@@ -185,13 +185,36 @@ export class DatabaseStorage implements IStorage {
     return db.select().from(menuOptions).orderBy(menuOptions.optionNumber);
   }
 
+  async getMenuOptionsByParent(parentMenuId: string | null): Promise<MenuOption[]> {
+    if (parentMenuId === null) {
+      return db.select().from(menuOptions)
+        .where(sql`${menuOptions.parentMenuId} IS NULL`)
+        .orderBy(menuOptions.optionNumber);
+    }
+    return db.select().from(menuOptions)
+      .where(eq(menuOptions.parentMenuId, parentMenuId))
+      .orderBy(menuOptions.optionNumber);
+  }
+
   async getMenuOption(id: string): Promise<MenuOption | undefined> {
     const [option] = await db.select().from(menuOptions).where(eq(menuOptions.id, id));
     return option;
   }
 
-  async getMenuOptionByNumber(optionNumber: number): Promise<MenuOption | undefined> {
-    const [option] = await db.select().from(menuOptions).where(eq(menuOptions.optionNumber, optionNumber));
+  async getMenuOptionByNumberAndParent(optionNumber: number, parentMenuId: string | null): Promise<MenuOption | undefined> {
+    if (parentMenuId === null) {
+      const [option] = await db.select().from(menuOptions)
+        .where(and(
+          eq(menuOptions.optionNumber, optionNumber),
+          sql`${menuOptions.parentMenuId} IS NULL`
+        ));
+      return option;
+    }
+    const [option] = await db.select().from(menuOptions)
+      .where(and(
+        eq(menuOptions.optionNumber, optionNumber),
+        eq(menuOptions.parentMenuId, parentMenuId)
+      ));
     return option;
   }
 
@@ -207,6 +230,45 @@ export class DatabaseStorage implements IStorage {
 
   async deleteMenuOption(id: string): Promise<void> {
     await db.delete(menuOptions).where(eq(menuOptions.id, id));
+  }
+
+  async upsertMenuOption(optionNumber: number, parentMenuId: string | null, data: Partial<InsertMenuOption>): Promise<MenuOption> {
+    const existing = await this.getMenuOptionByNumberAndParent(optionNumber, parentMenuId);
+    if (existing) {
+      const [option] = await db.update(menuOptions).set(data).where(eq(menuOptions.id, existing.id)).returning();
+      return option;
+    } else {
+      const [option] = await db.insert(menuOptions).values({
+        optionNumber,
+        parentMenuId,
+        ...data,
+      } as InsertMenuOption).returning();
+      return option;
+    }
+  }
+
+  // System Settings
+  async getSystemSetting(key: string): Promise<any> {
+    const result = await db.execute(sql`
+      SELECT * FROM system_settings WHERE key = ${key}
+    `);
+    return result.rows[0] || null;
+  }
+
+  async setSystemSetting(key: string, value: string | null, audioFileId: string | null): Promise<void> {
+    await db.execute(sql`
+      INSERT INTO system_settings (key, value, audio_file_id, updated_at)
+      VALUES (${key}, ${value}, ${audioFileId}, NOW())
+      ON CONFLICT (key) DO UPDATE SET
+        value = ${value},
+        audio_file_id = ${audioFileId},
+        updated_at = NOW()
+    `);
+  }
+
+  async getAllSystemSettings(): Promise<any[]> {
+    const result = await db.execute(sql`SELECT * FROM system_settings`);
+    return result.rows;
   }
 
   // Conference Sessions

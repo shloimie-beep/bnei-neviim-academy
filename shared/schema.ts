@@ -40,12 +40,24 @@ export const audioFiles = pgTable("audio_files", {
 // Menu options mapping audio files to IVR options
 export const menuOptions = pgTable("menu_options", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  optionNumber: integer("option_number").notNull().unique(), // 1, 2, 3, etc.
-  label: text("label").notNull(),
-  type: text("type").notNull().default("story"), // 'conference', 'story'
-  audioFileId: varchar("audio_file_id").references(() => audioFiles.id),
+  parentMenuId: varchar("parent_menu_id"), // null for main menu, or ID of parent submenu
+  optionNumber: integer("option_number").notNull(), // 1-9
+  functionType: text("function_type").notNull().default("none"), // 'none', 'play_mp3', 'transfer', 'submenu', 'conference'
+  audioFileId: varchar("audio_file_id").references(() => audioFiles.id), // for play_mp3
+  transferNumber: text("transfer_number"), // for transfer
+  transferTimeout: integer("transfer_timeout"), // for transfer (minutes)
+  submenuGreetingId: varchar("submenu_greeting_id").references(() => audioFiles.id), // greeting for submenu
   isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
+});
+
+// System settings for greetings
+export const systemSettings = pgTable("system_settings", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  key: text("key").notNull().unique(),
+  value: text("value"),
+  audioFileId: varchar("audio_file_id").references(() => audioFiles.id),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Conference sessions for tracking active conferences
@@ -148,6 +160,7 @@ export const insertUserSchema = createInsertSchema(users).omit({ id: true, creat
 export const insertPhoneNumberSchema = createInsertSchema(phoneNumbers).omit({ id: true, createdAt: true });
 export const insertAudioFileSchema = createInsertSchema(audioFiles).omit({ id: true, createdAt: true });
 export const insertMenuOptionSchema = createInsertSchema(menuOptions).omit({ id: true, createdAt: true });
+export const insertSystemSettingSchema = createInsertSchema(systemSettings).omit({ id: true, updatedAt: true });
 export const insertConferenceSessionSchema = createInsertSchema(conferenceSessions).omit({ id: true, startedAt: true });
 export const insertConferenceParticipantSchema = createInsertSchema(conferenceParticipants).omit({ id: true, joinedAt: true });
 export const insertUnmuteRequestSchema = createInsertSchema(unmuteRequests).omit({ id: true, requestedAt: true });
@@ -162,6 +175,8 @@ export type AudioFile = typeof audioFiles.$inferSelect;
 export type InsertAudioFile = z.infer<typeof insertAudioFileSchema>;
 export type MenuOption = typeof menuOptions.$inferSelect;
 export type InsertMenuOption = z.infer<typeof insertMenuOptionSchema>;
+export type SystemSetting = typeof systemSettings.$inferSelect;
+export type InsertSystemSetting = z.infer<typeof insertSystemSettingSchema>;
 export type ConferenceSession = typeof conferenceSessions.$inferSelect;
 export type InsertConferenceSession = z.infer<typeof insertConferenceSessionSchema>;
 export type ConferenceParticipant = typeof conferenceParticipants.$inferSelect;

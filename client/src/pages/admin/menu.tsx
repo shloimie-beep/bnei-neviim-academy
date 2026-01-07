@@ -1,376 +1,349 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Phone, Plus, Trash2, Loader2, Edit2, Music, Users, Save, X } from "lucide-react";
+import { Loader2, ChevronLeft, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { MenuOption, AudioFile } from "@shared/schema";
 
-function MenuOptionCard({
+type FunctionType = "none" | "play_mp3" | "transfer" | "submenu" | "conference";
+
+interface MenuOptionData {
+  optionNumber: number;
+  functionType: FunctionType;
+  audioFileId: string | null;
+  transferNumber: string | null;
+  transferTimeout: number | null;
+}
+
+function OptionBox({
+  num,
   option,
   audioFiles,
-  onEdit,
-  onDelete,
+  onUpdate,
+  onEditSubmenu,
+  isSaving,
 }: {
-  option: MenuOption;
+  num: number;
+  option?: MenuOption;
   audioFiles: AudioFile[];
-  onEdit: (option: MenuOption) => void;
-  onDelete: () => void;
+  onUpdate: (data: MenuOptionData) => void;
+  onEditSubmenu: (optionId: string) => void;
+  isSaving: boolean;
 }) {
-  const [isDeleting, setIsDeleting] = useState(false);
-  const audioFile = audioFiles.find((f) => f.id === option.audioFileId);
+  const [functionType, setFunctionType] = useState<FunctionType>(
+    (option?.functionType as FunctionType) || "none"
+  );
+  const [audioFileId, setAudioFileId] = useState(option?.audioFileId || "");
+  const [transferNumber, setTransferNumber] = useState(option?.transferNumber || "");
+  const [transferTimeout, setTransferTimeout] = useState(option?.transferTimeout?.toString() || "");
 
-  const handleDelete = async () => {
-    setIsDeleting(true);
-    await onDelete();
-    setIsDeleting(false);
+  const handleFunctionChange = (value: FunctionType) => {
+    setFunctionType(value);
+    onUpdate({
+      optionNumber: num,
+      functionType: value,
+      audioFileId: value === "play_mp3" ? audioFileId : null,
+      transferNumber: value === "transfer" ? transferNumber : null,
+      transferTimeout: value === "transfer" ? parseInt(transferTimeout) || null : null,
+    });
+  };
+
+  const handleAudioChange = (value: string) => {
+    setAudioFileId(value);
+    onUpdate({
+      optionNumber: num,
+      functionType,
+      audioFileId: value,
+      transferNumber: null,
+      transferTimeout: null,
+    });
+  };
+
+  const handleTransferChange = (number: string, timeout: string) => {
+    setTransferNumber(number);
+    setTransferTimeout(timeout);
+    onUpdate({
+      optionNumber: num,
+      functionType,
+      audioFileId: null,
+      transferNumber: number,
+      transferTimeout: parseInt(timeout) || null,
+    });
   };
 
   return (
-    <Card className={!option.isActive ? "opacity-60" : ""}>
-      <CardContent className="p-4">
-        <div className="flex items-start gap-4">
-          <div className="h-12 w-12 rounded-lg bg-primary flex items-center justify-center flex-shrink-0">
-            <span className="text-xl font-bold text-primary-foreground">{option.optionNumber}</span>
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0">
-                <p className="font-medium" data-testid={`text-menu-label-${option.id}`}>
-                  {option.label}
-                </p>
-                <div className="flex items-center gap-2 mt-1">
-                  <Badge variant={option.type === "conference" ? "default" : "secondary"}>
-                    {option.type === "conference" ? (
-                      <><Users className="h-3 w-3 mr-1" /> Conference</>
-                    ) : (
-                      <><Music className="h-3 w-3 mr-1" /> Story</>
-                    )}
-                  </Badge>
-                  {!option.isActive && <Badge variant="outline">Disabled</Badge>}
-                </div>
-                {audioFile && option.type !== "conference" && (
-                  <p className="text-sm text-muted-foreground mt-2 truncate">
-                    Audio: {audioFile.name}
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="flex items-center gap-2 mt-3">
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => onEdit(option)}
-                data-testid={`button-edit-menu-${option.id}`}
-              >
-                <Edit2 className="h-4 w-4 mr-1" />
-                Edit
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleDelete}
-                disabled={isDeleting}
-                data-testid={`button-delete-menu-${option.id}`}
-              >
-                {isDeleting ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Trash2 className="h-4 w-4" />
-                )}
-              </Button>
-            </div>
-          </div>
+    <div className="border rounded-lg p-4 space-y-3 bg-card">
+      <div className="text-4xl font-bold text-center text-primary">{num}</div>
+      
+      <div className="space-y-2">
+        <Label className="text-xs text-muted-foreground">Function</Label>
+        <Select value={functionType} onValueChange={handleFunctionChange} disabled={isSaving}>
+          <SelectTrigger data-testid={`select-function-${num}`}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="none">None</SelectItem>
+            <SelectItem value="play_mp3">Play MP3</SelectItem>
+            <SelectItem value="transfer">Transfer</SelectItem>
+            <SelectItem value="submenu">Sub-menu</SelectItem>
+            <SelectItem value="conference">Conference</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {functionType === "play_mp3" && (
+        <div className="space-y-2">
+          <Label className="text-xs text-muted-foreground">File</Label>
+          <Select value={audioFileId} onValueChange={handleAudioChange} disabled={isSaving}>
+            <SelectTrigger data-testid={`select-audio-${num}`}>
+              <SelectValue placeholder="Select file" />
+            </SelectTrigger>
+            <SelectContent>
+              {audioFiles.map((file) => (
+                <SelectItem key={file.id} value={file.id}>
+                  {file.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
-      </CardContent>
-    </Card>
+      )}
+
+      {functionType === "transfer" && (
+        <>
+          <div className="space-y-2">
+            <Label className="text-xs text-muted-foreground">To</Label>
+            <Input
+              placeholder="+1234567890"
+              value={transferNumber}
+              onChange={(e) => handleTransferChange(e.target.value, transferTimeout)}
+              disabled={isSaving}
+              data-testid={`input-transfer-${num}`}
+            />
+          </div>
+          <div className="space-y-2">
+            <Label className="text-xs text-muted-foreground">End after (minutes)</Label>
+            <Input
+              type="number"
+              placeholder="60"
+              value={transferTimeout}
+              onChange={(e) => handleTransferChange(transferNumber, e.target.value)}
+              disabled={isSaving}
+              data-testid={`input-timeout-${num}`}
+            />
+          </div>
+        </>
+      )}
+
+      {functionType === "submenu" && option?.id && (
+        <Button
+          variant="link"
+          className="p-0 h-auto"
+          onClick={() => onEditSubmenu(option.id)}
+          data-testid={`button-edit-submenu-${num}`}
+        >
+          Edit submenu
+        </Button>
+      )}
+    </div>
   );
 }
 
 export default function MenuManagement() {
   const { toast } = useToast();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingOption, setEditingOption] = useState<MenuOption | null>(null);
-  const [formData, setFormData] = useState({
-    optionNumber: "",
-    label: "",
-    type: "story",
-    audioFileId: "",
-    isActive: true,
-  });
+  const [currentMenuId, setCurrentMenuId] = useState<string | null>(null);
+  const [menuPath, setMenuPath] = useState<{ id: string | null; name: string }[]>([
+    { id: null, name: "Main Menu" },
+  ]);
+  const [isSaving, setIsSaving] = useState(false);
 
   const { data: menuOptions, isLoading: menuLoading } = useQuery<MenuOption[]>({
-    queryKey: ["/api/admin/menu-options"],
+    queryKey: ["/api/admin/menu-options", currentMenuId],
+    queryFn: async () => {
+      const url = currentMenuId
+        ? `/api/admin/menu-options?parentMenuId=${currentMenuId}`
+        : "/api/admin/menu-options?parentMenuId=null";
+      const res = await fetch(url);
+      return res.json();
+    },
   });
 
-  const { data: audioFiles, isLoading: audioLoading } = useQuery<AudioFile[]>({
+  const { data: audioFiles } = useQuery<AudioFile[]>({
     queryKey: ["/api/admin/audio-files"],
   });
 
-  const createMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const res = await apiRequest("POST", "/api/admin/menu-options", data);
-      return res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/menu-options"] });
-      toast({ title: "Menu option created" });
-      resetForm();
-    },
-    onError: (error: any) => {
-      toast({ title: "Failed to create", description: error.message, variant: "destructive" });
-    },
+  const { data: settings } = useQuery<any>({
+    queryKey: ["/api/admin/settings"],
   });
 
   const updateMutation = useMutation({
-    mutationFn: async ({ id, data }: { id: string; data: any }) => {
-      const res = await apiRequest("PATCH", `/api/admin/menu-options/${id}`, data);
+    mutationFn: async (data: { optionNumber: number; parentMenuId: string | null } & Partial<MenuOptionData>) => {
+      const res = await apiRequest("POST", "/api/admin/menu-options/upsert", data);
       return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/menu-options"] });
-      toast({ title: "Menu option updated" });
-      resetForm();
     },
     onError: (error: any) => {
-      toast({ title: "Failed to update", description: error.message, variant: "destructive" });
+      toast({ title: "Failed to save", description: error.message, variant: "destructive" });
     },
   });
 
-  const deleteMutation = useMutation({
-    mutationFn: async (id: string) => {
-      await apiRequest("DELETE", `/api/admin/menu-options/${id}`);
+  const updateSettingMutation = useMutation({
+    mutationFn: async (data: { key: string; audioFileId: string | null }) => {
+      const res = await apiRequest("POST", "/api/admin/settings", data);
+      return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/menu-options"] });
-      toast({ title: "Menu option deleted" });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/settings"] });
+      toast({ title: "Setting saved" });
     },
     onError: (error: any) => {
-      toast({ title: "Failed to delete", description: error.message, variant: "destructive" });
+      toast({ title: "Failed to save setting", description: error.message, variant: "destructive" });
     },
   });
 
-  const resetForm = () => {
-    setFormData({
-      optionNumber: "",
-      label: "",
-      type: "story",
-      audioFileId: "",
-      isActive: true,
+  const handleOptionUpdate = async (data: MenuOptionData) => {
+    setIsSaving(true);
+    await updateMutation.mutateAsync({
+      ...data,
+      parentMenuId: currentMenuId,
     });
-    setEditingOption(null);
-    setIsDialogOpen(false);
+    setIsSaving(false);
   };
 
-  const handleEdit = (option: MenuOption) => {
-    setEditingOption(option);
-    setFormData({
-      optionNumber: option.optionNumber.toString(),
-      label: option.label,
-      type: option.type,
-      audioFileId: option.audioFileId || "",
-      isActive: option.isActive ?? true,
-    });
-    setIsDialogOpen(true);
-  };
-
-  const handleSubmit = async () => {
-    const data = {
-      optionNumber: parseInt(formData.optionNumber),
-      label: formData.label,
-      type: formData.type,
-      audioFileId: formData.type === "conference" ? null : formData.audioFileId || null,
-      isActive: formData.isActive,
-    };
-
-    if (editingOption) {
-      await updateMutation.mutateAsync({ id: editingOption.id, data });
-    } else {
-      await createMutation.mutateAsync(data);
+  const handleEditSubmenu = (optionId: string) => {
+    const option = menuOptions?.find((o) => o.id === optionId);
+    if (option) {
+      setMenuPath([...menuPath, { id: optionId, name: `Option ${option.optionNumber}` }]);
+      setCurrentMenuId(optionId);
     }
   };
 
-  const isLoading = menuLoading || audioLoading;
-  const storyAudioFiles = audioFiles?.filter((f) => f.type === "story") || [];
-  const sortedOptions = menuOptions?.slice().sort((a, b) => a.optionNumber - b.optionNumber) || [];
+  const handleBackToMain = () => {
+    if (menuPath.length > 1) {
+      const newPath = menuPath.slice(0, -1);
+      setMenuPath(newPath);
+      setCurrentMenuId(newPath[newPath.length - 1].id);
+    }
+  };
+
+  const getOptionForNumber = (num: number) => {
+    return menuOptions?.find((o) => o.optionNumber === num);
+  };
+
+  const subscriberGreeting = settings?.find((s: any) => s.key === "subscriber_greeting");
+  const nonSubscriberGreeting = settings?.find((s: any) => s.key === "non_subscriber_greeting");
+
+  if (menuLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <Loader2 className="h-8 w-8 animate-spin" />
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-8">
-      <div className="flex items-start justify-between gap-4">
+    <div className="space-y-6">
+      <div className="flex items-center gap-4">
+        {menuPath.length > 1 && (
+          <Button variant="ghost" size="icon" onClick={handleBackToMain} data-testid="button-back">
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+        )}
         <div>
-          <h1 className="text-3xl font-bold mb-2">Menu Options</h1>
-          <p className="text-muted-foreground">Configure the IVR menu for incoming calls.</p>
+          <h1 className="text-3xl font-bold">
+            {menuPath[menuPath.length - 1].name}
+          </h1>
+          {menuPath.length > 1 && (
+            <p className="text-sm text-muted-foreground">
+              Press * to return to main menu
+            </p>
+          )}
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={(open) => { if (!open) resetForm(); else setIsDialogOpen(true); }}>
-          <DialogTrigger asChild>
-            <Button data-testid="button-add-menu">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Option
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>{editingOption ? "Edit Menu Option" : "Add Menu Option"}</DialogTitle>
-              <DialogDescription>
-                Configure a number option for the IVR menu.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
+      </div>
+
+      {currentMenuId === null && (
+        <div className="grid md:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Greeting for subscribers</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
               <div className="space-y-2">
-                <Label htmlFor="option-number">Press Number</Label>
-                <Input
-                  id="option-number"
-                  type="number"
-                  min="0"
-                  max="9"
-                  placeholder="1-9"
-                  value={formData.optionNumber}
-                  onChange={(e) => setFormData({ ...formData, optionNumber: e.target.value })}
-                  data-testid="input-option-number"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="label">Label</Label>
-                <Input
-                  id="label"
-                  placeholder="e.g., Listen to a story"
-                  value={formData.label}
-                  onChange={(e) => setFormData({ ...formData, label: e.target.value })}
-                  data-testid="input-option-label"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="type">Type</Label>
-                <Select value={formData.type} onValueChange={(v) => setFormData({ ...formData, type: v })}>
-                  <SelectTrigger data-testid="select-option-type">
-                    <SelectValue placeholder="Select type" />
+                <Label className="text-xs text-muted-foreground">File</Label>
+                <Select
+                  value={subscriberGreeting?.audio_file_id || ""}
+                  onValueChange={(v) => updateSettingMutation.mutate({ key: "subscriber_greeting", audioFileId: v })}
+                >
+                  <SelectTrigger data-testid="select-subscriber-greeting">
+                    <SelectValue placeholder="Select greeting file" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="conference">Conference Call</SelectItem>
-                    <SelectItem value="story">Audio Story</SelectItem>
+                    {audioFiles?.filter((f) => f.type === "greeting" || f.type === "menu").map((file) => (
+                      <SelectItem key={file.id} value={file.id}>
+                        {file.name}
+                      </SelectItem>
+                    ))}
                   </SelectContent>
                 </Select>
               </div>
-              {formData.type === "story" && (
-                <div className="space-y-2">
-                  <Label htmlFor="audio">Audio File</Label>
-                  <Select value={formData.audioFileId} onValueChange={(v) => setFormData({ ...formData, audioFileId: v })}>
-                    <SelectTrigger data-testid="select-option-audio">
-                      <SelectValue placeholder="Select audio file" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {storyAudioFiles.map((file) => (
-                        <SelectItem key={file.id} value={file.id}>
-                          {file.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-              )}
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={resetForm}>
-                Cancel
-              </Button>
-              <Button
-                onClick={handleSubmit}
-                disabled={createMutation.isPending || updateMutation.isPending || !formData.optionNumber || !formData.label}
-                data-testid="button-save-menu"
-              >
-                {(createMutation.isPending || updateMutation.isPending) && (
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                )}
-                <Save className="h-4 w-4 mr-2" />
-                Save
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      </div>
+            </CardContent>
+          </Card>
 
-      {/* Visual Keypad */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg">Greeting for non-subscribers</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <div className="space-y-2">
+                <Label className="text-xs text-muted-foreground">File</Label>
+                <Select
+                  value={nonSubscriberGreeting?.audio_file_id || ""}
+                  onValueChange={(v) => updateSettingMutation.mutate({ key: "non_subscriber_greeting", audioFileId: v })}
+                >
+                  <SelectTrigger data-testid="select-non-subscriber-greeting">
+                    <SelectValue placeholder="Select greeting file" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {audioFiles?.filter((f) => f.type === "greeting" || f.type === "non_subscriber").map((file) => (
+                      <SelectItem key={file.id} value={file.id}>
+                        {file.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
       <Card>
         <CardHeader>
-          <CardTitle>IVR Keypad Overview</CardTitle>
-          <CardDescription>Visual representation of your menu options</CardDescription>
+          <CardTitle>Options 1-9</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-3 gap-4 max-w-xs mx-auto">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9, "*", 0, "#"].map((key) => {
-              const option = menuOptions?.find((o) => o.optionNumber === key);
-              return (
-                <div
-                  key={key}
-                  className={`
-                    h-16 rounded-lg border-2 flex flex-col items-center justify-center text-center p-2
-                    ${option ? "border-primary bg-primary/5" : "border-muted bg-muted/20"}
-                  `}
-                >
-                  <span className="text-lg font-bold">{key}</span>
-                  {option && (
-                    <span className="text-xs text-muted-foreground truncate w-full">
-                      {option.label.substring(0, 10)}...
-                    </span>
-                  )}
-                </div>
-              );
-            })}
+          <div className="grid grid-cols-3 gap-4">
+            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+              <OptionBox
+                key={num}
+                num={num}
+                option={getOptionForNumber(num)}
+                audioFiles={audioFiles || []}
+                onUpdate={handleOptionUpdate}
+                onEditSubmenu={handleEditSubmenu}
+                isSaving={isSaving}
+              />
+            ))}
           </div>
         </CardContent>
       </Card>
-
-      {/* Menu Options List */}
-      {isLoading ? (
-        <div className="grid gap-4 md:grid-cols-2">
-          {[1, 2].map((i) => (
-            <Card key={i}>
-              <CardContent className="p-4">
-                <div className="flex items-start gap-4">
-                  <Skeleton className="h-12 w-12 rounded-lg" />
-                  <div className="flex-1 space-y-2">
-                    <Skeleton className="h-4 w-32" />
-                    <Skeleton className="h-3 w-20" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      ) : sortedOptions.length > 0 ? (
-        <div className="grid gap-4 md:grid-cols-2">
-          {sortedOptions.map((option) => (
-            <MenuOptionCard
-              key={option.id}
-              option={option}
-              audioFiles={audioFiles || []}
-              onEdit={handleEdit}
-              onDelete={() => deleteMutation.mutate(option.id)}
-            />
-          ))}
-        </div>
-      ) : (
-        <Card>
-          <CardContent className="py-12">
-            <div className="text-center">
-              <Phone className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-lg font-medium mb-1">No menu options configured</p>
-              <p className="text-muted-foreground mb-4">Add options to create your IVR menu.</p>
-              <Button onClick={() => setIsDialogOpen(true)} data-testid="button-add-first-menu">
-                <Plus className="h-4 w-4 mr-2" />
-                Add First Option
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

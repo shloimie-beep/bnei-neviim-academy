@@ -481,32 +481,60 @@ export async function registerRoutes(
   // Menu Options
   app.get("/api/admin/menu-options", requireAdmin, async (req, res) => {
     try {
-      const options = await storage.getAllMenuOptions();
-      res.json(options);
+      const parentMenuId = req.query.parentMenuId as string | undefined;
+      if (parentMenuId === "null" || parentMenuId === undefined) {
+        const options = await storage.getMenuOptionsByParent(null);
+        res.json(options);
+      } else {
+        const options = await storage.getMenuOptionsByParent(parentMenuId);
+        res.json(options);
+      }
     } catch (error) {
       res.status(500).json({ message: "Failed to get menu options" });
     }
   });
 
-  app.post("/api/admin/menu-options", requireAdmin, async (req, res) => {
+  app.post("/api/admin/menu-options/upsert", requireAdmin, async (req, res) => {
     try {
-      const { optionNumber, label, type, audioFileId, isActive } = req.body;
+      const { optionNumber, parentMenuId, functionType, audioFileId, transferNumber, transferTimeout } = req.body;
       
-      if (!optionNumber || !label || !type) {
+      if (!optionNumber || !functionType) {
         return res.status(400).json({ message: "Required fields missing" });
       }
 
-      // Check if option number already exists
-      const existing = await storage.getMenuOptionByNumber(optionNumber);
-      if (existing) {
-        return res.status(400).json({ message: "Option number already in use" });
+      const option = await storage.upsertMenuOption(
+        optionNumber,
+        parentMenuId || null,
+        {
+          functionType,
+          audioFileId: audioFileId || null,
+          transferNumber: transferNumber || null,
+          transferTimeout: transferTimeout || null,
+        }
+      );
+
+      res.json(option);
+    } catch (error) {
+      console.error("Upsert menu option error:", error);
+      res.status(500).json({ message: "Failed to save menu option" });
+    }
+  });
+
+  app.post("/api/admin/menu-options", requireAdmin, async (req, res) => {
+    try {
+      const { optionNumber, parentMenuId, functionType, audioFileId, transferNumber, transferTimeout, isActive } = req.body;
+      
+      if (!optionNumber || !functionType) {
+        return res.status(400).json({ message: "Required fields missing" });
       }
 
       const option = await storage.createMenuOption({
         optionNumber,
-        label,
-        type,
+        parentMenuId: parentMenuId || null,
+        functionType,
         audioFileId: audioFileId || null,
+        transferNumber: transferNumber || null,
+        transferTimeout: transferTimeout || null,
         isActive: isActive ?? true,
       });
 
@@ -523,21 +551,14 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Menu option not found" });
       }
 
-      const { optionNumber, label, type, audioFileId, isActive } = req.body;
-
-      // Check if option number conflicts
-      if (optionNumber && optionNumber !== existing.optionNumber) {
-        const conflict = await storage.getMenuOptionByNumber(optionNumber);
-        if (conflict) {
-          return res.status(400).json({ message: "Option number already in use" });
-        }
-      }
+      const { optionNumber, functionType, audioFileId, transferNumber, transferTimeout, isActive } = req.body;
 
       const option = await storage.updateMenuOption(req.params.id, {
         optionNumber: optionNumber ?? existing.optionNumber,
-        label: label ?? existing.label,
-        type: type ?? existing.type,
+        functionType: functionType ?? existing.functionType,
         audioFileId: audioFileId !== undefined ? audioFileId : existing.audioFileId,
+        transferNumber: transferNumber !== undefined ? transferNumber : existing.transferNumber,
+        transferTimeout: transferTimeout !== undefined ? transferTimeout : existing.transferTimeout,
         isActive: isActive !== undefined ? isActive : existing.isActive,
       });
 
@@ -558,6 +579,30 @@ export async function registerRoutes(
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ message: "Failed to delete menu option" });
+    }
+  });
+
+  // System Settings
+  app.get("/api/admin/settings", requireAdmin, async (req, res) => {
+    try {
+      const settings = await storage.getAllSystemSettings();
+      res.json(settings);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get settings" });
+    }
+  });
+
+  app.post("/api/admin/settings", requireAdmin, async (req, res) => {
+    try {
+      const { key, value, audioFileId } = req.body;
+      if (!key) {
+        return res.status(400).json({ message: "Key is required" });
+      }
+      await storage.setSystemSetting(key, value || null, audioFileId || null);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Set setting error:", error);
+      res.status(500).json({ message: "Failed to save setting" });
     }
   });
 
