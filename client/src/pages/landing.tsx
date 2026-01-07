@@ -74,7 +74,7 @@ export default function LandingPage() {
               </a>
             </div>
             <p className="text-sm text-muted-foreground">
-              No credit card required for trial
+              Card required - Cancel anytime during trial
             </p>
           </div>
         </div>

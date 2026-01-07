@@ -238,27 +238,45 @@ export default function DashboardPage() {
                       <p className="text-sm text-muted-foreground">$9.99/month - Renews automatically</p>
                     </div>
                   )}
-                  {(user?.subscriptionStatus === "none" || user?.subscriptionStatus === "cancelled") && (
+                  {user?.subscriptionStatus === "none" && (
                     <div className="p-4 bg-muted rounded-lg">
-                      <p className="font-medium">No Active Subscription</p>
-                      <p className="text-sm text-muted-foreground">Subscribe to access the hotline</p>
+                      <p className="font-medium">Start Your Free Trial</p>
+                      <p className="text-sm text-muted-foreground">
+                        Get 14 days free access. Card required - $9.99/month after trial ends.
+                      </p>
+                    </div>
+                  )}
+                  {user?.subscriptionStatus === "cancelled" && (
+                    <div className="p-4 bg-muted rounded-lg">
+                      <p className="font-medium">Subscription Cancelled</p>
+                      <p className="text-sm text-muted-foreground">Resubscribe to regain access to the hotline</p>
                     </div>
                   )}
                 </div>
               )}
             </CardContent>
             <CardFooter className="flex flex-wrap gap-2">
-              {(user?.subscriptionStatus === "none" || user?.subscriptionStatus === "cancelled" || (user?.subscriptionStatus === "trial" && daysRemaining <= 0)) && (
+              {user?.subscriptionStatus === "none" && (
                 <Button
                   onClick={() => createCheckoutMutation.mutate()}
                   disabled={createCheckoutMutation.isPending}
                   data-testid="button-subscribe"
                 >
                   {createCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Start Free Trial
+                </Button>
+              )}
+              {(user?.subscriptionStatus === "cancelled" || (user?.subscriptionStatus === "trial" && daysRemaining <= 0)) && (
+                <Button
+                  onClick={() => createCheckoutMutation.mutate()}
+                  disabled={createCheckoutMutation.isPending}
+                  data-testid="button-resubscribe"
+                >
+                  {createCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                   Subscribe Now
                 </Button>
               )}
-              {(user?.subscriptionStatus === "active" || user?.subscriptionStatus === "past_due") && (
+              {(user?.subscriptionStatus === "active" || user?.subscriptionStatus === "past_due" || user?.subscriptionStatus === "trial") && subscription?.stripeCustomerId && (
                 <Button
                   variant="outline"
                   onClick={() => createPortalMutation.mutate()}

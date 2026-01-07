@@ -7,6 +7,9 @@ import path from "path";
 import fs from "fs";
 import { storage } from "./storage";
 import { registerSchema, loginSchema, phoneNumberSchema } from "@shared/schema";
+import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
+import { sql } from "drizzle-orm";
+import { db } from "./db";
 
 // Extend express-session
 declare module "express-session" {
@@ -103,16 +106,13 @@ export async function registerRoutes(
       // Hash password
       const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Create user with trial
-      const trialEndsAt = new Date();
-      trialEndsAt.setDate(trialEndsAt.getDate() + 14); // 14-day trial
-
+      // Create user without subscription - they'll need to complete Stripe checkout for trial
       const user = await storage.createUser({
         email,
         password: hashedPassword,
         role: "customer",
-        subscriptionStatus: "trial",
-        trialEndsAt,
+        subscriptionStatus: "none",
+        trialEndsAt: null,
       });
 
       // Register phone number
@@ -243,11 +243,45 @@ export async function registerRoutes(
         status: user?.subscriptionStatus,
         trialEndsAt: user?.trialEndsAt,
         stripeSubscriptionId: user?.stripeSubscriptionId,
+        stripeCustomerId: user?.stripeCustomerId,
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to get subscription" });
     }
   });
+
+  // Get Stripe publishable key for frontend
+  app.get("/api/stripe/publishable-key", async (req, res) => {
+    try {
+      const publishableKey = await getStripePublishableKey();
+      res.json({ publishableKey });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get Stripe key" });
+    }
+  });
+
+  // Get subscription price from Stripe
+  async function getSubscriptionPriceId(): Promise<string | null> {
+    try {
+      // Query the price from the synced stripe.prices table
+      const result = await db.execute(sql`
+        SELECT p.id as price_id 
+        FROM stripe.prices p
+        JOIN stripe.products prod ON p.product = prod.id
+        WHERE prod.name = 'Kids'' Hotline Monthly' 
+        AND p.active = true
+        LIMIT 1
+      `);
+      
+      if (result.rows.length > 0) {
+        return (result.rows[0] as any).price_id;
+      }
+      return null;
+    } catch (error) {
+      console.error("Error getting price ID:", error);
+      return null;
+    }
+  }
 
   app.post("/api/create-checkout", requireAuth, async (req, res) => {
     try {
@@ -256,10 +290,89 @@ export async function registerRoutes(
         return res.status(404).json({ message: "User not found" });
       }
 
-      // For now, return a placeholder. Stripe integration will be added in Task 2
-      res.json({ url: "/dashboard?checkout=success" });
-    } catch (error) {
-      res.status(500).json({ message: "Failed to create checkout" });
+      const stripe = await getUncachableStripeClient();
+      
+      // Get the subscription price ID
+      let priceId = await getSubscriptionPriceId();
+      
+      // If no price found, create product and price on the fly
+      if (!priceId) {
+        console.log("No price found, creating product and price...");
+        
+        // Search for existing product
+        const existingProducts = await stripe.products.search({
+          query: "name:'Kids\\' Hotline Monthly'",
+        });
+        
+        let productId: string;
+        if (existingProducts.data.length > 0) {
+          productId = existingProducts.data[0].id;
+        } else {
+          const product = await stripe.products.create({
+            name: "Kids' Hotline Monthly",
+            description: "Unlimited access to stories and moderated group calls. Includes 2-week free trial.",
+          });
+          productId = product.id;
+        }
+        
+        // Check for existing price
+        const existingPrices = await stripe.prices.list({
+          product: productId,
+          active: true,
+        });
+        
+        if (existingPrices.data.length > 0) {
+          priceId = existingPrices.data[0].id;
+        } else {
+          const price = await stripe.prices.create({
+            product: productId,
+            unit_amount: 999, // $9.99
+            currency: 'usd',
+            recurring: { interval: 'month' },
+          });
+          priceId = price.id;
+        }
+      }
+
+      // Create or get Stripe customer
+      let customerId = user.stripeCustomerId;
+      if (!customerId) {
+        const customer = await stripe.customers.create({
+          email: user.email,
+          metadata: { userId: user.id },
+        });
+        await storage.updateUser(user.id, { stripeCustomerId: customer.id });
+        customerId = customer.id;
+      }
+
+      // Get the base URL for redirects
+      const domains = process.env.REPLIT_DOMAINS?.split(',') || [];
+      const baseUrl = domains.length > 0 ? `https://${domains[0]}` : 'http://localhost:5000';
+
+      // Create checkout session with trial
+      const session = await stripe.checkout.sessions.create({
+        customer: customerId,
+        payment_method_types: ['card'],
+        payment_method_collection: 'always', // Always collect payment method
+        line_items: [{ price: priceId, quantity: 1 }],
+        mode: 'subscription',
+        subscription_data: {
+          trial_period_days: 14, // 2-week free trial
+          trial_settings: {
+            end_behavior: {
+              missing_payment_method: 'cancel', // Cancel if no payment method
+            },
+          },
+        },
+        success_url: `${baseUrl}/dashboard?checkout=success`,
+        cancel_url: `${baseUrl}/dashboard?checkout=cancelled`,
+        metadata: { userId: user.id },
+      });
+
+      res.json({ url: session.url });
+    } catch (error: any) {
+      console.error("Checkout error:", error);
+      res.status(500).json({ message: error.message || "Failed to create checkout" });
     }
   });
 
@@ -270,8 +383,18 @@ export async function registerRoutes(
         return res.status(404).json({ message: "No billing account found" });
       }
 
-      // For now, return a placeholder
-      res.json({ url: "/dashboard" });
+      const stripe = await getUncachableStripeClient();
+      
+      // Get the base URL for redirects
+      const domains = process.env.REPLIT_DOMAINS?.split(',') || [];
+      const baseUrl = domains.length > 0 ? `https://${domains[0]}` : 'http://localhost:5000';
+
+      const portalSession = await stripe.billingPortal.sessions.create({
+        customer: user.stripeCustomerId,
+        return_url: `${baseUrl}/dashboard`,
+      });
+
+      res.json({ url: portalSession.url });
     } catch (error) {
       res.status(500).json({ message: "Failed to access billing portal" });
     }
