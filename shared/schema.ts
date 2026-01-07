@@ -98,10 +98,20 @@ export const callLogs = pgTable("call_logs", {
   callUuid: text("call_uuid").notNull(),
   fromNumber: text("from_number").notNull(),
   toNumber: text("to_number").notNull(),
+  userId: varchar("user_id").references(() => users.id), // link to subscriber
   isSubscriber: boolean("is_subscriber").default(false),
   menuSelection: integer("menu_selection"),
   duration: integer("duration"), // in seconds
   status: text("status"), // 'completed', 'busy', 'no-answer', etc.
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Admin whitelisted phone numbers (free access without subscription)
+export const whitelistedNumbers = pgTable("whitelisted_numbers", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  phoneNumber: text("phone_number").notNull().unique(),
+  label: text("label"), // optional note about who/why
+  createdBy: varchar("created_by").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -165,6 +175,7 @@ export const insertConferenceSessionSchema = createInsertSchema(conferenceSessio
 export const insertConferenceParticipantSchema = createInsertSchema(conferenceParticipants).omit({ id: true, joinedAt: true });
 export const insertUnmuteRequestSchema = createInsertSchema(unmuteRequests).omit({ id: true, requestedAt: true });
 export const insertCallLogSchema = createInsertSchema(callLogs).omit({ id: true, createdAt: true });
+export const insertWhitelistedNumberSchema = createInsertSchema(whitelistedNumbers).omit({ id: true, createdAt: true });
 
 // Types
 export type User = typeof users.$inferSelect;
@@ -185,6 +196,8 @@ export type UnmuteRequest = typeof unmuteRequests.$inferSelect;
 export type InsertUnmuteRequest = z.infer<typeof insertUnmuteRequestSchema>;
 export type CallLog = typeof callLogs.$inferSelect;
 export type InsertCallLog = z.infer<typeof insertCallLogSchema>;
+export type WhitelistedNumber = typeof whitelistedNumbers.$inferSelect;
+export type InsertWhitelistedNumber = z.infer<typeof insertWhitelistedNumberSchema>;
 
 // Validation schemas for forms
 export const loginSchema = z.object({

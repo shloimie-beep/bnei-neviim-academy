@@ -202,93 +202,95 @@ export default function DashboardPage() {
             <p className="text-muted-foreground">Manage your subscription and phone numbers below.</p>
           </div>
 
-          {/* Subscription Card */}
-          <Card>
-            <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
-              <div className="space-y-1">
-                <CardTitle className="flex items-center gap-2">
-                  <CreditCard className="h-5 w-5" />
-                  Subscription Status
-                </CardTitle>
-                <CardDescription>Your current plan and billing information</CardDescription>
-              </div>
-              <SubscriptionStatusBadge status={user?.subscriptionStatus || "none"} />
-            </CardHeader>
-            <CardContent>
-              {subLoading ? (
-                <div className="space-y-3">
-                  <Skeleton className="h-4 w-48" />
-                  <Skeleton className="h-4 w-32" />
+          {/* Subscription Card - Hide for admins */}
+          {user?.role !== "admin" && (
+            <Card>
+              <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
+                <div className="space-y-1">
+                  <CardTitle className="flex items-center gap-2">
+                    <CreditCard className="h-5 w-5" />
+                    Subscription Status
+                  </CardTitle>
+                  <CardDescription>Your current plan and billing information</CardDescription>
                 </div>
-              ) : (
-                <div className="space-y-4">
-                  {user?.subscriptionStatus === "trial" && (
-                    <div className="p-4 bg-muted rounded-lg">
-                      <p className="font-medium">Free Trial</p>
-                      <p className="text-sm text-muted-foreground">
-                        {daysRemaining > 0
-                          ? `${daysRemaining} days remaining in your trial`
-                          : "Your trial has ended"}
-                      </p>
-                    </div>
-                  )}
-                  {user?.subscriptionStatus === "active" && (
-                    <div className="p-4 bg-muted rounded-lg">
-                      <p className="font-medium">Monthly Subscription</p>
-                      <p className="text-sm text-muted-foreground">$9.99/month - Renews automatically</p>
-                    </div>
-                  )}
-                  {user?.subscriptionStatus === "none" && (
-                    <div className="p-4 bg-muted rounded-lg">
-                      <p className="font-medium">Start Your Free Trial</p>
-                      <p className="text-sm text-muted-foreground">
-                        Get 14 days free access. Card required - $9.99/month after trial ends.
-                      </p>
-                    </div>
-                  )}
-                  {user?.subscriptionStatus === "cancelled" && (
-                    <div className="p-4 bg-muted rounded-lg">
-                      <p className="font-medium">Subscription Cancelled</p>
-                      <p className="text-sm text-muted-foreground">Resubscribe to regain access to the hotline</p>
-                    </div>
-                  )}
-                </div>
-              )}
-            </CardContent>
-            <CardFooter className="flex flex-wrap gap-2">
-              {user?.subscriptionStatus === "none" && (
-                <Button
-                  onClick={() => createCheckoutMutation.mutate()}
-                  disabled={createCheckoutMutation.isPending}
-                  data-testid="button-subscribe"
-                >
-                  {createCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  Start Free Trial
-                </Button>
-              )}
-              {(user?.subscriptionStatus === "cancelled" || (user?.subscriptionStatus === "trial" && daysRemaining <= 0)) && (
-                <Button
-                  onClick={() => createCheckoutMutation.mutate()}
-                  disabled={createCheckoutMutation.isPending}
-                  data-testid="button-resubscribe"
-                >
-                  {createCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  Subscribe Now
-                </Button>
-              )}
-              {(user?.subscriptionStatus === "active" || user?.subscriptionStatus === "past_due" || user?.subscriptionStatus === "trial") && subscription?.stripeCustomerId && (
-                <Button
-                  variant="outline"
-                  onClick={() => createPortalMutation.mutate()}
-                  disabled={createPortalMutation.isPending}
-                  data-testid="button-manage-billing"
-                >
-                  {createPortalMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  Manage Billing
-                </Button>
-              )}
-            </CardFooter>
-          </Card>
+                <SubscriptionStatusBadge status={user?.subscriptionStatus || "none"} />
+              </CardHeader>
+              <CardContent>
+                {subLoading ? (
+                  <div className="space-y-3">
+                    <Skeleton className="h-4 w-48" />
+                    <Skeleton className="h-4 w-32" />
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {user?.subscriptionStatus === "trial" && (
+                      <div className="p-4 bg-muted rounded-lg">
+                        <p className="font-medium">Free Trial</p>
+                        <p className="text-sm text-muted-foreground">
+                          {daysRemaining > 0
+                            ? `${daysRemaining} days remaining in your trial`
+                            : "Your trial has ended"}
+                        </p>
+                      </div>
+                    )}
+                    {user?.subscriptionStatus === "active" && (
+                      <div className="p-4 bg-muted rounded-lg">
+                        <p className="font-medium">Monthly Subscription</p>
+                        <p className="text-sm text-muted-foreground">$9.99/month - Renews automatically</p>
+                      </div>
+                    )}
+                    {user?.subscriptionStatus === "none" && (
+                      <div className="p-4 bg-muted rounded-lg">
+                        <p className="font-medium">Start Your Free Trial</p>
+                        <p className="text-sm text-muted-foreground">
+                          Get 14 days free access. Card required - $9.99/month after trial ends.
+                        </p>
+                      </div>
+                    )}
+                    {user?.subscriptionStatus === "cancelled" && (
+                      <div className="p-4 bg-muted rounded-lg">
+                        <p className="font-medium">Subscription Cancelled</p>
+                        <p className="text-sm text-muted-foreground">Resubscribe to regain access to the hotline</p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </CardContent>
+              <CardFooter className="flex flex-wrap gap-2">
+                {user?.subscriptionStatus === "none" && (
+                  <Button
+                    onClick={() => createCheckoutMutation.mutate()}
+                    disabled={createCheckoutMutation.isPending}
+                    data-testid="button-subscribe"
+                  >
+                    {createCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                    Start Free Trial
+                  </Button>
+                )}
+                {(user?.subscriptionStatus === "cancelled" || (user?.subscriptionStatus === "trial" && daysRemaining <= 0)) && (
+                  <Button
+                    onClick={() => createCheckoutMutation.mutate()}
+                    disabled={createCheckoutMutation.isPending}
+                    data-testid="button-resubscribe"
+                  >
+                    {createCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                    Subscribe Now
+                  </Button>
+                )}
+                {(user?.subscriptionStatus === "active" || user?.subscriptionStatus === "past_due" || user?.subscriptionStatus === "trial") && subscription?.stripeCustomerId && (
+                  <Button
+                    variant="outline"
+                    onClick={() => createPortalMutation.mutate()}
+                    disabled={createPortalMutation.isPending}
+                    data-testid="button-manage-billing"
+                  >
+                    {createPortalMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                    Manage Billing
+                  </Button>
+                )}
+              </CardFooter>
+            </Card>
+          )}
 
           {/* Phone Numbers Card */}
           <Card>
@@ -298,50 +300,56 @@ export default function DashboardPage() {
                   <Phone className="h-5 w-5" />
                   Registered Phone Numbers
                 </CardTitle>
-                <CardDescription>These numbers can access the hotline</CardDescription>
+                <CardDescription>
+                  {user?.role === "admin"
+                    ? "These numbers can access the hotline"
+                    : "Your registered phone number (limit: 1)"}
+                </CardDescription>
               </div>
-              <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button size="sm" data-testid="button-add-phone">
-                    <Plus className="h-4 w-4 mr-2" />
-                    Add Number
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>Add Phone Number</DialogTitle>
-                    <DialogDescription>
-                      Add a new phone number that can access the hotline.
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="space-y-4 py-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">Phone Number</Label>
-                      <Input
-                        id="phone"
-                        type="tel"
-                        placeholder="+1 (555) 123-4567"
-                        value={newPhoneNumber}
-                        onChange={(e) => setNewPhoneNumber(e.target.value)}
-                        data-testid="input-new-phone"
-                      />
-                    </div>
-                  </div>
-                  <DialogFooter>
-                    <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                      Cancel
-                    </Button>
-                    <Button
-                      onClick={handleAddPhone}
-                      disabled={isAddingPhone || !newPhoneNumber.trim()}
-                      data-testid="button-confirm-add-phone"
-                    >
-                      {isAddingPhone && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              {(user?.role === "admin" || !phoneNumbers || phoneNumbers.length === 0) ? (
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="sm" data-testid="button-add-phone">
+                      <Plus className="h-4 w-4 mr-2" />
                       Add Number
                     </Button>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Add Phone Number</DialogTitle>
+                      <DialogDescription>
+                        Add a new phone number that can access the hotline.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4 py-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="phone">Phone Number</Label>
+                        <Input
+                          id="phone"
+                          type="tel"
+                          placeholder="+1 (555) 123-4567"
+                          value={newPhoneNumber}
+                          onChange={(e) => setNewPhoneNumber(e.target.value)}
+                          data-testid="input-new-phone"
+                        />
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={handleAddPhone}
+                        disabled={isAddingPhone || !newPhoneNumber.trim()}
+                        data-testid="button-confirm-add-phone"
+                      >
+                        {isAddingPhone && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                        Add Number
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              ) : null}
             </CardHeader>
             <CardContent>
               {phonesLoading ? (

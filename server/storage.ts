@@ -9,6 +9,7 @@ import {
   conferenceParticipants,
   unmuteRequests,
   callLogs,
+  whitelistedNumbers,
   type User,
   type InsertUser,
   type PhoneNumber,
@@ -25,6 +26,8 @@ import {
   type InsertUnmuteRequest,
   type CallLog,
   type InsertCallLog,
+  type WhitelistedNumber,
+  type InsertWhitelistedNumber,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -379,6 +382,76 @@ export class DatabaseStorage implements IStorage {
       activeTrials: Number(trialResult?.count || 0),
       totalAudioFiles: Number(audioResult?.count || 0),
     };
+  }
+
+  // Whitelisted Numbers
+  async getAllWhitelistedNumbers(): Promise<WhitelistedNumber[]> {
+    return db.select().from(whitelistedNumbers).orderBy(desc(whitelistedNumbers.createdAt));
+  }
+
+  async getWhitelistedNumber(phoneNumber: string): Promise<WhitelistedNumber | undefined> {
+    const [num] = await db.select().from(whitelistedNumbers).where(eq(whitelistedNumbers.phoneNumber, phoneNumber));
+    return num;
+  }
+
+  async createWhitelistedNumber(data: InsertWhitelistedNumber): Promise<WhitelistedNumber> {
+    const [num] = await db.insert(whitelistedNumbers).values(data).returning();
+    return num;
+  }
+
+  async deleteWhitelistedNumber(id: string): Promise<void> {
+    await db.delete(whitelistedNumbers).where(eq(whitelistedNumbers.id, id));
+  }
+
+  async isWhitelistedPhoneNumber(phoneNumber: string): Promise<boolean> {
+    const num = await this.getWhitelistedNumber(phoneNumber);
+    return !!num;
+  }
+
+  // Monthly call stats per subscriber
+  async getMonthlyCallStats(year: number, month: number): Promise<any[]> {
+    const startDate = new Date(year, month - 1, 1);
+    const endDate = new Date(year, month, 1);
+    
+    const result = await db.execute(sql`
+      SELECT 
+        u.id as user_id,
+        u.email,
+        pn.phone_number,
+        COALESCE(SUM(cl.duration), 0) as total_duration,
+        COUNT(cl.id) as total_calls
+      FROM users u
+      LEFT JOIN phone_numbers pn ON pn.user_id = u.id
+      LEFT JOIN call_logs cl ON cl.from_number = pn.phone_number 
+        AND cl.created_at >= ${startDate.toISOString()} 
+        AND cl.created_at < ${endDate.toISOString()}
+      WHERE u.role = 'customer'
+        AND u.subscription_status IN ('active', 'trial')
+      GROUP BY u.id, u.email, pn.phone_number
+      ORDER BY total_duration DESC
+    `);
+    
+    return result.rows;
+  }
+
+  // Get all subscribers with their phone numbers and call stats
+  async getSubscriberList(): Promise<any[]> {
+    const result = await db.execute(sql`
+      SELECT 
+        u.id,
+        u.email,
+        u.subscription_status,
+        u.stripe_customer_id,
+        u.stripe_subscription_id,
+        u.trial_ends_at,
+        u.created_at,
+        pn.phone_number
+      FROM users u
+      LEFT JOIN phone_numbers pn ON pn.user_id = u.id
+      WHERE u.role = 'customer'
+      ORDER BY u.created_at DESC
+    `);
+    return result.rows;
   }
 }
 

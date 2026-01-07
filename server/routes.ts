@@ -200,6 +200,15 @@ export async function registerRoutes(
 
       const { phoneNumber } = result.data;
 
+      // Check if user is a subscriber (not admin) and limit to 1 phone
+      const user = await storage.getUser(req.session.userId!);
+      if (user?.role === "customer") {
+        const existingPhones = await storage.getPhoneNumbersByUser(req.session.userId!);
+        if (existingPhones.length >= 1) {
+          return res.status(400).json({ message: "Subscribers can only have one phone number" });
+        }
+      }
+
       // Check if already registered
       const existing = await storage.getPhoneNumberByNumber(phoneNumber);
       if (existing) {
@@ -603,6 +612,113 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Set setting error:", error);
       res.status(500).json({ message: "Failed to save setting" });
+    }
+  });
+
+  // Whitelisted Numbers (free access)
+  app.get("/api/admin/whitelisted-numbers", requireAdmin, async (req, res) => {
+    try {
+      const numbers = await storage.getAllWhitelistedNumbers();
+      res.json(numbers);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get whitelisted numbers" });
+    }
+  });
+
+  app.post("/api/admin/whitelisted-numbers", requireAdmin, async (req, res) => {
+    try {
+      const { phoneNumber, label } = req.body;
+      if (!phoneNumber) {
+        return res.status(400).json({ message: "Phone number is required" });
+      }
+
+      // Check if already whitelisted
+      const existing = await storage.getWhitelistedNumber(phoneNumber);
+      if (existing) {
+        return res.status(400).json({ message: "Phone number already whitelisted" });
+      }
+
+      const num = await storage.createWhitelistedNumber({
+        phoneNumber,
+        label: label || null,
+        createdBy: req.session.userId,
+      });
+      res.json(num);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to add whitelisted number" });
+    }
+  });
+
+  app.delete("/api/admin/whitelisted-numbers/:id", requireAdmin, async (req, res) => {
+    try {
+      await storage.deleteWhitelistedNumber(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete whitelisted number" });
+    }
+  });
+
+  // Subscribers list with call stats
+  app.get("/api/admin/subscribers", requireAdmin, async (req, res) => {
+    try {
+      const subscribers = await storage.getSubscriberList();
+      res.json(subscribers);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get subscribers" });
+    }
+  });
+
+  // Monthly call stats
+  app.get("/api/admin/call-stats", requireAdmin, async (req, res) => {
+    try {
+      const year = parseInt(req.query.year as string) || new Date().getFullYear();
+      const month = parseInt(req.query.month as string) || (new Date().getMonth() + 1);
+      
+      const stats = await storage.getMonthlyCallStats(year, month);
+      res.json(stats);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get call stats" });
+    }
+  });
+
+  // Refund endpoint
+  app.post("/api/admin/refund", requireAdmin, async (req, res) => {
+    try {
+      const { userId, amount, reason } = req.body;
+      
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      if (!user.stripeCustomerId) {
+        return res.status(400).json({ message: "User has no Stripe customer record" });
+      }
+
+      // Get the latest payment intent for this customer
+      const stripe = await getStripe();
+      const paymentIntents = await stripe.paymentIntents.list({
+        customer: user.stripeCustomerId,
+        limit: 1,
+      });
+
+      if (paymentIntents.data.length === 0) {
+        return res.status(400).json({ message: "No payments found for this user" });
+      }
+
+      const paymentIntentId = paymentIntents.data[0].id;
+      const refundAmount = amount ? Math.round(amount * 100) : undefined; // Convert to cents
+
+      const refund = await stripe.refunds.create({
+        payment_intent: paymentIntentId,
+        amount: refundAmount, // If undefined, refunds the full amount
+        reason: "requested_by_customer",
+      });
+
+      res.json({ success: true, refundId: refund.id, amount: refund.amount / 100 });
+    } catch (error: any) {
+      console.error("Refund error:", error);
+      res.status(500).json({ message: error.message || "Failed to process refund" });
     }
   });
 
