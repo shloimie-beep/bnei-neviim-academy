@@ -84,10 +84,7 @@ export default function SubscribersManagement() {
 
   const refundMutation = useMutation({
     mutationFn: async (data: { stripeCustomerId: string; amount: number }) => {
-      return apiRequest("/api/admin/refund", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      return apiRequest("POST", "/api/admin/refund", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/subscribers"] });

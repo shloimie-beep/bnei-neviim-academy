@@ -56,10 +56,7 @@ export default function WhitelistManagement() {
 
   const addMutation = useMutation({
     mutationFn: async (data: { phoneNumber: string; label?: string }) => {
-      return apiRequest("/api/admin/whitelisted-numbers", {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      return apiRequest("POST", "/api/admin/whitelisted-numbers", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/whitelisted-numbers"] });
@@ -82,9 +79,7 @@ export default function WhitelistManagement() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      return apiRequest(`/api/admin/whitelisted-numbers/${id}`, {
-        method: "DELETE",
-      });
+      return apiRequest("DELETE", `/api/admin/whitelisted-numbers/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/whitelisted-numbers"] });
