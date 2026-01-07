@@ -696,7 +696,7 @@ export async function registerRoutes(
       }
 
       // Get the latest payment intent for this customer
-      const stripe = await getStripe();
+      const stripe = getUncachableStripeClient();
       const paymentIntents = await stripe.paymentIntents.list({
         customer: user.stripeCustomerId,
         limit: 1,
@@ -815,22 +815,27 @@ export async function registerRoutes(
     }
   });
 
-  // ============ PLIVO WEBHOOKS ============
+  // ============ TELNYX TeXML WEBHOOKS ============
   
   // Answer webhook - called when someone calls the hotline
-  app.post("/api/plivo/answer", async (req, res) => {
+  app.post("/api/telnyx/answer", async (req, res) => {
     try {
-      const { From, CallUUID } = req.body;
+      const { From, CallSid, To } = req.body;
       
-      // Check if caller is a subscriber
-      const isSubscriber = await storage.isSubscribedPhoneNumber(From);
+      // Normalize phone number (strip non-digits for comparison)
+      const normalizedFrom = From?.replace(/\D/g, "") || "";
+      
+      // Check if caller is a subscriber or whitelisted
+      const isSubscriber = await storage.isSubscribedPhoneNumber(normalizedFrom);
+      const isWhitelisted = await storage.isWhitelistedPhoneNumber(normalizedFrom);
+      const hasAccess = isSubscriber || isWhitelisted;
 
       // Log the call
       await storage.createCallLog({
-        callUuid: CallUUID,
+        callUuid: CallSid,
         fromNumber: From,
-        toNumber: req.body.To || "",
-        isSubscriber,
+        toNumber: To || "",
+        isSubscriber: hasAccess,
       });
 
       // Get greeting and non-subscriber audio
@@ -840,12 +845,12 @@ export async function registerRoutes(
 
       let xml = '<?xml version="1.0" encoding="UTF-8"?><Response>';
 
-      if (!isSubscriber) {
+      if (!hasAccess) {
         // Play non-subscriber message
         if (nonSubFiles.length > 0) {
           xml += `<Play>${process.env.BASE_URL || ""}/uploads/audio/${path.basename(nonSubFiles[0].filepath)}</Play>`;
         } else {
-          xml += '<Speak>Thank you for calling Kids Hotline. To access our stories and live calls, please subscribe at our website.</Speak>';
+          xml += '<Say voice="alice">Thank you for calling Kids Hotline. To access our stories and live calls, please subscribe at our website.</Say>';
         }
         xml += '<Hangup/>';
       } else {
@@ -853,45 +858,48 @@ export async function registerRoutes(
         if (greetingFiles.length > 0) {
           xml += `<Play>${process.env.BASE_URL || ""}/uploads/audio/${path.basename(greetingFiles[0].filepath)}</Play>`;
         } else {
-          xml += '<Speak>Welcome to Kids Hotline!</Speak>';
+          xml += '<Say voice="alice">Welcome to Kids Hotline!</Say>';
         }
 
-        // Build IVR menu
-        xml += '<GetInput action="/api/plivo/menu" method="POST" inputType="dtmf" digitEndTimeout="3" timeout="10">';
+        // Build IVR menu with Gather
+        const baseUrl = process.env.BASE_URL || "";
+        xml += `<Gather numDigits="1" action="${baseUrl}/api/telnyx/menu" method="POST" timeout="10">`;
         
         let menuText = "Please press ";
-        const activeOptions = menuOptions.filter(o => o.isActive);
+        const activeOptions = menuOptions.filter(o => o.isActive && !o.parentMenuId);
         activeOptions.forEach((option, index) => {
-          menuText += `${option.optionNumber} for ${option.label}`;
+          menuText += `${option.optionNumber} for option ${option.optionNumber}`;
           if (index < activeOptions.length - 1) menuText += ", ";
         });
         
-        xml += `<Speak>${menuText}</Speak>`;
-        xml += '</GetInput>';
+        xml += `<Say voice="alice">${menuText}</Say>`;
+        xml += '</Gather>';
+        xml += '<Say voice="alice">We did not receive any input. Goodbye.</Say><Hangup/>';
       }
 
       xml += '</Response>';
-      res.type('application/xml').send(xml);
+      res.type('text/xml').send(xml);
     } catch (error) {
-      console.error("Plivo answer error:", error);
-      res.type('application/xml').send('<?xml version="1.0" encoding="UTF-8"?><Response><Speak>Sorry, an error occurred.</Speak></Response>');
+      console.error("Telnyx answer error:", error);
+      res.type('text/xml').send('<?xml version="1.0" encoding="UTF-8"?><Response><Say voice="alice">Sorry, an error occurred.</Say><Hangup/></Response>');
     }
   });
 
   // Menu selection webhook
-  app.post("/api/plivo/menu", async (req, res) => {
+  app.post("/api/telnyx/menu", async (req, res) => {
     try {
-      const { Digits, CallUUID, From } = req.body;
+      const { Digits, CallSid, From } = req.body;
       const digit = parseInt(Digits);
+      const baseUrl = process.env.BASE_URL || "";
 
-      const menuOption = await storage.getMenuOptionByNumber(digit);
+      const menuOption = await storage.getMenuOptionByNumberAndParent(digit, null);
 
       let xml = '<?xml version="1.0" encoding="UTF-8"?><Response>';
 
       if (!menuOption || !menuOption.isActive) {
-        xml += '<Speak>Invalid option. Please try again.</Speak>';
-        xml += '<Redirect method="POST">/api/plivo/answer</Redirect>';
-      } else if (menuOption.type === "conference") {
+        xml += '<Say voice="alice">Invalid option. Please try again.</Say>';
+        xml += `<Redirect>${baseUrl}/api/telnyx/answer</Redirect>`;
+      } else if (menuOption.functionType === "conference") {
         // Join conference
         let session = await storage.getActiveConference();
         if (!session) {
@@ -904,76 +912,135 @@ export async function registerRoutes(
         // Add participant
         await storage.addParticipant({
           sessionId: session.id,
-          callUuid: CallUUID,
+          callUuid: CallSid,
           phoneNumber: From,
           isMuted: true,
         });
 
-        xml += '<Speak>You are now joining the group call. You are muted. Press 9 to request to speak.</Speak>';
-        xml += `<Conference callbackUrl="/api/plivo/conference-callback" callbackMethod="POST" 
-                  digitsMatch="9" digitsMatchBLeg="/api/plivo/unmute-request"
-                  muted="true" enterSound="beep:1" exitSound="beep:2">KidsHotline</Conference>`;
-      } else if (menuOption.type === "story" && menuOption.audioFileId) {
-        // Play story with controls
+        xml += '<Say voice="alice">You are now joining the group call. You are muted. Press 9 to request to speak.</Say>';
+        xml += `<Dial><Conference beep="true" startConferenceOnEnter="true" endConferenceOnExit="false" muted="true" statusCallback="${baseUrl}/api/telnyx/conference-callback" statusCallbackEvent="join leave">KidsHotline</Conference></Dial>`;
+      } else if (menuOption.functionType === "play_mp3" && menuOption.audioFileId) {
+        // Play audio file
         const audioFile = await storage.getAudioFile(menuOption.audioFileId);
         if (audioFile) {
-          xml += `<GetInput action="/api/plivo/playback-control" method="POST" inputType="dtmf" digitEndTimeout="1" timeout="999">`;
-          xml += `<Play>${process.env.BASE_URL || ""}/uploads/audio/${path.basename(audioFile.filepath)}</Play>`;
-          xml += '</GetInput>';
+          xml += `<Gather numDigits="1" action="${baseUrl}/api/telnyx/playback-control" method="POST" timeout="300">`;
+          xml += `<Play>${baseUrl}/uploads/audio/${path.basename(audioFile.filepath)}</Play>`;
+          xml += '</Gather>';
+          xml += `<Redirect>${baseUrl}/api/telnyx/answer</Redirect>`;
         } else {
-          xml += '<Speak>Sorry, this story is not available.</Speak>';
-          xml += '<Redirect method="POST">/api/plivo/answer</Redirect>';
+          xml += '<Say voice="alice">Sorry, this audio is not available.</Say>';
+          xml += `<Redirect>${baseUrl}/api/telnyx/answer</Redirect>`;
+        }
+      } else if (menuOption.functionType === "transfer" && menuOption.transferNumber) {
+        // Transfer call
+        xml += '<Say voice="alice">Transferring your call now.</Say>';
+        xml += `<Dial timeout="${menuOption.transferTimeout || 30}"><Number>${menuOption.transferNumber}</Number></Dial>`;
+        xml += '<Say voice="alice">The call could not be completed. Goodbye.</Say><Hangup/>';
+      } else if (menuOption.functionType === "submenu") {
+        // Handle submenu - get submenu options
+        const submenuOptions = await storage.getMenuOptionsByParent(menuOption.id);
+        if (submenuOptions.length > 0) {
+          xml += `<Gather numDigits="1" action="${baseUrl}/api/telnyx/submenu?parentId=${menuOption.id}" method="POST" timeout="10">`;
+          xml += '<Say voice="alice">Please press ';
+          submenuOptions.filter(o => o.isActive).forEach((opt, idx, arr) => {
+            xml += `${opt.optionNumber} for option ${opt.optionNumber}`;
+            if (idx < arr.length - 1) xml += ', ';
+          });
+          xml += '. Press star to return to the main menu.</Say>';
+          xml += '</Gather>';
+        } else {
+          xml += '<Say voice="alice">This submenu has no options.</Say>';
+          xml += `<Redirect>${baseUrl}/api/telnyx/answer</Redirect>`;
         }
       } else {
-        xml += '<Speak>This option is not available.</Speak>';
-        xml += '<Redirect method="POST">/api/plivo/answer</Redirect>';
+        xml += '<Say voice="alice">This option is not available.</Say>';
+        xml += `<Redirect>${baseUrl}/api/telnyx/answer</Redirect>`;
       }
 
       xml += '</Response>';
-      res.type('application/xml').send(xml);
+      res.type('text/xml').send(xml);
     } catch (error) {
-      console.error("Plivo menu error:", error);
-      res.type('application/xml').send('<?xml version="1.0" encoding="UTF-8"?><Response><Speak>Sorry, an error occurred.</Speak></Response>');
+      console.error("Telnyx menu error:", error);
+      res.type('text/xml').send('<?xml version="1.0" encoding="UTF-8"?><Response><Say voice="alice">Sorry, an error occurred.</Say><Hangup/></Response>');
+    }
+  });
+
+  // Submenu selection webhook
+  app.post("/api/telnyx/submenu", async (req, res) => {
+    try {
+      const { Digits, CallSid, From } = req.body;
+      const parentId = req.query.parentId as string;
+      const baseUrl = process.env.BASE_URL || "";
+
+      // Check for star key to return to main menu
+      if (Digits === "*") {
+        res.type('text/xml').send(`<?xml version="1.0" encoding="UTF-8"?><Response><Redirect>${baseUrl}/api/telnyx/answer</Redirect></Response>`);
+        return;
+      }
+
+      const digit = parseInt(Digits);
+      const menuOption = await storage.getMenuOptionByNumberAndParent(digit, parentId);
+
+      let xml = '<?xml version="1.0" encoding="UTF-8"?><Response>';
+
+      if (!menuOption || !menuOption.isActive) {
+        xml += '<Say voice="alice">Invalid option. Returning to main menu.</Say>';
+        xml += `<Redirect>${baseUrl}/api/telnyx/answer</Redirect>`;
+      } else if (menuOption.functionType === "play_mp3" && menuOption.audioFileId) {
+        const audioFile = await storage.getAudioFile(menuOption.audioFileId);
+        if (audioFile) {
+          xml += `<Gather numDigits="1" action="${baseUrl}/api/telnyx/playback-control" method="POST" timeout="300">`;
+          xml += `<Play>${baseUrl}/uploads/audio/${path.basename(audioFile.filepath)}</Play>`;
+          xml += '</Gather>';
+          xml += `<Redirect>${baseUrl}/api/telnyx/answer</Redirect>`;
+        } else {
+          xml += '<Say voice="alice">Sorry, this audio is not available.</Say>';
+          xml += `<Redirect>${baseUrl}/api/telnyx/answer</Redirect>`;
+        }
+      } else if (menuOption.functionType === "transfer" && menuOption.transferNumber) {
+        xml += '<Say voice="alice">Transferring your call now.</Say>';
+        xml += `<Dial timeout="${menuOption.transferTimeout || 30}"><Number>${menuOption.transferNumber}</Number></Dial>`;
+        xml += '<Say voice="alice">The call could not be completed. Goodbye.</Say><Hangup/>';
+      } else {
+        xml += '<Say voice="alice">This option is not available.</Say>';
+        xml += `<Redirect>${baseUrl}/api/telnyx/answer</Redirect>`;
+      }
+
+      xml += '</Response>';
+      res.type('text/xml').send(xml);
+    } catch (error) {
+      console.error("Telnyx submenu error:", error);
+      res.type('text/xml').send('<?xml version="1.0" encoding="UTF-8"?><Response><Say voice="alice">Sorry, an error occurred.</Say><Hangup/></Response>');
     }
   });
 
   // Playback control webhook
-  app.post("/api/plivo/playback-control", async (req, res) => {
+  app.post("/api/telnyx/playback-control", async (req, res) => {
     const { Digits } = req.body;
+    const baseUrl = process.env.BASE_URL || "";
     
     let xml = '<?xml version="1.0" encoding="UTF-8"?><Response>';
 
     switch (Digits) {
-      case "0":
+      case "*":
         // Return to menu
-        xml += '<Redirect method="POST">/api/plivo/answer</Redirect>';
-        break;
-      case "1":
-        // Rewind - not directly supported, would need offset tracking
-        xml += '<Speak>Rewinding is not available in this version.</Speak>';
-        break;
-      case "2":
-        // Pause/Play - would need state tracking
-        xml += '<Speak>Pause and play controls are not available in this version.</Speak>';
-        break;
-      case "3":
-        // Fast forward - not directly supported
-        xml += '<Speak>Fast forward is not available in this version.</Speak>';
+        xml += `<Redirect>${baseUrl}/api/telnyx/answer</Redirect>`;
         break;
       default:
-        xml += '<Speak>Invalid option.</Speak>';
+        // Any other key returns to main menu
+        xml += `<Redirect>${baseUrl}/api/telnyx/answer</Redirect>`;
     }
 
     xml += '</Response>';
-    res.type('application/xml').send(xml);
+    res.type('text/xml').send(xml);
   });
 
   // Unmute request webhook
-  app.post("/api/plivo/unmute-request", async (req, res) => {
+  app.post("/api/telnyx/unmute-request", async (req, res) => {
     try {
-      const { CallUUID, From } = req.body;
+      const { CallSid, From } = req.body;
 
-      const participant = await storage.getParticipantByCallUuid(CallUUID);
+      const participant = await storage.getParticipantByCallUuid(CallSid);
       if (participant && participant.sessionId) {
         await storage.createUnmuteRequest({
           participantId: participant.id,
@@ -983,24 +1050,24 @@ export async function registerRoutes(
         });
       }
 
-      res.type('application/xml').send('<?xml version="1.0" encoding="UTF-8"?><Response><Speak>Your request to speak has been sent to the moderator.</Speak></Response>');
+      res.type('text/xml').send('<?xml version="1.0" encoding="UTF-8"?><Response><Say voice="alice">Your request to speak has been sent to the moderator.</Say></Response>');
     } catch (error) {
       console.error("Unmute request error:", error);
-      res.type('application/xml').send('<?xml version="1.0" encoding="UTF-8"?><Response></Response>');
+      res.type('text/xml').send('<?xml version="1.0" encoding="UTF-8"?><Response></Response>');
     }
   });
 
   // Conference callback webhook
-  app.post("/api/plivo/conference-callback", async (req, res) => {
+  app.post("/api/telnyx/conference-callback", async (req, res) => {
     try {
-      const { CallUUID, ConferenceAction, ConferenceMemberID } = req.body;
+      const { CallSid, StatusCallbackEvent, ConferenceSid } = req.body;
 
-      const participant = await storage.getParticipantByCallUuid(CallUUID);
+      const participant = await storage.getParticipantByCallUuid(CallSid);
       
       if (participant) {
-        if (ConferenceAction === "enter") {
-          await storage.updateParticipant(participant.id, { memberId: ConferenceMemberID });
-        } else if (ConferenceAction === "exit") {
+        if (StatusCallbackEvent === "participant-join") {
+          await storage.updateParticipant(participant.id, { memberId: ConferenceSid });
+        } else if (StatusCallbackEvent === "participant-leave") {
           await storage.removeParticipant(participant.id);
         }
       }
