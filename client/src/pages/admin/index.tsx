@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Phone, Music, Settings, Users, LogOut, LayoutDashboard, Menu } from "lucide-react";
+import { Phone, Music, Settings, Users, LogOut, LayoutDashboard, Menu, ShieldCheck, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -21,12 +21,16 @@ import AdminDashboard from "./dashboard";
 import AudioManagement from "./audio";
 import MenuManagement from "./menu";
 import ConferenceManagement from "./conference";
+import WhitelistManagement from "./whitelist";
+import SubscribersManagement from "./subscribers";
 
 const adminRoutes = [
   { path: "/admin", label: "Dashboard", icon: LayoutDashboard },
   { path: "/admin/audio", label: "Audio Files", icon: Music },
   { path: "/admin/menu", label: "Menu Options", icon: Menu },
   { path: "/admin/conference", label: "Conference", icon: Users },
+  { path: "/admin/whitelist", label: "Whitelist", icon: ShieldCheck },
+  { path: "/admin/subscribers", label: "Subscribers", icon: CreditCard },
 ];
 
 function AdminSidebar() {
@@ -107,6 +111,10 @@ export default function AdminLayout() {
         return <MenuManagement />;
       case "/admin/conference":
         return <ConferenceManagement />;
+      case "/admin/whitelist":
+        return <WhitelistManagement />;
+      case "/admin/subscribers":
+        return <SubscribersManagement />;
       default:
         return <AdminDashboard />;
     }
