@@ -209,6 +209,8 @@ export default function LandingPage() {
             <img src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/logo-vert-yellow.png/:/rs=h:100,cg:true" alt="Torah Anytime" className="h-16 w-auto" />
             <img src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Untitled%20drawing.png/:/rs=h:100,cg:true,m" alt="24Six" className="h-12 w-auto" />
             <img src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Loop_Purple_DarkPurple%402x-2.png/:/rs=h:100,cg:true" alt="Loop" className="h-12 w-auto" />
+            <img src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/mishpachalogo.jpg/:/cr=t:0%25,l:2.1%25,w:95.8%25,h:100%25/rs=h:100,cg:true" alt="Mishpacha" className="h-12 w-auto" />
+            <img src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/WhatsApp%20Image%202025-11-26%20at%2014.55.32.jpeg/:/rs=h:100,cg:true" alt="Naki Radio" className="h-12 w-auto" />
           </div>
         </div>
       </section>
@@ -276,6 +278,24 @@ export default function LandingPage() {
             <Card className="bg-[#1a2a3a] border-none overflow-hidden group">
               <div className="aspect-[3/4] overflow-hidden">
                 <img 
+                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Yellow%20and%20Red%20Bold%20Burger%20Food%20Marketing%20Inst.png/:/cr=t:11.49%25,l:4.96%25,w:89.29%25,h:84.17%25/rs=w:365,h:486,cg:true,m" 
+                  alt="The Purim Shpiel 2025" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <CardContent className="p-4">
+                <h4 className="font-bold text-white mb-1">The Purim Shpiel 2025</h4>
+                <p className="text-sm text-white/70 mb-2">Hilarious Comedy Film</p>
+                <p className="text-xs text-[#EDE518]">Included in the OneTime Hotline</p>
+                <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm">
+                  Stream - $12.99
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-[#1a2a3a] border-none overflow-hidden group">
+              <div className="aspect-[3/4] overflow-hidden">
+                <img 
                   src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/blob-ad680e5.png/:/cr=t:0%25,l:34.44%25,w:29.3%25,h:100%25/rs=w:365,h:486,cg:true" 
                   alt="Story Book" 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -287,6 +307,60 @@ export default function LandingPage() {
                 <p className="text-xs text-white/50">136 pages. Color images.</p>
                 <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm">
                   Hard copy - $24.99
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-[#1a2a3a] border-none overflow-hidden group">
+              <div className="aspect-[3/4] overflow-hidden">
+                <img 
+                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Untitled%20design-16.png/:/cr=t:23.53%25,l:21.31%25,w:48.08%25,h:48.08%25/rs=w:365,h:486,cg:true,m" 
+                  alt="Joke Book" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <CardContent className="p-4">
+                <h4 className="font-bold text-white mb-1">JOKE BOOK</h4>
+                <p className="text-sm text-white/70 mb-2">Just Kidding Stories and Jokes</p>
+                <p className="text-xs text-[#EDE518]">Free PDF in the Hotline</p>
+                <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm">
+                  ORDER on Amazon $19.99
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-[#1a2a3a] border-none overflow-hidden group">
+              <div className="aspect-[3/4] overflow-hidden">
+                <img 
+                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/brown_mystery_movie_poster_video-e60181e.jpg/:/cr=t:0%25,l:27.22%25,w:42.19%25,h:100%25/rs=w:365,h:486,cg:true" 
+                  alt="Public Speaking Course" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <CardContent className="p-4">
+                <h4 className="font-bold text-white mb-1">Public Speaking Mastery</h4>
+                <p className="text-sm text-white/70 mb-2">Full Course</p>
+                <p className="text-xs text-[#EDE518]">Included in the OneTime Hotline</p>
+                <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm">
+                  BUY COURSE - $249
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-[#1a2a3a] border-none overflow-hidden group">
+              <div className="aspect-[3/4] overflow-hidden">
+                <img 
+                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Black%20White%20Modern%20Grunge%20Typographic%20Brand%20Lo.jpg/:/cr=t:1.79%25,l:32.74%25,w:66.96%25,h:89.28%25/rs=w:365,h:486,cg:true,m" 
+                  alt="OneTime Merch" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <CardContent className="p-4">
+                <h4 className="font-bold text-white mb-1">One Time One Time Merch</h4>
+                <p className="text-sm text-white/70 mb-2">It's more than merch — it's a movement</p>
+                <p className="text-xs text-white/50">Wear your inspiration with pride</p>
+                <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm">
+                  Browse
                 </Button>
               </CardContent>
             </Card>
@@ -341,6 +415,103 @@ export default function LandingPage() {
               </div>
               <h4 className="font-bold text-white text-lg">Meet The Evil Inclination</h4>
               <p className="text-white/70">See the battle of the Yetzer tov and Yetzer Hara play out</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-12 bg-[#161616]">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 max-w-6xl mx-auto">
+            <div className="relative aspect-square overflow-hidden rounded-lg">
+              <img 
+                src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Lakewood%203.jpg/:/cr=t:7.63%25,l:6.52%25,w:84.75%25,h:84.75%25/rs=w:400,m" 
+                alt="Lakewood" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              <span className="absolute bottom-2 left-2 text-white font-bold text-sm">Lakewood</span>
+            </div>
+            <div className="relative aspect-square overflow-hidden rounded-lg">
+              <img 
+                src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Boca.png/:/cr=t:0%25,l:0%25,w:100%25,h:100%25" 
+                alt="Boca Raton" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              <span className="absolute bottom-2 left-2 text-white font-bold text-sm">Boca Raton</span>
+            </div>
+            <div className="relative aspect-square overflow-hidden rounded-lg">
+              <img 
+                src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Norfolk-f9846ea.png/:/cr=t:0%25,l:0%25,w:100%25,h:100%25" 
+                alt="Norfolk" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              <span className="absolute bottom-2 left-2 text-white font-bold text-sm">Norfolk</span>
+            </div>
+            <div className="relative aspect-square overflow-hidden rounded-lg">
+              <img 
+                src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/St.%20Louis-7095ee8.png/:/cr=t:0%25,l:0%25,w:100%25,h:100%25" 
+                alt="St. Louis" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              <span className="absolute bottom-2 left-2 text-white font-bold text-sm">St. Louis</span>
+            </div>
+            <div className="relative aspect-square overflow-hidden rounded-lg">
+              <img 
+                src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Vegas-dd83c6e.png/:/cr=t:0%25,l:0%25,w:100%25,h:100%25" 
+                alt="Las Vegas" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              <span className="absolute bottom-2 left-2 text-white font-bold text-sm">Las Vegas</span>
+            </div>
+            <div className="relative aspect-square overflow-hidden rounded-lg">
+              <img 
+                src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Altanta-0a96f2f.png/:/cr=t:0%25,l:0%25,w:100%25,h:100%25" 
+                alt="Atlanta" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              <span className="absolute bottom-2 left-2 text-white font-bold text-sm">Atlanta</span>
+            </div>
+            <div className="relative aspect-square overflow-hidden rounded-lg">
+              <img 
+                src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Philadelphia.jpg/:/cr=t:0%25,l:0%25,w:100%25,h:100%25/rs=w:400,m" 
+                alt="Philadelphia" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              <span className="absolute bottom-2 left-2 text-white font-bold text-sm">Philadelphia</span>
+            </div>
+            <div className="relative aspect-square overflow-hidden rounded-lg">
+              <img 
+                src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Passaic%20NJ.png/:/rs=w:400,m" 
+                alt="Passaic NJ" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              <span className="absolute bottom-2 left-2 text-white font-bold text-sm">Passaic NJ</span>
+            </div>
+            <div className="relative aspect-square overflow-hidden rounded-lg">
+              <img 
+                src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Silver%20Spring.jpg/:/cr=t:0%25,l:0%25,w:100%25,h:100%25/rs=w:400,m" 
+                alt="Silver Spring" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              <span className="absolute bottom-2 left-2 text-white font-bold text-sm">Silver Spring</span>
+            </div>
+            <div className="relative aspect-square overflow-hidden rounded-lg">
+              <img 
+                src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/20240716_115337-2680213.jpg/:/cr=t:0%25,l:0%25,w:100%25,h:100%25/rs=w:400,m" 
+                alt="Events" 
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              <span className="absolute bottom-2 left-2 text-white font-bold text-sm">And More...</span>
             </div>
           </div>
         </div>
