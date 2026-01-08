@@ -129,6 +129,21 @@ export const passwordResetTokens = pgTable("password_reset_tokens", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Videos for subscriber content
+export const videos = pgTable("videos", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  description: text("description"),
+  filename: text("filename").notNull(),
+  filepath: text("filepath").notNull(),
+  thumbnailPath: text("thumbnail_path"),
+  duration: integer("duration"),
+  fileSize: integer("file_size"),
+  status: text("status").notNull().default("processing"),
+  uploadedBy: varchar("uploaded_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   phoneNumbers: many(phoneNumbers),
@@ -191,6 +206,7 @@ export const insertUnmuteRequestSchema = createInsertSchema(unmuteRequests).omit
 export const insertCallLogSchema = createInsertSchema(callLogs).omit({ id: true, createdAt: true });
 export const insertWhitelistedNumberSchema = createInsertSchema(whitelistedNumbers).omit({ id: true, createdAt: true });
 export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTokens).omit({ id: true, createdAt: true });
+export const insertVideoSchema = createInsertSchema(videos).omit({ id: true, createdAt: true });
 
 // Types
 export type User = typeof users.$inferSelect;
@@ -215,6 +231,8 @@ export type WhitelistedNumber = typeof whitelistedNumbers.$inferSelect;
 export type InsertWhitelistedNumber = z.infer<typeof insertWhitelistedNumberSchema>;
 export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
 export type InsertPasswordResetToken = z.infer<typeof insertPasswordResetTokenSchema>;
+export type Video = typeof videos.$inferSelect;
+export type InsertVideo = z.infer<typeof insertVideoSchema>;
 
 // Validation schemas for forms
 export const loginSchema = z.object({

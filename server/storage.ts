@@ -12,6 +12,7 @@ import {
   whitelistedNumbers,
   passwordResetTokens,
   systemSettings,
+  videos,
   type User,
   type InsertUser,
   type PhoneNumber,
@@ -33,6 +34,8 @@ import {
   type PasswordResetToken,
   type InsertPasswordResetToken,
   type SystemSetting,
+  type Video,
+  type InsertVideo,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -476,6 +479,36 @@ export class DatabaseStorage implements IStorage {
 
   async getAllSystemSettings(): Promise<SystemSetting[]> {
     return db.select().from(systemSettings);
+  }
+
+  // Videos
+  async getAllVideos(): Promise<Video[]> {
+    return db.select().from(videos).orderBy(desc(videos.createdAt));
+  }
+
+  async getPublishedVideos(): Promise<Video[]> {
+    return db.select().from(videos)
+      .where(eq(videos.status, "ready"))
+      .orderBy(desc(videos.createdAt));
+  }
+
+  async getVideo(id: string): Promise<Video | undefined> {
+    const [video] = await db.select().from(videos).where(eq(videos.id, id));
+    return video;
+  }
+
+  async createVideo(data: InsertVideo): Promise<Video> {
+    const [video] = await db.insert(videos).values(data).returning();
+    return video;
+  }
+
+  async updateVideo(id: string, data: Partial<Video>): Promise<Video | undefined> {
+    const [video] = await db.update(videos).set(data).where(eq(videos.id, id)).returning();
+    return video;
+  }
+
+  async deleteVideo(id: string): Promise<void> {
+    await db.delete(videos).where(eq(videos.id, id));
   }
 }
 
