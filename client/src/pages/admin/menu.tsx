@@ -379,6 +379,8 @@ export default function MenuManagement() {
     { id: null, name: "Main Menu" },
   ]);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingGreeting, setIsUploadingGreeting] = useState(false);
+  const greetingFileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: menuOptions, isLoading: menuLoading } = useQuery<MenuOption[]>({
     queryKey: ["/api/admin/menu-options", currentMenuId],
@@ -441,6 +443,50 @@ export default function MenuManagement() {
       parentMenuId: currentMenuId,
     });
     setIsSaving(false);
+  };
+
+  const handleUploadGreeting = async (file: File, oldAudioId: string | null) => {
+    setIsUploadingGreeting(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("name", file.name.replace(/\.[^/.]+$/, ""));
+      formData.append("type", "greeting");
+      if (oldAudioId) {
+        formData.append("replaceAudioId", oldAudioId);
+      }
+
+      const res = await fetch("/api/admin/audio-files/upload-and-assign", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const newAudio = await res.json();
+      
+      await apiRequest("POST", "/api/admin/settings/greeting", { audioFileId: newAudio.id });
+      
+      if (newAudio.oldAudioIdToDelete) {
+        try {
+          await fetch("/api/admin/audio-files/cleanup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ audioFileId: newAudio.oldAudioIdToDelete }),
+          });
+        } catch {}
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/audio-files"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/settings"] });
+      toast({ title: "Greeting uploaded and saved" });
+    } catch {
+      toast({ title: "Failed to upload greeting", variant: "destructive" });
+    } finally {
+      setIsUploadingGreeting(false);
+    }
   };
 
   const handleUploadAndAssign = async (
@@ -517,8 +563,8 @@ export default function MenuManagement() {
     return menuOptions?.find((o) => o.optionNumber === num);
   };
 
-  const subscriberGreeting = settings?.find((s: any) => s.key === "subscriber_greeting");
-  const nonSubscriberGreeting = settings?.find((s: any) => s.key === "non_subscriber_greeting");
+  const mainGreeting = settings?.find((s: any) => s.key === "main_greeting");
+  const mainGreetingFile = audioFiles?.find((f) => f.id === mainGreeting?.audioFileId);
 
   if (menuLoading) {
     return (
@@ -549,59 +595,52 @@ export default function MenuManagement() {
       </div>
 
       {currentMenuId === null && (
-        <div className="grid md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Greeting for subscribers</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="space-y-2">
-                <Label className="text-xs text-muted-foreground">File</Label>
-                <Select
-                  value={subscriberGreeting?.audio_file_id || ""}
-                  onValueChange={(v) => updateSettingMutation.mutate({ key: "subscriber_greeting", audioFileId: v })}
-                >
-                  <SelectTrigger data-testid="select-subscriber-greeting">
-                    <SelectValue placeholder="Select greeting file" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {audioFiles?.filter((f) => f.type === "greeting" || f.type === "menu").map((file) => (
-                      <SelectItem key={file.id} value={file.id}>
-                        {file.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Greeting for non-subscribers</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="space-y-2">
-                <Label className="text-xs text-muted-foreground">File</Label>
-                <Select
-                  value={nonSubscriberGreeting?.audio_file_id || ""}
-                  onValueChange={(v) => updateSettingMutation.mutate({ key: "non_subscriber_greeting", audioFileId: v })}
-                >
-                  <SelectTrigger data-testid="select-non-subscriber-greeting">
-                    <SelectValue placeholder="Select greeting file" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {audioFiles?.filter((f) => f.type === "greeting" || f.type === "non_subscriber").map((file) => (
-                      <SelectItem key={file.id} value={file.id}>
-                        {file.name}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Volume2 className="h-5 w-5" />
+              Greeting for Subscribers
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <p className="text-sm font-medium">Current File</p>
+              <p className="text-sm text-muted-foreground">
+                {mainGreetingFile?.name || "No greeting selected (using default)"}
+              </p>
+            </div>
+            
+            <div className="flex flex-wrap gap-2">
+              <input
+                ref={greetingFileInputRef}
+                type="file"
+                accept="audio/*"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) {
+                    handleUploadGreeting(file, mainGreeting?.audioFileId || null);
+                    if (greetingFileInputRef.current) greetingFileInputRef.current.value = "";
+                  }
+                }}
+                data-testid="input-greeting-file"
+              />
+              <Button
+                variant="outline"
+                onClick={() => greetingFileInputRef.current?.click()}
+                disabled={isUploadingGreeting}
+                data-testid="button-upload-greeting"
+              >
+                {isUploadingGreeting ? (
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                ) : (
+                  <Upload className="h-4 w-4 mr-2" />
+                )}
+                {mainGreetingFile ? "Replace File" : "Upload File"}
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       )}
 
       <Card>

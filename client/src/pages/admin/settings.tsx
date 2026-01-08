@@ -180,39 +180,6 @@ export default function AdminSettingsPage() {
               {mainGreetingId && mainGreetingId !== "none" ? "Replace File" : "Upload File"}
             </Button>
           </div>
-
-          <div className="pt-2 border-t">
-            <p className="text-sm font-medium mb-2">Or select from existing files</p>
-            <div className="flex flex-wrap gap-2">
-              <Select
-                value={mainGreetingId}
-                onValueChange={setMainGreetingId}
-              >
-                <SelectTrigger className="w-[200px]" data-testid="select-main-greeting">
-                  <SelectValue placeholder="Select an audio file" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">No greeting (default)</SelectItem>
-                  {allAudioFiles.map((file) => (
-                    <SelectItem key={file.id} value={file.id}>
-                      {file.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button
-                onClick={() => saveGreetingMutation.mutate({
-                  type: "greeting",
-                  audioFileId: mainGreetingId === "none" ? null : mainGreetingId || null,
-                })}
-                disabled={saveGreetingMutation.isPending}
-                data-testid="button-save-main-greeting"
-              >
-                {saveGreetingMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                Save
-              </Button>
-            </div>
-          </div>
         </CardContent>
       </Card>
 
@@ -264,39 +231,6 @@ export default function AdminSettingsPage() {
               )}
               {nonSubGreetingId && nonSubGreetingId !== "none" ? "Replace File" : "Upload File"}
             </Button>
-          </div>
-
-          <div className="pt-2 border-t">
-            <p className="text-sm font-medium mb-2">Or select from existing files</p>
-            <div className="flex flex-wrap gap-2">
-              <Select
-                value={nonSubGreetingId}
-                onValueChange={setNonSubGreetingId}
-              >
-                <SelectTrigger className="w-[200px]" data-testid="select-non-sub-greeting">
-                  <SelectValue placeholder="Select an audio file" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="none">No greeting (default)</SelectItem>
-                  {allAudioFiles.map((file) => (
-                    <SelectItem key={file.id} value={file.id}>
-                      {file.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button
-                onClick={() => saveGreetingMutation.mutate({
-                  type: "non-subscriber-greeting",
-                  audioFileId: nonSubGreetingId === "none" ? null : nonSubGreetingId || null,
-                })}
-                disabled={saveGreetingMutation.isPending}
-                data-testid="button-save-nonsub-greeting"
-              >
-                {saveGreetingMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                Save
-              </Button>
-            </div>
           </div>
         </CardContent>
       </Card>
