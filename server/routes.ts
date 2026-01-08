@@ -752,6 +752,49 @@ export async function registerRoutes(
     }
   });
 
+  app.get("/api/admin/audio-files/:id/stream", requireAdmin, async (req, res) => {
+    try {
+      const file = await storage.getAudioFile(req.params.id);
+      if (!file) {
+        return res.status(404).json({ message: "Audio file not found" });
+      }
+
+      if (!fs.existsSync(file.filepath)) {
+        return res.status(404).json({ message: "Audio file not found on disk" });
+      }
+
+      const stat = fs.statSync(file.filepath);
+      const fileSize = stat.size;
+      const range = req.headers.range;
+
+      if (range) {
+        const parts = range.replace(/bytes=/, "").split("-");
+        const start = parseInt(parts[0], 10);
+        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+        const chunksize = (end - start) + 1;
+        const fileStream = fs.createReadStream(file.filepath, { start, end });
+        const head = {
+          'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+          'Accept-Ranges': 'bytes',
+          'Content-Length': chunksize,
+          'Content-Type': 'audio/mpeg',
+        };
+        res.writeHead(206, head);
+        fileStream.pipe(res);
+      } else {
+        const head = {
+          'Content-Length': fileSize,
+          'Content-Type': 'audio/mpeg',
+        };
+        res.writeHead(200, head);
+        fs.createReadStream(file.filepath).pipe(res);
+      }
+    } catch (error) {
+      console.error("Stream error:", error);
+      res.status(500).json({ message: "Failed to stream audio file" });
+    }
+  });
+
   app.post("/api/admin/audio-files/upload-and-assign", requireAdmin, upload.single("file"), async (req, res) => {
     try {
       if (!req.file) {

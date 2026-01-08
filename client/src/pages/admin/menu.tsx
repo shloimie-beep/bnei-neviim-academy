@@ -11,7 +11,6 @@ import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { MenuOption, AudioFile } from "@shared/schema";
-import playbackOptionsImage from "@assets/playing_options_1767880506090.jpg";
 
 type FunctionType = "none" | "play_mp3" | "submenu" | "conference";
 
@@ -94,7 +93,7 @@ function AudioPlayerDialog({
         <div className="space-y-4 py-4">
           <audio
             ref={audioRef}
-            src={audioFile.filepath}
+            src={`/api/admin/audio-files/${audioFile.id}/stream`}
             onTimeUpdate={handleTimeUpdate}
             onLoadedMetadata={handleLoadedMetadata}
             onEnded={handleEnded}
@@ -123,17 +122,6 @@ function AudioPlayerDialog({
             <span className="text-sm text-muted-foreground min-w-[80px] text-right">
               {formatDuration(currentTime)} / {formatDuration(duration)}
             </span>
-          </div>
-
-          <div className="mt-4 border rounded-lg overflow-hidden">
-            <img 
-              src={playbackOptionsImage} 
-              alt="IVR Playback Controls" 
-              className="w-full"
-            />
-            <p className="text-xs text-muted-foreground text-center p-2 bg-muted">
-              Phone keypad options during playback
-            </p>
           </div>
         </div>
       </DialogContent>
