@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Phone, Settings, Users, LogOut, LayoutDashboard, Menu, ShieldCheck, CreditCard } from "lucide-react";
+import { Phone, Settings, Users, LogOut, LayoutDashboard, Menu, ShieldCheck, CreditCard, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -23,6 +23,7 @@ import ConferenceManagement from "./conference";
 import WhitelistManagement from "./whitelist";
 import SubscribersManagement from "./subscribers";
 import AdminSettingsPage from "./settings";
+import VideoManagement from "./videos";
 
 const adminRoutes = [
   { path: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -30,6 +31,7 @@ const adminRoutes = [
   { path: "/admin/conference", label: "Conference", icon: Users },
   { path: "/admin/whitelist", label: "Whitelist", icon: ShieldCheck },
   { path: "/admin/subscribers", label: "Subscribers", icon: CreditCard },
+  { path: "/admin/videos", label: "Videos", icon: Video },
   { path: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
@@ -113,6 +115,8 @@ export default function AdminLayout() {
         return <WhitelistManagement />;
       case "/admin/subscribers":
         return <SubscribersManagement />;
+      case "/admin/videos":
+        return <VideoManagement />;
       case "/admin/settings":
         return <AdminSettingsPage />;
       default:
