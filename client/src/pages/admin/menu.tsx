@@ -502,6 +502,7 @@ export default function MenuManagement() {
 
     const newAudio = await res.json();
     
+    // Update menu option to point to new audio file
     await updateMutation.mutateAsync({
       optionNumber: optionNum,
       parentMenuId: currentMenuId,
@@ -509,6 +510,20 @@ export default function MenuManagement() {
       audioFileId: newAudio.id,
     });
 
+    // Clean up old audio file after menu option is updated
+    if (newAudio.oldAudioIdToDelete) {
+      try {
+        await fetch("/api/admin/audio-files/cleanup", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ audioFileId: newAudio.oldAudioIdToDelete }),
+        });
+      } catch {
+        // Cleanup is best-effort
+      }
+    }
+
+    queryClient.invalidateQueries({ queryKey: ["/api/admin/audio-files"] });
     toast({ title: "File uploaded and assigned successfully" });
   };
 

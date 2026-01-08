@@ -806,19 +806,7 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Name is required" });
       }
 
-      // If replacing an old file, delete it first
-      if (replaceAudioId) {
-        const oldFile = await storage.getAudioFile(replaceAudioId);
-        if (oldFile) {
-          // Delete from disk
-          if (fs.existsSync(oldFile.filepath)) {
-            fs.unlinkSync(oldFile.filepath);
-          }
-          // Delete from database
-          await storage.deleteAudioFile(replaceAudioId);
-        }
-      }
-
+      // Create new audio file first
       const audioFile = await storage.createAudioFile({
         name,
         filename: req.file.originalname,
@@ -830,10 +818,36 @@ export async function registerRoutes(
         voitexRecordingId: null,
       });
 
-      res.json(audioFile);
+      // Return the new file - old file will be cleaned up separately
+      res.json({ ...audioFile, oldAudioIdToDelete: replaceAudioId || null });
     } catch (error) {
       console.error("Upload and assign error:", error);
       res.status(500).json({ message: "Failed to upload audio file" });
+    }
+  });
+
+  // Delete orphaned audio file after menu option is updated
+  app.post("/api/admin/audio-files/cleanup", requireAdmin, async (req, res) => {
+    try {
+      const { audioFileId } = req.body;
+      if (!audioFileId) {
+        return res.json({ success: true });
+      }
+
+      const file = await storage.getAudioFile(audioFileId);
+      if (file) {
+        // Delete from disk
+        if (fs.existsSync(file.filepath)) {
+          fs.unlinkSync(file.filepath);
+        }
+        // Delete from database
+        await storage.deleteAudioFile(audioFileId);
+      }
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Cleanup error:", error);
+      // Don't fail - this is cleanup
+      res.json({ success: false });
     }
   });
 
