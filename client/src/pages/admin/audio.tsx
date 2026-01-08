@@ -253,10 +253,12 @@ export default function AudioManagement() {
                 <p className="text-sm font-medium mb-3">Voitex Integration (Optional)</p>
                 <div className="grid grid-cols-2 gap-3">
                   <div className="space-y-2">
-                    <Label htmlFor="voitex-album">Album Name</Label>
+                    <Label htmlFor="voitex-album">Album Number</Label>
                     <Input
                       id="voitex-album"
-                      placeholder="e.g., stories"
+                      type="number"
+                      min="1"
+                      placeholder="e.g., 1"
                       value={voitexAlbum}
                       onChange={(e) => setVoitexAlbum(e.target.value)}
                       data-testid="input-voitex-album"

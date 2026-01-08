@@ -692,15 +692,23 @@ export async function registerRoutes(
       // Optionally sync to Voitex
       if (syncToVoitex === "true" && voitexAlbum) {
         try {
-          const { voitexClient } = await import("./voitexClient");
-          const result = await voitexClient.uploadRecording(
-            req.file.path,
-            voitexAlbum,
-            parseInt(voitexSort) || 1,
-            req.file.originalname
-          );
-          if (result.success && result.data?.recid) {
-            voitexRecordingId = result.data.recid;
+          const { getVoitexClient } = await import("./voitexClient");
+          const client = getVoitexClient();
+          const albumNumber = parseInt(voitexAlbum);
+          const sortNumber = parseInt(voitexSort) || 1;
+          
+          if (isNaN(albumNumber)) {
+            console.error("Invalid album number for Voitex sync");
+          } else {
+            const result = await client.uploadRecording({
+              filePath: req.file.path,
+              albumNumber,
+              sortNumber,
+              displayName: req.file.originalname
+            });
+            if (result.success && result.data) {
+              voitexRecordingId = result.data;
+            }
           }
         } catch (voitexError) {
           console.error("Voitex sync failed:", voitexError);
