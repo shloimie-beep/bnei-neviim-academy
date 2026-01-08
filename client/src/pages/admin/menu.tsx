@@ -380,6 +380,7 @@ export default function MenuManagement() {
   ]);
   const [isSaving, setIsSaving] = useState(false);
   const [isUploadingGreeting, setIsUploadingGreeting] = useState(false);
+  const [greetingPlayerOpen, setGreetingPlayerOpen] = useState(false);
   const greetingFileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: menuOptions, isLoading: menuLoading } = useQuery<MenuOption[]>({
@@ -611,6 +612,16 @@ export default function MenuManagement() {
             </div>
             
             <div className="flex flex-wrap gap-2">
+              {mainGreetingFile && (
+                <Button
+                  variant="outline"
+                  onClick={() => setGreetingPlayerOpen(true)}
+                  data-testid="button-listen-greeting"
+                >
+                  <Play className="h-4 w-4 mr-2" />
+                  Listen
+                </Button>
+              )}
               <input
                 ref={greetingFileInputRef}
                 type="file"
@@ -642,6 +653,12 @@ export default function MenuManagement() {
           </CardContent>
         </Card>
       )}
+
+      <AudioPlayerDialog
+        open={greetingPlayerOpen}
+        onOpenChange={setGreetingPlayerOpen}
+        audioFile={mainGreetingFile || null}
+      />
 
       <Card>
         <CardHeader>

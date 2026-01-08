@@ -4,10 +4,109 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Settings, Volume2, Upload } from "lucide-react";
+import { Loader2, Settings, Volume2, Upload, Play, Pause } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { AudioFile, SystemSetting } from "@shared/schema";
+
+function formatDuration(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+}
+
+function AudioPlayerDialog({
+  open,
+  onOpenChange,
+  audioFile,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  audioFile: AudioFile | null;
+}) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  const togglePlay = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      setCurrentTime(audioRef.current.currentTime);
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) {
+      setDuration(audioRef.current.duration);
+    }
+  };
+
+  const handleSeek = (value: number[]) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = value[0];
+      setCurrentTime(value[0]);
+    }
+  };
+
+  const handleEnded = () => {
+    setIsPlaying(false);
+    setCurrentTime(0);
+  };
+
+  if (!audioFile) return null;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{audioFile.name}</DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-4">
+          <audio
+            ref={audioRef}
+            src={`/api/admin/audio-files/${audioFile.id}/stream`}
+            onTimeUpdate={handleTimeUpdate}
+            onLoadedMetadata={handleLoadedMetadata}
+            onEnded={handleEnded}
+          />
+          
+          <div className="flex items-center gap-4">
+            <Button size="icon" variant="outline" onClick={togglePlay}>
+              {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+            </Button>
+            
+            <div className="flex-1">
+              <Slider
+                value={[currentTime]}
+                max={duration || 100}
+                step={1}
+                onValueChange={handleSeek}
+              />
+            </div>
+            
+            <span className="text-sm text-muted-foreground min-w-[80px] text-right">
+              {formatDuration(currentTime)} / {formatDuration(duration)}
+            </span>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export default function AdminSettingsPage() {
   const { toast } = useToast();
@@ -15,6 +114,8 @@ export default function AdminSettingsPage() {
   const [nonSubGreetingId, setNonSubGreetingId] = useState<string>("");
   const [isUploadingMain, setIsUploadingMain] = useState(false);
   const [isUploadingNonSub, setIsUploadingNonSub] = useState(false);
+  const [mainPlayerOpen, setMainPlayerOpen] = useState(false);
+  const [nonSubPlayerOpen, setNonSubPlayerOpen] = useState(false);
   const mainFileInputRef = useRef<HTMLInputElement>(null);
   const nonSubFileInputRef = useRef<HTMLInputElement>(null);
 
@@ -152,6 +253,16 @@ export default function AdminSettingsPage() {
           </div>
           
           <div className="flex flex-wrap gap-2">
+            {mainGreetingId && mainGreetingId !== "none" && allAudioFiles.find(f => f.id === mainGreetingId) && (
+              <Button
+                variant="outline"
+                onClick={() => setMainPlayerOpen(true)}
+                data-testid="button-listen-main-greeting"
+              >
+                <Play className="h-4 w-4 mr-2" />
+                Listen
+              </Button>
+            )}
             <input
               ref={mainFileInputRef}
               type="file"
@@ -183,6 +294,12 @@ export default function AdminSettingsPage() {
         </CardContent>
       </Card>
 
+      <AudioPlayerDialog
+        open={mainPlayerOpen}
+        onOpenChange={setMainPlayerOpen}
+        audioFile={allAudioFiles.find(f => f.id === mainGreetingId) || null}
+      />
+
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
@@ -204,6 +321,16 @@ export default function AdminSettingsPage() {
           </div>
           
           <div className="flex flex-wrap gap-2">
+            {nonSubGreetingId && nonSubGreetingId !== "none" && allAudioFiles.find(f => f.id === nonSubGreetingId) && (
+              <Button
+                variant="outline"
+                onClick={() => setNonSubPlayerOpen(true)}
+                data-testid="button-listen-nonsub-greeting"
+              >
+                <Play className="h-4 w-4 mr-2" />
+                Listen
+              </Button>
+            )}
             <input
               ref={nonSubFileInputRef}
               type="file"
@@ -234,6 +361,12 @@ export default function AdminSettingsPage() {
           </div>
         </CardContent>
       </Card>
+
+      <AudioPlayerDialog
+        open={nonSubPlayerOpen}
+        onOpenChange={setNonSubPlayerOpen}
+        audioFile={allAudioFiles.find(f => f.id === nonSubGreetingId) || null}
+      />
 
       <Card>
         <CardHeader>
