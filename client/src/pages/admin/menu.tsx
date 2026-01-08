@@ -221,7 +221,7 @@ function OptionBox({
   allOptions: MenuOption[];
   onUpdate: (data: MenuOptionData) => void;
   onEditSubmenu: (optionId: string) => void;
-  onUploadAndAssign: (optionNum: number, file: File, name: string, oldAudioId: string | null) => Promise<void>;
+  onUploadAndAssign: (optionNum: number, file: File, name: string, oldAudioId: string | null) => Promise<string>;
   isSaving: boolean;
 }) {
   const { toast } = useToast();
@@ -266,8 +266,8 @@ function OptionBox({
   };
 
   const handleReplaceFile = async (file: File, name: string) => {
-    await onUploadAndAssign(num, file, name, audioFileId || null);
-    queryClient.invalidateQueries({ queryKey: ["/api/admin/audio-files"] });
+    const newAudioId = await onUploadAndAssign(num, file, name, audioFileId || null);
+    setAudioFileId(newAudioId);
   };
 
   return (
@@ -448,7 +448,7 @@ export default function MenuManagement() {
     file: File,
     name: string,
     oldAudioId: string | null
-  ) => {
+  ): Promise<string> => {
     const formData = new FormData();
     formData.append("file", file);
     formData.append("name", name);
@@ -491,7 +491,10 @@ export default function MenuManagement() {
     }
 
     queryClient.invalidateQueries({ queryKey: ["/api/admin/audio-files"] });
+    queryClient.invalidateQueries({ queryKey: ["/api/admin/menu-options"] });
     toast({ title: "File uploaded and assigned successfully" });
+    
+    return newAudio.id;
   };
 
   const handleEditSubmenu = (optionId: string) => {
