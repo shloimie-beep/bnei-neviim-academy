@@ -420,194 +420,104 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="py-20 bg-[#FDF7E1]">
+      <section className="py-16 bg-[#FDF7E1]">
         <div className="container mx-auto px-4">
-          <h3 className="text-xl font-medium text-center mb-2 text-[#161616]/70">
-            ...at home... in camps... at schools...
-          </h3>
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-[#161616]">
-            ...all over the world.
-          </h2>
-          
-          <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden" data-testid="card-testimonial-lakewood">
-              <img 
-                src={lakewoodImg} 
-                alt="Lakewood event" 
-                className="w-full h-64 object-cover"
-                data-testid="img-testimonial-lakewood"
-              />
-              <div className="p-6">
-                <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
-                  "We never saw the kids so captivated by your stories! You electrified the crowd with amazing stories and Torah lessons. R' Eli, thank you!"
-                </p>
-                <div className="border-t pt-4">
-                  <p className="font-bold text-[#161616]">Rabbi Dweck</p>
-                  <p className="text-[#161616]/60">Lakewood, NJ</p>
-                </div>
+          <div className="flex flex-col items-center gap-8 mb-12">
+            <div className="text-center">
+              <h3 className="text-2xl md:text-3xl font-bold text-[#161616] mb-4">...at home...</h3>
+              <div className="w-48 h-48 mx-auto rounded-full overflow-hidden border-4 border-white shadow-lg" data-testid="img-at-home">
+                <img src={lakewoodImg} alt="At home" className="w-full h-full object-cover" />
               </div>
             </div>
-            
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden" data-testid="card-testimonial-boca">
-              <img 
-                src={bocaImg} 
-                alt="Boca Raton event" 
-                className="w-full h-64 object-cover"
-                data-testid="img-testimonial-boca"
-              />
-              <div className="p-6">
-                <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
-                  "That was amazing!!! Way above my expectations. Please come back again."
-                </p>
-                <div className="border-t pt-4">
-                  <p className="font-bold text-[#161616]">Mrs. Haddasah Smolarcik</p>
-                  <p className="text-[#161616]/60">Boca Raton, FL</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden" data-testid="card-testimonial-norfolk">
-              <img 
-                src={norfolkImg} 
-                alt="Norfolk event" 
-                className="w-full h-64 object-cover"
-                data-testid="img-testimonial-norfolk"
-              />
-              <div className="p-6">
-                <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
-                  "Thank you so much for bringing so much positive and exciting energy to Norfolk! The Ribono Shel Olam should continue to give you and your family the koach to inspire yidden throughout the world!"
-                </p>
-                <div className="border-t pt-4">
-                  <p className="font-bold text-[#161616]">Aharon Lipman</p>
-                  <p className="text-[#161616]/60">Norfolk, Virginia</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden" data-testid="card-testimonial-stlouis">
-              <img 
-                src={stlouisImg} 
-                alt="St. Louis event" 
-                className="w-full h-64 object-cover"
-                data-testid="img-testimonial-stlouis"
-              />
-              <div className="p-6">
-                <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
-                  "You brought so much simcha to the community and were able to unite everyone together like never before. Thank you! (It was worth every penny)"
-                </p>
-                <div className="border-t pt-4">
-                  <p className="font-bold text-[#161616]">Moshe Glazer</p>
-                  <p className="text-[#161616]/60">St. Louis, Missouri</p>
-                </div>
-              </div>
-            </div>
+          </div>
+        </div>
+      </section>
 
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden" data-testid="card-testimonial-vegas">
-              <img 
-                src={vegasImg} 
-                alt="Las Vegas event" 
-                className="w-full h-64 object-cover"
-                data-testid="img-testimonial-vegas"
-              />
-              <div className="p-6">
-                <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
-                  "The kids were absolutely mesmerized! Rabbi Eli's storytelling is pure magic. We can't wait to have him back!"
-                </p>
-                <div className="border-t pt-4">
-                  <p className="font-bold text-[#161616]">Community Leader</p>
-                  <p className="text-[#161616]/60">Las Vegas, NV</p>
-                </div>
+      <section className="py-16 bg-[#161616]">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col items-center gap-8">
+            <div className="text-center">
+              <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">...in camps...</h3>
+              <div className="w-48 h-48 mx-auto rounded-full overflow-hidden border-4 border-white shadow-lg" data-testid="img-in-camps">
+                <img src={bocaImg} alt="In camps" className="w-full h-full object-cover" />
               </div>
             </div>
+          </div>
+        </div>
+      </section>
 
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden" data-testid="card-testimonial-atlanta">
-              <img 
-                src={atlantaImg} 
-                alt="Atlanta event" 
-                className="w-full h-64 object-cover"
-                data-testid="img-testimonial-atlanta"
-              />
-              <div className="p-6">
-                <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
-                  "A truly inspiring experience for our entire community. The children haven't stopped talking about it!"
-                </p>
-                <div className="border-t pt-4">
-                  <p className="font-bold text-[#161616]">Community Organizer</p>
-                  <p className="text-[#161616]/60">Atlanta, GA</p>
-                </div>
-              </div>
+      <section className="py-16 bg-[#FDF7E1]">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8">
+            <h3 className="text-2xl md:text-3xl font-bold text-[#161616] mb-8">...at schools...</h3>
+          </div>
+          <div className="max-w-4xl mx-auto" data-testid="img-at-schools">
+            <img src={eventsImg} alt="At schools" className="w-full rounded-lg shadow-xl" />
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 bg-[#161616]">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-8">
+            <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">...all over the</h3>
+            <h2 className="text-4xl md:text-5xl font-bold text-[#EDE518]">world.</h2>
+          </div>
+          <div className="max-w-4xl mx-auto relative" data-testid="img-usa-map">
+            <img 
+              src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/usa-map-silhouette.png" 
+              alt="USA Map" 
+              className="w-full opacity-60"
+            />
+            <div className="absolute top-1/4 left-1/4 w-3 h-3 bg-[#EDE518] rounded-full animate-pulse" />
+            <div className="absolute top-1/3 left-1/2 w-3 h-3 bg-[#EDE518] rounded-full animate-pulse" />
+            <div className="absolute top-1/2 left-1/3 w-3 h-3 bg-[#EDE518] rounded-full animate-pulse" />
+            <div className="absolute top-2/3 left-2/3 w-3 h-3 bg-[#EDE518] rounded-full animate-pulse" />
+            <div className="absolute top-1/3 right-1/4 w-3 h-3 bg-[#EDE518] rounded-full animate-pulse" />
+          </div>
+        </div>
+      </section>
+
+      <section className="relative">
+        <div className="relative h-[400px] overflow-hidden" data-testid="img-testimonial-crowd-1">
+          <img src={lakewoodImg} alt="Lakewood event" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-black/50" />
+          <div className="absolute inset-0 flex items-center justify-center p-8">
+            <div className="text-center max-w-3xl">
+              <p className="text-xl md:text-2xl italic text-white mb-4 leading-relaxed">
+                "We never saw the kids so captivated by your stories! You electrified the crowd with amazing stories and Torah lessons. R' Eli, thank you!"
+              </p>
+              <p className="text-white/80 font-medium">- Rabbi Dweck, Lakewood, NJ</p>
             </div>
+          </div>
+        </div>
+      </section>
 
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden" data-testid="card-testimonial-philly">
-              <img 
-                src={philadelphiaImg} 
-                alt="Philadelphia event" 
-                className="w-full h-64 object-cover"
-                data-testid="img-testimonial-philly"
-              />
-              <div className="p-6">
-                <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
-                  "Rabbi Eli connected with every single child in the room. His energy is infectious and his message is powerful!"
-                </p>
-                <div className="border-t pt-4">
-                  <p className="font-bold text-[#161616]">School Principal</p>
-                  <p className="text-[#161616]/60">Philadelphia, PA</p>
-                </div>
-              </div>
+      <section className="relative">
+        <div className="relative h-[400px] overflow-hidden" data-testid="img-testimonial-crowd-2">
+          <img src={norfolkImg} alt="Norfolk event" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-black/50" />
+          <div className="absolute inset-0 flex items-center justify-center p-8">
+            <div className="text-center max-w-3xl">
+              <p className="text-xl md:text-2xl italic text-white mb-4 leading-relaxed">
+                "Thank you so much for bringing so much positive and exciting energy to Norfolk! The Ribono Shel Olam should continue to give you and your family the koach to inspire yidden throughout the world!"
+              </p>
+              <p className="text-white/80 font-medium">- Aharon Lipman, Norfolk, Virginia</p>
             </div>
+          </div>
+        </div>
+      </section>
 
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden" data-testid="card-testimonial-passaic">
-              <img 
-                src={passaicImg} 
-                alt="Passaic event" 
-                className="w-full h-64 object-cover"
-                data-testid="img-testimonial-passaic"
-              />
-              <div className="p-6">
-                <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
-                  "An unforgettable evening that brought our community together. The storytelling was phenomenal!"
-                </p>
-                <div className="border-t pt-4">
-                  <p className="font-bold text-[#161616]">Event Coordinator</p>
-                  <p className="text-[#161616]/60">Passaic, NJ</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden" data-testid="card-testimonial-silverspring">
-              <img 
-                src={silverspringImg} 
-                alt="Silver Spring event" 
-                className="w-full h-64 object-cover"
-                data-testid="img-testimonial-silverspring"
-              />
-              <div className="p-6">
-                <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
-                  "The impact on our students was remarkable. Rabbi Eli's stories teach important lessons in the most engaging way!"
-                </p>
-                <div className="border-t pt-4">
-                  <p className="font-bold text-[#161616]">School Director</p>
-                  <p className="text-[#161616]/60">Silver Spring, MD</p>
-                </div>
-              </div>
-            </div>
-
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden" data-testid="card-testimonial-events">
-              <img 
-                src={eventsImg} 
-                alt="Community events" 
-                className="w-full h-64 object-cover"
-                data-testid="img-testimonial-events"
-              />
-              <div className="p-6">
-                <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
-                  "From camps to schools to community events, Rabbi Eli brings joy and inspiration everywhere he goes!"
-                </p>
-                <div className="border-t pt-4">
-                  <p className="font-bold text-[#161616]">Camp Director</p>
-                  <p className="text-[#161616]/60">And many more locations...</p>
-                </div>
-              </div>
+      <section className="relative">
+        <div className="relative h-[400px] overflow-hidden" data-testid="img-testimonial-crowd-3">
+          <img src={stlouisImg} alt="St. Louis event" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-black/50" />
+          <div className="absolute inset-0 flex items-center justify-center p-8">
+            <div className="text-center max-w-3xl">
+              <p className="text-xl md:text-2xl italic text-white mb-4 leading-relaxed">
+                "You brought so much simcha to the community and were able to unite everyone together like never before. Thank you! (It was worth every penny)"
+              </p>
+              <p className="text-white/80 font-medium">- Moshe Glazer, St. Louis, Missouri</p>
             </div>
           </div>
         </div>
