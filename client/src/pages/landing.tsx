@@ -2,37 +2,62 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Phone, Mail, MapPin } from "lucide-react";
+import { Phone, Mail, MapPin, ShoppingCart, Search, User, Menu } from "lucide-react";
 import logoImage from "@assets/qt=q_95_1767830887218.webp";
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-white dark:bg-[#161616]">
-      <header className="absolute top-0 left-0 right-0 z-50">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <img src={logoImage} alt="OneTimeOneTime" className="h-10 w-auto" />
+    <div className="min-h-screen bg-[#161616]">
+      <div className="bg-[#08779C] py-2 text-center">
+        <a 
+          href="#hotline" 
+          className="text-white text-sm font-medium hover:underline"
+          data-testid="link-promo-banner"
+        >
+          Check out our Gadlus Ha'Adam Skills → GROUPS FORMING NOW IN LAKEWOOD
+        </a>
+      </div>
+
+      <header className="sticky top-0 z-50 bg-[#161616]/95 backdrop-blur border-b border-white/10">
+        <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
+          <div className="flex items-center gap-6">
+            <a href="#home">
+              <img src={logoImage} alt="OneTimeOneTime" className="h-12 w-auto" />
+            </a>
+            <nav className="hidden lg:flex items-center gap-6">
+              <a href="#home" className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide">Home</a>
+              <a href="#gadlus" className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide">Gadlus Ha'Adam</a>
+              <a href="#hotline" className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide">Hotline</a>
+              <a href="#story" className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide">The Story</a>
+              <a href="#contact" className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide">Contact</a>
+            </nav>
           </div>
-          <nav className="hidden md:flex items-center gap-6">
-            <a href="#home" className="text-white font-medium hover:text-[#EDE518] transition-colors">Home</a>
-            <a href="#hotline" className="text-white font-medium hover:text-[#EDE518] transition-colors">The Hotline</a>
-            <a href="#story" className="text-white font-medium hover:text-[#EDE518] transition-colors">The Story</a>
-            <a href="#contact" className="text-white font-medium hover:text-[#EDE518] transition-colors">Contact</a>
-          </nav>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <ThemeToggle />
+            <Button size="icon" variant="ghost" className="text-white">
+              <Search className="h-4 w-4" />
+            </Button>
+            <Button size="icon" variant="ghost" className="text-white">
+              <ShoppingCart className="h-4 w-4" />
+            </Button>
+            <Button size="icon" variant="ghost" className="text-white">
+              <User className="h-4 w-4" />
+            </Button>
             <Link href="/login">
-              <Button className="bg-[#EDE518] text-black border-[#EDE518] font-semibold" data-testid="button-login">
+              <Button className="bg-[#EDE518] text-black border-[#EDE518] font-semibold text-sm" data-testid="button-login">
                 Hotline Login
               </Button>
             </Link>
+            <Button size="icon" variant="ghost" className="lg:hidden text-white">
+              <Menu className="h-5 w-5" />
+            </Button>
           </div>
         </div>
       </header>
 
       <section 
         id="home"
-        className="relative min-h-[90vh] flex items-center justify-center overflow-hidden"
+        className="relative min-h-[85vh] flex items-center justify-center overflow-hidden"
       >
         <div className="absolute inset-0 w-full h-full bg-[#161616]">
           <iframe
@@ -44,29 +69,29 @@ export default function LandingPage() {
             title="Background Video"
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/30" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/20" />
         <div className="container mx-auto px-4 py-32 relative z-10">
-          <div className="max-w-4xl mx-auto text-center space-y-6">
-            <h1 className="text-4xl md:text-6xl font-bold text-white drop-shadow-lg italic" style={{ fontFamily: "'Georgia', serif" }}>
+          <div className="max-w-4xl mx-auto text-center space-y-4">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-normal text-white italic" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
               Where Kids Fall in Love With Torah
             </h1>
-            <p className="text-xl md:text-2xl text-white font-semibold">
+            <p className="text-xl md:text-2xl text-white font-bold mt-8">
               Rabbi Eli Scheller
             </p>
-            <p className="text-lg text-white/90">
+            <p className="text-lg text-white/90 font-medium">
               Global Educator & Creator of the OneTime OneTime Experience
             </p>
             <p className="text-lg text-white/80">
               Inspiring Families Through Stories and Humor
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
               <Link href="/register">
-                <Button size="lg" className="bg-[#EDE518] text-black border-[#EDE518] font-semibold px-8" data-testid="button-hotline">
+                <Button size="lg" className="bg-[#EDE518] text-black border-[#EDE518] font-bold px-10 text-base uppercase tracking-wide" data-testid="button-hotline">
                   The Hotline
                 </Button>
               </Link>
               <a href="#story">
-                <Button size="lg" variant="outline" className="bg-white text-black border-white font-semibold px-8" data-testid="button-story">
+                <Button size="lg" variant="outline" className="bg-white text-black border-white font-bold px-10 text-base uppercase tracking-wide" data-testid="button-story">
                   The Story
                 </Button>
               </a>
@@ -75,112 +100,217 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <div className="bg-[#EDE518] py-3 overflow-hidden">
+      <a href="#hotline" className="block bg-[#EDE518] py-3 overflow-hidden">
         <div className="animate-marquee whitespace-nowrap flex">
-          {[...Array(10)].map((_, i) => (
-            <span key={i} className="text-black font-bold text-lg mx-8">
+          {[...Array(12)].map((_, i) => (
+            <span key={i} className="text-black font-bold text-lg mx-8 uppercase tracking-wider">
               The OneTime OneTime Hotline
             </span>
           ))}
         </div>
-      </div>
+      </a>
 
-      <section id="hotline" className="py-20 bg-white dark:bg-[#161616]">
+      <section id="hotline" className="py-20 bg-[#161616]">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-[#161616] dark:text-white">
+          <h2 className="text-3xl md:text-5xl font-bold text-center mb-4 text-white">
             Introducing... The OneTime OneTime Hotline
           </h2>
-          <h3 className="text-xl text-center mb-8 text-[#161616]/80 dark:text-white/80">
+          <h3 className="text-xl md:text-2xl text-center mb-10 text-white/80">
             Welcome to Rabbi Eli Scheller's global phone line for kids, teens, and families.
           </h3>
           
           <div className="max-w-4xl mx-auto text-center space-y-6">
-            <p className="text-lg font-semibold text-[#161616] dark:text-white">
+            <p className="text-xl font-bold text-[#EDE518]">
               A Family Experience That Keeps You Inspired All Week Long!
             </p>
-            <p className="text-[#161616]/80 dark:text-white/80">
-              Bring Torah, inspiration, and excitement into your home - in the simple, clear, engaging style kids love and parents trust.
+            <p className="text-lg text-white/80">
+              Bring Torah, inspiration, and excitement into your home — in the simple, clear, engaging style kids love and parents trust.
             </p>
-            <p className="text-[#161616]/80 dark:text-white/80">
+            <p className="text-lg text-white/80">
               Join families around the world who are already enjoying the OneTime OneTime experience.
             </p>
-            <p className="text-lg font-semibold text-[#161616] dark:text-white">
+            <p className="text-xl font-bold text-white">
               Stories. Parsha. Mishnayos. Gemara. Jokes.
             </p>
-            <p className="text-[#161616]/80 dark:text-white/80">
-              Weekly growth for kids, teens, and the whole family - delivered in the OneTime style you love.
+            <p className="text-lg text-white/80">
+              Weekly growth for kids, teens, and the whole family — delivered in the OneTime style you love.
             </p>
             
-            <Card className="bg-[#f5f5f5] dark:bg-[#222] border-none mt-8 max-w-xl mx-auto">
+            <Card className="bg-[#FDF7E1] border-none mt-10 max-w-xl mx-auto">
               <CardContent className="p-6">
-                <p className="italic text-[#161616]/80 dark:text-white/80">
+                <p className="italic text-[#161616] text-lg">
                   "A gut voch Rabbi! Regards from Panama, my kids and I love your stories."
                 </p>
-                <p className="mt-2 font-semibold text-[#161616] dark:text-white">- Miki Rubin</p>
+                <p className="mt-3 font-bold text-[#161616]">- Miki Rubin</p>
               </CardContent>
             </Card>
 
-            <div className="pt-8">
+            <div className="pt-10 flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/register">
-                <Button size="lg" className="bg-[#EDE518] text-black font-semibold px-10">
-                  Join Hotline
+                <Button size="lg" className="bg-[#EDE518] text-black font-bold px-12 text-base">
+                  Join Hotline →
                 </Button>
               </Link>
+              <a href="#learn-more">
+                <Button size="lg" variant="outline" className="border-white text-white font-bold px-8 text-base">
+                  Learn More About the Hotline
+                </Button>
+              </a>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-[#f5f5f5] dark:bg-[#1a1a1a]">
+      <section id="learn-more" className="py-16 bg-[#0B1D2B]">
         <div className="container mx-auto px-4">
-          <h3 className="text-2xl font-bold text-center mb-10 text-[#161616] dark:text-white">
+          <h3 className="text-2xl md:text-3xl font-bold text-center mb-10 text-white">
             What Your Family Gets Each Week
           </h3>
           <div className="max-w-3xl mx-auto">
-            <p className="text-center mb-8 text-[#161616]/80 dark:text-white/80">
-              The OneTime OneTime Hotline brings Torah, inspiration, and meaningful entertainment into your home - created specifically for kids, teens, and families.
+            <p className="text-center mb-10 text-white/80 text-lg">
+              The OneTime OneTime Hotline brings Torah, inspiration, and meaningful entertainment into your home — created specifically for kids, teens, and families.
             </p>
-            <ul className="space-y-4 text-[#161616] dark:text-white">
-              <li className="flex items-start gap-3">
-                <span className="text-[#EDE518] font-bold text-xl">*</span>
+            <p className="text-center mb-8 text-white font-semibold">Here's what you can expect:</p>
+            <ul className="space-y-4 text-white text-lg max-w-2xl mx-auto">
+              <li className="flex items-start gap-4">
+                <span className="text-[#EDE518] font-bold text-2xl leading-none">•</span>
                 <span>OneTime OneTime stories that your kids will talk about all week</span>
               </li>
-              <li className="flex items-start gap-3">
-                <span className="text-[#EDE518] font-bold text-xl">*</span>
+              <li className="flex items-start gap-4">
+                <span className="text-[#EDE518] font-bold text-2xl leading-none">•</span>
                 <span>A Parsha Spark that brings the weekly Torah portion to life</span>
               </li>
-              <li className="flex items-start gap-3">
-                <span className="text-[#EDE518] font-bold text-xl">*</span>
+              <li className="flex items-start gap-4">
+                <span className="text-[#EDE518] font-bold text-2xl leading-none">•</span>
                 <span>Mishnayos (around 4 perakim a week)</span>
               </li>
-              <li className="flex items-start gap-3">
-                <span className="text-[#EDE518] font-bold text-xl">*</span>
+              <li className="flex items-start gap-4">
+                <span className="text-[#EDE518] font-bold text-2xl leading-none">•</span>
                 <span>Gemara taught simply and clearly</span>
               </li>
-              <li className="flex items-start gap-3">
-                <span className="text-[#EDE518] font-bold text-xl">*</span>
+              <li className="flex items-start gap-4">
+                <span className="text-[#EDE518] font-bold text-2xl leading-none">•</span>
                 <span>A weekly joke track (guaranteed to get laughs)</span>
               </li>
-              <li className="flex items-start gap-3">
-                <span className="text-[#EDE518] font-bold text-xl">*</span>
+              <li className="flex items-start gap-4">
+                <span className="text-[#EDE518] font-bold text-2xl leading-none">•</span>
                 <span>Exclusive member-only content throughout the year</span>
               </li>
             </ul>
-            <p className="text-center mt-8 text-[#161616]/80 dark:text-white/80">
-              Each piece is short, powerful, and memorable - perfect for busy families who want meaningful moments in minutes.
+            <p className="text-center mt-10 text-white/80 text-lg">
+              Each piece is short, powerful, and memorable — perfect for busy families who want meaningful moments in minutes.
             </p>
+            <div className="text-center mt-8">
+              <a href="#hotline" className="text-[#EDE518] font-semibold hover:underline">
+                Learn More About the Hotline
+              </a>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-white dark:bg-[#161616]">
+      <section className="py-12 bg-[#161616]">
         <div className="container mx-auto px-4">
-          <h3 className="text-2xl font-bold text-center mb-10 text-[#161616] dark:text-white">
+          <h3 className="text-xl font-bold text-center mb-8 text-white/60 uppercase tracking-wider">
+            As Seen Across The Jewish World:
+          </h3>
+          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-80">
+            <img src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/logo-vert-yellow.png/:/rs=h:100,cg:true" alt="Torah Anytime" className="h-16 w-auto" />
+            <img src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Untitled%20drawing.png/:/rs=h:100,cg:true,m" alt="24Six" className="h-12 w-auto" />
+            <img src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Loop_Purple_DarkPurple%402x-2.png/:/rs=h:100,cg:true" alt="Loop" className="h-12 w-auto" />
+          </div>
+        </div>
+      </section>
+
+      <section className="py-20 bg-[#0B1D2B]">
+        <div className="container mx-auto px-4">
+          <h3 className="text-2xl md:text-3xl font-bold text-center mb-12 text-white">
+            Featured Products
+          </h3>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
+            <Card className="bg-[#1a2a3a] border-none overflow-hidden group">
+              <div className="aspect-[3/4] overflow-hidden">
+                <img 
+                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/ChatGPT%20Image%20Oct%2026%2C%202025%20at%2004_35_46%20PM.png/:/cr=t:0.59%25,l:0%25,w:100%25,h:88.89%25/rs=w:365,h:486,cg:true" 
+                  alt="It's All Good Film" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <CardContent className="p-4">
+                <h4 className="font-bold text-white mb-1">IT'S ALL GOOD</h4>
+                <p className="text-sm text-white/70 mb-2">Inspirational / Comical Film</p>
+                <p className="text-xs text-[#EDE518]">Included in the OneTime Hotline</p>
+                <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm">
+                  Stream - $7.99
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-[#1a2a3a] border-none overflow-hidden group">
+              <div className="aspect-[3/4] overflow-hidden">
+                <img 
+                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Beige%20Green%20Travel%20To%20The%20World%20Flyer-2.png/:/cr=t:2.87%25,l:0%25,w:100%25,h:94.27%25/rs=w:365,h:486,cg:true" 
+                  alt="Experience Eretz Yisrael" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <CardContent className="p-4">
+                <h4 className="font-bold text-white mb-1">Experience Eretz Yisrael</h4>
+                <p className="text-sm text-white/70 mb-2">Inspirational Film</p>
+                <p className="text-xs text-[#EDE518]">Included in the OneTime Hotline</p>
+                <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm">
+                  Stream - $12.99
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-[#1a2a3a] border-none overflow-hidden group">
+              <div className="aspect-[3/4] overflow-hidden">
+                <img 
+                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Blue%20Professional%20Annual%20Report%20Book%20Cover%20(6%20.png/:/cr=t:6.46%25,l:0%25,w:100%25,h:88.87%25/rs=w:365,h:486,cg:true" 
+                  alt="Searching for Happiness" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <CardContent className="p-4">
+                <h4 className="font-bold text-white mb-1">Searching for Happiness</h4>
+                <p className="text-sm text-white/70 mb-2">A Comedy Adventure Film</p>
+                <p className="text-xs text-[#EDE518]">Included in the OneTime Hotline</p>
+                <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm">
+                  Stream - $12.99
+                </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-[#1a2a3a] border-none overflow-hidden group">
+              <div className="aspect-[3/4] overflow-hidden">
+                <img 
+                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/blob-ad680e5.png/:/cr=t:0%25,l:34.44%25,w:29.3%25,h:100%25/rs=w:365,h:486,cg:true" 
+                  alt="Story Book" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <CardContent className="p-4">
+                <h4 className="font-bold text-white mb-1">One Time One Time Story Book</h4>
+                <p className="text-sm text-white/70 mb-2">39 Thrilling Stories</p>
+                <p className="text-xs text-white/50">136 pages. Color images.</p>
+                <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm">
+                  Hard copy - $24.99
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-20 bg-[#161616]">
+        <div className="container mx-auto px-4">
+          <h3 className="text-2xl md:text-3xl font-bold text-center mb-12 text-white">
             Featured Videos
           </h3>
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <div className="space-y-4">
-              <div className="aspect-video bg-black rounded-lg overflow-hidden">
+              <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-xl">
                 <iframe
                   src="https://player.vimeo.com/video/1138747998?title=0&byline=0&portrait=0"
                   className="w-full h-full"
@@ -190,11 +320,11 @@ export default function LandingPage() {
                   title="A Birthday Surprise"
                 />
               </div>
-              <h4 className="font-semibold text-[#161616] dark:text-white">A Birthday Surprise</h4>
-              <p className="text-sm text-[#161616]/70 dark:text-white/70">An interesting birthday surprise for my mother</p>
+              <h4 className="font-bold text-white text-lg">A Birthday Surprise</h4>
+              <p className="text-white/70">An interesting birthday surprise for my mother</p>
             </div>
             <div className="space-y-4">
-              <div className="aspect-video bg-black rounded-lg overflow-hidden">
+              <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-xl">
                 <iframe
                   src="https://player.vimeo.com/video/1050076957?title=0&byline=0&portrait=0"
                   className="w-full h-full"
@@ -204,11 +334,11 @@ export default function LandingPage() {
                   title="The Secret Mission"
                 />
               </div>
-              <h4 className="font-semibold text-[#161616] dark:text-white">The Secret Mission</h4>
-              <p className="text-sm text-[#161616]/70 dark:text-white/70">When an old man gets upset at the kids in the community, tries to harm them and then something unique happens</p>
+              <h4 className="font-bold text-white text-lg">The Secret Mission</h4>
+              <p className="text-white/70">When an old man gets upset at the kids in the community...</p>
             </div>
             <div className="space-y-4">
-              <div className="aspect-video bg-black rounded-lg overflow-hidden">
+              <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-xl">
                 <iframe
                   src="https://player.vimeo.com/video/1138749816?title=0&byline=0&portrait=0"
                   className="w-full h-full"
@@ -218,116 +348,155 @@ export default function LandingPage() {
                   title="Meet The Evil Inclination"
                 />
               </div>
-              <h4 className="font-semibold text-[#161616] dark:text-white">Meet The Evil Inclination</h4>
-              <p className="text-sm text-[#161616]/70 dark:text-white/70">See the battle of the Yetzer tov and Yetzer Hara play out in real-life</p>
+              <h4 className="font-bold text-white text-lg">Meet The Evil Inclination</h4>
+              <p className="text-white/70">See the battle of the Yetzer tov and Yetzer Hara play out</p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-[#f5f5f5] dark:bg-[#1a1a1a]">
+      <section className="py-20 bg-[#FDF7E1]">
         <div className="container mx-auto px-4">
-          <h3 className="text-2xl font-bold text-center mb-4 text-[#161616] dark:text-white">
+          <h3 className="text-xl font-medium text-center mb-2 text-[#161616]/70">
             ...at home... in camps... at schools...
           </h3>
-          <h2 className="text-3xl font-bold text-center mb-12 text-[#161616] dark:text-white">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-16 text-[#161616]">
             ...all over the world.
           </h2>
           
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-            <Card className="bg-white dark:bg-[#222] border-none">
-              <CardContent className="p-6">
-                <p className="text-lg italic text-[#161616]/80 dark:text-white/80 mb-4">
+          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+            <Card className="bg-white border-none shadow-lg">
+              <CardContent className="p-8">
+                <p className="text-xl italic text-[#161616]/80 mb-6 leading-relaxed">
                   "We never saw the kids so captivated by your stories! You electrified the crowd with amazing stories and Torah lessons. R' Eli, thank you!"
                 </p>
-                <p className="font-semibold text-[#161616] dark:text-white">Rabbi Dweck, Brooklyn</p>
+                <div className="border-t pt-4">
+                  <p className="font-bold text-[#161616]">Rabbi Dweck</p>
+                  <p className="text-[#161616]/60">Brooklyn</p>
+                </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-white dark:bg-[#222] border-none">
-              <CardContent className="p-6">
-                <p className="text-lg italic text-[#161616]/80 dark:text-white/80 mb-4">
+            <Card className="bg-white border-none shadow-lg">
+              <CardContent className="p-8">
+                <p className="text-xl italic text-[#161616]/80 mb-6 leading-relaxed">
                   "That was amazing!!! Way above my expectations. Please come back again."
                 </p>
-                <p className="font-semibold text-[#161616] dark:text-white">Mrs. Haddasah Smolarcik, Boca Raton</p>
+                <div className="border-t pt-4">
+                  <p className="font-bold text-[#161616]">Mrs. Haddasah Smolarcik</p>
+                  <p className="text-[#161616]/60">Boca Raton</p>
+                </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-white dark:bg-[#222] border-none">
-              <CardContent className="p-6">
-                <p className="text-lg italic text-[#161616]/80 dark:text-white/80 mb-4">
-                  "Thank you so much for bringing so much positive and exciting energy to Norfolk! The fact that you brought your mishpacha only enhanced the Shabbos."
+            <Card className="bg-white border-none shadow-lg">
+              <CardContent className="p-8">
+                <p className="text-xl italic text-[#161616]/80 mb-6 leading-relaxed">
+                  "Thank you so much for bringing so much positive and exciting energy to Norfolk! The Ribono Shel Olam should continue to give you and your family the koach to inspire yidden throughout the world!"
                 </p>
-                <p className="font-semibold text-[#161616] dark:text-white">Aharon Lipman, Norfolk, Virginia</p>
+                <div className="border-t pt-4">
+                  <p className="font-bold text-[#161616]">Aharon Lipman</p>
+                  <p className="text-[#161616]/60">Norfolk, Virginia</p>
+                </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-white dark:bg-[#222] border-none">
-              <CardContent className="p-6">
-                <p className="text-lg italic text-[#161616]/80 dark:text-white/80 mb-4">
-                  "You brought so much simcha to the community and were able to unite everyone together like never before. Thank you!"
+            <Card className="bg-white border-none shadow-lg">
+              <CardContent className="p-8">
+                <p className="text-xl italic text-[#161616]/80 mb-6 leading-relaxed">
+                  "You brought so much simcha to the community and were able to unite everyone together like never before. Thank you! (It was worth every penny)"
                 </p>
-                <p className="font-semibold text-[#161616] dark:text-white">Moshe Glazer, St Louis, Missouri</p>
+                <div className="border-t pt-4">
+                  <p className="font-bold text-[#161616]">Moshe Glazer</p>
+                  <p className="text-[#161616]/60">St Louis, Missouri</p>
+                </div>
               </CardContent>
             </Card>
           </div>
         </div>
       </section>
 
-      <section id="story" className="py-16 bg-white dark:bg-[#161616]">
+      <section id="story" className="py-20 bg-[#161616]">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center mb-8 text-[#EDE518]">
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-[#EDE518]">
             The Story
           </h2>
-          <div className="max-w-3xl mx-auto text-center space-y-6">
-            <h3 className="text-xl font-semibold text-[#161616] dark:text-white">
-              Rabbi Eli Scheller: Inspiring, educating, and empowering the next generation of Jewish children worldwide.
-            </h3>
-            <p className="text-[#161616]/80 dark:text-white/80">
-              Most stories begin with "once upon a time." Mine begins with "One time, one time."
-            </p>
-            <p className="text-[#161616]/80 dark:text-white/80">
-              I wasn't supposed to become a storyteller. I wasn't supposed to become a rebbi. I definitely wasn't supposed to become the voice in thousands of kids' rooms every night. I was the kid who struggled in yeshivah, bounced from place to place, and never quite fit the system - until a few "one time" moments changed everything.
-            </p>
-            <p className="text-[#161616]/80 dark:text-white/80">
-              Those moments shaped me. After learning under Rav Yitzchak Berkovits in Yerushalayim, life took me from Lakewood to Los Angeles and eventually to a small classroom in Baltimore, where I walked in with a guitar, faced a wild fifth grade, and began, "One time, one time..." That first story froze the room and quietly launched OneTime OneTime.
-            </p>
-            <p className="text-lg font-semibold text-[#161616] dark:text-white">
-              Every child is one "one time" moment away from discovering who they can become.
-            </p>
+          <div className="max-w-4xl mx-auto">
+            <div className="flex flex-col lg:flex-row gap-12 items-center">
+              <div className="lg:w-1/3">
+                <img 
+                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Untitled%20(1080%20x%201920%20px).png/:/cr=t:9.5%25,l:0%25,w:100%25,h:75%25/rs=w:400,h:533,cg:true" 
+                  alt="Rabbi Eli Scheller" 
+                  className="rounded-lg shadow-2xl w-full max-w-sm mx-auto"
+                />
+              </div>
+              <div className="lg:w-2/3 space-y-6 text-center lg:text-left">
+                <h3 className="text-2xl font-bold text-white">
+                  Rabbi Eli Scheller: Inspiring, educating, and empowering the next generation of Jewish children worldwide.
+                </h3>
+                <p className="text-white/80 text-lg">
+                  Most stories begin with "once upon a time." Mine begins with "One time, one time."
+                </p>
+                <p className="text-white/80 text-lg">
+                  I wasn't supposed to become a storyteller. I wasn't supposed to become a rebbi. I definitely wasn't supposed to become the voice in thousands of kids' rooms every night. I was the kid who struggled in yeshivah, bounced from place to place, and never quite fit the system — until a few "one time" moments changed everything.
+                </p>
+                <p className="text-white/80 text-lg">
+                  Those moments shaped me. After learning under Rav Yitzchak Berkovits in Yerushalayim, life took me from Lakewood to Los Angeles and eventually to a small classroom in Baltimore, where I walked in with a guitar, faced a wild fifth grade, and began, "One time, one time..." That first story froze the room and quietly launched OneTime OneTime.
+                </p>
+                <p className="text-xl font-bold text-[#EDE518]">
+                  Every child is one "one time" moment away from discovering who they can become.
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section id="contact" className="py-16 bg-[#161616] text-white">
+      <section className="py-16 bg-[#08779C]">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="text-3xl font-bold text-white mb-6">
+            Ready to bring OneTime OneTime into your home?
+          </h2>
+          <p className="text-xl text-white/90 mb-8">
+            Join thousands of families enjoying weekly Torah content.
+          </p>
+          <Link href="/register">
+            <Button size="lg" className="bg-[#EDE518] text-black font-bold px-12 text-lg">
+              Join the Hotline Today
+            </Button>
+          </Link>
+        </div>
+      </section>
+
+      <section id="contact" className="py-20 bg-[#161616] text-white">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12 text-[#EDE518]">
             Contact
           </h2>
           <div className="max-w-md mx-auto space-y-6 text-center">
-            <div className="flex items-center justify-center gap-3">
-              <MapPin className="h-5 w-5 text-[#EDE518]" />
-              <span>Lakewood, New Jersey, United States</span>
+            <div className="flex items-center justify-center gap-4">
+              <MapPin className="h-6 w-6 text-[#EDE518]" />
+              <span className="text-lg">Lakewood, New Jersey, United States</span>
             </div>
-            <div className="flex items-center justify-center gap-3">
-              <Phone className="h-5 w-5 text-[#EDE518]" />
-              <a href="tel:4434538614" className="hover:text-[#EDE518]">(443) 453-8614</a>
+            <div className="flex items-center justify-center gap-4">
+              <Phone className="h-6 w-6 text-[#EDE518]" />
+              <a href="tel:4434538614" className="text-lg hover:text-[#EDE518] transition-colors">(443) 453-8614</a>
             </div>
-            <div className="flex items-center justify-center gap-3">
-              <Mail className="h-5 w-5 text-[#EDE518]" />
-              <a href="mailto:info@onetimeonetime.com" className="hover:text-[#EDE518]">info@onetimeonetime.com</a>
+            <div className="flex items-center justify-center gap-4">
+              <Mail className="h-6 w-6 text-[#EDE518]" />
+              <a href="mailto:info@onetimeonetime.com" className="text-lg hover:text-[#EDE518] transition-colors">info@onetimeonetime.com</a>
             </div>
           </div>
         </div>
       </section>
 
-      <footer className="bg-[#0a0a0a] py-8 text-white/60">
+      <footer className="bg-[#0a0a0a] py-10 text-white/60">
         <div className="container mx-auto px-4 text-center">
-          <img src={logoImage} alt="OneTimeOneTime" className="h-12 w-auto mx-auto mb-4" />
-          <p className="text-sm">
+          <img src={logoImage} alt="OneTimeOneTime" className="h-16 w-auto mx-auto mb-6" />
+          <p className="text-sm mb-2">
             OneTimeOneTime is a program of Gadlus HaAdam, LLC.
           </p>
-          <p className="text-sm mt-2">
+          <p className="text-sm">
             &copy; {new Date().getFullYear()} OneTimeOneTime. All rights reserved.
           </p>
         </div>
@@ -339,7 +508,7 @@ export default function LandingPage() {
           100% { transform: translateX(-50%); }
         }
         .animate-marquee {
-          animation: marquee 20s linear infinite;
+          animation: marquee 25s linear infinite;
         }
       `}</style>
     </div>
