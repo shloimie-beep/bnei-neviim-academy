@@ -261,14 +261,31 @@ export class DatabaseStorage implements IStorage {
   }
 
   async shiftMenuOptionsDown(parentMenuId: string | null): Promise<void> {
-    const options = await this.getMenuOptionsByParent(parentMenuId);
-    const sortedDesc = options.sort((a, b) => b.optionNumber - a.optionNumber);
-    
-    for (const option of sortedDesc) {
-      await db.update(menuOptions)
-        .set({ optionNumber: option.optionNumber + 1 })
-        .where(eq(menuOptions.id, option.id));
-    }
+    await db.transaction(async (tx) => {
+      if (parentMenuId === null) {
+        await tx.execute(sql`
+          UPDATE menu_options 
+          SET option_number = option_number + 10000 
+          WHERE parent_menu_id IS NULL
+        `);
+        await tx.execute(sql`
+          UPDATE menu_options 
+          SET option_number = option_number - 9999 
+          WHERE parent_menu_id IS NULL AND option_number >= 10000
+        `);
+      } else {
+        await tx.execute(sql`
+          UPDATE menu_options 
+          SET option_number = option_number + 10000 
+          WHERE parent_menu_id = ${parentMenuId}
+        `);
+        await tx.execute(sql`
+          UPDATE menu_options 
+          SET option_number = option_number - 9999 
+          WHERE parent_menu_id = ${parentMenuId} AND option_number >= 10000
+        `);
+      }
+    });
   }
 
   async getHighestOptionNumber(parentMenuId: string | null): Promise<number> {

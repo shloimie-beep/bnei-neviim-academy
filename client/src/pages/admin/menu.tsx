@@ -594,7 +594,7 @@ export default function MenuManagement() {
     const existingNumbers = menuOptions.map(o => o.optionNumber);
     const maxExisting = Math.max(...existingNumbers, 9);
     const allNumbers: number[] = [];
-    for (let i = 1; i <= maxExisting; i++) {
+    for (let i = 1; i <= maxExisting + 1; i++) {
       allNumbers.push(i);
     }
     return allNumbers;
