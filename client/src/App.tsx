@@ -13,6 +13,7 @@ import ForgotPasswordPage from "@/pages/forgot-password";
 import ResetPasswordPage from "@/pages/reset-password";
 import DashboardPage from "@/pages/dashboard";
 import AdminLayout from "@/pages/admin/index";
+import SetupPage from "@/pages/setup";
 import { Loader2 } from "lucide-react";
 
 function ProtectedRoute({ component: Component, adminOnly = false }: { component: React.ComponentType; adminOnly?: boolean }) {
@@ -67,6 +68,7 @@ function Router() {
       </Route>
       <Route path="/forgot-password" component={ForgotPasswordPage} />
       <Route path="/reset-password" component={ResetPasswordPage} />
+      <Route path="/setup" component={SetupPage} />
       <Route path="/dashboard">
         <ProtectedRoute component={DashboardPage} />
       </Route>

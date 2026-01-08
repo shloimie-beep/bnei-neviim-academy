@@ -132,6 +132,40 @@ export async function registerRoutes(
     }
   });
 
+  // Setup endpoint to create admin user in production
+  app.post("/api/setup/create-admin", async (req, res) => {
+    try {
+      const { email, password, setupKey } = req.body;
+      
+      if (setupKey !== "onetimeonetime2026") {
+        return res.status(403).json({ message: "Invalid setup key" });
+      }
+
+      if (!email || !password) {
+        return res.status(400).json({ message: "Email and password required" });
+      }
+
+      const existingUser = await storage.getUserByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: "User already exists" });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const user = await storage.createUser({
+        email,
+        password: hashedPassword,
+        role: "admin",
+        subscriptionStatus: "active",
+        trialEndsAt: null,
+      });
+
+      res.json({ success: true, message: "Admin user created", userId: user.id });
+    } catch (error: any) {
+      console.error("Setup error:", error);
+      res.status(500).json({ message: "Setup failed", error: error.message });
+    }
+  });
+
   // Debug login - test password verification
   app.post("/api/debug/test-login", async (req, res) => {
     try {
