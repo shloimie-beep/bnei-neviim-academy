@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle } from "lucide-react";
+import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, FileVideo } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -12,8 +12,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useState } from "react";
-import type { PhoneNumber } from "@shared/schema";
+import { useState, useRef } from "react";
+import type { PhoneNumber, Video as VideoType } from "@shared/schema";
 
 function SubscriptionStatusBadge({ status }: { status: string }) {
   const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: any }> = {
@@ -74,12 +74,69 @@ function PhoneNumberCard({ phoneNumber, onDelete }: { phoneNumber: PhoneNumber; 
   );
 }
 
+function VideoPlayer({ video, onClose }: { video: VideoType; onClose: () => void }) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  return (
+    <DialogContent className="max-w-4xl p-0 overflow-hidden">
+      <div className="relative">
+        <video
+          ref={videoRef}
+          src={`/api/videos/${video.id}/stream`}
+          controls
+          autoPlay
+          className="w-full aspect-video bg-black"
+          data-testid={`video-player-${video.id}`}
+        />
+      </div>
+      <div className="p-4">
+        <h3 className="font-semibold text-lg">{video.title}</h3>
+        {video.description && (
+          <p className="text-sm text-muted-foreground mt-1">{video.description}</p>
+        )}
+      </div>
+    </DialogContent>
+  );
+}
+
+function VideoCard({ video }: { video: VideoType }) {
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Card className="overflow-hidden cursor-pointer hover-elevate active-elevate-2" data-testid={`card-video-${video.id}`}>
+          <div className="aspect-video bg-muted flex items-center justify-center relative group">
+            <FileVideo className="h-12 w-12 text-muted-foreground" />
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="h-14 w-14 rounded-full bg-primary flex items-center justify-center">
+                <Play className="h-6 w-6 text-primary-foreground ml-1" />
+              </div>
+            </div>
+          </div>
+          <CardContent className="p-4">
+            <h3 className="font-medium line-clamp-1" data-testid={`text-video-title-${video.id}`}>
+              {video.title}
+            </h3>
+            {video.description && (
+              <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                {video.description}
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      </DialogTrigger>
+      <VideoPlayer video={video} onClose={() => setIsOpen(false)} />
+    </Dialog>
+  );
+}
+
 export default function DashboardPage() {
   const { user, logout, refreshUser } = useAuth();
   const { toast } = useToast();
   const [newPhoneNumber, setNewPhoneNumber] = useState("");
   const [isAddingPhone, setIsAddingPhone] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isPhoneDialogOpen, setIsPhoneDialogOpen] = useState(false);
 
   const { data: phoneNumbers, isLoading: phonesLoading } = useQuery<PhoneNumber[]>({
     queryKey: ["/api/phone-numbers"],
@@ -87,6 +144,10 @@ export default function DashboardPage() {
 
   const { data: subscription, isLoading: subLoading } = useQuery<any>({
     queryKey: ["/api/subscription"],
+  });
+
+  const { data: videos, isLoading: videosLoading } = useQuery<VideoType[]>({
+    queryKey: ["/api/videos"],
   });
 
   const addPhoneMutation = useMutation({
@@ -98,7 +159,7 @@ export default function DashboardPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/phone-numbers"] });
       toast({ title: "Phone number added", description: "Your new phone number has been registered." });
       setNewPhoneNumber("");
-      setIsDialogOpen(false);
+      setIsPhoneDialogOpen(false);
     },
     onError: (error: any) => {
       toast({ title: "Failed to add phone", description: error.message, variant: "destructive" });
@@ -164,9 +225,13 @@ export default function DashboardPage() {
     ? Math.max(0, Math.ceil((new Date(user.trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
     : 0;
 
+  const hasActiveSubscription = user?.subscriptionStatus === "active" || 
+    (user?.subscriptionStatus === "trial" && daysRemaining > 0);
+
+  const registeredPhone = phoneNumbers?.[0];
+
   return (
     <div className="min-h-screen bg-background">
-      {/* Header */}
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
@@ -193,134 +258,52 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
-        <div className="max-w-4xl mx-auto space-y-8">
-          {/* Welcome Section */}
-          <div>
-            <h1 className="text-3xl font-bold mb-2">Welcome back!</h1>
-            <p className="text-muted-foreground">Manage your subscription and phone numbers below.</p>
-          </div>
-
-          {/* Subscription Card - Hide for admins */}
-          {user?.role !== "admin" && (
-            <Card>
-              <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
-                <div className="space-y-1">
-                  <CardTitle className="flex items-center gap-2">
-                    <CreditCard className="h-5 w-5" />
-                    Subscription Status
-                  </CardTitle>
-                  <CardDescription>Your current plan and billing information</CardDescription>
-                </div>
+        <div className="max-w-6xl mx-auto space-y-8">
+          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+            <div>
+              <h1 className="text-3xl font-bold mb-2">Welcome back!</h1>
+              <div className="flex items-center gap-3 flex-wrap">
                 <SubscriptionStatusBadge status={user?.subscriptionStatus || "none"} />
-              </CardHeader>
-              <CardContent>
-                {subLoading ? (
-                  <div className="space-y-3">
-                    <Skeleton className="h-4 w-48" />
-                    <Skeleton className="h-4 w-32" />
-                  </div>
-                ) : (
-                  <div className="space-y-4">
-                    {user?.subscriptionStatus === "trial" && (
-                      <div className="p-4 bg-muted rounded-lg">
-                        <p className="font-medium">Free Trial</p>
-                        <p className="text-sm text-muted-foreground">
-                          {daysRemaining > 0
-                            ? `${daysRemaining} days remaining in your trial`
-                            : "Your trial has ended"}
-                        </p>
-                      </div>
-                    )}
-                    {user?.subscriptionStatus === "active" && (
-                      <div className="p-4 bg-muted rounded-lg">
-                        <p className="font-medium">Monthly Subscription</p>
-                        <p className="text-sm text-muted-foreground">$9.99/month - Renews automatically</p>
-                      </div>
-                    )}
-                    {user?.subscriptionStatus === "none" && (
-                      <div className="p-4 bg-muted rounded-lg">
-                        <p className="font-medium">Start Your Free Trial</p>
-                        <p className="text-sm text-muted-foreground">
-                          Get 14 days free access. Card required - $9.99/month after trial ends.
-                        </p>
-                      </div>
-                    )}
-                    {user?.subscriptionStatus === "cancelled" && (
-                      <div className="p-4 bg-muted rounded-lg">
-                        <p className="font-medium">Subscription Cancelled</p>
-                        <p className="text-sm text-muted-foreground">Resubscribe to regain access to the hotline</p>
-                      </div>
-                    )}
-                  </div>
+                {user?.subscriptionStatus === "trial" && daysRemaining > 0 && (
+                  <span className="text-sm text-muted-foreground">
+                    {daysRemaining} days left in trial
+                  </span>
                 )}
-              </CardContent>
-              <CardFooter className="flex flex-wrap gap-2">
-                {user?.subscriptionStatus === "none" && (
-                  <Button
-                    onClick={() => createCheckoutMutation.mutate()}
-                    disabled={createCheckoutMutation.isPending}
-                    data-testid="button-subscribe"
-                  >
-                    {createCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                    Start Free Trial
-                  </Button>
-                )}
-                {(user?.subscriptionStatus === "cancelled" || (user?.subscriptionStatus === "trial" && daysRemaining <= 0)) && (
-                  <Button
-                    onClick={() => createCheckoutMutation.mutate()}
-                    disabled={createCheckoutMutation.isPending}
-                    data-testid="button-resubscribe"
-                  >
-                    {createCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                    Subscribe Now
-                  </Button>
-                )}
-                {(user?.subscriptionStatus === "active" || user?.subscriptionStatus === "past_due" || user?.subscriptionStatus === "trial") && subscription?.stripeCustomerId && (
-                  <Button
-                    variant="outline"
-                    onClick={() => createPortalMutation.mutate()}
-                    disabled={createPortalMutation.isPending}
-                    data-testid="button-manage-billing"
-                  >
-                    {createPortalMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                    Manage Billing
-                  </Button>
-                )}
-              </CardFooter>
-            </Card>
-          )}
-
-          {/* Phone Numbers Card */}
-          <Card>
-            <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
-              <div className="space-y-1">
-                <CardTitle className="flex items-center gap-2">
-                  <Phone className="h-5 w-5" />
-                  Registered Phone Numbers
-                </CardTitle>
-                <CardDescription>
-                  {user?.role === "admin"
-                    ? "These numbers can access the hotline"
-                    : "Your registered phone number (limit: 1)"}
-                </CardDescription>
               </div>
-              {(user?.role === "admin" || !phoneNumbers || phoneNumbers.length === 0) ? (
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button size="sm" data-testid="button-add-phone">
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add Number
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Add Phone Number</DialogTitle>
-                      <DialogDescription>
-                        Add a new phone number that can access the hotline.
-                      </DialogDescription>
-                    </DialogHeader>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Dialog open={isPhoneDialogOpen} onOpenChange={setIsPhoneDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button size="lg" className="gap-2" data-testid="button-manage-phone">
+                    <Phone className="h-5 w-5" />
+                    {registeredPhone ? "Manage Phone" : "Add Phone Number"}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>
+                      {registeredPhone ? "Your Registered Phone" : "Add Phone Number"}
+                    </DialogTitle>
+                    <DialogDescription>
+                      {registeredPhone 
+                        ? "Your phone number for accessing the hotline" 
+                        : "Add a phone number to access the hotline"}
+                    </DialogDescription>
+                  </DialogHeader>
+                  
+                  {registeredPhone ? (
+                    <div className="py-4">
+                      <PhoneNumberCard
+                        phoneNumber={registeredPhone}
+                        onDelete={() => {
+                          deletePhoneMutation.mutate(registeredPhone.id);
+                          setIsPhoneDialogOpen(false);
+                        }}
+                      />
+                    </div>
+                  ) : (
                     <div className="space-y-4 py-4">
                       <div className="space-y-2">
                         <Label htmlFor="phone">Phone Number</Label>
@@ -334,10 +317,13 @@ export default function DashboardPage() {
                         />
                       </div>
                     </div>
-                    <DialogFooter>
-                      <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                        Cancel
-                      </Button>
+                  )}
+                  
+                  <DialogFooter>
+                    <Button variant="outline" onClick={() => setIsPhoneDialogOpen(false)}>
+                      Close
+                    </Button>
+                    {!registeredPhone && (
                       <Button
                         onClick={handleAddPhone}
                         disabled={isAddingPhone || !newPhoneNumber.trim()}
@@ -346,81 +332,144 @@ export default function DashboardPage() {
                         {isAddingPhone && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                         Add Number
                       </Button>
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              ) : null}
-            </CardHeader>
-            <CardContent>
-              {phonesLoading ? (
-                <div className="space-y-3">
-                  <Skeleton className="h-16 w-full" />
-                  <Skeleton className="h-16 w-full" />
-                </div>
-              ) : phoneNumbers && phoneNumbers.length > 0 ? (
-                <div className="space-y-3">
-                  {phoneNumbers.map((phone) => (
-                    <PhoneNumberCard
-                      key={phone.id}
-                      phoneNumber={phone}
-                      onDelete={() => deletePhoneMutation.mutate(phone.id)}
-                    />
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <Phone className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-                  <p className="text-muted-foreground">No phone numbers registered yet.</p>
-                  <p className="text-sm text-muted-foreground">Add a phone number to access the hotline.</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+                    )}
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
 
-          {/* How to Use Card */}
-          <Card>
-            <CardHeader>
-              <CardTitle>How to Use the Hotline</CardTitle>
-              <CardDescription>Instructions for calling in</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-start gap-3">
-                  <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <span className="text-sm font-bold text-primary">1</span>
+              {user?.role !== "admin" && (
+                <>
+                  {user?.subscriptionStatus === "none" && (
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      onClick={() => createCheckoutMutation.mutate()}
+                      disabled={createCheckoutMutation.isPending}
+                      data-testid="button-subscribe"
+                    >
+                      {createCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                      Start Free Trial
+                    </Button>
+                  )}
+                  {(user?.subscriptionStatus === "active" || user?.subscriptionStatus === "trial") && subscription?.stripeCustomerId && (
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      onClick={() => createPortalMutation.mutate()}
+                      disabled={createPortalMutation.isPending}
+                      data-testid="button-manage-billing"
+                    >
+                      <CreditCard className="h-5 w-5 mr-2" />
+                      Billing
+                    </Button>
+                  )}
+                </>
+              )}
+            </div>
+          </div>
+
+          {hasActiveSubscription ? (
+            <>
+              <div>
+                <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                  <Video className="h-6 w-6" />
+                  Video Library
+                </h2>
+                {videosLoading ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[1, 2, 3, 4, 5, 6].map((i) => (
+                      <Card key={i} className="overflow-hidden">
+                        <Skeleton className="aspect-video" />
+                        <CardContent className="p-4 space-y-2">
+                          <Skeleton className="h-5 w-3/4" />
+                          <Skeleton className="h-4 w-full" />
+                        </CardContent>
+                      </Card>
+                    ))}
                   </div>
-                  <div>
-                    <p className="font-medium">Call the Hotline</p>
-                    <p className="text-sm text-muted-foreground">
-                      Dial the hotline number from your registered phone.
-                    </p>
+                ) : videos && videos.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {videos.map((video) => (
+                      <VideoCard key={video.id} video={video} />
+                    ))}
                   </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <span className="text-sm font-bold text-primary">2</span>
-                  </div>
-                  <div>
-                    <p className="font-medium">Choose an Option</p>
-                    <p className="text-sm text-muted-foreground">
-                      Press 1 for the live call, or other numbers for stories.
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <span className="text-sm font-bold text-primary">3</span>
-                  </div>
-                  <div>
-                    <p className="font-medium">Control Playback</p>
-                    <p className="text-sm text-muted-foreground">
-                      For stories: Press 2 to pause/play, 1 to rewind, 3 to fast forward, 0 for menu.
-                    </p>
-                  </div>
-                </div>
+                ) : (
+                  <Card>
+                    <CardContent className="py-12 text-center">
+                      <FileVideo className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                      <h3 className="font-semibold text-lg mb-2">No Videos Yet</h3>
+                      <p className="text-muted-foreground">
+                        Check back soon for new video content!
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
-            </CardContent>
-          </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Phone className="h-5 w-5" />
+                    How to Use the Hotline
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid md:grid-cols-3 gap-6">
+                    <div className="flex flex-col items-center text-center p-4">
+                      <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                        <span className="text-lg font-bold text-primary">1</span>
+                      </div>
+                      <h4 className="font-medium mb-1">Call the Hotline</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Dial from your registered phone number
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-center text-center p-4">
+                      <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                        <span className="text-lg font-bold text-primary">2</span>
+                      </div>
+                      <h4 className="font-medium mb-1">Choose an Option</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Press 1 for live call, or other numbers for stories
+                      </p>
+                    </div>
+                    <div className="flex flex-col items-center text-center p-4">
+                      <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                        <span className="text-lg font-bold text-primary">3</span>
+                      </div>
+                      <h4 className="font-medium mb-1">Control Playback</h4>
+                      <p className="text-sm text-muted-foreground">
+                        Press 2 to pause, 1 to rewind, 3 to fast forward
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </>
+          ) : (
+            <Card className="border-2 border-dashed">
+              <CardContent className="py-16 text-center">
+                <Video className="h-16 w-16 mx-auto text-muted-foreground mb-6" />
+                <h2 className="text-2xl font-bold mb-2">Unlock Video Content</h2>
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                  Subscribe to access our library of exclusive video content for kids, 
+                  plus phone hotline access with stories and live calls.
+                </p>
+                <Button
+                  size="lg"
+                  onClick={() => createCheckoutMutation.mutate()}
+                  disabled={createCheckoutMutation.isPending}
+                  data-testid="button-subscribe-videos"
+                >
+                  {createCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Start 14-Day Free Trial
+                </Button>
+                <p className="text-sm text-muted-foreground mt-4">
+                  $9.99/month after trial ends. Cancel anytime.
+                </p>
+              </CardContent>
+            </Card>
+          )}
         </div>
       </main>
     </div>
