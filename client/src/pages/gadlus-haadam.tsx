@@ -12,7 +12,7 @@ export default function GadlusHaAdamPage() {
     <div className="min-h-screen bg-white">
       <div className="bg-[#08779C] py-2 text-center">
         <Link href="/gadlus-haadam">
-          <span className="text-white text-sm font-medium hover:underline cursor-pointer">
+          <span className="text-white text-sm font-medium hover:underline cursor-pointer" data-testid="link-promo-banner-gadlus">
             Check out our Gadlus Ha'Adam Skills → GROUPS FORMING NOW IN LAKEWOOD
           </span>
         </Link>
@@ -26,16 +26,16 @@ export default function GadlusHaAdamPage() {
             </Link>
             <nav className="hidden lg:flex items-center gap-6">
               <Link href="/">
-                <span className="text-[#161616] font-medium hover:text-[#08779C] transition-colors text-sm uppercase tracking-wide cursor-pointer">Home</span>
+                <span className="text-[#161616] font-medium hover:text-[#08779C] transition-colors text-sm uppercase tracking-wide cursor-pointer" data-testid="link-nav-home">Home</span>
               </Link>
               <Link href="/gadlus-haadam">
-                <span className="text-[#08779C] font-bold hover:text-[#08779C] transition-colors text-sm uppercase tracking-wide cursor-pointer">Gadlus Ha'Adam</span>
+                <span className="text-[#08779C] font-bold hover:text-[#08779C] transition-colors text-sm uppercase tracking-wide cursor-pointer" data-testid="link-nav-gadlus">Gadlus Ha'Adam</span>
               </Link>
               <Link href="/register">
-                <span className="text-[#161616] font-medium hover:text-[#08779C] transition-colors text-sm uppercase tracking-wide cursor-pointer">Hotline</span>
+                <span className="text-[#161616] font-medium hover:text-[#08779C] transition-colors text-sm uppercase tracking-wide cursor-pointer" data-testid="link-nav-hotline">Hotline</span>
               </Link>
-              <a href="/#story" className="text-[#161616] font-medium hover:text-[#08779C] transition-colors text-sm uppercase tracking-wide">The Story</a>
-              <a href="/#contact" className="text-[#161616] font-medium hover:text-[#08779C] transition-colors text-sm uppercase tracking-wide">Contact</a>
+              <a href="/#story" className="text-[#161616] font-medium hover:text-[#08779C] transition-colors text-sm uppercase tracking-wide" data-testid="link-nav-story">The Story</a>
+              <a href="/#contact" className="text-[#161616] font-medium hover:text-[#08779C] transition-colors text-sm uppercase tracking-wide" data-testid="link-nav-contact">Contact</a>
             </nav>
           </div>
           <div className="flex items-center gap-3">
@@ -73,11 +73,13 @@ export default function GadlusHaAdamPage() {
               target="_blank" 
               rel="noopener noreferrer"
               className="block hover:opacity-90 transition-opacity"
+              data-testid="link-register-singing"
             >
               <img 
                 src={singingGroupsImage} 
                 alt="Singing Groups - Final Groups" 
                 className="w-full rounded-lg shadow-lg"
+                data-testid="img-singing-groups"
               />
             </a>
             <a 
@@ -85,11 +87,13 @@ export default function GadlusHaAdamPage() {
               target="_blank" 
               rel="noopener noreferrer"
               className="block hover:opacity-90 transition-opacity"
+              data-testid="link-register-acting"
             >
               <img 
                 src={actingGroupsImage} 
                 alt="Acting Groups - Final Groups" 
                 className="w-full rounded-lg shadow-lg"
+                data-testid="img-acting-groups"
               />
             </a>
           </div>
@@ -113,8 +117,9 @@ export default function GadlusHaAdamPage() {
             href="https://www.cognitoforms.com/GadlusHaadam1/January2026GadlusHaAdamGroups" 
             target="_blank" 
             rel="noopener noreferrer"
+            data-testid="link-register-cta"
           >
-            <Button size="lg" className="bg-[#08779C] text-white font-bold px-12 text-lg">
+            <Button size="lg" className="bg-[#08779C] text-white font-bold px-12 text-lg" data-testid="button-register">
               REGISTER
             </Button>
           </a>

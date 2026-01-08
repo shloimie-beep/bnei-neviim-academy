@@ -37,7 +37,7 @@ export default function LandingPage() {
             </a>
             <nav className="hidden lg:flex items-center gap-6">
               <a href="#home" className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide">Home</a>
-              <Link href="/gadlus-haadam"><span className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide cursor-pointer">Gadlus Ha'Adam</span></Link>
+              <Link href="/gadlus-haadam"><span className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide cursor-pointer" data-testid="link-nav-gadlus">Gadlus Ha'Adam</span></Link>
               <a href="#hotline" className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide">Hotline</a>
               <a href="#story" className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide">The Story</a>
               <a href="#contact" className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide">Contact</a>
@@ -441,11 +441,12 @@ export default function LandingPage() {
           </h2>
           
           <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden" data-testid="card-testimonial-lakewood">
               <img 
                 src={lakewoodImg} 
                 alt="Lakewood event" 
                 className="w-full h-64 object-cover"
+                data-testid="img-testimonial-lakewood"
               />
               <div className="p-6">
                 <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
@@ -458,11 +459,12 @@ export default function LandingPage() {
               </div>
             </div>
             
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden" data-testid="card-testimonial-boca">
               <img 
                 src={bocaImg} 
                 alt="Boca Raton event" 
                 className="w-full h-64 object-cover"
+                data-testid="img-testimonial-boca"
               />
               <div className="p-6">
                 <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
@@ -475,11 +477,12 @@ export default function LandingPage() {
               </div>
             </div>
             
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden" data-testid="card-testimonial-norfolk">
               <img 
                 src={norfolkImg} 
                 alt="Norfolk event" 
                 className="w-full h-64 object-cover"
+                data-testid="img-testimonial-norfolk"
               />
               <div className="p-6">
                 <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
@@ -492,11 +495,12 @@ export default function LandingPage() {
               </div>
             </div>
             
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden" data-testid="card-testimonial-stlouis">
               <img 
                 src={stlouisImg} 
                 alt="St. Louis event" 
                 className="w-full h-64 object-cover"
+                data-testid="img-testimonial-stlouis"
               />
               <div className="p-6">
                 <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
@@ -509,11 +513,12 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden" data-testid="card-testimonial-vegas">
               <img 
                 src={vegasImg} 
                 alt="Las Vegas event" 
                 className="w-full h-64 object-cover"
+                data-testid="img-testimonial-vegas"
               />
               <div className="p-6">
                 <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
@@ -526,11 +531,12 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden" data-testid="card-testimonial-atlanta">
               <img 
                 src={atlantaImg} 
                 alt="Atlanta event" 
                 className="w-full h-64 object-cover"
+                data-testid="img-testimonial-atlanta"
               />
               <div className="p-6">
                 <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
@@ -543,11 +549,12 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden" data-testid="card-testimonial-philly">
               <img 
                 src={philadelphiaImg} 
                 alt="Philadelphia event" 
                 className="w-full h-64 object-cover"
+                data-testid="img-testimonial-philly"
               />
               <div className="p-6">
                 <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
@@ -560,11 +567,12 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden" data-testid="card-testimonial-passaic">
               <img 
                 src={passaicImg} 
                 alt="Passaic event" 
                 className="w-full h-64 object-cover"
+                data-testid="img-testimonial-passaic"
               />
               <div className="p-6">
                 <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
@@ -577,11 +585,12 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden" data-testid="card-testimonial-silverspring">
               <img 
                 src={silverspringImg} 
                 alt="Silver Spring event" 
                 className="w-full h-64 object-cover"
+                data-testid="img-testimonial-silverspring"
               />
               <div className="p-6">
                 <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
@@ -594,11 +603,12 @@ export default function LandingPage() {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden" data-testid="card-testimonial-events">
               <img 
                 src={eventsImg} 
                 alt="Community events" 
                 className="w-full h-64 object-cover"
+                data-testid="img-testimonial-events"
               />
               <div className="p-6">
                 <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
