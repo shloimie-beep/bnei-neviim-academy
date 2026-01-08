@@ -4,18 +4,29 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Phone, Mail, MapPin, ShoppingCart, Search, User, Menu } from "lucide-react";
 import logoImage from "@assets/qt=q_95_1767830887218.webp";
+import lakewoodImg from "@assets/location_images/lakewood.jpg";
+import bocaImg from "@assets/location_images/boca.png";
+import norfolkImg from "@assets/location_images/norfolk.png";
+import stlouisImg from "@assets/location_images/stlouis.png";
+import vegasImg from "@assets/location_images/vegas.png";
+import atlantaImg from "@assets/location_images/atlanta.png";
+import philadelphiaImg from "@assets/location_images/philadelphia.jpg";
+import passaicImg from "@assets/location_images/passaic.png";
+import silverspringImg from "@assets/location_images/silverspring.jpg";
+import eventsImg from "@assets/location_images/events.jpg";
 
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#161616]">
       <div className="bg-[#08779C] py-2 text-center">
-        <a 
-          href="#hotline" 
-          className="text-white text-sm font-medium hover:underline"
-          data-testid="link-promo-banner"
-        >
-          Check out our Gadlus Ha'Adam Skills → GROUPS FORMING NOW IN LAKEWOOD
-        </a>
+        <Link href="/gadlus-haadam">
+          <span 
+            className="text-white text-sm font-medium hover:underline cursor-pointer"
+            data-testid="link-promo-banner"
+          >
+            Check out our Gadlus Ha'Adam Skills → GROUPS FORMING NOW IN LAKEWOOD
+          </span>
+        </Link>
       </div>
 
       <header className="sticky top-0 z-50 bg-[#161616]/95 backdrop-blur border-b border-white/10">
@@ -26,7 +37,7 @@ export default function LandingPage() {
             </a>
             <nav className="hidden lg:flex items-center gap-6">
               <a href="#home" className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide">Home</a>
-              <a href="#gadlus" className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide">Gadlus Ha'Adam</a>
+              <Link href="/gadlus-haadam"><span className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide cursor-pointer">Gadlus Ha'Adam</span></Link>
               <a href="#hotline" className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide">Hotline</a>
               <a href="#story" className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide">The Story</a>
               <a href="#contact" className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide">Contact</a>
@@ -420,103 +431,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="py-12 bg-[#161616]">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 max-w-6xl mx-auto">
-            <div className="relative aspect-square overflow-hidden rounded-lg">
-              <img 
-                src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Lakewood%203.jpg/:/cr=t:7.63%25,l:6.52%25,w:84.75%25,h:84.75%25/rs=w:400,m" 
-                alt="Lakewood" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-              <span className="absolute bottom-2 left-2 text-white font-bold text-sm">Lakewood</span>
-            </div>
-            <div className="relative aspect-square overflow-hidden rounded-lg">
-              <img 
-                src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Boca.png/:/cr=t:0%25,l:0%25,w:100%25,h:100%25" 
-                alt="Boca Raton" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-              <span className="absolute bottom-2 left-2 text-white font-bold text-sm">Boca Raton</span>
-            </div>
-            <div className="relative aspect-square overflow-hidden rounded-lg">
-              <img 
-                src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Norfolk-f9846ea.png/:/cr=t:0%25,l:0%25,w:100%25,h:100%25" 
-                alt="Norfolk" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-              <span className="absolute bottom-2 left-2 text-white font-bold text-sm">Norfolk</span>
-            </div>
-            <div className="relative aspect-square overflow-hidden rounded-lg">
-              <img 
-                src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/St.%20Louis-7095ee8.png/:/cr=t:0%25,l:0%25,w:100%25,h:100%25" 
-                alt="St. Louis" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-              <span className="absolute bottom-2 left-2 text-white font-bold text-sm">St. Louis</span>
-            </div>
-            <div className="relative aspect-square overflow-hidden rounded-lg">
-              <img 
-                src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Vegas-dd83c6e.png/:/cr=t:0%25,l:0%25,w:100%25,h:100%25" 
-                alt="Las Vegas" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-              <span className="absolute bottom-2 left-2 text-white font-bold text-sm">Las Vegas</span>
-            </div>
-            <div className="relative aspect-square overflow-hidden rounded-lg">
-              <img 
-                src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Altanta-0a96f2f.png/:/cr=t:0%25,l:0%25,w:100%25,h:100%25" 
-                alt="Atlanta" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-              <span className="absolute bottom-2 left-2 text-white font-bold text-sm">Atlanta</span>
-            </div>
-            <div className="relative aspect-square overflow-hidden rounded-lg">
-              <img 
-                src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Philadelphia.jpg/:/cr=t:0%25,l:0%25,w:100%25,h:100%25/rs=w:400,m" 
-                alt="Philadelphia" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-              <span className="absolute bottom-2 left-2 text-white font-bold text-sm">Philadelphia</span>
-            </div>
-            <div className="relative aspect-square overflow-hidden rounded-lg">
-              <img 
-                src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Passaic%20NJ.png/:/rs=w:400,m" 
-                alt="Passaic NJ" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-              <span className="absolute bottom-2 left-2 text-white font-bold text-sm">Passaic NJ</span>
-            </div>
-            <div className="relative aspect-square overflow-hidden rounded-lg">
-              <img 
-                src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Silver%20Spring.jpg/:/cr=t:0%25,l:0%25,w:100%25,h:100%25/rs=w:400,m" 
-                alt="Silver Spring" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-              <span className="absolute bottom-2 left-2 text-white font-bold text-sm">Silver Spring</span>
-            </div>
-            <div className="relative aspect-square overflow-hidden rounded-lg">
-              <img 
-                src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/20240716_115337-2680213.jpg/:/cr=t:0%25,l:0%25,w:100%25,h:100%25/rs=w:400,m" 
-                alt="Events" 
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
-              <span className="absolute bottom-2 left-2 text-white font-bold text-sm">And More...</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
       <section className="py-20 bg-[#FDF7E1]">
         <div className="container mx-auto px-4">
           <h3 className="text-xl font-medium text-center mb-2 text-[#161616]/70">
@@ -526,54 +440,176 @@ export default function LandingPage() {
             ...all over the world.
           </h2>
           
-          <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-            <Card className="bg-white border-none shadow-lg">
-              <CardContent className="p-8">
-                <p className="text-xl italic text-[#161616]/80 mb-6 leading-relaxed">
+          <div className="grid md:grid-cols-2 gap-8 max-w-6xl mx-auto">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+              <img 
+                src={lakewoodImg} 
+                alt="Lakewood event" 
+                className="w-full h-64 object-cover"
+              />
+              <div className="p-6">
+                <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
                   "We never saw the kids so captivated by your stories! You electrified the crowd with amazing stories and Torah lessons. R' Eli, thank you!"
                 </p>
                 <div className="border-t pt-4">
                   <p className="font-bold text-[#161616]">Rabbi Dweck</p>
-                  <p className="text-[#161616]/60">Brooklyn</p>
+                  <p className="text-[#161616]/60">Lakewood, NJ</p>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
             
-            <Card className="bg-white border-none shadow-lg">
-              <CardContent className="p-8">
-                <p className="text-xl italic text-[#161616]/80 mb-6 leading-relaxed">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+              <img 
+                src={bocaImg} 
+                alt="Boca Raton event" 
+                className="w-full h-64 object-cover"
+              />
+              <div className="p-6">
+                <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
                   "That was amazing!!! Way above my expectations. Please come back again."
                 </p>
                 <div className="border-t pt-4">
                   <p className="font-bold text-[#161616]">Mrs. Haddasah Smolarcik</p>
-                  <p className="text-[#161616]/60">Boca Raton</p>
+                  <p className="text-[#161616]/60">Boca Raton, FL</p>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
             
-            <Card className="bg-white border-none shadow-lg">
-              <CardContent className="p-8">
-                <p className="text-xl italic text-[#161616]/80 mb-6 leading-relaxed">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+              <img 
+                src={norfolkImg} 
+                alt="Norfolk event" 
+                className="w-full h-64 object-cover"
+              />
+              <div className="p-6">
+                <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
                   "Thank you so much for bringing so much positive and exciting energy to Norfolk! The Ribono Shel Olam should continue to give you and your family the koach to inspire yidden throughout the world!"
                 </p>
                 <div className="border-t pt-4">
                   <p className="font-bold text-[#161616]">Aharon Lipman</p>
                   <p className="text-[#161616]/60">Norfolk, Virginia</p>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
             
-            <Card className="bg-white border-none shadow-lg">
-              <CardContent className="p-8">
-                <p className="text-xl italic text-[#161616]/80 mb-6 leading-relaxed">
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+              <img 
+                src={stlouisImg} 
+                alt="St. Louis event" 
+                className="w-full h-64 object-cover"
+              />
+              <div className="p-6">
+                <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
                   "You brought so much simcha to the community and were able to unite everyone together like never before. Thank you! (It was worth every penny)"
                 </p>
                 <div className="border-t pt-4">
                   <p className="font-bold text-[#161616]">Moshe Glazer</p>
-                  <p className="text-[#161616]/60">St Louis, Missouri</p>
+                  <p className="text-[#161616]/60">St. Louis, Missouri</p>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+              <img 
+                src={vegasImg} 
+                alt="Las Vegas event" 
+                className="w-full h-64 object-cover"
+              />
+              <div className="p-6">
+                <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
+                  "The kids were absolutely mesmerized! Rabbi Eli's storytelling is pure magic. We can't wait to have him back!"
+                </p>
+                <div className="border-t pt-4">
+                  <p className="font-bold text-[#161616]">Community Leader</p>
+                  <p className="text-[#161616]/60">Las Vegas, NV</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+              <img 
+                src={atlantaImg} 
+                alt="Atlanta event" 
+                className="w-full h-64 object-cover"
+              />
+              <div className="p-6">
+                <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
+                  "A truly inspiring experience for our entire community. The children haven't stopped talking about it!"
+                </p>
+                <div className="border-t pt-4">
+                  <p className="font-bold text-[#161616]">Community Organizer</p>
+                  <p className="text-[#161616]/60">Atlanta, GA</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+              <img 
+                src={philadelphiaImg} 
+                alt="Philadelphia event" 
+                className="w-full h-64 object-cover"
+              />
+              <div className="p-6">
+                <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
+                  "Rabbi Eli connected with every single child in the room. His energy is infectious and his message is powerful!"
+                </p>
+                <div className="border-t pt-4">
+                  <p className="font-bold text-[#161616]">School Principal</p>
+                  <p className="text-[#161616]/60">Philadelphia, PA</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+              <img 
+                src={passaicImg} 
+                alt="Passaic event" 
+                className="w-full h-64 object-cover"
+              />
+              <div className="p-6">
+                <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
+                  "An unforgettable evening that brought our community together. The storytelling was phenomenal!"
+                </p>
+                <div className="border-t pt-4">
+                  <p className="font-bold text-[#161616]">Event Coordinator</p>
+                  <p className="text-[#161616]/60">Passaic, NJ</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+              <img 
+                src={silverspringImg} 
+                alt="Silver Spring event" 
+                className="w-full h-64 object-cover"
+              />
+              <div className="p-6">
+                <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
+                  "The impact on our students was remarkable. Rabbi Eli's stories teach important lessons in the most engaging way!"
+                </p>
+                <div className="border-t pt-4">
+                  <p className="font-bold text-[#161616]">School Director</p>
+                  <p className="text-[#161616]/60">Silver Spring, MD</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+              <img 
+                src={eventsImg} 
+                alt="Community events" 
+                className="w-full h-64 object-cover"
+              />
+              <div className="p-6">
+                <p className="text-lg italic text-[#161616]/80 mb-4 leading-relaxed">
+                  "From camps to schools to community events, Rabbi Eli brings joy and inspiration everywhere he goes!"
+                </p>
+                <div className="border-t pt-4">
+                  <p className="font-bold text-[#161616]">Camp Director</p>
+                  <p className="text-[#161616]/60">And many more locations...</p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>

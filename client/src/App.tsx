@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/lib/theme-context";
 import { AuthProvider, useAuth } from "@/lib/auth-context";
 import NotFound from "@/pages/not-found";
 import LandingPage from "@/pages/landing";
+import GadlusHaAdamPage from "@/pages/gadlus-haadam";
 import LoginPage from "@/pages/login";
 import RegisterPage from "@/pages/register";
 import ForgotPasswordPage from "@/pages/forgot-password";
@@ -60,6 +61,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={LandingPage} />
+      <Route path="/gadlus-haadam" component={GadlusHaAdamPage} />
       <Route path="/login">
         <PublicRoute component={LoginPage} />
       </Route>
