@@ -3,12 +3,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Phone, Mail, MapPin, Menu } from "lucide-react";
 import logoImage from "@assets/qt=q_95_1767830887218.webp";
-import bocaImg from "@assets/location_images/boca.png";
-import norfolkImg from "@assets/location_images/norfolk.png";
-import stlouisImg from "@assets/location_images/stlouis.png";
-import vegasImg from "@assets/location_images/vegas.png";
-import atlantaImg from "@assets/location_images/atlanta.png";
-import usaMapImg from "@assets/stock_images/usa_united_states_ma_fa02ee65.jpg";
+import bocaMapImg from "@assets/Boca_Raton_1767898934153.webp";
+import norfolkMapImg from "@assets/Norfolk,_Virginia_1767898934152.webp";
+import stlouisMapImg from "@assets/St_Louis_1767898934150.webp";
+import vegasMapImg from "@assets/Las_Vegas_1767898934148.webp";
+import atlantaMapImg from "@assets/Atlanta_1767898934149.webp";
 
 export default function LandingPage() {
   return (
@@ -492,34 +491,38 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="py-16 bg-[#08779C]" data-testid="testimonial-2">
+      <section className="py-12 bg-white" data-testid="testimonial-2">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-5xl mx-auto">
-            <div className="relative flex-shrink-0">
-              <img 
-                src={usaMapImg} 
-                alt="USA Map" 
-                className="w-64 md:w-80 opacity-80"
-              />
-              <div className="absolute w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow-lg" style={{ top: '55%', right: '5%' }}>
-                <img src={bocaImg} alt="Boca Raton" className="w-full h-full object-cover" />
-              </div>
-            </div>
-            <div className="text-center md:text-left max-w-md">
-              <div className="text-white/60 text-4xl mb-2">"</div>
-              <p className="text-lg text-white italic mb-4 leading-relaxed">
+            <div className="text-center md:text-left max-w-md order-2 md:order-1">
+              <div className="text-[#08779C] text-4xl mb-2">"</div>
+              <p className="text-lg text-[#08779C] italic mb-4 leading-relaxed">
                 That was amazing!!! Way above my expectations. Please come back again.
               </p>
-              <div className="w-12 h-0.5 bg-white/30 mb-3 mx-auto md:mx-0" />
-              <p className="text-white/70 font-medium text-sm">Mrs. Haddasah Smolarcik, Boca Raton</p>
+              <div className="w-12 h-0.5 bg-[#08779C]/30 mb-3 mx-auto md:mx-0" />
+              <p className="text-[#08779C]/70 font-medium text-sm">Mrs. Haddasah Smolarcik, Boca Raton</p>
+            </div>
+            <div className="flex-shrink-0 order-1 md:order-2">
+              <img 
+                src={bocaMapImg} 
+                alt="Boca Raton location" 
+                className="w-72 md:w-96 h-auto"
+              />
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-white" data-testid="testimonial-3">
+      <section className="py-12 bg-white" data-testid="testimonial-3">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col-reverse md:flex-row items-center justify-center gap-8 max-w-5xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-5xl mx-auto">
+            <div className="flex-shrink-0">
+              <img 
+                src={norfolkMapImg} 
+                alt="Norfolk location" 
+                className="w-72 md:w-96 h-auto"
+              />
+            </div>
             <div className="text-center md:text-left max-w-md">
               <div className="text-[#08779C] text-4xl mb-2">"</div>
               <p className="text-lg text-[#08779C] italic mb-4 leading-relaxed">
@@ -528,48 +531,42 @@ export default function LandingPage() {
               <div className="w-12 h-0.5 bg-[#08779C]/30 mb-3 mx-auto md:mx-0" />
               <p className="text-[#08779C]/70 font-medium text-sm">Aharon Lipman, Norfolk, Virginia</p>
             </div>
-            <div className="relative flex-shrink-0">
-              <img 
-                src={usaMapImg} 
-                alt="USA Map" 
-                className="w-64 md:w-80 opacity-60"
-              />
-              <div className="absolute w-20 h-20 rounded-full overflow-hidden border-2 border-[#08779C] shadow-lg" style={{ top: '10%', right: '5%' }}>
-                <img src={norfolkImg} alt="Norfolk" className="w-full h-full object-cover" />
-              </div>
-            </div>
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-[#08779C]" data-testid="testimonial-4">
+      <section className="py-12 bg-white" data-testid="testimonial-4">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-5xl mx-auto">
-            <div className="relative flex-shrink-0">
-              <img 
-                src={usaMapImg} 
-                alt="USA Map" 
-                className="w-64 md:w-80 opacity-80"
-              />
-              <div className="absolute w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow-lg" style={{ top: '20%', left: '35%' }}>
-                <img src={stlouisImg} alt="St. Louis" className="w-full h-full object-cover" />
-              </div>
-            </div>
-            <div className="text-center md:text-left max-w-md">
-              <div className="text-white/60 text-4xl mb-2">"</div>
-              <p className="text-lg text-white italic mb-4 leading-relaxed">
+            <div className="text-center md:text-left max-w-md order-2 md:order-1">
+              <div className="text-[#08779C] text-4xl mb-2">"</div>
+              <p className="text-lg text-[#08779C] italic mb-4 leading-relaxed">
                 You brought so much simcha to the community and were able to unite everyone together like never before. Thank you! (It was worth every penny)
               </p>
-              <div className="w-12 h-0.5 bg-white/30 mb-3 mx-auto md:mx-0" />
-              <p className="text-white/70 font-medium text-sm">Moshe Glazer, St. Louis, Missouri</p>
+              <div className="w-12 h-0.5 bg-[#08779C]/30 mb-3 mx-auto md:mx-0" />
+              <p className="text-[#08779C]/70 font-medium text-sm">Moshe Glazer, St. Louis, Missouri</p>
+            </div>
+            <div className="flex-shrink-0 order-1 md:order-2">
+              <img 
+                src={stlouisMapImg} 
+                alt="St. Louis location" 
+                className="w-72 md:w-96 h-auto"
+              />
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-white" data-testid="testimonial-5">
+      <section className="py-12 bg-white" data-testid="testimonial-5">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col-reverse md:flex-row items-center justify-center gap-8 max-w-5xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-5xl mx-auto">
+            <div className="flex-shrink-0">
+              <img 
+                src={atlantaMapImg} 
+                alt="Atlanta location" 
+                className="w-72 md:w-96 h-auto"
+              />
+            </div>
             <div className="text-center md:text-left max-w-md">
               <div className="text-[#08779C] text-4xl mb-2">"</div>
               <p className="text-lg text-[#08779C] italic mb-4 leading-relaxed">
@@ -578,40 +575,27 @@ export default function LandingPage() {
               <div className="w-12 h-0.5 bg-[#08779C]/30 mb-3 mx-auto md:mx-0" />
               <p className="text-[#08779C]/70 font-medium text-sm">V. Birav, Atlanta, Georgia</p>
             </div>
-            <div className="relative flex-shrink-0">
-              <img 
-                src={usaMapImg} 
-                alt="USA Map" 
-                className="w-64 md:w-80 opacity-60"
-              />
-              <div className="absolute w-20 h-20 rounded-full overflow-hidden border-2 border-[#08779C] shadow-lg" style={{ top: '30%', right: '15%' }}>
-                <img src={atlantaImg} alt="Atlanta" className="w-full h-full object-cover" />
-              </div>
-            </div>
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-[#08779C]" data-testid="testimonial-6">
+      <section className="py-12 bg-white" data-testid="testimonial-6">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-5xl mx-auto">
-            <div className="relative flex-shrink-0">
-              <img 
-                src={usaMapImg} 
-                alt="USA Map" 
-                className="w-64 md:w-80 opacity-80"
-              />
-              <div className="absolute w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow-lg" style={{ top: '15%', left: '5%' }}>
-                <img src={vegasImg} alt="Las Vegas" className="w-full h-full object-cover" />
-              </div>
-            </div>
-            <div className="text-center md:text-left max-w-md">
-              <div className="text-white/60 text-4xl mb-2">"</div>
-              <p className="text-lg text-white italic mb-4 leading-relaxed">
+            <div className="text-center md:text-left max-w-md order-2 md:order-1">
+              <div className="text-[#08779C] text-4xl mb-2">"</div>
+              <p className="text-lg text-[#08779C] italic mb-4 leading-relaxed">
                 Thank you for coming to visit. It was a real chizuk for all!
               </p>
-              <div className="w-12 h-0.5 bg-white/30 mb-3 mx-auto md:mx-0" />
-              <p className="text-white/70 font-medium text-sm">Mendy Levine, Las Vegas, Torah Day School</p>
+              <div className="w-12 h-0.5 bg-[#08779C]/30 mb-3 mx-auto md:mx-0" />
+              <p className="text-[#08779C]/70 font-medium text-sm">Mendy Levine, Las Vegas, Torah Day School</p>
+            </div>
+            <div className="flex-shrink-0 order-1 md:order-2">
+              <img 
+                src={vegasMapImg} 
+                alt="Las Vegas location" 
+                className="w-72 md:w-96 h-auto"
+              />
             </div>
           </div>
         </div>
