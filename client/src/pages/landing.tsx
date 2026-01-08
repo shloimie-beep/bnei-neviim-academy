@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Phone, Mail, MapPin, Menu } from "lucide-react";
 import logoImage from "@assets/qt=q_95_1767830887218.webp";
+import silverSpringImg from "@assets/Silver_Spring_1767899261416.jpg";
 import bocaMapImg from "@assets/Boca_Raton_1767898934153.webp";
 import norfolkMapImg from "@assets/Norfolk,_Virginia_1767898934152.webp";
 import stlouisMapImg from "@assets/St_Louis_1767898934150.webp";
@@ -475,18 +476,19 @@ export default function LandingPage() {
 
       <section className="relative h-[400px] md:h-[500px]" data-testid="testimonial-1">
         <img 
-          src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Silver%20Spring.jpg/:/cr=t:0%25,l:0%25,w:100%25,h:100%25/fx-gs/rs=w:1920" 
-          alt="Lakewood event" 
+          src={silverSpringImg} 
+          alt="Silver Spring event" 
           className="w-full h-full object-cover"
         />
+        <div className="absolute inset-0 bg-black/40" />
         <div className="absolute inset-0 flex items-center justify-center p-8">
           <div className="text-center max-w-3xl">
-            <div className="text-[#08779C] text-6xl mb-4">"</div>
+            <div className="text-white/60 text-6xl mb-4">"</div>
             <p className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-6 leading-relaxed">
               We never saw the kids so captivated by your stories! You electrified the crowd with amazing stories and Torah lessons. R' Eli, thank you!
             </p>
             <div className="w-16 h-0.5 bg-white/50 mx-auto mb-4" />
-            <p className="text-white/80 font-medium">Rabbi Dweck, Brooklyn</p>
+            <p className="text-white/80 font-medium">Rabbi Dweck, Silver Spring</p>
           </div>
         </div>
       </section>
