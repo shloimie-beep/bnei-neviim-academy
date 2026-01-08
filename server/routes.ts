@@ -132,6 +132,51 @@ export async function registerRoutes(
     }
   });
 
+  // Debug login - test password verification
+  app.post("/api/debug/test-login", async (req, res) => {
+    try {
+      const { email, password } = req.body;
+      const user = await storage.getUserByEmail(email);
+      
+      if (!user) {
+        return res.json({ 
+          step: "user_lookup", 
+          success: false, 
+          message: "User not found",
+          emailSearched: email 
+        });
+      }
+
+      const hasPassword = !!user.password;
+      const passwordLength = user.password ? user.password.length : 0;
+      
+      let passwordValid = false;
+      try {
+        passwordValid = await bcrypt.compare(password, user.password);
+      } catch (err: any) {
+        return res.json({
+          step: "password_compare",
+          success: false,
+          message: "bcrypt.compare failed",
+          error: err.message,
+          hasPassword,
+          passwordLength
+        });
+      }
+
+      res.json({
+        step: "complete",
+        userFound: true,
+        hasPassword,
+        passwordLength,
+        passwordValid,
+        userId: user.id
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // ============ AUTH ROUTES ============
   
   app.post("/api/auth/register", async (req, res) => {
