@@ -425,15 +425,17 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="py-16 bg-[#FDF7E1]">
+      <section className="py-16 bg-[#08779C]">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center gap-8 mb-12">
-            <div className="text-center">
-              <h3 className="text-2xl md:text-3xl font-bold text-[#161616] mb-4">...at home...</h3>
-              <div className="w-48 h-48 mx-auto rounded-full overflow-hidden border-4 border-white shadow-lg" data-testid="img-at-home">
-                <img src={lakewoodImg} alt="At home" className="w-full h-full object-cover" />
-              </div>
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
+            <div className="w-64 h-64 md:w-80 md:h-80 rounded-full overflow-hidden border-4 border-white/20 shadow-2xl flex-shrink-0" data-testid="img-at-home">
+              <img 
+                src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/PHOTO-2024-08-29-09-15-28.jpg/:/cr=t:0%25,l:0%25,w:100%25,h:100%25/rs=w:600,h:600" 
+                alt="At home" 
+                className="w-full h-full object-cover" 
+              />
             </div>
+            <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white">...at home...</h3>
           </div>
         </div>
       </section>
