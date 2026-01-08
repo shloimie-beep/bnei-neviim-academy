@@ -1380,5 +1380,13 @@ export async function registerRoutes(
     }
   });
 
+  // ============ VOITEX WEBHOOK ROUTES ============
+  
+  // Import and register Voitex webhook handler
+  const { handleVoitexWebhook } = await import("./voitexWebhook");
+  
+  // Main Voitex API Branch webhook - receives calls from Voitex IVR
+  app.post("/api/voitex/webhook", handleVoitexWebhook);
+
   return httpServer;
 }

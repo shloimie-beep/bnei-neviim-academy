@@ -34,6 +34,9 @@ export const audioFiles = pgTable("audio_files", {
   duration: integer("duration"), // in seconds
   type: text("type").notNull().default("story"), // 'greeting', 'story', 'menu', 'non_subscriber'
   uploadedBy: varchar("uploaded_by").references(() => users.id),
+  voitexAlbum: text("voitex_album"), // Voitex album number for playback
+  voitexSort: text("voitex_sort"), // Voitex sort number within album
+  voitexRecordingId: text("voitex_recording_id"), // Voitex internal recording ID
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -42,6 +45,7 @@ export const menuOptions = pgTable("menu_options", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   parentMenuId: varchar("parent_menu_id"), // null for main menu, or ID of parent submenu
   optionNumber: integer("option_number").notNull(), // 1-9
+  label: text("label"), // Display label for the menu option
   functionType: text("function_type").notNull().default("none"), // 'none', 'play_mp3', 'transfer', 'submenu', 'conference'
   audioFileId: varchar("audio_file_id").references(() => audioFiles.id), // for play_mp3
   transferNumber: text("transfer_number"), // for transfer
