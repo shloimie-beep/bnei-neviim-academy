@@ -10,6 +10,8 @@ import {
   unmuteRequests,
   callLogs,
   whitelistedNumbers,
+  passwordResetTokens,
+  systemSettings,
   type User,
   type InsertUser,
   type PhoneNumber,
@@ -28,6 +30,9 @@ import {
   type InsertCallLog,
   type WhitelistedNumber,
   type InsertWhitelistedNumber,
+  type PasswordResetToken,
+  type InsertPasswordResetToken,
+  type SystemSetting,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -57,7 +62,6 @@ export interface IStorage {
   // Menu Options
   getAllMenuOptions(): Promise<MenuOption[]>;
   getMenuOption(id: string): Promise<MenuOption | undefined>;
-  getMenuOptionByNumber(optionNumber: number): Promise<MenuOption | undefined>;
   createMenuOption(data: InsertMenuOption): Promise<MenuOption>;
   updateMenuOption(id: string, data: Partial<MenuOption>): Promise<MenuOption | undefined>;
   deleteMenuOption(id: string): Promise<void>;
@@ -250,30 +254,6 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
-  // System Settings
-  async getSystemSetting(key: string): Promise<any> {
-    const result = await db.execute(sql`
-      SELECT * FROM system_settings WHERE key = ${key}
-    `);
-    return result.rows[0] || null;
-  }
-
-  async setSystemSetting(key: string, value: string | null, audioFileId: string | null): Promise<void> {
-    await db.execute(sql`
-      INSERT INTO system_settings (key, value, audio_file_id, updated_at)
-      VALUES (${key}, ${value}, ${audioFileId}, NOW())
-      ON CONFLICT (key) DO UPDATE SET
-        value = ${value},
-        audio_file_id = ${audioFileId},
-        updated_at = NOW()
-    `);
-  }
-
-  async getAllSystemSettings(): Promise<any[]> {
-    const result = await db.execute(sql`SELECT * FROM system_settings`);
-    return result.rows;
-  }
-
   // Conference Sessions
   async getActiveConference(): Promise<ConferenceSession | undefined> {
     const [session] = await db.select().from(conferenceSessions).where(eq(conferenceSessions.isActive, true));
@@ -452,6 +432,50 @@ export class DatabaseStorage implements IStorage {
       ORDER BY u.created_at DESC
     `);
     return result.rows;
+  }
+
+  // Password Reset Tokens
+  async createPasswordResetToken(data: InsertPasswordResetToken): Promise<PasswordResetToken> {
+    const [token] = await db.insert(passwordResetTokens).values(data).returning();
+    return token;
+  }
+
+  async getPasswordResetToken(token: string): Promise<PasswordResetToken | undefined> {
+    const [result] = await db.select().from(passwordResetTokens).where(eq(passwordResetTokens.token, token));
+    return result;
+  }
+
+  async markPasswordResetTokenUsed(id: string): Promise<void> {
+    await db.update(passwordResetTokens).set({ usedAt: new Date() }).where(eq(passwordResetTokens.id, id));
+  }
+
+  async deleteExpiredPasswordResetTokens(): Promise<void> {
+    await db.delete(passwordResetTokens).where(sql`${passwordResetTokens.expiresAt} < NOW()`);
+  }
+
+  // System Settings
+  async getSystemSetting(key: string): Promise<SystemSetting | undefined> {
+    const [result] = await db.select().from(systemSettings).where(eq(systemSettings.key, key));
+    return result;
+  }
+
+  async setSystemSetting(key: string, value?: string, audioFileId?: string): Promise<SystemSetting> {
+    const existing = await this.getSystemSetting(key);
+    if (existing) {
+      const [updated] = await db.update(systemSettings)
+        .set({ value, audioFileId, updatedAt: new Date() })
+        .where(eq(systemSettings.key, key))
+        .returning();
+      return updated;
+    }
+    const [created] = await db.insert(systemSettings)
+      .values({ key, value, audioFileId })
+      .returning();
+    return created;
+  }
+
+  async getAllSystemSettings(): Promise<SystemSetting[]> {
+    return db.select().from(systemSettings);
   }
 }
 

@@ -6,8 +6,10 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { storage } from "./storage";
-import { registerSchema, loginSchema, phoneNumberSchema } from "@shared/schema";
+import { registerSchema, loginSchema, phoneNumberSchema, forgotPasswordSchema, resetPasswordSchema } from "@shared/schema";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
+import { getUncachableResendClient } from "./resendClient";
+import crypto from "crypto";
 import { sql } from "drizzle-orm";
 import { db } from "./db";
 
@@ -164,6 +166,97 @@ export async function registerRoutes(
       }
       res.json({ success: true });
     });
+  });
+
+  // Forgot password - request reset link
+  app.post("/api/auth/forgot-password", async (req, res) => {
+    try {
+      const parsed = forgotPasswordSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: "Please provide a valid email address" });
+      }
+
+      const user = await storage.getUserByEmail(parsed.data.email);
+      
+      // Always return success to prevent email enumeration
+      if (!user) {
+        return res.json({ success: true, message: "If an account exists with that email, a reset link has been sent." });
+      }
+
+      // Generate reset token
+      const token = crypto.randomBytes(32).toString("hex");
+      const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour from now
+
+      await storage.createPasswordResetToken({
+        userId: user.id,
+        token,
+        expiresAt,
+      });
+
+      // Send email with reset link
+      const baseUrl = process.env.BASE_URL || `https://${process.env.REPL_SLUG}.${process.env.REPL_OWNER}.replit.app`;
+      const resetLink = `${baseUrl}/reset-password?token=${token}`;
+
+      try {
+        const { client, fromEmail } = await getUncachableResendClient();
+        await client.emails.send({
+          from: fromEmail,
+          to: user.email,
+          subject: "Reset Your Password - Kids Hotline",
+          html: `
+            <h2>Reset Your Password</h2>
+            <p>You requested to reset your password. Click the link below to set a new password:</p>
+            <p><a href="${resetLink}">Reset Password</a></p>
+            <p>This link will expire in 1 hour.</p>
+            <p>If you didn't request this, you can safely ignore this email.</p>
+          `,
+        });
+      } catch (emailError) {
+        console.error("Email send error:", emailError);
+        // Don't expose email errors to user
+      }
+
+      res.json({ success: true, message: "If an account exists with that email, a reset link has been sent." });
+    } catch (error) {
+      console.error("Forgot password error:", error);
+      res.status(500).json({ message: "An error occurred. Please try again." });
+    }
+  });
+
+  // Reset password with token
+  app.post("/api/auth/reset-password", async (req, res) => {
+    try {
+      const parsed = resetPasswordSchema.safeParse(req.body);
+      if (!parsed.success) {
+        return res.status(400).json({ message: "Invalid request" });
+      }
+
+      const tokenRecord = await storage.getPasswordResetToken(parsed.data.token);
+      
+      if (!tokenRecord) {
+        return res.status(400).json({ message: "Invalid or expired reset link" });
+      }
+
+      if (tokenRecord.usedAt) {
+        return res.status(400).json({ message: "This reset link has already been used" });
+      }
+
+      if (new Date() > tokenRecord.expiresAt) {
+        return res.status(400).json({ message: "This reset link has expired" });
+      }
+
+      // Update password
+      const hashedPassword = await bcrypt.hash(parsed.data.password, 10);
+      await storage.updateUser(tokenRecord.userId, { password: hashedPassword });
+
+      // Mark token as used
+      await storage.markPasswordResetTokenUsed(tokenRecord.id);
+
+      res.json({ success: true, message: "Password has been reset successfully" });
+    } catch (error) {
+      console.error("Reset password error:", error);
+      res.status(500).json({ message: "An error occurred. Please try again." });
+    }
   });
 
   app.get("/api/auth/me", async (req, res) => {
@@ -487,6 +580,53 @@ export async function registerRoutes(
     }
   });
 
+  // System Settings (Greeting)
+  app.get("/api/admin/settings", requireAdmin, async (req, res) => {
+    try {
+      const settings = await storage.getAllSystemSettings();
+      res.json(settings);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get settings" });
+    }
+  });
+
+  app.post("/api/admin/settings/greeting", requireAdmin, async (req, res) => {
+    try {
+      const { audioFileId } = req.body;
+      
+      // Validate audio file exists if provided
+      if (audioFileId) {
+        const audioFile = await storage.getAudioFile(audioFileId);
+        if (!audioFile) {
+          return res.status(400).json({ message: "Audio file not found" });
+        }
+      }
+
+      const setting = await storage.setSystemSetting("main_greeting", undefined, audioFileId || undefined);
+      res.json({ success: true, setting });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to save greeting setting" });
+    }
+  });
+
+  app.post("/api/admin/settings/non-subscriber-greeting", requireAdmin, async (req, res) => {
+    try {
+      const { audioFileId } = req.body;
+      
+      if (audioFileId) {
+        const audioFile = await storage.getAudioFile(audioFileId);
+        if (!audioFile) {
+          return res.status(400).json({ message: "Audio file not found" });
+        }
+      }
+
+      const setting = await storage.setSystemSetting("non_subscriber_greeting", undefined, audioFileId || undefined);
+      res.json({ success: true, setting });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to save greeting setting" });
+    }
+  });
+
   // Menu Options
   app.get("/api/admin/menu-options", requireAdmin, async (req, res) => {
     try {
@@ -696,7 +836,7 @@ export async function registerRoutes(
       }
 
       // Get the latest payment intent for this customer
-      const stripe = getUncachableStripeClient();
+      const stripe = await getUncachableStripeClient();
       const paymentIntents = await stripe.paymentIntents.list({
         customer: user.stripeCustomerId,
         limit: 1,
@@ -821,6 +961,7 @@ export async function registerRoutes(
   app.post("/api/telnyx/answer", async (req, res) => {
     try {
       const { From, CallSid, To } = req.body;
+      const baseUrl = process.env.BASE_URL || "";
       
       // Normalize phone number (strip non-digits for comparison)
       const normalizedFrom = From?.replace(/\D/g, "") || "";
@@ -838,33 +979,43 @@ export async function registerRoutes(
         isSubscriber: hasAccess,
       });
 
-      // Get greeting and non-subscriber audio
-      const greetingFiles = await storage.getAudioFilesByType("greeting");
-      const nonSubFiles = await storage.getAudioFilesByType("non_subscriber");
+      // Get greeting settings from system settings
+      const mainGreetingSetting = await storage.getSystemSetting("main_greeting");
+      const nonSubGreetingSetting = await storage.getSystemSetting("non_subscriber_greeting");
       const menuOptions = await storage.getAllMenuOptions();
 
       let xml = '<?xml version="1.0" encoding="UTF-8"?><Response>';
 
       if (!hasAccess) {
         // Play non-subscriber message
-        if (nonSubFiles.length > 0) {
-          xml += `<Play>${process.env.BASE_URL || ""}/uploads/audio/${path.basename(nonSubFiles[0].filepath)}</Play>`;
+        if (nonSubGreetingSetting?.audioFileId) {
+          const audioFile = await storage.getAudioFile(nonSubGreetingSetting.audioFileId);
+          if (audioFile) {
+            xml += `<Play>${baseUrl}/uploads/audio/${path.basename(audioFile.filepath)}</Play>`;
+          } else {
+            xml += '<Say voice="alice">Thank you for calling Kids Hotline. To access our stories and live calls, please subscribe at our website.</Say>';
+          }
         } else {
           xml += '<Say voice="alice">Thank you for calling Kids Hotline. To access our stories and live calls, please subscribe at our website.</Say>';
         }
         xml += '<Hangup/>';
       } else {
-        // Play greeting
-        if (greetingFiles.length > 0) {
-          xml += `<Play>${process.env.BASE_URL || ""}/uploads/audio/${path.basename(greetingFiles[0].filepath)}</Play>`;
+        // Build IVR menu with Gather - greeting plays inside Gather for barge-in support
+        xml += `<Gather numDigits="1" action="${baseUrl}/api/telnyx/menu" method="POST" timeout="10">`;
+        
+        // Play greeting inside Gather so user can interrupt with key press
+        if (mainGreetingSetting?.audioFileId) {
+          const audioFile = await storage.getAudioFile(mainGreetingSetting.audioFileId);
+          if (audioFile) {
+            xml += `<Play>${baseUrl}/uploads/audio/${path.basename(audioFile.filepath)}</Play>`;
+          } else {
+            xml += '<Say voice="alice">Welcome to Kids Hotline!</Say>';
+          }
         } else {
           xml += '<Say voice="alice">Welcome to Kids Hotline!</Say>';
         }
-
-        // Build IVR menu with Gather
-        const baseUrl = process.env.BASE_URL || "";
-        xml += `<Gather numDigits="1" action="${baseUrl}/api/telnyx/menu" method="POST" timeout="10">`;
         
+        // Add menu options text
         let menuText = "Please press ";
         const activeOptions = menuOptions.filter(o => o.isActive && !o.parentMenuId);
         activeOptions.forEach((option, index) => {

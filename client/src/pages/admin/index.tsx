@@ -23,6 +23,7 @@ import MenuManagement from "./menu";
 import ConferenceManagement from "./conference";
 import WhitelistManagement from "./whitelist";
 import SubscribersManagement from "./subscribers";
+import AdminSettingsPage from "./settings";
 
 const adminRoutes = [
   { path: "/admin", label: "Dashboard", icon: LayoutDashboard },
@@ -31,6 +32,7 @@ const adminRoutes = [
   { path: "/admin/conference", label: "Conference", icon: Users },
   { path: "/admin/whitelist", label: "Whitelist", icon: ShieldCheck },
   { path: "/admin/subscribers", label: "Subscribers", icon: CreditCard },
+  { path: "/admin/settings", label: "IVR Settings", icon: Settings },
 ];
 
 function AdminSidebar() {
@@ -115,6 +117,8 @@ export default function AdminLayout() {
         return <WhitelistManagement />;
       case "/admin/subscribers":
         return <SubscribersManagement />;
+      case "/admin/settings":
+        return <AdminSettingsPage />;
       default:
         return <AdminDashboard />;
     }

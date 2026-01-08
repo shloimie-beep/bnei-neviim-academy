@@ -95,15 +95,6 @@ export default function RegisterPage() {
                   <Check className="h-4 w-4 text-primary" />
                 </div>
                 <div>
-                  <p className="font-medium">No Credit Card Required</p>
-                  <p className="text-sm text-muted-foreground">Start your trial without any payment info</p>
-                </div>
-              </li>
-              <li className="flex items-start gap-3">
-                <div className="h-6 w-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                  <Check className="h-4 w-4 text-primary" />
-                </div>
-                <div>
                   <p className="font-medium">Cancel Anytime</p>
                   <p className="text-sm text-muted-foreground">No commitment, no strings attached</p>
                 </div>
