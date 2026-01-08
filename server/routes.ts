@@ -953,7 +953,7 @@ export async function registerRoutes(
         return res.status(400).json({ message: "No video file provided" });
       }
 
-      const { title, description } = req.body;
+      const { title, description, categoryId } = req.body;
       if (!title) {
         return res.status(400).json({ message: "Title is required" });
       }
@@ -965,6 +965,7 @@ export async function registerRoutes(
         filepath: req.file.path,
         fileSize: req.file.size,
         status: "ready",
+        categoryId: categoryId || null,
         uploadedBy: req.session.userId!,
       });
 
@@ -978,8 +979,8 @@ export async function registerRoutes(
   // Admin: Update video details
   app.patch("/api/admin/videos/:id", requireAdmin, async (req, res) => {
     try {
-      const { title, description, status } = req.body;
-      const video = await storage.updateVideo(req.params.id, { title, description, status });
+      const { title, description, status, categoryId } = req.body;
+      const video = await storage.updateVideo(req.params.id, { title, description, status, categoryId });
       if (!video) {
         return res.status(404).json({ message: "Video not found" });
       }
@@ -1008,6 +1009,76 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Delete video error:", error);
       res.status(500).json({ message: "Failed to delete video" });
+    }
+  });
+
+  // ============ VIDEO CATEGORIES ============
+  // Admin: Get all video categories
+  app.get("/api/admin/video-categories", requireAdmin, async (req, res) => {
+    try {
+      const categories = await storage.getAllVideoCategories();
+      res.json(categories);
+    } catch (error) {
+      console.error("Get video categories error:", error);
+      res.status(500).json({ message: "Failed to get video categories" });
+    }
+  });
+
+  // Admin: Create video category
+  app.post("/api/admin/video-categories", requireAdmin, async (req, res) => {
+    try {
+      const { name, sortOrder } = req.body;
+      if (!name) {
+        return res.status(400).json({ message: "Category name is required" });
+      }
+
+      const existing = await storage.getVideoCategoryByName(name);
+      if (existing) {
+        return res.status(400).json({ message: "Category already exists" });
+      }
+
+      const category = await storage.createVideoCategory({ name, sortOrder: sortOrder || 0 });
+      res.json(category);
+    } catch (error) {
+      console.error("Create video category error:", error);
+      res.status(500).json({ message: "Failed to create video category" });
+    }
+  });
+
+  // Admin: Update video category
+  app.patch("/api/admin/video-categories/:id", requireAdmin, async (req, res) => {
+    try {
+      const { name, sortOrder } = req.body;
+      const category = await storage.updateVideoCategory(req.params.id, { name, sortOrder });
+      if (!category) {
+        return res.status(404).json({ message: "Category not found" });
+      }
+      res.json(category);
+    } catch (error) {
+      console.error("Update video category error:", error);
+      res.status(500).json({ message: "Failed to update video category" });
+    }
+  });
+
+  // Admin: Delete video category
+  app.delete("/api/admin/video-categories/:id", requireAdmin, async (req, res) => {
+    try {
+      await storage.deleteVideoCategory(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Delete video category error:", error);
+      res.status(500).json({ message: "Failed to delete video category" });
+    }
+  });
+
+  // Public: Get video categories (for subscriber display)
+  app.get("/api/video-categories", async (req, res) => {
+    try {
+      const categories = await storage.getAllVideoCategories();
+      res.json(categories);
+    } catch (error) {
+      console.error("Get video categories error:", error);
+      res.status(500).json({ message: "Failed to get video categories" });
     }
   });
 
