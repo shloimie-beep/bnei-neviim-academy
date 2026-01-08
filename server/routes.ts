@@ -47,6 +47,31 @@ const upload = multer({
   limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
 });
 
+// Video upload multer setup
+const videoUploadDir = path.join(process.cwd(), "uploads", "videos");
+if (!fs.existsSync(videoUploadDir)) {
+  fs.mkdirSync(videoUploadDir, { recursive: true });
+}
+
+const videoUpload = multer({
+  storage: multer.diskStorage({
+    destination: videoUploadDir,
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      cb(null, uniqueSuffix + path.extname(file.originalname));
+    },
+  }),
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ["video/mp4", "video/webm", "video/quicktime", "video/x-msvideo"];
+    if (allowedTypes.includes(file.mimetype) || file.originalname.match(/\.(mp4|webm|mov|avi)$/i)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only video files are allowed"));
+    }
+  },
+  limits: { fileSize: 500 * 1024 * 1024 }, // 500MB limit
+});
+
 // Auth middleware
 function requireAuth(req: Request, res: Response, next: NextFunction) {
   if (!req.session.userId) {
@@ -906,6 +931,164 @@ export async function registerRoutes(
       console.error("Cleanup error:", error);
       // Don't fail - this is cleanup
       res.json({ success: false });
+    }
+  });
+
+  // ============ VIDEO MANAGEMENT ============
+  // Admin: Get all videos
+  app.get("/api/admin/videos", requireAdmin, async (req, res) => {
+    try {
+      const videos = await storage.getAllVideos();
+      res.json(videos);
+    } catch (error) {
+      console.error("Get videos error:", error);
+      res.status(500).json({ message: "Failed to get videos" });
+    }
+  });
+
+  // Admin: Upload a video
+  app.post("/api/admin/videos", requireAdmin, videoUpload.single("file"), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No video file provided" });
+      }
+
+      const { title, description } = req.body;
+      if (!title) {
+        return res.status(400).json({ message: "Title is required" });
+      }
+
+      const video = await storage.createVideo({
+        title,
+        description: description || null,
+        filename: req.file.originalname,
+        filepath: req.file.path,
+        fileSize: req.file.size,
+        status: "ready",
+        uploadedBy: req.session.userId!,
+      });
+
+      res.json(video);
+    } catch (error) {
+      console.error("Video upload error:", error);
+      res.status(500).json({ message: "Failed to upload video" });
+    }
+  });
+
+  // Admin: Update video details
+  app.patch("/api/admin/videos/:id", requireAdmin, async (req, res) => {
+    try {
+      const { title, description, status } = req.body;
+      const video = await storage.updateVideo(req.params.id, { title, description, status });
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+      res.json(video);
+    } catch (error) {
+      console.error("Update video error:", error);
+      res.status(500).json({ message: "Failed to update video" });
+    }
+  });
+
+  // Admin: Delete a video
+  app.delete("/api/admin/videos/:id", requireAdmin, async (req, res) => {
+    try {
+      const video = await storage.getVideo(req.params.id);
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+
+      // Delete the file from disk
+      if (fs.existsSync(video.filepath)) {
+        fs.unlinkSync(video.filepath);
+      }
+
+      await storage.deleteVideo(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Delete video error:", error);
+      res.status(500).json({ message: "Failed to delete video" });
+    }
+  });
+
+  // Subscriber: Get published videos (requires active subscription)
+  app.get("/api/videos", requireAuth, async (req, res) => {
+    try {
+      const user = await storage.getUser(req.session.userId!);
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      // Check subscription status
+      const isActive = user.subscriptionStatus === "active" || 
+        (user.subscriptionStatus === "trial" && user.trialEndsAt && new Date(user.trialEndsAt) > new Date());
+      
+      if (!isActive) {
+        return res.status(403).json({ message: "Active subscription required to access videos" });
+      }
+
+      const videos = await storage.getPublishedVideos();
+      res.json(videos);
+    } catch (error) {
+      console.error("Get subscriber videos error:", error);
+      res.status(500).json({ message: "Failed to get videos" });
+    }
+  });
+
+  // Subscriber: Stream a video (requires active subscription)
+  app.get("/api/videos/:id/stream", requireAuth, async (req, res) => {
+    try {
+      const user = await storage.getUser(req.session.userId!);
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      // Check subscription status
+      const isActive = user.subscriptionStatus === "active" || 
+        (user.subscriptionStatus === "trial" && user.trialEndsAt && new Date(user.trialEndsAt) > new Date());
+      
+      if (!isActive) {
+        return res.status(403).json({ message: "Active subscription required to watch videos" });
+      }
+
+      const video = await storage.getVideo(req.params.id);
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+
+      if (video.status !== "ready") {
+        return res.status(400).json({ message: "Video is not ready for playback" });
+      }
+
+      // Stream video with range support for seeking
+      const stat = fs.statSync(video.filepath);
+      const fileSize = stat.size;
+      const range = req.headers.range;
+
+      if (range) {
+        const parts = range.replace(/bytes=/, "").split("-");
+        const start = parseInt(parts[0], 10);
+        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+        const chunksize = end - start + 1;
+        const file = fs.createReadStream(video.filepath, { start, end });
+        
+        res.writeHead(206, {
+          "Content-Range": `bytes ${start}-${end}/${fileSize}`,
+          "Accept-Ranges": "bytes",
+          "Content-Length": chunksize,
+          "Content-Type": "video/mp4",
+        });
+        file.pipe(res);
+      } else {
+        res.writeHead(200, {
+          "Content-Length": fileSize,
+          "Content-Type": "video/mp4",
+        });
+        fs.createReadStream(video.filepath).pipe(res);
+      }
+    } catch (error) {
+      console.error("Video stream error:", error);
+      res.status(500).json({ message: "Failed to stream video" });
     }
   });
 
