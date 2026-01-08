@@ -682,9 +682,29 @@ export async function registerRoutes(
         return res.status(400).json({ message: "No file uploaded" });
       }
 
-      const { name, type } = req.body;
+      const { name, type, voitexAlbum, voitexSort, syncToVoitex } = req.body;
       if (!name || !type) {
         return res.status(400).json({ message: "Name and type are required" });
+      }
+
+      let voitexRecordingId: string | null = null;
+
+      // Optionally sync to Voitex
+      if (syncToVoitex === "true" && voitexAlbum) {
+        try {
+          const { voitexClient } = await import("./voitexClient");
+          const result = await voitexClient.uploadRecording(
+            req.file.path,
+            voitexAlbum,
+            parseInt(voitexSort) || 1,
+            req.file.originalname
+          );
+          if (result.success && result.data?.recid) {
+            voitexRecordingId = result.data.recid;
+          }
+        } catch (voitexError) {
+          console.error("Voitex sync failed:", voitexError);
+        }
       }
 
       const audioFile = await storage.createAudioFile({
@@ -693,10 +713,14 @@ export async function registerRoutes(
         filepath: req.file.path,
         type,
         uploadedBy: req.session.userId!,
+        voitexAlbum: voitexAlbum || null,
+        voitexSort: voitexSort ? parseInt(voitexSort) : null,
+        voitexRecordingId,
       });
 
       res.json(audioFile);
     } catch (error) {
+      console.error("Upload error:", error);
       res.status(500).json({ message: "Failed to upload audio file" });
     }
   });

@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Music, Trash2, Loader2, FileAudio, Play, Clock } from "lucide-react";
+import { Upload, Music, Trash2, Loader2, FileAudio, Play, Clock, Cloud, CloudOff } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -57,11 +57,22 @@ function AudioFileCard({ file, onDelete }: { file: AudioFile; onDelete: () => vo
                 {typeConfig.label}
               </Badge>
             </div>
-            <div className="flex items-center gap-4 mt-3">
+            <div className="flex items-center gap-4 mt-3 flex-wrap">
               <div className="flex items-center gap-1 text-sm text-muted-foreground">
                 <Clock className="h-4 w-4" />
                 {formatDuration(file.duration)}
               </div>
+              {file.voitexRecordingId ? (
+                <div className="flex items-center gap-1 text-sm text-green-600 dark:text-green-400">
+                  <Cloud className="h-4 w-4" />
+                  <span>Synced</span>
+                </div>
+              ) : file.voitexAlbum ? (
+                <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                  <CloudOff className="h-4 w-4" />
+                  <span>Not synced</span>
+                </div>
+              ) : null}
               <Button
                 variant="ghost"
                 size="sm"
@@ -92,6 +103,9 @@ export default function AudioManagement() {
   const [uploadType, setUploadType] = useState("story");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [voitexAlbum, setVoitexAlbum] = useState("");
+  const [voitexSort, setVoitexSort] = useState("1");
+  const [syncToVoitex, setSyncToVoitex] = useState(false);
 
   const { data: audioFiles, isLoading } = useQuery<AudioFile[]>({
     queryKey: ["/api/admin/audio-files"],
@@ -130,6 +144,11 @@ export default function AudioManagement() {
       formData.append("file", selectedFile);
       formData.append("name", uploadName);
       formData.append("type", uploadType);
+      if (voitexAlbum) {
+        formData.append("voitexAlbum", voitexAlbum);
+        formData.append("voitexSort", voitexSort);
+        formData.append("syncToVoitex", syncToVoitex.toString());
+      }
 
       const res = await fetch("/api/admin/audio-files", {
         method: "POST",
@@ -142,11 +161,15 @@ export default function AudioManagement() {
       }
 
       queryClient.invalidateQueries({ queryKey: ["/api/admin/audio-files"] });
-      toast({ title: "Audio uploaded", description: "Your file has been uploaded successfully." });
+      const syncMessage = syncToVoitex ? " and synced to Voitex." : ".";
+      toast({ title: "Audio uploaded", description: `Your file has been uploaded successfully${syncMessage}` });
       setIsDialogOpen(false);
       setUploadName("");
       setUploadType("story");
       setSelectedFile(null);
+      setVoitexAlbum("");
+      setVoitexSort("1");
+      setSyncToVoitex(false);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -225,6 +248,47 @@ export default function AudioManagement() {
                     <SelectItem value="non_subscriber">Non-Subscriber Message</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="border-t pt-4 mt-4">
+                <p className="text-sm font-medium mb-3">Voitex Integration (Optional)</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div className="space-y-2">
+                    <Label htmlFor="voitex-album">Album Name</Label>
+                    <Input
+                      id="voitex-album"
+                      placeholder="e.g., stories"
+                      value={voitexAlbum}
+                      onChange={(e) => setVoitexAlbum(e.target.value)}
+                      data-testid="input-voitex-album"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="voitex-sort">Sort Order</Label>
+                    <Input
+                      id="voitex-sort"
+                      type="number"
+                      min="1"
+                      value={voitexSort}
+                      onChange={(e) => setVoitexSort(e.target.value)}
+                      data-testid="input-voitex-sort"
+                    />
+                  </div>
+                </div>
+                {voitexAlbum && (
+                  <div className="flex items-center gap-2 mt-3">
+                    <input
+                      type="checkbox"
+                      id="sync-voitex"
+                      checked={syncToVoitex}
+                      onChange={(e) => setSyncToVoitex(e.target.checked)}
+                      className="h-4 w-4"
+                      data-testid="checkbox-sync-voitex"
+                    />
+                    <Label htmlFor="sync-voitex" className="text-sm font-normal cursor-pointer">
+                      Upload to Voitex now
+                    </Label>
+                  </div>
+                )}
               </div>
             </div>
             <DialogFooter>
