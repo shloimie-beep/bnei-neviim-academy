@@ -143,31 +143,20 @@ function ReplaceFileDialog({
   onReplace: (file: File, name: string) => Promise<void>;
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [fileName, setFileName] = useState("");
   const [isUploading, setIsUploading] = useState(false);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      setSelectedFile(file);
-      if (!fileName) {
-        setFileName(file.name.replace(/\.[^/.]+$/, ""));
+      const fileName = file.name.replace(/\.[^/.]+$/, "");
+      setIsUploading(true);
+      try {
+        await onReplace(file, fileName);
+        onOpenChange(false);
+        if (fileInputRef.current) fileInputRef.current.value = "";
+      } finally {
+        setIsUploading(false);
       }
-    }
-  };
-
-  const handleSubmit = async () => {
-    if (!selectedFile || !fileName) return;
-    setIsUploading(true);
-    try {
-      await onReplace(selectedFile, fileName);
-      onOpenChange(false);
-      setSelectedFile(null);
-      setFileName("");
-      if (fileInputRef.current) fileInputRef.current.value = "";
-    } finally {
-      setIsUploading(false);
     }
   };
 
@@ -175,7 +164,7 @@ function ReplaceFileDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Replace Audio File</DialogTitle>
+          <DialogTitle>{currentFile ? "Replace Audio File" : "Upload Audio File"}</DialogTitle>
           <DialogDescription>
             {currentFile 
               ? `Replace "${currentFile.name}" with a new file. The old file will be permanently deleted.`
@@ -183,54 +172,32 @@ function ReplaceFileDialog({
           </DialogDescription>
         </DialogHeader>
         
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label>File Name</Label>
-            <Input
-              value={fileName}
-              onChange={(e) => setFileName(e.target.value)}
-              placeholder="Enter a name for this audio"
-              data-testid="input-file-name"
-            />
-          </div>
-          
-          <div className="space-y-2">
-            <Label>Audio File</Label>
-            <Input
-              ref={fileInputRef}
-              type="file"
-              accept="audio/*"
-              onChange={handleFileSelect}
-              data-testid="input-file-upload"
-            />
-            {selectedFile && (
+        <div className="py-4">
+          {isUploading ? (
+            <div className="flex items-center justify-center gap-2 py-8">
+              <Loader2 className="h-6 w-6 animate-spin" />
+              <span>Uploading...</span>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <Label>Select Audio File</Label>
+              <Input
+                ref={fileInputRef}
+                type="file"
+                accept="audio/*"
+                onChange={handleFileSelect}
+                data-testid="input-file-upload"
+              />
               <p className="text-sm text-muted-foreground">
-                Selected: {selectedFile.name}
+                The file will be uploaded and assigned automatically
               </p>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         <DialogFooter>
-          <Button variant="outline" onClick={() => onOpenChange(false)}>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isUploading}>
             Cancel
-          </Button>
-          <Button 
-            onClick={handleSubmit} 
-            disabled={!selectedFile || !fileName || isUploading}
-            data-testid="button-upload-file"
-          >
-            {isUploading ? (
-              <>
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                Uploading...
-              </>
-            ) : (
-              <>
-                <Upload className="h-4 w-4 mr-2" />
-                {currentFile ? "Replace" : "Upload"}
-              </>
-            )}
           </Button>
         </DialogFooter>
       </DialogContent>
