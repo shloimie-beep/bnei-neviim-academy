@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X } from "lucide-react";
+import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -21,14 +21,18 @@ function formatFileSize(bytes: number | null): string {
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
-function VideoCard({ video, onDelete, onUpdate, categories }: { 
+function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, categories }: { 
   video: VideoType; 
   onDelete: () => void;
   onUpdate: (data: Partial<VideoType>) => void;
+  onUploadThumbnail: (file: File) => Promise<void>;
   categories: VideoCategory[];
 }) {
+  const { toast } = useToast();
+  const thumbnailInputRef = useRef<HTMLInputElement>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
   const [editTitle, setEditTitle] = useState(video.title);
   const [editDescription, setEditDescription] = useState(video.description || "");
   const [editCategoryId, setEditCategoryId] = useState(video.categoryId || "");
@@ -50,12 +54,55 @@ function VideoCard({ video, onDelete, onUpdate, categories }: {
     onUpdate({ status: video.status === "ready" ? "hidden" : "ready" });
   };
 
+  const handleThumbnailSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    
+    setIsUploadingThumbnail(true);
+    try {
+      await onUploadThumbnail(file);
+      toast({ title: "Thumbnail uploaded" });
+    } catch (error: any) {
+      toast({ title: "Failed to upload thumbnail", description: error.message, variant: "destructive" });
+    } finally {
+      setIsUploadingThumbnail(false);
+      if (thumbnailInputRef.current) thumbnailInputRef.current.value = "";
+    }
+  };
+
   return (
     <Card>
       <CardContent className="p-4">
         <div className="flex items-start gap-4">
-          <div className="h-16 w-24 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-            <FileVideo className="h-8 w-8 text-primary" />
+          <div className="relative h-16 w-24 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden group">
+            {video.thumbnailPath ? (
+              <img 
+                src={`/api/videos/${video.id}/thumbnail`} 
+                alt={video.title}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <FileVideo className="h-8 w-8 text-primary" />
+            )}
+            <button
+              onClick={() => thumbnailInputRef.current?.click()}
+              disabled={isUploadingThumbnail}
+              className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
+              data-testid={`button-upload-thumbnail-${video.id}`}
+            >
+              {isUploadingThumbnail ? (
+                <Loader2 className="h-5 w-5 text-white animate-spin" />
+              ) : (
+                <ImagePlus className="h-5 w-5 text-white" />
+              )}
+            </button>
+            <input
+              ref={thumbnailInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleThumbnailSelect}
+            />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
@@ -307,6 +354,7 @@ export default function VideoManagement() {
       setSelectedFile(null);
       setUploadTitle("");
       setUploadDescription("");
+      setUploadCategoryId("");
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (error: any) {
       toast({ title: "Upload failed", description: error.message, variant: "destructive" });
@@ -374,6 +422,20 @@ export default function VideoManagement() {
                   rows={3}
                   data-testid="input-video-description"
                 />
+              </div>
+              <div>
+                <Label htmlFor="video-category">Category (optional)</Label>
+                <Select value={uploadCategoryId} onValueChange={setUploadCategoryId}>
+                  <SelectTrigger data-testid="select-video-category">
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="none">No Category</SelectItem>
+                    {categories.map((cat) => (
+                      <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               {isUploading && (
                 <div className="space-y-2">
@@ -450,8 +512,19 @@ export default function VideoManagement() {
             <VideoCard
               key={video.id}
               video={video}
+              categories={categories}
               onDelete={() => deleteMutation.mutate(video.id)}
               onUpdate={(data) => updateMutation.mutate({ id: video.id, data })}
+              onUploadThumbnail={async (file) => {
+                const formData = new FormData();
+                formData.append("thumbnail", file);
+                const res = await fetch(`/api/admin/videos/${video.id}/thumbnail`, {
+                  method: "POST",
+                  body: formData,
+                });
+                if (!res.ok) throw new Error("Failed to upload thumbnail");
+                queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+              }}
             />
           ))}
         </div>

@@ -12,8 +12,8 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useState, useRef } from "react";
-import type { PhoneNumber, Video as VideoType } from "@shared/schema";
+import { useState, useRef, useMemo } from "react";
+import type { PhoneNumber, Video as VideoType, VideoCategory } from "@shared/schema";
 
 function SubscriptionStatusBadge({ status }: { status: string }) {
   const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: any }> = {
@@ -106,8 +106,16 @@ function VideoCard({ video }: { video: VideoType }) {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Card className="overflow-hidden cursor-pointer hover-elevate active-elevate-2" data-testid={`card-video-${video.id}`}>
-          <div className="aspect-video bg-muted flex items-center justify-center relative group">
-            <FileVideo className="h-12 w-12 text-muted-foreground" />
+          <div className="aspect-video bg-muted flex items-center justify-center relative group overflow-hidden">
+            {video.thumbnailPath ? (
+              <img 
+                src={`/api/videos/${video.id}/thumbnail`} 
+                alt={video.title}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <FileVideo className="h-12 w-12 text-muted-foreground" />
+            )}
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
               <div className="h-14 w-14 rounded-full bg-primary flex items-center justify-center">
                 <Play className="h-6 w-6 text-primary-foreground ml-1" />
@@ -149,6 +157,29 @@ export default function DashboardPage() {
   const { data: videos, isLoading: videosLoading } = useQuery<VideoType[]>({
     queryKey: ["/api/videos"],
   });
+
+  const { data: categories = [] } = useQuery<VideoCategory[]>({
+    queryKey: ["/api/video-categories"],
+  });
+
+  const videosByCategory = useMemo(() => {
+    if (!videos) return {};
+    const grouped: Record<string, VideoType[]> = {};
+    const uncategorized: VideoType[] = [];
+    
+    videos.forEach(video => {
+      if (video.categoryId) {
+        if (!grouped[video.categoryId]) {
+          grouped[video.categoryId] = [];
+        }
+        grouped[video.categoryId].push(video);
+      } else {
+        uncategorized.push(video);
+      }
+    });
+
+    return { grouped, uncategorized };
+  }, [videos]);
 
   const addPhoneMutation = useMutation({
     mutationFn: async (phoneNumber: string) => {
@@ -388,10 +419,35 @@ export default function DashboardPage() {
                     ))}
                   </div>
                 ) : videos && videos.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {videos.map((video) => (
-                      <VideoCard key={video.id} video={video} />
-                    ))}
+                  <div className="space-y-8">
+                    {categories.map((category) => {
+                      const categoryVideos = videosByCategory.grouped?.[category.id];
+                      if (!categoryVideos || categoryVideos.length === 0) return null;
+                      return (
+                        <div key={category.id}>
+                          <h3 className="text-lg font-semibold mb-4" data-testid={`text-category-${category.id}`}>
+                            {category.name}
+                          </h3>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {categoryVideos.map((video) => (
+                              <VideoCard key={video.id} video={video} />
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                    {videosByCategory.uncategorized && videosByCategory.uncategorized.length > 0 && (
+                      <div>
+                        {categories.length > 0 && (
+                          <h3 className="text-lg font-semibold mb-4">Other Videos</h3>
+                        )}
+                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                          {videosByCategory.uncategorized.map((video) => (
+                            <VideoCard key={video.id} video={video} />
+                          ))}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <Card>

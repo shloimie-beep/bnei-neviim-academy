@@ -72,6 +72,31 @@ const videoUpload = multer({
   limits: { fileSize: 500 * 1024 * 1024 }, // 500MB limit
 });
 
+// Image upload multer setup (for thumbnails)
+const thumbnailUploadDir = path.join(process.cwd(), "uploads", "thumbnails");
+if (!fs.existsSync(thumbnailUploadDir)) {
+  fs.mkdirSync(thumbnailUploadDir, { recursive: true });
+}
+
+const imageUpload = multer({
+  storage: multer.diskStorage({
+    destination: thumbnailUploadDir,
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      cb(null, uniqueSuffix + path.extname(file.originalname));
+    },
+  }),
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
+    if (allowedTypes.includes(file.mimetype) || file.originalname.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only image files are allowed"));
+    }
+  },
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
+});
+
 // Auth middleware
 function requireAuth(req: Request, res: Response, next: NextFunction) {
   if (!req.session.userId) {
@@ -991,6 +1016,53 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Upload video thumbnail
+  app.post("/api/admin/videos/:id/thumbnail", requireAdmin, imageUpload.single("thumbnail"), async (req, res) => {
+    try {
+      const video = await storage.getVideo(req.params.id);
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ message: "No thumbnail file provided" });
+      }
+
+      // Delete old thumbnail if exists
+      if (video.thumbnailPath && fs.existsSync(video.thumbnailPath)) {
+        fs.unlinkSync(video.thumbnailPath);
+      }
+
+      // Use the file path from multer (already in thumbnails directory)
+      const thumbnailPath = req.file.path;
+
+      const updatedVideo = await storage.updateVideo(video.id, { thumbnailPath });
+      res.json(updatedVideo);
+    } catch (error) {
+      console.error("Thumbnail upload error:", error);
+      res.status(500).json({ message: "Failed to upload thumbnail" });
+    }
+  });
+
+  // Serve video thumbnails
+  app.get("/api/videos/:id/thumbnail", async (req, res) => {
+    try {
+      const video = await storage.getVideo(req.params.id);
+      if (!video || !video.thumbnailPath) {
+        return res.status(404).json({ message: "Thumbnail not found" });
+      }
+
+      if (!fs.existsSync(video.thumbnailPath)) {
+        return res.status(404).json({ message: "Thumbnail file not found" });
+      }
+
+      res.sendFile(path.resolve(video.thumbnailPath));
+    } catch (error) {
+      console.error("Serve thumbnail error:", error);
+      res.status(500).json({ message: "Failed to serve thumbnail" });
+    }
+  });
+
   // Admin: Delete a video
   app.delete("/api/admin/videos/:id", requireAdmin, async (req, res) => {
     try {
@@ -999,9 +1071,14 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Video not found" });
       }
 
-      // Delete the file from disk
+      // Delete the video file from disk
       if (fs.existsSync(video.filepath)) {
         fs.unlinkSync(video.filepath);
+      }
+
+      // Delete thumbnail if exists
+      if (video.thumbnailPath && fs.existsSync(video.thumbnailPath)) {
+        fs.unlinkSync(video.thumbnailPath);
       }
 
       await storage.deleteVideo(req.params.id);
