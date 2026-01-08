@@ -40,3 +40,8 @@ waitForPort = 5000
 
 [agent]
 integrations = ["stripe:2.0.0", "javascript_database:1.0.0", "resend:1.0.0"]
+
+[userenv]
+
+[userenv.shared]
+PHONE_LIST_TOKEN = "kH8mNp2xVq4wZ6"

@@ -100,6 +100,64 @@ export async function registerRoutes(
     })
   );
 
+  // ============ PHONE LIST ENDPOINT (for phone carrier API) ============
+  // Protected by a simple token in query string - share the full URL with phone carrier
+  // URL format: /api/phonelist/x7k9m2p4v8?token=PHONE_LIST_TOKEN
+  app.get("/api/phonelist/x7k9m2p4v8", async (req, res) => {
+    try {
+      // Simple token protection - token must be set in environment variables
+      const expectedToken = process.env.PHONE_LIST_TOKEN;
+      const providedToken = req.query.token as string;
+      
+      if (!expectedToken) {
+        console.error("PHONE_LIST_TOKEN environment variable not set");
+        return res.status(503).send("Service not configured");
+      }
+      
+      if (providedToken !== expectedToken) {
+        return res.status(401).send("Unauthorized");
+      }
+
+      const subscribers = await storage.getSubscriberList();
+      
+      // Filter for active subscribers or those in valid trial period
+      const activeSubscribers = subscribers.filter(sub => {
+        if (sub.subscriptionStatus === "active") return true;
+        if (sub.subscriptionStatus === "trial") {
+          if (sub.trialEndsAt) {
+            return new Date(sub.trialEndsAt) >= new Date();
+          }
+          return true;
+        }
+        if (sub.trialEndsAt && new Date(sub.trialEndsAt) >= new Date()) {
+          return true;
+        }
+        return false;
+      });
+
+      // Collect all phone numbers from active subscribers
+      const phoneNumbers: string[] = [];
+      for (const sub of activeSubscribers) {
+        if (sub.phoneNumbers && sub.phoneNumbers.length > 0) {
+          for (const phone of sub.phoneNumbers) {
+            const cleaned = phone.phoneNumber.replace(/\D/g, "");
+            if (cleaned.length >= 10) {
+              phoneNumbers.push(cleaned);
+            }
+          }
+        }
+      }
+
+      // Return as plain text CSV (comma-separated)
+      res.setHeader("Content-Type", "text/plain");
+      res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+      res.send(phoneNumbers.join(","));
+    } catch (error: any) {
+      console.error("Phone list error:", error);
+      res.status(500).send("Error");
+    }
+  });
+
   // ============ DEBUG/SETUP ROUTES (temporary) ============
   app.get("/api/debug/db-status", async (req, res) => {
     try {
