@@ -1142,6 +1142,144 @@ export async function registerRoutes(
     }
   });
 
+  // Admin cancel subscription at period end
+  app.post("/api/admin/subscribers/:id/cancel", requireAdmin, async (req, res) => {
+    try {
+      const user = await storage.getUser(req.params.id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      if (!user.stripeSubscriptionId) {
+        return res.status(400).json({ message: "User has no active subscription" });
+      }
+
+      const stripe = await getUncachableStripeClient();
+      
+      // Cancel at period end (user keeps access until end of billing period)
+      await stripe.subscriptions.update(user.stripeSubscriptionId, {
+        cancel_at_period_end: true,
+      });
+
+      // Keep status as-is since they still have access until period end
+      // Status will be updated when webhook fires at period end
+
+      res.json({ success: true, message: "Subscription will be cancelled at end of billing period" });
+    } catch (error: any) {
+      console.error("Cancel subscription error:", error);
+      res.status(500).json({ message: error.message || "Failed to cancel subscription" });
+    }
+  });
+
+  // Admin cancel subscription immediately
+  app.post("/api/admin/subscribers/:id/cancel-immediately", requireAdmin, async (req, res) => {
+    try {
+      const user = await storage.getUser(req.params.id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      if (!user.stripeSubscriptionId) {
+        return res.status(400).json({ message: "User has no active subscription" });
+      }
+
+      const stripe = await getUncachableStripeClient();
+      
+      // Cancel immediately
+      await stripe.subscriptions.cancel(user.stripeSubscriptionId);
+
+      // Update local status
+      await storage.updateUser(req.params.id, { 
+        subscriptionStatus: "cancelled",
+        stripeSubscriptionId: null,
+      });
+
+      res.json({ success: true, message: "Subscription cancelled immediately" });
+    } catch (error: any) {
+      console.error("Cancel subscription error:", error);
+      res.status(500).json({ message: error.message || "Failed to cancel subscription" });
+    }
+  });
+
+  // Admin extend trial
+  app.post("/api/admin/subscribers/:id/extend-trial", requireAdmin, async (req, res) => {
+    try {
+      const { days } = req.body;
+      if (!days || days < 1 || days > 90) {
+        return res.status(400).json({ message: "Days must be between 1 and 90" });
+      }
+
+      const user = await storage.getUser(req.params.id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const newTrialEnd = new Date();
+      newTrialEnd.setDate(newTrialEnd.getDate() + days);
+
+      await storage.updateUser(req.params.id, { 
+        subscriptionStatus: "trial",
+        trialEndsAt: newTrialEnd,
+      });
+
+      res.json({ success: true, trialEndsAt: newTrialEnd });
+    } catch (error: any) {
+      console.error("Extend trial error:", error);
+      res.status(500).json({ message: error.message || "Failed to extend trial" });
+    }
+  });
+
+  // Export active subscriber phone numbers (text format for pasting)
+  app.get("/api/admin/subscribers/export-phones", requireAdmin, async (req, res) => {
+    try {
+      const subscribers = await storage.getSubscriberList();
+      
+      // Filter for active subscribers or those in valid trial period
+      const activeSubscribers = subscribers.filter(sub => {
+        // Active paid subscription
+        if (sub.subscriptionStatus === "active") {
+          // Check if in trial period (has trialEndsAt and it's in the future)
+          // or paid (no trialEndsAt or it's passed)
+          return true;
+        }
+        // Trial status
+        if (sub.subscriptionStatus === "trial") {
+          if (sub.trialEndsAt) {
+            return new Date(sub.trialEndsAt) >= new Date();
+          }
+          return true;
+        }
+        // Also include any user with active trialEndsAt in the future (regardless of status)
+        if (sub.trialEndsAt && new Date(sub.trialEndsAt) >= new Date()) {
+          return true;
+        }
+        return false;
+      });
+
+      // Collect all phone numbers from active subscribers
+      const phoneNumbers: string[] = [];
+      for (const sub of activeSubscribers) {
+        if (sub.phoneNumbers && sub.phoneNumbers.length > 0) {
+          for (const phone of sub.phoneNumbers) {
+            // Format as E.164 without the + for carrier compatibility
+            const cleaned = phone.phoneNumber.replace(/\D/g, "");
+            if (cleaned.length >= 10) {
+              phoneNumbers.push(cleaned);
+            }
+          }
+        }
+      }
+
+      // Return as plain text, one number per line
+      res.setHeader("Content-Type", "text/plain");
+      res.setHeader("Content-Disposition", "attachment; filename=active-subscriber-phones.txt");
+      res.send(phoneNumbers.join("\n"));
+    } catch (error: any) {
+      console.error("Export phones error:", error);
+      res.status(500).json({ message: error.message || "Failed to export phone numbers" });
+    }
+  });
+
   // Conference Management
   app.get("/api/admin/conference", requireAdmin, async (req, res) => {
     try {

@@ -8,7 +8,7 @@ import norfolkImg from "@assets/location_images/norfolk.png";
 import stlouisImg from "@assets/location_images/stlouis.png";
 import vegasImg from "@assets/location_images/vegas.png";
 import atlantaImg from "@assets/location_images/atlanta.png";
-import usaMapImg from "@assets/stock_images/usa_map_outline_silh_5a83c358.jpg";
+import usaMapImg from "@assets/stock_images/united_states_americ_97433050.jpg";
 
 export default function LandingPage() {
   return (

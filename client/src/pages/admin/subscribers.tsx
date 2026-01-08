@@ -6,9 +6,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Users, DollarSign, Clock, Search, RefreshCw } from "lucide-react";
+import { Loader2, Users, DollarSign, Clock, Search, RefreshCw, Ban, Calendar, Download, MoreHorizontal } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Dialog,
   DialogContent,
@@ -58,8 +66,11 @@ export default function SubscribersManagement() {
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
   });
   const [refundDialogOpen, setRefundDialogOpen] = useState(false);
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [extendTrialDialogOpen, setExtendTrialDialogOpen] = useState(false);
   const [selectedSubscriber, setSelectedSubscriber] = useState<Subscriber | null>(null);
   const [refundAmount, setRefundAmount] = useState("");
+  const [trialDays, setTrialDays] = useState("14");
 
   const monthOptions: MonthOption[] = [];
   const now = new Date();
@@ -100,6 +111,54 @@ export default function SubscribersManagement() {
       toast({
         title: "Refund failed",
         description: error.message || "Failed to process refund.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const cancelMutation = useMutation({
+    mutationFn: async (data: { userId: string; immediate: boolean }) => {
+      const endpoint = data.immediate 
+        ? `/api/admin/subscribers/${data.userId}/cancel-immediately`
+        : `/api/admin/subscribers/${data.userId}/cancel`;
+      return apiRequest("POST", endpoint, {});
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/subscribers"] });
+      setCancelDialogOpen(false);
+      setSelectedSubscriber(null);
+      toast({
+        title: "Subscription cancelled",
+        description: "The subscription has been cancelled.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Cancel failed",
+        description: error.message || "Failed to cancel subscription.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const extendTrialMutation = useMutation({
+    mutationFn: async (data: { userId: string; days: number }) => {
+      return apiRequest("POST", `/api/admin/subscribers/${data.userId}/extend-trial`, { days: data.days });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/subscribers"] });
+      setExtendTrialDialogOpen(false);
+      setSelectedSubscriber(null);
+      setTrialDays("14");
+      toast({
+        title: "Trial extended",
+        description: "The trial period has been extended.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Extend trial failed",
+        description: error.message || "Failed to extend trial.",
         variant: "destructive",
       });
     },
@@ -167,14 +226,24 @@ export default function SubscribersManagement() {
             View subscriber details, call statistics, and issue refunds.
           </p>
         </div>
-        <Button
-          variant="outline"
-          onClick={() => refetch()}
-          data-testid="button-refresh-subscribers"
-        >
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Refresh
-        </Button>
+        <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => window.open("/api/admin/subscribers/export-phones", "_blank")}
+            data-testid="button-export-phones"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Export Active Phone Numbers
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => refetch()}
+            data-testid="button-refresh-subscribers"
+          >
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
+        </div>
       </div>
 
       <Card>
@@ -258,20 +327,52 @@ export default function SubscribersManagement() {
                         {new Date(subscriber.createdAt).toLocaleDateString()}
                       </TableCell>
                       <TableCell>
-                        {subscriber.stripeCustomerId && (
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedSubscriber(subscriber);
-                              setRefundDialogOpen(true);
-                            }}
-                            data-testid={`button-refund-${subscriber.id}`}
-                          >
-                            <DollarSign className="h-4 w-4 mr-1" />
-                            Refund
-                          </Button>
-                        )}
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" data-testid={`button-actions-${subscriber.id}`}>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            {subscriber.stripeCustomerId && (
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setSelectedSubscriber(subscriber);
+                                  setRefundDialogOpen(true);
+                                }}
+                                data-testid={`menu-refund-${subscriber.id}`}
+                              >
+                                <DollarSign className="h-4 w-4 mr-2" />
+                                Issue Refund
+                              </DropdownMenuItem>
+                            )}
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedSubscriber(subscriber);
+                                setExtendTrialDialogOpen(true);
+                              }}
+                              data-testid={`menu-extend-trial-${subscriber.id}`}
+                            >
+                              <Calendar className="h-4 w-4 mr-2" />
+                              Extend Trial
+                            </DropdownMenuItem>
+                            {(subscriber.subscriptionStatus === "active" || subscriber.subscriptionStatus === "trial") && (
+                              <DropdownMenuItem
+                                onClick={() => {
+                                  setSelectedSubscriber(subscriber);
+                                  setCancelDialogOpen(true);
+                                }}
+                                className="text-destructive"
+                                data-testid={`menu-cancel-${subscriber.id}`}
+                              >
+                                <Ban className="h-4 w-4 mr-2" />
+                                Cancel Subscription
+                              </DropdownMenuItem>
+                            )}
+                          </DropdownMenuContent>
+                        </DropdownMenu>
                       </TableCell>
                     </TableRow>
                   ))}
@@ -327,6 +428,99 @@ export default function SubscribersManagement() {
             >
               {refundMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               Issue Refund
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={cancelDialogOpen} onOpenChange={setCancelDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Cancel Subscription</DialogTitle>
+            <DialogDescription>
+              Cancel the subscription for {selectedSubscriber?.email}. Choose how to cancel:
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <p className="text-sm text-muted-foreground">
+              Current status: {selectedSubscriber?.subscriptionStatus}
+            </p>
+          </div>
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button variant="outline" onClick={() => setCancelDialogOpen(false)}>
+              Keep Subscription
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                if (selectedSubscriber) {
+                  cancelMutation.mutate({ userId: selectedSubscriber.id, immediate: false });
+                }
+              }}
+              disabled={cancelMutation.isPending}
+              data-testid="button-cancel-end-period"
+            >
+              {cancelMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Cancel at Period End
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => {
+                if (selectedSubscriber) {
+                  cancelMutation.mutate({ userId: selectedSubscriber.id, immediate: true });
+                }
+              }}
+              disabled={cancelMutation.isPending}
+              data-testid="button-cancel-immediately"
+            >
+              {cancelMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Cancel Immediately
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={extendTrialDialogOpen} onOpenChange={setExtendTrialDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Extend Trial</DialogTitle>
+            <DialogDescription>
+              Extend or grant a trial period for {selectedSubscriber?.email}.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="trialDays">Trial Days</Label>
+              <Input
+                id="trialDays"
+                type="number"
+                min="1"
+                max="90"
+                placeholder="14"
+                value={trialDays}
+                onChange={(e) => setTrialDays(e.target.value)}
+                data-testid="input-trial-days"
+              />
+              <p className="text-xs text-muted-foreground">
+                Number of days from today. Maximum 90 days.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setExtendTrialDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                if (selectedSubscriber && trialDays) {
+                  extendTrialMutation.mutate({ userId: selectedSubscriber.id, days: parseInt(trialDays) });
+                }
+              }}
+              disabled={extendTrialMutation.isPending || !trialDays}
+              data-testid="button-confirm-extend-trial"
+            >
+              {extendTrialMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Extend Trial
             </Button>
           </DialogFooter>
         </DialogContent>
