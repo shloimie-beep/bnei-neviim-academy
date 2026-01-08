@@ -13,6 +13,11 @@ import philadelphiaImg from "@assets/location_images/philadelphia.jpg";
 import passaicImg from "@assets/location_images/passaic.png";
 import silverspringImg from "@assets/location_images/silverspring.jpg";
 import eventsImg from "@assets/location_images/events.jpg";
+import lasVegasPinImg from "@assets/Las_Vegas_1767880805572.webp";
+import atlantaPinImg from "@assets/Atlanta_1767880805574.webp";
+import stLouisPinImg from "@assets/St_Louis_1767880805577.webp";
+import norfolkPinImg from "@assets/Norfolk,_Virginia_1767880805578.webp";
+import bocaPinImg from "@assets/Boca_Raton_1767880805581.webp";
 
 export default function LandingPage() {
   return (
@@ -469,11 +474,41 @@ export default function LandingPage() {
               alt="USA Map" 
               className="w-full opacity-60"
             />
-            <div className="absolute top-1/4 left-1/4 w-3 h-3 bg-[#EDE518] rounded-full animate-pulse" />
-            <div className="absolute top-1/3 left-1/2 w-3 h-3 bg-[#EDE518] rounded-full animate-pulse" />
-            <div className="absolute top-1/2 left-1/3 w-3 h-3 bg-[#EDE518] rounded-full animate-pulse" />
-            <div className="absolute top-2/3 left-2/3 w-3 h-3 bg-[#EDE518] rounded-full animate-pulse" />
-            <div className="absolute top-1/3 right-1/4 w-3 h-3 bg-[#EDE518] rounded-full animate-pulse" />
+            <img 
+              src={lasVegasPinImg} 
+              alt="Las Vegas" 
+              className="absolute w-[25%] md:w-[22%]"
+              style={{ top: '10%', left: '5%' }}
+              data-testid="img-pin-las-vegas"
+            />
+            <img 
+              src={stLouisPinImg} 
+              alt="St. Louis" 
+              className="absolute w-[25%] md:w-[22%]"
+              style={{ top: '0%', left: '42%' }}
+              data-testid="img-pin-st-louis"
+            />
+            <img 
+              src={atlantaPinImg} 
+              alt="Atlanta" 
+              className="absolute w-[25%] md:w-[22%]"
+              style={{ top: '25%', right: '12%' }}
+              data-testid="img-pin-atlanta"
+            />
+            <img 
+              src={norfolkPinImg} 
+              alt="Norfolk, Virginia" 
+              className="absolute w-[25%] md:w-[22%]"
+              style={{ top: '0%', right: '2%' }}
+              data-testid="img-pin-norfolk"
+            />
+            <img 
+              src={bocaPinImg} 
+              alt="Boca Raton" 
+              className="absolute w-[25%] md:w-[22%]"
+              style={{ top: '35%', right: '0%' }}
+              data-testid="img-pin-boca-raton"
+            />
           </div>
         </div>
       </section>
@@ -518,6 +553,51 @@ export default function LandingPage() {
                 "You brought so much simcha to the community and were able to unite everyone together like never before. Thank you! (It was worth every penny)"
               </p>
               <p className="text-white/80 font-medium">- Moshe Glazer, St. Louis, Missouri</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="relative">
+        <div className="relative h-[400px] overflow-hidden" data-testid="img-testimonial-crowd-4">
+          <img src={atlantaImg} alt="Atlanta event" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-black/50" />
+          <div className="absolute inset-0 flex items-center justify-center p-8">
+            <div className="text-center max-w-3xl">
+              <p className="text-xl md:text-2xl italic text-white mb-4 leading-relaxed">
+                "Thank you Rabbi Scheller for coming! It was very nice meeting you. Your lecture was very timely, unbelievably helpful, inspirational, and energizing! Any time welcome back to Atlanta!"
+              </p>
+              <p className="text-white/80 font-medium">- V. Birav, Atlanta, Georgia</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="relative">
+        <div className="relative h-[400px] overflow-hidden" data-testid="img-testimonial-crowd-5">
+          <img src={vegasImg} alt="Las Vegas event" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-black/50" />
+          <div className="absolute inset-0 flex items-center justify-center p-8">
+            <div className="text-center max-w-3xl">
+              <p className="text-xl md:text-2xl italic text-white mb-4 leading-relaxed">
+                "Thank you for coming to visit. It was a real chizuk for all!"
+              </p>
+              <p className="text-white/80 font-medium">- Mendy Levine, Las Vegas, Torah Day School</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="relative">
+        <div className="relative h-[400px] overflow-hidden" data-testid="img-testimonial-crowd-6">
+          <img src={bocaImg} alt="Boca Raton event" className="w-full h-full object-cover" />
+          <div className="absolute inset-0 bg-black/50" />
+          <div className="absolute inset-0 flex items-center justify-center p-8">
+            <div className="text-center max-w-3xl">
+              <p className="text-xl md:text-2xl italic text-white mb-4 leading-relaxed">
+                "That was amazing!!! Way above my expectations. Please come back again."
+              </p>
+              <p className="text-white/80 font-medium">- Mrs. Haddasah Smolarcik, Boca Raton</p>
             </div>
           </div>
         </div>
