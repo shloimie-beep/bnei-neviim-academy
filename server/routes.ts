@@ -101,6 +101,45 @@ const imageUpload = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
 });
 
+// Combined upload for video + thumbnail
+const videoWithThumbnailUpload = multer({
+  storage: multer.diskStorage({
+    destination: (req, file, cb) => {
+      if (file.fieldname === "file") {
+        cb(null, videoUploadDir);
+      } else if (file.fieldname === "thumbnail") {
+        cb(null, thumbnailUploadDir);
+      } else {
+        cb(null, videoUploadDir);
+      }
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      cb(null, uniqueSuffix + path.extname(file.originalname));
+    },
+  }),
+  fileFilter: (req, file, cb) => {
+    if (file.fieldname === "file") {
+      const allowedTypes = ["video/mp4", "video/webm", "video/quicktime", "video/x-msvideo"];
+      if (allowedTypes.includes(file.mimetype) || file.originalname.match(/\.(mp4|webm|mov|avi)$/i)) {
+        cb(null, true);
+      } else {
+        cb(new Error("Only video files are allowed for the video field"));
+      }
+    } else if (file.fieldname === "thumbnail") {
+      const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
+      if (allowedTypes.includes(file.mimetype) || file.originalname.match(/\.(jpg|jpeg|png|gif|webp)$/i)) {
+        cb(null, true);
+      } else {
+        cb(new Error("Only image files are allowed for thumbnail"));
+      }
+    } else {
+      cb(null, false);
+    }
+  },
+  limits: { fileSize: 500 * 1024 * 1024 }, // 500MB limit (for video)
+});
+
 // Auth middleware
 function requireAuth(req: Request, res: Response, next: NextFunction) {
   if (!req.session.userId) {
@@ -976,9 +1015,16 @@ export async function registerRoutes(
   });
 
   // Admin: Upload a video
-  app.post("/api/admin/videos", requireAdmin, videoUpload.single("file"), async (req, res) => {
+  app.post("/api/admin/videos", requireAdmin, videoWithThumbnailUpload.fields([
+    { name: "file", maxCount: 1 },
+    { name: "thumbnail", maxCount: 1 }
+  ]), async (req, res) => {
     try {
-      if (!req.file) {
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
+      const videoFile = files?.file?.[0];
+      const thumbnailFile = files?.thumbnail?.[0];
+
+      if (!videoFile) {
         return res.status(400).json({ message: "No video file provided" });
       }
 
@@ -987,19 +1033,20 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Title is required" });
       }
 
-      const originalPath = req.file.path;
+      const originalPath = videoFile.path;
       const convertedFilename = `${Date.now()}-converted.mp4`;
       const convertedPath = path.join(videoUploadDir, convertedFilename);
 
       const video = await storage.createVideo({
         title,
         description: description || null,
-        filename: req.file.originalname,
+        filename: videoFile.originalname,
         filepath: originalPath,
-        fileSize: req.file.size,
+        fileSize: videoFile.size,
         status: "processing",
         categoryId: categoryId || null,
         uploadedBy: req.session.userId!,
+        thumbnailPath: thumbnailFile?.path || null,
       });
 
       res.json(video);

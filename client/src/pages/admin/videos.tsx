@@ -222,8 +222,10 @@ export default function VideoManagement() {
   const [uploadCategoryId, setUploadCategoryId] = useState("");
   const [newCategoryName, setNewCategoryName] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedThumbnail, setSelectedThumbnail] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const thumbnailInputRef = useRef<HTMLInputElement>(null);
 
   const { data: videos, isLoading } = useQuery<VideoType[]>({
     queryKey: ["/api/admin/videos"],
@@ -324,6 +326,9 @@ export default function VideoManagement() {
     if (uploadCategoryId && uploadCategoryId !== "none") {
       formData.append("categoryId", uploadCategoryId);
     }
+    if (selectedThumbnail) {
+      formData.append("thumbnail", selectedThumbnail);
+    }
 
     try {
       const xhr = new XMLHttpRequest();
@@ -352,10 +357,12 @@ export default function VideoManagement() {
       toast({ title: "Video uploaded successfully" });
       setIsDialogOpen(false);
       setSelectedFile(null);
+      setSelectedThumbnail(null);
       setUploadTitle("");
       setUploadDescription("");
       setUploadCategoryId("");
       if (fileInputRef.current) fileInputRef.current.value = "";
+      if (thumbnailInputRef.current) thumbnailInputRef.current.value = "";
     } catch (error: any) {
       toast({ title: "Upload failed", description: error.message, variant: "destructive" });
     } finally {
@@ -437,6 +444,22 @@ export default function VideoManagement() {
                   </SelectContent>
                 </Select>
               </div>
+              <div>
+                <Label htmlFor="video-thumbnail">Thumbnail Image (optional)</Label>
+                <Input
+                  id="video-thumbnail"
+                  type="file"
+                  accept="image/*"
+                  ref={thumbnailInputRef}
+                  onChange={(e) => setSelectedThumbnail(e.target.files?.[0] || null)}
+                  data-testid="input-video-thumbnail"
+                />
+                {selectedThumbnail && (
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Selected: {selectedThumbnail.name}
+                  </p>
+                )}
+              </div>
               {isUploading && (
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
@@ -474,6 +497,84 @@ export default function VideoManagement() {
           </DialogContent>
         </Dialog>
       </div>
+
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div>
+              <CardTitle className="text-lg">Categories</CardTitle>
+              <CardDescription>Organize videos into categories</CardDescription>
+            </div>
+            <Dialog open={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" data-testid="button-add-category">
+                  <FolderPlus className="h-4 w-4 mr-2" />
+                  Add Category
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Create Category</DialogTitle>
+                  <DialogDescription>
+                    Enter a name for the new video category
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="category-name">Category Name</Label>
+                    <Input
+                      id="category-name"
+                      value={newCategoryName}
+                      onChange={(e) => setNewCategoryName(e.target.value)}
+                      placeholder="e.g., Stories, Educational, Music"
+                      data-testid="input-category-name"
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="ghost" onClick={() => setIsCategoryDialogOpen(false)}>
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={() => createCategoryMutation.mutate(newCategoryName)}
+                    disabled={!newCategoryName.trim() || createCategoryMutation.isPending}
+                    data-testid="button-confirm-create-category"
+                  >
+                    {createCategoryMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      "Create"
+                    )}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardHeader>
+        <CardContent>
+          {categories.length === 0 ? (
+            <p className="text-sm text-muted-foreground">No categories yet. Create one to organize your videos.</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {categories.map((cat) => (
+                <Badge key={cat.id} variant="secondary" className="gap-1 pr-1">
+                  {cat.name}
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-4 w-4 ml-1"
+                    onClick={() => deleteCategoryMutation.mutate(cat.id)}
+                    disabled={deleteCategoryMutation.isPending}
+                    data-testid={`button-delete-category-${cat.id}`}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </Badge>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
 
       {isLoading ? (
         <div className="grid gap-4">
