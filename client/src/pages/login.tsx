@@ -30,12 +30,16 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginInput) => {
     setIsLoading(true);
     try {
-      await login(data.email, data.password);
+      const user = await login(data.email, data.password);
       toast({
         title: "Welcome back!",
         description: "You've been logged in successfully.",
       });
-      setLocation("/dashboard");
+      if (user.role === "admin") {
+        setLocation("/admin");
+      } else {
+        setLocation("/dashboard");
+      }
     } catch (error: any) {
       toast({
         title: "Login failed",
