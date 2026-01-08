@@ -161,16 +161,27 @@ export async function registerRoutes(
 
       const user = await storage.getUserByEmail(email);
       if (!user) {
+        console.log("Login failed: user not found for email:", email);
         return res.status(401).json({ message: "Invalid email or password" });
       }
 
       const valid = await bcrypt.compare(password, user.password);
       if (!valid) {
+        console.log("Login failed: invalid password for email:", email);
         return res.status(401).json({ message: "Invalid email or password" });
       }
 
       req.session.userId = user.id;
-      res.json({ user: { ...user, password: undefined } });
+      
+      // Explicitly save session before responding
+      req.session.save((err) => {
+        if (err) {
+          console.error("Session save error:", err);
+          return res.status(500).json({ message: "Login failed" });
+        }
+        console.log("Login successful for:", email, "Session ID:", req.sessionID);
+        res.json({ user: { ...user, password: undefined } });
+      });
     } catch (error: any) {
       console.error("Login error:", error);
       res.status(500).json({ message: "Login failed" });
