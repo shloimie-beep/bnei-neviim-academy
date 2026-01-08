@@ -2,7 +2,6 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
 import logoImage from "@assets/qt=q_95_1767830887218.webp";
-import heroBg from "@assets/generated_images/kids_storytelling_event_hero_background.png";
 
 export default function LandingPage() {
   return (
@@ -28,14 +27,17 @@ export default function LandingPage() {
         </div>
       </header>
 
-      <section 
-        className="relative min-h-[80vh] flex items-center justify-center"
-        style={{
-          backgroundImage: `url(${heroBg})`,
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-        }}
-      >
+      <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
+        <div className="absolute inset-0 w-full h-full">
+          <iframe
+            src="https://player.vimeo.com/video/1143589086?autoplay=1&loop=1&autopause=0&muted=1&title=0&byline=0&portrait=0&controls=0&background=1"
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[177.78vh] min-w-full h-[56.25vw] min-h-full"
+            frameBorder="0"
+            allow="autoplay; fullscreen"
+            allowFullScreen
+            title="Background Video"
+          />
+        </div>
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/50 to-black/30" />
         <div className="container mx-auto px-4 py-32 relative z-10">
           <div className="max-w-3xl mx-auto text-center space-y-6">
