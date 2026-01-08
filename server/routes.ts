@@ -7,7 +7,7 @@ import multer from "multer";
 import path from "path";
 import fs from "fs";
 import { storage } from "./storage";
-import { registerSchema, loginSchema, phoneNumberSchema, forgotPasswordSchema, resetPasswordSchema } from "@shared/schema";
+import { registerSchema, loginSchema, phoneNumberSchema, forgotPasswordSchema, resetPasswordSchema, users } from "@shared/schema";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { getUncachableResendClient } from "./resendClient";
 import crypto from "crypto";
@@ -101,6 +101,21 @@ export async function registerRoutes(
   );
 
   // ============ DEBUG/SETUP ROUTES (temporary) ============
+  app.get("/api/debug/db-status", async (req, res) => {
+    try {
+      // Check all users in the database
+      const allUsers = await db.select({ id: users.id, email: users.email, role: users.role }).from(users);
+      res.json({
+        nodeEnv: process.env.NODE_ENV,
+        dbConfigured: !!process.env.DATABASE_URL,
+        userCount: allUsers.length,
+        users: allUsers.map(u => ({ email: u.email, role: u.role })),
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   app.get("/api/debug/check-user/:email", async (req, res) => {
     try {
       const email = req.params.email;
@@ -114,43 +129,6 @@ export async function registerRoutes(
       });
     } catch (error: any) {
       res.status(500).json({ error: error.message });
-    }
-  });
-
-  // Setup endpoint to create admin user in production
-  app.post("/api/setup/create-admin", async (req, res) => {
-    try {
-      const { email, password, setupKey } = req.body;
-      
-      // Simple protection - require a setup key
-      if (setupKey !== "onetimeonetime2026") {
-        return res.status(403).json({ message: "Invalid setup key" });
-      }
-
-      if (!email || !password) {
-        return res.status(400).json({ message: "Email and password required" });
-      }
-
-      // Check if user already exists
-      const existingUser = await storage.getUserByEmail(email);
-      if (existingUser) {
-        return res.status(400).json({ message: "User already exists" });
-      }
-
-      // Hash password and create admin user
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const user = await storage.createUser({
-        email,
-        password: hashedPassword,
-        role: "admin",
-        subscriptionStatus: "active",
-        trialEndsAt: null,
-      });
-
-      res.json({ success: true, message: "Admin user created", userId: user.id });
-    } catch (error: any) {
-      console.error("Setup error:", error);
-      res.status(500).json({ message: "Setup failed", error: error.message });
     }
   });
 
