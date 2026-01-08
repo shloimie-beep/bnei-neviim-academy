@@ -706,7 +706,7 @@ export async function registerRoutes(
               sortNumber,
               displayName: req.file.originalname
             });
-            if (result.success && result.data) {
+            if (result.status === "success" && result.data) {
               voitexRecordingId = result.data;
             }
           }
@@ -722,7 +722,7 @@ export async function registerRoutes(
         type,
         uploadedBy: req.session.userId!,
         voitexAlbum: voitexAlbum || null,
-        voitexSort: voitexSort ? parseInt(voitexSort) : null,
+        voitexSort: voitexSort ? String(parseInt(voitexSort)) : null,
         voitexRecordingId,
       });
 
@@ -749,6 +749,48 @@ export async function registerRoutes(
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ message: "Failed to delete audio file" });
+    }
+  });
+
+  app.post("/api/admin/audio-files/upload-and-assign", requireAdmin, upload.single("file"), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+
+      const { name, type = "story", replaceAudioId } = req.body;
+      if (!name) {
+        return res.status(400).json({ message: "Name is required" });
+      }
+
+      // If replacing an old file, delete it first
+      if (replaceAudioId) {
+        const oldFile = await storage.getAudioFile(replaceAudioId);
+        if (oldFile) {
+          // Delete from disk
+          if (fs.existsSync(oldFile.filepath)) {
+            fs.unlinkSync(oldFile.filepath);
+          }
+          // Delete from database
+          await storage.deleteAudioFile(replaceAudioId);
+        }
+      }
+
+      const audioFile = await storage.createAudioFile({
+        name,
+        filename: req.file.originalname,
+        filepath: req.file.path,
+        type,
+        uploadedBy: req.session.userId!,
+        voitexAlbum: null,
+        voitexSort: null,
+        voitexRecordingId: null,
+      });
+
+      res.json(audioFile);
+    } catch (error) {
+      console.error("Upload and assign error:", error);
+      res.status(500).json({ message: "Failed to upload audio file" });
     }
   });
 
@@ -812,6 +854,15 @@ export async function registerRoutes(
       }
     } catch (error) {
       res.status(500).json({ message: "Failed to get menu options" });
+    }
+  });
+
+  app.get("/api/admin/menu-options/all", requireAdmin, async (req, res) => {
+    try {
+      const options = await storage.getAllMenuOptions();
+      res.json(options);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get all menu options" });
     }
   });
 

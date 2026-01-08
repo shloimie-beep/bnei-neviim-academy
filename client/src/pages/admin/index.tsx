@@ -1,5 +1,5 @@
 import { Link, useLocation } from "wouter";
-import { Phone, Music, Settings, Users, LogOut, LayoutDashboard, Menu, ShieldCheck, CreditCard } from "lucide-react";
+import { Phone, Settings, Users, LogOut, LayoutDashboard, Menu, ShieldCheck, CreditCard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -18,7 +18,6 @@ import {
   SidebarFooter,
 } from "@/components/ui/sidebar";
 import AdminDashboard from "./dashboard";
-import AudioManagement from "./audio";
 import MenuManagement from "./menu";
 import ConferenceManagement from "./conference";
 import WhitelistManagement from "./whitelist";
@@ -27,12 +26,11 @@ import AdminSettingsPage from "./settings";
 
 const adminRoutes = [
   { path: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { path: "/admin/audio", label: "Audio Files", icon: Music },
-  { path: "/admin/menu", label: "Menu Options", icon: Menu },
+  { path: "/admin/menu", label: "IVR Menu", icon: Menu },
   { path: "/admin/conference", label: "Conference", icon: Users },
   { path: "/admin/whitelist", label: "Whitelist", icon: ShieldCheck },
   { path: "/admin/subscribers", label: "Subscribers", icon: CreditCard },
-  { path: "/admin/settings", label: "IVR Settings", icon: Settings },
+  { path: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
 function AdminSidebar() {
@@ -107,8 +105,6 @@ export default function AdminLayout() {
 
   const renderContent = () => {
     switch (location) {
-      case "/admin/audio":
-        return <AudioManagement />;
       case "/admin/menu":
         return <MenuManagement />;
       case "/admin/conference":

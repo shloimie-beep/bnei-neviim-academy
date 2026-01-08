@@ -41,7 +41,6 @@ export async function handleVoitexWebhook(req: Request, res: Response) {
     console.log("Voitex webhook received:", JSON.stringify(callData, null, 2));
 
     const callerPhone = callData.cid;
-    const hotlineNumber = callData.did;
 
     const isSubscriber = await checkIfSubscriber(callerPhone);
     const isWhitelisted = await checkIfWhitelisted(callerPhone);
@@ -111,7 +110,7 @@ async function buildCallResponse(
     return buildMainMenuResponse(isSubscriber, isWhitelisted);
   }
 
-  return handleBranchNavigation(branch, input, isSubscriber, isWhitelisted);
+  return handleBranchNavigation(branch, input, callData.branch_data, isSubscriber, isWhitelisted);
 }
 
 async function buildMainMenuResponse(
@@ -155,6 +154,7 @@ async function buildMainMenuResponse(
 async function handleBranchNavigation(
   branch: string,
   input: string,
+  branchData: Array<{ branch: string; input: string }>,
   isSubscriber: boolean,
   isWhitelisted: boolean
 ): Promise<VoitexCallResponse> {
@@ -175,13 +175,11 @@ async function handleBranchNavigation(
 
   switch (menuOption.functionType) {
     case "play_mp3":
-      return handlePlayAudio(menuOption);
+      return handlePlayAudio(menuOption, branchData);
     case "submenu":
       return handleSubmenu(menuOption);
     case "conference":
       return handleConference(menuOption);
-    case "transfer":
-      return handleTransfer(menuOption);
     default:
       return {
         play: [{ type: "tts", text: "This feature is not available. Returning to main menu." }],
@@ -190,23 +188,33 @@ async function handleBranchNavigation(
   }
 }
 
-async function handlePlayAudio(menuOption: any): Promise<VoitexCallResponse> {
+async function handlePlayAudio(menuOption: any, branchData: Array<{ branch: string; input: string }>): Promise<VoitexCallResponse> {
+  const parentMenuId = menuOption.parentMenuId;
+  
   if (menuOption.audioFileId) {
     const audioFile = await storage.getAudioFile(menuOption.audioFileId);
     if (audioFile && audioFile.voitexAlbum && audioFile.voitexSort) {
+      const play: PlayItem[] = [
+        { type: "file", album: audioFile.voitexAlbum, sort: audioFile.voitexSort },
+      ];
+
+      const inputs: Record<string, string> = {
+        "*": parentMenuId || "0",
+      };
+
       return {
-        play: [
-          { type: "file", album: audioFile.voitexAlbum, sort: audioFile.voitexSort },
-          { type: "tts", text: "Press star to return to the main menu." },
-        ],
-        inputs: { "*": "0" },
+        play,
+        inputs,
+        variables: {
+          return_to_menu: parentMenuId || "0",
+        },
       };
     }
   }
   
   return {
-    play: [{ type: "tts", text: "The requested content is not available. Press star to return to the main menu." }],
-    inputs: { "*": "0" },
+    play: [{ type: "tts", text: "The requested content is not available. Press star to go back." }],
+    inputs: { "*": parentMenuId || "0" },
   };
 }
 
@@ -219,7 +227,7 @@ async function handleSubmenu(menuOption: any): Promise<VoitexCallResponse> {
   ];
 
   const inputs: Record<string, string> = {
-    "*": "0",
+    "*": menuOption.parentMenuId || "0",
   };
 
   for (const child of childOptions) {
@@ -230,7 +238,7 @@ async function handleSubmenu(menuOption: any): Promise<VoitexCallResponse> {
     }
   }
 
-  play.push({ type: "tts", text: "Press star to return to the main menu." });
+  play.push({ type: "tts", text: "Press star to go back." });
 
   return { play, inputs };
 }
@@ -241,19 +249,5 @@ async function handleConference(menuOption: any): Promise<VoitexCallResponse> {
       { type: "tts", text: "You are now joining the conference call. Please wait while we connect you." },
     ],
     variables: { conference_id: menuOption.id },
-  };
-}
-
-async function handleTransfer(menuOption: any): Promise<VoitexCallResponse> {
-  if (menuOption.transferNumber) {
-    return {
-      play: [{ type: "tts", text: "Please hold while we transfer your call." }],
-      variables: { transfer_to: menuOption.transferNumber },
-    };
-  }
-  
-  return {
-    play: [{ type: "tts", text: "Transfer is not available. Returning to main menu." }],
-    goto: "0",
   };
 }
