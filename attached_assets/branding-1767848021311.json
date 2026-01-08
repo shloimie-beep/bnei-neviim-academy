@@ -1,0 +1,94 @@
+{
+  "colorScheme": "light",
+  "fonts": [
+    {
+      "family": "arial",
+      "count": 69
+    },
+    {
+      "family": "sans-serif",
+      "count": 69
+    },
+    {
+      "family": "Helvetica",
+      "count": 67
+    },
+    {
+      "family": "League Spartan",
+      "count": 2
+    },
+    {
+      "family": "helvetica",
+      "count": 2
+    },
+    {
+      "family": "Times New Roman",
+      "count": 1
+    }
+  ],
+  "colors": {
+    "primary": "#EDE518",
+    "accent": "#08779C",
+    "background": "#161616",
+    "textPrimary": "#161616",
+    "link": "#08779C"
+  },
+  "typography": {
+    "fontFamilies": {
+      "primary": "Times New Roman",
+      "heading": "League Spartan"
+    },
+    "fontStacks": {
+      "body": [
+        "Times New Roman"
+      ],
+      "heading": [
+        "League Spartan",
+        "arial",
+        "helvetica",
+        "sans-serif"
+      ],
+      "paragraph": [
+        "Helvetica",
+        "arial",
+        "sans-serif"
+      ]
+    },
+    "fontSizes": {
+      "h1": "64px",
+      "h2": "48px",
+      "body": "18px"
+    }
+  },
+  "spacing": {
+    "baseUnit": 4,
+    "borderRadius": "0px"
+  },
+  "components": {},
+  "images": {
+    "logo": null,
+    "favicon": "File saved at: attached_assets/favicon.jpg",
+    "ogImage": "File saved at: attached_assets/ogImage.jpg"
+  },
+  "__framework_hints": [
+    "Starfield Technologies; Go Daddy Website Builder 8.0.0000"
+  ],
+  "__llm_button_reasoning": {
+    "primary": {
+      "index": -1,
+      "text": "N/A",
+      "reasoning": "LLM failed"
+    },
+    "secondary": {
+      "index": -1,
+      "text": "N/A",
+      "reasoning": "LLM failed"
+    },
+    "confidence": 0
+  },
+  "confidence": {
+    "buttons": 0,
+    "colors": 0,
+    "overall": 0
+  }
+}
