@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Phone, ArrowLeft, Loader2 } from "lucide-react";
+import { ArrowLeft, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { loginSchema, type LoginInput } from "@shared/schema";
+import logoImage from "@assets/qt=q_95_1767830887218.webp";
 
 export default function LoginPage() {
   const [, setLocation] = useLocation();
@@ -65,12 +66,10 @@ export default function LoginPage() {
       <main className="flex-1 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardHeader className="text-center">
-            <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center mx-auto mb-4">
-              <Phone className="h-6 w-6 text-primary-foreground" />
-            </div>
+            <img src={logoImage} alt="OneTimeOneTime" className="h-12 w-auto mx-auto mb-4" />
             <CardTitle className="text-2xl">Welcome Back</CardTitle>
             <CardDescription>
-              Sign in to your Kids' Hotline account
+              Sign in to your OneTimeOneTime account
             </CardDescription>
           </CardHeader>
           <CardContent>

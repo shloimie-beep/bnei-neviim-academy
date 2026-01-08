@@ -1,7 +1,7 @@
 import { Link } from "wouter";
-import { Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme-toggle";
+import logoImage from "@assets/qt=q_95_1767830887218.webp";
 
 export default function LandingPage() {
   return (
@@ -9,10 +9,7 @@ export default function LandingPage() {
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
-              <Phone className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="text-xl font-bold">Kids' Hotline</span>
+            <img src={logoImage} alt="OneTimeOneTime" className="h-10 w-auto" />
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
@@ -34,9 +31,7 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-background" />
         <div className="container mx-auto px-4 py-20 md:py-32 relative">
           <div className="max-w-3xl mx-auto text-center space-y-6">
-            <h1 className="text-4xl md:text-6xl font-bold tracking-tight">
-              Kids' Hotline
-            </h1>
+            <img src={logoImage} alt="OneTimeOneTime" className="h-24 md:h-32 w-auto mx-auto" />
             <p className="text-xl text-muted-foreground">
               $9.99/month - 14 day free trial
             </p>
@@ -54,7 +49,7 @@ export default function LandingPage() {
       <footer className="border-t py-12">
         <div className="container mx-auto px-4 text-center">
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} Kids' Hotline
+            &copy; {new Date().getFullYear()} OneTimeOneTime
           </p>
         </div>
       </footer>
