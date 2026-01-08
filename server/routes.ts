@@ -1,6 +1,7 @@
 import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import session from "express-session";
+import connectPgSimple from "connect-pg-simple";
 import bcrypt from "bcryptjs";
 import multer from "multer";
 import path from "path";
@@ -12,6 +13,7 @@ import { getUncachableResendClient } from "./resendClient";
 import crypto from "crypto";
 import { sql } from "drizzle-orm";
 import { db } from "./db";
+import { pool } from "./db";
 
 // Extend express-session
 declare module "express-session" {
@@ -68,15 +70,31 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  const isProduction = process.env.NODE_ENV === "production";
+  
+  // Trust proxy for production (Replit uses reverse proxy)
+  if (isProduction) {
+    app.set("trust proxy", 1);
+  }
+
+  // PostgreSQL session store for persistence
+  const PgSession = connectPgSimple(session);
+  
   // Session middleware
   app.use(
     session({
+      store: new PgSession({
+        pool: pool,
+        tableName: "user_sessions",
+        createTableIfMissing: true,
+      }),
       secret: process.env.SESSION_SECRET || "kids-hotline-secret-key",
       resave: false,
       saveUninitialized: false,
       cookie: {
-        secure: process.env.NODE_ENV === "production",
+        secure: isProduction,
         httpOnly: true,
+        sameSite: isProduction ? "none" : "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       },
     })
