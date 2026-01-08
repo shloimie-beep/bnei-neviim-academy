@@ -6,6 +6,8 @@ import bcrypt from "bcryptjs";
 import multer from "multer";
 import path from "path";
 import fs from "fs";
+import { exec } from "child_process";
+import { promisify } from "util";
 import { storage } from "./storage";
 import { registerSchema, loginSchema, phoneNumberSchema, forgotPasswordSchema, resetPasswordSchema, users } from "@shared/schema";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
@@ -14,6 +16,8 @@ import crypto from "crypto";
 import { sql } from "drizzle-orm";
 import { db } from "./db";
 import { pool } from "./db";
+
+const execAsync = promisify(exec);
 
 // Extend express-session
 declare module "express-session" {
@@ -983,18 +987,52 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Title is required" });
       }
 
+      const originalPath = req.file.path;
+      const convertedFilename = `${Date.now()}-converted.mp4`;
+      const convertedPath = path.join(videoUploadDir, convertedFilename);
+
       const video = await storage.createVideo({
         title,
         description: description || null,
         filename: req.file.originalname,
-        filepath: req.file.path,
+        filepath: originalPath,
         fileSize: req.file.size,
-        status: "ready",
+        status: "processing",
         categoryId: categoryId || null,
         uploadedBy: req.session.userId!,
       });
 
       res.json(video);
+
+      (async () => {
+        try {
+          const ffmpegCommand = `ffmpeg -i "${originalPath}" -vf "scale=-2:720" -c:v libx264 -preset medium -crf 23 -c:a aac -b:a 128k -movflags +faststart -y "${convertedPath}"`;
+          
+          await execAsync(ffmpegCommand, { timeout: 1800000 });
+
+          const stats = fs.statSync(convertedPath);
+
+          await storage.updateVideo(video.id, {
+            filepath: convertedPath,
+            filename: convertedFilename,
+            fileSize: stats.size,
+            status: "ready",
+          });
+
+          if (fs.existsSync(originalPath)) {
+            fs.unlinkSync(originalPath);
+          }
+
+          console.log(`Video ${video.id} converted successfully`);
+        } catch (conversionError) {
+          console.error(`Video conversion failed for ${video.id}:`, conversionError);
+          await storage.updateVideo(video.id, { status: "failed" });
+          
+          if (fs.existsSync(convertedPath)) {
+            fs.unlinkSync(convertedPath);
+          }
+        }
+      })();
     } catch (error) {
       console.error("Video upload error:", error);
       res.status(500).json({ message: "Failed to upload video" });
