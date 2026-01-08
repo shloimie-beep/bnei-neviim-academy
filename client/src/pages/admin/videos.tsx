@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff } from "lucide-react";
+import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,10 +8,11 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
-import type { Video as VideoType } from "@shared/schema";
+import type { Video as VideoType, VideoCategory } from "@shared/schema";
 
 function formatFileSize(bytes: number | null): string {
   if (!bytes) return "Unknown";
@@ -20,15 +21,19 @@ function formatFileSize(bytes: number | null): string {
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
-function VideoCard({ video, onDelete, onUpdate }: { 
+function VideoCard({ video, onDelete, onUpdate, categories }: { 
   video: VideoType; 
   onDelete: () => void;
   onUpdate: (data: Partial<VideoType>) => void;
+  categories: VideoCategory[];
 }) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(video.title);
   const [editDescription, setEditDescription] = useState(video.description || "");
+  const [editCategoryId, setEditCategoryId] = useState(video.categoryId || "");
+  
+  const categoryName = categories.find(c => c.id === video.categoryId)?.name;
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -37,7 +42,7 @@ function VideoCard({ video, onDelete, onUpdate }: {
   };
 
   const handleSave = () => {
-    onUpdate({ title: editTitle, description: editDescription });
+    onUpdate({ title: editTitle, description: editDescription, categoryId: editCategoryId || null });
     setIsEditing(false);
   };
 
@@ -70,6 +75,17 @@ function VideoCard({ video, onDelete, onUpdate }: {
                       rows={2}
                       data-testid={`input-edit-description-${video.id}`}
                     />
+                    <Select value={editCategoryId} onValueChange={setEditCategoryId}>
+                      <SelectTrigger data-testid={`select-edit-category-${video.id}`}>
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">No Category</SelectItem>
+                        {categories.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                     <div className="flex gap-2">
                       <Button size="sm" onClick={handleSave} data-testid={`button-save-video-${video.id}`}>
                         Save
@@ -81,9 +97,14 @@ function VideoCard({ video, onDelete, onUpdate }: {
                   </div>
                 ) : (
                   <>
-                    <p className="font-medium" data-testid={`text-video-title-${video.id}`}>
-                      {video.title}
-                    </p>
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <p className="font-medium" data-testid={`text-video-title-${video.id}`}>
+                        {video.title}
+                      </p>
+                      {categoryName && (
+                        <Badge variant="outline" className="text-xs">{categoryName}</Badge>
+                      )}
+                    </div>
                     {video.description && (
                       <p className="text-sm text-muted-foreground mt-1 line-clamp-2">{video.description}</p>
                     )}
@@ -148,14 +169,56 @@ export default function VideoManagement() {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [uploadTitle, setUploadTitle] = useState("");
   const [uploadDescription, setUploadDescription] = useState("");
+  const [uploadCategoryId, setUploadCategoryId] = useState("");
+  const [newCategoryName, setNewCategoryName] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
   const { data: videos, isLoading } = useQuery<VideoType[]>({
     queryKey: ["/api/admin/videos"],
+  });
+
+  const { data: categories = [] } = useQuery<VideoCategory[]>({
+    queryKey: ["/api/admin/video-categories"],
+  });
+
+  const createCategoryMutation = useMutation({
+    mutationFn: async (name: string) => {
+      const res = await fetch("/api/admin/video-categories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      if (!res.ok) throw new Error("Failed to create category");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/video-categories"] });
+      toast({ title: "Category created" });
+      setNewCategoryName("");
+      setIsCategoryDialogOpen(false);
+    },
+    onError: (error: any) => {
+      toast({ title: "Failed to create category", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const deleteCategoryMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const res = await fetch(`/api/admin/video-categories/${id}`, { method: "DELETE" });
+      if (!res.ok) throw new Error("Failed to delete category");
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/video-categories"] });
+      toast({ title: "Category deleted" });
+    },
+    onError: (error: any) => {
+      toast({ title: "Failed to delete category", description: error.message, variant: "destructive" });
+    },
   });
 
   const deleteMutation = useMutation({
@@ -211,6 +274,9 @@ export default function VideoManagement() {
     formData.append("file", selectedFile);
     formData.append("title", uploadTitle);
     formData.append("description", uploadDescription);
+    if (uploadCategoryId && uploadCategoryId !== "none") {
+      formData.append("categoryId", uploadCategoryId);
+    }
 
     try {
       const xhr = new XMLHttpRequest();
