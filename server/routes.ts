@@ -100,6 +100,23 @@ export async function registerRoutes(
     })
   );
 
+  // ============ DEBUG ROUTE (temporary) ============
+  app.get("/api/debug/check-user/:email", async (req, res) => {
+    try {
+      const email = req.params.email;
+      const user = await storage.getUserByEmail(email);
+      res.json({
+        exists: !!user,
+        email: email,
+        dbUrl: process.env.DATABASE_URL ? "configured" : "missing",
+        nodeEnv: process.env.NODE_ENV,
+        userCount: user ? 1 : 0,
+      });
+    } catch (error: any) {
+      res.status(500).json({ error: error.message });
+    }
+  });
+
   // ============ AUTH ROUTES ============
   
   app.post("/api/auth/register", async (req, res) => {
