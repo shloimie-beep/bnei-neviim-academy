@@ -12,6 +12,7 @@ import {
   whitelistedNumbers,
   passwordResetTokens,
   systemSettings,
+  videoCategories,
   videos,
   type User,
   type InsertUser,
@@ -34,6 +35,8 @@ import {
   type PasswordResetToken,
   type InsertPasswordResetToken,
   type SystemSetting,
+  type VideoCategory,
+  type InsertVideoCategory,
   type Video,
   type InsertVideo,
 } from "@shared/schema";
@@ -509,6 +512,35 @@ export class DatabaseStorage implements IStorage {
 
   async deleteVideo(id: string): Promise<void> {
     await db.delete(videos).where(eq(videos.id, id));
+  }
+
+  // Video Categories
+  async getAllVideoCategories(): Promise<VideoCategory[]> {
+    return db.select().from(videoCategories).orderBy(videoCategories.sortOrder);
+  }
+
+  async getVideoCategory(id: string): Promise<VideoCategory | undefined> {
+    const [category] = await db.select().from(videoCategories).where(eq(videoCategories.id, id));
+    return category;
+  }
+
+  async getVideoCategoryByName(name: string): Promise<VideoCategory | undefined> {
+    const [category] = await db.select().from(videoCategories).where(eq(videoCategories.name, name));
+    return category;
+  }
+
+  async createVideoCategory(data: InsertVideoCategory): Promise<VideoCategory> {
+    const [category] = await db.insert(videoCategories).values(data).returning();
+    return category;
+  }
+
+  async updateVideoCategory(id: string, data: Partial<VideoCategory>): Promise<VideoCategory | undefined> {
+    const [category] = await db.update(videoCategories).set(data).where(eq(videoCategories.id, id)).returning();
+    return category;
+  }
+
+  async deleteVideoCategory(id: string): Promise<void> {
+    await db.delete(videoCategories).where(eq(videoCategories.id, id));
   }
 }
 

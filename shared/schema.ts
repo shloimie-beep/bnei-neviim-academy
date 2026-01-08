@@ -130,6 +130,14 @@ export const passwordResetTokens = pgTable("password_reset_tokens", {
 });
 
 // Videos for subscriber content
+// Video categories for organizing content
+export const videoCategories = pgTable("video_categories", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull().unique(),
+  sortOrder: integer("sort_order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const videos = pgTable("videos", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   title: text("title").notNull(),
@@ -140,6 +148,7 @@ export const videos = pgTable("videos", {
   duration: integer("duration"),
   fileSize: integer("file_size"),
   status: text("status").notNull().default("processing"),
+  categoryId: varchar("category_id").references(() => videoCategories.id),
   uploadedBy: varchar("uploaded_by").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -206,6 +215,7 @@ export const insertUnmuteRequestSchema = createInsertSchema(unmuteRequests).omit
 export const insertCallLogSchema = createInsertSchema(callLogs).omit({ id: true, createdAt: true });
 export const insertWhitelistedNumberSchema = createInsertSchema(whitelistedNumbers).omit({ id: true, createdAt: true });
 export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTokens).omit({ id: true, createdAt: true });
+export const insertVideoCategorySchema = createInsertSchema(videoCategories).omit({ id: true, createdAt: true });
 export const insertVideoSchema = createInsertSchema(videos).omit({ id: true, createdAt: true });
 
 // Types
@@ -231,6 +241,8 @@ export type WhitelistedNumber = typeof whitelistedNumbers.$inferSelect;
 export type InsertWhitelistedNumber = z.infer<typeof insertWhitelistedNumberSchema>;
 export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
 export type InsertPasswordResetToken = z.infer<typeof insertPasswordResetTokenSchema>;
+export type VideoCategory = typeof videoCategories.$inferSelect;
+export type InsertVideoCategory = z.infer<typeof insertVideoCategorySchema>;
 export type Video = typeof videos.$inferSelect;
 export type InsertVideo = z.infer<typeof insertVideoSchema>;
 
