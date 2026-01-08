@@ -1,7 +1,6 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { Phone, Mail, ShoppingCart, Search, User, Menu } from "lucide-react";
+import { Phone, Mail, Menu } from "lucide-react";
 import logoImage from "@assets/qt=q_95_1767830887218.webp";
 import gadlusLogo from "@assets/rs=w_1280,h_685_1767849000436.webp";
 import singingGroupsImage from "@assets/rs=w_1280,h_1707_1767849000437.webp";
@@ -39,16 +38,6 @@ export default function GadlusHaAdamPage() {
             </nav>
           </div>
           <div className="flex items-center gap-3">
-            <ThemeToggle />
-            <Button size="icon" variant="ghost" className="text-[#161616]">
-              <Search className="h-4 w-4" />
-            </Button>
-            <Button size="icon" variant="ghost" className="text-[#161616]">
-              <ShoppingCart className="h-4 w-4" />
-            </Button>
-            <Button size="icon" variant="ghost" className="text-[#161616]">
-              <User className="h-4 w-4" />
-            </Button>
             <Link href="/login">
               <Button className="bg-[#EDE518] text-black border-[#EDE518] font-semibold text-sm" data-testid="button-login">
                 Hotline Login

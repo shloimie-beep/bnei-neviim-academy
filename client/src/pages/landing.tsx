@@ -1,8 +1,7 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { ThemeToggle } from "@/components/theme-toggle";
-import { Phone, Mail, MapPin, ShoppingCart, Search, User, Menu } from "lucide-react";
+import { Phone, Mail, MapPin, Menu } from "lucide-react";
 import logoImage from "@assets/qt=q_95_1767830887218.webp";
 import lakewoodImg from "@assets/location_images/lakewood.jpg";
 import bocaImg from "@assets/location_images/boca.png";
@@ -44,16 +43,6 @@ export default function LandingPage() {
             </nav>
           </div>
           <div className="flex items-center gap-3">
-            <ThemeToggle />
-            <Button size="icon" variant="ghost" className="text-white">
-              <Search className="h-4 w-4" />
-            </Button>
-            <Button size="icon" variant="ghost" className="text-white">
-              <ShoppingCart className="h-4 w-4" />
-            </Button>
-            <Button size="icon" variant="ghost" className="text-white">
-              <User className="h-4 w-4" />
-            </Button>
             <Link href="/login">
               <Button className="bg-[#EDE518] text-black border-[#EDE518] font-semibold text-sm" data-testid="button-login">
                 Hotline Login
