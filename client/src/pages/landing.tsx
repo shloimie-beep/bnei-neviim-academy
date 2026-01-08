@@ -136,15 +136,6 @@ export default function LandingPage() {
               Weekly growth for kids, teens, and the whole family — delivered in the OneTime style you love.
             </p>
             
-            <Card className="bg-[#FDF7E1] border-none mt-10 max-w-xl mx-auto">
-              <CardContent className="p-6">
-                <p className="italic text-[#161616] text-lg">
-                  "A gut voch Rabbi! Regards from Panama, my kids and I love your stories."
-                </p>
-                <p className="mt-3 font-bold text-[#161616]">- Miki Rubin</p>
-              </CardContent>
-            </Card>
-
             <div className="pt-10 flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/register">
                 <Button size="lg" className="bg-[#EDE518] text-black font-bold px-12 text-base">
