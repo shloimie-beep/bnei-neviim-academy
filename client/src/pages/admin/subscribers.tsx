@@ -147,7 +147,7 @@ export default function SubscribersManagement() {
 
   const filteredSubscribers = subscribers?.filter((sub) =>
     sub.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    sub.phoneNumbers.some((p) => p.phoneNumber.includes(searchTerm))
+    (sub.phoneNumbers || []).some((p) => p.phoneNumber.includes(searchTerm))
   );
 
   const formatPhoneNumber = (phone: string) => {
@@ -248,7 +248,7 @@ export default function SubscribersManagement() {
                     <TableRow key={subscriber.id} data-testid={`row-subscriber-${subscriber.id}`}>
                       <TableCell className="font-medium">{subscriber.email}</TableCell>
                       <TableCell className="font-mono text-sm">
-                        {subscriber.phoneNumbers.length > 0
+                        {(subscriber.phoneNumbers || []).length > 0
                           ? formatPhoneNumber(subscriber.phoneNumbers[0].phoneNumber)
                           : "-"}
                       </TableCell>
