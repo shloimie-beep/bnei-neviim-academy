@@ -286,3 +286,29 @@
     inset: -1px;
   }
 }
+
+@keyframes gradient-move {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.moving-gradient {
+  background: linear-gradient(
+    -45deg,
+    #161616,
+    #1a2a3a,
+    #2a1a3a,
+    #1a3a2a,
+    #3a2a1a,
+    #161616
+  );
+  background-size: 400% 400%;
+  animation: gradient-move 15s ease infinite;
+}

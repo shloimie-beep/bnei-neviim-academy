@@ -468,136 +468,90 @@ export default function LandingPage() {
             <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">...all over the</h3>
             <h2 className="text-4xl md:text-5xl font-bold text-[#EDE518]">world.</h2>
           </div>
-          <div className="max-w-4xl mx-auto relative" data-testid="img-usa-map">
-            <img 
-              src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/usa-map-silhouette.png" 
-              alt="USA Map" 
-              className="w-full opacity-60"
-            />
-            <img 
-              src={lasVegasPinImg} 
-              alt="Las Vegas" 
-              className="absolute w-[25%] md:w-[22%]"
-              style={{ top: '10%', left: '5%' }}
-              data-testid="img-pin-las-vegas"
-            />
-            <img 
-              src={stLouisPinImg} 
-              alt="St. Louis" 
-              className="absolute w-[25%] md:w-[22%]"
-              style={{ top: '0%', left: '42%' }}
-              data-testid="img-pin-st-louis"
-            />
-            <img 
-              src={atlantaPinImg} 
-              alt="Atlanta" 
-              className="absolute w-[25%] md:w-[22%]"
-              style={{ top: '25%', right: '12%' }}
-              data-testid="img-pin-atlanta"
-            />
-            <img 
-              src={norfolkPinImg} 
-              alt="Norfolk, Virginia" 
-              className="absolute w-[25%] md:w-[22%]"
-              style={{ top: '0%', right: '2%' }}
-              data-testid="img-pin-norfolk"
-            />
-            <img 
-              src={bocaPinImg} 
-              alt="Boca Raton" 
-              className="absolute w-[25%] md:w-[22%]"
-              style={{ top: '35%', right: '0%' }}
-              data-testid="img-pin-boca-raton"
-            />
+          <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4" data-testid="img-usa-map">
+            <div className="aspect-[4/3] rounded-lg overflow-hidden border-2 border-white/20 shadow-lg">
+              <img 
+                src={lasVegasPinImg} 
+                alt="Las Vegas" 
+                className="w-full h-full object-contain bg-[#1a1a1a]"
+                data-testid="img-pin-las-vegas"
+              />
+            </div>
+            <div className="aspect-[4/3] rounded-lg overflow-hidden border-2 border-white/20 shadow-lg">
+              <img 
+                src={stLouisPinImg} 
+                alt="St. Louis" 
+                className="w-full h-full object-contain bg-[#1a1a1a]"
+                data-testid="img-pin-st-louis"
+              />
+            </div>
+            <div className="aspect-[4/3] rounded-lg overflow-hidden border-2 border-white/20 shadow-lg">
+              <img 
+                src={atlantaPinImg} 
+                alt="Atlanta" 
+                className="w-full h-full object-contain bg-[#1a1a1a]"
+                data-testid="img-pin-atlanta"
+              />
+            </div>
+            <div className="aspect-[4/3] rounded-lg overflow-hidden border-2 border-white/20 shadow-lg">
+              <img 
+                src={norfolkPinImg} 
+                alt="Norfolk, Virginia" 
+                className="w-full h-full object-contain bg-[#1a1a1a]"
+                data-testid="img-pin-norfolk"
+              />
+            </div>
+            <div className="aspect-[4/3] rounded-lg overflow-hidden border-2 border-white/20 shadow-lg col-span-2 md:col-span-1">
+              <img 
+                src={bocaPinImg} 
+                alt="Boca Raton" 
+                className="w-full h-full object-contain bg-[#1a1a1a]"
+                data-testid="img-pin-boca-raton"
+              />
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="relative">
-        <div className="relative h-[400px] overflow-hidden" data-testid="img-testimonial-crowd-1">
-          <img src={lakewoodImg} alt="Lakewood event" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-black/50" />
-          <div className="absolute inset-0 flex items-center justify-center p-8">
-            <div className="text-center max-w-3xl">
-              <p className="text-xl md:text-2xl italic text-white mb-4 leading-relaxed">
+      <section className="moving-gradient py-16" data-testid="section-testimonials">
+        <div className="container mx-auto px-4">
+          <h3 className="text-2xl md:text-3xl font-bold text-white text-center mb-12">What People Are Saying</h3>
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+            <div className="bg-black/30 backdrop-blur-sm rounded-lg p-6 border border-white/10" data-testid="testimonial-1">
+              <p className="text-lg italic text-white mb-4 leading-relaxed">
                 "We never saw the kids so captivated by your stories! You electrified the crowd with amazing stories and Torah lessons. R' Eli, thank you!"
               </p>
-              <p className="text-white/80 font-medium">- Rabbi Dweck, Lakewood, NJ</p>
+              <p className="text-white/70 font-medium text-sm">- Rabbi Dweck, Lakewood, NJ</p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="relative">
-        <div className="relative h-[400px] overflow-hidden" data-testid="img-testimonial-crowd-2">
-          <img src={norfolkImg} alt="Norfolk event" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-black/50" />
-          <div className="absolute inset-0 flex items-center justify-center p-8">
-            <div className="text-center max-w-3xl">
-              <p className="text-xl md:text-2xl italic text-white mb-4 leading-relaxed">
+            <div className="bg-black/30 backdrop-blur-sm rounded-lg p-6 border border-white/10" data-testid="testimonial-2">
+              <p className="text-lg italic text-white mb-4 leading-relaxed">
                 "Thank you so much for bringing so much positive and exciting energy to Norfolk! The Ribono Shel Olam should continue to give you and your family the koach to inspire yidden throughout the world!"
               </p>
-              <p className="text-white/80 font-medium">- Aharon Lipman, Norfolk, Virginia</p>
+              <p className="text-white/70 font-medium text-sm">- Aharon Lipman, Norfolk, Virginia</p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="relative">
-        <div className="relative h-[400px] overflow-hidden" data-testid="img-testimonial-crowd-3">
-          <img src={stlouisImg} alt="St. Louis event" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-black/50" />
-          <div className="absolute inset-0 flex items-center justify-center p-8">
-            <div className="text-center max-w-3xl">
-              <p className="text-xl md:text-2xl italic text-white mb-4 leading-relaxed">
+            <div className="bg-black/30 backdrop-blur-sm rounded-lg p-6 border border-white/10" data-testid="testimonial-3">
+              <p className="text-lg italic text-white mb-4 leading-relaxed">
                 "You brought so much simcha to the community and were able to unite everyone together like never before. Thank you! (It was worth every penny)"
               </p>
-              <p className="text-white/80 font-medium">- Moshe Glazer, St. Louis, Missouri</p>
+              <p className="text-white/70 font-medium text-sm">- Moshe Glazer, St. Louis, Missouri</p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="relative">
-        <div className="relative h-[400px] overflow-hidden" data-testid="img-testimonial-crowd-4">
-          <img src={atlantaImg} alt="Atlanta event" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-black/50" />
-          <div className="absolute inset-0 flex items-center justify-center p-8">
-            <div className="text-center max-w-3xl">
-              <p className="text-xl md:text-2xl italic text-white mb-4 leading-relaxed">
+            <div className="bg-black/30 backdrop-blur-sm rounded-lg p-6 border border-white/10" data-testid="testimonial-4">
+              <p className="text-lg italic text-white mb-4 leading-relaxed">
                 "Thank you Rabbi Scheller for coming! It was very nice meeting you. Your lecture was very timely, unbelievably helpful, inspirational, and energizing! Any time welcome back to Atlanta!"
               </p>
-              <p className="text-white/80 font-medium">- V. Birav, Atlanta, Georgia</p>
+              <p className="text-white/70 font-medium text-sm">- V. Birav, Atlanta, Georgia</p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="relative">
-        <div className="relative h-[400px] overflow-hidden" data-testid="img-testimonial-crowd-5">
-          <img src={vegasImg} alt="Las Vegas event" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-black/50" />
-          <div className="absolute inset-0 flex items-center justify-center p-8">
-            <div className="text-center max-w-3xl">
-              <p className="text-xl md:text-2xl italic text-white mb-4 leading-relaxed">
+            <div className="bg-black/30 backdrop-blur-sm rounded-lg p-6 border border-white/10" data-testid="testimonial-5">
+              <p className="text-lg italic text-white mb-4 leading-relaxed">
                 "Thank you for coming to visit. It was a real chizuk for all!"
               </p>
-              <p className="text-white/80 font-medium">- Mendy Levine, Las Vegas, Torah Day School</p>
+              <p className="text-white/70 font-medium text-sm">- Mendy Levine, Las Vegas, Torah Day School</p>
             </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="relative">
-        <div className="relative h-[400px] overflow-hidden" data-testid="img-testimonial-crowd-6">
-          <img src={bocaImg} alt="Boca Raton event" className="w-full h-full object-cover" />
-          <div className="absolute inset-0 bg-black/50" />
-          <div className="absolute inset-0 flex items-center justify-center p-8">
-            <div className="text-center max-w-3xl">
-              <p className="text-xl md:text-2xl italic text-white mb-4 leading-relaxed">
+            <div className="bg-black/30 backdrop-blur-sm rounded-lg p-6 border border-white/10" data-testid="testimonial-6">
+              <p className="text-lg italic text-white mb-4 leading-relaxed">
                 "That was amazing!!! Way above my expectations. Please come back again."
               </p>
-              <p className="text-white/80 font-medium">- Mrs. Haddasah Smolarcik, Boca Raton</p>
+              <p className="text-white/70 font-medium text-sm">- Mrs. Haddasah Smolarcik, Boca Raton</p>
             </div>
           </div>
         </div>
