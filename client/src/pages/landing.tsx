@@ -3,21 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Phone, Mail, MapPin, Menu } from "lucide-react";
 import logoImage from "@assets/qt=q_95_1767830887218.webp";
-import lakewoodImg from "@assets/location_images/lakewood.jpg";
 import bocaImg from "@assets/location_images/boca.png";
 import norfolkImg from "@assets/location_images/norfolk.png";
 import stlouisImg from "@assets/location_images/stlouis.png";
 import vegasImg from "@assets/location_images/vegas.png";
 import atlantaImg from "@assets/location_images/atlanta.png";
-import philadelphiaImg from "@assets/location_images/philadelphia.jpg";
-import passaicImg from "@assets/location_images/passaic.png";
-import silverspringImg from "@assets/location_images/silverspring.jpg";
-import eventsImg from "@assets/location_images/events.jpg";
-import lasVegasPinImg from "@assets/Las_Vegas_1767880805572.webp";
-import atlantaPinImg from "@assets/Atlanta_1767880805574.webp";
-import stLouisPinImg from "@assets/St_Louis_1767880805577.webp";
-import norfolkPinImg from "@assets/Norfolk,_Virginia_1767880805578.webp";
-import bocaPinImg from "@assets/Boca_Raton_1767880805581.webp";
+import usaMapImg from "@assets/stock_images/usa_map_outline_silh_5a83c358.jpg";
 
 export default function LandingPage() {
   return (
@@ -440,120 +431,187 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="py-16 bg-[#161616]">
+      <section className="relative" data-testid="section-in-camps">
+        <div className="h-2 bg-[#08779C]" />
+        <div className="relative h-[350px] md:h-[400px]">
+          <img 
+            src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/20240716_115337-2680213.jpg/:/cr=t:0%25,l:0%25,w:100%25,h:100%25/rs=w:1920" 
+            alt="In camps" 
+            className="w-full h-full object-cover"
+            data-testid="img-in-camps"
+          />
+          <div className="absolute inset-0 bg-black/40" />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white">...in camps...</h3>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 bg-[#08779C]" data-testid="section-at-schools">
         <div className="container mx-auto px-4">
-          <div className="flex flex-col items-center gap-8">
-            <div className="text-center">
-              <h3 className="text-2xl md:text-3xl font-bold text-white mb-4">...in camps...</h3>
-              <div className="w-48 h-48 mx-auto rounded-full overflow-hidden border-4 border-white shadow-lg" data-testid="img-in-camps">
-                <img src={bocaImg} alt="In camps" className="w-full h-full object-cover" />
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-16">
+            <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white">...at schools...</h3>
+            <div className="w-72 md:w-96 rounded-lg overflow-hidden shadow-2xl flex-shrink-0" data-testid="img-at-schools">
+              <img 
+                src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/20240805_104841.jpg/:/cr=t:0%25,l:0%25,w:100%25,h:100%25/rs=w:800" 
+                alt="At schools" 
+                className="w-full h-auto object-cover" 
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="relative h-[300px] md:h-[350px]" data-testid="section-all-over-world">
+        <img 
+          src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80" 
+          alt="World connections" 
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-black/30" />
+        <div className="absolute inset-0 flex items-center justify-center">
+          <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white">...all over the world.</h3>
+        </div>
+      </section>
+
+      <section className="relative h-[400px] md:h-[500px]" data-testid="testimonial-1">
+        <img 
+          src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Silver%20Spring.jpg/:/cr=t:0%25,l:0%25,w:100%25,h:100%25/fx-gs/rs=w:1920" 
+          alt="Lakewood event" 
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 flex items-center justify-center p-8">
+          <div className="text-center max-w-3xl">
+            <div className="text-[#08779C] text-6xl mb-4">"</div>
+            <p className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-6 leading-relaxed">
+              We never saw the kids so captivated by your stories! You electrified the crowd with amazing stories and Torah lessons. R' Eli, thank you!
+            </p>
+            <div className="w-16 h-0.5 bg-white/50 mx-auto mb-4" />
+            <p className="text-white/80 font-medium">Rabbi Dweck, Brooklyn</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 bg-[#08779C]" data-testid="testimonial-2">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-5xl mx-auto">
+            <div className="relative flex-shrink-0">
+              <img 
+                src={usaMapImg} 
+                alt="USA Map" 
+                className="w-64 md:w-80 opacity-80"
+              />
+              <div className="absolute w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow-lg" style={{ top: '55%', right: '5%' }}>
+                <img src={bocaImg} alt="Boca Raton" className="w-full h-full object-cover" />
+              </div>
+            </div>
+            <div className="text-center md:text-left max-w-md">
+              <div className="text-white/60 text-4xl mb-2">"</div>
+              <p className="text-lg text-white italic mb-4 leading-relaxed">
+                That was amazing!!! Way above my expectations. Please come back again.
+              </p>
+              <div className="w-12 h-0.5 bg-white/30 mb-3 mx-auto md:mx-0" />
+              <p className="text-white/70 font-medium text-sm">Mrs. Haddasah Smolarcik, Boca Raton</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 bg-white" data-testid="testimonial-3">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col-reverse md:flex-row items-center justify-center gap-8 max-w-5xl mx-auto">
+            <div className="text-center md:text-left max-w-md">
+              <div className="text-[#08779C] text-4xl mb-2">"</div>
+              <p className="text-lg text-[#08779C] italic mb-4 leading-relaxed">
+                Thank you so much for bringing so much positive and exciting energy to Norfolk! The fact that you brought your mishpacha only enhanced the Shabbos. The Ribono Shel Olam should continue to give you and your family the koach to inspire yidden throughout the world!
+              </p>
+              <div className="w-12 h-0.5 bg-[#08779C]/30 mb-3 mx-auto md:mx-0" />
+              <p className="text-[#08779C]/70 font-medium text-sm">Aharon Lipman, Norfolk, Virginia</p>
+            </div>
+            <div className="relative flex-shrink-0">
+              <img 
+                src={usaMapImg} 
+                alt="USA Map" 
+                className="w-64 md:w-80 opacity-60"
+              />
+              <div className="absolute w-20 h-20 rounded-full overflow-hidden border-2 border-[#08779C] shadow-lg" style={{ top: '10%', right: '5%' }}>
+                <img src={norfolkImg} alt="Norfolk" className="w-full h-full object-cover" />
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="py-16 bg-[#FDF7E1]">
+      <section className="py-16 bg-[#08779C]" data-testid="testimonial-4">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
-            <h3 className="text-2xl md:text-3xl font-bold text-[#161616] mb-8">...at schools...</h3>
-          </div>
-          <div className="max-w-4xl mx-auto" data-testid="img-at-schools">
-            <img src={eventsImg} alt="At schools" className="w-full rounded-lg shadow-xl" />
-          </div>
-        </div>
-      </section>
-
-      <section className="py-16 bg-[#161616]">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-8">
-            <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">...all over the</h3>
-            <h2 className="text-4xl md:text-5xl font-bold text-[#EDE518]">world.</h2>
-          </div>
-          <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4" data-testid="img-usa-map">
-            <div className="aspect-[4/3] rounded-lg overflow-hidden border-2 border-white/20 shadow-lg">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-5xl mx-auto">
+            <div className="relative flex-shrink-0">
               <img 
-                src={lasVegasPinImg} 
-                alt="Las Vegas" 
-                className="w-full h-full object-contain bg-[#1a1a1a]"
-                data-testid="img-pin-las-vegas"
+                src={usaMapImg} 
+                alt="USA Map" 
+                className="w-64 md:w-80 opacity-80"
               />
+              <div className="absolute w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow-lg" style={{ top: '20%', left: '35%' }}>
+                <img src={stlouisImg} alt="St. Louis" className="w-full h-full object-cover" />
+              </div>
             </div>
-            <div className="aspect-[4/3] rounded-lg overflow-hidden border-2 border-white/20 shadow-lg">
-              <img 
-                src={stLouisPinImg} 
-                alt="St. Louis" 
-                className="w-full h-full object-contain bg-[#1a1a1a]"
-                data-testid="img-pin-st-louis"
-              />
-            </div>
-            <div className="aspect-[4/3] rounded-lg overflow-hidden border-2 border-white/20 shadow-lg">
-              <img 
-                src={atlantaPinImg} 
-                alt="Atlanta" 
-                className="w-full h-full object-contain bg-[#1a1a1a]"
-                data-testid="img-pin-atlanta"
-              />
-            </div>
-            <div className="aspect-[4/3] rounded-lg overflow-hidden border-2 border-white/20 shadow-lg">
-              <img 
-                src={norfolkPinImg} 
-                alt="Norfolk, Virginia" 
-                className="w-full h-full object-contain bg-[#1a1a1a]"
-                data-testid="img-pin-norfolk"
-              />
-            </div>
-            <div className="aspect-[4/3] rounded-lg overflow-hidden border-2 border-white/20 shadow-lg col-span-2 md:col-span-1">
-              <img 
-                src={bocaPinImg} 
-                alt="Boca Raton" 
-                className="w-full h-full object-contain bg-[#1a1a1a]"
-                data-testid="img-pin-boca-raton"
-              />
+            <div className="text-center md:text-left max-w-md">
+              <div className="text-white/60 text-4xl mb-2">"</div>
+              <p className="text-lg text-white italic mb-4 leading-relaxed">
+                You brought so much simcha to the community and were able to unite everyone together like never before. Thank you! (It was worth every penny)
+              </p>
+              <div className="w-12 h-0.5 bg-white/30 mb-3 mx-auto md:mx-0" />
+              <p className="text-white/70 font-medium text-sm">Moshe Glazer, St. Louis, Missouri</p>
             </div>
           </div>
         </div>
       </section>
 
-      <section className="moving-gradient py-16" data-testid="section-testimonials">
+      <section className="py-16 bg-white" data-testid="testimonial-5">
         <div className="container mx-auto px-4">
-          <h3 className="text-2xl md:text-3xl font-bold text-white text-center mb-12">What People Are Saying</h3>
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
-            <div className="bg-black/30 backdrop-blur-sm rounded-lg p-6 border border-white/10" data-testid="testimonial-1">
-              <p className="text-lg italic text-white mb-4 leading-relaxed">
-                "We never saw the kids so captivated by your stories! You electrified the crowd with amazing stories and Torah lessons. R' Eli, thank you!"
+          <div className="flex flex-col-reverse md:flex-row items-center justify-center gap-8 max-w-5xl mx-auto">
+            <div className="text-center md:text-left max-w-md">
+              <div className="text-[#08779C] text-4xl mb-2">"</div>
+              <p className="text-lg text-[#08779C] italic mb-4 leading-relaxed">
+                Thank you Rabbi Scheller for coming! It was very nice meeting you. Your lecture was very timely, unbelievably helpful, inspirational, and energizing! Any time welcome back to Atlanta!
               </p>
-              <p className="text-white/70 font-medium text-sm">- Rabbi Dweck, Lakewood, NJ</p>
+              <div className="w-12 h-0.5 bg-[#08779C]/30 mb-3 mx-auto md:mx-0" />
+              <p className="text-[#08779C]/70 font-medium text-sm">V. Birav, Atlanta, Georgia</p>
             </div>
-            <div className="bg-black/30 backdrop-blur-sm rounded-lg p-6 border border-white/10" data-testid="testimonial-2">
-              <p className="text-lg italic text-white mb-4 leading-relaxed">
-                "Thank you so much for bringing so much positive and exciting energy to Norfolk! The Ribono Shel Olam should continue to give you and your family the koach to inspire yidden throughout the world!"
-              </p>
-              <p className="text-white/70 font-medium text-sm">- Aharon Lipman, Norfolk, Virginia</p>
+            <div className="relative flex-shrink-0">
+              <img 
+                src={usaMapImg} 
+                alt="USA Map" 
+                className="w-64 md:w-80 opacity-60"
+              />
+              <div className="absolute w-20 h-20 rounded-full overflow-hidden border-2 border-[#08779C] shadow-lg" style={{ top: '30%', right: '15%' }}>
+                <img src={atlantaImg} alt="Atlanta" className="w-full h-full object-cover" />
+              </div>
             </div>
-            <div className="bg-black/30 backdrop-blur-sm rounded-lg p-6 border border-white/10" data-testid="testimonial-3">
-              <p className="text-lg italic text-white mb-4 leading-relaxed">
-                "You brought so much simcha to the community and were able to unite everyone together like never before. Thank you! (It was worth every penny)"
-              </p>
-              <p className="text-white/70 font-medium text-sm">- Moshe Glazer, St. Louis, Missouri</p>
+          </div>
+        </div>
+      </section>
+
+      <section className="py-16 bg-[#08779C]" data-testid="testimonial-6">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-5xl mx-auto">
+            <div className="relative flex-shrink-0">
+              <img 
+                src={usaMapImg} 
+                alt="USA Map" 
+                className="w-64 md:w-80 opacity-80"
+              />
+              <div className="absolute w-20 h-20 rounded-full overflow-hidden border-2 border-white shadow-lg" style={{ top: '15%', left: '5%' }}>
+                <img src={vegasImg} alt="Las Vegas" className="w-full h-full object-cover" />
+              </div>
             </div>
-            <div className="bg-black/30 backdrop-blur-sm rounded-lg p-6 border border-white/10" data-testid="testimonial-4">
-              <p className="text-lg italic text-white mb-4 leading-relaxed">
-                "Thank you Rabbi Scheller for coming! It was very nice meeting you. Your lecture was very timely, unbelievably helpful, inspirational, and energizing! Any time welcome back to Atlanta!"
+            <div className="text-center md:text-left max-w-md">
+              <div className="text-white/60 text-4xl mb-2">"</div>
+              <p className="text-lg text-white italic mb-4 leading-relaxed">
+                Thank you for coming to visit. It was a real chizuk for all!
               </p>
-              <p className="text-white/70 font-medium text-sm">- V. Birav, Atlanta, Georgia</p>
-            </div>
-            <div className="bg-black/30 backdrop-blur-sm rounded-lg p-6 border border-white/10" data-testid="testimonial-5">
-              <p className="text-lg italic text-white mb-4 leading-relaxed">
-                "Thank you for coming to visit. It was a real chizuk for all!"
-              </p>
-              <p className="text-white/70 font-medium text-sm">- Mendy Levine, Las Vegas, Torah Day School</p>
-            </div>
-            <div className="bg-black/30 backdrop-blur-sm rounded-lg p-6 border border-white/10" data-testid="testimonial-6">
-              <p className="text-lg italic text-white mb-4 leading-relaxed">
-                "That was amazing!!! Way above my expectations. Please come back again."
-              </p>
-              <p className="text-white/70 font-medium text-sm">- Mrs. Haddasah Smolarcik, Boca Raton</p>
+              <div className="w-12 h-0.5 bg-white/30 mb-3 mx-auto md:mx-0" />
+              <p className="text-white/70 font-medium text-sm">Mendy Levine, Las Vegas, Torah Day School</p>
             </div>
           </div>
         </div>
