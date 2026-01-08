@@ -1376,6 +1376,30 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Shift all menu options down (clears option 1)
+  app.post("/api/admin/menu-options/shift-down", requireAdmin, async (req, res) => {
+    try {
+      const { parentMenuId } = req.body;
+      await storage.shiftMenuOptionsDown(parentMenuId || null);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Shift menu options error:", error);
+      res.status(500).json({ message: "Failed to shift menu options" });
+    }
+  });
+
+  // Admin: Get highest option number for a menu
+  app.get("/api/admin/menu-options/highest", requireAdmin, async (req, res) => {
+    try {
+      const parentMenuId = req.query.parentMenuId as string | undefined;
+      const highest = await storage.getHighestOptionNumber(parentMenuId === "null" ? null : parentMenuId || null);
+      res.json({ highest });
+    } catch (error) {
+      console.error("Get highest option error:", error);
+      res.status(500).json({ message: "Failed to get highest option number" });
+    }
+  });
+
   app.post("/api/admin/menu-options", requireAdmin, async (req, res) => {
     try {
       const { optionNumber, parentMenuId, functionType, audioFileId, transferNumber, transferTimeout, isActive } = req.body;

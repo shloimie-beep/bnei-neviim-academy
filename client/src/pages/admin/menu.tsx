@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Loader2, ChevronLeft, Play, Pause, Upload, RefreshCw, Volume2 } from "lucide-react";
+import { Loader2, ChevronLeft, Play, Pause, Upload, RefreshCw, Volume2, Plus, ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -379,6 +379,7 @@ export default function MenuManagement() {
     { id: null, name: "Main Menu" },
   ]);
   const [isSaving, setIsSaving] = useState(false);
+  const [isShifting, setIsShifting] = useState(false);
   const [isUploadingGreeting, setIsUploadingGreeting] = useState(false);
   const [greetingPlayerOpen, setGreetingPlayerOpen] = useState(false);
   const greetingFileInputRef = useRef<HTMLInputElement>(null);
@@ -560,9 +561,46 @@ export default function MenuManagement() {
     }
   };
 
+  const shiftMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/admin/menu-options/shift-down", {
+        parentMenuId: currentMenuId,
+      });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/menu-options"] });
+      toast({ title: "Options shifted down", description: "Option 1 is now clear for new content." });
+    },
+    onError: (error: any) => {
+      toast({ title: "Failed to shift options", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const handleShiftDown = async () => {
+    setIsShifting(true);
+    await shiftMutation.mutateAsync();
+    setIsShifting(false);
+  };
+
   const getOptionForNumber = (num: number) => {
     return menuOptions?.find((o) => o.optionNumber === num);
   };
+
+  const getDisplayedOptionNumbers = (): number[] => {
+    if (!menuOptions || menuOptions.length === 0) {
+      return [1, 2, 3, 4, 5, 6, 7, 8, 9];
+    }
+    const existingNumbers = menuOptions.map(o => o.optionNumber);
+    const maxExisting = Math.max(...existingNumbers, 9);
+    const allNumbers: number[] = [];
+    for (let i = 1; i <= maxExisting; i++) {
+      allNumbers.push(i);
+    }
+    return allNumbers;
+  };
+
+  const optionNumbers = getDisplayedOptionNumbers();
 
   const mainGreeting = settings?.find((s: any) => s.key === "main_greeting");
   const mainGreetingFile = audioFiles?.find((f) => f.id === mainGreeting?.audioFileId);
@@ -661,12 +699,43 @@ export default function MenuManagement() {
       />
 
       <Card>
-        <CardHeader>
-          <CardTitle>Options 1-9</CardTitle>
+        <CardHeader className="flex flex-row items-center justify-between gap-4 space-y-0">
+          <CardTitle>Menu Options</CardTitle>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant="outline"
+              onClick={handleShiftDown}
+              disabled={isShifting || !menuOptions || menuOptions.length === 0}
+              data-testid="button-shift-down"
+            >
+              {isShifting ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <ArrowDown className="h-4 w-4 mr-2" />
+              )}
+              Move it over
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => {
+                const nextNum = optionNumbers.length > 0 ? Math.max(...optionNumbers) + 1 : 1;
+                handleOptionUpdate({
+                  optionNumber: nextNum,
+                  functionType: "none",
+                  audioFileId: null,
+                });
+              }}
+              disabled={isSaving}
+              data-testid="button-add-option"
+            >
+              <Plus className="h-4 w-4 mr-2" />
+              Add Option
+            </Button>
+          </div>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-3 gap-4">
-            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+            {optionNumbers.map((num) => (
               <OptionBox
                 key={num}
                 num={num}

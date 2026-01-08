@@ -260,6 +260,23 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  async shiftMenuOptionsDown(parentMenuId: string | null): Promise<void> {
+    const options = await this.getMenuOptionsByParent(parentMenuId);
+    const sortedDesc = options.sort((a, b) => b.optionNumber - a.optionNumber);
+    
+    for (const option of sortedDesc) {
+      await db.update(menuOptions)
+        .set({ optionNumber: option.optionNumber + 1 })
+        .where(eq(menuOptions.id, option.id));
+    }
+  }
+
+  async getHighestOptionNumber(parentMenuId: string | null): Promise<number> {
+    const options = await this.getMenuOptionsByParent(parentMenuId);
+    if (options.length === 0) return 0;
+    return Math.max(...options.map(o => o.optionNumber));
+  }
+
   // Conference Sessions
   async getActiveConference(): Promise<ConferenceSession | undefined> {
     const [session] = await db.select().from(conferenceSessions).where(eq(conferenceSessions.isActive, true));
