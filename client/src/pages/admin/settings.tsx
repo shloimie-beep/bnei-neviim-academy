@@ -1,10 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Settings, Volume2 } from "lucide-react";
+import { Loader2, Settings, Volume2, Upload } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { AudioFile, SystemSetting } from "@shared/schema";
 
@@ -12,6 +13,10 @@ export default function AdminSettingsPage() {
   const { toast } = useToast();
   const [mainGreetingId, setMainGreetingId] = useState<string>("");
   const [nonSubGreetingId, setNonSubGreetingId] = useState<string>("");
+  const [isUploadingMain, setIsUploadingMain] = useState(false);
+  const [isUploadingNonSub, setIsUploadingNonSub] = useState(false);
+  const mainFileInputRef = useRef<HTMLInputElement>(null);
+  const nonSubFileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: audioFiles = [], isLoading: filesLoading } = useQuery<AudioFile[]>({
     queryKey: ["/api/admin/audio-files"],
@@ -50,9 +55,60 @@ export default function AdminSettingsPage() {
     },
   });
 
+  const handleUploadGreeting = async (
+    file: File,
+    type: "greeting" | "non-subscriber-greeting",
+    oldAudioId: string | null
+  ) => {
+    const setUploading = type === "greeting" ? setIsUploadingMain : setIsUploadingNonSub;
+    setUploading(true);
+    
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("name", file.name.replace(/\.[^/.]+$/, ""));
+      formData.append("type", "greeting");
+      if (oldAudioId) {
+        formData.append("replaceAudioId", oldAudioId);
+      }
+
+      const res = await fetch("/api/admin/audio-files/upload-and-assign", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const newAudio = await res.json();
+      
+      // Save the greeting setting
+      await apiRequest("POST", `/api/admin/settings/${type}`, { audioFileId: newAudio.id });
+      
+      // Clean up old file
+      if (newAudio.oldAudioIdToDelete) {
+        try {
+          await fetch("/api/admin/audio-files/cleanup", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ audioFileId: newAudio.oldAudioIdToDelete }),
+          });
+        } catch {}
+      }
+
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/audio-files"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/settings"] });
+      toast({ title: "Greeting uploaded and saved" });
+    } catch {
+      toast({ title: "Failed to upload greeting", variant: "destructive" });
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const isLoading = filesLoading || settingsLoading;
 
-  const greetingFiles = audioFiles.filter((f) => f.type === "greeting");
   const allAudioFiles = audioFiles;
 
   if (isLoading) {
@@ -75,89 +131,175 @@ export default function AdminSettingsPage() {
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Volume2 className="h-5 w-5" />
-              Main Greeting
-            </CardTitle>
-            <CardDescription>
-              Plays for subscribers when they call. Users can press menu options while this plays.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Select
-              value={mainGreetingId}
-              onValueChange={setMainGreetingId}
-            >
-              <SelectTrigger data-testid="select-main-greeting">
-                <SelectValue placeholder="Select an audio file" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">No greeting (use default)</SelectItem>
-                {allAudioFiles.map((file) => (
-                  <SelectItem key={file.id} value={file.id}>
-                    {file.name} ({file.type})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Volume2 className="h-5 w-5" />
+            Greeting for Subscribers
+          </CardTitle>
+          <CardDescription>
+            Plays for subscribers when they call. Users can press menu options while this plays.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <p className="text-sm font-medium">Current File</p>
+            <p className="text-sm text-muted-foreground">
+              {mainGreetingId && mainGreetingId !== "none" 
+                ? allAudioFiles.find(f => f.id === mainGreetingId)?.name || "Selected file not found"
+                : "No greeting selected (using default)"}
+            </p>
+          </div>
+          
+          <div className="flex flex-wrap gap-2">
+            <input
+              ref={mainFileInputRef}
+              type="file"
+              accept="audio/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  handleUploadGreeting(file, "greeting", mainGreetingId && mainGreetingId !== "none" ? mainGreetingId : null);
+                  if (mainFileInputRef.current) mainFileInputRef.current.value = "";
+                }
+              }}
+              data-testid="input-main-greeting-file"
+            />
             <Button
-              onClick={() => saveGreetingMutation.mutate({
-                type: "greeting",
-                audioFileId: mainGreetingId === "none" ? null : mainGreetingId || null,
-              })}
-              disabled={saveGreetingMutation.isPending}
-              data-testid="button-save-main-greeting"
+              variant="outline"
+              onClick={() => mainFileInputRef.current?.click()}
+              disabled={isUploadingMain}
+              data-testid="button-upload-main-greeting"
             >
-              {saveGreetingMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              Save Main Greeting
+              {isUploadingMain ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Upload className="h-4 w-4 mr-2" />
+              )}
+              {mainGreetingId && mainGreetingId !== "none" ? "Replace File" : "Upload File"}
             </Button>
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Volume2 className="h-5 w-5" />
-              Non-Subscriber Greeting
-            </CardTitle>
-            <CardDescription>
-              Plays for non-subscribers before hanging up.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <Select
-              value={nonSubGreetingId}
-              onValueChange={setNonSubGreetingId}
-            >
-              <SelectTrigger data-testid="select-non-sub-greeting">
-                <SelectValue placeholder="Select an audio file" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="none">No greeting (use default)</SelectItem>
-                {allAudioFiles.map((file) => (
-                  <SelectItem key={file.id} value={file.id}>
-                    {file.name} ({file.type})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+          <div className="pt-2 border-t">
+            <p className="text-sm font-medium mb-2">Or select from existing files</p>
+            <div className="flex flex-wrap gap-2">
+              <Select
+                value={mainGreetingId}
+                onValueChange={setMainGreetingId}
+              >
+                <SelectTrigger className="w-[200px]" data-testid="select-main-greeting">
+                  <SelectValue placeholder="Select an audio file" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No greeting (default)</SelectItem>
+                  {allAudioFiles.map((file) => (
+                    <SelectItem key={file.id} value={file.id}>
+                      {file.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button
+                onClick={() => saveGreetingMutation.mutate({
+                  type: "greeting",
+                  audioFileId: mainGreetingId === "none" ? null : mainGreetingId || null,
+                })}
+                disabled={saveGreetingMutation.isPending}
+                data-testid="button-save-main-greeting"
+              >
+                {saveGreetingMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                Save
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Volume2 className="h-5 w-5" />
+            Greeting for Non-Subscribers
+          </CardTitle>
+          <CardDescription>
+            Plays for non-subscribers before hanging up.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <p className="text-sm font-medium">Current File</p>
+            <p className="text-sm text-muted-foreground">
+              {nonSubGreetingId && nonSubGreetingId !== "none" 
+                ? allAudioFiles.find(f => f.id === nonSubGreetingId)?.name || "Selected file not found"
+                : "No greeting selected (using default)"}
+            </p>
+          </div>
+          
+          <div className="flex flex-wrap gap-2">
+            <input
+              ref={nonSubFileInputRef}
+              type="file"
+              accept="audio/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  handleUploadGreeting(file, "non-subscriber-greeting", nonSubGreetingId && nonSubGreetingId !== "none" ? nonSubGreetingId : null);
+                  if (nonSubFileInputRef.current) nonSubFileInputRef.current.value = "";
+                }
+              }}
+              data-testid="input-nonsub-greeting-file"
+            />
             <Button
-              onClick={() => saveGreetingMutation.mutate({
-                type: "non-subscriber-greeting",
-                audioFileId: nonSubGreetingId === "none" ? null : nonSubGreetingId || null,
-              })}
-              disabled={saveGreetingMutation.isPending}
-              data-testid="button-save-nonsub-greeting"
+              variant="outline"
+              onClick={() => nonSubFileInputRef.current?.click()}
+              disabled={isUploadingNonSub}
+              data-testid="button-upload-nonsub-greeting"
             >
-              {saveGreetingMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-              Save Non-Subscriber Greeting
+              {isUploadingNonSub ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Upload className="h-4 w-4 mr-2" />
+              )}
+              {nonSubGreetingId && nonSubGreetingId !== "none" ? "Replace File" : "Upload File"}
             </Button>
-          </CardContent>
-        </Card>
-      </div>
+          </div>
+
+          <div className="pt-2 border-t">
+            <p className="text-sm font-medium mb-2">Or select from existing files</p>
+            <div className="flex flex-wrap gap-2">
+              <Select
+                value={nonSubGreetingId}
+                onValueChange={setNonSubGreetingId}
+              >
+                <SelectTrigger className="w-[200px]" data-testid="select-non-sub-greeting">
+                  <SelectValue placeholder="Select an audio file" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="none">No greeting (default)</SelectItem>
+                  {allAudioFiles.map((file) => (
+                    <SelectItem key={file.id} value={file.id}>
+                      {file.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <Button
+                onClick={() => saveGreetingMutation.mutate({
+                  type: "non-subscriber-greeting",
+                  audioFileId: nonSubGreetingId === "none" ? null : nonSubGreetingId || null,
+                })}
+                disabled={saveGreetingMutation.isPending}
+                data-testid="button-save-nonsub-greeting"
+              >
+                {saveGreetingMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                Save
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>
