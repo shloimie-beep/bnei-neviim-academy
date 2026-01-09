@@ -1260,8 +1260,11 @@ export async function registerRoutes(
         return res.status(401).json({ message: "User not found" });
       }
 
-      // Check subscription status
-      const isActive = user.subscriptionStatus === "active" || 
+      // Check if user is whitelisted or has active subscription
+      const whitelistedEmails = (process.env.VIDEO_WHITELIST_EMAILS || "").split(",").map(e => e.trim().toLowerCase()).filter(Boolean);
+      const isWhitelisted = whitelistedEmails.includes(user.email.toLowerCase()) || user.role === "admin";
+      
+      const isActive = isWhitelisted || user.subscriptionStatus === "active" || 
         (user.subscriptionStatus === "trial" && user.trialEndsAt && new Date(user.trialEndsAt) > new Date());
       
       if (!isActive) {
@@ -1284,8 +1287,11 @@ export async function registerRoutes(
         return res.status(401).json({ message: "User not found" });
       }
 
-      // Check subscription status
-      const isActive = user.subscriptionStatus === "active" || 
+      // Check if user is whitelisted or has active subscription
+      const whitelistedEmails = (process.env.VIDEO_WHITELIST_EMAILS || "").split(",").map(e => e.trim().toLowerCase()).filter(Boolean);
+      const isWhitelisted = whitelistedEmails.includes(user.email.toLowerCase()) || user.role === "admin";
+      
+      const isActive = isWhitelisted || user.subscriptionStatus === "active" || 
         (user.subscriptionStatus === "trial" && user.trialEndsAt && new Date(user.trialEndsAt) > new Date());
       
       if (!isActive) {
