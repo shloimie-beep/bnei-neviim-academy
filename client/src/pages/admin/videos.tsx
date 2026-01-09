@@ -257,18 +257,34 @@ interface UploadQueueItem {
 export default function VideoManagement() {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
+  const singleFileInputRef = useRef<HTMLInputElement>(null);
+  const thumbnailInputRef = useRef<HTMLInputElement>(null);
+  
+  // Batch upload state
+  const [isBatchDialogOpen, setIsBatchDialogOpen] = useState(false);
   const [uploadCategoryId, setUploadCategoryId] = useState("");
-  const [newCategoryName, setNewCategoryName] = useState("");
   const [uploadQueue, setUploadQueue] = useState<UploadQueueItem[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [currentUploadIndex, setCurrentUploadIndex] = useState(0);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
-  const [categoryToDelete, setCategoryToDelete] = useState<VideoCategory | null>(null);
   const currentXhrRef = useRef<XMLHttpRequest | null>(null);
   const cancelledRef = useRef(false);
+  
+  // Single upload state
+  const [isSingleDialogOpen, setIsSingleDialogOpen] = useState(false);
+  const [singleFile, setSingleFile] = useState<File | null>(null);
+  const [singleTitle, setSingleTitle] = useState("");
+  const [singleDescription, setSingleDescription] = useState("");
+  const [singleCategoryId, setSingleCategoryId] = useState("");
+  const [singleThumbnail, setSingleThumbnail] = useState<File | null>(null);
+  const [singleUploadProgress, setSingleUploadProgress] = useState(0);
+  const [isSingleUploading, setIsSingleUploading] = useState(false);
+  
+  // Category state
+  const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [categoryToDelete, setCategoryToDelete] = useState<VideoCategory | null>(null);
 
   const { data: videos, isLoading } = useQuery<VideoType[]>({
     queryKey: ["/api/admin/videos"],
@@ -576,10 +592,120 @@ export default function VideoManagement() {
     }
     
     if (errorCount === 0 && cancelledCount === 0) {
-      setIsDialogOpen(false);
+      setIsBatchDialogOpen(false);
       setUploadQueue([]);
       setUploadCategoryId("");
       if (fileInputRef.current) fileInputRef.current.value = "";
+    }
+  };
+
+  const handleSingleUpload = async () => {
+    if (!singleFile || !singleTitle) return;
+
+    setIsSingleUploading(true);
+    setSingleUploadProgress(0);
+
+    try {
+      // Step 1: Request presigned URL
+      setSingleUploadProgress(5);
+      const urlResponse = await fetch("/api/admin/videos/request-upload-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: singleFile.name,
+          size: singleFile.size,
+          contentType: singleFile.type || "video/mp4",
+        }),
+      });
+
+      if (!urlResponse.ok) {
+        throw new Error("Failed to get upload URL");
+      }
+
+      const { uploadURL, objectPath } = await urlResponse.json();
+
+      // Step 2: Upload to cloud storage
+      setSingleUploadProgress(10);
+      await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        
+        xhr.upload.addEventListener("progress", (e) => {
+          if (e.lengthComputable) {
+            const percent = 10 + Math.round((e.loaded / e.total) * 80);
+            setSingleUploadProgress(percent);
+          }
+        });
+
+        xhr.onload = () => {
+          if (xhr.status >= 200 && xhr.status < 300) {
+            resolve();
+          } else {
+            reject(new Error(`Upload failed (status ${xhr.status})`));
+          }
+        };
+        xhr.onerror = () => reject(new Error("Network error"));
+        xhr.ontimeout = () => reject(new Error("Upload timed out"));
+        xhr.timeout = 36000000; // 10 hours timeout
+        xhr.open("PUT", uploadURL);
+        xhr.setRequestHeader("Content-Type", singleFile.type || "video/mp4");
+        xhr.send(singleFile);
+      });
+
+      // Step 3: Finalize
+      setSingleUploadProgress(90);
+      const finalizeResponse = await fetch("/api/admin/videos/finalize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: singleTitle,
+          description: singleDescription,
+          categoryId: singleCategoryId && singleCategoryId !== "none" ? singleCategoryId : null,
+          objectPath,
+          filename: singleFile.name,
+          fileSize: singleFile.size,
+        }),
+      });
+
+      if (!finalizeResponse.ok) {
+        throw new Error("Failed to finalize upload");
+      }
+
+      const videoData = await finalizeResponse.json();
+
+      // Step 4: Upload thumbnail if selected
+      if (singleThumbnail && videoData.id) {
+        setSingleUploadProgress(95);
+        const thumbnailFormData = new FormData();
+        thumbnailFormData.append("thumbnail", singleThumbnail);
+        
+        const thumbnailResponse = await fetch(`/api/admin/videos/${videoData.id}/thumbnail`, {
+          method: "POST",
+          body: thumbnailFormData,
+        });
+        
+        if (!thumbnailResponse.ok) {
+          console.error("Thumbnail upload failed, but video was created successfully");
+        }
+      }
+
+      setSingleUploadProgress(100);
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+      toast({ title: "Video uploaded successfully", description: "Video is being processed and will be ready shortly." });
+      
+      // Reset form
+      setIsSingleDialogOpen(false);
+      setSingleFile(null);
+      setSingleThumbnail(null);
+      setSingleTitle("");
+      setSingleDescription("");
+      setSingleCategoryId("");
+      if (singleFileInputRef.current) singleFileInputRef.current.value = "";
+      if (thumbnailInputRef.current) thumbnailInputRef.current.value = "";
+    } catch (error: any) {
+      toast({ title: "Upload failed", description: error.message, variant: "destructive" });
+    } finally {
+      setIsSingleUploading(false);
+      setSingleUploadProgress(0);
     }
   };
 
@@ -590,7 +716,7 @@ export default function VideoManagement() {
           <h1 className="text-2xl font-bold">Video Library</h1>
           <p className="text-muted-foreground">Manage video content for subscribers</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button 
             variant="outline" 
             onClick={() => cleanupMutation.mutate()}
@@ -604,11 +730,143 @@ export default function VideoManagement() {
             )}
             Cleanup Storage
           </Button>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+          
+          <Dialog open={isSingleDialogOpen} onOpenChange={setIsSingleDialogOpen}>
             <DialogTrigger asChild>
-              <Button data-testid="button-upload-video">
+              <Button data-testid="button-upload-single-video">
                 <Upload className="h-4 w-4 mr-2" />
                 Upload Video
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Upload Video</DialogTitle>
+                <DialogDescription>
+                  Upload a video file with full details. Supported formats: MP4, WebM, MOV, AVI, MKV (max 10GB)
+                </DialogDescription>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="single-video-file">Video File</Label>
+                  <Input
+                    id="single-video-file"
+                    type="file"
+                    accept="video/*"
+                    ref={singleFileInputRef}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        setSingleFile(file);
+                        if (!singleTitle) {
+                          setSingleTitle(file.name.replace(/\.[^/.]+$/, ""));
+                        }
+                      }
+                    }}
+                    disabled={isSingleUploading}
+                    data-testid="input-single-video-file"
+                  />
+                  {singleFile && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Selected: {singleFile.name} ({formatFileSize(singleFile.size)})
+                    </p>
+                  )}
+                </div>
+                <div>
+                  <Label htmlFor="single-video-title">Title</Label>
+                  <Input
+                    id="single-video-title"
+                    value={singleTitle}
+                    onChange={(e) => setSingleTitle(e.target.value)}
+                    placeholder="Enter video title"
+                    disabled={isSingleUploading}
+                    data-testid="input-single-video-title"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="single-video-description">Description (optional)</Label>
+                  <Textarea
+                    id="single-video-description"
+                    value={singleDescription}
+                    onChange={(e) => setSingleDescription(e.target.value)}
+                    placeholder="Enter video description"
+                    rows={3}
+                    disabled={isSingleUploading}
+                    data-testid="input-single-video-description"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="single-video-category">Category (optional)</Label>
+                  <Select value={singleCategoryId} onValueChange={setSingleCategoryId} disabled={isSingleUploading}>
+                    <SelectTrigger data-testid="select-single-video-category">
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="none">No Category</SelectItem>
+                      {categories.map((cat) => (
+                        <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="single-video-thumbnail">Thumbnail Image (optional)</Label>
+                  <Input
+                    id="single-video-thumbnail"
+                    type="file"
+                    accept="image/*"
+                    ref={thumbnailInputRef}
+                    onChange={(e) => setSingleThumbnail(e.target.files?.[0] || null)}
+                    disabled={isSingleUploading}
+                    data-testid="input-single-video-thumbnail"
+                  />
+                  {singleThumbnail && (
+                    <p className="text-sm text-muted-foreground mt-1">
+                      Selected: {singleThumbnail.name}
+                    </p>
+                  )}
+                </div>
+                {isSingleUploading && (
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>{singleUploadProgress >= 100 ? "Processing video..." : "Uploading..."}</span>
+                      <span>{singleUploadProgress >= 100 ? "Please wait" : `${singleUploadProgress}%`}</span>
+                    </div>
+                    <div className="h-2 bg-muted rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full transition-all duration-300 ${singleUploadProgress >= 100 ? "bg-primary animate-pulse" : "bg-primary"}`}
+                        style={{ width: `${singleUploadProgress}%` }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+              <DialogFooter>
+                <Button variant="ghost" onClick={() => setIsSingleDialogOpen(false)} disabled={isSingleUploading}>
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={handleSingleUpload} 
+                  disabled={!singleFile || !singleTitle || isSingleUploading}
+                  data-testid="button-confirm-single-upload"
+                >
+                  {isSingleUploading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      {singleUploadProgress >= 100 ? "Processing..." : "Uploading..."}
+                    </>
+                  ) : (
+                    "Upload"
+                  )}
+                </Button>
+              </DialogFooter>
+            </DialogContent>
+          </Dialog>
+          
+          <Dialog open={isBatchDialogOpen} onOpenChange={setIsBatchDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" data-testid="button-batch-upload">
+                <Plus className="h-4 w-4 mr-2" />
+                Batch Upload
               </Button>
             </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
@@ -720,7 +978,7 @@ export default function VideoManagement() {
                 <Button 
                   variant="ghost" 
                   onClick={() => {
-                    setIsDialogOpen(false);
+                    setIsBatchDialogOpen(false);
                     setUploadQueue([]);
                     setUploadCategoryId("");
                   }}
@@ -916,7 +1174,7 @@ export default function VideoManagement() {
             <p className="text-muted-foreground mb-4">
               Upload videos for your subscribers to watch
             </p>
-            <Button onClick={() => setIsDialogOpen(true)} data-testid="button-upload-first-video">
+            <Button onClick={() => setIsSingleDialogOpen(true)} data-testid="button-upload-first-video">
               <Upload className="h-4 w-4 mr-2" />
               Upload First Video
             </Button>
