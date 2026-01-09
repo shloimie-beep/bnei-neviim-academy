@@ -231,10 +231,8 @@ export default function VideoManagement() {
   const [uploadCategoryId, setUploadCategoryId] = useState("");
   const [newCategoryName, setNewCategoryName] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [selectedThumbnail, setSelectedThumbnail] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-  const thumbnailInputRef = useRef<HTMLInputElement>(null);
 
   const { data: videos, isLoading } = useQuery<VideoType[]>({
     queryKey: ["/api/admin/videos"],
@@ -335,57 +333,84 @@ export default function VideoManagement() {
     setIsUploading(true);
     setUploadProgress(0);
 
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-    formData.append("title", uploadTitle);
-    formData.append("description", uploadDescription);
-    if (uploadCategoryId && uploadCategoryId !== "none") {
-      formData.append("categoryId", uploadCategoryId);
-    }
-    if (selectedThumbnail) {
-      formData.append("thumbnail", selectedThumbnail);
-    }
-
     try {
-      const xhr = new XMLHttpRequest();
-      
-      xhr.upload.addEventListener("progress", (e) => {
-        if (e.lengthComputable) {
-          const percent = Math.round((e.loaded / e.total) * 100);
-          setUploadProgress(percent);
-        }
+      // Step 1: Request presigned URL from backend (5%)
+      setUploadProgress(5);
+      const urlResponse = await fetch("/api/admin/videos/request-upload-url", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: selectedFile.name,
+          size: selectedFile.size,
+          contentType: selectedFile.type || "video/mp4",
+        }),
       });
 
+      if (!urlResponse.ok) {
+        const errorData = await urlResponse.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to get upload URL");
+      }
+
+      const { uploadURL, objectPath } = await urlResponse.json();
+
+      // Step 2: Upload video directly to cloud storage with progress
+      setUploadProgress(10);
       await new Promise<void>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        
+        xhr.upload.addEventListener("progress", (e) => {
+          if (e.lengthComputable) {
+            // Progress from 10% to 90% during upload
+            const percent = 10 + Math.round((e.loaded / e.total) * 80);
+            setUploadProgress(percent);
+          }
+        });
+
         xhr.onload = () => {
           if (xhr.status >= 200 && xhr.status < 300) {
             resolve();
           } else {
-            try {
-              const response = JSON.parse(xhr.responseText);
-              reject(new Error(response.message || "Upload failed"));
-            } catch {
-              reject(new Error(`Upload failed (status ${xhr.status})`));
-            }
+            reject(new Error(`Cloud upload failed (status ${xhr.status})`));
           }
         };
-        xhr.onerror = () => reject(new Error("Network error - please check your connection"));
+        xhr.onerror = () => reject(new Error("Network error during cloud upload"));
         xhr.ontimeout = () => reject(new Error("Upload timed out - try a smaller file"));
-        xhr.timeout = 1800000; // 30 minutes timeout
-        xhr.open("POST", "/api/admin/videos");
-        xhr.send(formData);
+        xhr.timeout = 3600000; // 60 minutes timeout for large files
+        xhr.open("PUT", uploadURL);
+        xhr.setRequestHeader("Content-Type", selectedFile.type || "video/mp4");
+        xhr.send(selectedFile);
       });
 
+      // Step 3: Finalize upload in backend (90%)
+      setUploadProgress(90);
+      const finalizeResponse = await fetch("/api/admin/videos/finalize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: uploadTitle,
+          description: uploadDescription,
+          categoryId: uploadCategoryId && uploadCategoryId !== "none" ? uploadCategoryId : null,
+          objectPath,
+          filename: selectedFile.name,
+          fileSize: selectedFile.size,
+        }),
+      });
+
+      if (!finalizeResponse.ok) {
+        const errorData = await finalizeResponse.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to finalize video upload");
+      }
+
+      setUploadProgress(100);
+
       queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
-      toast({ title: "Video uploaded successfully" });
+      toast({ title: "Video uploaded successfully", description: "Video is being processed and will be ready shortly. You can add a thumbnail after processing completes." });
       setIsDialogOpen(false);
       setSelectedFile(null);
-      setSelectedThumbnail(null);
       setUploadTitle("");
       setUploadDescription("");
       setUploadCategoryId("");
       if (fileInputRef.current) fileInputRef.current.value = "";
-      if (thumbnailInputRef.current) thumbnailInputRef.current.value = "";
     } catch (error: any) {
       toast({ title: "Upload failed", description: error.message, variant: "destructive" });
     } finally {
@@ -466,22 +491,6 @@ export default function VideoManagement() {
                     ))}
                   </SelectContent>
                 </Select>
-              </div>
-              <div>
-                <Label htmlFor="video-thumbnail">Thumbnail Image (optional)</Label>
-                <Input
-                  id="video-thumbnail"
-                  type="file"
-                  accept="image/*"
-                  ref={thumbnailInputRef}
-                  onChange={(e) => setSelectedThumbnail(e.target.files?.[0] || null)}
-                  data-testid="input-video-thumbnail"
-                />
-                {selectedThumbnail && (
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Selected: {selectedThumbnail.name}
-                  </p>
-                )}
               </div>
               {isUploading && (
                 <div className="space-y-2">

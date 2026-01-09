@@ -40,7 +40,7 @@ args = "npm run dev"
 waitForPort = 5000
 
 [agent]
-integrations = ["stripe:2.0.0", "javascript_database:1.0.0", "resend:1.0.0"]
+integrations = ["stripe:2.0.0", "javascript_database:1.0.0", "resend:1.0.0", "javascript_object_storage:2.0.0"]
 
 [userenv]
 

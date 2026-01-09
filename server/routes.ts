@@ -16,6 +16,7 @@ import crypto from "crypto";
 import { sql } from "drizzle-orm";
 import { db } from "./db";
 import { pool } from "./db";
+import { ObjectStorageService, objectStorageClient } from "./replit_integrations/object_storage";
 
 const execAsync = promisify(exec);
 
@@ -1164,12 +1165,23 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Video not found" });
       }
 
-      // Delete the video file from disk
-      if (fs.existsSync(video.filepath)) {
+      // Delete from cloud storage if stored there
+      if (video.filepath.startsWith("/objects/") || video.filepath.startsWith("https://storage.googleapis.com/")) {
+        try {
+          const objectStorageService = new ObjectStorageService();
+          const normalizedPath = objectStorageService.normalizeObjectEntityPath(video.filepath);
+          if (normalizedPath.startsWith("/objects/")) {
+            const objectFile = await objectStorageService.getObjectEntityFile(normalizedPath);
+            await objectFile.delete();
+          }
+        } catch (err) {
+          console.error("Failed to delete video from cloud storage:", err);
+        }
+      } else if (fs.existsSync(video.filepath)) {
         fs.unlinkSync(video.filepath);
       }
 
-      // Delete thumbnail if exists
+      // Delete thumbnail if exists (still local)
       if (video.thumbnailPath && fs.existsSync(video.thumbnailPath)) {
         fs.unlinkSync(video.thumbnailPath);
       }
@@ -1179,6 +1191,158 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Delete video error:", error);
       res.status(500).json({ message: "Failed to delete video" });
+    }
+  });
+
+  // ============ CLOUD VIDEO UPLOAD ============
+  const objectStorageService = new ObjectStorageService();
+
+  // Admin: Request presigned URL for video upload
+  app.post("/api/admin/videos/request-upload-url", requireAdmin, async (req, res) => {
+    try {
+      const { name, size, contentType } = req.body;
+
+      if (!name) {
+        return res.status(400).json({ message: "Filename is required" });
+      }
+
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
+
+      res.json({
+        uploadURL,
+        objectPath,
+        metadata: { name, size, contentType },
+      });
+    } catch (error) {
+      console.error("Request upload URL error:", error);
+      res.status(500).json({ message: "Failed to generate upload URL" });
+    }
+  });
+
+  // Admin: Finalize video upload (create record after successful cloud upload)
+  app.post("/api/admin/videos/finalize", requireAdmin, async (req, res) => {
+    try {
+      const { title, description, categoryId, objectPath, filename, fileSize } = req.body;
+
+      if (!title || !objectPath) {
+        return res.status(400).json({ message: "Title and objectPath are required" });
+      }
+
+      const video = await storage.createVideo({
+        title,
+        description: description || null,
+        filename: filename || "uploaded-video.mp4",
+        filepath: objectPath,
+        fileSize: fileSize || null,
+        status: "processing",
+        categoryId: categoryId || null,
+        uploadedBy: req.session.userId!,
+        thumbnailPath: null,
+      });
+
+      res.json(video);
+
+      // Start background video conversion
+      (async () => {
+        try {
+          console.log(`Starting video conversion for ${video.id}...`);
+          
+          // Download video from cloud storage to temp file
+          const tempDir = path.join(process.cwd(), "uploads", "temp");
+          if (!fs.existsSync(tempDir)) {
+            fs.mkdirSync(tempDir, { recursive: true });
+          }
+          
+          const tempOriginalPath = path.join(tempDir, `${video.id}-original`);
+          const tempConvertedPath = path.join(tempDir, `${video.id}-converted.mp4`);
+          
+          // Get the file from object storage
+          const objectFile = await objectStorageService.getObjectEntityFile(objectPath);
+          
+          // Download to local temp file
+          await new Promise<void>((resolve, reject) => {
+            const stream = objectFile.createReadStream();
+            const writeStream = fs.createWriteStream(tempOriginalPath);
+            stream.on("error", reject);
+            writeStream.on("error", reject);
+            writeStream.on("finish", resolve);
+            stream.pipe(writeStream);
+          });
+          
+          console.log(`Downloaded ${video.id} for conversion`);
+          
+          // Convert with FFmpeg
+          const ffmpegCommand = `ffmpeg -i "${tempOriginalPath}" -vf "scale=-2:720" -c:v libx264 -preset medium -crf 23 -c:a aac -b:a 128k -movflags +faststart -y "${tempConvertedPath}"`;
+          
+          await execAsync(ffmpegCommand, { timeout: 1800000 });
+          
+          console.log(`FFmpeg conversion completed for ${video.id}`);
+          
+          // Upload converted file back to cloud storage
+          const convertedUploadURL = await objectStorageService.getObjectEntityUploadURL();
+          const convertedObjectPath = objectStorageService.normalizeObjectEntityPath(convertedUploadURL);
+          
+          // Parse the URL to get bucket and object name for direct upload
+          const url = new URL(convertedUploadURL);
+          const pathParts = url.pathname.slice(1).split("/");
+          const bucketName = pathParts[0];
+          const objectName = pathParts.slice(1).join("/");
+          
+          const bucket = objectStorageClient.bucket(bucketName);
+          const newFile = bucket.file(objectName);
+          
+          await new Promise<void>((resolve, reject) => {
+            const readStream = fs.createReadStream(tempConvertedPath);
+            const writeStream = newFile.createWriteStream({
+              resumable: false,
+              contentType: "video/mp4",
+            });
+            readStream.on("error", reject);
+            writeStream.on("error", reject);
+            writeStream.on("finish", resolve);
+            readStream.pipe(writeStream);
+          });
+          
+          console.log(`Uploaded converted video for ${video.id}`);
+          
+          const stats = fs.statSync(tempConvertedPath);
+          
+          // Update video record with new path
+          await storage.updateVideo(video.id, {
+            filepath: convertedObjectPath,
+            filename: `${video.id}-converted.mp4`,
+            fileSize: stats.size,
+            status: "ready",
+          });
+          
+          // Clean up temp files
+          if (fs.existsSync(tempOriginalPath)) fs.unlinkSync(tempOriginalPath);
+          if (fs.existsSync(tempConvertedPath)) fs.unlinkSync(tempConvertedPath);
+          
+          // Delete original uploaded file from cloud
+          try {
+            await objectFile.delete();
+          } catch (err) {
+            console.error("Failed to delete original cloud file:", err);
+          }
+          
+          console.log(`Video ${video.id} converted and uploaded successfully`);
+        } catch (conversionError) {
+          console.error(`Video conversion failed for ${video.id}:`, conversionError);
+          await storage.updateVideo(video.id, { status: "failed" });
+          
+          // Clean up any temp files
+          const tempDir = path.join(process.cwd(), "uploads", "temp");
+          const tempOriginalPath = path.join(tempDir, `${video.id}-original`);
+          const tempConvertedPath = path.join(tempDir, `${video.id}-converted.mp4`);
+          if (fs.existsSync(tempOriginalPath)) fs.unlinkSync(tempOriginalPath);
+          if (fs.existsSync(tempConvertedPath)) fs.unlinkSync(tempConvertedPath);
+        }
+      })();
+    } catch (error) {
+      console.error("Finalize video error:", error);
+      res.status(500).json({ message: "Failed to finalize video upload" });
     }
   });
 
@@ -1305,54 +1469,98 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Video is not ready for playback" });
       }
 
-      // Stream video with range support for seeking
-      const stat = fs.statSync(video.filepath);
-      const fileSize = stat.size;
-      const range = req.headers.range;
+      // Check if video is stored in cloud storage
+      const isCloudStorage = video.filepath.startsWith("/objects/");
+      
+      if (isCloudStorage) {
+        // Stream from cloud storage
+        try {
+          const objectFile = await objectStorageService.getObjectEntityFile(video.filepath);
+          const [metadata] = await objectFile.getMetadata();
+          const fileSize = parseInt(metadata.size as string, 10);
+          const range = req.headers.range;
+          
+          // Increment view count only on initial request
+          if (!range || range === "bytes=0-") {
+            await storage.incrementVideoViewCount(video.id);
+          }
 
-      // Determine content type based on file extension
-      const ext = path.extname(video.filepath).toLowerCase();
-      const mimeTypes: { [key: string]: string } = {
-        ".mp4": "video/mp4",
-        ".webm": "video/webm",
-        ".mov": "video/quicktime",
-        ".m4v": "video/x-m4v",
-        ".avi": "video/x-msvideo",
-        ".mkv": "video/x-matroska",
-        ".3gp": "video/3gpp",
-        ".mpeg": "video/mpeg",
-        ".mpg": "video/mpeg",
-        ".ogv": "video/ogg",
-        ".flv": "video/x-flv",
-        ".wmv": "video/x-ms-wmv",
-      };
-      const contentType = mimeTypes[ext] || "video/mp4";
-
-      // Increment view count only on initial request (not range requests from seeking)
-      if (!range || range === "bytes=0-") {
-        await storage.incrementVideoViewCount(video.id);
-      }
-
-      if (range) {
-        const parts = range.replace(/bytes=/, "").split("-");
-        const start = parseInt(parts[0], 10);
-        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
-        const chunksize = end - start + 1;
-        const file = fs.createReadStream(video.filepath, { start, end });
-        
-        res.writeHead(206, {
-          "Content-Range": `bytes ${start}-${end}/${fileSize}`,
-          "Accept-Ranges": "bytes",
-          "Content-Length": chunksize,
-          "Content-Type": contentType,
-        });
-        file.pipe(res);
+          if (range) {
+            const parts = range.replace(/bytes=/, "").split("-");
+            const start = parseInt(parts[0], 10);
+            const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+            const chunksize = end - start + 1;
+            
+            res.writeHead(206, {
+              "Content-Range": `bytes ${start}-${end}/${fileSize}`,
+              "Accept-Ranges": "bytes",
+              "Content-Length": chunksize,
+              "Content-Type": "video/mp4",
+            });
+            
+            const stream = objectFile.createReadStream({ start, end });
+            stream.pipe(res);
+          } else {
+            res.writeHead(200, {
+              "Content-Length": fileSize,
+              "Content-Type": "video/mp4",
+            });
+            objectFile.createReadStream().pipe(res);
+          }
+        } catch (cloudError) {
+          console.error("Cloud video stream error:", cloudError);
+          return res.status(500).json({ message: "Failed to stream video from cloud" });
+        }
       } else {
-        res.writeHead(200, {
-          "Content-Length": fileSize,
-          "Content-Type": contentType,
-        });
-        fs.createReadStream(video.filepath).pipe(res);
+        // Stream from local filesystem
+        const stat = await fs.promises.stat(video.filepath);
+        const fileSize = stat.size;
+        const range = req.headers.range;
+
+        // Determine content type based on file extension
+        const ext = path.extname(video.filepath).toLowerCase();
+        const mimeTypes: { [key: string]: string } = {
+          ".mp4": "video/mp4",
+          ".webm": "video/webm",
+          ".mov": "video/quicktime",
+          ".m4v": "video/x-m4v",
+          ".avi": "video/x-msvideo",
+          ".mkv": "video/x-matroska",
+          ".3gp": "video/3gpp",
+          ".mpeg": "video/mpeg",
+          ".mpg": "video/mpeg",
+          ".ogv": "video/ogg",
+          ".flv": "video/x-flv",
+          ".wmv": "video/x-ms-wmv",
+        };
+        const contentType = mimeTypes[ext] || "video/mp4";
+
+        // Increment view count only on initial request (not range requests from seeking)
+        if (!range || range === "bytes=0-") {
+          await storage.incrementVideoViewCount(video.id);
+        }
+
+        if (range) {
+          const parts = range.replace(/bytes=/, "").split("-");
+          const start = parseInt(parts[0], 10);
+          const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+          const chunksize = end - start + 1;
+          const file = fs.createReadStream(video.filepath, { start, end });
+          
+          res.writeHead(206, {
+            "Content-Range": `bytes ${start}-${end}/${fileSize}`,
+            "Accept-Ranges": "bytes",
+            "Content-Length": chunksize,
+            "Content-Type": contentType,
+          });
+          file.pipe(res);
+        } else {
+          res.writeHead(200, {
+            "Content-Length": fileSize,
+            "Content-Type": contentType,
+          });
+          fs.createReadStream(video.filepath).pipe(res);
+        }
       }
     } catch (error) {
       console.error("Video stream error:", error);
