@@ -1368,12 +1368,60 @@ export async function registerRoutes(
           
           console.log(`Downloaded ${video.id} for conversion`);
           
-          // Convert with FFmpeg
-          const ffmpegCommand = `ffmpeg -i "${tempOriginalPath}" -vf "scale=-2:720" -c:v libx264 -preset medium -crf 23 -c:a aac -b:a 128k -movflags +faststart -y "${tempConvertedPath}"`;
+          // Check if video needs conversion by probing format and resolution
+          let needsConversion = true;
+          let videoHeight = 1080; // Default assumption
+          let videoCodec = "";
+          let audioCodec = "";
           
-          await execAsync(ffmpegCommand, { timeout: 1800000 });
+          try {
+            const probeCommand = `ffprobe -v quiet -print_format json -show_streams "${tempOriginalPath}"`;
+            const { stdout: probeOutput } = await execAsync(probeCommand, { timeout: 30000 });
+            const probeData = JSON.parse(probeOutput);
+            
+            const videoStream = probeData.streams?.find((s: any) => s.codec_type === "video");
+            const audioStream = probeData.streams?.find((s: any) => s.codec_type === "audio");
+            
+            if (videoStream) {
+              videoHeight = videoStream.height || 1080;
+              videoCodec = videoStream.codec_name || "";
+            }
+            if (audioStream) {
+              audioCodec = audioStream.codec_name || "";
+            }
+            
+            // Skip conversion if already H.264/AAC MP4 and resolution is ≤720p
+            const isH264 = videoCodec === "h264";
+            const isAac = audioCodec === "aac";
+            const isSmallEnough = videoHeight <= 720;
+            const isMp4 = filename?.toLowerCase().endsWith(".mp4");
+            
+            if (isH264 && isAac && isSmallEnough && isMp4) {
+              needsConversion = false;
+              console.log(`Video ${video.id} is already optimized (H.264/AAC, ${videoHeight}p) - skipping conversion`);
+            } else {
+              console.log(`Video ${video.id} needs conversion: codec=${videoCodec}/${audioCodec}, height=${videoHeight}p`);
+            }
+          } catch (probeError) {
+            console.log(`Could not probe video ${video.id}, will convert:`, probeError);
+          }
           
-          console.log(`FFmpeg conversion completed for ${video.id}`);
+          if (needsConversion) {
+            // Build FFmpeg command with optimizations:
+            // - Use "veryfast" preset for ~50% faster encoding (slight quality trade-off)
+            // - Only scale if video is larger than 720p
+            // - Use multiple threads
+            const scaleFilter = videoHeight > 720 ? '-vf "scale=-2:720"' : '';
+            const ffmpegCommand = `ffmpeg -i "${tempOriginalPath}" ${scaleFilter} -c:v libx264 -preset veryfast -crf 23 -threads 0 -c:a aac -b:a 128k -movflags +faststart -y "${tempConvertedPath}"`;
+            
+            console.log(`Running FFmpeg for ${video.id}: ${ffmpegCommand}`);
+            await execAsync(ffmpegCommand, { timeout: 1800000 });
+            console.log(`FFmpeg conversion completed for ${video.id}`);
+          } else {
+            // Just copy the file as-is (rename to .mp4 if needed)
+            fs.copyFileSync(tempOriginalPath, tempConvertedPath);
+            console.log(`Copied original file for ${video.id} (no conversion needed)`);
+          }
           
           // Upload converted file back to cloud storage
           const convertedUploadURL = await objectStorageService.getObjectEntityUploadURL();
