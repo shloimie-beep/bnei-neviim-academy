@@ -693,6 +693,24 @@ export default function VideoManagement() {
         throw finalizeError || new Error("Failed to finalize upload after 3 attempts");
       }
 
+      const videoData = await finalizeResponse.json();
+
+      // Step 4: Upload thumbnail if selected
+      if (singleThumbnail && videoData.id) {
+        setSingleUploadProgress(95);
+        const thumbnailFormData = new FormData();
+        thumbnailFormData.append("thumbnail", singleThumbnail);
+        
+        const thumbnailResponse = await fetch(`/api/admin/videos/${videoData.id}/thumbnail`, {
+          method: "POST",
+          body: thumbnailFormData,
+        });
+        
+        if (!thumbnailResponse.ok) {
+          console.error("Thumbnail upload failed, but video was created successfully");
+        }
+      }
+
       setSingleUploadProgress(100);
       queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
       toast({ title: "Video uploaded to Bunny Stream", description: "Video is being processed and will be ready shortly." });
