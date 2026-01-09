@@ -9,6 +9,8 @@ import norfolkMapImg from "@assets/Norfolk,_Virginia_1767898934152.webp";
 import stlouisMapImg from "@assets/St_Louis_1767898934150.webp";
 import vegasMapImg from "@assets/Las_Vegas_1767898934148.webp";
 import atlantaMapImg from "@assets/Atlanta_1767898934149.webp";
+import worldMapImg from "@assets/generated_images/global_connections_world_map.png";
+import captivatedCrowdImg from "@assets/generated_images/b&w_captivated_crowd_photo.png";
 
 export default function LandingPage() {
   return (
@@ -68,21 +70,21 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/20" />
         <div className="container mx-auto px-4 py-32 relative z-10">
           <div className="max-w-4xl mx-auto text-center space-y-4">
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-normal text-white italic" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-normal text-white italic animate-fade-in" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
               Where Kids Fall in Love With Torah
             </h1>
-            <p className="text-xl md:text-2xl text-white font-bold mt-8">
+            <p className="text-xl md:text-2xl text-white font-bold mt-8 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
               Rabbi Eli Scheller
             </p>
-            <p className="text-lg text-white/90 font-medium">
+            <p className="text-lg text-white/90 font-medium animate-fade-in-up" style={{animationDelay: '0.2s'}}>
               Global Educator & Creator of the OneTime OneTime Experience
             </p>
-            <p className="text-lg text-white/80">
+            <p className="text-lg text-white/80 animate-fade-in-up" style={{animationDelay: '0.25s'}}>
               Inspiring Families Through Stories and Humor
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
               <Link href="/register">
-                <Button size="lg" className="bg-[#EDE518] text-black border-[#EDE518] font-bold px-10 text-base uppercase tracking-wide" data-testid="button-hotline">
+                <Button size="lg" className="bg-[#EDE518] text-black border-[#EDE518] font-bold px-10 text-base uppercase tracking-wide animate-pulse-glow" data-testid="button-hotline">
                   The Hotline
                 </Button>
               </Link>
@@ -202,11 +204,17 @@ export default function LandingPage() {
             As Seen Across The Jewish World:
           </h3>
           <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-80">
-            <img src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/logo-vert-yellow.png/:/rs=h:100,cg:true" alt="Torah Anytime" className="h-16 w-auto" />
-            <img src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Untitled%20drawing.png/:/rs=h:100,cg:true,m" alt="24Six" className="h-12 w-auto" />
+            <a href="https://www.torahanytime.com/#/speaker?l=540" target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-110" data-testid="link-torahanytime">
+              <img src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Untitled%20drawing.png/:/rs=h:100,cg:true,m" alt="Torah Anytime" className="h-12 w-auto" />
+            </a>
+            <a href="https://24six.app/preview/music/artist/654/rabbi-eli-scheller" target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-110" data-testid="link-24six">
+              <img src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/logo-vert-yellow.png/:/rs=h:100,cg:true" alt="24Six" className="h-16 w-auto" />
+            </a>
             <img src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Loop_Purple_DarkPurple%402x-2.png/:/rs=h:100,cg:true" alt="Loop" className="h-12 w-auto" />
             <img src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/mishpachalogo.jpg/:/cr=t:0%25,l:2.1%25,w:95.8%25,h:100%25/rs=h:100,cg:true" alt="Mishpacha" className="h-12 w-auto" />
-            <img src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/WhatsApp%20Image%202025-11-26%20at%2014.55.32.jpeg/:/rs=h:100,cg:true" alt="Naki Radio" className="h-12 w-auto" />
+            <a href="https://nakiradio.com/" target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-110" data-testid="link-nakiradio">
+              <img src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/WhatsApp%20Image%202025-11-26%20at%2014.55.32.jpeg/:/rs=h:100,cg:true" alt="Naki Radio" className="h-12 w-auto" />
+            </a>
           </div>
         </div>
       </section>
@@ -217,10 +225,10 @@ export default function LandingPage() {
             Featured Products
           </h3>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            <Card className="bg-[#1a2a3a] border-none overflow-hidden group">
+            <Card className="bg-[#1a2a3a] border-none overflow-hidden group animate-fade-in-up">
               <div className="aspect-[3/4] overflow-hidden">
                 <img 
-                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/ChatGPT%20Image%20Oct%2026%2C%202025%20at%2004_35_46%20PM.png/:/cr=t:0.59%25,l:0%25,w:100%25,h:88.89%25/rs=w:365,h:486,cg:true" 
+                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Black%20White%20Modern%20Grunge%20Typographic%20Brand%20Lo.jpg/:/cr=t:1.79%25,l:32.74%25,w:66.96%25,h:89.28%25/rs=w:365,h:486,cg:true,m" 
                   alt="It's All Good Film" 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
@@ -229,13 +237,15 @@ export default function LandingPage() {
                 <h4 className="font-bold text-white mb-1">IT'S ALL GOOD</h4>
                 <p className="text-sm text-white/70 mb-2">Inspirational / Comical Film</p>
                 <p className="text-xs text-[#EDE518]">Included in the OneTime Hotline</p>
-                <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm">
-                  Stream - $7.99
-                </Button>
+                <a href="https://eli-schellergenerous.sellfy.store/p/its-all-good/" target="_blank" rel="noopener noreferrer">
+                  <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm" data-testid="button-product-itsallgood">
+                    Stream - $7.99
+                  </Button>
+                </a>
               </CardContent>
             </Card>
 
-            <Card className="bg-[#1a2a3a] border-none overflow-hidden group">
+            <Card className="bg-[#1a2a3a] border-none overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.1s'}}>
               <div className="aspect-[3/4] overflow-hidden">
                 <img 
                   src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Beige%20Green%20Travel%20To%20The%20World%20Flyer-2.png/:/cr=t:2.87%25,l:0%25,w:100%25,h:94.27%25/rs=w:365,h:486,cg:true" 
@@ -247,16 +257,18 @@ export default function LandingPage() {
                 <h4 className="font-bold text-white mb-1">Experience Eretz Yisrael</h4>
                 <p className="text-sm text-white/70 mb-2">Inspirational Film</p>
                 <p className="text-xs text-[#EDE518]">Included in the OneTime Hotline</p>
-                <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm">
-                  Stream - $12.99
-                </Button>
+                <a href="https://eli-schellergenerous.sellfy.store/p/experience-eretz-yisrael/" target="_blank" rel="noopener noreferrer">
+                  <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm" data-testid="button-product-eretzyisrael">
+                    Stream - $12.99
+                  </Button>
+                </a>
               </CardContent>
             </Card>
 
-            <Card className="bg-[#1a2a3a] border-none overflow-hidden group">
+            <Card className="bg-[#1a2a3a] border-none overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.2s'}}>
               <div className="aspect-[3/4] overflow-hidden">
                 <img 
-                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Blue%20Professional%20Annual%20Report%20Book%20Cover%20(6%20.png/:/cr=t:6.46%25,l:0%25,w:100%25,h:88.87%25/rs=w:365,h:486,cg:true" 
+                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/blob-ad680e5.png/:/cr=t:0%25,l:34.44%25,w:29.3%25,h:100%25/rs=w:365,h:486,cg:true" 
                   alt="Searching for Happiness" 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
@@ -265,16 +277,18 @@ export default function LandingPage() {
                 <h4 className="font-bold text-white mb-1">Searching for Happiness</h4>
                 <p className="text-sm text-white/70 mb-2">A Comedy Adventure Film</p>
                 <p className="text-xs text-[#EDE518]">Included in the OneTime Hotline</p>
-                <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm">
-                  Stream - $12.99
-                </Button>
+                <a href="https://eli-schellergenerous.sellfy.store/p/chasing-happiness/" target="_blank" rel="noopener noreferrer">
+                  <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm" data-testid="button-product-happiness">
+                    Stream - $12.99
+                  </Button>
+                </a>
               </CardContent>
             </Card>
 
-            <Card className="bg-[#1a2a3a] border-none overflow-hidden group">
+            <Card className="bg-[#1a2a3a] border-none overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.3s'}}>
               <div className="aspect-[3/4] overflow-hidden">
                 <img 
-                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Yellow%20and%20Red%20Bold%20Burger%20Food%20Marketing%20Inst.png/:/cr=t:11.49%25,l:4.96%25,w:89.29%25,h:84.17%25/rs=w:365,h:486,cg:true,m" 
+                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/brown_mystery_movie_poster_video-e60181e.jpg/:/cr=t:0%25,l:27.22%25,w:42.19%25,h:100%25/rs=w:365,h:486,cg:true" 
                   alt="The Purim Shpiel 2025" 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
@@ -283,34 +297,18 @@ export default function LandingPage() {
                 <h4 className="font-bold text-white mb-1">The Purim Shpiel 2025</h4>
                 <p className="text-sm text-white/70 mb-2">Hilarious Comedy Film</p>
                 <p className="text-xs text-[#EDE518]">Included in the OneTime Hotline</p>
-                <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm">
-                  Stream - $12.99
-                </Button>
+                <a href="https://eli-schellergenerous.sellfy.store/p/purim-shpiel-2025/" target="_blank" rel="noopener noreferrer">
+                  <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm" data-testid="button-product-purim">
+                    Stream - $12.99
+                  </Button>
+                </a>
               </CardContent>
             </Card>
 
-            <Card className="bg-[#1a2a3a] border-none overflow-hidden group">
+            <Card className="bg-[#1a2a3a] border-none overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.4s'}}>
               <div className="aspect-[3/4] overflow-hidden">
                 <img 
-                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/blob-ad680e5.png/:/cr=t:0%25,l:34.44%25,w:29.3%25,h:100%25/rs=w:365,h:486,cg:true" 
-                  alt="Story Book" 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <CardContent className="p-4">
-                <h4 className="font-bold text-white mb-1">One Time One Time Story Book</h4>
-                <p className="text-sm text-white/70 mb-2">39 Thrilling Stories</p>
-                <p className="text-xs text-white/50">136 pages. Color images.</p>
-                <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm">
-                  Hard copy - $24.99
-                </Button>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-[#1a2a3a] border-none overflow-hidden group">
-              <div className="aspect-[3/4] overflow-hidden">
-                <img 
-                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Untitled%20design-16.png/:/cr=t:23.53%25,l:21.31%25,w:48.08%25,h:48.08%25/rs=w:365,h:486,cg:true,m" 
+                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Yellow%20and%20Red%20Bold%20Burger%20Food%20Marketing%20Inst.png/:/cr=t:11.49%25,l:4.96%25,w:89.29%25,h:84.17%25/rs=w:365,h:486,cg:true,m" 
                   alt="Joke Book" 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
@@ -319,16 +317,38 @@ export default function LandingPage() {
                 <h4 className="font-bold text-white mb-1">JOKE BOOK</h4>
                 <p className="text-sm text-white/70 mb-2">Just Kidding Stories and Jokes</p>
                 <p className="text-xs text-[#EDE518]">Free PDF in the Hotline</p>
-                <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm">
-                  ORDER on Amazon $19.99
-                </Button>
+                <a href="https://www.amazon.com/dp/B0FCMSL21T" target="_blank" rel="noopener noreferrer">
+                  <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm" data-testid="button-product-jokebook">
+                    ORDER on Amazon $19.99
+                  </Button>
+                </a>
               </CardContent>
             </Card>
 
-            <Card className="bg-[#1a2a3a] border-none overflow-hidden group">
+            <Card className="bg-[#1a2a3a] border-none overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.5s'}}>
               <div className="aspect-[3/4] overflow-hidden">
                 <img 
-                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/brown_mystery_movie_poster_video-e60181e.jpg/:/cr=t:0%25,l:27.22%25,w:42.19%25,h:100%25/rs=w:365,h:486,cg:true" 
+                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Untitled%20design-16.png/:/cr=t:23.53%25,l:21.31%25,w:48.08%25,h:48.08%25/rs=w:365,h:486,cg:true,m" 
+                  alt="Story Book" 
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+              </div>
+              <CardContent className="p-4">
+                <h4 className="font-bold text-white mb-1">One Time One Time Story Book</h4>
+                <p className="text-sm text-white/70 mb-2">39 Thrilling Stories</p>
+                <p className="text-xs text-white/50">136 pages. Color images.</p>
+                <Link href="/register">
+                  <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm" data-testid="button-product-storybook">
+                    Hard copy - $24.99
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-[#1a2a3a] border-none overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.6s'}}>
+              <div className="aspect-[3/4] overflow-hidden">
+                <img 
+                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Blue%20Professional%20Annual%20Report%20Book%20Cover%20(6%20.png/:/cr=t:6.46%25,l:0%25,w:100%25,h:88.87%25/rs=w:365,h:486,cg:true" 
                   alt="Public Speaking Course" 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
@@ -337,16 +357,18 @@ export default function LandingPage() {
                 <h4 className="font-bold text-white mb-1">Public Speaking Mastery</h4>
                 <p className="text-sm text-white/70 mb-2">Full Course</p>
                 <p className="text-xs text-[#EDE518]">Included in the OneTime Hotline</p>
-                <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm">
-                  BUY COURSE - $249
-                </Button>
+                <a href="https://onetimeonetime.thinkific.com/courses/publicspeakingmastery" target="_blank" rel="noopener noreferrer">
+                  <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm" data-testid="button-product-publicspeaking">
+                    BUY COURSE - $249
+                  </Button>
+                </a>
               </CardContent>
             </Card>
 
-            <Card className="bg-[#1a2a3a] border-none overflow-hidden group">
+            <Card className="bg-[#1a2a3a] border-none overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.7s'}}>
               <div className="aspect-[3/4] overflow-hidden">
                 <img 
-                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Black%20White%20Modern%20Grunge%20Typographic%20Brand%20Lo.jpg/:/cr=t:1.79%25,l:32.74%25,w:66.96%25,h:89.28%25/rs=w:365,h:486,cg:true,m" 
+                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/ChatGPT%20Image%20Oct%2026%2C%202025%20at%2004_35_46%20PM.png/:/cr=t:0.59%25,l:0%25,w:100%25,h:88.89%25/rs=w:365,h:486,cg:true" 
                   alt="OneTime Merch" 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
@@ -355,9 +377,11 @@ export default function LandingPage() {
                 <h4 className="font-bold text-white mb-1">One Time One Time Merch</h4>
                 <p className="text-sm text-white/70 mb-2">It's more than merch — it's a movement</p>
                 <p className="text-xs text-white/50">Wear your inspiration with pride</p>
-                <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm">
-                  Browse
-                </Button>
+                <a href="https://onetimeonetime.printful.me/" target="_blank" rel="noopener noreferrer">
+                  <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm" data-testid="button-product-merch">
+                    Browse
+                  </Button>
+                </a>
               </CardContent>
             </Card>
           </div>
@@ -464,25 +488,25 @@ export default function LandingPage() {
 
       <section className="relative h-[300px] md:h-[350px]" data-testid="section-all-over-world">
         <img 
-          src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80" 
-          alt="World connections" 
+          src={worldMapImg} 
+          alt="Global OneTime OneTime hotline reach" 
           className="w-full h-full object-cover"
         />
         <div className="absolute inset-0 bg-black/30" />
         <div className="absolute inset-0 flex items-center justify-center">
-          <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white">...all over the world.</h3>
+          <h3 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white animate-fade-in-up">...all over the world.</h3>
         </div>
       </section>
 
       <section className="relative h-[400px] md:h-[500px]" data-testid="testimonial-1">
         <img 
-          src={silverSpringImg} 
-          alt="Silver Spring event" 
-          className="w-full h-full object-cover"
+          src={captivatedCrowdImg} 
+          alt="Captivated crowd at Silver Spring event" 
+          className="w-full h-full object-cover grayscale"
         />
         <div className="absolute inset-0 bg-black/40" />
         <div className="absolute inset-0 flex items-center justify-center p-8">
-          <div className="text-center max-w-3xl">
+          <div className="text-center max-w-3xl animate-fade-in">
             <div className="text-white/60 text-6xl mb-4">"</div>
             <p className="text-xl md:text-2xl lg:text-3xl font-bold text-white mb-6 leading-relaxed">
               We never saw the kids so captivated by your stories! You electrified the crowd with amazing stories and Torah lessons. R' Eli, thank you!
@@ -696,6 +720,54 @@ export default function LandingPage() {
         }
         .animate-marquee {
           animation: marquee 25s linear infinite;
+        }
+        
+        @keyframes fade-in {
+          from { opacity: 0; }
+          to { opacity: 1; }
+        }
+        .animate-fade-in {
+          animation: fade-in 1s ease-out forwards;
+        }
+        
+        @keyframes fade-in-up {
+          from {
+            opacity: 0;
+            transform: translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        .animate-fade-in-up {
+          animation: fade-in-up 0.6s ease-out both;
+        }
+        
+        @keyframes pulse-glow {
+          0%, 100% { box-shadow: 0 0 20px rgba(237, 229, 24, 0.3); }
+          50% { box-shadow: 0 0 40px rgba(237, 229, 24, 0.6); }
+        }
+        .animate-pulse-glow {
+          animation: pulse-glow 2s ease-in-out infinite;
+        }
+        
+        @keyframes bounce-subtle {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-5px); }
+        }
+        .animate-bounce-subtle {
+          animation: bounce-subtle 2s ease-in-out infinite;
+        }
+        
+        @media (prefers-reduced-motion: reduce) {
+          .animate-marquee,
+          .animate-fade-in,
+          .animate-fade-in-up,
+          .animate-pulse-glow,
+          .animate-bounce-subtle {
+            animation: none;
+          }
         }
       `}</style>
     </div>
