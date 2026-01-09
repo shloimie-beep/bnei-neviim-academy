@@ -20,6 +20,9 @@ import { ObjectStorageService, objectStorageClient } from "./replit_integrations
 
 const execAsync = promisify(exec);
 
+// Initialize object storage service early (used throughout the file)
+const objectStorageService = new ObjectStorageService();
+
 // Extend express-session
 declare module "express-session" {
   interface SessionData {
@@ -1123,17 +1126,65 @@ export async function registerRoutes(
       }
 
       // Delete old thumbnail if exists
-      if (video.thumbnailPath && fs.existsSync(video.thumbnailPath)) {
-        fs.unlinkSync(video.thumbnailPath);
+      if (video.thumbnailPath) {
+        // Delete from cloud storage if it's a cloud path
+        if (video.thumbnailPath.startsWith("/objects/")) {
+          try {
+            const oldObjectFile = await objectStorageService.getObjectEntityFile(video.thumbnailPath);
+            await oldObjectFile.delete();
+            console.log(`Deleted old thumbnail from cloud storage for video ${video.id}`);
+          } catch (err) {
+            console.error(`Failed to delete old thumbnail from cloud storage:`, err);
+          }
+        } else if (fs.existsSync(video.thumbnailPath)) {
+          fs.unlinkSync(video.thumbnailPath);
+        }
       }
 
-      // Use the file path from multer (already in thumbnails directory)
-      const thumbnailPath = req.file.path;
+      // Upload thumbnail to cloud storage
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      const thumbnailPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
+      
+      console.log(`[Thumbnail Upload] uploadURL: ${uploadURL.substring(0, 100)}...`);
+      console.log(`[Thumbnail Upload] normalized thumbnailPath: ${thumbnailPath}`);
+      
+      // Parse the URL to get bucket and object name for direct upload
+      const url = new URL(uploadURL);
+      const pathParts = url.pathname.slice(1).split("/");
+      const bucketName = pathParts[0];
+      const objectName = pathParts.slice(1).join("/");
+      
+      const bucket = objectStorageClient.bucket(bucketName);
+      const thumbnailFile = bucket.file(objectName);
+      
+      // Read the temp file and upload to cloud
+      await new Promise<void>((resolve, reject) => {
+        const readStream = fs.createReadStream(req.file!.path);
+        const writeStream = thumbnailFile.createWriteStream({
+          resumable: false,
+          contentType: req.file!.mimetype,
+        });
+        readStream.on("error", reject);
+        writeStream.on("error", reject);
+        writeStream.on("finish", resolve);
+        readStream.pipe(writeStream);
+      });
+      
+      // Delete the temp file from local storage
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+      
+      console.log(`Thumbnail uploaded to cloud: ${thumbnailPath}`);
 
       const updatedVideo = await storage.updateVideo(video.id, { thumbnailPath });
       res.json(updatedVideo);
     } catch (error) {
       console.error("Thumbnail upload error:", error);
+      // Clean up temp file if it exists
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
       res.status(500).json({ message: "Failed to upload thumbnail" });
     }
   });
@@ -1146,11 +1197,37 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Thumbnail not found" });
       }
 
-      if (!fs.existsSync(video.thumbnailPath)) {
-        return res.status(404).json({ message: "Thumbnail file not found" });
+      // Check if thumbnail is stored in cloud storage
+      if (video.thumbnailPath.startsWith("/objects/")) {
+        try {
+          const objectFile = await objectStorageService.getObjectEntityFile(video.thumbnailPath);
+          const [metadata] = await objectFile.getMetadata();
+          
+          res.set({
+            "Content-Type": metadata.contentType || "image/jpeg",
+            "Content-Length": metadata.size,
+            "Cache-Control": "public, max-age=3600",
+          });
+          
+          const stream = objectFile.createReadStream();
+          stream.on("error", (err) => {
+            console.error("Thumbnail stream error:", err);
+            if (!res.headersSent) {
+              res.status(500).json({ message: "Error streaming thumbnail" });
+            }
+          });
+          stream.pipe(res);
+        } catch (cloudError) {
+          console.error("Cloud thumbnail error:", cloudError);
+          return res.status(404).json({ message: "Thumbnail not found in cloud storage" });
+        }
+      } else {
+        // Serve from local filesystem (for backwards compatibility)
+        if (!fs.existsSync(video.thumbnailPath)) {
+          return res.status(404).json({ message: "Thumbnail file not found" });
+        }
+        res.sendFile(path.resolve(video.thumbnailPath));
       }
-
-      res.sendFile(path.resolve(video.thumbnailPath));
     } catch (error) {
       console.error("Serve thumbnail error:", error);
       res.status(500).json({ message: "Failed to serve thumbnail" });
@@ -1168,10 +1245,9 @@ export async function registerRoutes(
       // Delete video file from cloud storage or local filesystem
       if (video.filepath.startsWith("/objects/") || video.filepath.startsWith("https://storage.googleapis.com/")) {
         try {
-          const localObjectStorageService = new ObjectStorageService();
-          const normalizedPath = localObjectStorageService.normalizeObjectEntityPath(video.filepath);
+          const normalizedPath = objectStorageService.normalizeObjectEntityPath(video.filepath);
           if (normalizedPath.startsWith("/objects/")) {
-            const objectFile = await localObjectStorageService.getObjectEntityFile(normalizedPath);
+            const objectFile = await objectStorageService.getObjectEntityFile(normalizedPath);
             await objectFile.delete();
             console.log(`Deleted video ${req.params.id} from cloud storage`);
           }
@@ -1183,10 +1259,20 @@ export async function registerRoutes(
         console.log(`Deleted video ${req.params.id} from local filesystem`);
       }
 
-      // Delete thumbnail if exists (stored locally)
-      if (video.thumbnailPath && fs.existsSync(video.thumbnailPath)) {
-        fs.unlinkSync(video.thumbnailPath);
-        console.log(`Deleted thumbnail for video ${req.params.id}`);
+      // Delete thumbnail if exists (cloud or local)
+      if (video.thumbnailPath) {
+        if (video.thumbnailPath.startsWith("/objects/")) {
+          try {
+            const thumbnailFile = await objectStorageService.getObjectEntityFile(video.thumbnailPath);
+            await thumbnailFile.delete();
+            console.log(`Deleted thumbnail for video ${req.params.id} from cloud storage`);
+          } catch (err) {
+            console.error(`Failed to delete thumbnail from cloud storage:`, err);
+          }
+        } else if (fs.existsSync(video.thumbnailPath)) {
+          fs.unlinkSync(video.thumbnailPath);
+          console.log(`Deleted thumbnail for video ${req.params.id} from local filesystem`);
+        }
       }
 
       await storage.deleteVideo(req.params.id);
@@ -1199,7 +1285,7 @@ export async function registerRoutes(
   });
 
   // ============ CLOUD VIDEO UPLOAD ============
-  const objectStorageService = new ObjectStorageService();
+  // objectStorageService is initialized at the top of the file
 
   // Admin: Request presigned URL for video upload
   app.post("/api/admin/videos/request-upload-url", requireAdmin, async (req, res) => {
@@ -1212,6 +1298,8 @@ export async function registerRoutes(
 
       const uploadURL = await objectStorageService.getObjectEntityUploadURL();
       const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
+      
+      console.log(`[Cloud Upload] Generated upload URL for ${name}, normalized path: ${objectPath}`);
 
       res.json({
         uploadURL,
@@ -1233,6 +1321,8 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Title and objectPath are required" });
       }
 
+      console.log(`[Cloud Upload] Finalizing video "${title}" with objectPath: ${objectPath}`);
+
       const video = await storage.createVideo({
         title,
         description: description || null,
@@ -1244,6 +1334,8 @@ export async function registerRoutes(
         uploadedBy: req.session.userId!,
         thumbnailPath: null,
       });
+
+      console.log(`[Cloud Upload] Created video record ${video.id} with filepath: ${video.filepath}`);
 
       res.json(video);
 

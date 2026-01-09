@@ -184,26 +184,50 @@ export class ObjectStorageService {
   normalizeObjectEntityPath(
     rawPath: string,
   ): string {
-    if (!rawPath.startsWith("https://storage.googleapis.com/")) {
+    // Already normalized
+    if (rawPath.startsWith("/objects/")) {
       return rawPath;
     }
-  
-    // Extract the path from the URL by removing query parameters and domain
-    const url = new URL(rawPath);
-    const rawObjectPath = url.pathname;
-  
-    let objectEntityDir = this.getPrivateObjectDir();
-    if (!objectEntityDir.endsWith("/")) {
-      objectEntityDir = `${objectEntityDir}/`;
+    
+    // Handle signed URLs from Google Cloud Storage
+    if (rawPath.startsWith("https://storage.googleapis.com/")) {
+      // Extract the path from the URL by removing query parameters and domain
+      const url = new URL(rawPath);
+      const rawObjectPath = url.pathname;
+      
+      // Look for "uploads/" in the path and extract everything after .private/
+      // Path format: /bucket-name/.private/uploads/uuid
+      const uploadsMatch = rawObjectPath.match(/\.private\/(.+)$/);
+      if (uploadsMatch) {
+        const entityId = uploadsMatch[1];
+        console.log(`[Normalize] Converted signed URL to /objects/${entityId}`);
+        return `/objects/${entityId}`;
+      }
+      
+      // Fallback: try to match based on PRIVATE_OBJECT_DIR
+      let objectEntityDir = this.getPrivateObjectDir();
+      if (!objectEntityDir.endsWith("/")) {
+        objectEntityDir = `${objectEntityDir}/`;
+      }
+    
+      if (rawObjectPath.startsWith(objectEntityDir)) {
+        const entityId = rawObjectPath.slice(objectEntityDir.length);
+        console.log(`[Normalize] Converted via PRIVATE_OBJECT_DIR to /objects/${entityId}`);
+        return `/objects/${entityId}`;
+      }
+      
+      // Last resort: extract the path after bucket name
+      // Path format: /bucket-name/some/path
+      const pathParts = rawObjectPath.slice(1).split("/");
+      if (pathParts.length >= 2) {
+        const entityId = pathParts.slice(1).join("/");
+        console.log(`[Normalize] Fallback conversion to /objects/${entityId}`);
+        return `/objects/${entityId}`;
+      }
     }
-  
-    if (!rawObjectPath.startsWith(objectEntityDir)) {
-      return rawObjectPath;
-    }
-  
-    // Extract the entity ID from the path
-    const entityId = rawObjectPath.slice(objectEntityDir.length);
-    return `/objects/${entityId}`;
+    
+    // For local paths, return as-is
+    return rawPath;
   }
 
   // Tries to set the ACL policy for the object entity and return the normalized path.
