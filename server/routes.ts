@@ -1306,6 +1306,24 @@ export async function registerRoutes(
       const fileSize = stat.size;
       const range = req.headers.range;
 
+      // Determine content type based on file extension
+      const ext = path.extname(video.filepath).toLowerCase();
+      const mimeTypes: { [key: string]: string } = {
+        ".mp4": "video/mp4",
+        ".webm": "video/webm",
+        ".mov": "video/quicktime",
+        ".m4v": "video/x-m4v",
+        ".avi": "video/x-msvideo",
+        ".mkv": "video/x-matroska",
+        ".3gp": "video/3gpp",
+        ".mpeg": "video/mpeg",
+        ".mpg": "video/mpeg",
+        ".ogv": "video/ogg",
+        ".flv": "video/x-flv",
+        ".wmv": "video/x-ms-wmv",
+      };
+      const contentType = mimeTypes[ext] || "video/mp4";
+
       // Increment view count only on initial request (not range requests from seeking)
       if (!range || range === "bytes=0-") {
         await storage.incrementVideoViewCount(video.id);
@@ -1322,13 +1340,13 @@ export async function registerRoutes(
           "Content-Range": `bytes ${start}-${end}/${fileSize}`,
           "Accept-Ranges": "bytes",
           "Content-Length": chunksize,
-          "Content-Type": "video/mp4",
+          "Content-Type": contentType,
         });
         file.pipe(res);
       } else {
         res.writeHead(200, {
           "Content-Length": fileSize,
-          "Content-Type": "video/mp4",
+          "Content-Type": contentType,
         });
         fs.createReadStream(video.filepath).pipe(res);
       }
