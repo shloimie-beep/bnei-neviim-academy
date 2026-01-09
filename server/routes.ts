@@ -1497,6 +1497,37 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Cancel video upload and clean up partial file
+  app.post("/api/admin/videos/cancel-upload", requireAdmin, async (req, res) => {
+    try {
+      const { objectPath } = req.body;
+
+      if (!objectPath) {
+        return res.status(400).json({ message: "objectPath is required" });
+      }
+
+      console.log(`[Cancel Upload] Cleaning up cancelled upload at: ${objectPath}`);
+
+      try {
+        const file = await objectStorageService.getObjectEntityFile(objectPath);
+        await file.delete();
+        console.log(`[Cancel Upload] Successfully deleted: ${objectPath}`);
+      } catch (deleteError: any) {
+        // File might not exist yet if upload was cancelled early
+        if (deleteError.code === 404) {
+          console.log(`[Cancel Upload] File not found (may not have been uploaded yet): ${objectPath}`);
+        } else {
+          throw deleteError;
+        }
+      }
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Cancel upload cleanup error:", error);
+      res.status(500).json({ message: "Failed to cleanup cancelled upload" });
+    }
+  });
+
   // ============ VIDEO CATEGORIES ============
   // Admin: Get all video categories
   app.get("/api/admin/video-categories", requireAdmin, async (req, res) => {

@@ -10,6 +10,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
 import type { Video as VideoType, VideoCategory } from "@shared/schema";
@@ -224,9 +225,10 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, categories }:
 interface UploadQueueItem {
   file: File;
   title: string;
-  status: 'pending' | 'uploading' | 'processing' | 'done' | 'error';
+  status: 'pending' | 'uploading' | 'processing' | 'done' | 'error' | 'cancelled';
   progress: number;
   error?: string;
+  objectPath?: string;
 }
 
 export default function VideoManagement() {
@@ -239,6 +241,10 @@ export default function VideoManagement() {
   const [uploadQueue, setUploadQueue] = useState<UploadQueueItem[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [currentUploadIndex, setCurrentUploadIndex] = useState(0);
+  const [showCancelConfirm, setShowCancelConfirm] = useState(false);
+  const [isCancelling, setIsCancelling] = useState(false);
+  const currentXhrRef = useRef<XMLHttpRequest | null>(null);
+  const cancelledRef = useRef(false);
 
   const { data: videos, isLoading } = useQuery<VideoType[]>({
     queryKey: ["/api/admin/videos"],
@@ -364,7 +370,13 @@ export default function VideoManagement() {
   };
 
   const uploadSingleVideo = async (item: UploadQueueItem, index: number): Promise<boolean> => {
+    let currentObjectPath: string | undefined;
+    
     try {
+      if (cancelledRef.current) {
+        throw new Error("Upload cancelled");
+      }
+      
       updateQueueItem(index, { status: 'uploading', progress: 5 });
 
       // Step 1: Request presigned URL
@@ -383,11 +395,18 @@ export default function VideoManagement() {
       }
 
       const { uploadURL, objectPath } = await urlResponse.json();
+      currentObjectPath = objectPath;
+      updateQueueItem(index, { objectPath });
+
+      if (cancelledRef.current) {
+        throw new Error("Upload cancelled");
+      }
 
       // Step 2: Upload to cloud storage
       updateQueueItem(index, { progress: 10 });
       await new Promise<void>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
+        currentXhrRef.current = xhr;
         
         xhr.upload.addEventListener("progress", (e) => {
           if (e.lengthComputable) {
@@ -397,19 +416,34 @@ export default function VideoManagement() {
         });
 
         xhr.onload = () => {
+          currentXhrRef.current = null;
           if (xhr.status >= 200 && xhr.status < 300) {
             resolve();
           } else {
             reject(new Error(`Upload failed (status ${xhr.status})`));
           }
         };
-        xhr.onerror = () => reject(new Error("Network error"));
-        xhr.ontimeout = () => reject(new Error("Upload timed out"));
+        xhr.onerror = () => {
+          currentXhrRef.current = null;
+          reject(new Error("Network error"));
+        };
+        xhr.ontimeout = () => {
+          currentXhrRef.current = null;
+          reject(new Error("Upload timed out"));
+        };
+        xhr.onabort = () => {
+          currentXhrRef.current = null;
+          reject(new Error("Upload cancelled"));
+        };
         xhr.timeout = 36000000; // 10 hours timeout
         xhr.open("PUT", uploadURL);
         xhr.setRequestHeader("Content-Type", item.file.type || "video/mp4");
         xhr.send(item.file);
       });
+
+      if (cancelledRef.current) {
+        throw new Error("Upload cancelled");
+      }
 
       // Step 3: Finalize
       updateQueueItem(index, { status: 'processing', progress: 95 });
@@ -433,9 +467,49 @@ export default function VideoManagement() {
       updateQueueItem(index, { status: 'done', progress: 100 });
       return true;
     } catch (error: any) {
-      updateQueueItem(index, { status: 'error', error: error.message });
+      const isCancelled = error.message === "Upload cancelled" || cancelledRef.current;
+      
+      if (isCancelled) {
+        updateQueueItem(index, { status: 'cancelled', error: "Cancelled" });
+        
+        // Delete the partial upload from server if we have an objectPath
+        if (currentObjectPath) {
+          try {
+            await fetch("/api/admin/videos/cancel-upload", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ objectPath: currentObjectPath }),
+            });
+          } catch (cleanupError) {
+            console.error("Failed to cleanup cancelled upload:", cleanupError);
+          }
+        }
+      } else {
+        updateQueueItem(index, { status: 'error', error: error.message });
+      }
       return false;
     }
+  };
+
+  const handleCancelUpload = async () => {
+    setIsCancelling(true);
+    cancelledRef.current = true;
+    
+    // Abort current XHR if active
+    if (currentXhrRef.current) {
+      currentXhrRef.current.abort();
+    }
+    
+    // Mark all pending items as cancelled
+    setUploadQueue(prev => prev.map(item => 
+      item.status === 'pending' ? { ...item, status: 'cancelled' as const } : item
+    ));
+    
+    setShowCancelConfirm(false);
+    setIsCancelling(false);
+    setIsUploading(false);
+    
+    toast({ title: "Upload cancelled", description: "Remaining uploads have been cancelled" });
   };
 
   const handleBatchUpload = async () => {
@@ -443,18 +517,23 @@ export default function VideoManagement() {
 
     setIsUploading(true);
     setCurrentUploadIndex(0);
+    cancelledRef.current = false;
 
     let successCount = 0;
     let errorCount = 0;
+    let cancelledCount = 0;
 
     for (let i = 0; i < uploadQueue.length; i++) {
-      if (uploadQueue[i].status === 'done') continue;
+      if (uploadQueue[i].status === 'done' || uploadQueue[i].status === 'cancelled') continue;
+      if (cancelledRef.current) break;
       
       setCurrentUploadIndex(i);
       const success = await uploadSingleVideo(uploadQueue[i], i);
       
       if (success) {
         successCount++;
+      } else if (cancelledRef.current || uploadQueue[i].status === 'cancelled') {
+        cancelledCount++;
       } else {
         errorCount++;
       }
@@ -465,14 +544,14 @@ export default function VideoManagement() {
 
     setIsUploading(false);
     
-    if (successCount > 0) {
+    if (successCount > 0 && !cancelledRef.current) {
       toast({ 
         title: "Batch upload complete", 
         description: `${successCount} videos uploaded${errorCount > 0 ? `, ${errorCount} failed` : ''}` 
       });
     }
     
-    if (errorCount === 0) {
+    if (errorCount === 0 && cancelledCount === 0) {
       setIsDialogOpen(false);
       setUploadQueue([]);
       setUploadCategoryId("");
@@ -591,7 +670,10 @@ export default function VideoManagement() {
                           {item.status === 'error' && (
                             <Badge variant="destructive">Error</Badge>
                           )}
-                          {!isUploading && item.status !== 'done' && (
+                          {item.status === 'cancelled' && (
+                            <Badge variant="secondary">Cancelled</Badge>
+                          )}
+                          {!isUploading && item.status !== 'done' && item.status !== 'cancelled' && (
                             <Button
                               variant="ghost"
                               size="icon"
@@ -609,23 +691,36 @@ export default function VideoManagement() {
                 </div>
               )}
             </div>
-            <DialogFooter>
-              <Button 
-                variant="ghost" 
-                onClick={() => {
-                  setIsDialogOpen(false);
-                  if (!isUploading) {
+            <DialogFooter className="gap-2">
+              {!isUploading && (
+                <Button 
+                  variant="ghost" 
+                  onClick={() => {
+                    setIsDialogOpen(false);
                     setUploadQueue([]);
                     setUploadCategoryId("");
-                  }
-                }} 
-                disabled={isUploading}
-              >
-                {isUploading ? "Running in background..." : "Cancel"}
-              </Button>
+                  }}
+                >
+                  Close
+                </Button>
+              )}
+              {isUploading && (
+                <Button 
+                  variant="destructive" 
+                  onClick={() => setShowCancelConfirm(true)}
+                  disabled={isCancelling}
+                  data-testid="button-cancel-upload"
+                >
+                  {isCancelling ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    "Cancel Upload"
+                  )}
+                </Button>
+              )}
               <Button 
                 onClick={handleBatchUpload} 
-                disabled={uploadQueue.length === 0 || isUploading || uploadQueue.every(q => q.status === 'done')}
+                disabled={uploadQueue.length === 0 || isUploading || uploadQueue.every(q => q.status === 'done' || q.status === 'cancelled')}
                 data-testid="button-confirm-upload"
               >
                 {isUploading ? (
@@ -633,13 +728,36 @@ export default function VideoManagement() {
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
                     Uploading {currentUploadIndex + 1}/{uploadQueue.length}...
                   </>
+                ) : uploadQueue.length === 0 ? (
+                  "Select Videos"
                 ) : (
-                  `Upload ${uploadQueue.length} Video${uploadQueue.length !== 1 ? 's' : ''}`
+                  `Upload ${uploadQueue.filter(q => q.status !== 'done' && q.status !== 'cancelled').length} Video${uploadQueue.filter(q => q.status !== 'done' && q.status !== 'cancelled').length !== 1 ? 's' : ''}`
                 )}
               </Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        
+        <AlertDialog open={showCancelConfirm} onOpenChange={setShowCancelConfirm}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Cancel Upload?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to cancel the current upload? The partially uploaded file will be deleted from the server. Any videos that have already finished uploading will be kept.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel data-testid="button-cancel-confirm-no">Continue Uploading</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleCancelUpload}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                data-testid="button-cancel-confirm-yes"
+              >
+                Yes, Cancel Upload
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
         </div>
       </div>
 
