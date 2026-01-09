@@ -17,6 +17,7 @@ import { sql } from "drizzle-orm";
 import { db } from "./db";
 import { pool } from "./db";
 import { ObjectStorageService, objectStorageClient } from "./replit_integrations/object_storage";
+import * as bunnyStream from "./bunnyStream";
 
 const execAsync = promisify(exec);
 
@@ -1242,8 +1243,15 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Video not found" });
       }
 
-      // Delete video file from cloud storage or local filesystem
-      if (video.filepath.startsWith("/objects/") || video.filepath.startsWith("https://storage.googleapis.com/")) {
+      // Delete video file from cloud storage, local filesystem, or Bunny Stream
+      if (video.bunnyGuid) {
+        try {
+          await bunnyStream.deleteVideo(video.bunnyGuid);
+          console.log(`Deleted video ${req.params.id} from Bunny Stream`);
+        } catch (err) {
+          console.error(`Failed to delete video ${req.params.id} from Bunny Stream:`, err);
+        }
+      } else if (video.filepath?.startsWith("/objects/") || video.filepath?.startsWith("https://storage.googleapis.com/")) {
         try {
           const normalizedPath = objectStorageService.normalizeObjectEntityPath(video.filepath);
           if (normalizedPath.startsWith("/objects/")) {
@@ -1528,6 +1536,170 @@ export async function registerRoutes(
     }
   });
 
+  // ============ BUNNY STREAM VIDEO UPLOAD ============
+  // Admin: Create a video on Bunny Stream and get upload URL
+  app.post("/api/admin/videos/bunny/create", requireAdmin, async (req, res) => {
+    try {
+      const { title } = req.body;
+      if (!title) {
+        return res.status(400).json({ message: "Title is required" });
+      }
+
+      const bunnyVideo = await bunnyStream.createVideo(title);
+      const uploadUrl = bunnyStream.getUploadUrl(bunnyVideo.guid);
+      
+      console.log(`[Bunny Stream] Created video "${title}" with guid: ${bunnyVideo.guid}`);
+      
+      res.json({
+        bunnyGuid: bunnyVideo.guid,
+        uploadUrl,
+        apiKey: process.env.BUNNY_API_KEY,
+      });
+    } catch (error: any) {
+      console.error("Bunny create video error:", error);
+      res.status(500).json({ message: error.message || "Failed to create video on Bunny Stream" });
+    }
+  });
+
+  // Admin: Finalize Bunny Stream video (create local record after upload)
+  app.post("/api/admin/videos/bunny/finalize", requireAdmin, async (req, res) => {
+    try {
+      const { title, description, categoryId, bunnyGuid, filename, fileSize } = req.body;
+
+      if (!title || !bunnyGuid) {
+        return res.status(400).json({ message: "Title and bunnyGuid are required" });
+      }
+
+      console.log(`[Bunny Stream] Finalizing video "${title}" with guid: ${bunnyGuid}`);
+
+      const video = await storage.createVideo({
+        title,
+        description: description || null,
+        filename: filename || null,
+        filepath: null,
+        fileSize: fileSize || null,
+        status: "processing",
+        categoryId: categoryId || null,
+        uploadedBy: req.session.userId!,
+        thumbnailPath: null,
+        bunnyGuid,
+        bunnyVideoId: bunnyGuid,
+        storageType: "bunny",
+      });
+
+      console.log(`[Bunny Stream] Created video record ${video.id}`);
+
+      // Poll Bunny for processing status
+      (async () => {
+        let attempts = 0;
+        const maxAttempts = 60; // 10 minutes max
+        
+        while (attempts < maxAttempts) {
+          try {
+            await new Promise(r => setTimeout(r, 10000)); // Check every 10 seconds
+            const bunnyVideo = await bunnyStream.getVideo(bunnyGuid);
+            
+            // Status: 0=created, 1=uploaded, 2=processing, 3=transcoding, 4=finished, 5=error
+            if (bunnyVideo.status === 4) {
+              await storage.updateVideo(video.id, { 
+                status: "ready",
+                duration: bunnyVideo.length,
+              });
+              console.log(`[Bunny Stream] Video ${video.id} is ready`);
+              break;
+            } else if (bunnyVideo.status === 5) {
+              await storage.updateVideo(video.id, { status: "failed" });
+              console.log(`[Bunny Stream] Video ${video.id} failed processing`);
+              break;
+            }
+            
+            attempts++;
+          } catch (err) {
+            console.error(`[Bunny Stream] Error checking status for ${video.id}:`, err);
+            attempts++;
+          }
+        }
+      })();
+
+      res.json(video);
+    } catch (error: any) {
+      console.error("Bunny finalize video error:", error);
+      res.status(500).json({ message: error.message || "Failed to finalize video" });
+    }
+  });
+
+  // Admin: Get Bunny embed URL for a video
+  app.get("/api/admin/videos/:id/bunny-embed", requireAdmin, async (req, res) => {
+    try {
+      const video = await storage.getVideo(req.params.id);
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+      
+      if (!video.bunnyGuid) {
+        return res.status(400).json({ message: "Video is not hosted on Bunny Stream" });
+      }
+      
+      res.json({
+        embedUrl: bunnyStream.getEmbedUrl(video.bunnyGuid),
+        thumbnailUrl: bunnyStream.getThumbnailUrl(video.bunnyGuid),
+      });
+    } catch (error) {
+      console.error("Get Bunny embed error:", error);
+      res.status(500).json({ message: "Failed to get embed URL" });
+    }
+  });
+
+  // Public: Get Bunny embed URL for subscribers
+  app.get("/api/videos/:id/bunny-embed", requireAuth, async (req, res) => {
+    try {
+      const video = await storage.getVideo(req.params.id);
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+      
+      if (!video.bunnyGuid) {
+        return res.status(400).json({ message: "Video is not hosted on Bunny Stream" });
+      }
+
+      // Increment view count
+      await storage.incrementVideoViewCount(req.params.id);
+      
+      res.json({
+        embedUrl: bunnyStream.getEmbedUrl(video.bunnyGuid),
+        thumbnailUrl: bunnyStream.getThumbnailUrl(video.bunnyGuid),
+      });
+    } catch (error) {
+      console.error("Get Bunny embed error:", error);
+      res.status(500).json({ message: "Failed to get embed URL" });
+    }
+  });
+
+  // Admin: Delete Bunny Stream video
+  app.delete("/api/admin/videos/:id/bunny", requireAdmin, async (req, res) => {
+    try {
+      const video = await storage.getVideo(req.params.id);
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+      
+      if (video.bunnyGuid) {
+        try {
+          await bunnyStream.deleteVideo(video.bunnyGuid);
+          console.log(`[Bunny Stream] Deleted video ${video.bunnyGuid} from Bunny`);
+        } catch (err) {
+          console.error(`[Bunny Stream] Failed to delete from Bunny:`, err);
+        }
+      }
+      
+      await storage.deleteVideo(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Delete Bunny video error:", error);
+      res.status(500).json({ message: "Failed to delete video" });
+    }
+  });
+
   // ============ VIDEO CATEGORIES ============
   // Admin: Get all video categories
   app.get("/api/admin/video-categories", requireAdmin, async (req, res) => {
@@ -1651,7 +1823,20 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Video is not ready for playback" });
       }
 
+      // If video is on Bunny Stream, redirect to embed endpoint
+      if (video.bunnyGuid) {
+        await storage.incrementVideoViewCount(video.id);
+        return res.json({ 
+          bunny: true, 
+          embedUrl: bunnyStream.getEmbedUrl(video.bunnyGuid) 
+        });
+      }
+
       // Check if video is stored in cloud storage
+      if (!video.filepath) {
+        return res.status(404).json({ message: "Video file not found" });
+      }
+      
       const isCloudStorage = video.filepath.startsWith("/objects/");
       
       if (isCloudStorage) {

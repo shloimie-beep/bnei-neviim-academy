@@ -410,7 +410,7 @@ export default function VideoManagement() {
   };
 
   const uploadSingleVideo = async (item: UploadQueueItem, index: number): Promise<boolean> => {
-    let currentObjectPath: string | undefined;
+    let bunnyGuid: string | undefined;
     
     try {
       if (cancelledRef.current) {
@@ -419,30 +419,26 @@ export default function VideoManagement() {
       
       updateQueueItem(index, { status: 'uploading', progress: 5 });
 
-      // Step 1: Request presigned URL
-      const urlResponse = await fetch("/api/admin/videos/request-upload-url", {
+      // Step 1: Create video on Bunny Stream
+      const createResponse = await fetch("/api/admin/videos/bunny/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: item.file.name,
-          size: item.file.size,
-          contentType: item.file.type || "video/mp4",
-        }),
+        body: JSON.stringify({ title: item.title }),
       });
 
-      if (!urlResponse.ok) {
-        throw new Error("Failed to get upload URL");
+      if (!createResponse.ok) {
+        const errorData = await createResponse.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to create video on Bunny Stream");
       }
 
-      const { uploadURL, objectPath } = await urlResponse.json();
-      currentObjectPath = objectPath;
-      updateQueueItem(index, { objectPath });
+      const { bunnyGuid: guid, uploadUrl, apiKey } = await createResponse.json();
+      bunnyGuid = guid;
 
       if (cancelledRef.current) {
         throw new Error("Upload cancelled");
       }
 
-      // Step 2: Upload to cloud storage
+      // Step 2: Upload to Bunny Stream
       updateQueueItem(index, { progress: 10 });
       await new Promise<void>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
@@ -476,8 +472,9 @@ export default function VideoManagement() {
           reject(new Error("Upload cancelled"));
         };
         xhr.timeout = 36000000; // 10 hours timeout
-        xhr.open("PUT", uploadURL);
-        xhr.setRequestHeader("Content-Type", item.file.type || "video/mp4");
+        xhr.open("PUT", uploadUrl);
+        xhr.setRequestHeader("AccessKey", apiKey);
+        xhr.setRequestHeader("Content-Type", "application/octet-stream");
         xhr.send(item.file);
       });
 
@@ -496,14 +493,14 @@ export default function VideoManagement() {
         }
         
         try {
-          finalizeResponse = await fetch("/api/admin/videos/finalize", {
+          finalizeResponse = await fetch("/api/admin/videos/bunny/finalize", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               title: item.title,
               description: "",
               categoryId: uploadCategoryId && uploadCategoryId !== "none" ? uploadCategoryId : null,
-              objectPath,
+              bunnyGuid,
               filename: item.file.name,
               fileSize: item.file.size,
             }),
@@ -537,13 +534,11 @@ export default function VideoManagement() {
       if (isCancelled) {
         updateQueueItem(index, { status: 'cancelled', error: "Cancelled" });
         
-        // Delete the partial upload from server if we have an objectPath
-        if (currentObjectPath) {
+        // Delete the partial upload from Bunny if we have a guid
+        if (bunnyGuid) {
           try {
-            await fetch("/api/admin/videos/cancel-upload", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ objectPath: currentObjectPath }),
+            await fetch(`/api/admin/videos/${bunnyGuid}/bunny`, {
+              method: "DELETE",
             });
           } catch (cleanupError) {
             console.error("Failed to cleanup cancelled upload:", cleanupError);
@@ -631,25 +626,22 @@ export default function VideoManagement() {
     setSingleUploadProgress(0);
 
     try {
-      // Step 1: Request presigned URL
+      // Step 1: Create video on Bunny Stream and get upload URL
       setSingleUploadProgress(5);
-      const urlResponse = await fetch("/api/admin/videos/request-upload-url", {
+      const createResponse = await fetch("/api/admin/videos/bunny/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: singleFile.name,
-          size: singleFile.size,
-          contentType: singleFile.type || "video/mp4",
-        }),
+        body: JSON.stringify({ title: singleTitle }),
       });
 
-      if (!urlResponse.ok) {
-        throw new Error("Failed to get upload URL");
+      if (!createResponse.ok) {
+        const errorData = await createResponse.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to create video on Bunny Stream");
       }
 
-      const { uploadURL, objectPath } = await urlResponse.json();
+      const { bunnyGuid, uploadUrl, apiKey } = await createResponse.json();
 
-      // Step 2: Upload to cloud storage
+      // Step 2: Upload directly to Bunny Stream
       setSingleUploadProgress(10);
       await new Promise<void>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
@@ -671,26 +663,27 @@ export default function VideoManagement() {
         xhr.onerror = () => reject(new Error("Network error"));
         xhr.ontimeout = () => reject(new Error("Upload timed out"));
         xhr.timeout = 36000000; // 10 hours timeout
-        xhr.open("PUT", uploadURL);
-        xhr.setRequestHeader("Content-Type", singleFile.type || "video/mp4");
+        xhr.open("PUT", uploadUrl);
+        xhr.setRequestHeader("AccessKey", apiKey);
+        xhr.setRequestHeader("Content-Type", "application/octet-stream");
         xhr.send(singleFile);
       });
 
-      // Step 3: Finalize with retry logic
+      // Step 3: Finalize in our database with retry logic
       setSingleUploadProgress(90);
       let finalizeResponse: Response | null = null;
       let finalizeError: Error | null = null;
       
       for (let attempt = 1; attempt <= 3; attempt++) {
         try {
-          finalizeResponse = await fetch("/api/admin/videos/finalize", {
+          finalizeResponse = await fetch("/api/admin/videos/bunny/finalize", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               title: singleTitle,
               description: singleDescription,
               categoryId: singleCategoryId && singleCategoryId !== "none" ? singleCategoryId : null,
-              objectPath,
+              bunnyGuid,
               filename: singleFile.name,
               fileSize: singleFile.size,
             }),
@@ -708,7 +701,7 @@ export default function VideoManagement() {
         }
         
         if (attempt < 3) {
-          await new Promise(r => setTimeout(r, 2000 * attempt)); // Wait before retry
+          await new Promise(r => setTimeout(r, 2000 * attempt));
         }
       }
 
@@ -716,27 +709,9 @@ export default function VideoManagement() {
         throw finalizeError || new Error("Failed to finalize upload after 3 attempts");
       }
 
-      const videoData = await finalizeResponse.json();
-
-      // Step 4: Upload thumbnail if selected
-      if (singleThumbnail && videoData.id) {
-        setSingleUploadProgress(95);
-        const thumbnailFormData = new FormData();
-        thumbnailFormData.append("thumbnail", singleThumbnail);
-        
-        const thumbnailResponse = await fetch(`/api/admin/videos/${videoData.id}/thumbnail`, {
-          method: "POST",
-          body: thumbnailFormData,
-        });
-        
-        if (!thumbnailResponse.ok) {
-          console.error("Thumbnail upload failed, but video was created successfully");
-        }
-      }
-
       setSingleUploadProgress(100);
       queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
-      toast({ title: "Video uploaded successfully", description: "Video is being processed and will be ready shortly." });
+      toast({ title: "Video uploaded to Bunny Stream", description: "Video is being processed and will be ready shortly." });
       
       // Reset form
       setIsSingleDialogOpen(false);
