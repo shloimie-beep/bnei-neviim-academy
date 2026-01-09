@@ -1823,6 +1823,68 @@ export async function registerRoutes(
     }
   });
 
+  // Admin change subscriber password
+  app.post("/api/admin/subscribers/:id/change-password", requireAdmin, async (req, res) => {
+    try {
+      const { newPassword } = req.body;
+      if (!newPassword || newPassword.length < 6) {
+        return res.status(400).json({ message: "Password must be at least 6 characters" });
+      }
+
+      const user = await storage.getUser(req.params.id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await storage.updateUser(req.params.id, { password: hashedPassword });
+
+      res.json({ success: true, message: "Password updated successfully" });
+    } catch (error: any) {
+      console.error("Change password error:", error);
+      res.status(500).json({ message: error.message || "Failed to change password" });
+    }
+  });
+
+  // Admin delete subscriber (and cancel Stripe subscription if exists)
+  app.delete("/api/admin/subscribers/:id", requireAdmin, async (req, res) => {
+    try {
+      const user = await storage.getUser(req.params.id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Prevent deleting admin users
+      if (user.role === "admin") {
+        return res.status(400).json({ message: "Cannot delete admin users" });
+      }
+
+      // Cancel Stripe subscription if exists
+      if (user.stripeSubscriptionId) {
+        try {
+          const stripe = await getUncachableStripeClient();
+          await stripe.subscriptions.cancel(user.stripeSubscriptionId);
+        } catch (stripeError: any) {
+          console.error("Stripe cancellation error (continuing with deletion):", stripeError.message);
+        }
+      }
+
+      // Delete user's phone numbers
+      const phoneNumbers = await storage.getPhoneNumbersByUser(user.id);
+      for (const phone of phoneNumbers) {
+        await storage.deletePhoneNumber(phone.id);
+      }
+
+      // Delete the user
+      await storage.deleteUser(user.id);
+
+      res.json({ success: true, message: "Subscriber deleted successfully" });
+    } catch (error: any) {
+      console.error("Delete subscriber error:", error);
+      res.status(500).json({ message: error.message || "Failed to delete subscriber" });
+    }
+  });
+
   // Export active subscriber phone numbers (text format for pasting)
   app.get("/api/admin/subscribers/export-phones", requireAdmin, async (req, res) => {
     try {

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Users, DollarSign, Clock, Search, RefreshCw, Ban, Calendar, Download, MoreHorizontal } from "lucide-react";
+import { Loader2, Users, DollarSign, Clock, Search, RefreshCw, Ban, Calendar, Download, MoreHorizontal, Key, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import {
@@ -40,6 +40,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 interface Subscriber {
   id: string;
@@ -68,9 +78,12 @@ export default function SubscribersManagement() {
   const [refundDialogOpen, setRefundDialogOpen] = useState(false);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [extendTrialDialogOpen, setExtendTrialDialogOpen] = useState(false);
+  const [passwordDialogOpen, setPasswordDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [selectedSubscriber, setSelectedSubscriber] = useState<Subscriber | null>(null);
   const [refundAmount, setRefundAmount] = useState("");
   const [trialDays, setTrialDays] = useState("14");
+  const [newPassword, setNewPassword] = useState("");
 
   const monthOptions: MonthOption[] = [];
   const now = new Date();
@@ -159,6 +172,51 @@ export default function SubscribersManagement() {
       toast({
         title: "Extend trial failed",
         description: error.message || "Failed to extend trial.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const changePasswordMutation = useMutation({
+    mutationFn: async (data: { userId: string; newPassword: string }) => {
+      return apiRequest("POST", `/api/admin/subscribers/${data.userId}/change-password`, { newPassword: data.newPassword });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/subscribers"] });
+      setPasswordDialogOpen(false);
+      setSelectedSubscriber(null);
+      setNewPassword("");
+      toast({
+        title: "Password changed",
+        description: "The subscriber's password has been updated.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Password change failed",
+        description: error.message || "Failed to change password.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteSubscriberMutation = useMutation({
+    mutationFn: async (userId: string) => {
+      return apiRequest("DELETE", `/api/admin/subscribers/${userId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/subscribers"] });
+      setDeleteDialogOpen(false);
+      setSelectedSubscriber(null);
+      toast({
+        title: "Subscriber deleted",
+        description: "The subscriber and their subscription have been removed.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Delete failed",
+        description: error.message || "Failed to delete subscriber.",
         variant: "destructive",
       });
     },
@@ -371,6 +429,28 @@ export default function SubscribersManagement() {
                                 Cancel Subscription
                               </DropdownMenuItem>
                             )}
+                            <DropdownMenuSeparator />
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedSubscriber(subscriber);
+                                setPasswordDialogOpen(true);
+                              }}
+                              data-testid={`menu-password-${subscriber.id}`}
+                            >
+                              <Key className="h-4 w-4 mr-2" />
+                              Change Password
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedSubscriber(subscriber);
+                                setDeleteDialogOpen(true);
+                              }}
+                              className="text-destructive"
+                              data-testid={`menu-delete-${subscriber.id}`}
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              Delete Subscriber
+                            </DropdownMenuItem>
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
@@ -525,6 +605,75 @@ export default function SubscribersManagement() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <Dialog open={passwordDialogOpen} onOpenChange={setPasswordDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Change Password</DialogTitle>
+            <DialogDescription>
+              Set a new password for {selectedSubscriber?.email}.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="newPassword">New Password</Label>
+              <Input
+                id="newPassword"
+                type="password"
+                placeholder="Enter new password"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                data-testid="input-new-password"
+              />
+              <p className="text-xs text-muted-foreground">
+                Password must be at least 6 characters.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPasswordDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                if (selectedSubscriber && newPassword.length >= 6) {
+                  changePasswordMutation.mutate({ userId: selectedSubscriber.id, newPassword });
+                }
+              }}
+              disabled={changePasswordMutation.isPending || newPassword.length < 6}
+              data-testid="button-confirm-password"
+            >
+              {changePasswordMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Change Password
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Subscriber?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete {selectedSubscriber?.email} and cancel their Stripe subscription if they have one. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                if (selectedSubscriber) {
+                  deleteSubscriberMutation.mutate(selectedSubscriber.id);
+                }
+              }}
+              className="bg-destructive text-destructive-foreground"
+            >
+              {deleteSubscriberMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Delete Subscriber
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
