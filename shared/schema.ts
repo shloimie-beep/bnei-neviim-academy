@@ -151,8 +151,8 @@ export const videos = pgTable("videos", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   title: text("title").notNull(),
   description: text("description"),
-  filename: text("filename").notNull(),
-  filepath: text("filepath").notNull(),
+  filename: text("filename"),
+  filepath: text("filepath"),
   thumbnailPath: text("thumbnail_path"),
   duration: integer("duration"),
   fileSize: integer("file_size"),
@@ -161,6 +161,9 @@ export const videos = pgTable("videos", {
   categoryId: varchar("category_id").references(() => videoCategories.id),
   uploadedBy: varchar("uploaded_by").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
+  bunnyVideoId: text("bunny_video_id"),
+  bunnyGuid: text("bunny_guid"),
+  storageType: text("storage_type").default("local"),
 });
 
 // Relations
