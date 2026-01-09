@@ -2633,5 +2633,101 @@ export async function registerRoutes(
   // Main Voitex API Branch webhook - receives calls from Voitex IVR
   app.post("/api/voitex/webhook", handleVoitexWebhook);
 
+  // ============ ORPHANED UPLOAD CLEANUP ============
+  
+  // Function to clean up orphaned files in cloud storage
+  async function cleanupOrphanedUploads(): Promise<{ deleted: string[], kept: string[], errors: string[] }> {
+    const deleted: string[] = [];
+    const kept: string[] = [];
+    const errors: string[] = [];
+    
+    try {
+      const privateObjectDir = process.env.PRIVATE_OBJECT_DIR;
+      if (!privateObjectDir) {
+        console.log("[Cleanup] PRIVATE_OBJECT_DIR not set, skipping cleanup");
+        return { deleted, kept, errors };
+      }
+      
+      // Parse bucket and prefix from PRIVATE_OBJECT_DIR
+      const parts = privateObjectDir.replace(/^\//, '').split('/');
+      const bucketName = parts[0];
+      const prefix = parts.slice(1).join('/') + '/uploads/';
+      
+      console.log(`[Cleanup] Scanning bucket ${bucketName} with prefix ${prefix}`);
+      
+      const bucket = objectStorageClient.bucket(bucketName);
+      const [files] = await bucket.getFiles({ prefix });
+      
+      // Get all video filepaths from database
+      const allVideos = await storage.getAllVideos();
+      const videoFilepaths = new Set(allVideos.map(v => v.filepath));
+      
+      const now = Date.now();
+      const twelveHoursMs = 12 * 60 * 60 * 1000;
+      
+      for (const file of files) {
+        try {
+          const [metadata] = await file.getMetadata();
+          const created = new Date(metadata.timeCreated || 0).getTime();
+          const ageMs = now - created;
+          
+          // Build the normalized path this file would have
+          const objectName = file.name;
+          const normalizedPath = `/objects/${objectName.replace(/^\.private\//, '')}`;
+          
+          // Check if this file is referenced by any video
+          const isReferenced = videoFilepaths.has(normalizedPath);
+          
+          if (!isReferenced && ageMs > twelveHoursMs) {
+            await file.delete();
+            deleted.push(file.name);
+            console.log(`[Cleanup] Deleted orphaned file: ${file.name} (age: ${Math.round(ageMs / 3600000)}h)`);
+          } else if (!isReferenced) {
+            kept.push(file.name);
+            console.log(`[Cleanup] Kept recent file: ${file.name} (age: ${Math.round(ageMs / 3600000)}h, may be in-progress)`);
+          }
+        } catch (fileError) {
+          const errorMsg = `Failed to process ${file.name}: ${fileError}`;
+          errors.push(errorMsg);
+          console.error(`[Cleanup] ${errorMsg}`);
+        }
+      }
+      
+      console.log(`[Cleanup] Complete: ${deleted.length} deleted, ${kept.length} kept (recent), ${errors.length} errors`);
+    } catch (error) {
+      console.error("[Cleanup] Error during orphaned upload cleanup:", error);
+      errors.push(`General error: ${error}`);
+    }
+    
+    return { deleted, kept, errors };
+  }
+  
+  // Admin endpoint to manually trigger cleanup
+  app.post("/api/admin/cleanup-orphaned-uploads", requireAdmin, async (req, res) => {
+    try {
+      console.log("[Cleanup] Manual cleanup triggered by admin");
+      const result = await cleanupOrphanedUploads();
+      res.json({
+        message: `Cleanup complete: ${result.deleted.length} files deleted`,
+        ...result
+      });
+    } catch (error) {
+      console.error("Cleanup error:", error);
+      res.status(500).json({ message: "Failed to cleanup orphaned uploads" });
+    }
+  });
+  
+  // Schedule automatic cleanup every hour
+  setInterval(async () => {
+    console.log("[Cleanup] Running scheduled orphaned upload cleanup...");
+    await cleanupOrphanedUploads();
+  }, 60 * 60 * 1000); // Every hour
+  
+  // Run initial cleanup 5 minutes after server start
+  setTimeout(async () => {
+    console.log("[Cleanup] Running initial orphaned upload cleanup...");
+    await cleanupOrphanedUploads();
+  }, 5 * 60 * 1000);
+
   return httpServer;
 }
