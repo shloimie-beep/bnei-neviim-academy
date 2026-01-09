@@ -231,8 +231,10 @@ export default function VideoManagement() {
   const [uploadCategoryId, setUploadCategoryId] = useState("");
   const [newCategoryName, setNewCategoryName] = useState("");
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedThumbnail, setSelectedThumbnail] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
+  const thumbnailInputRef = useRef<HTMLInputElement>(null);
 
   const { data: videos, isLoading } = useQuery<VideoType[]>({
     queryKey: ["/api/admin/videos"],
@@ -401,16 +403,36 @@ export default function VideoManagement() {
         throw new Error(errorData.message || "Failed to finalize video upload");
       }
 
+      const videoData = await finalizeResponse.json();
+
+      // Step 4: Upload thumbnail if selected (95%)
+      if (selectedThumbnail && videoData.id) {
+        setUploadProgress(95);
+        const thumbnailFormData = new FormData();
+        thumbnailFormData.append("thumbnail", selectedThumbnail);
+        
+        const thumbnailResponse = await fetch(`/api/admin/videos/${videoData.id}/thumbnail`, {
+          method: "POST",
+          body: thumbnailFormData,
+        });
+        
+        if (!thumbnailResponse.ok) {
+          console.error("Thumbnail upload failed, but video was created successfully");
+        }
+      }
+
       setUploadProgress(100);
 
       queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
-      toast({ title: "Video uploaded successfully", description: "Video is being processed and will be ready shortly. You can add a thumbnail after processing completes." });
+      toast({ title: "Video uploaded successfully", description: "Video is being processed and will be ready shortly." });
       setIsDialogOpen(false);
       setSelectedFile(null);
+      setSelectedThumbnail(null);
       setUploadTitle("");
       setUploadDescription("");
       setUploadCategoryId("");
       if (fileInputRef.current) fileInputRef.current.value = "";
+      if (thumbnailInputRef.current) thumbnailInputRef.current.value = "";
     } catch (error: any) {
       toast({ title: "Upload failed", description: error.message, variant: "destructive" });
     } finally {
@@ -491,6 +513,22 @@ export default function VideoManagement() {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+              <div>
+                <Label htmlFor="video-thumbnail">Thumbnail Image (optional)</Label>
+                <Input
+                  id="video-thumbnail"
+                  type="file"
+                  accept="image/*"
+                  ref={thumbnailInputRef}
+                  onChange={(e) => setSelectedThumbnail(e.target.files?.[0] || null)}
+                  data-testid="input-video-thumbnail"
+                />
+                {selectedThumbnail && (
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Selected: {selectedThumbnail.name}
+                  </p>
+                )}
               </div>
               {isUploading && (
                 <div className="space-y-2">
