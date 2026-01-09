@@ -66,14 +66,18 @@ const videoUpload = multer({
     },
   }),
   fileFilter: (req, file, cb) => {
-    const allowedTypes = ["video/mp4", "video/webm", "video/quicktime", "video/x-msvideo"];
-    if (allowedTypes.includes(file.mimetype) || file.originalname.match(/\.(mp4|webm|mov|avi)$/i)) {
+    const allowedTypes = [
+      "video/mp4", "video/webm", "video/quicktime", "video/x-msvideo",
+      "video/x-m4v", "video/x-matroska", "video/3gpp", "video/3gpp2",
+      "video/mpeg", "video/ogg", "video/x-flv", "video/x-ms-wmv"
+    ];
+    if (allowedTypes.includes(file.mimetype) || file.originalname.match(/\.(mp4|webm|mov|avi|m4v|mkv|3gp|3g2|mpeg|mpg|ogv|flv|wmv|hevc)$/i)) {
       cb(null, true);
     } else {
       cb(new Error("Only video files are allowed"));
     }
   },
-  limits: { fileSize: 500 * 1024 * 1024 }, // 500MB limit
+  limits: { fileSize: 10 * 1024 * 1024 * 1024 }, // 10GB limit
 });
 
 // Image upload multer setup (for thumbnails)
@@ -120,8 +124,12 @@ const videoWithThumbnailUpload = multer({
   }),
   fileFilter: (req, file, cb) => {
     if (file.fieldname === "file") {
-      const allowedTypes = ["video/mp4", "video/webm", "video/quicktime", "video/x-msvideo"];
-      if (allowedTypes.includes(file.mimetype) || file.originalname.match(/\.(mp4|webm|mov|avi)$/i)) {
+      const allowedTypes = [
+        "video/mp4", "video/webm", "video/quicktime", "video/x-msvideo",
+        "video/x-m4v", "video/x-matroska", "video/3gpp", "video/3gpp2",
+        "video/mpeg", "video/ogg", "video/x-flv", "video/x-ms-wmv"
+      ];
+      if (allowedTypes.includes(file.mimetype) || file.originalname.match(/\.(mp4|webm|mov|avi|m4v|mkv|3gp|3g2|mpeg|mpg|ogv|flv|wmv|hevc)$/i)) {
         cb(null, true);
       } else {
         cb(new Error("Only video files are allowed for the video field"));
@@ -137,7 +145,7 @@ const videoWithThumbnailUpload = multer({
       cb(null, false);
     }
   },
-  limits: { fileSize: 500 * 1024 * 1024 }, // 500MB limit (for video)
+  limits: { fileSize: 10 * 1024 * 1024 * 1024 }, // 10GB limit (for video)
 });
 
 // Auth middleware
