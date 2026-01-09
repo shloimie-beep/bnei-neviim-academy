@@ -159,8 +159,13 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, categories }:
                   </>
                 )}
               </div>
-              <Badge variant={video.status === "ready" ? "default" : "secondary"} className="flex-shrink-0">
-                {video.status === "ready" ? "Published" : "Hidden"}
+              <Badge 
+                variant={video.status === "ready" ? "default" : video.status === "failed" ? "destructive" : "secondary"} 
+                className={`flex-shrink-0 ${video.status === "processing" ? "animate-pulse" : ""}`}
+              >
+                {video.status === "ready" ? "Published" : 
+                 video.status === "processing" ? "Converting..." : 
+                 video.status === "failed" ? "Failed" : "Hidden"}
               </Badge>
             </div>
             {!isEditing && (
@@ -233,6 +238,13 @@ export default function VideoManagement() {
 
   const { data: videos, isLoading } = useQuery<VideoType[]>({
     queryKey: ["/api/admin/videos"],
+    refetchInterval: (query) => {
+      const data = query.state.data;
+      if (data?.some(v => v.status === "processing")) {
+        return 5000;
+      }
+      return false;
+    },
   });
 
   const { data: categories = [] } = useQuery<VideoCategory[]>({

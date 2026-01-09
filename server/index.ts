@@ -9,6 +9,12 @@ import { WebhookHandlers } from "./webhookHandlers";
 const app = express();
 const httpServer = createServer(app);
 
+// Increase timeouts for large file uploads (30 minutes)
+httpServer.timeout = 1800000;
+httpServer.headersTimeout = 1800000;
+httpServer.keepAliveTimeout = 1800000;
+httpServer.requestTimeout = 1800000;
+
 declare module "http" {
   interface IncomingMessage {
     rawBody: unknown;
