@@ -501,68 +501,70 @@ export default function DashboardPage() {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-3">
-              <Dialog open={isPhoneDialogOpen} onOpenChange={setIsPhoneDialogOpen}>
-                <DialogTrigger asChild>
-                  <Button size="lg" className="gap-2" data-testid="button-manage-phone">
-                    <Phone className="h-5 w-5" />
-                    {registeredPhone ? "Manage Phone" : "Add Phone Number"}
-                  </Button>
-                </DialogTrigger>
-                <DialogContent>
-                  <DialogHeader>
-                    <DialogTitle>
-                      {registeredPhone ? "Your Registered Phone" : "Add Phone Number"}
-                    </DialogTitle>
-                    <DialogDescription>
-                      {registeredPhone 
-                        ? "Your phone number for accessing the hotline" 
-                        : "Add a phone number to access the hotline"}
-                    </DialogDescription>
-                  </DialogHeader>
-                  
-                  {registeredPhone ? (
-                    <div className="py-4">
-                      <PhoneNumberCard
-                        phoneNumber={registeredPhone}
-                        onDelete={() => {
-                          deletePhoneMutation.mutate(registeredPhone.id);
-                          setIsPhoneDialogOpen(false);
-                        }}
-                      />
-                    </div>
-                  ) : (
-                    <div className="space-y-4 py-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="phone">Phone Number</Label>
-                        <Input
-                          id="phone"
-                          type="tel"
-                          placeholder="+1 (555) 123-4567"
-                          value={newPhoneNumber}
-                          onChange={(e) => setNewPhoneNumber(e.target.value)}
-                          data-testid="input-new-phone"
+              {user?.role !== "admin" && (
+                <Dialog open={isPhoneDialogOpen} onOpenChange={setIsPhoneDialogOpen}>
+                  <DialogTrigger asChild>
+                    <Button size="lg" className="gap-2" data-testid="button-manage-phone">
+                      <Phone className="h-5 w-5" />
+                      {registeredPhone ? "Manage Phone" : "Add Phone Number"}
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>
+                        {registeredPhone ? "Your Registered Phone" : "Add Phone Number"}
+                      </DialogTitle>
+                      <DialogDescription>
+                        {registeredPhone 
+                          ? "Your phone number for accessing the hotline" 
+                          : "Add a phone number to access the hotline"}
+                      </DialogDescription>
+                    </DialogHeader>
+                    
+                    {registeredPhone ? (
+                      <div className="py-4">
+                        <PhoneNumberCard
+                          phoneNumber={registeredPhone}
+                          onDelete={() => {
+                            deletePhoneMutation.mutate(registeredPhone.id);
+                            setIsPhoneDialogOpen(false);
+                          }}
                         />
                       </div>
-                    </div>
-                  )}
-                  
-                  <DialogFooter>
-                    <Button variant="outline" onClick={() => setIsPhoneDialogOpen(false)}>
-                      Close
-                    </Button>
-                    {!registeredPhone && (
-                      <Button
-                        onClick={handleAddPhone}
-                        disabled={isAddingPhone || !newPhoneNumber.trim()}
-                        data-testid="button-confirm-add-phone"
-                      >
-                        {isAddingPhone && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                        Add Number
-                      </Button>
+                    ) : (
+                      <div className="space-y-4 py-4">
+                        <div className="space-y-2">
+                          <Label htmlFor="phone">Phone Number</Label>
+                          <Input
+                            id="phone"
+                            type="tel"
+                            placeholder="+1 (555) 123-4567"
+                            value={newPhoneNumber}
+                            onChange={(e) => setNewPhoneNumber(e.target.value)}
+                            data-testid="input-new-phone"
+                          />
+                        </div>
+                      </div>
                     )}
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
+                    
+                    <DialogFooter>
+                      <Button variant="outline" onClick={() => setIsPhoneDialogOpen(false)}>
+                        Close
+                      </Button>
+                      {!registeredPhone && (
+                        <Button
+                          onClick={handleAddPhone}
+                          disabled={isAddingPhone || !newPhoneNumber.trim()}
+                          data-testid="button-confirm-add-phone"
+                        >
+                          {isAddingPhone && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                          Add Number
+                        </Button>
+                      )}
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              )}
 
               {user?.role !== "admin" && (
                 <>
@@ -658,45 +660,47 @@ export default function DashboardPage() {
                 )}
               </div>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Phone className="h-5 w-5" />
-                    How to Use the Hotline
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid md:grid-cols-3 gap-6">
-                    <div className="flex flex-col items-center text-center p-4">
-                      <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                        <span className="text-lg font-bold text-primary">1</span>
+              {user?.role !== "admin" && (
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Phone className="h-5 w-5" />
+                      How to Use the Hotline
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid md:grid-cols-3 gap-6">
+                      <div className="flex flex-col items-center text-center p-4">
+                        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                          <span className="text-lg font-bold text-primary">1</span>
+                        </div>
+                        <h4 className="font-medium mb-1">Call the Hotline</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Dial from your registered phone number
+                        </p>
                       </div>
-                      <h4 className="font-medium mb-1">Call the Hotline</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Dial from your registered phone number
-                      </p>
-                    </div>
-                    <div className="flex flex-col items-center text-center p-4">
-                      <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                        <span className="text-lg font-bold text-primary">2</span>
+                      <div className="flex flex-col items-center text-center p-4">
+                        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                          <span className="text-lg font-bold text-primary">2</span>
+                        </div>
+                        <h4 className="font-medium mb-1">Choose an Option</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Press 1 for live call, or other numbers for stories
+                        </p>
                       </div>
-                      <h4 className="font-medium mb-1">Choose an Option</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Press 1 for live call, or other numbers for stories
-                      </p>
-                    </div>
-                    <div className="flex flex-col items-center text-center p-4">
-                      <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                        <span className="text-lg font-bold text-primary">3</span>
+                      <div className="flex flex-col items-center text-center p-4">
+                        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
+                          <span className="text-lg font-bold text-primary">3</span>
+                        </div>
+                        <h4 className="font-medium mb-1">Control Playback</h4>
+                        <p className="text-sm text-muted-foreground">
+                          Press 2 to pause, 1 to rewind, 3 to fast forward
+                        </p>
                       </div>
-                      <h4 className="font-medium mb-1">Control Playback</h4>
-                      <p className="text-sm text-muted-foreground">
-                        Press 2 to pause, 1 to rewind, 3 to fast forward
-                      </p>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              )}
             </>
           ) : (
             <Card className="border-2 border-dashed">
