@@ -1377,6 +1377,24 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/admin/settings/no-conference-audio", requireAdmin, async (req, res) => {
+    try {
+      const { audioFileId } = req.body;
+      
+      if (audioFileId) {
+        const audioFile = await storage.getAudioFile(audioFileId);
+        if (!audioFile) {
+          return res.status(400).json({ message: "Audio file not found" });
+        }
+      }
+
+      const setting = await storage.setSystemSetting("no_conference_audio", undefined, audioFileId || undefined);
+      res.json({ success: true, setting });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to save no-conference audio setting" });
+    }
+  });
+
   // Menu Options
   app.get("/api/admin/menu-options", requireAdmin, async (req, res) => {
     try {

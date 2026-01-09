@@ -27,7 +27,7 @@ import VideoManagement from "./videos";
 
 const adminRoutes = [
   { path: "/admin", label: "Dashboard", icon: LayoutDashboard },
-  { path: "/admin/menu", label: "IVR Menu", icon: Menu },
+  { path: "/admin/menu", label: "Hotline", icon: Phone },
   { path: "/admin/conference", label: "Conference", icon: Users },
   { path: "/admin/whitelist", label: "Whitelist", icon: ShieldCheck },
   { path: "/admin/subscribers", label: "Subscribers", icon: CreditCard },

@@ -1,15 +1,17 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Users, MicOff, Mic, Volume2, VolumeX, Phone, Clock, RefreshCw, Loader2, CheckCircle, XCircle, AlertCircle } from "lucide-react";
+import { Users, MicOff, Mic, Volume2, VolumeX, Phone, Clock, RefreshCw, Loader2, CheckCircle, XCircle, AlertCircle, Upload, ExternalLink, Play, Pause } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import type { ConferenceParticipant, UnmuteRequest } from "@shared/schema";
+import type { ConferenceParticipant, UnmuteRequest, AudioFile, SystemSetting } from "@shared/schema";
 
 interface ConferenceStatus {
   isActive: boolean;
@@ -145,16 +147,166 @@ function UnmuteRequestRow({
   );
 }
 
+function formatAudioDuration(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = Math.floor(seconds % 60);
+  return `${mins}:${secs.toString().padStart(2, "0")}`;
+}
+
+function AudioPlayerDialog({
+  open,
+  onOpenChange,
+  audioFile,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+  audioFile: AudioFile | null;
+}) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+
+  const togglePlay = () => {
+    if (audioRef.current) {
+      if (isPlaying) {
+        audioRef.current.pause();
+      } else {
+        audioRef.current.play();
+      }
+      setIsPlaying(!isPlaying);
+    }
+  };
+
+  const handleTimeUpdate = () => {
+    if (audioRef.current) {
+      setCurrentTime(audioRef.current.currentTime);
+    }
+  };
+
+  const handleLoadedMetadata = () => {
+    if (audioRef.current) {
+      setDuration(audioRef.current.duration);
+    }
+  };
+
+  const handleSeek = (value: number[]) => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = value[0];
+      setCurrentTime(value[0]);
+    }
+  };
+
+  const handleEnded = () => {
+    setIsPlaying(false);
+    setCurrentTime(0);
+  };
+
+  if (!audioFile) return null;
+
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-md">
+        <DialogHeader>
+          <DialogTitle>{audioFile.name}</DialogTitle>
+        </DialogHeader>
+        
+        <div className="space-y-4">
+          <audio
+            ref={audioRef}
+            src={`/api/admin/audio-files/${audioFile.id}/stream`}
+            onTimeUpdate={handleTimeUpdate}
+            onLoadedMetadata={handleLoadedMetadata}
+            onEnded={handleEnded}
+          />
+          
+          <div className="flex items-center gap-4">
+            <Button size="icon" variant="outline" onClick={togglePlay}>
+              {isPlaying ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+            </Button>
+            
+            <div className="flex-1">
+              <Slider
+                value={[currentTime]}
+                max={duration || 100}
+                step={1}
+                onValueChange={handleSeek}
+              />
+            </div>
+            
+            <span className="text-sm text-muted-foreground min-w-[80px] text-right">
+              {formatAudioDuration(currentTime)} / {formatAudioDuration(duration)}
+            </span>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 export default function ConferenceManagement() {
   const { toast } = useToast();
   const [mutingParticipant, setMutingParticipant] = useState<string | null>(null);
   const [processingRequest, setProcessingRequest] = useState<string | null>(null);
   const [isMutingAll, setIsMutingAll] = useState(false);
+  const [noConferenceAudioId, setNoConferenceAudioId] = useState<string>("");
+  const [isUploadingAudio, setIsUploadingAudio] = useState(false);
+  const [audioPlayerOpen, setAudioPlayerOpen] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: conference, isLoading, refetch } = useQuery<ConferenceStatus>({
     queryKey: ["/api/admin/conference"],
     refetchInterval: 5000, // Poll every 5 seconds
   });
+
+  const { data: audioFiles = [] } = useQuery<AudioFile[]>({
+    queryKey: ["/api/admin/audio-files"],
+  });
+
+  const { data: settings = [] } = useQuery<SystemSetting[]>({
+    queryKey: ["/api/admin/settings"],
+  });
+
+  useEffect(() => {
+    if (settings.length > 0) {
+      const noConfAudio = settings.find((s: SystemSetting) => s.key === "no_conference_audio");
+      if (noConfAudio?.audioFileId) setNoConferenceAudioId(noConfAudio.audioFileId);
+    }
+  }, [settings]);
+
+  const handleUploadNoConferenceAudio = async (file: File) => {
+    setIsUploadingAudio(true);
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("name", file.name.replace(/\.[^/.]+$/, ""));
+      formData.append("type", "conference");
+      if (noConferenceAudioId && noConferenceAudioId !== "none") {
+        formData.append("replaceAudioId", noConferenceAudioId);
+      }
+
+      const res = await fetch("/api/admin/audio-files/upload-and-assign", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        throw new Error("Upload failed");
+      }
+
+      const newAudio = await res.json();
+      
+      await apiRequest("POST", "/api/admin/settings/no-conference-audio", { audioFileId: newAudio.id });
+      
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/audio-files"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/settings"] });
+      toast({ title: "Audio uploaded and saved" });
+    } catch {
+      toast({ title: "Failed to upload audio", variant: "destructive" });
+    } finally {
+      setIsUploadingAudio(false);
+    }
+  };
 
   const toggleMuteMutation = useMutation({
     mutationFn: async ({ participantId, mute }: { participantId: string; mute: boolean }) => {
@@ -212,6 +364,8 @@ export default function ConferenceManagement() {
 
   const pendingRequests = conference?.unmuteRequests?.filter((r) => r.status === "pending") || [];
 
+  const noConferenceAudioFile = audioFiles.find(f => f.id === noConferenceAudioId);
+
   return (
     <div className="space-y-8">
       <div className="flex items-start justify-between gap-4">
@@ -224,6 +378,96 @@ export default function ConferenceManagement() {
           Refresh
         </Button>
       </div>
+
+      {/* Voitex Portal Notice */}
+      <Card className="border-blue-500/50 bg-blue-500/5">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <ExternalLink className="h-5 w-5" />
+            Conference Management
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p className="text-muted-foreground mb-3">
+            The actual conference call is managed through the Voitex portal. Use the link below to access the full conference management features.
+          </p>
+          <a href="https://voitex.com" target="_blank" rel="noopener noreferrer">
+            <Button variant="outline" data-testid="button-voitex-portal">
+              <ExternalLink className="h-4 w-4 mr-2" />
+              Open Voitex Portal
+            </Button>
+          </a>
+        </CardContent>
+      </Card>
+
+      {/* No Active Conference Audio */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Volume2 className="h-5 w-5" />
+            No Conference Audio
+          </CardTitle>
+          <CardDescription>
+            This audio plays when callers try to join a conference but there is no active session.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <p className="text-sm font-medium">Current File</p>
+            <p className="text-sm text-muted-foreground">
+              {noConferenceAudioId && noConferenceAudioId !== "none" 
+                ? noConferenceAudioFile?.name || "Selected file not found"
+                : "No audio selected (using default message)"}
+            </p>
+          </div>
+          
+          <div className="flex flex-wrap gap-2">
+            {noConferenceAudioId && noConferenceAudioId !== "none" && noConferenceAudioFile && (
+              <Button
+                variant="outline"
+                onClick={() => setAudioPlayerOpen(true)}
+                data-testid="button-listen-no-conference-audio"
+              >
+                <Play className="h-4 w-4 mr-2" />
+                Listen
+              </Button>
+            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="audio/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) {
+                  handleUploadNoConferenceAudio(file);
+                  if (fileInputRef.current) fileInputRef.current.value = "";
+                }
+              }}
+              data-testid="input-no-conference-audio-file"
+            />
+            <Button
+              variant="outline"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isUploadingAudio}
+              data-testid="button-upload-no-conference-audio"
+            >
+              {isUploadingAudio ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <Upload className="h-4 w-4 mr-2" />
+              )}
+              {noConferenceAudioId && noConferenceAudioId !== "none" ? "Replace File" : "Upload File"}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+
+      <AudioPlayerDialog
+        open={audioPlayerOpen}
+        onOpenChange={setAudioPlayerOpen}
+        audioFile={noConferenceAudioFile || null}
+      />
 
       {/* Conference Status Card */}
       <Card>

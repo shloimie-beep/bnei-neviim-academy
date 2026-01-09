@@ -110,13 +110,9 @@ function AudioPlayerDialog({
 
 export default function AdminSettingsPage() {
   const { toast } = useToast();
-  const [mainGreetingId, setMainGreetingId] = useState<string>("");
   const [nonSubGreetingId, setNonSubGreetingId] = useState<string>("");
-  const [isUploadingMain, setIsUploadingMain] = useState(false);
   const [isUploadingNonSub, setIsUploadingNonSub] = useState(false);
-  const [mainPlayerOpen, setMainPlayerOpen] = useState(false);
   const [nonSubPlayerOpen, setNonSubPlayerOpen] = useState(false);
-  const mainFileInputRef = useRef<HTMLInputElement>(null);
   const nonSubFileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: audioFiles = [], isLoading: filesLoading } = useQuery<AudioFile[]>({
@@ -129,9 +125,7 @@ export default function AdminSettingsPage() {
 
   useEffect(() => {
     if (settings.length > 0) {
-      const mainGreeting = settings.find((s: SystemSetting) => s.key === "main_greeting");
       const nonSubGreeting = settings.find((s: SystemSetting) => s.key === "non_subscriber_greeting");
-      if (mainGreeting?.audioFileId) setMainGreetingId(mainGreeting.audioFileId);
       if (nonSubGreeting?.audioFileId) setNonSubGreetingId(nonSubGreeting.audioFileId);
     }
   }, [settings]);
@@ -158,11 +152,10 @@ export default function AdminSettingsPage() {
 
   const handleUploadGreeting = async (
     file: File,
-    type: "greeting" | "non-subscriber-greeting",
+    type: "non-subscriber-greeting",
     oldAudioId: string | null
   ) => {
-    const setUploading = type === "greeting" ? setIsUploadingMain : setIsUploadingNonSub;
-    setUploading(true);
+    setIsUploadingNonSub(true);
     
     try {
       const formData = new FormData();
@@ -204,7 +197,7 @@ export default function AdminSettingsPage() {
     } catch {
       toast({ title: "Failed to upload greeting", variant: "destructive" });
     } finally {
-      setUploading(false);
+      setIsUploadingNonSub(false);
     }
   };
 
@@ -231,74 +224,6 @@ export default function AdminSettingsPage() {
           Configure the greetings that play when callers connect
         </p>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Volume2 className="h-5 w-5" />
-            Greeting for Subscribers
-          </CardTitle>
-          <CardDescription>
-            Plays for subscribers when they call. Users can press menu options while this plays.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <p className="text-sm font-medium">Current File</p>
-            <p className="text-sm text-muted-foreground">
-              {mainGreetingId && mainGreetingId !== "none" 
-                ? allAudioFiles.find(f => f.id === mainGreetingId)?.name || "Selected file not found"
-                : "No greeting selected (using default)"}
-            </p>
-          </div>
-          
-          <div className="flex flex-wrap gap-2">
-            {mainGreetingId && mainGreetingId !== "none" && allAudioFiles.find(f => f.id === mainGreetingId) && (
-              <Button
-                variant="outline"
-                onClick={() => setMainPlayerOpen(true)}
-                data-testid="button-listen-main-greeting"
-              >
-                <Play className="h-4 w-4 mr-2" />
-                Listen
-              </Button>
-            )}
-            <input
-              ref={mainFileInputRef}
-              type="file"
-              accept="audio/*"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) {
-                  handleUploadGreeting(file, "greeting", mainGreetingId && mainGreetingId !== "none" ? mainGreetingId : null);
-                  if (mainFileInputRef.current) mainFileInputRef.current.value = "";
-                }
-              }}
-              data-testid="input-main-greeting-file"
-            />
-            <Button
-              variant="outline"
-              onClick={() => mainFileInputRef.current?.click()}
-              disabled={isUploadingMain}
-              data-testid="button-upload-main-greeting"
-            >
-              {isUploadingMain ? (
-                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-              ) : (
-                <Upload className="h-4 w-4 mr-2" />
-              )}
-              {mainGreetingId && mainGreetingId !== "none" ? "Replace File" : "Upload File"}
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
-
-      <AudioPlayerDialog
-        open={mainPlayerOpen}
-        onOpenChange={setMainPlayerOpen}
-        audioFile={allAudioFiles.find(f => f.id === mainGreetingId) || null}
-      />
 
       <Card>
         <CardHeader>
