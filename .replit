@@ -46,3 +46,6 @@ integrations = ["stripe:2.0.0", "javascript_database:1.0.0", "resend:1.0.0", "ja
 
 [userenv.shared]
 PHONE_LIST_TOKEN = "kH8mNp2xVq4wZ6"
+
+[objectStorage]
+defaultBucketID = "replit-objstore-5a2bbfbf-1884-4fde-824a-ce5bfc53fc46"
