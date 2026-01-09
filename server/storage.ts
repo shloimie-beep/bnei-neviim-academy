@@ -548,6 +548,12 @@ export class DatabaseStorage implements IStorage {
     await db.delete(videos).where(eq(videos.id, id));
   }
 
+  async incrementVideoViewCount(id: string): Promise<void> {
+    await db.update(videos)
+      .set({ viewCount: sql<number>`COALESCE(view_count, 0) + 1` })
+      .where(eq(videos.id, id));
+  }
+
   // Video Categories
   async getAllVideoCategories(): Promise<VideoCategory[]> {
     return db.select().from(videoCategories).orderBy(videoCategories.sortOrder);

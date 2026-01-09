@@ -15,6 +15,12 @@ import captivatedCrowdImg from "@assets/generated_images/b&w_captivated_crowd_ph
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#161616]">
+      <div className="bg-[#EDE518] py-2 text-center" data-testid="banner-hotline-number">
+        <span className="text-black text-sm font-bold uppercase tracking-wide flex items-center justify-center gap-2">
+          <Phone className="h-4 w-4" />
+          Call the Hotline at 613-ONE-TIME (613-663-8463)
+        </span>
+      </div>
       <div className="bg-[#08779C] py-2 text-center">
         <Link href="/gadlus-haadam">
           <span 

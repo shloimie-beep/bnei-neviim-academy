@@ -463,9 +463,9 @@ export default function DashboardPage() {
             <ThemeToggle />
             {user?.role === "admin" && (
               <Link href="/admin">
-                <Button variant="outline" size="sm" data-testid="button-admin">
+                <Button variant="destructive" size="sm" data-testid="button-admin">
                   <Settings className="h-4 w-4 mr-2" />
-                  Admin
+                  Admin Panel
                 </Button>
               </Link>
             )}

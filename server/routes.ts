@@ -1298,6 +1298,11 @@ export async function registerRoutes(
       const fileSize = stat.size;
       const range = req.headers.range;
 
+      // Increment view count only on initial request (not range requests from seeking)
+      if (!range || range === "bytes=0-") {
+        await storage.incrementVideoViewCount(video.id);
+      }
+
       if (range) {
         const parts = range.replace(/bytes=/, "").split("-");
         const start = parseInt(parts[0], 10);

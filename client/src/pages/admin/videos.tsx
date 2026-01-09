@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus } from "lucide-react";
+import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -167,6 +167,10 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, categories }:
               <div className="flex items-center gap-4 mt-3 flex-wrap">
                 <span className="text-sm text-muted-foreground">
                   {formatFileSize(video.fileSize)}
+                </span>
+                <span className="text-sm text-muted-foreground flex items-center gap-1" title="View count">
+                  <BarChart2 className="h-3 w-3" />
+                  {video.viewCount ?? 0} views
                 </span>
                 <span className="text-sm text-muted-foreground">
                   {video.createdAt ? new Date(video.createdAt).toLocaleDateString() : "Unknown date"}

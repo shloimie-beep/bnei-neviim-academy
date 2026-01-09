@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Phone, ArrowLeft, Loader2, Check } from "lucide-react";
+import { Phone, ArrowLeft, Loader2, Check, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
@@ -61,6 +61,38 @@ export default function RegisterPage() {
           <ThemeToggle />
         </div>
       </header>
+
+      {/* Development Warning Banner */}
+      <div className="bg-red-600 text-white py-4 px-4" data-testid="banner-development-warning">
+        <div className="container mx-auto flex items-center justify-center gap-3">
+          <AlertTriangle className="h-6 w-6 flex-shrink-0" />
+          <div className="text-center">
+            <p className="font-bold text-lg">The Hotline is Still in Development</p>
+            <p className="text-sm mt-1">
+              The hotline phone line is not working yet. In the meantime, you can{" "}
+              <a 
+                href="https://academy.onetimeonetime.com/the-onetime-onetime-academy" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="underline font-semibold hover:text-yellow-300"
+                data-testid="link-old-academy-signup"
+              >
+                sign up for the old Academy
+              </a>
+              {" "}or{" "}
+              <a 
+                href="https://academy.onetimeonetime.com/login" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="underline font-semibold hover:text-yellow-300"
+                data-testid="link-old-academy-login"
+              >
+                login if you already have an account
+              </a>.
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center p-4">

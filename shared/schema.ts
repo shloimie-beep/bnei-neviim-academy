@@ -147,6 +147,7 @@ export const videos = pgTable("videos", {
   thumbnailPath: text("thumbnail_path"),
   duration: integer("duration"),
   fileSize: integer("file_size"),
+  viewCount: integer("view_count").default(0),
   status: text("status").notNull().default("processing"),
   categoryId: varchar("category_id").references(() => videoCategories.id),
   uploadedBy: varchar("uploaded_by").references(() => users.id),
@@ -216,7 +217,7 @@ export const insertCallLogSchema = createInsertSchema(callLogs).omit({ id: true,
 export const insertWhitelistedNumberSchema = createInsertSchema(whitelistedNumbers).omit({ id: true, createdAt: true });
 export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTokens).omit({ id: true, createdAt: true });
 export const insertVideoCategorySchema = createInsertSchema(videoCategories).omit({ id: true, createdAt: true });
-export const insertVideoSchema = createInsertSchema(videos).omit({ id: true, createdAt: true });
+export const insertVideoSchema = createInsertSchema(videos).omit({ id: true, createdAt: true, viewCount: true });
 
 // Types
 export type User = typeof users.$inferSelect;
