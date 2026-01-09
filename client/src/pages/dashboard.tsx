@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
@@ -86,7 +87,17 @@ function VideoPlayer({ video, onClose }: { video: VideoType; onClose: () => void
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [buffered, setBuffered] = useState(0);
+  const [playbackRate, setPlaybackRate] = useState(1);
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const speedOptions = [0.5, 0.75, 1, 1.25, 1.5, 2];
+
+  const handleSpeedChange = (speed: number) => {
+    if (videoRef.current) {
+      videoRef.current.playbackRate = speed;
+      setPlaybackRate(speed);
+    }
+  };
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -264,6 +275,31 @@ function VideoPlayer({ video, onClose }: { video: VideoType; onClose: () => void
             </span>
             
             <div className="flex-1" />
+            
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="text-white hover:bg-white/20 text-xs px-2"
+                  data-testid="button-speed"
+                >
+                  {playbackRate}x
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="min-w-[80px]">
+                {speedOptions.map((speed) => (
+                  <DropdownMenuItem
+                    key={speed}
+                    onClick={() => handleSpeedChange(speed)}
+                    className={playbackRate === speed ? "bg-accent" : ""}
+                    data-testid={`speed-option-${speed}`}
+                  >
+                    {speed}x
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
             
             <Button
               size="icon"
