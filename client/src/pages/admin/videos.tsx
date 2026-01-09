@@ -361,10 +361,17 @@ export default function VideoManagement() {
           if (xhr.status >= 200 && xhr.status < 300) {
             resolve();
           } else {
-            reject(new Error("Upload failed"));
+            try {
+              const response = JSON.parse(xhr.responseText);
+              reject(new Error(response.message || "Upload failed"));
+            } catch {
+              reject(new Error(`Upload failed (status ${xhr.status})`));
+            }
           }
         };
-        xhr.onerror = () => reject(new Error("Upload failed"));
+        xhr.onerror = () => reject(new Error("Network error - please check your connection"));
+        xhr.ontimeout = () => reject(new Error("Upload timed out - try a smaller file"));
+        xhr.timeout = 1800000; // 30 minutes timeout
         xhr.open("POST", "/api/admin/videos");
         xhr.send(formData);
       });
@@ -405,7 +412,7 @@ export default function VideoManagement() {
             <DialogHeader>
               <DialogTitle>Upload Video</DialogTitle>
               <DialogDescription>
-                Upload a video file for subscribers. Supported formats: MP4, WebM, MOV, AVI (max 500MB)
+                Upload a video file for subscribers. Supported formats: MP4, WebM, MOV, AVI, MKV, MPEG, 3GP, FLV, WMV (max 10GB)
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
@@ -479,15 +486,20 @@ export default function VideoManagement() {
               {isUploading && (
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
-                    <span>Uploading...</span>
-                    <span>{uploadProgress}%</span>
+                    <span>{uploadProgress >= 100 ? "Processing video..." : "Uploading..."}</span>
+                    <span>{uploadProgress >= 100 ? "Please wait" : `${uploadProgress}%`}</span>
                   </div>
                   <div className="h-2 bg-muted rounded-full overflow-hidden">
                     <div 
-                      className="h-full bg-primary transition-all duration-300"
+                      className={`h-full transition-all duration-300 ${uploadProgress >= 100 ? "bg-primary animate-pulse" : "bg-primary"}`}
                       style={{ width: `${uploadProgress}%` }}
                     />
                   </div>
+                  {uploadProgress >= 100 && (
+                    <p className="text-xs text-muted-foreground">
+                      The server is saving your video. This may take a moment for larger files.
+                    </p>
+                  )}
                 </div>
               )}
             </div>
@@ -503,7 +515,7 @@ export default function VideoManagement() {
                 {isUploading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Uploading...
+                    {uploadProgress >= 100 ? "Processing..." : "Uploading..."}
                   </>
                 ) : (
                   "Upload"
