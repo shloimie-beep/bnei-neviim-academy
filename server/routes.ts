@@ -1700,6 +1700,37 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Get Bunny library settings (domain restrictions)
+  app.get("/api/admin/bunny/settings", requireAdmin, async (req, res) => {
+    try {
+      const settings = await bunnyStream.getLibrarySettings();
+      res.json({
+        allowedReferrers: settings.AllowedReferrers || [],
+        blockedReferrers: settings.BlockedReferrers || [],
+      });
+    } catch (error: any) {
+      console.error("Get Bunny settings error:", error);
+      res.status(500).json({ message: error.message || "Failed to get Bunny settings" });
+    }
+  });
+
+  // Admin: Set allowed domains for video playback
+  app.post("/api/admin/bunny/allowed-domains", requireAdmin, async (req, res) => {
+    try {
+      const { domains } = req.body;
+      if (!Array.isArray(domains)) {
+        return res.status(400).json({ message: "Domains must be an array of strings" });
+      }
+      
+      await bunnyStream.setAllowedReferrers(domains);
+      console.log(`[Bunny Stream] Updated allowed domains:`, domains);
+      res.json({ success: true, domains });
+    } catch (error: any) {
+      console.error("Set Bunny allowed domains error:", error);
+      res.status(500).json({ message: error.message || "Failed to set allowed domains" });
+    }
+  });
+
   // ============ VIDEO CATEGORIES ============
   // Admin: Get all video categories
   app.get("/api/admin/video-categories", requireAdmin, async (req, res) => {

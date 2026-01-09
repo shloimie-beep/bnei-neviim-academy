@@ -144,4 +144,58 @@ export function getUploadUrl(videoGuid: string): string {
   return `${BUNNY_API_BASE}/${BUNNY_LIBRARY_ID}/videos/${videoGuid}`;
 }
 
+interface LibrarySettings {
+  AllowedReferrers?: string[];
+  BlockedReferrers?: string[];
+  EnableDRM?: boolean;
+  PlayerKeyColor?: string;
+  FontFamily?: string;
+  ShowHeatmap?: boolean;
+  EnableContentTagging?: boolean;
+}
+
+export async function getLibrarySettings(): Promise<any> {
+  if (!BUNNY_API_KEY || !BUNNY_LIBRARY_ID) {
+    throw new Error("Bunny Stream credentials not configured");
+  }
+
+  const response = await fetch(`${BUNNY_API_BASE}/${BUNNY_LIBRARY_ID}`, {
+    method: "GET",
+    headers: {
+      "AccessKey": BUNNY_API_KEY,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Failed to get library settings: ${error}`);
+  }
+
+  return response.json();
+}
+
+export async function updateLibrarySettings(settings: LibrarySettings): Promise<void> {
+  if (!BUNNY_API_KEY || !BUNNY_LIBRARY_ID) {
+    throw new Error("Bunny Stream credentials not configured");
+  }
+
+  const response = await fetch(`${BUNNY_API_BASE}/${BUNNY_LIBRARY_ID}`, {
+    method: "POST",
+    headers: {
+      "AccessKey": BUNNY_API_KEY,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(settings),
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Failed to update library settings: ${error}`);
+  }
+}
+
+export async function setAllowedReferrers(domains: string[]): Promise<void> {
+  await updateLibrarySettings({ AllowedReferrers: domains });
+}
+
 export { BUNNY_API_KEY, BUNNY_LIBRARY_ID };

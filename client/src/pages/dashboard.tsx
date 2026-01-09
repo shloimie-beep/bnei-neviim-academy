@@ -14,7 +14,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useState, useRef, useMemo } from "react";
+import { useState, useRef, useMemo, useEffect } from "react";
 import type { PhoneNumber, Video as VideoType, VideoCategory } from "@shared/schema";
 
 function SubscriptionStatusBadge({ status }: { status: string }) {
@@ -76,7 +76,77 @@ function PhoneNumberCard({ phoneNumber, onDelete }: { phoneNumber: PhoneNumber; 
   );
 }
 
-function VideoPlayer({ video, onClose }: { video: VideoType; onClose: () => void }) {
+function BunnyVideoPlayer({ video }: { video: VideoType }) {
+  const [embedUrl, setEmbedUrl] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch(`/api/videos/${video.id}/stream`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.bunny && data.embedUrl) {
+          setEmbedUrl(data.embedUrl);
+        } else {
+          setError("Video not available");
+        }
+        setLoading(false);
+      })
+      .catch(() => {
+        setError("Failed to load video");
+        setLoading(false);
+      });
+  }, [video.id]);
+
+  if (loading) {
+    return (
+      <DialogContent className="max-w-4xl p-0 overflow-hidden">
+        <div className="aspect-video bg-black flex items-center justify-center">
+          <Loader2 className="h-12 w-12 text-white animate-spin" />
+        </div>
+        <div className="p-4">
+          <h3 className="font-semibold text-lg">{video.title}</h3>
+        </div>
+      </DialogContent>
+    );
+  }
+
+  if (error || !embedUrl) {
+    return (
+      <DialogContent className="max-w-4xl p-0 overflow-hidden">
+        <div className="aspect-video bg-black flex items-center justify-center">
+          <p className="text-white">{error || "Video not available"}</p>
+        </div>
+        <div className="p-4">
+          <h3 className="font-semibold text-lg">{video.title}</h3>
+        </div>
+      </DialogContent>
+    );
+  }
+
+  return (
+    <DialogContent className="max-w-4xl p-0 overflow-hidden">
+      <div className="relative bg-black">
+        <iframe
+          src={embedUrl}
+          className="w-full aspect-video"
+          frameBorder="0"
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          data-testid={`video-player-${video.id}`}
+        />
+      </div>
+      <div className="p-4">
+        <h3 className="font-semibold text-lg">{video.title}</h3>
+        {video.description && (
+          <p className="text-sm text-muted-foreground mt-1">{video.description}</p>
+        )}
+      </div>
+    </DialogContent>
+  );
+}
+
+function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () => void }) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -323,6 +393,13 @@ function VideoPlayer({ video, onClose }: { video: VideoType; onClose: () => void
   );
 }
 
+function VideoPlayer({ video, onClose }: { video: VideoType; onClose: () => void }) {
+  if (video.bunnyGuid) {
+    return <BunnyVideoPlayer video={video} />;
+  }
+  return <LegacyVideoPlayer video={video} onClose={onClose} />;
+}
+
 function VideoCard({ video }: { video: VideoType }) {
   const [isOpen, setIsOpen] = useState(false);
 
@@ -334,6 +411,12 @@ function VideoCard({ video }: { video: VideoType }) {
             {video.thumbnailPath ? (
               <img 
                 src={`/api/videos/${video.id}/thumbnail`} 
+                alt={video.title}
+                className="h-full w-full object-cover"
+              />
+            ) : video.bunnyGuid ? (
+              <img 
+                src={`https://vz-21d70a77-eb3.b-cdn.net/${video.bunnyGuid}/thumbnail.jpg`}
                 alt={video.title}
                 className="h-full w-full object-cover"
               />

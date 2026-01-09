@@ -28,22 +28,27 @@ The frontend follows a page-based structure with protected routes for authentica
 - **Database ORM**: Drizzle ORM with PostgreSQL
 - **Session Management**: express-session with connect-pg-simple for PostgreSQL session storage
 - **Authentication**: Session-based auth with bcryptjs for password hashing
-- **File Uploads**: Multer for audio file handling, Replit Object Storage for large video uploads
-- **Video Processing**: FFmpeg for video conversion to H.264/MP4 format
+- **File Uploads**: Multer for audio file handling
+- **Video Hosting**: Bunny Stream CDN for video uploads and delivery
 - **API Structure**: RESTful endpoints under `/api` prefix
 
 The backend handles user authentication, subscription management, phone number registration, audio file management, IVR menu configuration, and video content management.
 
 ### Video Upload Architecture
-- **Cloud Storage**: Replit Object Storage with presigned URLs for direct uploads (bypasses server size limits)
+- **Video Hosting**: Bunny Stream CDN for reliable video delivery and automatic transcoding
 - **Upload Flow**: 
-  1. Frontend requests presigned URL from backend
-  2. Video uploads directly to cloud storage
-  3. Backend finalizes record and starts conversion
-  4. FFmpeg converts to 720p H.264/MP4 format
-  5. Converted video uploaded back to cloud storage
-- **Streaming**: Supports HTTP range requests for seeking, serves from both local and cloud storage
+  1. Admin creates video on Bunny Stream via `/api/admin/videos/bunny/create`
+  2. Frontend uploads directly to Bunny CDN using the returned upload URL
+  3. Backend finalizes record via `/api/admin/videos/bunny/finalize`
+  4. Bunny automatically transcodes video to multiple resolutions
+  5. Backend polls Bunny API to update video status when ready
+- **Playback**: Uses Bunny's embedded iframe player for new videos, legacy videos still stream from original storage
+- **Domain Restriction**: Bunny library settings allow domain restrictions to prevent unauthorized video sharing
 - **Max Size**: Up to 10GB video files supported
+- **Key Files**: 
+  - `server/bunnyStream.ts` - Bunny Stream API service
+  - Video schema includes `bunnyGuid`, `bunnyVideoId`, `storageType` fields for Bunny videos
+- **Legacy Support**: Videos without `bunnyGuid` continue to use local/cloud storage streaming
 
 ### Data Storage
 - **Primary Database**: PostgreSQL
@@ -94,5 +99,7 @@ The backend handles user authentication, subscription management, phone number r
 
 ### Environment Variables Required
 - `DATABASE_URL` - PostgreSQL connection string
+- `BUNNY_API_KEY` - Bunny Stream API key for video management
+- `BUNNY_LIBRARY_ID` - Bunny Stream library ID
 - Stripe credentials managed via Replit Connectors (auto-configured)
 - `REPL_IDENTITY` / `WEB_REPL_RENEWAL` - Replit authentication tokens
