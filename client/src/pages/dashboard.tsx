@@ -477,6 +477,14 @@ export default function DashboardPage() {
         </div>
       </header>
 
+      {/* Hotline Phone Number Banner */}
+      <div className="bg-[#EDE518] py-2 text-center" data-testid="banner-hotline-number">
+        <span className="text-black text-sm font-bold uppercase tracking-wide flex items-center justify-center gap-2">
+          <Phone className="h-4 w-4" />
+          Call the Hotline at 613-ONE-TIME (613-663-8463)
+        </span>
+      </div>
+
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto space-y-8">
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
