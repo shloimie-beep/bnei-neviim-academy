@@ -275,17 +275,12 @@ export default function LandingPage() {
             </ScrollReveal>
             
             <ScrollReveal delay={0.45}>
-              <div className="pt-10 flex flex-col sm:flex-row gap-4 justify-center">
+              <div className="pt-10 flex justify-center">
                 <Link href="/register">
                   <Button size="lg" className="bg-[#EDE518] text-black font-bold px-12 text-base">
                     Join Academy & Hotline →
                   </Button>
                 </Link>
-                <a href="#learn-more">
-                  <Button size="lg" variant="outline" className="border-white text-white font-bold px-8 text-base">
-                    Learn More
-                  </Button>
-                </a>
               </div>
             </ScrollReveal>
           </div>
@@ -356,13 +351,6 @@ export default function LandingPage() {
               <p className="text-center mt-10 text-white/80 text-lg">
                 Each piece is short, powerful, and memorable — perfect for busy families who want meaningful moments in minutes.
               </p>
-            </ScrollReveal>
-            <ScrollReveal delay={0.6}>
-              <div className="text-center mt-8">
-                <a href="#hotline" className="text-[#EDE518] font-semibold hover:underline">
-                  Learn More About the Academy & Hotline
-                </a>
-              </div>
             </ScrollReveal>
           </div>
         </div>
@@ -860,8 +848,15 @@ export default function LandingPage() {
           <p className="text-sm mb-2">
             OneTimeOneTime is a program of Gadlus HaAdam, LLC.
           </p>
-          <p className="text-sm">
+          <p className="text-sm mb-2">
             &copy; {new Date().getFullYear()} OneTimeOneTime. All rights reserved.
+          </p>
+          <p className="text-xs mt-4">
+            Website and Academy built by{" "}
+            <a href="https://baltimoreexpert.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+              baltimoreexpert.com
+            </a>{" "}
+            <a href="tel:3473895527" className="hover:text-white transition-colors">(347) 389-5527</a>
           </p>
         </div>
       </footer>
