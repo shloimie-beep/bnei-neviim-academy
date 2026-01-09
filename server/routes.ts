@@ -1165,28 +1165,32 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Video not found" });
       }
 
-      // Delete from cloud storage if stored there
+      // Delete video file from cloud storage or local filesystem
       if (video.filepath.startsWith("/objects/") || video.filepath.startsWith("https://storage.googleapis.com/")) {
         try {
-          const objectStorageService = new ObjectStorageService();
-          const normalizedPath = objectStorageService.normalizeObjectEntityPath(video.filepath);
+          const localObjectStorageService = new ObjectStorageService();
+          const normalizedPath = localObjectStorageService.normalizeObjectEntityPath(video.filepath);
           if (normalizedPath.startsWith("/objects/")) {
-            const objectFile = await objectStorageService.getObjectEntityFile(normalizedPath);
+            const objectFile = await localObjectStorageService.getObjectEntityFile(normalizedPath);
             await objectFile.delete();
+            console.log(`Deleted video ${req.params.id} from cloud storage`);
           }
         } catch (err) {
-          console.error("Failed to delete video from cloud storage:", err);
+          console.error(`Failed to delete video ${req.params.id} from cloud storage:`, err);
         }
-      } else if (fs.existsSync(video.filepath)) {
+      } else if (video.filepath && fs.existsSync(video.filepath)) {
         fs.unlinkSync(video.filepath);
+        console.log(`Deleted video ${req.params.id} from local filesystem`);
       }
 
-      // Delete thumbnail if exists (still local)
+      // Delete thumbnail if exists (stored locally)
       if (video.thumbnailPath && fs.existsSync(video.thumbnailPath)) {
         fs.unlinkSync(video.thumbnailPath);
+        console.log(`Deleted thumbnail for video ${req.params.id}`);
       }
 
       await storage.deleteVideo(req.params.id);
+      console.log(`Video ${req.params.id} fully deleted from database and storage`);
       res.json({ success: true });
     } catch (error) {
       console.error("Delete video error:", error);
@@ -1316,18 +1320,25 @@ export async function registerRoutes(
             status: "ready",
           });
           
-          // Clean up temp files
-          if (fs.existsSync(tempOriginalPath)) fs.unlinkSync(tempOriginalPath);
-          if (fs.existsSync(tempConvertedPath)) fs.unlinkSync(tempConvertedPath);
-          
-          // Delete original uploaded file from cloud
-          try {
-            await objectFile.delete();
-          } catch (err) {
-            console.error("Failed to delete original cloud file:", err);
+          // Clean up temp files from local server
+          if (fs.existsSync(tempOriginalPath)) {
+            fs.unlinkSync(tempOriginalPath);
+            console.log(`Deleted temp original file for ${video.id}`);
+          }
+          if (fs.existsSync(tempConvertedPath)) {
+            fs.unlinkSync(tempConvertedPath);
+            console.log(`Deleted temp converted file for ${video.id}`);
           }
           
-          console.log(`Video ${video.id} converted and uploaded successfully`);
+          // Delete original uploaded file from cloud storage
+          try {
+            await objectFile.delete();
+            console.log(`Deleted original cloud file for ${video.id} from cloud storage`);
+          } catch (err) {
+            console.error(`Failed to delete original cloud file for ${video.id}:`, err);
+          }
+          
+          console.log(`Video ${video.id} converted and uploaded successfully - original deleted`);
         } catch (conversionError) {
           console.error(`Video conversion failed for ${video.id}:`, conversionError);
           await storage.updateVideo(video.id, { status: "failed" });
