@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2 } from "lucide-react";
+import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -319,6 +319,23 @@ export default function VideoManagement() {
     },
   });
 
+  const cleanupMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/admin/cleanup-orphaned-uploads", { method: "POST" });
+      if (!res.ok) throw new Error("Failed to cleanup");
+      return res.json();
+    },
+    onSuccess: (data: { deleted: string[], kept: string[], message: string }) => {
+      toast({ 
+        title: "Cleanup complete", 
+        description: `${data.deleted.length} orphaned files removed` 
+      });
+    },
+    onError: (error: any) => {
+      toast({ title: "Cleanup failed", description: error.message, variant: "destructive" });
+    },
+  });
+
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
@@ -448,13 +465,27 @@ export default function VideoManagement() {
           <h1 className="text-2xl font-bold">Video Library</h1>
           <p className="text-muted-foreground">Manage video content for subscribers</p>
         </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button data-testid="button-upload-video">
-              <Upload className="h-4 w-4 mr-2" />
-              Upload Video
-            </Button>
-          </DialogTrigger>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            onClick={() => cleanupMutation.mutate()}
+            disabled={cleanupMutation.isPending}
+            data-testid="button-cleanup-orphans"
+          >
+            {cleanupMutation.isPending ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Trash className="h-4 w-4 mr-2" />
+            )}
+            Cleanup Storage
+          </Button>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button data-testid="button-upload-video">
+                <Upload className="h-4 w-4 mr-2" />
+                Upload Video
+              </Button>
+            </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Upload Video</DialogTitle>
@@ -571,6 +602,7 @@ export default function VideoManagement() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+        </div>
       </div>
 
       <Card>

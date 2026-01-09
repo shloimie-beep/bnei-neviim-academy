@@ -2658,12 +2658,16 @@ export async function registerRoutes(
       const bucket = objectStorageClient.bucket(bucketName);
       const [files] = await bucket.getFiles({ prefix });
       
-      // Get all video filepaths from database
+      // Get all video filepaths from database (including processing videos)
       const allVideos = await storage.getAllVideos();
       const videoFilepaths = new Set(allVideos.map(v => v.filepath));
       
+      // Also check for videos currently being processed - don't delete their source files
+      const processingVideos = allVideos.filter(v => v.status === "processing");
+      const processingFilepaths = new Set(processingVideos.map(v => v.filepath));
+      
       const now = Date.now();
-      const twelveHoursMs = 12 * 60 * 60 * 1000;
+      const twentyFourHoursMs = 24 * 60 * 60 * 1000; // 24 hours minimum age before deletion
       
       for (const file of files) {
         try {
@@ -2675,16 +2679,20 @@ export async function registerRoutes(
           const objectName = file.name;
           const normalizedPath = `/objects/${objectName.replace(/^\.private\//, '')}`;
           
-          // Check if this file is referenced by any video
+          // Check if this file is referenced by any video or is being processed
           const isReferenced = videoFilepaths.has(normalizedPath);
+          const isProcessing = processingFilepaths.has(normalizedPath);
           
-          if (!isReferenced && ageMs > twelveHoursMs) {
+          if (isProcessing) {
+            kept.push(file.name);
+            console.log(`[Cleanup] Kept file being converted: ${file.name}`);
+          } else if (!isReferenced && ageMs > twentyFourHoursMs) {
             await file.delete();
             deleted.push(file.name);
             console.log(`[Cleanup] Deleted orphaned file: ${file.name} (age: ${Math.round(ageMs / 3600000)}h)`);
           } else if (!isReferenced) {
             kept.push(file.name);
-            console.log(`[Cleanup] Kept recent file: ${file.name} (age: ${Math.round(ageMs / 3600000)}h, may be in-progress)`);
+            console.log(`[Cleanup] Kept recent file: ${file.name} (age: ${Math.round(ageMs / 3600000)}h, may be uploading/converting)`);
           }
         } catch (fileError) {
           const errorMsg = `Failed to process ${file.name}: ${fileError}`;
@@ -2717,17 +2725,11 @@ export async function registerRoutes(
     }
   });
   
-  // Schedule automatic cleanup every hour
+  // Schedule automatic cleanup every week (7 days)
   setInterval(async () => {
-    console.log("[Cleanup] Running scheduled orphaned upload cleanup...");
+    console.log("[Cleanup] Running scheduled weekly orphaned upload cleanup...");
     await cleanupOrphanedUploads();
-  }, 60 * 60 * 1000); // Every hour
-  
-  // Run initial cleanup 5 minutes after server start
-  setTimeout(async () => {
-    console.log("[Cleanup] Running initial orphaned upload cleanup...");
-    await cleanupOrphanedUploads();
-  }, 5 * 60 * 1000);
+  }, 7 * 24 * 60 * 60 * 1000); // Every week
 
   return httpServer;
 }
