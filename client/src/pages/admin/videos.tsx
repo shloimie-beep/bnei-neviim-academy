@@ -221,20 +221,24 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, categories }:
   );
 }
 
+interface UploadQueueItem {
+  file: File;
+  title: string;
+  status: 'pending' | 'uploading' | 'processing' | 'done' | 'error';
+  progress: number;
+  error?: string;
+}
+
 export default function VideoManagement() {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
-  const [uploadTitle, setUploadTitle] = useState("");
-  const [uploadDescription, setUploadDescription] = useState("");
   const [uploadCategoryId, setUploadCategoryId] = useState("");
   const [newCategoryName, setNewCategoryName] = useState("");
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [selectedThumbnail, setSelectedThumbnail] = useState<File | null>(null);
+  const [uploadQueue, setUploadQueue] = useState<UploadQueueItem[]>([]);
   const [isUploading, setIsUploading] = useState(false);
-  const [uploadProgress, setUploadProgress] = useState(0);
-  const thumbnailInputRef = useRef<HTMLInputElement>(null);
+  const [currentUploadIndex, setCurrentUploadIndex] = useState(0);
 
   const { data: videos, isLoading } = useQuery<VideoType[]>({
     queryKey: ["/api/admin/videos"],
@@ -337,51 +341,58 @@ export default function VideoManagement() {
   });
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-      if (!uploadTitle) {
-        setUploadTitle(file.name.replace(/\.[^/.]+$/, ""));
-      }
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      const newItems: UploadQueueItem[] = Array.from(files).map(file => ({
+        file,
+        title: file.name.replace(/\.[^/.]+$/, ""),
+        status: 'pending' as const,
+        progress: 0,
+      }));
+      setUploadQueue(prev => [...prev, ...newItems]);
     }
   };
 
-  const handleUpload = async () => {
-    if (!selectedFile || !uploadTitle) return;
+  const removeFromQueue = (index: number) => {
+    setUploadQueue(prev => prev.filter((_, i) => i !== index));
+  };
 
-    setIsUploading(true);
-    setUploadProgress(0);
+  const updateQueueItem = (index: number, updates: Partial<UploadQueueItem>) => {
+    setUploadQueue(prev => prev.map((item, i) => 
+      i === index ? { ...item, ...updates } : item
+    ));
+  };
 
+  const uploadSingleVideo = async (item: UploadQueueItem, index: number): Promise<boolean> => {
     try {
-      // Step 1: Request presigned URL from backend (5%)
-      setUploadProgress(5);
+      updateQueueItem(index, { status: 'uploading', progress: 5 });
+
+      // Step 1: Request presigned URL
       const urlResponse = await fetch("/api/admin/videos/request-upload-url", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: selectedFile.name,
-          size: selectedFile.size,
-          contentType: selectedFile.type || "video/mp4",
+          name: item.file.name,
+          size: item.file.size,
+          contentType: item.file.type || "video/mp4",
         }),
       });
 
       if (!urlResponse.ok) {
-        const errorData = await urlResponse.json().catch(() => ({}));
-        throw new Error(errorData.message || "Failed to get upload URL");
+        throw new Error("Failed to get upload URL");
       }
 
       const { uploadURL, objectPath } = await urlResponse.json();
 
-      // Step 2: Upload video directly to cloud storage with progress
-      setUploadProgress(10);
+      // Step 2: Upload to cloud storage
+      updateQueueItem(index, { progress: 10 });
       await new Promise<void>((resolve, reject) => {
         const xhr = new XMLHttpRequest();
         
         xhr.upload.addEventListener("progress", (e) => {
           if (e.lengthComputable) {
-            // Progress from 10% to 90% during upload
             const percent = 10 + Math.round((e.loaded / e.total) * 80);
-            setUploadProgress(percent);
+            updateQueueItem(index, { progress: percent });
           }
         });
 
@@ -389,72 +400,83 @@ export default function VideoManagement() {
           if (xhr.status >= 200 && xhr.status < 300) {
             resolve();
           } else {
-            reject(new Error(`Cloud upload failed (status ${xhr.status})`));
+            reject(new Error(`Upload failed (status ${xhr.status})`));
           }
         };
-        xhr.onerror = () => reject(new Error("Network error during cloud upload"));
-        xhr.ontimeout = () => reject(new Error("Upload timed out - try a smaller file"));
-        xhr.timeout = 3600000; // 60 minutes timeout for large files
+        xhr.onerror = () => reject(new Error("Network error"));
+        xhr.ontimeout = () => reject(new Error("Upload timed out"));
+        xhr.timeout = 36000000; // 10 hours timeout
         xhr.open("PUT", uploadURL);
-        xhr.setRequestHeader("Content-Type", selectedFile.type || "video/mp4");
-        xhr.send(selectedFile);
+        xhr.setRequestHeader("Content-Type", item.file.type || "video/mp4");
+        xhr.send(item.file);
       });
 
-      // Step 3: Finalize upload in backend (90%)
-      setUploadProgress(90);
+      // Step 3: Finalize
+      updateQueueItem(index, { status: 'processing', progress: 95 });
       const finalizeResponse = await fetch("/api/admin/videos/finalize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          title: uploadTitle,
-          description: uploadDescription,
+          title: item.title,
+          description: "",
           categoryId: uploadCategoryId && uploadCategoryId !== "none" ? uploadCategoryId : null,
           objectPath,
-          filename: selectedFile.name,
-          fileSize: selectedFile.size,
+          filename: item.file.name,
+          fileSize: item.file.size,
         }),
       });
 
       if (!finalizeResponse.ok) {
-        const errorData = await finalizeResponse.json().catch(() => ({}));
-        throw new Error(errorData.message || "Failed to finalize video upload");
+        throw new Error("Failed to finalize upload");
       }
 
-      const videoData = await finalizeResponse.json();
+      updateQueueItem(index, { status: 'done', progress: 100 });
+      return true;
+    } catch (error: any) {
+      updateQueueItem(index, { status: 'error', error: error.message });
+      return false;
+    }
+  };
 
-      // Step 4: Upload thumbnail if selected (95%)
-      if (selectedThumbnail && videoData.id) {
-        setUploadProgress(95);
-        const thumbnailFormData = new FormData();
-        thumbnailFormData.append("thumbnail", selectedThumbnail);
-        
-        const thumbnailResponse = await fetch(`/api/admin/videos/${videoData.id}/thumbnail`, {
-          method: "POST",
-          body: thumbnailFormData,
-        });
-        
-        if (!thumbnailResponse.ok) {
-          console.error("Thumbnail upload failed, but video was created successfully");
-        }
+  const handleBatchUpload = async () => {
+    if (uploadQueue.length === 0) return;
+
+    setIsUploading(true);
+    setCurrentUploadIndex(0);
+
+    let successCount = 0;
+    let errorCount = 0;
+
+    for (let i = 0; i < uploadQueue.length; i++) {
+      if (uploadQueue[i].status === 'done') continue;
+      
+      setCurrentUploadIndex(i);
+      const success = await uploadSingleVideo(uploadQueue[i], i);
+      
+      if (success) {
+        successCount++;
+      } else {
+        errorCount++;
       }
-
-      setUploadProgress(100);
-
+      
+      // Refresh video list after each upload
       queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
-      toast({ title: "Video uploaded successfully", description: "Video is being processed and will be ready shortly." });
+    }
+
+    setIsUploading(false);
+    
+    if (successCount > 0) {
+      toast({ 
+        title: "Batch upload complete", 
+        description: `${successCount} videos uploaded${errorCount > 0 ? `, ${errorCount} failed` : ''}` 
+      });
+    }
+    
+    if (errorCount === 0) {
       setIsDialogOpen(false);
-      setSelectedFile(null);
-      setSelectedThumbnail(null);
-      setUploadTitle("");
-      setUploadDescription("");
+      setUploadQueue([]);
       setUploadCategoryId("");
       if (fileInputRef.current) fileInputRef.current.value = "";
-      if (thumbnailInputRef.current) thumbnailInputRef.current.value = "";
-    } catch (error: any) {
-      toast({ title: "Upload failed", description: error.message, variant: "destructive" });
-    } finally {
-      setIsUploading(false);
-      setUploadProgress(0);
     }
   };
 
@@ -486,54 +508,34 @@ export default function VideoManagement() {
                 Upload Video
               </Button>
             </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Upload Video</DialogTitle>
+              <DialogTitle>Upload Videos</DialogTitle>
               <DialogDescription>
-                Upload a video file for subscribers. Supported formats: MP4, WebM, MOV, AVI, MKV, MPEG, 3GP, FLV, WMV (max 10GB)
+                Select multiple video files to upload. They will be processed one at a time. You can leave this running overnight.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="video-file">Video File</Label>
+                <Label htmlFor="video-file">Video Files</Label>
                 <Input
                   id="video-file"
                   type="file"
                   accept="video/*"
+                  multiple
                   ref={fileInputRef}
                   onChange={handleFileSelect}
+                  disabled={isUploading}
                   data-testid="input-video-file"
                 />
-                {selectedFile && (
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Selected: {selectedFile.name} ({formatFileSize(selectedFile.size)})
-                  </p>
-                )}
+                <p className="text-xs text-muted-foreground mt-1">
+                  Supported: MP4, WebM, MOV, AVI, MKV (max 10GB each)
+                </p>
               </div>
+              
               <div>
-                <Label htmlFor="video-title">Title</Label>
-                <Input
-                  id="video-title"
-                  value={uploadTitle}
-                  onChange={(e) => setUploadTitle(e.target.value)}
-                  placeholder="Enter video title"
-                  data-testid="input-video-title"
-                />
-              </div>
-              <div>
-                <Label htmlFor="video-description">Description (optional)</Label>
-                <Textarea
-                  id="video-description"
-                  value={uploadDescription}
-                  onChange={(e) => setUploadDescription(e.target.value)}
-                  placeholder="Enter video description"
-                  rows={3}
-                  data-testid="input-video-description"
-                />
-              </div>
-              <div>
-                <Label htmlFor="video-category">Category (optional)</Label>
-                <Select value={uploadCategoryId} onValueChange={setUploadCategoryId}>
+                <Label htmlFor="video-category">Category for all videos (optional)</Label>
+                <Select value={uploadCategoryId} onValueChange={setUploadCategoryId} disabled={isUploading}>
                   <SelectTrigger data-testid="select-video-category">
                     <SelectValue placeholder="Select a category" />
                   </SelectTrigger>
@@ -545,58 +547,94 @@ export default function VideoManagement() {
                   </SelectContent>
                 </Select>
               </div>
-              <div>
-                <Label htmlFor="video-thumbnail">Thumbnail Image (optional)</Label>
-                <Input
-                  id="video-thumbnail"
-                  type="file"
-                  accept="image/*"
-                  ref={thumbnailInputRef}
-                  onChange={(e) => setSelectedThumbnail(e.target.files?.[0] || null)}
-                  data-testid="input-video-thumbnail"
-                />
-                {selectedThumbnail && (
-                  <p className="text-sm text-muted-foreground mt-1">
-                    Selected: {selectedThumbnail.name}
-                  </p>
-                )}
-              </div>
-              {isUploading && (
+
+              {uploadQueue.length > 0 && (
                 <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>{uploadProgress >= 100 ? "Processing video..." : "Uploading..."}</span>
-                    <span>{uploadProgress >= 100 ? "Please wait" : `${uploadProgress}%`}</span>
+                  <Label>Upload Queue ({uploadQueue.filter(q => q.status === 'done').length}/{uploadQueue.length} complete)</Label>
+                  <div className="max-h-60 overflow-y-auto space-y-2 border rounded-md p-2">
+                    {uploadQueue.map((item, index) => (
+                      <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium truncate">{item.title}</p>
+                          <p className="text-xs text-muted-foreground">{formatFileSize(item.file.size)}</p>
+                          {item.status === 'uploading' && (
+                            <div className="h-1.5 bg-muted rounded-full overflow-hidden mt-1">
+                              <div 
+                                className="h-full bg-primary transition-all duration-300"
+                                style={{ width: `${item.progress}%` }}
+                              />
+                            </div>
+                          )}
+                          {item.status === 'error' && (
+                            <p className="text-xs text-destructive">{item.error}</p>
+                          )}
+                        </div>
+                        <div className="flex items-center gap-1">
+                          {item.status === 'pending' && (
+                            <Badge variant="secondary">Pending</Badge>
+                          )}
+                          {item.status === 'uploading' && (
+                            <Badge variant="default" className="gap-1">
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                              {item.progress}%
+                            </Badge>
+                          )}
+                          {item.status === 'processing' && (
+                            <Badge variant="default" className="gap-1">
+                              <Loader2 className="h-3 w-3 animate-spin" />
+                              Processing
+                            </Badge>
+                          )}
+                          {item.status === 'done' && (
+                            <Badge variant="outline" className="text-green-600 border-green-600">Done</Badge>
+                          )}
+                          {item.status === 'error' && (
+                            <Badge variant="destructive">Error</Badge>
+                          )}
+                          {!isUploading && item.status !== 'done' && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-6 w-6"
+                              onClick={() => removeFromQueue(index)}
+                              data-testid={`button-remove-queue-${index}`}
+                            >
+                              <X className="h-3 w-3" />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <div className="h-2 bg-muted rounded-full overflow-hidden">
-                    <div 
-                      className={`h-full transition-all duration-300 ${uploadProgress >= 100 ? "bg-primary animate-pulse" : "bg-primary"}`}
-                      style={{ width: `${uploadProgress}%` }}
-                    />
-                  </div>
-                  {uploadProgress >= 100 && (
-                    <p className="text-xs text-muted-foreground">
-                      The server is saving your video. This may take a moment for larger files.
-                    </p>
-                  )}
                 </div>
               )}
             </div>
             <DialogFooter>
-              <Button variant="ghost" onClick={() => setIsDialogOpen(false)} disabled={isUploading}>
-                Cancel
+              <Button 
+                variant="ghost" 
+                onClick={() => {
+                  setIsDialogOpen(false);
+                  if (!isUploading) {
+                    setUploadQueue([]);
+                    setUploadCategoryId("");
+                  }
+                }} 
+                disabled={isUploading}
+              >
+                {isUploading ? "Running in background..." : "Cancel"}
               </Button>
               <Button 
-                onClick={handleUpload} 
-                disabled={!selectedFile || !uploadTitle || isUploading}
+                onClick={handleBatchUpload} 
+                disabled={uploadQueue.length === 0 || isUploading || uploadQueue.every(q => q.status === 'done')}
                 data-testid="button-confirm-upload"
               >
                 {isUploading ? (
                   <>
                     <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    {uploadProgress >= 100 ? "Processing..." : "Uploading..."}
+                    Uploading {currentUploadIndex + 1}/{uploadQueue.length}...
                   </>
                 ) : (
-                  "Upload"
+                  `Upload ${uploadQueue.length} Video${uploadQueue.length !== 1 ? 's' : ''}`
                 )}
               </Button>
             </DialogFooter>
