@@ -485,23 +485,48 @@ export default function VideoManagement() {
         throw new Error("Upload cancelled");
       }
 
-      // Step 3: Finalize
+      // Step 3: Finalize with retry logic
       updateQueueItem(index, { status: 'processing', progress: 95 });
-      const finalizeResponse = await fetch("/api/admin/videos/finalize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: item.title,
-          description: "",
-          categoryId: uploadCategoryId && uploadCategoryId !== "none" ? uploadCategoryId : null,
-          objectPath,
-          filename: item.file.name,
-          fileSize: item.file.size,
-        }),
-      });
+      let finalizeResponse: Response | null = null;
+      let finalizeError: Error | null = null;
+      
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        if (cancelledRef.current) {
+          throw new Error("Upload cancelled");
+        }
+        
+        try {
+          finalizeResponse = await fetch("/api/admin/videos/finalize", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              title: item.title,
+              description: "",
+              categoryId: uploadCategoryId && uploadCategoryId !== "none" ? uploadCategoryId : null,
+              objectPath,
+              filename: item.file.name,
+              fileSize: item.file.size,
+            }),
+          });
+          
+          if (finalizeResponse.ok) {
+            finalizeError = null;
+            break;
+          } else {
+            const errorData = await finalizeResponse.json().catch(() => ({}));
+            finalizeError = new Error(errorData.message || `Finalize failed (attempt ${attempt})`);
+          }
+        } catch (err: any) {
+          finalizeError = err;
+        }
+        
+        if (attempt < 3) {
+          await new Promise(r => setTimeout(r, 2000 * attempt));
+        }
+      }
 
-      if (!finalizeResponse.ok) {
-        throw new Error("Failed to finalize upload");
+      if (finalizeError || !finalizeResponse?.ok) {
+        throw finalizeError || new Error("Failed to finalize upload after 3 attempts");
       }
 
       updateQueueItem(index, { status: 'done', progress: 100 });
@@ -651,23 +676,44 @@ export default function VideoManagement() {
         xhr.send(singleFile);
       });
 
-      // Step 3: Finalize
+      // Step 3: Finalize with retry logic
       setSingleUploadProgress(90);
-      const finalizeResponse = await fetch("/api/admin/videos/finalize", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          title: singleTitle,
-          description: singleDescription,
-          categoryId: singleCategoryId && singleCategoryId !== "none" ? singleCategoryId : null,
-          objectPath,
-          filename: singleFile.name,
-          fileSize: singleFile.size,
-        }),
-      });
+      let finalizeResponse: Response | null = null;
+      let finalizeError: Error | null = null;
+      
+      for (let attempt = 1; attempt <= 3; attempt++) {
+        try {
+          finalizeResponse = await fetch("/api/admin/videos/finalize", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              title: singleTitle,
+              description: singleDescription,
+              categoryId: singleCategoryId && singleCategoryId !== "none" ? singleCategoryId : null,
+              objectPath,
+              filename: singleFile.name,
+              fileSize: singleFile.size,
+            }),
+          });
+          
+          if (finalizeResponse.ok) {
+            finalizeError = null;
+            break;
+          } else {
+            const errorData = await finalizeResponse.json().catch(() => ({}));
+            finalizeError = new Error(errorData.message || `Finalize failed (attempt ${attempt})`);
+          }
+        } catch (err: any) {
+          finalizeError = err;
+        }
+        
+        if (attempt < 3) {
+          await new Promise(r => setTimeout(r, 2000 * attempt)); // Wait before retry
+        }
+      }
 
-      if (!finalizeResponse.ok) {
-        throw new Error("Failed to finalize upload");
+      if (finalizeError || !finalizeResponse?.ok) {
+        throw finalizeError || new Error("Failed to finalize upload after 3 attempts");
       }
 
       const videoData = await finalizeResponse.json();
