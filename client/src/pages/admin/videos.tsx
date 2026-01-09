@@ -369,22 +369,6 @@ export default function VideoManagement() {
     },
   });
 
-  const cleanupMutation = useMutation({
-    mutationFn: async () => {
-      const res = await fetch("/api/admin/cleanup-orphaned-uploads", { method: "POST" });
-      if (!res.ok) throw new Error("Failed to cleanup");
-      return res.json();
-    },
-    onSuccess: (data: { deleted: string[], kept: string[], message: string }) => {
-      toast({ 
-        title: "Cleanup complete", 
-        description: `${data.deleted.length} orphaned files removed` 
-      });
-    },
-    onError: (error: any) => {
-      toast({ title: "Cleanup failed", description: error.message, variant: "destructive" });
-    },
-  });
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
@@ -738,20 +722,6 @@ export default function VideoManagement() {
           <p className="text-muted-foreground">Manage video content for subscribers</p>
         </div>
         <div className="flex gap-2 flex-wrap">
-          <Button 
-            variant="outline" 
-            onClick={() => cleanupMutation.mutate()}
-            disabled={cleanupMutation.isPending}
-            data-testid="button-cleanup-orphans"
-          >
-            {cleanupMutation.isPending ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <Trash className="h-4 w-4 mr-2" />
-            )}
-            Cleanup Storage
-          </Button>
-          
           <Dialog open={isSingleDialogOpen} onOpenChange={setIsSingleDialogOpen}>
             <DialogTrigger asChild>
               <Button data-testid="button-upload-single-video">
