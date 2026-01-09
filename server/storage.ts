@@ -10,6 +10,7 @@ import {
   unmuteRequests,
   callLogs,
   whitelistedNumbers,
+  whitelistedEmails,
   passwordResetTokens,
   systemSettings,
   videoCategories,
@@ -32,6 +33,8 @@ import {
   type InsertCallLog,
   type WhitelistedNumber,
   type InsertWhitelistedNumber,
+  type WhitelistedEmail,
+  type InsertWhitelistedEmail,
   type PasswordResetToken,
   type InsertPasswordResetToken,
   type SystemSetting,
@@ -426,6 +429,30 @@ export class DatabaseStorage implements IStorage {
   async isWhitelistedPhoneNumber(phoneNumber: string): Promise<boolean> {
     const num = await this.getWhitelistedNumber(phoneNumber);
     return !!num;
+  }
+
+  // Whitelisted Emails (for free video access)
+  async getAllWhitelistedEmails(): Promise<WhitelistedEmail[]> {
+    return db.select().from(whitelistedEmails).orderBy(desc(whitelistedEmails.createdAt));
+  }
+
+  async getWhitelistedEmail(email: string): Promise<WhitelistedEmail | undefined> {
+    const [entry] = await db.select().from(whitelistedEmails).where(ilike(whitelistedEmails.email, email));
+    return entry;
+  }
+
+  async createWhitelistedEmail(data: InsertWhitelistedEmail): Promise<WhitelistedEmail> {
+    const [entry] = await db.insert(whitelistedEmails).values(data).returning();
+    return entry;
+  }
+
+  async deleteWhitelistedEmail(id: string): Promise<void> {
+    await db.delete(whitelistedEmails).where(eq(whitelistedEmails.id, id));
+  }
+
+  async isWhitelistedEmailAddress(email: string): Promise<boolean> {
+    const entry = await this.getWhitelistedEmail(email);
+    return !!entry;
   }
 
   // Monthly call stats per subscriber

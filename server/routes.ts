@@ -1261,8 +1261,7 @@ export async function registerRoutes(
       }
 
       // Check if user is whitelisted or has active subscription
-      const whitelistedEmails = (process.env.VIDEO_WHITELIST_EMAILS || "").split(",").map(e => e.trim().toLowerCase()).filter(Boolean);
-      const isWhitelisted = whitelistedEmails.includes(user.email.toLowerCase()) || user.role === "admin";
+      const isWhitelisted = user.role === "admin" || await storage.isWhitelistedEmailAddress(user.email);
       
       const isActive = isWhitelisted || user.subscriptionStatus === "active" || 
         (user.subscriptionStatus === "trial" && user.trialEndsAt && new Date(user.trialEndsAt) > new Date());
@@ -1288,8 +1287,7 @@ export async function registerRoutes(
       }
 
       // Check if user is whitelisted or has active subscription
-      const whitelistedEmails = (process.env.VIDEO_WHITELIST_EMAILS || "").split(",").map(e => e.trim().toLowerCase()).filter(Boolean);
-      const isWhitelisted = whitelistedEmails.includes(user.email.toLowerCase()) || user.role === "admin";
+      const isWhitelisted = user.role === "admin" || await storage.isWhitelistedEmailAddress(user.email);
       
       const isActive = isWhitelisted || user.subscriptionStatus === "active" || 
         (user.subscriptionStatus === "trial" && user.trialEndsAt && new Date(user.trialEndsAt) > new Date());
@@ -1628,6 +1626,49 @@ export async function registerRoutes(
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ message: "Failed to delete whitelisted number" });
+    }
+  });
+
+  // Whitelisted Emails (free video access)
+  app.get("/api/admin/whitelisted-emails", requireAdmin, async (req, res) => {
+    try {
+      const emails = await storage.getAllWhitelistedEmails();
+      res.json(emails);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get whitelisted emails" });
+    }
+  });
+
+  app.post("/api/admin/whitelisted-emails", requireAdmin, async (req, res) => {
+    try {
+      const { email, label } = req.body;
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      // Check if already whitelisted
+      const existing = await storage.getWhitelistedEmail(email);
+      if (existing) {
+        return res.status(400).json({ message: "Email already whitelisted" });
+      }
+
+      const entry = await storage.createWhitelistedEmail({
+        email: email.toLowerCase().trim(),
+        label: label || null,
+        createdBy: req.session.userId,
+      });
+      res.json(entry);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to add whitelisted email" });
+    }
+  });
+
+  app.delete("/api/admin/whitelisted-emails/:id", requireAdmin, async (req, res) => {
+    try {
+      await storage.deleteWhitelistedEmail(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete whitelisted email" });
     }
   });
 

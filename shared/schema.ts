@@ -119,6 +119,15 @@ export const whitelistedNumbers = pgTable("whitelisted_numbers", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Whitelisted emails for free video access
+export const whitelistedEmails = pgTable("whitelisted_emails", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  email: text("email").notNull().unique(),
+  label: text("label"), // optional note about who/why
+  createdBy: varchar("created_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Password reset tokens
 export const passwordResetTokens = pgTable("password_reset_tokens", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -215,6 +224,7 @@ export const insertConferenceParticipantSchema = createInsertSchema(conferencePa
 export const insertUnmuteRequestSchema = createInsertSchema(unmuteRequests).omit({ id: true, requestedAt: true });
 export const insertCallLogSchema = createInsertSchema(callLogs).omit({ id: true, createdAt: true });
 export const insertWhitelistedNumberSchema = createInsertSchema(whitelistedNumbers).omit({ id: true, createdAt: true });
+export const insertWhitelistedEmailSchema = createInsertSchema(whitelistedEmails).omit({ id: true, createdAt: true });
 export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTokens).omit({ id: true, createdAt: true });
 export const insertVideoCategorySchema = createInsertSchema(videoCategories).omit({ id: true, createdAt: true });
 export const insertVideoSchema = createInsertSchema(videos).omit({ id: true, createdAt: true, viewCount: true });
@@ -240,6 +250,8 @@ export type CallLog = typeof callLogs.$inferSelect;
 export type InsertCallLog = z.infer<typeof insertCallLogSchema>;
 export type WhitelistedNumber = typeof whitelistedNumbers.$inferSelect;
 export type InsertWhitelistedNumber = z.infer<typeof insertWhitelistedNumberSchema>;
+export type WhitelistedEmail = typeof whitelistedEmails.$inferSelect;
+export type InsertWhitelistedEmail = z.infer<typeof insertWhitelistedEmailSchema>;
 export type PasswordResetToken = typeof passwordResetTokens.$inferSelect;
 export type InsertPasswordResetToken = z.infer<typeof insertPasswordResetTokenSchema>;
 export type VideoCategory = typeof videoCategories.$inferSelect;

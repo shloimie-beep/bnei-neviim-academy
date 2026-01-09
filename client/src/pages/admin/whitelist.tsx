@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Loader2, Plus, Trash2, Phone, ShieldCheck } from "lucide-react";
+import { Loader2, Plus, Trash2, Phone, ShieldCheck, Mail, Video } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import {
@@ -36,6 +36,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 interface WhitelistedNumber {
   id: string;
@@ -44,64 +45,101 @@ interface WhitelistedNumber {
   createdAt: string;
 }
 
+interface WhitelistedEmail {
+  id: string;
+  email: string;
+  label: string | null;
+  createdAt: string;
+}
+
 export default function WhitelistManagement() {
   const { toast } = useToast();
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isPhoneDialogOpen, setIsPhoneDialogOpen] = useState(false);
+  const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
   const [newPhoneNumber, setNewPhoneNumber] = useState("");
-  const [newLabel, setNewLabel] = useState("");
+  const [newPhoneLabel, setNewPhoneLabel] = useState("");
+  const [newEmail, setNewEmail] = useState("");
+  const [newEmailLabel, setNewEmailLabel] = useState("");
 
-  const { data: whitelistedNumbers, isLoading } = useQuery<WhitelistedNumber[]>({
+  const { data: whitelistedNumbers, isLoading: loadingNumbers } = useQuery<WhitelistedNumber[]>({
     queryKey: ["/api/admin/whitelisted-numbers"],
   });
 
-  const addMutation = useMutation({
+  const { data: whitelistedEmails, isLoading: loadingEmails } = useQuery<WhitelistedEmail[]>({
+    queryKey: ["/api/admin/whitelisted-emails"],
+  });
+
+  const addPhoneMutation = useMutation({
     mutationFn: async (data: { phoneNumber: string; label?: string }) => {
       return apiRequest("POST", "/api/admin/whitelisted-numbers", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/whitelisted-numbers"] });
-      setIsDialogOpen(false);
+      setIsPhoneDialogOpen(false);
       setNewPhoneNumber("");
-      setNewLabel("");
-      toast({
-        title: "Number added",
-        description: "The phone number has been whitelisted for free access.",
-      });
+      setNewPhoneLabel("");
+      toast({ title: "Number added", description: "The phone number has been whitelisted." });
     },
     onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to add phone number.",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: error.message || "Failed to add phone number.", variant: "destructive" });
     },
   });
 
-  const deleteMutation = useMutation({
+  const deletePhoneMutation = useMutation({
     mutationFn: async (id: string) => {
       return apiRequest("DELETE", `/api/admin/whitelisted-numbers/${id}`);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/whitelisted-numbers"] });
-      toast({
-        title: "Number removed",
-        description: "The phone number has been removed from the whitelist.",
-      });
+      toast({ title: "Number removed", description: "The phone number has been removed from the whitelist." });
     },
     onError: (error: Error) => {
-      toast({
-        title: "Error",
-        description: error.message || "Failed to remove phone number.",
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: error.message || "Failed to remove phone number.", variant: "destructive" });
     },
   });
 
-  const handleAdd = () => {
+  const addEmailMutation = useMutation({
+    mutationFn: async (data: { email: string; label?: string }) => {
+      return apiRequest("POST", "/api/admin/whitelisted-emails", data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/whitelisted-emails"] });
+      setIsEmailDialogOpen(false);
+      setNewEmail("");
+      setNewEmailLabel("");
+      toast({ title: "Email added", description: "The email has been whitelisted for free video access." });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message || "Failed to add email.", variant: "destructive" });
+    },
+  });
+
+  const deleteEmailMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return apiRequest("DELETE", `/api/admin/whitelisted-emails/${id}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/whitelisted-emails"] });
+      toast({ title: "Email removed", description: "The email has been removed from the whitelist." });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message || "Failed to remove email.", variant: "destructive" });
+    },
+  });
+
+  const handleAddPhone = () => {
     if (!newPhoneNumber.trim()) return;
-    addMutation.mutate({
+    addPhoneMutation.mutate({
       phoneNumber: newPhoneNumber.replace(/\D/g, ""),
-      label: newLabel.trim() || undefined,
+      label: newPhoneLabel.trim() || undefined,
+    });
+  };
+
+  const handleAddEmail = () => {
+    if (!newEmail.trim()) return;
+    addEmailMutation.mutate({
+      email: newEmail.trim(),
+      label: newEmailLabel.trim() || undefined,
     });
   };
 
@@ -117,154 +155,289 @@ export default function WhitelistManagement() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold" data-testid="text-page-title">Whitelisted Numbers</h1>
-          <p className="text-muted-foreground">
-            Manage phone numbers that can access the hotline for free without a subscription.
-          </p>
-        </div>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button data-testid="button-add-whitelist">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Number
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add Whitelisted Number</DialogTitle>
-              <DialogDescription>
-                This phone number will have free access to the hotline without requiring a subscription.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="space-y-4 py-4">
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="+1 (555) 123-4567"
-                  value={newPhoneNumber}
-                  onChange={(e) => setNewPhoneNumber(e.target.value)}
-                  data-testid="input-whitelist-phone"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="label">Label (Optional)</Label>
-                <Input
-                  id="label"
-                  type="text"
-                  placeholder="e.g., Mom's phone, Test number"
-                  value={newLabel}
-                  onChange={(e) => setNewLabel(e.target.value)}
-                  data-testid="input-whitelist-label"
-                />
-              </div>
-            </div>
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setIsDialogOpen(false)}>
-                Cancel
-              </Button>
-              <Button
-                onClick={handleAdd}
-                disabled={addMutation.isPending || !newPhoneNumber.trim()}
-                data-testid="button-confirm-add-whitelist"
-              >
-                {addMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                Add Number
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+      <div>
+        <h1 className="text-3xl font-bold" data-testid="text-page-title">Whitelist Management</h1>
+        <p className="text-muted-foreground">
+          Manage phone numbers and emails that get free access without a subscription.
+        </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5" />
-            Free Access Numbers
-          </CardTitle>
-          <CardDescription>
-            These phone numbers bypass subscription requirements and can call the hotline for free.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="space-y-3">
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
-              <Skeleton className="h-12 w-full" />
-            </div>
-          ) : whitelistedNumbers && whitelistedNumbers.length > 0 ? (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Phone Number</TableHead>
-                  <TableHead>Label</TableHead>
-                  <TableHead>Added</TableHead>
-                  <TableHead className="w-[80px]">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {whitelistedNumbers.map((number) => (
-                  <TableRow key={number.id} data-testid={`row-whitelist-${number.id}`}>
-                    <TableCell className="font-mono">
-                      {formatPhoneNumber(number.phoneNumber)}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {number.label || "-"}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {new Date(number.createdAt).toLocaleDateString()}
-                    </TableCell>
-                    <TableCell>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            data-testid={`button-delete-whitelist-${number.id}`}
-                          >
-                            <Trash2 className="h-4 w-4 text-destructive" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Remove from whitelist?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This phone number will no longer have free access to the hotline.
-                              They will need a subscription to call.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => deleteMutation.mutate(number.id)}
-                              className="bg-destructive text-destructive-foreground"
-                            >
-                              {deleteMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                              Remove
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          ) : (
-            <div className="text-center py-12">
-              <Phone className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">No whitelisted numbers yet.</p>
-              <p className="text-sm text-muted-foreground">
-                Add phone numbers that should have free access to the hotline.
-              </p>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="emails" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="emails" className="gap-2">
+            <Video className="h-4 w-4" />
+            Video Access (Emails)
+          </TabsTrigger>
+          <TabsTrigger value="phones" className="gap-2">
+            <Phone className="h-4 w-4" />
+            Hotline Access (Phones)
+          </TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="emails" className="space-y-4">
+          <div className="flex justify-end">
+            <Dialog open={isEmailDialogOpen} onOpenChange={setIsEmailDialogOpen}>
+              <DialogTrigger asChild>
+                <Button data-testid="button-add-email-whitelist">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Email
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Whitelisted Email</DialogTitle>
+                  <DialogDescription>
+                    This email will have free access to all videos without requiring a subscription.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="email">Email Address</Label>
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="user@example.com"
+                      value={newEmail}
+                      onChange={(e) => setNewEmail(e.target.value)}
+                      data-testid="input-whitelist-email"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email-label">Label (Optional)</Label>
+                    <Input
+                      id="email-label"
+                      type="text"
+                      placeholder="e.g., Press reviewer, Partner"
+                      value={newEmailLabel}
+                      onChange={(e) => setNewEmailLabel(e.target.value)}
+                      data-testid="input-whitelist-email-label"
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsEmailDialogOpen(false)}>Cancel</Button>
+                  <Button
+                    onClick={handleAddEmail}
+                    disabled={addEmailMutation.isPending || !newEmail.trim()}
+                    data-testid="button-confirm-add-email-whitelist"
+                  >
+                    {addEmailMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                    Add Email
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Video className="h-5 w-5" />
+                Free Video Access
+              </CardTitle>
+              <CardDescription>
+                These emails can watch all videos without needing a subscription.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {loadingEmails ? (
+                <div className="space-y-3">
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
+                </div>
+              ) : whitelistedEmails && whitelistedEmails.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Label</TableHead>
+                      <TableHead>Added</TableHead>
+                      <TableHead className="w-[80px]">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {whitelistedEmails.map((entry) => (
+                      <TableRow key={entry.id} data-testid={`row-email-whitelist-${entry.id}`}>
+                        <TableCell>{entry.email}</TableCell>
+                        <TableCell className="text-muted-foreground">{entry.label || "-"}</TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {new Date(entry.createdAt).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="icon" data-testid={`button-delete-email-whitelist-${entry.id}`}>
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Remove from whitelist?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This email will no longer have free video access.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => deleteEmailMutation.mutate(entry.id)}
+                                  className="bg-destructive text-destructive-foreground"
+                                >
+                                  Remove
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className="text-center py-12">
+                  <Mail className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">No whitelisted emails yet.</p>
+                  <p className="text-sm text-muted-foreground">
+                    Add emails that should have free access to videos.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="phones" className="space-y-4">
+          <div className="flex justify-end">
+            <Dialog open={isPhoneDialogOpen} onOpenChange={setIsPhoneDialogOpen}>
+              <DialogTrigger asChild>
+                <Button data-testid="button-add-phone-whitelist">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Number
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Whitelisted Number</DialogTitle>
+                  <DialogDescription>
+                    This phone number will have free access to the hotline without requiring a subscription.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="phone">Phone Number</Label>
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="+1 (555) 123-4567"
+                      value={newPhoneNumber}
+                      onChange={(e) => setNewPhoneNumber(e.target.value)}
+                      data-testid="input-whitelist-phone"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone-label">Label (Optional)</Label>
+                    <Input
+                      id="phone-label"
+                      type="text"
+                      placeholder="e.g., Mom's phone, Test number"
+                      value={newPhoneLabel}
+                      onChange={(e) => setNewPhoneLabel(e.target.value)}
+                      data-testid="input-whitelist-phone-label"
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsPhoneDialogOpen(false)}>Cancel</Button>
+                  <Button
+                    onClick={handleAddPhone}
+                    disabled={addPhoneMutation.isPending || !newPhoneNumber.trim()}
+                    data-testid="button-confirm-add-phone-whitelist"
+                  >
+                    {addPhoneMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                    Add Number
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <ShieldCheck className="h-5 w-5" />
+                Free Hotline Access
+              </CardTitle>
+              <CardDescription>
+                These phone numbers bypass subscription requirements and can call the hotline for free.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {loadingNumbers ? (
+                <div className="space-y-3">
+                  <Skeleton className="h-12 w-full" />
+                  <Skeleton className="h-12 w-full" />
+                </div>
+              ) : whitelistedNumbers && whitelistedNumbers.length > 0 ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Phone Number</TableHead>
+                      <TableHead>Label</TableHead>
+                      <TableHead>Added</TableHead>
+                      <TableHead className="w-[80px]">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {whitelistedNumbers.map((number) => (
+                      <TableRow key={number.id} data-testid={`row-phone-whitelist-${number.id}`}>
+                        <TableCell className="font-mono">{formatPhoneNumber(number.phoneNumber)}</TableCell>
+                        <TableCell className="text-muted-foreground">{number.label || "-"}</TableCell>
+                        <TableCell className="text-muted-foreground">
+                          {new Date(number.createdAt).toLocaleDateString()}
+                        </TableCell>
+                        <TableCell>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="icon" data-testid={`button-delete-phone-whitelist-${number.id}`}>
+                                <Trash2 className="h-4 w-4 text-destructive" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Remove from whitelist?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This phone number will no longer have free access to the hotline.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => deletePhoneMutation.mutate(number.id)}
+                                  className="bg-destructive text-destructive-foreground"
+                                >
+                                  Remove
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className="text-center py-12">
+                  <Phone className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+                  <p className="text-muted-foreground">No whitelisted numbers yet.</p>
+                  <p className="text-sm text-muted-foreground">
+                    Add phone numbers that should have free access to the hotline.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
