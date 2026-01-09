@@ -145,12 +145,12 @@ export class ObjectStorageService {
 
     const { bucketName, objectName } = parseObjectPath(fullPath);
 
-    // Sign URL for PUT method with TTL (2 hours for large file uploads up to 10GB)
+    // Sign URL for PUT method with TTL (10 hours for large file uploads up to 10GB)
     return signObjectURL({
       bucketName,
       objectName,
       method: "PUT",
-      ttlSec: 7200,
+      ttlSec: 36000,
     });
   }
 
