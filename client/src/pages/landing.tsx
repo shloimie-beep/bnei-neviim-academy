@@ -191,7 +191,7 @@ export default function LandingPage() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-black/20" />
         <div className="container mx-auto px-4 py-32 relative z-10">
           <div className="max-w-4xl mx-auto text-center space-y-4">
-            <h1 className="text-4xl md:text-6xl lg:text-7xl font-normal text-white italic animate-fade-in" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-normal italic animate-fade-in animate-gradient-text" style={{ fontFamily: "'Georgia', 'Times New Roman', serif", background: "linear-gradient(90deg, #EDE518, #ffffff, #FFD700, #EDE518, #ffffff, #FFD700, #EDE518)", backgroundSize: "300% 100%", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
               Where Kids Fall in Love With Torah
             </h1>
             <p className="text-xl md:text-2xl text-white font-bold mt-8 animate-fade-in-up" style={{animationDelay: '0.1s'}}>
@@ -868,6 +868,15 @@ export default function LandingPage() {
         }
         .animate-marquee {
           animation: marquee 25s linear infinite;
+        }
+        
+        @keyframes gradient-shift {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .animate-gradient-text {
+          animation: gradient-shift 4s ease-in-out infinite;
         }
         
         @keyframes fade-in {
