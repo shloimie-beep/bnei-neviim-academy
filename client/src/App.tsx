@@ -51,7 +51,7 @@ function PublicRoute({ component: Component }: { component: React.ComponentType 
   }
 
   if (user) {
-    return <Redirect to="/dashboard" />;
+    return <Redirect to={user.role === "admin" ? "/admin" : "/dashboard"} />;
   }
 
   return <Component />;
