@@ -34,6 +34,7 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, categories }:
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [editTitle, setEditTitle] = useState(video.title);
   const [editDescription, setEditDescription] = useState(video.description || "");
   const [editCategoryId, setEditCategoryId] = useState(video.categoryId || "");
@@ -44,6 +45,7 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, categories }:
     setIsDeleting(true);
     await onDelete();
     setIsDeleting(false);
+    setShowDeleteConfirm(false);
   };
 
   const handleSave = () => {
@@ -202,7 +204,7 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, categories }:
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={handleDelete}
+                    onClick={() => setShowDeleteConfirm(true)}
                     disabled={isDeleting}
                     data-testid={`button-delete-video-${video.id}`}
                   >
@@ -218,6 +220,27 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, categories }:
           </div>
         </div>
       </CardContent>
+      
+      <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Video?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{video.title}"? This action cannot be undone and will permanently remove the video file.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel data-testid={`button-cancel-delete-video-${video.id}`}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDelete}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              data-testid={`button-confirm-delete-video-${video.id}`}
+            >
+              {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </Card>
   );
 }
@@ -243,6 +266,7 @@ export default function VideoManagement() {
   const [currentUploadIndex, setCurrentUploadIndex] = useState(0);
   const [showCancelConfirm, setShowCancelConfirm] = useState(false);
   const [isCancelling, setIsCancelling] = useState(false);
+  const [categoryToDelete, setCategoryToDelete] = useState<VideoCategory | null>(null);
   const currentXhrRef = useRef<XMLHttpRequest | null>(null);
   const cancelledRef = useRef(false);
 
@@ -818,23 +842,51 @@ export default function VideoManagement() {
           {categories.length === 0 ? (
             <p className="text-sm text-muted-foreground">No categories yet. Create one to organize your videos.</p>
           ) : (
-            <div className="flex flex-wrap gap-2">
-              {categories.map((cat) => (
-                <Badge key={cat.id} variant="secondary" className="gap-1 pr-1">
-                  {cat.name}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    className="h-4 w-4 ml-1"
-                    onClick={() => deleteCategoryMutation.mutate(cat.id)}
-                    disabled={deleteCategoryMutation.isPending}
-                    data-testid={`button-delete-category-${cat.id}`}
-                  >
-                    <X className="h-3 w-3" />
-                  </Button>
-                </Badge>
-              ))}
-            </div>
+            <>
+              <div className="flex flex-wrap gap-2">
+                {categories.map((cat) => (
+                  <Badge key={cat.id} variant="secondary" className="gap-1 pr-1">
+                    {cat.name}
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-4 w-4 ml-1"
+                      onClick={() => setCategoryToDelete(cat)}
+                      disabled={deleteCategoryMutation.isPending}
+                      data-testid={`button-delete-category-${cat.id}`}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </Badge>
+                ))}
+              </div>
+              
+              <AlertDialog open={!!categoryToDelete} onOpenChange={(open) => !open && setCategoryToDelete(null)}>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Delete Category?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to delete the category "{categoryToDelete?.name}"? Videos in this category will not be deleted, but they will no longer be assigned to this category.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel data-testid="button-cancel-delete-category">Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => {
+                        if (categoryToDelete) {
+                          deleteCategoryMutation.mutate(categoryToDelete.id);
+                          setCategoryToDelete(null);
+                        }
+                      }}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      data-testid="button-confirm-delete-category"
+                    >
+                      Delete
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            </>
           )}
         </CardContent>
       </Card>
