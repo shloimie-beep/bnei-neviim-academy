@@ -35,7 +35,7 @@ export default function LandingPage() {
             <nav className="hidden lg:flex items-center gap-6">
               <a href="#home" className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide">Home</a>
               <Link href="/gadlus-haadam"><span className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide cursor-pointer" data-testid="link-nav-gadlus">Gadlus Ha'Adam</span></Link>
-              <a href="#hotline" className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide">Hotline</a>
+              <a href="#hotline" className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide">Academy & Hotline</a>
               <a href="#story" className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide">The Story</a>
               <a href="#contact" className="text-white font-medium hover:text-[#EDE518] transition-colors text-sm uppercase tracking-wide">Contact</a>
             </nav>
@@ -43,7 +43,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-3">
             <Link href="/login">
               <Button className="bg-[#EDE518] text-black border-[#EDE518] font-semibold text-sm" data-testid="button-login">
-                Hotline Login
+                Member Login
               </Button>
             </Link>
             <Button size="icon" variant="ghost" className="lg:hidden text-white">
@@ -85,7 +85,7 @@ export default function LandingPage() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
               <Link href="/register">
                 <Button size="lg" className="bg-[#EDE518] text-black border-[#EDE518] font-bold px-10 text-base uppercase tracking-wide animate-pulse-glow" data-testid="button-hotline">
-                  The Hotline
+                  The Academy & Hotline
                 </Button>
               </Link>
               <a href="#story">
@@ -102,7 +102,7 @@ export default function LandingPage() {
         <div className="animate-marquee whitespace-nowrap flex">
           {[...Array(12)].map((_, i) => (
             <span key={i} className="text-black font-bold text-lg mx-8 uppercase tracking-wider">
-              The OneTime OneTime Hotline
+              The OneTime OneTime Academy & Hotline
             </span>
           ))}
         </div>
@@ -111,10 +111,10 @@ export default function LandingPage() {
       <section id="hotline" className="py-20 bg-[#161616]">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-5xl font-bold text-center mb-4 text-white">
-            Introducing... The OneTime OneTime Hotline
+            Introducing... The OneTime OneTime Academy & Hotline
           </h2>
           <h3 className="text-xl md:text-2xl text-center mb-10 text-white/80">
-            Welcome to Rabbi Eli Scheller's global phone line for kids, teens, and families.
+            Welcome to Rabbi Eli Scheller's global phone line and video library for kids, teens, and families.
           </h3>
           
           <div className="max-w-4xl mx-auto text-center space-y-6">
@@ -128,21 +128,24 @@ export default function LandingPage() {
               Join families around the world who are already enjoying the OneTime OneTime experience.
             </p>
             <p className="text-xl font-bold text-white">
-              Stories. Parsha. Mishnayos. Gemara. Jokes.
+              Stories. Parsha. Mishnayos. Gemara. Jokes. Plus exclusive video content!
             </p>
             <p className="text-lg text-white/80">
               Weekly growth for kids, teens, and the whole family — delivered in the OneTime style you love.
+            </p>
+            <p className="text-lg text-[#EDE518] font-semibold">
+              All members get full access to our video library on the website!
             </p>
             
             <div className="pt-10 flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/register">
                 <Button size="lg" className="bg-[#EDE518] text-black font-bold px-12 text-base">
-                  Join Hotline →
+                  Join Academy & Hotline →
                 </Button>
               </Link>
               <a href="#learn-more">
                 <Button size="lg" variant="outline" className="border-white text-white font-bold px-8 text-base">
-                  Learn More About the Hotline
+                  Learn More
                 </Button>
               </a>
             </div>
@@ -157,7 +160,7 @@ export default function LandingPage() {
           </h3>
           <div className="max-w-3xl mx-auto">
             <p className="text-center mb-10 text-white/80 text-lg">
-              The OneTime OneTime Hotline brings Torah, inspiration, and meaningful entertainment into your home — created specifically for kids, teens, and families.
+              The OneTime OneTime Academy & Hotline brings Torah, inspiration, and meaningful entertainment into your home — created specifically for kids, teens, and families.
             </p>
             <p className="text-center mb-8 text-white font-semibold">Here's what you can expect:</p>
             <ul className="space-y-4 text-white text-lg max-w-2xl mx-auto">
@@ -185,13 +188,17 @@ export default function LandingPage() {
                 <span className="text-[#EDE518] font-bold text-2xl leading-none">•</span>
                 <span>Exclusive member-only content throughout the year</span>
               </li>
+              <li className="flex items-start gap-4">
+                <span className="text-[#EDE518] font-bold text-2xl leading-none">•</span>
+                <span>Full access to our exclusive video library on the website</span>
+              </li>
             </ul>
             <p className="text-center mt-10 text-white/80 text-lg">
               Each piece is short, powerful, and memorable — perfect for busy families who want meaningful moments in minutes.
             </p>
             <div className="text-center mt-8">
               <a href="#hotline" className="text-[#EDE518] font-semibold hover:underline">
-                Learn More About the Hotline
+                Learn More About the Academy & Hotline
               </a>
             </div>
           </div>
@@ -236,7 +243,7 @@ export default function LandingPage() {
               <CardContent className="p-4">
                 <h4 className="font-bold text-white mb-1">IT'S ALL GOOD</h4>
                 <p className="text-sm text-white/70 mb-2">Inspirational / Comical Film</p>
-                <p className="text-xs text-[#EDE518]">Included in the OneTime Hotline</p>
+                <p className="text-xs text-[#EDE518]">Included in the Academy & Hotline</p>
                 <a href="https://eli-schellergenerous.sellfy.store/p/its-all-good/" target="_blank" rel="noopener noreferrer">
                   <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm" data-testid="button-product-itsallgood">
                     Stream - $7.99
@@ -256,7 +263,7 @@ export default function LandingPage() {
               <CardContent className="p-4">
                 <h4 className="font-bold text-white mb-1">Experience Eretz Yisrael</h4>
                 <p className="text-sm text-white/70 mb-2">Inspirational Film</p>
-                <p className="text-xs text-[#EDE518]">Included in the OneTime Hotline</p>
+                <p className="text-xs text-[#EDE518]">Included in the Academy & Hotline</p>
                 <a href="https://eli-schellergenerous.sellfy.store/p/experience-eretz-yisrael/" target="_blank" rel="noopener noreferrer">
                   <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm" data-testid="button-product-eretzyisrael">
                     Stream - $12.99
@@ -276,7 +283,7 @@ export default function LandingPage() {
               <CardContent className="p-4">
                 <h4 className="font-bold text-white mb-1">Searching for Happiness</h4>
                 <p className="text-sm text-white/70 mb-2">A Comedy Adventure Film</p>
-                <p className="text-xs text-[#EDE518]">Included in the OneTime Hotline</p>
+                <p className="text-xs text-[#EDE518]">Included in the Academy & Hotline</p>
                 <a href="https://eli-schellergenerous.sellfy.store/p/chasing-happiness/" target="_blank" rel="noopener noreferrer">
                   <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm" data-testid="button-product-happiness">
                     Stream - $12.99
@@ -296,7 +303,7 @@ export default function LandingPage() {
               <CardContent className="p-4">
                 <h4 className="font-bold text-white mb-1">The Purim Shpiel 2025</h4>
                 <p className="text-sm text-white/70 mb-2">Hilarious Comedy Film</p>
-                <p className="text-xs text-[#EDE518]">Included in the OneTime Hotline</p>
+                <p className="text-xs text-[#EDE518]">Included in the Academy & Hotline</p>
                 <a href="https://eli-schellergenerous.sellfy.store/p/purim-shpiel-2025/" target="_blank" rel="noopener noreferrer">
                   <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm" data-testid="button-product-purim">
                     Stream - $12.99
@@ -316,7 +323,7 @@ export default function LandingPage() {
               <CardContent className="p-4">
                 <h4 className="font-bold text-white mb-1">JOKE BOOK</h4>
                 <p className="text-sm text-white/70 mb-2">Just Kidding Stories and Jokes</p>
-                <p className="text-xs text-[#EDE518]">Free PDF in the Hotline</p>
+                <p className="text-xs text-[#EDE518]">Free PDF for Members</p>
                 <a href="https://www.amazon.com/dp/B0FCMSL21T" target="_blank" rel="noopener noreferrer">
                   <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm" data-testid="button-product-jokebook">
                     ORDER on Amazon $19.99
@@ -356,7 +363,7 @@ export default function LandingPage() {
               <CardContent className="p-4">
                 <h4 className="font-bold text-white mb-1">Public Speaking Mastery</h4>
                 <p className="text-sm text-white/70 mb-2">Full Course</p>
-                <p className="text-xs text-[#EDE518]">Included in the OneTime Hotline</p>
+                <p className="text-xs text-[#EDE518]">Included in the Academy & Hotline</p>
                 <a href="https://onetimeonetime.thinkific.com/courses/publicspeakingmastery" target="_blank" rel="noopener noreferrer">
                   <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm" data-testid="button-product-publicspeaking">
                     BUY COURSE - $249
@@ -673,7 +680,7 @@ export default function LandingPage() {
           </p>
           <Link href="/register">
             <Button size="lg" className="bg-[#EDE518] text-black font-bold px-12 text-lg">
-              Join the Hotline Today
+              Join the Academy & Hotline Today
             </Button>
           </Link>
         </div>
