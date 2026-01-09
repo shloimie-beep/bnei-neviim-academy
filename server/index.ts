@@ -45,8 +45,8 @@ async function initStripe() {
     log('Initializing Stripe schema...', 'stripe');
     await runMigrations({ 
       databaseUrl,
-      schema: 'stripe'
-    });
+      schemaName: 'stripe'
+    } as any);
     log('Stripe schema ready', 'stripe');
 
     // Get StripeSync instance
@@ -162,8 +162,12 @@ async function initStripe() {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
-    res.status(status).json({ message });
-    throw err;
+    log(`Error: ${message} (${status})`, 'error');
+    console.error(err);
+    
+    if (!res.headersSent) {
+      res.status(status).json({ message });
+    }
   });
 
   // Setup vite in development, serve static in production
