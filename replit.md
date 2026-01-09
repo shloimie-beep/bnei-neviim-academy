@@ -28,10 +28,22 @@ The frontend follows a page-based structure with protected routes for authentica
 - **Database ORM**: Drizzle ORM with PostgreSQL
 - **Session Management**: express-session with connect-pg-simple for PostgreSQL session storage
 - **Authentication**: Session-based auth with bcryptjs for password hashing
-- **File Uploads**: Multer for audio file handling
+- **File Uploads**: Multer for audio file handling, Replit Object Storage for large video uploads
+- **Video Processing**: FFmpeg for video conversion to H.264/MP4 format
 - **API Structure**: RESTful endpoints under `/api` prefix
 
-The backend handles user authentication, subscription management, phone number registration, audio file management, and IVR menu configuration.
+The backend handles user authentication, subscription management, phone number registration, audio file management, IVR menu configuration, and video content management.
+
+### Video Upload Architecture
+- **Cloud Storage**: Replit Object Storage with presigned URLs for direct uploads (bypasses server size limits)
+- **Upload Flow**: 
+  1. Frontend requests presigned URL from backend
+  2. Video uploads directly to cloud storage
+  3. Backend finalizes record and starts conversion
+  4. FFmpeg converts to 720p H.264/MP4 format
+  5. Converted video uploaded back to cloud storage
+- **Streaming**: Supports HTTP range requests for seeking, serves from both local and cloud storage
+- **Max Size**: Up to 10GB video files supported
 
 ### Data Storage
 - **Primary Database**: PostgreSQL
