@@ -2,6 +2,8 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Phone, Mail, MapPin, Menu } from "lucide-react";
+import { motion, useInView } from "framer-motion";
+import { useRef } from "react";
 import logoImage from "@assets/qt=q_95_1767830887218.webp";
 import silverSpringImg from "@assets/Silver_Spring_1767899261416.jpg";
 import bocaMapImg from "@assets/Boca_Raton_1767898934153.webp";
@@ -11,6 +13,125 @@ import vegasMapImg from "@assets/Las_Vegas_1767898934148.webp";
 import atlantaMapImg from "@assets/Atlanta_1767898934149.webp";
 import worldMapImg from "@assets/generated_images/global_connections_world_map.png";
 import captivatedCrowdImg from "@assets/generated_images/b&w_captivated_crowd_photo.png";
+
+// Scroll-triggered animation wrapper
+function ScrollReveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, y: 50 }}
+      animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+      transition={{ duration: 0.6, delay, ease: "easeOut" }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+// Scale-in animation for logos/images
+function ScaleReveal({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.8 }}
+      transition={{ duration: 0.5, delay, ease: "easeOut" }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+// Slide-in from left animation
+function SlideInLeft({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, x: -60 }}
+      animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: -60 }}
+      transition={{ duration: 0.6, delay, ease: "easeOut" }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+// Slide-in from right animation
+function SlideInRight({ children, className = "", delay = 0 }: { children: React.ReactNode; className?: string; delay?: number }) {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-100px" });
+  
+  return (
+    <motion.div
+      ref={ref}
+      initial={{ opacity: 0, x: 60 }}
+      animate={isInView ? { opacity: 1, x: 0 } : { opacity: 0, x: 60 }}
+      transition={{ duration: 0.6, delay, ease: "easeOut" }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+}
+
+// As Seen Section with white background
+function AsSeenSection() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: "-50px" });
+  
+  const logos = [
+    { href: "https://www.torahanytime.com/#/speaker?l=540", src: "https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Untitled%20drawing.png/:/rs=h:100,cg:true,m", alt: "Torah Anytime", testId: "link-torahanytime", height: "h-12" },
+    { href: "https://24six.app/preview/music/artist/654/rabbi-eli-scheller", src: "https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/logo-vert-yellow.png/:/rs=h:100,cg:true", alt: "24Six", testId: "link-24six", height: "h-16" },
+    { src: "https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Loop_Purple_DarkPurple%402x-2.png/:/rs=h:100,cg:true", alt: "Loop", height: "h-12" },
+    { src: "https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/mishpachalogo.jpg/:/cr=t:0%25,l:2.1%25,w:95.8%25,h:100%25/rs=h:100,cg:true", alt: "Mishpacha", height: "h-12" },
+    { href: "https://nakiradio.com/", src: "https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/WhatsApp%20Image%202025-11-26%20at%2014.55.32.jpeg/:/rs=h:100,cg:true", alt: "Naki Radio", testId: "link-nakiradio", height: "h-12" },
+  ];
+  
+  return (
+    <section className="py-12 bg-white" ref={ref}>
+      <div className="container mx-auto px-4">
+        <motion.h3 
+          className="text-xl font-bold text-center mb-8 text-gray-500 uppercase tracking-wider"
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+          transition={{ duration: 0.5 }}
+        >
+          As Seen Across The Jewish World:
+        </motion.h3>
+        <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12">
+          {logos.map((logo, index) => (
+            <motion.div
+              key={logo.alt}
+              initial={{ opacity: 0, scale: 0.5 }}
+              animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.5 }}
+              transition={{ duration: 0.4, delay: index * 0.1 }}
+            >
+              {logo.href ? (
+                <a href={logo.href} target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-110" data-testid={logo.testId}>
+                  <img src={logo.src} alt={logo.alt} className={`${logo.height} w-auto`} />
+                </a>
+              ) : (
+                <img src={logo.src} alt={logo.alt} className={`${logo.height} w-auto`} />
+              )}
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
 export default function LandingPage() {
   return (
@@ -110,127 +231,152 @@ export default function LandingPage() {
 
       <section id="hotline" className="py-20 bg-[#161616]">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl md:text-5xl font-bold text-center mb-4 text-white">
-            Introducing... The OneTime OneTime Academy & Hotline
-          </h2>
-          <h3 className="text-xl md:text-2xl text-center mb-10 text-white/80">
-            Welcome to Rabbi Eli Scheller's global phone line and video library for kids, teens, and families.
-          </h3>
+          <ScrollReveal>
+            <h2 className="text-3xl md:text-5xl font-bold text-center mb-4 text-white">
+              Introducing... The OneTime OneTime Academy & Hotline
+            </h2>
+          </ScrollReveal>
+          <ScrollReveal delay={0.1}>
+            <h3 className="text-xl md:text-2xl text-center mb-10 text-white/80">
+              Welcome to Rabbi Eli Scheller's global phone line and video library for kids, teens, and families.
+            </h3>
+          </ScrollReveal>
           
           <div className="max-w-4xl mx-auto text-center space-y-6">
-            <p className="text-xl font-bold text-[#EDE518]">
-              A Family Experience That Keeps You Inspired All Week Long!
-            </p>
-            <p className="text-lg text-white/80">
-              Bring Torah, inspiration, and excitement into your home — in the simple, clear, engaging style kids love and parents trust.
-            </p>
-            <p className="text-lg text-white/80">
-              Join families around the world who are already enjoying the OneTime OneTime experience.
-            </p>
-            <p className="text-xl font-bold text-white">
-              Stories. Parsha. Mishnayos. Gemara. Jokes. Plus exclusive video content!
-            </p>
-            <p className="text-lg text-white/80">
-              Weekly growth for kids, teens, and the whole family — delivered in the OneTime style you love.
-            </p>
-            <p className="text-lg text-[#EDE518] font-semibold">
-              All members get full access to our video library on the website!
-            </p>
+            <ScrollReveal delay={0.15}>
+              <p className="text-xl font-bold text-[#EDE518]">
+                A Family Experience That Keeps You Inspired All Week Long!
+              </p>
+            </ScrollReveal>
+            <ScrollReveal delay={0.2}>
+              <p className="text-lg text-white/80">
+                Bring Torah, inspiration, and excitement into your home — in the simple, clear, engaging style kids love and parents trust.
+              </p>
+            </ScrollReveal>
+            <ScrollReveal delay={0.25}>
+              <p className="text-lg text-white/80">
+                Join families around the world who are already enjoying the OneTime OneTime experience.
+              </p>
+            </ScrollReveal>
+            <ScrollReveal delay={0.3}>
+              <p className="text-xl font-bold text-white">
+                Stories. Parsha. Mishnayos. Gemara. Jokes. Plus exclusive video content!
+              </p>
+            </ScrollReveal>
+            <ScrollReveal delay={0.35}>
+              <p className="text-lg text-white/80">
+                Weekly growth for kids, teens, and the whole family — delivered in the OneTime style you love.
+              </p>
+            </ScrollReveal>
+            <ScrollReveal delay={0.4}>
+              <p className="text-lg text-[#EDE518] font-semibold">
+                All members get full access to our video library on the website!
+              </p>
+            </ScrollReveal>
             
-            <div className="pt-10 flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/register">
-                <Button size="lg" className="bg-[#EDE518] text-black font-bold px-12 text-base">
-                  Join Academy & Hotline →
-                </Button>
-              </Link>
-              <a href="#learn-more">
-                <Button size="lg" variant="outline" className="border-white text-white font-bold px-8 text-base">
-                  Learn More
-                </Button>
-              </a>
-            </div>
+            <ScrollReveal delay={0.45}>
+              <div className="pt-10 flex flex-col sm:flex-row gap-4 justify-center">
+                <Link href="/register">
+                  <Button size="lg" className="bg-[#EDE518] text-black font-bold px-12 text-base">
+                    Join Academy & Hotline →
+                  </Button>
+                </Link>
+                <a href="#learn-more">
+                  <Button size="lg" variant="outline" className="border-white text-white font-bold px-8 text-base">
+                    Learn More
+                  </Button>
+                </a>
+              </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
 
       <section id="learn-more" className="py-16 bg-[#0B1D2B]">
         <div className="container mx-auto px-4">
-          <h3 className="text-2xl md:text-3xl font-bold text-center mb-10 text-white">
-            What Your Family Gets Each Week
-          </h3>
+          <ScrollReveal>
+            <h3 className="text-2xl md:text-3xl font-bold text-center mb-10 text-white">
+              What Your Family Gets Each Week
+            </h3>
+          </ScrollReveal>
           <div className="max-w-3xl mx-auto">
-            <p className="text-center mb-10 text-white/80 text-lg">
-              The OneTime OneTime Academy & Hotline brings Torah, inspiration, and meaningful entertainment into your home — created specifically for kids, teens, and families.
-            </p>
-            <p className="text-center mb-8 text-white font-semibold">Here's what you can expect:</p>
+            <ScrollReveal delay={0.1}>
+              <p className="text-center mb-10 text-white/80 text-lg">
+                The OneTime OneTime Academy & Hotline brings Torah, inspiration, and meaningful entertainment into your home — created specifically for kids, teens, and families.
+              </p>
+            </ScrollReveal>
+            <ScrollReveal delay={0.15}>
+              <p className="text-center mb-8 text-white font-semibold">Here's what you can expect:</p>
+            </ScrollReveal>
             <ul className="space-y-4 text-white text-lg max-w-2xl mx-auto">
-              <li className="flex items-start gap-4">
-                <span className="text-[#EDE518] font-bold text-2xl leading-none">•</span>
-                <span>OneTime OneTime stories that your kids will talk about all week</span>
-              </li>
-              <li className="flex items-start gap-4">
-                <span className="text-[#EDE518] font-bold text-2xl leading-none">•</span>
-                <span>A Parsha Spark that brings the weekly Torah portion to life</span>
-              </li>
-              <li className="flex items-start gap-4">
-                <span className="text-[#EDE518] font-bold text-2xl leading-none">•</span>
-                <span>Mishnayos (around 4 perakim a week)</span>
-              </li>
-              <li className="flex items-start gap-4">
-                <span className="text-[#EDE518] font-bold text-2xl leading-none">•</span>
-                <span>Gemara taught simply and clearly</span>
-              </li>
-              <li className="flex items-start gap-4">
-                <span className="text-[#EDE518] font-bold text-2xl leading-none">•</span>
-                <span>A weekly joke track (guaranteed to get laughs)</span>
-              </li>
-              <li className="flex items-start gap-4">
-                <span className="text-[#EDE518] font-bold text-2xl leading-none">•</span>
-                <span>Exclusive member-only content throughout the year</span>
-              </li>
-              <li className="flex items-start gap-4">
-                <span className="text-[#EDE518] font-bold text-2xl leading-none">•</span>
-                <span>Full access to our exclusive video library on the website</span>
-              </li>
+              <SlideInLeft delay={0.2}>
+                <li className="flex items-start gap-4">
+                  <span className="text-[#EDE518] font-bold text-2xl leading-none">•</span>
+                  <span>OneTime OneTime stories that your kids will talk about all week</span>
+                </li>
+              </SlideInLeft>
+              <SlideInLeft delay={0.25}>
+                <li className="flex items-start gap-4">
+                  <span className="text-[#EDE518] font-bold text-2xl leading-none">•</span>
+                  <span>A Parsha Spark that brings the weekly Torah portion to life</span>
+                </li>
+              </SlideInLeft>
+              <SlideInLeft delay={0.3}>
+                <li className="flex items-start gap-4">
+                  <span className="text-[#EDE518] font-bold text-2xl leading-none">•</span>
+                  <span>Mishnayos (around 4 perakim a week)</span>
+                </li>
+              </SlideInLeft>
+              <SlideInLeft delay={0.35}>
+                <li className="flex items-start gap-4">
+                  <span className="text-[#EDE518] font-bold text-2xl leading-none">•</span>
+                  <span>Gemara taught simply and clearly</span>
+                </li>
+              </SlideInLeft>
+              <SlideInLeft delay={0.4}>
+                <li className="flex items-start gap-4">
+                  <span className="text-[#EDE518] font-bold text-2xl leading-none">•</span>
+                  <span>A weekly joke track (guaranteed to get laughs)</span>
+                </li>
+              </SlideInLeft>
+              <SlideInLeft delay={0.45}>
+                <li className="flex items-start gap-4">
+                  <span className="text-[#EDE518] font-bold text-2xl leading-none">•</span>
+                  <span>Exclusive member-only content throughout the year</span>
+                </li>
+              </SlideInLeft>
+              <SlideInLeft delay={0.5}>
+                <li className="flex items-start gap-4">
+                  <span className="text-[#EDE518] font-bold text-2xl leading-none">•</span>
+                  <span>Full access to our exclusive video library on the website</span>
+                </li>
+              </SlideInLeft>
             </ul>
-            <p className="text-center mt-10 text-white/80 text-lg">
-              Each piece is short, powerful, and memorable — perfect for busy families who want meaningful moments in minutes.
-            </p>
-            <div className="text-center mt-8">
-              <a href="#hotline" className="text-[#EDE518] font-semibold hover:underline">
-                Learn More About the Academy & Hotline
-              </a>
-            </div>
+            <ScrollReveal delay={0.55}>
+              <p className="text-center mt-10 text-white/80 text-lg">
+                Each piece is short, powerful, and memorable — perfect for busy families who want meaningful moments in minutes.
+              </p>
+            </ScrollReveal>
+            <ScrollReveal delay={0.6}>
+              <div className="text-center mt-8">
+                <a href="#hotline" className="text-[#EDE518] font-semibold hover:underline">
+                  Learn More About the Academy & Hotline
+                </a>
+              </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
 
-      <section className="py-12 bg-[#161616]">
-        <div className="container mx-auto px-4">
-          <h3 className="text-xl font-bold text-center mb-8 text-white/60 uppercase tracking-wider">
-            As Seen Across The Jewish World:
-          </h3>
-          <div className="flex flex-wrap justify-center items-center gap-8 md:gap-12 opacity-80">
-            <a href="https://www.torahanytime.com/#/speaker?l=540" target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-110" data-testid="link-torahanytime">
-              <img src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Untitled%20drawing.png/:/rs=h:100,cg:true,m" alt="Torah Anytime" className="h-12 w-auto" />
-            </a>
-            <a href="https://24six.app/preview/music/artist/654/rabbi-eli-scheller" target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-110" data-testid="link-24six">
-              <img src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/logo-vert-yellow.png/:/rs=h:100,cg:true" alt="24Six" className="h-16 w-auto" />
-            </a>
-            <img src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Loop_Purple_DarkPurple%402x-2.png/:/rs=h:100,cg:true" alt="Loop" className="h-12 w-auto" />
-            <img src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/mishpachalogo.jpg/:/cr=t:0%25,l:2.1%25,w:95.8%25,h:100%25/rs=h:100,cg:true" alt="Mishpacha" className="h-12 w-auto" />
-            <a href="https://nakiradio.com/" target="_blank" rel="noopener noreferrer" className="transition-transform hover:scale-110" data-testid="link-nakiradio">
-              <img src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/WhatsApp%20Image%202025-11-26%20at%2014.55.32.jpeg/:/rs=h:100,cg:true" alt="Naki Radio" className="h-12 w-auto" />
-            </a>
-          </div>
-        </div>
-      </section>
+      <AsSeenSection />
 
       <section className="py-20 bg-[#0B1D2B]">
         <div className="container mx-auto px-4">
-          <h3 className="text-2xl md:text-3xl font-bold text-center mb-12 text-white">
-            Featured Products
-          </h3>
+          <ScrollReveal>
+            <h3 className="text-2xl md:text-3xl font-bold text-center mb-12 text-white">
+              Featured Products
+            </h3>
+          </ScrollReveal>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             <Card className="bg-[#1a2a3a] border-none overflow-hidden group animate-fade-in-up">
               <div className="aspect-[3/4] overflow-hidden">
