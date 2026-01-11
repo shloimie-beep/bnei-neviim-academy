@@ -18,6 +18,7 @@ import { db } from "./db";
 import { pool } from "./db";
 import { ObjectStorageService, objectStorageClient } from "./replit_integrations/object_storage";
 import * as bunnyStream from "./bunnyStream";
+import { generateThumbnailFromBunny, generateThumbnailFromLocalVideo } from "./thumbnailGenerator";
 
 const execAsync = promisify(exec);
 
@@ -1870,6 +1871,17 @@ export async function registerRoutes(
                 duration: bunnyVideo.length,
               });
               console.log(`[Bunny Stream] Video ${video.id} is ready`);
+              
+              // Auto-generate thumbnail if none exists
+              const currentVideo = await storage.getVideo(video.id);
+              if (currentVideo && !currentVideo.thumbnailPath) {
+                console.log(`[Bunny Stream] Generating thumbnail for ${video.id}...`);
+                const thumbnailPath = await generateThumbnailFromBunny(video.id, bunnyGuid, 5);
+                if (thumbnailPath) {
+                  await storage.updateVideo(video.id, { thumbnailPath });
+                  console.log(`[Bunny Stream] Thumbnail generated for ${video.id}`);
+                }
+              }
               break;
             } else if (bunnyVideo.status === 5) {
               await storage.updateVideo(video.id, { status: "failed" });
@@ -1936,6 +1948,89 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Get Bunny embed error:", error);
       res.status(500).json({ message: "Failed to get embed URL" });
+    }
+  });
+
+  // Admin: Generate/regenerate thumbnail for a video
+  app.post("/api/admin/videos/:id/generate-thumbnail", requireAdmin, async (req, res) => {
+    try {
+      const video = await storage.getVideo(req.params.id);
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+
+      let thumbnailPath: string | null = null;
+
+      if (video.bunnyGuid) {
+        // Generate from Bunny Stream
+        thumbnailPath = await generateThumbnailFromBunny(video.id, video.bunnyGuid, 5);
+      } else if (video.filepath) {
+        // Generate from local/cloud video file
+        thumbnailPath = await generateThumbnailFromLocalVideo(video.id, video.filepath, 5);
+      }
+
+      if (!thumbnailPath) {
+        return res.status(500).json({ message: "Failed to generate thumbnail" });
+      }
+
+      // Delete old thumbnail if exists
+      if (video.thumbnailPath) {
+        if (video.thumbnailPath.startsWith("/objects/")) {
+          try {
+            const oldFile = await objectStorageService.getObjectEntityFile(video.thumbnailPath);
+            await oldFile.delete();
+          } catch (err) {
+            console.error("Failed to delete old thumbnail:", err);
+          }
+        } else if (fs.existsSync(video.thumbnailPath)) {
+          fs.unlinkSync(video.thumbnailPath);
+        }
+      }
+
+      const updatedVideo = await storage.updateVideo(video.id, { thumbnailPath });
+      res.json(updatedVideo);
+    } catch (error) {
+      console.error("Generate thumbnail error:", error);
+      res.status(500).json({ message: "Failed to generate thumbnail" });
+    }
+  });
+
+  // Admin: Generate thumbnails for all videos without thumbnails
+  app.post("/api/admin/videos/generate-all-thumbnails", requireAdmin, async (req, res) => {
+    try {
+      const videos = await storage.getAllVideos();
+      const videosWithoutThumbnails = videos.filter(v => !v.thumbnailPath && v.status === "ready");
+      
+      res.json({ 
+        message: `Starting thumbnail generation for ${videosWithoutThumbnails.length} videos`,
+        count: videosWithoutThumbnails.length
+      });
+
+      // Generate thumbnails in background
+      (async () => {
+        for (const video of videosWithoutThumbnails) {
+          try {
+            let thumbnailPath: string | null = null;
+            
+            if (video.bunnyGuid) {
+              thumbnailPath = await generateThumbnailFromBunny(video.id, video.bunnyGuid, 5);
+            } else if (video.filepath) {
+              thumbnailPath = await generateThumbnailFromLocalVideo(video.id, video.filepath, 5);
+            }
+
+            if (thumbnailPath) {
+              await storage.updateVideo(video.id, { thumbnailPath });
+              console.log(`[Thumbnail] Generated thumbnail for video ${video.id}`);
+            }
+          } catch (err) {
+            console.error(`[Thumbnail] Failed to generate thumbnail for ${video.id}:`, err);
+          }
+        }
+        console.log(`[Thumbnail] Finished generating thumbnails for all videos`);
+      })();
+    } catch (error) {
+      console.error("Generate all thumbnails error:", error);
+      res.status(500).json({ message: "Failed to start thumbnail generation" });
     }
   });
 

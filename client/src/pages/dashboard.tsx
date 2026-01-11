@@ -468,15 +468,6 @@ function VideoCard({ video }: { video: VideoType }) {
                   </div>
                 )}
               </>
-            ) : (video as any).bunnyThumbnailUrl ? (
-              <img 
-                src={(video as any).bunnyThumbnailUrl}
-                alt={video.title}
-                className="h-full w-full object-cover"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                }}
-              />
             ) : isAudio ? (
               <Music className="h-12 w-12 text-muted-foreground" />
             ) : (
