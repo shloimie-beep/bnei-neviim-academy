@@ -1466,6 +1466,67 @@ export async function registerRoutes(
             console.log(`Copied original file for ${video.id} (no conversion needed)`);
           }
           
+          // Generate default thumbnail from video (extract frame at 1 second)
+          // Only if no custom thumbnail has been uploaded
+          const tempThumbnailPath = path.join(tempDir, `${video.id}-thumbnail.jpg`);
+          try {
+            // Re-fetch video to check if custom thumbnail was uploaded during processing
+            const currentVideo = await storage.getVideo(video.id);
+            if (currentVideo && !currentVideo.thumbnailPath) {
+              const thumbnailCommand = `ffmpeg -i "${tempConvertedPath}" -ss 00:00:01 -vframes 1 -vf "scale=640:-2" -y "${tempThumbnailPath}"`;
+              console.log(`Generating default thumbnail for ${video.id}`);
+              await execAsync(thumbnailCommand, { timeout: 60000 });
+              
+              if (fs.existsSync(tempThumbnailPath)) {
+                // Double-check thumbnail wasn't set in the meantime
+                const videoBeforeUpload = await storage.getVideo(video.id);
+                if (videoBeforeUpload && !videoBeforeUpload.thumbnailPath) {
+                  // Upload thumbnail to cloud storage
+                  const thumbnailUploadURL = await objectStorageService.getObjectEntityUploadURL();
+                  const thumbnailObjectPath = objectStorageService.normalizeObjectEntityPath(thumbnailUploadURL);
+                  
+                  const thumbUrl = new URL(thumbnailUploadURL);
+                  const thumbPathParts = thumbUrl.pathname.slice(1).split("/");
+                  const thumbBucketName = thumbPathParts[0];
+                  const thumbObjectName = thumbPathParts.slice(1).join("/");
+                  
+                  const thumbBucket = objectStorageClient.bucket(thumbBucketName);
+                  const thumbFile = thumbBucket.file(thumbObjectName);
+                  
+                  await new Promise<void>((resolve, reject) => {
+                    const thumbReadStream = fs.createReadStream(tempThumbnailPath);
+                    const thumbWriteStream = thumbFile.createWriteStream({
+                      resumable: false,
+                      contentType: "image/jpeg",
+                    });
+                    thumbReadStream.on("error", reject);
+                    thumbWriteStream.on("error", reject);
+                    thumbWriteStream.on("finish", resolve);
+                    thumbReadStream.pipe(thumbWriteStream);
+                  });
+                  
+                  // Update video with thumbnail path
+                  await storage.updateVideo(video.id, { thumbnailPath: thumbnailObjectPath });
+                  console.log(`Default thumbnail generated and uploaded for ${video.id}`);
+                } else {
+                  console.log(`Custom thumbnail was uploaded during processing for ${video.id}, skipping default`);
+                }
+                
+                // Clean up temp thumbnail
+                fs.unlinkSync(tempThumbnailPath);
+              }
+            } else {
+              console.log(`Video ${video.id} already has custom thumbnail, skipping default generation`);
+            }
+          } catch (thumbnailError) {
+            console.error(`Failed to generate thumbnail for ${video.id}:`, thumbnailError);
+            // Clean up temp thumbnail on error
+            if (fs.existsSync(tempThumbnailPath)) {
+              fs.unlinkSync(tempThumbnailPath);
+            }
+            // Continue without thumbnail - not a critical failure
+          }
+          
           // Upload converted file back to cloud storage
           const convertedUploadURL = await objectStorageService.getObjectEntityUploadURL();
           const convertedObjectPath = objectStorageService.normalizeObjectEntityPath(convertedUploadURL);
@@ -1530,8 +1591,10 @@ export async function registerRoutes(
           const tempDir = path.join(process.cwd(), "uploads", "temp");
           const tempOriginalPath = path.join(tempDir, `${video.id}-original`);
           const tempConvertedPath = path.join(tempDir, `${video.id}-converted.mp4`);
+          const tempThumbnailPath = path.join(tempDir, `${video.id}-thumbnail.jpg`);
           if (fs.existsSync(tempOriginalPath)) fs.unlinkSync(tempOriginalPath);
           if (fs.existsSync(tempConvertedPath)) fs.unlinkSync(tempConvertedPath);
+          if (fs.existsSync(tempThumbnailPath)) fs.unlinkSync(tempThumbnailPath);
         }
       })();
     } catch (error) {
@@ -1724,6 +1787,22 @@ export async function registerRoutes(
           console.log(`[Bunny Stream] Deleted video ${video.bunnyGuid} from Bunny`);
         } catch (err) {
           console.error(`[Bunny Stream] Failed to delete from Bunny:`, err);
+        }
+      }
+      
+      // Delete custom thumbnail if exists (cloud or local)
+      if (video.thumbnailPath) {
+        if (video.thumbnailPath.startsWith("/objects/")) {
+          try {
+            const thumbnailFile = await objectStorageService.getObjectEntityFile(video.thumbnailPath);
+            await thumbnailFile.delete();
+            console.log(`Deleted custom thumbnail for Bunny video ${req.params.id} from cloud storage`);
+          } catch (err) {
+            console.error(`Failed to delete thumbnail from cloud storage:`, err);
+          }
+        } else if (fs.existsSync(video.thumbnailPath)) {
+          fs.unlinkSync(video.thumbnailPath);
+          console.log(`Deleted custom thumbnail for Bunny video ${req.params.id} from local filesystem`);
         }
       }
       
