@@ -2,15 +2,29 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Phone, ArrowLeft, Loader2, Check, AlertTriangle } from "lucide-react";
+import { Phone, ArrowLeft, Loader2, Check, AlertTriangle, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { registerSchema, type RegisterInput } from "@shared/schema";
+
+const countryCodes = [
+  { code: "+1", country: "USA/Canada", flag: "US" },
+  { code: "+972", country: "Israel", flag: "IL" },
+  { code: "+44", country: "UK", flag: "GB" },
+  { code: "+61", country: "Australia", flag: "AU" },
+  { code: "+33", country: "France", flag: "FR" },
+  { code: "+49", country: "Germany", flag: "DE" },
+  { code: "+27", country: "South Africa", flag: "ZA" },
+  { code: "+52", country: "Mexico", flag: "MX" },
+  { code: "+55", country: "Brazil", flag: "BR" },
+  { code: "+91", country: "India", flag: "IN" },
+];
 
 export default function RegisterPage() {
   const [, setLocation] = useLocation();
@@ -23,14 +37,18 @@ export default function RegisterPage() {
     defaultValues: {
       email: "",
       password: "",
+      confirmPassword: "",
+      familyName: "",
+      location: "",
       phoneNumber: "",
+      countryCode: "+1",
     },
   });
 
   const onSubmit = async (data: RegisterInput) => {
     setIsLoading(true);
     try {
-      await register(data.email, data.password, data.phoneNumber);
+      await register(data);
       toast({
         title: "Account created!",
         description: "Your 2-week free trial has started. Enjoy the hotline!",
@@ -49,7 +67,6 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      {/* Header */}
       <header className="border-b">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between gap-4">
           <Link href="/">
@@ -62,7 +79,6 @@ export default function RegisterPage() {
         </div>
       </header>
 
-      {/* Development Warning Banner */}
       <div className="bg-red-600 text-white py-4 px-4" data-testid="banner-development-warning">
         <div className="container mx-auto flex items-center justify-center gap-3">
           <AlertTriangle className="h-6 w-6 flex-shrink-0" />
@@ -94,10 +110,8 @@ export default function RegisterPage() {
         </div>
       </div>
 
-      {/* Main Content */}
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-4xl grid md:grid-cols-2 gap-8 items-center">
-          {/* Benefits Panel */}
           <div className="hidden md:block space-y-6 p-6">
             <h2 className="text-2xl font-bold">Start Your Free Trial</h2>
             <p className="text-muted-foreground">
@@ -134,7 +148,6 @@ export default function RegisterPage() {
             </ul>
           </div>
 
-          {/* Registration Form */}
           <Card>
             <CardHeader className="text-center">
               <div className="h-12 w-12 rounded-full bg-primary flex items-center justify-center mx-auto mb-4">
@@ -148,6 +161,23 @@ export default function RegisterPage() {
             <CardContent>
               <Form {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="familyName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Family Name</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="Your family name"
+                            data-testid="input-family-name"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
                   <FormField
                     control={form.control}
                     name="email"
@@ -168,6 +198,26 @@ export default function RegisterPage() {
                   />
                   <FormField
                     control={form.control}
+                    name="location"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Location</FormLabel>
+                        <FormControl>
+                          <Input
+                            placeholder="City, State/Country"
+                            data-testid="input-location"
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          e.g., Baltimore, MD or London, UK
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                  <FormField
+                    control={form.control}
                     name="password"
                     render={({ field }) => (
                       <FormItem>
@@ -175,36 +225,84 @@ export default function RegisterPage() {
                         <FormControl>
                           <Input
                             type="password"
-                            placeholder="Create a password"
+                            placeholder="Create a strong password"
                             data-testid="input-password"
                             {...field}
                           />
                         </FormControl>
+                        <FormDescription>
+                          Must be 8+ characters with uppercase, lowercase, and number
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
                   <FormField
                     control={form.control}
-                    name="phoneNumber"
+                    name="confirmPassword"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Phone Number</FormLabel>
+                        <FormLabel>Confirm Password</FormLabel>
                         <FormControl>
                           <Input
-                            type="tel"
-                            placeholder="+1 (555) 123-4567"
-                            data-testid="input-phone"
+                            type="password"
+                            placeholder="Confirm your password"
+                            data-testid="input-confirm-password"
                             {...field}
                           />
                         </FormControl>
-                        <FormDescription>
-                          This number will be used to access the hotline
-                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
+                  <div className="space-y-2">
+                    <FormLabel>Phone Number</FormLabel>
+                    <div className="flex gap-2">
+                      <FormField
+                        control={form.control}
+                        name="countryCode"
+                        render={({ field }) => (
+                          <FormItem className="w-32">
+                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                              <FormControl>
+                                <SelectTrigger data-testid="select-country-code">
+                                  <SelectValue placeholder="+1" />
+                                </SelectTrigger>
+                              </FormControl>
+                              <SelectContent>
+                                {countryCodes.map((cc) => (
+                                  <SelectItem key={cc.code} value={cc.code}>
+                                    {cc.code} {cc.country}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="phoneNumber"
+                        render={({ field }) => (
+                          <FormItem className="flex-1">
+                            <FormControl>
+                              <Input
+                                type="tel"
+                                placeholder="555-123-4567"
+                                data-testid="input-phone"
+                                {...field}
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                    </div>
+                    <p className="text-sm text-muted-foreground">
+                      This number will be used to access the hotline
+                    </p>
+                  </div>
                   <Button
                     type="submit"
                     className="w-full"

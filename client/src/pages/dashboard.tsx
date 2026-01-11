@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize } from "lucide-react";
+import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2 } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,12 +10,26 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState, useRef, useMemo, useEffect } from "react";
 import type { PhoneNumber, Video as VideoType, VideoCategory } from "@shared/schema";
+
+const countryCodes = [
+  { code: "+1", country: "USA/Canada" },
+  { code: "+972", country: "Israel" },
+  { code: "+44", country: "UK" },
+  { code: "+61", country: "Australia" },
+  { code: "+33", country: "France" },
+  { code: "+49", country: "Germany" },
+  { code: "+27", country: "South Africa" },
+  { code: "+52", country: "Mexico" },
+  { code: "+55", country: "Brazil" },
+  { code: "+91", country: "India" },
+];
 
 function SubscriptionStatusBadge({ status }: { status: string }) {
   const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline"; icon: any }> = {
@@ -450,8 +464,11 @@ export default function DashboardPage() {
   const { user, logout, refreshUser } = useAuth();
   const { toast } = useToast();
   const [newPhoneNumber, setNewPhoneNumber] = useState("");
+  const [phoneCountryCode, setPhoneCountryCode] = useState("+1");
   const [isAddingPhone, setIsAddingPhone] = useState(false);
   const [isPhoneDialogOpen, setIsPhoneDialogOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isEditingPhone, setIsEditingPhone] = useState(false);
 
   const { data: phoneNumbers, isLoading: phonesLoading } = useQuery<PhoneNumber[]>({
     queryKey: ["/api/phone-numbers"],
@@ -497,6 +514,7 @@ export default function DashboardPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/phone-numbers"] });
       toast({ title: "Phone number added", description: "Your new phone number has been registered." });
       setNewPhoneNumber("");
+      setPhoneCountryCode("+1");
       setIsPhoneDialogOpen(false);
     },
     onError: (error: any) => {
@@ -514,6 +532,23 @@ export default function DashboardPage() {
     },
     onError: (error: any) => {
       toast({ title: "Failed to remove phone", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const updatePhoneMutation = useMutation({
+    mutationFn: async ({ id, phoneNumber }: { id: string; phoneNumber: string }) => {
+      const res = await apiRequest("PUT", `/api/phone-numbers/${id}`, { phoneNumber });
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/phone-numbers"] });
+      toast({ title: "Phone number updated" });
+      setIsEditingPhone(false);
+      setNewPhoneNumber("");
+      setPhoneCountryCode("+1");
+    },
+    onError: (error: any) => {
+      toast({ title: "Failed to update phone", description: error.message, variant: "destructive" });
     },
   });
 
@@ -590,6 +625,166 @@ export default function DashboardPage() {
                 </Button>
               </Link>
             )}
+            {user?.role !== "admin" && (
+              <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+                <DialogTrigger asChild>
+                  <Button variant="outline" size="sm" data-testid="button-account-settings">
+                    <Settings className="h-4 w-4 mr-2" />
+                    Account Settings
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Account Settings</DialogTitle>
+                    <DialogDescription>
+                      Manage your account, phone number, and billing
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-6 py-4">
+                    <div className="space-y-3">
+                      <h3 className="font-medium flex items-center gap-2">
+                        <Phone className="h-4 w-4" />
+                        Phone Number
+                      </h3>
+                      {registeredPhone ? (
+                        <div className="p-4 border rounded-lg">
+                          {isEditingPhone ? (
+                            <div className="space-y-3">
+                              <div className="flex gap-2">
+                                <Select value={phoneCountryCode} onValueChange={setPhoneCountryCode}>
+                                  <SelectTrigger className="w-32" data-testid="select-edit-country-code">
+                                    <SelectValue />
+                                  </SelectTrigger>
+                                  <SelectContent>
+                                    {countryCodes.map((cc) => (
+                                      <SelectItem key={cc.code} value={cc.code}>
+                                        {cc.code} {cc.country}
+                                      </SelectItem>
+                                    ))}
+                                  </SelectContent>
+                                </Select>
+                                <Input
+                                  type="tel"
+                                  placeholder="555-123-4567"
+                                  value={newPhoneNumber}
+                                  onChange={(e) => setNewPhoneNumber(e.target.value)}
+                                  data-testid="input-edit-phone"
+                                />
+                              </div>
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  onClick={() => {
+                                    const fullNumber = phoneCountryCode + newPhoneNumber.replace(/^0+/, '');
+                                    updatePhoneMutation.mutate({ id: registeredPhone.id, phoneNumber: fullNumber });
+                                  }}
+                                  disabled={updatePhoneMutation.isPending || !newPhoneNumber.trim()}
+                                  data-testid="button-save-phone"
+                                >
+                                  {updatePhoneMutation.isPending && <Loader2 className="h-4 w-4 mr-1 animate-spin" />}
+                                  Save
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => {
+                                    setIsEditingPhone(false);
+                                    setNewPhoneNumber("");
+                                    setPhoneCountryCode("+1");
+                                  }}
+                                >
+                                  Cancel
+                                </Button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="flex items-center justify-between">
+                              <span className="font-medium" data-testid="text-current-phone">{registeredPhone.phoneNumber}</span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setIsEditingPhone(true)}
+                                data-testid="button-edit-phone"
+                              >
+                                <Edit2 className="h-4 w-4 mr-1" />
+                                Edit
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          <div className="flex gap-2">
+                            <Select value={phoneCountryCode} onValueChange={setPhoneCountryCode}>
+                              <SelectTrigger className="w-32" data-testid="select-add-country-code">
+                                <SelectValue />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {countryCodes.map((cc) => (
+                                  <SelectItem key={cc.code} value={cc.code}>
+                                    {cc.code} {cc.country}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                            <Input
+                              type="tel"
+                              placeholder="555-123-4567"
+                              value={newPhoneNumber}
+                              onChange={(e) => setNewPhoneNumber(e.target.value)}
+                              data-testid="input-add-phone"
+                            />
+                          </div>
+                          <Button
+                            onClick={() => {
+                              const fullNumber = phoneCountryCode + newPhoneNumber.replace(/^0+/, '');
+                              addPhoneMutation.mutate(fullNumber);
+                            }}
+                            disabled={isAddingPhone || !newPhoneNumber.trim()}
+                            data-testid="button-add-phone"
+                          >
+                            {isAddingPhone && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                            Add Phone Number
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                    
+                    <div className="space-y-3">
+                      <h3 className="font-medium flex items-center gap-2">
+                        <CreditCard className="h-4 w-4" />
+                        Billing
+                      </h3>
+                      {user?.subscriptionStatus === "none" ? (
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => createCheckoutMutation.mutate()}
+                          disabled={createCheckoutMutation.isPending}
+                          data-testid="button-start-trial-settings"
+                        >
+                          {createCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                          Start Free Trial
+                        </Button>
+                      ) : (user?.subscriptionStatus === "active" || user?.subscriptionStatus === "trial") && subscription?.stripeCustomerId ? (
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => createPortalMutation.mutate()}
+                          disabled={createPortalMutation.isPending}
+                          data-testid="button-manage-billing-settings"
+                        >
+                          {createPortalMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                          Manage Billing
+                        </Button>
+                      ) : (
+                        <p className="text-sm text-muted-foreground">No billing options available</p>
+                      )}
+                    </div>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            )}
             <Button variant="ghost" size="sm" onClick={handleLogout} data-testid="button-logout">
               <LogOut className="h-4 w-4 mr-2" />
               Logout
@@ -621,101 +816,6 @@ export default function DashboardPage() {
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3">
-              {user?.role !== "admin" && (
-                <Dialog open={isPhoneDialogOpen} onOpenChange={setIsPhoneDialogOpen}>
-                  <DialogTrigger asChild>
-                    <Button size="lg" className="gap-2" data-testid="button-manage-phone">
-                      <Phone className="h-5 w-5" />
-                      {registeredPhone ? "Manage Phone" : "Add Phone Number"}
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>
-                        {registeredPhone ? "Your Registered Phone" : "Add Phone Number"}
-                      </DialogTitle>
-                      <DialogDescription>
-                        {registeredPhone 
-                          ? "Your phone number for accessing the hotline" 
-                          : "Add a phone number to access the hotline"}
-                      </DialogDescription>
-                    </DialogHeader>
-                    
-                    {registeredPhone ? (
-                      <div className="py-4">
-                        <PhoneNumberCard
-                          phoneNumber={registeredPhone}
-                          onDelete={() => {
-                            deletePhoneMutation.mutate(registeredPhone.id);
-                            setIsPhoneDialogOpen(false);
-                          }}
-                        />
-                      </div>
-                    ) : (
-                      <div className="space-y-4 py-4">
-                        <div className="space-y-2">
-                          <Label htmlFor="phone">Phone Number</Label>
-                          <Input
-                            id="phone"
-                            type="tel"
-                            placeholder="+1 (555) 123-4567"
-                            value={newPhoneNumber}
-                            onChange={(e) => setNewPhoneNumber(e.target.value)}
-                            data-testid="input-new-phone"
-                          />
-                        </div>
-                      </div>
-                    )}
-                    
-                    <DialogFooter>
-                      <Button variant="outline" onClick={() => setIsPhoneDialogOpen(false)}>
-                        Close
-                      </Button>
-                      {!registeredPhone && (
-                        <Button
-                          onClick={handleAddPhone}
-                          disabled={isAddingPhone || !newPhoneNumber.trim()}
-                          data-testid="button-confirm-add-phone"
-                        >
-                          {isAddingPhone && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                          Add Number
-                        </Button>
-                      )}
-                    </DialogFooter>
-                  </DialogContent>
-                </Dialog>
-              )}
-
-              {user?.role !== "admin" && (
-                <>
-                  {user?.subscriptionStatus === "none" && (
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      onClick={() => createCheckoutMutation.mutate()}
-                      disabled={createCheckoutMutation.isPending}
-                      data-testid="button-subscribe"
-                    >
-                      {createCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                      Start Free Trial
-                    </Button>
-                  )}
-                  {(user?.subscriptionStatus === "active" || user?.subscriptionStatus === "trial") && subscription?.stripeCustomerId && (
-                    <Button
-                      size="lg"
-                      variant="outline"
-                      onClick={() => createPortalMutation.mutate()}
-                      disabled={createPortalMutation.isPending}
-                      data-testid="button-manage-billing"
-                    >
-                      <CreditCard className="h-5 w-5 mr-2" />
-                      Billing
-                    </Button>
-                  )}
-                </>
-              )}
-            </div>
           </div>
 
           {hasActiveSubscription ? (

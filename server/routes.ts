@@ -384,7 +384,7 @@ export async function registerRoutes(
         return res.status(400).json({ message: result.error.errors[0].message });
       }
 
-      const { email, password, phoneNumber } = result.data;
+      const { email, password, phoneNumber, countryCode, familyName, location } = result.data;
 
       // Check if user exists
       const existingUser = await storage.getUserByEmail(email);
@@ -392,8 +392,11 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Email already registered" });
       }
 
+      // Combine country code with phone number
+      const fullPhoneNumber = countryCode + phoneNumber.replace(/^0+/, '');
+
       // Check if phone number is already registered
-      const existingPhone = await storage.getPhoneNumberByNumber(phoneNumber);
+      const existingPhone = await storage.getPhoneNumberByNumber(fullPhoneNumber);
       if (existingPhone) {
         return res.status(400).json({ message: "Phone number already registered" });
       }
@@ -405,15 +408,17 @@ export async function registerRoutes(
       const user = await storage.createUser({
         email,
         password: hashedPassword,
+        familyName,
+        location,
         role: "customer",
         subscriptionStatus: "none",
         trialEndsAt: null,
       });
 
-      // Register phone number
+      // Register phone number with country code
       await storage.createPhoneNumber({
         userId: user.id,
-        phoneNumber,
+        phoneNumber: fullPhoneNumber,
         isActive: true,
       });
 
@@ -641,6 +646,32 @@ export async function registerRoutes(
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ message: "Failed to delete phone number" });
+    }
+  });
+
+  app.put("/api/phone-numbers/:id", requireAuth, async (req, res) => {
+    try {
+      const phones = await storage.getPhoneNumbersByUser(req.session.userId!);
+      const phone = phones.find((p) => p.id === req.params.id);
+      
+      if (!phone) {
+        return res.status(404).json({ message: "Phone number not found" });
+      }
+
+      const { phoneNumber } = req.body;
+      if (!phoneNumber || typeof phoneNumber !== "string") {
+        return res.status(400).json({ message: "Phone number is required" });
+      }
+
+      const existingPhone = await storage.getPhoneNumberByNumber(phoneNumber);
+      if (existingPhone && existingPhone.id !== req.params.id) {
+        return res.status(400).json({ message: "Phone number already registered" });
+      }
+
+      const updated = await storage.updatePhoneNumber(req.params.id, phoneNumber);
+      res.json(updated);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update phone number" });
     }
   });
 

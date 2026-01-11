@@ -8,6 +8,8 @@ export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   email: text("email").notNull().unique(),
   password: text("password").notNull(),
+  familyName: text("family_name"),
+  location: text("location"), // city/state/country
   role: text("role").notNull().default("customer"), // 'admin' or 'customer'
   stripeCustomerId: text("stripe_customer_id"),
   stripeSubscriptionId: text("stripe_subscription_id"),
@@ -268,10 +270,21 @@ export const loginSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
+const strongPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
 export const registerSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
-  password: z.string().min(6, "Password must be at least 6 characters"),
+  password: z.string()
+    .min(8, "Password must be at least 8 characters")
+    .regex(strongPasswordRegex, "Password must contain at least one uppercase letter, one lowercase letter, and one number"),
+  confirmPassword: z.string().min(1, "Please confirm your password"),
+  familyName: z.string().min(2, "Please enter your family name"),
+  location: z.string().min(2, "Please enter your city/state/country"),
   phoneNumber: z.string().min(10, "Please enter a valid phone number"),
+  countryCode: z.string().default("+1"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords do not match",
+  path: ["confirmPassword"],
 });
 
 export const phoneNumberSchema = z.object({

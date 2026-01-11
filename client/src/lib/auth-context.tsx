@@ -3,11 +3,21 @@ import type { User } from "@shared/schema";
 
 type AuthUser = User & { isWhitelistedEmail?: boolean };
 
+interface RegisterData {
+  email: string;
+  password: string;
+  confirmPassword: string;
+  familyName: string;
+  location: string;
+  phoneNumber: string;
+  countryCode: string;
+}
+
 interface AuthContextType {
   user: AuthUser | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<User>;
-  register: (email: string, password: string, phoneNumber: string) => Promise<void>;
+  register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -58,11 +68,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return data.user;
   };
 
-  const register = async (email: string, password: string, phoneNumber: string) => {
+  const register = async (data: RegisterData) => {
     const response = await fetch("/api/auth/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, phoneNumber }),
+      body: JSON.stringify(data),
       credentials: "include",
     });
     
@@ -71,8 +81,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       throw new Error(error.message || "Registration failed");
     }
     
-    const data = await response.json();
-    setUser(data.user);
+    const result = await response.json();
+    setUser(result.user);
   };
 
   const logout = async () => {

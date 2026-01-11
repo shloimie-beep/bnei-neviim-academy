@@ -59,6 +59,7 @@ export interface IStorage {
   getPhoneNumberByNumber(phoneNumber: string): Promise<PhoneNumber | undefined>;
   createPhoneNumber(data: InsertPhoneNumber): Promise<PhoneNumber>;
   deletePhoneNumber(id: string): Promise<void>;
+  updatePhoneNumber(id: string, phoneNumber: string): Promise<PhoneNumber>;
   isSubscribedPhoneNumber(phoneNumber: string): Promise<boolean>;
 
   // Audio Files
@@ -160,6 +161,11 @@ export class DatabaseStorage implements IStorage {
 
   async deletePhoneNumber(id: string): Promise<void> {
     await db.delete(phoneNumbers).where(eq(phoneNumbers.id, id));
+  }
+
+  async updatePhoneNumber(id: string, newPhoneNumber: string): Promise<PhoneNumber> {
+    const [phone] = await db.update(phoneNumbers).set({ phoneNumber: newPhoneNumber }).where(eq(phoneNumbers.id, id)).returning();
+    return phone;
   }
 
   async isSubscribedPhoneNumber(phoneNumber: string): Promise<boolean> {
