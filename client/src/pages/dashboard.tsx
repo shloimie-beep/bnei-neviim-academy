@@ -468,9 +468,9 @@ function VideoCard({ video }: { video: VideoType }) {
                   </div>
                 )}
               </>
-            ) : video.bunnyGuid ? (
+            ) : (video as any).bunnyThumbnailUrl ? (
               <img 
-                src={`https://vz-576907.b-cdn.net/${video.bunnyGuid}/thumbnail.jpg`}
+                src={(video as any).bunnyThumbnailUrl}
                 alt={video.title}
                 className="h-full w-full object-cover"
                 onError={(e) => {

@@ -214,6 +214,9 @@ export async function registerRoutes(
 ): Promise<Server> {
   const isProduction = process.env.NODE_ENV === "production";
   
+  // Initialize Bunny Stream service (caches CDN hostname)
+  await bunnyStream.initializeBunnyStream();
+  
   // Trust proxy for production (Replit uses reverse proxy)
   if (isProduction) {
     app.set("trust proxy", 1);
@@ -1903,7 +1906,7 @@ export async function registerRoutes(
       
       res.json({
         embedUrl: bunnyStream.getEmbedUrl(video.bunnyGuid),
-        thumbnailUrl: bunnyStream.getThumbnailUrl(video.bunnyGuid),
+        thumbnailUrl: await bunnyStream.getThumbnailUrl(video.bunnyGuid),
       });
     } catch (error) {
       console.error("Get Bunny embed error:", error);
@@ -1928,7 +1931,7 @@ export async function registerRoutes(
       
       res.json({
         embedUrl: bunnyStream.getEmbedUrl(video.bunnyGuid),
-        thumbnailUrl: bunnyStream.getThumbnailUrl(video.bunnyGuid),
+        thumbnailUrl: await bunnyStream.getThumbnailUrl(video.bunnyGuid),
       });
     } catch (error) {
       console.error("Get Bunny embed error:", error);
@@ -2097,7 +2100,19 @@ export async function registerRoutes(
       }
 
       const videos = await storage.getPublishedVideos();
-      res.json(videos);
+      
+      // Add Bunny thumbnail URLs for videos with bunnyGuid
+      const videosWithThumbnails = await Promise.all(videos.map(async (video) => {
+        if (video.bunnyGuid && !video.thumbnailPath) {
+          return {
+            ...video,
+            bunnyThumbnailUrl: await bunnyStream.getThumbnailUrl(video.bunnyGuid),
+          };
+        }
+        return video;
+      }));
+      
+      res.json(videosWithThumbnails);
     } catch (error) {
       console.error("Get subscriber videos error:", error);
       res.status(500).json({ message: "Failed to get videos" });

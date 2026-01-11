@@ -1,7 +1,27 @@
 const BUNNY_API_KEY = process.env.BUNNY_API_KEY;
 const BUNNY_LIBRARY_ID = process.env.BUNNY_LIBRARY_ID;
+const BUNNY_CDN_HOSTNAME = process.env.BUNNY_CDN_HOSTNAME;
 
 const BUNNY_API_BASE = "https://video.bunnycdn.com/library";
+
+// Cache for the CDN hostname
+let cachedPullZone: string | null = null;
+
+async function getPullZoneHostname(): Promise<string> {
+  if (cachedPullZone) return cachedPullZone;
+  
+  // Use environment variable if set
+  if (BUNNY_CDN_HOSTNAME) {
+    cachedPullZone = BUNNY_CDN_HOSTNAME;
+    console.log(`[Bunny] Using configured CDN hostname: ${cachedPullZone}`);
+    return cachedPullZone;
+  }
+  
+  // Fallback to library ID format (may not work for all accounts)
+  cachedPullZone = `vz-${BUNNY_LIBRARY_ID}`;
+  console.log(`[Bunny] Using default CDN hostname: ${cachedPullZone}`);
+  return cachedPullZone;
+}
 
 interface BunnyVideo {
   guid: string;
@@ -133,7 +153,17 @@ export function getEmbedUrl(videoGuid: string): string {
   return `https://iframe.mediadelivery.net/embed/${BUNNY_LIBRARY_ID}/${videoGuid}`;
 }
 
-export function getThumbnailUrl(videoGuid: string): string {
+export async function getThumbnailUrl(videoGuid: string): Promise<string> {
+  const pullZone = await getPullZoneHostname();
+  return `https://${pullZone}.b-cdn.net/${videoGuid}/thumbnail.jpg`;
+}
+
+// Synchronous version for cases where we can't await
+export function getThumbnailUrlSync(videoGuid: string): string {
+  if (cachedPullZone) {
+    return `https://${cachedPullZone}.b-cdn.net/${videoGuid}/thumbnail.jpg`;
+  }
+  // Fallback - this should rarely happen after initialization
   return `https://vz-${BUNNY_LIBRARY_ID}.b-cdn.net/${videoGuid}/thumbnail.jpg`;
 }
 
@@ -196,6 +226,18 @@ export async function updateLibrarySettings(settings: LibrarySettings): Promise<
 
 export async function setAllowedReferrers(domains: string[]): Promise<void> {
   await updateLibrarySettings({ AllowedReferrers: domains });
+}
+
+// Initialize pull zone cache on module load
+export async function initializeBunnyStream(): Promise<void> {
+  try {
+    if (BUNNY_API_KEY && BUNNY_LIBRARY_ID) {
+      await getPullZoneHostname();
+      console.log("[Bunny] Stream service initialized");
+    }
+  } catch (err) {
+    console.error("[Bunny] Failed to initialize:", err);
+  }
 }
 
 export { BUNNY_API_KEY, BUNNY_LIBRARY_ID };
