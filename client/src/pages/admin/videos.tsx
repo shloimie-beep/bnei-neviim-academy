@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash } from "lucide-react";
+import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -79,11 +79,20 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, categories }:
         <div className="flex items-start gap-4">
           <div className="relative h-16 w-24 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden group">
             {video.thumbnailPath ? (
-              <img 
-                src={`/api/videos/${video.id}/thumbnail`} 
-                alt={video.title}
-                className="h-full w-full object-cover"
-              />
+              <>
+                <img 
+                  src={`/api/videos/${video.id}/thumbnail`} 
+                  alt={video.title}
+                  className="h-full w-full object-cover"
+                />
+                {video.mediaType === "audio" && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/40">
+                    <Music className="h-6 w-6 text-white" />
+                  </div>
+                )}
+              </>
+            ) : video.mediaType === "audio" ? (
+              <Music className="h-8 w-8 text-primary" />
             ) : (
               <FileVideo className="h-8 w-8 text-primary" />
             )}
@@ -151,6 +160,12 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, categories }:
                       <p className="font-medium" data-testid={`text-video-title-${video.id}`}>
                         {video.title}
                       </p>
+                      {video.mediaType === "audio" && (
+                        <Badge variant="secondary" className="text-xs gap-1">
+                          <Music className="h-3 w-3" />
+                          Audio
+                        </Badge>
+                      )}
                       {categoryName && (
                         <Badge variant="outline" className="text-xs">{categoryName}</Badge>
                       )}
@@ -736,31 +751,31 @@ export default function VideoManagement() {
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div>
-          <h1 className="text-2xl font-bold">Video Library</h1>
-          <p className="text-muted-foreground">Manage video content for subscribers</p>
+          <h1 className="text-2xl font-bold">Media Library</h1>
+          <p className="text-muted-foreground">Manage video and audio content for subscribers</p>
         </div>
         <div className="flex gap-2 flex-wrap">
           <Dialog open={isSingleDialogOpen} onOpenChange={setIsSingleDialogOpen}>
             <DialogTrigger asChild>
               <Button data-testid="button-upload-single-video">
                 <Upload className="h-4 w-4 mr-2" />
-                Upload Video
+                Upload Media
               </Button>
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Upload Video</DialogTitle>
+                <DialogTitle>Upload Media</DialogTitle>
                 <DialogDescription>
-                  Upload a video file with full details. Supported formats: MP4, WebM, MOV, AVI, MKV (max 10GB)
+                  Upload a video or audio file. Supported: MP4, WebM, MOV, MKV (video) or MP3, WAV, OGG, M4A (audio). Max 10GB.
                 </DialogDescription>
               </DialogHeader>
               <div className="space-y-4">
                 <div>
-                  <Label htmlFor="single-video-file">Video File</Label>
+                  <Label htmlFor="single-video-file">Media File</Label>
                   <Input
                     id="single-video-file"
                     type="file"
-                    accept="video/*"
+                    accept="video/*,audio/*,.mp3,.wav,.ogg,.m4a,.aac,.flac"
                     ref={singleFileInputRef}
                     onChange={(e) => {
                       const file = e.target.files?.[0];
@@ -880,18 +895,18 @@ export default function VideoManagement() {
             </DialogTrigger>
           <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
             <DialogHeader>
-              <DialogTitle>Upload Videos</DialogTitle>
+              <DialogTitle>Upload Media</DialogTitle>
               <DialogDescription>
-                Select multiple video files to upload. They will be processed one at a time. You can leave this running overnight.
+                Select multiple video or audio files to upload. They will be processed one at a time. You can leave this running overnight.
               </DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div>
-                <Label htmlFor="video-file">Video Files</Label>
+                <Label htmlFor="video-file">Media Files</Label>
                 <Input
                   id="video-file"
                   type="file"
-                  accept="video/*"
+                  accept="video/*,audio/*,.mp3,.wav,.ogg,.m4a,.aac,.flac"
                   multiple
                   ref={fileInputRef}
                   onChange={handleFileSelect}
@@ -899,7 +914,7 @@ export default function VideoManagement() {
                   data-testid="input-video-file"
                 />
                 <p className="text-xs text-muted-foreground mt-1">
-                  Supported: MP4, WebM, MOV, AVI, MKV (max 10GB each)
+                  Supported: MP4, WebM, MOV, MKV (video) or MP3, WAV, OGG, M4A (audio). Max 10GB each.
                 </p>
               </div>
               

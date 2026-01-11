@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2 } from "lucide-react";
+import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,7 +16,7 @@ import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState, useRef, useMemo, useEffect } from "react";
-import type { PhoneNumber, Video as VideoType, VideoCategory } from "@shared/schema";
+import type { PhoneNumber, Video as VideoType, VideoCategory, Document } from "@shared/schema";
 
 const countryCodes = [
   { code: "+1", country: "USA/Canada" },
@@ -416,6 +416,7 @@ function VideoPlayer({ video, onClose }: { video: VideoType; onClose: () => void
 
 function VideoCard({ video }: { video: VideoType }) {
   const [isOpen, setIsOpen] = useState(false);
+  const isAudio = video.mediaType === "audio";
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -423,17 +424,26 @@ function VideoCard({ video }: { video: VideoType }) {
         <Card className="overflow-hidden cursor-pointer hover-elevate active-elevate-2" data-testid={`card-video-${video.id}`}>
           <div className="aspect-video bg-muted flex items-center justify-center relative group overflow-hidden">
             {video.thumbnailPath ? (
-              <img 
-                src={`/api/videos/${video.id}/thumbnail`} 
-                alt={video.title}
-                className="h-full w-full object-cover"
-              />
+              <>
+                <img 
+                  src={`/api/videos/${video.id}/thumbnail`} 
+                  alt={video.title}
+                  className="h-full w-full object-cover"
+                />
+                {isAudio && (
+                  <div className="absolute top-2 left-2 bg-black/60 rounded-full p-1.5">
+                    <Music className="h-4 w-4 text-white" />
+                  </div>
+                )}
+              </>
             ) : video.bunnyGuid ? (
               <img 
                 src={`https://vz-21d70a77-eb3.b-cdn.net/${video.bunnyGuid}/thumbnail.jpg`}
                 alt={video.title}
                 className="h-full w-full object-cover"
               />
+            ) : isAudio ? (
+              <Music className="h-12 w-12 text-muted-foreground" />
             ) : (
               <FileVideo className="h-12 w-12 text-muted-foreground" />
             )}
@@ -444,9 +454,17 @@ function VideoCard({ video }: { video: VideoType }) {
             </div>
           </div>
           <CardContent className="p-4">
-            <h3 className="font-medium line-clamp-1" data-testid={`text-video-title-${video.id}`}>
-              {video.title}
-            </h3>
+            <div className="flex items-center gap-2">
+              <h3 className="font-medium line-clamp-1 flex-1" data-testid={`text-video-title-${video.id}`}>
+                {video.title}
+              </h3>
+              {isAudio && (
+                <span className="text-xs text-muted-foreground flex items-center gap-1 flex-shrink-0">
+                  <Music className="h-3 w-3" />
+                  Audio
+                </span>
+              )}
+            </div>
             {video.description && (
               <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                 {video.description}
@@ -456,6 +474,60 @@ function VideoCard({ video }: { video: VideoType }) {
         </Card>
       </DialogTrigger>
       <VideoPlayer video={video} onClose={() => setIsOpen(false)} />
+    </Dialog>
+  );
+}
+
+function DocumentCard({ doc }: { doc: Document }) {
+  const [isViewerOpen, setIsViewerOpen] = useState(false);
+
+  return (
+    <Dialog open={isViewerOpen} onOpenChange={setIsViewerOpen}>
+      <DialogTrigger asChild>
+        <Card className="overflow-hidden cursor-pointer hover-elevate active-elevate-2" data-testid={`card-doc-${doc.id}`}>
+          <div className="aspect-video bg-muted flex items-center justify-center relative group">
+            <FileText className="h-12 w-12 text-muted-foreground" />
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="h-14 w-14 rounded-full bg-primary flex items-center justify-center">
+                <ExternalLink className="h-6 w-6 text-primary-foreground" />
+              </div>
+            </div>
+          </div>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <h3 className="font-medium line-clamp-1 flex-1" data-testid={`text-doc-title-${doc.id}`}>
+                {doc.title}
+              </h3>
+              <Badge variant="secondary" className="text-xs flex-shrink-0">PDF</Badge>
+            </div>
+            {doc.description && (
+              <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                {doc.description}
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      </DialogTrigger>
+      <DialogContent className="max-w-4xl h-[85vh] p-0 flex flex-col">
+        <DialogHeader className="p-4 pb-2 border-b flex-shrink-0">
+          <DialogTitle>{doc.title}</DialogTitle>
+          {doc.description && (
+            <DialogDescription>{doc.description}</DialogDescription>
+          )}
+        </DialogHeader>
+        <div className="flex-1 overflow-hidden relative">
+          <iframe
+            src={`/api/documents/${doc.id}/view#toolbar=0&navpanes=0&scrollbar=1`}
+            className="w-full h-full border-0"
+            title={doc.title}
+            sandbox="allow-scripts allow-same-origin"
+            data-testid={`iframe-doc-viewer-${doc.id}`}
+          />
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background/90 to-transparent py-4 text-center pointer-events-none">
+            <p className="text-xs text-muted-foreground">View only - Downloading is not permitted</p>
+          </div>
+        </div>
+      </DialogContent>
     </Dialog>
   );
 }
@@ -484,6 +556,10 @@ export default function DashboardPage() {
 
   const { data: categories = [] } = useQuery<VideoCategory[]>({
     queryKey: ["/api/video-categories"],
+  });
+
+  const { data: documents, isLoading: documentsLoading } = useQuery<Document[]>({
+    queryKey: ["/api/documents"],
   });
 
   const videosByCategory = useMemo(() => {
@@ -875,6 +951,42 @@ export default function DashboardPage() {
                       <h3 className="font-semibold text-lg mb-2">No Videos Yet</h3>
                       <p className="text-muted-foreground">
                         Check back soon for new video content!
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+
+              <div>
+                <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
+                  <FileText className="h-6 w-6" />
+                  Document Library
+                </h2>
+                {documentsLoading ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {[1, 2, 3].map((i) => (
+                      <Card key={i} className="overflow-hidden">
+                        <Skeleton className="aspect-video" />
+                        <CardContent className="p-4 space-y-2">
+                          <Skeleton className="h-5 w-3/4" />
+                          <Skeleton className="h-4 w-full" />
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                ) : documents && documents.length > 0 ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {documents.map((doc) => (
+                      <DocumentCard key={doc.id} doc={doc} />
+                    ))}
+                  </div>
+                ) : (
+                  <Card>
+                    <CardContent className="py-12 text-center">
+                      <FileText className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                      <h3 className="font-semibold text-lg mb-2">No Documents Yet</h3>
+                      <p className="text-muted-foreground">
+                        Check back soon for new document content!
                       </p>
                     </CardContent>
                   </Card>
