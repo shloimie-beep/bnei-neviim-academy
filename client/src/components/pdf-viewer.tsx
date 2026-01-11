@@ -73,9 +73,17 @@ export function PdfViewer({ url, title }: PdfViewerProps) {
       
       if (!context) return;
 
-      const viewport = page.getViewport({ scale });
+      // Render at high resolution for sharpness, use CSS transform for zoom
+      const dpr = window.devicePixelRatio || 1;
+      const renderScale = 2 * dpr; // High res render
+      const viewport = page.getViewport({ scale: renderScale });
+      
       canvas.height = viewport.height;
       canvas.width = viewport.width;
+      
+      // Set display size based on zoom scale
+      canvas.style.width = `${(viewport.width / renderScale) * scale}px`;
+      canvas.style.height = `${(viewport.height / renderScale) * scale}px`;
 
       await page.render({
         canvasContext: context,
