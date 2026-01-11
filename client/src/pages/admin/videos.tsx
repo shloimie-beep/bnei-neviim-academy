@@ -182,7 +182,7 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, categories }:
                 className={`flex-shrink-0 ${video.status === "processing" ? "animate-pulse" : ""}`}
               >
                 {video.status === "ready" ? "Published" : 
-                 video.status === "processing" ? "Converting..." : 
+                 video.status === "processing" ? (video.mediaType === "audio" ? "Processing..." : "Converting...") : 
                  video.status === "failed" ? "Failed" : "Hidden"}
               </Badge>
             </div>
@@ -624,111 +624,161 @@ export default function VideoManagement() {
     setIsSingleUploading(true);
     setSingleUploadProgress(0);
 
+    // Detect if this is an audio file
+    const audioExtensions = /\.(mp3|wav|ogg|m4a|aac|flac)$/i;
+    const audioMimetypes = ["audio/mpeg", "audio/wav", "audio/mp3", "audio/ogg", "audio/x-wav", "audio/x-m4a", "audio/mp4", "audio/aac", "audio/flac"];
+    const isAudio = audioMimetypes.includes(singleFile.type) || audioExtensions.test(singleFile.name);
+
     try {
-      // Step 1: Create video on Bunny Stream and get upload URL
-      setSingleUploadProgress(5);
-      const createResponse = await fetch("/api/admin/videos/bunny/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: singleTitle }),
-      });
-
-      if (!createResponse.ok) {
-        const errorData = await createResponse.json().catch(() => ({}));
-        throw new Error(errorData.message || "Failed to create video on Bunny Stream");
-      }
-
-      const { bunnyGuid, uploadUrl, apiKey } = await createResponse.json();
-
-      // Step 2: Upload directly to Bunny Stream
-      setSingleUploadProgress(10);
-      await new Promise<void>((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
+      if (isAudio) {
+        // Audio files: Upload locally via FormData
+        setSingleUploadProgress(10);
         
-        xhr.upload.addEventListener("progress", (e) => {
-          if (e.lengthComputable) {
-            const percent = 10 + Math.round((e.loaded / e.total) * 80);
-            setSingleUploadProgress(percent);
-          }
+        const formData = new FormData();
+        formData.append("file", singleFile);
+        formData.append("title", singleTitle);
+        formData.append("description", singleDescription || "");
+        if (singleCategoryId && singleCategoryId !== "none") {
+          formData.append("categoryId", singleCategoryId);
+        }
+        if (singleThumbnail) {
+          formData.append("thumbnail", singleThumbnail);
+        }
+
+        const response = await new Promise<Response>((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          
+          xhr.upload.addEventListener("progress", (e) => {
+            if (e.lengthComputable) {
+              const percent = 10 + Math.round((e.loaded / e.total) * 85);
+              setSingleUploadProgress(percent);
+            }
+          });
+
+          xhr.onload = () => {
+            resolve(new Response(xhr.responseText, {
+              status: xhr.status,
+              statusText: xhr.statusText,
+            }));
+          };
+          xhr.onerror = () => reject(new Error("Network error"));
+          xhr.ontimeout = () => reject(new Error("Upload timed out"));
+          xhr.timeout = 3600000; // 1 hour timeout
+          xhr.open("POST", "/api/admin/videos");
+          xhr.send(formData);
         });
 
-        xhr.onload = () => {
-          if (xhr.status >= 200 && xhr.status < 300) {
-            resolve();
-          } else {
-            reject(new Error(`Upload failed (status ${xhr.status})`));
-          }
-        };
-        xhr.onerror = () => reject(new Error("Network error"));
-        xhr.ontimeout = () => reject(new Error("Upload timed out"));
-        xhr.timeout = 36000000; // 10 hours timeout
-        xhr.open("PUT", uploadUrl);
-        xhr.setRequestHeader("AccessKey", apiKey);
-        xhr.setRequestHeader("Content-Type", "application/octet-stream");
-        xhr.send(singleFile);
-      });
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || "Failed to upload audio file");
+        }
 
-      // Step 3: Finalize in our database with retry logic
-      setSingleUploadProgress(90);
-      let finalizeResponse: Response | null = null;
-      let finalizeError: Error | null = null;
-      
-      for (let attempt = 1; attempt <= 3; attempt++) {
-        try {
-          finalizeResponse = await fetch("/api/admin/videos/bunny/finalize", {
+        setSingleUploadProgress(100);
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+        toast({ title: "Audio uploaded", description: "Audio file saved successfully." });
+      } else {
+        // Video files: Upload to Bunny Stream
+        setSingleUploadProgress(5);
+        const createResponse = await fetch("/api/admin/videos/bunny/create", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title: singleTitle }),
+        });
+
+        if (!createResponse.ok) {
+          const errorData = await createResponse.json().catch(() => ({}));
+          throw new Error(errorData.message || "Failed to create video on Bunny Stream");
+        }
+
+        const { bunnyGuid, uploadUrl, apiKey } = await createResponse.json();
+
+        setSingleUploadProgress(10);
+        await new Promise<void>((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          
+          xhr.upload.addEventListener("progress", (e) => {
+            if (e.lengthComputable) {
+              const percent = 10 + Math.round((e.loaded / e.total) * 80);
+              setSingleUploadProgress(percent);
+            }
+          });
+
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              resolve();
+            } else {
+              reject(new Error(`Upload failed (status ${xhr.status})`));
+            }
+          };
+          xhr.onerror = () => reject(new Error("Network error"));
+          xhr.ontimeout = () => reject(new Error("Upload timed out"));
+          xhr.timeout = 36000000; // 10 hours timeout
+          xhr.open("PUT", uploadUrl);
+          xhr.setRequestHeader("AccessKey", apiKey);
+          xhr.setRequestHeader("Content-Type", "application/octet-stream");
+          xhr.send(singleFile);
+        });
+
+        setSingleUploadProgress(90);
+        let finalizeResponse: Response | null = null;
+        let finalizeError: Error | null = null;
+        
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          try {
+            finalizeResponse = await fetch("/api/admin/videos/bunny/finalize", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                title: singleTitle,
+                description: singleDescription,
+                categoryId: singleCategoryId && singleCategoryId !== "none" ? singleCategoryId : null,
+                bunnyGuid,
+                filename: singleFile.name,
+                fileSize: singleFile.size,
+              }),
+            });
+            
+            if (finalizeResponse.ok) {
+              finalizeError = null;
+              break;
+            } else {
+              const errorData = await finalizeResponse.json().catch(() => ({}));
+              finalizeError = new Error(errorData.message || `Finalize failed (attempt ${attempt})`);
+            }
+          } catch (err: any) {
+            finalizeError = err;
+          }
+          
+          if (attempt < 3) {
+            await new Promise(r => setTimeout(r, 2000 * attempt));
+          }
+        }
+
+        if (finalizeError || !finalizeResponse?.ok) {
+          throw finalizeError || new Error("Failed to finalize upload after 3 attempts");
+        }
+
+        const videoData = await finalizeResponse.json();
+
+        if (singleThumbnail && videoData.id) {
+          setSingleUploadProgress(95);
+          const thumbnailFormData = new FormData();
+          thumbnailFormData.append("thumbnail", singleThumbnail);
+          
+          const thumbnailResponse = await fetch(`/api/admin/videos/${videoData.id}/thumbnail`, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              title: singleTitle,
-              description: singleDescription,
-              categoryId: singleCategoryId && singleCategoryId !== "none" ? singleCategoryId : null,
-              bunnyGuid,
-              filename: singleFile.name,
-              fileSize: singleFile.size,
-            }),
+            body: thumbnailFormData,
           });
           
-          if (finalizeResponse.ok) {
-            finalizeError = null;
-            break;
-          } else {
-            const errorData = await finalizeResponse.json().catch(() => ({}));
-            finalizeError = new Error(errorData.message || `Finalize failed (attempt ${attempt})`);
+          if (!thumbnailResponse.ok) {
+            console.error("Thumbnail upload failed, but video was created successfully");
           }
-        } catch (err: any) {
-          finalizeError = err;
         }
-        
-        if (attempt < 3) {
-          await new Promise(r => setTimeout(r, 2000 * attempt));
-        }
+
+        setSingleUploadProgress(100);
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+        toast({ title: "Video uploaded", description: "Video is being processed and will be ready shortly." });
       }
-
-      if (finalizeError || !finalizeResponse?.ok) {
-        throw finalizeError || new Error("Failed to finalize upload after 3 attempts");
-      }
-
-      const videoData = await finalizeResponse.json();
-
-      // Step 4: Upload thumbnail if selected
-      if (singleThumbnail && videoData.id) {
-        setSingleUploadProgress(95);
-        const thumbnailFormData = new FormData();
-        thumbnailFormData.append("thumbnail", singleThumbnail);
-        
-        const thumbnailResponse = await fetch(`/api/admin/videos/${videoData.id}/thumbnail`, {
-          method: "POST",
-          body: thumbnailFormData,
-        });
-        
-        if (!thumbnailResponse.ok) {
-          console.error("Thumbnail upload failed, but video was created successfully");
-        }
-      }
-
-      setSingleUploadProgress(100);
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
-      toast({ title: "Video uploaded to Bunny Stream", description: "Video is being processed and will be ready shortly." });
       
       // Reset form
       setIsSingleDialogOpen(false);
