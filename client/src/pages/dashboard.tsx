@@ -541,12 +541,6 @@ function DocumentCard({ doc }: { doc: Document }) {
         </Card>
       </DialogTrigger>
       <DialogContent className="max-w-4xl h-[85vh] p-0 flex flex-col">
-        <DialogHeader className="p-4 pb-2 border-b flex-shrink-0">
-          <DialogTitle>{doc.title}</DialogTitle>
-          {doc.description && (
-            <DialogDescription>{doc.description}</DialogDescription>
-          )}
-        </DialogHeader>
         <div className="flex-1 overflow-hidden">
           <PdfViewer
             url={`/api/documents/${doc.id}/view`}

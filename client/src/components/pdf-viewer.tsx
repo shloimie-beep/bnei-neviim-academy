@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Loader2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Loader2, Maximize, Minimize } from "lucide-react";
 import * as pdfjsLib from "pdfjs-dist";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
@@ -22,6 +22,7 @@ export function PdfViewer({ url, title }: PdfViewerProps) {
   const [scale, setScale] = useState(1.0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isFullscreen, setIsFullscreen] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -123,13 +124,35 @@ export function PdfViewer({ url, title }: PdfViewerProps) {
     }
   };
 
-  const zoomIn = () => {
+  const handleZoomIn = useCallback(() => {
     setScale((s) => Math.min(s + 0.25, 3));
-  };
+  }, []);
 
-  const zoomOut = () => {
+  const handleZoomOut = useCallback(() => {
     setScale((s) => Math.max(s - 0.25, 0.5));
-  };
+  }, []);
+
+  const toggleFullscreen = useCallback(() => {
+    if (!containerRef.current) return;
+    
+    if (!document.fullscreenElement) {
+      containerRef.current.requestFullscreen().then(() => {
+        setIsFullscreen(true);
+      }).catch(console.error);
+    } else {
+      document.exitFullscreen().then(() => {
+        setIsFullscreen(false);
+      }).catch(console.error);
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => document.removeEventListener("fullscreenchange", handleFullscreenChange);
+  }, []);
 
   if (isLoading) {
     return (
@@ -150,7 +173,7 @@ export function PdfViewer({ url, title }: PdfViewerProps) {
   }
 
   return (
-    <div ref={containerRef} className="flex flex-col h-full select-none" data-testid="pdf-viewer">
+    <div ref={containerRef} className="flex flex-col h-full select-none bg-background" data-testid="pdf-viewer">
       <div className="flex items-center justify-between gap-2 p-2 border-b bg-muted/50">
         <div className="flex items-center gap-1">
           <Button
@@ -179,7 +202,7 @@ export function PdfViewer({ url, title }: PdfViewerProps) {
           <Button
             variant="ghost"
             size="icon"
-            onClick={zoomOut}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleZoomOut(); }}
             disabled={scale <= 0.5}
             data-testid="button-pdf-zoom-out"
           >
@@ -191,19 +214,24 @@ export function PdfViewer({ url, title }: PdfViewerProps) {
           <Button
             variant="ghost"
             size="icon"
-            onClick={zoomIn}
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleZoomIn(); }}
             disabled={scale >= 3}
             data-testid="button-pdf-zoom-in"
           >
             <ZoomIn className="h-4 w-4" />
           </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFullscreen(); }}
+            data-testid="button-pdf-fullscreen"
+          >
+            {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
+          </Button>
         </div>
       </div>
       <div className="flex-1 overflow-auto bg-muted/30 flex justify-center p-4">
         <canvas ref={canvasRef} className="shadow-lg" />
-      </div>
-      <div className="p-2 text-center border-t bg-muted/50">
-        <p className="text-xs text-muted-foreground">View only - Downloading is not permitted</p>
       </div>
     </div>
   );
