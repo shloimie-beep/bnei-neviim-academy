@@ -137,6 +137,18 @@ export default function LoginPage() {
                 Sign up
               </Link>
             </div>
+            <div className="text-sm text-center text-muted-foreground">
+              Looking for The Academy Login?{" "}
+              <a 
+                href="https://academy.onetimeonetime.com/login" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-primary hover:underline"
+                data-testid="link-academy-login"
+              >
+                Click here
+              </a>
+            </div>
           </CardFooter>
         </Card>
       </main>
