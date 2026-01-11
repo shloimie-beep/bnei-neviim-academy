@@ -137,16 +137,16 @@ export default function LoginPage() {
                 Sign up
               </Link>
             </div>
-            <div className="text-sm text-center text-muted-foreground">
-              Looking for The Academy Login?{" "}
+            <div className="mt-4 p-4 bg-muted rounded-lg text-center">
+              <p className="font-medium text-foreground">Looking for The Academy Login?</p>
               <a 
                 href="https://academy.onetimeonetime.com/login" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="text-primary hover:underline"
+                className="inline-block mt-2 text-primary font-semibold hover:underline"
                 data-testid="link-academy-login"
               >
-                Click here
+                Click here to access the old Academy
               </a>
             </div>
           </CardFooter>
