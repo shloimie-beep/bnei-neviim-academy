@@ -51,7 +51,7 @@ export default function RegisterPage() {
       await register(data);
       toast({
         title: "Account created!",
-        description: "Your 2-week free trial has started. Enjoy the hotline!",
+        description: "Welcome! Complete your subscription to access the hotline.",
       });
       setLocation("/dashboard");
     } catch (error: any) {
