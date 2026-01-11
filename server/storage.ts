@@ -15,6 +15,7 @@ import {
   systemSettings,
   videoCategories,
   videos,
+  documents,
   type User,
   type InsertUser,
   type PhoneNumber,
@@ -42,6 +43,8 @@ import {
   type InsertVideoCategory,
   type Video,
   type InsertVideo,
+  type Document,
+  type InsertDocument,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -618,6 +621,42 @@ export class DatabaseStorage implements IStorage {
 
   async deleteVideoCategory(id: string): Promise<void> {
     await db.delete(videoCategories).where(eq(videoCategories.id, id));
+  }
+
+  // Documents
+  async getAllDocuments(): Promise<Document[]> {
+    return db.select().from(documents).orderBy(desc(documents.createdAt));
+  }
+
+  async getPublishedDocuments(): Promise<Document[]> {
+    return db.select().from(documents)
+      .where(eq(documents.status, "ready"))
+      .orderBy(desc(documents.createdAt));
+  }
+
+  async getDocument(id: string): Promise<Document | undefined> {
+    const [doc] = await db.select().from(documents).where(eq(documents.id, id));
+    return doc;
+  }
+
+  async createDocument(data: InsertDocument): Promise<Document> {
+    const [doc] = await db.insert(documents).values(data).returning();
+    return doc;
+  }
+
+  async updateDocument(id: string, data: Partial<Document>): Promise<Document | undefined> {
+    const [doc] = await db.update(documents).set(data).where(eq(documents.id, id)).returning();
+    return doc;
+  }
+
+  async deleteDocument(id: string): Promise<void> {
+    await db.delete(documents).where(eq(documents.id, id));
+  }
+
+  async incrementDocumentViewCount(id: string): Promise<void> {
+    await db.update(documents)
+      .set({ viewCount: sql<number>`COALESCE(view_count, 0) + 1` })
+      .where(eq(documents.id, id));
   }
 }
 

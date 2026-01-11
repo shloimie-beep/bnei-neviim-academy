@@ -160,12 +160,29 @@ export const videos = pgTable("videos", {
   fileSize: integer("file_size"),
   viewCount: integer("view_count").default(0),
   status: text("status").notNull().default("processing"),
+  mediaType: text("media_type").notNull().default("video"), // 'video' or 'audio'
   categoryId: varchar("category_id").references(() => videoCategories.id),
   uploadedBy: varchar("uploaded_by").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
   bunnyVideoId: text("bunny_video_id"),
   bunnyGuid: text("bunny_guid"),
   storageType: text("storage_type").default("local"),
+});
+
+// PDF documents for subscriber content
+export const documents = pgTable("documents", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  description: text("description"),
+  filename: text("filename").notNull(),
+  filepath: text("filepath").notNull(),
+  fileSize: integer("file_size"),
+  pageCount: integer("page_count"),
+  viewCount: integer("view_count").default(0),
+  status: text("status").notNull().default("ready"), // 'processing', 'ready', 'hidden'
+  categoryId: varchar("category_id").references(() => videoCategories.id),
+  uploadedBy: varchar("uploaded_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 // Relations
@@ -233,6 +250,7 @@ export const insertWhitelistedEmailSchema = createInsertSchema(whitelistedEmails
 export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTokens).omit({ id: true, createdAt: true });
 export const insertVideoCategorySchema = createInsertSchema(videoCategories).omit({ id: true, createdAt: true });
 export const insertVideoSchema = createInsertSchema(videos).omit({ id: true, createdAt: true, viewCount: true });
+export const insertDocumentSchema = createInsertSchema(documents).omit({ id: true, createdAt: true, viewCount: true });
 
 // Types
 export type User = typeof users.$inferSelect;
@@ -263,6 +281,8 @@ export type VideoCategory = typeof videoCategories.$inferSelect;
 export type InsertVideoCategory = z.infer<typeof insertVideoCategorySchema>;
 export type Video = typeof videos.$inferSelect;
 export type InsertVideo = z.infer<typeof insertVideoSchema>;
+export type Document = typeof documents.$inferSelect;
+export type InsertDocument = z.infer<typeof insertDocumentSchema>;
 
 // Validation schemas for forms
 export const loginSchema = z.object({

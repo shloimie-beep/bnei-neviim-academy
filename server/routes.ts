@@ -71,15 +71,21 @@ const videoUpload = multer({
     },
   }),
   fileFilter: (req, file, cb) => {
-    const allowedTypes = [
+    const allowedVideoTypes = [
       "video/mp4", "video/webm", "video/quicktime", "video/x-msvideo",
       "video/x-m4v", "video/x-matroska", "video/3gpp", "video/3gpp2",
       "video/mpeg", "video/ogg", "video/x-flv", "video/x-ms-wmv"
     ];
-    if (allowedTypes.includes(file.mimetype) || file.originalname.match(/\.(mp4|webm|mov|avi|m4v|mkv|3gp|3g2|mpeg|mpg|ogv|flv|wmv|hevc)$/i)) {
+    const allowedAudioTypes = [
+      "audio/mpeg", "audio/wav", "audio/mp3", "audio/ogg", "audio/x-wav", 
+      "audio/x-m4a", "audio/mp4", "audio/aac", "audio/flac"
+    ];
+    const isVideo = allowedVideoTypes.includes(file.mimetype) || file.originalname.match(/\.(mp4|webm|mov|avi|m4v|mkv|3gp|3g2|mpeg|mpg|ogv|flv|wmv|hevc)$/i);
+    const isAudio = allowedAudioTypes.includes(file.mimetype) || file.originalname.match(/\.(mp3|wav|ogg|m4a|aac|flac)$/i);
+    if (isVideo || isAudio) {
       cb(null, true);
     } else {
-      cb(new Error("Only video files are allowed"));
+      cb(new Error("Only video or audio files are allowed"));
     }
   },
   limits: { fileSize: 10 * 1024 * 1024 * 1024 }, // 10GB limit
@@ -110,7 +116,7 @@ const imageUpload = multer({
   limits: { fileSize: 10 * 1024 * 1024 }, // 10MB limit
 });
 
-// Combined upload for video + thumbnail
+// Combined upload for video/audio + thumbnail
 const videoWithThumbnailUpload = multer({
   storage: multer.diskStorage({
     destination: (req, file, cb) => {
@@ -129,15 +135,21 @@ const videoWithThumbnailUpload = multer({
   }),
   fileFilter: (req, file, cb) => {
     if (file.fieldname === "file") {
-      const allowedTypes = [
+      const allowedVideoTypes = [
         "video/mp4", "video/webm", "video/quicktime", "video/x-msvideo",
         "video/x-m4v", "video/x-matroska", "video/3gpp", "video/3gpp2",
         "video/mpeg", "video/ogg", "video/x-flv", "video/x-ms-wmv"
       ];
-      if (allowedTypes.includes(file.mimetype) || file.originalname.match(/\.(mp4|webm|mov|avi|m4v|mkv|3gp|3g2|mpeg|mpg|ogv|flv|wmv|hevc)$/i)) {
+      const allowedAudioTypes = [
+        "audio/mpeg", "audio/wav", "audio/mp3", "audio/ogg", "audio/x-wav", 
+        "audio/x-m4a", "audio/mp4", "audio/aac", "audio/flac"
+      ];
+      const isVideo = allowedVideoTypes.includes(file.mimetype) || file.originalname.match(/\.(mp4|webm|mov|avi|m4v|mkv|3gp|3g2|mpeg|mpg|ogv|flv|wmv|hevc)$/i);
+      const isAudio = allowedAudioTypes.includes(file.mimetype) || file.originalname.match(/\.(mp3|wav|ogg|m4a|aac|flac)$/i);
+      if (isVideo || isAudio) {
         cb(null, true);
       } else {
-        cb(new Error("Only video files are allowed for the video field"));
+        cb(new Error("Only video or audio files are allowed"));
       }
     } else if (file.fieldname === "thumbnail") {
       const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/webp"];
@@ -151,6 +163,30 @@ const videoWithThumbnailUpload = multer({
     }
   },
   limits: { fileSize: 10 * 1024 * 1024 * 1024 }, // 10GB limit (for video)
+});
+
+// PDF document upload multer setup
+const documentUploadDir = path.join(process.cwd(), "uploads", "documents");
+if (!fs.existsSync(documentUploadDir)) {
+  fs.mkdirSync(documentUploadDir, { recursive: true });
+}
+
+const documentUpload = multer({
+  storage: multer.diskStorage({
+    destination: documentUploadDir,
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+      cb(null, uniqueSuffix + path.extname(file.originalname));
+    },
+  }),
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype === "application/pdf" || file.originalname.match(/\.pdf$/i)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Only PDF files are allowed"));
+    }
+  },
+  limits: { fileSize: 100 * 1024 * 1024 }, // 100MB limit for PDFs
 });
 
 // Auth middleware
@@ -1062,18 +1098,18 @@ export async function registerRoutes(
     }
   });
 
-  // Admin: Upload a video
+  // Admin: Upload a video or audio file
   app.post("/api/admin/videos", requireAdmin, videoWithThumbnailUpload.fields([
     { name: "file", maxCount: 1 },
     { name: "thumbnail", maxCount: 1 }
   ]), async (req, res) => {
     try {
       const files = req.files as { [fieldname: string]: Express.Multer.File[] } | undefined;
-      const videoFile = files?.file?.[0];
+      const mediaFile = files?.file?.[0];
       const thumbnailFile = files?.thumbnail?.[0];
 
-      if (!videoFile) {
-        return res.status(400).json({ message: "No video file provided" });
+      if (!mediaFile) {
+        return res.status(400).json({ message: "No media file provided" });
       }
 
       const { title, description, categoryId } = req.body;
@@ -1081,17 +1117,24 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Title is required" });
       }
 
-      const originalPath = videoFile.path;
-      const convertedFilename = `${Date.now()}-converted.mp4`;
+      // Detect media type based on mimetype or extension
+      const audioExtensions = /\.(mp3|wav|ogg|m4a|aac|flac)$/i;
+      const audioMimetypes = ["audio/mpeg", "audio/wav", "audio/mp3", "audio/ogg", "audio/x-wav", "audio/x-m4a", "audio/mp4", "audio/aac", "audio/flac"];
+      const isAudio = audioMimetypes.includes(mediaFile.mimetype) || audioExtensions.test(mediaFile.originalname);
+      const mediaType = isAudio ? "audio" : "video";
+
+      const originalPath = mediaFile.path;
+      const convertedFilename = `${Date.now()}-converted.${isAudio ? "mp3" : "mp4"}`;
       const convertedPath = path.join(videoUploadDir, convertedFilename);
 
       const video = await storage.createVideo({
         title,
         description: description || null,
-        filename: videoFile.originalname,
+        filename: mediaFile.originalname,
         filepath: originalPath,
-        fileSize: videoFile.size,
+        fileSize: mediaFile.size,
         status: "processing",
+        mediaType,
         categoryId: categoryId || null,
         uploadedBy: req.session.userId!,
         thumbnailPath: thumbnailFile?.path || null,
@@ -1101,7 +1144,14 @@ export async function registerRoutes(
 
       (async () => {
         try {
-          const ffmpegCommand = `ffmpeg -i "${originalPath}" -vf "scale=-2:720" -c:v libx264 -preset medium -crf 23 -c:a aac -b:a 128k -movflags +faststart -y "${convertedPath}"`;
+          let ffmpegCommand: string;
+          if (isAudio) {
+            // Audio conversion: normalize to mp3
+            ffmpegCommand = `ffmpeg -i "${originalPath}" -c:a libmp3lame -b:a 192k -y "${convertedPath}"`;
+          } else {
+            // Video conversion
+            ffmpegCommand = `ffmpeg -i "${originalPath}" -vf "scale=-2:720" -c:v libx264 -preset medium -crf 23 -c:a aac -b:a 128k -movflags +faststart -y "${convertedPath}"`;
+          }
           
           await execAsync(ffmpegCommand, { timeout: 1800000 });
 
@@ -1118,9 +1168,9 @@ export async function registerRoutes(
             fs.unlinkSync(originalPath);
           }
 
-          console.log(`Video ${video.id} converted successfully`);
+          console.log(`${mediaType === "audio" ? "Audio" : "Video"} ${video.id} converted successfully`);
         } catch (conversionError) {
-          console.error(`Video conversion failed for ${video.id}:`, conversionError);
+          console.error(`${mediaType === "audio" ? "Audio" : "Video"} conversion failed for ${video.id}:`, conversionError);
           await storage.updateVideo(video.id, { status: "failed" });
           
           if (fs.existsSync(convertedPath)) {
@@ -1129,8 +1179,8 @@ export async function registerRoutes(
         }
       })();
     } catch (error) {
-      console.error("Video upload error:", error);
-      res.status(500).json({ message: "Failed to upload video" });
+      console.error("Media upload error:", error);
+      res.status(500).json({ message: "Failed to upload media" });
     }
   });
 
@@ -3041,6 +3091,154 @@ export async function registerRoutes(
   
   // Main Voitex API Branch webhook - receives calls from Voitex IVR
   app.post("/api/voitex/webhook", handleVoitexWebhook);
+
+  // ============ DOCUMENT MANAGEMENT ============
+  
+  // Admin: Get all documents
+  app.get("/api/admin/documents", requireAdmin, async (req, res) => {
+    try {
+      const docs = await storage.getAllDocuments();
+      res.json(docs);
+    } catch (error) {
+      console.error("Get documents error:", error);
+      res.status(500).json({ message: "Failed to get documents" });
+    }
+  });
+
+  // Admin: Upload a document
+  app.post("/api/admin/documents", requireAdmin, documentUpload.single("file"), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No PDF file provided" });
+      }
+
+      const { title, description, categoryId } = req.body;
+      if (!title) {
+        return res.status(400).json({ message: "Title is required" });
+      }
+
+      const doc = await storage.createDocument({
+        title,
+        description: description || null,
+        filename: req.file.originalname,
+        filepath: req.file.path,
+        fileSize: req.file.size,
+        status: "ready",
+        categoryId: categoryId || null,
+        uploadedBy: req.session.userId!,
+      });
+
+      res.json(doc);
+    } catch (error) {
+      console.error("Document upload error:", error);
+      res.status(500).json({ message: "Failed to upload document" });
+    }
+  });
+
+  // Admin: Update document details
+  app.patch("/api/admin/documents/:id", requireAdmin, async (req, res) => {
+    try {
+      const { title, description, status, categoryId } = req.body;
+      const doc = await storage.updateDocument(req.params.id, { title, description, status, categoryId });
+      if (!doc) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+      res.json(doc);
+    } catch (error) {
+      console.error("Update document error:", error);
+      res.status(500).json({ message: "Failed to update document" });
+    }
+  });
+
+  // Admin: Delete document
+  app.delete("/api/admin/documents/:id", requireAdmin, async (req, res) => {
+    try {
+      const doc = await storage.getDocument(req.params.id);
+      if (!doc) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      // Delete file from disk
+      if (doc.filepath && fs.existsSync(doc.filepath)) {
+        fs.unlinkSync(doc.filepath);
+      }
+
+      await storage.deleteDocument(req.params.id);
+      res.json({ message: "Document deleted" });
+    } catch (error) {
+      console.error("Delete document error:", error);
+      res.status(500).json({ message: "Failed to delete document" });
+    }
+  });
+
+  // Customer: Get all published documents
+  app.get("/api/documents", requireAuth, async (req, res) => {
+    try {
+      const user = await storage.getUser(req.session.userId!);
+      if (!user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      // Check subscription access
+      const hasAccess = user.subscriptionStatus === "active" || 
+        (user.subscriptionStatus === "trial" && user.trialEndsAt && new Date(user.trialEndsAt) > new Date()) ||
+        await storage.isWhitelistedEmailAddress(user.email);
+
+      if (!hasAccess) {
+        return res.status(403).json({ message: "Subscription required" });
+      }
+
+      const docs = await storage.getPublishedDocuments();
+      res.json(docs);
+    } catch (error) {
+      console.error("Get documents error:", error);
+      res.status(500).json({ message: "Failed to get documents" });
+    }
+  });
+
+  // Customer: View PDF (stream with no-download headers)
+  app.get("/api/documents/:id/view", requireAuth, async (req, res) => {
+    try {
+      const user = await storage.getUser(req.session.userId!);
+      if (!user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      // Check subscription access
+      const hasAccess = user.subscriptionStatus === "active" || 
+        (user.subscriptionStatus === "trial" && user.trialEndsAt && new Date(user.trialEndsAt) > new Date()) ||
+        await storage.isWhitelistedEmailAddress(user.email);
+
+      if (!hasAccess) {
+        return res.status(403).json({ message: "Subscription required" });
+      }
+
+      const doc = await storage.getDocument(req.params.id);
+      if (!doc || doc.status !== "ready") {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      // Increment view count
+      await storage.incrementDocumentViewCount(doc.id);
+
+      // Set headers to prevent download and enable inline viewing
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader("Content-Disposition", "inline");
+      res.setHeader("X-Content-Type-Options", "nosniff");
+      res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
+      
+      // Stream the file
+      if (doc.filepath && fs.existsSync(doc.filepath)) {
+        const fileStream = fs.createReadStream(doc.filepath);
+        fileStream.pipe(res);
+      } else {
+        res.status(404).json({ message: "Document file not found" });
+      }
+    } catch (error) {
+      console.error("View document error:", error);
+      res.status(500).json({ message: "Failed to view document" });
+    }
+  });
 
   // ============ ORPHANED UPLOAD CLEANUP ============
   
