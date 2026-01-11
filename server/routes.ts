@@ -1124,60 +1124,138 @@ export async function registerRoutes(
       const mediaType = isAudio ? "audio" : "video";
 
       const originalPath = mediaFile.path;
-      const convertedFilename = `${Date.now()}-converted.${isAudio ? "mp3" : "mp4"}`;
-      const convertedPath = path.join(videoUploadDir, convertedFilename);
-
-      const video = await storage.createVideo({
-        title,
-        description: description || null,
-        filename: mediaFile.originalname,
-        filepath: originalPath,
-        fileSize: mediaFile.size,
-        status: "processing",
-        mediaType,
-        categoryId: categoryId || null,
-        uploadedBy: req.session.userId!,
-        thumbnailPath: thumbnailFile?.path || null,
-      });
-
-      res.json(video);
-
-      (async () => {
-        try {
-          let ffmpegCommand: string;
-          if (isAudio) {
-            // Audio conversion: normalize to mp3
-            ffmpegCommand = `ffmpeg -i "${originalPath}" -c:a libmp3lame -b:a 192k -y "${convertedPath}"`;
-          } else {
-            // Video conversion
-            ffmpegCommand = `ffmpeg -i "${originalPath}" -vf "scale=-2:720" -c:v libx264 -preset medium -crf 23 -c:a aac -b:a 128k -movflags +faststart -y "${convertedPath}"`;
-          }
+      
+      // Check if this is a WAV file that needs conversion
+      const isWavFile = mediaFile.mimetype === "audio/wav" || 
+                        mediaFile.mimetype === "audio/x-wav" || 
+                        mediaFile.originalname.toLowerCase().endsWith(".wav");
+      const isMp3File = mediaFile.mimetype === "audio/mpeg" || 
+                        mediaFile.mimetype === "audio/mp3" || 
+                        mediaFile.originalname.toLowerCase().endsWith(".mp3");
+      
+      // For audio files: save locally, only convert WAV to MP3
+      // For video files: use existing conversion logic
+      if (isAudio) {
+        // Audio files are saved locally (not to Bunny)
+        if (isWavFile) {
+          // WAV files need conversion to MP3
+          const convertedFilename = `${Date.now()}-converted.mp3`;
+          const convertedPath = path.join(videoUploadDir, convertedFilename);
           
-          await execAsync(ffmpegCommand, { timeout: 1800000 });
-
-          const stats = fs.statSync(convertedPath);
-
-          await storage.updateVideo(video.id, {
-            filepath: convertedPath,
-            filename: convertedFilename,
-            fileSize: stats.size,
-            status: "ready",
+          const video = await storage.createVideo({
+            title,
+            description: description || null,
+            filename: mediaFile.originalname,
+            filepath: originalPath,
+            fileSize: mediaFile.size,
+            status: "processing",
+            mediaType,
+            categoryId: categoryId || null,
+            uploadedBy: req.session.userId!,
+            thumbnailPath: thumbnailFile?.path || null,
+            storageType: "local",
           });
 
-          if (fs.existsSync(originalPath)) {
-            fs.unlinkSync(originalPath);
-          }
+          res.json(video);
 
-          console.log(`${mediaType === "audio" ? "Audio" : "Video"} ${video.id} converted successfully`);
-        } catch (conversionError) {
-          console.error(`${mediaType === "audio" ? "Audio" : "Video"} conversion failed for ${video.id}:`, conversionError);
-          await storage.updateVideo(video.id, { status: "failed" });
-          
-          if (fs.existsSync(convertedPath)) {
-            fs.unlinkSync(convertedPath);
-          }
+          // Convert WAV to MP3 in background
+          (async () => {
+            try {
+              const ffmpegCommand = `ffmpeg -i "${originalPath}" -c:a libmp3lame -b:a 192k -y "${convertedPath}"`;
+              await execAsync(ffmpegCommand, { timeout: 1800000 });
+
+              const stats = fs.statSync(convertedPath);
+
+              await storage.updateVideo(video.id, {
+                filepath: convertedPath,
+                filename: convertedFilename,
+                fileSize: stats.size,
+                status: "ready",
+              });
+
+              if (fs.existsSync(originalPath)) {
+                fs.unlinkSync(originalPath);
+              }
+
+              console.log(`Audio ${video.id} converted from WAV to MP3 successfully`);
+            } catch (conversionError) {
+              console.error(`Audio conversion failed for ${video.id}:`, conversionError);
+              await storage.updateVideo(video.id, { status: "failed" });
+              
+              if (fs.existsSync(convertedPath)) {
+                fs.unlinkSync(convertedPath);
+              }
+            }
+          })();
+        } else {
+          // MP3 and other audio files: save as-is without conversion
+          const video = await storage.createVideo({
+            title,
+            description: description || null,
+            filename: mediaFile.originalname,
+            filepath: originalPath,
+            fileSize: mediaFile.size,
+            status: "ready",
+            mediaType,
+            categoryId: categoryId || null,
+            uploadedBy: req.session.userId!,
+            thumbnailPath: thumbnailFile?.path || null,
+            storageType: "local",
+          });
+
+          console.log(`Audio ${video.id} saved locally without conversion`);
+          res.json(video);
         }
-      })();
+      } else {
+        // Video files: use existing conversion logic
+        const convertedFilename = `${Date.now()}-converted.mp4`;
+        const convertedPath = path.join(videoUploadDir, convertedFilename);
+
+        const video = await storage.createVideo({
+          title,
+          description: description || null,
+          filename: mediaFile.originalname,
+          filepath: originalPath,
+          fileSize: mediaFile.size,
+          status: "processing",
+          mediaType,
+          categoryId: categoryId || null,
+          uploadedBy: req.session.userId!,
+          thumbnailPath: thumbnailFile?.path || null,
+        });
+
+        res.json(video);
+
+        (async () => {
+          try {
+            const ffmpegCommand = `ffmpeg -i "${originalPath}" -vf "scale=-2:720" -c:v libx264 -preset medium -crf 23 -c:a aac -b:a 128k -movflags +faststart -y "${convertedPath}"`;
+            
+            await execAsync(ffmpegCommand, { timeout: 1800000 });
+
+            const stats = fs.statSync(convertedPath);
+
+            await storage.updateVideo(video.id, {
+              filepath: convertedPath,
+              filename: convertedFilename,
+              fileSize: stats.size,
+              status: "ready",
+            });
+
+            if (fs.existsSync(originalPath)) {
+              fs.unlinkSync(originalPath);
+            }
+
+            console.log(`Video ${video.id} converted successfully`);
+          } catch (conversionError) {
+            console.error(`Video conversion failed for ${video.id}:`, conversionError);
+            await storage.updateVideo(video.id, { status: "failed" });
+            
+            if (fs.existsSync(convertedPath)) {
+              fs.unlinkSync(convertedPath);
+            }
+          }
+        })();
+      }
     } catch (error) {
       console.error("Media upload error:", error);
       res.status(500).json({ message: "Failed to upload media" });
@@ -2094,8 +2172,14 @@ export async function registerRoutes(
           ".ogv": "video/ogg",
           ".flv": "video/x-flv",
           ".wmv": "video/x-ms-wmv",
+          ".mp3": "audio/mpeg",
+          ".wav": "audio/wav",
+          ".ogg": "audio/ogg",
+          ".m4a": "audio/mp4",
+          ".aac": "audio/aac",
+          ".flac": "audio/flac",
         };
-        const contentType = mimeTypes[ext] || "video/mp4";
+        const contentType = mimeTypes[ext] || (video.mediaType === "audio" ? "audio/mpeg" : "video/mp4");
 
         // Increment view count only on initial request (not range requests from seeking)
         if (!range || range === "bytes=0-") {
