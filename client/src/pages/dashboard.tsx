@@ -470,9 +470,12 @@ function VideoCard({ video }: { video: VideoType }) {
               </>
             ) : video.bunnyGuid ? (
               <img 
-                src={`https://vz-21d70a77-eb3.b-cdn.net/${video.bunnyGuid}/thumbnail.jpg`}
+                src={`https://vz-576907.b-cdn.net/${video.bunnyGuid}/thumbnail.jpg`}
                 alt={video.title}
                 className="h-full w-full object-cover"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
               />
             ) : isAudio ? (
               <Music className="h-12 w-12 text-muted-foreground" />
