@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
+import { PdfViewer } from "@/components/pdf-viewer";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState, useRef, useMemo, useEffect } from "react";
 import type { PhoneNumber, Video as VideoType, VideoCategory, Document } from "@shared/schema";
@@ -515,17 +516,11 @@ function DocumentCard({ doc }: { doc: Document }) {
             <DialogDescription>{doc.description}</DialogDescription>
           )}
         </DialogHeader>
-        <div className="flex-1 overflow-hidden relative">
-          <iframe
-            src={`/api/documents/${doc.id}/view#toolbar=0&navpanes=0&scrollbar=1`}
-            className="w-full h-full border-0"
+        <div className="flex-1 overflow-hidden">
+          <PdfViewer
+            url={`/api/documents/${doc.id}/view`}
             title={doc.title}
-            sandbox="allow-scripts allow-same-origin"
-            data-testid={`iframe-doc-viewer-${doc.id}`}
           />
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-background/90 to-transparent py-4 text-center pointer-events-none">
-            <p className="text-xs text-muted-foreground">View only - Downloading is not permitted</p>
-          </div>
         </div>
       </DialogContent>
     </Dialog>
