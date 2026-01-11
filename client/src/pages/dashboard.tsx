@@ -265,6 +265,8 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
   const bufferedProgress = duration > 0 ? (buffered / duration) * 100 : 0;
 
+  const isAudio = video.mediaType === "audio";
+
   return (
     <DialogContent className="max-w-4xl p-0 overflow-hidden">
       <div 
@@ -272,21 +274,50 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
         onMouseMove={handleMouseMove}
         onMouseLeave={() => isPlaying && setShowControls(false)}
       >
-        <video
-          ref={videoRef}
-          src={`/api/videos/${video.id}/stream`}
-          autoPlay
-          preload="auto"
-          className="w-full aspect-video"
-          controlsList="nodownload nofullscreen noremoteplayback"
-          disablePictureInPicture
-          onContextMenu={(e) => e.preventDefault()}
-          onPlay={() => setIsPlaying(true)}
-          onPause={() => setIsPlaying(false)}
-          onTimeUpdate={handleTimeUpdate}
-          onLoadedMetadata={handleLoadedMetadata}
-          data-testid={`video-player-${video.id}`}
-        />
+        {isAudio ? (
+          <div className="w-full aspect-video flex items-center justify-center bg-black">
+            <audio
+              ref={videoRef as React.RefObject<HTMLAudioElement>}
+              src={`/api/videos/${video.id}/stream`}
+              autoPlay
+              preload="auto"
+              className="hidden"
+              onPlay={() => setIsPlaying(true)}
+              onPause={() => setIsPlaying(false)}
+              onTimeUpdate={handleTimeUpdate}
+              onLoadedMetadata={handleLoadedMetadata}
+              data-testid={`audio-player-${video.id}`}
+            />
+            {video.thumbnailPath ? (
+              <img 
+                src={`/api/videos/${video.id}/thumbnail`}
+                alt={video.title}
+                className="max-h-[50%] max-w-[50%] object-contain rounded-lg"
+                onContextMenu={(e) => e.preventDefault()}
+              />
+            ) : (
+              <div className="h-32 w-32 rounded-full bg-muted/20 flex items-center justify-center">
+                <Music className="h-16 w-16 text-muted-foreground" />
+              </div>
+            )}
+          </div>
+        ) : (
+          <video
+            ref={videoRef}
+            src={`/api/videos/${video.id}/stream`}
+            autoPlay
+            preload="auto"
+            className="w-full aspect-video"
+            controlsList="nodownload nofullscreen noremoteplayback"
+            disablePictureInPicture
+            onContextMenu={(e) => e.preventDefault()}
+            onPlay={() => setIsPlaying(true)}
+            onPause={() => setIsPlaying(false)}
+            onTimeUpdate={handleTimeUpdate}
+            onLoadedMetadata={handleLoadedMetadata}
+            data-testid={`video-player-${video.id}`}
+          />
+        )}
         
         <div 
           className={`absolute inset-0 flex items-center justify-center cursor-pointer transition-opacity ${showControls ? 'opacity-100' : 'opacity-0'}`}
