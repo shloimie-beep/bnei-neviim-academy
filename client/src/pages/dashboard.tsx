@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink } from "lucide-react";
+import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -536,6 +536,10 @@ export default function DashboardPage() {
   const [isPhoneDialogOpen, setIsPhoneDialogOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isEditingPhone, setIsEditingPhone] = useState(false);
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
 
   const { data: phoneNumbers, isLoading: phonesLoading } = useQuery<PhoneNumber[]>({
     queryKey: ["/api/phone-numbers"],
@@ -652,6 +656,35 @@ export default function DashboardPage() {
       toast({ title: "Portal access failed", description: error.message, variant: "destructive" });
     },
   });
+
+  const changePasswordMutation = useMutation({
+    mutationFn: async ({ currentPassword, newPassword }: { currentPassword: string; newPassword: string }) => {
+      const res = await apiRequest("POST", "/api/auth/change-password", { currentPassword, newPassword });
+      return res.json();
+    },
+    onSuccess: () => {
+      toast({ title: "Password changed successfully" });
+      setIsChangingPassword(false);
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmNewPassword("");
+    },
+    onError: (error: any) => {
+      toast({ title: "Failed to change password", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const handleChangePassword = () => {
+    if (newPassword !== confirmNewPassword) {
+      toast({ title: "Passwords don't match", description: "New password and confirmation must match", variant: "destructive" });
+      return;
+    }
+    if (newPassword.length < 8) {
+      toast({ title: "Password too short", description: "Password must be at least 8 characters", variant: "destructive" });
+      return;
+    }
+    changePasswordMutation.mutate({ currentPassword, newPassword });
+  };
 
   const handleAddPhone = async () => {
     if (!newPhoneNumber.trim()) return;
@@ -821,6 +854,82 @@ export default function DashboardPage() {
                       )}
                     </div>
                     
+                    <div className="space-y-3">
+                      <h3 className="font-medium flex items-center gap-2">
+                        <Lock className="h-4 w-4" />
+                        Password
+                      </h3>
+                      {isChangingPassword ? (
+                        <div className="space-y-3">
+                          <div>
+                            <Label htmlFor="current-password">Current Password</Label>
+                            <Input
+                              id="current-password"
+                              type="password"
+                              value={currentPassword}
+                              onChange={(e) => setCurrentPassword(e.target.value)}
+                              placeholder="Enter current password"
+                              data-testid="input-current-password"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="new-password">New Password</Label>
+                            <Input
+                              id="new-password"
+                              type="password"
+                              value={newPassword}
+                              onChange={(e) => setNewPassword(e.target.value)}
+                              placeholder="Enter new password (min 8 characters)"
+                              data-testid="input-new-password"
+                            />
+                          </div>
+                          <div>
+                            <Label htmlFor="confirm-password">Confirm New Password</Label>
+                            <Input
+                              id="confirm-password"
+                              type="password"
+                              value={confirmNewPassword}
+                              onChange={(e) => setConfirmNewPassword(e.target.value)}
+                              placeholder="Confirm new password"
+                              data-testid="input-confirm-password"
+                            />
+                          </div>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              onClick={handleChangePassword}
+                              disabled={changePasswordMutation.isPending || !currentPassword || !newPassword || !confirmNewPassword}
+                              data-testid="button-save-password"
+                            >
+                              {changePasswordMutation.isPending && <Loader2 className="h-4 w-4 mr-1 animate-spin" />}
+                              Save Password
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setIsChangingPassword(false);
+                                setCurrentPassword("");
+                                setNewPassword("");
+                                setConfirmNewPassword("");
+                              }}
+                            >
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => setIsChangingPassword(true)}
+                          data-testid="button-change-password"
+                        >
+                          Change Password
+                        </Button>
+                      )}
+                    </div>
+
                     <div className="space-y-3">
                       <h3 className="font-medium flex items-center gap-2">
                         <CreditCard className="h-4 w-4" />
