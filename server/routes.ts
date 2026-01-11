@@ -3236,11 +3236,45 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Title is required" });
       }
 
+      // Upload to object storage for permanent URL
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
+      
+      console.log(`[Document Upload] Uploading to cloud storage: ${objectPath}`);
+      
+      const url = new URL(uploadURL);
+      const pathParts = url.pathname.slice(1).split("/");
+      const bucketName = pathParts[0];
+      const objectName = pathParts.slice(1).join("/");
+      
+      const bucket = objectStorageClient.bucket(bucketName);
+      const objectFile = bucket.file(objectName);
+      
+      // Upload file to cloud storage
+      await new Promise<void>((resolve, reject) => {
+        const readStream = fs.createReadStream(req.file!.path);
+        const writeStream = objectFile.createWriteStream({
+          resumable: false,
+          contentType: "application/pdf",
+        });
+        readStream.on("error", reject);
+        writeStream.on("error", reject);
+        writeStream.on("finish", resolve);
+        readStream.pipe(writeStream);
+      });
+      
+      // Clean up temp file
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+      
+      console.log(`[Document Upload] Successfully uploaded to: ${objectPath}`);
+
       const doc = await storage.createDocument({
         title,
         description: description || null,
         filename: req.file.originalname,
-        filepath: req.file.path,
+        filepath: objectPath,
         fileSize: req.file.size,
         status: "ready",
         categoryId: categoryId || null,
@@ -3250,6 +3284,10 @@ export async function registerRoutes(
       res.json(doc);
     } catch (error) {
       console.error("Document upload error:", error);
+      // Clean up temp file if it exists
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
       res.status(500).json({ message: "Failed to upload document" });
     }
   });
@@ -3277,9 +3315,19 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Document not found" });
       }
 
-      // Delete file from disk
-      if (doc.filepath && fs.existsSync(doc.filepath)) {
-        fs.unlinkSync(doc.filepath);
+      // Delete file from cloud storage or disk
+      if (doc.filepath) {
+        if (doc.filepath.startsWith("/objects/")) {
+          try {
+            const objectFile = await objectStorageService.getObjectEntityFile(doc.filepath);
+            await objectFile.delete();
+            console.log(`[Document Delete] Deleted from cloud storage: ${doc.filepath}`);
+          } catch (err) {
+            console.error(`[Document Delete] Failed to delete from cloud storage:`, err);
+          }
+        } else if (fs.existsSync(doc.filepath)) {
+          fs.unlinkSync(doc.filepath);
+        }
       }
 
       await storage.deleteDocument(req.params.id);
@@ -3346,10 +3394,35 @@ export async function registerRoutes(
       res.setHeader("X-Content-Type-Options", "nosniff");
       res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate, private");
       
-      // Stream the file
-      if (doc.filepath && fs.existsSync(doc.filepath)) {
-        const fileStream = fs.createReadStream(doc.filepath);
-        fileStream.pipe(res);
+      // Stream the file from cloud storage or local filesystem
+      if (doc.filepath) {
+        if (doc.filepath.startsWith("/objects/")) {
+          try {
+            const objectFile = await objectStorageService.getObjectEntityFile(doc.filepath);
+            const [metadata] = await objectFile.getMetadata();
+            
+            if (metadata.size) {
+              res.setHeader("Content-Length", metadata.size);
+            }
+            
+            const stream = objectFile.createReadStream();
+            stream.on("error", (err) => {
+              console.error("Document stream error:", err);
+              if (!res.headersSent) {
+                res.status(500).json({ message: "Error streaming document" });
+              }
+            });
+            stream.pipe(res);
+          } catch (cloudError) {
+            console.error("Cloud storage error:", cloudError);
+            res.status(404).json({ message: "Document file not found in cloud storage" });
+          }
+        } else if (fs.existsSync(doc.filepath)) {
+          const fileStream = fs.createReadStream(doc.filepath);
+          fileStream.pipe(res);
+        } else {
+          res.status(404).json({ message: "Document file not found" });
+        }
       } else {
         res.status(404).json({ message: "Document file not found" });
       }
