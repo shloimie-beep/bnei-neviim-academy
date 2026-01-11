@@ -881,47 +881,6 @@ export default function DashboardPage() {
                 )}
               </div>
 
-              {user?.role !== "admin" && (
-                <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Phone className="h-5 w-5" />
-                      How to Use the Hotline
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid md:grid-cols-3 gap-6">
-                      <div className="flex flex-col items-center text-center p-4">
-                        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                          <span className="text-lg font-bold text-primary">1</span>
-                        </div>
-                        <h4 className="font-medium mb-1">Call the Hotline</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Dial from your registered phone number
-                        </p>
-                      </div>
-                      <div className="flex flex-col items-center text-center p-4">
-                        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                          <span className="text-lg font-bold text-primary">2</span>
-                        </div>
-                        <h4 className="font-medium mb-1">Choose an Option</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Press 1 for live call, or other numbers for stories
-                        </p>
-                      </div>
-                      <div className="flex flex-col items-center text-center p-4">
-                        <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mb-3">
-                          <span className="text-lg font-bold text-primary">3</span>
-                        </div>
-                        <h4 className="font-medium mb-1">Control Playback</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Press 2 to pause, 1 to rewind, 3 to fast forward
-                        </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
             </>
           ) : (
             <Card className="border-2 border-dashed">
