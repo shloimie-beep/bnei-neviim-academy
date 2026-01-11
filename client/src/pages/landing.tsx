@@ -2,8 +2,8 @@ import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Phone, Mail, MapPin, Menu } from "lucide-react";
-import { motion, useInView } from "framer-motion";
-import { useRef } from "react";
+import { motion, useInView, AnimatePresence } from "framer-motion";
+import { useRef, useState, useEffect } from "react";
 import logoImage from "@assets/qt=q_95_1767830887218.webp";
 import silverSpringImg from "@assets/Silver_Spring_1767899261416.jpg";
 import bocaMapImg from "@assets/Boca_Raton_1767898934153.webp";
@@ -127,6 +127,106 @@ function AsSeenSection() {
               )}
             </motion.div>
           ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// Testimonial data for carousel
+const testimonials = [
+  {
+    quote: "That was amazing!!! Way above my expectations. Please come back again.",
+    author: "Mrs. Haddasah Smolarcik, Boca Raton",
+    image: bocaMapImg,
+    imageAlt: "Boca Raton location",
+  },
+  {
+    quote: "Thank you so much for bringing so much positive and exciting energy to Norfolk! The fact that you brought your mishpacha only enhanced the Shabbos. The Ribono Shel Olam should continue to give you and your family the koach to inspire yidden throughout the world!",
+    author: "Aharon Lipman, Norfolk, Virginia",
+    image: norfolkMapImg,
+    imageAlt: "Norfolk location",
+  },
+  {
+    quote: "You brought so much simcha to the community and were able to unite everyone together like never before. Thank you! (It was worth every penny)",
+    author: "Moshe Glazer, St. Louis, Missouri",
+    image: stlouisMapImg,
+    imageAlt: "St. Louis location",
+  },
+  {
+    quote: "Thank you Rabbi Scheller for coming! It was very nice meeting you. Your lecture was very timely, unbelievably helpful, inspirational, and energizing! Any time welcome back to Atlanta!",
+    author: "V. Birav, Atlanta, Georgia",
+    image: atlantaMapImg,
+    imageAlt: "Atlanta location",
+  },
+  {
+    quote: "Thank you for coming to visit. It was a real chizuk for all!",
+    author: "Mendy Levine, Las Vegas, Torah Day School",
+    image: vegasMapImg,
+    imageAlt: "Las Vegas location",
+  },
+];
+
+function TestimonialCarousel() {
+  const [currentIndex, setCurrentIndex] = useState(0);
+  
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % testimonials.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+  
+  const current = testimonials[currentIndex];
+  
+  return (
+    <section className="py-16 bg-white" data-testid="testimonial-carousel">
+      <div className="container mx-auto px-4">
+        <div className="max-w-5xl mx-auto min-h-[300px] relative">
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentIndex}
+              initial={{ opacity: 0, x: 50 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -50 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              className="flex flex-col md:flex-row items-center justify-center gap-8"
+            >
+              <div className="flex-shrink-0 order-1 md:order-2">
+                <img 
+                  src={current.image} 
+                  alt={current.imageAlt} 
+                  className="w-72 md:w-80 h-auto"
+                  data-testid={`img-testimonial-${currentIndex}`}
+                />
+              </div>
+              <div className="text-center md:text-left max-w-md order-2 md:order-1">
+                <div className="text-[#08779C] text-4xl mb-2">"</div>
+                <p className="text-lg text-[#08779C] italic mb-4 leading-relaxed" data-testid={`text-testimonial-quote-${currentIndex}`}>
+                  {current.quote}
+                </p>
+                <div className="w-12 h-0.5 bg-[#08779C]/30 mb-3 mx-auto md:mx-0" />
+                <p className="text-[#08779C]/70 font-medium text-sm" data-testid={`text-testimonial-author-${currentIndex}`}>{current.author}</p>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+          
+          <div className="flex justify-center gap-2 mt-8">
+            {testimonials.map((_, index) => (
+              <button
+                type="button"
+                key={index}
+                onClick={() => setCurrentIndex(index)}
+                className={`w-3 h-3 rounded-full transition-all duration-300 ${
+                  index === currentIndex 
+                    ? "bg-[#08779C] scale-110" 
+                    : "bg-[#08779C]/30 hover:bg-[#08779C]/50"
+                }`}
+                data-testid={`button-testimonial-dot-${index}`}
+                aria-label={`Go to testimonial ${index + 1}`}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </section>
@@ -469,26 +569,6 @@ export default function LandingPage() {
             <Card className="bg-[#1a2a3a] border-none overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.5s'}}>
               <div className="aspect-[3/4] overflow-hidden">
                 <img 
-                  src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Untitled%20design-16.png/:/cr=t:23.53%25,l:21.31%25,w:48.08%25,h:48.08%25/rs=w:365,h:486,cg:true,m" 
-                  alt="Story Book" 
-                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                />
-              </div>
-              <CardContent className="p-4">
-                <h4 className="font-bold text-white mb-1">One Time One Time Story Book</h4>
-                <p className="text-sm text-white/70 mb-2">39 Thrilling Stories</p>
-                <p className="text-xs text-white/50">136 pages. Color images.</p>
-                <Link href="/register">
-                  <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm" data-testid="button-product-storybook">
-                    Hard copy - $24.99
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-[#1a2a3a] border-none overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.6s'}}>
-              <div className="aspect-[3/4] overflow-hidden">
-                <img 
                   src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Blue%20Professional%20Annual%20Report%20Book%20Cover%20(6%20.png/:/cr=t:6.46%25,l:0%25,w:100%25,h:88.87%25/rs=w:365,h:486,cg:true" 
                   alt="Public Speaking Course" 
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
@@ -506,7 +586,7 @@ export default function LandingPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-[#1a2a3a] border-none overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.7s'}}>
+            <Card className="bg-[#1a2a3a] border-none overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.6s'}}>
               <div className="aspect-[3/4] overflow-hidden">
                 <img 
                   src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/ChatGPT%20Image%20Oct%2026%2C%202025%20at%2004_35_46%20PM.png/:/cr=t:0.59%25,l:0%25,w:100%25,h:88.89%25/rs=w:365,h:486,cg:true" 
@@ -658,115 +738,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="py-12 bg-white" data-testid="testimonial-2">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-5xl mx-auto">
-            <div className="text-center md:text-left max-w-md order-2 md:order-1">
-              <div className="text-[#08779C] text-4xl mb-2">"</div>
-              <p className="text-lg text-[#08779C] italic mb-4 leading-relaxed">
-                That was amazing!!! Way above my expectations. Please come back again.
-              </p>
-              <div className="w-12 h-0.5 bg-[#08779C]/30 mb-3 mx-auto md:mx-0" />
-              <p className="text-[#08779C]/70 font-medium text-sm">Mrs. Haddasah Smolarcik, Boca Raton</p>
-            </div>
-            <div className="flex-shrink-0 order-1 md:order-2">
-              <img 
-                src={bocaMapImg} 
-                alt="Boca Raton location" 
-                className="w-72 md:w-96 h-auto"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-12 bg-white" data-testid="testimonial-3">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-5xl mx-auto">
-            <div className="flex-shrink-0">
-              <img 
-                src={norfolkMapImg} 
-                alt="Norfolk location" 
-                className="w-72 md:w-96 h-auto"
-              />
-            </div>
-            <div className="text-center md:text-left max-w-md">
-              <div className="text-[#08779C] text-4xl mb-2">"</div>
-              <p className="text-lg text-[#08779C] italic mb-4 leading-relaxed">
-                Thank you so much for bringing so much positive and exciting energy to Norfolk! The fact that you brought your mishpacha only enhanced the Shabbos. The Ribono Shel Olam should continue to give you and your family the koach to inspire yidden throughout the world!
-              </p>
-              <div className="w-12 h-0.5 bg-[#08779C]/30 mb-3 mx-auto md:mx-0" />
-              <p className="text-[#08779C]/70 font-medium text-sm">Aharon Lipman, Norfolk, Virginia</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-12 bg-white" data-testid="testimonial-4">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-5xl mx-auto">
-            <div className="text-center md:text-left max-w-md order-2 md:order-1">
-              <div className="text-[#08779C] text-4xl mb-2">"</div>
-              <p className="text-lg text-[#08779C] italic mb-4 leading-relaxed">
-                You brought so much simcha to the community and were able to unite everyone together like never before. Thank you! (It was worth every penny)
-              </p>
-              <div className="w-12 h-0.5 bg-[#08779C]/30 mb-3 mx-auto md:mx-0" />
-              <p className="text-[#08779C]/70 font-medium text-sm">Moshe Glazer, St. Louis, Missouri</p>
-            </div>
-            <div className="flex-shrink-0 order-1 md:order-2">
-              <img 
-                src={stlouisMapImg} 
-                alt="St. Louis location" 
-                className="w-72 md:w-96 h-auto"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-12 bg-white" data-testid="testimonial-5">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-5xl mx-auto">
-            <div className="flex-shrink-0">
-              <img 
-                src={atlantaMapImg} 
-                alt="Atlanta location" 
-                className="w-72 md:w-96 h-auto"
-              />
-            </div>
-            <div className="text-center md:text-left max-w-md">
-              <div className="text-[#08779C] text-4xl mb-2">"</div>
-              <p className="text-lg text-[#08779C] italic mb-4 leading-relaxed">
-                Thank you Rabbi Scheller for coming! It was very nice meeting you. Your lecture was very timely, unbelievably helpful, inspirational, and energizing! Any time welcome back to Atlanta!
-              </p>
-              <div className="w-12 h-0.5 bg-[#08779C]/30 mb-3 mx-auto md:mx-0" />
-              <p className="text-[#08779C]/70 font-medium text-sm">V. Birav, Atlanta, Georgia</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <section className="py-12 bg-white" data-testid="testimonial-6">
-        <div className="container mx-auto px-4">
-          <div className="flex flex-col md:flex-row items-center justify-center gap-8 max-w-5xl mx-auto">
-            <div className="text-center md:text-left max-w-md order-2 md:order-1">
-              <div className="text-[#08779C] text-4xl mb-2">"</div>
-              <p className="text-lg text-[#08779C] italic mb-4 leading-relaxed">
-                Thank you for coming to visit. It was a real chizuk for all!
-              </p>
-              <div className="w-12 h-0.5 bg-[#08779C]/30 mb-3 mx-auto md:mx-0" />
-              <p className="text-[#08779C]/70 font-medium text-sm">Mendy Levine, Las Vegas, Torah Day School</p>
-            </div>
-            <div className="flex-shrink-0 order-1 md:order-2">
-              <img 
-                src={vegasMapImg} 
-                alt="Las Vegas location" 
-                className="w-72 md:w-96 h-auto"
-              />
-            </div>
-          </div>
-        </div>
-      </section>
+      <TestimonialCarousel />
 
       <section id="story" className="py-20 bg-[#161616]">
         <div className="container mx-auto px-4">

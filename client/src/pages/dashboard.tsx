@@ -563,8 +563,10 @@ export default function DashboardPage() {
     ? Math.max(0, Math.ceil((new Date(user.trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
     : 0;
 
+  // Check if user has access via subscription, trial, or whitelisted email
   const hasActiveSubscription = user?.subscriptionStatus === "active" || 
-    (user?.subscriptionStatus === "trial" && daysRemaining > 0);
+    (user?.subscriptionStatus === "trial" && daysRemaining > 0) ||
+    user?.isWhitelistedEmail === true;
 
   const registeredPhone = phoneNumbers?.[0];
 

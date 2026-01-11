@@ -574,7 +574,11 @@ export async function registerRoutes(
       return res.status(401).json({ message: "User not found" });
     }
 
-    res.json({ user: { ...user, password: undefined } });
+    // Check if user's email is whitelisted for free access
+    const whitelistedEmail = user.email ? await storage.getWhitelistedEmail(user.email) : null;
+    const isWhitelistedEmail = !!whitelistedEmail;
+
+    res.json({ user: { ...user, password: undefined, isWhitelistedEmail } });
   });
 
   // ============ PHONE NUMBERS ============

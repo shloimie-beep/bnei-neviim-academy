@@ -1,8 +1,10 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
 import type { User } from "@shared/schema";
 
+type AuthUser = User & { isWhitelistedEmail?: boolean };
+
 interface AuthContextType {
-  user: User | null;
+  user: AuthUser | null;
   isLoading: boolean;
   login: (email: string, password: string) => Promise<User>;
   register: (email: string, password: string, phoneNumber: string) => Promise<void>;
@@ -13,7 +15,7 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const refreshUser = async () => {
