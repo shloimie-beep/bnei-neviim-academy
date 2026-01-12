@@ -494,17 +494,32 @@ export default function VideoManagement() {
           currentXhrRef.current = null;
           if (xhr.status >= 200 && xhr.status < 300) {
             resolve();
+          } else if (xhr.status === 0) {
+            reject(new Error("Connection blocked - the upload URL (video-*.bunnycdn.com) may be blocked by your network, firewall, or browser extension. Try disabling ad blockers or VPN, or contact your network administrator."));
+          } else if (xhr.status === 403) {
+            reject(new Error("Access denied (403) - upload authorization failed. Please try again or contact support."));
+          } else if (xhr.status === 413) {
+            reject(new Error("File too large (413) - the file exceeds the maximum upload size."));
           } else {
-            reject(new Error(`Upload failed (status ${xhr.status})`));
+            reject(new Error(`Upload failed with status ${xhr.status}. Response: ${xhr.statusText || 'No details available'}`));
           }
         };
         xhr.onerror = () => {
           currentXhrRef.current = null;
-          reject(new Error("Network error"));
+          const errorDetails = [
+            "Network error during upload.",
+            "Possible causes:",
+            "- The upload URL (video-*.bunnycdn.com) may be blocked by your firewall, VPN, or browser extension",
+            "- Your internet connection may have dropped",
+            "- A proxy or corporate network may be blocking the request",
+            "",
+            "Try: Disable ad blockers/VPN, check your connection, or try a different network."
+          ].join("\n");
+          reject(new Error(errorDetails));
         };
         xhr.ontimeout = () => {
           currentXhrRef.current = null;
-          reject(new Error("Upload timed out"));
+          reject(new Error("Upload timed out - your connection may be too slow or unstable. Try a smaller file or faster connection."));
         };
         xhr.onabort = () => {
           currentXhrRef.current = null;
@@ -701,8 +716,19 @@ export default function VideoManagement() {
               statusText: xhr.statusText,
             }));
           };
-          xhr.onerror = () => reject(new Error("Network error"));
-          xhr.ontimeout = () => reject(new Error("Upload timed out"));
+          xhr.onerror = () => {
+            const errorDetails = [
+              "Network error during audio upload.",
+              "Possible causes:",
+              "- Your internet connection may have dropped",
+              "- A proxy or corporate network may be blocking the request",
+              "- The server may be temporarily unavailable",
+              "",
+              "Try: Check your connection and try again."
+            ].join("\n");
+            reject(new Error(errorDetails));
+          };
+          xhr.ontimeout = () => reject(new Error("Upload timed out - your connection may be too slow or unstable. Try a smaller file or faster connection."));
           xhr.timeout = 3600000; // 1 hour timeout
           xhr.open("POST", "/api/admin/videos");
           xhr.send(formData);
@@ -746,12 +772,29 @@ export default function VideoManagement() {
           xhr.onload = () => {
             if (xhr.status >= 200 && xhr.status < 300) {
               resolve();
+            } else if (xhr.status === 0) {
+              reject(new Error("Connection blocked - the upload URL (video-*.bunnycdn.com) may be blocked by your network, firewall, or browser extension. Try disabling ad blockers or VPN, or contact your network administrator."));
+            } else if (xhr.status === 403) {
+              reject(new Error("Access denied (403) - upload authorization failed. Please try again or contact support."));
+            } else if (xhr.status === 413) {
+              reject(new Error("File too large (413) - the file exceeds the maximum upload size."));
             } else {
-              reject(new Error(`Upload failed (status ${xhr.status})`));
+              reject(new Error(`Upload failed with status ${xhr.status}. Response: ${xhr.statusText || 'No details available'}`));
             }
           };
-          xhr.onerror = () => reject(new Error("Network error"));
-          xhr.ontimeout = () => reject(new Error("Upload timed out"));
+          xhr.onerror = () => {
+            const errorDetails = [
+              "Network error during upload.",
+              "Possible causes:",
+              "- The upload URL (video-*.bunnycdn.com) may be blocked by your firewall, VPN, or browser extension",
+              "- Your internet connection may have dropped",
+              "- A proxy or corporate network may be blocking the request",
+              "",
+              "Try: Disable ad blockers/VPN, check your connection, or try a different network."
+            ].join("\n");
+            reject(new Error(errorDetails));
+          };
+          xhr.ontimeout = () => reject(new Error("Upload timed out - your connection may be too slow or unstable. Try a smaller file or faster connection."));
           xhr.timeout = 36000000; // 10 hours timeout
           xhr.open("PUT", uploadUrl);
           xhr.setRequestHeader("AccessKey", apiKey);
