@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw } from "lucide-react";
+import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -372,6 +372,9 @@ export default function VideoManagement() {
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [categoryToDelete, setCategoryToDelete] = useState<VideoCategory | null>(null);
+  
+  // Bunny sync state
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const { data: videos, isLoading } = useQuery<VideoType[]>({
     queryKey: ["/api/admin/videos"],
@@ -705,6 +708,34 @@ export default function VideoManagement() {
     }
   };
 
+  const handleSyncFromBunny = async () => {
+    setIsSyncing(true);
+    try {
+      const res = await fetch("/api/admin/videos/sync-from-bunny", {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Sync failed");
+      }
+      const result = await res.json();
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+      toast({ 
+        title: "Sync complete", 
+        description: result.message 
+      });
+    } catch (error: any) {
+      toast({ 
+        title: "Sync failed", 
+        description: error.message, 
+        variant: "destructive" 
+      });
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const handleSingleUpload = async () => {
     if (!singleFile || !singleTitle) return;
 
@@ -920,6 +951,19 @@ export default function VideoManagement() {
           <p className="text-muted-foreground">Manage video and audio content for subscribers</p>
         </div>
         <div className="flex gap-2 flex-wrap">
+          <Button 
+            variant="outline" 
+            onClick={handleSyncFromBunny} 
+            disabled={isSyncing}
+            data-testid="button-sync-from-bunny"
+          >
+            {isSyncing ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4 mr-2" />
+            )}
+            Sync from Bunny
+          </Button>
           <Dialog open={isSingleDialogOpen} onOpenChange={setIsSingleDialogOpen}>
             <DialogTrigger asChild>
               <Button data-testid="button-upload-single-video">
