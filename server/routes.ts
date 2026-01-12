@@ -2251,12 +2251,20 @@ export async function registerRoutes(
       console.log(`[Bunny Sync] ${missingVideos.length} videos need to be imported`);
 
       let importedCount = 0;
+      let deletedFromBunnyCount = 0;
       
       for (const bunnyVideo of missingVideos) {
         try {
-          // Only import videos that are finished processing (status 4)
-          const status = bunnyVideo.status === 4 ? "ready" : 
-                        bunnyVideo.status === 5 ? "failed" : "processing";
+          // Delete failed videos from Bunny instead of importing them
+          if (bunnyVideo.status === 5) {
+            console.log(`[Bunny Sync] Deleting failed video from Bunny: ${bunnyVideo.title} (${bunnyVideo.guid})`);
+            await bunnyStream.deleteVideo(bunnyVideo.guid);
+            deletedFromBunnyCount++;
+            continue;
+          }
+          
+          // Only import videos that are finished processing (status 4) or still processing
+          const status = bunnyVideo.status === 4 ? "ready" : "processing";
           
           await storage.createVideo({
             title: bunnyVideo.title || `Video ${bunnyVideo.guid}`,
@@ -2285,10 +2293,12 @@ export async function registerRoutes(
       const allDbVideos = await storage.getAllVideos();
       const stuckVideos = allDbVideos.filter(v => 
         v.bunnyGuid && 
-        (v.status === "processing" || v.status === "uploading")
+        (v.status === "processing" || v.status === "uploading" || v.status === "failed")
       );
       
       let updatedCount = 0;
+      let deletedFromDbCount = 0;
+      
       for (const video of stuckVideos) {
         try {
           const bunnyVideo = await bunnyStream.getVideo(video.bunnyGuid!);
@@ -2304,8 +2314,12 @@ export async function registerRoutes(
             updatedCount++;
             console.log(`[Bunny Sync] Updated video ${video.id} to ready`);
           } else if (bunnyVideo.status === 5) {
-            await storage.updateVideo(video.id, { status: "failed" });
-            updatedCount++;
+            // Delete failed videos from both Bunny and database
+            console.log(`[Bunny Sync] Deleting failed video: ${video.title} (${video.bunnyGuid})`);
+            await bunnyStream.deleteVideo(video.bunnyGuid!);
+            await storage.deleteVideo(video.id);
+            deletedFromDbCount++;
+            deletedFromBunnyCount++;
           }
         } catch (err) {
           console.error(`[Bunny Sync] Failed to check video ${video.id}:`, err);
@@ -2313,11 +2327,13 @@ export async function registerRoutes(
       }
 
       res.json({ 
-        message: `Found ${allBunnyVideos.length} videos in Bunny, imported ${importedCount} new, updated ${updatedCount} statuses`,
+        message: `Found ${allBunnyVideos.length} videos in Bunny, imported ${importedCount} new, updated ${updatedCount} statuses, deleted ${deletedFromBunnyCount} failed`,
         totalInBunny: allBunnyVideos.length,
         alreadyImported: dbVideos.length,
         newlyImported: importedCount,
-        statusesUpdated: updatedCount
+        statusesUpdated: updatedCount,
+        deletedFromBunny: deletedFromBunnyCount,
+        deletedFromDb: deletedFromDbCount
       });
     } catch (error: any) {
       console.error("Bunny sync error:", error);
