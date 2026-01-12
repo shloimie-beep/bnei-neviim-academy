@@ -222,6 +222,47 @@ export async function registerRoutes(
   // Initialize Bunny Storage service (for audio files)
   bunnyStorage.initializeBunnyStorage();
   
+  // Sync stuck video statuses from Bunny on startup
+  (async () => {
+    try {
+      const allVideos = await storage.getAllVideos();
+      const stuckVideos = allVideos.filter(v => 
+        v.bunnyGuid && 
+        (v.status === "processing" || v.status === "uploading")
+      );
+      
+      if (stuckVideos.length > 0) {
+        console.log(`[Bunny Sync] Found ${stuckVideos.length} videos with pending status, checking Bunny...`);
+        
+        for (const video of stuckVideos) {
+          try {
+            const bunnyVideo = await bunnyStream.getVideo(video.bunnyGuid!);
+            
+            // Status: 0=created, 1=uploaded, 2=processing, 3=transcoding, 4=finished, 5=error
+            if (bunnyVideo.status === 4) {
+              await storage.updateVideo(video.id, { 
+                status: "ready",
+                duration: bunnyVideo.length,
+              });
+              console.log(`[Bunny Sync] Updated video ${video.id} to ready`);
+            } else if (bunnyVideo.status === 5) {
+              await storage.updateVideo(video.id, { status: "failed" });
+              console.log(`[Bunny Sync] Updated video ${video.id} to failed`);
+            } else {
+              console.log(`[Bunny Sync] Video ${video.id} still processing on Bunny (status: ${bunnyVideo.status})`);
+            }
+          } catch (err) {
+            console.error(`[Bunny Sync] Failed to check video ${video.id}:`, err);
+          }
+        }
+        
+        console.log(`[Bunny Sync] Sync complete`);
+      }
+    } catch (err) {
+      console.error("[Bunny Sync] Startup sync failed:", err);
+    }
+  })();
+  
   // Trust proxy for production (Replit uses reverse proxy)
   if (isProduction) {
     app.set("trust proxy", 1);
@@ -2095,6 +2136,91 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Generate all thumbnails error:", error);
       res.status(500).json({ message: "Failed to start thumbnail generation" });
+    }
+  });
+
+  // Admin: Refresh a single video's status from Bunny
+  app.post("/api/admin/videos/:id/refresh-status", requireAdmin, async (req, res) => {
+    try {
+      const video = await storage.getVideo(req.params.id);
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+
+      if (!video.bunnyGuid) {
+        return res.status(400).json({ message: "Video is not hosted on Bunny Stream" });
+      }
+
+      const bunnyVideo = await bunnyStream.getVideo(video.bunnyGuid);
+      
+      let newStatus = video.status;
+      // Status: 0=created, 1=uploaded, 2=processing, 3=transcoding, 4=finished, 5=error
+      if (bunnyVideo.status === 4) {
+        newStatus = "ready";
+      } else if (bunnyVideo.status === 5) {
+        newStatus = "failed";
+      } else if (bunnyVideo.status >= 1 && bunnyVideo.status <= 3) {
+        newStatus = "processing";
+      }
+
+      const updatedVideo = await storage.updateVideo(video.id, { 
+        status: newStatus,
+        duration: bunnyVideo.length || video.duration,
+      });
+
+      console.log(`[Bunny Refresh] Video ${video.id} status: ${video.status} -> ${newStatus}`);
+
+      res.json(updatedVideo);
+    } catch (error: any) {
+      console.error("Refresh video status error:", error);
+      res.status(500).json({ message: error.message || "Failed to refresh video status" });
+    }
+  });
+
+  // Admin: Refresh all stuck video statuses from Bunny
+  app.post("/api/admin/videos/refresh-all-statuses", requireAdmin, async (req, res) => {
+    try {
+      const allVideos = await storage.getAllVideos();
+      const stuckVideos = allVideos.filter(v => 
+        v.bunnyGuid && 
+        (v.status === "processing" || v.status === "uploading")
+      );
+
+      if (stuckVideos.length === 0) {
+        return res.json({ message: "No videos with pending status", updated: 0 });
+      }
+
+      let updatedCount = 0;
+      
+      for (const video of stuckVideos) {
+        try {
+          const bunnyVideo = await bunnyStream.getVideo(video.bunnyGuid!);
+          
+          if (bunnyVideo.status === 4) {
+            await storage.updateVideo(video.id, { 
+              status: "ready",
+              duration: bunnyVideo.length,
+            });
+            updatedCount++;
+            console.log(`[Bunny Refresh] Updated video ${video.id} to ready`);
+          } else if (bunnyVideo.status === 5) {
+            await storage.updateVideo(video.id, { status: "failed" });
+            updatedCount++;
+            console.log(`[Bunny Refresh] Updated video ${video.id} to failed`);
+          }
+        } catch (err) {
+          console.error(`[Bunny Refresh] Failed to check video ${video.id}:`, err);
+        }
+      }
+
+      res.json({ 
+        message: `Checked ${stuckVideos.length} videos, updated ${updatedCount}`,
+        checked: stuckVideos.length,
+        updated: updatedCount
+      });
+    } catch (error) {
+      console.error("Refresh all statuses error:", error);
+      res.status(500).json({ message: "Failed to refresh video statuses" });
     }
   });
 
