@@ -1,5 +1,5 @@
-import { Link, useLocation } from "wouter";
-import { Phone, Settings, Users, LogOut, LayoutDashboard, Menu, ShieldCheck, CreditCard, Video, FileText } from "lucide-react";
+import { Link, useLocation, Redirect } from "wouter";
+import { Phone, Settings, Users, LogOut, ShieldCheck, CreditCard, Video, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -17,7 +17,6 @@ import {
   SidebarHeader,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import AdminDashboard from "./dashboard";
 import MenuManagement from "./menu";
 import ConferenceManagement from "./conference";
 import WhitelistManagement from "./whitelist";
@@ -27,12 +26,11 @@ import VideoManagement from "./videos";
 import DocumentManagement from "./documents";
 
 const adminRoutes = [
-  { path: "/admin", label: "Dashboard", icon: LayoutDashboard },
+  { path: "/admin/videos", label: "Media", icon: Video },
   { path: "/admin/menu", label: "Hotline", icon: Phone },
   { path: "/admin/conference", label: "Conference", icon: Users },
   { path: "/admin/whitelist", label: "Whitelist", icon: ShieldCheck },
   { path: "/admin/subscribers", label: "Subscribers", icon: CreditCard },
-  { path: "/admin/videos", label: "Media", icon: Video },
   { path: "/admin/documents", label: "Documents", icon: FileText },
   { path: "/admin/settings", label: "Settings", icon: Settings },
 ];
@@ -124,7 +122,7 @@ export default function AdminLayout() {
       case "/admin/settings":
         return <AdminSettingsPage />;
       default:
-        return <AdminDashboard />;
+        return <Redirect to="/admin/videos" />;
     }
   };
 
