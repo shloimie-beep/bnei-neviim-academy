@@ -30,7 +30,7 @@ export async function generateThumbnailFromBunny(
     console.log(`[Thumbnail] Generating thumbnail for video ${videoId} from ${videoUrl}`);
 
     await execAsync(
-      `ffmpeg -y -ss ${timeOffset} -i "${videoUrl}" -vframes 1 -q:v 2 -vf "scale=640:-1" "${tempThumbnailPath}"`,
+      `ffmpeg -y -ss 10 -i "${videoUrl}" -vframes 1 -q:v 2 -vf "scale=640:-1" "${tempThumbnailPath}"`,
       { timeout: 60000 }
     );
 

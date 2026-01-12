@@ -453,7 +453,7 @@ function VideoCard({ video }: { video: VideoType }) {
   const thumbnailSrc = video.thumbnailPath 
     ? `/api/videos/${video.id}/thumbnail`
     : video.bunnyGuid
-      ? `https://vz-576907.b-cdn.net/${video.bunnyGuid}/thumbnail.jpg`
+      ? `https://iframe.mediadelivery.net/embed/${video.bunnyGuid}/thumbnail.jpg`
       : null;
 
   return (

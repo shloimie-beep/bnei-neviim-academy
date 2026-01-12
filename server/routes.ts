@@ -1876,7 +1876,7 @@ export async function registerRoutes(
               const currentVideo = await storage.getVideo(video.id);
               if (currentVideo && !currentVideo.thumbnailPath) {
                 console.log(`[Bunny Stream] Generating thumbnail for ${video.id}...`);
-                const thumbnailPath = await generateThumbnailFromBunny(video.id, bunnyGuid, 5);
+                const thumbnailPath = await generateThumbnailFromBunny(video.id, bunnyGuid, 10);
                 if (thumbnailPath) {
                   await storage.updateVideo(video.id, { thumbnailPath });
                   console.log(`[Bunny Stream] Thumbnail generated for ${video.id}`);
