@@ -149,6 +149,26 @@ export async function listVideos(page: number = 1, itemsPerPage: number = 100): 
   return response.json();
 }
 
+export async function uploadThumbnail(videoGuid: string, thumbnailBuffer: Buffer): Promise<void> {
+  if (!BUNNY_API_KEY || !BUNNY_LIBRARY_ID) {
+    throw new Error("Bunny Stream credentials not configured");
+  }
+
+  const response = await fetch(`${BUNNY_API_BASE}/${BUNNY_LIBRARY_ID}/videos/${videoGuid}/thumbnail`, {
+    method: "POST",
+    headers: {
+      "AccessKey": BUNNY_API_KEY,
+      "Content-Type": "image/jpeg",
+    },
+    body: thumbnailBuffer,
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Failed to upload thumbnail: ${error}`);
+  }
+}
+
 export function getEmbedUrl(videoGuid: string): string {
   return `https://iframe.mediadelivery.net/embed/${BUNNY_LIBRARY_ID}/${videoGuid}`;
 }

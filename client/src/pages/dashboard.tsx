@@ -451,7 +451,9 @@ function VideoCard({ video }: { video: VideoType }) {
   const isAudio = video.mediaType === "audio";
 
   const thumbnailSrc = video.thumbnailPath 
-    ? `/api/videos/${video.id}/thumbnail`
+    ? (video.thumbnailPath.startsWith("bunny://") 
+        ? `https://iframe.mediadelivery.net/embed/${video.bunnyGuid}/thumbnail.jpg`
+        : `/api/videos/${video.id}/thumbnail`)
     : video.bunnyGuid
       ? `https://iframe.mediadelivery.net/embed/${video.bunnyGuid}/thumbnail.jpg`
       : null;

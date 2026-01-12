@@ -44,7 +44,9 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
   const categoryName = categories.find(c => c.id === video.categoryId)?.name;
 
   const thumbnailSrc = video.thumbnailPath 
-    ? `/api/videos/${video.id}/thumbnail`
+    ? (video.thumbnailPath.startsWith("bunny://") 
+        ? `https://iframe.mediadelivery.net/embed/${video.bunnyGuid}/thumbnail.jpg`
+        : `/api/videos/${video.id}/thumbnail`)
     : video.bunnyGuid
       ? `https://iframe.mediadelivery.net/embed/${video.bunnyGuid}/thumbnail.jpg`
       : null;

@@ -4,6 +4,8 @@ import * as fs from "fs";
 import * as path from "path";
 import { ObjectStorageService, objectStorageClient } from "./replit_integrations/object_storage";
 
+import { createVideo, uploadThumbnail } from "./bunnyStream";
+
 const execAsync = promisify(exec);
 const objectStorageService = new ObjectStorageService();
 
@@ -18,9 +20,8 @@ if (!fs.existsSync(tempDir)) {
 export async function generateThumbnailFromBunny(
   videoId: string,
   bunnyGuid: string,
-  timeOffset: number = 5
+  timeOffset: number = 10
 ): Promise<string | null> {
-  const tempVideoPath = path.join(tempDir, `${videoId}_video.mp4`);
   const tempThumbnailPath = path.join(tempDir, `${videoId}_thumb.jpg`);
 
   try {
@@ -30,7 +31,7 @@ export async function generateThumbnailFromBunny(
     console.log(`[Thumbnail] Generating thumbnail for video ${videoId} from ${videoUrl}`);
 
     await execAsync(
-      `ffmpeg -y -ss 10 -i "${videoUrl}" -vframes 1 -q:v 2 -vf "scale=640:-1" "${tempThumbnailPath}"`,
+      `ffmpeg -y -ss ${timeOffset} -i "${videoUrl}" -vframes 1 -q:v 2 -vf "scale=640:-1" "${tempThumbnailPath}"`,
       { timeout: 60000 }
     );
 
@@ -39,39 +40,16 @@ export async function generateThumbnailFromBunny(
       return null;
     }
 
-    const uploadURL = await objectStorageService.getObjectEntityUploadURL();
-    const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
-
-    const url = new URL(uploadURL);
-    const pathParts = url.pathname.slice(1).split("/");
-    const bucketName = pathParts[0];
-    const objectName = pathParts.slice(1).join("/");
-
-    const bucket = objectStorageClient.bucket(bucketName);
-    const objectFile = bucket.file(objectName);
-
-    await new Promise<void>((resolve, reject) => {
-      const readStream = fs.createReadStream(tempThumbnailPath);
-      const writeStream = objectFile.createWriteStream({
-        resumable: false,
-        contentType: "image/jpeg",
-      });
-      readStream.on("error", reject);
-      writeStream.on("error", reject);
-      writeStream.on("finish", resolve);
-      readStream.pipe(writeStream);
-    });
-
+    const thumbnailBuffer = fs.readFileSync(tempThumbnailPath);
+    await uploadThumbnail(bunnyGuid, thumbnailBuffer);
+    
     fs.unlinkSync(tempThumbnailPath);
 
-    console.log(`[Thumbnail] Generated and uploaded thumbnail to ${objectPath}`);
-    return objectPath;
+    console.log(`[Thumbnail] Generated and uploaded thumbnail to Bunny for ${bunnyGuid}`);
+    return `bunny://${bunnyGuid}`;
   } catch (error: any) {
     console.error(`[Thumbnail] Error generating thumbnail:`, error.message);
-    
-    if (fs.existsSync(tempVideoPath)) fs.unlinkSync(tempVideoPath);
     if (fs.existsSync(tempThumbnailPath)) fs.unlinkSync(tempThumbnailPath);
-    
     return null;
   }
 }
