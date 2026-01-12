@@ -18,6 +18,7 @@ import { db } from "./db";
 import { pool } from "./db";
 import { ObjectStorageService, objectStorageClient } from "./replit_integrations/object_storage";
 import * as bunnyStream from "./bunnyStream";
+import * as bunnyStorage from "./bunnyStorage";
 import { generateThumbnailFromBunny, generateThumbnailFromLocalVideo } from "./thumbnailGenerator";
 
 const execAsync = promisify(exec);
@@ -217,6 +218,9 @@ export async function registerRoutes(
   
   // Initialize Bunny Stream service (caches CDN hostname)
   await bunnyStream.initializeBunnyStream();
+  
+  // Initialize Bunny Storage service (for audio files)
+  bunnyStorage.initializeBunnyStorage();
   
   // Trust proxy for production (Replit uses reverse proxy)
   if (isProduction) {
@@ -1238,23 +1242,72 @@ export async function registerRoutes(
             }
           })();
         } else {
-          // MP3 and other audio files: save as-is without conversion
-          const video = await storage.createVideo({
-            title,
-            description: description || null,
-            filename: mediaFile.originalname,
-            filepath: originalPath,
-            fileSize: mediaFile.size,
-            status: "ready",
-            mediaType,
-            categoryId: categoryId || null,
-            uploadedBy: req.session.userId!,
-            thumbnailPath: thumbnailFile?.path || null,
-            storageType: "local",
-          });
+          // MP3 and other audio files: upload to Bunny Storage if configured, otherwise save locally
+          if (bunnyStorage.isBunnyStorageConfigured()) {
+            try {
+              const uniqueFilename = `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(mediaFile.originalname)}`;
+              const { cdnUrl, storagePath } = await bunnyStorage.uploadAudioToBunny(originalPath, uniqueFilename);
+              
+              const video = await storage.createVideo({
+                title,
+                description: description || null,
+                filename: mediaFile.originalname,
+                filepath: storagePath,
+                fileSize: mediaFile.size,
+                status: "ready",
+                mediaType,
+                categoryId: categoryId || null,
+                uploadedBy: req.session.userId!,
+                thumbnailPath: thumbnailFile?.path || null,
+                storageType: "bunny_storage",
+                bunnyStorageUrl: cdnUrl,
+              });
 
-          console.log(`Audio ${video.id} saved locally without conversion`);
-          res.json(video);
+              // Delete local temp file after upload
+              if (fs.existsSync(originalPath)) {
+                fs.unlinkSync(originalPath);
+              }
+
+              console.log(`Audio ${video.id} uploaded to Bunny Storage: ${cdnUrl}`);
+              res.json(video);
+            } catch (uploadError) {
+              console.error("Bunny Storage upload failed, falling back to local:", uploadError);
+              // Fallback to local storage
+              const video = await storage.createVideo({
+                title,
+                description: description || null,
+                filename: mediaFile.originalname,
+                filepath: originalPath,
+                fileSize: mediaFile.size,
+                status: "ready",
+                mediaType,
+                categoryId: categoryId || null,
+                uploadedBy: req.session.userId!,
+                thumbnailPath: thumbnailFile?.path || null,
+                storageType: "local",
+              });
+              console.log(`Audio ${video.id} saved locally (Bunny fallback)`);
+              res.json(video);
+            }
+          } else {
+            // Local storage fallback
+            const video = await storage.createVideo({
+              title,
+              description: description || null,
+              filename: mediaFile.originalname,
+              filepath: originalPath,
+              fileSize: mediaFile.size,
+              status: "ready",
+              mediaType,
+              categoryId: categoryId || null,
+              uploadedBy: req.session.userId!,
+              thumbnailPath: thumbnailFile?.path || null,
+              storageType: "local",
+            });
+
+            console.log(`Audio ${video.id} saved locally without conversion`);
+            res.json(video);
+          }
         }
       } else {
         // Video files: use existing conversion logic
@@ -2307,6 +2360,16 @@ export async function registerRoutes(
         return res.json({ 
           bunny: true, 
           embedUrl: bunnyStream.getEmbedUrl(video.bunnyGuid) 
+        });
+      }
+
+      // If audio is on Bunny Storage, return the CDN URL directly
+      if (video.bunnyStorageUrl && video.storageType === "bunny_storage") {
+        await storage.incrementVideoViewCount(video.id);
+        return res.json({ 
+          bunnyStorage: true, 
+          cdnUrl: video.bunnyStorageUrl,
+          mediaType: video.mediaType,
         });
       }
 

@@ -174,6 +174,36 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
   const [buffered, setBuffered] = useState(0);
   const [playbackRate, setPlaybackRate] = useState(1);
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [streamUrl, setStreamUrl] = useState<string | null>(null);
+  const [streamLoading, setStreamLoading] = useState(true);
+  const [streamError, setStreamError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch(`/api/videos/${video.id}/stream`)
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to load");
+        const contentType = res.headers.get("content-type");
+        if (contentType?.includes("application/json")) {
+          return res.json().then(data => {
+            if (data.bunnyStorage && data.cdnUrl) {
+              setStreamUrl(data.cdnUrl);
+            } else if (data.bunny && data.embedUrl) {
+              setStreamUrl(data.embedUrl);
+            } else {
+              setStreamError("Media not available");
+            }
+            setStreamLoading(false);
+          });
+        } else {
+          setStreamUrl(`/api/videos/${video.id}/stream`);
+          setStreamLoading(false);
+        }
+      })
+      .catch(() => {
+        setStreamUrl(`/api/videos/${video.id}/stream`);
+        setStreamLoading(false);
+      });
+  }, [video.id]);
 
   const speedOptions = [0.5, 0.75, 1, 1.25, 1.5, 2];
 
@@ -267,6 +297,32 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
 
   const isAudio = video.mediaType === "audio";
 
+  if (streamLoading) {
+    return (
+      <DialogContent className="max-w-4xl p-0 overflow-hidden">
+        <div className="aspect-video bg-black flex items-center justify-center">
+          <Loader2 className="h-12 w-12 text-white animate-spin" />
+        </div>
+        <div className="p-4">
+          <h3 className="font-semibold text-lg">{video.title}</h3>
+        </div>
+      </DialogContent>
+    );
+  }
+
+  if (streamError || !streamUrl) {
+    return (
+      <DialogContent className="max-w-4xl p-0 overflow-hidden">
+        <div className="aspect-video bg-black flex items-center justify-center">
+          <p className="text-white">{streamError || "Media not available"}</p>
+        </div>
+        <div className="p-4">
+          <h3 className="font-semibold text-lg">{video.title}</h3>
+        </div>
+      </DialogContent>
+    );
+  }
+
   return (
     <DialogContent className="max-w-4xl p-0 overflow-hidden">
       <div 
@@ -278,7 +334,7 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
           <div className="w-full aspect-video flex items-center justify-center bg-black">
             <audio
               ref={videoRef as React.RefObject<HTMLAudioElement>}
-              src={`/api/videos/${video.id}/stream`}
+              src={streamUrl}
               autoPlay
               preload="auto"
               className="hidden"
@@ -304,7 +360,7 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
         ) : (
           <video
             ref={videoRef}
-            src={`/api/videos/${video.id}/stream`}
+            src={streamUrl}
             autoPlay
             preload="auto"
             className="w-full aspect-video"

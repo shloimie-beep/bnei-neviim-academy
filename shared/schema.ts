@@ -167,6 +167,7 @@ export const videos = pgTable("videos", {
   bunnyVideoId: text("bunny_video_id"),
   bunnyGuid: text("bunny_guid"),
   storageType: text("storage_type").default("local"),
+  bunnyStorageUrl: text("bunny_storage_url"),
 });
 
 // PDF documents for subscriber content
