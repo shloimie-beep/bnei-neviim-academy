@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music } from "lucide-react";
+import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -22,11 +22,12 @@ function formatFileSize(bytes: number | null): string {
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
-function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, categories }: { 
+function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbnail, categories }: { 
   video: VideoType; 
   onDelete: () => void;
   onUpdate: (data: Partial<VideoType>) => void;
   onUploadThumbnail: (file: File) => Promise<void>;
+  onResetThumbnail: (regenerate: boolean) => Promise<void>;
   categories: VideoCategory[];
 }) {
   const { toast } = useToast();
@@ -34,6 +35,7 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, categories }:
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
+  const [isResettingThumbnail, setIsResettingThumbnail] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [editTitle, setEditTitle] = useState(video.title);
   const [editDescription, setEditDescription] = useState(video.description || "");
@@ -73,6 +75,18 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, categories }:
     }
   };
 
+  const handleResetThumbnail = async () => {
+    setIsResettingThumbnail(true);
+    try {
+      await onResetThumbnail(true);
+      toast({ title: "Thumbnail reset", description: "Generated new thumbnail from video" });
+    } catch (error: any) {
+      toast({ title: "Failed to reset thumbnail", description: error.message, variant: "destructive" });
+    } finally {
+      setIsResettingThumbnail(false);
+    }
+  };
+
   return (
     <Card>
       <CardContent className="p-4">
@@ -96,18 +110,36 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, categories }:
             ) : (
               <FileVideo className="h-8 w-8 text-primary" />
             )}
-            <button
-              onClick={() => thumbnailInputRef.current?.click()}
-              disabled={isUploadingThumbnail}
-              className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center cursor-pointer"
-              data-testid={`button-upload-thumbnail-${video.id}`}
-            >
-              {isUploadingThumbnail ? (
-                <Loader2 className="h-5 w-5 text-white animate-spin" />
-              ) : (
-                <ImagePlus className="h-5 w-5 text-white" />
+            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
+              <button
+                onClick={() => thumbnailInputRef.current?.click()}
+                disabled={isUploadingThumbnail || isResettingThumbnail}
+                className="p-1.5 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+                title="Upload custom thumbnail"
+                data-testid={`button-upload-thumbnail-${video.id}`}
+              >
+                {isUploadingThumbnail ? (
+                  <Loader2 className="h-4 w-4 text-white animate-spin" />
+                ) : (
+                  <ImagePlus className="h-4 w-4 text-white" />
+                )}
+              </button>
+              {video.thumbnailPath && video.mediaType !== "audio" && (
+                <button
+                  onClick={handleResetThumbnail}
+                  disabled={isUploadingThumbnail || isResettingThumbnail}
+                  className="p-1.5 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
+                  title="Reset to auto-generated thumbnail"
+                  data-testid={`button-reset-thumbnail-${video.id}`}
+                >
+                  {isResettingThumbnail ? (
+                    <Loader2 className="h-4 w-4 text-white animate-spin" />
+                  ) : (
+                    <RotateCcw className="h-4 w-4 text-white" />
+                  )}
+                </button>
               )}
-            </button>
+            </div>
             <input
               ref={thumbnailInputRef}
               type="file"
@@ -1271,6 +1303,13 @@ export default function VideoManagement() {
                   body: formData,
                 });
                 if (!res.ok) throw new Error("Failed to upload thumbnail");
+                queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+              }}
+              onResetThumbnail={async (regenerate) => {
+                const res = await fetch(`/api/admin/videos/${video.id}/thumbnail?regenerate=${regenerate}`, {
+                  method: "DELETE",
+                });
+                if (!res.ok) throw new Error("Failed to reset thumbnail");
                 queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
               }}
             />

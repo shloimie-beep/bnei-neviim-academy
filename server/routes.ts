@@ -2034,6 +2034,55 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Delete custom thumbnail and optionally regenerate from video
+  app.delete("/api/admin/videos/:id/thumbnail", requireAdmin, async (req, res) => {
+    try {
+      const video = await storage.getVideo(req.params.id);
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+
+      // Delete existing thumbnail
+      if (video.thumbnailPath) {
+        if (video.thumbnailPath.startsWith("/objects/")) {
+          try {
+            const thumbnailFile = await objectStorageService.getObjectEntityFile(video.thumbnailPath);
+            await thumbnailFile.delete();
+            console.log(`[Thumbnail] Deleted custom thumbnail for video ${video.id}`);
+          } catch (err) {
+            console.error("Failed to delete thumbnail from cloud storage:", err);
+          }
+        } else if (fs.existsSync(video.thumbnailPath)) {
+          fs.unlinkSync(video.thumbnailPath);
+        }
+      }
+
+      // Check if user wants to regenerate
+      const regenerate = req.query.regenerate === "true";
+      let newThumbnailPath: string | null = null;
+
+      if (regenerate && video.status === "ready") {
+        // Try to regenerate thumbnail from video source
+        if (video.bunnyGuid) {
+          newThumbnailPath = await generateThumbnailFromBunny(video.id, video.bunnyGuid, 5);
+        } else if (video.filepath) {
+          newThumbnailPath = await generateThumbnailFromLocalVideo(video.id, video.filepath, 5);
+        }
+      }
+
+      const updatedVideo = await storage.updateVideo(video.id, { thumbnailPath: newThumbnailPath });
+      
+      res.json({
+        success: true,
+        regenerated: !!newThumbnailPath,
+        video: updatedVideo
+      });
+    } catch (error) {
+      console.error("Delete thumbnail error:", error);
+      res.status(500).json({ message: "Failed to delete thumbnail" });
+    }
+  });
+
   // Admin: Delete Bunny Stream video
   app.delete("/api/admin/videos/:id/bunny", requireAdmin, async (req, res) => {
     try {
