@@ -16,6 +16,7 @@ import {
   videoCategories,
   videos,
   documents,
+  userVideoViews,
   type User,
   type InsertUser,
   type PhoneNumber,
@@ -45,6 +46,7 @@ import {
   type InsertVideo,
   type Document,
   type InsertDocument,
+  type UserVideoView,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -659,6 +661,33 @@ export class DatabaseStorage implements IStorage {
     await db.update(documents)
       .set({ viewCount: sql<number>`COALESCE(view_count, 0) + 1` })
       .where(eq(documents.id, id));
+  }
+
+  // User Video Views (for per-user "New" badge)
+  async hasUserViewedVideo(userId: string, videoId: string): Promise<boolean> {
+    const [view] = await db.select()
+      .from(userVideoViews)
+      .where(and(
+        eq(userVideoViews.userId, userId),
+        eq(userVideoViews.videoId, videoId)
+      ));
+    return !!view;
+  }
+
+  async markVideoAsViewed(userId: string, videoId: string): Promise<UserVideoView | undefined> {
+    // Use ON CONFLICT to handle duplicates gracefully
+    const [view] = await db.insert(userVideoViews)
+      .values({ userId, videoId })
+      .onConflictDoNothing()
+      .returning();
+    return view;
+  }
+
+  async getUserViewedVideoIds(userId: string): Promise<string[]> {
+    const views = await db.select({ videoId: userVideoViews.videoId })
+      .from(userVideoViews)
+      .where(eq(userVideoViews.userId, userId));
+    return views.map(v => v.videoId);
   }
 }
 
