@@ -176,6 +176,7 @@ export const documents = pgTable("documents", {
   description: text("description"),
   filename: text("filename").notNull(),
   filepath: text("filepath").notNull(),
+  thumbnailPath: text("thumbnail_path"),
   fileSize: integer("file_size"),
   pageCount: integer("page_count"),
   viewCount: integer("view_count").default(0),
