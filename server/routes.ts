@@ -2292,10 +2292,14 @@ export async function registerRoutes(
       for (const video of stuckVideos) {
         try {
           const bunnyVideo = await bunnyStream.getVideo(video.bunnyGuid!);
-          if (bunnyVideo.status === 4) {
+          console.log(`[Bunny Sync] Video ${video.title} (${video.bunnyGuid}) has Bunny status: ${bunnyVideo.status}, encodeProgress: ${bunnyVideo.encodeProgress}`);
+          
+          // Bunny status: 4 = ready, 5 = failed, 3 = transcoding, 1 = queued, 0 = created
+          if (bunnyVideo.status === 4 || bunnyVideo.encodeProgress === 100) {
             await storage.updateVideo(video.id, { 
               status: "ready",
               duration: bunnyVideo.length,
+              fileSize: bunnyVideo.storageSize || video.fileSize,
             });
             updatedCount++;
             console.log(`[Bunny Sync] Updated video ${video.id} to ready`);
