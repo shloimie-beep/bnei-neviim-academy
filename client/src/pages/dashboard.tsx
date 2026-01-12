@@ -519,16 +519,8 @@ function DocumentCard({ doc }: { doc: Document }) {
     <Dialog open={isViewerOpen} onOpenChange={setIsViewerOpen}>
       <DialogTrigger asChild>
         <Card className="overflow-hidden cursor-pointer hover-elevate active-elevate-2" data-testid={`card-doc-${doc.id}`}>
-          <div className="aspect-video bg-muted flex items-center justify-center relative group overflow-hidden">
-            {doc.thumbnailPath ? (
-              <img 
-                src={`/api/documents/${doc.id}/thumbnail`} 
-                alt={doc.title}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <FileText className="h-12 w-12 text-muted-foreground" />
-            )}
+          <div className="aspect-video bg-muted flex items-center justify-center relative group">
+            <FileText className="h-12 w-12 text-muted-foreground" />
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
               <div className="h-14 w-14 rounded-full bg-primary flex items-center justify-center">
                 <ExternalLink className="h-6 w-6 text-primary-foreground" />
@@ -1074,7 +1066,7 @@ export default function DashboardPage() {
                     {videosByCategory.uncategorized && videosByCategory.uncategorized.length > 0 && (
                       <div>
                         {categories.length > 0 && (
-                          <h3 className="text-lg font-semibold mb-4">Other / not yet categorized</h3>
+                          <h3 className="text-lg font-semibold mb-4">Other Videos</h3>
                         )}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                           {videosByCategory.uncategorized.map((video) => (

@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, FileText, Trash2, Loader2, Edit2, Eye, EyeOff, BarChart2, ImagePlus } from "lucide-react";
+import { Upload, FileText, Trash2, Loader2, Edit2, Eye, EyeOff, BarChart2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -28,11 +28,8 @@ function DocumentCard({ doc, onDelete, onUpdate, categories }: {
   onUpdate: (data: Partial<Document>) => void;
   categories: VideoCategory[];
 }) {
-  const { toast } = useToast();
   const [isDeleting, setIsDeleting] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
-  const thumbnailInputRef = useRef<HTMLInputElement>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [editTitle, setEditTitle] = useState(doc.title);
   const [editDescription, setEditDescription] = useState(doc.description || "");
@@ -56,64 +53,12 @@ function DocumentCard({ doc, onDelete, onUpdate, categories }: {
     onUpdate({ status: doc.status === "ready" ? "hidden" : "ready" });
   };
 
-  const handleThumbnailSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setIsUploadingThumbnail(true);
-    try {
-      const formData = new FormData();
-      formData.append("thumbnail", file);
-      const res = await fetch(`/api/admin/documents/${doc.id}/thumbnail`, {
-        method: "POST",
-        body: formData,
-      });
-      if (!res.ok) throw new Error("Failed to upload thumbnail");
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/documents"] });
-      toast({ title: "Thumbnail uploaded" });
-    } catch (error: any) {
-      toast({ title: "Upload failed", description: error.message, variant: "destructive" });
-    } finally {
-      setIsUploadingThumbnail(false);
-      if (thumbnailInputRef.current) thumbnailInputRef.current.value = "";
-    }
-  };
-
   return (
     <Card>
       <CardContent className="p-4">
         <div className="flex items-start gap-4">
-          <div className="relative h-16 w-24 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden group">
-            {doc.thumbnailPath ? (
-              <img 
-                src={`/api/documents/${doc.id}/thumbnail`} 
-                alt={doc.title}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <FileText className="h-8 w-8 text-primary" />
-            )}
-            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-              <button
-                onClick={() => thumbnailInputRef.current?.click()}
-                disabled={isUploadingThumbnail}
-                className="p-1.5 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
-                title="Upload thumbnail"
-              >
-                {isUploadingThumbnail ? (
-                  <Loader2 className="h-4 w-4 text-white animate-spin" />
-                ) : (
-                  <ImagePlus className="h-4 w-4 text-white" />
-                )}
-              </button>
-            </div>
-            <input
-              ref={thumbnailInputRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={handleThumbnailSelect}
-            />
+          <div className="h-16 w-16 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <FileText className="h-8 w-8 text-primary" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">

@@ -18,7 +18,7 @@ import { db } from "./db";
 import { pool } from "./db";
 import { ObjectStorageService, objectStorageClient } from "./replit_integrations/object_storage";
 import * as bunnyStream from "./bunnyStream";
-import { generateThumbnailFromBunny, generateThumbnailFromLocalVideo, generatePdfThumbnail } from "./thumbnailGenerator";
+import { generateThumbnailFromBunny, generateThumbnailFromLocalVideo } from "./thumbnailGenerator";
 
 const execAsync = promisify(exec);
 
@@ -3450,42 +3450,6 @@ export async function registerRoutes(
         categoryId: categoryId || null,
         uploadedBy: req.session.userId!,
       });
-
-      // Generate default thumbnail if it's a PDF
-      try {
-        const thumbnailDir = path.join(process.cwd(), "uploads", "thumbnails");
-        if (!fs.existsSync(thumbnailDir)) {
-          fs.mkdirSync(thumbnailDir, { recursive: true });
-        }
-
-        const thumbnailFilename = `${doc.id}_default.jpg`;
-        const thumbnailPath = `/uploads/thumbnails/${thumbnailFilename}`;
-        const fullThumbPath = path.join(process.cwd(), thumbnailPath);
-
-        // We need a local copy of the PDF to generate the thumbnail
-        const objectFile = await objectStorageService.getObjectEntityFile(objectPath);
-        const tempPdfPath = path.join(process.cwd(), "uploads", "temp", `${doc.id}.pdf`);
-        
-        await new Promise<void>((resolve, reject) => {
-          const writeStream = fs.createWriteStream(tempPdfPath);
-          objectFile.createReadStream()
-            .on("error", reject)
-            .pipe(writeStream)
-            .on("finish", resolve);
-        });
-
-        const generated = await generatePdfThumbnail(tempPdfPath, fullThumbPath);
-        if (generated) {
-          await storage.updateDocument(doc.id, { thumbnailPath });
-        }
-
-        // Clean up temp PDF
-        if (fs.existsSync(tempPdfPath)) {
-          fs.unlinkSync(tempPdfPath);
-        }
-      } catch (thumbError) {
-        console.error("[Thumbnail Generation] Failed:", thumbError);
-      }
 
       res.json(doc);
     } catch (error) {
