@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Loader2, Maximize, Minimize } from "lucide-react";
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Loader2, Maximize, Minimize, X } from "lucide-react";
 import * as pdfjsLib from "pdfjs-dist";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
@@ -11,9 +11,10 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
 interface PdfViewerProps {
   url: string;
   title?: string;
+  onClose?: () => void;
 }
 
-export function PdfViewer({ url, title }: PdfViewerProps) {
+export function PdfViewer({ url, title, onClose }: PdfViewerProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [pdf, setPdf] = useState<pdfjsLib.PDFDocumentProxy | null>(null);
@@ -236,6 +237,16 @@ export function PdfViewer({ url, title }: PdfViewerProps) {
           >
             {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
           </Button>
+          {onClose && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
+              data-testid="button-pdf-close"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       </div>
       <div className="flex-1 overflow-auto bg-muted/30 flex justify-center p-4">

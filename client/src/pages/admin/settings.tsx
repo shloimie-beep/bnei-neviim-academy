@@ -4,10 +4,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Settings, Volume2, Upload, Play, Pause } from "lucide-react";
+import { Loader2, Settings, Volume2, Upload, Play, Pause, Lock } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { AudioFile, SystemSetting } from "@shared/schema";
 
@@ -114,6 +115,11 @@ export default function AdminSettingsPage() {
   const [isUploadingNonSub, setIsUploadingNonSub] = useState(false);
   const [nonSubPlayerOpen, setNonSubPlayerOpen] = useState(false);
   const nonSubFileInputRef = useRef<HTMLInputElement>(null);
+  
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
 
   const { data: audioFiles = [], isLoading: filesLoading } = useQuery<AudioFile[]>({
     queryKey: ["/api/admin/audio-files"],
@@ -149,6 +155,38 @@ export default function AdminSettingsPage() {
       });
     },
   });
+
+  const handleChangePassword = async () => {
+    if (!currentPassword || !newPassword) {
+      toast({ title: "Please fill in all password fields", variant: "destructive" });
+      return;
+    }
+    if (newPassword.length < 8) {
+      toast({ title: "New password must be at least 8 characters", variant: "destructive" });
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      toast({ title: "New passwords don't match", variant: "destructive" });
+      return;
+    }
+    
+    setIsChangingPassword(true);
+    try {
+      const res = await apiRequest("POST", "/api/auth/change-password", { currentPassword, newPassword });
+      toast({ title: "Password changed successfully" });
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+    } catch (error: any) {
+      toast({ 
+        title: "Failed to change password", 
+        description: error.message || "Please check your current password",
+        variant: "destructive" 
+      });
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
 
   const handleUploadGreeting = async (
     file: File,
@@ -324,6 +362,67 @@ export default function AdminSettingsPage() {
           <p className="text-sm text-muted-foreground mt-2">
             Set this as your TeXML webhook URL in your Telnyx dashboard for your phone number.
           </p>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Lock className="h-5 w-5" />
+            Change Password
+          </CardTitle>
+          <CardDescription>
+            Update your admin account password
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="current-password">Current Password</Label>
+            <Input
+              id="current-password"
+              type="password"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+              placeholder="Enter current password"
+              data-testid="input-current-password"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="new-password">New Password</Label>
+            <Input
+              id="new-password"
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="At least 8 characters"
+              data-testid="input-new-password"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="confirm-password">Confirm New Password</Label>
+            <Input
+              id="confirm-password"
+              type="password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+              placeholder="Confirm new password"
+              data-testid="input-confirm-password"
+            />
+          </div>
+          <Button
+            onClick={handleChangePassword}
+            disabled={isChangingPassword || !currentPassword || !newPassword || !confirmPassword}
+            data-testid="button-change-password"
+          >
+            {isChangingPassword ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Changing...
+              </>
+            ) : (
+              "Change Password"
+            )}
+          </Button>
         </CardContent>
       </Card>
     </div>
