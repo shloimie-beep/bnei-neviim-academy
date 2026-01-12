@@ -2256,8 +2256,9 @@ export async function registerRoutes(
       for (const bunnyVideo of missingVideos) {
         try {
           // Delete failed videos from Bunny instead of importing them
-          if (bunnyVideo.status === 5) {
-            console.log(`[Bunny Sync] Deleting failed video from Bunny: ${bunnyVideo.title} (${bunnyVideo.guid})`);
+          // Bunny status: 5 = failed processing, 6 = upload failed
+          if (bunnyVideo.status === 5 || bunnyVideo.status === 6) {
+            console.log(`[Bunny Sync] Deleting failed video from Bunny: ${bunnyVideo.title} (${bunnyVideo.guid}) status=${bunnyVideo.status}`);
             await bunnyStream.deleteVideo(bunnyVideo.guid);
             deletedFromBunnyCount++;
             continue;
@@ -2304,7 +2305,7 @@ export async function registerRoutes(
           const bunnyVideo = await bunnyStream.getVideo(video.bunnyGuid!);
           console.log(`[Bunny Sync] Video ${video.title} (${video.bunnyGuid}) has Bunny status: ${bunnyVideo.status}, encodeProgress: ${bunnyVideo.encodeProgress}`);
           
-          // Bunny status: 4 = ready, 5 = failed, 3 = transcoding, 1 = queued, 0 = created
+          // Bunny status: 4 = ready, 5 = failed processing, 6 = upload failed, 3 = transcoding, 1 = queued, 0 = created
           if (bunnyVideo.status === 4 || bunnyVideo.encodeProgress === 100) {
             await storage.updateVideo(video.id, { 
               status: "ready",
@@ -2313,9 +2314,9 @@ export async function registerRoutes(
             });
             updatedCount++;
             console.log(`[Bunny Sync] Updated video ${video.id} to ready`);
-          } else if (bunnyVideo.status === 5) {
+          } else if (bunnyVideo.status === 5 || bunnyVideo.status === 6) {
             // Delete failed videos from both Bunny and database
-            console.log(`[Bunny Sync] Deleting failed video: ${video.title} (${video.bunnyGuid})`);
+            console.log(`[Bunny Sync] Deleting failed video: ${video.title} (${video.bunnyGuid}) status=${bunnyVideo.status}`);
             await bunnyStream.deleteVideo(video.bunnyGuid!);
             await storage.deleteVideo(video.id);
             deletedFromDbCount++;
