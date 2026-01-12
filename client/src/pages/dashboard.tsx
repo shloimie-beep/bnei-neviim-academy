@@ -450,15 +450,21 @@ function VideoCard({ video }: { video: VideoType }) {
   const [isOpen, setIsOpen] = useState(false);
   const isAudio = video.mediaType === "audio";
 
+  const thumbnailSrc = video.thumbnailPath 
+    ? `/api/videos/${video.id}/thumbnail`
+    : video.bunnyGuid
+      ? `https://vz-576907.b-cdn.net/${video.bunnyGuid}/thumbnail.jpg`
+      : null;
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Card className="overflow-hidden cursor-pointer hover-elevate active-elevate-2" data-testid={`card-video-${video.id}`}>
           <div className="aspect-video bg-muted flex items-center justify-center relative group overflow-hidden">
-            {video.thumbnailPath ? (
+            {thumbnailSrc ? (
               <>
                 <img 
-                  src={`/api/videos/${video.id}/thumbnail`} 
+                  src={thumbnailSrc} 
                   alt={video.title}
                   className="h-full w-full object-cover"
                 />

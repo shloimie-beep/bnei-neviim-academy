@@ -43,6 +43,12 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
   
   const categoryName = categories.find(c => c.id === video.categoryId)?.name;
 
+  const thumbnailSrc = video.thumbnailPath 
+    ? `/api/videos/${video.id}/thumbnail`
+    : video.bunnyGuid
+      ? `https://vz-576907.b-cdn.net/${video.bunnyGuid}/thumbnail.jpg`
+      : null;
+
   const handleDelete = async () => {
     setIsDeleting(true);
     await onDelete();
@@ -92,10 +98,10 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
       <CardContent className="p-4">
         <div className="flex items-start gap-4">
           <div className="relative h-16 w-24 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden group">
-            {video.thumbnailPath ? (
+            {thumbnailSrc ? (
               <>
                 <img 
-                  src={`/api/videos/${video.id}/thumbnail`} 
+                  src={thumbnailSrc} 
                   alt={video.title}
                   className="h-full w-full object-cover"
                 />
