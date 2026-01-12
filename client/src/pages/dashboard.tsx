@@ -502,7 +502,7 @@ function VideoPlayer({ video, onClose }: { video: VideoType; onClose: () => void
   return <LegacyVideoPlayer video={video} onClose={onClose} />;
 }
 
-function VideoCard({ video }: { video: VideoType }) {
+function VideoCard({ video, isNew, onView }: { video: VideoType; isNew?: boolean; onView?: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const isAudio = video.mediaType === "audio";
 
@@ -514,8 +514,15 @@ function VideoCard({ video }: { video: VideoType }) {
       ? (video as any).bunnyThumbnailUrl
       : null;
 
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (open && onView) {
+      onView();
+    }
+  };
+
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Card className="overflow-hidden cursor-pointer hover-elevate active-elevate-2" data-testid={`card-video-${video.id}`}>
           <div className="aspect-video bg-muted flex items-center justify-center relative group overflow-hidden">
@@ -536,6 +543,11 @@ function VideoCard({ video }: { video: VideoType }) {
               <Music className="h-12 w-12 text-muted-foreground" />
             ) : (
               <FileVideo className="h-12 w-12 text-muted-foreground" />
+            )}
+            {isNew && (
+              <div className="absolute top-2 right-2">
+                <Badge variant="destructive" className="text-xs" data-testid={`badge-new-${video.id}`}>New</Badge>
+              </div>
             )}
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
               <div className="h-14 w-14 rounded-full bg-primary flex items-center justify-center">
@@ -641,6 +653,11 @@ export default function DashboardPage() {
     queryKey: ["/api/video-categories"],
   });
 
+  const { data: viewedData } = useQuery<{ viewedVideoIds: string[] }>({
+    queryKey: ["/api/videos/viewed"],
+  });
+  const viewedVideoIds = viewedData?.viewedVideoIds || [];
+
   const { data: documents, isLoading: documentsLoading } = useQuery<Document[]>({
     queryKey: ["/api/documents"],
   });
@@ -663,6 +680,26 @@ export default function DashboardPage() {
 
     return { grouped, uncategorized };
   }, [videos]);
+
+  const markVideoViewedMutation = useMutation({
+    mutationFn: async (videoId: string) => {
+      const res = await apiRequest("POST", `/api/videos/${videoId}/viewed`);
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/videos/viewed"] });
+    },
+  });
+
+  // Check if a video is new (uploaded in last 24 hours and not viewed by user)
+  const isVideoNew = (video: VideoType): boolean => {
+    if (!video.createdAt) return false;
+    const uploadedAt = new Date(video.createdAt);
+    const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
+    const isRecent = uploadedAt > oneDayAgo;
+    const hasViewed = viewedVideoIds.includes(video.id);
+    return isRecent && !hasViewed;
+  };
 
   const addPhoneMutation = useMutation({
     mutationFn: async (phoneNumber: string) => {
@@ -1113,7 +1150,12 @@ export default function DashboardPage() {
                           </h3>
                           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                             {categoryVideos.map((video) => (
-                              <VideoCard key={video.id} video={video} />
+                              <VideoCard 
+                                key={video.id} 
+                                video={video} 
+                                isNew={isVideoNew(video)}
+                                onView={() => markVideoViewedMutation.mutate(video.id)}
+                              />
                             ))}
                           </div>
                         </div>
@@ -1126,7 +1168,12 @@ export default function DashboardPage() {
                         )}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                           {videosByCategory.uncategorized.map((video) => (
-                            <VideoCard key={video.id} video={video} />
+                            <VideoCard 
+                              key={video.id} 
+                              video={video}
+                              isNew={isVideoNew(video)}
+                              onView={() => markVideoViewedMutation.mutate(video.id)}
+                            />
                           ))}
                         </div>
                       </div>

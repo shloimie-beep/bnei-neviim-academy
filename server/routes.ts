@@ -2571,6 +2571,31 @@ export async function registerRoutes(
     }
   });
 
+  // Get user's viewed video IDs (for "New" badge logic)
+  app.get("/api/videos/viewed", requireAuth, async (req, res) => {
+    try {
+      const userId = req.session.userId!;
+      const viewedVideoIds = await storage.getUserViewedVideoIds(userId);
+      res.json({ viewedVideoIds });
+    } catch (error) {
+      console.error("Get viewed videos error:", error);
+      res.status(500).json({ message: "Failed to get viewed videos" });
+    }
+  });
+
+  // Mark a video as viewed by the current user
+  app.post("/api/videos/:id/viewed", requireAuth, async (req, res) => {
+    try {
+      const userId = req.session.userId!;
+      const videoId = req.params.id;
+      await storage.markVideoAsViewed(userId, videoId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Mark video as viewed error:", error);
+      res.status(500).json({ message: "Failed to mark video as viewed" });
+    }
+  });
+
   // Subscriber: Stream a video (requires active subscription)
   app.get("/api/videos/:id/stream", requireAuth, async (req, res) => {
     try {

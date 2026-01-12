@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw, Sparkles } from "lucide-react";
+import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -214,15 +214,6 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
                       <p className="font-medium" data-testid={`text-video-title-${video.id}`}>
                         {video.title}
                       </p>
-                      {/* Show "New" badge for videos uploaded in last 24 hours with no views */}
-                      {video.createdAt && 
-                       (new Date().getTime() - new Date(video.createdAt).getTime()) < 24 * 60 * 60 * 1000 && 
-                       (video.viewCount ?? 0) === 0 && (
-                        <Badge variant="default" className="text-xs gap-1 bg-amber-500 hover:bg-amber-600" data-testid={`badge-new-${video.id}`}>
-                          <Sparkles className="h-3 w-3" />
-                          New
-                        </Badge>
-                      )}
                       {video.mediaType === "audio" && (
                         <Badge variant="secondary" className="text-xs gap-1">
                           <Music className="h-3 w-3" />
