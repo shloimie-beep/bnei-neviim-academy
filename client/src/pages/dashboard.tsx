@@ -1066,7 +1066,7 @@ export default function DashboardPage() {
                     {videosByCategory.uncategorized && videosByCategory.uncategorized.length > 0 && (
                       <div>
                         {categories.length > 0 && (
-                          <h3 className="text-lg font-semibold mb-4">Other / Not Yet Categorized</h3>
+                          <h3 className="text-lg font-semibold mb-4">Other Videos</h3>
                         )}
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                           {videosByCategory.uncategorized.map((video) => (

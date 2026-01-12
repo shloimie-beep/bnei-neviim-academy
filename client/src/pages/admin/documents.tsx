@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, FileText, Trash2, Loader2, Edit2, Eye, EyeOff, BarChart2, Image, RefreshCw } from "lucide-react";
+import { Upload, FileText, Trash2, Loader2, Edit2, Eye, EyeOff, BarChart2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -22,12 +22,10 @@ function formatFileSize(bytes: number | null): string {
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
-function DocumentCard({ doc, onDelete, onUpdate, onThumbnailUpload, onGenerateThumbnail, categories }: { 
+function DocumentCard({ doc, onDelete, onUpdate, categories }: { 
   doc: Document; 
   onDelete: () => void;
   onUpdate: (data: Partial<Document>) => void;
-  onThumbnailUpload: (file: File) => void;
-  onGenerateThumbnail: () => void;
   categories: VideoCategory[];
 }) {
   const [isDeleting, setIsDeleting] = useState(false);
@@ -36,37 +34,8 @@ function DocumentCard({ doc, onDelete, onUpdate, onThumbnailUpload, onGenerateTh
   const [editTitle, setEditTitle] = useState(doc.title);
   const [editDescription, setEditDescription] = useState(doc.description || "");
   const [editCategoryId, setEditCategoryId] = useState(doc.categoryId || "");
-  const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
-  const [isGeneratingThumbnail, setIsGeneratingThumbnail] = useState(false);
-  const thumbnailInputRef = useRef<HTMLInputElement>(null);
   
   const categoryName = categories.find(c => c.id === doc.categoryId)?.name;
-  
-  const handleThumbnailChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setIsUploadingThumbnail(true);
-      try {
-        await onThumbnailUpload(file);
-      } catch (err) {
-        // Error is handled by mutation onError
-      } finally {
-        setIsUploadingThumbnail(false);
-        if (thumbnailInputRef.current) thumbnailInputRef.current.value = "";
-      }
-    }
-  };
-  
-  const handleGenerateThumbnail = async () => {
-    setIsGeneratingThumbnail(true);
-    try {
-      await onGenerateThumbnail();
-    } catch (err) {
-      // Error is handled by mutation onError
-    } finally {
-      setIsGeneratingThumbnail(false);
-    }
-  };
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -88,50 +57,8 @@ function DocumentCard({ doc, onDelete, onUpdate, onThumbnailUpload, onGenerateTh
     <Card>
       <CardContent className="p-4">
         <div className="flex items-start gap-4">
-          <div className="relative group">
-            {doc.thumbnailPath ? (
-              <img 
-                src={`/api/documents/${doc.id}/thumbnail`} 
-                alt={doc.title}
-                className="h-20 w-20 rounded-lg object-cover flex-shrink-0"
-              />
-            ) : (
-              <div className="h-20 w-20 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <FileText className="h-10 w-10 text-primary" />
-              </div>
-            )}
-            <div className="absolute inset-0 bg-black/60 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-1">
-              <input
-                ref={thumbnailInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleThumbnailChange}
-                className="hidden"
-                data-testid={`input-thumbnail-${doc.id}`}
-              />
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-7 w-7 text-white hover:bg-white/20"
-                onClick={() => thumbnailInputRef.current?.click()}
-                disabled={isUploadingThumbnail}
-                title="Upload thumbnail"
-                data-testid={`button-upload-thumbnail-${doc.id}`}
-              >
-                {isUploadingThumbnail ? <Loader2 className="h-4 w-4 animate-spin" /> : <Image className="h-4 w-4" />}
-              </Button>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-7 w-7 text-white hover:bg-white/20"
-                onClick={handleGenerateThumbnail}
-                disabled={isGeneratingThumbnail}
-                title="Generate from PDF"
-                data-testid={`button-generate-thumbnail-${doc.id}`}
-              >
-                {isGeneratingThumbnail ? <Loader2 className="h-4 w-4 animate-spin" /> : <RefreshCw className="h-4 w-4" />}
-              </Button>
-            </div>
+          <div className="h-16 w-16 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+            <FileText className="h-8 w-8 text-primary" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
@@ -318,46 +245,6 @@ export default function DocumentManagement() {
     },
   });
 
-  const thumbnailUploadMutation = useMutation({
-    mutationFn: async ({ id, file }: { id: string; file: File }) => {
-      const formData = new FormData();
-      formData.append("thumbnail", file);
-      const res = await fetch(`/api/admin/documents/${id}/thumbnail`, {
-        method: "POST",
-        body: formData,
-      });
-      if (!res.ok) throw new Error("Failed to upload thumbnail");
-      return res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/documents"] });
-      toast({ title: "Thumbnail uploaded" });
-    },
-    onError: (error: any) => {
-      toast({ title: "Failed to upload thumbnail", description: error.message, variant: "destructive" });
-    },
-  });
-
-  const generateThumbnailMutation = useMutation({
-    mutationFn: async (id: string) => {
-      const res = await fetch(`/api/admin/documents/${id}/generate-thumbnail`, {
-        method: "POST",
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.message || "Failed to generate thumbnail");
-      }
-      return res.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/documents"] });
-      toast({ title: "Thumbnail generated from PDF" });
-    },
-    onError: (error: any) => {
-      toast({ title: "Failed to generate thumbnail", description: error.message, variant: "destructive" });
-    },
-  });
-
   const handleUpload = async () => {
     if (!selectedFile || !title) {
       toast({ title: "Please provide a file and title", variant: "destructive" });
@@ -529,8 +416,6 @@ export default function DocumentManagement() {
               categories={categories}
               onDelete={() => deleteMutation.mutate(doc.id)}
               onUpdate={(data) => updateMutation.mutate({ id: doc.id, data })}
-              onThumbnailUpload={(file) => thumbnailUploadMutation.mutateAsync({ id: doc.id, file })}
-              onGenerateThumbnail={() => generateThumbnailMutation.mutateAsync(doc.id)}
             />
           ))}
         </div>
