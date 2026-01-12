@@ -500,6 +500,8 @@ export class DatabaseStorage implements IStorage {
       SELECT 
         u.id,
         u.email,
+        u.family_name,
+        u.location,
         u.subscription_status,
         u.stripe_customer_id,
         u.stripe_subscription_id,

@@ -54,6 +54,8 @@ import {
 interface Subscriber {
   id: string;
   email: string;
+  familyName: string | null;
+  location: string | null;
   role: string;
   subscriptionStatus: string | null;
   stripeCustomerId: string | null;
@@ -262,10 +264,15 @@ export default function SubscribersManagement() {
     }
   };
 
-  const filteredSubscribers = subscribers?.filter((sub) =>
-    sub.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (sub.phoneNumbers || []).some((p) => p.phoneNumber.includes(searchTerm))
-  );
+  const filteredSubscribers = subscribers?.filter((sub) => {
+    const term = searchTerm.toLowerCase();
+    return (
+      sub.email.toLowerCase().includes(term) ||
+      (sub.familyName?.toLowerCase() || "").includes(term) ||
+      (sub.location?.toLowerCase() || "").includes(term) ||
+      (sub.phoneNumbers || []).some((p) => p.phoneNumber.includes(searchTerm))
+    );
+  });
 
   const formatPhoneNumber = (phone: string) => {
     const cleaned = phone.replace(/\D/g, "");
@@ -357,8 +364,10 @@ export default function SubscribersManagement() {
               <Table>
                 <TableHeader>
                   <TableRow>
+                    <TableHead>Family Name</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Phone</TableHead>
+                    <TableHead>Location</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>
                       <div className="flex items-center gap-1">
@@ -373,12 +382,14 @@ export default function SubscribersManagement() {
                 <TableBody>
                   {filteredSubscribers.map((subscriber) => (
                     <TableRow key={subscriber.id} data-testid={`row-subscriber-${subscriber.id}`}>
-                      <TableCell className="font-medium">{subscriber.email}</TableCell>
+                      <TableCell className="font-medium">{subscriber.familyName || "-"}</TableCell>
+                      <TableCell>{subscriber.email}</TableCell>
                       <TableCell className="font-mono text-sm">
                         {(subscriber.phoneNumbers || []).length > 0
                           ? formatPhoneNumber(subscriber.phoneNumbers[0].phoneNumber)
                           : "-"}
                       </TableCell>
+                      <TableCell className="text-muted-foreground">{subscriber.location || "-"}</TableCell>
                       <TableCell>{getStatusBadge(subscriber.subscriptionStatus)}</TableCell>
                       <TableCell>{formatMinutes(subscriber.monthlyCallMinutes)}</TableCell>
                       <TableCell className="text-muted-foreground">
