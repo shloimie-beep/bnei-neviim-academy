@@ -2224,6 +2224,75 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Sync videos from Bunny library to database
+  app.post("/api/admin/videos/sync-from-bunny", requireAdmin, async (req, res) => {
+    try {
+      // Get all videos from Bunny library
+      let allBunnyVideos: any[] = [];
+      let page = 1;
+      let hasMore = true;
+      
+      while (hasMore) {
+        const result = await bunnyStream.listVideos(page, 100);
+        allBunnyVideos = allBunnyVideos.concat(result.items);
+        hasMore = allBunnyVideos.length < result.totalItems;
+        page++;
+      }
+      
+      console.log(`[Bunny Sync] Found ${allBunnyVideos.length} videos in Bunny library`);
+
+      // Get all videos from database
+      const dbVideos = await storage.getAllVideos();
+      const existingGuids = new Set(dbVideos.filter(v => v.bunnyGuid).map(v => v.bunnyGuid));
+
+      // Find videos in Bunny that don't exist in database
+      const missingVideos = allBunnyVideos.filter(bv => !existingGuids.has(bv.guid));
+      
+      console.log(`[Bunny Sync] ${missingVideos.length} videos need to be imported`);
+
+      let importedCount = 0;
+      
+      for (const bunnyVideo of missingVideos) {
+        try {
+          // Only import videos that are finished processing (status 4)
+          const status = bunnyVideo.status === 4 ? "ready" : 
+                        bunnyVideo.status === 5 ? "failed" : "processing";
+          
+          await storage.createVideo({
+            title: bunnyVideo.title || `Video ${bunnyVideo.guid}`,
+            description: null,
+            filename: `${bunnyVideo.title || bunnyVideo.guid}.mp4`,
+            filepath: null,
+            fileSize: bunnyVideo.storageSize || 0,
+            duration: bunnyVideo.length || 0,
+            status,
+            mediaType: "video",
+            storageType: "bunny",
+            bunnyGuid: bunnyVideo.guid,
+            bunnyVideoId: bunnyVideo.guid,
+            categoryId: null,
+            thumbnailPath: null,
+          });
+          
+          importedCount++;
+          console.log(`[Bunny Sync] Imported video: ${bunnyVideo.title} (${bunnyVideo.guid})`);
+        } catch (err) {
+          console.error(`[Bunny Sync] Failed to import video ${bunnyVideo.guid}:`, err);
+        }
+      }
+
+      res.json({ 
+        message: `Found ${allBunnyVideos.length} videos in Bunny, imported ${importedCount} new videos`,
+        totalInBunny: allBunnyVideos.length,
+        alreadyImported: dbVideos.length,
+        newlyImported: importedCount
+      });
+    } catch (error: any) {
+      console.error("Bunny sync error:", error);
+      res.status(500).json({ message: error.message || "Failed to sync videos from Bunny" });
+    }
+  });
+
   // Admin: Delete custom thumbnail and optionally regenerate from video
   app.delete("/api/admin/videos/:id/thumbnail", requireAdmin, async (req, res) => {
     try {
