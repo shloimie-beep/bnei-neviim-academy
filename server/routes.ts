@@ -1130,7 +1130,18 @@ export async function registerRoutes(
   app.get("/api/admin/videos", requireAdmin, async (req, res) => {
     try {
       const videos = await storage.getAllVideos();
-      res.json(videos);
+      const videosWithThumbnails = await Promise.all(
+        videos.map(async (video) => {
+          if (video.bunnyGuid && !video.thumbnailPath) {
+            return {
+              ...video,
+              bunnyThumbnailUrl: await bunnyStream.getThumbnailUrl(video.bunnyGuid),
+            };
+          }
+          return video;
+        })
+      );
+      res.json(videosWithThumbnails);
     } catch (error) {
       console.error("Get videos error:", error);
       res.status(500).json({ message: "Failed to get videos" });

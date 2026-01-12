@@ -45,10 +45,10 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
 
   const thumbnailSrc = video.thumbnailPath 
     ? (video.thumbnailPath.startsWith("bunny://") 
-        ? `https://iframe.mediadelivery.net/embed/${video.bunnyGuid}/thumbnail.jpg`
+        ? (video as any).bunnyThumbnailUrl || `https://vz-2480b6a7-327.b-cdn.net/${video.bunnyGuid}/thumbnail.jpg`
         : `/api/videos/${video.id}/thumbnail`)
-    : video.bunnyGuid
-      ? `https://iframe.mediadelivery.net/embed/${video.bunnyGuid}/thumbnail.jpg`
+    : (video as any).bunnyThumbnailUrl 
+      ? (video as any).bunnyThumbnailUrl
       : null;
 
   const handleDelete = async () => {
