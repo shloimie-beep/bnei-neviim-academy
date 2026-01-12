@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock } from "lucide-react";
+import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -636,6 +636,8 @@ export default function DashboardPage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const recentScrollRef = useRef<HTMLDivElement>(null);
 
   const { data: phoneNumbers, isLoading: phonesLoading } = useQuery<PhoneNumber[]>({
     queryKey: ["/api/phone-numbers"],
@@ -699,6 +701,40 @@ export default function DashboardPage() {
     const isRecent = uploadedAt > oneDayAgo;
     const hasViewed = viewedVideoIds.includes(video.id);
     return isRecent && !hasViewed;
+  };
+
+  // Get 10 most recent videos for the Recent section
+  const recentVideos = useMemo(() => {
+    if (!videos) return [];
+    return [...videos]
+      .sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
+        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        return dateB - dateA;
+      })
+      .slice(0, 10);
+  }, [videos]);
+
+  // Get filtered content based on selected category
+  const filteredVideos = useMemo(() => {
+    if (!videos) return [];
+    if (selectedCategory === "all") return videos;
+    if (selectedCategory === "documents") return [];
+    if (selectedCategory === "uncategorized") {
+      return videos.filter(v => !v.categoryId);
+    }
+    return videos.filter(v => v.categoryId === selectedCategory);
+  }, [videos, selectedCategory]);
+
+  // Scroll functions for Recent section
+  const scrollRecent = (direction: "left" | "right") => {
+    if (recentScrollRef.current) {
+      const scrollAmount = 300;
+      recentScrollRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth"
+      });
+    }
   };
 
   const addPhoneMutation = useMutation({
@@ -1121,112 +1157,159 @@ export default function DashboardPage() {
 
           {hasActiveSubscription ? (
             <>
-              <div>
-                <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                  <Video className="h-6 w-6" />
-                  Video Library
-                </h2>
-                {videosLoading ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {[1, 2, 3, 4, 5, 6].map((i) => (
-                      <Card key={i} className="overflow-hidden">
-                        <Skeleton className="aspect-video" />
-                        <CardContent className="p-4 space-y-2">
-                          <Skeleton className="h-5 w-3/4" />
-                          <Skeleton className="h-4 w-full" />
-                        </CardContent>
-                      </Card>
-                    ))}
-                  </div>
-                ) : videos && videos.length > 0 ? (
-                  <div className="space-y-8">
-                    {categories.map((category) => {
-                      const categoryVideos = videosByCategory.grouped?.[category.id];
-                      if (!categoryVideos || categoryVideos.length === 0) return null;
-                      return (
-                        <div key={category.id}>
-                          <h3 className="text-lg font-semibold mb-4" data-testid={`text-category-${category.id}`}>
-                            {category.name}
-                          </h3>
-                          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                            {categoryVideos.map((video) => (
-                              <VideoCard 
-                                key={video.id} 
-                                video={video} 
-                                isNew={isVideoNew(video)}
-                                onView={() => markVideoViewedMutation.mutate(video.id)}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      );
-                    })}
-                    {videosByCategory.uncategorized && videosByCategory.uncategorized.length > 0 && (
-                      <div>
-                        {categories.length > 0 && (
-                          <h3 className="text-lg font-semibold mb-4">Other / Not Yet Categorized</h3>
-                        )}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                          {videosByCategory.uncategorized.map((video) => (
-                            <VideoCard 
-                              key={video.id} 
-                              video={video}
-                              isNew={isVideoNew(video)}
-                              onView={() => markVideoViewedMutation.mutate(video.id)}
-                            />
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                ) : (
-                  <Card>
-                    <CardContent className="py-12 text-center">
-                      <FileVideo className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                      <h3 className="font-semibold text-lg mb-2">No Videos Yet</h3>
-                      <p className="text-muted-foreground">
-                        Check back soon for new video content!
-                      </p>
-                    </CardContent>
-                  </Card>
+              {/* Category Filter Buttons */}
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  variant={selectedCategory === "all" ? "default" : "outline"}
+                  onClick={() => setSelectedCategory("all")}
+                  data-testid="button-category-all"
+                >
+                  All
+                </Button>
+                {categories.map((category) => (
+                  <Button
+                    key={category.id}
+                    variant={selectedCategory === category.id ? "default" : "outline"}
+                    onClick={() => setSelectedCategory(category.id)}
+                    data-testid={`button-category-${category.id}`}
+                  >
+                    {category.name}
+                  </Button>
+                ))}
+                {videosByCategory.uncategorized && videosByCategory.uncategorized.length > 0 && (
+                  <Button
+                    variant={selectedCategory === "uncategorized" ? "default" : "outline"}
+                    onClick={() => setSelectedCategory("uncategorized")}
+                    data-testid="button-category-uncategorized"
+                  >
+                    Other
+                  </Button>
+                )}
+                {documents && documents.length > 0 && (
+                  <Button
+                    variant={selectedCategory === "documents" ? "default" : "outline"}
+                    onClick={() => setSelectedCategory("documents")}
+                    data-testid="button-category-documents"
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Documents
+                  </Button>
                 )}
               </div>
 
-              <div>
-                <h2 className="text-2xl font-bold mb-4 flex items-center gap-2">
-                  <FileText className="h-6 w-6" />
-                  Document Library
-                </h2>
-                {documentsLoading ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {[1, 2, 3].map((i) => (
-                      <Card key={i} className="overflow-hidden">
-                        <Skeleton className="aspect-video" />
-                        <CardContent className="p-4 space-y-2">
-                          <Skeleton className="h-5 w-3/4" />
-                          <Skeleton className="h-4 w-full" />
-                        </CardContent>
-                      </Card>
-                    ))}
+              {/* Recent Videos Section - Horizontal Scrolling */}
+              {recentVideos.length > 0 && (
+                <div>
+                  <h2 className="text-lg font-semibold mb-4">Recent</h2>
+                  <div className="relative">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm"
+                      onClick={() => scrollRecent("left")}
+                      data-testid="button-scroll-recent-left"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <div 
+                      ref={recentScrollRef}
+                      className="flex gap-4 overflow-x-auto scrollbar-hide px-10 pb-2"
+                      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                    >
+                      {recentVideos.map((video) => (
+                        <div key={video.id} className="flex-shrink-0 w-64">
+                          <VideoCard 
+                            video={video}
+                            isNew={isVideoNew(video)}
+                            onView={() => markVideoViewedMutation.mutate(video.id)}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm"
+                      onClick={() => scrollRecent("right")}
+                      data-testid="button-scroll-recent-right"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
                   </div>
-                ) : documents && documents.length > 0 ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {documents.map((doc) => (
-                      <DocumentCard key={doc.id} doc={doc} />
-                    ))}
-                  </div>
-                ) : (
-                  <Card>
-                    <CardContent className="py-12 text-center">
-                      <FileText className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                      <h3 className="font-semibold text-lg mb-2">No Documents Yet</h3>
-                      <p className="text-muted-foreground">
-                        Check back soon for new document content!
-                      </p>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
+                </div>
+              )}
+
+              {/* Content based on selected category */}
+              {selectedCategory === "documents" ? (
+                <div>
+                  {documentsLoading ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {[1, 2, 3].map((i) => (
+                        <Card key={i} className="overflow-hidden">
+                          <Skeleton className="aspect-video" />
+                          <CardContent className="p-4 space-y-2">
+                            <Skeleton className="h-5 w-3/4" />
+                            <Skeleton className="h-4 w-full" />
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : documents && documents.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {documents.map((doc) => (
+                        <DocumentCard key={doc.id} doc={doc} />
+                      ))}
+                    </div>
+                  ) : (
+                    <Card>
+                      <CardContent className="py-12 text-center">
+                        <FileText className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                        <h3 className="font-semibold text-lg mb-2">No Documents Yet</h3>
+                        <p className="text-muted-foreground">
+                          Check back soon for new document content!
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              ) : (
+                <div>
+                  {videosLoading ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {[1, 2, 3, 4, 5, 6].map((i) => (
+                        <Card key={i} className="overflow-hidden">
+                          <Skeleton className="aspect-video" />
+                          <CardContent className="p-4 space-y-2">
+                            <Skeleton className="h-5 w-3/4" />
+                            <Skeleton className="h-4 w-full" />
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : filteredVideos.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {filteredVideos.map((video) => (
+                        <VideoCard 
+                          key={video.id} 
+                          video={video}
+                          isNew={isVideoNew(video)}
+                          onView={() => markVideoViewedMutation.mutate(video.id)}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <Card>
+                      <CardContent className="py-12 text-center">
+                        <FileVideo className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                        <h3 className="font-semibold text-lg mb-2">No Content Yet</h3>
+                        <p className="text-muted-foreground">
+                          Check back soon for new content!
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              )}
 
             </>
           ) : (
