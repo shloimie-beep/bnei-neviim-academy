@@ -1,10 +1,11 @@
-import { exec } from "child_process";
-import { promisify } from "util";
 import * as fs from "fs";
 import * as path from "path";
+import { exec } from "child_process";
+import { promisify } from "util";
 import { ObjectStorageService, objectStorageClient } from "./replit_integrations/object_storage";
-
-import { createVideo, uploadThumbnail } from "./bunnyStream";
+import { uploadThumbnail } from "./bunnyStream";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf";
+import { createCanvas } from "canvas";
 
 const execAsync = promisify(exec);
 const objectStorageService = new ObjectStorageService();
@@ -51,6 +52,37 @@ export async function generateThumbnailFromBunny(
     console.error(`[Thumbnail] Error generating thumbnail:`, error.message);
     if (fs.existsSync(tempThumbnailPath)) fs.unlinkSync(tempThumbnailPath);
     return null;
+  }
+}
+
+export async function generatePdfThumbnail(pdfPath: string, thumbnailPath: string): Promise<boolean> {
+  try {
+    const data = new Uint8Array(fs.readFileSync(pdfPath));
+    const loadingTask = pdfjsLib.getDocument({
+      data,
+      useSystemFonts: true,
+      disableFontFace: true,
+    });
+
+    const pdfDocument = await loadingTask.promise;
+    const page = await pdfDocument.getPage(1);
+    
+    const viewport = page.getViewport({ scale: 1.0 });
+    const canvas = createCanvas(viewport.width, viewport.height);
+    const context = canvas.getContext('2d') as any;
+
+    await page.render({
+      canvasContext: context,
+      viewport: viewport,
+    }).promise;
+
+    const buffer = canvas.toBuffer('image/jpeg');
+    fs.writeFileSync(thumbnailPath, buffer);
+    
+    return true;
+  } catch (error) {
+    console.error("PDF Thumbnail generation failed:", error);
+    return false;
   }
 }
 
