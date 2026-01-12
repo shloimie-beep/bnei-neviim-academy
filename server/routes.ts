@@ -2281,11 +2281,39 @@ export async function registerRoutes(
         }
       }
 
+      // Also refresh status of any existing videos that are stuck in processing
+      const allDbVideos = await storage.getAllVideos();
+      const stuckVideos = allDbVideos.filter(v => 
+        v.bunnyGuid && 
+        (v.status === "processing" || v.status === "uploading")
+      );
+      
+      let updatedCount = 0;
+      for (const video of stuckVideos) {
+        try {
+          const bunnyVideo = await bunnyStream.getVideo(video.bunnyGuid!);
+          if (bunnyVideo.status === 4) {
+            await storage.updateVideo(video.id, { 
+              status: "ready",
+              duration: bunnyVideo.length,
+            });
+            updatedCount++;
+            console.log(`[Bunny Sync] Updated video ${video.id} to ready`);
+          } else if (bunnyVideo.status === 5) {
+            await storage.updateVideo(video.id, { status: "failed" });
+            updatedCount++;
+          }
+        } catch (err) {
+          console.error(`[Bunny Sync] Failed to check video ${video.id}:`, err);
+        }
+      }
+
       res.json({ 
-        message: `Found ${allBunnyVideos.length} videos in Bunny, imported ${importedCount} new videos`,
+        message: `Found ${allBunnyVideos.length} videos in Bunny, imported ${importedCount} new, updated ${updatedCount} statuses`,
         totalInBunny: allBunnyVideos.length,
         alreadyImported: dbVideos.length,
-        newlyImported: importedCount
+        newlyImported: importedCount,
+        statusesUpdated: updatedCount
       });
     } catch (error: any) {
       console.error("Bunny sync error:", error);
