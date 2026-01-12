@@ -1,5 +1,5 @@
 import { sql, relations } from "drizzle-orm";
-import { pgTable, text, varchar, boolean, integer, timestamp, jsonb } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, boolean, integer, timestamp, jsonb, bigint } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -157,7 +157,7 @@ export const videos = pgTable("videos", {
   filepath: text("filepath"),
   thumbnailPath: text("thumbnail_path"),
   duration: integer("duration"),
-  fileSize: integer("file_size"),
+  fileSize: bigint("file_size", { mode: "number" }),
   viewCount: integer("view_count").default(0),
   status: text("status").notNull().default("processing"),
   mediaType: text("media_type").notNull().default("video"), // 'video' or 'audio'
