@@ -1140,23 +1140,57 @@ export default function DashboardPage() {
 
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto space-y-8">
-          <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
-            <div>
-              <h1 className="text-3xl font-bold mb-2">Welcome back!</h1>
-              <div className="flex items-center gap-3 flex-wrap">
-                <SubscriptionStatusBadge status={user?.subscriptionStatus || "none"} />
-                {user?.subscriptionStatus === "trial" && daysRemaining > 0 && (
-                  <span className="text-sm text-muted-foreground">
-                    {daysRemaining} days left in trial
-                  </span>
-                )}
-              </div>
-            </div>
-
-          </div>
 
           {hasActiveSubscription ? (
             <>
+              {/* Recent Videos Section - Horizontal Scrolling */}
+              {recentVideos.length > 0 && (
+                <div>
+                  <h2 className="text-lg font-semibold mb-4">Recent</h2>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="flex-shrink-0"
+                      onClick={() => scrollRecent("left")}
+                      data-testid="button-scroll-recent-left"
+                    >
+                      <ChevronLeft className="h-4 w-4" />
+                    </Button>
+                    <div className="relative flex-1 overflow-hidden">
+                      {/* Left fade gradient */}
+                      <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+                      <div 
+                        ref={recentScrollRef}
+                        className="flex gap-4 overflow-x-auto scrollbar-hide px-2 pb-2"
+                        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                      >
+                        {recentVideos.map((video) => (
+                          <div key={video.id} className="flex-shrink-0 w-64">
+                            <VideoCard 
+                              video={video}
+                              isNew={isVideoNew(video)}
+                              onView={() => markVideoViewedMutation.mutate(video.id)}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      {/* Right fade gradient */}
+                      <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+                    </div>
+                    <Button
+                      variant="outline"
+                      size="icon"
+                      className="flex-shrink-0"
+                      onClick={() => scrollRecent("right")}
+                      data-testid="button-scroll-recent-right"
+                    >
+                      <ChevronRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+
               {/* Category Filter Buttons */}
               <div className="flex flex-wrap gap-2">
                 <Button
@@ -1196,48 +1230,6 @@ export default function DashboardPage() {
                   </Button>
                 )}
               </div>
-
-              {/* Recent Videos Section - Horizontal Scrolling */}
-              {recentVideos.length > 0 && (
-                <div>
-                  <h2 className="text-lg font-semibold mb-4">Recent</h2>
-                  <div className="relative">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm"
-                      onClick={() => scrollRecent("left")}
-                      data-testid="button-scroll-recent-left"
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
-                    <div 
-                      ref={recentScrollRef}
-                      className="flex gap-4 overflow-x-auto scrollbar-hide px-10 pb-2"
-                      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                    >
-                      {recentVideos.map((video) => (
-                        <div key={video.id} className="flex-shrink-0 w-64">
-                          <VideoCard 
-                            video={video}
-                            isNew={isVideoNew(video)}
-                            onView={() => markVideoViewedMutation.mutate(video.id)}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-background/80 backdrop-blur-sm"
-                      onClick={() => scrollRecent("right")}
-                      data-testid="button-scroll-recent-right"
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-              )}
 
               {/* Content based on selected category */}
               {selectedCategory === "documents" ? (
