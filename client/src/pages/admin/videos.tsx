@@ -22,12 +22,13 @@ function formatFileSize(bytes: number | null): string {
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
-function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbnail, categories }: { 
+function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbnail, onRefreshStatus, categories }: { 
   video: VideoType; 
   onDelete: () => void;
   onUpdate: (data: Partial<VideoType>) => void;
   onUploadThumbnail: (file: File) => Promise<void>;
   onResetThumbnail: (regenerate: boolean) => Promise<void>;
+  onRefreshStatus: () => Promise<void>;
   categories: VideoCategory[];
 }) {
   const { toast } = useToast();
@@ -36,6 +37,7 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
   const [isEditing, setIsEditing] = useState(false);
   const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
   const [isResettingThumbnail, setIsResettingThumbnail] = useState(false);
+  const [isRefreshingStatus, setIsRefreshingStatus] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [editTitle, setEditTitle] = useState(video.title);
   const [editDescription, setEditDescription] = useState(video.description || "");
@@ -92,6 +94,18 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
       toast({ title: "Failed to reset thumbnail", description: error.message, variant: "destructive" });
     } finally {
       setIsResettingThumbnail(false);
+    }
+  };
+
+  const handleRefreshStatus = async () => {
+    setIsRefreshingStatus(true);
+    try {
+      await onRefreshStatus();
+      toast({ title: "Status refreshed" });
+    } catch (error: any) {
+      toast({ title: "Failed to refresh status", description: error.message, variant: "destructive" });
+    } finally {
+      setIsRefreshingStatus(false);
     }
   };
 
@@ -217,14 +231,32 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
                   </>
                 )}
               </div>
-              <Badge 
-                variant={video.status === "ready" ? "default" : video.status === "failed" ? "destructive" : "secondary"} 
-                className={`flex-shrink-0 ${video.status === "processing" ? "animate-pulse" : ""}`}
-              >
-                {video.status === "ready" ? "Published" : 
-                 video.status === "processing" ? (video.mediaType === "audio" ? "Processing..." : "Converting...") : 
-                 video.status === "failed" ? "Failed" : "Hidden"}
-              </Badge>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <Badge 
+                  variant={video.status === "ready" ? "default" : video.status === "failed" ? "destructive" : "secondary"} 
+                  className={`${video.status === "processing" ? "animate-pulse" : ""}`}
+                >
+                  {video.status === "ready" ? "Published" : 
+                   video.status === "processing" ? (video.mediaType === "audio" ? "Processing..." : "Converting...") : 
+                   video.status === "failed" ? "Failed" : "Hidden"}
+                </Badge>
+                {(video.status === "processing" || video.status === "uploading") && video.bunnyGuid && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={handleRefreshStatus}
+                    disabled={isRefreshingStatus}
+                    title="Check if processing is complete"
+                    data-testid={`button-refresh-status-${video.id}`}
+                  >
+                    {isRefreshingStatus ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <RotateCcw className="h-4 w-4" />
+                    )}
+                  </Button>
+                )}
+              </div>
             </div>
             {!isEditing && (
               <div className="flex items-center gap-4 mt-3 flex-wrap">
@@ -1361,6 +1393,16 @@ export default function VideoManagement() {
                   method: "DELETE",
                 });
                 if (!res.ok) throw new Error("Failed to reset thumbnail");
+                queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+              }}
+              onRefreshStatus={async () => {
+                const res = await fetch(`/api/admin/videos/${video.id}/refresh-status`, {
+                  method: "POST",
+                });
+                if (!res.ok) {
+                  const err = await res.json();
+                  throw new Error(err.message || "Failed to refresh status");
+                }
                 queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
               }}
             />
