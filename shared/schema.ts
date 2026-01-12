@@ -186,6 +186,14 @@ export const documents = pgTable("documents", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Per-user video view tracking for "New" badge
+export const userVideoViews = pgTable("user_video_views", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  videoId: varchar("video_id").notNull().references(() => videos.id, { onDelete: "cascade" }),
+  firstViewedAt: timestamp("first_viewed_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   phoneNumbers: many(phoneNumbers),
@@ -252,6 +260,7 @@ export const insertPasswordResetTokenSchema = createInsertSchema(passwordResetTo
 export const insertVideoCategorySchema = createInsertSchema(videoCategories).omit({ id: true, createdAt: true });
 export const insertVideoSchema = createInsertSchema(videos).omit({ id: true, createdAt: true, viewCount: true });
 export const insertDocumentSchema = createInsertSchema(documents).omit({ id: true, createdAt: true, viewCount: true });
+export const insertUserVideoViewSchema = createInsertSchema(userVideoViews).omit({ id: true, firstViewedAt: true });
 
 // Types
 export type User = typeof users.$inferSelect;
@@ -284,6 +293,8 @@ export type Video = typeof videos.$inferSelect;
 export type InsertVideo = z.infer<typeof insertVideoSchema>;
 export type Document = typeof documents.$inferSelect;
 export type InsertDocument = z.infer<typeof insertDocumentSchema>;
+export type UserVideoView = typeof userVideoViews.$inferSelect;
+export type InsertUserVideoView = z.infer<typeof insertUserVideoViewSchema>;
 
 // Validation schemas for forms
 export const loginSchema = z.object({
