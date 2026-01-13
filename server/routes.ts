@@ -917,9 +917,8 @@ export async function registerRoutes(
         customerId = customer.id;
       }
 
-      // Get the base URL for redirects
-      const domains = process.env.REPLIT_DOMAINS?.split(',') || [];
-      const baseUrl = domains.length > 0 ? `https://${domains[0]}` : 'http://localhost:5000';
+      // Get the base URL for redirects - prefer PUBLIC_APP_URL for custom domain
+      const baseUrl = process.env.PUBLIC_APP_URL || 'https://onetimeonetime.com';
 
       // Create checkout session with trial
       const session = await stripe.checkout.sessions.create({
@@ -957,9 +956,8 @@ export async function registerRoutes(
 
       const stripe = await getUncachableStripeClient();
       
-      // Get the base URL for redirects
-      const domains = process.env.REPLIT_DOMAINS?.split(',') || [];
-      const baseUrl = domains.length > 0 ? `https://${domains[0]}` : 'http://localhost:5000';
+      // Get the base URL for redirects - prefer PUBLIC_APP_URL for custom domain
+      const baseUrl = process.env.PUBLIC_APP_URL || 'https://onetimeonetime.com';
 
       const portalSession = await stripe.billingPortal.sessions.create({
         customer: user.stripeCustomerId,

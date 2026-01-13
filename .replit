@@ -47,6 +47,7 @@ integrations = ["stripe:2.0.0", "javascript_database:1.0.0", "resend:1.0.0", "ja
 [userenv.shared]
 PHONE_LIST_TOKEN = "kH8mNp2xVq4wZ6"
 BUNNY_CDN_HOSTNAME = "vz-2480b6a7-327"
+PUBLIC_APP_URL = "https://onetimeonetime.com"
 
 [objectStorage]
 defaultBucketID = "replit-objstore-5a2bbfbf-1884-4fde-824a-ce5bfc53fc46"
