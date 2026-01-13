@@ -500,6 +500,11 @@ export class DatabaseStorage implements IStorage {
 
   // Get all subscribers with their phone numbers and call stats
   async getSubscriberList(): Promise<any[]> {
+    // Get current month for call stats
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    
     const result = await db.execute(sql`
       SELECT 
         u.id,
@@ -511,13 +516,37 @@ export class DatabaseStorage implements IStorage {
         u.stripe_subscription_id,
         u.trial_ends_at,
         u.created_at,
-        pn.phone_number
+        COALESCE(
+          (SELECT array_agg(phone_number) FROM phone_numbers WHERE user_id = u.id),
+          ARRAY[]::text[]
+        ) as phone_numbers,
+        COALESCE(
+          (SELECT SUM(duration) FROM call_logs cl 
+           JOIN phone_numbers pn ON cl.from_number = pn.phone_number 
+           WHERE pn.user_id = u.id 
+             AND cl.created_at >= ${startOfMonth.toISOString()} 
+             AND cl.created_at < ${endOfMonth.toISOString()}),
+          0
+        ) as monthly_call_seconds
       FROM users u
-      LEFT JOIN phone_numbers pn ON pn.user_id = u.id
       WHERE u.role = 'customer'
       ORDER BY u.created_at DESC
     `);
-    return result.rows;
+    
+    // Transform to camelCase and format phone numbers
+    return result.rows.map((row: any) => ({
+      id: row.id,
+      email: row.email,
+      familyName: row.family_name,
+      location: row.location,
+      subscriptionStatus: row.subscription_status,
+      stripeCustomerId: row.stripe_customer_id,
+      stripeSubscriptionId: row.stripe_subscription_id,
+      trialEndsAt: row.trial_ends_at,
+      createdAt: row.created_at,
+      phoneNumbers: (row.phone_numbers || []).map((p: string) => ({ phoneNumber: p })),
+      monthlyCallMinutes: Math.round((row.monthly_call_seconds || 0) / 60),
+    }));
   }
 
   // Password Reset Tokens

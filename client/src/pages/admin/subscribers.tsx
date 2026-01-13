@@ -241,12 +241,20 @@ export default function SubscribersManagement() {
     });
   };
 
-  const formatMinutes = (minutes: number) => {
+  const formatMinutes = (minutes: number | null | undefined) => {
+    if (minutes === null || minutes === undefined || isNaN(minutes)) return "0 min";
     if (minutes < 1) return "< 1 min";
     if (minutes < 60) return `${Math.round(minutes)} min`;
     const hours = Math.floor(minutes / 60);
     const mins = Math.round(minutes % 60);
     return `${hours}h ${mins}m`;
+  };
+
+  const formatDate = (dateString: string | null | undefined) => {
+    if (!dateString) return "-";
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return "-";
+    return date.toLocaleDateString();
   };
 
   const getStatusBadge = (status: string | null) => {
@@ -393,7 +401,7 @@ export default function SubscribersManagement() {
                       <TableCell>{getStatusBadge(subscriber.subscriptionStatus)}</TableCell>
                       <TableCell>{formatMinutes(subscriber.monthlyCallMinutes)}</TableCell>
                       <TableCell className="text-muted-foreground">
-                        {new Date(subscriber.createdAt).toLocaleDateString()}
+                        {formatDate(subscriber.createdAt)}
                       </TableCell>
                       <TableCell>
                         <DropdownMenu>

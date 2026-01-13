@@ -949,6 +949,14 @@ export default function DashboardPage() {
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-6 py-4">
+                    {/* Email Display */}
+                    <div className="space-y-3">
+                      <h3 className="font-medium">Email</h3>
+                      <p className="text-sm text-muted-foreground" data-testid="text-user-email">
+                        {user?.email}
+                      </p>
+                    </div>
+
                     <div className="space-y-3">
                       <h3 className="font-medium flex items-center gap-2">
                         <Phone className="h-4 w-4" />
