@@ -151,9 +151,12 @@ export default function WhitelistManagement() {
 
   const handleAddPhone = () => {
     if (!newPhoneNumber.trim()) return;
-    const fullNumber = phoneCountryCode + newPhoneNumber.replace(/^0+/, '').replace(/\D/g, "");
+    // Build full E.164 number: country code (without +) + cleaned local number
+    const countryCodeDigits = phoneCountryCode.replace(/\D/g, "");
+    const localNumber = newPhoneNumber.replace(/^0+/, '').replace(/\D/g, "");
+    const fullNumber = countryCodeDigits + localNumber;
     addPhoneMutation.mutate({
-      phoneNumber: fullNumber.replace(/\D/g, ""),
+      phoneNumber: fullNumber,
       label: newPhoneLabel.trim() || undefined,
     });
   };
