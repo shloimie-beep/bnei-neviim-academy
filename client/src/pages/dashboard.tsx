@@ -1168,19 +1168,25 @@ export default function DashboardPage() {
               {recentVideos.length > 0 && (
                 <div>
                   <h2 className="text-lg font-semibold mb-4">Recent</h2>
-                  <div className="flex items-center gap-2">
-                    {canScrollLeft && (
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="flex-shrink-0"
-                        onClick={() => scrollRecent("left")}
-                        data-testid="button-scroll-recent-left"
-                      >
-                        <ChevronLeft className="h-4 w-4" />
-                      </Button>
-                    )}
-                    <div className="relative flex-1 overflow-hidden">
+                  <div className="grid grid-cols-[40px_1fr_40px] gap-2 items-center">
+                    {/* Left control column - always reserves space */}
+                    <div className="flex items-center justify-center">
+                      {canScrollLeft ? (
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => scrollRecent("left")}
+                          data-testid="button-scroll-recent-left"
+                        >
+                          <ChevronLeft className="h-4 w-4" />
+                        </Button>
+                      ) : (
+                        <div className="w-9 h-9" /> 
+                      )}
+                    </div>
+                    
+                    {/* Scrollable video track */}
+                    <div className="relative overflow-hidden">
                       {/* Left fade gradient */}
                       {canScrollLeft && (
                         <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
@@ -1191,7 +1197,7 @@ export default function DashboardPage() {
                         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                       >
                         {recentVideos.map((video) => (
-                          <div key={video.id} className="flex-shrink-0 w-64">
+                          <div key={video.id} className="flex-shrink-0 w-56">
                             <VideoCard 
                               video={video}
                               isNew={isVideoNew(video)}
@@ -1205,17 +1211,22 @@ export default function DashboardPage() {
                         <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
                       )}
                     </div>
-                    {canScrollRight && (
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="flex-shrink-0"
-                        onClick={() => scrollRecent("right")}
-                        data-testid="button-scroll-recent-right"
-                      >
-                        <ChevronRight className="h-4 w-4" />
-                      </Button>
-                    )}
+                    
+                    {/* Right control column - always reserves space */}
+                    <div className="flex items-center justify-center">
+                      {canScrollRight ? (
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => scrollRecent("right")}
+                          data-testid="button-scroll-recent-right"
+                        >
+                          <ChevronRight className="h-4 w-4" />
+                        </Button>
+                      ) : (
+                        <div className="w-9 h-9" />
+                      )}
+                    </div>
                   </div>
                 </div>
               )}
