@@ -505,6 +505,7 @@ export class DatabaseStorage implements IStorage {
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
     
+    // Use subqueries to avoid duplicate rows from LEFT JOINs
     const result = await db.execute(sql`
       SELECT 
         u.id,
@@ -521,9 +522,8 @@ export class DatabaseStorage implements IStorage {
           ARRAY[]::text[]
         ) as phone_numbers,
         COALESCE(
-          (SELECT SUM(duration) FROM call_logs cl 
-           JOIN phone_numbers pn ON cl.from_number = pn.phone_number 
-           WHERE pn.user_id = u.id 
+          (SELECT SUM(cl.duration) FROM call_logs cl 
+           WHERE cl.from_number IN (SELECT phone_number FROM phone_numbers WHERE user_id = u.id)
              AND cl.created_at >= ${startOfMonth.toISOString()} 
              AND cl.created_at < ${endOfMonth.toISOString()}),
           0
