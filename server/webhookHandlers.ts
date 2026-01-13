@@ -117,11 +117,13 @@ export class WebhookHandlers {
         
         const user = await storage.getUserByStripeCustomerId(customerId);
         if (user) {
+          // Clear all subscription data so user loses access and can re-subscribe
           await storage.updateUser(user.id, {
-            subscriptionStatus: 'cancelled',
+            subscriptionStatus: 'none',
             stripeSubscriptionId: null,
+            trialEndsAt: null,
           });
-          console.log(`User ${user.id} subscription cancelled`);
+          console.log(`User ${user.id} subscription deleted - access revoked`);
         }
         break;
       }

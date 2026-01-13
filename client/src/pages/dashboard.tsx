@@ -1139,18 +1139,7 @@ export default function DashboardPage() {
                         <CreditCard className="h-4 w-4" />
                         Billing
                       </h3>
-                      {user?.subscriptionStatus === "none" ? (
-                        <Button
-                          variant="outline"
-                          className="w-full"
-                          onClick={() => createCheckoutMutation.mutate()}
-                          disabled={createCheckoutMutation.isPending}
-                          data-testid="button-start-trial-settings"
-                        >
-                          {createCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                          Start Free Trial
-                        </Button>
-                      ) : (user?.subscriptionStatus === "active" || user?.subscriptionStatus === "trial") && subscription?.stripeCustomerId ? (
+                      {(user?.subscriptionStatus === "active" || user?.subscriptionStatus === "trial") && subscription?.stripeCustomerId ? (
                         <Button
                           variant="outline"
                           className="w-full"
@@ -1162,7 +1151,16 @@ export default function DashboardPage() {
                           Manage Billing
                         </Button>
                       ) : (
-                        <p className="text-sm text-muted-foreground">No billing options available</p>
+                        <Button
+                          variant="outline"
+                          className="w-full"
+                          onClick={() => createCheckoutMutation.mutate()}
+                          disabled={createCheckoutMutation.isPending}
+                          data-testid="button-start-trial-settings"
+                        >
+                          {createCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                          Subscribe Now
+                        </Button>
                       )}
                     </div>
                   </div>
