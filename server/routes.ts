@@ -327,22 +327,31 @@ export async function registerRoutes(
       });
 
       // Collect all phone numbers from active subscribers
-      const phoneNumbers: string[] = [];
+      const phoneNumbers: Set<string> = new Set();
       for (const sub of activeSubscribers) {
         if (sub.phoneNumbers && sub.phoneNumbers.length > 0) {
           for (const phone of sub.phoneNumbers) {
             const cleaned = phone.phoneNumber.replace(/\D/g, "");
             if (cleaned.length >= 10) {
-              phoneNumbers.push(cleaned);
+              phoneNumbers.add(cleaned);
             }
           }
+        }
+      }
+
+      // Also include whitelisted phone numbers
+      const whitelistedNumbers = await storage.getAllWhitelistedNumbers();
+      for (const wn of whitelistedNumbers) {
+        const cleaned = wn.phoneNumber.replace(/\D/g, "");
+        if (cleaned.length >= 10) {
+          phoneNumbers.add(cleaned);
         }
       }
 
       // Return as plain text CSV (comma-separated)
       res.setHeader("Content-Type", "text/plain");
       res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-      res.send(phoneNumbers.join(","));
+      res.send(Array.from(phoneNumbers).join(","));
     } catch (error: any) {
       console.error("Phone list error:", error);
       res.status(500).send("Error");
