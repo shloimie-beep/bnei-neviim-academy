@@ -194,6 +194,15 @@ export const userVideoViews = pgTable("user_video_views", {
   firstViewedAt: timestamp("first_viewed_at").defaultNow(),
 });
 
+// Track phone numbers that have been used in trials (to prevent reuse)
+export const trialPhoneNumbers = pgTable("trial_phone_numbers", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  phoneNumber: text("phone_number").notNull().unique(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+  usedAt: timestamp("used_at").defaultNow(),
+  releasedAt: timestamp("released_at"), // When admin releases it for reuse
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   phoneNumbers: many(phoneNumbers),
@@ -261,6 +270,7 @@ export const insertVideoCategorySchema = createInsertSchema(videoCategories).omi
 export const insertVideoSchema = createInsertSchema(videos).omit({ id: true, createdAt: true, viewCount: true });
 export const insertDocumentSchema = createInsertSchema(documents).omit({ id: true, createdAt: true, viewCount: true });
 export const insertUserVideoViewSchema = createInsertSchema(userVideoViews).omit({ id: true, firstViewedAt: true });
+export const insertTrialPhoneNumberSchema = createInsertSchema(trialPhoneNumbers).omit({ id: true, usedAt: true });
 
 // Types
 export type User = typeof users.$inferSelect;
@@ -295,6 +305,8 @@ export type Document = typeof documents.$inferSelect;
 export type InsertDocument = z.infer<typeof insertDocumentSchema>;
 export type UserVideoView = typeof userVideoViews.$inferSelect;
 export type InsertUserVideoView = z.infer<typeof insertUserVideoViewSchema>;
+export type TrialPhoneNumber = typeof trialPhoneNumbers.$inferSelect;
+export type InsertTrialPhoneNumber = z.infer<typeof insertTrialPhoneNumberSchema>;
 
 // Validation schemas for forms
 export const loginSchema = z.object({

@@ -851,6 +851,17 @@ export async function registerRoutes(
         return res.status(404).json({ message: "User not found" });
       }
 
+      // Check if user's phone number has been used in a trial before
+      const userPhones = await storage.getPhoneNumbersByUser(user.id);
+      for (const phone of userPhones) {
+        const isUsedInTrial = await storage.isPhoneUsedInTrial(phone.phoneNumber);
+        if (isUsedInTrial) {
+          return res.status(400).json({ 
+            message: "This phone number has already been used for a free trial. Please contact support if you need assistance." 
+          });
+        }
+      }
+
       const stripe = await getUncachableStripeClient();
       
       // Get the subscription price ID
@@ -3060,6 +3071,26 @@ export async function registerRoutes(
       res.json({ success: true });
     } catch (error) {
       res.status(500).json({ message: "Failed to delete whitelisted email" });
+    }
+  });
+
+  // Trial Phone Numbers Management
+  app.get("/api/admin/trial-phone-numbers", requireAdmin, async (req, res) => {
+    try {
+      const trialPhones = await storage.getTrialPhoneNumbers();
+      res.json(trialPhones);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get trial phone numbers" });
+    }
+  });
+
+  app.post("/api/admin/trial-phone-numbers/:phoneNumber/release", requireAdmin, async (req, res) => {
+    try {
+      const phoneNumber = decodeURIComponent(req.params.phoneNumber);
+      await storage.releaseTrialPhoneNumber(phoneNumber);
+      res.json({ success: true, message: "Phone number released for trial reuse" });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to release trial phone number" });
     }
   });
 

@@ -47,6 +47,8 @@ import {
   type Document,
   type InsertDocument,
   type UserVideoView,
+  trialPhoneNumbers,
+  type TrialPhoneNumber,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -688,6 +690,43 @@ export class DatabaseStorage implements IStorage {
       .from(userVideoViews)
       .where(eq(userVideoViews.userId, userId));
     return views.map(v => v.videoId);
+  }
+
+  // Trial Phone Numbers - track phones used in trials to prevent reuse
+  async isPhoneUsedInTrial(phoneNumber: string): Promise<boolean> {
+    const [record] = await db.select()
+      .from(trialPhoneNumbers)
+      .where(and(
+        eq(trialPhoneNumbers.phoneNumber, phoneNumber),
+        sql`released_at IS NULL`
+      ));
+    return !!record;
+  }
+
+  async recordTrialPhoneNumber(phoneNumber: string, userId: string): Promise<TrialPhoneNumber> {
+    // Use upsert to handle released numbers - clear releasedAt when reusing
+    const [record] = await db.insert(trialPhoneNumbers)
+      .values({ phoneNumber, userId })
+      .onConflictDoUpdate({
+        target: trialPhoneNumbers.phoneNumber,
+        set: {
+          userId,
+          usedAt: new Date(),
+          releasedAt: null, // Re-lock the phone number
+        }
+      })
+      .returning();
+    return record;
+  }
+
+  async releaseTrialPhoneNumber(phoneNumber: string): Promise<void> {
+    await db.update(trialPhoneNumbers)
+      .set({ releasedAt: new Date() })
+      .where(eq(trialPhoneNumbers.phoneNumber, phoneNumber));
+  }
+
+  async getTrialPhoneNumbers(): Promise<TrialPhoneNumber[]> {
+    return db.select().from(trialPhoneNumbers).orderBy(trialPhoneNumbers.usedAt);
   }
 }
 

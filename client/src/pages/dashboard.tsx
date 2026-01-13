@@ -506,6 +506,20 @@ function VideoCard({ video, isNew, onView }: { video: VideoType; isNew?: boolean
   const [isOpen, setIsOpen] = useState(false);
   const isAudio = video.mediaType === "audio";
 
+  // Format duration from seconds to MM:SS or HH:MM:SS
+  const formatDuration = (seconds: number | null | undefined): string | null => {
+    if (!seconds || seconds <= 0) return null;
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = Math.floor(seconds % 60);
+    if (hrs > 0) {
+      return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    }
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const durationText = formatDuration(video.duration);
+
   const thumbnailSrc = video.thumbnailPath 
     ? (video.thumbnailPath.startsWith("bunny://") 
         ? (video as any).bunnyThumbnailUrl || `https://vz-2480b6a7-327.b-cdn.net/${video.bunnyGuid}/thumbnail.jpg`
@@ -547,6 +561,11 @@ function VideoCard({ video, isNew, onView }: { video: VideoType; isNew?: boolean
             {isNew && (
               <div className="absolute top-2 right-2">
                 <Badge variant="destructive" className="text-xs" data-testid={`badge-new-${video.id}`}>New</Badge>
+              </div>
+            )}
+            {durationText && (
+              <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded font-medium" data-testid={`duration-${video.id}`}>
+                {durationText}
               </div>
             )}
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
@@ -636,7 +655,7 @@ export default function DashboardPage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("all");
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const recentScrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -685,6 +704,13 @@ export default function DashboardPage() {
     return { grouped, uncategorized };
   }, [videos]);
 
+  // Set default category to first available category when loaded
+  useEffect(() => {
+    if (selectedCategory === null && categories.length > 0) {
+      setSelectedCategory(categories[0].id);
+    }
+  }, [categories, selectedCategory]);
+
   const markVideoViewedMutation = useMutation({
     mutationFn: async (videoId: string) => {
       const res = await apiRequest("POST", `/api/videos/${videoId}/viewed`);
@@ -720,7 +746,7 @@ export default function DashboardPage() {
   // Get filtered content based on selected category
   const filteredVideos = useMemo(() => {
     if (!videos) return [];
-    if (selectedCategory === "all") return videos;
+    if (selectedCategory === null) return [];
     if (selectedCategory === "documents") return [];
     if (selectedCategory === "uncategorized") {
       return videos.filter(v => !v.categoryId);
@@ -1233,13 +1259,6 @@ export default function DashboardPage() {
 
               {/* Category Filter Buttons */}
               <div className="flex flex-wrap gap-2">
-                <Button
-                  variant={selectedCategory === "all" ? "default" : "outline"}
-                  onClick={() => setSelectedCategory("all")}
-                  data-testid="button-category-all"
-                >
-                  All
-                </Button>
                 {categories.map((category) => (
                   <Button
                     key={category.id}

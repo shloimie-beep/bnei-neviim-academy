@@ -59,6 +59,16 @@ export class WebhookHandlers {
             subscriptionStatus: isTrialing ? 'trial' : 'active',
             trialEndsAt: trialEnd,
           });
+          
+          // If starting a trial, record the phone numbers as used in trial
+          if (isTrialing) {
+            const userPhones = await storage.getPhoneNumbersByUser(userId);
+            for (const phone of userPhones) {
+              await storage.recordTrialPhoneNumber(phone.phoneNumber, userId);
+            }
+            console.log(`User ${userId} trial started, recorded ${userPhones.length} phone number(s)`);
+          }
+          
           console.log(`User ${userId} subscription: ${isTrialing ? 'trial' : 'active'}`);
         }
         break;
@@ -70,6 +80,18 @@ export class WebhookHandlers {
         
         const user = await storage.getUserByStripeCustomerId(customerId);
         if (user) {
+          // If subscription is being cancelled (cancel_at_period_end = true) and user is in trial, cancel immediately
+          if (subscription.cancel_at_period_end && subscription.status === 'trialing') {
+            try {
+              await stripe.subscriptions.cancel(subscription.id);
+              console.log(`User ${user.id} trial cancelled immediately`);
+              // The cancel will trigger customer.subscription.deleted which updates the user status
+              return;
+            } catch (err) {
+              console.error('Failed to cancel trial immediately:', err);
+            }
+          }
+          
           const statusMap: Record<string, string> = {
             active: 'active',
             trialing: 'trial',
