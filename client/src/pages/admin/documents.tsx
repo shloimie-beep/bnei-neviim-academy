@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, FileText, Trash2, Loader2, Edit2, Eye, EyeOff, BarChart2 } from "lucide-react";
+import { Upload, FileText, Trash2, Loader2, Edit2, Eye, EyeOff, BarChart2, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,6 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
@@ -34,6 +35,7 @@ function DocumentCard({ doc, onDelete, onUpdate, categories }: {
   const [editTitle, setEditTitle] = useState(doc.title);
   const [editDescription, setEditDescription] = useState(doc.description || "");
   const [editCategoryId, setEditCategoryId] = useState(doc.categoryId || "");
+  const [editAllowDownload, setEditAllowDownload] = useState(doc.allowDownload ?? false);
   
   const categoryName = categories.find(c => c.id === doc.categoryId)?.name;
 
@@ -45,7 +47,12 @@ function DocumentCard({ doc, onDelete, onUpdate, categories }: {
   };
 
   const handleSave = () => {
-    onUpdate({ title: editTitle, description: editDescription, categoryId: editCategoryId || null });
+    onUpdate({ 
+      title: editTitle, 
+      description: editDescription, 
+      categoryId: editCategoryId || null,
+      allowDownload: editAllowDownload 
+    });
     setIsEditing(false);
   };
 
@@ -89,6 +96,17 @@ function DocumentCard({ doc, onDelete, onUpdate, categories }: {
                         ))}
                       </SelectContent>
                     </Select>
+                    <div className="flex items-center gap-2">
+                      <Checkbox 
+                        id={`edit-allow-download-${doc.id}`}
+                        checked={editAllowDownload}
+                        onCheckedChange={(checked) => setEditAllowDownload(checked === true)}
+                        data-testid={`checkbox-edit-allow-download-${doc.id}`}
+                      />
+                      <Label htmlFor={`edit-allow-download-${doc.id}`} className="text-sm font-normal cursor-pointer">
+                        Allow users to download and print
+                      </Label>
+                    </div>
                     <div className="flex gap-2">
                       <Button size="sm" onClick={handleSave} data-testid={`button-save-doc-${doc.id}`}>
                         Save
@@ -107,6 +125,12 @@ function DocumentCard({ doc, onDelete, onUpdate, categories }: {
                       <Badge variant="secondary" className="text-xs">PDF</Badge>
                       {categoryName && (
                         <Badge variant="outline" className="text-xs">{categoryName}</Badge>
+                      )}
+                      {doc.allowDownload && (
+                        <Badge variant="outline" className="text-xs gap-1">
+                          <Download className="h-3 w-3" />
+                          Downloadable
+                        </Badge>
                       )}
                     </div>
                     {doc.description && (
@@ -202,6 +226,7 @@ export default function DocumentManagement() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [categoryId, setCategoryId] = useState("");
+  const [allowDownload, setAllowDownload] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
 
   const { data: documents, isLoading } = useQuery<Document[]>({
@@ -258,6 +283,7 @@ export default function DocumentManagement() {
       formData.append("title", title);
       if (description) formData.append("description", description);
       if (categoryId && categoryId !== "none") formData.append("categoryId", categoryId);
+      formData.append("allowDownload", String(allowDownload));
 
       const res = await fetch("/api/admin/documents", {
         method: "POST",
@@ -276,6 +302,7 @@ export default function DocumentManagement() {
       setTitle("");
       setDescription("");
       setCategoryId("");
+      setAllowDownload(false);
       setIsDialogOpen(false);
       if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (error: any) {
@@ -368,6 +395,18 @@ export default function DocumentManagement() {
                     ))}
                   </SelectContent>
                 </Select>
+              </div>
+              <div className="flex items-center gap-2 pt-2">
+                <Checkbox 
+                  id="allow-download"
+                  checked={allowDownload}
+                  onCheckedChange={(checked) => setAllowDownload(checked === true)}
+                  disabled={isUploading}
+                  data-testid="checkbox-allow-download"
+                />
+                <Label htmlFor="allow-download" className="text-sm font-normal cursor-pointer">
+                  Allow users to download and print
+                </Label>
               </div>
             </div>
             <DialogFooter>

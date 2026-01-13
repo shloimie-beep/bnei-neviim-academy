@@ -181,6 +181,7 @@ export const documents = pgTable("documents", {
   pageCount: integer("page_count"),
   viewCount: integer("view_count").default(0),
   status: text("status").notNull().default("ready"), // 'processing', 'ready', 'hidden'
+  allowDownload: boolean("allow_download").default(false),
   categoryId: varchar("category_id").references(() => videoCategories.id),
   uploadedBy: varchar("uploaded_by").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),

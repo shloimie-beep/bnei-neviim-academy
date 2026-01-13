@@ -635,6 +635,7 @@ function DocumentCard({ doc }: { doc: Document }) {
             url={`/api/documents/${doc.id}/view`}
             title={doc.title}
             onClose={() => setIsViewerOpen(false)}
+            allowDownload={doc.allowDownload ?? false}
           />
         </div>
       </DialogContent>

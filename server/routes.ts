@@ -3772,7 +3772,7 @@ export async function registerRoutes(
         return res.status(400).json({ message: "No PDF file provided" });
       }
 
-      const { title, description, categoryId } = req.body;
+      const { title, description, categoryId, allowDownload } = req.body;
       if (!title) {
         return res.status(400).json({ message: "Title is required" });
       }
@@ -3818,6 +3818,7 @@ export async function registerRoutes(
         filepath: objectPath,
         fileSize: req.file.size,
         status: "ready",
+        allowDownload: allowDownload === "true" || allowDownload === true,
         categoryId: categoryId || null,
         uploadedBy: req.session.userId!,
       });
@@ -3836,8 +3837,8 @@ export async function registerRoutes(
   // Admin: Update document details
   app.patch("/api/admin/documents/:id", requireAdmin, async (req, res) => {
     try {
-      const { title, description, status, categoryId } = req.body;
-      const doc = await storage.updateDocument(req.params.id, { title, description, status, categoryId });
+      const { title, description, status, categoryId, allowDownload } = req.body;
+      const doc = await storage.updateDocument(req.params.id, { title, description, status, categoryId, allowDownload });
       if (!doc) {
         return res.status(404).json({ message: "Document not found" });
       }
