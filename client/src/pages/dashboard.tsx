@@ -638,6 +638,8 @@ export default function DashboardPage() {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const recentScrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(true);
 
   const { data: phoneNumbers, isLoading: phonesLoading } = useQuery<PhoneNumber[]>({
     queryKey: ["/api/phone-numbers"],
@@ -726,6 +728,15 @@ export default function DashboardPage() {
     return videos.filter(v => v.categoryId === selectedCategory);
   }, [videos, selectedCategory]);
 
+  // Check scroll position to show/hide arrows
+  const checkScrollPosition = () => {
+    if (recentScrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = recentScrollRef.current;
+      setCanScrollLeft(scrollLeft > 5);
+      setCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
+    }
+  };
+
   // Scroll functions for Recent section
   const scrollRecent = (direction: "left" | "right") => {
     if (recentScrollRef.current) {
@@ -736,6 +747,16 @@ export default function DashboardPage() {
       });
     }
   };
+
+  // Check scroll position on mount and when videos change
+  useEffect(() => {
+    checkScrollPosition();
+    const scrollEl = recentScrollRef.current;
+    if (scrollEl) {
+      scrollEl.addEventListener("scroll", checkScrollPosition);
+      return () => scrollEl.removeEventListener("scroll", checkScrollPosition);
+    }
+  }, [recentVideos]);
 
   const addPhoneMutation = useMutation({
     mutationFn: async (phoneNumber: string) => {
@@ -1148,18 +1169,22 @@ export default function DashboardPage() {
                 <div>
                   <h2 className="text-lg font-semibold mb-4">Recent</h2>
                   <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="flex-shrink-0"
-                      onClick={() => scrollRecent("left")}
-                      data-testid="button-scroll-recent-left"
-                    >
-                      <ChevronLeft className="h-4 w-4" />
-                    </Button>
+                    {canScrollLeft && (
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="flex-shrink-0"
+                        onClick={() => scrollRecent("left")}
+                        data-testid="button-scroll-recent-left"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                    )}
                     <div className="relative flex-1 overflow-hidden">
                       {/* Left fade gradient */}
-                      <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+                      {canScrollLeft && (
+                        <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+                      )}
                       <div 
                         ref={recentScrollRef}
                         className="flex gap-4 overflow-x-auto scrollbar-hide px-2 pb-2"
@@ -1176,17 +1201,21 @@ export default function DashboardPage() {
                         ))}
                       </div>
                       {/* Right fade gradient */}
-                      <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+                      {canScrollRight && (
+                        <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+                      )}
                     </div>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="flex-shrink-0"
-                      onClick={() => scrollRecent("right")}
-                      data-testid="button-scroll-recent-right"
-                    >
-                      <ChevronRight className="h-4 w-4" />
-                    </Button>
+                    {canScrollRight && (
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="flex-shrink-0"
+                        onClick={() => scrollRecent("right")}
+                        data-testid="button-scroll-recent-right"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    )}
                   </div>
                 </div>
               )}
