@@ -37,6 +37,26 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+const countryCodes = [
+  { code: "+1", country: "USA/Canada" },
+  { code: "+972", country: "Israel" },
+  { code: "+44", country: "UK" },
+  { code: "+61", country: "Australia" },
+  { code: "+33", country: "France" },
+  { code: "+49", country: "Germany" },
+  { code: "+27", country: "South Africa" },
+  { code: "+52", country: "Mexico" },
+  { code: "+55", country: "Brazil" },
+  { code: "+91", country: "India" },
+];
 
 interface WhitelistedNumber {
   id: string;
@@ -58,6 +78,7 @@ export default function WhitelistManagement() {
   const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
   const [newPhoneNumber, setNewPhoneNumber] = useState("");
   const [newPhoneLabel, setNewPhoneLabel] = useState("");
+  const [phoneCountryCode, setPhoneCountryCode] = useState("+1");
   const [newEmail, setNewEmail] = useState("");
   const [newEmailLabel, setNewEmailLabel] = useState("");
 
@@ -78,6 +99,7 @@ export default function WhitelistManagement() {
       setIsPhoneDialogOpen(false);
       setNewPhoneNumber("");
       setNewPhoneLabel("");
+      setPhoneCountryCode("+1");
       toast({ title: "Number added", description: "The phone number has been whitelisted." });
     },
     onError: (error: Error) => {
@@ -129,8 +151,9 @@ export default function WhitelistManagement() {
 
   const handleAddPhone = () => {
     if (!newPhoneNumber.trim()) return;
+    const fullNumber = phoneCountryCode + newPhoneNumber.replace(/^0+/, '').replace(/\D/g, "");
     addPhoneMutation.mutate({
-      phoneNumber: newPhoneNumber.replace(/\D/g, ""),
+      phoneNumber: fullNumber.replace(/\D/g, ""),
       label: newPhoneLabel.trim() || undefined,
     });
   };
@@ -325,14 +348,28 @@ export default function WhitelistManagement() {
                 <div className="space-y-4 py-4">
                   <div className="space-y-2">
                     <Label htmlFor="phone">Phone Number</Label>
-                    <Input
-                      id="phone"
-                      type="tel"
-                      placeholder="+1 (555) 123-4567"
-                      value={newPhoneNumber}
-                      onChange={(e) => setNewPhoneNumber(e.target.value)}
-                      data-testid="input-whitelist-phone"
-                    />
+                    <div className="flex gap-2">
+                      <Select value={phoneCountryCode} onValueChange={setPhoneCountryCode}>
+                        <SelectTrigger className="w-36" data-testid="select-whitelist-country-code">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {countryCodes.map((cc) => (
+                            <SelectItem key={cc.code} value={cc.code}>
+                              {cc.code} {cc.country}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        id="phone"
+                        type="tel"
+                        placeholder="555-123-4567"
+                        value={newPhoneNumber}
+                        onChange={(e) => setNewPhoneNumber(e.target.value)}
+                        data-testid="input-whitelist-phone"
+                      />
+                    </div>
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="phone-label">Label (Optional)</Label>

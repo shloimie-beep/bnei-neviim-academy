@@ -348,10 +348,10 @@ export async function registerRoutes(
         }
       }
 
-      // Return as plain text CSV (comma-separated)
+      // Return as plain text CSV (comma-separated) with + prefix
       res.setHeader("Content-Type", "text/plain");
       res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-      res.send(Array.from(phoneNumbers).join(","));
+      res.send(Array.from(phoneNumbers).map(num => `+${num}`).join(","));
     } catch (error: any) {
       console.error("Phone list error:", error);
       res.status(500).send("Error");
