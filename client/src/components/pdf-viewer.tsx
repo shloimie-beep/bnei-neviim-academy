@@ -3,9 +3,8 @@ import { Button } from "@/components/ui/button";
 import { ChevronUp, ChevronDown, ZoomIn, ZoomOut, Loader2, Maximize, Minimize, X, Download } from "lucide-react";
 import * as pdfjsLib from "pdfjs-dist";
 
-// Use unpkg CDN which tracks npm versions
-const pdfjsVersion = pdfjsLib.version;
-pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsVersion}/build/pdf.worker.min.mjs`;
+// Use worker from public directory
+pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js";
 
 interface PdfViewerProps {
   url: string;
@@ -53,8 +52,9 @@ export function PdfViewer({ url, title, onClose, allowDownload = false }: PdfVie
         }
       } catch (err: any) {
         if (!cancelled) {
-          console.error("Error loading PDF:", err);
-          setError(err.message || "Failed to load document");
+          console.error("Error loading PDF:", err, "URL:", url);
+          const errorMsg = err?.message || err?.name || (typeof err === 'string' ? err : JSON.stringify(err)) || "Failed to load document";
+          setError(errorMsg);
         }
       } finally {
         if (!cancelled) {
