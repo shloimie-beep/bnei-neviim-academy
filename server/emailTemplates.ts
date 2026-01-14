@@ -1,4 +1,4 @@
-const LOGO_URL = "https://onetimeonetime.com/logo.png";
+const LOGO_URL = "https://onetimeonetime.com/logo-email.png";
 const SITE_URL = "https://onetimeonetime.com";
 
 export function getEmailFooter(): string {
