@@ -5,12 +5,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Settings, Volume2, Upload, Play, Pause, Lock } from "lucide-react";
+import { Loader2, Settings, Volume2, Upload, Play, Pause, Lock, UserX, Users } from "lucide-react";
 import { queryClient, apiRequest } from "@/lib/queryClient";
 import type { AudioFile, SystemSetting } from "@shared/schema";
+
+interface AdminUser {
+  id: string;
+  email: string;
+  createdAt: string;
+}
 
 function formatDuration(seconds: number): string {
   const mins = Math.floor(seconds / 60);
@@ -120,6 +126,9 @@ export default function AdminSettingsPage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  
+  const [deleteAdminId, setDeleteAdminId] = useState<string | null>(null);
+  const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
 
   const { data: audioFiles = [], isLoading: filesLoading } = useQuery<AudioFile[]>({
     queryKey: ["/api/admin/audio-files"],
@@ -127,6 +136,29 @@ export default function AdminSettingsPage() {
 
   const { data: settings = [], isLoading: settingsLoading } = useQuery<SystemSetting[]>({
     queryKey: ["/api/admin/settings"],
+  });
+
+  const { data: adminUsers = [], isLoading: adminsLoading } = useQuery<AdminUser[]>({
+    queryKey: ["/api/admin/admins"],
+  });
+
+  const deleteAdminMutation = useMutation({
+    mutationFn: async (adminId: string) => {
+      await apiRequest("DELETE", `/api/admin/admins/${adminId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/admins"] });
+      toast({ title: "Admin account deleted successfully" });
+      setDeleteConfirmOpen(false);
+      setDeleteAdminId(null);
+    },
+    onError: (error: any) => {
+      toast({ 
+        title: "Failed to delete admin", 
+        description: error.message,
+        variant: "destructive" 
+      });
+    },
   });
 
   useEffect(() => {
@@ -391,6 +423,79 @@ export default function AdminSettingsPage() {
           </Button>
         </CardContent>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Users className="h-5 w-5" />
+            Admin Accounts
+          </CardTitle>
+          <CardDescription>
+            Manage admin user accounts
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {adminsLoading ? (
+            <div className="flex items-center justify-center py-4">
+              <Loader2 className="h-6 w-6 animate-spin" />
+            </div>
+          ) : adminUsers.length === 0 ? (
+            <p className="text-muted-foreground">No admin accounts found.</p>
+          ) : (
+            <div className="space-y-3">
+              {adminUsers.map((admin) => (
+                <div key={admin.id} className="flex items-center justify-between gap-4 py-2 border-b last:border-0">
+                  <div>
+                    <p className="font-medium" data-testid={`text-admin-email-${admin.id}`}>{admin.email}</p>
+                    <p className="text-sm text-muted-foreground">
+                      Created {new Date(admin.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      setDeleteAdminId(admin.id);
+                      setDeleteConfirmOpen(true);
+                    }}
+                    data-testid={`button-delete-admin-${admin.id}`}
+                  >
+                    <UserX className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Admin Account</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this admin account? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex justify-end gap-2 mt-4">
+            <Button variant="outline" onClick={() => setDeleteConfirmOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={() => deleteAdminId && deleteAdminMutation.mutate(deleteAdminId)}
+              disabled={deleteAdminMutation.isPending}
+              data-testid="button-confirm-delete-admin"
+            >
+              {deleteAdminMutation.isPending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                "Delete"
+              )}
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

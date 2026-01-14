@@ -698,6 +698,51 @@ export async function registerRoutes(
     }
   });
 
+  // Get all admin users
+  app.get("/api/admin/admins", requireAdmin, async (req, res) => {
+    try {
+      const allUsers = await storage.getAllUsers();
+      const admins = allUsers
+        .filter(u => u.role === "admin")
+        .map(u => ({
+          id: u.id,
+          email: u.email,
+          createdAt: u.createdAt,
+        }));
+      res.json(admins);
+    } catch (error) {
+      console.error("Error fetching admins:", error);
+      res.status(500).json({ message: "Failed to fetch admin users" });
+    }
+  });
+
+  // Delete an admin user
+  app.delete("/api/admin/admins/:id", requireAdmin, async (req, res) => {
+    try {
+      const { id } = req.params;
+      
+      // Prevent deleting yourself
+      if (id === req.session.userId) {
+        return res.status(400).json({ message: "You cannot delete your own account" });
+      }
+      
+      const userToDelete = await storage.getUser(id);
+      if (!userToDelete) {
+        return res.status(404).json({ message: "Admin user not found" });
+      }
+      
+      if (userToDelete.role !== "admin") {
+        return res.status(400).json({ message: "This user is not an admin" });
+      }
+      
+      await storage.deleteUser(id);
+      res.json({ success: true, message: "Admin deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting admin:", error);
+      res.status(500).json({ message: "Failed to delete admin user" });
+    }
+  });
+
   app.get("/api/auth/me", async (req, res) => {
     if (!req.session.userId) {
       return res.status(401).json({ message: "Not authenticated" });
