@@ -3,10 +3,9 @@ import { Button } from "@/components/ui/button";
 import { ChevronUp, ChevronDown, ZoomIn, ZoomOut, Loader2, Maximize, Minimize, X, Download } from "lucide-react";
 import * as pdfjsLib from "pdfjs-dist";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.mjs",
-  import.meta.url
-).toString();
+// Use unpkg CDN which tracks npm versions
+const pdfjsVersion = pdfjsLib.version;
+pdfjsLib.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjsVersion}/build/pdf.worker.min.mjs`;
 
 interface PdfViewerProps {
   url: string;
