@@ -107,8 +107,9 @@ export function PdfViewer({ url, title, onClose, allowDownload = false }: PdfVie
       canvas.style.width = `${viewport.width / dpr}px`;
       canvas.style.height = `${viewport.height / dpr}px`;
 
-      // Clear canvas before rendering
-      context.clearRect(0, 0, canvas.width, canvas.height);
+      // Fill with white background before rendering (PDFs expect white background)
+      context.fillStyle = "#ffffff";
+      context.fillRect(0, 0, canvas.width, canvas.height);
 
       await page.render({
         canvasContext: context,
