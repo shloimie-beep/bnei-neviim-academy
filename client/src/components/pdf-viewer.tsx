@@ -85,29 +85,16 @@ export function PdfViewer({ url, title, onClose, allowDownload = false }: PdfVie
       
       if (!context) return;
 
-      // Get the base viewport at scale 1.0
-      const baseViewport = page.getViewport({ scale: 1.0 });
+      // Get viewport with scale
+      const viewport = page.getViewport({ scale: scale });
       
-      // Calculate display scale based on container width for initial fit
-      const containerWidth = scrollContainerRef.current?.clientWidth || 800;
-      const baseScale = Math.min((containerWidth - 32) / baseViewport.width, 1.5);
-      
-      // Apply user scale on top of base scale
-      const dpr = window.devicePixelRatio || 1;
-      const displayScale = baseScale * scale;
-      const renderScale = displayScale * dpr;
-      
-      // Get viewport with proper scale
-      const viewport = page.getViewport({ scale: renderScale });
-      
-      canvas.height = viewport.height;
+      // Set canvas size to match viewport exactly
       canvas.width = viewport.width;
-      
-      // Set display size (divide by dpr to get CSS pixels)
-      canvas.style.width = `${viewport.width / dpr}px`;
-      canvas.style.height = `${viewport.height / dpr}px`;
+      canvas.height = viewport.height;
+      canvas.style.width = `${viewport.width}px`;
+      canvas.style.height = `${viewport.height}px`;
 
-      // Fill with white background before rendering (PDFs expect white background)
+      // Fill with white background before rendering
       context.fillStyle = "#ffffff";
       context.fillRect(0, 0, canvas.width, canvas.height);
 
