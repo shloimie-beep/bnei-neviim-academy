@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { ChevronUp, ChevronDown, ZoomIn, ZoomOut, Loader2, Maximize, Minimize, X, Download } from "lucide-react";
+import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Loader2, Maximize, Minimize, X, Download } from "lucide-react";
 import * as pdfjsLib from "pdfjs-dist";
 
-// Use worker from public directory
-pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js";
+// Use worker from CDN for reliability
+pdfjsLib.GlobalWorkerOptions.workerSrc = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs";
 
 interface PdfViewerProps {
   url: string;
@@ -14,11 +14,8 @@ interface PdfViewerProps {
 }
 
 export function PdfViewer({ url, title, onClose, allowDownload = false }: PdfViewerProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const pageRefs = useRef<Map<number, HTMLCanvasElement>>(new Map());
-  const renderedPagesRef = useRef<Set<number>>(new Set());
-  const lastScaleRef = useRef<number>(1.0);
   const [pdf, setPdf] = useState<pdfjsLib.PDFDocumentProxy | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
@@ -26,7 +23,6 @@ export function PdfViewer({ url, title, onClose, allowDownload = false }: PdfVie
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [, forceUpdate] = useState(0);
 
   // Load PDF document
   useEffect(() => {
@@ -48,13 +44,11 @@ export function PdfViewer({ url, title, onClose, allowDownload = false }: PdfVie
           setPdf(pdfDoc);
           setTotalPages(pdfDoc.numPages);
           setCurrentPage(1);
-          renderedPagesRef.current.clear();
         }
       } catch (err: any) {
         if (!cancelled) {
-          console.error("Error loading PDF:", err, "URL:", url);
-          const errorMsg = err?.message || err?.name || (typeof err === 'string' ? err : JSON.stringify(err)) || "Failed to load document";
-          setError(errorMsg);
+          console.error("Error loading PDF:", err);
+          setError(err?.message || "Failed to load document");
         }
       } finally {
         if (!cancelled) {
@@ -70,111 +64,47 @@ export function PdfViewer({ url, title, onClose, allowDownload = false }: PdfVie
     };
   }, [url]);
 
-  // Render a specific page
-  const renderPage = useCallback(async (pageNum: number, canvas: HTMLCanvasElement, forceRender = false) => {
-    if (!pdf) return;
-    
-    // Skip if already rendered at current scale (unless forced)
-    if (!forceRender && renderedPagesRef.current.has(pageNum) && lastScaleRef.current === scale) {
-      return;
-    }
-
-    try {
-      const page = await pdf.getPage(pageNum);
-      const context = canvas.getContext("2d");
-      
-      if (!context) return;
-
-      // Get viewport with scale
-      const viewport = page.getViewport({ scale: scale });
-      
-      // Set canvas size to match viewport exactly
-      canvas.width = viewport.width;
-      canvas.height = viewport.height;
-      canvas.style.width = `${viewport.width}px`;
-      canvas.style.height = `${viewport.height}px`;
-
-      // Fill with white background before rendering
-      context.fillStyle = "#ffffff";
-      context.fillRect(0, 0, canvas.width, canvas.height);
-
-      await page.render({
-        canvasContext: context,
-        viewport,
-      }).promise;
-
-      renderedPagesRef.current.add(pageNum);
-    } catch (err) {
-      console.error(`Error rendering page ${pageNum}:`, err);
-    }
-  }, [pdf, scale]);
-
-  // Re-render all pages when scale changes
+  // Render current page
   useEffect(() => {
-    if (!pdf) return;
-    
-    // Clear rendered pages cache when scale changes
-    if (lastScaleRef.current !== scale) {
-      renderedPagesRef.current.clear();
-      lastScaleRef.current = scale;
-      
-      // Re-render all currently visible pages
-      pageRefs.current.forEach((canvas, pageNum) => {
-        renderPage(pageNum, canvas, true);
-      });
-    }
-  }, [scale, pdf, renderPage]);
+    if (!pdf || !canvasRef.current) return;
 
-  // Initial render of visible pages
-  useEffect(() => {
-    if (!pdf || totalPages === 0) return;
+    let cancelled = false;
 
-    // Render first few pages immediately
-    const initialPages = Math.min(3, totalPages);
-    for (let i = 1; i <= initialPages; i++) {
-      const canvas = pageRefs.current.get(i);
-      if (canvas) {
-        renderPage(i, canvas);
+    async function renderPage() {
+      try {
+        const page = await pdf!.getPage(currentPage);
+        const canvas = canvasRef.current;
+        if (!canvas || cancelled) return;
+
+        const context = canvas.getContext("2d");
+        if (!context) return;
+
+        const viewport = page.getViewport({ scale });
+        
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+
+        // Fill white background
+        context.fillStyle = "#ffffff";
+        context.fillRect(0, 0, canvas.width, canvas.height);
+
+        const renderContext = {
+          canvasContext: context,
+          viewport: viewport,
+        };
+
+        await page.render(renderContext).promise;
+      } catch (err) {
+        console.error("Error rendering page:", err);
       }
     }
-  }, [pdf, totalPages, renderPage]);
 
-  // Intersection observer for lazy loading and current page tracking
-  useEffect(() => {
-    if (!scrollContainerRef.current || totalPages === 0) return;
+    renderPage();
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          const pageNum = parseInt(entry.target.getAttribute("data-page") || "1");
-          
-          if (entry.isIntersecting) {
-            // Render the page when it becomes visible
-            const canvas = pageRefs.current.get(pageNum);
-            if (canvas && !renderedPagesRef.current.has(pageNum)) {
-              renderPage(pageNum, canvas);
-            }
-            
-            // Update current page based on visibility
-            if (entry.intersectionRatio > 0.5) {
-              setCurrentPage(pageNum);
-            }
-          }
-        });
-      },
-      {
-        root: scrollContainerRef.current,
-        rootMargin: "100px",
-        threshold: [0, 0.5, 1],
-      }
-    );
-
-    // Observe all page containers
-    const containers = scrollContainerRef.current.querySelectorAll("[data-page]");
-    containers.forEach((container) => observer.observe(container));
-
-    return () => observer.disconnect();
-  }, [totalPages, renderPage]);
+    return () => {
+      cancelled = true;
+    };
+  }, [pdf, currentPage, scale]);
 
   // Block keyboard shortcuts for save/print (unless allowed)
   useEffect(() => {
@@ -183,107 +113,42 @@ export function PdfViewer({ url, title, onClose, allowDownload = false }: PdfVie
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && (e.key === "s" || e.key === "p")) {
         e.preventDefault();
-        e.stopPropagation();
       }
-    };
-
-    const handleContextMenu = (e: MouseEvent) => {
-      e.preventDefault();
     };
 
     document.addEventListener("keydown", handleKeyDown);
-    containerRef.current?.addEventListener("contextmenu", handleContextMenu);
-
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      containerRef.current?.removeEventListener("contextmenu", handleContextMenu);
-    };
+    return () => document.removeEventListener("keydown", handleKeyDown);
   }, [allowDownload]);
-
-  // Prevent page zoom on pinch (mobile) - only zoom PDF content
-  useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
-
-    let lastTouchDistance = 0;
-    let initialScale = scale;
-
-    const handleTouchStart = (e: TouchEvent) => {
-      if (e.touches.length === 2) {
-        e.preventDefault();
-        const touch1 = e.touches[0];
-        const touch2 = e.touches[1];
-        lastTouchDistance = Math.hypot(
-          touch2.clientX - touch1.clientX,
-          touch2.clientY - touch1.clientY
-        );
-        initialScale = scale;
-      }
-    };
-
-    const handleTouchMove = (e: TouchEvent) => {
-      if (e.touches.length === 2) {
-        e.preventDefault();
-        const touch1 = e.touches[0];
-        const touch2 = e.touches[1];
-        const currentDistance = Math.hypot(
-          touch2.clientX - touch1.clientX,
-          touch2.clientY - touch1.clientY
-        );
-        
-        if (lastTouchDistance > 0) {
-          const scaleFactor = currentDistance / lastTouchDistance;
-          const newScale = Math.max(0.5, Math.min(3, initialScale * scaleFactor));
-          setScale(newScale);
-        }
-      }
-    };
-
-    container.addEventListener("touchstart", handleTouchStart, { passive: false });
-    container.addEventListener("touchmove", handleTouchMove, { passive: false });
-
-    return () => {
-      container.removeEventListener("touchstart", handleTouchStart);
-      container.removeEventListener("touchmove", handleTouchMove);
-    };
-  }, [scale]);
-
-  const scrollToPage = (pageNum: number) => {
-    const container = scrollContainerRef.current?.querySelector(`[data-page="${pageNum}"]`);
-    if (container) {
-      container.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  };
 
   const goToPrevPage = () => {
     if (currentPage > 1) {
-      scrollToPage(currentPage - 1);
+      setCurrentPage(currentPage - 1);
     }
   };
 
   const goToNextPage = () => {
     if (currentPage < totalPages) {
-      scrollToPage(currentPage + 1);
+      setCurrentPage(currentPage + 1);
     }
   };
 
-  const handleZoomIn = useCallback(() => {
+  const handleZoomIn = () => {
     setScale((s) => Math.min(s + 0.25, 3));
-  }, []);
+  };
 
-  const handleZoomOut = useCallback(() => {
+  const handleZoomOut = () => {
     setScale((s) => Math.max(s - 0.25, 0.5));
-  }, []);
+  };
 
-  const toggleFullscreen = useCallback(() => {
-    setIsFullscreen(prev => !prev);
-  }, []);
+  const toggleFullscreen = () => {
+    setIsFullscreen((prev) => !prev);
+  };
 
-  const handleDownload = useCallback(() => {
+  const handleDownload = () => {
     if (allowDownload) {
       window.open(url, "_blank");
     }
-  }, [url, allowDownload]);
+  };
 
   if (isLoading) {
     return (
@@ -307,13 +172,11 @@ export function PdfViewer({ url, title, onClose, allowDownload = false }: PdfVie
     <div 
       ref={containerRef} 
       className={`flex flex-col select-none bg-background ${
-        isFullscreen 
-          ? "fixed inset-0 z-50" 
-          : "h-full"
+        isFullscreen ? "fixed inset-0 z-50" : "h-full"
       }`}
-      style={{ touchAction: "pan-x pan-y" }}
       data-testid="pdf-viewer"
     >
+      {/* Toolbar */}
       <div className="flex items-center justify-between gap-2 p-2 border-b bg-muted/50 flex-shrink-0">
         <div className="flex items-center gap-1">
           <Button
@@ -323,7 +186,7 @@ export function PdfViewer({ url, title, onClose, allowDownload = false }: PdfVie
             disabled={currentPage <= 1}
             data-testid="button-pdf-prev"
           >
-            <ChevronUp className="h-4 w-4" />
+            <ChevronLeft className="h-4 w-4" />
           </Button>
           <span className="text-sm min-w-[80px] text-center" data-testid="text-pdf-page">
             {currentPage} / {totalPages}
@@ -335,14 +198,14 @@ export function PdfViewer({ url, title, onClose, allowDownload = false }: PdfVie
             disabled={currentPage >= totalPages}
             data-testid="button-pdf-next"
           >
-            <ChevronDown className="h-4 w-4" />
+            <ChevronRight className="h-4 w-4" />
           </Button>
         </div>
         <div className="flex items-center gap-1">
           <Button
             variant="ghost"
             size="icon"
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleZoomOut(); }}
+            onClick={handleZoomOut}
             disabled={scale <= 0.5}
             data-testid="button-pdf-zoom-out"
           >
@@ -354,7 +217,7 @@ export function PdfViewer({ url, title, onClose, allowDownload = false }: PdfVie
           <Button
             variant="ghost"
             size="icon"
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleZoomIn(); }}
+            onClick={handleZoomIn}
             disabled={scale >= 3}
             data-testid="button-pdf-zoom-in"
           >
@@ -364,7 +227,7 @@ export function PdfViewer({ url, title, onClose, allowDownload = false }: PdfVie
             <Button
               variant="ghost"
               size="icon"
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); handleDownload(); }}
+              onClick={handleDownload}
               data-testid="button-pdf-download"
             >
               <Download className="h-4 w-4" />
@@ -373,7 +236,7 @@ export function PdfViewer({ url, title, onClose, allowDownload = false }: PdfVie
           <Button
             variant="ghost"
             size="icon"
-            onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFullscreen(); }}
+            onClick={toggleFullscreen}
             data-testid="button-pdf-fullscreen"
           >
             {isFullscreen ? <Minimize className="h-4 w-4" /> : <Maximize className="h-4 w-4" />}
@@ -382,7 +245,7 @@ export function PdfViewer({ url, title, onClose, allowDownload = false }: PdfVie
             <Button
               variant="ghost"
               size="icon"
-              onClick={(e) => { e.preventDefault(); e.stopPropagation(); onClose(); }}
+              onClick={onClose}
               data-testid="button-pdf-close"
             >
               <X className="h-4 w-4" />
@@ -390,30 +253,15 @@ export function PdfViewer({ url, title, onClose, allowDownload = false }: PdfVie
           )}
         </div>
       </div>
-      <div 
-        ref={scrollContainerRef}
-        className="flex-1 overflow-auto bg-muted/30"
-        style={{ touchAction: "pan-y pinch-zoom" }}
-      >
-        <div className="flex flex-col items-center gap-2 py-2">
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
-            <div 
-              key={pageNum}
-              data-page={pageNum}
-              className="flex justify-center"
-            >
-              <canvas
-                ref={(el) => {
-                  if (el) {
-                    pageRefs.current.set(pageNum, el);
-                  } else {
-                    pageRefs.current.delete(pageNum);
-                  }
-                }}
-                className="shadow-md"
-              />
-            </div>
-          ))}
+
+      {/* PDF Canvas */}
+      <div className="flex-1 overflow-auto bg-neutral-200 dark:bg-neutral-800">
+        <div className="flex justify-center p-4">
+          <canvas
+            ref={canvasRef}
+            className="shadow-lg"
+            onContextMenu={(e) => !allowDownload && e.preventDefault()}
+          />
         </div>
       </div>
     </div>
