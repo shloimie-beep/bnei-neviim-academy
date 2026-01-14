@@ -97,9 +97,21 @@ The backend handles user authentication, subscription management, phone number r
 - `bcryptjs` - Password hashing
 - `zod` - Schema validation (shared between frontend and backend)
 
+### Voitex Contact Sync Integration
+- **Purpose**: Automatically syncs active subscriber phone numbers to Voitex.com contacts
+- **Key File**: `server/voitexService.ts` - Voitex API service
+- **API Endpoint**: `https://contacts.voitexapi.com/` for contact management
+- **Automatic Sync Events**:
+  - When checkout completes → Creates/updates contact in Voitex
+  - When subscription is deleted → Removes contact from Voitex
+  - Trial cancellations are immediate (no waiting for period end)
+- **Admin Manual Sync**: POST `/api/admin/subscribers/sync-voitex` to sync all active subscribers
+- **UI**: "Sync to Voitex" button in Admin Subscribers page
+
 ### Environment Variables Required
 - `DATABASE_URL` - PostgreSQL connection string
 - `BUNNY_API_KEY` - Bunny Stream API key for video management
 - `BUNNY_LIBRARY_ID` - Bunny Stream library ID
+- `VOITEX_AUTH_KEY` - Voitex API authentication key for contact sync (optional)
 - Stripe credentials managed via Replit Connectors (auto-configured)
 - `REPL_IDENTITY` / `WEB_REPL_RENEWAL` - Replit authentication tokens

@@ -21,6 +21,8 @@ import { ObjectStorageService, objectStorageClient } from "./replit_integrations
 import * as bunnyStream from "./bunnyStream";
 import * as bunnyStorage from "./bunnyStorage";
 import { generateThumbnailFromBunny, generateThumbnailFromLocalVideo } from "./thumbnailGenerator";
+import { voitexService } from "./voitexService";
+import { WebhookHandlers } from "./webhookHandlers";
 
 const execAsync = promisify(exec);
 
@@ -222,6 +224,9 @@ export async function registerRoutes(
   
   // Initialize Bunny Storage service (for audio files)
   bunnyStorage.initializeBunnyStorage();
+  
+  // Initialize Voitex service for contact sync
+  voitexService.initialize();
   
   // Sync stuck video statuses from Bunny on startup
   (async () => {
@@ -3425,6 +3430,58 @@ export async function registerRoutes(
     } catch (error: any) {
       console.error("Email all subscribers error:", error);
       res.status(500).json({ message: error.message || "Failed to send emails" });
+    }
+  });
+
+  // Sync all active subscribers to Voitex
+  app.post("/api/admin/subscribers/sync-voitex", requireAdmin, async (req, res) => {
+    try {
+      if (!voitexService.isConfigured()) {
+        return res.status(400).json({ message: "Voitex API key not configured" });
+      }
+
+      const subscribers = await storage.getSubscriberList();
+      
+      // Filter for active subscribers or those in valid trial period
+      const activeSubscribers = subscribers.filter(sub => {
+        if (sub.subscriptionStatus === "active") return true;
+        if (sub.subscriptionStatus === "trial") {
+          if (sub.trialEndsAt) {
+            return new Date(sub.trialEndsAt) >= new Date();
+          }
+          return true;
+        }
+        if (sub.trialEndsAt && new Date(sub.trialEndsAt) >= new Date()) {
+          return true;
+        }
+        return false;
+      });
+
+      let totalSynced = 0;
+      let totalFailed = 0;
+      const errors: string[] = [];
+
+      for (const subscriber of activeSubscribers) {
+        const result = await WebhookHandlers.syncUserToVoitex(subscriber.id);
+        totalSynced += result.synced;
+        totalFailed += result.failed;
+        
+        if (result.errors.length > 0) {
+          errors.push(`${subscriber.email}: ${result.errors.join('; ')}`);
+        }
+      }
+
+      res.json({
+        success: totalFailed === 0,
+        message: `Synced ${totalSynced} contacts to Voitex${totalFailed > 0 ? `, ${totalFailed} failed` : ""}`,
+        successCount: totalSynced,
+        failCount: totalFailed,
+        totalSubscribers: activeSubscribers.length,
+        errors: totalFailed > 0 ? errors.slice(0, 10) : undefined,
+      });
+    } catch (error: any) {
+      console.error("Voitex sync error:", error);
+      res.status(500).json({ message: error.message || "Failed to sync to Voitex" });
     }
   });
 
