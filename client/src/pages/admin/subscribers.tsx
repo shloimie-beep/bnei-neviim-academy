@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Users, DollarSign, Clock, Search, RefreshCw, Ban, Calendar, Download, MoreHorizontal, Key, Trash2 } from "lucide-react";
+import { Loader2, Users, DollarSign, Clock, Search, RefreshCw, Ban, Calendar, Download, MoreHorizontal, Key, Trash2, Mail } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import {
@@ -86,6 +87,9 @@ export default function SubscribersManagement() {
   const [refundAmount, setRefundAmount] = useState("");
   const [trialDays, setTrialDays] = useState("14");
   const [newPassword, setNewPassword] = useState("");
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+  const [emailSubject, setEmailSubject] = useState("");
+  const [emailMessage, setEmailMessage] = useState("");
 
   const monthOptions: MonthOption[] = [];
   const now = new Date();
@@ -224,6 +228,43 @@ export default function SubscribersManagement() {
     },
   });
 
+  const emailAllMutation = useMutation({
+    mutationFn: async (data: { subject: string; message: string }) => {
+      return apiRequest("POST", "/api/admin/subscribers/email-all", data);
+    },
+    onSuccess: (data: any) => {
+      setEmailDialogOpen(false);
+      setEmailSubject("");
+      setEmailMessage("");
+      toast({
+        title: "Emails sent",
+        description: data.message || `Successfully sent emails to subscribers.`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Email failed",
+        description: error.message || "Failed to send emails.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleEmailAll = () => {
+    if (!emailSubject.trim() || !emailMessage.trim()) {
+      toast({
+        title: "Missing information",
+        description: "Please provide both subject and message.",
+        variant: "destructive",
+      });
+      return;
+    }
+    emailAllMutation.mutate({
+      subject: emailSubject.trim(),
+      message: emailMessage.trim(),
+    });
+  };
+
   const handleRefund = () => {
     if (!selectedSubscriber?.stripeCustomerId || !refundAmount) return;
     const amountCents = Math.round(parseFloat(refundAmount) * 100);
@@ -300,6 +341,14 @@ export default function SubscribersManagement() {
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          <Button
+            variant="outline"
+            onClick={() => setEmailDialogOpen(true)}
+            data-testid="button-email-all"
+          >
+            <Mail className="h-4 w-4 mr-2" />
+            Email All Subscribers
+          </Button>
           <Button
             variant="outline"
             onClick={() => window.open("/api/admin/subscribers/export-phones", "_blank")}
@@ -693,6 +742,53 @@ export default function SubscribersManagement() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={emailDialogOpen} onOpenChange={setEmailDialogOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Email All Subscribers</DialogTitle>
+            <DialogDescription>
+              Send an email to all active subscribers. This will be sent from noreply@onetimeonetime.com.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="emailSubject">Subject</Label>
+              <Input
+                id="emailSubject"
+                placeholder="Enter email subject..."
+                value={emailSubject}
+                onChange={(e) => setEmailSubject(e.target.value)}
+                data-testid="input-email-subject"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="emailMessage">Message</Label>
+              <Textarea
+                id="emailMessage"
+                placeholder="Enter your message..."
+                value={emailMessage}
+                onChange={(e) => setEmailMessage(e.target.value)}
+                rows={6}
+                data-testid="input-email-message"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setEmailDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={handleEmailAll}
+              disabled={emailAllMutation.isPending || !emailSubject.trim() || !emailMessage.trim()}
+              data-testid="button-send-email"
+            >
+              {emailAllMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Send Email
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

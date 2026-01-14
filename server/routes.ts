@@ -12,6 +12,7 @@ import { storage } from "./storage";
 import { registerSchema, loginSchema, phoneNumberSchema, forgotPasswordSchema, resetPasswordSchema, users } from "@shared/schema";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { getUncachableResendClient } from "./resendClient";
+import { FROM_EMAIL, getPasswordResetEmail, getBulkEmail } from "./emailTemplates";
 import crypto from "crypto";
 import { sql } from "drizzle-orm";
 import { db } from "./db";
@@ -602,18 +603,12 @@ export async function registerRoutes(
       const resetLink = `${baseUrl}/reset-password?token=${token}`;
 
       try {
-        const { client, fromEmail } = await getUncachableResendClient();
+        const { client } = await getUncachableResendClient();
         await client.emails.send({
-          from: fromEmail,
+          from: FROM_EMAIL,
           to: user.email,
-          subject: "Reset Your Password - Kids Hotline",
-          html: `
-            <h2>Reset Your Password</h2>
-            <p>You requested to reset your password. Click the link below to set a new password:</p>
-            <p><a href="${resetLink}">Reset Password</a></p>
-            <p>This link will expire in 1 hour.</p>
-            <p>If you didn't request this, you can safely ignore this email.</p>
-          `,
+          subject: "Reset Your Password - OneTimeOneTime",
+          html: getPasswordResetEmail(resetLink),
         });
       } catch (emailError) {
         console.error("Email send error:", emailError);
@@ -3363,6 +3358,73 @@ export async function registerRoutes(
     } catch (error: any) {
       console.error("Export phones error:", error);
       res.status(500).json({ message: error.message || "Failed to export phone numbers" });
+    }
+  });
+
+  // Email all subscribers
+  app.post("/api/admin/subscribers/email-all", requireAdmin, async (req, res) => {
+    try {
+      const { subject, message } = req.body;
+      
+      if (!subject || !message) {
+        return res.status(400).json({ message: "Subject and message are required" });
+      }
+
+      const subscribers = await storage.getSubscriberList();
+      
+      // Filter for active subscribers or those in valid trial period
+      const activeSubscribers = subscribers.filter(sub => {
+        if (sub.subscriptionStatus === "active") return true;
+        if (sub.subscriptionStatus === "trial") {
+          if (sub.trialEndsAt) {
+            return new Date(sub.trialEndsAt) >= new Date();
+          }
+          return true;
+        }
+        if (sub.trialEndsAt && new Date(sub.trialEndsAt) >= new Date()) {
+          return true;
+        }
+        return false;
+      });
+
+      if (activeSubscribers.length === 0) {
+        return res.status(400).json({ message: "No active subscribers to email" });
+      }
+
+      const { client } = await getUncachableResendClient();
+      const htmlContent = getBulkEmail(subject, message);
+
+      let successCount = 0;
+      let failCount = 0;
+      const errors: string[] = [];
+
+      // Send emails in batches to avoid rate limits
+      for (const subscriber of activeSubscribers) {
+        try {
+          await client.emails.send({
+            from: FROM_EMAIL,
+            to: subscriber.email,
+            subject: subject,
+            html: htmlContent,
+          });
+          successCount++;
+        } catch (error: any) {
+          failCount++;
+          errors.push(`${subscriber.email}: ${error.message}`);
+          console.error(`Failed to email ${subscriber.email}:`, error.message);
+        }
+      }
+
+      res.json({
+        success: true,
+        message: `Sent ${successCount} emails successfully${failCount > 0 ? `, ${failCount} failed` : ""}`,
+        successCount,
+        failCount,
+        errors: failCount > 0 ? errors.slice(0, 5) : undefined, // Return first 5 errors
+      });
+    } catch (error: any) {
+      console.error("Email all subscribers error:", error);
+      res.status(500).json({ message: error.message || "Failed to send emails" });
     }
   });
 
