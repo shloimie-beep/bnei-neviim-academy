@@ -333,40 +333,6 @@ export default function AdminSettingsPage() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Voitex API Branch Webhook</CardTitle>
-          <CardDescription>
-            Configure your Voitex IVR route to use this webhook URL
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <code className="block bg-muted p-3 rounded-md text-sm break-all" data-testid="text-voitex-webhook-url">
-            {window.location.origin}/api/voitex/webhook
-          </code>
-          <p className="text-sm text-muted-foreground mt-2">
-            Set this as your API Branch webhook URL in your Voitex dashboard.
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Telnyx Webhook URL</CardTitle>
-          <CardDescription>
-            Configure your Telnyx phone number to use this webhook URL for incoming calls
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <code className="block bg-muted p-3 rounded-md text-sm break-all" data-testid="text-telnyx-webhook-url">
-            {window.location.origin}/api/telnyx/answer
-          </code>
-          <p className="text-sm text-muted-foreground mt-2">
-            Set this as your TeXML webhook URL in your Telnyx dashboard for your phone number.
-          </p>
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Lock className="h-5 w-5" />
             Change Password

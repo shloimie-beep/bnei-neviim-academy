@@ -1,5 +1,5 @@
 import { Link, useLocation, Redirect } from "wouter";
-import { Phone, Settings, Users, LogOut, ShieldCheck, CreditCard, Video, FileText } from "lucide-react";
+import { Phone, Settings, LogOut, ShieldCheck, CreditCard, Video, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -17,8 +17,7 @@ import {
   SidebarHeader,
   SidebarFooter,
 } from "@/components/ui/sidebar";
-import MenuManagement from "./menu";
-import ConferenceManagement from "./conference";
+import HotlineManagement from "./hotline";
 import WhitelistManagement from "./whitelist";
 import SubscribersManagement from "./subscribers";
 import AdminSettingsPage from "./settings";
@@ -27,8 +26,7 @@ import DocumentManagement from "./documents";
 
 const adminRoutes = [
   { path: "/admin/videos", label: "Media", icon: Video },
-  { path: "/admin/menu", label: "Hotline", icon: Phone },
-  { path: "/admin/conference", label: "Conference", icon: Users },
+  { path: "/admin/hotline", label: "Hotline", icon: Phone },
   { path: "/admin/whitelist", label: "Whitelist", icon: ShieldCheck },
   { path: "/admin/subscribers", label: "Subscribers", icon: CreditCard },
   { path: "/admin/documents", label: "Documents", icon: FileText },
@@ -107,10 +105,8 @@ export default function AdminLayout() {
 
   const renderContent = () => {
     switch (location) {
-      case "/admin/menu":
-        return <MenuManagement />;
-      case "/admin/conference":
-        return <ConferenceManagement />;
+      case "/admin/hotline":
+        return <HotlineManagement />;
       case "/admin/whitelist":
         return <WhitelistManagement />;
       case "/admin/subscribers":
