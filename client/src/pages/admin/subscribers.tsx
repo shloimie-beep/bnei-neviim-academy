@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Users, DollarSign, Clock, Search, RefreshCw, Ban, Calendar, Download, MoreHorizontal, Key, Trash2, Mail, Upload } from "lucide-react";
+import { Loader2, Users, DollarSign, Clock, Search, RefreshCw, Ban, Calendar, Download, MoreHorizontal, Key, Trash2, Mail } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -250,25 +250,6 @@ export default function SubscribersManagement() {
     },
   });
 
-  const voitexSyncMutation = useMutation({
-    mutationFn: async () => {
-      return apiRequest("POST", "/api/admin/subscribers/sync-voitex");
-    },
-    onSuccess: (data: any) => {
-      toast({
-        title: "Voitex sync complete",
-        description: data.message || `Successfully synced contacts to Voitex.`,
-      });
-    },
-    onError: (error: Error) => {
-      toast({
-        title: "Voitex sync failed",
-        description: error.message || "Failed to sync contacts to Voitex.",
-        variant: "destructive",
-      });
-    },
-  });
-
   const handleEmailAll = () => {
     if (!emailSubject.trim() || !emailMessage.trim()) {
       toast({
@@ -375,19 +356,6 @@ export default function SubscribersManagement() {
           >
             <Download className="h-4 w-4 mr-2" />
             Export Active Phone Numbers
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => voitexSyncMutation.mutate()}
-            disabled={voitexSyncMutation.isPending}
-            data-testid="button-sync-voitex"
-          >
-            {voitexSyncMutation.isPending ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <Upload className="h-4 w-4 mr-2" />
-            )}
-            Sync to Voitex
           </Button>
           <Button
             variant="outline"
