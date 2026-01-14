@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw } from "lucide-react";
+import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -38,6 +38,7 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
   const [isUploadingThumbnail, setIsUploadingThumbnail] = useState(false);
   const [isResettingThumbnail, setIsResettingThumbnail] = useState(false);
   const [isRefreshingStatus, setIsRefreshingStatus] = useState(false);
+  const [isDownloadingMp3, setIsDownloadingMp3] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [editTitle, setEditTitle] = useState(video.title);
   const [editDescription, setEditDescription] = useState(video.description || "");
@@ -106,6 +107,43 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
       toast({ title: "Failed to refresh status", description: error.message, variant: "destructive" });
     } finally {
       setIsRefreshingStatus(false);
+    }
+  };
+
+  const handleDownloadMp3 = async () => {
+    if (!video.bunnyGuid || video.status !== "ready") {
+      toast({ title: "Video not ready for download", variant: "destructive" });
+      return;
+    }
+    
+    setIsDownloadingMp3(true);
+    toast({ title: "Preparing MP3 download...", description: "This may take a moment for first download" });
+    
+    try {
+      const response = await fetch(`/api/admin/videos/${video.id}/download-mp3`, {
+        credentials: "include",
+      });
+      
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.message || "Download failed");
+      }
+      
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${video.title.replace(/[^a-zA-Z0-9\s_-]/g, "").substring(0, 50) || "audio"}.mp3`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      
+      toast({ title: "MP3 downloaded successfully" });
+    } catch (error: any) {
+      toast({ title: "Download failed", description: error.message, variant: "destructive" });
+    } finally {
+      setIsDownloadingMp3(false);
     }
   };
 
@@ -271,6 +309,22 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
                   {video.createdAt ? new Date(video.createdAt).toLocaleDateString() : "Unknown date"}
                 </span>
                 <div className="flex gap-1 ml-auto">
+                  {video.bunnyGuid && video.status === "ready" && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={handleDownloadMp3}
+                      disabled={isDownloadingMp3}
+                      title="Download as MP3"
+                      data-testid={`button-download-mp3-${video.id}`}
+                    >
+                      {isDownloadingMp3 ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Download className="h-4 w-4" />
+                      )}
+                    </Button>
+                  )}
                   <Button
                     variant="ghost"
                     size="icon"

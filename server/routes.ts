@@ -23,6 +23,7 @@ import * as bunnyStorage from "./bunnyStorage";
 import { generateThumbnailFromBunny, generateThumbnailFromLocalVideo } from "./thumbnailGenerator";
 import { voitexService } from "./voitexService";
 import { WebhookHandlers } from "./webhookHandlers";
+import { getOrCreateMp3, getCachedMp3Path, preGenerateMp3 } from "./mp3Converter";
 
 const execAsync = promisify(exec);
 
@@ -251,6 +252,13 @@ export async function registerRoutes(
                 duration: bunnyVideo.length,
               });
               console.log(`[Bunny Sync] Updated video ${video.id} to ready`);
+              
+              // Pre-generate MP3 for download
+              if (video.bunnyGuid) {
+                preGenerateMp3(video.id, video.bunnyGuid, video.title, true).catch(err => {
+                  console.error(`[MP3] Background pre-generation failed for ${video.id}:`, err);
+                });
+              }
             } else if (bunnyVideo.status === 5) {
               await storage.updateVideo(video.id, { status: "failed" });
               console.log(`[Bunny Sync] Updated video ${video.id} to failed`);
@@ -2051,6 +2059,11 @@ export async function registerRoutes(
                   console.log(`[Bunny Stream] Thumbnail generated for ${video.id}`);
                 }
               }
+              
+              // Pre-generate MP3 for download
+              preGenerateMp3(video.id, bunnyGuid, title, true).catch(err => {
+                console.error(`[MP3] Background pre-generation failed for ${video.id}:`, err);
+              });
               break;
             } else if (bunnyVideo.status === 5) {
               await storage.updateVideo(video.id, { status: "failed" });
@@ -2234,10 +2247,64 @@ export async function registerRoutes(
 
       console.log(`[Bunny Refresh] Video ${video.id} status: ${video.status} -> ${newStatus}`);
 
+      if (newStatus === "ready" && video.status !== "ready" && video.bunnyGuid) {
+        preGenerateMp3(video.id, video.bunnyGuid, video.title, true).catch(err => {
+          console.error(`[MP3] Background pre-generation failed for ${video.id}:`, err);
+        });
+      }
+
       res.json(updatedVideo);
     } catch (error: any) {
       console.error("Refresh video status error:", error);
       res.status(500).json({ message: error.message || "Failed to refresh video status" });
+    }
+  });
+
+  // Admin: Download video as MP3
+  app.get("/api/admin/videos/:id/download-mp3", requireAdmin, async (req, res) => {
+    try {
+      const video = await storage.getVideo(req.params.id);
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+
+      if (!video.bunnyGuid) {
+        return res.status(400).json({ message: "Only Bunny-hosted videos can be converted to MP3" });
+      }
+
+      if (video.status !== "ready") {
+        return res.status(400).json({ message: "Video must be fully processed before download" });
+      }
+
+      const mp3Path = await getOrCreateMp3(video.id, video.bunnyGuid, video.title);
+      
+      const safeTitle = video.title.replace(/[^a-zA-Z0-9\s_-]/g, "").substring(0, 50) || "audio";
+      res.setHeader("Content-Type", "audio/mpeg");
+      res.setHeader("Content-Disposition", `attachment; filename="${safeTitle}.mp3"`);
+      
+      const fileStream = fs.createReadStream(mp3Path);
+      fileStream.pipe(res);
+    } catch (error: any) {
+      console.error("MP3 download error:", error);
+      res.status(500).json({ message: error.message || "Failed to generate MP3" });
+    }
+  });
+
+  // Admin: Check if MP3 is cached for a video
+  app.get("/api/admin/videos/:id/mp3-status", requireAdmin, async (req, res) => {
+    try {
+      const video = await storage.getVideo(req.params.id);
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+
+      const cached = video.bunnyGuid ? getCachedMp3Path(video.id) : null;
+      res.json({ 
+        available: video.bunnyGuid && video.status === "ready",
+        cached: !!cached 
+      });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
   });
 
@@ -2267,6 +2334,12 @@ export async function registerRoutes(
             });
             updatedCount++;
             console.log(`[Bunny Refresh] Updated video ${video.id} to ready`);
+            
+            if (video.bunnyGuid) {
+              preGenerateMp3(video.id, video.bunnyGuid, video.title, true).catch(err => {
+                console.error(`[MP3] Background pre-generation failed for ${video.id}:`, err);
+              });
+            }
           } else if (bunnyVideo.status === 5) {
             await storage.updateVideo(video.id, { status: "failed" });
             updatedCount++;
@@ -2330,11 +2403,12 @@ export async function registerRoutes(
           
           // Only import videos that are finished processing (status 4) or still processing
           const status = bunnyVideo.status === 4 ? "ready" : "processing";
+          const videoTitle = bunnyVideo.title || `Video ${bunnyVideo.guid}`;
           
-          await storage.createVideo({
-            title: bunnyVideo.title || `Video ${bunnyVideo.guid}`,
+          const newVideo = await storage.createVideo({
+            title: videoTitle,
             description: null,
-            filename: `${bunnyVideo.title || bunnyVideo.guid}.mp4`,
+            filename: `${videoTitle}.mp4`,
             filepath: null,
             fileSize: bunnyVideo.storageSize || 0,
             duration: bunnyVideo.length || 0,
@@ -2348,7 +2422,14 @@ export async function registerRoutes(
           });
           
           importedCount++;
-          console.log(`[Bunny Sync] Imported video: ${bunnyVideo.title} (${bunnyVideo.guid})`);
+          console.log(`[Bunny Sync] Imported video: ${videoTitle} (${bunnyVideo.guid})`);
+          
+          // Pre-generate MP3 if video is already ready
+          if (status === "ready") {
+            preGenerateMp3(newVideo.id, bunnyVideo.guid, videoTitle, true).catch(err => {
+              console.error(`[MP3] Background pre-generation failed for ${newVideo.id}:`, err);
+            });
+          }
         } catch (err) {
           console.error(`[Bunny Sync] Failed to import video ${bunnyVideo.guid}:`, err);
         }
@@ -2378,6 +2459,12 @@ export async function registerRoutes(
             });
             updatedCount++;
             console.log(`[Bunny Sync] Updated video ${video.id} to ready`);
+            
+            if (video.bunnyGuid) {
+              preGenerateMp3(video.id, video.bunnyGuid, video.title, true).catch(err => {
+                console.error(`[MP3] Background pre-generation failed for ${video.id}:`, err);
+              });
+            }
           } else if (bunnyVideo.status === 5 || bunnyVideo.status === 6) {
             // Delete failed videos from both Bunny and database
             console.log(`[Bunny Sync] Deleting failed video: ${video.title} (${video.bunnyGuid}) status=${bunnyVideo.status}`);
