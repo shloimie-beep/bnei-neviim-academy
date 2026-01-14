@@ -111,8 +111,18 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
   };
 
   const handleDownloadMp3 = async () => {
-    if (!video.bunnyGuid || video.status !== "ready") {
-      toast({ title: "Video not ready for download", variant: "destructive" });
+    if (video.status !== "ready") {
+      toast({ title: "Media not ready for download", variant: "destructive" });
+      return;
+    }
+    
+    // For videos, need bunnyGuid. For audio, can have bunnyStorageUrl or filepath
+    const canDownload = video.mediaType === "audio" 
+      ? (video.bunnyStorageUrl || video.filepath) 
+      : video.bunnyGuid;
+      
+    if (!canDownload) {
+      toast({ title: "Media source not available", variant: "destructive" });
       return;
     }
     
@@ -309,21 +319,23 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
                   {video.createdAt ? new Date(video.createdAt).toLocaleDateString() : "Unknown date"}
                 </span>
                 <div className="flex gap-1 ml-auto">
-                  {video.bunnyGuid && video.status === "ready" && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handleDownloadMp3}
-                      disabled={isDownloadingMp3}
-                      title="Download as MP3"
-                      data-testid={`button-download-mp3-${video.id}`}
-                    >
-                      {isDownloadingMp3 ? (
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                      ) : (
-                        <Download className="h-4 w-4" />
-                      )}
-                    </Button>
+                  {video.status === "ready" && (
+                    (video.bunnyGuid || video.mediaType === "audio") && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={handleDownloadMp3}
+                        disabled={isDownloadingMp3}
+                        title={video.mediaType === "audio" ? "Download Audio" : "Download as MP3"}
+                        data-testid={`button-download-mp3-${video.id}`}
+                      >
+                        {isDownloadingMp3 ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <Download className="h-4 w-4" />
+                        )}
+                      </Button>
+                    )
                   )}
                   <Button
                     variant="ghost"

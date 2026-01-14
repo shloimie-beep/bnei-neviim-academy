@@ -2260,25 +2260,57 @@ export async function registerRoutes(
     }
   });
 
-  // Admin: Download video as MP3
+  // Admin: Download media as MP3 (or direct download for audio files)
   app.get("/api/admin/videos/:id/download-mp3", requireAdmin, async (req, res) => {
     try {
       const video = await storage.getVideo(req.params.id);
       if (!video) {
-        return res.status(404).json({ message: "Video not found" });
+        return res.status(404).json({ message: "Media not found" });
       }
 
+      if (video.status !== "ready") {
+        return res.status(400).json({ message: "Media must be fully processed before download" });
+      }
+
+      const safeTitle = video.title.replace(/[^a-zA-Z0-9\s_-]/g, "").substring(0, 50) || "audio";
+
+      // For audio files, download directly from source without conversion
+      if (video.mediaType === "audio") {
+        res.setHeader("Content-Type", "audio/mpeg");
+        res.setHeader("Content-Disposition", `attachment; filename="${safeTitle}.mp3"`);
+        
+        if (video.bunnyStorageUrl) {
+          // Bunny storage audio - proxy the download
+          const response = await fetch(video.bunnyStorageUrl);
+          if (!response.ok) {
+            throw new Error(`Failed to download from Bunny storage: ${response.status}`);
+          }
+          const buffer = await response.arrayBuffer();
+          return res.send(Buffer.from(buffer));
+        } else if (video.filepath) {
+          // Local audio file
+          const localPath = path.join(process.cwd(), "uploads", "videos", path.basename(video.filepath));
+          if (fs.existsSync(localPath)) {
+            return fs.createReadStream(localPath).pipe(res);
+          }
+          // Try alternative path
+          const altPath = video.filepath.startsWith("/") ? video.filepath : path.join(process.cwd(), video.filepath);
+          if (fs.existsSync(altPath)) {
+            return fs.createReadStream(altPath).pipe(res);
+          }
+          throw new Error("Audio file not found on disk");
+        } else {
+          return res.status(400).json({ message: "Audio file source not found" });
+        }
+      }
+
+      // For videos, convert to MP3
       if (!video.bunnyGuid) {
         return res.status(400).json({ message: "Only Bunny-hosted videos can be converted to MP3" });
       }
 
-      if (video.status !== "ready") {
-        return res.status(400).json({ message: "Video must be fully processed before download" });
-      }
-
       const mp3Path = await getOrCreateMp3(video.id, video.bunnyGuid, video.title);
       
-      const safeTitle = video.title.replace(/[^a-zA-Z0-9\s_-]/g, "").substring(0, 50) || "audio";
       res.setHeader("Content-Type", "audio/mpeg");
       res.setHeader("Content-Disposition", `attachment; filename="${safeTitle}.mp3"`);
       

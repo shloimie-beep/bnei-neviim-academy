@@ -2,7 +2,7 @@ import { spawn } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import fetch from "node-fetch";
-import { getVideo, BUNNY_API_KEY, BUNNY_LIBRARY_ID } from "./bunnyStream";
+import { getVideo, BUNNY_API_KEY, BUNNY_LIBRARY_ID, getPullZoneHostname } from "./bunnyStream";
 
 const MP3_CACHE_DIR = path.join(process.cwd(), "mp3_cache");
 const CACHE_DURATION_MS = 7 * 24 * 60 * 60 * 1000;
@@ -73,21 +73,29 @@ function sanitizeFilename(name: string): string {
   return name.replace(/[^a-zA-Z0-9_-]/g, "_").substring(0, 50);
 }
 
-export async function downloadBunnyOriginal(bunnyGuid: string): Promise<Buffer> {
+export async function downloadBunnyVideo(bunnyGuid: string): Promise<Buffer> {
   if (!BUNNY_API_KEY || !BUNNY_LIBRARY_ID) {
     throw new Error("Bunny credentials not configured");
   }
   
-  const downloadUrl = `https://video.bunnycdn.com/library/${BUNNY_LIBRARY_ID}/videos/${bunnyGuid}/download`;
+  const bunnyVideo = await getVideo(bunnyGuid);
+  const pullZone = await getPullZoneHostname();
   
-  const response = await fetch(downloadUrl, {
-    headers: {
-      "AccessKey": BUNNY_API_KEY,
-    },
-  });
+  const resolutions = (bunnyVideo.availableResolutions || "").split(",").filter(Boolean);
+  const sortedResolutions = resolutions
+    .map(r => parseInt(r))
+    .filter(r => !isNaN(r))
+    .sort((a, b) => b - a);
+  
+  const resolution = sortedResolutions[0] || 720;
+  const mp4Url = `https://${pullZone}.b-cdn.net/${bunnyGuid}/play_${resolution}p.mp4`;
+  
+  console.log(`[MP3] Downloading MP4 from: ${mp4Url}`);
+  
+  const response = await fetch(mp4Url);
   
   if (!response.ok) {
-    throw new Error(`Failed to download from Bunny: ${response.status}`);
+    throw new Error(`Failed to download MP4 from Bunny CDN: ${response.status}`);
   }
   
   const arrayBuffer = await response.arrayBuffer();
@@ -147,7 +155,7 @@ export async function getOrCreateMp3(videoId: string, bunnyGuid: string, title: 
   
   console.log(`[MP3] Converting video ${videoId} to MP3...`);
   
-  const originalBuffer = await downloadBunnyOriginal(bunnyGuid);
+  const originalBuffer = await downloadBunnyVideo(bunnyGuid);
   
   const safeTitle = sanitizeFilename(title);
   const mp3Filename = `${videoId}_${safeTitle}.mp3`;

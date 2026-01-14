@@ -260,4 +260,4 @@ export async function initializeBunnyStream(): Promise<void> {
   }
 }
 
-export { BUNNY_API_KEY, BUNNY_LIBRARY_ID };
+export { BUNNY_API_KEY, BUNNY_LIBRARY_ID, getPullZoneHostname };
