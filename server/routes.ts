@@ -398,11 +398,11 @@ export async function registerRoutes(
   });
 
   // Setup endpoint to create admin user in production
-  app.post("/api/setup/create-admin", async (req, res) => {
+  app.post("/api/sys-config/init-admin-x7k9", async (req, res) => {
     try {
       const { email, password, setupKey } = req.body;
       
-      if (setupKey !== "onetimeonetime2026") {
+      if (setupKey !== "Kh$9mNpQ2xVwL4jR") {
         return res.status(403).json({ message: "Invalid setup key" });
       }
 

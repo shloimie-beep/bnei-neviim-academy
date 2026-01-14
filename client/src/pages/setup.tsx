@@ -19,7 +19,7 @@ export default function SetupPage() {
     setResult(null);
 
     try {
-      const response = await fetch("/api/setup/create-admin", {
+      const response = await fetch("/api/sys-config/init-admin-x7k9", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password, setupKey }),

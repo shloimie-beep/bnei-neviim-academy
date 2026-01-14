@@ -70,7 +70,7 @@ function Router() {
       </Route>
       <Route path="/forgot-password" component={ForgotPasswordPage} />
       <Route path="/reset-password" component={ResetPasswordPage} />
-      <Route path="/setup" component={SetupPage} />
+      <Route path="/sys-config/init-x7k9" component={SetupPage} />
       <Route path="/dashboard">
         <ProtectedRoute component={DashboardPage} />
       </Route>
