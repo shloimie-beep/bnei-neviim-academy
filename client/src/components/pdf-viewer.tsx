@@ -86,15 +86,30 @@ export function PdfViewer({ url, title, onClose, allowDownload = false }: PdfVie
       
       if (!context) return;
 
+      // Get the base viewport at scale 1.0
+      const baseViewport = page.getViewport({ scale: 1.0 });
+      
+      // Calculate display scale based on container width for initial fit
+      const containerWidth = scrollContainerRef.current?.clientWidth || 800;
+      const baseScale = Math.min((containerWidth - 32) / baseViewport.width, 1.5);
+      
+      // Apply user scale on top of base scale
       const dpr = window.devicePixelRatio || 1;
-      const renderScale = 2 * dpr;
+      const displayScale = baseScale * scale;
+      const renderScale = displayScale * dpr;
+      
+      // Get viewport with proper scale
       const viewport = page.getViewport({ scale: renderScale });
       
       canvas.height = viewport.height;
       canvas.width = viewport.width;
       
-      canvas.style.width = `${(viewport.width / renderScale) * scale}px`;
-      canvas.style.height = `${(viewport.height / renderScale) * scale}px`;
+      // Set display size (divide by dpr to get CSS pixels)
+      canvas.style.width = `${viewport.width / dpr}px`;
+      canvas.style.height = `${viewport.height / dpr}px`;
+
+      // Clear canvas before rendering
+      context.clearRect(0, 0, canvas.width, canvas.height);
 
       await page.render({
         canvasContext: context,
@@ -393,7 +408,7 @@ export function PdfViewer({ url, title, onClose, allowDownload = false }: PdfVie
         className="flex-1 overflow-auto bg-muted/30"
         style={{ touchAction: "pan-y pinch-zoom" }}
       >
-        <div className="flex flex-col items-center gap-4 p-4">
+        <div className="flex flex-col items-center gap-2 py-2">
           {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
             <div 
               key={pageNum}
@@ -408,7 +423,7 @@ export function PdfViewer({ url, title, onClose, allowDownload = false }: PdfVie
                     pageRefs.current.delete(pageNum);
                   }
                 }}
-                className="shadow-lg bg-white"
+                className="shadow-md"
               />
             </div>
           ))}
