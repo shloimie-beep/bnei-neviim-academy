@@ -73,33 +73,43 @@ function sanitizeFilename(name: string): string {
   return name.replace(/[^a-zA-Z0-9_-]/g, "_").substring(0, 50);
 }
 
-export async function downloadBunnyVideo(bunnyGuid: string): Promise<Buffer> {
-  if (!BUNNY_API_KEY || !BUNNY_LIBRARY_ID) {
-    throw new Error("Bunny credentials not configured");
-  }
-  
-  const bunnyVideo = await getVideo(bunnyGuid);
+export async function convertHlsToMp3(bunnyGuid: string, outputPath: string): Promise<void> {
   const pullZone = await getPullZoneHostname();
+  const hlsUrl = `https://${pullZone}.b-cdn.net/${bunnyGuid}/playlist.m3u8`;
   
-  const resolutions = (bunnyVideo.availableResolutions || "").split(",").filter(Boolean);
-  const sortedResolutions = resolutions
-    .map(r => parseInt(r))
-    .filter(r => !isNaN(r))
-    .sort((a, b) => b - a);
+  console.log(`[MP3] Streaming audio from HLS: ${hlsUrl}`);
   
-  const resolution = sortedResolutions[0] || 720;
-  const mp4Url = `https://${pullZone}.b-cdn.net/${bunnyGuid}/play_${resolution}p.mp4`;
-  
-  console.log(`[MP3] Downloading MP4 from: ${mp4Url}`);
-  
-  const response = await fetch(mp4Url);
-  
-  if (!response.ok) {
-    throw new Error(`Failed to download MP4 from Bunny CDN: ${response.status}`);
-  }
-  
-  const arrayBuffer = await response.arrayBuffer();
-  return Buffer.from(arrayBuffer);
+  return new Promise((resolve, reject) => {
+    const ffmpeg = spawn("ffmpeg", [
+      "-y",
+      "-i", hlsUrl,
+      "-vn",
+      "-acodec", "libmp3lame",
+      "-ab", "128k",
+      "-ar", "44100",
+      "-ac", "2",
+      outputPath,
+    ]);
+    
+    let stderr = "";
+    
+    ffmpeg.stderr.on("data", (data) => {
+      stderr += data.toString();
+    });
+    
+    ffmpeg.on("close", (code) => {
+      if (code === 0) {
+        console.log(`[MP3] Successfully converted HLS to MP3: ${outputPath}`);
+        resolve();
+      } else {
+        reject(new Error(`FFmpeg HLS conversion failed with code ${code}: ${stderr.slice(-500)}`));
+      }
+    });
+    
+    ffmpeg.on("error", (err) => {
+      reject(err);
+    });
+  });
 }
 
 export async function convertToMp3(inputBuffer: Buffer, outputPath: string): Promise<void> {
@@ -155,13 +165,11 @@ export async function getOrCreateMp3(videoId: string, bunnyGuid: string, title: 
   
   console.log(`[MP3] Converting video ${videoId} to MP3...`);
   
-  const originalBuffer = await downloadBunnyVideo(bunnyGuid);
-  
   const safeTitle = sanitizeFilename(title);
   const mp3Filename = `${videoId}_${safeTitle}.mp3`;
   const mp3Path = path.join(MP3_CACHE_DIR, mp3Filename);
   
-  await convertToMp3(originalBuffer, mp3Path);
+  await convertHlsToMp3(bunnyGuid, mp3Path);
   
   cacheManifest.set(videoId, {
     videoId,
