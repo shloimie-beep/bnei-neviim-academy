@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut, Loader2, Maximize, Minimize, X, Download } from "lucide-react";
-import * as pdfjsLib from "pdfjs-dist";
+import * as pdfjsLib from "pdfjs-dist/legacy/build/pdf.mjs";
 
-// Use worker from public directory
+// Use worker from public directory (legacy build for compatibility)
 pdfjsLib.GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js";
 
 interface PdfViewerProps {
@@ -91,6 +91,7 @@ export function PdfViewer({ url, title, onClose, allowDownload = false }: PdfVie
         const renderContext = {
           canvasContext: context,
           viewport: viewport,
+          canvas: canvas,
         };
 
         await page.render(renderContext).promise;
