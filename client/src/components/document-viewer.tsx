@@ -199,12 +199,13 @@ export function DocumentViewer({ documentId, title, onClose, allowDownload = fal
         ref={containerRef}
         className="flex-1 overflow-auto bg-neutral-200 dark:bg-neutral-800"
       >
-        <div 
-          className="flex flex-col items-center gap-4 p-4"
-          style={{ transform: `scale(${zoom})`, transformOrigin: "top center" }}
-        >
+        <div className="flex flex-col items-center gap-4 p-4 min-w-fit">
           {Array.from({ length: pagesData.pageCount }, (_, i) => i + 1).map((pageNum) => (
-            <div key={pageNum} className="relative bg-white shadow-lg">
+            <div 
+              key={pageNum} 
+              className="relative bg-white shadow-lg"
+              style={{ width: `${zoom * 100}%`, maxWidth: `${zoom * 800}px` }}
+            >
               {!loadedPages.has(pageNum) && (
                 <div className="absolute inset-0 flex items-center justify-center bg-white">
                   <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
@@ -213,7 +214,7 @@ export function DocumentViewer({ documentId, title, onClose, allowDownload = fal
               <img
                 src={`/api/documents/${documentId}/page/${pageNum}`}
                 alt={`Page ${pageNum}`}
-                className="max-w-full"
+                className="w-full h-auto"
                 onLoad={() => handlePageLoad(pageNum)}
                 onContextMenu={(e) => !(allowDownload || pagesData.allowDownload) && e.preventDefault()}
                 draggable={false}
