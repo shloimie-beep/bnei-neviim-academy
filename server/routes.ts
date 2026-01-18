@@ -1175,6 +1175,7 @@ export async function registerRoutes(
 
       // Check if user has already used their trial
       const canUseTrial = !user.hasUsedTrial;
+      console.log(`[Checkout] User ${user.email} hasUsedTrial=${user.hasUsedTrial}, canUseTrial=${canUseTrial}`);
 
       // Create checkout session - with trial only if user hasn't used one before
       const sessionConfig: any = {
