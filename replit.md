@@ -50,6 +50,21 @@ The backend handles user authentication, subscription management, phone number r
   - Video schema includes `bunnyGuid`, `bunnyVideoId`, `storageType` fields for Bunny videos
 - **Legacy Support**: Videos without `bunnyGuid` continue to use local/cloud storage streaming
 
+### Document Viewer Architecture
+- **Processing Flow**: PDFs are converted to page images on upload for better viewing
+- **Upload Flow**:
+  1. Admin uploads PDF document
+  2. Document created with status "processing"
+  3. Backend converts each PDF page to PNG images using pdf-to-img library
+  4. Page images uploaded to object storage
+  5. Document updated with page image paths and status "ready"
+- **Viewing**: DocumentViewer component displays pages as scrollable images with zoom controls
+- **Polling**: Viewer polls every 2 seconds while document status is "processing"
+- **Key Files**:
+  - `server/pdfConverter.ts` - PDF to image conversion service
+  - `client/src/components/document-viewer.tsx` - Image-based document viewer
+  - Documents schema includes `pageImages` array and `status` field
+
 ### Data Storage
 - **Primary Database**: PostgreSQL
 - **Schema Location**: `shared/schema.ts` using Drizzle ORM
