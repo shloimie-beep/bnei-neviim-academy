@@ -648,7 +648,19 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
   const [tracks, setTracks] = useState<AlbumTrack[]>([]);
   const [loadingTracks, setLoadingTracks] = useState(false);
   const [playingTrackId, setPlayingTrackId] = useState<string | null>(null);
+  const [isPlayingAll, setIsPlayingAll] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const isPlayingAllRef = useRef(false);
+
+  // Sort tracks by trackNumber for proper ordering
+  const sortedTracks = useMemo(() => {
+    return [...tracks].sort((a, b) => (a.trackNumber || 0) - (b.trackNumber || 0));
+  }, [tracks]);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    isPlayingAllRef.current = isPlayingAll;
+  }, [isPlayingAll]);
 
   const fetchTracks = async () => {
     setLoadingTracks(true);
@@ -670,14 +682,18 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
 
   const handleClose = () => {
     setIsOpen(false);
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current = null;
-    }
-    setPlayingTrackId(null);
+    stopPlaying();
+    setIsPlayingAll(false);
   };
 
-  const playTrack = (track: AlbumTrack) => {
+  const playTrackAtIndex = (index: number) => {
+    if (index >= sortedTracks.length) {
+      setPlayingTrackId(null);
+      setIsPlayingAll(false);
+      return;
+    }
+    
+    const track = sortedTracks[index];
     if (audioRef.current) {
       audioRef.current.pause();
     }
@@ -685,9 +701,27 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
     audio.play();
     audioRef.current = audio;
     setPlayingTrackId(track.id);
+    
     audio.onended = () => {
-      setPlayingTrackId(null);
+      if (isPlayingAllRef.current && index < sortedTracks.length - 1) {
+        playTrackAtIndex(index + 1);
+      } else {
+        setPlayingTrackId(null);
+        setIsPlayingAll(false);
+      }
     };
+  };
+
+  const playTrack = (track: AlbumTrack) => {
+    const trackIndex = sortedTracks.findIndex(t => t.id === track.id);
+    playTrackAtIndex(trackIndex >= 0 ? trackIndex : 0);
+  };
+
+  const playAll = () => {
+    if (sortedTracks.length === 0) return;
+    setIsPlayingAll(true);
+    isPlayingAllRef.current = true;
+    playTrackAtIndex(0);
   };
 
   const stopPlaying = () => {
@@ -696,6 +730,8 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
       audioRef.current = null;
     }
     setPlayingTrackId(null);
+    setIsPlayingAll(false);
+    isPlayingAllRef.current = false;
   };
 
   return (
@@ -749,6 +785,30 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
               <DialogDescription>{album.description}</DialogDescription>
             )}
           </DialogHeader>
+          
+          {/* Play All button */}
+          {sortedTracks.length > 0 && (
+            <div className="pb-2">
+              <Button 
+                onClick={isPlayingAll ? stopPlaying : playAll}
+                className="w-full gap-2"
+                data-testid="button-play-all"
+              >
+                {isPlayingAll ? (
+                  <>
+                    <Pause className="h-4 w-4" />
+                    Stop Playing
+                  </>
+                ) : (
+                  <>
+                    <Play className="h-4 w-4" />
+                    Play All
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
+          
           <div className="flex-1 overflow-y-auto">
             {loadingTracks ? (
               <div className="space-y-2">
@@ -756,13 +816,16 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
                   <Skeleton key={i} className="h-12 w-full" />
                 ))}
               </div>
-            ) : tracks.length > 0 ? (
+            ) : sortedTracks.length > 0 ? (
               <div className="space-y-1">
-                {tracks.map((track, index) => (
+                {sortedTracks.map((track, index) => (
                   <div 
                     key={track.id}
-                    className="flex items-center gap-3 p-3 rounded-lg hover-elevate cursor-pointer"
-                    onClick={() => playingTrackId === track.id ? stopPlaying() : playTrack(track)}
+                    className={`flex items-center gap-3 p-3 rounded-lg hover-elevate cursor-pointer ${playingTrackId === track.id ? 'bg-muted' : ''}`}
+                    onClick={() => {
+                      setIsPlayingAll(false);
+                      playingTrackId === track.id ? stopPlaying() : playTrack(track);
+                    }}
                     data-testid={`track-${track.id}`}
                   >
                     <span className="text-muted-foreground w-6 text-center text-sm">
@@ -776,6 +839,7 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
                       variant={playingTrackId === track.id ? "default" : "ghost"}
                       onClick={(e) => {
                         e.stopPropagation();
+                        setIsPlayingAll(false);
                         playingTrackId === track.id ? stopPlaying() : playTrack(track);
                       }}
                     >
