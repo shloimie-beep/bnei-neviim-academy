@@ -1374,6 +1374,28 @@ export default function DashboardPage() {
               )}
 
             </>
+          ) : user?.subscriptionStatus === "past_due" ? (
+            <Card className="border-2 border-destructive">
+              <CardContent className="py-16 text-center">
+                <AlertCircle className="h-16 w-16 mx-auto text-destructive mb-6" />
+                <h2 className="text-2xl font-bold mb-2">Payment Issue</h2>
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                  We were unable to process your payment. Please update your payment method to restore access to videos and the phone hotline.
+                </p>
+                <Button
+                  size="lg"
+                  onClick={() => createPortalMutation.mutate()}
+                  disabled={createPortalMutation.isPending}
+                  data-testid="button-update-payment"
+                >
+                  {createPortalMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                  Update Payment Method
+                </Button>
+                <p className="text-sm text-muted-foreground mt-4">
+                  Once your payment is updated, your access will be restored automatically.
+                </p>
+              </CardContent>
+            </Card>
           ) : (
             <Card className="border-2 border-dashed">
               <CardContent className="py-16 text-center">
