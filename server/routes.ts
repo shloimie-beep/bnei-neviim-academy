@@ -930,9 +930,6 @@ export async function registerRoutes(
     const whitelistedEmail = user.email ? await storage.getWhitelistedEmail(user.email) : null;
     const isWhitelistedEmail = !!whitelistedEmail;
 
-    // Debug logging for subscription status
-    console.log(`[Auth/Me] User ${user.email}: subscriptionStatus=${user.subscriptionStatus}, hasUsedTrial=${user.hasUsedTrial}`);
-
     res.json({ user: { ...user, password: undefined, isWhitelistedEmail } });
   });
 
@@ -1178,7 +1175,6 @@ export async function registerRoutes(
 
       // Check if user has already used their trial
       const canUseTrial = !user.hasUsedTrial;
-      console.log(`[Checkout] User ${user.email} hasUsedTrial=${user.hasUsedTrial}, canUseTrial=${canUseTrial}`);
 
       // Create checkout session - with trial only if user hasn't used one before
       const sessionConfig: any = {
