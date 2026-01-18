@@ -4379,14 +4379,14 @@ export async function registerRoutes(
       
       console.log(`[Document Upload] Successfully uploaded PDF to: ${objectPath}`);
 
-      // Create document record with processing status
+      // Create document record - visible immediately while processing happens in background
       const doc = await storage.createDocument({
         title,
         description: description || null,
         filename: req.file.originalname,
         filepath: objectPath,
         fileSize: req.file.size,
-        status: "processing",
+        status: "ready",
         allowDownload: allowDownload === "true" || allowDownload === true,
         categoryId: categoryId || null,
         uploadedBy: adminUserId,
