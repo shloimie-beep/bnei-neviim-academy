@@ -4877,7 +4877,7 @@ export async function registerRoutes(
             try {
               const bunnyUrl = new URL(track.bunnyStorageUrl);
               const filePath = bunnyUrl.pathname;
-              const deleteResponse = await fetch(`https://${bunnyStorageZone}.storage.bunnycdn.com${filePath}`, {
+              const deleteResponse = await fetch(`https://storage.bunnycdn.com/${bunnyStorageZone}${filePath}`, {
                 method: "DELETE",
                 headers: {
                   "AccessKey": bunnyStoragePassword,
@@ -5010,7 +5010,7 @@ export async function registerRoutes(
 
       const fileExtension = path.extname(req.file.originalname).toLowerCase();
       const safeFilename = `album-tracks/${album.id}/${Date.now()}${fileExtension}`;
-      const bunnyUploadUrl = `https://${bunnyStorageZone}.storage.bunnycdn.com/${safeFilename}`;
+      const bunnyUploadUrl = `https://storage.bunnycdn.com/${bunnyStorageZone}/${safeFilename}`;
       
       // Read file and upload to Bunny (async)
       const fileBuffer = await fs.promises.readFile(req.file.path);
@@ -5087,7 +5087,7 @@ export async function registerRoutes(
         try {
           const bunnyUrl = new URL(track.bunnyStorageUrl);
           const filePath = bunnyUrl.pathname;
-          const deleteResponse = await fetch(`https://${bunnyStorageZone}.storage.bunnycdn.com${filePath}`, {
+          const deleteResponse = await fetch(`https://storage.bunnycdn.com/${bunnyStorageZone}${filePath}`, {
             method: "DELETE",
             headers: {
               "AccessKey": bunnyStoragePassword,
