@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight } from "lucide-react";
+import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -17,7 +17,7 @@ import { ThemeToggle } from "@/components/theme-toggle";
 import { DocumentViewer } from "@/components/document-viewer";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState, useRef, useMemo, useEffect } from "react";
-import type { PhoneNumber, Video as VideoType, VideoCategory, Document } from "@shared/schema";
+import type { PhoneNumber, Video as VideoType, VideoCategory, Document, Album, AlbumTrack } from "@shared/schema";
 
 const countryCodes = [
   { code: "+1", country: "USA/Canada" },
@@ -643,6 +643,164 @@ function DocumentCard({ doc }: { doc: Document }) {
   );
 }
 
+function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [tracks, setTracks] = useState<AlbumTrack[]>([]);
+  const [loadingTracks, setLoadingTracks] = useState(false);
+  const [playingTrackId, setPlayingTrackId] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const fetchTracks = async () => {
+    setLoadingTracks(true);
+    try {
+      const res = await fetch(`/api/albums/${album.id}`);
+      const data = await res.json();
+      setTracks(data.tracks || []);
+    } catch (err) {
+      console.error("Failed to fetch album tracks:", err);
+    } finally {
+      setLoadingTracks(false);
+    }
+  };
+
+  const handleOpen = () => {
+    setIsOpen(true);
+    fetchTracks();
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    setPlayingTrackId(null);
+  };
+
+  const playTrack = (track: AlbumTrack) => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    const audio = new Audio(`/api/albums/${album.id}/tracks/${track.id}/stream`);
+    audio.play();
+    audioRef.current = audio;
+    setPlayingTrackId(track.id);
+    audio.onended = () => {
+      setPlayingTrackId(null);
+    };
+  };
+
+  const stopPlaying = () => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    setPlayingTrackId(null);
+  };
+
+  return (
+    <>
+      <Card 
+        className="overflow-hidden cursor-pointer hover-elevate active-elevate-2" 
+        onClick={handleOpen}
+        data-testid={`card-album-${album.id}`}
+      >
+        <div className="aspect-video bg-muted flex items-center justify-center relative group">
+          {album.thumbnailPath ? (
+            <img 
+              src={`/api/albums/${album.id}/thumbnail`} 
+              alt={album.title}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <Disc className="h-12 w-12 text-muted-foreground" />
+          )}
+          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="h-14 w-14 rounded-full bg-primary flex items-center justify-center">
+              <Play className="h-6 w-6 text-primary-foreground ml-1" />
+            </div>
+          </div>
+        </div>
+        <CardContent className="p-4">
+          <div className="flex items-center gap-2">
+            <h3 className="font-medium line-clamp-1 flex-1" data-testid={`text-album-title-${album.id}`}>
+              {album.title}
+            </h3>
+            <Badge variant="secondary" className="text-xs flex-shrink-0">
+              {album.trackCount} {album.trackCount === 1 ? "track" : "tracks"}
+            </Badge>
+          </div>
+          {album.description && (
+            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+              {album.description}
+            </p>
+          )}
+        </CardContent>
+      </Card>
+
+      <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
+        <DialogContent className="max-w-lg max-h-[80vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Disc className="h-5 w-5" />
+              {album.title}
+            </DialogTitle>
+            {album.description && (
+              <DialogDescription>{album.description}</DialogDescription>
+            )}
+          </DialogHeader>
+          <div className="flex-1 overflow-y-auto">
+            {loadingTracks ? (
+              <div className="space-y-2">
+                {[1, 2, 3].map(i => (
+                  <Skeleton key={i} className="h-12 w-full" />
+                ))}
+              </div>
+            ) : tracks.length > 0 ? (
+              <div className="space-y-1">
+                {tracks.map((track, index) => (
+                  <div 
+                    key={track.id}
+                    className="flex items-center gap-3 p-3 rounded-lg hover-elevate cursor-pointer"
+                    onClick={() => playingTrackId === track.id ? stopPlaying() : playTrack(track)}
+                    data-testid={`track-${track.id}`}
+                  >
+                    <span className="text-muted-foreground w-6 text-center text-sm">
+                      {track.trackNumber || index + 1}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="font-medium truncate">{track.title}</p>
+                    </div>
+                    <Button 
+                      size="icon" 
+                      variant={playingTrackId === track.id ? "default" : "ghost"}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        playingTrackId === track.id ? stopPlaying() : playTrack(track);
+                      }}
+                    >
+                      {playingTrackId === track.id ? (
+                        <Pause className="h-4 w-4" />
+                      ) : (
+                        <Play className="h-4 w-4" />
+                      )}
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="py-8 text-center text-muted-foreground">
+                <Music className="h-12 w-12 mx-auto mb-2 opacity-50" />
+                <p>No tracks in this album yet</p>
+              </div>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
 export default function DashboardPage() {
   const { user, logout, refreshUser } = useAuth();
   const { toast } = useToast();
@@ -696,6 +854,11 @@ export default function DashboardPage() {
 
   const { data: documents, isLoading: documentsLoading } = useQuery<Document[]>({
     queryKey: ["/api/documents"],
+    enabled: hasActiveSubscription,
+  });
+
+  const { data: albums, isLoading: albumsLoading } = useQuery<(Album & { trackCount: number })[]>({
+    queryKey: ["/api/albums"],
     enabled: hasActiveSubscription,
   });
 
@@ -1299,6 +1462,16 @@ export default function DashboardPage() {
                     Documents
                   </Button>
                 )}
+                {albums && albums.length > 0 && (
+                  <Button
+                    variant={selectedCategory === "albums" ? "default" : "outline"}
+                    onClick={() => setSelectedCategory("albums")}
+                    data-testid="button-category-albums"
+                  >
+                    <Disc className="h-4 w-4 mr-2" />
+                    Albums
+                  </Button>
+                )}
               </div>
 
               {/* Content based on selected category */}
@@ -1329,6 +1502,38 @@ export default function DashboardPage() {
                         <h3 className="font-semibold text-lg mb-2">No Documents Yet</h3>
                         <p className="text-muted-foreground">
                           Check back soon for new document content!
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              ) : selectedCategory === "albums" ? (
+                <div>
+                  {albumsLoading ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {[1, 2, 3].map((i) => (
+                        <Card key={i} className="overflow-hidden">
+                          <Skeleton className="aspect-video" />
+                          <CardContent className="p-4 space-y-2">
+                            <Skeleton className="h-5 w-3/4" />
+                            <Skeleton className="h-4 w-full" />
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : albums && albums.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {albums.map((album) => (
+                        <AlbumCard key={album.id} album={album} />
+                      ))}
+                    </div>
+                  ) : (
+                    <Card>
+                      <CardContent className="py-12 text-center">
+                        <Disc className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                        <h3 className="font-semibold text-lg mb-2">No Albums Yet</h3>
+                        <p className="text-muted-foreground">
+                          Check back soon for new album content!
                         </p>
                       </CardContent>
                     </Card>

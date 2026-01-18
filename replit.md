@@ -66,12 +66,13 @@ The backend handles user authentication, subscription management, phone number r
   - Documents schema includes `pageImages` array and `status` field
 
 ### Albums Architecture
-- **Purpose**: Organize multiple audio tracks into albums with cover art and categories
+- **Purpose**: Organize multiple audio tracks into albums with cover art
+- **Display**: Albums appear in their own dedicated "Albums" section in the customer portal (not mixed with video categories)
 - **Database Tables**:
-  - `albums` - Album metadata (title, description, thumbnail, category, status)
+  - `albums` - Album metadata (title, description, thumbnail, status)
   - `albumTracks` - Individual audio tracks with track numbers and Bunny CDN storage
 - **Storage**:
-  - Album thumbnails: Object storage (like document page images)
+  - Album thumbnails: Object storage (uploaded by hovering over album image)
   - Audio tracks: Bunny CDN at `album-tracks/{albumId}/{timestamp}.mp3`
 - **Admin Endpoints**:
   - `GET/POST /api/admin/albums` - List and create albums

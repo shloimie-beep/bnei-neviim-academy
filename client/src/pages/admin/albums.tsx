@@ -8,18 +8,16 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
-import type { Album, AlbumTrack, VideoCategory } from "@shared/schema";
+import type { Album, AlbumTrack } from "@shared/schema";
 
 type AlbumWithCount = Album & { trackCount: number };
 
-function AlbumCard({ album, categories, onDelete, onUpdate, onRefresh }: { 
+function AlbumCard({ album, onDelete, onUpdate, onRefresh }: { 
   album: AlbumWithCount; 
-  categories: VideoCategory[];
   onDelete: () => void;
   onUpdate: (data: Partial<Album>) => void;
   onRefresh: () => void;
@@ -35,10 +33,7 @@ function AlbumCard({ album, categories, onDelete, onUpdate, onRefresh }: {
   const [isUploadingTrack, setIsUploadingTrack] = useState(false);
   const [editTitle, setEditTitle] = useState(album.title);
   const [editDescription, setEditDescription] = useState(album.description || "");
-  const [editCategoryId, setEditCategoryId] = useState(album.categoryId || "none");
   const [newTrackTitle, setNewTrackTitle] = useState("");
-  
-  const categoryName = categories.find(c => c.id === album.categoryId)?.name;
 
   const { data: tracks = [], isLoading: tracksLoading } = useQuery<AlbumTrack[]>({
     queryKey: ["/api/admin/albums", album.id, "tracks"],
@@ -60,8 +55,7 @@ function AlbumCard({ album, categories, onDelete, onUpdate, onRefresh }: {
   const handleSave = () => {
     onUpdate({ 
       title: editTitle, 
-      description: editDescription, 
-      categoryId: editCategoryId === "none" ? null : editCategoryId 
+      description: editDescription
     });
     setIsEditing(false);
   };
@@ -189,17 +183,6 @@ function AlbumCard({ album, categories, onDelete, onUpdate, onRefresh }: {
                       rows={2}
                       data-testid={`input-edit-description-${album.id}`}
                     />
-                    <Select value={editCategoryId} onValueChange={setEditCategoryId}>
-                      <SelectTrigger data-testid={`select-edit-category-${album.id}`}>
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">No Category</SelectItem>
-                        {categories.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
                     <div className="flex gap-2">
                       <Button size="sm" onClick={handleSave} data-testid={`button-save-album-${album.id}`}>
                         Save
@@ -216,7 +199,6 @@ function AlbumCard({ album, categories, onDelete, onUpdate, onRefresh }: {
                         {album.title}
                       </p>
                       <Badge variant="secondary" className="text-xs">{album.trackCount} tracks</Badge>
-                      {categoryName && <Badge variant="outline" className="text-xs">{categoryName}</Badge>}
                       {album.status === "hidden" && <Badge variant="destructive" className="text-xs">Hidden</Badge>}
                     </div>
                     {album.description && (
@@ -391,18 +373,13 @@ export default function AlbumManagement() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newAlbumTitle, setNewAlbumTitle] = useState("");
   const [newAlbumDescription, setNewAlbumDescription] = useState("");
-  const [newAlbumCategoryId, setNewAlbumCategoryId] = useState("");
 
   const { data: albums, isLoading } = useQuery<AlbumWithCount[]>({
     queryKey: ["/api/admin/albums"],
   });
 
-  const { data: categories = [] } = useQuery<VideoCategory[]>({
-    queryKey: ["/api/admin/video-categories"],
-  });
-
   const createAlbumMutation = useMutation({
-    mutationFn: async (data: { title: string; description: string; categoryId: string | null }) => {
+    mutationFn: async (data: { title: string; description: string }) => {
       const res = await fetch("/api/admin/albums", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -417,7 +394,6 @@ export default function AlbumManagement() {
       setIsCreateDialogOpen(false);
       setNewAlbumTitle("");
       setNewAlbumDescription("");
-      setNewAlbumCategoryId("");
     },
     onError: (error: any) => {
       toast({ title: "Failed to create album", description: error.message, variant: "destructive" });
@@ -465,7 +441,6 @@ export default function AlbumManagement() {
     createAlbumMutation.mutate({
       title: newAlbumTitle.trim(),
       description: newAlbumDescription.trim(),
-      categoryId: newAlbumCategoryId === "none" || !newAlbumCategoryId ? null : newAlbumCategoryId,
     });
   };
 
@@ -511,20 +486,6 @@ export default function AlbumManagement() {
                   rows={3}
                   data-testid="input-album-description"
                 />
-              </div>
-              <div className="space-y-2">
-                <Label>Category (optional)</Label>
-                <Select value={newAlbumCategoryId} onValueChange={setNewAlbumCategoryId}>
-                  <SelectTrigger data-testid="select-album-category">
-                    <SelectValue placeholder="Select category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">No Category</SelectItem>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
               </div>
             </div>
             <DialogFooter>
@@ -579,7 +540,6 @@ export default function AlbumManagement() {
             <AlbumCard
               key={album.id}
               album={album}
-              categories={categories}
               onDelete={() => deleteAlbumMutation.mutate(album.id)}
               onUpdate={(data) => updateAlbumMutation.mutate({ id: album.id, data })}
               onRefresh={() => queryClient.invalidateQueries({ queryKey: ["/api/admin/albums"] })}
