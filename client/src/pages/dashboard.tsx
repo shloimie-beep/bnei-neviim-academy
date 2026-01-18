@@ -14,7 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { DocumentViewer } from "@/components/document-viewer";
+import { PdfViewer } from "@/components/pdf-viewer";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState, useRef, useMemo, useEffect } from "react";
 import type { PhoneNumber, Video as VideoType, VideoCategory, Document } from "@shared/schema";
@@ -603,43 +603,43 @@ function DocumentCard({ doc }: { doc: Document }) {
   const [isViewerOpen, setIsViewerOpen] = useState(false);
 
   return (
-    <>
-      <Card 
-        className="overflow-hidden cursor-pointer hover-elevate active-elevate-2" 
-        onClick={() => setIsViewerOpen(true)}
-        data-testid={`card-doc-${doc.id}`}
-      >
-        <div className="aspect-video bg-muted flex items-center justify-center relative group">
-          <FileText className="h-12 w-12 text-muted-foreground" />
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <div className="h-14 w-14 rounded-full bg-primary flex items-center justify-center">
-              <ExternalLink className="h-6 w-6 text-primary-foreground" />
+    <Dialog open={isViewerOpen} onOpenChange={setIsViewerOpen}>
+      <DialogTrigger asChild>
+        <Card className="overflow-hidden cursor-pointer hover-elevate active-elevate-2" data-testid={`card-doc-${doc.id}`}>
+          <div className="aspect-video bg-muted flex items-center justify-center relative group">
+            <FileText className="h-12 w-12 text-muted-foreground" />
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="h-14 w-14 rounded-full bg-primary flex items-center justify-center">
+                <ExternalLink className="h-6 w-6 text-primary-foreground" />
+              </div>
             </div>
           </div>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-2">
+              <h3 className="font-medium line-clamp-1 flex-1" data-testid={`text-doc-title-${doc.id}`}>
+                {doc.title}
+              </h3>
+              <Badge variant="secondary" className="text-xs flex-shrink-0">PDF</Badge>
+            </div>
+            {doc.description && (
+              <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                {doc.description}
+              </p>
+            )}
+          </CardContent>
+        </Card>
+      </DialogTrigger>
+      <DialogContent className="max-w-4xl h-[85vh] p-0 flex flex-col [&>button]:hidden">
+        <div className="flex-1 overflow-hidden">
+          <PdfViewer
+            url={`/api/documents/${doc.id}/view`}
+            title={doc.title}
+            onClose={() => setIsViewerOpen(false)}
+            allowDownload={doc.allowDownload ?? false}
+          />
         </div>
-        <CardContent className="p-4">
-          <div className="flex items-center gap-2">
-            <h3 className="font-medium line-clamp-1 flex-1" data-testid={`text-doc-title-${doc.id}`}>
-              {doc.title}
-            </h3>
-            <Badge variant="secondary" className="text-xs flex-shrink-0">PDF</Badge>
-          </div>
-          {doc.description && (
-            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
-              {doc.description}
-            </p>
-          )}
-        </CardContent>
-      </Card>
-      {isViewerOpen && (
-        <DocumentViewer
-          documentId={doc.id}
-          title={doc.title}
-          onClose={() => setIsViewerOpen(false)}
-          allowDownload={doc.allowDownload ?? false}
-        />
-      )}
-    </>
+      </DialogContent>
+    </Dialog>
   );
 }
 

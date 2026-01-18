@@ -50,21 +50,6 @@ The backend handles user authentication, subscription management, phone number r
   - Video schema includes `bunnyGuid`, `bunnyVideoId`, `storageType` fields for Bunny videos
 - **Legacy Support**: Videos without `bunnyGuid` continue to use local/cloud storage streaming
 
-### Document Viewer Architecture
-- **Processing Flow**: PDFs are converted to page images on upload for better viewing
-- **Upload Flow**:
-  1. Admin uploads PDF document
-  2. Document created with status "processing"
-  3. Backend converts each PDF page to PNG images using pdf-to-img library
-  4. Page images uploaded to object storage
-  5. Document updated with page image paths and status "ready"
-- **Viewing**: DocumentViewer component displays pages as scrollable images with zoom controls
-- **Polling**: Viewer polls every 2 seconds while document status is "processing"
-- **Key Files**:
-  - `server/pdfConverter.ts` - PDF to image conversion service
-  - `client/src/components/document-viewer.tsx` - Image-based document viewer
-  - Documents schema includes `pageImages` array and `status` field
-
 ### Data Storage
 - **Primary Database**: PostgreSQL
 - **Schema Location**: `shared/schema.ts` using Drizzle ORM
@@ -78,23 +63,10 @@ The backend handles user authentication, subscription management, phone number r
   - `callLogs` - Call history and analytics
 
 ### Authentication & Authorization
-- **Web (Browser)**: Session-based authentication stored in PostgreSQL
-- **Mobile Apps**: JWT Bearer token authentication with 30-day expiry
+- Session-based authentication stored in PostgreSQL
 - Role-based access control (customer vs admin)
 - Protected routes on both frontend and backend
-- Middleware pattern for route protection (`requireAuth`, `requireAdmin`)
-- Hybrid auth via `getAuthUserId()` helper supports both session and Bearer tokens
-
-### Mobile API
-- **Key File**: `server/mobileAuth.ts` - JWT token generation and verification
-- **Endpoints**:
-  - `POST /api/mobile/login` - Login with email/password, returns JWT token
-  - `GET /api/mobile/me` - Get current user with Bearer token
-  - `POST /api/mobile/refresh-token` - Refresh JWT before expiry
-  - `GET /api/mobile/info` - API documentation for mobile developers
-- **Token Expiry**: 30 days (configurable in mobileAuth.ts)
-- **All customer endpoints** support Bearer token auth (videos, audio, documents, phone numbers)
-- **Security**: JWT secret derived from SESSION_SECRET (required environment variable)
+- Middleware pattern for route protection (`requireAuth`)
 
 ### Payment Integration
 - **Stripe Integration**: Uses `stripe-replit-sync` package for webhook handling and data synchronization
@@ -138,7 +110,6 @@ The backend handles user authentication, subscription management, phone number r
 
 ### Environment Variables Required
 - `DATABASE_URL` - PostgreSQL connection string
-- `SESSION_SECRET` - **Required** for both session cookies and JWT token signing
 - `BUNNY_API_KEY` - Bunny Stream API key for video management
 - `BUNNY_LIBRARY_ID` - Bunny Stream library ID
 - `VOITEX_AUTH_KEY` - Voitex API authentication key for contact sync (optional)
