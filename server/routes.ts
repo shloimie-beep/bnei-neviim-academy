@@ -4989,12 +4989,12 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Album not found" });
       }
 
-      const { title } = req.body;
-      if (!title) {
-        if (req.file && fs.existsSync(req.file.path)) {
-          fs.unlinkSync(req.file.path);
-        }
-        return res.status(400).json({ message: "Track title is required" });
+      // Use provided title or default to filename without extension
+      let { title } = req.body;
+      if (!title || !title.trim()) {
+        // Extract filename without extension as default title
+        const originalName = req.file.originalname;
+        title = path.basename(originalName, path.extname(originalName));
       }
 
       // Upload to Bunny CDN (same location as other audio files)

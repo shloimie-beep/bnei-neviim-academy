@@ -1516,16 +1516,6 @@ export default function DashboardPage() {
                     Other
                   </Button>
                 )}
-                {documents && documents.length > 0 && (
-                  <Button
-                    variant={selectedCategory === "documents" ? "default" : "outline"}
-                    onClick={() => setSelectedCategory("documents")}
-                    data-testid="button-category-documents"
-                  >
-                    <FileText className="h-4 w-4 mr-2" />
-                    Documents
-                  </Button>
-                )}
                 {albums && albums.length > 0 && (
                   <Button
                     variant={selectedCategory === "albums" ? "default" : "outline"}
@@ -1536,42 +1526,20 @@ export default function DashboardPage() {
                     Albums
                   </Button>
                 )}
+                {documents && documents.length > 0 && (
+                  <Button
+                    variant={selectedCategory === "documents" ? "default" : "outline"}
+                    onClick={() => setSelectedCategory("documents")}
+                    data-testid="button-category-documents"
+                  >
+                    <FileText className="h-4 w-4 mr-2" />
+                    Documents
+                  </Button>
+                )}
               </div>
 
               {/* Content based on selected category */}
-              {selectedCategory === "documents" ? (
-                <div>
-                  {documentsLoading ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {[1, 2, 3].map((i) => (
-                        <Card key={i} className="overflow-hidden">
-                          <Skeleton className="aspect-video" />
-                          <CardContent className="p-4 space-y-2">
-                            <Skeleton className="h-5 w-3/4" />
-                            <Skeleton className="h-4 w-full" />
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </div>
-                  ) : documents && documents.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {documents.map((doc) => (
-                        <DocumentCard key={doc.id} doc={doc} />
-                      ))}
-                    </div>
-                  ) : (
-                    <Card>
-                      <CardContent className="py-12 text-center">
-                        <FileText className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                        <h3 className="font-semibold text-lg mb-2">No Documents Yet</h3>
-                        <p className="text-muted-foreground">
-                          Check back soon for new document content!
-                        </p>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
-              ) : selectedCategory === "albums" ? (
+              {selectedCategory === "albums" ? (
                 <div>
                   {albumsLoading ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -1598,6 +1566,38 @@ export default function DashboardPage() {
                         <h3 className="font-semibold text-lg mb-2">No Albums Yet</h3>
                         <p className="text-muted-foreground">
                           Check back soon for new album content!
+                        </p>
+                      </CardContent>
+                    </Card>
+                  )}
+                </div>
+              ) : selectedCategory === "documents" ? (
+                <div>
+                  {documentsLoading ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {[1, 2, 3].map((i) => (
+                        <Card key={i} className="overflow-hidden">
+                          <Skeleton className="aspect-video" />
+                          <CardContent className="p-4 space-y-2">
+                            <Skeleton className="h-5 w-3/4" />
+                            <Skeleton className="h-4 w-full" />
+                          </CardContent>
+                        </Card>
+                      ))}
+                    </div>
+                  ) : documents && documents.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {documents.map((doc) => (
+                        <DocumentCard key={doc.id} doc={doc} />
+                      ))}
+                    </div>
+                  ) : (
+                    <Card>
+                      <CardContent className="py-12 text-center">
+                        <FileText className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
+                        <h3 className="font-semibold text-lg mb-2">No Documents Yet</h3>
+                        <p className="text-muted-foreground">
+                          Check back soon for new document content!
                         </p>
                       </CardContent>
                     </Card>

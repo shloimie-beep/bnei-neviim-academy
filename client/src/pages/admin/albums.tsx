@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Disc, Trash2, Loader2, Edit2, Eye, EyeOff, Plus, Music, ImagePlus, X, Play } from "lucide-react";
+import { Upload, Disc, Trash2, Loader2, Edit2, Eye, EyeOff, Plus, Music, ImagePlus, X, Play, ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -90,21 +90,23 @@ function AlbumCard({ album, onDelete, onUpdate, onRefresh }: {
   const handleTrackUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!newTrackTitle.trim()) {
-      toast({ title: "Please enter a track title first", variant: "destructive" });
-      return;
-    }
+    
+    // Use provided title or default to filename without extension
+    const trackTitle = newTrackTitle.trim() || file.name.replace(/\.[^/.]+$/, "");
     
     setIsUploadingTrack(true);
     try {
       const formData = new FormData();
       formData.append("audio", file);
-      formData.append("title", newTrackTitle.trim());
+      formData.append("title", trackTitle);
       const res = await fetch(`/api/admin/albums/${album.id}/tracks`, {
         method: "POST",
         body: formData,
       });
-      if (!res.ok) throw new Error("Failed to upload track");
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Failed to upload track");
+      }
       toast({ title: "Track added" });
       setNewTrackTitle("");
       queryClient.invalidateQueries({ queryKey: ["/api/admin/albums", album.id, "tracks"] });
@@ -303,7 +305,7 @@ function AlbumCard({ album, onDelete, onUpdate, onRefresh }: {
               />
               <Button
                 onClick={() => trackInputRef.current?.click()}
-                disabled={isUploadingTrack || !newTrackTitle.trim()}
+                disabled={isUploadingTrack}
                 data-testid="button-upload-track"
               >
                 {isUploadingTrack ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : <Upload className="h-4 w-4 mr-2" />}
@@ -373,6 +375,11 @@ export default function AlbumManagement() {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [newAlbumTitle, setNewAlbumTitle] = useState("");
   const [newAlbumDescription, setNewAlbumDescription] = useState("");
+  const [newAlbumThumbnail, setNewAlbumThumbnail] = useState<File | null>(null);
+  const [newAlbumTracks, setNewAlbumTracks] = useState<File[]>([]);
+  const [isCreating, setIsCreating] = useState(false);
+  const thumbnailInputRef = useRef<HTMLInputElement>(null);
+  const tracksInputRef = useRef<HTMLInputElement>(null);
 
   const { data: albums, isLoading } = useQuery<AlbumWithCount[]>({
     queryKey: ["/api/admin/albums"],
@@ -433,15 +440,59 @@ export default function AlbumManagement() {
     },
   });
 
-  const handleCreateAlbum = () => {
+  const handleCreateAlbum = async () => {
     if (!newAlbumTitle.trim()) {
       toast({ title: "Please enter an album title", variant: "destructive" });
       return;
     }
-    createAlbumMutation.mutate({
-      title: newAlbumTitle.trim(),
-      description: newAlbumDescription.trim(),
-    });
+    
+    setIsCreating(true);
+    try {
+      // Create the album first
+      const res = await fetch("/api/admin/albums", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title: newAlbumTitle.trim(),
+          description: newAlbumDescription.trim(),
+        }),
+      });
+      if (!res.ok) throw new Error("Failed to create album");
+      const album = await res.json();
+      
+      // Upload thumbnail if provided
+      if (newAlbumThumbnail) {
+        const thumbFormData = new FormData();
+        thumbFormData.append("thumbnail", newAlbumThumbnail);
+        await fetch(`/api/admin/albums/${album.id}/thumbnail`, {
+          method: "POST",
+          body: thumbFormData,
+        });
+      }
+      
+      // Upload tracks if provided
+      for (const track of newAlbumTracks) {
+        const trackFormData = new FormData();
+        trackFormData.append("audio", track);
+        trackFormData.append("title", track.name.replace(/\.[^/.]+$/, ""));
+        await fetch(`/api/admin/albums/${album.id}/tracks`, {
+          method: "POST",
+          body: trackFormData,
+        });
+      }
+      
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/albums"] });
+      toast({ title: "Album created" });
+      setIsCreateDialogOpen(false);
+      setNewAlbumTitle("");
+      setNewAlbumDescription("");
+      setNewAlbumThumbnail(null);
+      setNewAlbumTracks([]);
+    } catch (error: any) {
+      toast({ title: "Failed to create album", description: error.message, variant: "destructive" });
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   return (
@@ -487,15 +538,68 @@ export default function AlbumManagement() {
                   data-testid="input-album-description"
                 />
               </div>
+              <div className="space-y-2">
+                <Label>Cover Image (optional)</Label>
+                <input
+                  ref={thumbnailInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(e) => setNewAlbumThumbnail(e.target.files?.[0] || null)}
+                />
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => thumbnailInputRef.current?.click()}
+                    data-testid="button-select-thumbnail"
+                  >
+                    <ImageIcon className="h-4 w-4 mr-2" />
+                    {newAlbumThumbnail ? "Change Image" : "Select Image"}
+                  </Button>
+                  {newAlbumThumbnail && (
+                    <span className="text-sm text-muted-foreground truncate max-w-[200px]">
+                      {newAlbumThumbnail.name}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label>Audio Tracks (optional)</Label>
+                <input
+                  ref={tracksInputRef}
+                  type="file"
+                  accept="audio/*"
+                  multiple
+                  className="hidden"
+                  onChange={(e) => setNewAlbumTracks(Array.from(e.target.files || []))}
+                />
+                <div className="flex items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => tracksInputRef.current?.click()}
+                    data-testid="button-select-tracks"
+                  >
+                    <Music className="h-4 w-4 mr-2" />
+                    {newAlbumTracks.length > 0 ? "Change Tracks" : "Select Tracks"}
+                  </Button>
+                  {newAlbumTracks.length > 0 && (
+                    <span className="text-sm text-muted-foreground">
+                      {newAlbumTracks.length} track{newAlbumTracks.length !== 1 ? "s" : ""} selected
+                    </span>
+                  )}
+                </div>
+              </div>
             </div>
             <DialogFooter>
               <Button variant="ghost" onClick={() => setIsCreateDialogOpen(false)}>Cancel</Button>
               <Button 
                 onClick={handleCreateAlbum} 
-                disabled={createAlbumMutation.isPending}
+                disabled={isCreating}
                 data-testid="button-confirm-create-album"
               >
-                {createAlbumMutation.isPending && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
+                {isCreating && <Loader2 className="h-4 w-4 animate-spin mr-2" />}
                 Create Album
               </Button>
             </DialogFooter>
