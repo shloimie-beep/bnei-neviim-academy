@@ -196,56 +196,19 @@ const documentUpload = multer({
   limits: { fileSize: 100 * 1024 * 1024 }, // 100MB limit for PDFs
 });
 
-// Helper to get authenticated user ID from either session or mobile token
-function getAuthUserId(req: Request): string | null {
-  if (req.mobileUser?.userId) {
-    return req.mobileUser.userId;
-  }
-  return req.session?.userId || null;
-}
-
-// Auth middleware - supports both session (web) and Bearer token (mobile)
+// Auth middleware for web (session-based)
 function requireAuth(req: Request, res: Response, next: NextFunction) {
-  // Check for Bearer token (mobile app)
-  const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith("Bearer ")) {
-    const token = authHeader.substring(7);
-    const payload = verifyMobileToken(token);
-    if (payload) {
-      req.mobileUser = payload;
-      return next();
-    }
-  }
-  
-  // Fall back to session auth (web app)
   if (!req.session.userId) {
-    console.log("[Auth Debug] Session missing userId. Session ID:", req.sessionID, "Session:", JSON.stringify(req.session));
     return res.status(401).json({ message: "Unauthorized" });
   }
   next();
 }
 
 async function requireAdmin(req: Request, res: Response, next: NextFunction) {
-  // Check for Bearer token (mobile app)
-  const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith("Bearer ")) {
-    const token = authHeader.substring(7);
-    const payload = verifyMobileToken(token);
-    if (payload) {
-      if (payload.role !== "admin") {
-        return res.status(403).json({ message: "Forbidden" });
-      }
-      req.mobileUser = payload;
-      return next();
-    }
-  }
-  
-  // Fall back to session auth
-  const userId = getAuthUserId(req);
-  if (!userId) {
+  if (!req.session.userId) {
     return res.status(401).json({ message: "Unauthorized" });
   }
-  const user = await storage.getUser(userId);
+  const user = await storage.getUser(req.session.userId);
   if (!user || user.role !== "admin") {
     return res.status(403).json({ message: "Forbidden" });
   }
@@ -835,7 +798,7 @@ export async function registerRoutes(
         return res.status(400).json({ message: "New password must be at least 8 characters" });
       }
 
-      const userId = getAuthUserId(req);
+      const userId = req.session.userId;
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
@@ -886,7 +849,7 @@ export async function registerRoutes(
       const { id } = req.params;
       
       // Prevent deleting yourself
-      const currentUserId = getAuthUserId(req);
+      const currentUserId = req.session.userId;
       if (id === currentUserId) {
         return res.status(400).json({ message: "You cannot delete your own account" });
       }
@@ -909,7 +872,7 @@ export async function registerRoutes(
   });
 
   app.get("/api/auth/me", async (req, res) => {
-    const userId = getAuthUserId(req);
+    const userId = req.session.userId;
     if (!userId) {
       return res.status(401).json({ message: "Not authenticated" });
     }
@@ -933,7 +896,7 @@ export async function registerRoutes(
   
   app.get("/api/phone-numbers", requireAuth, async (req, res) => {
     try {
-      const userId = getAuthUserId(req);
+      const userId = req.session.userId;
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
@@ -953,7 +916,7 @@ export async function registerRoutes(
 
       const { phoneNumber } = result.data;
 
-      const userId = getAuthUserId(req);
+      const userId = req.session.userId;
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
@@ -987,7 +950,7 @@ export async function registerRoutes(
 
   app.delete("/api/phone-numbers/:id", requireAuth, async (req, res) => {
     try {
-      const userId = getAuthUserId(req);
+      const userId = req.session.userId;
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
@@ -1007,7 +970,7 @@ export async function registerRoutes(
 
   app.put("/api/phone-numbers/:id", requireAuth, async (req, res) => {
     try {
-      const userId = getAuthUserId(req);
+      const userId = req.session.userId;
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
@@ -1039,7 +1002,7 @@ export async function registerRoutes(
   
   app.get("/api/subscription", requireAuth, async (req, res) => {
     try {
-      const userId = getAuthUserId(req);
+      const userId = req.session.userId;
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
@@ -1090,7 +1053,7 @@ export async function registerRoutes(
 
   app.post("/api/create-checkout", requireAuth, async (req, res) => {
     try {
-      const userId = getAuthUserId(req);
+      const userId = req.session.userId;
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
@@ -1197,7 +1160,7 @@ export async function registerRoutes(
 
   app.post("/api/create-portal", requireAuth, async (req, res) => {
     try {
-      const userId = getAuthUserId(req);
+      const userId = req.session.userId;
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
@@ -2908,7 +2871,7 @@ export async function registerRoutes(
   // Subscriber: Get published videos (requires active subscription)
   app.get("/api/videos", requireAuth, async (req, res) => {
     try {
-      const userId = getAuthUserId(req);
+      const userId = req.session.userId;
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
@@ -2950,7 +2913,7 @@ export async function registerRoutes(
   // Get user's viewed video IDs (for "New" badge logic)
   app.get("/api/videos/viewed", requireAuth, async (req, res) => {
     try {
-      const userId = getAuthUserId(req);
+      const userId = req.session.userId;
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
@@ -2965,7 +2928,7 @@ export async function registerRoutes(
   // Mark a video as viewed by the current user
   app.post("/api/videos/:id/viewed", requireAuth, async (req, res) => {
     try {
-      const userId = getAuthUserId(req);
+      const userId = req.session.userId;
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
@@ -2981,7 +2944,7 @@ export async function registerRoutes(
   // Subscriber: Stream a video (requires active subscription)
   app.get("/api/videos/:id/stream", requireAuth, async (req, res) => {
     try {
-      const userId = getAuthUserId(req);
+      const userId = req.session.userId;
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
@@ -4263,7 +4226,7 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Title is required" });
       }
 
-      const adminUserId = getAuthUserId(req);
+      const adminUserId = req.session.userId;
       if (!adminUserId) {
         return res.status(401).json({ message: "Authentication required" });
       }
@@ -4455,7 +4418,7 @@ export async function registerRoutes(
   // Customer: Get all published documents
   app.get("/api/documents", requireAuth, async (req, res) => {
     try {
-      const userId = getAuthUserId(req);
+      const userId = req.session.userId;
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
@@ -4484,7 +4447,7 @@ export async function registerRoutes(
   // Customer: View PDF (stream with no-download headers)
   app.get("/api/documents/:id/view", requireAuth, async (req, res) => {
     try {
-      const userId = getAuthUserId(req);
+      const userId = req.session.userId;
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
@@ -4557,7 +4520,7 @@ export async function registerRoutes(
   // Customer: Get document page images (for image-based viewer)
   app.get("/api/documents/:id/pages", requireAuth, async (req, res) => {
     try {
-      const userId = getAuthUserId(req);
+      const userId = req.session.userId;
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
@@ -4617,7 +4580,7 @@ export async function registerRoutes(
   // Customer: Stream a specific document page image
   app.get("/api/documents/:id/page/:pageNum", requireAuth, async (req, res) => {
     try {
-      const userId = getAuthUserId(req);
+      const userId = req.session.userId;
       if (!userId) {
         return res.status(401).json({ message: "Authentication required" });
       }
