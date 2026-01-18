@@ -4264,11 +4264,16 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Title is required" });
       }
 
-      // Upload to object storage for permanent URL
+      const adminUserId = getAuthUserId(req);
+      if (!adminUserId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Upload PDF to object storage for permanent URL
       const uploadURL = await objectStorageService.getObjectEntityUploadURL();
       const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
       
-      console.log(`[Document Upload] Uploading to cloud storage: ${objectPath}`);
+      console.log(`[Document Upload] Uploading PDF to cloud storage: ${objectPath}`);
       
       const url = new URL(uploadURL);
       const pathParts = url.pathname.slice(1).split("/");
@@ -4278,7 +4283,7 @@ export async function registerRoutes(
       const bucket = objectStorageClient.bucket(bucketName);
       const objectFile = bucket.file(objectName);
       
-      // Upload file to cloud storage
+      // Upload PDF file to cloud storage
       await new Promise<void>((resolve, reject) => {
         const readStream = fs.createReadStream(req.file!.path);
         const writeStream = objectFile.createWriteStream({
@@ -4291,26 +4296,107 @@ export async function registerRoutes(
         readStream.pipe(writeStream);
       });
       
-      // Clean up temp file
-      if (fs.existsSync(req.file.path)) {
-        fs.unlinkSync(req.file.path);
-      }
-      
-      console.log(`[Document Upload] Successfully uploaded to: ${objectPath}`);
+      console.log(`[Document Upload] Successfully uploaded PDF to: ${objectPath}`);
 
+      // Create document record with processing status
       const doc = await storage.createDocument({
         title,
         description: description || null,
         filename: req.file.originalname,
         filepath: objectPath,
         fileSize: req.file.size,
-        status: "ready",
+        status: "processing",
         allowDownload: allowDownload === "true" || allowDownload === true,
         categoryId: categoryId || null,
-        uploadedBy: req.session.userId!,
+        uploadedBy: adminUserId,
       });
 
+      // Return immediately, conversion happens in background
       res.json(doc);
+
+      // Convert PDF pages to images in background
+      (async () => {
+        try {
+          const { convertPdfToImages } = await import("./pdfConverter");
+          
+          // Create temp directory for page images
+          const tempDir = path.join(uploadDir, "temp_pages", doc.id);
+          if (!fs.existsSync(tempDir)) {
+            fs.mkdirSync(tempDir, { recursive: true });
+          }
+
+          console.log(`[Document Upload] Converting PDF to images for document: ${doc.id}`);
+          
+          // Convert PDF to images
+          const result = await convertPdfToImages(req.file!.path, tempDir, doc.id);
+          
+          // Upload each page image to object storage
+          const pageImagePaths: string[] = [];
+          
+          for (let i = 0; i < result.imagePaths.length; i++) {
+            const imagePath = result.imagePaths[i];
+            const pageNum = i + 1;
+            
+            // Get upload URL for this page image
+            const pageUploadURL = await objectStorageService.getObjectEntityUploadURL();
+            const pageObjectPath = objectStorageService.normalizeObjectEntityPath(pageUploadURL);
+            
+            const pageUrl = new URL(pageUploadURL);
+            const pagePathParts = pageUrl.pathname.slice(1).split("/");
+            const pageBucketName = pagePathParts[0];
+            const pageObjectName = pagePathParts.slice(1).join("/");
+            
+            const pageBucket = objectStorageClient.bucket(pageBucketName);
+            const pageObjectFile = pageBucket.file(pageObjectName);
+            
+            // Upload page image
+            await new Promise<void>((resolve, reject) => {
+              const readStream = fs.createReadStream(imagePath);
+              const writeStream = pageObjectFile.createWriteStream({
+                resumable: false,
+                contentType: "image/png",
+              });
+              readStream.on("error", reject);
+              writeStream.on("error", reject);
+              writeStream.on("finish", resolve);
+              readStream.pipe(writeStream);
+            });
+            
+            pageImagePaths.push(pageObjectPath);
+            console.log(`[Document Upload] Uploaded page ${pageNum}/${result.pageCount} to: ${pageObjectPath}`);
+          }
+          
+          // Clean up temp files
+          for (const imagePath of result.imagePaths) {
+            if (fs.existsSync(imagePath)) {
+              fs.unlinkSync(imagePath);
+            }
+          }
+          if (fs.existsSync(tempDir)) {
+            fs.rmdirSync(tempDir, { recursive: true });
+          }
+          if (fs.existsSync(req.file!.path)) {
+            fs.unlinkSync(req.file!.path);
+          }
+          
+          // Update document with page images and ready status
+          await storage.updateDocument(doc.id, {
+            pageCount: result.pageCount,
+            pageImages: pageImagePaths,
+            status: "ready",
+          });
+          
+          console.log(`[Document Upload] Document ${doc.id} is ready with ${result.pageCount} pages`);
+        } catch (error) {
+          console.error(`[Document Upload] Failed to convert document ${doc.id}:`, error);
+          // Mark document as failed
+          await storage.updateDocument(doc.id, { status: "hidden" });
+          // Clean up temp file
+          if (req.file && fs.existsSync(req.file.path)) {
+            fs.unlinkSync(req.file.path);
+          }
+        }
+      })();
     } catch (error) {
       console.error("Document upload error:", error);
       // Clean up temp file if it exists
