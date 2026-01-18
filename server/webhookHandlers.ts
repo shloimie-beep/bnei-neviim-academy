@@ -126,12 +126,14 @@ export class WebhookHandlers {
           await WebhookHandlers.removeUserFromVoitex(user.id);
           
           // Clear all subscription data so user loses access and can re-subscribe
+          // Also mark hasUsedTrial = true so they don't get another trial
           await storage.updateUser(user.id, {
             subscriptionStatus: 'none',
             stripeSubscriptionId: null,
             trialEndsAt: null,
+            hasUsedTrial: true,
           });
-          console.log(`User ${user.id} subscription deleted - access revoked`);
+          console.log(`User ${user.id} subscription deleted - access revoked, trial used`);
         }
         break;
       }
