@@ -24,7 +24,7 @@ export function DocumentViewer({ documentId, title, onClose, allowDownload = fal
   const [error, setError] = useState<string | null>(null);
   const [zoom, setZoom] = useState(1);
   const [loadedPages, setLoadedPages] = useState<Set<number>>(new Set());
-  const containerRef = useRef<HTMLDivElement>(null);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     let pollInterval: NodeJS.Timeout | null = null;
@@ -46,7 +46,6 @@ export function DocumentViewer({ documentId, title, onClose, allowDownload = fal
         const data: DocumentPagesData = await response.json();
         setPagesData(data);
         
-        // If still processing, poll every 2 seconds
         if (data.status === "processing") {
           pollInterval = setTimeout(loadDocumentPages, 2000);
         }
@@ -131,6 +130,9 @@ export function DocumentViewer({ documentId, title, onClose, allowDownload = fal
     );
   }
 
+  const baseWidth = 800;
+  const scaledWidth = baseWidth * zoom;
+
   return (
     <div className="fixed inset-0 z-50 bg-background flex flex-col" data-testid="document-viewer">
       <div className="flex items-center justify-between gap-2 p-2 border-b bg-muted/50 flex-shrink-0">
@@ -196,35 +198,43 @@ export function DocumentViewer({ documentId, title, onClose, allowDownload = fal
       </div>
 
       <div 
-        ref={containerRef}
+        ref={scrollContainerRef}
         className="flex-1 overflow-auto bg-neutral-200 dark:bg-neutral-800"
       >
-        <div className="flex flex-col items-center gap-4 p-4 min-w-fit">
-          {Array.from({ length: pagesData.pageCount }, (_, i) => i + 1).map((pageNum) => (
-            <div 
-              key={pageNum} 
-              className="relative bg-white shadow-lg"
-              style={{ width: `${zoom * 100}%`, maxWidth: `${zoom * 800}px` }}
-            >
-              {!loadedPages.has(pageNum) && (
-                <div className="absolute inset-0 flex items-center justify-center bg-white">
-                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+        <div 
+          className="p-4"
+          style={{ 
+            width: scaledWidth > window.innerWidth ? scaledWidth + 32 : '100%',
+            minHeight: '100%'
+          }}
+        >
+          <div className="flex flex-col gap-4" style={{ width: scaledWidth, margin: '0 auto' }}>
+            {Array.from({ length: pagesData.pageCount }, (_, i) => i + 1).map((pageNum) => (
+              <div 
+                key={pageNum} 
+                className="relative bg-white shadow-lg"
+                style={{ width: scaledWidth }}
+              >
+                {!loadedPages.has(pageNum) && (
+                  <div className="absolute inset-0 flex items-center justify-center bg-white">
+                    <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                  </div>
+                )}
+                <img
+                  src={`/api/documents/${documentId}/page/${pageNum}`}
+                  alt={`Page ${pageNum}`}
+                  style={{ width: scaledWidth, height: 'auto' }}
+                  onLoad={() => handlePageLoad(pageNum)}
+                  onContextMenu={(e) => !(allowDownload || pagesData.allowDownload) && e.preventDefault()}
+                  draggable={false}
+                  data-testid={`img-doc-page-${pageNum}`}
+                />
+                <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
+                  {pageNum} / {pagesData.pageCount}
                 </div>
-              )}
-              <img
-                src={`/api/documents/${documentId}/page/${pageNum}`}
-                alt={`Page ${pageNum}`}
-                className="w-full h-auto"
-                onLoad={() => handlePageLoad(pageNum)}
-                onContextMenu={(e) => !(allowDownload || pagesData.allowDownload) && e.preventDefault()}
-                draggable={false}
-                data-testid={`img-doc-page-${pageNum}`}
-              />
-              <div className="absolute bottom-2 right-2 bg-black/50 text-white text-xs px-2 py-1 rounded">
-                {pageNum} / {pagesData.pageCount}
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>
