@@ -219,6 +219,7 @@ function requireAuth(req: Request, res: Response, next: NextFunction) {
   
   // Fall back to session auth (web app)
   if (!req.session.userId) {
+    console.log("[Auth Debug] Session missing userId. Session ID:", req.sessionID, "Session:", JSON.stringify(req.session));
     return res.status(401).json({ message: "Unauthorized" });
   }
   next();
