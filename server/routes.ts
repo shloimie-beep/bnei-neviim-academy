@@ -24,6 +24,7 @@ import { generateThumbnailFromBunny, generateThumbnailFromLocalVideo } from "./t
 import { voitexService } from "./voitexService";
 import { WebhookHandlers } from "./webhookHandlers";
 import { getOrCreateMp3, getCachedMp3Path, preGenerateMp3 } from "./mp3Converter";
+import { generateMobileToken, verifyMobileToken, requireMobileAuth, requireMobileOrSessionAuth } from "./mobileAuth";
 
 const execAsync = promisify(exec);
 
@@ -584,6 +585,91 @@ export async function registerRoutes(
       }
       res.json({ success: true });
     });
+  });
+
+  // Mobile app login - returns JWT token
+  app.post("/api/mobile/login", async (req, res) => {
+    try {
+      const result = loginSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ message: result.error.errors[0].message });
+      }
+
+      const { email, password } = result.data;
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+
+      const valid = await bcrypt.compare(password, user.password);
+      if (!valid) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+
+      // Generate JWT token for mobile app
+      const token = generateMobileToken({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      });
+
+      res.json({
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          subscriptionStatus: user.subscriptionStatus,
+          trialEndsAt: user.trialEndsAt,
+        },
+      });
+    } catch (error: any) {
+      console.error("Mobile login error:", error);
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+
+  // Mobile app - verify token and get user info
+  app.get("/api/mobile/me", requireMobileAuth, async (req, res) => {
+    try {
+      const user = await storage.getUser(req.mobileUser!.userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({
+        user: {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          subscriptionStatus: user.subscriptionStatus,
+          trialEndsAt: user.trialEndsAt,
+        },
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get user info" });
+    }
+  });
+
+  // Mobile app - refresh token
+  app.post("/api/mobile/refresh-token", requireMobileAuth, async (req, res) => {
+    try {
+      const user = await storage.getUser(req.mobileUser!.userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const token = generateMobileToken({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      });
+
+      res.json({ token });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to refresh token" });
+    }
   });
 
   // Forgot password - request reset link
