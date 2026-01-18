@@ -321,9 +321,6 @@ export async function registerRoutes(
   // PostgreSQL session store for persistence
   const PgSession = connectPgSimple(session);
   
-  // Detect if running on Replit (HTTPS even in dev)
-  const isReplit = !!process.env.REPL_ID;
-  
   // Session middleware
   app.use(
     session({
@@ -336,9 +333,9 @@ export async function registerRoutes(
       resave: false,
       saveUninitialized: false,
       cookie: {
-        secure: isProduction || isReplit, // Replit preview uses HTTPS
+        secure: isProduction,
         httpOnly: true,
-        sameSite: (isProduction || isReplit) ? "none" : "lax",
+        sameSite: isProduction ? "none" : "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       },
     })
