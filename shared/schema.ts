@@ -179,8 +179,9 @@ export const documents = pgTable("documents", {
   filepath: text("filepath").notNull(),
   fileSize: integer("file_size"),
   pageCount: integer("page_count"),
+  pageImages: text("page_images").array(), // Array of image paths for each page
   viewCount: integer("view_count").default(0),
-  status: text("status").notNull().default("ready"), // 'processing', 'ready', 'hidden'
+  status: text("status").notNull().default("processing"), // 'processing', 'ready', 'hidden'
   allowDownload: boolean("allow_download").default(false),
   categoryId: varchar("category_id").references(() => videoCategories.id),
   uploadedBy: varchar("uploaded_by").references(() => users.id),

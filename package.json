@@ -73,6 +73,7 @@
     "next-themes": "^0.4.6",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0",
+    "pdf-to-img": "^5.0.0",
     "pdfjs-dist": "^5.4.530",
     "pg": "^8.16.3",
     "plivo": "^4.75.4",
