@@ -1,4 +1,5 @@
 import express, { type Request, Response, NextFunction } from "express";
+import cors from "cors";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
@@ -117,6 +118,14 @@ async function initStripe() {
       }
     }
   );
+
+  // CORS configuration for mobile app and web access
+  app.use(cors({
+    origin: true, // Allow all origins (mobile apps, web)
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+  }));
 
   // Now apply JSON middleware for all other routes
   app.use(

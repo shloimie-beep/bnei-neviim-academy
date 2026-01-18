@@ -24,6 +24,7 @@ import { generateThumbnailFromBunny, generateThumbnailFromLocalVideo } from "./t
 import { voitexService } from "./voitexService";
 import { WebhookHandlers } from "./webhookHandlers";
 import { getOrCreateMp3, getCachedMp3Path, preGenerateMp3 } from "./mp3Converter";
+import { generateMobileToken, verifyMobileToken, requireMobileAuth, requireMobileOrSessionAuth } from "./mobileAuth";
 
 const execAsync = promisify(exec);
 
@@ -195,8 +196,28 @@ const documentUpload = multer({
   limits: { fileSize: 100 * 1024 * 1024 }, // 100MB limit for PDFs
 });
 
-// Auth middleware
+// Helper to get authenticated user ID from either session or mobile token
+function getAuthUserId(req: Request): string | null {
+  if (req.mobileUser?.userId) {
+    return req.mobileUser.userId;
+  }
+  return req.session?.userId || null;
+}
+
+// Auth middleware - supports both session (web) and Bearer token (mobile)
 function requireAuth(req: Request, res: Response, next: NextFunction) {
+  // Check for Bearer token (mobile app)
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    const token = authHeader.substring(7);
+    const payload = verifyMobileToken(token);
+    if (payload) {
+      req.mobileUser = payload;
+      return next();
+    }
+  }
+  
+  // Fall back to session auth (web app)
   if (!req.session.userId) {
     return res.status(401).json({ message: "Unauthorized" });
   }
@@ -204,10 +225,26 @@ function requireAuth(req: Request, res: Response, next: NextFunction) {
 }
 
 async function requireAdmin(req: Request, res: Response, next: NextFunction) {
-  if (!req.session.userId) {
+  // Check for Bearer token (mobile app)
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    const token = authHeader.substring(7);
+    const payload = verifyMobileToken(token);
+    if (payload) {
+      if (payload.role !== "admin") {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      req.mobileUser = payload;
+      return next();
+    }
+  }
+  
+  // Fall back to session auth
+  const userId = getAuthUserId(req);
+  if (!userId) {
     return res.status(401).json({ message: "Unauthorized" });
   }
-  const user = await storage.getUser(req.session.userId);
+  const user = await storage.getUser(userId);
   if (!user || user.role !== "admin") {
     return res.status(403).json({ message: "Forbidden" });
   }
@@ -277,13 +314,14 @@ export async function registerRoutes(
     }
   })();
   
-  // Trust proxy for production (Replit uses reverse proxy)
-  if (isProduction) {
-    app.set("trust proxy", 1);
-  }
+  // Trust proxy for Replit (uses reverse proxy in both dev and prod)
+  app.set("trust proxy", 1);
 
   // PostgreSQL session store for persistence
   const PgSession = connectPgSimple(session);
+  
+  // Detect if running on Replit (HTTPS even in dev)
+  const isReplit = !!process.env.REPL_ID;
   
   // Session middleware
   app.use(
@@ -293,13 +331,13 @@ export async function registerRoutes(
         tableName: "user_sessions",
         createTableIfMissing: true,
       }),
-      secret: process.env.SESSION_SECRET || "kids-hotline-secret-key",
+      secret: process.env.SESSION_SECRET!,
       resave: false,
       saveUninitialized: false,
       cookie: {
-        secure: isProduction,
+        secure: isProduction || isReplit, // Replit preview uses HTTPS
         httpOnly: true,
-        sameSite: isProduction ? "none" : "lax",
+        sameSite: (isProduction || isReplit) ? "none" : "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       },
     })
@@ -586,6 +624,121 @@ export async function registerRoutes(
     });
   });
 
+  // Mobile API info endpoint - provides documentation for mobile app
+  app.get("/api/mobile/info", (req, res) => {
+    res.json({
+      version: "1.0.0",
+      name: "OneTimeOneTime Mobile API",
+      endpoints: {
+        auth: {
+          login: { method: "POST", path: "/api/mobile/login", body: { email: "string", password: "string" } },
+          me: { method: "GET", path: "/api/mobile/me", headers: { Authorization: "Bearer <token>" } },
+          refreshToken: { method: "POST", path: "/api/mobile/refresh-token", headers: { Authorization: "Bearer <token>" } },
+        },
+        content: {
+          videos: { method: "GET", path: "/api/videos", headers: { Authorization: "Bearer <token>" } },
+          videoCategories: { method: "GET", path: "/api/video-categories" },
+          audio: { method: "GET", path: "/api/audio", headers: { Authorization: "Bearer <token>" } },
+          documents: { method: "GET", path: "/api/documents", headers: { Authorization: "Bearer <token>" } },
+        },
+        streaming: {
+          videoStream: { method: "GET", path: "/api/videos/:id/stream", headers: { Authorization: "Bearer <token>" } },
+          audioStream: { method: "GET", path: "/api/audio/:id/stream", headers: { Authorization: "Bearer <token>" } },
+        },
+      },
+      notes: [
+        "All authenticated endpoints require Bearer token in Authorization header",
+        "Token expires in 30 days, use refresh-token endpoint to get a new one",
+        "Subscription status is returned in login/me responses",
+      ],
+    });
+  });
+
+  // Mobile app login - returns JWT token
+  app.post("/api/mobile/login", async (req, res) => {
+    try {
+      const result = loginSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ message: result.error.errors[0].message });
+      }
+
+      const { email, password } = result.data;
+
+      const user = await storage.getUserByEmail(email);
+      if (!user) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+
+      const valid = await bcrypt.compare(password, user.password);
+      if (!valid) {
+        return res.status(401).json({ message: "Invalid email or password" });
+      }
+
+      // Generate JWT token for mobile app
+      const token = generateMobileToken({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      });
+
+      res.json({
+        token,
+        user: {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          subscriptionStatus: user.subscriptionStatus,
+          trialEndsAt: user.trialEndsAt,
+        },
+      });
+    } catch (error: any) {
+      console.error("Mobile login error:", error);
+      res.status(500).json({ message: "Login failed" });
+    }
+  });
+
+  // Mobile app - verify token and get user info
+  app.get("/api/mobile/me", requireMobileAuth, async (req, res) => {
+    try {
+      const user = await storage.getUser(req.mobileUser!.userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      res.json({
+        user: {
+          id: user.id,
+          email: user.email,
+          role: user.role,
+          subscriptionStatus: user.subscriptionStatus,
+          trialEndsAt: user.trialEndsAt,
+        },
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get user info" });
+    }
+  });
+
+  // Mobile app - refresh token
+  app.post("/api/mobile/refresh-token", requireMobileAuth, async (req, res) => {
+    try {
+      const user = await storage.getUser(req.mobileUser!.userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      const token = generateMobileToken({
+        id: user.id,
+        email: user.email,
+        role: user.role,
+      });
+
+      res.json({ token });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to refresh token" });
+    }
+  });
+
   // Forgot password - request reset link
   app.post("/api/auth/forgot-password", async (req, res) => {
     try {
@@ -684,7 +837,12 @@ export async function registerRoutes(
         return res.status(400).json({ message: "New password must be at least 8 characters" });
       }
 
-      const user = await storage.getUser(req.session.userId!);
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -697,7 +855,7 @@ export async function registerRoutes(
 
       // Hash and update new password
       const hashedPassword = await bcrypt.hash(newPassword, 10);
-      await storage.updateUser(req.session.userId!, { password: hashedPassword });
+      await storage.updateUser(userId, { password: hashedPassword });
 
       res.json({ success: true, message: "Password changed successfully" });
     } catch (error) {
@@ -730,7 +888,8 @@ export async function registerRoutes(
       const { id } = req.params;
       
       // Prevent deleting yourself
-      if (id === req.session.userId) {
+      const currentUserId = getAuthUserId(req);
+      if (id === currentUserId) {
         return res.status(400).json({ message: "You cannot delete your own account" });
       }
       
@@ -752,13 +911,16 @@ export async function registerRoutes(
   });
 
   app.get("/api/auth/me", async (req, res) => {
-    if (!req.session.userId) {
+    const userId = getAuthUserId(req);
+    if (!userId) {
       return res.status(401).json({ message: "Not authenticated" });
     }
 
-    const user = await storage.getUser(req.session.userId);
+    const user = await storage.getUser(userId);
     if (!user) {
-      req.session.destroy(() => {});
+      if (req.session) {
+        req.session.destroy(() => {});
+      }
       return res.status(401).json({ message: "User not found" });
     }
 
@@ -773,7 +935,11 @@ export async function registerRoutes(
   
   app.get("/api/phone-numbers", requireAuth, async (req, res) => {
     try {
-      const phones = await storage.getPhoneNumbersByUser(req.session.userId!);
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const phones = await storage.getPhoneNumbersByUser(userId);
       res.json(phones);
     } catch (error) {
       res.status(500).json({ message: "Failed to get phone numbers" });
@@ -789,10 +955,15 @@ export async function registerRoutes(
 
       const { phoneNumber } = result.data;
 
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
       // Check if user is a subscriber (not admin) and limit to 1 phone
-      const user = await storage.getUser(req.session.userId!);
+      const user = await storage.getUser(userId);
       if (user?.role === "customer") {
-        const existingPhones = await storage.getPhoneNumbersByUser(req.session.userId!);
+        const existingPhones = await storage.getPhoneNumbersByUser(userId);
         if (existingPhones.length >= 1) {
           return res.status(400).json({ message: "Subscribers can only have one phone number" });
         }
@@ -805,7 +976,7 @@ export async function registerRoutes(
       }
 
       const phone = await storage.createPhoneNumber({
-        userId: req.session.userId!,
+        userId: userId,
         phoneNumber,
         isActive: true,
       });
@@ -818,7 +989,11 @@ export async function registerRoutes(
 
   app.delete("/api/phone-numbers/:id", requireAuth, async (req, res) => {
     try {
-      const phones = await storage.getPhoneNumbersByUser(req.session.userId!);
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const phones = await storage.getPhoneNumbersByUser(userId);
       const phone = phones.find((p) => p.id === req.params.id);
       
       if (!phone) {
@@ -834,7 +1009,11 @@ export async function registerRoutes(
 
   app.put("/api/phone-numbers/:id", requireAuth, async (req, res) => {
     try {
-      const phones = await storage.getPhoneNumbersByUser(req.session.userId!);
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const phones = await storage.getPhoneNumbersByUser(userId);
       const phone = phones.find((p) => p.id === req.params.id);
       
       if (!phone) {
@@ -862,7 +1041,11 @@ export async function registerRoutes(
   
   app.get("/api/subscription", requireAuth, async (req, res) => {
     try {
-      const user = await storage.getUser(req.session.userId!);
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
       res.json({
         status: user?.subscriptionStatus,
         trialEndsAt: user?.trialEndsAt,
@@ -909,7 +1092,11 @@ export async function registerRoutes(
 
   app.post("/api/create-checkout", requireAuth, async (req, res) => {
     try {
-      const user = await storage.getUser(req.session.userId!);
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -1012,7 +1199,11 @@ export async function registerRoutes(
 
   app.post("/api/create-portal", requireAuth, async (req, res) => {
     try {
-      const user = await storage.getUser(req.session.userId!);
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
       if (!user || !user.stripeCustomerId) {
         return res.status(404).json({ message: "No billing account found" });
       }
@@ -2719,7 +2910,11 @@ export async function registerRoutes(
   // Subscriber: Get published videos (requires active subscription)
   app.get("/api/videos", requireAuth, async (req, res) => {
     try {
-      const user = await storage.getUser(req.session.userId!);
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
       if (!user) {
         return res.status(401).json({ message: "User not found" });
       }
@@ -2757,7 +2952,10 @@ export async function registerRoutes(
   // Get user's viewed video IDs (for "New" badge logic)
   app.get("/api/videos/viewed", requireAuth, async (req, res) => {
     try {
-      const userId = req.session.userId!;
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
       const viewedVideoIds = await storage.getUserViewedVideoIds(userId);
       res.json({ viewedVideoIds });
     } catch (error) {
@@ -2769,7 +2967,10 @@ export async function registerRoutes(
   // Mark a video as viewed by the current user
   app.post("/api/videos/:id/viewed", requireAuth, async (req, res) => {
     try {
-      const userId = req.session.userId!;
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
       const videoId = req.params.id;
       await storage.markVideoAsViewed(userId, videoId);
       res.json({ success: true });
@@ -2782,7 +2983,11 @@ export async function registerRoutes(
   // Subscriber: Stream a video (requires active subscription)
   app.get("/api/videos/:id/stream", requireAuth, async (req, res) => {
     try {
-      const user = await storage.getUser(req.session.userId!);
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
       if (!user) {
         return res.status(401).json({ message: "User not found" });
       }
@@ -4060,11 +4265,16 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Title is required" });
       }
 
-      // Upload to object storage for permanent URL
+      const adminUserId = getAuthUserId(req);
+      if (!adminUserId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Upload PDF to object storage for permanent URL
       const uploadURL = await objectStorageService.getObjectEntityUploadURL();
       const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
       
-      console.log(`[Document Upload] Uploading to cloud storage: ${objectPath}`);
+      console.log(`[Document Upload] Uploading PDF to cloud storage: ${objectPath}`);
       
       const url = new URL(uploadURL);
       const pathParts = url.pathname.slice(1).split("/");
@@ -4074,7 +4284,7 @@ export async function registerRoutes(
       const bucket = objectStorageClient.bucket(bucketName);
       const objectFile = bucket.file(objectName);
       
-      // Upload file to cloud storage
+      // Upload PDF file to cloud storage
       await new Promise<void>((resolve, reject) => {
         const readStream = fs.createReadStream(req.file!.path);
         const writeStream = objectFile.createWriteStream({
@@ -4087,26 +4297,107 @@ export async function registerRoutes(
         readStream.pipe(writeStream);
       });
       
-      // Clean up temp file
-      if (fs.existsSync(req.file.path)) {
-        fs.unlinkSync(req.file.path);
-      }
-      
-      console.log(`[Document Upload] Successfully uploaded to: ${objectPath}`);
+      console.log(`[Document Upload] Successfully uploaded PDF to: ${objectPath}`);
 
+      // Create document record with processing status
       const doc = await storage.createDocument({
         title,
         description: description || null,
         filename: req.file.originalname,
         filepath: objectPath,
         fileSize: req.file.size,
-        status: "ready",
+        status: "processing",
         allowDownload: allowDownload === "true" || allowDownload === true,
         categoryId: categoryId || null,
-        uploadedBy: req.session.userId!,
+        uploadedBy: adminUserId,
       });
 
+      // Return immediately, conversion happens in background
       res.json(doc);
+
+      // Convert PDF pages to images in background
+      (async () => {
+        try {
+          const { convertPdfToImages } = await import("./pdfConverter");
+          
+          // Create temp directory for page images
+          const tempDir = path.join(uploadDir, "temp_pages", doc.id);
+          if (!fs.existsSync(tempDir)) {
+            fs.mkdirSync(tempDir, { recursive: true });
+          }
+
+          console.log(`[Document Upload] Converting PDF to images for document: ${doc.id}`);
+          
+          // Convert PDF to images
+          const result = await convertPdfToImages(req.file!.path, tempDir, doc.id);
+          
+          // Upload each page image to object storage
+          const pageImagePaths: string[] = [];
+          
+          for (let i = 0; i < result.imagePaths.length; i++) {
+            const imagePath = result.imagePaths[i];
+            const pageNum = i + 1;
+            
+            // Get upload URL for this page image
+            const pageUploadURL = await objectStorageService.getObjectEntityUploadURL();
+            const pageObjectPath = objectStorageService.normalizeObjectEntityPath(pageUploadURL);
+            
+            const pageUrl = new URL(pageUploadURL);
+            const pagePathParts = pageUrl.pathname.slice(1).split("/");
+            const pageBucketName = pagePathParts[0];
+            const pageObjectName = pagePathParts.slice(1).join("/");
+            
+            const pageBucket = objectStorageClient.bucket(pageBucketName);
+            const pageObjectFile = pageBucket.file(pageObjectName);
+            
+            // Upload page image
+            await new Promise<void>((resolve, reject) => {
+              const readStream = fs.createReadStream(imagePath);
+              const writeStream = pageObjectFile.createWriteStream({
+                resumable: false,
+                contentType: "image/png",
+              });
+              readStream.on("error", reject);
+              writeStream.on("error", reject);
+              writeStream.on("finish", resolve);
+              readStream.pipe(writeStream);
+            });
+            
+            pageImagePaths.push(pageObjectPath);
+            console.log(`[Document Upload] Uploaded page ${pageNum}/${result.pageCount} to: ${pageObjectPath}`);
+          }
+          
+          // Clean up temp files
+          for (const imagePath of result.imagePaths) {
+            if (fs.existsSync(imagePath)) {
+              fs.unlinkSync(imagePath);
+            }
+          }
+          if (fs.existsSync(tempDir)) {
+            fs.rmdirSync(tempDir, { recursive: true });
+          }
+          if (fs.existsSync(req.file!.path)) {
+            fs.unlinkSync(req.file!.path);
+          }
+          
+          // Update document with page images and ready status
+          await storage.updateDocument(doc.id, {
+            pageCount: result.pageCount,
+            pageImages: pageImagePaths,
+            status: "ready",
+          });
+          
+          console.log(`[Document Upload] Document ${doc.id} is ready with ${result.pageCount} pages`);
+        } catch (error) {
+          console.error(`[Document Upload] Failed to convert document ${doc.id}:`, error);
+          // Mark document as failed
+          await storage.updateDocument(doc.id, { status: "hidden" });
+          // Clean up temp file
+          if (req.file && fs.existsSync(req.file.path)) {
+            fs.unlinkSync(req.file.path);
+          }
+        }
+      })();
     } catch (error) {
       console.error("Document upload error:", error);
       // Clean up temp file if it exists
@@ -4166,7 +4457,11 @@ export async function registerRoutes(
   // Customer: Get all published documents
   app.get("/api/documents", requireAuth, async (req, res) => {
     try {
-      const user = await storage.getUser(req.session.userId!);
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
       if (!user) {
         return res.status(401).json({ message: "Not authenticated" });
       }
@@ -4191,7 +4486,11 @@ export async function registerRoutes(
   // Customer: View PDF (stream with no-download headers)
   app.get("/api/documents/:id/view", requireAuth, async (req, res) => {
     try {
-      const user = await storage.getUser(req.session.userId!);
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
       if (!user) {
         return res.status(401).json({ message: "Not authenticated" });
       }
@@ -4254,6 +4553,136 @@ export async function registerRoutes(
     } catch (error) {
       console.error("View document error:", error);
       res.status(500).json({ message: "Failed to view document" });
+    }
+  });
+
+  // Customer: Get document page images (for image-based viewer)
+  app.get("/api/documents/:id/pages", requireAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      // Check subscription access
+      const hasAccess = user.subscriptionStatus === "active" || 
+        (user.subscriptionStatus === "trial" && user.trialEndsAt && new Date(user.trialEndsAt) > new Date()) ||
+        await storage.isWhitelistedEmailAddress(user.email);
+
+      if (!hasAccess) {
+        return res.status(403).json({ message: "Subscription required" });
+      }
+
+      const doc = await storage.getDocument(req.params.id);
+      if (!doc) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      // Return processing status if still being converted
+      if (doc.status === "processing") {
+        return res.status(202).json({
+          id: doc.id,
+          title: doc.title,
+          status: "processing",
+          pageCount: 0,
+          pageImages: [],
+          allowDownload: doc.allowDownload,
+        });
+      }
+
+      if (doc.status === "hidden") {
+        return res.status(404).json({ message: "Document not available" });
+      }
+
+      // Increment view count only when ready
+      await storage.incrementDocumentViewCount(doc.id);
+
+      // Return page image paths for the viewer
+      res.json({
+        id: doc.id,
+        title: doc.title,
+        status: "ready",
+        pageCount: doc.pageCount || 0,
+        pageImages: doc.pageImages || [],
+        allowDownload: doc.allowDownload,
+      });
+    } catch (error) {
+      console.error("Get document pages error:", error);
+      res.status(500).json({ message: "Failed to get document pages" });
+    }
+  });
+
+  // Customer: Stream a specific document page image
+  app.get("/api/documents/:id/page/:pageNum", requireAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      // Check subscription access
+      const hasAccess = user.subscriptionStatus === "active" || 
+        (user.subscriptionStatus === "trial" && user.trialEndsAt && new Date(user.trialEndsAt) > new Date()) ||
+        await storage.isWhitelistedEmailAddress(user.email);
+
+      if (!hasAccess) {
+        return res.status(403).json({ message: "Subscription required" });
+      }
+
+      const doc = await storage.getDocument(req.params.id);
+      if (!doc || doc.status !== "ready") {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      const pageNum = parseInt(req.params.pageNum);
+      if (isNaN(pageNum) || pageNum < 1 || !doc.pageImages || pageNum > doc.pageImages.length) {
+        return res.status(404).json({ message: "Page not found" });
+      }
+
+      const pageImagePath = doc.pageImages[pageNum - 1];
+      
+      // Set headers for image
+      res.setHeader("Content-Type", "image/png");
+      res.setHeader("Cache-Control", "private, max-age=3600");
+      
+      if (pageImagePath.startsWith("/objects/")) {
+        try {
+          const objectFile = await objectStorageService.getObjectEntityFile(pageImagePath);
+          const [metadata] = await objectFile.getMetadata();
+          
+          if (metadata.size) {
+            res.setHeader("Content-Length", metadata.size);
+          }
+          
+          const stream = objectFile.createReadStream();
+          stream.on("error", (err) => {
+            console.error("Page image stream error:", err);
+            if (!res.headersSent) {
+              res.status(500).json({ message: "Error streaming page image" });
+            }
+          });
+          stream.pipe(res);
+        } catch (cloudError) {
+          console.error("Cloud storage error:", cloudError);
+          res.status(404).json({ message: "Page image not found in cloud storage" });
+        }
+      } else if (fs.existsSync(pageImagePath)) {
+        const fileStream = fs.createReadStream(pageImagePath);
+        fileStream.pipe(res);
+      } else {
+        res.status(404).json({ message: "Page image not found" });
+      }
+    } catch (error) {
+      console.error("Get document page error:", error);
+      res.status(500).json({ message: "Failed to get document page" });
     }
   });
 
