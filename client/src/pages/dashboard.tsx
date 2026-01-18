@@ -678,6 +678,17 @@ export default function DashboardPage() {
     (user?.subscriptionStatus === "trial" && daysRemaining > 0) ||
     user?.isWhitelistedEmail === true;
 
+  // Debug logging for subscription check
+  console.log('[Dashboard] User subscription check:', {
+    email: user?.email,
+    subscriptionStatus: user?.subscriptionStatus,
+    hasUsedTrial: user?.hasUsedTrial,
+    trialEndsAt: user?.trialEndsAt,
+    daysRemaining,
+    isWhitelistedEmail: user?.isWhitelistedEmail,
+    hasActiveSubscription
+  });
+
   // Only fetch content if user has active subscription
   const { data: videos, isLoading: videosLoading } = useQuery<VideoType[]>({
     queryKey: ["/api/videos"],

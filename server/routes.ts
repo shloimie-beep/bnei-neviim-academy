@@ -930,6 +930,9 @@ export async function registerRoutes(
     const whitelistedEmail = user.email ? await storage.getWhitelistedEmail(user.email) : null;
     const isWhitelistedEmail = !!whitelistedEmail;
 
+    // Debug logging for subscription status
+    console.log(`[Auth/Me] User ${user.email}: subscriptionStatus=${user.subscriptionStatus}, hasUsedTrial=${user.hasUsedTrial}`);
+
     res.json({ user: { ...user, password: undefined, isWhitelistedEmail } });
   });
 
