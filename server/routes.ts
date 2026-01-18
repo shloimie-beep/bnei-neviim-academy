@@ -634,6 +634,7 @@ export async function registerRoutes(
           login: { method: "POST", path: "/api/mobile/login", body: { email: "string", password: "string" } },
           me: { method: "GET", path: "/api/mobile/me", headers: { Authorization: "Bearer <token>" } },
           refreshToken: { method: "POST", path: "/api/mobile/refresh-token", headers: { Authorization: "Bearer <token>" } },
+          subscription: { method: "GET", path: "/api/mobile/subscription", headers: { Authorization: "Bearer <token>" }, response: { active: "boolean", subscriptionStatus: "string", trialDaysRemaining: "number|null", isWhitelisted: "boolean" } },
         },
         content: {
           videos: { method: "GET", path: "/api/videos", headers: { Authorization: "Bearer <token>" } },
@@ -738,6 +739,40 @@ export async function registerRoutes(
       res.json({ token });
     } catch (error) {
       res.status(500).json({ message: "Failed to refresh token" });
+    }
+  });
+
+  // Mobile app - check subscription status
+  app.get("/api/mobile/subscription", requireMobileAuth, async (req, res) => {
+    try {
+      const user = await storage.getUser(req.mobileUser!.userId);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Check if user's email is whitelisted for free access
+      const whitelistedEmail = user.email ? await storage.getWhitelistedEmail(user.email) : null;
+      const isWhitelisted = !!whitelistedEmail;
+
+      // Calculate trial days remaining if applicable
+      let trialDaysRemaining = 0;
+      if (user.subscriptionStatus === "trial" && user.trialEndsAt) {
+        trialDaysRemaining = Math.max(0, Math.ceil((new Date(user.trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)));
+      }
+
+      // User has active access if: whitelisted, active subscription, or valid trial
+      const active = isWhitelisted || 
+        user.subscriptionStatus === "active" || 
+        (user.subscriptionStatus === "trial" && trialDaysRemaining > 0);
+
+      res.json({ 
+        active,
+        subscriptionStatus: user.subscriptionStatus,
+        trialDaysRemaining: user.subscriptionStatus === "trial" ? trialDaysRemaining : null,
+        isWhitelisted
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to check subscription status" });
     }
   });
 
