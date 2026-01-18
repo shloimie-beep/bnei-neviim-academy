@@ -669,8 +669,19 @@ export default function DashboardPage() {
     queryKey: ["/api/subscription"],
   });
 
+  // Calculate subscription status early so we can conditionally fetch content
+  const daysRemaining = user?.trialEndsAt
+    ? Math.max(0, Math.ceil((new Date(user.trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
+    : 0;
+
+  const hasActiveSubscription = user?.subscriptionStatus === "active" || 
+    (user?.subscriptionStatus === "trial" && daysRemaining > 0) ||
+    user?.isWhitelistedEmail === true;
+
+  // Only fetch content if user has active subscription
   const { data: videos, isLoading: videosLoading } = useQuery<VideoType[]>({
     queryKey: ["/api/videos"],
+    enabled: hasActiveSubscription,
   });
 
   const { data: categories = [] } = useQuery<VideoCategory[]>({
@@ -679,11 +690,13 @@ export default function DashboardPage() {
 
   const { data: viewedData } = useQuery<{ viewedVideoIds: string[] }>({
     queryKey: ["/api/videos/viewed"],
+    enabled: hasActiveSubscription,
   });
   const viewedVideoIds = viewedData?.viewedVideoIds || [];
 
   const { data: documents, isLoading: documentsLoading } = useQuery<Document[]>({
     queryKey: ["/api/documents"],
+    enabled: hasActiveSubscription,
   });
 
   const videosByCategory = useMemo(() => {
@@ -902,15 +915,6 @@ export default function DashboardPage() {
     await logout();
     window.location.href = "/";
   };
-
-  const daysRemaining = user?.trialEndsAt
-    ? Math.max(0, Math.ceil((new Date(user.trialEndsAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)))
-    : 0;
-
-  // Check if user has access via subscription, trial, or whitelisted email
-  const hasActiveSubscription = user?.subscriptionStatus === "active" || 
-    (user?.subscriptionStatus === "trial" && daysRemaining > 0) ||
-    user?.isWhitelistedEmail === true;
 
   const registeredPhone = phoneNumbers?.[0];
 
