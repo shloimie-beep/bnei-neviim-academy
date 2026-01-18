@@ -689,6 +689,7 @@ export async function registerRoutes(
           role: user.role,
           subscriptionStatus: user.subscriptionStatus,
           trialEndsAt: user.trialEndsAt,
+          hasUsedTrial: user.hasUsedTrial,
         },
       });
     } catch (error: any) {
@@ -712,6 +713,7 @@ export async function registerRoutes(
           role: user.role,
           subscriptionStatus: user.subscriptionStatus,
           trialEndsAt: user.trialEndsAt,
+          hasUsedTrial: user.hasUsedTrial,
         },
       });
     } catch (error) {
@@ -1051,6 +1053,7 @@ export async function registerRoutes(
         trialEndsAt: user?.trialEndsAt,
         stripeSubscriptionId: user?.stripeSubscriptionId,
         stripeCustomerId: user?.stripeCustomerId,
+        hasUsedTrial: user?.hasUsedTrial,
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to get subscription" });
@@ -1170,25 +1173,34 @@ export async function registerRoutes(
       // Get the base URL for redirects - prefer PUBLIC_APP_URL for custom domain
       const baseUrl = process.env.PUBLIC_APP_URL || 'https://onetimeonetime.com';
 
-      // Create checkout session with trial
-      const session = await stripe.checkout.sessions.create({
+      // Check if user has already used their trial
+      const canUseTrial = !user.hasUsedTrial;
+
+      // Create checkout session - with trial only if user hasn't used one before
+      const sessionConfig: any = {
         customer: customerId,
         payment_method_types: ['card'],
         payment_method_collection: 'always', // Always collect payment method
         line_items: [{ price: priceId, quantity: 1 }],
         mode: 'subscription',
-        subscription_data: {
+        success_url: `${baseUrl}/dashboard?checkout=success`,
+        cancel_url: `${baseUrl}/dashboard?checkout=cancelled`,
+        metadata: { userId: user.id },
+      };
+
+      // Only add trial for users who haven't used one
+      if (canUseTrial) {
+        sessionConfig.subscription_data = {
           trial_period_days: 14, // 2-week free trial
           trial_settings: {
             end_behavior: {
               missing_payment_method: 'cancel', // Cancel if no payment method
             },
           },
-        },
-        success_url: `${baseUrl}/dashboard?checkout=success`,
-        cancel_url: `${baseUrl}/dashboard?checkout=cancelled`,
-        metadata: { userId: user.id },
-      });
+        };
+      }
+
+      const session = await stripe.checkout.sessions.create(sessionConfig);
 
       res.json({ url: session.url });
     } catch (error: any) {

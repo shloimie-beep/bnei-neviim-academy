@@ -15,6 +15,7 @@ export const users = pgTable("users", {
   stripeSubscriptionId: text("stripe_subscription_id"),
   subscriptionStatus: text("subscription_status").default("none"), // 'none', 'trial', 'active', 'cancelled', 'past_due'
   trialEndsAt: timestamp("trial_ends_at"),
+  hasUsedTrial: boolean("has_used_trial").default(false), // Track if user has ever started a trial
   createdAt: timestamp("created_at").defaultNow(),
 });
 

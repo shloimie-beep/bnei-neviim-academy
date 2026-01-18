@@ -59,6 +59,7 @@ export class WebhookHandlers {
             stripeSubscriptionId: subscriptionId,
             subscriptionStatus: isTrialing ? 'trial' : 'active',
             trialEndsAt: trialEnd,
+            hasUsedTrial: isTrialing ? true : undefined, // Mark trial as used if starting one
           });
           
           // If starting a trial, record the phone numbers as used in trial
