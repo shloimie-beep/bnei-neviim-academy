@@ -3818,6 +3818,39 @@ export async function registerRoutes(
     }
   });
 
+  // Fix hasUsedTrial for all cancelled/expired users
+  app.post("/api/admin/subscribers/fix-trial-status", requireAdmin, async (req, res) => {
+    try {
+      const subscribers = await storage.getSubscriberList();
+      let fixed = 0;
+      
+      for (const subscriber of subscribers) {
+        // If user has a stripe customer ID (means they went through checkout) but hasUsedTrial is false, fix it
+        if (subscriber.stripeCustomerId && !subscriber.hasUsedTrial) {
+          await storage.updateUser(subscriber.id, { hasUsedTrial: true });
+          fixed++;
+          console.log(`[FixTrialStatus] Set hasUsedTrial=true for ${subscriber.email}`);
+        }
+        // Also fix anyone with cancelled status who hasn't been marked as used trial
+        else if ((subscriber.subscriptionStatus === 'cancelled' || subscriber.subscriptionStatus === 'none') && 
+                 subscriber.stripeCustomerId && !subscriber.hasUsedTrial) {
+          await storage.updateUser(subscriber.id, { hasUsedTrial: true });
+          fixed++;
+          console.log(`[FixTrialStatus] Set hasUsedTrial=true for cancelled user ${subscriber.email}`);
+        }
+      }
+      
+      res.json({
+        success: true,
+        message: `Fixed ${fixed} users' trial status`,
+        fixedCount: fixed,
+      });
+    } catch (error: any) {
+      console.error("Fix trial status error:", error);
+      res.status(500).json({ message: error.message || "Failed to fix trial status" });
+    }
+  });
+
   // Sync all active subscribers to Voitex
   app.post("/api/admin/subscribers/sync-voitex", requireAdmin, async (req, res) => {
     try {

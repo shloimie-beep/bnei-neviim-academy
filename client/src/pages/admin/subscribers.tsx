@@ -250,6 +250,27 @@ export default function SubscribersManagement() {
     },
   });
 
+  const fixTrialStatusMutation = useMutation({
+    mutationFn: async () => {
+      return apiRequest("POST", "/api/admin/subscribers/fix-trial-status");
+    },
+    onSuccess: async (res: Response) => {
+      const data = await res.json();
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/subscribers"] });
+      toast({
+        title: "Trial status fixed",
+        description: data.message || `Fixed trial status for users.`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Fix failed",
+        description: error.message || "Failed to fix trial status.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleEmailAll = () => {
     if (!emailSubject.trim() || !emailMessage.trim()) {
       toast({
@@ -356,6 +377,15 @@ export default function SubscribersManagement() {
           >
             <Download className="h-4 w-4 mr-2" />
             Export Active Phone Numbers
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => fixTrialStatusMutation.mutate()}
+            disabled={fixTrialStatusMutation.isPending}
+            data-testid="button-fix-trial-status"
+          >
+            {fixTrialStatusMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+            Fix Trial Status
           </Button>
           <Button
             variant="outline"

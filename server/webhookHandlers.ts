@@ -107,11 +107,19 @@ export class WebhookHandlers {
           const status = statusMap[subscription.status] || 'none';
           const trialEnd = subscription.trial_end ? new Date(subscription.trial_end * 1000) : null;
           
-          await storage.updateUser(user.id, {
+          // If subscription status is cancelled, mark trial as used
+          const updateData: any = {
             subscriptionStatus: status,
             trialEndsAt: trialEnd,
-          });
-          console.log(`User ${user.id} subscription updated: ${status}`);
+          };
+          
+          // Mark hasUsedTrial = true if user ever had a trial or is being cancelled
+          if (subscription.status === 'trialing' || subscription.status === 'canceled' || subscription.status === 'unpaid') {
+            updateData.hasUsedTrial = true;
+          }
+          
+          await storage.updateUser(user.id, updateData);
+          console.log(`User ${user.id} subscription updated: ${status}, hasUsedTrial: ${updateData.hasUsedTrial || 'unchanged'}`);
         }
         break;
       }
