@@ -63,10 +63,23 @@ The backend handles user authentication, subscription management, phone number r
   - `callLogs` - Call history and analytics
 
 ### Authentication & Authorization
-- Session-based authentication stored in PostgreSQL
+- **Web (Browser)**: Session-based authentication stored in PostgreSQL
+- **Mobile Apps**: JWT Bearer token authentication with 30-day expiry
 - Role-based access control (customer vs admin)
 - Protected routes on both frontend and backend
-- Middleware pattern for route protection (`requireAuth`)
+- Middleware pattern for route protection (`requireAuth`, `requireAdmin`)
+- Hybrid auth via `getAuthUserId()` helper supports both session and Bearer tokens
+
+### Mobile API
+- **Key File**: `server/mobileAuth.ts` - JWT token generation and verification
+- **Endpoints**:
+  - `POST /api/mobile/login` - Login with email/password, returns JWT token
+  - `GET /api/mobile/me` - Get current user with Bearer token
+  - `POST /api/mobile/refresh-token` - Refresh JWT before expiry
+  - `GET /api/mobile/info` - API documentation for mobile developers
+- **Token Expiry**: 30 days (configurable in mobileAuth.ts)
+- **All customer endpoints** support Bearer token auth (videos, audio, documents, phone numbers)
+- **Security**: JWT secret derived from SESSION_SECRET (required environment variable)
 
 ### Payment Integration
 - **Stripe Integration**: Uses `stripe-replit-sync` package for webhook handling and data synchronization
@@ -110,6 +123,7 @@ The backend handles user authentication, subscription management, phone number r
 
 ### Environment Variables Required
 - `DATABASE_URL` - PostgreSQL connection string
+- `SESSION_SECRET` - **Required** for both session cookies and JWT token signing
 - `BUNNY_API_KEY` - Bunny Stream API key for video management
 - `BUNNY_LIBRARY_ID` - Bunny Stream library ID
 - `VOITEX_AUTH_KEY` - Voitex API authentication key for contact sync (optional)

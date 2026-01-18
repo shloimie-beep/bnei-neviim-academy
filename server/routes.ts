@@ -196,8 +196,28 @@ const documentUpload = multer({
   limits: { fileSize: 100 * 1024 * 1024 }, // 100MB limit for PDFs
 });
 
-// Auth middleware
+// Helper to get authenticated user ID from either session or mobile token
+function getAuthUserId(req: Request): string | null {
+  if (req.mobileUser?.userId) {
+    return req.mobileUser.userId;
+  }
+  return req.session?.userId || null;
+}
+
+// Auth middleware - supports both session (web) and Bearer token (mobile)
 function requireAuth(req: Request, res: Response, next: NextFunction) {
+  // Check for Bearer token (mobile app)
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    const token = authHeader.substring(7);
+    const payload = verifyMobileToken(token);
+    if (payload) {
+      req.mobileUser = payload;
+      return next();
+    }
+  }
+  
+  // Fall back to session auth (web app)
   if (!req.session.userId) {
     return res.status(401).json({ message: "Unauthorized" });
   }
@@ -205,10 +225,26 @@ function requireAuth(req: Request, res: Response, next: NextFunction) {
 }
 
 async function requireAdmin(req: Request, res: Response, next: NextFunction) {
-  if (!req.session.userId) {
+  // Check for Bearer token (mobile app)
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    const token = authHeader.substring(7);
+    const payload = verifyMobileToken(token);
+    if (payload) {
+      if (payload.role !== "admin") {
+        return res.status(403).json({ message: "Forbidden" });
+      }
+      req.mobileUser = payload;
+      return next();
+    }
+  }
+  
+  // Fall back to session auth
+  const userId = getAuthUserId(req);
+  if (!userId) {
     return res.status(401).json({ message: "Unauthorized" });
   }
-  const user = await storage.getUser(req.session.userId);
+  const user = await storage.getUser(userId);
   if (!user || user.role !== "admin") {
     return res.status(403).json({ message: "Forbidden" });
   }
@@ -294,7 +330,7 @@ export async function registerRoutes(
         tableName: "user_sessions",
         createTableIfMissing: true,
       }),
-      secret: process.env.SESSION_SECRET || "kids-hotline-secret-key",
+      secret: process.env.SESSION_SECRET!,
       resave: false,
       saveUninitialized: false,
       cookie: {
@@ -587,6 +623,36 @@ export async function registerRoutes(
     });
   });
 
+  // Mobile API info endpoint - provides documentation for mobile app
+  app.get("/api/mobile/info", (req, res) => {
+    res.json({
+      version: "1.0.0",
+      name: "OneTimeOneTime Mobile API",
+      endpoints: {
+        auth: {
+          login: { method: "POST", path: "/api/mobile/login", body: { email: "string", password: "string" } },
+          me: { method: "GET", path: "/api/mobile/me", headers: { Authorization: "Bearer <token>" } },
+          refreshToken: { method: "POST", path: "/api/mobile/refresh-token", headers: { Authorization: "Bearer <token>" } },
+        },
+        content: {
+          videos: { method: "GET", path: "/api/videos", headers: { Authorization: "Bearer <token>" } },
+          videoCategories: { method: "GET", path: "/api/video-categories" },
+          audio: { method: "GET", path: "/api/audio", headers: { Authorization: "Bearer <token>" } },
+          documents: { method: "GET", path: "/api/documents", headers: { Authorization: "Bearer <token>" } },
+        },
+        streaming: {
+          videoStream: { method: "GET", path: "/api/videos/:id/stream", headers: { Authorization: "Bearer <token>" } },
+          audioStream: { method: "GET", path: "/api/audio/:id/stream", headers: { Authorization: "Bearer <token>" } },
+        },
+      },
+      notes: [
+        "All authenticated endpoints require Bearer token in Authorization header",
+        "Token expires in 30 days, use refresh-token endpoint to get a new one",
+        "Subscription status is returned in login/me responses",
+      ],
+    });
+  });
+
   // Mobile app login - returns JWT token
   app.post("/api/mobile/login", async (req, res) => {
     try {
@@ -770,7 +836,12 @@ export async function registerRoutes(
         return res.status(400).json({ message: "New password must be at least 8 characters" });
       }
 
-      const user = await storage.getUser(req.session.userId!);
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -783,7 +854,7 @@ export async function registerRoutes(
 
       // Hash and update new password
       const hashedPassword = await bcrypt.hash(newPassword, 10);
-      await storage.updateUser(req.session.userId!, { password: hashedPassword });
+      await storage.updateUser(userId, { password: hashedPassword });
 
       res.json({ success: true, message: "Password changed successfully" });
     } catch (error) {
@@ -816,7 +887,8 @@ export async function registerRoutes(
       const { id } = req.params;
       
       // Prevent deleting yourself
-      if (id === req.session.userId) {
+      const currentUserId = getAuthUserId(req);
+      if (id === currentUserId) {
         return res.status(400).json({ message: "You cannot delete your own account" });
       }
       
@@ -838,13 +910,16 @@ export async function registerRoutes(
   });
 
   app.get("/api/auth/me", async (req, res) => {
-    if (!req.session.userId) {
+    const userId = getAuthUserId(req);
+    if (!userId) {
       return res.status(401).json({ message: "Not authenticated" });
     }
 
-    const user = await storage.getUser(req.session.userId);
+    const user = await storage.getUser(userId);
     if (!user) {
-      req.session.destroy(() => {});
+      if (req.session) {
+        req.session.destroy(() => {});
+      }
       return res.status(401).json({ message: "User not found" });
     }
 
@@ -859,7 +934,11 @@ export async function registerRoutes(
   
   app.get("/api/phone-numbers", requireAuth, async (req, res) => {
     try {
-      const phones = await storage.getPhoneNumbersByUser(req.session.userId!);
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const phones = await storage.getPhoneNumbersByUser(userId);
       res.json(phones);
     } catch (error) {
       res.status(500).json({ message: "Failed to get phone numbers" });
@@ -875,10 +954,15 @@ export async function registerRoutes(
 
       const { phoneNumber } = result.data;
 
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
       // Check if user is a subscriber (not admin) and limit to 1 phone
-      const user = await storage.getUser(req.session.userId!);
+      const user = await storage.getUser(userId);
       if (user?.role === "customer") {
-        const existingPhones = await storage.getPhoneNumbersByUser(req.session.userId!);
+        const existingPhones = await storage.getPhoneNumbersByUser(userId);
         if (existingPhones.length >= 1) {
           return res.status(400).json({ message: "Subscribers can only have one phone number" });
         }
@@ -891,7 +975,7 @@ export async function registerRoutes(
       }
 
       const phone = await storage.createPhoneNumber({
-        userId: req.session.userId!,
+        userId: userId,
         phoneNumber,
         isActive: true,
       });
@@ -904,7 +988,11 @@ export async function registerRoutes(
 
   app.delete("/api/phone-numbers/:id", requireAuth, async (req, res) => {
     try {
-      const phones = await storage.getPhoneNumbersByUser(req.session.userId!);
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const phones = await storage.getPhoneNumbersByUser(userId);
       const phone = phones.find((p) => p.id === req.params.id);
       
       if (!phone) {
@@ -920,7 +1008,11 @@ export async function registerRoutes(
 
   app.put("/api/phone-numbers/:id", requireAuth, async (req, res) => {
     try {
-      const phones = await storage.getPhoneNumbersByUser(req.session.userId!);
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const phones = await storage.getPhoneNumbersByUser(userId);
       const phone = phones.find((p) => p.id === req.params.id);
       
       if (!phone) {
@@ -948,7 +1040,11 @@ export async function registerRoutes(
   
   app.get("/api/subscription", requireAuth, async (req, res) => {
     try {
-      const user = await storage.getUser(req.session.userId!);
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
       res.json({
         status: user?.subscriptionStatus,
         trialEndsAt: user?.trialEndsAt,
@@ -995,7 +1091,11 @@ export async function registerRoutes(
 
   app.post("/api/create-checkout", requireAuth, async (req, res) => {
     try {
-      const user = await storage.getUser(req.session.userId!);
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
@@ -1098,7 +1198,11 @@ export async function registerRoutes(
 
   app.post("/api/create-portal", requireAuth, async (req, res) => {
     try {
-      const user = await storage.getUser(req.session.userId!);
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
       if (!user || !user.stripeCustomerId) {
         return res.status(404).json({ message: "No billing account found" });
       }
@@ -2805,7 +2909,11 @@ export async function registerRoutes(
   // Subscriber: Get published videos (requires active subscription)
   app.get("/api/videos", requireAuth, async (req, res) => {
     try {
-      const user = await storage.getUser(req.session.userId!);
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
       if (!user) {
         return res.status(401).json({ message: "User not found" });
       }
@@ -2843,7 +2951,10 @@ export async function registerRoutes(
   // Get user's viewed video IDs (for "New" badge logic)
   app.get("/api/videos/viewed", requireAuth, async (req, res) => {
     try {
-      const userId = req.session.userId!;
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
       const viewedVideoIds = await storage.getUserViewedVideoIds(userId);
       res.json({ viewedVideoIds });
     } catch (error) {
@@ -2855,7 +2966,10 @@ export async function registerRoutes(
   // Mark a video as viewed by the current user
   app.post("/api/videos/:id/viewed", requireAuth, async (req, res) => {
     try {
-      const userId = req.session.userId!;
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
       const videoId = req.params.id;
       await storage.markVideoAsViewed(userId, videoId);
       res.json({ success: true });
@@ -2868,7 +2982,11 @@ export async function registerRoutes(
   // Subscriber: Stream a video (requires active subscription)
   app.get("/api/videos/:id/stream", requireAuth, async (req, res) => {
     try {
-      const user = await storage.getUser(req.session.userId!);
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
       if (!user) {
         return res.status(401).json({ message: "User not found" });
       }
@@ -4252,7 +4370,11 @@ export async function registerRoutes(
   // Customer: Get all published documents
   app.get("/api/documents", requireAuth, async (req, res) => {
     try {
-      const user = await storage.getUser(req.session.userId!);
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
       if (!user) {
         return res.status(401).json({ message: "Not authenticated" });
       }
@@ -4277,7 +4399,11 @@ export async function registerRoutes(
   // Customer: View PDF (stream with no-download headers)
   app.get("/api/documents/:id/view", requireAuth, async (req, res) => {
     try {
-      const user = await storage.getUser(req.session.userId!);
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
       if (!user) {
         return res.status(401).json({ message: "Not authenticated" });
       }

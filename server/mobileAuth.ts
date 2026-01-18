@@ -1,7 +1,14 @@
 import jwt from "jsonwebtoken";
 import { Request, Response, NextFunction } from "express";
 
-const JWT_SECRET = process.env.SESSION_SECRET || "mobile-app-secret-key";
+function getJwtSecret(): string {
+  const secret = process.env.SESSION_SECRET;
+  if (!secret) {
+    throw new Error("SESSION_SECRET environment variable is required for JWT authentication");
+  }
+  return secret;
+}
+
 const JWT_EXPIRY = "30d";
 
 export interface MobileTokenPayload {
@@ -24,12 +31,16 @@ export function generateMobileToken(user: { id: string; email: string; role: str
     email: user.email,
     role: user.role,
   };
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRY });
+  return jwt.sign(payload, getJwtSecret(), { expiresIn: JWT_EXPIRY });
 }
 
 export function verifyMobileToken(token: string): MobileTokenPayload | null {
   try {
-    return jwt.verify(token, JWT_SECRET) as MobileTokenPayload;
+    const decoded = jwt.verify(token, getJwtSecret());
+    if (typeof decoded === "object" && decoded !== null && "userId" in decoded) {
+      return decoded as MobileTokenPayload;
+    }
+    return null;
   } catch {
     return null;
   }
@@ -62,7 +73,6 @@ export function requireMobileOrSessionAuth(req: Request, res: Response, next: Ne
     
     if (payload) {
       req.mobileUser = payload;
-      req.session.userId = payload.userId;
       return next();
     }
   }
