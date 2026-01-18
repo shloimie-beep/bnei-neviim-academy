@@ -4555,6 +4555,136 @@ export async function registerRoutes(
     }
   });
 
+  // Customer: Get document page images (for image-based viewer)
+  app.get("/api/documents/:id/pages", requireAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      // Check subscription access
+      const hasAccess = user.subscriptionStatus === "active" || 
+        (user.subscriptionStatus === "trial" && user.trialEndsAt && new Date(user.trialEndsAt) > new Date()) ||
+        await storage.isWhitelistedEmailAddress(user.email);
+
+      if (!hasAccess) {
+        return res.status(403).json({ message: "Subscription required" });
+      }
+
+      const doc = await storage.getDocument(req.params.id);
+      if (!doc) {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      // Return processing status if still being converted
+      if (doc.status === "processing") {
+        return res.status(202).json({
+          id: doc.id,
+          title: doc.title,
+          status: "processing",
+          pageCount: 0,
+          pageImages: [],
+          allowDownload: doc.allowDownload,
+        });
+      }
+
+      if (doc.status === "hidden") {
+        return res.status(404).json({ message: "Document not available" });
+      }
+
+      // Increment view count only when ready
+      await storage.incrementDocumentViewCount(doc.id);
+
+      // Return page image paths for the viewer
+      res.json({
+        id: doc.id,
+        title: doc.title,
+        status: "ready",
+        pageCount: doc.pageCount || 0,
+        pageImages: doc.pageImages || [],
+        allowDownload: doc.allowDownload,
+      });
+    } catch (error) {
+      console.error("Get document pages error:", error);
+      res.status(500).json({ message: "Failed to get document pages" });
+    }
+  });
+
+  // Customer: Stream a specific document page image
+  app.get("/api/documents/:id/page/:pageNum", requireAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      // Check subscription access
+      const hasAccess = user.subscriptionStatus === "active" || 
+        (user.subscriptionStatus === "trial" && user.trialEndsAt && new Date(user.trialEndsAt) > new Date()) ||
+        await storage.isWhitelistedEmailAddress(user.email);
+
+      if (!hasAccess) {
+        return res.status(403).json({ message: "Subscription required" });
+      }
+
+      const doc = await storage.getDocument(req.params.id);
+      if (!doc || doc.status !== "ready") {
+        return res.status(404).json({ message: "Document not found" });
+      }
+
+      const pageNum = parseInt(req.params.pageNum);
+      if (isNaN(pageNum) || pageNum < 1 || !doc.pageImages || pageNum > doc.pageImages.length) {
+        return res.status(404).json({ message: "Page not found" });
+      }
+
+      const pageImagePath = doc.pageImages[pageNum - 1];
+      
+      // Set headers for image
+      res.setHeader("Content-Type", "image/png");
+      res.setHeader("Cache-Control", "private, max-age=3600");
+      
+      if (pageImagePath.startsWith("/objects/")) {
+        try {
+          const objectFile = await objectStorageService.getObjectEntityFile(pageImagePath);
+          const [metadata] = await objectFile.getMetadata();
+          
+          if (metadata.size) {
+            res.setHeader("Content-Length", metadata.size);
+          }
+          
+          const stream = objectFile.createReadStream();
+          stream.on("error", (err) => {
+            console.error("Page image stream error:", err);
+            if (!res.headersSent) {
+              res.status(500).json({ message: "Error streaming page image" });
+            }
+          });
+          stream.pipe(res);
+        } catch (cloudError) {
+          console.error("Cloud storage error:", cloudError);
+          res.status(404).json({ message: "Page image not found in cloud storage" });
+        }
+      } else if (fs.existsSync(pageImagePath)) {
+        const fileStream = fs.createReadStream(pageImagePath);
+        fileStream.pipe(res);
+      } else {
+        res.status(404).json({ message: "Page image not found" });
+      }
+    } catch (error) {
+      console.error("Get document page error:", error);
+      res.status(500).json({ message: "Failed to get document page" });
+    }
+  });
+
   // ============ ORPHANED UPLOAD CLEANUP ============
   
   // Function to clean up orphaned files in cloud storage
