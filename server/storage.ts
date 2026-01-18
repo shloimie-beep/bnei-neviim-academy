@@ -17,6 +17,8 @@ import {
   videos,
   documents,
   userVideoViews,
+  albums,
+  albumTracks,
   type User,
   type InsertUser,
   type PhoneNumber,
@@ -49,6 +51,10 @@ import {
   type UserVideoView,
   trialPhoneNumbers,
   type TrialPhoneNumber,
+  type Album,
+  type InsertAlbum,
+  type AlbumTrack,
+  type InsertAlbumTrack,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -761,6 +767,68 @@ export class DatabaseStorage implements IStorage {
 
   async getTrialPhoneNumbers(): Promise<TrialPhoneNumber[]> {
     return db.select().from(trialPhoneNumbers).orderBy(trialPhoneNumbers.usedAt);
+  }
+
+  // Albums
+  async getAllAlbums(): Promise<Album[]> {
+    return db.select().from(albums).orderBy(desc(albums.createdAt));
+  }
+
+  async getPublishedAlbums(): Promise<Album[]> {
+    return db.select().from(albums)
+      .where(eq(albums.status, "ready"))
+      .orderBy(desc(albums.createdAt));
+  }
+
+  async getAlbum(id: string): Promise<Album | undefined> {
+    const [album] = await db.select().from(albums).where(eq(albums.id, id));
+    return album;
+  }
+
+  async createAlbum(data: InsertAlbum): Promise<Album> {
+    const [album] = await db.insert(albums).values(data).returning();
+    return album;
+  }
+
+  async updateAlbum(id: string, data: Partial<Album>): Promise<Album | undefined> {
+    const [album] = await db.update(albums).set(data).where(eq(albums.id, id)).returning();
+    return album;
+  }
+
+  async deleteAlbum(id: string): Promise<void> {
+    await db.delete(albums).where(eq(albums.id, id));
+  }
+
+  // Album Tracks
+  async getAlbumTracks(albumId: string): Promise<AlbumTrack[]> {
+    return db.select().from(albumTracks)
+      .where(eq(albumTracks.albumId, albumId))
+      .orderBy(albumTracks.trackNumber);
+  }
+
+  async getAlbumTrack(id: string): Promise<AlbumTrack | undefined> {
+    const [track] = await db.select().from(albumTracks).where(eq(albumTracks.id, id));
+    return track;
+  }
+
+  async createAlbumTrack(data: InsertAlbumTrack): Promise<AlbumTrack> {
+    const [track] = await db.insert(albumTracks).values(data).returning();
+    return track;
+  }
+
+  async updateAlbumTrack(id: string, data: Partial<AlbumTrack>): Promise<AlbumTrack | undefined> {
+    const [track] = await db.update(albumTracks).set(data).where(eq(albumTracks.id, id)).returning();
+    return track;
+  }
+
+  async deleteAlbumTrack(id: string): Promise<void> {
+    await db.delete(albumTracks).where(eq(albumTracks.id, id));
+  }
+
+  async getNextTrackNumber(albumId: string): Promise<number> {
+    const tracks = await this.getAlbumTracks(albumId);
+    if (tracks.length === 0) return 1;
+    return Math.max(...tracks.map(t => t.trackNumber)) + 1;
   }
 }
 

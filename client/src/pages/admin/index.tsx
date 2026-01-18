@@ -1,5 +1,5 @@
 import { Link, useLocation, Redirect } from "wouter";
-import { Phone, Settings, LogOut, ShieldCheck, CreditCard, Video, FileText } from "lucide-react";
+import { Phone, Settings, LogOut, ShieldCheck, CreditCard, Video, FileText, Disc } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -23,9 +23,11 @@ import SubscribersManagement from "./subscribers";
 import AdminSettingsPage from "./settings";
 import VideoManagement from "./videos";
 import DocumentManagement from "./documents";
+import AlbumManagement from "./albums";
 
 const adminRoutes = [
   { path: "/admin/videos", label: "Media", icon: Video },
+  { path: "/admin/albums", label: "Albums", icon: Disc },
   { path: "/admin/hotline", label: "Hotline", icon: Phone },
   { path: "/admin/whitelist", label: "Whitelist", icon: ShieldCheck },
   { path: "/admin/subscribers", label: "Subscribers", icon: CreditCard },
@@ -113,6 +115,8 @@ export default function AdminLayout() {
         return <SubscribersManagement />;
       case "/admin/videos":
         return <VideoManagement />;
+      case "/admin/albums":
+        return <AlbumManagement />;
       case "/admin/documents":
         return <DocumentManagement />;
       case "/admin/settings":

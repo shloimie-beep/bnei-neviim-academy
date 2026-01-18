@@ -2943,6 +2943,29 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Reorder video categories (batch update sort orders)
+  app.post("/api/admin/video-categories/reorder", requireAdmin, async (req, res) => {
+    try {
+      const { categoryIds } = req.body;
+      if (!Array.isArray(categoryIds)) {
+        return res.status(400).json({ message: "categoryIds array is required" });
+      }
+
+      // Update each category with its new sort order
+      await Promise.all(
+        categoryIds.map((id, index) => 
+          storage.updateVideoCategory(id, { sortOrder: index })
+        )
+      );
+
+      const categories = await storage.getAllVideoCategories();
+      res.json(categories);
+    } catch (error) {
+      console.error("Reorder video categories error:", error);
+      res.status(500).json({ message: "Failed to reorder video categories" });
+    }
+  });
+
   // Public: Get video categories (for subscriber display)
   app.get("/api/video-categories", async (req, res) => {
     try {
@@ -4763,6 +4786,462 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Get document page error:", error);
       res.status(500).json({ message: "Failed to get document page" });
+    }
+  });
+
+  // ============ ALBUMS ============
+
+  // Admin: Get all albums
+  app.get("/api/admin/albums", requireAdmin, async (req, res) => {
+    try {
+      const allAlbums = await storage.getAllAlbums();
+      // Include track count for each album
+      const albumsWithTracks = await Promise.all(allAlbums.map(async (album) => {
+        const tracks = await storage.getAlbumTracks(album.id);
+        return { ...album, trackCount: tracks.length };
+      }));
+      res.json(albumsWithTracks);
+    } catch (error) {
+      console.error("Get albums error:", error);
+      res.status(500).json({ message: "Failed to get albums" });
+    }
+  });
+
+  // Admin: Create album
+  app.post("/api/admin/albums", requireAdmin, async (req, res) => {
+    try {
+      const adminUserId = getAuthUserId(req);
+      const { title, description, categoryId } = req.body;
+      
+      if (!title) {
+        return res.status(400).json({ message: "Album title is required" });
+      }
+
+      const album = await storage.createAlbum({
+        title,
+        description: description || null,
+        categoryId: categoryId || null,
+        uploadedBy: adminUserId,
+        status: "ready",
+      });
+      
+      res.json(album);
+    } catch (error) {
+      console.error("Create album error:", error);
+      res.status(500).json({ message: "Failed to create album" });
+    }
+  });
+
+  // Admin: Update album
+  app.patch("/api/admin/albums/:id", requireAdmin, async (req, res) => {
+    try {
+      const { title, description, status, categoryId } = req.body;
+      const album = await storage.updateAlbum(req.params.id, { title, description, status, categoryId });
+      if (!album) {
+        return res.status(404).json({ message: "Album not found" });
+      }
+      res.json(album);
+    } catch (error) {
+      console.error("Update album error:", error);
+      res.status(500).json({ message: "Failed to update album" });
+    }
+  });
+
+  // Admin: Delete album (tracks are deleted via CASCADE)
+  app.delete("/api/admin/albums/:id", requireAdmin, async (req, res) => {
+    try {
+      const album = await storage.getAlbum(req.params.id);
+      if (!album) {
+        return res.status(404).json({ message: "Album not found" });
+      }
+
+      // Delete thumbnail from storage if exists
+      if (album.thumbnailPath) {
+        if (album.thumbnailPath.startsWith("/objects/")) {
+          try {
+            const objectFile = await objectStorageService.getObjectEntityFile(album.thumbnailPath);
+            await objectFile.delete();
+          } catch (err) {
+            console.error("Failed to delete album thumbnail:", err);
+          }
+        }
+      }
+
+      // Delete track files from Bunny storage
+      const tracks = await storage.getAlbumTracks(album.id);
+      const bunnyStorageZone = process.env.BUNNY_STORAGE_ZONE;
+      const bunnyStoragePassword = process.env.BUNNY_STORAGE_PASSWORD;
+      if (bunnyStorageZone && bunnyStoragePassword) {
+        for (const track of tracks) {
+          if (track.bunnyStorageUrl) {
+            try {
+              const bunnyUrl = new URL(track.bunnyStorageUrl);
+              const filePath = bunnyUrl.pathname;
+              const deleteResponse = await fetch(`https://${bunnyStorageZone}.storage.bunnycdn.com${filePath}`, {
+                method: "DELETE",
+                headers: {
+                  "AccessKey": bunnyStoragePassword,
+                },
+              });
+              if (!deleteResponse.ok) {
+                console.warn(`Bunny track delete returned ${deleteResponse.status} for ${filePath}`);
+              }
+            } catch (err) {
+              console.error("Failed to delete track from Bunny:", err);
+            }
+          }
+        }
+      }
+
+      await storage.deleteAlbum(req.params.id);
+      res.json({ message: "Album deleted" });
+    } catch (error) {
+      console.error("Delete album error:", error);
+      res.status(500).json({ message: "Failed to delete album" });
+    }
+  });
+
+  // Admin: Upload album thumbnail
+  app.post("/api/admin/albums/:id/thumbnail", requireAdmin, imageUpload.single("thumbnail"), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No thumbnail file provided" });
+      }
+
+      const album = await storage.getAlbum(req.params.id);
+      if (!album) {
+        return res.status(404).json({ message: "Album not found" });
+      }
+
+      // Upload to object storage
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
+      
+      const url = new URL(uploadURL);
+      const pathParts = url.pathname.slice(1).split("/");
+      const bucketName = pathParts[0];
+      const objectName = pathParts.slice(1).join("/");
+      
+      const bucket = objectStorageClient.bucket(bucketName);
+      const objectFile = bucket.file(objectName);
+      
+      await new Promise<void>((resolve, reject) => {
+        const readStream = fs.createReadStream(req.file!.path);
+        const writeStream = objectFile.createWriteStream({
+          resumable: false,
+          contentType: req.file!.mimetype,
+        });
+        readStream.on("error", reject);
+        writeStream.on("error", reject);
+        writeStream.on("finish", resolve);
+        readStream.pipe(writeStream);
+      });
+
+      // Delete old thumbnail if exists
+      if (album.thumbnailPath && album.thumbnailPath.startsWith("/objects/")) {
+        try {
+          const oldFile = await objectStorageService.getObjectEntityFile(album.thumbnailPath);
+          await oldFile.delete();
+        } catch (err) {
+          console.error("Failed to delete old thumbnail:", err);
+        }
+      }
+
+      // Clean up temp file
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+
+      const updatedAlbum = await storage.updateAlbum(album.id, { thumbnailPath: objectPath });
+      res.json(updatedAlbum);
+    } catch (error) {
+      console.error("Upload album thumbnail error:", error);
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+      res.status(500).json({ message: "Failed to upload thumbnail" });
+    }
+  });
+
+  // Admin: Get album tracks
+  app.get("/api/admin/albums/:id/tracks", requireAdmin, async (req, res) => {
+    try {
+      const tracks = await storage.getAlbumTracks(req.params.id);
+      res.json(tracks);
+    } catch (error) {
+      console.error("Get album tracks error:", error);
+      res.status(500).json({ message: "Failed to get tracks" });
+    }
+  });
+
+  // Admin: Add track to album (upload audio to Bunny)
+  app.post("/api/admin/albums/:id/tracks", requireAdmin, upload.single("audio"), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No audio file provided" });
+      }
+
+      const album = await storage.getAlbum(req.params.id);
+      if (!album) {
+        if (req.file && fs.existsSync(req.file.path)) {
+          fs.unlinkSync(req.file.path);
+        }
+        return res.status(404).json({ message: "Album not found" });
+      }
+
+      const { title } = req.body;
+      if (!title) {
+        if (req.file && fs.existsSync(req.file.path)) {
+          fs.unlinkSync(req.file.path);
+        }
+        return res.status(400).json({ message: "Track title is required" });
+      }
+
+      // Upload to Bunny CDN (same location as other audio files)
+      const bunnyStorageZone = process.env.BUNNY_STORAGE_ZONE;
+      const bunnyStoragePassword = process.env.BUNNY_STORAGE_PASSWORD;
+      
+      if (!bunnyStorageZone || !bunnyStoragePassword) {
+        if (req.file && fs.existsSync(req.file.path)) {
+          fs.unlinkSync(req.file.path);
+        }
+        return res.status(500).json({ message: "Bunny storage not configured" });
+      }
+
+      const fileExtension = path.extname(req.file.originalname).toLowerCase();
+      const safeFilename = `album-tracks/${album.id}/${Date.now()}${fileExtension}`;
+      const bunnyUploadUrl = `https://${bunnyStorageZone}.storage.bunnycdn.com/${safeFilename}`;
+      
+      // Read file and upload to Bunny (async)
+      const fileBuffer = await fs.promises.readFile(req.file.path);
+      const uploadResponse = await fetch(bunnyUploadUrl, {
+        method: "PUT",
+        headers: {
+          "AccessKey": bunnyStoragePassword,
+          "Content-Type": req.file.mimetype,
+        },
+        body: fileBuffer,
+      });
+
+      if (!uploadResponse.ok) {
+        if (req.file && fs.existsSync(req.file.path)) {
+          fs.unlinkSync(req.file.path);
+        }
+        return res.status(500).json({ message: "Failed to upload to Bunny CDN" });
+      }
+
+      // Clean up temp file
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+
+      const nextTrackNumber = await storage.getNextTrackNumber(album.id);
+      const bunnyCdnUrl = `https://${process.env.BUNNY_STORAGE_CDN}/${safeFilename}`;
+
+      const track = await storage.createAlbumTrack({
+        albumId: album.id,
+        title,
+        trackNumber: nextTrackNumber,
+        filename: req.file.originalname,
+        bunnyStorageUrl: bunnyCdnUrl,
+        fileSize: req.file.size,
+      });
+
+      res.json(track);
+    } catch (error) {
+      console.error("Add album track error:", error);
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+      res.status(500).json({ message: "Failed to add track" });
+    }
+  });
+
+  // Admin: Update track (title, order)
+  app.patch("/api/admin/albums/:albumId/tracks/:trackId", requireAdmin, async (req, res) => {
+    try {
+      const { title, trackNumber } = req.body;
+      const track = await storage.updateAlbumTrack(req.params.trackId, { title, trackNumber });
+      if (!track) {
+        return res.status(404).json({ message: "Track not found" });
+      }
+      res.json(track);
+    } catch (error) {
+      console.error("Update track error:", error);
+      res.status(500).json({ message: "Failed to update track" });
+    }
+  });
+
+  // Admin: Delete track
+  app.delete("/api/admin/albums/:albumId/tracks/:trackId", requireAdmin, async (req, res) => {
+    try {
+      const track = await storage.getAlbumTrack(req.params.trackId);
+      if (!track) {
+        return res.status(404).json({ message: "Track not found" });
+      }
+
+      // Delete from Bunny storage
+      const bunnyStorageZone = process.env.BUNNY_STORAGE_ZONE;
+      const bunnyStoragePassword = process.env.BUNNY_STORAGE_PASSWORD;
+      if (track.bunnyStorageUrl && bunnyStorageZone && bunnyStoragePassword) {
+        try {
+          const bunnyUrl = new URL(track.bunnyStorageUrl);
+          const filePath = bunnyUrl.pathname;
+          const deleteResponse = await fetch(`https://${bunnyStorageZone}.storage.bunnycdn.com${filePath}`, {
+            method: "DELETE",
+            headers: {
+              "AccessKey": bunnyStoragePassword,
+            },
+          });
+          if (!deleteResponse.ok) {
+            console.warn(`Bunny track delete returned ${deleteResponse.status} for ${filePath}`);
+          }
+        } catch (err) {
+          console.error("Failed to delete track from Bunny:", err);
+        }
+      }
+
+      await storage.deleteAlbumTrack(req.params.trackId);
+      res.json({ message: "Track deleted" });
+    } catch (error) {
+      console.error("Delete track error:", error);
+      res.status(500).json({ message: "Failed to delete track" });
+    }
+  });
+
+  // Customer: Get all published albums
+  app.get("/api/albums", requireAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      // Check subscription access
+      const hasAccess = user.subscriptionStatus === "active" || 
+        (user.subscriptionStatus === "trial" && user.trialEndsAt && new Date(user.trialEndsAt) > new Date()) ||
+        await storage.isWhitelistedEmailAddress(user.email);
+
+      if (!hasAccess) {
+        return res.status(403).json({ message: "Subscription required" });
+      }
+
+      const allAlbums = await storage.getPublishedAlbums();
+      const albumsWithTracks = await Promise.all(allAlbums.map(async (album) => {
+        const tracks = await storage.getAlbumTracks(album.id);
+        return { ...album, trackCount: tracks.length };
+      }));
+      res.json(albumsWithTracks);
+    } catch (error) {
+      console.error("Get albums error:", error);
+      res.status(500).json({ message: "Failed to get albums" });
+    }
+  });
+
+  // Customer: Get album with tracks
+  app.get("/api/albums/:id", requireAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      // Check subscription access
+      const hasAccess = user.subscriptionStatus === "active" || 
+        (user.subscriptionStatus === "trial" && user.trialEndsAt && new Date(user.trialEndsAt) > new Date()) ||
+        await storage.isWhitelistedEmailAddress(user.email);
+
+      if (!hasAccess) {
+        return res.status(403).json({ message: "Subscription required" });
+      }
+
+      const album = await storage.getAlbum(req.params.id);
+      if (!album || album.status !== "ready") {
+        return res.status(404).json({ message: "Album not found" });
+      }
+
+      const tracks = await storage.getAlbumTracks(album.id);
+      res.json({ ...album, tracks });
+    } catch (error) {
+      console.error("Get album error:", error);
+      res.status(500).json({ message: "Failed to get album" });
+    }
+  });
+
+  // Customer: Get album thumbnail
+  app.get("/api/albums/:id/thumbnail", requireAuth, async (req, res) => {
+    try {
+      const album = await storage.getAlbum(req.params.id);
+      if (!album || !album.thumbnailPath) {
+        return res.status(404).json({ message: "Thumbnail not found" });
+      }
+
+      if (album.thumbnailPath.startsWith("/objects/")) {
+        try {
+          const objectFile = await objectStorageService.getObjectEntityFile(album.thumbnailPath);
+          const [metadata] = await objectFile.getMetadata();
+          
+          res.setHeader("Content-Type", metadata.contentType || "image/jpeg");
+          res.setHeader("Cache-Control", "public, max-age=86400");
+          
+          const stream = objectFile.createReadStream();
+          stream.pipe(res);
+        } catch (err) {
+          console.error("Error streaming album thumbnail:", err);
+          res.status(404).json({ message: "Thumbnail not found" });
+        }
+      } else {
+        res.status(404).json({ message: "Thumbnail not found" });
+      }
+    } catch (error) {
+      console.error("Get album thumbnail error:", error);
+      res.status(500).json({ message: "Failed to get thumbnail" });
+    }
+  });
+
+  // Customer: Stream album track audio
+  app.get("/api/albums/:albumId/tracks/:trackId/stream", requireAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(401).json({ message: "Not authenticated" });
+      }
+
+      // Check subscription access
+      const hasAccess = user.subscriptionStatus === "active" || 
+        (user.subscriptionStatus === "trial" && user.trialEndsAt && new Date(user.trialEndsAt) > new Date()) ||
+        await storage.isWhitelistedEmailAddress(user.email);
+
+      if (!hasAccess) {
+        return res.status(403).json({ message: "Subscription required" });
+      }
+
+      const track = await storage.getAlbumTrack(req.params.trackId);
+      if (!track) {
+        return res.status(404).json({ message: "Track not found" });
+      }
+
+      // Redirect to Bunny CDN URL for streaming
+      if (track.bunnyStorageUrl) {
+        return res.redirect(track.bunnyStorageUrl);
+      }
+
+      res.status(404).json({ message: "Track audio not available" });
+    } catch (error) {
+      console.error("Stream track error:", error);
+      res.status(500).json({ message: "Failed to stream track" });
     }
   });
 

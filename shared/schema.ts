@@ -197,6 +197,32 @@ export const userVideoViews = pgTable("user_video_views", {
   firstViewedAt: timestamp("first_viewed_at").defaultNow(),
 });
 
+// Albums - collection of audio tracks
+export const albums = pgTable("albums", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  title: text("title").notNull(),
+  description: text("description"),
+  thumbnailPath: text("thumbnail_path"),
+  status: text("status").notNull().default("ready"), // 'ready', 'hidden'
+  categoryId: varchar("category_id").references(() => videoCategories.id),
+  uploadedBy: varchar("uploaded_by").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Album tracks - individual audio files within an album
+export const albumTracks = pgTable("album_tracks", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  albumId: varchar("album_id").notNull().references(() => albums.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  trackNumber: integer("track_number").notNull(),
+  filename: text("filename"),
+  filepath: text("filepath"),
+  bunnyStorageUrl: text("bunny_storage_url"),
+  duration: integer("duration"),
+  fileSize: bigint("file_size", { mode: "number" }),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Track phone numbers that have been used in trials (to prevent reuse)
 export const trialPhoneNumbers = pgTable("trial_phone_numbers", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -274,6 +300,8 @@ export const insertVideoSchema = createInsertSchema(videos).omit({ id: true, cre
 export const insertDocumentSchema = createInsertSchema(documents).omit({ id: true, createdAt: true, viewCount: true });
 export const insertUserVideoViewSchema = createInsertSchema(userVideoViews).omit({ id: true, firstViewedAt: true });
 export const insertTrialPhoneNumberSchema = createInsertSchema(trialPhoneNumbers).omit({ id: true, usedAt: true });
+export const insertAlbumSchema = createInsertSchema(albums).omit({ id: true, createdAt: true });
+export const insertAlbumTrackSchema = createInsertSchema(albumTracks).omit({ id: true, createdAt: true });
 
 // Types
 export type User = typeof users.$inferSelect;
@@ -310,6 +338,10 @@ export type UserVideoView = typeof userVideoViews.$inferSelect;
 export type InsertUserVideoView = z.infer<typeof insertUserVideoViewSchema>;
 export type TrialPhoneNumber = typeof trialPhoneNumbers.$inferSelect;
 export type InsertTrialPhoneNumber = z.infer<typeof insertTrialPhoneNumberSchema>;
+export type Album = typeof albums.$inferSelect;
+export type InsertAlbum = z.infer<typeof insertAlbumSchema>;
+export type AlbumTrack = typeof albumTracks.$inferSelect;
+export type InsertAlbumTrack = z.infer<typeof insertAlbumTrackSchema>;
 
 // Validation schemas for forms
 export const loginSchema = z.object({

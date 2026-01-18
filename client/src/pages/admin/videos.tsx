@@ -1,6 +1,6 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw, Download } from "lucide-react";
+import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw, Download, GripVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -491,6 +491,66 @@ export default function VideoManagement() {
       toast({ title: "Failed to delete category", description: error.message, variant: "destructive" });
     },
   });
+
+  const reorderCategoriesMutation = useMutation({
+    mutationFn: async (categoryIds: string[]) => {
+      const res = await fetch("/api/admin/video-categories/reorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ categoryIds }),
+      });
+      if (!res.ok) throw new Error("Failed to reorder categories");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/video-categories"] });
+      toast({ title: "Categories reordered" });
+    },
+    onError: (error: any) => {
+      toast({ title: "Failed to reorder categories", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const [draggedCategoryId, setDraggedCategoryId] = useState<string | null>(null);
+
+  const handleCategoryDragStart = (e: React.DragEvent, categoryId: string) => {
+    setDraggedCategoryId(categoryId);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleCategoryDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+  };
+
+  const handleCategoryDrop = (e: React.DragEvent, targetCategoryId: string) => {
+    e.preventDefault();
+    if (!draggedCategoryId || draggedCategoryId === targetCategoryId) {
+      setDraggedCategoryId(null);
+      return;
+    }
+
+    const currentOrder = categories.map(c => c.id);
+    const draggedIndex = currentOrder.indexOf(draggedCategoryId);
+    const targetIndex = currentOrder.indexOf(targetCategoryId);
+
+    if (draggedIndex === -1 || targetIndex === -1) {
+      setDraggedCategoryId(null);
+      return;
+    }
+
+    // Remove dragged item and insert at target position
+    const newOrder = [...currentOrder];
+    newOrder.splice(draggedIndex, 1);
+    newOrder.splice(targetIndex, 0, draggedCategoryId);
+
+    reorderCategoriesMutation.mutate(newOrder);
+    setDraggedCategoryId(null);
+  };
+
+  const handleCategoryDragEnd = () => {
+    setDraggedCategoryId(null);
+  };
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
@@ -1402,21 +1462,34 @@ export default function VideoManagement() {
             <>
               <div className="flex flex-wrap gap-2">
                 {categories.map((cat) => (
-                  <Badge key={cat.id} variant="secondary" className="gap-1 pr-1">
-                    {cat.name}
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-4 w-4 ml-1"
-                      onClick={() => setCategoryToDelete(cat)}
-                      disabled={deleteCategoryMutation.isPending}
-                      data-testid={`button-delete-category-${cat.id}`}
-                    >
-                      <X className="h-3 w-3" />
-                    </Button>
-                  </Badge>
+                  <div
+                    key={cat.id}
+                    draggable
+                    onDragStart={(e) => handleCategoryDragStart(e, cat.id)}
+                    onDragOver={handleCategoryDragOver}
+                    onDrop={(e) => handleCategoryDrop(e, cat.id)}
+                    onDragEnd={handleCategoryDragEnd}
+                    className={`cursor-grab active:cursor-grabbing ${draggedCategoryId === cat.id ? "opacity-50" : ""}`}
+                    data-testid={`draggable-category-${cat.id}`}
+                  >
+                    <Badge variant="secondary" className="gap-1 pr-1">
+                      <GripVertical className="h-3 w-3 text-muted-foreground" />
+                      {cat.name}
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-4 w-4 ml-1"
+                        onClick={() => setCategoryToDelete(cat)}
+                        disabled={deleteCategoryMutation.isPending}
+                        data-testid={`button-delete-category-${cat.id}`}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </Badge>
+                  </div>
                 ))}
               </div>
+              <p className="text-xs text-muted-foreground mt-2">Drag categories to reorder them</p>
               
               <AlertDialog open={!!categoryToDelete} onOpenChange={(open) => !open && setCategoryToDelete(null)}>
                 <AlertDialogContent>

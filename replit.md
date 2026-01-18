@@ -65,6 +65,29 @@ The backend handles user authentication, subscription management, phone number r
   - `client/src/components/document-viewer.tsx` - Image-based document viewer
   - Documents schema includes `pageImages` array and `status` field
 
+### Albums Architecture
+- **Purpose**: Organize multiple audio tracks into albums with cover art and categories
+- **Database Tables**:
+  - `albums` - Album metadata (title, description, thumbnail, category, status)
+  - `albumTracks` - Individual audio tracks with track numbers and Bunny CDN storage
+- **Storage**:
+  - Album thumbnails: Object storage (like document page images)
+  - Audio tracks: Bunny CDN at `album-tracks/{albumId}/{timestamp}.mp3`
+- **Admin Endpoints**:
+  - `GET/POST /api/admin/albums` - List and create albums
+  - `PATCH/DELETE /api/admin/albums/:id` - Update and delete albums
+  - `POST /api/admin/albums/:id/thumbnail` - Upload album cover image
+  - `GET/POST /api/admin/albums/:id/tracks` - List and add tracks
+  - `PATCH/DELETE /api/admin/albums/:albumId/tracks/:trackId` - Update and delete tracks
+- **Customer Endpoints**:
+  - `GET /api/albums` - List published albums with track counts
+  - `GET /api/albums/:id` - Get album with all tracks
+  - `GET /api/albums/:id/thumbnail` - Stream album cover image
+  - `GET /api/albums/:albumId/tracks/:trackId/stream` - Stream track audio (redirects to Bunny CDN)
+- **Key Files**:
+  - `client/src/pages/admin/albums.tsx` - Admin album management UI
+  - Album schema in `shared/schema.ts` with CASCADE delete for tracks
+
 ### Data Storage
 - **Primary Database**: PostgreSQL
 - **Schema Location**: `shared/schema.ts` using Drizzle ORM
@@ -76,6 +99,8 @@ The backend handles user authentication, subscription management, phone number r
   - `conferenceSessions` - Group call sessions
   - `conferenceParticipants` - Call participants tracking
   - `callLogs` - Call history and analytics
+  - `albums` - Audio albums with metadata and thumbnails
+  - `albumTracks` - Individual tracks within albums (Bunny CDN storage)
 
 ### Authentication & Authorization
 - **Web (Browser)**: Session-based authentication stored in PostgreSQL
