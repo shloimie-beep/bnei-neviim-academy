@@ -314,13 +314,14 @@ export async function registerRoutes(
     }
   })();
   
-  // Trust proxy for production (Replit uses reverse proxy)
-  if (isProduction) {
-    app.set("trust proxy", 1);
-  }
+  // Trust proxy for Replit (uses reverse proxy in both dev and prod)
+  app.set("trust proxy", 1);
 
   // PostgreSQL session store for persistence
   const PgSession = connectPgSimple(session);
+  
+  // Detect if running on Replit (HTTPS even in dev)
+  const isReplit = !!process.env.REPL_ID;
   
   // Session middleware
   app.use(
@@ -334,9 +335,9 @@ export async function registerRoutes(
       resave: false,
       saveUninitialized: false,
       cookie: {
-        secure: isProduction,
+        secure: isProduction || isReplit, // Replit preview uses HTTPS
         httpOnly: true,
-        sameSite: isProduction ? "none" : "lax",
+        sameSite: (isProduction || isReplit) ? "none" : "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
       },
     })
