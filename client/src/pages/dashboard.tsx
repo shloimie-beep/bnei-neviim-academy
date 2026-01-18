@@ -1172,7 +1172,7 @@ export default function DashboardPage() {
                           data-testid="button-start-trial-settings"
                         >
                           {createCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                          Subscribe Now
+                          {user?.hasUsedTrial ? "Subscribe Now - $9.99/mo" : "Start 14-Day Free Trial"}
                         </Button>
                       )}
                     </div>
