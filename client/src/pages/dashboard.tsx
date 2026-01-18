@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc } from "lucide-react";
+import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -649,13 +649,21 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
   const [loadingTracks, setLoadingTracks] = useState(false);
   const [playingTrackId, setPlayingTrackId] = useState<string | null>(null);
   const [isPlayingAll, setIsPlayingAll] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const isPlayingAllRef = useRef(false);
+  const progressRef = useRef<HTMLDivElement>(null);
 
   // Sort tracks by trackNumber for proper ordering
   const sortedTracks = useMemo(() => {
     return [...tracks].sort((a, b) => (a.trackNumber || 0) - (b.trackNumber || 0));
   }, [tracks]);
+
+  const currentTrack = useMemo(() => {
+    return sortedTracks.find(t => t.id === playingTrackId) || null;
+  }, [sortedTracks, playingTrackId]);
 
   // Keep ref in sync with state
   useEffect(() => {
@@ -686,10 +694,28 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
     setIsPlayingAll(false);
   };
 
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const handleSeek = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!audioRef.current || !progressRef.current) return;
+    const rect = progressRef.current.getBoundingClientRect();
+    const percent = (e.clientX - rect.left) / rect.width;
+    const newTime = percent * duration;
+    audioRef.current.currentTime = newTime;
+    setCurrentTime(newTime);
+  };
+
   const playTrackAtIndex = (index: number) => {
     if (index >= sortedTracks.length) {
       setPlayingTrackId(null);
       setIsPlayingAll(false);
+      setIsPlaying(false);
+      setCurrentTime(0);
+      setDuration(0);
       return;
     }
     
@@ -698,6 +724,12 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
       audioRef.current.pause();
     }
     const audio = new Audio(`/api/albums/${album.id}/tracks/${track.id}/stream`);
+    
+    audio.ontimeupdate = () => setCurrentTime(audio.currentTime);
+    audio.onloadedmetadata = () => setDuration(audio.duration);
+    audio.onplay = () => setIsPlaying(true);
+    audio.onpause = () => setIsPlaying(false);
+    
     audio.play();
     audioRef.current = audio;
     setPlayingTrackId(track.id);
@@ -708,6 +740,9 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
       } else {
         setPlayingTrackId(null);
         setIsPlayingAll(false);
+        setIsPlaying(false);
+        setCurrentTime(0);
+        setDuration(0);
       }
     };
   };
@@ -724,6 +759,36 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
     playTrackAtIndex(0);
   };
 
+  const togglePlayPause = () => {
+    if (!audioRef.current) return;
+    if (isPlaying) {
+      audioRef.current.pause();
+    } else {
+      audioRef.current.play();
+    }
+  };
+
+  const playNext = () => {
+    if (!currentTrack) return;
+    const currentIndex = sortedTracks.findIndex(t => t.id === currentTrack.id);
+    if (currentIndex < sortedTracks.length - 1) {
+      playTrackAtIndex(currentIndex + 1);
+    }
+  };
+
+  const playPrev = () => {
+    if (!currentTrack) return;
+    const currentIndex = sortedTracks.findIndex(t => t.id === currentTrack.id);
+    if (currentTime > 3) {
+      // Restart current track if more than 3 seconds in
+      if (audioRef.current) {
+        audioRef.current.currentTime = 0;
+      }
+    } else if (currentIndex > 0) {
+      playTrackAtIndex(currentIndex - 1);
+    }
+  };
+
   const stopPlaying = () => {
     if (audioRef.current) {
       audioRef.current.pause();
@@ -732,6 +797,9 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
     setPlayingTrackId(null);
     setIsPlayingAll(false);
     isPlayingAllRef.current = false;
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
   };
 
   return (
@@ -775,41 +843,100 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
       </Card>
 
       <Dialog open={isOpen} onOpenChange={(open) => !open && handleClose()}>
-        <DialogContent className="max-w-lg max-h-[80vh] overflow-hidden flex flex-col">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Disc className="h-5 w-5" />
-              {album.title}
-            </DialogTitle>
-            {album.description && (
-              <DialogDescription>{album.description}</DialogDescription>
-            )}
-          </DialogHeader>
-          
-          {/* Play All button */}
-          {sortedTracks.length > 0 && (
-            <div className="pb-2">
-              <Button 
-                onClick={isPlayingAll ? stopPlaying : playAll}
-                className="w-full gap-2"
-                data-testid="button-play-all"
-              >
-                {isPlayingAll ? (
-                  <>
-                    <Pause className="h-4 w-4" />
-                    Stop Playing
-                  </>
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-hidden flex flex-col p-0">
+          {/* Player Section with Thumbnail */}
+          <div className="bg-muted/50 p-4">
+            <div className="flex gap-4">
+              {/* Album Thumbnail */}
+              <div className="w-24 h-24 rounded-lg overflow-hidden bg-muted flex-shrink-0">
+                {album.thumbnailPath ? (
+                  <img 
+                    src={`/api/albums/${album.id}/thumbnail`} 
+                    alt={album.title}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
-                  <>
-                    <Play className="h-4 w-4" />
-                    Play All
-                  </>
+                  <div className="w-full h-full flex items-center justify-center">
+                    <Disc className="h-10 w-10 text-muted-foreground" />
+                  </div>
                 )}
-              </Button>
+              </div>
+              
+              {/* Track Info & Controls */}
+              <div className="flex-1 min-w-0 flex flex-col justify-center">
+                <h3 className="font-semibold truncate" data-testid="text-album-player-title">
+                  {album.title}
+                </h3>
+                {currentTrack ? (
+                  <p className="text-sm text-muted-foreground truncate">
+                    {currentTrack.title}
+                  </p>
+                ) : (
+                  <p className="text-sm text-muted-foreground">
+                    {sortedTracks.length} {sortedTracks.length === 1 ? "track" : "tracks"}
+                  </p>
+                )}
+                
+                {/* Progress Bar */}
+                {playingTrackId && (
+                  <div className="mt-2">
+                    <div 
+                      ref={progressRef}
+                      className="h-2 bg-muted rounded-full cursor-pointer overflow-hidden"
+                      onClick={handleSeek}
+                      data-testid="progress-bar"
+                    >
+                      <div 
+                        className="h-full bg-primary rounded-full transition-all"
+                        style={{ width: duration > 0 ? `${(currentTime / duration) * 100}%` : '0%' }}
+                      />
+                    </div>
+                    <div className="flex justify-between text-xs text-muted-foreground mt-1">
+                      <span>{formatTime(currentTime)}</span>
+                      <span>{formatTime(duration)}</span>
+                    </div>
+                  </div>
+                )}
+                
+                {/* Playback Controls */}
+                <div className="flex items-center justify-center gap-2 mt-2">
+                  <Button 
+                    size="icon" 
+                    variant="ghost"
+                    onClick={playPrev}
+                    disabled={!currentTrack}
+                    data-testid="button-prev"
+                  >
+                    <SkipBack className="h-4 w-4" />
+                  </Button>
+                  <Button 
+                    size="icon"
+                    onClick={currentTrack ? togglePlayPause : playAll}
+                    data-testid="button-play-pause"
+                  >
+                    {isPlaying ? (
+                      <Pause className="h-5 w-5" />
+                    ) : (
+                      <Play className="h-5 w-5 ml-0.5" />
+                    )}
+                  </Button>
+                  <Button 
+                    size="icon" 
+                    variant="ghost"
+                    onClick={playNext}
+                    disabled={!currentTrack || sortedTracks.findIndex(t => t.id === currentTrack.id) >= sortedTracks.length - 1}
+                    data-testid="button-next"
+                  >
+                    <SkipForward className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
             </div>
-          )}
+          </div>
           
-          <div className="flex-1 overflow-y-auto">
+          {/* Track List */}
+          <div className="flex-1 overflow-y-auto p-4 pt-2">
+            <h4 className="text-sm font-medium text-muted-foreground mb-2">Tracks</h4>
             {loadingTracks ? (
               <div className="space-y-2">
                 {[1, 2, 3].map(i => (
@@ -821,29 +948,43 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
                 {sortedTracks.map((track, index) => (
                   <div 
                     key={track.id}
-                    className={`flex items-center gap-3 p-3 rounded-lg hover-elevate cursor-pointer ${playingTrackId === track.id ? 'bg-muted' : ''}`}
+                    className={`flex items-center gap-3 p-3 rounded-lg hover-elevate cursor-pointer ${playingTrackId === track.id ? 'bg-primary/10' : ''}`}
                     onClick={() => {
-                      setIsPlayingAll(false);
-                      playingTrackId === track.id ? stopPlaying() : playTrack(track);
+                      if (playingTrackId === track.id) {
+                        togglePlayPause();
+                      } else {
+                        setIsPlayingAll(false);
+                        playTrack(track);
+                      }
                     }}
                     data-testid={`track-${track.id}`}
                   >
-                    <span className="text-muted-foreground w-6 text-center text-sm">
-                      {track.trackNumber || index + 1}
+                    <span className={`w-6 text-center text-sm ${playingTrackId === track.id ? 'text-primary font-medium' : 'text-muted-foreground'}`}>
+                      {playingTrackId === track.id && isPlaying ? (
+                        <Volume2 className="h-4 w-4 mx-auto" />
+                      ) : (
+                        track.trackNumber || index + 1
+                      )}
                     </span>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium truncate">{track.title}</p>
+                      <p className={`truncate ${playingTrackId === track.id ? 'font-medium text-primary' : ''}`}>
+                        {track.title}
+                      </p>
                     </div>
                     <Button 
                       size="icon" 
                       variant={playingTrackId === track.id ? "default" : "ghost"}
                       onClick={(e) => {
                         e.stopPropagation();
-                        setIsPlayingAll(false);
-                        playingTrackId === track.id ? stopPlaying() : playTrack(track);
+                        if (playingTrackId === track.id) {
+                          togglePlayPause();
+                        } else {
+                          setIsPlayingAll(false);
+                          playTrack(track);
+                        }
                       }}
                     >
-                      {playingTrackId === track.id ? (
+                      {playingTrackId === track.id && isPlaying ? (
                         <Pause className="h-4 w-4" />
                       ) : (
                         <Play className="h-4 w-4" />
