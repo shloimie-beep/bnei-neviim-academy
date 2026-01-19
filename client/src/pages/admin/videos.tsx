@@ -90,9 +90,9 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
     setIsResettingThumbnail(true);
     try {
       await onResetThumbnail(true);
-      toast({ title: "Thumbnail reset", description: "Generated new thumbnail from video" });
+      toast({ title: "Thumbnail generated", description: "Generated new thumbnail from video" });
     } catch (error: any) {
-      toast({ title: "Failed to reset thumbnail", description: error.message, variant: "destructive" });
+      toast({ title: "Failed to generate thumbnail", description: error.message, variant: "destructive" });
     } finally {
       setIsResettingThumbnail(false);
     }
@@ -194,12 +194,12 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
                   <ImagePlus className="h-4 w-4 text-white" />
                 )}
               </button>
-              {video.thumbnailPath && video.mediaType !== "audio" && (
+              {video.mediaType !== "audio" && video.bunnyGuid && (
                 <button
                   onClick={handleResetThumbnail}
                   disabled={isUploadingThumbnail || isResettingThumbnail}
                   className="p-1.5 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
-                  title="Reset to auto-generated thumbnail"
+                  title="Generate new thumbnail from video"
                   data-testid={`button-reset-thumbnail-${video.id}`}
                 >
                   {isResettingThumbnail ? (
