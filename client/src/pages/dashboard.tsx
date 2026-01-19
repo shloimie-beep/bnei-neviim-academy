@@ -520,10 +520,13 @@ function VideoCard({ video, isNew, onView }: { video: VideoType; isNew?: boolean
 
   const durationText = formatDuration(video.duration);
 
+  // Use a stable cache-bust value per page load to avoid infinite rerenders
+  const [cacheBust] = useState(() => Date.now());
+
   const thumbnailSrc = video.thumbnailPath 
     ? (video.thumbnailPath.startsWith("bunny://") 
         ? (video as any).bunnyThumbnailUrl || `https://vz-2480b6a7-327.b-cdn.net/${video.bunnyGuid}/thumbnail.jpg`
-        : `/api/videos/${video.id}/thumbnail`)
+        : `/api/videos/${video.id}/thumbnail?v=${cacheBust}`)
     : (video as any).bunnyThumbnailUrl 
       ? (video as any).bunnyThumbnailUrl
       : null;
