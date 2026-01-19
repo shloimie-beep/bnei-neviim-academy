@@ -46,13 +46,21 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
   
   const categoryName = categories.find(c => c.id === video.categoryId)?.name;
 
-  const thumbnailSrc = video.thumbnailPath 
-    ? (video.thumbnailPath.startsWith("bunny://") 
-        ? (video as any).bunnyThumbnailUrl || `https://vz-2480b6a7-327.b-cdn.net/${video.bunnyGuid}/thumbnail.jpg`
-        : `/api/videos/${video.id}/thumbnail`)
-    : (video as any).bunnyThumbnailUrl 
-      ? (video as any).bunnyThumbnailUrl
-      : null;
+  // For bunny videos, use bunnyThumbnailUrl which comes from the backend
+  // For videos with custom thumbnailPath (not bunny://), serve through our API
+  // For bunny:// thumbnailPath, use the bunnyThumbnailUrl
+  const thumbnailSrc = (() => {
+    if (video.thumbnailPath && !video.thumbnailPath.startsWith("bunny://")) {
+      return `/api/videos/${video.id}/thumbnail`;
+    }
+    if ((video as any).bunnyThumbnailUrl) {
+      return (video as any).bunnyThumbnailUrl;
+    }
+    if (video.bunnyGuid) {
+      return `https://vz-2480b6a7-327.b-cdn.net/${video.bunnyGuid}/thumbnail.jpg`;
+    }
+    return null;
+  })();
 
   const handleDelete = async () => {
     setIsDeleting(true);

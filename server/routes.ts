@@ -1487,7 +1487,8 @@ export async function registerRoutes(
       const videos = await storage.getAllVideos();
       const videosWithThumbnails = await Promise.all(
         videos.map(async (video) => {
-          if (video.bunnyGuid && !video.thumbnailPath) {
+          // Add bunnyThumbnailUrl for all Bunny videos (whether they have a custom thumbnailPath or not)
+          if (video.bunnyGuid) {
             return {
               ...video,
               bunnyThumbnailUrl: await bunnyStream.getThumbnailUrl(video.bunnyGuid),
@@ -3001,9 +3002,9 @@ export async function registerRoutes(
 
       const videos = await storage.getPublishedVideos();
       
-      // Add Bunny thumbnail URLs for videos with bunnyGuid
+      // Add Bunny thumbnail URLs for all Bunny videos
       const videosWithThumbnails = await Promise.all(videos.map(async (video) => {
-        if (video.bunnyGuid && !video.thumbnailPath) {
+        if (video.bunnyGuid) {
           return {
             ...video,
             bunnyThumbnailUrl: await bunnyStream.getThumbnailUrl(video.bunnyGuid),
