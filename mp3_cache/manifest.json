@@ -8,5 +8,20 @@
     "videoId": "8f4fe876-40cf-4d0c-be22-1e8875e2de57",
     "mp3Path": "/home/runner/workspace/mp3_cache/8f4fe876-40cf-4d0c-be22-1e8875e2de57________no_show_party.mp3",
     "createdAt": 1768790709841
+  },
+  {
+    "videoId": "21888833-a640-46d2-86ff-63a3656c5492",
+    "mp3Path": "/home/runner/workspace/mp3_cache/21888833-a640-46d2-86ff-63a3656c5492_6_Constant_Mitzvos.mp3",
+    "createdAt": 1768794288306
+  },
+  {
+    "videoId": "d12e57de-cf98-4724-a723-beef29b1e6f0",
+    "mp3Path": "/home/runner/workspace/mp3_cache/d12e57de-cf98-4724-a723-beef29b1e6f0_A_prisoner_on_the_loose.mp3",
+    "createdAt": 1768794300408
+  },
+  {
+    "videoId": "37ed8b2d-4472-40c1-b07a-78e07834078f",
+    "mp3Path": "/home/runner/workspace/mp3_cache/37ed8b2d-4472-40c1-b07a-78e07834078f_Advice_from_a_Billlionaire.mp3",
+    "createdAt": 1768794300761
   }
 ]

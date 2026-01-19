@@ -43,6 +43,7 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
   const [editTitle, setEditTitle] = useState(video.title);
   const [editDescription, setEditDescription] = useState(video.description || "");
   const [editCategoryId, setEditCategoryId] = useState(video.categoryId || "");
+  const [thumbnailCacheBust, setThumbnailCacheBust] = useState(Date.now());
   
   const categoryName = categories.find(c => c.id === video.categoryId)?.name;
 
@@ -51,7 +52,7 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
   // For bunny:// thumbnailPath, use the bunnyThumbnailUrl
   const thumbnailSrc = (() => {
     if (video.thumbnailPath && !video.thumbnailPath.startsWith("bunny://")) {
-      return `/api/videos/${video.id}/thumbnail`;
+      return `/api/videos/${video.id}/thumbnail?v=${thumbnailCacheBust}`;
     }
     if ((video as any).bunnyThumbnailUrl) {
       return (video as any).bunnyThumbnailUrl;
@@ -85,6 +86,7 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
     setIsUploadingThumbnail(true);
     try {
       await onUploadThumbnail(file);
+      setThumbnailCacheBust(Date.now());
       toast({ title: "Thumbnail uploaded" });
     } catch (error: any) {
       toast({ title: "Failed to upload thumbnail", description: error.message, variant: "destructive" });
@@ -98,6 +100,7 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
     setIsResettingThumbnail(true);
     try {
       await onResetThumbnail(true);
+      setThumbnailCacheBust(Date.now());
       toast({ title: "Thumbnail generated", description: "Generated new thumbnail from video" });
     } catch (error: any) {
       toast({ title: "Failed to generate thumbnail", description: error.message, variant: "destructive" });
