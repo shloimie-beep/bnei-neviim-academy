@@ -1825,7 +1825,7 @@ export async function registerRoutes(
           res.set({
             "Content-Type": metadata.contentType || "image/jpeg",
             "Content-Length": metadata.size,
-            "Cache-Control": "public, max-age=3600",
+            "Cache-Control": "no-cache, no-store, must-revalidate",
           });
           
           const stream = objectFile.createReadStream();
