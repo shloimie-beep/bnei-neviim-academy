@@ -40,13 +40,34 @@ export async function generateThumbnailFromBunny(
       return null;
     }
 
-    const thumbnailBuffer = fs.readFileSync(tempThumbnailPath);
-    await uploadThumbnail(bunnyGuid, thumbnailBuffer);
-    
+    // Upload to object storage (our server) instead of Bunny
+    const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+    const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
+
+    const url = new URL(uploadURL);
+    const pathParts = url.pathname.slice(1).split("/");
+    const bucketName = pathParts[0];
+    const objectName = pathParts.slice(1).join("/");
+
+    const bucket = objectStorageClient.bucket(bucketName);
+    const objectFile = bucket.file(objectName);
+
+    await new Promise<void>((resolve, reject) => {
+      const readStream = fs.createReadStream(tempThumbnailPath);
+      const writeStream = objectFile.createWriteStream({
+        resumable: false,
+        contentType: "image/jpeg",
+      });
+      readStream.on("error", reject);
+      writeStream.on("error", reject);
+      writeStream.on("finish", resolve);
+      readStream.pipe(writeStream);
+    });
+
     fs.unlinkSync(tempThumbnailPath);
 
-    console.log(`[Thumbnail] Generated and uploaded thumbnail to Bunny for ${bunnyGuid}`);
-    return `bunny://${bunnyGuid}`;
+    console.log(`[Thumbnail] Generated and uploaded thumbnail to ${objectPath}`);
+    return objectPath;
   } catch (error: any) {
     console.error(`[Thumbnail] Error generating thumbnail:`, error.message);
     if (fs.existsSync(tempThumbnailPath)) fs.unlinkSync(tempThumbnailPath);
