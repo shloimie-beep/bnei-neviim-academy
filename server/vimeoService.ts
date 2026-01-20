@@ -70,7 +70,40 @@ class VimeoService {
 
     const data = await response.json();
     console.log(`[Vimeo] Created video: ${data.uri}`);
+    
+    // Set domain whitelist for the new video
+    const videoId = data.uri.split("/").pop();
+    if (videoId) {
+      await this.setDomainWhitelist(videoId);
+    }
+    
     return data;
+  }
+
+  private async setDomainWhitelist(videoId: string): Promise<void> {
+    const domains = [
+      "onetimeonetime.com",
+      "www.onetimeonetime.com",
+      "workspace.moshehoffman37.repl.co",
+      "moshehoffman37-workspace.replit.dev",
+    ];
+
+    try {
+      for (const domain of domains) {
+        await fetch(
+          `https://api.vimeo.com/videos/${videoId}/privacy/domains/${domain}`,
+          {
+            method: "PUT",
+            headers: {
+              "Authorization": `Bearer ${this.accessToken}`,
+            },
+          }
+        );
+      }
+      console.log(`[Vimeo] Set domain whitelist for video ${videoId}`);
+    } catch (error) {
+      console.error(`[Vimeo] Failed to set domain whitelist for ${videoId}:`, error);
+    }
   }
 
   async getVideo(videoId: string): Promise<VimeoVideo | null> {
@@ -154,52 +187,6 @@ class VimeoService {
     } catch (error) {
       console.error(`[Vimeo] Error getting secure embed URL for ${videoId}:`, error);
       return null;
-    }
-  }
-
-  async setDomainWhitelist(videoId: string, domains: string[]): Promise<boolean> {
-    try {
-      // First, get current embed settings
-      const response = await fetch(`https://api.vimeo.com/videos/${videoId}`, {
-        method: "PATCH",
-        headers: {
-          "Authorization": `Bearer ${this.accessToken}`,
-          "Content-Type": "application/json",
-          "Accept": "application/vnd.vimeo.*+json;version=3.4",
-        },
-        body: JSON.stringify({
-          privacy: {
-            embed: "whitelist",
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        console.error(`[Vimeo] Failed to set embed privacy for ${videoId}`);
-        return false;
-      }
-
-      // Add each domain to whitelist
-      for (const domain of domains) {
-        const domainResponse = await fetch(
-          `https://api.vimeo.com/videos/${videoId}/privacy/domains/${domain}`,
-          {
-            method: "PUT",
-            headers: {
-              "Authorization": `Bearer ${this.accessToken}`,
-            },
-          }
-        );
-        
-        if (!domainResponse.ok) {
-          console.error(`[Vimeo] Failed to add domain ${domain} to whitelist for ${videoId}`);
-        }
-      }
-
-      return true;
-    } catch (error) {
-      console.error(`[Vimeo] Error setting domain whitelist for ${videoId}:`, error);
-      return false;
     }
   }
 
