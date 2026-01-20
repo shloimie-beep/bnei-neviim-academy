@@ -169,6 +169,7 @@ export const videos = pgTable("videos", {
   bunnyGuid: text("bunny_guid"),
   storageType: text("storage_type").default("local"),
   bunnyStorageUrl: text("bunny_storage_url"),
+  vimeoVideoId: text("vimeo_video_id"),
 });
 
 // PDF documents for subscriber content

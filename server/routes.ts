@@ -21,6 +21,7 @@ import { ObjectStorageService, objectStorageClient } from "./replit_integrations
 import * as bunnyStream from "./bunnyStream";
 import * as bunnyStorage from "./bunnyStorage";
 import { generateThumbnailFromBunny, generateThumbnailFromLocalVideo } from "./thumbnailGenerator";
+import { vimeoService } from "./vimeoService";
 import { voitexService } from "./voitexService";
 import { WebhookHandlers } from "./webhookHandlers";
 import { getOrCreateMp3, getCachedMp3Path, preGenerateMp3 } from "./mp3Converter";
@@ -2369,6 +2370,104 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Get Bunny embed error:", error);
       res.status(500).json({ message: "Failed to get embed URL" });
+    }
+  });
+
+  // ============ VIMEO VIDEO UPLOAD ============
+  // Admin: Create a video on Vimeo and get upload URL (TUS protocol)
+  app.post("/api/admin/videos/vimeo/create", requireAdmin, async (req, res) => {
+    try {
+      const { title, fileSize } = req.body;
+      if (!title || !fileSize) {
+        return res.status(400).json({ message: "Title and fileSize are required" });
+      }
+
+      const vimeoVideo = await vimeoService.createVideo(title, fileSize);
+      const vimeoVideoId = vimeoService.extractVideoId(vimeoVideo.uri);
+      
+      console.log(`[Vimeo] Created video "${title}" with id: ${vimeoVideoId}`);
+      
+      res.json({
+        vimeoVideoId,
+        uploadUrl: vimeoVideo.upload.upload_link,
+        vimeoUri: vimeoVideo.uri,
+      });
+    } catch (error: any) {
+      console.error("Vimeo create video error:", error);
+      res.status(500).json({ message: error.message || "Failed to create video on Vimeo" });
+    }
+  });
+
+  // Admin: Finalize Vimeo video (create local record after upload)
+  app.post("/api/admin/videos/vimeo/finalize", requireAdmin, async (req, res) => {
+    try {
+      const { title, description, categoryId, vimeoVideoId, filename, fileSize } = req.body;
+
+      if (!title || !vimeoVideoId) {
+        return res.status(400).json({ message: "Title and vimeoVideoId are required" });
+      }
+
+      console.log(`[Vimeo] Finalizing video "${title}" with id: ${vimeoVideoId}`);
+
+      const video = await storage.createVideo({
+        title,
+        description: description || null,
+        filename: filename || null,
+        filepath: null,
+        fileSize: fileSize || null,
+        status: "processing",
+        categoryId: categoryId || null,
+        uploadedBy: req.session.userId!,
+        thumbnailPath: null,
+        bunnyGuid: null,
+        bunnyVideoId: null,
+        storageType: "vimeo",
+        vimeoVideoId,
+      });
+
+      console.log(`[Vimeo] Created video record ${video.id}`);
+
+      // Poll Vimeo for processing status
+      (async () => {
+        let attempts = 0;
+        const maxAttempts = 120; // 20 minutes max
+        
+        while (attempts < maxAttempts) {
+          try {
+            await new Promise(r => setTimeout(r, 10000)); // Check every 10 seconds
+            const vimeoVideo = await vimeoService.getVideo(vimeoVideoId);
+            
+            if (!vimeoVideo) {
+              attempts++;
+              continue;
+            }
+            
+            // Vimeo status: "available" means ready
+            if (vimeoVideo.status === "available") {
+              await storage.updateVideo(video.id, { 
+                status: "ready",
+                duration: vimeoVideo.duration || 0,
+              });
+              console.log(`[Vimeo] Video ${video.id} is ready`);
+              break;
+            } else if (vimeoVideo.status === "uploading_error" || vimeoVideo.status === "transcode_error") {
+              await storage.updateVideo(video.id, { status: "failed" });
+              console.log(`[Vimeo] Video ${video.id} failed processing: ${vimeoVideo.status}`);
+              break;
+            }
+            
+            attempts++;
+          } catch (err) {
+            console.error(`[Vimeo] Error checking status for ${video.id}:`, err);
+            attempts++;
+          }
+        }
+      })();
+
+      res.json(video);
+    } catch (error: any) {
+      console.error("Vimeo finalize video error:", error);
+      res.status(500).json({ message: error.message || "Failed to finalize video" });
     }
   });
 
