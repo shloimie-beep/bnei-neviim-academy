@@ -468,5 +468,25 @@
     "videoId": "856bdd22-47f1-432d-9a25-ece364b6bd3b",
     "mp3Path": "/home/runner/workspace/mp3_cache/856bdd22-47f1-432d-9a25-ece364b6bd3b_LV_and_LA___mp4.mp3",
     "createdAt": 1768951220134
+  },
+  {
+    "videoId": "a854cfb6-d9e7-40a6-a795-75e8cedd5b48",
+    "mp3Path": "/home/runner/workspace/mp3_cache/a854cfb6-d9e7-40a6-a795-75e8cedd5b48_Shalom_Torah_mp4.mp3",
+    "createdAt": 1768951222843
+  },
+  {
+    "videoId": "e4b94966-3757-4f26-a3cd-bbca1da6cadd",
+    "mp3Path": "/home/runner/workspace/mp3_cache/e4b94966-3757-4f26-a3cd-bbca1da6cadd_Stuck_in_Moscow_mp4.mp3",
+    "createdAt": 1768951231617
+  },
+  {
+    "videoId": "291afa8a-6a86-4260-808e-8a71fc9feda4",
+    "mp3Path": "/home/runner/workspace/mp3_cache/291afa8a-6a86-4260-808e-8a71fc9feda4_Copy_of_Purim_5780_mp4.mp3",
+    "createdAt": 1768951232843
+  },
+  {
+    "videoId": "4ffa87ab-001f-4d45-9eb1-bb121d5ffdbd",
+    "mp3Path": "/home/runner/workspace/mp3_cache/4ffa87ab-001f-4d45-9eb1-bb121d5ffdbd_The_Secret_Mission_mp4.mp3",
+    "createdAt": 1768951282737
   }
 ]
