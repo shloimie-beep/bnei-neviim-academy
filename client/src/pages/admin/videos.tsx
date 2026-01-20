@@ -1,6 +1,7 @@
 import { useState, useRef, useCallback } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw, Download, GripVertical } from "lucide-react";
+import * as tus from "tus-js-client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -621,7 +622,8 @@ export default function VideoManagement() {
   };
 
   const uploadSingleVideo = async (item: UploadQueueItem, index: number): Promise<boolean> => {
-    let bunnyGuid: string | undefined;
+    let vimeoVideoId: string | undefined;
+    let tusUpload: tus.Upload | null = null;
     
     try {
       if (cancelledRef.current) {
@@ -630,78 +632,49 @@ export default function VideoManagement() {
       
       updateQueueItem(index, { status: 'uploading', progress: 5 });
 
-      // Step 1: Create video on Bunny Stream
-      const createResponse = await fetch("/api/admin/videos/bunny/create", {
+      // Step 1: Create video on Vimeo and get TUS upload URL
+      const createResponse = await fetch("/api/admin/videos/vimeo/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: item.title }),
+        body: JSON.stringify({ title: item.title, fileSize: item.file.size }),
       });
 
       if (!createResponse.ok) {
         const errorData = await createResponse.json().catch(() => ({}));
-        throw new Error(errorData.message || "Failed to create video on Bunny Stream");
+        throw new Error(errorData.message || "Failed to create video on Vimeo");
       }
 
-      const { bunnyGuid: guid, uploadUrl, apiKey } = await createResponse.json();
-      bunnyGuid = guid;
+      const { vimeoVideoId: videoId, uploadUrl } = await createResponse.json();
+      vimeoVideoId = videoId;
 
       if (cancelledRef.current) {
         throw new Error("Upload cancelled");
       }
 
-      // Step 2: Upload to Bunny Stream
+      // Step 2: Upload to Vimeo using TUS protocol
       updateQueueItem(index, { progress: 10 });
       await new Promise<void>((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-        currentXhrRef.current = xhr;
-        
-        xhr.upload.addEventListener("progress", (e) => {
-          if (e.lengthComputable) {
-            const percent = 10 + Math.round((e.loaded / e.total) * 80);
+        tusUpload = new tus.Upload(item.file, {
+          uploadUrl,
+          retryDelays: [0, 3000, 5000, 10000, 20000],
+          chunkSize: 128 * 1024 * 1024, // 128MB chunks for large files
+          onError: (error) => {
+            tusUpload = null;
+            reject(new Error(`Upload failed: ${error.message}`));
+          },
+          onProgress: (bytesUploaded, bytesTotal) => {
+            const percent = 10 + Math.round((bytesUploaded / bytesTotal) * 80);
             updateQueueItem(index, { progress: percent });
-          }
-        });
-
-        xhr.onload = () => {
-          currentXhrRef.current = null;
-          if (xhr.status >= 200 && xhr.status < 300) {
+          },
+          onSuccess: () => {
+            tusUpload = null;
             resolve();
-          } else if (xhr.status === 0) {
-            reject(new Error("Connection blocked - the upload URL (video-*.bunnycdn.com) may be blocked by your network, firewall, or browser extension. Try disabling ad blockers or VPN, or contact your network administrator."));
-          } else if (xhr.status === 403) {
-            reject(new Error("Access denied (403) - upload authorization failed. Please try again or contact support."));
-          } else if (xhr.status === 413) {
-            reject(new Error("File too large (413) - the file exceeds the maximum upload size."));
-          } else {
-            reject(new Error(`Upload failed with status ${xhr.status}. Response: ${xhr.statusText || 'No details available'}`));
-          }
-        };
-        xhr.onerror = () => {
-          currentXhrRef.current = null;
-          const errorDetails = [
-            "Network error during upload.",
-            "Possible causes:",
-            "- The upload URL (video-*.bunnycdn.com) may be blocked by your firewall, VPN, or browser extension",
-            "- Your internet connection may have dropped",
-            "- A proxy or corporate network may be blocking the request",
-            "",
-            "Try: Disable ad blockers/VPN, check your connection, or try a different network."
-          ].join("\n");
-          reject(new Error(errorDetails));
-        };
-        xhr.ontimeout = () => {
-          currentXhrRef.current = null;
-          reject(new Error("Upload timed out - your connection may be too slow or unstable. Try a smaller file or faster connection."));
-        };
-        xhr.onabort = () => {
-          currentXhrRef.current = null;
-          reject(new Error("Upload cancelled"));
-        };
-        xhr.timeout = 36000000; // 10 hours timeout
-        xhr.open("PUT", uploadUrl);
-        xhr.setRequestHeader("AccessKey", apiKey);
-        xhr.setRequestHeader("Content-Type", "application/octet-stream");
-        xhr.send(item.file);
+          },
+        });
+        
+        // Store reference for cancellation
+        (currentXhrRef as any).current = { abort: () => tusUpload?.abort() };
+        tusUpload.start();
       });
 
       if (cancelledRef.current) {
@@ -719,14 +692,14 @@ export default function VideoManagement() {
         }
         
         try {
-          finalizeResponse = await fetch("/api/admin/videos/bunny/finalize", {
+          finalizeResponse = await fetch("/api/admin/videos/vimeo/finalize", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               title: item.title,
               description: "",
               categoryId: uploadCategoryId && uploadCategoryId !== "none" ? uploadCategoryId : null,
-              bunnyGuid,
+              vimeoVideoId,
               filename: item.file.name,
               fileSize: item.file.size,
             }),
@@ -760,10 +733,10 @@ export default function VideoManagement() {
       if (isCancelled) {
         updateQueueItem(index, { status: 'cancelled', error: "Cancelled" });
         
-        // Delete the partial upload from Bunny if we have a guid
-        if (bunnyGuid) {
+        // Cleanup partial upload on Vimeo if we have an id
+        if (vimeoVideoId) {
           try {
-            await fetch(`/api/admin/videos/${bunnyGuid}/bunny`, {
+            await fetch(`/api/admin/videos/${vimeoVideoId}/vimeo`, {
               method: "DELETE",
             });
           } catch (cleanupError) {
@@ -943,63 +916,39 @@ export default function VideoManagement() {
         queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
         toast({ title: "Audio uploaded", description: "Audio file saved successfully." });
       } else {
-        // Video files: Upload to Bunny Stream
+        // Video files: Upload to Vimeo using TUS protocol
         setSingleUploadProgress(5);
-        const createResponse = await fetch("/api/admin/videos/bunny/create", {
+        const createResponse = await fetch("/api/admin/videos/vimeo/create", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ title: singleTitle }),
+          body: JSON.stringify({ title: singleTitle, fileSize: singleFile.size }),
         });
 
         if (!createResponse.ok) {
           const errorData = await createResponse.json().catch(() => ({}));
-          throw new Error(errorData.message || "Failed to create video on Bunny Stream");
+          throw new Error(errorData.message || "Failed to create video on Vimeo");
         }
 
-        const { bunnyGuid, uploadUrl, apiKey } = await createResponse.json();
+        const { vimeoVideoId, uploadUrl } = await createResponse.json();
 
         setSingleUploadProgress(10);
         await new Promise<void>((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-          
-          xhr.upload.addEventListener("progress", (e) => {
-            if (e.lengthComputable) {
-              const percent = 10 + Math.round((e.loaded / e.total) * 80);
+          const tusUpload = new tus.Upload(singleFile, {
+            uploadUrl,
+            retryDelays: [0, 3000, 5000, 10000, 20000],
+            chunkSize: 128 * 1024 * 1024, // 128MB chunks
+            onError: (error) => {
+              reject(new Error(`Upload failed: ${error.message}`));
+            },
+            onProgress: (bytesUploaded, bytesTotal) => {
+              const percent = 10 + Math.round((bytesUploaded / bytesTotal) * 80);
               setSingleUploadProgress(percent);
-            }
-          });
-
-          xhr.onload = () => {
-            if (xhr.status >= 200 && xhr.status < 300) {
+            },
+            onSuccess: () => {
               resolve();
-            } else if (xhr.status === 0) {
-              reject(new Error("Connection blocked - the upload URL (video-*.bunnycdn.com) may be blocked by your network, firewall, or browser extension. Try disabling ad blockers or VPN, or contact your network administrator."));
-            } else if (xhr.status === 403) {
-              reject(new Error("Access denied (403) - upload authorization failed. Please try again or contact support."));
-            } else if (xhr.status === 413) {
-              reject(new Error("File too large (413) - the file exceeds the maximum upload size."));
-            } else {
-              reject(new Error(`Upload failed with status ${xhr.status}. Response: ${xhr.statusText || 'No details available'}`));
-            }
-          };
-          xhr.onerror = () => {
-            const errorDetails = [
-              "Network error during upload.",
-              "Possible causes:",
-              "- The upload URL (video-*.bunnycdn.com) may be blocked by your firewall, VPN, or browser extension",
-              "- Your internet connection may have dropped",
-              "- A proxy or corporate network may be blocking the request",
-              "",
-              "Try: Disable ad blockers/VPN, check your connection, or try a different network."
-            ].join("\n");
-            reject(new Error(errorDetails));
-          };
-          xhr.ontimeout = () => reject(new Error("Upload timed out - your connection may be too slow or unstable. Try a smaller file or faster connection."));
-          xhr.timeout = 36000000; // 10 hours timeout
-          xhr.open("PUT", uploadUrl);
-          xhr.setRequestHeader("AccessKey", apiKey);
-          xhr.setRequestHeader("Content-Type", "application/octet-stream");
-          xhr.send(singleFile);
+            },
+          });
+          tusUpload.start();
         });
 
         setSingleUploadProgress(90);
@@ -1008,14 +957,14 @@ export default function VideoManagement() {
         
         for (let attempt = 1; attempt <= 3; attempt++) {
           try {
-            finalizeResponse = await fetch("/api/admin/videos/bunny/finalize", {
+            finalizeResponse = await fetch("/api/admin/videos/vimeo/finalize", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 title: singleTitle,
                 description: singleDescription,
                 categoryId: singleCategoryId && singleCategoryId !== "none" ? singleCategoryId : null,
-                bunnyGuid,
+                vimeoVideoId,
                 filename: singleFile.name,
                 fileSize: singleFile.size,
               }),

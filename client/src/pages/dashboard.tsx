@@ -91,7 +91,7 @@ function PhoneNumberCard({ phoneNumber, onDelete }: { phoneNumber: PhoneNumber; 
   );
 }
 
-function BunnyVideoPlayer({ video }: { video: VideoType }) {
+function VideoEmbedPlayer({ video }: { video: VideoType }) {
   const [embedUrl, setEmbedUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -100,7 +100,7 @@ function BunnyVideoPlayer({ video }: { video: VideoType }) {
     fetch(`/api/videos/${video.id}/stream`)
       .then(res => res.json())
       .then(data => {
-        if (data.bunny && data.embedUrl) {
+        if ((data.vimeo || data.bunny) && data.embedUrl) {
           setEmbedUrl(data.embedUrl);
         } else {
           setError("Video not available");
@@ -496,8 +496,9 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
 }
 
 function VideoPlayer({ video, onClose }: { video: VideoType; onClose: () => void }) {
-  if (video.bunnyGuid) {
-    return <BunnyVideoPlayer video={video} />;
+  // Use embed player for Vimeo or Bunny Stream videos
+  if ((video as any).vimeoVideoId || video.bunnyGuid) {
+    return <VideoEmbedPlayer video={video} />;
   }
   return <LegacyVideoPlayer video={video} onClose={onClose} />;
 }

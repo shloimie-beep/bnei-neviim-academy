@@ -2471,6 +2471,51 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Get Vimeo embed URL for a video
+  app.get("/api/admin/videos/:id/vimeo-embed", requireAdmin, async (req, res) => {
+    try {
+      const video = await storage.getVideo(req.params.id);
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+      
+      if (!video.vimeoVideoId) {
+        return res.status(400).json({ message: "Video is not hosted on Vimeo" });
+      }
+      
+      res.json({
+        embedUrl: vimeoService.getEmbedUrl(video.vimeoVideoId),
+      });
+    } catch (error) {
+      console.error("Get Vimeo embed error:", error);
+      res.status(500).json({ message: "Failed to get embed URL" });
+    }
+  });
+
+  // Public: Get Vimeo embed URL for subscribers
+  app.get("/api/videos/:id/vimeo-embed", requireMobileOrSessionAuth, async (req, res) => {
+    try {
+      const video = await storage.getVideo(req.params.id);
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+      
+      if (!video.vimeoVideoId) {
+        return res.status(400).json({ message: "Video is not hosted on Vimeo" });
+      }
+
+      // Increment view count
+      await storage.incrementVideoViewCount(req.params.id);
+      
+      res.json({
+        embedUrl: vimeoService.getEmbedUrl(video.vimeoVideoId),
+      });
+    } catch (error) {
+      console.error("Get Vimeo embed error:", error);
+      res.status(500).json({ message: "Failed to get embed URL" });
+    }
+  });
+
   // Admin: Generate/regenerate thumbnail for a video
   app.post("/api/admin/videos/:id/generate-thumbnail", requireAdmin, async (req, res) => {
     try {
@@ -3181,7 +3226,16 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Video is not ready for playback" });
       }
 
-      // If video is on Bunny Stream, redirect to embed endpoint
+      // If video is on Vimeo, redirect to embed endpoint
+      if (video.vimeoVideoId) {
+        await storage.incrementVideoViewCount(video.id);
+        return res.json({ 
+          vimeo: true, 
+          embedUrl: vimeoService.getEmbedUrl(video.vimeoVideoId) 
+        });
+      }
+
+      // If video is on Bunny Stream (legacy), redirect to embed endpoint
       if (video.bunnyGuid) {
         await storage.incrementVideoViewCount(video.id);
         return res.json({ 
