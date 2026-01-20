@@ -8,6 +8,8 @@ const ALLOWED_DOMAINS = [
   "www.onetimeonetime.com",
   "workspace.moshehoffman37.repl.co",
   "moshehoffman37-workspace.replit.dev",
+  "workspace-moshehoffman37.replit.app",
+  "5adb8632-36cc-47e1-9d7b-6ec0f00a6ba6-00-2pf0xxjmxwfrr.worf.replit.dev",
 ];
 
 async function setDomainWhitelist(videoId: string, domains: string[]): Promise<boolean> {
