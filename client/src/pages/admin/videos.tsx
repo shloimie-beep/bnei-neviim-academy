@@ -48,12 +48,15 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
   
   const categoryName = categories.find(c => c.id === video.categoryId)?.name;
 
-  // For bunny videos, use bunnyThumbnailUrl which comes from the backend
-  // For videos with custom thumbnailPath (not bunny://), serve through our API
-  // For bunny:// thumbnailPath, use the bunnyThumbnailUrl
+  // For videos with custom thumbnailPath, serve through our API
+  // For Vimeo videos, use vimeoThumbnailUrl from the backend
+  // For Bunny videos, use bunnyThumbnailUrl from the backend
   const thumbnailSrc = (() => {
     if (video.thumbnailPath && !video.thumbnailPath.startsWith("bunny://")) {
       return `/api/videos/${video.id}/thumbnail?v=${thumbnailCacheBust}`;
+    }
+    if ((video as any).vimeoThumbnailUrl) {
+      return (video as any).vimeoThumbnailUrl;
     }
     if ((video as any).bunnyThumbnailUrl) {
       return (video as any).bunnyThumbnailUrl;

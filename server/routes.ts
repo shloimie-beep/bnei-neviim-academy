@@ -1488,6 +1488,13 @@ export async function registerRoutes(
       const videos = await storage.getAllVideos();
       const videosWithThumbnails = await Promise.all(
         videos.map(async (video) => {
+          // Add vimeoThumbnailUrl for Vimeo videos
+          if (video.vimeoVideoId) {
+            return {
+              ...video,
+              vimeoThumbnailUrl: await vimeoService.getThumbnailUrl(video.vimeoVideoId),
+            };
+          }
           // Add bunnyThumbnailUrl for all Bunny videos (whether they have a custom thumbnailPath or not)
           if (video.bunnyGuid) {
             return {
@@ -2492,9 +2499,27 @@ export async function registerRoutes(
     }
   });
 
-  // Public: Get Vimeo embed URL for subscribers
+  // Public: Get Vimeo embed URL for subscribers (requires active subscription)
   app.get("/api/videos/:id/vimeo-embed", requireMobileOrSessionAuth, async (req, res) => {
     try {
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      // Check if user is whitelisted or has active subscription
+      const isWhitelisted = user.role === "admin" || await storage.isWhitelistedEmailAddress(user.email);
+      const isActive = isWhitelisted || user.subscriptionStatus === "active" || 
+        (user.subscriptionStatus === "trial" && user.trialEndsAt && new Date(user.trialEndsAt) > new Date());
+      
+      if (!isActive) {
+        return res.status(403).json({ message: "Active subscription required to watch videos" });
+      }
+
       const video = await storage.getVideo(req.params.id);
       if (!video) {
         return res.status(404).json({ message: "Video not found" });
@@ -3146,8 +3171,14 @@ export async function registerRoutes(
 
       const videos = await storage.getPublishedVideos();
       
-      // Add Bunny thumbnail URLs for all Bunny videos
+      // Add thumbnail URLs for Vimeo and Bunny videos
       const videosWithThumbnails = await Promise.all(videos.map(async (video) => {
+        if (video.vimeoVideoId) {
+          return {
+            ...video,
+            vimeoThumbnailUrl: await vimeoService.getThumbnailUrl(video.vimeoVideoId),
+          };
+        }
         if (video.bunnyGuid) {
           return {
             ...video,
@@ -3226,8 +3257,8 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Video is not ready for playback" });
       }
 
-      // If video is on Vimeo, redirect to embed endpoint
-      if (video.vimeoVideoId) {
+      // If video is on Vimeo (only for video content, not audio)
+      if (video.vimeoVideoId && video.mediaType === "video") {
         await storage.incrementVideoViewCount(video.id);
         return res.json({ 
           vimeo: true, 

@@ -109,6 +109,20 @@ class VimeoService {
     return `https://player.vimeo.com/video/${videoId}`;
   }
 
+  async getThumbnailUrl(videoId: string): Promise<string | null> {
+    try {
+      const video = await this.getVideo(videoId);
+      if (video?.pictures?.base_link) {
+        // Vimeo provides different sizes, get a reasonable one
+        return video.pictures.base_link.replace('?', '_640x360?');
+      }
+      return null;
+    } catch (error) {
+      console.error(`[Vimeo] Error getting thumbnail for ${videoId}:`, error);
+      return null;
+    }
+  }
+
   extractVideoId(uri: string): string {
     return uri.replace("/videos/", "");
   }

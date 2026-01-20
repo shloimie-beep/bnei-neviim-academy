@@ -524,13 +524,25 @@ function VideoCard({ video, isNew, onView }: { video: VideoType; isNew?: boolean
   // Use a stable cache-bust value per page load to avoid infinite rerenders
   const [cacheBust] = useState(() => Date.now());
 
-  const thumbnailSrc = video.thumbnailPath 
-    ? (video.thumbnailPath.startsWith("bunny://") 
-        ? (video as any).bunnyThumbnailUrl || `https://vz-2480b6a7-327.b-cdn.net/${video.bunnyGuid}/thumbnail.jpg`
-        : `/api/videos/${video.id}/thumbnail?v=${cacheBust}`)
-    : (video as any).bunnyThumbnailUrl 
-      ? (video as any).bunnyThumbnailUrl
-      : null;
+  const thumbnailSrc = (() => {
+    // Custom thumbnail path takes priority
+    if (video.thumbnailPath && !video.thumbnailPath.startsWith("bunny://")) {
+      return `/api/videos/${video.id}/thumbnail?v=${cacheBust}`;
+    }
+    // Vimeo thumbnail
+    if ((video as any).vimeoThumbnailUrl) {
+      return (video as any).vimeoThumbnailUrl;
+    }
+    // Bunny thumbnail
+    if ((video as any).bunnyThumbnailUrl) {
+      return (video as any).bunnyThumbnailUrl;
+    }
+    // Fallback for bunny:// path
+    if (video.bunnyGuid) {
+      return `https://vz-2480b6a7-327.b-cdn.net/${video.bunnyGuid}/thumbnail.jpg`;
+    }
+    return null;
+  })();
 
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
