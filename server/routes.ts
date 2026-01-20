@@ -2490,9 +2490,13 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Video is not hosted on Vimeo" });
       }
       
-      res.json({
-        embedUrl: vimeoService.getEmbedUrl(video.vimeoVideoId),
-      });
+      // Get secure embed URL with hash for private videos
+      const embedUrl = await vimeoService.getSecureEmbedUrl(video.vimeoVideoId);
+      if (!embedUrl) {
+        return res.status(500).json({ message: "Failed to get video embed" });
+      }
+      
+      res.json({ embedUrl });
     } catch (error) {
       console.error("Get Vimeo embed error:", error);
       res.status(500).json({ message: "Failed to get embed URL" });
@@ -2532,9 +2536,13 @@ export async function registerRoutes(
       // Increment view count
       await storage.incrementVideoViewCount(req.params.id);
       
-      res.json({
-        embedUrl: vimeoService.getEmbedUrl(video.vimeoVideoId),
-      });
+      // Get secure embed URL with hash for private videos
+      const embedUrl = await vimeoService.getSecureEmbedUrl(video.vimeoVideoId);
+      if (!embedUrl) {
+        return res.status(500).json({ message: "Failed to get video embed" });
+      }
+      
+      res.json({ embedUrl });
     } catch (error) {
       console.error("Get Vimeo embed error:", error);
       res.status(500).json({ message: "Failed to get embed URL" });
@@ -3260,9 +3268,13 @@ export async function registerRoutes(
       // If video is on Vimeo (only for video content, not audio)
       if (video.vimeoVideoId && video.mediaType === "video") {
         await storage.incrementVideoViewCount(video.id);
+        const embedUrl = await vimeoService.getSecureEmbedUrl(video.vimeoVideoId);
+        if (!embedUrl) {
+          return res.status(500).json({ message: "Failed to get video embed" });
+        }
         return res.json({ 
           vimeo: true, 
-          embedUrl: vimeoService.getEmbedUrl(video.vimeoVideoId) 
+          embedUrl
         });
       }
 
