@@ -3577,10 +3577,8 @@ export async function registerRoutes(
       // If video is on Vimeo (only for video content, not audio)
       if (video.vimeoVideoId && video.mediaType === "video") {
         await storage.incrementVideoViewCount(video.id);
-        const embedUrl = await vimeoService.getSecureEmbedUrl(video.vimeoVideoId);
-        if (!embedUrl) {
-          return res.status(500).json({ message: "Failed to get video embed" });
-        }
+        // Use direct embed URL without API call (faster, no rate limits)
+        const embedUrl = `https://player.vimeo.com/video/${video.vimeoVideoId}?dnt=1&title=0&byline=0&portrait=0`;
         return res.json({ 
           vimeo: true, 
           embedUrl

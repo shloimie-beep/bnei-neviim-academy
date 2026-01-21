@@ -1278,6 +1278,29 @@ export default function VideoManagement() {
             )}
             Fix Vimeo Videos
           </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => categoryFileInputRef.current?.click()} 
+            disabled={isApplyingCategories}
+            data-testid="button-apply-categories"
+          >
+            {isApplyingCategories ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Upload className="h-4 w-4 mr-2" />
+            )}
+            Import Categories
+          </Button>
+          <input
+            type="file"
+            ref={categoryFileInputRef}
+            accept=".json"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleApplyCategories(file);
+            }}
+          />
           <Dialog open={isSingleDialogOpen} onOpenChange={setIsSingleDialogOpen}>
             <DialogTrigger asChild>
               <Button data-testid="button-upload-single-video">
