@@ -456,6 +456,8 @@ export default function VideoManagement() {
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [categoryToDelete, setCategoryToDelete] = useState<VideoCategory | null>(null);
+  const [categoryToEdit, setCategoryToEdit] = useState<VideoCategory | null>(null);
+  const [editCategoryName, setEditCategoryName] = useState("");
   
   // Vimeo sync state
   const [isSyncing, setIsSyncing] = useState(false);
@@ -511,6 +513,28 @@ export default function VideoManagement() {
     },
     onError: (error: any) => {
       toast({ title: "Failed to delete category", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const renameCategoryMutation = useMutation({
+    mutationFn: async ({ id, name }: { id: string; name: string }) => {
+      const res = await fetch(`/api/admin/video-categories/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+      if (!res.ok) throw new Error("Failed to rename category");
+      return res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/video-categories"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+      toast({ title: "Category renamed" });
+      setCategoryToEdit(null);
+      setEditCategoryName("");
+    },
+    onError: (error: any) => {
+      toast({ title: "Failed to rename category", description: error.message, variant: "destructive" });
     },
   });
 
@@ -1597,6 +1621,19 @@ export default function VideoManagement() {
                         variant="ghost"
                         size="icon"
                         className="h-4 w-4 ml-1"
+                        onClick={() => {
+                          setCategoryToEdit(cat);
+                          setEditCategoryName(cat.name);
+                        }}
+                        disabled={renameCategoryMutation.isPending}
+                        data-testid={`button-edit-category-${cat.id}`}
+                      >
+                        <Edit2 className="h-3 w-3" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-4 w-4"
                         onClick={() => setCategoryToDelete(cat)}
                         disabled={deleteCategoryMutation.isPending}
                         data-testid={`button-delete-category-${cat.id}`}
@@ -1634,6 +1671,49 @@ export default function VideoManagement() {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
+
+              <Dialog open={!!categoryToEdit} onOpenChange={(open) => !open && setCategoryToEdit(null)}>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Rename Category</DialogTitle>
+                    <DialogDescription>
+                      Enter a new name for the category. All videos in this category will automatically use the new name.
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div>
+                      <Label htmlFor="edit-category-name">Category Name</Label>
+                      <Input
+                        id="edit-category-name"
+                        value={editCategoryName}
+                        onChange={(e) => setEditCategoryName(e.target.value)}
+                        placeholder="Enter new name"
+                        data-testid="input-edit-category-name"
+                      />
+                    </div>
+                  </div>
+                  <DialogFooter>
+                    <Button variant="ghost" onClick={() => setCategoryToEdit(null)}>
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={() => {
+                        if (categoryToEdit && editCategoryName.trim()) {
+                          renameCategoryMutation.mutate({ id: categoryToEdit.id, name: editCategoryName.trim() });
+                        }
+                      }}
+                      disabled={!editCategoryName.trim() || editCategoryName === categoryToEdit?.name || renameCategoryMutation.isPending}
+                      data-testid="button-confirm-rename-category"
+                    >
+                      {renameCategoryMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        "Rename"
+                      )}
+                    </Button>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
             </>
           )}
         </CardContent>
