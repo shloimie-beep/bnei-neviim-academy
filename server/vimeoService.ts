@@ -250,6 +250,19 @@ class VimeoService {
     try {
       const token = await this.getAccessToken();
       
+      // First check current privacy settings
+      const checkResponse = await fetch(`https://api.vimeo.com/videos/${videoId}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/vnd.vimeo.*+json;version=3.4",
+        },
+      });
+      
+      if (checkResponse.ok) {
+        const videoData = await checkResponse.json();
+        console.log(`[Vimeo] Current privacy for ${videoId}: view=${videoData.privacy?.view}, embed=${videoData.privacy?.embed}`);
+      }
+      
       // Set view to "unlisted" and embed to "public"
       // Unlisted = only people with the link can view
       // Public embed = can be embedded anywhere
@@ -272,6 +285,19 @@ class VimeoService {
         const errorText = await response.text();
         console.error(`[Vimeo] Failed to update privacy for ${videoId}: ${response.status} - ${errorText}`);
         return false;
+      }
+
+      // Verify the change
+      const verifyResponse = await fetch(`https://api.vimeo.com/videos/${videoId}`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/vnd.vimeo.*+json;version=3.4",
+        },
+      });
+      
+      if (verifyResponse.ok) {
+        const updatedData = await verifyResponse.json();
+        console.log(`[Vimeo] After update for ${videoId}: view=${updatedData.privacy?.view}, embed=${updatedData.privacy?.embed}`);
       }
 
       console.log(`[Vimeo] Updated privacy for video ${videoId} to unlisted + public embed`);
