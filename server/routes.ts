@@ -1842,6 +1842,11 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Thumbnail not found" });
       }
 
+      // Redirect to Vimeo CDN URL directly
+      if (video.thumbnailPath.startsWith("https://")) {
+        return res.redirect(video.thumbnailPath);
+      }
+
       // Check if thumbnail is stored in cloud storage
       if (video.thumbnailPath.startsWith("/objects/")) {
         try {
@@ -3059,6 +3064,15 @@ export async function registerRoutes(
           const status = vimeoVideo.status === "available" ? "ready" : "processing";
           const videoTitle = vimeoVideo.name || `Video ${videoId}`;
           
+          // Extract thumbnail URL from Vimeo response
+          let thumbnailUrl: string | null = null;
+          if (vimeoVideo.pictures?.sizes && Array.isArray(vimeoVideo.pictures.sizes)) {
+            const size640 = vimeoVideo.pictures.sizes.find((s: any) => s.width === 640);
+            thumbnailUrl = size640?.link || vimeoVideo.pictures.sizes[vimeoVideo.pictures.sizes.length - 1]?.link || null;
+          } else if (vimeoVideo.pictures?.base_link) {
+            thumbnailUrl = vimeoVideo.pictures.base_link;
+          }
+          
           await storage.createVideo({
             title: videoTitle,
             description: null,
@@ -3071,7 +3085,7 @@ export async function registerRoutes(
             storageType: "vimeo",
             vimeoVideoId: videoId,
             categoryId: null,
-            thumbnailPath: null,
+            thumbnailPath: thumbnailUrl,
           });
           
           importedCount++;

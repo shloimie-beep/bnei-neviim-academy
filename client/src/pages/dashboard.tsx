@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/lib/auth-context";
+import { useAuth, getAuthHeaders } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { DocumentViewer } from "@/components/document-viewer";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -104,7 +104,9 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
     
     // Always use the backend API to get the embed URL (with cache-buster)
     fetch(`/api/videos/${video.id}/stream?t=${Date.now()}`, {
-      cache: "no-store"
+      cache: "no-store",
+      credentials: "include",
+      headers: getAuthHeaders(),
     })
       .then(res => {
         if (!res.ok) throw new Error("Failed to load");
@@ -203,7 +205,9 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
     
     // Always use the backend API with cache-buster
     fetch(`/api/videos/${video.id}/stream?t=${Date.now()}`, {
-      cache: "no-store"
+      cache: "no-store",
+      credentials: "include",
+      headers: getAuthHeaders(),
     })
       .then(res => {
         if (!res.ok) throw new Error("Failed to load");
@@ -720,7 +724,10 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
   const fetchTracks = async () => {
     setLoadingTracks(true);
     try {
-      const res = await fetch(`/api/albums/${album.id}`);
+      const res = await fetch(`/api/albums/${album.id}`, {
+        credentials: "include",
+        headers: getAuthHeaders(),
+      });
       const data = await res.json();
       setTracks(data.tracks || []);
     } catch (err) {
