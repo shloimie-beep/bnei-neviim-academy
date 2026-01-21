@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useMemo } from "react";
+import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw, Download, GripVertical, ChevronDown, ChevronRight, Folder, FolderOpen } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -46,6 +46,8 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
   const [editDescription, setEditDescription] = useState(video.description || "");
   const [editCategoryId, setEditCategoryId] = useState(video.categoryId || "");
   const [thumbnailCacheBust, setThumbnailCacheBust] = useState(Date.now());
+  const [thumbnailLoaded, setThumbnailLoaded] = useState(false);
+  const [thumbnailError, setThumbnailError] = useState(false);
   
   const categoryName = categories.find(c => c.id === video.categoryId)?.name;
 
@@ -70,6 +72,12 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
     }
     return null;
   })();
+
+  // Reset thumbnail load state when source changes
+  useEffect(() => {
+    setThumbnailLoaded(false);
+    setThumbnailError(false);
+  }, [thumbnailSrc]);
 
   const handleDelete = async () => {
     setIsDeleting(true);
@@ -181,14 +189,25 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
       <CardContent className="p-4">
         <div className="flex items-start gap-4">
           <div className="relative h-16 w-24 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden group">
-            {thumbnailSrc ? (
+            {thumbnailSrc && !thumbnailError ? (
               <>
+                {!thumbnailLoaded && (
+                  video.mediaType === "audio" ? (
+                    <Music className="h-8 w-8 text-primary" />
+                  ) : (
+                    <FileVideo className="h-8 w-8 text-primary" />
+                  )
+                )}
                 <img 
                   src={thumbnailSrc} 
                   alt={video.title}
-                  className="h-full w-full object-cover"
+                  loading="lazy"
+                  decoding="async"
+                  onLoad={() => setThumbnailLoaded(true)}
+                  onError={() => setThumbnailError(true)}
+                  className={`h-full w-full object-cover absolute inset-0 transition-opacity duration-200 ${thumbnailLoaded && !thumbnailError ? 'opacity-100' : 'opacity-0'}`}
                 />
-                {video.mediaType === "audio" && (
+                {video.mediaType === "audio" && thumbnailLoaded && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/40">
                     <Music className="h-6 w-6 text-white" />
                   </div>
