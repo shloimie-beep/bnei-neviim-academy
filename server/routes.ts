@@ -5825,5 +5825,116 @@ export async function registerRoutes(
     await cleanupOrphanedUploads();
   }, 7 * 24 * 60 * 60 * 1000); // Every week
 
+  // ============ DATABASE EXPORT/IMPORT FOR PRODUCTION SYNC ============
+  // Admin: Export all videos and categories for production sync
+  app.get("/api/admin/export-data", requireAdmin, async (req, res) => {
+    try {
+      const videos = await storage.getAllVideos();
+      const categories = await storage.getCategories();
+      
+      res.json({
+        exportedAt: new Date().toISOString(),
+        videos,
+        categories,
+      });
+    } catch (error) {
+      console.error("Export data error:", error);
+      res.status(500).json({ message: "Failed to export data" });
+    }
+  });
+
+  // Admin: Import videos and categories from exported data
+  app.post("/api/admin/import-data", requireAdmin, async (req, res) => {
+    try {
+      const { videos, categories } = req.body;
+      
+      if (!videos || !categories) {
+        return res.status(400).json({ message: "Missing videos or categories data" });
+      }
+      
+      let importedCategories = 0;
+      let importedVideos = 0;
+      let skippedVideos = 0;
+      
+      // First import categories
+      for (const category of categories) {
+        const existingCategory = await storage.getCategoryByName(category.name);
+        if (!existingCategory) {
+          await storage.createCategory({
+            name: category.name,
+            description: category.description || null,
+          });
+          importedCategories++;
+        }
+      }
+      
+      // Build category name to ID mapping for the current database
+      const currentCategories = await storage.getCategories();
+      const categoryNameToId = new Map<string, string>();
+      for (const cat of currentCategories) {
+        categoryNameToId.set(cat.name, cat.id);
+      }
+      
+      // Build old category ID to name mapping from imported data
+      const oldCategoryIdToName = new Map<string, string>();
+      for (const cat of categories) {
+        oldCategoryIdToName.set(cat.id, cat.name);
+      }
+      
+      // Then import videos
+      for (const video of videos) {
+        // Check if video already exists by vimeoVideoId or title
+        const existingVideos = await storage.getAllVideos();
+        const exists = existingVideos.some(v => 
+          (video.vimeoVideoId && v.vimeoVideoId === video.vimeoVideoId) ||
+          (video.vimeoUri && v.vimeoUri === video.vimeoUri)
+        );
+        
+        if (exists) {
+          skippedVideos++;
+          continue;
+        }
+        
+        // Map old category ID to new category ID
+        let newCategoryId = null;
+        if (video.categoryId) {
+          const categoryName = oldCategoryIdToName.get(video.categoryId);
+          if (categoryName) {
+            newCategoryId = categoryNameToId.get(categoryName) || null;
+          }
+        }
+        
+        await storage.createVideo({
+          title: video.title,
+          description: video.description || null,
+          filepath: video.filepath || null,
+          thumbnailPath: video.thumbnailPath || null,
+          status: video.status || "ready",
+          categoryId: newCategoryId,
+          uploadedBy: video.uploadedBy,
+          mediaType: video.mediaType || "video",
+          duration: video.duration || null,
+          fileSize: video.fileSize || null,
+          bunnyGuid: video.bunnyGuid || null,
+          bunnyVideoId: video.bunnyVideoId || null,
+          storageType: video.storageType || null,
+          vimeoVideoId: video.vimeoVideoId || null,
+          vimeoUri: video.vimeoUri || null,
+        });
+        importedVideos++;
+      }
+      
+      res.json({
+        message: "Import complete",
+        importedCategories,
+        importedVideos,
+        skippedVideos,
+      });
+    } catch (error) {
+      console.error("Import data error:", error);
+      res.status(500).json({ message: "Failed to import data" });
+    }
+  });
+
   return httpServer;
 }
