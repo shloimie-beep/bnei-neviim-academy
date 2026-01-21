@@ -60,19 +60,12 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
       return video.thumbnailPath.replace("vimeo://", "");
     }
     // Custom thumbnail path (local storage)
-    if (video.thumbnailPath && !video.thumbnailPath.startsWith("bunny://")) {
+    if (video.thumbnailPath) {
       return `/api/videos/${video.id}/thumbnail?v=${thumbnailCacheBust}`;
     }
     // Vimeo thumbnail from API response
     if ((video as any).vimeoThumbnailUrl) {
       return (video as any).vimeoThumbnailUrl;
-    }
-    // Bunny fallback for admin (keep for backward compatibility)
-    if ((video as any).bunnyThumbnailUrl) {
-      return (video as any).bunnyThumbnailUrl;
-    }
-    if (video.bunnyGuid) {
-      return `https://vz-2480b6a7-327.b-cdn.net/${video.bunnyGuid}/thumbnail.jpg`;
     }
     return null;
   })();
@@ -141,10 +134,10 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
       return;
     }
     
-    // For videos, need bunnyGuid. For audio, can have bunnyStorageUrl or filepath
+    // For videos, need vimeoVideoId. For audio, can have bunnyStorageUrl or filepath
     const canDownload = video.mediaType === "audio" 
       ? (video.bunnyStorageUrl || video.filepath) 
-      : video.bunnyGuid;
+      : video.vimeoVideoId;
       
     if (!canDownload) {
       toast({ title: "Media source not available", variant: "destructive" });
@@ -219,7 +212,7 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
                   <ImagePlus className="h-4 w-4 text-white" />
                 )}
               </button>
-              {video.mediaType !== "audio" && video.bunnyGuid && (
+              {video.mediaType !== "audio" && video.vimeoVideoId && (
                 <button
                   onClick={handleResetThumbnail}
                   disabled={isUploadingThumbnail || isResettingThumbnail}
@@ -313,7 +306,7 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
                    video.status === "processing" ? (video.mediaType === "audio" ? "Processing..." : "Converting...") : 
                    video.status === "failed" ? "Failed" : "Hidden"}
                 </Badge>
-                {(video.status === "processing" || video.status === "uploading") && video.bunnyGuid && (
+                {(video.status === "processing" || video.status === "uploading") && video.vimeoVideoId && (
                   <Button
                     variant="ghost"
                     size="icon"
@@ -345,7 +338,7 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
                 </span>
                 <div className="flex gap-1 ml-auto">
                   {video.status === "ready" && (
-                    (video.bunnyGuid || video.mediaType === "audio") && (
+                    (video.vimeoVideoId || video.mediaType === "audio") && (
                       <Button
                         variant="ghost"
                         size="icon"

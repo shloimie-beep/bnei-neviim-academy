@@ -100,7 +100,7 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
     fetch(`/api/videos/${video.id}/stream`)
       .then(res => res.json())
       .then(data => {
-        if ((data.vimeo || data.bunny) && data.embedUrl) {
+        if (data.vimeo && data.embedUrl) {
           setEmbedUrl(data.embedUrl);
         } else {
           setError("Video not available");
@@ -185,9 +185,9 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
         const contentType = res.headers.get("content-type");
         if (contentType?.includes("application/json")) {
           return res.json().then(data => {
-            if (data.bunnyStorage && data.cdnUrl) {
+            if (data.cdnUrl) {
               setStreamUrl(data.cdnUrl);
-            } else if (data.bunny && data.embedUrl) {
+            } else if (data.vimeo && data.embedUrl) {
               setStreamUrl(data.embedUrl);
             } else {
               setStreamError("Media not available");
@@ -496,8 +496,8 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
 }
 
 function VideoPlayer({ video, onClose }: { video: VideoType; onClose: () => void }) {
-  // Use embed player for Vimeo or Bunny Stream videos
-  if ((video as any).vimeoVideoId || video.bunnyGuid) {
+  // Use embed player for Vimeo videos
+  if ((video as any).vimeoVideoId) {
     return <VideoEmbedPlayer video={video} />;
   }
   return <LegacyVideoPlayer video={video} onClose={onClose} />;
@@ -534,7 +534,7 @@ function VideoCard({ video, isNew, onView }: { video: VideoType; isNew?: boolean
       return video.thumbnailPath.replace("vimeo://", "");
     }
     // Custom thumbnail path (local storage)
-    if (video.thumbnailPath && !video.thumbnailPath.startsWith("bunny://")) {
+    if (video.thumbnailPath) {
       return `/api/videos/${video.id}/thumbnail?v=${cacheBust}`;
     }
     // Vimeo thumbnail from API response
