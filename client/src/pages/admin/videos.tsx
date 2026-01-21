@@ -501,6 +501,7 @@ export default function VideoManagement() {
   // Vimeo sync state
   const [isSyncing, setIsSyncing] = useState(false);
   const [isFixing, setIsFixing] = useState(false);
+  const [fixProgress, setFixProgress] = useState<{ current: number; total: number; percent: number; videoTitle?: string } | null>(null);
   const [isExportingCategories, setIsExportingCategories] = useState(false);
   const [isApplyingCategories, setIsApplyingCategories] = useState(false);
   const categoryFileInputRef = useRef<HTMLInputElement>(null);
@@ -964,22 +965,61 @@ export default function VideoManagement() {
 
   const handleFixVimeo = async () => {
     setIsFixing(true);
+    setFixProgress(null);
+    
     try {
       const res = await fetch("/api/admin/videos/fix-vimeo", {
         method: "POST",
         credentials: "include",
         headers: getAuthHeaders(),
       });
+      
       if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.message || "Fix failed");
+        throw new Error("Fix failed");
       }
-      const result = await res.json();
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
-      toast({ 
-        title: "Fix complete", 
-        description: result.message 
-      });
+      
+      // Handle SSE response
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+      
+      if (reader) {
+        let buffer = "";
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n\n');
+          buffer = lines.pop() || "";
+          
+          for (const line of lines) {
+            if (line.startsWith('data: ')) {
+              try {
+                const data = JSON.parse(line.slice(6));
+                
+                if (data.type === 'progress') {
+                  setFixProgress({
+                    current: data.current,
+                    total: data.total,
+                    percent: data.percent,
+                    videoTitle: data.videoTitle
+                  });
+                } else if (data.type === 'complete') {
+                  queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+                  toast({ 
+                    title: "Fix complete", 
+                    description: data.message 
+                  });
+                } else if (data.type === 'error') {
+                  throw new Error(data.message);
+                }
+              } catch (parseErr) {
+                // Skip invalid JSON
+              }
+            }
+          }
+        }
+      }
     } catch (error: any) {
       toast({ 
         title: "Fix failed", 
@@ -988,6 +1028,7 @@ export default function VideoManagement() {
       });
     } finally {
       setIsFixing(false);
+      setFixProgress(null);
     }
   };
 
@@ -1275,19 +1316,34 @@ export default function VideoManagement() {
             )}
             Sync from Vimeo
           </Button>
-          <Button 
-            variant="outline" 
-            onClick={handleFixVimeo} 
-            disabled={isFixing}
-            data-testid="button-fix-vimeo"
-          >
-            {isFixing ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <RefreshCw className="h-4 w-4 mr-2" />
+          <div className="flex flex-col gap-2">
+            <Button 
+              variant="outline" 
+              onClick={handleFixVimeo} 
+              disabled={isFixing}
+              data-testid="button-fix-vimeo"
+            >
+              {isFixing ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : (
+                <RefreshCw className="h-4 w-4 mr-2" />
+              )}
+              Fix Vimeo Videos
+            </Button>
+            {isFixing && fixProgress && (
+              <div className="w-48">
+                <div className="h-2 bg-muted rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-primary transition-all duration-300" 
+                    style={{ width: `${fixProgress.percent}%` }}
+                  />
+                </div>
+                <p className="text-xs text-muted-foreground mt-1 truncate">
+                  {fixProgress.current}/{fixProgress.total}: {fixProgress.videoTitle || 'Processing...'}
+                </p>
+              </div>
             )}
-            Fix Vimeo Videos
-          </Button>
+          </div>
           <Button 
             variant="outline" 
             onClick={() => categoryFileInputRef.current?.click()} 

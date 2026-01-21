@@ -250,8 +250,9 @@ class VimeoService {
     try {
       const token = await this.getAccessToken();
       
-      // Set embed to "public" - allows embedding on any domain
-      // View privacy is managed separately on Vimeo (set to private by user)
+      // Set view to "unlisted" and embed to "public"
+      // Unlisted = only people with the link can view
+      // Public embed = can be embedded anywhere
       const response = await fetch(`https://api.vimeo.com/videos/${videoId}`, {
         method: "PATCH",
         headers: {
@@ -261,6 +262,7 @@ class VimeoService {
         },
         body: JSON.stringify({
           privacy: {
+            view: "unlisted",
             embed: "public",
           },
         }),
@@ -272,7 +274,7 @@ class VimeoService {
         return false;
       }
 
-      console.log(`[Vimeo] Updated embed privacy for video ${videoId} to public (embeddable everywhere)`);
+      console.log(`[Vimeo] Updated privacy for video ${videoId} to unlisted + public embed`);
       return true;
     } catch (error) {
       console.error(`[Vimeo] Error updating privacy for ${videoId}:`, error);
