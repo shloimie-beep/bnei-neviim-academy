@@ -2,6 +2,7 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import session from "express-session";
 import connectPgSimple from "connect-pg-simple";
+import cors from "cors";
 import bcrypt from "bcryptjs";
 import multer from "multer";
 import path from "path";
@@ -317,6 +318,12 @@ export async function registerRoutes(
   
   // Trust proxy for Replit (uses reverse proxy in both dev and prod)
   app.set("trust proxy", 1);
+
+  // CORS middleware for cookie support
+  app.use(cors({
+    origin: true, // Allow all origins
+    credentials: true, // Allow cookies
+  }));
 
   // PostgreSQL session store for persistence
   const PgSession = connectPgSimple(session);
