@@ -1,6 +1,7 @@
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useMemo } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw, Download, GripVertical } from "lucide-react";
+import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw, Download, GripVertical, ChevronDown, ChevronRight, Folder, FolderOpen } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import * as tus from "tus-js-client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -462,6 +463,21 @@ export default function VideoManagement() {
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
   
+  // Category folder expansion state
+  const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  
+  const toggleCategory = (categoryId: string) => {
+    setExpandedCategories(prev => {
+      const next = new Set(prev);
+      if (next.has(categoryId)) {
+        next.delete(categoryId);
+      } else {
+        next.add(categoryId);
+      }
+      return next;
+    });
+  };
+  
   // Vimeo sync state
   const [isSyncing, setIsSyncing] = useState(false);
   const [isFixing, setIsFixing] = useState(false);
@@ -497,6 +513,27 @@ export default function VideoManagement() {
   
   // Filtered videos based on search
   const filteredVideos = videos?.filter(video => fuzzyMatch(video.title, searchQuery)) || [];
+  
+  // Group videos by category for folder view (only when not searching)
+  const videosByCategory = useMemo(() => {
+    if (!videos || searchQuery.trim()) return null;
+    
+    const grouped: Record<string, VideoType[]> = {};
+    const uncategorized: VideoType[] = [];
+    
+    videos.forEach(video => {
+      if (video.categoryId) {
+        if (!grouped[video.categoryId]) {
+          grouped[video.categoryId] = [];
+        }
+        grouped[video.categoryId].push(video);
+      } else {
+        uncategorized.push(video);
+      }
+    });
+    
+    return { grouped, uncategorized };
+  }, [videos, searchQuery]);
 
   const createCategoryMutation = useMutation({
     mutationFn: async (name: string) => {
@@ -1776,8 +1813,12 @@ export default function VideoManagement() {
             </Button>
           </CardContent>
         </Card>
-      ) : (
+      ) : searchQuery.trim() ? (
+        // Search results - flat list
         <div className="grid gap-4">
+          <p className="text-sm text-muted-foreground">
+            Found {filteredVideos.length} video{filteredVideos.length !== 1 ? 's' : ''} matching "{searchQuery}"
+          </p>
           {filteredVideos.map((video) => (
             <VideoCard
               key={video.id}
@@ -1815,7 +1856,164 @@ export default function VideoManagement() {
             />
           ))}
         </div>
-      )}
+      ) : videosByCategory ? (
+        // Category folders view
+        <div className="space-y-4">
+          {categories.map((category) => {
+            const categoryVideos = videosByCategory.grouped[category.id] || [];
+            const isExpanded = expandedCategories.has(category.id);
+            
+            return (
+              <Card key={category.id}>
+                <Collapsible open={isExpanded} onOpenChange={() => toggleCategory(category.id)}>
+                  <CollapsibleTrigger asChild>
+                    <CardHeader className="cursor-pointer hover-elevate py-3">
+                      <div className="flex items-center gap-3">
+                        {isExpanded ? (
+                          <FolderOpen className="h-5 w-5 text-primary" />
+                        ) : (
+                          <Folder className="h-5 w-5 text-muted-foreground" />
+                        )}
+                        <div className="flex-1">
+                          <CardTitle className="text-base flex items-center gap-2">
+                            {category.name}
+                            <Badge variant="secondary" className="ml-2">
+                              {categoryVideos.length} video{categoryVideos.length !== 1 ? 's' : ''}
+                            </Badge>
+                          </CardTitle>
+                        </div>
+                        {isExpanded ? (
+                          <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                        ) : (
+                          <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                        )}
+                      </div>
+                    </CardHeader>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <CardContent className="pt-0 space-y-3">
+                      {categoryVideos.length === 0 ? (
+                        <p className="text-sm text-muted-foreground py-4 text-center">
+                          No videos in this category yet
+                        </p>
+                      ) : isExpanded ? (
+                        categoryVideos.map((video) => (
+                          <VideoCard
+                            key={video.id}
+                            video={video}
+                            categories={categories}
+                            onDelete={() => deleteMutation.mutate(video.id)}
+                            onUpdate={(data) => updateMutation.mutate({ id: video.id, data })}
+                            onUploadThumbnail={async (file) => {
+                              const formData = new FormData();
+                              formData.append("thumbnail", file);
+                              const res = await fetch(`/api/admin/videos/${video.id}/thumbnail`, {
+                                method: "POST",
+                                body: formData,
+                              });
+                              if (!res.ok) throw new Error("Failed to upload thumbnail");
+                              queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+                            }}
+                            onResetThumbnail={async (regenerate) => {
+                              const res = await fetch(`/api/admin/videos/${video.id}/thumbnail?regenerate=${regenerate}`, {
+                                method: "DELETE",
+                              });
+                              if (!res.ok) throw new Error("Failed to reset thumbnail");
+                              queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+                            }}
+                            onRefreshStatus={async () => {
+                              const res = await fetch(`/api/admin/videos/${video.id}/refresh-status`, {
+                                method: "POST",
+                              });
+                              if (!res.ok) {
+                                const err = await res.json();
+                                throw new Error(err.message || "Failed to refresh status");
+                              }
+                              queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+                            }}
+                          />
+                        ))
+                      ) : null}
+                    </CardContent>
+                  </CollapsibleContent>
+                </Collapsible>
+              </Card>
+            );
+          })}
+          
+          {/* Uncategorized videos */}
+          {videosByCategory.uncategorized.length > 0 && (
+            <Card>
+              <Collapsible open={expandedCategories.has("__uncategorized__")} onOpenChange={() => toggleCategory("__uncategorized__")}>
+                <CollapsibleTrigger asChild>
+                  <CardHeader className="cursor-pointer hover-elevate py-3">
+                    <div className="flex items-center gap-3">
+                      {expandedCategories.has("__uncategorized__") ? (
+                        <FolderOpen className="h-5 w-5 text-muted-foreground" />
+                      ) : (
+                        <Folder className="h-5 w-5 text-muted-foreground" />
+                      )}
+                      <div className="flex-1">
+                        <CardTitle className="text-base flex items-center gap-2 text-muted-foreground">
+                          Uncategorized
+                          <Badge variant="outline" className="ml-2">
+                            {videosByCategory.uncategorized.length} video{videosByCategory.uncategorized.length !== 1 ? 's' : ''}
+                          </Badge>
+                        </CardTitle>
+                      </div>
+                      {expandedCategories.has("__uncategorized__") ? (
+                        <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                      ) : (
+                        <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                      )}
+                    </div>
+                  </CardHeader>
+                </CollapsibleTrigger>
+                <CollapsibleContent>
+                  <CardContent className="pt-0 space-y-3">
+                    {expandedCategories.has("__uncategorized__") ? videosByCategory.uncategorized.map((video) => (
+                      <VideoCard
+                        key={video.id}
+                        video={video}
+                        categories={categories}
+                        onDelete={() => deleteMutation.mutate(video.id)}
+                        onUpdate={(data) => updateMutation.mutate({ id: video.id, data })}
+                        onUploadThumbnail={async (file) => {
+                          const formData = new FormData();
+                          formData.append("thumbnail", file);
+                          const res = await fetch(`/api/admin/videos/${video.id}/thumbnail`, {
+                            method: "POST",
+                            body: formData,
+                          });
+                          if (!res.ok) throw new Error("Failed to upload thumbnail");
+                          queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+                        }}
+                        onResetThumbnail={async (regenerate) => {
+                          const res = await fetch(`/api/admin/videos/${video.id}/thumbnail?regenerate=${regenerate}`, {
+                            method: "DELETE",
+                          });
+                          if (!res.ok) throw new Error("Failed to reset thumbnail");
+                          queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+                        }}
+                        onRefreshStatus={async () => {
+                          const res = await fetch(`/api/admin/videos/${video.id}/refresh-status`, {
+                            method: "POST",
+                          });
+                          if (!res.ok) {
+                            const err = await res.json();
+                            throw new Error(err.message || "Failed to refresh status");
+                          }
+                          queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+                        }}
+                      />
+                    )) : null}
+                  </CardContent>
+                </CollapsibleContent>
+              </Collapsible>
+            </Card>
+          )}
+        </div>
+      ) : null}
     </div>
   );
 }

@@ -91,27 +91,69 @@ function PhoneNumberCard({ phoneNumber, onDelete }: { phoneNumber: PhoneNumber; 
   );
 }
 
+// Helper to extract Vimeo hash from thumbnail URL
+function extractVimeoHashFromThumbnail(thumbnailPath: string | null): string | null {
+  if (!thumbnailPath) return null;
+  
+  // Format: https://i.vimeocdn.com/video/{videoId}_{hash}_...
+  const match = thumbnailPath.match(/vimeocdn\.com\/video\/\d+_([a-f0-9]+)/i);
+  return match ? match[1] : null;
+}
+
 function VideoEmbedPlayer({ video }: { video: VideoType }) {
   const [embedUrl, setEmbedUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Try to construct embed URL directly from video data
+    if (video.vimeoVideoId) {
+      // Extract hash from thumbnail URL if available
+      const hash = extractVimeoHashFromThumbnail(video.thumbnailPath);
+      
+      if (hash) {
+        // We have the hash, construct direct embed URL
+        const directEmbedUrl = `https://player.vimeo.com/video/${video.vimeoVideoId}?h=${hash}&dnt=1&title=0&byline=0&portrait=0`;
+        setEmbedUrl(directEmbedUrl);
+        setLoading(false);
+        return;
+      }
+      
+      // No hash available - fall through to API call for unlisted videos
+    }
+    
+    // Fallback to API for non-Vimeo videos or when hash unavailable
     fetch(`/api/videos/${video.id}/stream`)
       .then(res => res.json())
       .then(data => {
         if (data.vimeo && data.embedUrl) {
           setEmbedUrl(data.embedUrl);
+        } else if (video.vimeoVideoId) {
+          // Last resort: try direct embed without hash (works for public videos)
+          setEmbedUrl(`https://player.vimeo.com/video/${video.vimeoVideoId}?dnt=1&title=0&byline=0&portrait=0`);
         } else {
           setError("Video not available");
         }
         setLoading(false);
       })
       .catch(() => {
-        setError("Failed to load video");
-        setLoading(false);
+        // API failed - try direct embed if we have vimeoVideoId
+        if (video.vimeoVideoId) {
+          const hash = extractVimeoHashFromThumbnail(video.thumbnailPath);
+          let fallbackUrl = `https://player.vimeo.com/video/${video.vimeoVideoId}`;
+          if (hash) {
+            fallbackUrl += `?h=${hash}&dnt=1&title=0&byline=0&portrait=0`;
+          } else {
+            fallbackUrl += `?dnt=1&title=0&byline=0&portrait=0`;
+          }
+          setEmbedUrl(fallbackUrl);
+          setLoading(false);
+        } else {
+          setError("Failed to load video");
+          setLoading(false);
+        }
       });
-  }, [video.id]);
+  }, [video.id, video.vimeoVideoId, video.thumbnailPath]);
 
   if (loading) {
     return (
@@ -179,6 +221,22 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
   const [streamError, setStreamError] = useState<string | null>(null);
 
   useEffect(() => {
+    // Try to construct Vimeo embed URL directly from video data
+    if (video.vimeoVideoId) {
+      const hash = extractVimeoHashFromThumbnail(video.thumbnailPath);
+      
+      if (hash) {
+        // We have the hash, construct direct embed URL
+        const directEmbedUrl = `https://player.vimeo.com/video/${video.vimeoVideoId}?h=${hash}&dnt=1&title=0&byline=0&portrait=0`;
+        setStreamUrl(directEmbedUrl);
+        setStreamLoading(false);
+        return;
+      }
+      
+      // No hash available - fall through to API call
+    }
+    
+    // Fallback to API for non-Vimeo videos or when hash unavailable
     fetch(`/api/videos/${video.id}/stream`)
       .then(res => {
         if (!res.ok) throw new Error("Failed to load");
@@ -189,6 +247,9 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
               setStreamUrl(data.cdnUrl);
             } else if (data.vimeo && data.embedUrl) {
               setStreamUrl(data.embedUrl);
+            } else if (video.vimeoVideoId) {
+              // Last resort: try direct embed without hash
+              setStreamUrl(`https://player.vimeo.com/video/${video.vimeoVideoId}?dnt=1&title=0&byline=0&portrait=0`);
             } else {
               setStreamError("Media not available");
             }
@@ -200,10 +261,22 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
         }
       })
       .catch(() => {
-        setStreamUrl(`/api/videos/${video.id}/stream`);
+        // API failed - try direct embed if we have vimeoVideoId
+        if (video.vimeoVideoId) {
+          const hash = extractVimeoHashFromThumbnail(video.thumbnailPath);
+          let fallbackUrl = `https://player.vimeo.com/video/${video.vimeoVideoId}`;
+          if (hash) {
+            fallbackUrl += `?h=${hash}&dnt=1&title=0&byline=0&portrait=0`;
+          } else {
+            fallbackUrl += `?dnt=1&title=0&byline=0&portrait=0`;
+          }
+          setStreamUrl(fallbackUrl);
+        } else {
+          setStreamUrl(`/api/videos/${video.id}/stream`);
+        }
         setStreamLoading(false);
       });
-  }, [video.id]);
+  }, [video.id, video.vimeoVideoId, video.thumbnailPath]);
 
   const speedOptions = [0.5, 0.75, 1, 1.25, 1.5, 2];
 

@@ -5830,7 +5830,7 @@ export async function registerRoutes(
   app.get("/api/admin/export-data", requireAdmin, async (req, res) => {
     try {
       const videos = await storage.getAllVideos();
-      const categories = await storage.getCategories();
+      const categories = await storage.getAllVideoCategories();
       
       res.json({
         exportedAt: new Date().toISOString(),
@@ -5858,18 +5858,18 @@ export async function registerRoutes(
       
       // First import categories
       for (const category of categories) {
-        const existingCategory = await storage.getCategoryByName(category.name);
+        const existingCategory = await storage.getVideoCategoryByName(category.name);
         if (!existingCategory) {
-          await storage.createCategory({
+          await storage.createVideoCategory({
             name: category.name,
-            description: category.description || null,
+            sortOrder: category.sortOrder || 0,
           });
           importedCategories++;
         }
       }
       
       // Build category name to ID mapping for the current database
-      const currentCategories = await storage.getCategories();
+      const currentCategories = await storage.getAllVideoCategories();
       const categoryNameToId = new Map<string, string>();
       for (const cat of currentCategories) {
         categoryNameToId.set(cat.name, cat.id);
@@ -5883,11 +5883,10 @@ export async function registerRoutes(
       
       // Then import videos
       for (const video of videos) {
-        // Check if video already exists by vimeoVideoId or title
+        // Check if video already exists by vimeoVideoId
         const existingVideos = await storage.getAllVideos();
         const exists = existingVideos.some(v => 
-          (video.vimeoVideoId && v.vimeoVideoId === video.vimeoVideoId) ||
-          (video.vimeoUri && v.vimeoUri === video.vimeoUri)
+          (video.vimeoVideoId && v.vimeoVideoId === video.vimeoVideoId)
         );
         
         if (exists) {
@@ -5919,7 +5918,6 @@ export async function registerRoutes(
           bunnyVideoId: video.bunnyVideoId || null,
           storageType: video.storageType || null,
           vimeoVideoId: video.vimeoVideoId || null,
-          vimeoUri: video.vimeoUri || null,
         });
         importedVideos++;
       }
