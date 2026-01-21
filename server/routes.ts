@@ -3039,6 +3039,56 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Fix all Vimeo videos - update privacy settings and sync thumbnails
+  app.post("/api/admin/videos/fix-vimeo", requireAdmin, async (req, res) => {
+    try {
+      const videos = await storage.getAllVideos();
+      const vimeoVideos = videos.filter(v => v.vimeoVideoId);
+      
+      console.log(`[Vimeo Fix] Processing ${vimeoVideos.length} Vimeo videos`);
+      
+      let privacyUpdated = 0;
+      let thumbnailsUpdated = 0;
+      let errors = 0;
+
+      for (const video of vimeoVideos) {
+        try {
+          // Update privacy settings
+          const privacyResult = await vimeoService.updateVideoPrivacy(video.vimeoVideoId!);
+          if (privacyResult) {
+            privacyUpdated++;
+          }
+
+          // Get thumbnail URL from Vimeo
+          const vimeoData = await vimeoService.getVideo(video.vimeoVideoId!);
+          if (vimeoData?.pictures?.base_link) {
+            // Store the Vimeo thumbnail URL directly
+            const thumbnailUrl = vimeoData.pictures.base_link.replace('?', '_640x360?');
+            await storage.updateVideo(video.id, { 
+              thumbnailPath: `vimeo://${thumbnailUrl}`
+            });
+            thumbnailsUpdated++;
+            console.log(`[Vimeo Fix] Updated thumbnail for ${video.title}`);
+          }
+        } catch (err) {
+          console.error(`[Vimeo Fix] Error processing video ${video.id}:`, err);
+          errors++;
+        }
+      }
+
+      res.json({
+        message: `Processed ${vimeoVideos.length} videos: ${privacyUpdated} privacy updated, ${thumbnailsUpdated} thumbnails synced, ${errors} errors`,
+        total: vimeoVideos.length,
+        privacyUpdated,
+        thumbnailsUpdated,
+        errors,
+      });
+    } catch (error: any) {
+      console.error("Vimeo fix error:", error);
+      res.status(500).json({ message: error.message || "Failed to fix Vimeo videos" });
+    }
+  });
+
   // Admin: Delete custom thumbnail and optionally regenerate from video
   app.delete("/api/admin/videos/:id/thumbnail", requireAdmin, async (req, res) => {
     try {

@@ -525,11 +525,15 @@ function VideoCard({ video, isNew, onView }: { video: VideoType; isNew?: boolean
   const [cacheBust] = useState(() => Date.now());
 
   const thumbnailSrc = (() => {
-    // Custom thumbnail path takes priority
+    // Vimeo thumbnail stored as vimeo://url
+    if (video.thumbnailPath?.startsWith("vimeo://")) {
+      return video.thumbnailPath.replace("vimeo://", "");
+    }
+    // Custom thumbnail path
     if (video.thumbnailPath && !video.thumbnailPath.startsWith("bunny://")) {
       return `/api/videos/${video.id}/thumbnail?v=${cacheBust}`;
     }
-    // Vimeo thumbnail
+    // Vimeo thumbnail from API
     if ((video as any).vimeoThumbnailUrl) {
       return (video as any).vimeoThumbnailUrl;
     }

@@ -49,9 +49,13 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
   const categoryName = categories.find(c => c.id === video.categoryId)?.name;
 
   // For videos with custom thumbnailPath, serve through our API
-  // For Vimeo videos, use vimeoThumbnailUrl from the backend
+  // For Vimeo videos, use vimeoThumbnailUrl from the backend or vimeo:// path
   // For Bunny videos, use bunnyThumbnailUrl from the backend
   const thumbnailSrc = (() => {
+    // Vimeo thumbnail stored as vimeo://url
+    if (video.thumbnailPath?.startsWith("vimeo://")) {
+      return video.thumbnailPath.replace("vimeo://", "");
+    }
     if (video.thumbnailPath && !video.thumbnailPath.startsWith("bunny://")) {
       return `/api/videos/${video.id}/thumbnail?v=${thumbnailCacheBust}`;
     }
@@ -456,6 +460,7 @@ export default function VideoManagement() {
   
   // Vimeo sync state
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isFixing, setIsFixing] = useState(false);
 
   const { data: videos, isLoading } = useQuery<VideoType[]>({
     queryKey: ["/api/admin/videos"],
@@ -849,6 +854,34 @@ export default function VideoManagement() {
     }
   };
 
+  const handleFixVimeo = async () => {
+    setIsFixing(true);
+    try {
+      const res = await fetch("/api/admin/videos/fix-vimeo", {
+        method: "POST",
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Fix failed");
+      }
+      const result = await res.json();
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+      toast({ 
+        title: "Fix complete", 
+        description: result.message 
+      });
+    } catch (error: any) {
+      toast({ 
+        title: "Fix failed", 
+        description: error.message, 
+        variant: "destructive" 
+      });
+    } finally {
+      setIsFixing(false);
+    }
+  };
+
   const handleSingleUpload = async () => {
     if (!singleFile || !singleTitle) return;
 
@@ -1052,6 +1085,19 @@ export default function VideoManagement() {
               <RefreshCw className="h-4 w-4 mr-2" />
             )}
             Sync from Vimeo
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={handleFixVimeo} 
+            disabled={isFixing}
+            data-testid="button-fix-vimeo"
+          >
+            {isFixing ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4 mr-2" />
+            )}
+            Fix Vimeo Videos
           </Button>
           <Dialog open={isSingleDialogOpen} onOpenChange={setIsSingleDialogOpen}>
             <DialogTrigger asChild>

@@ -56,8 +56,8 @@ class VimeoService {
         },
         name: title,
         privacy: {
-          view: "disable",
-          embed: "whitelist",
+          view: "unlisted",
+          embed: "public",
         },
       }),
     });
@@ -152,6 +152,36 @@ class VimeoService {
     } catch (error) {
       console.error(`[Vimeo] Error getting video ${videoId}:`, error);
       return null;
+    }
+  }
+
+  async updateVideoPrivacy(videoId: string): Promise<boolean> {
+    try {
+      const response = await fetch(`https://api.vimeo.com/videos/${videoId}`, {
+        method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${this.accessToken}`,
+          "Content-Type": "application/json",
+          "Accept": "application/vnd.vimeo.*+json;version=3.4",
+        },
+        body: JSON.stringify({
+          privacy: {
+            view: "unlisted",
+            embed: "public",
+          },
+        }),
+      });
+
+      if (!response.ok) {
+        console.error(`[Vimeo] Failed to update privacy for ${videoId}: ${response.status}`);
+        return false;
+      }
+
+      console.log(`[Vimeo] Updated privacy for video ${videoId} to unlisted/public`);
+      return true;
+    } catch (error) {
+      console.error(`[Vimeo] Error updating privacy for ${videoId}:`, error);
+      return false;
     }
   }
 
