@@ -1486,26 +1486,9 @@ export async function registerRoutes(
   app.get("/api/admin/videos", requireAdmin, async (req, res) => {
     try {
       const videos = await storage.getAllVideos();
-      const videosWithThumbnails = await Promise.all(
-        videos.map(async (video) => {
-          // Add vimeoThumbnailUrl for Vimeo videos
-          if (video.vimeoVideoId) {
-            return {
-              ...video,
-              vimeoThumbnailUrl: await vimeoService.getThumbnailUrl(video.vimeoVideoId),
-            };
-          }
-          // Add bunnyThumbnailUrl for all Bunny videos (whether they have a custom thumbnailPath or not)
-          if (video.bunnyGuid) {
-            return {
-              ...video,
-              bunnyThumbnailUrl: await bunnyStream.getThumbnailUrl(video.bunnyGuid),
-            };
-          }
-          return video;
-        })
-      );
-      res.json(videosWithThumbnails);
+      // Return videos directly - thumbnails are already stored in thumbnailPath
+      // No need to call Vimeo/Bunny APIs for each video (causes rate limiting)
+      res.json(videos);
     } catch (error) {
       console.error("Get videos error:", error);
       res.status(500).json({ message: "Failed to get videos" });
@@ -3447,26 +3430,9 @@ export async function registerRoutes(
         return !!video.vimeoVideoId; // Only keep videos with Vimeo
       });
       
-      // Add thumbnail URLs for Vimeo videos
-      const videosWithThumbnails = await Promise.all(filteredVideos.map(async (video) => {
-        // If thumbnail is already stored as Vimeo URL, use it directly
-        if (video.thumbnailPath?.startsWith("https://i.vimeocdn.com")) {
-          return {
-            ...video,
-            vimeoThumbnailUrl: video.thumbnailPath,
-          };
-        }
-        // Fetch from Vimeo API if not cached
-        if (video.vimeoVideoId) {
-          return {
-            ...video,
-            vimeoThumbnailUrl: await vimeoService.getThumbnailUrl(video.vimeoVideoId),
-          };
-        }
-        return video;
-      }));
-      
-      res.json(videosWithThumbnails);
+      // Return videos directly - thumbnails are already stored in thumbnailPath
+      // No need to call Vimeo API for each video (causes rate limiting)
+      res.json(filteredVideos);
     } catch (error) {
       console.error("Get subscriber videos error:", error);
       res.status(500).json({ message: "Failed to get videos" });
