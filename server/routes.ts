@@ -2941,6 +2941,104 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Sync videos from Vimeo library to database
+  app.post("/api/admin/videos/sync-from-vimeo", requireAdmin, async (req, res) => {
+    try {
+      // Get all videos from Vimeo library
+      let allVimeoVideos: any[] = [];
+      let page = 1;
+      let hasMore = true;
+      
+      while (hasMore) {
+        const result = await vimeoService.listVideos(page, 100);
+        allVimeoVideos = allVimeoVideos.concat(result.items);
+        hasMore = allVimeoVideos.length < result.totalItems;
+        page++;
+      }
+      
+      console.log(`[Vimeo Sync] Found ${allVimeoVideos.length} videos in Vimeo library`);
+
+      // Get all videos from database
+      const dbVideos = await storage.getAllVideos();
+      const existingVimeoIds = new Set(dbVideos.filter(v => v.vimeoVideoId).map(v => v.vimeoVideoId));
+
+      // Find videos in Vimeo that don't exist in database
+      const missingVideos = allVimeoVideos.filter(vv => {
+        const videoId = vv.uri?.replace("/videos/", "");
+        return videoId && !existingVimeoIds.has(videoId);
+      });
+      
+      console.log(`[Vimeo Sync] ${missingVideos.length} videos need to be imported`);
+
+      let importedCount = 0;
+      
+      for (const vimeoVideo of missingVideos) {
+        try {
+          const videoId = vimeoVideo.uri?.replace("/videos/", "");
+          if (!videoId) continue;
+          
+          // Only import videos that are available
+          const status = vimeoVideo.status === "available" ? "ready" : "processing";
+          const videoTitle = vimeoVideo.name || `Video ${videoId}`;
+          
+          await storage.createVideo({
+            title: videoTitle,
+            description: null,
+            filename: `${videoTitle}.mp4`,
+            filepath: null,
+            fileSize: 0,
+            duration: vimeoVideo.duration || 0,
+            status,
+            mediaType: "video",
+            storageType: "vimeo",
+            vimeoVideoId: videoId,
+            categoryId: null,
+            thumbnailPath: null,
+          });
+          
+          importedCount++;
+          console.log(`[Vimeo Sync] Imported video: ${videoTitle} (${videoId})`);
+        } catch (err) {
+          console.error(`[Vimeo Sync] Failed to import video:`, err);
+        }
+      }
+
+      // Update status of existing videos that are processing
+      const processingVideos = dbVideos.filter(v => 
+        v.vimeoVideoId && v.status === "processing"
+      );
+      
+      let updatedCount = 0;
+      
+      for (const video of processingVideos) {
+        try {
+          const vimeoVideo = await vimeoService.getVideo(video.vimeoVideoId!);
+          if (vimeoVideo && vimeoVideo.status === "available") {
+            await storage.updateVideo(video.id, { 
+              status: "ready",
+              duration: vimeoVideo.duration || video.duration,
+            });
+            updatedCount++;
+            console.log(`[Vimeo Sync] Updated video ${video.id} to ready`);
+          }
+        } catch (err) {
+          console.error(`[Vimeo Sync] Failed to check video ${video.id}:`, err);
+        }
+      }
+
+      res.json({ 
+        message: `Found ${allVimeoVideos.length} videos in Vimeo, imported ${importedCount} new, updated ${updatedCount} statuses`,
+        totalInVimeo: allVimeoVideos.length,
+        alreadyImported: existingVimeoIds.size,
+        newlyImported: importedCount,
+        statusesUpdated: updatedCount,
+      });
+    } catch (error: any) {
+      console.error("Vimeo sync error:", error);
+      res.status(500).json({ message: error.message || "Failed to sync videos from Vimeo" });
+    }
+  });
+
   // Admin: Delete custom thumbnail and optionally regenerate from video
   app.delete("/api/admin/videos/:id/thumbnail", requireAdmin, async (req, res) => {
     try {

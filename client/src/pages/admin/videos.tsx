@@ -454,7 +454,7 @@ export default function VideoManagement() {
   const [newCategoryName, setNewCategoryName] = useState("");
   const [categoryToDelete, setCategoryToDelete] = useState<VideoCategory | null>(null);
   
-  // Bunny sync state
+  // Vimeo sync state
   const [isSyncing, setIsSyncing] = useState(false);
 
   const { data: videos, isLoading } = useQuery<VideoType[]>({
@@ -821,10 +821,10 @@ export default function VideoManagement() {
     }
   };
 
-  const handleSyncFromBunny = async () => {
+  const handleSyncFromVimeo = async () => {
     setIsSyncing(true);
     try {
-      const res = await fetch("/api/admin/videos/sync-from-bunny", {
+      const res = await fetch("/api/admin/videos/sync-from-vimeo", {
         method: "POST",
         credentials: "include",
       });
@@ -1042,16 +1042,16 @@ export default function VideoManagement() {
         <div className="flex gap-2 flex-wrap">
           <Button 
             variant="outline" 
-            onClick={handleSyncFromBunny} 
+            onClick={handleSyncFromVimeo} 
             disabled={isSyncing}
-            data-testid="button-sync-from-bunny"
+            data-testid="button-sync-from-vimeo"
           >
             {isSyncing ? (
               <Loader2 className="h-4 w-4 mr-2 animate-spin" />
             ) : (
               <RefreshCw className="h-4 w-4 mr-2" />
             )}
-            Sync from Bunny
+            Sync from Vimeo
           </Button>
           <Dialog open={isSingleDialogOpen} onOpenChange={setIsSingleDialogOpen}>
             <DialogTrigger asChild>

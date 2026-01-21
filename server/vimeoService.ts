@@ -107,6 +107,34 @@ class VimeoService {
     }
   }
 
+  async listVideos(page: number = 1, perPage: number = 100): Promise<{ items: VimeoVideo[]; totalItems: number }> {
+    try {
+      const response = await fetch(
+        `https://api.vimeo.com/me/videos?page=${page}&per_page=${perPage}&fields=uri,name,link,status,duration,pictures,player_embed_url`,
+        {
+          headers: {
+            "Authorization": `Bearer ${this.accessToken}`,
+            "Accept": "application/vnd.vimeo.*+json;version=3.4",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        console.error(`[Vimeo] Failed to list videos: ${response.status}`);
+        return { items: [], totalItems: 0 };
+      }
+
+      const data = await response.json();
+      return {
+        items: data.data || [],
+        totalItems: data.total || 0,
+      };
+    } catch (error) {
+      console.error("[Vimeo] Error listing videos:", error);
+      return { items: [], totalItems: 0 };
+    }
+  }
+
   async getVideo(videoId: string): Promise<VimeoVideo | null> {
     try {
       const response = await fetch(`https://api.vimeo.com/videos/${videoId}`, {
