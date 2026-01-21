@@ -42,8 +42,37 @@ class VimeoService {
     }
   }
 
+  // Helper to handle rate limiting with retry
+  private async fetchWithRetry(
+    url: string,
+    options: RequestInit,
+    maxRetries: number = 5
+  ): Promise<Response> {
+    let lastError: Error | null = null;
+    
+    for (let attempt = 0; attempt < maxRetries; attempt++) {
+      const response = await fetch(url, options);
+      
+      if (response.status === 429) {
+        // Rate limited - get retry delay from header or use exponential backoff
+        const retryAfter = response.headers.get("Retry-After");
+        const waitTime = retryAfter 
+          ? parseInt(retryAfter, 10) * 1000 
+          : Math.min(1000 * Math.pow(2, attempt), 60000); // Max 60 seconds
+        
+        console.log(`[Vimeo] Rate limited (429). Waiting ${waitTime/1000}s before retry ${attempt + 1}/${maxRetries}...`);
+        await new Promise(resolve => setTimeout(resolve, waitTime));
+        continue;
+      }
+      
+      return response;
+    }
+    
+    throw new Error(`[Vimeo] Max retries (${maxRetries}) exceeded due to rate limiting`);
+  }
+
   async createVideo(title: string, fileSize: number): Promise<VimeoCreateResponse> {
-    const response = await fetch("https://api.vimeo.com/me/videos", {
+    const response = await this.fetchWithRetry("https://api.vimeo.com/me/videos", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${this.accessToken}`,
@@ -110,7 +139,7 @@ class VimeoService {
 
   async listVideos(page: number = 1, perPage: number = 100): Promise<{ items: VimeoVideo[]; totalItems: number }> {
     try {
-      const response = await fetch(
+      const response = await this.fetchWithRetry(
         `https://api.vimeo.com/me/videos?page=${page}&per_page=${perPage}&fields=uri,name,link,status,duration,pictures,player_embed_url`,
         {
           headers: {
@@ -138,7 +167,7 @@ class VimeoService {
 
   async getVideo(videoId: string): Promise<VimeoVideo | null> {
     try {
-      const response = await fetch(`https://api.vimeo.com/videos/${videoId}`, {
+      const response = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}`, {
         headers: {
           "Authorization": `Bearer ${this.accessToken}`,
           "Accept": "application/vnd.vimeo.*+json;version=3.4",
@@ -188,7 +217,7 @@ class VimeoService {
 
   async deleteVideo(videoId: string): Promise<boolean> {
     try {
-      const response = await fetch(`https://api.vimeo.com/videos/${videoId}`, {
+      const response = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${this.accessToken}`,
