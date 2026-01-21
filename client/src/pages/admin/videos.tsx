@@ -49,19 +49,25 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
   const categoryName = categories.find(c => c.id === video.categoryId)?.name;
 
   // For videos with custom thumbnailPath, serve through our API
-  // For Vimeo videos, use vimeoThumbnailUrl from the backend or vimeo:// path
-  // For Bunny videos, use bunnyThumbnailUrl from the backend
+  // For Vimeo videos, use the stored thumbnail URL directly
   const thumbnailSrc = (() => {
-    // Vimeo thumbnail stored as vimeo://url
+    // Vimeo thumbnail URL stored directly
+    if (video.thumbnailPath?.startsWith("https://i.vimeocdn.com")) {
+      return video.thumbnailPath;
+    }
+    // Legacy vimeo:// prefix format
     if (video.thumbnailPath?.startsWith("vimeo://")) {
       return video.thumbnailPath.replace("vimeo://", "");
     }
+    // Custom thumbnail path (local storage)
     if (video.thumbnailPath && !video.thumbnailPath.startsWith("bunny://")) {
       return `/api/videos/${video.id}/thumbnail?v=${thumbnailCacheBust}`;
     }
+    // Vimeo thumbnail from API response
     if ((video as any).vimeoThumbnailUrl) {
       return (video as any).vimeoThumbnailUrl;
     }
+    // Bunny fallback for admin (keep for backward compatibility)
     if ((video as any).bunnyThumbnailUrl) {
       return (video as any).bunnyThumbnailUrl;
     }

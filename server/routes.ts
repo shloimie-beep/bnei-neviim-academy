@@ -3062,13 +3062,17 @@ export async function registerRoutes(
           // Get thumbnail URL from Vimeo
           const vimeoData = await vimeoService.getVideo(video.vimeoVideoId!);
           if (vimeoData?.pictures?.base_link) {
-            // Store the Vimeo thumbnail URL directly
-            const thumbnailUrl = vimeoData.pictures.base_link.replace('?', '_640x360?');
+            // Store the Vimeo thumbnail URL directly (no prefix)
+            let thumbnailUrl = vimeoData.pictures.base_link;
+            // Vimeo sometimes returns base_link without size, append size suffix
+            if (!thumbnailUrl.includes('_')) {
+              thumbnailUrl = thumbnailUrl.replace(/\?.*$/, '') + '_640x360';
+            }
             await storage.updateVideo(video.id, { 
-              thumbnailPath: `vimeo://${thumbnailUrl}`
+              thumbnailPath: thumbnailUrl
             });
             thumbnailsUpdated++;
-            console.log(`[Vimeo Fix] Updated thumbnail for ${video.title}`);
+            console.log(`[Vimeo Fix] Updated thumbnail for ${video.title}: ${thumbnailUrl}`);
           }
         } catch (err) {
           console.error(`[Vimeo Fix] Error processing video ${video.id}:`, err);
@@ -3327,18 +3331,27 @@ export async function registerRoutes(
 
       const videos = await storage.getPublishedVideos();
       
-      // Add thumbnail URLs for Vimeo and Bunny videos
-      const videosWithThumbnails = await Promise.all(videos.map(async (video) => {
+      // Filter to only show Vimeo videos (for video content) or audio files
+      // Bunny-only videos are no longer supported
+      const filteredVideos = videos.filter(video => {
+        if (video.mediaType === "audio") return true; // Keep audio files
+        return !!video.vimeoVideoId; // Only keep videos with Vimeo
+      });
+      
+      // Add thumbnail URLs for Vimeo videos
+      const videosWithThumbnails = await Promise.all(filteredVideos.map(async (video) => {
+        // If thumbnail is already stored as Vimeo URL, use it directly
+        if (video.thumbnailPath?.startsWith("https://i.vimeocdn.com")) {
+          return {
+            ...video,
+            vimeoThumbnailUrl: video.thumbnailPath,
+          };
+        }
+        // Fetch from Vimeo API if not cached
         if (video.vimeoVideoId) {
           return {
             ...video,
             vimeoThumbnailUrl: await vimeoService.getThumbnailUrl(video.vimeoVideoId),
-          };
-        }
-        if (video.bunnyGuid) {
-          return {
-            ...video,
-            bunnyThumbnailUrl: await bunnyStream.getThumbnailUrl(video.bunnyGuid),
           };
         }
         return video;

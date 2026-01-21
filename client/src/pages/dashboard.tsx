@@ -525,25 +525,21 @@ function VideoCard({ video, isNew, onView }: { video: VideoType; isNew?: boolean
   const [cacheBust] = useState(() => Date.now());
 
   const thumbnailSrc = (() => {
-    // Vimeo thumbnail stored as vimeo://url
+    // Vimeo thumbnail URL stored directly (starts with https://i.vimeocdn.com)
+    if (video.thumbnailPath?.startsWith("https://i.vimeocdn.com")) {
+      return video.thumbnailPath;
+    }
+    // Legacy vimeo:// prefix format
     if (video.thumbnailPath?.startsWith("vimeo://")) {
       return video.thumbnailPath.replace("vimeo://", "");
     }
-    // Custom thumbnail path
+    // Custom thumbnail path (local storage)
     if (video.thumbnailPath && !video.thumbnailPath.startsWith("bunny://")) {
       return `/api/videos/${video.id}/thumbnail?v=${cacheBust}`;
     }
-    // Vimeo thumbnail from API
+    // Vimeo thumbnail from API response
     if ((video as any).vimeoThumbnailUrl) {
       return (video as any).vimeoThumbnailUrl;
-    }
-    // Bunny thumbnail
-    if ((video as any).bunnyThumbnailUrl) {
-      return (video as any).bunnyThumbnailUrl;
-    }
-    // Fallback for bunny:// path
-    if (video.bunnyGuid) {
-      return `https://vz-2480b6a7-327.b-cdn.net/${video.bunnyGuid}/thumbnail.jpg`;
     }
     return null;
   })();

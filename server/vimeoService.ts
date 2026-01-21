@@ -207,12 +207,9 @@ class VimeoService {
 
   async getSecureEmbedUrl(videoId: string): Promise<string | null> {
     try {
+      // First try getting the player_embed_url from Vimeo which includes any necessary hash
       const video = await this.getVideo(videoId);
-      if (!video) return null;
-
-      // Use player_embed_url if available (most reliable for private videos)
-      if (video.player_embed_url) {
-        // Append additional parameters to hide Vimeo branding
+      if (video?.player_embed_url) {
         const url = new URL(video.player_embed_url);
         url.searchParams.set('dnt', '1');
         url.searchParams.set('title', '0');
@@ -220,32 +217,14 @@ class VimeoService {
         url.searchParams.set('portrait', '0');
         return url.toString();
       }
-
-      // Extract embed URL from embed.html if available
-      if (video.embed?.html) {
-        const srcMatch = video.embed.html.match(/src="([^"]+)"/);
-        if (srcMatch) {
-          const url = new URL(srcMatch[1]);
-          url.searchParams.set('dnt', '1');
-          url.searchParams.set('title', '0');
-          url.searchParams.set('byline', '0');
-          url.searchParams.set('portrait', '0');
-          return url.toString();
-        }
-      }
-
-      // For private videos, Vimeo provides a hash in the link
-      // e.g., https://vimeo.com/123456789/abc123hash
-      const linkMatch = video.link?.match(/vimeo\.com\/\d+\/([a-zA-Z0-9]+)/);
-      if (linkMatch) {
-        return `https://player.vimeo.com/video/${videoId}?h=${linkMatch[1]}&dnt=1&title=0&byline=0&portrait=0`;
-      }
-
-      // Fallback to standard embed
+      
+      // If player_embed_url not available, use simple public URL
+      // (works for unlisted videos with public embed)
       return `https://player.vimeo.com/video/${videoId}?dnt=1&title=0&byline=0&portrait=0`;
     } catch (error) {
-      console.error(`[Vimeo] Error getting secure embed URL for ${videoId}:`, error);
-      return null;
+      console.error(`[Vimeo] Error getting embed URL for ${videoId}:`, error);
+      // Fallback to simple URL
+      return `https://player.vimeo.com/video/${videoId}?dnt=1&title=0&byline=0&portrait=0`;
     }
   }
 
@@ -253,8 +232,13 @@ class VimeoService {
     try {
       const video = await this.getVideo(videoId);
       if (video?.pictures?.base_link) {
-        // Vimeo provides different sizes, get a reasonable one
-        return video.pictures.base_link.replace('?', '_640x360?');
+        let url = video.pictures.base_link;
+        // Vimeo provides different sizes - append size suffix
+        // Handle both URLs with and without query strings
+        if (!url.includes('_')) {
+          url = url.replace(/\?.*$/, '') + '_640x360';
+        }
+        return url;
       }
       return null;
     } catch (error) {
