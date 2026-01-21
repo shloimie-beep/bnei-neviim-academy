@@ -3488,6 +3488,21 @@ export async function registerRoutes(
     }
   });
 
+  // Get trending videos (most views in past 48 hours)
+  app.get("/api/videos/trending", requireAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const trendingVideos = await storage.getTrendingVideos(10);
+      res.json(trendingVideos);
+    } catch (error) {
+      console.error("Get trending videos error:", error);
+      res.status(500).json({ message: "Failed to get trending videos" });
+    }
+  });
+
   // Mark a video as viewed by the current user
   app.post("/api/videos/:id/viewed", requireAuth, async (req, res) => {
     try {

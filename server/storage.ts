@@ -1,4 +1,4 @@
-import { eq, and, sql, desc, ilike } from "drizzle-orm";
+import { eq, and, sql, desc, ilike, gte, inArray } from "drizzle-orm";
 import { db } from "./db";
 import {
   users,
@@ -117,6 +117,9 @@ export interface IStorage {
     activeTrials: number;
     totalAudioFiles: number;
   }>;
+
+  // Trending
+  getTrendingVideos(limit?: number): Promise<Video[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -730,6 +733,45 @@ export class DatabaseStorage implements IStorage {
       .from(userVideoViews)
       .where(eq(userVideoViews.userId, userId));
     return views.map(v => v.videoId);
+  }
+
+  async getTrendingVideos(limit: number = 10): Promise<Video[]> {
+    // Get videos with most new views in the past 48 hours
+    const fortyEightHoursAgo = new Date(Date.now() - 48 * 60 * 60 * 1000);
+    
+    // Count recent views per video
+    const recentViews = await db
+      .select({
+        videoId: userVideoViews.videoId,
+        viewCount: sql<number>`count(*)`.as('view_count'),
+      })
+      .from(userVideoViews)
+      .where(gte(userVideoViews.firstViewedAt, fortyEightHoursAgo))
+      .groupBy(userVideoViews.videoId)
+      .orderBy(desc(sql`count(*)`))
+      .limit(limit);
+
+    if (recentViews.length === 0) {
+      // Fallback: return most viewed videos overall if no recent views
+      return db.select().from(videos)
+        .where(eq(videos.status, "ready"))
+        .orderBy(desc(videos.viewCount))
+        .limit(limit);
+    }
+
+    // Get full video data for the trending videos
+    const videoIds = recentViews.map(v => v.videoId);
+    const trendingVideos = await db.select().from(videos)
+      .where(and(
+        eq(videos.status, "ready"),
+        inArray(videos.id, videoIds)
+      ));
+
+    // Sort by the view count order from recentViews
+    const videoIdOrder = new Map(recentViews.map((v, i) => [v.videoId, i]));
+    return trendingVideos.sort((a, b) => 
+      (videoIdOrder.get(a.id) ?? 999) - (videoIdOrder.get(b.id) ?? 999)
+    );
   }
 
   // Trial Phone Numbers - track phones used in trials to prevent reuse

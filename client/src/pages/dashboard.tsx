@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward } from "lucide-react";
+import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -143,7 +143,7 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
     <DialogContent className="max-w-4xl p-0 overflow-hidden">
       <div className="relative bg-black">
         <iframe
-          src={embedUrl}
+          src={embedUrl.includes('?') ? `${embedUrl}&autoplay=1` : `${embedUrl}?autoplay=1`}
           className="w-full aspect-video"
           frameBorder="0"
           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
@@ -503,7 +503,7 @@ function VideoPlayer({ video, onClose }: { video: VideoType; onClose: () => void
   return <LegacyVideoPlayer video={video} onClose={onClose} />;
 }
 
-function VideoCard({ video, isNew, onView }: { video: VideoType; isNew?: boolean; onView?: () => void }) {
+function VideoCard({ video, isNew, onView, categoryName }: { video: VideoType; isNew?: boolean; onView?: () => void; categoryName?: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const isAudio = video.mediaType === "audio";
 
@@ -602,6 +602,11 @@ function VideoCard({ video, isNew, onView }: { video: VideoType; isNew?: boolean
                 </span>
               )}
             </div>
+            {categoryName && (
+              <Badge variant="secondary" className="mt-1 text-xs" data-testid={`badge-category-${video.id}`}>
+                {categoryName}
+              </Badge>
+            )}
             {video.description && (
               <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
                 {video.description}
@@ -1040,6 +1045,10 @@ export default function DashboardPage() {
   const recentScrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  const trendingScrollRef = useRef<HTMLDivElement>(null);
+  const [trendingCanScrollLeft, setTrendingCanScrollLeft] = useState(false);
+  const [trendingCanScrollRight, setTrendingCanScrollRight] = useState(true);
+  const [showTrending, setShowTrending] = useState(true);
   
   // Fuzzy search helper - normalizes and checks if search terms appear in text
   const fuzzyMatch = (text: string, query: string): boolean => {
@@ -1077,6 +1086,11 @@ export default function DashboardPage() {
 
   const { data: categories = [] } = useQuery<VideoCategory[]>({
     queryKey: ["/api/video-categories"],
+  });
+
+  const { data: trendingVideos = [] } = useQuery<VideoType[]>({
+    queryKey: ["/api/videos/trending"],
+    enabled: hasActiveSubscription,
   });
 
   const { data: viewedData } = useQuery<{ viewedVideoIds: string[] }>({
@@ -1199,6 +1213,36 @@ export default function DashboardPage() {
       return () => scrollEl.removeEventListener("scroll", checkScrollPosition);
     }
   }, [recentVideos]);
+
+  // Check trending scroll position
+  const checkTrendingScrollPosition = () => {
+    if (trendingScrollRef.current) {
+      const { scrollLeft, scrollWidth, clientWidth } = trendingScrollRef.current;
+      setTrendingCanScrollLeft(scrollLeft > 5);
+      setTrendingCanScrollRight(scrollLeft < scrollWidth - clientWidth - 5);
+    }
+  };
+
+  // Scroll functions for Trending section
+  const scrollTrending = (direction: "left" | "right") => {
+    if (trendingScrollRef.current) {
+      const scrollAmount = 300;
+      trendingScrollRef.current.scrollBy({
+        left: direction === "left" ? -scrollAmount : scrollAmount,
+        behavior: "smooth"
+      });
+    }
+  };
+
+  // Check trending scroll position on mount and when videos change
+  useEffect(() => {
+    checkTrendingScrollPosition();
+    const scrollEl = trendingScrollRef.current;
+    if (scrollEl) {
+      scrollEl.addEventListener("scroll", checkTrendingScrollPosition);
+      return () => scrollEl.removeEventListener("scroll", checkTrendingScrollPosition);
+    }
+  }, [trendingVideos]);
 
   const addPhoneMutation = useMutation({
     mutationFn: async (phoneNumber: string) => {
@@ -1632,14 +1676,18 @@ export default function DashboardPage() {
                   </div>
                   {filteredVideos.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {filteredVideos.map((video) => (
-                        <VideoCard 
-                          key={video.id} 
-                          video={video}
-                          isNew={isVideoNew(video)}
-                          onView={() => markVideoViewedMutation.mutate(video.id)}
-                        />
-                      ))}
+                      {filteredVideos.map((video) => {
+                        const category = categories.find(c => c.id === video.categoryId);
+                        return (
+                          <VideoCard 
+                            key={video.id} 
+                            video={video}
+                            isNew={isVideoNew(video)}
+                            onView={() => markVideoViewedMutation.mutate(video.id)}
+                            categoryName={category?.name}
+                          />
+                        );
+                      })}
                     </div>
                   ) : (
                     <p className="text-muted-foreground">No videos found matching your search.</p>
@@ -1711,6 +1759,88 @@ export default function DashboardPage() {
                       )}
                     </div>
                   </div>
+                </div>
+              )}
+
+              {/* Trending Videos Section - Horizontal Scrolling (hidden when searching) */}
+              {!searchQuery.trim() && trendingVideos.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <TrendingUp className="h-5 w-5 text-orange-500" />
+                    <h2 className="text-lg font-semibold">Trending</h2>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowTrending(!showTrending)}
+                      data-testid="button-toggle-trending"
+                      className="ml-auto"
+                    >
+                      {showTrending ? <EyeOff className="h-4 w-4 mr-1" /> : <Eye className="h-4 w-4 mr-1" />}
+                      {showTrending ? "Hide" : "Show"}
+                    </Button>
+                  </div>
+                  {showTrending && (
+                    <div className="grid grid-cols-[40px_1fr_40px] gap-2 items-center">
+                      {/* Left control column - always reserves space */}
+                      <div className="flex items-center justify-center">
+                        {trendingCanScrollLeft ? (
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => scrollTrending("left")}
+                            data-testid="button-scroll-trending-left"
+                          >
+                            <ChevronLeft className="h-4 w-4" />
+                          </Button>
+                        ) : (
+                          <div className="w-9 h-9" /> 
+                        )}
+                      </div>
+                      
+                      {/* Scrollable video track */}
+                      <div className="relative overflow-hidden">
+                        {/* Left fade gradient */}
+                        {trendingCanScrollLeft && (
+                          <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
+                        )}
+                        <div 
+                          ref={trendingScrollRef}
+                          className="flex gap-4 overflow-x-auto scrollbar-hide px-2 pb-2"
+                          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                        >
+                          {trendingVideos.map((video) => (
+                            <div key={video.id} className="flex-shrink-0 w-56">
+                              <VideoCard 
+                                video={video}
+                                isNew={isVideoNew(video)}
+                                onView={() => markVideoViewedMutation.mutate(video.id)}
+                              />
+                            </div>
+                          ))}
+                        </div>
+                        {/* Right fade gradient */}
+                        {trendingCanScrollRight && (
+                          <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
+                        )}
+                      </div>
+                      
+                      {/* Right control column - always reserves space */}
+                      <div className="flex items-center justify-center">
+                        {trendingCanScrollRight ? (
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => scrollTrending("right")}
+                            data-testid="button-scroll-trending-right"
+                          >
+                            <ChevronRight className="h-4 w-4" />
+                          </Button>
+                        ) : (
+                          <div className="w-9 h-9" />
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 
