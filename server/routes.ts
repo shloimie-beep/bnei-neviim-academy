@@ -3118,12 +3118,31 @@ export async function registerRoutes(
         }
       }
 
+      // Find videos in database that no longer exist in Vimeo and delete them
+      const vimeoVideoIds = new Set(allVimeoVideos.map(vv => vv.uri?.replace("/videos/", "")));
+      const videosToDelete = dbVideos.filter(v => 
+        v.vimeoVideoId && !vimeoVideoIds.has(v.vimeoVideoId)
+      );
+      
+      let deletedCount = 0;
+      
+      for (const video of videosToDelete) {
+        try {
+          await storage.deleteVideo(video.id);
+          deletedCount++;
+          console.log(`[Vimeo Sync] Deleted video ${video.title} (${video.vimeoVideoId}) - no longer in Vimeo`);
+        } catch (err) {
+          console.error(`[Vimeo Sync] Failed to delete video ${video.id}:`, err);
+        }
+      }
+
       res.json({ 
-        message: `Found ${allVimeoVideos.length} videos in Vimeo, imported ${importedCount} new, updated ${updatedCount} statuses`,
+        message: `Found ${allVimeoVideos.length} videos in Vimeo, imported ${importedCount} new, updated ${updatedCount} statuses, deleted ${deletedCount} removed from Vimeo`,
         totalInVimeo: allVimeoVideos.length,
         alreadyImported: existingVimeoIds.size,
         newlyImported: importedCount,
         statusesUpdated: updatedCount,
+        deleted: deletedCount,
       });
     } catch (error: any) {
       console.error("Vimeo sync error:", error);
