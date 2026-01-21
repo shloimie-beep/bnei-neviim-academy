@@ -3068,12 +3068,23 @@ export async function registerRoutes(
             privacyUpdated++;
           }
 
-          // Get thumbnail URL from Vimeo
+          // Get thumbnail URL from Vimeo - use sizes array for reliability
           const vimeoData = await vimeoService.getVideo(video.vimeoVideoId!);
-          if (vimeoData?.pictures?.base_link) {
-            // Store the Vimeo thumbnail URL directly (no prefix)
+          if (vimeoData?.pictures?.sizes && Array.isArray(vimeoData.pictures.sizes)) {
+            // Find 640px size or largest available
+            const size640 = vimeoData.pictures.sizes.find((s: any) => s.width === 640);
+            const thumbnailUrl = size640?.link || vimeoData.pictures.sizes[vimeoData.pictures.sizes.length - 1]?.link;
+            
+            if (thumbnailUrl) {
+              await storage.updateVideo(video.id, { 
+                thumbnailPath: thumbnailUrl
+              });
+              thumbnailsUpdated++;
+              console.log(`[Vimeo Fix] Updated thumbnail for ${video.title}: ${thumbnailUrl}`);
+            }
+          } else if (vimeoData?.pictures?.base_link) {
+            // Fallback to base_link
             let thumbnailUrl = vimeoData.pictures.base_link;
-            // Vimeo sometimes returns base_link without size, append size suffix
             if (!thumbnailUrl.includes('_')) {
               thumbnailUrl = thumbnailUrl.replace(/\?.*$/, '') + '_640x360';
             }
@@ -3083,6 +3094,9 @@ export async function registerRoutes(
             thumbnailsUpdated++;
             console.log(`[Vimeo Fix] Updated thumbnail for ${video.title}: ${thumbnailUrl}`);
           }
+          
+          // Small delay to avoid rate limiting
+          await new Promise(resolve => setTimeout(resolve, 100));
         } catch (err) {
           console.error(`[Vimeo Fix] Error processing video ${video.id}:`, err);
           errors++;
