@@ -250,7 +250,8 @@ class VimeoService {
     try {
       const token = await this.getAccessToken();
       
-      // Set privacy to unlisted with whitelist embedding
+      // Set embed to "public" - allows embedding on any domain
+      // View privacy is managed separately on Vimeo (set to private by user)
       const response = await fetch(`https://api.vimeo.com/videos/${videoId}`, {
         method: "PATCH",
         headers: {
@@ -260,8 +261,7 @@ class VimeoService {
         },
         body: JSON.stringify({
           privacy: {
-            view: "unlisted",
-            embed: "whitelist",
+            embed: "public",
           },
         }),
       });
@@ -272,34 +272,7 @@ class VimeoService {
         return false;
       }
 
-      // Add allowed embed domains
-      const allowedDomains = [
-        "onetimeonetime.com",
-        "www.onetimeonetime.com",
-        "onetimeonetime.replit.app",
-        "*.replit.app",
-        "*.replit.dev",
-        "replit.dev"
-      ];
-
-      for (const domain of allowedDomains) {
-        try {
-          const domainResponse = await fetch(`https://api.vimeo.com/videos/${videoId}/privacy/domains/${domain}`, {
-            method: "PUT",
-            headers: {
-              "Authorization": `Bearer ${token}`,
-              "Accept": "application/vnd.vimeo.*+json;version=3.4",
-            },
-          });
-          if (domainResponse.ok) {
-            console.log(`[Vimeo] Added domain ${domain} to whitelist for video ${videoId}`);
-          }
-        } catch (domainError) {
-          console.error(`[Vimeo] Failed to add domain ${domain}:`, domainError);
-        }
-      }
-
-      console.log(`[Vimeo] Updated privacy for video ${videoId} to unlisted/whitelist`);
+      console.log(`[Vimeo] Updated embed privacy for video ${videoId} to public (embeddable everywhere)`);
       return true;
     } catch (error) {
       console.error(`[Vimeo] Error updating privacy for ${videoId}:`, error);
