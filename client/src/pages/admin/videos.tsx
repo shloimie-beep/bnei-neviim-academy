@@ -974,56 +974,59 @@ export default function VideoManagement() {
         headers: getAuthHeaders(),
       });
       
-      if (!res.ok) {
-        throw new Error("Fix failed");
-      }
+      // Read response as text first to handle SSE or JSON
+      const contentType = res.headers.get('content-type') || '';
       
-      // Handle SSE response
-      const reader = res.body?.getReader();
-      const decoder = new TextDecoder();
-      
-      if (reader) {
-        let buffer = "";
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          
-          buffer += decoder.decode(value, { stream: true });
-          const lines = buffer.split('\n\n');
-          buffer = lines.pop() || "";
-          
-          for (const line of lines) {
-            if (line.startsWith('data: ')) {
-              try {
-                const data = JSON.parse(line.slice(6));
-                
-                if (data.type === 'progress') {
-                  setFixProgress({
-                    current: data.current,
-                    total: data.total,
-                    percent: data.percent,
-                    videoTitle: data.videoTitle
-                  });
-                } else if (data.type === 'complete') {
-                  queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
-                  toast({ 
-                    title: "Fix complete", 
-                    description: data.message 
-                  });
-                } else if (data.type === 'error') {
-                  throw new Error(data.message);
-                }
-              } catch (parseErr) {
-                // Skip invalid JSON
+      if (contentType.includes('text/event-stream')) {
+        // Handle SSE response
+        const text = await res.text();
+        const lines = text.split('\n');
+        let lastData: any = null;
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              lastData = JSON.parse(line.slice(6));
+              if (lastData.type === 'progress') {
+                setFixProgress({
+                  current: lastData.current,
+                  total: lastData.total,
+                  percent: lastData.percent,
+                  videoTitle: lastData.videoTitle
+                });
               }
+            } catch {
+              // Skip invalid JSON
             }
           }
         }
+        
+        if (lastData?.type === 'complete') {
+          queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+          toast({ 
+            title: "Fix complete", 
+            description: lastData.message 
+          });
+        } else if (lastData?.type === 'error') {
+          throw new Error(lastData.message);
+        }
+      } else {
+        // Handle regular JSON response
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.message || "Fix failed");
+        }
+        const result = await res.json();
+        queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+        toast({ 
+          title: "Fix complete", 
+          description: result.message 
+        });
       }
     } catch (error: any) {
       toast({ 
         title: "Fix failed", 
-        description: error.message, 
+        description: error.message || "An error occurred", 
         variant: "destructive" 
       });
     } finally {

@@ -3132,7 +3132,6 @@ export async function registerRoutes(
   });
 
   // Admin: Fix all Vimeo videos - update privacy settings and sync thumbnails
-  // Streaming progress endpoint for Fix Vimeo
   app.post("/api/admin/videos/fix-vimeo", requireAdmin, async (req, res) => {
     try {
       const videos = await storage.getAllVideos();
@@ -3140,34 +3139,12 @@ export async function registerRoutes(
       
       console.log(`[Vimeo Fix] Processing ${vimeoVideos.length} Vimeo videos`);
       
-      // Set up SSE for progress updates
-      res.setHeader('Content-Type', 'text/event-stream');
-      res.setHeader('Cache-Control', 'no-cache');
-      res.setHeader('Connection', 'keep-alive');
-      res.flushHeaders();
-
-      const sendProgress = (data: any) => {
-        res.write(`data: ${JSON.stringify(data)}\n\n`);
-      };
-
       let privacyUpdated = 0;
       let thumbnailsUpdated = 0;
       let errors = 0;
-      const total = vimeoVideos.length;
 
-      sendProgress({ type: 'start', total, message: `Starting to process ${total} videos...` });
-
-      for (let i = 0; i < vimeoVideos.length; i++) {
-        const video = vimeoVideos[i];
+      for (const video of vimeoVideos) {
         try {
-          sendProgress({ 
-            type: 'progress', 
-            current: i + 1, 
-            total, 
-            percent: Math.round(((i + 1) / total) * 100),
-            videoTitle: video.title 
-          });
-
           // Update privacy settings (unlisted + public embed)
           const privacyResult = await vimeoService.updateVideoPrivacy(video.vimeoVideoId!);
           if (privacyResult) {
@@ -3202,28 +3179,23 @@ export async function registerRoutes(
           }
           
           // Small delay to avoid rate limiting
-          await new Promise(resolve => setTimeout(resolve, 100));
+          await new Promise(resolve => setTimeout(resolve, 50));
         } catch (err) {
           console.error(`[Vimeo Fix] Error processing video ${video.id}:`, err);
           errors++;
         }
       }
 
-      sendProgress({
-        type: 'complete',
+      res.json({
         message: `Processed ${vimeoVideos.length} videos: ${privacyUpdated} privacy updated, ${thumbnailsUpdated} thumbnails synced, ${errors} errors`,
         total: vimeoVideos.length,
         privacyUpdated,
         thumbnailsUpdated,
         errors,
       });
-      
-      res.end();
     } catch (error: any) {
       console.error("Vimeo fix error:", error);
-      // For SSE, send error as event then close
-      res.write(`data: ${JSON.stringify({ type: 'error', message: error.message || "Failed to fix Vimeo videos" })}\n\n`);
-      res.end();
+      res.status(500).json({ message: error.message || "Failed to fix Vimeo videos" });
     }
   });
 
