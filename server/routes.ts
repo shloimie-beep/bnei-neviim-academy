@@ -351,6 +351,17 @@ export async function registerRoutes(
     })
   );
 
+  // Debug middleware to log session state
+  app.use((req, res, next) => {
+    if (req.path.startsWith('/api/admin')) {
+      console.log(`[Session Debug] ${req.method} ${req.path}`);
+      console.log(`[Session Debug] Cookie header:`, req.headers.cookie ? 'present' : 'missing');
+      console.log(`[Session Debug] Session ID:`, req.sessionID);
+      console.log(`[Session Debug] Session userId:`, req.session?.userId);
+    }
+    next();
+  });
+
   // ============ PHONE LIST ENDPOINT (for phone carrier API) ============
   // Protected by a simple token in query string - share the full URL with phone carrier
   // URL format: /api/phonelist/x7k9m2p4v8?token=PHONE_LIST_TOKEN
