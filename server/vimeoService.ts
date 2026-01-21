@@ -331,12 +331,11 @@ class VimeoService {
 
   async getSecureEmbedUrl(videoId: string): Promise<string | null> {
     try {
-      // First try getting the player_embed_url from Vimeo which includes any necessary hash
       const video = await this.getVideo(videoId);
       
       console.log(`[Vimeo] Video ${videoId} privacy: view=${video?.privacy?.view}, embed=${video?.privacy?.embed}`);
-      console.log(`[Vimeo] Video ${videoId} player_embed_url: ${video?.player_embed_url || 'not available'}`);
       
+      // Method 1: Use player_embed_url if available (includes hash)
       if (video?.player_embed_url) {
         const url = new URL(video.player_embed_url);
         url.searchParams.set('dnt', '1');
@@ -347,13 +346,37 @@ class VimeoService {
         return url.toString();
       }
       
-      // If player_embed_url not available, use simple public URL
-      // (works for unlisted videos with public embed)
-      console.log(`[Vimeo] Falling back to simple URL for ${videoId}`);
+      // Method 2: Extract hash from embed.html if available
+      if (video?.embed?.html) {
+        const embedHtml = video.embed.html;
+        const srcMatch = embedHtml.match(/src="([^"]+)"/);
+        if (srcMatch && srcMatch[1]) {
+          const url = new URL(srcMatch[1]);
+          url.searchParams.set('dnt', '1');
+          url.searchParams.set('title', '0');
+          url.searchParams.set('byline', '0');
+          url.searchParams.set('portrait', '0');
+          console.log(`[Vimeo] Extracted from embed.html: ${url.toString()}`);
+          return url.toString();
+        }
+      }
+      
+      // Method 3: Extract hash from video link (format: vimeo.com/videoId/hash)
+      if (video?.link) {
+        const linkMatch = video.link.match(/vimeo\.com\/\d+\/([a-zA-Z0-9]+)/);
+        if (linkMatch && linkMatch[1]) {
+          const hash = linkMatch[1];
+          const embedUrl = `https://player.vimeo.com/video/${videoId}?h=${hash}&dnt=1&title=0&byline=0&portrait=0`;
+          console.log(`[Vimeo] Extracted hash from link: ${embedUrl}`);
+          return embedUrl;
+        }
+      }
+      
+      // Fallback: simple URL (may not work for unlisted videos)
+      console.log(`[Vimeo] Falling back to simple URL for ${videoId} (no hash found)`);
       return `https://player.vimeo.com/video/${videoId}?dnt=1&title=0&byline=0&portrait=0`;
     } catch (error) {
       console.error(`[Vimeo] Error getting embed URL for ${videoId}:`, error);
-      // Fallback to simple URL
       return `https://player.vimeo.com/video/${videoId}?dnt=1&title=0&byline=0&portrait=0`;
     }
   }
