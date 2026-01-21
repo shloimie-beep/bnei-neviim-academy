@@ -459,12 +459,26 @@ export default function VideoManagement() {
   const [categoryToEdit, setCategoryToEdit] = useState<VideoCategory | null>(null);
   const [editCategoryName, setEditCategoryName] = useState("");
   
+  // Search state
+  const [searchQuery, setSearchQuery] = useState("");
+  
   // Vimeo sync state
   const [isSyncing, setIsSyncing] = useState(false);
   const [isFixing, setIsFixing] = useState(false);
   const [isExportingCategories, setIsExportingCategories] = useState(false);
   const [isApplyingCategories, setIsApplyingCategories] = useState(false);
   const categoryFileInputRef = useRef<HTMLInputElement>(null);
+  
+  // Fuzzy search helper - normalizes and checks if search terms appear in text
+  const fuzzyMatch = (text: string, query: string): boolean => {
+    if (!query.trim()) return true;
+    const normalizedText = text.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const terms = query.toLowerCase().split(/\s+/).filter(t => t.length > 0);
+    return terms.every(term => {
+      const normalizedTerm = term.replace(/[^a-z0-9]/g, '');
+      return normalizedText.includes(normalizedTerm);
+    });
+  };
 
   const { data: videos, isLoading } = useQuery<VideoType[]>({
     queryKey: ["/api/admin/videos"],
@@ -480,6 +494,9 @@ export default function VideoManagement() {
   const { data: categories = [] } = useQuery<VideoCategory[]>({
     queryKey: ["/api/admin/video-categories"],
   });
+  
+  // Filtered videos based on search
+  const filteredVideos = videos?.filter(video => fuzzyMatch(video.title, searchQuery)) || [];
 
   const createCategoryMutation = useMutation({
     mutationFn: async (name: string) => {
@@ -1169,6 +1186,15 @@ export default function VideoManagement() {
           <h1 className="text-2xl font-bold">Media Library</h1>
           <p className="text-muted-foreground">Manage video and audio content for subscribers</p>
         </div>
+        <div className="flex-1 max-w-md mx-4">
+          <Input
+            placeholder="Search videos..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full"
+            data-testid="input-search-videos"
+          />
+        </div>
         <div className="flex gap-2 flex-wrap">
           <Button 
             variant="outline" 
@@ -1752,7 +1778,7 @@ export default function VideoManagement() {
         </Card>
       ) : (
         <div className="grid gap-4">
-          {videos?.map((video) => (
+          {filteredVideos.map((video) => (
             <VideoCard
               key={video.id}
               video={video}

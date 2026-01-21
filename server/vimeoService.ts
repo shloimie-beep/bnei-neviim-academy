@@ -8,6 +8,7 @@ interface VimeoVideo {
   duration: number;
   pictures?: {
     base_link: string;
+    sizes?: Array<{ width: number; height: number; link: string }>;
   };
   upload?: {
     upload_link: string;

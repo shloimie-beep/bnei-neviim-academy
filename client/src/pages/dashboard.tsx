@@ -1036,9 +1036,21 @@ export default function DashboardPage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const recentScrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
+  
+  // Fuzzy search helper - normalizes and checks if search terms appear in text
+  const fuzzyMatch = (text: string, query: string): boolean => {
+    if (!query.trim()) return true;
+    const normalizedText = text.toLowerCase().replace(/[^a-z0-9]/g, '');
+    const terms = query.toLowerCase().split(/\s+/).filter(t => t.length > 0);
+    return terms.every(term => {
+      const normalizedTerm = term.replace(/[^a-z0-9]/g, '');
+      return normalizedText.includes(normalizedTerm);
+    });
+  };
 
   const { data: phoneNumbers, isLoading: phonesLoading } = useQuery<PhoneNumber[]>({
     queryKey: ["/api/phone-numbers"],
@@ -1141,16 +1153,22 @@ export default function DashboardPage() {
       .slice(0, 10);
   }, [videos]);
 
-  // Get filtered content based on selected category
+  // Get filtered content based on selected category and search
   const filteredVideos = useMemo(() => {
     if (!videos) return [];
+    
+    // If searching, search across all videos regardless of category
+    if (searchQuery.trim()) {
+      return videos.filter(v => fuzzyMatch(v.title, searchQuery));
+    }
+    
     if (selectedCategory === null) return [];
     if (selectedCategory === "documents") return [];
     if (selectedCategory === "uncategorized") {
       return videos.filter(v => !v.categoryId);
     }
     return videos.filter(v => v.categoryId === selectedCategory);
-  }, [videos, selectedCategory]);
+  }, [videos, selectedCategory, searchQuery]);
 
   // Check scroll position to show/hide arrows
   const checkScrollPosition = () => {
@@ -1585,8 +1603,52 @@ export default function DashboardPage() {
 
           {hasActiveSubscription ? (
             <>
-              {/* Recent Videos Section - Horizontal Scrolling */}
-              {recentVideos.length > 0 && (
+              {/* Search Bar */}
+              <div className="max-w-md">
+                <Input
+                  placeholder="Search videos..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full"
+                  data-testid="input-search-videos"
+                />
+              </div>
+              
+              {/* Search Results - shown when searching */}
+              {searchQuery.trim() && (
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-semibold">
+                      Search Results ({filteredVideos.length})
+                    </h2>
+                    <Button 
+                      variant="ghost" 
+                      size="sm" 
+                      onClick={() => setSearchQuery("")}
+                      data-testid="button-clear-search"
+                    >
+                      Clear Search
+                    </Button>
+                  </div>
+                  {filteredVideos.length > 0 ? (
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {filteredVideos.map((video) => (
+                        <VideoCard 
+                          key={video.id} 
+                          video={video}
+                          isNew={isVideoNew(video)}
+                          onView={() => markVideoViewedMutation.mutate(video.id)}
+                        />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-muted-foreground">No videos found matching your search.</p>
+                  )}
+                </div>
+              )}
+              
+              {/* Recent Videos Section - Horizontal Scrolling (hidden when searching) */}
+              {!searchQuery.trim() && recentVideos.length > 0 && (
                 <div>
                   <h2 className="text-lg font-semibold mb-4">Recent</h2>
                   <div className="grid grid-cols-[40px_1fr_40px] gap-2 items-center">
@@ -1695,8 +1757,8 @@ export default function DashboardPage() {
                 )}
               </div>
 
-              {/* Content based on selected category */}
-              {selectedCategory === "albums" ? (
+              {/* Content based on selected category (hidden when searching) */}
+              {searchQuery.trim() ? null : selectedCategory === "albums" ? (
                 <div>
                   {albumsLoading ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
