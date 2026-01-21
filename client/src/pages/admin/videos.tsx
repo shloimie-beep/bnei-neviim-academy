@@ -502,6 +502,8 @@ export default function VideoManagement() {
   const [isFixing, setIsFixing] = useState(false);
   const [isExportingCategories, setIsExportingCategories] = useState(false);
   const [isApplyingCategories, setIsApplyingCategories] = useState(false);
+  const [isDeletingBunnyVideos, setIsDeletingBunnyVideos] = useState(false);
+  const [showDeleteBunnyConfirm, setShowDeleteBunnyConfirm] = useState(false);
   const categoryFileInputRef = useRef<HTMLInputElement>(null);
   
   // Fuzzy search helper - normalizes and checks if search terms appear in text
@@ -981,6 +983,35 @@ export default function VideoManagement() {
     }
   };
 
+  const handleDeleteBunnyVideos = async () => {
+    setIsDeletingBunnyVideos(true);
+    try {
+      const res = await fetch("/api/admin/videos/bunny/bulk-delete", {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Delete failed");
+      }
+      const result = await res.json();
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+      toast({ 
+        title: "Bunny videos deleted", 
+        description: `Removed ${result.deletedCount} legacy Bunny videos` 
+      });
+    } catch (error: any) {
+      toast({ 
+        title: "Delete failed", 
+        description: error.message, 
+        variant: "destructive" 
+      });
+    } finally {
+      setIsDeletingBunnyVideos(false);
+      setShowDeleteBunnyConfirm(false);
+    }
+  };
+
   const handleExportCategories = async () => {
     setIsExportingCategories(true);
     try {
@@ -1314,6 +1345,19 @@ export default function VideoManagement() {
               if (file) handleApplyCategories(file);
             }}
           />
+          <Button 
+            variant="destructive" 
+            onClick={() => setShowDeleteBunnyConfirm(true)} 
+            disabled={isDeletingBunnyVideos}
+            data-testid="button-delete-bunny-videos"
+          >
+            {isDeletingBunnyVideos ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Trash2 className="h-4 w-4 mr-2" />
+            )}
+            Delete Bunny Videos
+          </Button>
           <Dialog open={isSingleDialogOpen} onOpenChange={setIsSingleDialogOpen}>
             <DialogTrigger asChild>
               <Button data-testid="button-upload-single-video">
@@ -2033,6 +2077,31 @@ export default function VideoManagement() {
           )}
         </div>
       ) : null}
+
+      {/* Delete Bunny Videos Confirmation Dialog */}
+      <AlertDialog open={showDeleteBunnyConfirm} onOpenChange={setShowDeleteBunnyConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete All Bunny Videos?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete all legacy Bunny Stream videos from the database and Bunny's servers. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={isDeletingBunnyVideos}>Cancel</AlertDialogCancel>
+            <AlertDialogAction 
+              onClick={handleDeleteBunnyVideos} 
+              disabled={isDeletingBunnyVideos}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              {isDeletingBunnyVideos ? (
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              ) : null}
+              Delete All Bunny Videos
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

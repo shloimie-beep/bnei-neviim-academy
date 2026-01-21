@@ -1817,6 +1817,8 @@ export async function registerRoutes(
             "Content-Type": metadata.contentType || "image/jpeg",
             "Content-Length": metadata.size,
             "Cache-Control": "no-cache, no-store, must-revalidate",
+            "Pragma": "no-cache",
+            "Expires": "0"
           });
           
           const stream = objectFile.createReadStream();
@@ -1836,11 +1838,60 @@ export async function registerRoutes(
         if (!fs.existsSync(video.thumbnailPath)) {
           return res.status(404).json({ message: "Thumbnail file not found" });
         }
+        res.set({
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          "Pragma": "no-cache",
+          "Expires": "0"
+        });
         res.sendFile(path.resolve(video.thumbnailPath));
       }
     } catch (error) {
       console.error("Serve thumbnail error:", error);
       res.status(500).json({ message: "Failed to serve thumbnail" });
+    }
+  });
+
+  // Admin: Bulk delete all Bunny Stream videos
+  app.delete("/api/admin/videos/bunny/bulk-delete", requireAdmin, async (req, res) => {
+    try {
+      const allVideos = await storage.getAllVideos();
+      const bunnyVideos = allVideos.filter(v => v.bunnyGuid && !v.vimeoVideoId);
+      
+      if (bunnyVideos.length === 0) {
+        return res.json({ message: "No Bunny videos found", deletedCount: 0 });
+      }
+
+      let deletedCount = 0;
+      const errors: string[] = [];
+
+      for (const video of bunnyVideos) {
+        try {
+          // Delete from Bunny Stream
+          if (video.bunnyGuid) {
+            try {
+              await bunnyStream.deleteVideo(video.bunnyGuid);
+            } catch (err) {
+              console.error(`Failed to delete video ${video.id} from Bunny:`, err);
+            }
+          }
+          
+          // Delete from database
+          await storage.deleteVideo(video.id);
+          deletedCount++;
+        } catch (err) {
+          errors.push(`Failed to delete ${video.title}: ${err}`);
+        }
+      }
+
+      res.json({ 
+        message: `Deleted ${deletedCount} Bunny videos`, 
+        deletedCount,
+        totalFound: bunnyVideos.length,
+        errors: errors.length > 0 ? errors : undefined
+      });
+    } catch (error) {
+      console.error("Bulk delete Bunny videos error:", error);
+      res.status(500).json({ message: "Failed to delete Bunny videos" });
     }
   });
 

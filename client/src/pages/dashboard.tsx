@@ -193,6 +193,7 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
   const [streamUrl, setStreamUrl] = useState<string | null>(null);
   const [streamLoading, setStreamLoading] = useState(true);
   const [streamError, setStreamError] = useState<string | null>(null);
+  const [thumbnailCacheBust] = useState(() => Date.now());
 
   useEffect(() => {
     // Reset state when video changes
@@ -371,7 +372,7 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
             />
             {video.thumbnailPath ? (
               <img 
-                src={`/api/videos/${video.id}/thumbnail`}
+                src={`/api/videos/${video.id}/thumbnail?v=${thumbnailCacheBust}`}
                 alt={video.title}
                 className="max-h-[50%] max-w-[50%] object-contain rounded-lg"
                 onContextMenu={(e) => e.preventDefault()}
