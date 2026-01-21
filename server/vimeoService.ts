@@ -333,17 +333,23 @@ class VimeoService {
     try {
       // First try getting the player_embed_url from Vimeo which includes any necessary hash
       const video = await this.getVideo(videoId);
+      
+      console.log(`[Vimeo] Video ${videoId} privacy: view=${video?.privacy?.view}, embed=${video?.privacy?.embed}`);
+      console.log(`[Vimeo] Video ${videoId} player_embed_url: ${video?.player_embed_url || 'not available'}`);
+      
       if (video?.player_embed_url) {
         const url = new URL(video.player_embed_url);
         url.searchParams.set('dnt', '1');
         url.searchParams.set('title', '0');
         url.searchParams.set('byline', '0');
         url.searchParams.set('portrait', '0');
+        console.log(`[Vimeo] Using player_embed_url: ${url.toString()}`);
         return url.toString();
       }
       
       // If player_embed_url not available, use simple public URL
       // (works for unlisted videos with public embed)
+      console.log(`[Vimeo] Falling back to simple URL for ${videoId}`);
       return `https://player.vimeo.com/video/${videoId}?dnt=1&title=0&byline=0&portrait=0`;
     } catch (error) {
       console.error(`[Vimeo] Error getting embed URL for ${videoId}:`, error);

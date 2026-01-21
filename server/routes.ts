@@ -3218,6 +3218,29 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Check Vimeo privacy settings for a specific video
+  app.get("/api/admin/videos/check-vimeo/:vimeoId", requireAdmin, async (req, res) => {
+    try {
+      const { vimeoId } = req.params;
+      const videoInfo = await vimeoService.getVideoInfo(vimeoId);
+      
+      if (!videoInfo) {
+        return res.status(404).json({ message: "Video not found on Vimeo" });
+      }
+      
+      res.json({
+        vimeoId,
+        name: videoInfo.name,
+        privacy: videoInfo.privacy,
+        embedHtml: videoInfo.embed?.html,
+        link: videoInfo.link,
+      });
+    } catch (error: any) {
+      console.error("Vimeo check error:", error);
+      res.status(500).json({ message: error.message || "Failed to check Vimeo video" });
+    }
+  });
+
   // Admin: Export category assignments as JSON for syncing between environments
   app.get("/api/admin/videos/export-categories", requireAdmin, async (req, res) => {
     try {
