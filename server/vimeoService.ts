@@ -1,4 +1,6 @@
 const VIMEO_ACCESS_TOKEN = process.env.VIMEO_ACCESS_TOKEN;
+const VIMEO_CLIENT_ID = process.env.VIMEO_CLIENT_ID;
+const VIMEO_CLIENT_SECRET = process.env.VIMEO_CLIENT_SECRET;
 
 interface VimeoVideo {
   uri: string;
@@ -32,14 +34,69 @@ interface VimeoCreateResponse {
 
 class VimeoService {
   private accessToken: string;
+  private clientId: string;
+  private clientSecret: string;
+  private cachedToken: string | null = null;
+  private tokenExpiry: number = 0;
 
   constructor() {
     this.accessToken = VIMEO_ACCESS_TOKEN || "";
+    this.clientId = VIMEO_CLIENT_ID || "";
+    this.clientSecret = VIMEO_CLIENT_SECRET || "";
+    
     if (this.accessToken) {
-      console.log("[Vimeo] Service initialized");
+      console.log("[Vimeo] Service initialized with personal access token");
+    } else if (this.clientId && this.clientSecret) {
+      console.log("[Vimeo] Service initialized with client credentials");
     } else {
-      console.log("[Vimeo] Access token not configured - uploads will fail");
+      console.log("[Vimeo] No credentials configured - API calls will fail");
     }
+  }
+
+  private async getAccessToken(): Promise<string> {
+    // Use personal access token if available
+    if (this.accessToken) {
+      return this.accessToken;
+    }
+
+    // Check cached token
+    if (this.cachedToken && Date.now() < this.tokenExpiry) {
+      return this.cachedToken;
+    }
+
+    // Get new token via client credentials grant
+    if (!this.clientId || !this.clientSecret) {
+      throw new Error("[Vimeo] No credentials configured");
+    }
+
+    const credentials = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString("base64");
+    
+    const response = await fetch("https://api.vimeo.com/oauth/authorize/client", {
+      method: "POST",
+      headers: {
+        "Authorization": `Basic ${credentials}`,
+        "Content-Type": "application/json",
+        "Accept": "application/vnd.vimeo.*+json;version=3.4",
+      },
+      body: JSON.stringify({
+        grant_type: "client_credentials",
+        scope: "public private video_files",
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("[Vimeo] Failed to get access token:", response.status, errorText);
+      throw new Error(`[Vimeo] Failed to authenticate: ${response.status}`);
+    }
+
+    const data = await response.json();
+    this.cachedToken = data.access_token;
+    // Cache for 1 hour (tokens don't have explicit expiry in client credentials)
+    this.tokenExpiry = Date.now() + 3600000;
+    
+    console.log("[Vimeo] Successfully obtained access token via client credentials");
+    return this.cachedToken!;
   }
 
   // Helper to handle rate limiting with retry
@@ -72,10 +129,11 @@ class VimeoService {
   }
 
   async createVideo(title: string, fileSize: number): Promise<VimeoCreateResponse> {
+    const token = await this.getAccessToken();
     const response = await this.fetchWithRetry("https://api.vimeo.com/me/videos", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer ${this.accessToken}`,
+        "Authorization": `Bearer ${token}`,
         "Content-Type": "application/json",
         "Accept": "application/vnd.vimeo.*+json;version=3.4",
       },
@@ -120,13 +178,14 @@ class VimeoService {
     ];
 
     try {
+      const token = await this.getAccessToken();
       for (const domain of domains) {
         await fetch(
           `https://api.vimeo.com/videos/${videoId}/privacy/domains/${domain}`,
           {
             method: "PUT",
             headers: {
-              "Authorization": `Bearer ${this.accessToken}`,
+              "Authorization": `Bearer ${token}`,
             },
           }
         );
@@ -139,11 +198,12 @@ class VimeoService {
 
   async listVideos(page: number = 1, perPage: number = 100): Promise<{ items: VimeoVideo[]; totalItems: number }> {
     try {
+      const token = await this.getAccessToken();
       const response = await this.fetchWithRetry(
         `https://api.vimeo.com/me/videos?page=${page}&per_page=${perPage}&fields=uri,name,link,status,duration,pictures,player_embed_url`,
         {
           headers: {
-            "Authorization": `Bearer ${this.accessToken}`,
+            "Authorization": `Bearer ${token}`,
             "Accept": "application/vnd.vimeo.*+json;version=3.4",
           },
         }
@@ -167,9 +227,10 @@ class VimeoService {
 
   async getVideo(videoId: string): Promise<VimeoVideo | null> {
     try {
+      const token = await this.getAccessToken();
       const response = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}`, {
         headers: {
-          "Authorization": `Bearer ${this.accessToken}`,
+          "Authorization": `Bearer ${token}`,
           "Accept": "application/vnd.vimeo.*+json;version=3.4",
         },
       });
@@ -187,10 +248,11 @@ class VimeoService {
 
   async updateVideoPrivacy(videoId: string): Promise<boolean> {
     try {
+      const token = await this.getAccessToken();
       const response = await fetch(`https://api.vimeo.com/videos/${videoId}`, {
         method: "PATCH",
         headers: {
-          "Authorization": `Bearer ${this.accessToken}`,
+          "Authorization": `Bearer ${token}`,
           "Content-Type": "application/json",
           "Accept": "application/vnd.vimeo.*+json;version=3.4",
         },
@@ -217,10 +279,11 @@ class VimeoService {
 
   async deleteVideo(videoId: string): Promise<boolean> {
     try {
+      const token = await this.getAccessToken();
       const response = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}`, {
         method: "DELETE",
         headers: {
-          "Authorization": `Bearer ${this.accessToken}`,
+          "Authorization": `Bearer ${token}`,
         },
       });
 
