@@ -3093,6 +3093,92 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Export category assignments as JSON for syncing between environments
+  app.get("/api/admin/videos/export-categories", requireAdmin, async (req, res) => {
+    try {
+      const videos = await storage.getAllVideos();
+      const categories = await storage.getAllVideoCategories();
+      
+      // Create mapping of vimeoVideoId to category info
+      const categoryAssignments = videos
+        .filter(v => v.vimeoVideoId && v.categoryId)
+        .map(v => ({
+          vimeoVideoId: v.vimeoVideoId,
+          categoryName: categories.find(c => c.id === v.categoryId)?.name || null,
+        }))
+        .filter(v => v.categoryName);
+
+      res.json({
+        exportDate: new Date().toISOString(),
+        totalAssignments: categoryAssignments.length,
+        categories: categories.map(c => ({ name: c.name, sortOrder: c.sortOrder })),
+        assignments: categoryAssignments,
+      });
+    } catch (error: any) {
+      console.error("Category export error:", error);
+      res.status(500).json({ message: error.message || "Failed to export categories" });
+    }
+  });
+
+  // Admin: Apply category assignments from export data
+  app.post("/api/admin/videos/apply-categories", requireAdmin, async (req, res) => {
+    try {
+      const { categories: categoryData, assignments } = req.body;
+      
+      if (!assignments || !Array.isArray(assignments)) {
+        return res.status(400).json({ message: "Invalid category data format" });
+      }
+
+      // Get existing categories
+      let existingCategories = await storage.getAllVideoCategories();
+      
+      // Create any missing categories
+      if (categoryData && Array.isArray(categoryData)) {
+        for (const cat of categoryData) {
+          if (!existingCategories.find(c => c.name === cat.name)) {
+            const newCat = await storage.createVideoCategory({
+              name: cat.name,
+              sortOrder: cat.sortOrder || 0,
+            });
+            existingCategories.push(newCat);
+            console.log(`[Categories] Created category: ${cat.name}`);
+          }
+        }
+      }
+
+      // Build category name to ID map
+      const categoryMap = new Map(existingCategories.map(c => [c.name, c.id]));
+      
+      // Get all videos
+      const videos = await storage.getAllVideos();
+      const videoByVimeoId = new Map(videos.filter(v => v.vimeoVideoId).map(v => [v.vimeoVideoId, v]));
+      
+      let updated = 0;
+      let notFound = 0;
+      
+      for (const assignment of assignments) {
+        const video = videoByVimeoId.get(assignment.vimeoVideoId);
+        const categoryId = categoryMap.get(assignment.categoryName);
+        
+        if (video && categoryId) {
+          await storage.updateVideo(video.id, { categoryId });
+          updated++;
+        } else {
+          notFound++;
+        }
+      }
+
+      res.json({
+        message: `Applied ${updated} category assignments (${notFound} videos not found in this environment)`,
+        updated,
+        notFound,
+      });
+    } catch (error: any) {
+      console.error("Category apply error:", error);
+      res.status(500).json({ message: error.message || "Failed to apply categories" });
+    }
+  });
+
   // Admin: Delete custom thumbnail and optionally regenerate from video
   app.delete("/api/admin/videos/:id/thumbnail", requireAdmin, async (req, res) => {
     try {

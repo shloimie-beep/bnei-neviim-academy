@@ -460,6 +460,9 @@ export default function VideoManagement() {
   // Vimeo sync state
   const [isSyncing, setIsSyncing] = useState(false);
   const [isFixing, setIsFixing] = useState(false);
+  const [isExportingCategories, setIsExportingCategories] = useState(false);
+  const [isApplyingCategories, setIsApplyingCategories] = useState(false);
+  const categoryFileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: videos, isLoading } = useQuery<VideoType[]>({
     queryKey: ["/api/admin/videos"],
@@ -881,6 +884,77 @@ export default function VideoManagement() {
     }
   };
 
+  const handleExportCategories = async () => {
+    setIsExportingCategories(true);
+    try {
+      const res = await fetch("/api/admin/videos/export-categories", {
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Export failed");
+      }
+      const data = await res.json();
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `category-assignments-${new Date().toISOString().split("T")[0]}.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      
+      toast({ 
+        title: "Categories exported", 
+        description: `Exported ${data.totalAssignments} category assignments` 
+      });
+    } catch (error: any) {
+      toast({ 
+        title: "Export failed", 
+        description: error.message, 
+        variant: "destructive" 
+      });
+    } finally {
+      setIsExportingCategories(false);
+    }
+  };
+
+  const handleApplyCategories = async (file: File) => {
+    setIsApplyingCategories(true);
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      
+      const res = await fetch("/api/admin/videos/apply-categories", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(data),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Apply failed");
+      }
+      const result = await res.json();
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+      toast({ 
+        title: "Categories applied", 
+        description: result.message 
+      });
+    } catch (error: any) {
+      toast({ 
+        title: "Apply failed", 
+        description: error.message, 
+        variant: "destructive" 
+      });
+    } finally {
+      setIsApplyingCategories(false);
+      if (categoryFileInputRef.current) categoryFileInputRef.current.value = "";
+    }
+  };
+
   const handleSingleUpload = async () => {
     if (!singleFile || !singleTitle) return;
 
@@ -1098,6 +1172,42 @@ export default function VideoManagement() {
             )}
             Fix Vimeo Videos
           </Button>
+          <Button 
+            variant="outline" 
+            onClick={handleExportCategories} 
+            disabled={isExportingCategories}
+            data-testid="button-export-categories"
+          >
+            {isExportingCategories ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Download className="h-4 w-4 mr-2" />
+            )}
+            Export Categories
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => categoryFileInputRef.current?.click()} 
+            disabled={isApplyingCategories}
+            data-testid="button-apply-categories"
+          >
+            {isApplyingCategories ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Upload className="h-4 w-4 mr-2" />
+            )}
+            Apply Categories
+          </Button>
+          <input
+            type="file"
+            ref={categoryFileInputRef}
+            accept=".json"
+            className="hidden"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) handleApplyCategories(file);
+            }}
+          />
           <Dialog open={isSingleDialogOpen} onOpenChange={setIsSingleDialogOpen}>
             <DialogTrigger asChild>
               <Button data-testid="button-upload-single-video">
