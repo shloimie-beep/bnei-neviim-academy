@@ -91,69 +91,42 @@ function PhoneNumberCard({ phoneNumber, onDelete }: { phoneNumber: PhoneNumber; 
   );
 }
 
-// Helper to extract Vimeo hash from thumbnail URL
-function extractVimeoHashFromThumbnail(thumbnailPath: string | null): string | null {
-  if (!thumbnailPath) return null;
-  
-  // Format: https://i.vimeocdn.com/video/{videoId}_{hash}_...
-  const match = thumbnailPath.match(/vimeocdn\.com\/video\/\d+_([a-f0-9]+)/i);
-  return match ? match[1] : null;
-}
-
 function VideoEmbedPlayer({ video }: { video: VideoType }) {
   const [embedUrl, setEmbedUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Try to construct embed URL directly from video data
-    if (video.vimeoVideoId) {
-      // Extract hash from thumbnail URL if available
-      const hash = extractVimeoHashFromThumbnail(video.thumbnailPath);
-      
-      if (hash) {
-        // We have the hash, construct direct embed URL
-        const directEmbedUrl = `https://player.vimeo.com/video/${video.vimeoVideoId}?h=${hash}&dnt=1&title=0&byline=0&portrait=0`;
-        setEmbedUrl(directEmbedUrl);
-        setLoading(false);
-        return;
-      }
-      
-      // No hash available - fall through to API call for unlisted videos
-    }
+    // Reset state when video changes
+    setEmbedUrl(null);
+    setLoading(true);
+    setError(null);
     
-    // Fallback to API for non-Vimeo videos or when hash unavailable
+    // Always use the backend API to get the embed URL
     fetch(`/api/videos/${video.id}/stream`)
-      .then(res => res.json())
-      .then(data => {
-        if (data.vimeo && data.embedUrl) {
-          setEmbedUrl(data.embedUrl);
-        } else if (video.vimeoVideoId) {
-          // Last resort: try direct embed without hash (works for public videos)
-          setEmbedUrl(`https://player.vimeo.com/video/${video.vimeoVideoId}?dnt=1&title=0&byline=0&portrait=0`);
+      .then(res => {
+        if (!res.ok) throw new Error("Failed to load");
+        const contentType = res.headers.get("content-type");
+        if (contentType?.includes("application/json")) {
+          return res.json().then(data => {
+            if (data.embedUrl) {
+              setEmbedUrl(data.embedUrl);
+            } else {
+              setError("Video not available");
+            }
+            setLoading(false);
+          });
         } else {
-          setError("Video not available");
+          // Non-JSON response - this shouldn't happen for Vimeo videos
+          setError("Video format not supported");
+          setLoading(false);
         }
-        setLoading(false);
       })
       .catch(() => {
-        // API failed - try direct embed if we have vimeoVideoId
-        if (video.vimeoVideoId) {
-          const hash = extractVimeoHashFromThumbnail(video.thumbnailPath);
-          let fallbackUrl = `https://player.vimeo.com/video/${video.vimeoVideoId}`;
-          if (hash) {
-            fallbackUrl += `?h=${hash}&dnt=1&title=0&byline=0&portrait=0`;
-          } else {
-            fallbackUrl += `?dnt=1&title=0&byline=0&portrait=0`;
-          }
-          setEmbedUrl(fallbackUrl);
-          setLoading(false);
-        } else {
-          setError("Failed to load video");
-          setLoading(false);
-        }
+        setError("Failed to load video");
+        setLoading(false);
       });
-  }, [video.id, video.vimeoVideoId, video.thumbnailPath]);
+  }, [video.id]);
 
   if (loading) {
     return (
@@ -221,22 +194,12 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
   const [streamError, setStreamError] = useState<string | null>(null);
 
   useEffect(() => {
-    // Try to construct Vimeo embed URL directly from video data
-    if (video.vimeoVideoId) {
-      const hash = extractVimeoHashFromThumbnail(video.thumbnailPath);
-      
-      if (hash) {
-        // We have the hash, construct direct embed URL
-        const directEmbedUrl = `https://player.vimeo.com/video/${video.vimeoVideoId}?h=${hash}&dnt=1&title=0&byline=0&portrait=0`;
-        setStreamUrl(directEmbedUrl);
-        setStreamLoading(false);
-        return;
-      }
-      
-      // No hash available - fall through to API call
-    }
+    // Reset state when video changes
+    setStreamUrl(null);
+    setStreamLoading(true);
+    setStreamError(null);
     
-    // Fallback to API for non-Vimeo videos or when hash unavailable
+    // Always use the backend API - it's reliable and handles all video types
     fetch(`/api/videos/${video.id}/stream`)
       .then(res => {
         if (!res.ok) throw new Error("Failed to load");
@@ -245,38 +208,24 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
           return res.json().then(data => {
             if (data.cdnUrl) {
               setStreamUrl(data.cdnUrl);
-            } else if (data.vimeo && data.embedUrl) {
+            } else if (data.embedUrl) {
               setStreamUrl(data.embedUrl);
-            } else if (video.vimeoVideoId) {
-              // Last resort: try direct embed without hash
-              setStreamUrl(`https://player.vimeo.com/video/${video.vimeoVideoId}?dnt=1&title=0&byline=0&portrait=0`);
             } else {
               setStreamError("Media not available");
             }
             setStreamLoading(false);
           });
         } else {
+          // Direct stream (for legacy videos)
           setStreamUrl(`/api/videos/${video.id}/stream`);
           setStreamLoading(false);
         }
       })
       .catch(() => {
-        // API failed - try direct embed if we have vimeoVideoId
-        if (video.vimeoVideoId) {
-          const hash = extractVimeoHashFromThumbnail(video.thumbnailPath);
-          let fallbackUrl = `https://player.vimeo.com/video/${video.vimeoVideoId}`;
-          if (hash) {
-            fallbackUrl += `?h=${hash}&dnt=1&title=0&byline=0&portrait=0`;
-          } else {
-            fallbackUrl += `?dnt=1&title=0&byline=0&portrait=0`;
-          }
-          setStreamUrl(fallbackUrl);
-        } else {
-          setStreamUrl(`/api/videos/${video.id}/stream`);
-        }
+        setStreamError("Failed to load video");
         setStreamLoading(false);
       });
-  }, [video.id, video.vimeoVideoId, video.thumbnailPath]);
+  }, [video.id]);
 
   const speedOptions = [0.5, 0.75, 1, 1.25, 1.5, 2];
 
