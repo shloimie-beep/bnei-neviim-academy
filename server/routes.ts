@@ -589,7 +589,11 @@ export async function registerRoutes(
       });
 
       req.session.userId = user.id;
-      res.json({ user: { ...user, password: undefined } });
+      
+      // Generate a token for localStorage-based auth (works when cookies are blocked)
+      const token = generateMobileToken({ id: user.id, email: user.email, role: user.role });
+      
+      res.json({ user: { ...user, password: undefined }, token });
     } catch (error: any) {
       console.error("Registration error:", error);
       res.status(500).json({ message: "Registration failed" });
@@ -619,6 +623,9 @@ export async function registerRoutes(
 
       req.session.userId = user.id;
       
+      // Generate a token for localStorage-based auth (works when cookies are blocked)
+      const token = generateMobileToken({ id: user.id, email: user.email, role: user.role });
+      
       // Explicitly save session before responding
       req.session.save((err) => {
         if (err) {
@@ -626,7 +633,7 @@ export async function registerRoutes(
           return res.status(500).json({ message: "Login failed" });
         }
         console.log("Login successful for:", email, "Session ID:", req.sessionID);
-        res.json({ user: { ...user, password: undefined } });
+        res.json({ user: { ...user, password: undefined }, token });
       });
     } catch (error: any) {
       console.error("Login error:", error);
@@ -967,6 +974,16 @@ export async function registerRoutes(
   });
 
   app.get("/api/auth/me", async (req, res) => {
+    // Check for Bearer token (web app localStorage-based auth)
+    const authHeader = req.headers.authorization;
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      const token = authHeader.substring(7);
+      const payload = verifyMobileToken(token);
+      if (payload) {
+        req.mobileUser = payload;
+      }
+    }
+    
     const userId = getAuthUserId(req);
     if (!userId) {
       return res.status(401).json({ message: "Not authenticated" });

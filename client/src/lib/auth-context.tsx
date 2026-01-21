@@ -20,6 +20,21 @@ interface AuthContextType {
   register: (data: RegisterData) => Promise<void>;
   logout: () => Promise<void>;
   refreshUser: () => Promise<void>;
+  getAuthHeaders: () => Record<string, string>;
+}
+
+const AUTH_TOKEN_KEY = "auth_token";
+
+export function getStoredAuthToken(): string | null {
+  return localStorage.getItem(AUTH_TOKEN_KEY);
+}
+
+export function getAuthHeaders(): Record<string, string> {
+  const token = getStoredAuthToken();
+  if (token) {
+    return { Authorization: `Bearer ${token}` };
+  }
+  return {};
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -30,14 +45,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshUser = async () => {
     try {
+      const token = getStoredAuthToken();
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers.Authorization = `Bearer ${token}`;
+      }
+      
       const response = await fetch("/api/auth/me", {
         credentials: "include",
+        headers,
       });
       if (response.ok) {
         const data = await response.json();
         setUser(data.user);
       } else {
         setUser(null);
+        localStorage.removeItem(AUTH_TOKEN_KEY);
       }
     } catch {
       setUser(null);
@@ -64,6 +87,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     
     const data = await response.json();
+    if (data.token) {
+      localStorage.setItem(AUTH_TOKEN_KEY, data.token);
+    }
     setUser(data.user);
     return data.user;
   };
@@ -82,6 +108,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
     
     const result = await response.json();
+    if (result.token) {
+      localStorage.setItem(AUTH_TOKEN_KEY, result.token);
+    }
     setUser(result.user);
   };
 
@@ -89,12 +118,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     await fetch("/api/auth/logout", {
       method: "POST",
       credentials: "include",
+      headers: getAuthHeaders(),
     });
+    localStorage.removeItem(AUTH_TOKEN_KEY);
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout, refreshUser }}>
+    <AuthContext.Provider value={{ user, isLoading, login, register, logout, refreshUser, getAuthHeaders }}>
       {children}
     </AuthContext.Provider>
   );

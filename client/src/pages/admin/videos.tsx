@@ -15,6 +15,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
+import { getAuthHeaders } from "@/lib/auth-context";
 import type { Video as VideoType, VideoCategory } from "@shared/schema";
 
 function formatFileSize(bytes: number | null): string {
@@ -558,8 +559,9 @@ export default function VideoManagement() {
     mutationFn: async (name: string) => {
       const res = await fetch("/api/admin/video-categories", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body: JSON.stringify({ name }),
+        credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to create category");
       return res.json();
@@ -577,7 +579,11 @@ export default function VideoManagement() {
 
   const deleteCategoryMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(`/api/admin/video-categories/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/video-categories/${id}`, { 
+        method: "DELETE",
+        headers: getAuthHeaders(),
+        credentials: "include",
+      });
       if (!res.ok) throw new Error("Failed to delete category");
     },
     onSuccess: () => {
@@ -593,8 +599,9 @@ export default function VideoManagement() {
     mutationFn: async ({ id, name }: { id: string; name: string }) => {
       const res = await fetch(`/api/admin/video-categories/${id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body: JSON.stringify({ name }),
+        credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to rename category");
       return res.json();
@@ -615,8 +622,9 @@ export default function VideoManagement() {
     mutationFn: async (categoryIds: string[]) => {
       const res = await fetch("/api/admin/video-categories/reorder", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body: JSON.stringify({ categoryIds }),
+        credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to reorder categories");
       return res.json();
@@ -931,6 +939,7 @@ export default function VideoManagement() {
       const res = await fetch("/api/admin/videos/sync-from-vimeo", {
         method: "POST",
         credentials: "include",
+        headers: getAuthHeaders(),
       });
       if (!res.ok) {
         const err = await res.json();
@@ -959,6 +968,7 @@ export default function VideoManagement() {
       const res = await fetch("/api/admin/videos/fix-vimeo", {
         method: "POST",
         credentials: "include",
+        headers: getAuthHeaders(),
       });
       if (!res.ok) {
         const err = await res.json();
