@@ -1869,15 +1869,24 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Video not found" });
       }
 
-      // Delete video file from cloud storage, local filesystem, or Bunny Stream
-      if (video.bunnyGuid) {
+      // Delete video file from Vimeo, Bunny Stream, cloud storage, or local filesystem
+      if (video.vimeoVideoId) {
+        try {
+          await vimeoService.deleteVideo(video.vimeoVideoId);
+          console.log(`Deleted video ${req.params.id} from Vimeo`);
+        } catch (err) {
+          console.error(`Failed to delete video ${req.params.id} from Vimeo:`, err);
+        }
+      } else if (video.bunnyGuid) {
         try {
           await bunnyStream.deleteVideo(video.bunnyGuid);
           console.log(`Deleted video ${req.params.id} from Bunny Stream`);
         } catch (err) {
           console.error(`Failed to delete video ${req.params.id} from Bunny Stream:`, err);
         }
-      } else if (video.filepath?.startsWith("/objects/") || video.filepath?.startsWith("https://storage.googleapis.com/")) {
+      }
+      
+      if (video.filepath?.startsWith("/objects/") || video.filepath?.startsWith("https://storage.googleapis.com/")) {
         try {
           const normalizedPath = objectStorageService.normalizeObjectEntityPath(video.filepath);
           if (normalizedPath.startsWith("/objects/")) {
