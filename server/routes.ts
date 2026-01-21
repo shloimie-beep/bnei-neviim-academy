@@ -3487,6 +3487,13 @@ export async function registerRoutes(
 
   // Subscriber: Stream a video (requires active subscription)
   app.get("/api/videos/:id/stream", requireAuth, async (req, res) => {
+    // Prevent caching of embed URLs - they should always be fetched fresh
+    res.set({
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+      "Pragma": "no-cache",
+      "Expires": "0"
+    });
+    
     try {
       const userId = getAuthUserId(req);
       if (!userId) {

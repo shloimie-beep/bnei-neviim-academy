@@ -102,8 +102,10 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
     setLoading(true);
     setError(null);
     
-    // Always use the backend API to get the embed URL
-    fetch(`/api/videos/${video.id}/stream`)
+    // Always use the backend API to get the embed URL (with cache-buster)
+    fetch(`/api/videos/${video.id}/stream?t=${Date.now()}`, {
+      cache: "no-store"
+    })
       .then(res => {
         if (!res.ok) throw new Error("Failed to load");
         const contentType = res.headers.get("content-type");
@@ -117,7 +119,6 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
             setLoading(false);
           });
         } else {
-          // Non-JSON response - this shouldn't happen for Vimeo videos
           setError("Video format not supported");
           setLoading(false);
         }
@@ -199,8 +200,10 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
     setStreamLoading(true);
     setStreamError(null);
     
-    // Always use the backend API - it's reliable and handles all video types
-    fetch(`/api/videos/${video.id}/stream`)
+    // Always use the backend API with cache-buster
+    fetch(`/api/videos/${video.id}/stream?t=${Date.now()}`, {
+      cache: "no-store"
+    })
       .then(res => {
         if (!res.ok) throw new Error("Failed to load");
         const contentType = res.headers.get("content-type");
@@ -217,7 +220,7 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
           });
         } else {
           // Direct stream (for legacy videos)
-          setStreamUrl(`/api/videos/${video.id}/stream`);
+          setStreamUrl(`/api/videos/${video.id}/stream?t=${Date.now()}`);
           setStreamLoading(false);
         }
       })
