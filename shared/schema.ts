@@ -225,6 +225,30 @@ export const albumTracks = pgTable("album_tracks", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// RSS feed folders for organizing audio
+export const rssFolders = pgTable("rss_folders", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  name: text("name").notNull(),
+  description: text("description"),
+  sortOrder: integer("sort_order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+// RSS audio items - converted to MP3 64kbps
+export const rssAudioItems = pgTable("rss_audio_items", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  folderId: varchar("folder_id").references(() => rssFolders.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  description: text("description"),
+  filename: text("filename").notNull(), // converted mp3 filename
+  filepath: text("filepath").notNull(), // path to converted mp3
+  originalFilename: text("original_filename"), // original upload filename
+  duration: integer("duration"), // in seconds
+  fileSize: integer("file_size"), // in bytes
+  sortOrder: integer("sort_order").default(0), // for manual ordering
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Track phone numbers that have been used in trials (to prevent reuse)
 export const trialPhoneNumbers = pgTable("trial_phone_numbers", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -304,6 +328,8 @@ export const insertUserVideoViewSchema = createInsertSchema(userVideoViews).omit
 export const insertTrialPhoneNumberSchema = createInsertSchema(trialPhoneNumbers).omit({ id: true, usedAt: true });
 export const insertAlbumSchema = createInsertSchema(albums).omit({ id: true, createdAt: true });
 export const insertAlbumTrackSchema = createInsertSchema(albumTracks).omit({ id: true, createdAt: true });
+export const insertRssFolderSchema = createInsertSchema(rssFolders).omit({ id: true, createdAt: true });
+export const insertRssAudioItemSchema = createInsertSchema(rssAudioItems).omit({ id: true, createdAt: true });
 
 // Types
 export type User = typeof users.$inferSelect;
@@ -344,6 +370,10 @@ export type Album = typeof albums.$inferSelect;
 export type InsertAlbum = z.infer<typeof insertAlbumSchema>;
 export type AlbumTrack = typeof albumTracks.$inferSelect;
 export type InsertAlbumTrack = z.infer<typeof insertAlbumTrackSchema>;
+export type RssFolder = typeof rssFolders.$inferSelect;
+export type InsertRssFolder = z.infer<typeof insertRssFolderSchema>;
+export type RssAudioItem = typeof rssAudioItems.$inferSelect;
+export type InsertRssAudioItem = z.infer<typeof insertRssAudioItemSchema>;
 
 // Validation schemas for forms
 export const loginSchema = z.object({
