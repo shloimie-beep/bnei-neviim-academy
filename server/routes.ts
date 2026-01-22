@@ -430,6 +430,52 @@ export async function registerRoutes(
     }
   });
 
+  // ============ USER LIST JSON ENDPOINT (similar to phone-list but returns full user data) ============
+  // Protected by a simple token in query string
+  // URL format: /api/userlist/j8n5k2m9p3?token=PHONE_LIST_TOKEN
+  app.get("/api/userlist/j8n5k2m9p3", async (req, res) => {
+    try {
+      // Simple token protection - reuses the same PHONE_LIST_TOKEN
+      const expectedToken = process.env.PHONE_LIST_TOKEN;
+      const providedToken = req.query.token as string;
+      
+      if (!expectedToken) {
+        console.error("PHONE_LIST_TOKEN environment variable not set");
+        return res.status(503).json({ error: "Service not configured" });
+      }
+      
+      if (providedToken !== expectedToken) {
+        return res.status(401).json({ error: "Unauthorized" });
+      }
+
+      const subscribers = await storage.getSubscriberList();
+      
+      // Map to user data without sensitive fields
+      const users = subscribers.map(sub => ({
+        id: sub.id,
+        email: sub.email,
+        subscriptionStatus: sub.subscriptionStatus,
+        trialEndsAt: sub.trialEndsAt,
+        hasUsedTrial: sub.hasUsedTrial,
+        createdAt: sub.createdAt,
+        phoneNumbers: sub.phoneNumbers?.map(p => p.phoneNumber) || [],
+        isActive: sub.subscriptionStatus === "active" || 
+          (sub.subscriptionStatus === "trial" && sub.trialEndsAt && new Date(sub.trialEndsAt) >= new Date()),
+      }));
+
+      res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+      res.json({
+        exportedAt: new Date().toISOString(),
+        totalUsers: users.length,
+        activeUsers: users.filter(u => u.isActive).length,
+        users,
+      });
+    } catch (error: any) {
+      console.error("User list error:", error);
+      res.status(500).json({ error: "Failed to get user list" });
+    }
+  });
+
   // ============ DEBUG/SETUP ROUTES (temporary) ============
   app.get("/api/debug/db-status", async (req, res) => {
     try {
