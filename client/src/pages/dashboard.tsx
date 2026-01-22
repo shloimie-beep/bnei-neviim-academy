@@ -241,7 +241,9 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
         const contentType = res.headers.get("content-type");
         if (contentType?.includes("application/json")) {
           return res.json().then(data => {
-            if (data.cdnUrl) {
+            if (data.localAudio && data.streamUrl) {
+              setStreamUrl(data.streamUrl);
+            } else if (data.cdnUrl) {
               setStreamUrl(data.cdnUrl);
             } else if (data.embedUrl) {
               setStreamUrl(data.embedUrl);

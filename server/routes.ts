@@ -1689,72 +1689,23 @@ export async function registerRoutes(
             }
           })();
         } else {
-          // MP3 and other audio files: upload to Bunny Storage if configured, otherwise save locally
-          if (bunnyStorage.isBunnyStorageConfigured()) {
-            try {
-              const uniqueFilename = `${Date.now()}-${Math.round(Math.random() * 1e9)}${path.extname(mediaFile.originalname)}`;
-              const { cdnUrl, storagePath } = await bunnyStorage.uploadAudioToBunny(originalPath, uniqueFilename);
-              
-              const video = await storage.createVideo({
-                title,
-                description: description || null,
-                filename: mediaFile.originalname,
-                filepath: storagePath,
-                fileSize: mediaFile.size,
-                status: "ready",
-                mediaType,
-                categoryId: categoryId || null,
-                uploadedBy: req.session.userId!,
-                thumbnailPath: thumbnailFile?.path || null,
-                storageType: "bunny_storage",
-                bunnyStorageUrl: cdnUrl,
-              });
+          // MP3 and other audio files: always use local storage (permanent URLs)
+          const video = await storage.createVideo({
+            title,
+            description: description || null,
+            filename: mediaFile.originalname,
+            filepath: originalPath,
+            fileSize: mediaFile.size,
+            status: "ready",
+            mediaType,
+            categoryId: categoryId || null,
+            uploadedBy: req.session.userId!,
+            thumbnailPath: thumbnailFile?.path || null,
+            storageType: "local",
+          });
 
-              // Delete local temp file after upload
-              if (fs.existsSync(originalPath)) {
-                fs.unlinkSync(originalPath);
-              }
-
-              console.log(`Audio ${video.id} uploaded to Bunny Storage: ${cdnUrl}`);
-              res.json(video);
-            } catch (uploadError) {
-              console.error("Bunny Storage upload failed, falling back to local:", uploadError);
-              // Fallback to local storage
-              const video = await storage.createVideo({
-                title,
-                description: description || null,
-                filename: mediaFile.originalname,
-                filepath: originalPath,
-                fileSize: mediaFile.size,
-                status: "ready",
-                mediaType,
-                categoryId: categoryId || null,
-                uploadedBy: req.session.userId!,
-                thumbnailPath: thumbnailFile?.path || null,
-                storageType: "local",
-              });
-              console.log(`Audio ${video.id} saved locally (Bunny fallback)`);
-              res.json(video);
-            }
-          } else {
-            // Local storage fallback
-            const video = await storage.createVideo({
-              title,
-              description: description || null,
-              filename: mediaFile.originalname,
-              filepath: originalPath,
-              fileSize: mediaFile.size,
-              status: "ready",
-              mediaType,
-              categoryId: categoryId || null,
-              uploadedBy: req.session.userId!,
-              thumbnailPath: thumbnailFile?.path || null,
-              storageType: "local",
-            });
-
-            console.log(`Audio ${video.id} saved locally without conversion`);
-            res.json(video);
-          }
+          console.log(`Audio ${video.id} saved locally with permanent URL`);
+          res.json(video);
         }
       } else {
         // Video files: use existing conversion logic
@@ -3352,6 +3303,102 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Migrate audio files from Bunny Storage to local storage
+  app.post("/api/admin/migrate-audio-to-local", requireAdmin, async (req, res) => {
+    try {
+      const videos = await storage.getAllVideos();
+      const albums = await storage.getAllAlbums();
+      
+      // Find all audio files on Bunny Storage that need migration
+      const bunnyAudioFiles = videos.filter(v => 
+        v.mediaType === "audio" && 
+        v.storageType === "bunny_storage" && 
+        v.bunnyStorageUrl
+      );
+      
+      // Find all album tracks on Bunny that need migration
+      let bunnyTracks: any[] = [];
+      for (const album of albums) {
+        const tracks = await storage.getAlbumTracks(album.id);
+        const tracksToMigrate = tracks.filter(t => t.bunnyStorageUrl && !t.filepath);
+        bunnyTracks = [...bunnyTracks, ...tracksToMigrate];
+      }
+      
+      let migratedAudio = 0;
+      let migratedTracks = 0;
+      let errors = 0;
+      
+      // Migrate audio files (videos with mediaType=audio)
+      for (const audio of bunnyAudioFiles) {
+        try {
+          console.log(`Migrating audio: ${audio.title} from ${audio.bunnyStorageUrl}`);
+          const response = await fetch(audio.bunnyStorageUrl!);
+          if (!response.ok) {
+            throw new Error(`Failed to download: ${response.status}`);
+          }
+          
+          const buffer = await response.arrayBuffer();
+          const extension = path.extname(audio.filename || "file.mp3") || ".mp3";
+          const localFilename = `${Date.now()}-${Math.round(Math.random() * 1e9)}${extension}`;
+          const localPath = path.join(videoUploadDir, localFilename);
+          
+          await fs.promises.writeFile(localPath, Buffer.from(buffer));
+          
+          await storage.updateVideo(audio.id, {
+            filepath: localPath,
+            storageType: "local",
+          });
+          
+          migratedAudio++;
+          console.log(`Migrated audio ${audio.id} to ${localPath}`);
+        } catch (error) {
+          console.error(`Failed to migrate audio ${audio.id}:`, error);
+          errors++;
+        }
+      }
+      
+      // Migrate album tracks
+      for (const track of bunnyTracks) {
+        try {
+          console.log(`Migrating track: ${track.title} from ${track.bunnyStorageUrl}`);
+          const response = await fetch(track.bunnyStorageUrl);
+          if (!response.ok) {
+            throw new Error(`Failed to download: ${response.status}`);
+          }
+          
+          const buffer = await response.arrayBuffer();
+          const extension = path.extname(track.filename || "track.mp3") || ".mp3";
+          const localFilename = `${Date.now()}-${Math.round(Math.random() * 1e9)}${extension}`;
+          const localPath = path.join(uploadDir, localFilename);
+          
+          await fs.promises.writeFile(localPath, Buffer.from(buffer));
+          
+          await storage.updateAlbumTrack(track.id, {
+            filepath: localPath,
+          });
+          
+          migratedTracks++;
+          console.log(`Migrated track ${track.id} to ${localPath}`);
+        } catch (error) {
+          console.error(`Failed to migrate track ${track.id}:`, error);
+          errors++;
+        }
+      }
+      
+      res.json({
+        message: `Migration complete: ${migratedAudio} audio files, ${migratedTracks} album tracks migrated, ${errors} errors`,
+        migratedAudio,
+        migratedTracks,
+        errors,
+        totalAudioToMigrate: bunnyAudioFiles.length,
+        totalTracksToMigrate: bunnyTracks.length,
+      });
+    } catch (error: any) {
+      console.error("Audio migration error:", error);
+      res.status(500).json({ message: error.message || "Failed to migrate audio files" });
+    }
+  });
+
   // Admin: Export category assignments as JSON for syncing between environments
   app.get("/api/admin/videos/export-categories", requireAdmin, async (req, res) => {
     try {
@@ -3801,7 +3848,17 @@ export async function registerRoutes(
         });
       }
 
-      // If audio is on Bunny Storage, return the CDN URL directly
+      // If audio has a local filepath, serve from local storage (permanent URL)
+      if (video.mediaType === "audio" && video.filepath && fs.existsSync(video.filepath)) {
+        await storage.incrementVideoViewCount(video.id);
+        return res.json({ 
+          localAudio: true, 
+          streamUrl: `/api/audio/${video.id}/stream`,
+          mediaType: video.mediaType,
+        });
+      }
+
+      // Legacy: If audio is on Bunny Storage, return the CDN URL (for un-migrated files)
       if (video.bunnyStorageUrl && video.storageType === "bunny_storage") {
         await storage.incrementVideoViewCount(video.id);
         return res.json({ 
@@ -3917,6 +3974,76 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Video stream error:", error);
       res.status(500).json({ message: "Failed to stream video" });
+    }
+  });
+
+  // Customer: Stream audio file (permanent URL)
+  app.get("/api/audio/:id/stream", requireAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const user = await storage.getUser(userId);
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      // Check subscription access
+      const isWhitelisted = user.role === "admin" || await storage.isWhitelistedEmailAddress(user.email);
+      const isActive = isWhitelisted || user.subscriptionStatus === "active" || 
+        (user.subscriptionStatus === "trial" && user.trialEndsAt && new Date(user.trialEndsAt) > new Date());
+      
+      if (!isActive) {
+        return res.status(403).json({ message: "Active subscription required" });
+      }
+
+      const video = await storage.getVideo(req.params.id);
+      if (!video || video.mediaType !== "audio") {
+        return res.status(404).json({ message: "Audio file not found" });
+      }
+
+      if (!video.filepath || !fs.existsSync(video.filepath)) {
+        return res.status(404).json({ message: "Audio file not found on disk" });
+      }
+
+      const stat = fs.statSync(video.filepath);
+      const fileSize = stat.size;
+      const range = req.headers.range;
+
+      // Derive content type from file extension
+      const ext = path.extname(video.filepath).toLowerCase();
+      const contentTypes: Record<string, string> = {
+        ".mp3": "audio/mpeg",
+        ".wav": "audio/wav",
+        ".ogg": "audio/ogg",
+        ".m4a": "audio/mp4",
+        ".aac": "audio/aac",
+        ".flac": "audio/flac",
+      };
+      const contentType = contentTypes[ext] || "audio/mpeg";
+
+      res.setHeader("Accept-Ranges", "bytes");
+      res.setHeader("Content-Type", contentType);
+
+      if (range) {
+        const parts = range.replace(/bytes=/, "").split("-");
+        const start = parseInt(parts[0], 10);
+        const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+        const chunksize = (end - start) + 1;
+        const fileStream = fs.createReadStream(video.filepath, { start, end });
+        res.writeHead(206, {
+          'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+          'Content-Length': chunksize,
+        });
+        fileStream.pipe(res);
+      } else {
+        res.setHeader("Content-Length", fileSize);
+        fs.createReadStream(video.filepath).pipe(res);
+      }
+    } catch (error) {
+      console.error("Audio stream error:", error);
+      res.status(500).json({ message: "Failed to stream audio" });
     }
   });
 
@@ -5685,7 +5812,7 @@ export async function registerRoutes(
     }
   });
 
-  // Admin: Add track to album (upload audio to Bunny)
+  // Admin: Add track to album (upload audio to local storage with permanent URLs)
   app.post("/api/admin/albums/:id/tracks", requireAdmin, upload.single("audio"), async (req, res) => {
     try {
       if (!req.file) {
@@ -5708,56 +5835,19 @@ export async function registerRoutes(
         title = path.basename(originalName, path.extname(originalName));
       }
 
-      // Upload to Bunny CDN (same location as other audio files)
-      const bunnyStorageZone = process.env.BUNNY_STORAGE_ZONE;
-      const bunnyStoragePassword = process.env.BUNNY_STORAGE_PASSWORD;
-      
-      if (!bunnyStorageZone || !bunnyStoragePassword) {
-        if (req.file && fs.existsSync(req.file.path)) {
-          fs.unlinkSync(req.file.path);
-        }
-        return res.status(500).json({ message: "Bunny storage not configured" });
-      }
-
-      const fileExtension = path.extname(req.file.originalname).toLowerCase();
-      const safeFilename = `album-tracks/${album.id}/${Date.now()}${fileExtension}`;
-      const bunnyUploadUrl = `https://storage.bunnycdn.com/${bunnyStorageZone}/${safeFilename}`;
-      
-      // Read file and upload to Bunny (async)
-      const fileBuffer = await fs.promises.readFile(req.file.path);
-      const uploadResponse = await fetch(bunnyUploadUrl, {
-        method: "PUT",
-        headers: {
-          "AccessKey": bunnyStoragePassword,
-          "Content-Type": req.file.mimetype,
-        },
-        body: fileBuffer,
-      });
-
-      if (!uploadResponse.ok) {
-        if (req.file && fs.existsSync(req.file.path)) {
-          fs.unlinkSync(req.file.path);
-        }
-        return res.status(500).json({ message: "Failed to upload to Bunny CDN" });
-      }
-
-      // Clean up temp file
-      if (fs.existsSync(req.file.path)) {
-        fs.unlinkSync(req.file.path);
-      }
-
+      // Store track file locally with permanent URL
       const nextTrackNumber = await storage.getNextTrackNumber(album.id);
-      const bunnyCdnUrl = `https://${process.env.BUNNY_STORAGE_CDN}/${safeFilename}`;
 
       const track = await storage.createAlbumTrack({
         albumId: album.id,
         title,
         trackNumber: nextTrackNumber,
         filename: req.file.originalname,
-        bunnyStorageUrl: bunnyCdnUrl,
+        filepath: req.file.path,
         fileSize: req.file.size,
       });
 
+      console.log(`Album track ${track.id} saved locally with permanent URL: ${req.file.path}`);
       res.json(track);
     } catch (error) {
       console.error("Add album track error:", error);
@@ -5791,24 +5881,13 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Track not found" });
       }
 
-      // Delete from Bunny storage
-      const bunnyStorageZone = process.env.BUNNY_STORAGE_ZONE;
-      const bunnyStoragePassword = process.env.BUNNY_STORAGE_PASSWORD;
-      if (track.bunnyStorageUrl && bunnyStorageZone && bunnyStoragePassword) {
+      // Delete from local storage
+      if (track.filepath && fs.existsSync(track.filepath)) {
         try {
-          const bunnyUrl = new URL(track.bunnyStorageUrl);
-          const filePath = bunnyUrl.pathname;
-          const deleteResponse = await fetch(`https://storage.bunnycdn.com/${bunnyStorageZone}${filePath}`, {
-            method: "DELETE",
-            headers: {
-              "AccessKey": bunnyStoragePassword,
-            },
-          });
-          if (!deleteResponse.ok) {
-            console.warn(`Bunny track delete returned ${deleteResponse.status} for ${filePath}`);
-          }
+          fs.unlinkSync(track.filepath);
+          console.log(`Deleted local track file: ${track.filepath}`);
         } catch (err) {
-          console.error("Failed to delete track from Bunny:", err);
+          console.error("Failed to delete local track file:", err);
         }
       }
 
@@ -5944,7 +6023,45 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Track not found" });
       }
 
-      // Redirect to Bunny CDN URL for streaming
+      // Serve from local storage (permanent URL)
+      if (track.filepath && fs.existsSync(track.filepath)) {
+        const stat = fs.statSync(track.filepath);
+        const fileSize = stat.size;
+        const range = req.headers.range;
+
+        // Derive content type from file extension
+        const ext = path.extname(track.filepath).toLowerCase();
+        const contentTypes: Record<string, string> = {
+          ".mp3": "audio/mpeg",
+          ".wav": "audio/wav",
+          ".ogg": "audio/ogg",
+          ".m4a": "audio/mp4",
+          ".aac": "audio/aac",
+          ".flac": "audio/flac",
+        };
+        const contentType = contentTypes[ext] || "audio/mpeg";
+
+        res.setHeader("Accept-Ranges", "bytes");
+        res.setHeader("Content-Type", contentType);
+
+        if (range) {
+          const parts = range.replace(/bytes=/, "").split("-");
+          const start = parseInt(parts[0], 10);
+          const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+          const chunksize = (end - start) + 1;
+          const fileStream = fs.createReadStream(track.filepath, { start, end });
+          res.writeHead(206, {
+            'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+            'Content-Length': chunksize,
+          });
+          return fileStream.pipe(res);
+        } else {
+          res.setHeader("Content-Length", fileSize);
+          return fs.createReadStream(track.filepath).pipe(res);
+        }
+      }
+
+      // Fallback: Redirect to Bunny CDN URL for legacy tracks
       if (track.bunnyStorageUrl) {
         return res.redirect(track.bunnyStorageUrl);
       }

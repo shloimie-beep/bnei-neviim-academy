@@ -501,6 +501,7 @@ export default function VideoManagement() {
   // Vimeo sync state
   const [isSyncing, setIsSyncing] = useState(false);
   const [isFixing, setIsFixing] = useState(false);
+  const [isMigratingAudio, setIsMigratingAudio] = useState(false);
   const [isExportingCategories, setIsExportingCategories] = useState(false);
   const [isApplyingCategories, setIsApplyingCategories] = useState(false);
   const categoryFileInputRef = useRef<HTMLInputElement>(null);
@@ -994,6 +995,38 @@ export default function VideoManagement() {
     }
   };
 
+  const handleMigrateAudio = async () => {
+    setIsMigratingAudio(true);
+    
+    try {
+      const res = await fetch("/api/admin/migrate-audio-to-local", {
+        method: "POST",
+        credentials: "include",
+        headers: getAuthHeaders(),
+      });
+      
+      const result = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(result.message || "Migration failed");
+      }
+      
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+      toast({ 
+        title: "Migration complete", 
+        description: result.message 
+      });
+    } catch (error: any) {
+      toast({ 
+        title: "Migration failed", 
+        description: error.message || "An error occurred", 
+        variant: "destructive" 
+      });
+    } finally {
+      setIsMigratingAudio(false);
+    }
+  };
+
   const handleExportCategories = async () => {
     setIsExportingCategories(true);
     try {
@@ -1290,6 +1323,19 @@ export default function VideoManagement() {
               <RefreshCw className="h-4 w-4 mr-2" />
             )}
             Fix Vimeo Videos
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={handleMigrateAudio} 
+            disabled={isMigratingAudio}
+            data-testid="button-migrate-audio"
+          >
+            {isMigratingAudio ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Download className="h-4 w-4 mr-2" />
+            )}
+            Migrate Audio to Local
           </Button>
           <Button 
             variant="outline" 
