@@ -54,7 +54,7 @@ export default function RssFeedManagement() {
     queryKey: ["/api/admin/rss-audio", selectedFolderId],
     queryFn: async () => {
       const params = selectedFolderId !== null ? `?folderId=${selectedFolderId}` : "";
-      const res = await fetch(`/api/admin/rss-audio${params}`);
+      const res = await fetch(`/api/admin/rss-audio${params}`, { credentials: "include" });
       if (!res.ok) throw new Error("Failed to fetch audio items");
       return res.json();
     },
@@ -66,6 +66,7 @@ export default function RssFeedManagement() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
+        credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to create folder");
       return res.json();
@@ -88,6 +89,7 @@ export default function RssFeedManagement() {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
+        credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to update folder");
       return res.json();
@@ -105,7 +107,7 @@ export default function RssFeedManagement() {
 
   const deleteFolderMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(`/api/admin/rss-folders/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/rss-folders/${id}`, { method: "DELETE", credentials: "include" });
       if (!res.ok) throw new Error("Failed to delete folder");
       return res.json();
     },
@@ -141,6 +143,7 @@ export default function RssFeedManagement() {
       const res = await fetch("/api/admin/rss-audio", {
         method: "POST",
         body: formData,
+        credentials: "include",
       });
 
       if (!res.ok) {
@@ -163,7 +166,7 @@ export default function RssFeedManagement() {
 
   const deleteAudioMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(`/api/admin/rss-audio/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/rss-audio/${id}`, { method: "DELETE", credentials: "include" });
       if (!res.ok) throw new Error("Failed to delete audio");
       return res.json();
     },
@@ -183,6 +186,7 @@ export default function RssFeedManagement() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ itemIds }),
+        credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to reorder");
       return res.json();
@@ -536,16 +540,6 @@ export default function RssFeedManagement() {
                 onChange={(e) => setUploadTitle(e.target.value)}
                 placeholder="Enter title"
                 data-testid="input-upload-title"
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="upload-description">Description (optional)</Label>
-              <Textarea
-                id="upload-description"
-                value={uploadDescription}
-                onChange={(e) => setUploadDescription(e.target.value)}
-                placeholder="Enter description"
-                data-testid="input-upload-description"
               />
             </div>
             <div className="space-y-2">
