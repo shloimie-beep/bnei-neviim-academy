@@ -89,6 +89,27 @@ The backend handles user authentication, subscription management, phone number r
   - `client/src/pages/admin/albums.tsx` - Admin album management UI
   - Album schema in `shared/schema.ts` with CASCADE delete for tracks
 
+### RSS Feed Architecture
+- **Purpose**: Distribute audio content via RSS podcast feed with folder organization
+- **Audio Conversion**: All uploads automatically converted to MP3 64kbps using ffmpeg, originals deleted after conversion
+- **Storage**: Local filesystem at `uploads/rss-audio/` with permanent URLs
+- **Database Tables**:
+  - `rss_folders` - Folder organization for audio items
+  - `rss_audio_items` - Audio files with metadata, sortOrder, and folder association
+- **Ordering**: sortOrder ASC (lower = higher priority), then createdAt DESC (newest first by default)
+- **Admin Endpoints**:
+  - `GET/POST /api/admin/rss-folders` - List and create folders
+  - `PATCH/DELETE /api/admin/rss-folders/:id` - Update and delete folders (cascade deletes audio files)
+  - `GET/POST /api/admin/rss-audio` - List and upload audio
+  - `PATCH/DELETE /api/admin/rss-audio/:id` - Update and delete audio
+  - `PATCH /api/admin/rss-audio/:id/reorder` - Adjust sortOrder for manual ordering
+- **Public Endpoints**:
+  - `GET /rss/feed.xml` - RSS 2.0 podcast feed with iTunes namespace
+  - `GET /api/rss-audio/:id/stream` - Stream converted MP3 audio
+- **Key Files**:
+  - `server/audioConverter.ts` - ffmpeg-based MP3 64kbps conversion
+  - `client/src/pages/admin/rss-feed.tsx` - Admin RSS feed management UI
+
 ### Data Storage
 - **Primary Database**: PostgreSQL
 - **Schema Location**: `shared/schema.ts` using Drizzle ORM
