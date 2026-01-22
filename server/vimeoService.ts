@@ -601,26 +601,85 @@ class VimeoService {
         return { type: 'progressive', url: bestFile.link };
       }
       
-      // Priority 4: Fallback to embed URL (for public/unlisted videos)
-      if (video.player_embed_url) {
-        console.log(`[Vimeo] Falling back to embed URL for ${videoId}`);
-        return { type: 'embed', url: video.player_embed_url };
+      // Priority 4: Try fetching HLS from player config (works for embed-only videos)
+      console.log(`[Vimeo] Attempting player config fallback for ${videoId}`);
+      const playerConfig = await this.getPlayerConfig(videoId, video.link);
+      if (playerConfig?.hls) {
+        console.log(`[Vimeo] Using HLS from player config for ${videoId}`);
+        return { type: 'hls', url: playerConfig.hls };
       }
       
-      // Last resort: try to construct embed URL with hash from link
-      if (video.link) {
-        const linkMatch = video.link.match(/vimeo\.com\/\d+\/([a-zA-Z0-9]+)/);
-        if (linkMatch && linkMatch[1]) {
-          const embedUrl = `https://player.vimeo.com/video/${videoId}?h=${linkMatch[1]}`;
-          console.log(`[Vimeo] Constructed embed URL with hash for ${videoId}`);
-          return { type: 'embed', url: embedUrl };
-        }
+      // Priority 5: Fallback to embed URL (can't be used for audio extraction)
+      if (video.player_embed_url) {
+        console.log(`[Vimeo] Falling back to embed URL for ${videoId} (not usable for audio extraction)`);
+        return { type: 'embed', url: video.player_embed_url };
       }
       
       console.log(`[Vimeo] No playback method available for ${videoId}`);
       return null;
     } catch (error) {
       console.error(`[Vimeo] Error getting playback URL for ${videoId}:`, error);
+      return null;
+    }
+  }
+
+  // Fetch player config to get HLS stream for embed-only videos
+  private async getPlayerConfig(videoId: string, videoLink?: string): Promise<{ hls: string } | null> {
+    try {
+      // Extract hash from video link if available (for unlisted/private videos)
+      let hash = "";
+      if (videoLink) {
+        const hashMatch = videoLink.match(/vimeo\.com\/\d+\/([a-zA-Z0-9]+)/);
+        if (hashMatch && hashMatch[1]) {
+          hash = hashMatch[1];
+        }
+      }
+      
+      // Try fetching the player config
+      const configUrl = hash 
+        ? `https://player.vimeo.com/video/${videoId}/config?h=${hash}`
+        : `https://player.vimeo.com/video/${videoId}/config`;
+      
+      console.log(`[Vimeo] Fetching player config: ${configUrl}`);
+      
+      const response = await fetch(configUrl, {
+        headers: {
+          "Accept": "application/json",
+          "Referer": "https://player.vimeo.com/",
+        },
+      });
+      
+      if (!response.ok) {
+        console.log(`[Vimeo] Player config not available: ${response.status}`);
+        return null;
+      }
+      
+      const config = await response.json() as any;
+      
+      // The HLS URL is in request.files.hls.cdns
+      const hlsCdns = config?.request?.files?.hls?.cdns;
+      if (hlsCdns) {
+        // Get first available CDN's URL
+        const cdnKeys = Object.keys(hlsCdns);
+        for (const cdn of cdnKeys) {
+          const hlsUrl = hlsCdns[cdn]?.url;
+          if (hlsUrl) {
+            console.log(`[Vimeo] Found HLS URL in player config (${cdn})`);
+            return { hls: hlsUrl };
+          }
+        }
+      }
+      
+      // Alternative: check for direct HLS URL
+      const directHls = config?.request?.files?.hls?.default_cdn;
+      if (directHls && hlsCdns?.[directHls]?.url) {
+        return { hls: hlsCdns[directHls].url };
+      }
+      
+      console.log(`[Vimeo] No HLS URL found in player config`);
+      return null;
+    } catch (error) {
+      console.error(`[Vimeo] Error fetching player config:`, error);
       return null;
     }
   }
