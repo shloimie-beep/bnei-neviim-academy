@@ -2586,7 +2586,8 @@ export async function registerRoutes(
     }
   });
 
-  // Public: Get Vimeo embed URL for subscribers (requires active subscription)
+  // Public: Get Vimeo playback URL for subscribers (requires active subscription)
+  // Returns HLS, progressive, or embed URL depending on video privacy and API permissions
   app.get("/api/videos/:id/vimeo-embed", requireMobileOrSessionAuth, async (req, res) => {
     try {
       const userId = getAuthUserId(req);
@@ -2619,16 +2620,21 @@ export async function registerRoutes(
       // Increment view count
       await storage.incrementVideoViewCount(req.params.id);
       
-      // Get secure embed URL with hash for private videos
-      const embedUrl = await vimeoService.getSecureEmbedUrl(video.vimeoVideoId);
-      if (!embedUrl) {
-        return res.status(500).json({ message: "Failed to get video embed" });
+      // Get authenticated playback URL (HLS, progressive, or embed)
+      const playback = await vimeoService.getAuthenticatedPlaybackUrl(video.vimeoVideoId);
+      if (!playback) {
+        return res.status(500).json({ message: "Failed to get video playback" });
       }
       
-      res.json({ embedUrl });
+      // Return playback info - frontend handles different types
+      res.json({ 
+        embedUrl: playback.url,  // Backward compatible
+        playbackType: playback.type,
+        videoUrl: playback.url
+      });
     } catch (error) {
-      console.error("Get Vimeo embed error:", error);
-      res.status(500).json({ message: "Failed to get embed URL" });
+      console.error("Get Vimeo playback error:", error);
+      res.status(500).json({ message: "Failed to get video playback" });
     }
   });
 
@@ -3222,7 +3228,7 @@ export async function registerRoutes(
   app.get("/api/admin/videos/check-vimeo/:vimeoId", requireAdmin, async (req, res) => {
     try {
       const { vimeoId } = req.params;
-      const videoInfo = await vimeoService.getVideoInfo(vimeoId);
+      const videoInfo = await vimeoService.getVideo(vimeoId);
       
       if (!videoInfo) {
         return res.status(404).json({ message: "Video not found on Vimeo" });
@@ -3668,11 +3674,16 @@ export async function registerRoutes(
       // If video is on Vimeo (only for video content, not audio)
       if (video.vimeoVideoId && video.mediaType === "video") {
         await storage.incrementVideoViewCount(video.id);
-        // Use simplest embed URL format
-        const embedUrl = `https://player.vimeo.com/video/${video.vimeoVideoId}`;
+        // Get authenticated playback URL (HLS, progressive, or embed)
+        const playback = await vimeoService.getAuthenticatedPlaybackUrl(video.vimeoVideoId);
+        if (!playback) {
+          return res.status(500).json({ message: "Failed to get video playback" });
+        }
         return res.json({ 
           vimeo: true, 
-          embedUrl
+          embedUrl: playback.url,
+          videoUrl: playback.url,
+          playbackType: playback.type
         });
       }
 

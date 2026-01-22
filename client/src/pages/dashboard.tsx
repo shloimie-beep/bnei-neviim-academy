@@ -92,17 +92,19 @@ function PhoneNumberCard({ phoneNumber, onDelete }: { phoneNumber: PhoneNumber; 
 }
 
 function VideoEmbedPlayer({ video }: { video: VideoType }) {
-  const [embedUrl, setEmbedUrl] = useState<string | null>(null);
+  const [videoUrl, setVideoUrl] = useState<string | null>(null);
+  const [playbackType, setPlaybackType] = useState<'embed' | 'hls' | 'progressive' | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     // Reset state when video changes
-    setEmbedUrl(null);
+    setVideoUrl(null);
+    setPlaybackType(null);
     setLoading(true);
     setError(null);
     
-    // Always use the backend API to get the embed URL (with cache-buster)
+    // Use backend API to get playback URL
     fetch(`/api/videos/${video.id}/stream?t=${Date.now()}`, {
       cache: "no-store",
       credentials: "include",
@@ -113,8 +115,9 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
         const contentType = res.headers.get("content-type");
         if (contentType?.includes("application/json")) {
           return res.json().then(data => {
-            if (data.embedUrl) {
-              setEmbedUrl(data.embedUrl);
+            if (data.videoUrl || data.embedUrl) {
+              setVideoUrl(data.videoUrl || data.embedUrl);
+              setPlaybackType(data.playbackType || 'embed');
             } else {
               setError("Video not available");
             }
@@ -144,7 +147,7 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
     );
   }
 
-  if (error || !embedUrl) {
+  if (error || !videoUrl) {
     return (
       <DialogContent className="max-w-4xl p-0 overflow-hidden">
         <div className="aspect-video bg-black flex items-center justify-center">
@@ -157,11 +160,35 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
     );
   }
 
+  // For HLS or progressive video URLs, use native video player
+  if (playbackType === 'hls' || playbackType === 'progressive') {
+    return (
+      <DialogContent className="max-w-4xl p-0 overflow-hidden">
+        <div className="relative bg-black">
+          <video
+            src={videoUrl}
+            className="w-full aspect-video"
+            controls
+            autoPlay
+            data-testid={`video-player-${video.id}`}
+          />
+        </div>
+        <div className="p-4">
+          <h3 className="font-semibold text-lg">{video.title}</h3>
+          {video.description && (
+            <p className="text-sm text-muted-foreground mt-1">{video.description}</p>
+          )}
+        </div>
+      </DialogContent>
+    );
+  }
+
+  // For embed URLs, use iframe
   return (
     <DialogContent className="max-w-4xl p-0 overflow-hidden">
       <div className="relative bg-black">
         <iframe
-          src={embedUrl.includes('?') ? `${embedUrl}&autoplay=1` : `${embedUrl}?autoplay=1`}
+          src={videoUrl.includes('?') ? `${videoUrl}&autoplay=1` : `${videoUrl}?autoplay=1`}
           className="w-full aspect-video"
           frameBorder="0"
           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"

@@ -2,6 +2,15 @@ const VIMEO_ACCESS_TOKEN = process.env.VIMEO_ACCESS_TOKEN;
 const VIMEO_CLIENT_ID = process.env.VIMEO_CLIENT_ID;
 const VIMEO_CLIENT_SECRET = process.env.VIMEO_CLIENT_SECRET;
 
+interface VimeoVideoFile {
+  quality: string;
+  type: string;
+  width: number;
+  height: number;
+  link: string;
+  expires: string;
+}
+
 interface VimeoVideo {
   uri: string;
   name: string;
@@ -19,6 +28,16 @@ interface VimeoVideo {
   player_embed_url?: string;
   embed?: {
     html?: string;
+  };
+  privacy?: {
+    view: string;
+    embed: string;
+  };
+  files?: VimeoVideoFile[];
+  play?: {
+    hls?: { link: string };
+    dash?: { link: string };
+    progressive?: VimeoVideoFile[];
   };
 }
 
@@ -396,6 +415,82 @@ class VimeoService {
       return null;
     } catch (error) {
       console.error(`[Vimeo] Error getting thumbnail for ${videoId}:`, error);
+      return null;
+    }
+  }
+
+  // Get authenticated playback URL for private videos
+  // Returns HLS or progressive download URL with signed token
+  async getAuthenticatedPlaybackUrl(videoId: string): Promise<{ type: 'hls' | 'progressive' | 'embed'; url: string } | null> {
+    try {
+      const token = await this.getAccessToken();
+      
+      // Request video with files included
+      const response = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}?fields=uri,name,status,privacy,files,play,player_embed_url,link,embed`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/vnd.vimeo.*+json;version=3.4",
+        },
+      });
+
+      if (!response.ok) {
+        console.error(`[Vimeo] Failed to get video ${videoId}: ${response.status}`);
+        return null;
+      }
+
+      const video: VimeoVideo = await response.json();
+      
+      console.log(`[Vimeo] Video ${videoId} privacy: ${video.privacy?.view}, embed: ${video.privacy?.embed}`);
+      console.log(`[Vimeo] Video ${videoId} has files: ${!!video.files}, has play: ${!!video.play}`);
+      
+      // Priority 1: HLS streaming (best for adaptive quality)
+      if (video.play?.hls?.link) {
+        console.log(`[Vimeo] Using HLS playback for ${videoId}`);
+        return { type: 'hls', url: video.play.hls.link };
+      }
+      
+      // Priority 2: Progressive files (direct download links)
+      if (video.files && video.files.length > 0) {
+        // Sort by quality (highest first) and pick the best one
+        const sortedFiles = video.files
+          .filter(f => f.type === 'video/mp4')
+          .sort((a, b) => b.height - a.height);
+        
+        if (sortedFiles.length > 0) {
+          const bestFile = sortedFiles[0];
+          console.log(`[Vimeo] Using progressive ${bestFile.quality} for ${videoId}`);
+          return { type: 'progressive', url: bestFile.link };
+        }
+      }
+      
+      // Priority 3: Progressive from play object
+      if (video.play?.progressive && video.play.progressive.length > 0) {
+        const sortedFiles = video.play.progressive.sort((a, b) => b.height - a.height);
+        const bestFile = sortedFiles[0];
+        console.log(`[Vimeo] Using progressive from play object ${bestFile.quality} for ${videoId}`);
+        return { type: 'progressive', url: bestFile.link };
+      }
+      
+      // Priority 4: Fallback to embed URL (for public/unlisted videos)
+      if (video.player_embed_url) {
+        console.log(`[Vimeo] Falling back to embed URL for ${videoId}`);
+        return { type: 'embed', url: video.player_embed_url };
+      }
+      
+      // Last resort: try to construct embed URL with hash from link
+      if (video.link) {
+        const linkMatch = video.link.match(/vimeo\.com\/\d+\/([a-zA-Z0-9]+)/);
+        if (linkMatch && linkMatch[1]) {
+          const embedUrl = `https://player.vimeo.com/video/${videoId}?h=${linkMatch[1]}`;
+          console.log(`[Vimeo] Constructed embed URL with hash for ${videoId}`);
+          return { type: 'embed', url: embedUrl };
+        }
+      }
+      
+      console.log(`[Vimeo] No playback method available for ${videoId}`);
+      return null;
+    } catch (error) {
+      console.error(`[Vimeo] Error getting playback URL for ${videoId}:`, error);
       return null;
     }
   }
