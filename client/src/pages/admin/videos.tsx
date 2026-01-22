@@ -1784,6 +1784,20 @@ export default function VideoManagement() {
                           size="icon"
                           className="h-4 w-4 ml-1"
                           onClick={() => {
+                            setNewCategoryParentId(cat.id);
+                            setNewCategoryName("");
+                            setIsCategoryDialogOpen(true);
+                          }}
+                          title="Add subcategory"
+                          data-testid={`button-add-subcategory-${cat.id}`}
+                        >
+                          <Plus className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-4 w-4"
+                          onClick={() => {
                             setCategoryToEdit(cat);
                             setEditCategoryName(cat.name);
                             setEditCategoryParentId(cat.parentCategoryId || null);

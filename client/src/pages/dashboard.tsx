@@ -1206,7 +1206,12 @@ export default function DashboardPage() {
   // Set default category to first available category when loaded
   useEffect(() => {
     if (selectedCategory === null && categories.length > 0) {
-      setSelectedCategory(categories[0].id);
+      const firstCategory = categories[0];
+      setSelectedCategory(firstCategory.id);
+      // Also expand if it's a top-level category with subcategories
+      if (!firstCategory.parentCategoryId) {
+        setExpandedCategory(firstCategory.id);
+      }
     }
   }, [categories, selectedCategory]);
 
@@ -1249,6 +1254,7 @@ export default function DashboardPage() {
   }, [videos, searchQuery]);
   
   // Get filtered content based on selected category (always shows category videos)
+  // When a main category is selected, show ALL videos from that category AND its subcategories
   const filteredVideos = useMemo(() => {
     if (!videos) return [];
     if (selectedCategory === null) return [];
@@ -1257,8 +1263,19 @@ export default function DashboardPage() {
     if (selectedCategory === "uncategorized") {
       return videos.filter(v => !v.categoryId);
     }
+    
+    // Check if selectedCategory is a main (top-level) category
+    const isMainCategory = topLevelCategories.some(c => c.id === selectedCategory);
+    if (isMainCategory) {
+      // Get all subcategory IDs for this main category
+      const subcategoryIds = getSubcategories(selectedCategory).map(s => s.id);
+      // Include videos from main category AND all its subcategories
+      return videos.filter(v => v.categoryId === selectedCategory || subcategoryIds.includes(v.categoryId || ""));
+    }
+    
+    // It's a subcategory - show only videos in that subcategory
     return videos.filter(v => v.categoryId === selectedCategory);
-  }, [videos, selectedCategory]);
+  }, [videos, selectedCategory, topLevelCategories, getSubcategories]);
 
   // Check scroll position to show/hide arrows
   const checkScrollPosition = () => {
@@ -1934,7 +1951,8 @@ export default function DashboardPage() {
                         variant={isSelected ? "default" : "outline"}
                         onClick={() => {
                           setSelectedCategory(category.id);
-                          setExpandedCategory(expandedCategory === category.id ? null : category.id);
+                          // Always expand subcategories when main category is selected
+                          setExpandedCategory(category.id);
                         }}
                         data-testid={`button-category-${category.id}`}
                       >
@@ -1975,21 +1993,31 @@ export default function DashboardPage() {
                     </Button>
                   )}
                 </div>
-                {/* Subcategories - shown below parent when expanded */}
-                {expandedCategory && getSubcategories(expandedCategory).length > 0 && (
-                  <div className="flex flex-wrap gap-2 ml-4 pl-4 border-l-2 border-muted-foreground/30">
-                    {getSubcategories(expandedCategory).map((subcat) => (
-                      <Button
-                        key={subcat.id}
-                        variant={selectedCategory === subcat.id ? "secondary" : "ghost"}
-                        onClick={() => setSelectedCategory(subcat.id)}
-                        data-testid={`button-subcategory-${subcat.id}`}
-                      >
-                        {subcat.name}
-                      </Button>
-                    ))}
-                  </div>
-                )}
+                {/* Subcategories - shown below parent when main category selected, in distinct accent color */}
+                {(() => {
+                  // Show subcategories if selectedCategory is a main category with subcategories
+                  const mainCatId = topLevelCategories.find(c => c.id === selectedCategory)?.id 
+                    || topLevelCategories.find(c => getSubcategories(c.id).some(s => s.id === selectedCategory))?.id;
+                  const subsToShow = mainCatId ? getSubcategories(mainCatId) : [];
+                  if (subsToShow.length === 0) return null;
+                  return (
+                    <div className="flex flex-wrap gap-2 ml-4 pl-4 border-l-2 border-primary/50">
+                      {subsToShow.map((subcat) => (
+                        <Button
+                          key={subcat.id}
+                          variant={selectedCategory === subcat.id ? "default" : "outline"}
+                          className={selectedCategory === subcat.id 
+                            ? "bg-primary/80 text-primary-foreground" 
+                            : "border-primary/50 text-primary hover:bg-primary/10"}
+                          onClick={() => setSelectedCategory(subcat.id)}
+                          data-testid={`button-subcategory-${subcat.id}`}
+                        >
+                          {subcat.name}
+                        </Button>
+                      ))}
+                    </div>
+                  );
+                })()}
               </div>
 
               {/* Content based on selected category (always visible) */}
