@@ -183,7 +183,7 @@ class VimeoService {
         name: title,
         privacy: {
           view: "unlisted",  // Unlisted - accessible via link but not searchable
-          embed: "whitelist", // Only embeddable on whitelisted domains
+          embed: "public",   // Embeddable anywhere
         },
       }),
     });
@@ -301,9 +301,9 @@ class VimeoService {
         console.log(`[Vimeo] Current privacy for ${videoId}: view=${videoData.privacy?.view}, embed=${videoData.privacy?.embed}`);
       }
       
-      // Set view to "unlisted" and embed to "whitelist"
+      // Set view to "unlisted" and embed to "public"
       // Unlisted = accessible via link but not searchable on Vimeo
-      // Whitelist = only embeddable on whitelisted domains
+      // Public = embeddable anywhere
       const response = await fetch(`https://api.vimeo.com/videos/${videoId}`, {
         method: "PATCH",
         headers: {
@@ -314,7 +314,7 @@ class VimeoService {
         body: JSON.stringify({
           privacy: {
             view: "unlisted",
-            embed: "whitelist",
+            embed: "public",
           },
         }),
       });
