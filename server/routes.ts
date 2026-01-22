@@ -1747,10 +1747,28 @@ export async function registerRoutes(
   app.patch("/api/admin/videos/:id", requireAdmin, async (req, res) => {
     try {
       const { title, description, status, categoryId } = req.body;
-      const video = await storage.updateVideo(req.params.id, { title, description, status, categoryId });
-      if (!video) {
+      
+      // Get current video to check if it's a Vimeo video
+      const currentVideo = await storage.getVideo(req.params.id);
+      if (!currentVideo) {
         return res.status(404).json({ message: "Video not found" });
       }
+      
+      // Update on Vimeo if it's a Vimeo video and title or description changed
+      if (currentVideo.vimeoVideoId && (title || description !== undefined)) {
+        const vimeoMetadata: { name?: string; description?: string } = {};
+        if (title) vimeoMetadata.name = title;
+        if (description !== undefined) vimeoMetadata.description = description || "";
+        
+        const success = await vimeoService.updateVideoMetadata(currentVideo.vimeoVideoId, vimeoMetadata);
+        if (success) {
+          console.log(`Updated Vimeo metadata for video ${req.params.id}`);
+        } else {
+          console.log(`Failed to update Vimeo metadata for video ${req.params.id} (non-fatal)`);
+        }
+      }
+      
+      const video = await storage.updateVideo(req.params.id, { title, description, status, categoryId });
       res.json(video);
     } catch (error) {
       console.error("Update video error:", error);

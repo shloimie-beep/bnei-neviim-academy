@@ -346,6 +346,34 @@ class VimeoService {
     }
   }
 
+  // Update video metadata on Vimeo (title, description)
+  async updateVideoMetadata(videoId: string, metadata: { name?: string; description?: string }): Promise<boolean> {
+    try {
+      const token = await this.getAccessToken();
+      const response = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}`, {
+        method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Accept": "application/vnd.vimeo.*+json;version=3.4",
+        },
+        body: JSON.stringify(metadata),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`[Vimeo] Failed to update metadata for ${videoId}: ${response.status} - ${errorText}`);
+        return false;
+      }
+
+      console.log(`[Vimeo] Updated metadata for video ${videoId}`);
+      return true;
+    } catch (error) {
+      console.error(`[Vimeo] Error updating metadata for ${videoId}:`, error);
+      return false;
+    }
+  }
+
   async deleteVideo(videoId: string): Promise<boolean> {
     try {
       const token = await this.getAccessToken();
