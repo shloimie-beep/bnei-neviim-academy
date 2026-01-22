@@ -1,6 +1,8 @@
 const VIMEO_ACCESS_TOKEN = process.env.VIMEO_ACCESS_TOKEN;
 const VIMEO_CLIENT_ID = process.env.VIMEO_CLIENT_ID;
 const VIMEO_CLIENT_SECRET = process.env.VIMEO_CLIENT_SECRET;
+// VIMEO_CUSTOMER_TOKEN is an alternative API key for upload operations
+const VIMEO_CUSTOMER_TOKEN = process.env.VIMEO_CUSTOMER_TOKEN;
 
 interface VimeoVideoFile {
   quality: string;
@@ -53,6 +55,7 @@ interface VimeoCreateResponse {
 
 class VimeoService {
   private accessToken: string;
+  private customerToken: string;
   private clientId: string;
   private clientSecret: string;
   private cachedToken: string | null = null;
@@ -60,16 +63,31 @@ class VimeoService {
 
   constructor() {
     this.accessToken = VIMEO_ACCESS_TOKEN || "";
+    this.customerToken = VIMEO_CUSTOMER_TOKEN || "";
     this.clientId = VIMEO_CLIENT_ID || "";
     this.clientSecret = VIMEO_CLIENT_SECRET || "";
     
     if (this.accessToken) {
       console.log("[Vimeo] Service initialized with personal access token");
-    } else if (this.clientId && this.clientSecret) {
-      console.log("[Vimeo] Service initialized with client credentials");
-    } else {
+    }
+    if (this.customerToken) {
+      console.log("[Vimeo] Customer token available for uploads");
+    }
+    if (this.clientId && this.clientSecret) {
+      console.log("[Vimeo] Client credentials available");
+    }
+    if (!this.accessToken && !this.customerToken && !this.clientId) {
       console.log("[Vimeo] No credentials configured - API calls will fail");
     }
+  }
+
+  // Get token for upload operations - prefer customer token if available
+  private getUploadToken(): string {
+    // Customer token takes priority for upload operations
+    if (this.customerToken) {
+      return this.customerToken;
+    }
+    return this.accessToken;
   }
 
   private async getAccessToken(): Promise<string> {
@@ -148,7 +166,8 @@ class VimeoService {
   }
 
   async createVideo(title: string, fileSize: number): Promise<VimeoCreateResponse> {
-    const token = await this.getAccessToken();
+    // Use customer token for uploads if available (has upload permission)
+    const token = this.getUploadToken() || await this.getAccessToken();
     const response = await this.fetchWithRetry("https://api.vimeo.com/me/videos", {
       method: "POST",
       headers: {
