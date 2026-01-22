@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Folder, Trash2, Loader2, Edit2, Plus, Music, GripVertical, ExternalLink, FolderPlus, Copy } from "lucide-react";
+import { Upload, Folder, Trash2, Loader2, Edit2, Plus, Music, GripVertical, ExternalLink, FolderPlus, Copy, Play, Pause } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -32,6 +32,7 @@ function formatFileSize(bytes: number | null): string {
 export default function RssFeedManagement() {
   const { toast } = useToast();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const audioRef = useRef<HTMLAudioElement>(null);
   const [selectedFolderId, setSelectedFolderId] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [showNewFolderDialog, setShowNewFolderDialog] = useState(false);
@@ -45,6 +46,7 @@ export default function RssFeedManagement() {
   const [uploadDescription, setUploadDescription] = useState("");
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [deletingItemId, setDeletingItemId] = useState<string | null>(null);
+  const [playingItemId, setPlayingItemId] = useState<string | null>(null);
 
   const { data: folders = [], isLoading: foldersLoading } = useQuery<RssFolder[]>({
     queryKey: ["/api/admin/rss-folders"],
@@ -231,8 +233,30 @@ export default function RssFeedManagement() {
     toast({ title: "RSS URL copied to clipboard" });
   };
 
+  const togglePlayAudio = (itemId: string) => {
+    if (playingItemId === itemId) {
+      audioRef.current?.pause();
+      setPlayingItemId(null);
+    } else {
+      if (audioRef.current) {
+        audioRef.current.src = `/api/rss-audio/${itemId}/stream`;
+        audioRef.current.play().catch((err) => {
+          console.error("Playback error:", err);
+          toast({ title: "Failed to play audio", variant: "destructive" });
+        });
+        setPlayingItemId(itemId);
+      }
+    }
+  };
+
   return (
     <div className="space-y-6">
+      <audio 
+        ref={audioRef} 
+        onEnded={() => setPlayingItemId(null)} 
+        onError={() => setPlayingItemId(null)}
+        className="hidden" 
+      />
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold" data-testid="text-page-title">RSS Feed</h1>
@@ -281,17 +305,10 @@ export default function RssFeedManagement() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <Button
-              variant={selectedFolderId === null ? "secondary" : "ghost"}
-              className="w-full justify-start"
-              onClick={() => setSelectedFolderId(null)}
-              data-testid="button-folder-all"
-            >
-              <Folder className="h-4 w-4 mr-2" />
-              All Audio
-            </Button>
             {foldersLoading ? (
               <Skeleton className="h-10 w-full" />
+            ) : folders.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-2">No folders yet. Create one to get started.</p>
             ) : (
               folders.map((folder) => (
                 <div key={folder.id} className="flex items-center gap-1">
@@ -328,10 +345,10 @@ export default function RssFeedManagement() {
             <CardTitle className="flex items-center justify-between gap-4">
               <span>
                 {selectedFolderId === null 
-                  ? "All Audio" 
+                  ? "Select a Folder" 
                   : folders.find(f => f.id === selectedFolderId)?.name || "Audio Files"}
               </span>
-              <Button onClick={() => setShowUploadDialog(true)} data-testid="button-upload-audio">
+              <Button onClick={() => setShowUploadDialog(true)} disabled={!selectedFolderId} data-testid="button-upload-audio">
                 <Upload className="h-4 w-4 mr-2" />
                 Upload Audio
               </Button>
@@ -400,6 +417,18 @@ export default function RssFeedManagement() {
                     <Badge variant="outline" className="shrink-0">
                       #{index + 1}
                     </Badge>
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => togglePlayAudio(item.id)}
+                      data-testid={`button-play-audio-${item.id}`}
+                    >
+                      {playingItemId === item.id ? (
+                        <Pause className="h-4 w-4" />
+                      ) : (
+                        <Play className="h-4 w-4" />
+                      )}
+                    </Button>
                     <Button
                       size="icon"
                       variant="ghost"
