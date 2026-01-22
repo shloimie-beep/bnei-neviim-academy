@@ -182,8 +182,8 @@ class VimeoService {
         },
         name: title,
         privacy: {
-          view: "disable",  // Private - only accessible via API
-          embed: "private", // Private embed - requires authentication
+          view: "unlisted",  // Unlisted - accessible via link but not searchable
+          embed: "whitelist", // Only embeddable on whitelisted domains
         },
       }),
     });
@@ -301,9 +301,9 @@ class VimeoService {
         console.log(`[Vimeo] Current privacy for ${videoId}: view=${videoData.privacy?.view}, embed=${videoData.privacy?.embed}`);
       }
       
-      // Set view to "disable" and embed to "private"
-      // Disable = only accessible via authenticated API
-      // Private embed = requires authentication
+      // Set view to "unlisted" and embed to "whitelist"
+      // Unlisted = accessible via link but not searchable on Vimeo
+      // Whitelist = only embeddable on whitelisted domains
       const response = await fetch(`https://api.vimeo.com/videos/${videoId}`, {
         method: "PATCH",
         headers: {
@@ -313,8 +313,8 @@ class VimeoService {
         },
         body: JSON.stringify({
           privacy: {
-            view: "disable",
-            embed: "private",
+            view: "unlisted",
+            embed: "whitelist",
           },
         }),
       });
@@ -338,7 +338,7 @@ class VimeoService {
         console.log(`[Vimeo] After update for ${videoId}: view=${updatedData.privacy?.view}, embed=${updatedData.privacy?.embed}`);
       }
 
-      console.log(`[Vimeo] Updated privacy for video ${videoId} to private (disable + private embed)`);
+      console.log(`[Vimeo] Updated privacy for video ${videoId} to unlisted + whitelist embed`);
       return true;
     } catch (error) {
       console.error(`[Vimeo] Error updating privacy for ${videoId}:`, error);
