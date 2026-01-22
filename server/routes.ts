@@ -691,6 +691,10 @@ export async function registerRoutes(
       // Generate a token for localStorage-based auth (works when cookies are blocked)
       const token = generateMobileToken({ id: user.id, email: user.email, role: user.role });
       
+      // Check if user's email is whitelisted for free access
+      const whitelistedEmail = user.email ? await storage.getWhitelistedEmail(user.email) : null;
+      const isWhitelistedEmail = !!whitelistedEmail;
+      
       // Explicitly save session before responding
       req.session.save((err) => {
         if (err) {
@@ -698,7 +702,7 @@ export async function registerRoutes(
           return res.status(500).json({ message: "Login failed" });
         }
         console.log("Login successful for:", email, "Session ID:", req.sessionID);
-        res.json({ user: { ...user, password: undefined }, token });
+        res.json({ user: { ...user, password: undefined, isWhitelistedEmail }, token });
       });
     } catch (error: any) {
       console.error("Login error:", error);
