@@ -19,6 +19,8 @@ import {
   userVideoViews,
   albums,
   albumTracks,
+  rssFolders,
+  rssAudioItems,
   type User,
   type InsertUser,
   type PhoneNumber,
@@ -55,6 +57,10 @@ import {
   type InsertAlbum,
   type AlbumTrack,
   type InsertAlbumTrack,
+  type RssFolder,
+  type InsertRssFolder,
+  type RssAudioItem,
+  type InsertRssAudioItem,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -871,6 +877,75 @@ export class DatabaseStorage implements IStorage {
     const tracks = await this.getAlbumTracks(albumId);
     if (tracks.length === 0) return 1;
     return Math.max(...tracks.map(t => t.trackNumber)) + 1;
+  }
+
+  // RSS Folders
+  async getAllRssFolders(): Promise<RssFolder[]> {
+    return db.select().from(rssFolders).orderBy(rssFolders.sortOrder, rssFolders.createdAt);
+  }
+
+  async getRssFolder(id: string): Promise<RssFolder | undefined> {
+    const [folder] = await db.select().from(rssFolders).where(eq(rssFolders.id, id));
+    return folder;
+  }
+
+  async createRssFolder(data: InsertRssFolder): Promise<RssFolder> {
+    const [folder] = await db.insert(rssFolders).values(data).returning();
+    return folder;
+  }
+
+  async updateRssFolder(id: string, data: Partial<RssFolder>): Promise<RssFolder | undefined> {
+    const [folder] = await db.update(rssFolders).set(data).where(eq(rssFolders.id, id)).returning();
+    return folder;
+  }
+
+  async deleteRssFolder(id: string): Promise<void> {
+    await db.delete(rssFolders).where(eq(rssFolders.id, id));
+  }
+
+  // RSS Audio Items - ordered by sortOrder ASC (lower = higher priority), then createdAt DESC (newest first)
+  async getAllRssAudioItems(): Promise<RssAudioItem[]> {
+    return db.select().from(rssAudioItems).orderBy(rssAudioItems.sortOrder, desc(rssAudioItems.createdAt));
+  }
+
+  async getRssAudioItemsByFolder(folderId: string | null): Promise<RssAudioItem[]> {
+    if (folderId === null) {
+      return db.select().from(rssAudioItems)
+        .where(sql`${rssAudioItems.folderId} IS NULL`)
+        .orderBy(rssAudioItems.sortOrder, desc(rssAudioItems.createdAt));
+    }
+    return db.select().from(rssAudioItems)
+      .where(eq(rssAudioItems.folderId, folderId))
+      .orderBy(rssAudioItems.sortOrder, desc(rssAudioItems.createdAt));
+  }
+
+  async getRssAudioItemsByFolderForDeletion(folderId: string): Promise<RssAudioItem[]> {
+    return db.select().from(rssAudioItems).where(eq(rssAudioItems.folderId, folderId));
+  }
+
+  async getRssAudioItem(id: string): Promise<RssAudioItem | undefined> {
+    const [item] = await db.select().from(rssAudioItems).where(eq(rssAudioItems.id, id));
+    return item;
+  }
+
+  async createRssAudioItem(data: InsertRssAudioItem): Promise<RssAudioItem> {
+    const [item] = await db.insert(rssAudioItems).values(data).returning();
+    return item;
+  }
+
+  async updateRssAudioItem(id: string, data: Partial<RssAudioItem>): Promise<RssAudioItem | undefined> {
+    const [item] = await db.update(rssAudioItems).set(data).where(eq(rssAudioItems.id, id)).returning();
+    return item;
+  }
+
+  async deleteRssAudioItem(id: string): Promise<void> {
+    await db.delete(rssAudioItems).where(eq(rssAudioItems.id, id));
+  }
+
+  async getNextRssAudioSortOrder(folderId: string | null): Promise<number> {
+    const items = await this.getRssAudioItemsByFolder(folderId);
+    if (items.length === 0) return 0;
+    return Math.max(...items.map(i => i.sortOrder || 0)) + 1;
   }
 }
 

@@ -27,6 +27,7 @@ import { voitexService } from "./voitexService";
 import { WebhookHandlers } from "./webhookHandlers";
 import { getOrCreateMp3, getCachedMp3Path, preGenerateMp3 } from "./mp3Converter";
 import { generateMobileToken, verifyMobileToken, requireMobileAuth, requireMobileOrSessionAuth } from "./mobileAuth";
+import { convertToMp3 } from "./audioConverter";
 
 const execAsync = promisify(exec);
 
@@ -3725,6 +3726,300 @@ export async function registerRoutes(
       res.status(500).json({ message: "Failed to reorder video categories" });
     }
   });
+
+  // ============================================
+  // RSS FEED MANAGEMENT ENDPOINTS
+  // ============================================
+
+  // Admin: Get all RSS folders
+  app.get("/api/admin/rss-folders", requireAdmin, async (req, res) => {
+    try {
+      const folders = await storage.getAllRssFolders();
+      res.json(folders);
+    } catch (error) {
+      console.error("Get RSS folders error:", error);
+      res.status(500).json({ message: "Failed to get RSS folders" });
+    }
+  });
+
+  // Admin: Create RSS folder
+  app.post("/api/admin/rss-folders", requireAdmin, async (req, res) => {
+    try {
+      const { name, description } = req.body;
+      if (!name) {
+        return res.status(400).json({ message: "Folder name is required" });
+      }
+      const folder = await storage.createRssFolder({ name, description, sortOrder: 0 });
+      res.json(folder);
+    } catch (error) {
+      console.error("Create RSS folder error:", error);
+      res.status(500).json({ message: "Failed to create RSS folder" });
+    }
+  });
+
+  // Admin: Update RSS folder
+  app.patch("/api/admin/rss-folders/:id", requireAdmin, async (req, res) => {
+    try {
+      const { name, description, sortOrder } = req.body;
+      const updateData: any = {};
+      if (name !== undefined) updateData.name = name;
+      if (description !== undefined) updateData.description = description;
+      if (sortOrder !== undefined) updateData.sortOrder = sortOrder;
+      
+      const folder = await storage.updateRssFolder(req.params.id, updateData);
+      if (!folder) {
+        return res.status(404).json({ message: "Folder not found" });
+      }
+      res.json(folder);
+    } catch (error) {
+      console.error("Update RSS folder error:", error);
+      res.status(500).json({ message: "Failed to update RSS folder" });
+    }
+  });
+
+  // Admin: Delete RSS folder (also deletes all audio files in the folder)
+  app.delete("/api/admin/rss-folders/:id", requireAdmin, async (req, res) => {
+    try {
+      const audioItems = await storage.getRssAudioItemsByFolderForDeletion(req.params.id);
+      for (const item of audioItems) {
+        if (item.filepath && fs.existsSync(item.filepath)) {
+          fs.unlinkSync(item.filepath);
+          console.log("[RSS Audio] Deleted file:", item.filepath);
+        }
+      }
+      await storage.deleteRssFolder(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Delete RSS folder error:", error);
+      res.status(500).json({ message: "Failed to delete RSS folder" });
+    }
+  });
+
+  // Admin: Get RSS audio items (all or by folder)
+  app.get("/api/admin/rss-audio", requireAdmin, async (req, res) => {
+    try {
+      const { folderId } = req.query;
+      let items;
+      if (folderId === "null" || folderId === "") {
+        items = await storage.getRssAudioItemsByFolder(null);
+      } else if (folderId) {
+        items = await storage.getRssAudioItemsByFolder(folderId as string);
+      } else {
+        items = await storage.getAllRssAudioItems();
+      }
+      res.json(items);
+    } catch (error) {
+      console.error("Get RSS audio items error:", error);
+      res.status(500).json({ message: "Failed to get RSS audio items" });
+    }
+  });
+
+  // Admin: Upload RSS audio (converts to MP3 64kbps)
+  const rssUploadDir = path.join(process.cwd(), "uploads", "rss-audio");
+  if (!fs.existsSync(rssUploadDir)) {
+    fs.mkdirSync(rssUploadDir, { recursive: true });
+  }
+  const rssUpload = multer({
+    storage: multer.diskStorage({
+      destination: (req, file, cb) => cb(null, rssUploadDir),
+      filename: (req, file, cb) => {
+        const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+        cb(null, "temp-" + uniqueSuffix + path.extname(file.originalname));
+      },
+    }),
+  });
+
+  app.post("/api/admin/rss-audio", requireAdmin, rssUpload.single("audio"), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "Audio file is required" });
+      }
+
+      const { title, description, folderId } = req.body;
+      if (!title) {
+        fs.unlinkSync(req.file.path);
+        return res.status(400).json({ message: "Title is required" });
+      }
+
+      const outputFilename = `${Date.now()}-${Math.round(Math.random() * 1e9)}.mp3`;
+      const conversionResult = await convertToMp3(req.file.path, rssUploadDir, outputFilename);
+
+      if (!conversionResult.success) {
+        return res.status(500).json({ message: "Audio conversion failed: " + conversionResult.error });
+      }
+
+      const item = await storage.createRssAudioItem({
+        folderId: folderId === "null" || !folderId ? null : folderId,
+        title,
+        description: description || null,
+        filename: outputFilename,
+        filepath: conversionResult.outputPath!,
+        originalFilename: req.file.originalname,
+        duration: conversionResult.duration || null,
+        fileSize: conversionResult.fileSize || null,
+        sortOrder: 0,
+      });
+
+      res.json(item);
+    } catch (error) {
+      console.error("Upload RSS audio error:", error);
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+      res.status(500).json({ message: "Failed to upload RSS audio" });
+    }
+  });
+
+  // Admin: Update RSS audio item
+  app.patch("/api/admin/rss-audio/:id", requireAdmin, async (req, res) => {
+    try {
+      const { title, description, folderId, sortOrder } = req.body;
+      const updateData: any = {};
+      if (title !== undefined) updateData.title = title;
+      if (description !== undefined) updateData.description = description;
+      if (folderId !== undefined) updateData.folderId = folderId === "null" ? null : folderId;
+      if (sortOrder !== undefined) updateData.sortOrder = sortOrder;
+      
+      const item = await storage.updateRssAudioItem(req.params.id, updateData);
+      if (!item) {
+        return res.status(404).json({ message: "Audio item not found" });
+      }
+      res.json(item);
+    } catch (error) {
+      console.error("Update RSS audio item error:", error);
+      res.status(500).json({ message: "Failed to update RSS audio item" });
+    }
+  });
+
+  // Admin: Reorder RSS audio items
+  app.post("/api/admin/rss-audio/reorder", requireAdmin, async (req, res) => {
+    try {
+      const { itemIds } = req.body;
+      if (!Array.isArray(itemIds)) {
+        return res.status(400).json({ message: "itemIds array is required" });
+      }
+
+      await Promise.all(
+        itemIds.map((id, index) => 
+          storage.updateRssAudioItem(id, { sortOrder: index })
+        )
+      );
+
+      const items = await storage.getAllRssAudioItems();
+      res.json(items);
+    } catch (error) {
+      console.error("Reorder RSS audio items error:", error);
+      res.status(500).json({ message: "Failed to reorder RSS audio items" });
+    }
+  });
+
+  // Admin: Delete RSS audio item
+  app.delete("/api/admin/rss-audio/:id", requireAdmin, async (req, res) => {
+    try {
+      const item = await storage.getRssAudioItem(req.params.id);
+      if (!item) {
+        return res.status(404).json({ message: "Audio item not found" });
+      }
+
+      if (item.filepath && fs.existsSync(item.filepath)) {
+        fs.unlinkSync(item.filepath);
+        console.log("[RSS Audio] Deleted file:", item.filepath);
+      }
+
+      await storage.deleteRssAudioItem(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Delete RSS audio item error:", error);
+      res.status(500).json({ message: "Failed to delete RSS audio item" });
+    }
+  });
+
+  // Public: Stream RSS audio file
+  app.get("/api/rss-audio/:id/stream", async (req, res) => {
+    try {
+      const item = await storage.getRssAudioItem(req.params.id);
+      if (!item) {
+        return res.status(404).json({ message: "Audio not found" });
+      }
+
+      if (!item.filepath || !fs.existsSync(item.filepath)) {
+        return res.status(404).json({ message: "Audio file not found" });
+      }
+
+      const stat = fs.statSync(item.filepath);
+      res.setHeader("Content-Type", "audio/mpeg");
+      res.setHeader("Content-Length", stat.size);
+      res.setHeader("Accept-Ranges", "bytes");
+      res.setHeader("Cache-Control", "public, max-age=31536000");
+
+      fs.createReadStream(item.filepath).pipe(res);
+    } catch (error) {
+      console.error("Stream RSS audio error:", error);
+      res.status(500).json({ message: "Failed to stream audio" });
+    }
+  });
+
+  // Public: RSS Feed XML
+  app.get("/rss/feed.xml", async (req, res) => {
+    try {
+      const items = await storage.getAllRssAudioItems();
+      const folders = await storage.getAllRssFolders();
+      const folderMap = new Map(folders.map(f => [f.id, f]));
+      
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      const feedTitle = "Audio Feed";
+      const feedDescription = "Latest audio content";
+      const feedLink = baseUrl;
+
+      let xml = `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>${feedTitle}</title>
+    <link>${feedLink}</link>
+    <description>${feedDescription}</description>
+    <language>en-us</language>
+    <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
+`;
+
+      for (const item of items) {
+        const audioUrl = `${baseUrl}/api/rss-audio/${item.id}/stream`;
+        const folderName = item.folderId ? folderMap.get(item.folderId)?.name || "" : "";
+        const pubDate = item.createdAt ? new Date(item.createdAt).toUTCString() : new Date().toUTCString();
+        const durationStr = item.duration ? formatDuration(item.duration) : "00:00";
+        
+        xml += `    <item>
+      <title><![CDATA[${item.title}]]></title>
+      <description><![CDATA[${item.description || ""}]]></description>
+      <enclosure url="${audioUrl}" length="${item.fileSize || 0}" type="audio/mpeg"/>
+      <guid isPermaLink="true">${audioUrl}</guid>
+      <pubDate>${pubDate}</pubDate>
+      <itunes:duration>${durationStr}</itunes:duration>
+${folderName ? `      <itunes:keywords>${folderName}</itunes:keywords>\n` : ""}    </item>
+`;
+      }
+
+      xml += `  </channel>
+</rss>`;
+
+      res.setHeader("Content-Type", "application/rss+xml");
+      res.setHeader("Cache-Control", "public, max-age=300");
+      res.send(xml);
+    } catch (error) {
+      console.error("Generate RSS feed error:", error);
+      res.status(500).json({ message: "Failed to generate RSS feed" });
+    }
+  });
+
+  // Helper function for duration formatting
+  function formatDuration(seconds: number): string {
+    const hrs = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = seconds % 60;
+    if (hrs > 0) {
+      return `${hrs}:${mins.toString().padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
+    }
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  }
 
   // Public: Get video categories (for subscriber display)
   app.get("/api/video-categories", async (req, res) => {
