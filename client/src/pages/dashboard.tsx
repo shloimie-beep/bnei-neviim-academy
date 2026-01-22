@@ -1429,10 +1429,12 @@ export default function DashboardPage() {
       <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
         <div className="container mx-auto px-4 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="h-10 w-10 rounded-full bg-primary flex items-center justify-center">
-              <Phone className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="text-xl font-bold">Kids' Hotline</span>
+            <img 
+              src="/logo.webp" 
+              alt="OneTimeOneTime" 
+              className="h-10 w-auto"
+            />
+            <span className="text-xl font-bold">OneTimeOneTime</span>
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />

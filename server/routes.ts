@@ -1822,6 +1822,24 @@ export async function registerRoutes(
       
       console.log(`Thumbnail uploaded to cloud: ${thumbnailPath}`);
 
+      // Also upload to Vimeo if it's a Vimeo video
+      if (video.vimeoVideoId) {
+        try {
+          // Read the original file for Vimeo upload
+          const imageBuffer = await bucket.file(objectName).download();
+          const contentType = req.file!.mimetype || "image/jpeg";
+          const success = await vimeoService.uploadThumbnail(video.vimeoVideoId, imageBuffer[0], contentType);
+          if (success) {
+            console.log(`Thumbnail also uploaded to Vimeo for video ${video.id}`);
+          } else {
+            console.log(`Failed to upload thumbnail to Vimeo for video ${video.id} (non-fatal)`);
+          }
+        } catch (vimeoErr) {
+          console.error(`Error uploading thumbnail to Vimeo for ${video.id}:`, vimeoErr);
+          // Continue anyway - cloud storage upload succeeded
+        }
+      }
+
       const updatedVideo = await storage.updateVideo(video.id, { thumbnailPath });
       res.json(updatedVideo);
     } catch (error) {

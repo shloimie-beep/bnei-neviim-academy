@@ -319,7 +319,7 @@ class VimeoService {
         console.log(`[Vimeo] After update for ${videoId}: view=${updatedData.privacy?.view}, embed=${updatedData.privacy?.embed}`);
       }
 
-      console.log(`[Vimeo] Updated privacy for video ${videoId} to unlisted + public embed`);
+      console.log(`[Vimeo] Updated privacy for video ${videoId} to private (disable + private embed)`);
       return true;
     } catch (error) {
       console.error(`[Vimeo] Error updating privacy for ${videoId}:`, error);
@@ -397,6 +397,89 @@ class VimeoService {
     } catch (error) {
       console.error(`[Vimeo] Error getting embed URL for ${videoId}:`, error);
       return `https://player.vimeo.com/video/${videoId}?dnt=1&title=0&byline=0&portrait=0`;
+    }
+  }
+
+  // Upload a custom thumbnail to Vimeo
+  async uploadThumbnail(videoId: string, imageBuffer: Buffer, contentType: string = "image/jpeg"): Promise<boolean> {
+    try {
+      const token = await this.getAccessToken();
+      
+      // Step 1: Create a picture resource to get upload link
+      const createResponse = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}/pictures`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Accept": "application/vnd.vimeo.*+json;version=3.4",
+        },
+        body: JSON.stringify({
+          active: true,
+        }),
+      });
+
+      if (!createResponse.ok) {
+        const errorText = await createResponse.text();
+        console.error(`[Vimeo] Failed to create picture resource for ${videoId}: ${createResponse.status} - ${errorText}`);
+        return false;
+      }
+
+      const pictureData = await createResponse.json();
+      const pictureUri = pictureData.uri;
+
+      console.log(`[Vimeo] Picture resource response:`, JSON.stringify(pictureData, null, 2));
+
+      // Vimeo should return upload_link for custom image upload
+      // If not present, the API may not support custom thumbnails for this account type
+      if (!pictureData.upload_link) {
+        console.error(`[Vimeo] No upload_link returned for picture on ${videoId}. Response: ${JSON.stringify(pictureData)}`);
+        console.log(`[Vimeo] Custom thumbnail upload may not be available for this account or video`);
+        return false;
+      }
+      
+      const uploadLink = pictureData.upload_link;
+
+      console.log(`[Vimeo] Uploading thumbnail to ${uploadLink}`);
+
+      // Step 2: Upload the image to the upload link
+      const uploadResponse = await fetch(uploadLink, {
+        method: "PUT",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": contentType,
+          "Accept": "application/vnd.vimeo.*+json;version=3.4",
+        },
+        body: imageBuffer,
+      });
+
+      if (!uploadResponse.ok) {
+        const errorText = await uploadResponse.text();
+        console.error(`[Vimeo] Failed to upload thumbnail for ${videoId}: ${uploadResponse.status} - ${errorText}`);
+        return false;
+      }
+
+      // Step 3: Set the thumbnail as active
+      if (pictureUri) {
+        const activateResponse = await this.fetchWithRetry(`https://api.vimeo.com${pictureUri}`, {
+          method: "PATCH",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+            "Accept": "application/vnd.vimeo.*+json;version=3.4",
+          },
+          body: JSON.stringify({ active: true }),
+        });
+        
+        if (!activateResponse.ok) {
+          console.log(`[Vimeo] Warning: Could not activate thumbnail for ${videoId}, but upload succeeded`);
+        }
+      }
+
+      console.log(`[Vimeo] Successfully uploaded and activated thumbnail for video ${videoId}`);
+      return true;
+    } catch (error) {
+      console.error(`[Vimeo] Error uploading thumbnail for ${videoId}:`, error);
+      return false;
     }
   }
 

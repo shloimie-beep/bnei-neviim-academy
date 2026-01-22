@@ -48,11 +48,13 @@ function AdminSidebar() {
     <Sidebar>
       <SidebarHeader className="p-4 border-b">
         <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-full bg-primary flex items-center justify-center">
-            <Phone className="h-4 w-4 text-primary-foreground" />
-          </div>
+          <img 
+            src="/logo.webp" 
+            alt="OneTimeOneTime" 
+            className="h-8 w-auto"
+          />
           <div>
-            <p className="font-semibold text-sm">Kids' Hotline</p>
+            <p className="font-semibold text-sm">OneTimeOneTime</p>
             <p className="text-xs text-muted-foreground">Admin Panel</p>
           </div>
         </div>
