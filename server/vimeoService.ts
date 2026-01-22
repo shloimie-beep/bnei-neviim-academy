@@ -90,6 +90,16 @@ class VimeoService {
     return this.accessToken;
   }
 
+  // Get token for download/playback operations - prefer customer token (master key) for full access
+  private getDownloadToken(): string {
+    // Customer token (master API key) has full access including download permissions
+    if (this.customerToken) {
+      console.log("[Vimeo] Using customer token (master key) for download");
+      return this.customerToken;
+    }
+    return this.accessToken;
+  }
+
   private async getAccessToken(): Promise<string> {
     // Use personal access token if available
     if (this.accessToken) {
@@ -553,7 +563,8 @@ class VimeoService {
   // Returns HLS or progressive download URL with signed token
   async getAuthenticatedPlaybackUrl(videoId: string): Promise<{ type: 'hls' | 'progressive' | 'embed'; url: string } | null> {
     try {
-      const token = await this.getAccessToken();
+      // Use the download token (master API key) for full access to files
+      const token = this.getDownloadToken();
       
       // Request video with files included
       const response = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}?fields=uri,name,status,privacy,files,play,player_embed_url,link,embed`, {
