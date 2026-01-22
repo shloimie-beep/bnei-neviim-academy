@@ -25,7 +25,7 @@ import { generateThumbnailFromBunny, generateThumbnailFromLocalVideo } from "./t
 import { vimeoService } from "./vimeoService";
 import { voitexService } from "./voitexService";
 import { WebhookHandlers } from "./webhookHandlers";
-import { getOrCreateMp3, getCachedMp3Path, preGenerateMp3 } from "./mp3Converter";
+import { getOrCreateMp3, getOrCreateVimeoMp3, getCachedMp3Path, preGenerateMp3 } from "./mp3Converter";
 import { generateMobileToken, verifyMobileToken, requireMobileAuth, requireMobileOrSessionAuth } from "./mobileAuth";
 import { convertToMp3 } from "./audioConverter";
 
@@ -2867,11 +2867,17 @@ export async function registerRoutes(
       }
 
       // For videos, convert to MP3
-      if (!video.bunnyGuid) {
-        return res.status(400).json({ message: "Only Bunny-hosted videos can be converted to MP3" });
+      let mp3Path: string;
+      
+      if (video.vimeoVideoId) {
+        // Vimeo video - extract audio as MP3 64kbps mono
+        mp3Path = await getOrCreateVimeoMp3(video.id, video.vimeoVideoId, video.title);
+      } else if (video.bunnyGuid) {
+        // Bunny video - extract audio as MP3
+        mp3Path = await getOrCreateMp3(video.id, video.bunnyGuid, video.title);
+      } else {
+        return res.status(400).json({ message: "Video does not have a streamable source (Vimeo or Bunny)" });
       }
-
-      const mp3Path = await getOrCreateMp3(video.id, video.bunnyGuid, video.title);
       
       res.setHeader("Content-Type", "audio/mpeg");
       res.setHeader("Content-Disposition", `attachment; filename="${safeTitle}.mp3"`);
@@ -2892,9 +2898,9 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Video not found" });
       }
 
-      const cached = video.bunnyGuid ? getCachedMp3Path(video.id) : null;
+      const cached = (video.bunnyGuid || video.vimeoVideoId) ? getCachedMp3Path(video.id) : null;
       res.json({ 
-        available: video.bunnyGuid && video.status === "ready",
+        available: (video.bunnyGuid || video.vimeoVideoId) && video.status === "ready",
         cached: !!cached 
       });
     } catch (error: any) {

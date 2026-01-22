@@ -239,9 +239,12 @@ export default function RssFeedManagement() {
       setPlayingItemId(null);
     } else {
       if (audioRef.current) {
+        audioRef.current.pause();
         audioRef.current.src = `/api/rss-audio/${itemId}/stream`;
+        audioRef.current.load();
         audioRef.current.play().catch((err) => {
           console.error("Playback error:", err);
+          setPlayingItemId(null);
           toast({ title: "Failed to play audio", variant: "destructive" });
         });
         setPlayingItemId(itemId);
