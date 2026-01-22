@@ -430,10 +430,10 @@ export async function registerRoutes(
     }
   });
 
-  // ============ USER LIST JSON ENDPOINT (similar to phone-list but returns full user data) ============
+  // ============ PHONE LIST JSON ENDPOINT (active phone numbers as JSON array) ============
   // Protected by a simple token in query string
-  // URL format: /api/userlist/j8n5k2m9p3?token=PHONE_LIST_TOKEN
-  app.get("/api/userlist/j8n5k2m9p3", async (req, res) => {
+  // URL format: /api/phonelist-json/j8n5k2m9p3?token=PHONE_LIST_TOKEN
+  app.get("/api/phonelist-json/j8n5k2m9p3", async (req, res) => {
     try {
       // Simple token protection - reuses the same PHONE_LIST_TOKEN
       const expectedToken = process.env.PHONE_LIST_TOKEN;
@@ -450,29 +450,48 @@ export async function registerRoutes(
 
       const subscribers = await storage.getSubscriberList();
       
-      // Map to user data without sensitive fields
-      const users = subscribers.map(sub => ({
-        id: sub.id,
-        email: sub.email,
-        subscriptionStatus: sub.subscriptionStatus,
-        trialEndsAt: sub.trialEndsAt,
-        hasUsedTrial: sub.hasUsedTrial,
-        createdAt: sub.createdAt,
-        phoneNumbers: sub.phoneNumbers?.map(p => p.phoneNumber) || [],
-        isActive: sub.subscriptionStatus === "active" || 
-          (sub.subscriptionStatus === "trial" && sub.trialEndsAt && new Date(sub.trialEndsAt) >= new Date()),
-      }));
+      // Filter for active subscribers or those in valid trial period
+      const activeSubscribers = subscribers.filter(sub => {
+        if (sub.subscriptionStatus === "active") return true;
+        if (sub.subscriptionStatus === "trial") {
+          if (sub.trialEndsAt) {
+            return new Date(sub.trialEndsAt) >= new Date();
+          }
+          return true;
+        }
+        if (sub.trialEndsAt && new Date(sub.trialEndsAt) >= new Date()) {
+          return true;
+        }
+        return false;
+      });
+
+      // Collect all phone numbers from active subscribers
+      const phoneNumbers: Set<string> = new Set();
+      for (const sub of activeSubscribers) {
+        if (sub.phoneNumbers && sub.phoneNumbers.length > 0) {
+          for (const phone of sub.phoneNumbers) {
+            const cleaned = phone.phoneNumber.replace(/\D/g, "");
+            if (cleaned.length >= 10) {
+              phoneNumbers.add(`+${cleaned}`);
+            }
+          }
+        }
+      }
+
+      // Also include whitelisted phone numbers
+      const whitelistedNumbers = await storage.getAllWhitelistedNumbers();
+      for (const wn of whitelistedNumbers) {
+        const cleaned = wn.phoneNumber.replace(/\D/g, "");
+        if (cleaned.length >= 10) {
+          phoneNumbers.add(`+${cleaned}`);
+        }
+      }
 
       res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-      res.json({
-        exportedAt: new Date().toISOString(),
-        totalUsers: users.length,
-        activeUsers: users.filter(u => u.isActive).length,
-        users,
-      });
+      res.json(Array.from(phoneNumbers));
     } catch (error: any) {
-      console.error("User list error:", error);
-      res.status(500).json({ error: "Failed to get user list" });
+      console.error("Phone list JSON error:", error);
+      res.status(500).json({ error: "Failed to get phone list" });
     }
   });
 
