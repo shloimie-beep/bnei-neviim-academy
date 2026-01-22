@@ -146,6 +146,7 @@ export const passwordResetTokens = pgTable("password_reset_tokens", {
 export const videoCategories = pgTable("video_categories", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   name: text("name").notNull().unique(),
+  parentCategoryId: varchar("parent_category_id"), // null for top-level categories, ID for subcategories
   sortOrder: integer("sort_order").default(0),
   createdAt: timestamp("created_at").defaultNow(),
 });

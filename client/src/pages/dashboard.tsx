@@ -1150,6 +1150,19 @@ export default function DashboardPage() {
     queryKey: ["/api/video-categories"],
   });
 
+  // Top-level categories (no parent) for display
+  const topLevelCategories = useMemo(() => {
+    return categories.filter(c => !c.parentCategoryId);
+  }, [categories]);
+
+  // Get subcategories for a parent category
+  const getSubcategories = (parentId: string) => {
+    return categories.filter(c => c.parentCategoryId === parentId);
+  };
+
+  // Track expanded categories (showing subcategories)
+  const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+
   const { data: trendingVideos = [] } = useQuery<VideoType[]>({
     queryKey: ["/api/videos/trending"],
     enabled: hasActiveSubscription,
@@ -1229,22 +1242,23 @@ export default function DashboardPage() {
       .slice(0, 10);
   }, [videos]);
 
-  // Get filtered content based on selected category and search
+  // Get search results (when searching)
+  const searchResults = useMemo(() => {
+    if (!videos || !searchQuery.trim()) return [];
+    return videos.filter(v => fuzzyMatch(v.title, searchQuery));
+  }, [videos, searchQuery]);
+  
+  // Get filtered content based on selected category (always shows category videos)
   const filteredVideos = useMemo(() => {
     if (!videos) return [];
-    
-    // If searching, search across all videos regardless of category
-    if (searchQuery.trim()) {
-      return videos.filter(v => fuzzyMatch(v.title, searchQuery));
-    }
-    
     if (selectedCategory === null) return [];
     if (selectedCategory === "documents") return [];
+    if (selectedCategory === "albums") return [];
     if (selectedCategory === "uncategorized") {
       return videos.filter(v => !v.categoryId);
     }
     return videos.filter(v => v.categoryId === selectedCategory);
-  }, [videos, selectedCategory, searchQuery]);
+  }, [videos, selectedCategory]);
 
   // Check scroll position to show/hide arrows
   const checkScrollPosition = () => {
@@ -1727,7 +1741,7 @@ export default function DashboardPage() {
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <h2 className="text-lg font-semibold">
-                      Search Results ({filteredVideos.length})
+                      Search Results ({searchResults.length})
                     </h2>
                     <Button 
                       variant="ghost" 
@@ -1738,9 +1752,9 @@ export default function DashboardPage() {
                       Clear Search
                     </Button>
                   </div>
-                  {filteredVideos.length > 0 ? (
+                  {searchResults.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {filteredVideos.map((video) => {
+                      {searchResults.map((video) => {
                         const category = categories.find(c => c.id === video.categoryId);
                         return (
                           <VideoCard 
@@ -1909,50 +1923,77 @@ export default function DashboardPage() {
               )}
 
               {/* Category Filter Buttons */}
-              <div className="flex flex-wrap gap-2">
-                {categories.map((category) => (
-                  <Button
-                    key={category.id}
-                    variant={selectedCategory === category.id ? "default" : "outline"}
-                    onClick={() => setSelectedCategory(category.id)}
-                    data-testid={`button-category-${category.id}`}
-                  >
-                    {category.name}
-                  </Button>
-                ))}
-                {videosByCategory.uncategorized && videosByCategory.uncategorized.length > 0 && (
-                  <Button
-                    variant={selectedCategory === "uncategorized" ? "default" : "outline"}
-                    onClick={() => setSelectedCategory("uncategorized")}
-                    data-testid="button-category-uncategorized"
-                  >
-                    Other
-                  </Button>
-                )}
-                {albums && albums.length > 0 && (
-                  <Button
-                    variant={selectedCategory === "albums" ? "default" : "outline"}
-                    onClick={() => setSelectedCategory("albums")}
-                    data-testid="button-category-albums"
-                  >
-                    <Disc className="h-4 w-4 mr-2" />
-                    Albums
-                  </Button>
-                )}
-                {documents && documents.length > 0 && (
-                  <Button
-                    variant={selectedCategory === "documents" ? "default" : "outline"}
-                    onClick={() => setSelectedCategory("documents")}
-                    data-testid="button-category-documents"
-                  >
-                    <FileText className="h-4 w-4 mr-2" />
-                    Documents
-                  </Button>
+              <div className="space-y-2">
+                <div className="flex flex-wrap gap-2">
+                  {topLevelCategories.map((category) => {
+                    const subcats = getSubcategories(category.id);
+                    const isSelected = selectedCategory === category.id || subcats.some(s => s.id === selectedCategory);
+                    return (
+                      <Button
+                        key={category.id}
+                        variant={isSelected ? "default" : "outline"}
+                        onClick={() => {
+                          setSelectedCategory(category.id);
+                          setExpandedCategory(expandedCategory === category.id ? null : category.id);
+                        }}
+                        data-testid={`button-category-${category.id}`}
+                      >
+                        {category.name}
+                        {subcats.length > 0 && (
+                          <ChevronRight className={`h-4 w-4 ml-1 transition-transform ${expandedCategory === category.id ? "rotate-90" : ""}`} />
+                        )}
+                      </Button>
+                    );
+                  })}
+                  {videosByCategory.uncategorized && videosByCategory.uncategorized.length > 0 && (
+                    <Button
+                      variant={selectedCategory === "uncategorized" ? "default" : "outline"}
+                      onClick={() => setSelectedCategory("uncategorized")}
+                      data-testid="button-category-uncategorized"
+                    >
+                      Other
+                    </Button>
+                  )}
+                  {albums && albums.length > 0 && (
+                    <Button
+                      variant={selectedCategory === "albums" ? "default" : "outline"}
+                      onClick={() => setSelectedCategory("albums")}
+                      data-testid="button-category-albums"
+                    >
+                      <Disc className="h-4 w-4 mr-2" />
+                      Albums
+                    </Button>
+                  )}
+                  {documents && documents.length > 0 && (
+                    <Button
+                      variant={selectedCategory === "documents" ? "default" : "outline"}
+                      onClick={() => setSelectedCategory("documents")}
+                      data-testid="button-category-documents"
+                    >
+                      <FileText className="h-4 w-4 mr-2" />
+                      Documents
+                    </Button>
+                  )}
+                </div>
+                {/* Subcategories - shown below parent when expanded */}
+                {expandedCategory && getSubcategories(expandedCategory).length > 0 && (
+                  <div className="flex flex-wrap gap-2 ml-4 pl-4 border-l-2 border-muted-foreground/30">
+                    {getSubcategories(expandedCategory).map((subcat) => (
+                      <Button
+                        key={subcat.id}
+                        variant={selectedCategory === subcat.id ? "secondary" : "ghost"}
+                        onClick={() => setSelectedCategory(subcat.id)}
+                        data-testid={`button-subcategory-${subcat.id}`}
+                      >
+                        {subcat.name}
+                      </Button>
+                    ))}
+                  </div>
                 )}
               </div>
 
-              {/* Content based on selected category (hidden when searching) */}
-              {searchQuery.trim() ? null : selectedCategory === "albums" ? (
+              {/* Content based on selected category (always visible) */}
+              {selectedCategory === "albums" ? (
                 <div>
                   {albumsLoading ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

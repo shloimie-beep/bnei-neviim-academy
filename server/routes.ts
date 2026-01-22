@@ -3621,7 +3621,7 @@ export async function registerRoutes(
   // Admin: Create video category
   app.post("/api/admin/video-categories", requireAdmin, async (req, res) => {
     try {
-      const { name, sortOrder } = req.body;
+      const { name, sortOrder, parentCategoryId } = req.body;
       if (!name) {
         return res.status(400).json({ message: "Category name is required" });
       }
@@ -3631,7 +3631,23 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Category already exists" });
       }
 
-      const category = await storage.createVideoCategory({ name, sortOrder: sortOrder || 0 });
+      // Validate parent category exists if provided
+      if (parentCategoryId) {
+        const parentCat = await storage.getVideoCategory(parentCategoryId);
+        if (!parentCat) {
+          return res.status(400).json({ message: "Parent category not found" });
+        }
+        // Only allow one level of nesting (parent cannot have a parent)
+        if (parentCat.parentCategoryId) {
+          return res.status(400).json({ message: "Cannot create subcategory of a subcategory" });
+        }
+      }
+
+      const category = await storage.createVideoCategory({ 
+        name, 
+        sortOrder: sortOrder || 0,
+        parentCategoryId: parentCategoryId || null 
+      });
       res.json(category);
     } catch (error) {
       console.error("Create video category error:", error);
@@ -3642,8 +3658,30 @@ export async function registerRoutes(
   // Admin: Update video category
   app.patch("/api/admin/video-categories/:id", requireAdmin, async (req, res) => {
     try {
-      const { name, sortOrder } = req.body;
-      const category = await storage.updateVideoCategory(req.params.id, { name, sortOrder });
+      const { name, sortOrder, parentCategoryId } = req.body;
+      const updateData: any = {};
+      if (name !== undefined) updateData.name = name;
+      if (sortOrder !== undefined) updateData.sortOrder = sortOrder;
+      
+      // Validate parentCategoryId if provided
+      if (parentCategoryId !== undefined) {
+        if (parentCategoryId === req.params.id) {
+          return res.status(400).json({ message: "Category cannot be its own parent" });
+        }
+        if (parentCategoryId) {
+          const parentCat = await storage.getVideoCategory(parentCategoryId);
+          if (!parentCat) {
+            return res.status(400).json({ message: "Parent category not found" });
+          }
+          // Only allow one level of nesting
+          if (parentCat.parentCategoryId) {
+            return res.status(400).json({ message: "Cannot set parent to a subcategory" });
+          }
+        }
+        updateData.parentCategoryId = parentCategoryId;
+      }
+      
+      const category = await storage.updateVideoCategory(req.params.id, updateData);
       if (!category) {
         return res.status(404).json({ message: "Category not found" });
       }

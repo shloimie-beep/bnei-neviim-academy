@@ -476,9 +476,11 @@ export default function VideoManagement() {
   // Category state
   const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
+  const [newCategoryParentId, setNewCategoryParentId] = useState<string | null>(null);
   const [categoryToDelete, setCategoryToDelete] = useState<VideoCategory | null>(null);
   const [categoryToEdit, setCategoryToEdit] = useState<VideoCategory | null>(null);
   const [editCategoryName, setEditCategoryName] = useState("");
+  const [editCategoryParentId, setEditCategoryParentId] = useState<string | null>(null);
   
   // Search state
   const [searchQuery, setSearchQuery] = useState("");
@@ -532,6 +534,16 @@ export default function VideoManagement() {
     queryKey: ["/api/admin/video-categories"],
   });
   
+  // Top-level categories (no parent) for subcategory selection
+  const topLevelCategories = useMemo(() => {
+    return categories.filter(c => !c.parentCategoryId);
+  }, [categories]);
+  
+  // Get subcategories for a parent
+  const getSubcategories = (parentId: string) => {
+    return categories.filter(c => c.parentCategoryId === parentId);
+  };
+  
   // Filtered videos based on search
   const filteredVideos = videos?.filter(video => fuzzyMatch(video.title, searchQuery)) || [];
   
@@ -557,11 +569,11 @@ export default function VideoManagement() {
   }, [videos, searchQuery]);
 
   const createCategoryMutation = useMutation({
-    mutationFn: async (name: string) => {
+    mutationFn: async ({ name, parentCategoryId }: { name: string; parentCategoryId: string | null }) => {
       const res = await fetch("/api/admin/video-categories", {
         method: "POST",
         headers: { "Content-Type": "application/json", ...getAuthHeaders() },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ name, parentCategoryId }),
         credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to create category");
@@ -571,6 +583,7 @@ export default function VideoManagement() {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/video-categories"] });
       toast({ title: "Category created" });
       setNewCategoryName("");
+      setNewCategoryParentId(null);
       setIsCategoryDialogOpen(false);
     },
     onError: (error: any) => {
@@ -597,25 +610,26 @@ export default function VideoManagement() {
   });
 
   const renameCategoryMutation = useMutation({
-    mutationFn: async ({ id, name }: { id: string; name: string }) => {
+    mutationFn: async ({ id, name, parentCategoryId }: { id: string; name: string; parentCategoryId?: string | null }) => {
       const res = await fetch(`/api/admin/video-categories/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json", ...getAuthHeaders() },
-        body: JSON.stringify({ name }),
+        body: JSON.stringify({ name, parentCategoryId }),
         credentials: "include",
       });
-      if (!res.ok) throw new Error("Failed to rename category");
+      if (!res.ok) throw new Error("Failed to update category");
       return res.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/video-categories"] });
       queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
-      toast({ title: "Category renamed" });
+      toast({ title: "Category updated" });
       setCategoryToEdit(null);
       setEditCategoryName("");
+      setEditCategoryParentId(null);
     },
     onError: (error: any) => {
-      toast({ title: "Failed to rename category", description: error.message, variant: "destructive" });
+      toast({ title: "Failed to update category", description: error.message, variant: "destructive" });
     },
   });
 
@@ -1690,7 +1704,7 @@ export default function VideoManagement() {
                 <DialogHeader>
                   <DialogTitle>Create Category</DialogTitle>
                   <DialogDescription>
-                    Enter a name for the new video category
+                    Enter a name for the new category. Select a parent to create a subcategory.
                   </DialogDescription>
                 </DialogHeader>
                 <div className="space-y-4">
@@ -1704,13 +1718,33 @@ export default function VideoManagement() {
                       data-testid="input-category-name"
                     />
                   </div>
+                  <div>
+                    <Label htmlFor="parent-category">Parent Category (optional)</Label>
+                    <Select 
+                      value={newCategoryParentId || "none"} 
+                      onValueChange={(val) => setNewCategoryParentId(val === "none" ? null : val)}
+                    >
+                      <SelectTrigger data-testid="select-parent-category">
+                        <SelectValue placeholder="None (top-level)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="none">None (top-level)</SelectItem>
+                        {topLevelCategories.map((cat) => (
+                          <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Leave empty for a main category, or select a parent to create a subcategory
+                    </p>
+                  </div>
                 </div>
                 <DialogFooter>
-                  <Button variant="ghost" onClick={() => setIsCategoryDialogOpen(false)}>
+                  <Button variant="ghost" onClick={() => { setIsCategoryDialogOpen(false); setNewCategoryParentId(null); }}>
                     Cancel
                   </Button>
                   <Button
-                    onClick={() => createCategoryMutation.mutate(newCategoryName)}
+                    onClick={() => createCategoryMutation.mutate({ name: newCategoryName, parentCategoryId: newCategoryParentId })}
                     disabled={!newCategoryName.trim() || createCategoryMutation.isPending}
                     data-testid="button-confirm-create-category"
                   >
@@ -1730,45 +1764,93 @@ export default function VideoManagement() {
             <p className="text-sm text-muted-foreground">No categories yet. Create one to organize your videos.</p>
           ) : (
             <>
-              <div className="flex flex-wrap gap-2">
-                {categories.map((cat) => (
-                  <div
-                    key={cat.id}
-                    draggable
-                    onDragStart={(e) => handleCategoryDragStart(e, cat.id)}
-                    onDragOver={handleCategoryDragOver}
-                    onDrop={(e) => handleCategoryDrop(e, cat.id)}
-                    onDragEnd={handleCategoryDragEnd}
-                    className={`cursor-grab active:cursor-grabbing ${draggedCategoryId === cat.id ? "opacity-50" : ""}`}
-                    data-testid={`draggable-category-${cat.id}`}
-                  >
-                    <Badge variant="secondary" className="gap-1 pr-1">
-                      <GripVertical className="h-3 w-3 text-muted-foreground" />
-                      {cat.name}
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-4 w-4 ml-1"
-                        onClick={() => {
-                          setCategoryToEdit(cat);
-                          setEditCategoryName(cat.name);
-                        }}
-                        disabled={renameCategoryMutation.isPending}
-                        data-testid={`button-edit-category-${cat.id}`}
-                      >
-                        <Edit2 className="h-3 w-3" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-4 w-4"
-                        onClick={() => setCategoryToDelete(cat)}
-                        disabled={deleteCategoryMutation.isPending}
-                        data-testid={`button-delete-category-${cat.id}`}
-                      >
-                        <X className="h-3 w-3" />
-                      </Button>
-                    </Badge>
+              <div className="space-y-2">
+                {topLevelCategories.map((cat) => (
+                  <div key={cat.id}>
+                    <div
+                      draggable
+                      onDragStart={(e) => handleCategoryDragStart(e, cat.id)}
+                      onDragOver={handleCategoryDragOver}
+                      onDrop={(e) => handleCategoryDrop(e, cat.id)}
+                      onDragEnd={handleCategoryDragEnd}
+                      className={`inline-block cursor-grab active:cursor-grabbing ${draggedCategoryId === cat.id ? "opacity-50" : ""}`}
+                      data-testid={`draggable-category-${cat.id}`}
+                    >
+                      <Badge variant="secondary" className="gap-1 pr-1">
+                        <GripVertical className="h-3 w-3 text-muted-foreground" />
+                        {cat.name}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-4 w-4 ml-1"
+                          onClick={() => {
+                            setCategoryToEdit(cat);
+                            setEditCategoryName(cat.name);
+                            setEditCategoryParentId(cat.parentCategoryId || null);
+                          }}
+                          disabled={renameCategoryMutation.isPending}
+                          data-testid={`button-edit-category-${cat.id}`}
+                        >
+                          <Edit2 className="h-3 w-3" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-4 w-4"
+                          onClick={() => setCategoryToDelete(cat)}
+                          disabled={deleteCategoryMutation.isPending}
+                          data-testid={`button-delete-category-${cat.id}`}
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      </Badge>
+                    </div>
+                    {/* Subcategories */}
+                    {getSubcategories(cat.id).length > 0 && (
+                      <div className="ml-6 mt-1 flex flex-wrap gap-1">
+                        {getSubcategories(cat.id).map((subcat) => (
+                          <div
+                            key={subcat.id}
+                            draggable
+                            onDragStart={(e) => handleCategoryDragStart(e, subcat.id)}
+                            onDragOver={handleCategoryDragOver}
+                            onDrop={(e) => handleCategoryDrop(e, subcat.id)}
+                            onDragEnd={handleCategoryDragEnd}
+                            className={`cursor-grab active:cursor-grabbing ${draggedCategoryId === subcat.id ? "opacity-50" : ""}`}
+                            data-testid={`draggable-category-${subcat.id}`}
+                          >
+                            <Badge variant="outline" className="gap-1 pr-1 bg-muted/50">
+                              <GripVertical className="h-3 w-3 text-muted-foreground" />
+                              {subcat.name}
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-4 w-4 ml-1"
+                                onClick={() => {
+                                  setCategoryToEdit(subcat);
+                                  setEditCategoryName(subcat.name);
+                                  setEditCategoryParentId(subcat.parentCategoryId || null);
+                                }}
+                                disabled={renameCategoryMutation.isPending}
+                                data-testid={`button-edit-category-${subcat.id}`}
+                              >
+                                <Edit2 className="h-3 w-3" />
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-4 w-4"
+                                onClick={() => setCategoryToDelete(subcat)}
+                                disabled={deleteCategoryMutation.isPending}
+                                data-testid={`button-delete-category-${subcat.id}`}
+                              >
+                                <X className="h-3 w-3" />
+                              </Button>
+                            </Badge>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -1803,9 +1885,9 @@ export default function VideoManagement() {
               <Dialog open={!!categoryToEdit} onOpenChange={(open) => !open && setCategoryToEdit(null)}>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Rename Category</DialogTitle>
+                    <DialogTitle>Edit Category</DialogTitle>
                     <DialogDescription>
-                      Enter a new name for the category. All videos in this category will automatically use the new name.
+                      Update the category name or change its parent category.
                     </DialogDescription>
                   </DialogHeader>
                   <div className="space-y-4">
@@ -1819,6 +1901,23 @@ export default function VideoManagement() {
                         data-testid="input-edit-category-name"
                       />
                     </div>
+                    <div>
+                      <Label htmlFor="edit-parent-category">Parent Category</Label>
+                      <Select 
+                        value={editCategoryParentId || "none"} 
+                        onValueChange={(val) => setEditCategoryParentId(val === "none" ? null : val)}
+                      >
+                        <SelectTrigger data-testid="select-edit-parent-category">
+                          <SelectValue placeholder="None (top-level)" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="none">None (top-level)</SelectItem>
+                          {topLevelCategories.filter(c => c.id !== categoryToEdit?.id).map((cat) => (
+                            <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                   <DialogFooter>
                     <Button variant="ghost" onClick={() => setCategoryToEdit(null)}>
@@ -1827,16 +1926,20 @@ export default function VideoManagement() {
                     <Button
                       onClick={() => {
                         if (categoryToEdit && editCategoryName.trim()) {
-                          renameCategoryMutation.mutate({ id: categoryToEdit.id, name: editCategoryName.trim() });
+                          renameCategoryMutation.mutate({ 
+                            id: categoryToEdit.id, 
+                            name: editCategoryName.trim(),
+                            parentCategoryId: editCategoryParentId
+                          });
                         }
                       }}
-                      disabled={!editCategoryName.trim() || editCategoryName === categoryToEdit?.name || renameCategoryMutation.isPending}
+                      disabled={!editCategoryName.trim() || renameCategoryMutation.isPending}
                       data-testid="button-confirm-rename-category"
                     >
                       {renameCategoryMutation.isPending ? (
                         <Loader2 className="h-4 w-4 animate-spin" />
                       ) : (
-                        "Rename"
+                        "Save"
                       )}
                     </Button>
                   </DialogFooter>
