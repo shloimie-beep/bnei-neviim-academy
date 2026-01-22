@@ -140,14 +140,28 @@ export default function RssFeedManagement() {
       formData.append("description", uploadDescription);
       formData.append("folderId", selectedFolderId || "null");
 
-      const res = await fetch("/api/admin/rss-audio", {
-        method: "POST",
-        body: formData,
-        credentials: "include",
+      // Use XMLHttpRequest which automatically includes cookies
+      const response = await new Promise<Response>((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
+        
+        xhr.onload = () => {
+          resolve(new Response(xhr.responseText, {
+            status: xhr.status,
+            statusText: xhr.statusText,
+          }));
+        };
+        
+        xhr.onerror = () => reject(new Error("Network error"));
+        xhr.ontimeout = () => reject(new Error("Upload timeout"));
+        
+        xhr.withCredentials = true;
+        xhr.timeout = 300000; // 5 minute timeout
+        xhr.open("POST", "/api/admin/rss-audio");
+        xhr.send(formData);
       });
 
-      if (!res.ok) {
-        const error = await res.json();
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ message: "Failed to upload audio" }));
         throw new Error(error.message || "Failed to upload audio");
       }
 
