@@ -189,7 +189,7 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
     <Card>
       <CardContent className="p-4">
         <div className="flex items-start gap-4">
-          <div className="relative h-16 w-24 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 overflow-hidden group">
+          <div className={`relative h-16 w-24 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden group ${video.mediaType === "audio" ? "bg-black" : "bg-primary/10"}`}>
             {thumbnailSrc && !thumbnailError ? (
               <>
                 {!thumbnailLoaded && (
@@ -206,7 +206,7 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
                   decoding="async"
                   onLoad={() => setThumbnailLoaded(true)}
                   onError={() => setThumbnailError(true)}
-                  className={`h-full w-full object-cover absolute inset-0 transition-opacity duration-200 ${thumbnailLoaded && !thumbnailError ? 'opacity-100' : 'opacity-0'}`}
+                  className={`h-full w-full absolute inset-0 transition-opacity duration-200 ${video.mediaType === "audio" ? "object-contain" : "object-cover"} ${thumbnailLoaded && !thumbnailError ? 'opacity-100' : 'opacity-0'}`}
                 />
                 {video.mediaType === "audio" && thumbnailLoaded && (
                   <div className="absolute inset-0 flex items-center justify-center bg-black/40">

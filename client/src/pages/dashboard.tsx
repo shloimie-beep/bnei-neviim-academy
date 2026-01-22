@@ -612,13 +612,13 @@ function VideoCard({ video, isNew, onView, categoryName }: { video: VideoType; i
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Card className="overflow-hidden cursor-pointer hover-elevate active-elevate-2" data-testid={`card-video-${video.id}`}>
-          <div className="aspect-video bg-muted flex items-center justify-center relative group overflow-hidden">
+          <div className={`aspect-video flex items-center justify-center relative group overflow-hidden ${isAudio ? "bg-black" : "bg-muted"}`}>
             {thumbnailSrc ? (
               <>
                 <img 
                   src={thumbnailSrc} 
                   alt={video.title}
-                  className="h-full w-full object-cover"
+                  className={`h-full w-full ${isAudio ? "object-contain" : "object-cover"}`}
                 />
                 {isAudio && (
                   <div className="absolute top-2 left-2 bg-black/60 rounded-full p-1.5">
