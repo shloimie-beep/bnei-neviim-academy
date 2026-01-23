@@ -3391,30 +3391,49 @@ export async function registerRoutes(
     }
   });
 
-  // Admin: Migrate audio files from Bunny Storage to local storage
+  // Admin: Migrate audio files from Bunny Storage to Object Storage (works in production)
   app.post("/api/admin/migrate-audio-to-local", requireAdmin, async (req, res) => {
     try {
       const videos = await storage.getAllVideos();
       const albums = await storage.getAllAlbums();
       
-      // Find all audio files on Bunny Storage that need migration
-      // Include any audio with a bunnyStorageUrl, regardless of current storageType
+      // Find all audio files with bunnyStorageUrl that need migration to object storage
       const bunnyAudioFiles = videos.filter(v => 
         v.mediaType === "audio" && 
-        v.bunnyStorageUrl
+        v.bunnyStorageUrl &&
+        !v.filepath?.startsWith("/objects/") // Not already in object storage
       );
       
       // Find all album tracks on Bunny that need migration
       let bunnyTracks: any[] = [];
       for (const album of albums) {
         const tracks = await storage.getAlbumTracks(album.id);
-        const tracksToMigrate = tracks.filter(t => t.bunnyStorageUrl && !t.filepath);
+        const tracksToMigrate = tracks.filter(t => 
+          t.bunnyStorageUrl && 
+          !t.filepath?.startsWith("/objects/") // Not already in object storage
+        );
         bunnyTracks = [...bunnyTracks, ...tracksToMigrate];
       }
       
       let migratedAudio = 0;
       let migratedTracks = 0;
       let errors = 0;
+      
+      // Get the private object dir for uploads
+      const privateObjectDir = process.env.PRIVATE_OBJECT_DIR || "";
+      if (!privateObjectDir) {
+        return res.status(500).json({ message: "Object storage not configured. Please set up object storage first." });
+      }
+      
+      const { bucketName, objectName: basePath } = (() => {
+        const pathParts = privateObjectDir.slice(1).split("/");
+        return {
+          bucketName: pathParts[0],
+          objectName: pathParts.slice(1).join("/"),
+        };
+      })();
+      
+      const bucket = objectStorageClient.bucket(bucketName);
       
       // Migrate audio files (videos with mediaType=audio)
       for (const audio of bunnyAudioFiles) {
@@ -3425,20 +3444,31 @@ export async function registerRoutes(
             throw new Error(`Failed to download: ${response.status}`);
           }
           
-          const buffer = await response.arrayBuffer();
+          const buffer = Buffer.from(await response.arrayBuffer());
           const extension = path.extname(audio.filename || "file.mp3") || ".mp3";
-          const localFilename = `${Date.now()}-${Math.round(Math.random() * 1e9)}${extension}`;
-          const localPath = path.join(videoUploadDir, localFilename);
+          const objectFilename = `audio/${Date.now()}-${Math.round(Math.random() * 1e9)}${extension}`;
+          const fullObjectName = `${basePath}/${objectFilename}`;
+          const objectPath = `/objects/${objectFilename}`;
           
-          await fs.promises.writeFile(localPath, Buffer.from(buffer));
+          const objectFile = bucket.file(fullObjectName);
+          
+          await new Promise<void>((resolve, reject) => {
+            const writeStream = objectFile.createWriteStream({
+              resumable: false,
+              contentType: "audio/mpeg",
+            });
+            writeStream.on("error", reject);
+            writeStream.on("finish", resolve);
+            writeStream.end(buffer);
+          });
           
           await storage.updateVideo(audio.id, {
-            filepath: localPath,
-            storageType: "local",
+            filepath: objectPath,
+            storageType: "object_storage",
           });
           
           migratedAudio++;
-          console.log(`Migrated audio ${audio.id} to ${localPath}`);
+          console.log(`Migrated audio ${audio.id} to object storage: ${objectPath}`);
         } catch (error) {
           console.error(`Failed to migrate audio ${audio.id}:`, error);
           errors++;
@@ -3454,19 +3484,30 @@ export async function registerRoutes(
             throw new Error(`Failed to download: ${response.status}`);
           }
           
-          const buffer = await response.arrayBuffer();
+          const buffer = Buffer.from(await response.arrayBuffer());
           const extension = path.extname(track.filename || "track.mp3") || ".mp3";
-          const localFilename = `${Date.now()}-${Math.round(Math.random() * 1e9)}${extension}`;
-          const localPath = path.join(uploadDir, localFilename);
+          const objectFilename = `tracks/${Date.now()}-${Math.round(Math.random() * 1e9)}${extension}`;
+          const fullObjectName = `${basePath}/${objectFilename}`;
+          const objectPath = `/objects/${objectFilename}`;
           
-          await fs.promises.writeFile(localPath, Buffer.from(buffer));
+          const objectFile = bucket.file(fullObjectName);
+          
+          await new Promise<void>((resolve, reject) => {
+            const writeStream = objectFile.createWriteStream({
+              resumable: false,
+              contentType: "audio/mpeg",
+            });
+            writeStream.on("error", reject);
+            writeStream.on("finish", resolve);
+            writeStream.end(buffer);
+          });
           
           await storage.updateAlbumTrack(track.id, {
-            filepath: localPath,
+            filepath: objectPath,
           });
           
           migratedTracks++;
-          console.log(`Migrated track ${track.id} to ${localPath}`);
+          console.log(`Migrated track ${track.id} to object storage: ${objectPath}`);
         } catch (error) {
           console.error(`Failed to migrate track ${track.id}:`, error);
           errors++;
@@ -3474,7 +3515,7 @@ export async function registerRoutes(
       }
       
       res.json({
-        message: `Migration complete: ${migratedAudio} audio files, ${migratedTracks} album tracks migrated, ${errors} errors`,
+        message: `Migration complete: ${migratedAudio} audio files, ${migratedTracks} album tracks migrated to object storage, ${errors} errors`,
         migratedAudio,
         migratedTracks,
         errors,
@@ -4313,7 +4354,17 @@ export async function registerRoutes(
         });
       }
 
-      // If audio has a local filepath, serve from local storage (permanent URL)
+      // If audio is in object storage, serve from there (works in production)
+      if (video.mediaType === "audio" && video.filepath?.startsWith("/objects/")) {
+        await storage.incrementVideoViewCount(video.id);
+        return res.json({ 
+          localAudio: true, 
+          streamUrl: `/api/audio/${video.id}/stream`,
+          mediaType: video.mediaType,
+        });
+      }
+
+      // If audio has a local filepath, serve from local storage
       if (video.mediaType === "audio" && video.filepath && fs.existsSync(video.filepath)) {
         await storage.incrementVideoViewCount(video.id);
         return res.json({ 
@@ -4323,19 +4374,8 @@ export async function registerRoutes(
         });
       }
 
-      // Fallback: If audio has bunnyStorageUrl (even with local storageType), use Bunny CDN
-      // This handles cases where local file doesn't exist (e.g., production environment)
+      // Fallback: If audio has bunnyStorageUrl, use Bunny CDN (for un-migrated files)
       if (video.mediaType === "audio" && video.bunnyStorageUrl) {
-        await storage.incrementVideoViewCount(video.id);
-        return res.json({ 
-          bunnyStorage: true, 
-          cdnUrl: video.bunnyStorageUrl,
-          mediaType: video.mediaType,
-        });
-      }
-
-      // Legacy: If audio is on Bunny Storage, return the CDN URL (for un-migrated files)
-      if (video.bunnyStorageUrl && video.storageType === "bunny_storage") {
         await storage.incrementVideoViewCount(video.id);
         return res.json({ 
           bunnyStorage: true, 
@@ -4453,7 +4493,7 @@ export async function registerRoutes(
     }
   });
 
-  // Customer: Stream audio file (permanent URL)
+  // Customer: Stream audio file (from object storage or local)
   app.get("/api/audio/:id/stream", requireAuth, async (req, res) => {
     try {
       const userId = getAuthUserId(req);
@@ -4479,7 +4519,59 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Audio file not found" });
       }
 
-      if (!video.filepath || !fs.existsSync(video.filepath)) {
+      if (!video.filepath) {
+        return res.status(404).json({ message: "Audio file path not set" });
+      }
+
+      // Handle object storage files
+      if (video.filepath.startsWith("/objects/")) {
+        try {
+          const objectFile = await objectStorageService.getObjectEntityFile(video.filepath);
+          const [metadata] = await objectFile.getMetadata();
+          const fileSize = parseInt(metadata.size as string, 10);
+          const range = req.headers.range;
+
+          // Derive content type
+          const ext = path.extname(video.filepath).toLowerCase();
+          const contentTypes: Record<string, string> = {
+            ".mp3": "audio/mpeg",
+            ".wav": "audio/wav",
+            ".ogg": "audio/ogg",
+            ".m4a": "audio/mp4",
+            ".aac": "audio/aac",
+            ".flac": "audio/flac",
+          };
+          const contentType = contentTypes[ext] || "audio/mpeg";
+
+          res.setHeader("Accept-Ranges", "bytes");
+          res.setHeader("Content-Type", contentType);
+
+          if (range) {
+            const parts = range.replace(/bytes=/, "").split("-");
+            const start = parseInt(parts[0], 10);
+            const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+            const chunksize = (end - start) + 1;
+            
+            res.writeHead(206, {
+              'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+              'Content-Length': chunksize,
+            });
+            
+            const stream = objectFile.createReadStream({ start, end });
+            stream.pipe(res);
+          } else {
+            res.setHeader("Content-Length", fileSize);
+            objectFile.createReadStream().pipe(res);
+          }
+          return;
+        } catch (err) {
+          console.error("Object storage audio stream error:", err);
+          return res.status(404).json({ message: "Audio file not found in storage" });
+        }
+      }
+
+      // Handle local files
+      if (!fs.existsSync(video.filepath)) {
         return res.status(404).json({ message: "Audio file not found on disk" });
       }
 
