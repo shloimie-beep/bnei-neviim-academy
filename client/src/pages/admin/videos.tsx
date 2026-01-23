@@ -1418,6 +1418,16 @@ export default function VideoManagement() {
           </Button>
           <Button 
             variant="outline" 
+            onClick={() => {
+              window.open('/api/admin/videos/vimeo/export-embed-urls', '_blank');
+            }}
+            data-testid="button-export-embed-urls"
+          >
+            <Download className="h-4 w-4 mr-2" />
+            Export URLs (SQL)
+          </Button>
+          <Button 
+            variant="outline" 
             onClick={handleMigrateAudio} 
             disabled={isMigratingAudio}
             data-testid="button-migrate-audio"

@@ -2863,6 +2863,33 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Export Vimeo embed URLs as SQL file for production import
+  app.get("/api/admin/videos/vimeo/export-embed-urls", requireAdmin, async (req, res) => {
+    try {
+      const allVideos = await storage.getAllVideos();
+      const vimeoVideos = allVideos.filter((v: any) => 
+        v.vimeoVideoId && 
+        v.vimeoEmbedUrl
+      );
+      
+      if (vimeoVideos.length === 0) {
+        return res.status(404).json({ message: "No videos with embed URLs found" });
+      }
+      
+      // Generate SQL UPDATE statements
+      const sqlStatements = vimeoVideos.map((v: any) => 
+        `UPDATE videos SET vimeo_embed_url = '${v.vimeoEmbedUrl}' WHERE vimeo_video_id = '${v.vimeoVideoId}';`
+      ).join('\n');
+      
+      res.setHeader('Content-Type', 'text/plain');
+      res.setHeader('Content-Disposition', 'attachment; filename="vimeo_embed_urls_import.sql"');
+      res.send(`-- Vimeo Embed URLs Export\n-- Generated: ${new Date().toISOString()}\n-- Total: ${vimeoVideos.length} videos\n\n${sqlStatements}`);
+    } catch (error) {
+      console.error("Export embed URLs error:", error);
+      res.status(500).json({ message: "Failed to export embed URLs" });
+    }
+  });
+
   // Admin: Fetch and store Vimeo embed URLs with hash codes (streaming progress)
   app.post("/api/admin/videos/vimeo/fix-embed-urls-stream", requireAdmin, async (req, res) => {
     // Set up SSE
