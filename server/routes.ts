@@ -3978,7 +3978,7 @@ export async function registerRoutes(
       const feedLink = baseUrl;
 
       let xml = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+<rss version="2.0">
   <channel>
     <title>${feedTitle}</title>
     <link>${feedLink}</link>
@@ -3995,12 +3995,11 @@ export async function registerRoutes(
         
         xml += `    <item>
       <title><![CDATA[${item.title}]]></title>
-      <description><![CDATA[${item.description || ""}]]></description>
+      <description><![CDATA[${item.description || ""}${folderName ? ` (Folder: ${folderName})` : ""}]]></description>
       <enclosure url="${audioUrl}" length="${item.fileSize || 0}" type="audio/mpeg"/>
       <guid isPermaLink="true">${audioUrl}</guid>
       <pubDate>${pubDate}</pubDate>
-      <itunes:duration>${durationStr}</itunes:duration>
-${folderName ? `      <itunes:keywords>${folderName}</itunes:keywords>\n` : ""}    </item>
+    </item>
 `;
       }
 
