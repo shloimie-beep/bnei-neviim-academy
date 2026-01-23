@@ -524,7 +524,9 @@ export default function VideoManagement() {
   const [isMigratingAudio, setIsMigratingAudio] = useState(false);
   const [isExportingCategories, setIsExportingCategories] = useState(false);
   const [isApplyingCategories, setIsApplyingCategories] = useState(false);
+  const [isImportingUrls, setIsImportingUrls] = useState(false);
   const categoryFileInputRef = useRef<HTMLInputElement>(null);
+  const importUrlsFileInputRef = useRef<HTMLInputElement>(null);
   
   // Fix progress state
   const [fixProgress, setFixProgress] = useState<{
@@ -1119,6 +1121,53 @@ export default function VideoManagement() {
     }
   };
 
+  const handleImportUrls = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    
+    setIsImportingUrls(true);
+    
+    try {
+      const text = await file.text();
+      const data = JSON.parse(text);
+      
+      if (!data.updates || !Array.isArray(data.updates)) {
+        throw new Error("Invalid file format. Expected JSON with 'updates' array.");
+      }
+      
+      const res = await fetch("/api/admin/videos/vimeo/import-embed-urls", {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          ...getAuthHeaders(),
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ updates: data.updates }),
+      });
+      
+      const result = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(result.message || "Import failed");
+      }
+      
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+      toast({ 
+        title: "Import complete", 
+        description: `Updated ${result.updated} of ${result.total} videos` 
+      });
+    } catch (error: any) {
+      toast({ 
+        title: "Import failed", 
+        description: error.message || "An error occurred", 
+        variant: "destructive" 
+      });
+    } finally {
+      setIsImportingUrls(false);
+      if (importUrlsFileInputRef.current) importUrlsFileInputRef.current.value = "";
+    }
+  };
+
   const handleExportCategories = async () => {
     setIsExportingCategories(true);
     try {
@@ -1424,8 +1473,29 @@ export default function VideoManagement() {
             data-testid="button-export-embed-urls"
           >
             <Download className="h-4 w-4 mr-2" />
-            Export URLs (SQL)
+            Export URLs
           </Button>
+          <Button 
+            variant="outline" 
+            onClick={() => importUrlsFileInputRef.current?.click()}
+            disabled={isImportingUrls}
+            data-testid="button-import-embed-urls"
+          >
+            {isImportingUrls ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <Upload className="h-4 w-4 mr-2" />
+            )}
+            Import URLs
+          </Button>
+          <input
+            type="file"
+            accept=".json"
+            onChange={handleImportUrls}
+            ref={importUrlsFileInputRef}
+            className="hidden"
+            data-testid="input-import-urls-file"
+          />
           <Button 
             variant="outline" 
             onClick={handleMigrateAudio} 

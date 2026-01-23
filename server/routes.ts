@@ -2863,7 +2863,51 @@ export async function registerRoutes(
     }
   });
 
-  // Admin: Export Vimeo embed URLs as SQL file for production import
+  // Admin: Import Vimeo embed URLs from SQL or JSON
+  app.post("/api/admin/videos/vimeo/import-embed-urls", requireAdmin, async (req, res) => {
+    try {
+      const { updates } = req.body;
+      
+      if (!updates || !Array.isArray(updates)) {
+        return res.status(400).json({ message: "Invalid data format. Expected { updates: [{vimeoVideoId, embedUrl}] }" });
+      }
+      
+      let updated = 0;
+      let failed = 0;
+      
+      for (const item of updates) {
+        try {
+          if (!item.vimeoVideoId || !item.embedUrl) continue;
+          
+          // Find video by vimeoVideoId and update its embed URL
+          const allVideos = await storage.getAllVideos();
+          const video = allVideos.find((v: any) => v.vimeoVideoId === item.vimeoVideoId);
+          
+          if (video) {
+            await storage.updateVideo(video.id, { vimeoEmbedUrl: item.embedUrl } as any);
+            updated++;
+            console.log(`[Import] Updated embed URL for ${video.title}`);
+          } else {
+            failed++;
+          }
+        } catch (e) {
+          failed++;
+        }
+      }
+      
+      res.json({ 
+        message: `Updated ${updated} videos`, 
+        updated, 
+        failed, 
+        total: updates.length 
+      });
+    } catch (error) {
+      console.error("Import embed URLs error:", error);
+      res.status(500).json({ message: "Failed to import embed URLs" });
+    }
+  });
+
+  // Admin: Export Vimeo embed URLs as JSON file for production import
   app.get("/api/admin/videos/vimeo/export-embed-urls", requireAdmin, async (req, res) => {
     try {
       const allVideos = await storage.getAllVideos();
@@ -2876,14 +2920,16 @@ export async function registerRoutes(
         return res.status(404).json({ message: "No videos with embed URLs found" });
       }
       
-      // Generate SQL UPDATE statements
-      const sqlStatements = vimeoVideos.map((v: any) => 
-        `UPDATE videos SET vimeo_embed_url = '${v.vimeoEmbedUrl}' WHERE vimeo_video_id = '${v.vimeoVideoId}';`
-      ).join('\n');
+      // Generate JSON format for easy import
+      const updates = vimeoVideos.map((v: any) => ({
+        vimeoVideoId: v.vimeoVideoId,
+        embedUrl: v.vimeoEmbedUrl,
+        title: v.title
+      }));
       
-      res.setHeader('Content-Type', 'text/plain');
-      res.setHeader('Content-Disposition', 'attachment; filename="vimeo_embed_urls_import.sql"');
-      res.send(`-- Vimeo Embed URLs Export\n-- Generated: ${new Date().toISOString()}\n-- Total: ${vimeoVideos.length} videos\n\n${sqlStatements}`);
+      res.setHeader('Content-Type', 'application/json');
+      res.setHeader('Content-Disposition', 'attachment; filename="vimeo_embed_urls_export.json"');
+      res.send(JSON.stringify({ updates, exportedAt: new Date().toISOString(), total: updates.length }, null, 2));
     } catch (error) {
       console.error("Export embed URLs error:", error);
       res.status(500).json({ message: "Failed to export embed URLs" });
