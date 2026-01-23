@@ -235,8 +235,13 @@ export default function RssFeedManagement() {
 
   const copyRssUrl = () => {
     if (rssFeedData?.url) {
-      navigator.clipboard.writeText(rssFeedData.url);
-      toast({ title: "RSS URL copied to clipboard" });
+      const confirmed = window.confirm(
+        "Warning: This URL contains a private access token. Do not share it publicly.\n\nCopy URL to clipboard?"
+      );
+      if (confirmed) {
+        navigator.clipboard.writeText(rssFeedData.url);
+        toast({ title: "RSS URL copied to clipboard" });
+      }
     }
   };
 
@@ -285,24 +290,6 @@ export default function RssFeedManagement() {
           </a>
         </div>
       </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center justify-between gap-4">
-            <span>RSS Feed URL</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-2">
-            <Input 
-              value={rssUrl} 
-              readOnly 
-              className="font-mono text-sm"
-              data-testid="input-rss-url"
-            />
-          </div>
-        </CardContent>
-      </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         <Card className="lg:col-span-1">
