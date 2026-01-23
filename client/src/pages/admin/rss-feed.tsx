@@ -269,8 +269,8 @@ export default function RssFeedManagement() {
       />
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-2xl font-bold" data-testid="text-page-title">RSS Feed</h1>
-          <p className="text-muted-foreground">Manage audio files for your RSS feed</p>
+          <h1 className="text-2xl font-bold" data-testid="text-page-title">Hotline</h1>
+          <p className="text-muted-foreground">Manage audio files for your hotline</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
           <Button variant="outline" onClick={copyRssUrl} data-testid="button-copy-rss-url">

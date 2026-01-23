@@ -1,5 +1,5 @@
 import { Link, useLocation, Redirect } from "wouter";
-import { Settings, LogOut, ShieldCheck, CreditCard, Video, FileText, Disc, Rss } from "lucide-react";
+import { Settings, LogOut, ShieldCheck, CreditCard, Video, FileText, Disc, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -28,7 +28,7 @@ import RssFeedManagement from "./rss-feed";
 const adminRoutes = [
   { path: "/admin/videos", label: "Media", icon: Video },
   { path: "/admin/albums", label: "Albums", icon: Disc },
-  { path: "/admin/rss-feed", label: "RSS Feed", icon: Rss },
+  { path: "/admin/rss-feed", label: "Hotline", icon: Phone },
   { path: "/admin/whitelist", label: "Whitelist", icon: ShieldCheck },
   { path: "/admin/subscribers", label: "Subscribers", icon: CreditCard },
   { path: "/admin/documents", label: "Documents", icon: FileText },
