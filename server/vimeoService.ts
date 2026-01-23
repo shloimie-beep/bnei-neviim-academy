@@ -670,22 +670,14 @@ class VimeoService {
   }
 
   // Get authenticated playback URL for private videos
-  // Returns HLS or progressive download URL with signed token
+  // Optimized for playback - prioritizes embed player to avoid API rate limiting
   async getAuthenticatedPlaybackUrl(videoId: string): Promise<{ type: 'hls' | 'progressive' | 'embed'; url: string } | null> {
     try {
-      // Priority 0: Try direct download API first (most reliable for audio extraction)
-      console.log(`[Vimeo] Attempting direct download API for ${videoId}`);
-      const downloadLink = await this.getDownloadLink(videoId);
-      if (downloadLink) {
-        console.log(`[Vimeo] Using direct download link (${downloadLink.quality}) for ${videoId}`);
-        return { type: 'progressive', url: downloadLink.url };
-      }
-      
-      // Use the download token (master API key) for full access to files
+      // For playback, make a single API call to get the video info with embed URL
       const token = this.getDownloadToken();
       
-      // Request video with files included
-      const response = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}?fields=uri,name,status,privacy,files,play,player_embed_url,link,embed`, {
+      // Request only essential fields for playback
+      const response = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}?fields=uri,link,player_embed_url,play`, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Accept": "application/vnd.vimeo.*+json;version=3.4",
@@ -694,35 +686,24 @@ class VimeoService {
 
       if (!response.ok) {
         console.error(`[Vimeo] Failed to get video ${videoId}: ${response.status}`);
+        // If API fails, try player config directly (works without API)
+        const playerConfig = await this.getPlayerConfig(videoId);
+        if (playerConfig?.hls) {
+          console.log(`[Vimeo] Using HLS from player config for ${videoId}`);
+          return { type: 'hls', url: playerConfig.hls };
+        }
         return null;
       }
 
       const video: VimeoVideo = await response.json();
       
-      console.log(`[Vimeo] Video ${videoId} privacy: ${video.privacy?.view}, embed: ${video.privacy?.embed}`);
-      console.log(`[Vimeo] Video ${videoId} has files: ${!!video.files}, has play: ${!!video.play}`);
-      
-      // Priority 1: HLS streaming (best for adaptive quality)
+      // Priority 1: HLS streaming from play object (best for adaptive quality)
       if (video.play?.hls?.link) {
         console.log(`[Vimeo] Using HLS playback for ${videoId}`);
         return { type: 'hls', url: video.play.hls.link };
       }
       
-      // Priority 2: Progressive files (direct download links)
-      if (video.files && video.files.length > 0) {
-        // Sort by quality (highest first) and pick the best one
-        const sortedFiles = video.files
-          .filter(f => f.type === 'video/mp4')
-          .sort((a, b) => b.height - a.height);
-        
-        if (sortedFiles.length > 0) {
-          const bestFile = sortedFiles[0];
-          console.log(`[Vimeo] Using progressive ${bestFile.quality} for ${videoId}`);
-          return { type: 'progressive', url: bestFile.link };
-        }
-      }
-      
-      // Priority 3: Progressive from play object
+      // Priority 2: Progressive from play object
       if (video.play?.progressive && video.play.progressive.length > 0) {
         const sortedFiles = video.play.progressive.sort((a, b) => b.height - a.height);
         const bestFile = sortedFiles[0];
@@ -730,32 +711,42 @@ class VimeoService {
         return { type: 'progressive', url: bestFile.link };
       }
       
-      // Priority 4: Try fetching HLS from player config (works for embed-only videos)
-      console.log(`[Vimeo] Attempting player config fallback for ${videoId}`);
+      // Priority 3: Try player config for HLS (works for embed-only videos)
       const playerConfig = await this.getPlayerConfig(videoId, video.link);
       if (playerConfig?.hls) {
         console.log(`[Vimeo] Using HLS from player config for ${videoId}`);
         return { type: 'hls', url: playerConfig.hls };
       }
       
-      // Priority 5: Try scraping the embed page directly
-      console.log(`[Vimeo] Attempting embed page scraping for ${videoId}`);
-      const embedStream = await this.getStreamFromEmbedPage(videoId);
-      if (embedStream) {
-        console.log(`[Vimeo] Using ${embedStream.type} from embed page for ${videoId}`);
-        return embedStream;
+      // Priority 4: Use embed URL (most reliable for private/unlisted videos)
+      if (video.player_embed_url) {
+        console.log(`[Vimeo] Using embed URL for ${videoId}`);
+        return { type: 'embed', url: video.player_embed_url };
       }
       
-      // Priority 6: Fallback to embed URL (can't be used for audio extraction)
-      if (video.player_embed_url) {
-        console.log(`[Vimeo] Falling back to embed URL for ${videoId} (not usable for audio extraction)`);
-        return { type: 'embed', url: video.player_embed_url };
+      // Priority 5: Construct embed URL from link
+      if (video.link) {
+        // Extract hash if present (for unlisted videos)
+        const hashMatch = video.link.match(/vimeo\.com\/\d+\/([a-zA-Z0-9]+)/);
+        const hash = hashMatch ? hashMatch[1] : undefined;
+        const embedUrl = this.getEmbedUrl(videoId, hash);
+        console.log(`[Vimeo] Constructed embed URL for ${videoId}`);
+        return { type: 'embed', url: embedUrl };
       }
       
       console.log(`[Vimeo] No playback method available for ${videoId}`);
       return null;
     } catch (error) {
       console.error(`[Vimeo] Error getting playback URL for ${videoId}:`, error);
+      // Last resort: try player config without API
+      try {
+        const playerConfig = await this.getPlayerConfig(videoId);
+        if (playerConfig?.hls) {
+          return { type: 'hls', url: playerConfig.hls };
+        }
+      } catch (e) {
+        // Ignore
+      }
       return null;
     }
   }
