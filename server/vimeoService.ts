@@ -620,7 +620,15 @@ class VimeoService {
         return { type: 'hls', url: playerConfig.hls };
       }
       
-      // Priority 5: Fallback to embed URL (can't be used for audio extraction)
+      // Priority 5: Try scraping the embed page directly
+      console.log(`[Vimeo] Attempting embed page scraping for ${videoId}`);
+      const embedStream = await this.getStreamFromEmbedPage(videoId);
+      if (embedStream) {
+        console.log(`[Vimeo] Using ${embedStream.type} from embed page for ${videoId}`);
+        return embedStream;
+      }
+      
+      // Priority 6: Fallback to embed URL (can't be used for audio extraction)
       if (video.player_embed_url) {
         console.log(`[Vimeo] Falling back to embed URL for ${videoId} (not usable for audio extraction)`);
         return { type: 'embed', url: video.player_embed_url };
@@ -706,6 +714,111 @@ class VimeoService {
       return null;
     } catch (error) {
       console.error(`[Vimeo] Error fetching player config:`, error);
+      return null;
+    }
+  }
+
+  // Extract video stream from embed page HTML (fallback for heavily restricted videos)
+  async getStreamFromEmbedPage(videoId: string): Promise<{ type: 'hls' | 'progressive', url: string } | null> {
+    try {
+      // Fetch the embed page
+      const embedUrl = `https://player.vimeo.com/video/${videoId}`;
+      console.log(`[Vimeo] Fetching embed page: ${embedUrl}`);
+      
+      const response = await fetch(embedUrl, {
+        headers: {
+          "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+          "Accept-Language": "en-US,en;q=0.5",
+          "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+          "Sec-Fetch-Dest": "document",
+          "Sec-Fetch-Mode": "navigate",
+        },
+      });
+      
+      if (!response.ok) {
+        console.log(`[Vimeo] Embed page not available: ${response.status}`);
+        return null;
+      }
+      
+      const html = await response.text();
+      
+      // Look for the config JSON embedded in the page
+      // Pattern 1: window.playerConfig = {...}
+      const configMatch = html.match(/window\.playerConfig\s*=\s*(\{[\s\S]*?\});/);
+      if (configMatch) {
+        try {
+          const config = JSON.parse(configMatch[1]);
+          const hlsCdns = config?.request?.files?.hls?.cdns;
+          if (hlsCdns) {
+            const cdnKeys = Object.keys(hlsCdns);
+            for (const cdn of cdnKeys) {
+              if (hlsCdns[cdn]?.url) {
+                console.log(`[Vimeo] Found HLS URL in embed page config (${cdn})`);
+                return { type: 'hls', url: hlsCdns[cdn].url };
+              }
+            }
+          }
+          const progressive = config?.request?.files?.progressive;
+          if (progressive && progressive.length > 0) {
+            const sorted = progressive.sort((a: any, b: any) => (b.height || 0) - (a.height || 0));
+            if (sorted[0]?.url) {
+              console.log(`[Vimeo] Found progressive URL in embed page config`);
+              return { type: 'progressive', url: sorted[0].url };
+            }
+          }
+        } catch (e) {
+          console.log(`[Vimeo] Failed to parse playerConfig from embed page`);
+        }
+      }
+      
+      // Pattern 2: Look for master.json URL directly in the page
+      const masterMatch = html.match(/(https:\/\/[^"'\s]+master\.json[^"'\s]*)/);
+      if (masterMatch) {
+        console.log(`[Vimeo] Found master.json URL in embed page`);
+        // Master.json contains HLS/DASH manifests
+        try {
+          const masterResponse = await fetch(masterMatch[1], {
+            headers: {
+              "Accept": "application/json",
+              "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+            },
+          });
+          if (masterResponse.ok) {
+            const masterData = await masterResponse.json() as any;
+            // Look for video URLs in master.json
+            if (masterData.video && masterData.video.length > 0) {
+              const sortedVideos = masterData.video.sort((a: any, b: any) => (b.height || 0) - (a.height || 0));
+              const baseUrl = masterData.base_url || masterMatch[1].replace(/master\.json.*/, '');
+              if (sortedVideos[0]?.base_url) {
+                const videoUrl = baseUrl + sortedVideos[0].base_url + 'segment-0.m4s';
+                console.log(`[Vimeo] Found video segment URL from master.json`);
+                return { type: 'progressive', url: videoUrl };
+              }
+            }
+          }
+        } catch (e) {
+          console.log(`[Vimeo] Failed to fetch master.json`);
+        }
+      }
+      
+      // Pattern 3: Look for .m3u8 playlist URL directly
+      const m3u8Match = html.match(/(https:\/\/[^"'\s]+\.m3u8[^"'\s]*)/);
+      if (m3u8Match) {
+        console.log(`[Vimeo] Found m3u8 URL in embed page`);
+        return { type: 'hls', url: m3u8Match[1] };
+      }
+      
+      // Pattern 4: Look for progressive .mp4 URL
+      const mp4Match = html.match(/(https:\/\/[^"'\s]+\.mp4[^"'\s]*)/);
+      if (mp4Match && !mp4Match[1].includes('thumbnail') && !mp4Match[1].includes('poster')) {
+        console.log(`[Vimeo] Found mp4 URL in embed page`);
+        return { type: 'progressive', url: mp4Match[1] };
+      }
+      
+      console.log(`[Vimeo] No stream URL found in embed page`);
+      return null;
+    } catch (error) {
+      console.error(`[Vimeo] Error fetching embed page:`, error);
       return null;
     }
   }
