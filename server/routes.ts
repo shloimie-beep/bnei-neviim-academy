@@ -2741,14 +2741,14 @@ export async function registerRoutes(
           // First update privacy settings
           const success = await vimeoService.updatePrivacySettings(video.vimeoVideoId);
           
-          // Then fetch and store the embed URL (which includes hash for private videos)
-          const playback = await vimeoService.getAuthenticatedPlaybackUrl(video.vimeoVideoId);
-          if (playback?.url) {
-            await storage.updateVideo(video.id, { vimeoEmbedUrl: playback.url } as any);
-            console.log(`[Admin] Stored embed URL for ${video.title}: ${playback.url}`);
+          // Get the secure embed URL (which includes hash for private/unlisted videos)
+          const embedUrl = await vimeoService.getSecureEmbedUrl(video.vimeoVideoId);
+          if (embedUrl) {
+            await storage.updateVideo(video.id, { vimeoEmbedUrl: embedUrl } as any);
+            console.log(`[Admin] Stored embed URL for ${video.title}: ${embedUrl}`);
           }
           
-          if (success || playback?.url) {
+          if (success || embedUrl) {
             fixed++;
             console.log(`[Admin] Fixed video ${video.title} (${video.vimeoVideoId})`);
           } else {
@@ -3223,6 +3223,32 @@ export async function registerRoutes(
             thumbnailUrl = vimeoVideo.pictures.base_link;
           }
           
+          // Try to extract embed URL with hash from Vimeo data
+          let embedUrl: string | null = null;
+          if (vimeoVideo.player_embed_url) {
+            const url = new URL(vimeoVideo.player_embed_url);
+            url.searchParams.set('dnt', '1');
+            url.searchParams.set('title', '0');
+            url.searchParams.set('byline', '0');
+            url.searchParams.set('portrait', '0');
+            embedUrl = url.toString();
+          } else if (vimeoVideo.link) {
+            // Extract hash from link (format: vimeo.com/videoId/hash)
+            const linkMatch = vimeoVideo.link.match(/vimeo\.com\/\d+\/([a-zA-Z0-9]+)/);
+            if (linkMatch && linkMatch[1]) {
+              embedUrl = `https://player.vimeo.com/video/${videoId}?h=${linkMatch[1]}&dnt=1&title=0&byline=0&portrait=0`;
+            }
+          }
+          
+          // If no embed URL found from list data, try to get it via API call
+          if (!embedUrl) {
+            try {
+              embedUrl = await vimeoService.getSecureEmbedUrl(videoId);
+            } catch (err) {
+              console.log(`[Vimeo Sync] Could not get embed URL for ${videoId}:`, err);
+            }
+          }
+          
           await storage.createVideo({
             title: videoTitle,
             description: null,
@@ -3236,10 +3262,11 @@ export async function registerRoutes(
             vimeoVideoId: videoId,
             categoryId: null,
             thumbnailPath: thumbnailUrl,
+            vimeoEmbedUrl: embedUrl,
           });
           
           importedCount++;
-          console.log(`[Vimeo Sync] Imported video: ${videoTitle} (${videoId})`);
+          console.log(`[Vimeo Sync] Imported video: ${videoTitle} (${videoId}) embedUrl: ${embedUrl}`);
         } catch (err) {
           console.error(`[Vimeo Sync] Failed to import video:`, err);
         }
