@@ -3398,9 +3398,9 @@ export async function registerRoutes(
       const albums = await storage.getAllAlbums();
       
       // Find all audio files on Bunny Storage that need migration
+      // Include any audio with a bunnyStorageUrl, regardless of current storageType
       const bunnyAudioFiles = videos.filter(v => 
         v.mediaType === "audio" && 
-        v.storageType === "bunny_storage" && 
         v.bunnyStorageUrl
       );
       
