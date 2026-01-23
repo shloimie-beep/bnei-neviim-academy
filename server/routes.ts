@@ -2720,7 +2720,99 @@ export async function registerRoutes(
     }
   });
 
-  // Admin: Fix Vimeo privacy settings and fetch embed URLs for all videos
+  // Admin: Fix Vimeo privacy settings and fetch embed URLs for all videos (with SSE progress)
+  app.get("/api/admin/videos/vimeo/fix-privacy-stream", requireAdmin, async (req, res) => {
+    // Set up Server-Sent Events
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
+
+    const sendEvent = (data: any) => {
+      res.write(`data: ${JSON.stringify(data)}\n\n`);
+    };
+
+    try {
+      const allVideos = await storage.getAllVideos();
+      const vimeoVideos = allVideos.filter((v: any) => v.vimeoVideoId && v.mediaType === 'video');
+      
+      if (vimeoVideos.length === 0) {
+        sendEvent({ type: 'complete', message: "No Vimeo videos found", fixed: 0, failed: 0, total: 0 });
+        res.end();
+        return;
+      }
+
+      sendEvent({ type: 'start', total: vimeoVideos.length });
+
+      let fixed = 0;
+      let failed = 0;
+
+      for (let i = 0; i < vimeoVideos.length; i++) {
+        const video = vimeoVideos[i];
+        if (!video.vimeoVideoId) continue;
+        
+        sendEvent({ 
+          type: 'progress', 
+          current: i + 1, 
+          total: vimeoVideos.length,
+          videoTitle: video.title,
+          status: 'processing'
+        });
+
+        try {
+          const embedUrl = await vimeoService.getSecureEmbedUrl(video.vimeoVideoId);
+          if (embedUrl) {
+            await storage.updateVideo(video.id, { vimeoEmbedUrl: embedUrl } as any);
+            fixed++;
+            sendEvent({ 
+              type: 'progress', 
+              current: i + 1, 
+              total: vimeoVideos.length,
+              videoTitle: video.title,
+              status: 'success'
+            });
+          } else {
+            failed++;
+            sendEvent({ 
+              type: 'progress', 
+              current: i + 1, 
+              total: vimeoVideos.length,
+              videoTitle: video.title,
+              status: 'failed',
+              error: 'Could not get embed URL'
+            });
+          }
+          // Wait 600ms between updates to avoid rate limiting
+          await new Promise(resolve => setTimeout(resolve, 600));
+        } catch (error) {
+          failed++;
+          sendEvent({ 
+            type: 'progress', 
+            current: i + 1, 
+            total: vimeoVideos.length,
+            videoTitle: video.title,
+            status: 'failed',
+            error: error instanceof Error ? error.message : 'Unknown error'
+          });
+        }
+      }
+
+      sendEvent({ 
+        type: 'complete', 
+        message: `Fixed ${fixed} of ${vimeoVideos.length} videos`, 
+        fixed, 
+        failed,
+        total: vimeoVideos.length
+      });
+      res.end();
+    } catch (error) {
+      console.error("Fix Vimeo privacy error:", error);
+      sendEvent({ type: 'error', message: "Failed to fix Vimeo privacy settings" });
+      res.end();
+    }
+  });
+
+  // Admin: Fix Vimeo privacy settings (non-streaming fallback)
   app.post("/api/admin/videos/vimeo/fix-privacy", requireAdmin, async (req, res) => {
     try {
       // Get all videos with Vimeo IDs

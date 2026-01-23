@@ -526,6 +526,16 @@ export default function VideoManagement() {
   const [isApplyingCategories, setIsApplyingCategories] = useState(false);
   const categoryFileInputRef = useRef<HTMLInputElement>(null);
   
+  // Fix progress state
+  const [fixProgress, setFixProgress] = useState<{
+    current: number;
+    total: number;
+    videoTitle: string;
+    status: string;
+    logs: Array<{ title: string; status: string; error?: string }>;
+  } | null>(null);
+  const [showFixProgress, setShowFixProgress] = useState(false);
+  
   // Fuzzy search helper - normalizes and checks if search terms appear in text
   const fuzzyMatch = (text: string, query: string): boolean => {
     if (!query.trim()) return true;
@@ -997,6 +1007,8 @@ export default function VideoManagement() {
 
   const handleFixVimeo = async () => {
     setIsFixing(true);
+    setShowFixProgress(true);
+    setFixProgress({ current: 0, total: 0, videoTitle: 'Starting...', status: 'processing', logs: [] });
     
     try {
       // First, fix database records
@@ -1012,32 +1024,67 @@ export default function VideoManagement() {
         throw new Error(result.message || "Fix failed");
       }
       
-      // Then, fix Vimeo privacy settings to allow embedding
-      toast({ 
-        title: "Fixing Vimeo privacy settings...", 
-        description: "This may take a minute" 
-      });
+      // Then, fix Vimeo embed URLs with streaming progress
+      const eventSource = new EventSource("/api/admin/videos/vimeo/fix-privacy-stream");
       
-      const privacyRes = await fetch("/api/admin/videos/vimeo/fix-privacy", {
-        method: "POST",
-        credentials: "include",
-        headers: getAuthHeaders(),
-      });
+      eventSource.onmessage = (event) => {
+        const data = JSON.parse(event.data);
+        
+        if (data.type === 'start') {
+          setFixProgress(prev => prev ? { ...prev, total: data.total, logs: [] } : null);
+        } else if (data.type === 'progress') {
+          setFixProgress(prev => {
+            if (!prev) return null;
+            const newLogs = [...prev.logs];
+            // Update or add log entry
+            const existingIndex = newLogs.findIndex(l => l.title === data.videoTitle);
+            if (existingIndex >= 0) {
+              newLogs[existingIndex] = { title: data.videoTitle, status: data.status, error: data.error };
+            } else if (data.status !== 'processing') {
+              newLogs.push({ title: data.videoTitle, status: data.status, error: data.error });
+            }
+            return {
+              current: data.current,
+              total: data.total,
+              videoTitle: data.videoTitle,
+              status: data.status,
+              logs: newLogs
+            };
+          });
+        } else if (data.type === 'complete') {
+          eventSource.close();
+          queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+          toast({ 
+            title: "Fix complete", 
+            description: `${result.message}. Embed URLs: ${data.fixed || 0} videos updated.` 
+          });
+          setIsFixing(false);
+        } else if (data.type === 'error') {
+          eventSource.close();
+          toast({ 
+            title: "Fix failed", 
+            description: data.message, 
+            variant: "destructive" 
+          });
+          setIsFixing(false);
+        }
+      };
       
-      const privacyResult = await privacyRes.json();
-      
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
-      toast({ 
-        title: "Fix complete", 
-        description: `${result.message}. Privacy: ${privacyResult.fixed || 0} videos updated.` 
-      });
+      eventSource.onerror = () => {
+        eventSource.close();
+        toast({ 
+          title: "Connection lost", 
+          description: "Fix process may have completed. Please refresh.", 
+          variant: "destructive" 
+        });
+        setIsFixing(false);
+      };
     } catch (error: any) {
       toast({ 
         title: "Fix failed", 
         description: error.message || "An error occurred", 
         variant: "destructive" 
       });
-    } finally {
       setIsFixing(false);
     }
   };
@@ -2332,6 +2379,60 @@ export default function VideoManagement() {
           )}
         </div>
       ) : null}
+
+      {/* Fix Vimeo Progress Dialog */}
+      <Dialog open={showFixProgress} onOpenChange={setShowFixProgress}>
+        <DialogContent className="max-w-lg max-h-[80vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Fixing Vimeo Videos</DialogTitle>
+            <DialogDescription>
+              {fixProgress ? `Processing ${fixProgress.current} of ${fixProgress.total} videos` : 'Starting...'}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex-1 overflow-auto space-y-3">
+            {fixProgress && (
+              <>
+                <div className="p-3 bg-muted rounded-lg">
+                  <div className="flex items-center gap-2">
+                    {fixProgress.status === 'processing' ? (
+                      <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
+                    ) : fixProgress.status === 'success' ? (
+                      <div className="h-4 w-4 rounded-full bg-green-500" />
+                    ) : (
+                      <div className="h-4 w-4 rounded-full bg-red-500" />
+                    )}
+                    <span className="font-medium truncate">{fixProgress.videoTitle}</span>
+                  </div>
+                </div>
+                <div className="space-y-1 max-h-60 overflow-auto">
+                  {fixProgress.logs.slice().reverse().map((log, i) => (
+                    <div key={i} className="flex items-center gap-2 text-sm py-1 px-2 rounded hover:bg-muted/50">
+                      {log.status === 'success' ? (
+                        <div className="h-2 w-2 rounded-full bg-green-500 shrink-0" />
+                      ) : (
+                        <div className="h-2 w-2 rounded-full bg-red-500 shrink-0" />
+                      )}
+                      <span className="truncate flex-1">{log.title}</span>
+                      <span className={log.status === 'success' ? 'text-green-600' : 'text-red-600'}>
+                        {log.status === 'success' ? 'Done' : 'Failed'}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            )}
+          </div>
+          <DialogFooter>
+            <Button 
+              variant="outline" 
+              onClick={() => setShowFixProgress(false)}
+              disabled={isFixing}
+            >
+              {isFixing ? 'Processing...' : 'Close'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
