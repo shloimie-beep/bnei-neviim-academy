@@ -4323,6 +4323,17 @@ export async function registerRoutes(
         });
       }
 
+      // Fallback: If audio has bunnyStorageUrl (even with local storageType), use Bunny CDN
+      // This handles cases where local file doesn't exist (e.g., production environment)
+      if (video.mediaType === "audio" && video.bunnyStorageUrl) {
+        await storage.incrementVideoViewCount(video.id);
+        return res.json({ 
+          bunnyStorage: true, 
+          cdnUrl: video.bunnyStorageUrl,
+          mediaType: video.mediaType,
+        });
+      }
+
       // Legacy: If audio is on Bunny Storage, return the CDN URL (for un-migrated files)
       if (video.bunnyStorageUrl && video.storageType === "bunny_storage") {
         await storage.incrementVideoViewCount(video.id);
