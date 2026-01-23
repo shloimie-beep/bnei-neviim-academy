@@ -1849,7 +1849,7 @@ export default function VideoManagement() {
                     </div>
                     {/* Subcategories */}
                     {getSubcategories(cat.id).length > 0 && (
-                      <div className="ml-6 mt-1 flex flex-wrap gap-1">
+                      <div className="ml-6 mt-1 pl-2 border-l-2 border-primary/30 flex flex-wrap gap-1">
                         {getSubcategories(cat.id).map((subcat) => (
                           <div
                             key={subcat.id}
@@ -1861,9 +1861,9 @@ export default function VideoManagement() {
                             className={`cursor-grab active:cursor-grabbing ${draggedCategoryId === subcat.id ? "opacity-50" : ""}`}
                             data-testid={`draggable-category-${subcat.id}`}
                           >
-                            <Badge variant="outline" className="gap-1 pr-1 bg-muted/50">
-                              <GripVertical className="h-3 w-3 text-muted-foreground" />
-                              {subcat.name}
+                            <Badge variant="outline" className="gap-1 pr-1 border-primary/50 text-primary">
+                              <GripVertical className="h-3 w-3 text-primary/50" />
+                              └ {subcat.name}
                               <Button
                                 variant="ghost"
                                 size="icon"
