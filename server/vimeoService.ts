@@ -646,48 +646,63 @@ class VimeoService {
         }
       }
       
-      // Try fetching the player config
-      const configUrl = hash 
-        ? `https://player.vimeo.com/video/${videoId}/config?h=${hash}`
-        : `https://player.vimeo.com/video/${videoId}/config`;
+      // Try multiple referrer options for domain-restricted videos
+      const referrers = [
+        "https://player.vimeo.com/",
+        "https://vimeo.com/",
+        process.env.REPLIT_DEPLOYMENT_URL || "https://onetimeonetime.replit.app/",
+      ];
       
-      console.log(`[Vimeo] Fetching player config: ${configUrl}`);
-      
-      const response = await fetch(configUrl, {
-        headers: {
-          "Accept": "application/json",
-          "Referer": "https://player.vimeo.com/",
-        },
-      });
-      
-      if (!response.ok) {
-        console.log(`[Vimeo] Player config not available: ${response.status}`);
-        return null;
-      }
-      
-      const config = await response.json() as any;
-      
-      // The HLS URL is in request.files.hls.cdns
-      const hlsCdns = config?.request?.files?.hls?.cdns;
-      if (hlsCdns) {
-        // Get first available CDN's URL
-        const cdnKeys = Object.keys(hlsCdns);
-        for (const cdn of cdnKeys) {
-          const hlsUrl = hlsCdns[cdn]?.url;
-          if (hlsUrl) {
-            console.log(`[Vimeo] Found HLS URL in player config (${cdn})`);
-            return { hls: hlsUrl };
+      for (const referer of referrers) {
+        // Try fetching the player config
+        const configUrl = hash 
+          ? `https://player.vimeo.com/video/${videoId}/config?h=${hash}`
+          : `https://player.vimeo.com/video/${videoId}/config`;
+        
+        console.log(`[Vimeo] Fetching player config: ${configUrl} with referer: ${referer}`);
+        
+        const response = await fetch(configUrl, {
+          headers: {
+            "Accept": "application/json",
+            "Referer": referer,
+            "Origin": referer.replace(/\/$/, ""),
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+          },
+        });
+        
+        if (!response.ok) {
+          console.log(`[Vimeo] Player config not available with referer ${referer}: ${response.status}`);
+          continue;
+        }
+        
+        const config = await response.json() as any;
+        
+        // The HLS URL is in request.files.hls.cdns
+        const hlsCdns = config?.request?.files?.hls?.cdns;
+        if (hlsCdns) {
+          // Get first available CDN's URL
+          const cdnKeys = Object.keys(hlsCdns);
+          for (const cdn of cdnKeys) {
+            const hlsUrl = hlsCdns[cdn]?.url;
+            if (hlsUrl) {
+              console.log(`[Vimeo] Found HLS URL in player config (${cdn}) with referer: ${referer}`);
+              return { hls: hlsUrl };
+            }
+          }
+        }
+        
+        // Alternative: check for progressive files
+        const progressive = config?.request?.files?.progressive;
+        if (progressive && progressive.length > 0) {
+          const sorted = progressive.sort((a: any, b: any) => (b.height || 0) - (a.height || 0));
+          if (sorted[0]?.url) {
+            console.log(`[Vimeo] Found progressive URL in player config with referer: ${referer}`);
+            return { hls: sorted[0].url }; // Return as "hls" for compatibility
           }
         }
       }
       
-      // Alternative: check for direct HLS URL
-      const directHls = config?.request?.files?.hls?.default_cdn;
-      if (directHls && hlsCdns?.[directHls]?.url) {
-        return { hls: hlsCdns[directHls].url };
-      }
-      
-      console.log(`[Vimeo] No HLS URL found in player config`);
+      console.log(`[Vimeo] No HLS/progressive URL found in player config with any referer`);
       return null;
     } catch (error) {
       console.error(`[Vimeo] Error fetching player config:`, error);
