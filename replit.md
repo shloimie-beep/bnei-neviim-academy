@@ -143,6 +143,48 @@ The backend handles user authentication, subscription management, phone number r
 - **All customer endpoints** support Bearer token auth (videos, audio, documents, phone numbers)
 - **Security**: JWT secret derived from SESSION_SECRET (required environment variable)
 
+### Video Categories with Subcategories
+- **Purpose**: Organize videos into hierarchical categories (main categories and subcategories)
+- **Database Schema**: The `videoCategories` table has a `parentCategoryId` field
+  - `parentCategoryId = null` → Main category (top-level)
+  - `parentCategoryId = <uuid>` → Subcategory (belongs to parent)
+- **API Endpoints**:
+  - `GET /api/video-categories` - Returns all categories with `parentCategoryId` field
+  - Categories with `parentCategoryId: null` are main categories
+  - Categories with a `parentCategoryId` value are subcategories of that parent
+- **Display Guidelines for Mobile Apps**:
+  1. First, display only main categories (where `parentCategoryId` is null)
+  2. When user selects/expands a main category, show its subcategories (where `parentCategoryId` matches the selected category's `id`)
+  3. Subcategories should be visually indented or styled differently (e.g., with a "└" prefix or primary color styling)
+  4. Videos can belong to either main categories or subcategories via their `categoryId` field
+- **Example Response**:
+  ```json
+  [
+    { "id": "cat-1", "name": "Stories", "parentCategoryId": null },
+    { "id": "cat-2", "name": "Short Stories", "parentCategoryId": "cat-1" },
+    { "id": "cat-3", "name": "Long Stories", "parentCategoryId": "cat-1" },
+    { "id": "cat-4", "name": "Music", "parentCategoryId": null }
+  ]
+  ```
+  In this example, "Stories" and "Music" are main categories. "Short Stories" and "Long Stories" are subcategories under "Stories".
+
+### Background Audio/Video Playback Requirements
+- **IMPORTANT**: The mobile app MUST support background playback for both audio and video content
+- **Audio Playback**:
+  - Audio files (albums, tracks) should continue playing when the app is in the background
+  - Audio should continue playing when the device screen is locked
+  - Use appropriate audio session category (e.g., iOS: AVAudioSessionCategoryPlayback, Android: MediaSession)
+- **Video Playback**:
+  - Videos should support Picture-in-Picture (PiP) mode
+  - When user leaves the app or locks the screen, video audio should continue playing
+  - On iOS: Enable Background Modes → Audio, AirPlay, and Picture in Picture
+  - On Android: Use MediaSession API and enable PiP in manifest
+- **Implementation Notes**:
+  - Enable background audio capabilities in app configuration
+  - Handle audio interruptions gracefully (phone calls, other apps)
+  - Show media controls in lock screen and notification center
+  - Support remote control events (play, pause, skip) from headphones/car bluetooth
+
 ### Payment Integration
 - **Stripe Integration**: Uses `stripe-replit-sync` package for webhook handling and data synchronization
 - **Subscription Model**: $9.99/month with 14-day free trial
