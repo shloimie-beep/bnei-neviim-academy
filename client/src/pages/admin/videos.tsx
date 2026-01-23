@@ -2067,11 +2067,14 @@ export default function VideoManagement() {
           ))}
         </div>
       ) : videosByCategory ? (
-        // Category folders view
+        // Category folders view - only show top-level categories
         <div className="space-y-4">
-          {categories.map((category) => {
+          {topLevelCategories.map((category) => {
             const categoryVideos = videosByCategory.grouped[category.id] || [];
+            const subcats = getSubcategories(category.id);
             const isExpanded = expandedCategories.has(category.id);
+            // Count total videos including subcategories
+            const totalVideos = categoryVideos.length + subcats.reduce((sum, sub) => sum + (videosByCategory.grouped[sub.id]?.length || 0), 0);
             
             return (
               <Card key={category.id}>
@@ -2088,8 +2091,13 @@ export default function VideoManagement() {
                           <CardTitle className="text-base flex items-center gap-2">
                             {category.name}
                             <Badge variant="secondary" className="ml-2">
-                              {categoryVideos.length} video{categoryVideos.length !== 1 ? 's' : ''}
+                              {totalVideos} video{totalVideos !== 1 ? 's' : ''}
                             </Badge>
+                            {subcats.length > 0 && (
+                              <Badge variant="outline" className="ml-1 text-xs">
+                                {subcats.length} subcategor{subcats.length !== 1 ? 'ies' : 'y'}
+                              </Badge>
+                            )}
                           </CardTitle>
                         </div>
                         {isExpanded ? (
@@ -2102,47 +2110,125 @@ export default function VideoManagement() {
                   </CollapsibleTrigger>
                   <CollapsibleContent>
                     <CardContent className="pt-0 space-y-3">
-                      {categoryVideos.length === 0 ? (
+                      {/* Videos directly in this category */}
+                      {categoryVideos.length === 0 && subcats.length === 0 ? (
                         <p className="text-sm text-muted-foreground py-4 text-center">
                           No videos in this category yet
                         </p>
                       ) : isExpanded ? (
-                        categoryVideos.map((video) => (
-                          <VideoCard
-                            key={video.id}
-                            video={video}
-                            categories={categories}
-                            onDelete={() => deleteMutation.mutate(video.id)}
-                            onUpdate={(data) => updateMutation.mutate({ id: video.id, data })}
-                            onUploadThumbnail={async (file) => {
-                              const formData = new FormData();
-                              formData.append("thumbnail", file);
-                              const res = await fetch(`/api/admin/videos/${video.id}/thumbnail`, {
-                                method: "POST",
-                                body: formData,
-                              });
-                              if (!res.ok) throw new Error("Failed to upload thumbnail");
-                              queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
-                            }}
-                            onResetThumbnail={async (regenerate) => {
-                              const res = await fetch(`/api/admin/videos/${video.id}/thumbnail?regenerate=${regenerate}`, {
-                                method: "DELETE",
-                              });
-                              if (!res.ok) throw new Error("Failed to reset thumbnail");
-                              queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
-                            }}
-                            onRefreshStatus={async () => {
-                              const res = await fetch(`/api/admin/videos/${video.id}/refresh-status`, {
-                                method: "POST",
-                              });
-                              if (!res.ok) {
-                                const err = await res.json();
-                                throw new Error(err.message || "Failed to refresh status");
-                              }
-                              queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
-                            }}
-                          />
-                        ))
+                        <>
+                          {categoryVideos.map((video) => (
+                            <VideoCard
+                              key={video.id}
+                              video={video}
+                              categories={categories}
+                              onDelete={() => deleteMutation.mutate(video.id)}
+                              onUpdate={(data) => updateMutation.mutate({ id: video.id, data })}
+                              onUploadThumbnail={async (file) => {
+                                const formData = new FormData();
+                                formData.append("thumbnail", file);
+                                const res = await fetch(`/api/admin/videos/${video.id}/thumbnail`, {
+                                  method: "POST",
+                                  body: formData,
+                                });
+                                if (!res.ok) throw new Error("Failed to upload thumbnail");
+                                queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+                              }}
+                              onResetThumbnail={async (regenerate) => {
+                                const res = await fetch(`/api/admin/videos/${video.id}/thumbnail?regenerate=${regenerate}`, {
+                                  method: "DELETE",
+                                });
+                                if (!res.ok) throw new Error("Failed to reset thumbnail");
+                                queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+                              }}
+                              onRefreshStatus={async () => {
+                                const res = await fetch(`/api/admin/videos/${video.id}/refresh-status`, {
+                                  method: "POST",
+                                });
+                                if (!res.ok) {
+                                  const err = await res.json();
+                                  throw new Error(err.message || "Failed to refresh status");
+                                }
+                                queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+                              }}
+                            />
+                          ))}
+                          
+                          {/* Subcategories nested inside */}
+                          {subcats.map((subcat) => {
+                            const subVideos = videosByCategory.grouped[subcat.id] || [];
+                            const isSubExpanded = expandedCategories.has(subcat.id);
+                            
+                            return (
+                              <div key={subcat.id} className="ml-4 pl-4 border-l-2 border-primary/30">
+                                <Collapsible open={isSubExpanded} onOpenChange={() => toggleCategory(subcat.id)}>
+                                  <CollapsibleTrigger asChild>
+                                    <div className="flex items-center gap-2 py-2 cursor-pointer hover-elevate rounded px-2">
+                                      {isSubExpanded ? (
+                                        <FolderOpen className="h-4 w-4 text-primary" />
+                                      ) : (
+                                        <Folder className="h-4 w-4 text-primary/60" />
+                                      )}
+                                      <span className="font-medium text-primary">└ {subcat.name}</span>
+                                      <Badge variant="outline" className="border-primary/50 text-primary text-xs">
+                                        {subVideos.length} video{subVideos.length !== 1 ? 's' : ''}
+                                      </Badge>
+                                      {isSubExpanded ? (
+                                        <ChevronDown className="h-4 w-4 text-primary/60 ml-auto" />
+                                      ) : (
+                                        <ChevronRight className="h-4 w-4 text-primary/60 ml-auto" />
+                                      )}
+                                    </div>
+                                  </CollapsibleTrigger>
+                                  <CollapsibleContent>
+                                    <div className="space-y-3 mt-2">
+                                      {subVideos.length === 0 ? (
+                                        <p className="text-sm text-muted-foreground py-2 text-center">
+                                          No videos in this subcategory
+                                        </p>
+                                      ) : subVideos.map((video) => (
+                                        <VideoCard
+                                          key={video.id}
+                                          video={video}
+                                          categories={categories}
+                                          onDelete={() => deleteMutation.mutate(video.id)}
+                                          onUpdate={(data) => updateMutation.mutate({ id: video.id, data })}
+                                          onUploadThumbnail={async (file) => {
+                                            const formData = new FormData();
+                                            formData.append("thumbnail", file);
+                                            const res = await fetch(`/api/admin/videos/${video.id}/thumbnail`, {
+                                              method: "POST",
+                                              body: formData,
+                                            });
+                                            if (!res.ok) throw new Error("Failed to upload thumbnail");
+                                            queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+                                          }}
+                                          onResetThumbnail={async (regenerate) => {
+                                            const res = await fetch(`/api/admin/videos/${video.id}/thumbnail?regenerate=${regenerate}`, {
+                                              method: "DELETE",
+                                            });
+                                            if (!res.ok) throw new Error("Failed to reset thumbnail");
+                                            queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+                                          }}
+                                          onRefreshStatus={async () => {
+                                            const res = await fetch(`/api/admin/videos/${video.id}/refresh-status`, {
+                                              method: "POST",
+                                            });
+                                            if (!res.ok) {
+                                              const err = await res.json();
+                                              throw new Error(err.message || "Failed to refresh status");
+                                            }
+                                            queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+                                          }}
+                                        />
+                                      ))}
+                                    </div>
+                                  </CollapsibleContent>
+                                </Collapsible>
+                              </div>
+                            );
+                          })}
+                        </>
                       ) : null}
                     </CardContent>
                   </CollapsibleContent>
