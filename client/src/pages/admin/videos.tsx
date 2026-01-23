@@ -46,6 +46,10 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
   const [editTitle, setEditTitle] = useState(video.title);
   const [editDescription, setEditDescription] = useState(video.description || "");
   const [editCategoryId, setEditCategoryId] = useState(video.categoryId || "");
+  
+  // Derive top-level categories and subcategories for the dropdown
+  const topLevelCategories = useMemo(() => categories.filter(c => !c.parentCategoryId), [categories]);
+  const getSubcategories = (parentId: string) => categories.filter(c => c.parentCategoryId === parentId);
   const [thumbnailCacheBust, setThumbnailCacheBust] = useState(Date.now());
   const [thumbnailLoaded, setThumbnailLoaded] = useState(false);
   const [thumbnailError, setThumbnailError] = useState(false);
@@ -281,9 +285,17 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="none">No Category</SelectItem>
-                        {categories.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-                        ))}
+                        {topLevelCategories.map((cat) => {
+                          const subs = getSubcategories(cat.id);
+                          return [
+                            <SelectItem key={cat.id} value={cat.id} className="font-medium">{cat.name}</SelectItem>,
+                            ...subs.map((subcat) => (
+                              <SelectItem key={subcat.id} value={subcat.id} className="pl-6 text-muted-foreground">
+                                └ {subcat.name}
+                              </SelectItem>
+                            ))
+                          ];
+                        })}
                       </SelectContent>
                     </Select>
                     <div className="flex gap-2">
@@ -1445,9 +1457,17 @@ export default function VideoManagement() {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="none">No Category</SelectItem>
-                      {categories.map((cat) => (
-                        <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-                      ))}
+                      {topLevelCategories.map((cat) => {
+                        const subs = getSubcategories(cat.id);
+                        return [
+                          <SelectItem key={cat.id} value={cat.id} className="font-medium">{cat.name}</SelectItem>,
+                          ...subs.map((subcat) => (
+                            <SelectItem key={subcat.id} value={subcat.id} className="pl-6 text-muted-foreground">
+                              └ {subcat.name}
+                            </SelectItem>
+                          ))
+                        ];
+                      })}
                     </SelectContent>
                   </Select>
                 </div>
@@ -1545,9 +1565,17 @@ export default function VideoManagement() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="none">No Category</SelectItem>
-                    {categories.map((cat) => (
-                      <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-                    ))}
+                    {topLevelCategories.map((cat) => {
+                      const subs = getSubcategories(cat.id);
+                      return [
+                        <SelectItem key={cat.id} value={cat.id} className="font-medium">{cat.name}</SelectItem>,
+                        ...subs.map((subcat) => (
+                          <SelectItem key={subcat.id} value={subcat.id} className="pl-6 text-muted-foreground">
+                            └ {subcat.name}
+                          </SelectItem>
+                        ))
+                      ];
+                    })}
                   </SelectContent>
                 </Select>
               </div>
