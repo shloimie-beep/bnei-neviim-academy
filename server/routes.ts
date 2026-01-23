@@ -2604,9 +2604,21 @@ export async function registerRoutes(
             
             // Vimeo status: "available" means ready
             if (vimeoVideo.status === "available") {
+              // Fetch thumbnail from Vimeo
+              let thumbnailPath: string | null = null;
+              try {
+                thumbnailPath = await vimeoService.getThumbnailUrl(vimeoVideoId);
+                if (thumbnailPath) {
+                  console.log(`[Vimeo] Got thumbnail URL for video ${video.id}: ${thumbnailPath}`);
+                }
+              } catch (thumbErr) {
+                console.error(`[Vimeo] Failed to get thumbnail for ${video.id}:`, thumbErr);
+              }
+              
               await storage.updateVideo(video.id, { 
                 status: "ready",
                 duration: vimeoVideo.duration || 0,
+                thumbnailPath,
               });
               console.log(`[Vimeo] Video ${video.id} is ready`);
               break;
