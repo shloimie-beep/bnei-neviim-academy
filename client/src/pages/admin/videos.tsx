@@ -1007,31 +1007,75 @@ export default function VideoManagement() {
 
   const handleFixVimeo = async () => {
     setIsFixing(true);
+    setShowFixProgress(true);
+    setFixProgress({ current: 0, total: 0, videoTitle: 'Starting...', status: 'processing', logs: [] });
     
     try {
-      toast({ 
-        title: "Fetching embed URLs...", 
-        description: "This may take a few minutes for many videos. Please wait." 
-      });
-      
-      // Fetch Vimeo embed URLs with hash codes for all videos
-      const res = await fetch("/api/admin/videos/vimeo/fix-embed-urls", {
+      // Use streaming endpoint to show progress
+      const response = await fetch("/api/admin/videos/vimeo/fix-embed-urls-stream", {
         method: "POST",
         credentials: "include",
         headers: getAuthHeaders(),
       });
       
-      const result = await res.json();
-      
-      if (!res.ok) {
-        throw new Error(result.message || "Fix failed");
+      if (!response.ok) {
+        throw new Error("Failed to start fix process");
       }
       
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
-      toast({ 
-        title: "Fix complete", 
-        description: `${result.fixed || 0} of ${result.total || 0} videos now have embed URLs with hash codes.` 
-      });
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      
+      if (!reader) {
+        throw new Error("Streaming not supported");
+      }
+      
+      let buffer = '';
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n\n');
+        buffer = lines.pop() || '';
+        
+        for (const chunk of lines) {
+          if (chunk.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(chunk.slice(6));
+              
+              if (data.type === 'start') {
+                setFixProgress(prev => prev ? { ...prev, total: data.total, logs: [] } : null);
+              } else if (data.type === 'progress') {
+                setFixProgress(prev => {
+                  if (!prev) return null;
+                  const newLogs = [...prev.logs];
+                  newLogs.push({ 
+                    title: data.videoTitle, 
+                    status: data.status, 
+                    error: data.error 
+                  });
+                  return {
+                    current: data.current,
+                    total: data.total,
+                    videoTitle: data.videoTitle,
+                    status: data.status,
+                    logs: newLogs
+                  };
+                });
+              } else if (data.type === 'complete') {
+                queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+                toast({ 
+                  title: "Fix complete", 
+                  description: `${data.fixed || 0} of ${data.total || 0} videos now have embed URLs with hash codes.` 
+                });
+              }
+            } catch (e) {
+              // Ignore parse errors
+            }
+          }
+        }
+      }
     } catch (error: any) {
       toast({ 
         title: "Fix failed", 

@@ -2863,6 +2863,101 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Fetch and store Vimeo embed URLs with hash codes (streaming progress)
+  app.post("/api/admin/videos/vimeo/fix-embed-urls-stream", requireAdmin, async (req, res) => {
+    // Set up SSE
+    res.setHeader('Content-Type', 'text/event-stream');
+    res.setHeader('Cache-Control', 'no-cache');
+    res.setHeader('Connection', 'keep-alive');
+    res.flushHeaders();
+    
+    const sendEvent = (data: any) => {
+      res.write(`data: ${JSON.stringify(data)}\n\n`);
+    };
+    
+    try {
+      console.log("[Admin] Starting embed URL fix (streaming)...");
+      
+      // Get all videos with Vimeo IDs that don't have embed URLs yet
+      const allVideos = await storage.getAllVideos();
+      const vimeoVideos = allVideos.filter((v: any) => 
+        v.vimeoVideoId && 
+        v.mediaType === 'video' && 
+        !v.vimeoEmbedUrl
+      );
+      
+      console.log(`[Admin] Found ${vimeoVideos.length} videos without embed URLs`);
+      
+      sendEvent({ type: 'start', total: vimeoVideos.length });
+      
+      if (vimeoVideos.length === 0) {
+        sendEvent({ type: 'complete', fixed: 0, failed: 0, total: 0 });
+        res.end();
+        return;
+      }
+
+      let fixed = 0;
+      let failed = 0;
+
+      // Process videos one at a time
+      for (let i = 0; i < vimeoVideos.length; i++) {
+        const video = vimeoVideos[i];
+        try {
+          if (!video.vimeoVideoId) continue;
+          
+          // Get the secure embed URL (which includes hash for private/unlisted videos)
+          const embedUrl = await vimeoService.getSecureEmbedUrl(video.vimeoVideoId);
+          
+          if (embedUrl) {
+            await storage.updateVideo(video.id, { vimeoEmbedUrl: embedUrl } as any);
+            console.log(`[Admin] Stored embed URL for ${video.title}: ${embedUrl}`);
+            fixed++;
+            sendEvent({ 
+              type: 'progress', 
+              current: i + 1, 
+              total: vimeoVideos.length,
+              videoTitle: video.title,
+              status: 'success'
+            });
+          } else {
+            console.log(`[Admin] No embed URL found for ${video.title}`);
+            failed++;
+            sendEvent({ 
+              type: 'progress', 
+              current: i + 1, 
+              total: vimeoVideos.length,
+              videoTitle: video.title,
+              status: 'failed',
+              error: 'No embed URL found'
+            });
+          }
+          
+          // Wait 400ms between requests to avoid rate limiting
+          await new Promise(resolve => setTimeout(resolve, 400));
+        } catch (error) {
+          console.error(`[Admin] Error processing ${video.title}:`, error);
+          failed++;
+          sendEvent({ 
+            type: 'progress', 
+            current: i + 1, 
+            total: vimeoVideos.length,
+            videoTitle: video.title,
+            status: 'failed',
+            error: error instanceof Error ? error.message : 'Unknown error'
+          });
+        }
+      }
+
+      console.log(`[Admin] Embed URL fix complete: ${fixed} fixed, ${failed} failed`);
+      sendEvent({ type: 'complete', fixed, failed, total: vimeoVideos.length });
+      res.end();
+    } catch (error) {
+      console.error("Fix embed URLs error:", error);
+      sendEvent({ type: 'error', message: "Failed to fix embed URLs" });
+      res.end();
+    }
+  });
+
   // Admin: Fetch and store Vimeo embed URLs with hash codes (simple endpoint)
   app.post("/api/admin/videos/vimeo/fix-embed-urls", requireAdmin, async (req, res) => {
     try {
