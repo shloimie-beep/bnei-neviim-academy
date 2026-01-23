@@ -1024,61 +1024,81 @@ export default function VideoManagement() {
         throw new Error(result.message || "Fix failed");
       }
       
-      // Then, fix Vimeo embed URLs with streaming progress
-      const eventSource = new EventSource("/api/admin/videos/vimeo/fix-privacy-stream");
+      // Then, fix Vimeo embed URLs with streaming progress using fetch
+      const response = await fetch("/api/admin/videos/vimeo/fix-privacy-stream", {
+        credentials: "include",
+        headers: getAuthHeaders(),
+      });
       
-      eventSource.onmessage = (event) => {
-        const data = JSON.parse(event.data);
+      if (!response.ok) {
+        throw new Error("Failed to start fix process");
+      }
+      
+      const reader = response.body?.getReader();
+      const decoder = new TextDecoder();
+      
+      if (!reader) {
+        throw new Error("Streaming not supported");
+      }
+      
+      let buffer = '';
+      
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
         
-        if (data.type === 'start') {
-          setFixProgress(prev => prev ? { ...prev, total: data.total, logs: [] } : null);
-        } else if (data.type === 'progress') {
-          setFixProgress(prev => {
-            if (!prev) return null;
-            const newLogs = [...prev.logs];
-            // Update or add log entry
-            const existingIndex = newLogs.findIndex(l => l.title === data.videoTitle);
-            if (existingIndex >= 0) {
-              newLogs[existingIndex] = { title: data.videoTitle, status: data.status, error: data.error };
-            } else if (data.status !== 'processing') {
-              newLogs.push({ title: data.videoTitle, status: data.status, error: data.error });
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop() || '';
+        
+        for (const line of lines) {
+          if (line.startsWith('data: ')) {
+            try {
+              const data = JSON.parse(line.slice(6));
+              
+              if (data.type === 'start') {
+                setFixProgress(prev => prev ? { ...prev, total: data.total, logs: [] } : null);
+              } else if (data.type === 'progress') {
+                setFixProgress(prev => {
+                  if (!prev) return null;
+                  const newLogs = [...prev.logs];
+                  const existingIndex = newLogs.findIndex(l => l.title === data.videoTitle);
+                  if (existingIndex >= 0) {
+                    newLogs[existingIndex] = { title: data.videoTitle, status: data.status, error: data.error };
+                  } else if (data.status !== 'processing') {
+                    newLogs.push({ title: data.videoTitle, status: data.status, error: data.error });
+                  }
+                  return {
+                    current: data.current,
+                    total: data.total,
+                    videoTitle: data.videoTitle,
+                    status: data.status,
+                    logs: newLogs
+                  };
+                });
+              } else if (data.type === 'complete') {
+                queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+                toast({ 
+                  title: "Fix complete", 
+                  description: `${result.message}. Embed URLs: ${data.fixed || 0} videos updated.` 
+                });
+                setIsFixing(false);
+              } else if (data.type === 'error') {
+                toast({ 
+                  title: "Fix failed", 
+                  description: data.message, 
+                  variant: "destructive" 
+                });
+                setIsFixing(false);
+              }
+            } catch (e) {
+              // Ignore parse errors
             }
-            return {
-              current: data.current,
-              total: data.total,
-              videoTitle: data.videoTitle,
-              status: data.status,
-              logs: newLogs
-            };
-          });
-        } else if (data.type === 'complete') {
-          eventSource.close();
-          queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
-          toast({ 
-            title: "Fix complete", 
-            description: `${result.message}. Embed URLs: ${data.fixed || 0} videos updated.` 
-          });
-          setIsFixing(false);
-        } else if (data.type === 'error') {
-          eventSource.close();
-          toast({ 
-            title: "Fix failed", 
-            description: data.message, 
-            variant: "destructive" 
-          });
-          setIsFixing(false);
+          }
         }
-      };
+      }
       
-      eventSource.onerror = () => {
-        eventSource.close();
-        toast({ 
-          title: "Connection lost", 
-          description: "Fix process may have completed. Please refresh.", 
-          variant: "destructive" 
-        });
-        setIsFixing(false);
-      };
+      setIsFixing(false);
     } catch (error: any) {
       toast({ 
         title: "Fix failed", 
