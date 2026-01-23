@@ -1473,7 +1473,7 @@ export default function VideoManagement() {
             data-testid="button-export-embed-urls"
           >
             <Download className="h-4 w-4 mr-2" />
-            Export URLs
+            Export URLs (JSON)
           </Button>
           <Button 
             variant="outline" 
