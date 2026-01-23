@@ -2117,44 +2117,7 @@ export default function VideoManagement() {
                         </p>
                       ) : isExpanded ? (
                         <>
-                          {categoryVideos.map((video) => (
-                            <VideoCard
-                              key={video.id}
-                              video={video}
-                              categories={categories}
-                              onDelete={() => deleteMutation.mutate(video.id)}
-                              onUpdate={(data) => updateMutation.mutate({ id: video.id, data })}
-                              onUploadThumbnail={async (file) => {
-                                const formData = new FormData();
-                                formData.append("thumbnail", file);
-                                const res = await fetch(`/api/admin/videos/${video.id}/thumbnail`, {
-                                  method: "POST",
-                                  body: formData,
-                                });
-                                if (!res.ok) throw new Error("Failed to upload thumbnail");
-                                queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
-                              }}
-                              onResetThumbnail={async (regenerate) => {
-                                const res = await fetch(`/api/admin/videos/${video.id}/thumbnail?regenerate=${regenerate}`, {
-                                  method: "DELETE",
-                                });
-                                if (!res.ok) throw new Error("Failed to reset thumbnail");
-                                queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
-                              }}
-                              onRefreshStatus={async () => {
-                                const res = await fetch(`/api/admin/videos/${video.id}/refresh-status`, {
-                                  method: "POST",
-                                });
-                                if (!res.ok) {
-                                  const err = await res.json();
-                                  throw new Error(err.message || "Failed to refresh status");
-                                }
-                                queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
-                              }}
-                            />
-                          ))}
-                          
-                          {/* Subcategories nested inside */}
+                          {/* Subcategories nested inside - shown first */}
                           {subcats.map((subcat) => {
                             const subVideos = videosByCategory.grouped[subcat.id] || [];
                             const isSubExpanded = expandedCategories.has(subcat.id);
@@ -2228,6 +2191,44 @@ export default function VideoManagement() {
                               </div>
                             );
                           })}
+                          
+                          {/* Videos directly in this category - shown after subcategories */}
+                          {categoryVideos.map((video) => (
+                            <VideoCard
+                              key={video.id}
+                              video={video}
+                              categories={categories}
+                              onDelete={() => deleteMutation.mutate(video.id)}
+                              onUpdate={(data) => updateMutation.mutate({ id: video.id, data })}
+                              onUploadThumbnail={async (file) => {
+                                const formData = new FormData();
+                                formData.append("thumbnail", file);
+                                const res = await fetch(`/api/admin/videos/${video.id}/thumbnail`, {
+                                  method: "POST",
+                                  body: formData,
+                                });
+                                if (!res.ok) throw new Error("Failed to upload thumbnail");
+                                queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+                              }}
+                              onResetThumbnail={async (regenerate) => {
+                                const res = await fetch(`/api/admin/videos/${video.id}/thumbnail?regenerate=${regenerate}`, {
+                                  method: "DELETE",
+                                });
+                                if (!res.ok) throw new Error("Failed to reset thumbnail");
+                                queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+                              }}
+                              onRefreshStatus={async () => {
+                                const res = await fetch(`/api/admin/videos/${video.id}/refresh-status`, {
+                                  method: "POST",
+                                });
+                                if (!res.ok) {
+                                  const err = await res.json();
+                                  throw new Error(err.message || "Failed to refresh status");
+                                }
+                                queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+                              }}
+                            />
+                          ))}
                         </>
                       ) : null}
                     </CardContent>
