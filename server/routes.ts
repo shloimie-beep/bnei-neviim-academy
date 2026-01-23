@@ -2724,8 +2724,8 @@ export async function registerRoutes(
   app.post("/api/admin/videos/vimeo/fix-privacy", requireAdmin, async (req, res) => {
     try {
       // Get all videos with Vimeo IDs
-      const allVideos = await storage.getVideos();
-      const vimeoVideos = allVideos.filter(v => v.vimeoVideoId && v.mediaType === 'video');
+      const allVideos = await storage.getAllVideos();
+      const vimeoVideos = allVideos.filter((v: any) => v.vimeoVideoId && v.mediaType === 'video');
       
       if (vimeoVideos.length === 0) {
         return res.json({ message: "No Vimeo videos found", fixed: 0, failed: 0 });
@@ -2738,22 +2738,17 @@ export async function registerRoutes(
       // Process videos one at a time with delay to avoid rate limiting
       for (const video of vimeoVideos) {
         try {
-          // First update privacy settings
-          const success = await vimeoService.updatePrivacySettings(video.vimeoVideoId);
-          
+          if (!video.vimeoVideoId) continue;
           // Get the secure embed URL (which includes hash for private/unlisted videos)
           const embedUrl = await vimeoService.getSecureEmbedUrl(video.vimeoVideoId);
           if (embedUrl) {
             await storage.updateVideo(video.id, { vimeoEmbedUrl: embedUrl } as any);
             console.log(`[Admin] Stored embed URL for ${video.title}: ${embedUrl}`);
-          }
-          
-          if (success || embedUrl) {
             fixed++;
             console.log(`[Admin] Fixed video ${video.title} (${video.vimeoVideoId})`);
           } else {
             failed++;
-            errors.push(`${video.title}: Could not fix privacy or get embed URL`);
+            errors.push(`${video.title}: Could not get embed URL`);
           }
           // Wait 600ms between updates to avoid rate limiting
           await new Promise(resolve => setTimeout(resolve, 600));
@@ -3555,6 +3550,62 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Migrate RSS audio files from local filesystem to object storage
+  app.post("/api/admin/migrate-rss-audio", requireAdmin, async (req, res) => {
+    try {
+      const allRssAudio = await storage.getAllRssAudioItems();
+      
+      // Filter to only local files (not already in object storage)
+      const localFiles = allRssAudio.filter(item => 
+        item.filepath && !item.filepath.startsWith("/objects/")
+      );
+      
+      if (localFiles.length === 0) {
+        return res.json({ message: "No local RSS audio files to migrate", migrated: 0, errors: 0 });
+      }
+
+      let migrated = 0;
+      let errors = 0;
+
+      for (const item of localFiles) {
+        try {
+          if (!item.filepath || !fs.existsSync(item.filepath)) {
+            console.log(`RSS audio ${item.id} file not found on disk: ${item.filepath}`);
+            errors++;
+            continue;
+          }
+
+          // Upload to object storage
+          const objectPath = `/objects/.private/rss-audio/${item.filename}`;
+          const fileBuffer = fs.readFileSync(item.filepath);
+          await objectStorageService.uploadBuffer(objectPath, fileBuffer, "audio/mpeg");
+          
+          // Update database record
+          await storage.updateRssAudioItem(item.id, { filepath: objectPath } as any);
+          
+          // Optionally delete local file after successful migration
+          fs.unlinkSync(item.filepath);
+          
+          migrated++;
+          console.log(`Migrated RSS audio ${item.id} to object storage: ${objectPath}`);
+        } catch (error) {
+          console.error(`Failed to migrate RSS audio ${item.id}:`, error);
+          errors++;
+        }
+      }
+
+      res.json({
+        message: `Migration complete: ${migrated} RSS audio files migrated to object storage, ${errors} errors`,
+        migrated,
+        errors,
+        total: localFiles.length,
+      });
+    } catch (error: any) {
+      console.error("RSS audio migration error:", error);
+      res.status(500).json({ message: error.message || "Failed to migrate RSS audio files" });
+    }
+  });
+
   // Admin: Export category assignments as JSON for syncing between environments
   app.get("/api/admin/videos/export-categories", requireAdmin, async (req, res) => {
     try {
@@ -3969,14 +4020,14 @@ export async function registerRoutes(
     }
   });
 
-  // Admin: Upload RSS audio (converts to MP3 64kbps)
-  const rssUploadDir = path.join(process.cwd(), "uploads", "rss-audio");
-  if (!fs.existsSync(rssUploadDir)) {
-    fs.mkdirSync(rssUploadDir, { recursive: true });
+  // Admin: Upload RSS audio (converts to MP3 64kbps, stores in object storage)
+  const rssTempDir = path.join(process.cwd(), "uploads", "rss-temp");
+  if (!fs.existsSync(rssTempDir)) {
+    fs.mkdirSync(rssTempDir, { recursive: true });
   }
   const rssUpload = multer({
     storage: multer.diskStorage({
-      destination: (req, file, cb) => cb(null, rssUploadDir),
+      destination: (req, file, cb) => cb(null, rssTempDir),
       filename: (req, file, cb) => {
         const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
         cb(null, "temp-" + uniqueSuffix + path.extname(file.originalname));
@@ -3997,10 +4048,20 @@ export async function registerRoutes(
       }
 
       const outputFilename = `${Date.now()}-${Math.round(Math.random() * 1e9)}.mp3`;
-      const conversionResult = await convertToMp3(req.file.path, rssUploadDir, outputFilename);
+      const conversionResult = await convertToMp3(req.file.path, rssTempDir, outputFilename);
 
       if (!conversionResult.success) {
         return res.status(500).json({ message: "Audio conversion failed: " + conversionResult.error });
+      }
+
+      // Upload converted file to object storage
+      const objectStoragePath = `/objects/.private/rss-audio/${outputFilename}`;
+      const fileBuffer = fs.readFileSync(conversionResult.outputPath!);
+      await objectStorageService.uploadBuffer(objectStoragePath, fileBuffer, "audio/mpeg");
+      
+      // Clean up local temp files
+      if (fs.existsSync(conversionResult.outputPath!)) {
+        fs.unlinkSync(conversionResult.outputPath!);
       }
 
       const item = await storage.createRssAudioItem({
@@ -4008,7 +4069,7 @@ export async function registerRoutes(
         title,
         description: description || null,
         filename: outputFilename,
-        filepath: conversionResult.outputPath!,
+        filepath: objectStoragePath,
         originalFilename: req.file.originalname,
         duration: conversionResult.duration || null,
         fileSize: conversionResult.fileSize || null,
@@ -4089,7 +4150,7 @@ export async function registerRoutes(
     }
   });
 
-  // Public: Stream RSS audio file
+  // Public: Stream RSS audio file (from object storage or legacy local)
   app.get("/api/rss-audio/:id/stream", async (req, res) => {
     try {
       const item = await storage.getRssAudioItem(req.params.id);
@@ -4097,8 +4158,34 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Audio not found" });
       }
 
-      if (!item.filepath || !fs.existsSync(item.filepath)) {
-        return res.status(404).json({ message: "Audio file not found" });
+      if (!item.filepath) {
+        return res.status(404).json({ message: "Audio file path not set" });
+      }
+
+      // Handle object storage files
+      if (item.filepath.startsWith("/objects/")) {
+        try {
+          const objectFile = await objectStorageService.getObjectEntityFile(item.filepath);
+          const [metadata] = await objectFile.getMetadata();
+          const fileSize = parseInt(metadata.size as string, 10);
+          
+          res.setHeader("Content-Type", "audio/mpeg");
+          res.setHeader("Content-Length", fileSize);
+          res.setHeader("Accept-Ranges", "bytes");
+          res.setHeader("Cache-Control", "public, max-age=31536000");
+          
+          const stream = await objectFile.createReadStream();
+          stream.pipe(res);
+          return;
+        } catch (err) {
+          console.error("Object storage stream error:", err);
+          return res.status(404).json({ message: "Audio file not found in storage" });
+        }
+      }
+
+      // Legacy: local filesystem
+      if (!fs.existsSync(item.filepath)) {
+        return res.status(404).json({ message: "Audio file not found on disk" });
       }
 
       const stat = fs.statSync(item.filepath);

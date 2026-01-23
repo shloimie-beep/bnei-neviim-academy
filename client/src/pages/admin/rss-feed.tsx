@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Folder, Trash2, Loader2, Edit2, Plus, Music, GripVertical, ExternalLink, FolderPlus, Copy, Play, Pause } from "lucide-react";
+import { Upload, Folder, Trash2, Loader2, Edit2, Plus, Music, GripVertical, ExternalLink, FolderPlus, Copy, Play, Pause, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -47,6 +47,7 @@ export default function RssFeedManagement() {
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [deletingItemId, setDeletingItemId] = useState<string | null>(null);
   const [playingItemId, setPlayingItemId] = useState<string | null>(null);
+  const [isMigrating, setIsMigrating] = useState(false);
 
   const { data: folders = [], isLoading: foldersLoading } = useQuery<RssFolder[]>({
     queryKey: ["/api/admin/rss-folders"],
@@ -127,6 +128,27 @@ export default function RssFeedManagement() {
       toast({ title: "Failed to delete folder", description: error.message, variant: "destructive" });
     },
   });
+
+  const handleMigrate = async () => {
+    setIsMigrating(true);
+    try {
+      const res = await fetch("/api/admin/migrate-rss-audio", {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Migration failed");
+      toast({ 
+        title: "Migration complete", 
+        description: `${data.migrated} files migrated to cloud storage${data.errors > 0 ? `, ${data.errors} errors` : ""}` 
+      });
+      refetchItems();
+    } catch (error: any) {
+      toast({ title: "Migration failed", description: error.message, variant: "destructive" });
+    } finally {
+      setIsMigrating(false);
+    }
+  };
 
   const handleUpload = async () => {
     if (!uploadFile || !uploadTitle.trim()) {
@@ -278,6 +300,15 @@ export default function RssFeedManagement() {
           <p className="text-muted-foreground">Manage audio files for your hotline</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
+          <Button 
+            variant="outline" 
+            onClick={handleMigrate} 
+            disabled={isMigrating}
+            data-testid="button-migrate-rss"
+          >
+            {isMigrating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-2" />}
+            Migrate to Cloud
+          </Button>
           <Button variant="outline" onClick={copyRssUrl} data-testid="button-copy-rss-url">
             <Copy className="h-4 w-4 mr-2" />
             Copy RSS URL

@@ -261,6 +261,34 @@ export class ObjectStorageService {
       requestedPermission: requestedPermission ?? ObjectPermission.READ,
     });
   }
+
+  // Upload a buffer to object storage at a specific path
+  async uploadBuffer(objectPath: string, buffer: Buffer, contentType: string = "application/octet-stream"): Promise<void> {
+    if (!objectPath.startsWith("/objects/")) {
+      throw new Error("Object path must start with /objects/");
+    }
+
+    // Extract the entity path (everything after /objects/)
+    const entityId = objectPath.slice("/objects/".length);
+    const privateObjectDir = this.getPrivateObjectDir();
+    let entityDir = privateObjectDir;
+    if (!entityDir.endsWith("/")) {
+      entityDir = `${entityDir}/`;
+    }
+    const fullPath = `${entityDir}${entityId}`;
+    
+    const { bucketName, objectName } = parseObjectPath(fullPath);
+    const bucket = objectStorageClient.bucket(bucketName);
+    const file = bucket.file(objectName);
+    
+    await file.save(buffer, {
+      metadata: {
+        contentType,
+      },
+    });
+    
+    console.log(`[ObjectStorage] Uploaded ${buffer.length} bytes to ${objectPath}`);
+  }
 }
 
 function parseObjectPath(path: string): {
