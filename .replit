@@ -49,6 +49,7 @@ PHONE_LIST_TOKEN = "kH8mNp2xVq4wZ6"
 BUNNY_CDN_HOSTNAME = "vz-2480b6a7-327"
 PUBLIC_APP_URL = "https://onetimeonetime.com"
 BASE_URL = "https://onetimeonetime.com"
+RSS_FEED_SECRET = "f90a41ac96156e6f466a755c689eb542"
 
 [objectStorage]
 defaultBucketID = "replit-objstore-5a2bbfbf-1884-4fde-824a-ce5bfc53fc46"

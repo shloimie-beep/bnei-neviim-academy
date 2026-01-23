@@ -3965,9 +3965,36 @@ export async function registerRoutes(
     }
   });
 
-  // Public: RSS Feed XML
-  app.get("/rss/feed.xml", async (req, res) => {
+  // Get RSS feed secret token (generate one if not set)
+  const getRssFeedSecret = (): string => {
+    if (process.env.RSS_FEED_SECRET) {
+      return process.env.RSS_FEED_SECRET;
+    }
+    // Generate a random 32-character hex token
+    const token = crypto.randomBytes(16).toString("hex");
+    console.log(`[RSS] Generated new feed secret: ${token}`);
+    console.log(`[RSS] Set RSS_FEED_SECRET environment variable to persist this token`);
+    return token;
+  };
+  
+  const RSS_FEED_SECRET = getRssFeedSecret();
+  
+  // Admin endpoint to get RSS feed URL with secret
+  app.get("/api/admin/rss-feed-url", requireAdmin, async (req, res) => {
+    const baseUrl = `${req.protocol}://${req.get("host")}`;
+    res.json({ url: `${baseUrl}/rss/feed/${RSS_FEED_SECRET}.xml` });
+  });
+
+  // Public: RSS Feed XML (requires secret token in URL)
+  app.get("/rss/feed/:token.xml", async (req, res) => {
     try {
+      const { token } = req.params;
+      
+      // Validate the secret token
+      if (token !== RSS_FEED_SECRET) {
+        return res.status(404).send("Not Found");
+      }
+      
       const items = await storage.getAllRssAudioItems();
       const folders = await storage.getAllRssFolders();
       const folderMap = new Map(folders.map(f => [f.id, f]));

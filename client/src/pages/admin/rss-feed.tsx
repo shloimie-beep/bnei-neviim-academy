@@ -226,11 +226,18 @@ export default function RssFeedManagement() {
     reorderMutation.mutate(newOrder.map(i => i.id));
   };
 
-  const rssUrl = `${window.location.origin}/rss/feed.xml`;
+  // Fetch the secure RSS feed URL from backend
+  const { data: rssFeedData } = useQuery<{ url: string }>({
+    queryKey: ["/api/admin/rss-feed-url"],
+  });
+  
+  const rssUrl = rssFeedData?.url || "Loading...";
 
   const copyRssUrl = () => {
-    navigator.clipboard.writeText(rssUrl);
-    toast({ title: "RSS URL copied to clipboard" });
+    if (rssFeedData?.url) {
+      navigator.clipboard.writeText(rssFeedData.url);
+      toast({ title: "RSS URL copied to clipboard" });
+    }
   };
 
   const togglePlayAudio = (itemId: string) => {
