@@ -8,6 +8,63 @@ export interface ConversionResult {
   duration?: number;
   fileSize?: number;
   error?: string;
+  skipped?: boolean;
+}
+
+// Check if file is already MP3 with approximately 64kbps bitrate
+async function isAlreadyMp3_64kbps(filePath: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    const ffprobe = spawn("ffprobe", [
+      "-v", "error",
+      "-select_streams", "a:0",
+      "-show_entries", "stream=codec_name,bit_rate",
+      "-of", "json",
+      filePath
+    ]);
+
+    let output = "";
+    ffprobe.stdout.on("data", (data) => {
+      output += data.toString();
+    });
+
+    ffprobe.on("close", (code) => {
+      if (code !== 0) {
+        resolve(false);
+        return;
+      }
+      
+      try {
+        const data = JSON.parse(output);
+        const stream = data.streams?.[0];
+        if (!stream) {
+          resolve(false);
+          return;
+        }
+        
+        const codec = stream.codec_name?.toLowerCase();
+        const bitrate = parseInt(stream.bit_rate || "0", 10);
+        
+        // Check if MP3 and bitrate is between 56k and 72k (allowing some tolerance around 64k)
+        const isMp3 = codec === "mp3";
+        const isApprox64k = bitrate >= 56000 && bitrate <= 72000;
+        
+        console.log(`[AudioConverter] File info: codec=${codec}, bitrate=${bitrate}bps`);
+        
+        if (isMp3 && isApprox64k) {
+          console.log("[AudioConverter] File is already MP3 ~64kbps, skipping conversion");
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+      } catch (e) {
+        resolve(false);
+      }
+    });
+
+    ffprobe.on("error", () => {
+      resolve(false);
+    });
+  });
 }
 
 export async function convertToMp3(
@@ -15,13 +72,39 @@ export async function convertToMp3(
   outputDir: string,
   outputFilename: string
 ): Promise<ConversionResult> {
-  return new Promise((resolve) => {
-    const outputPath = path.join(outputDir, outputFilename);
-    
-    if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir, { recursive: true });
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
+  
+  const outputPath = path.join(outputDir, outputFilename);
+  
+  // Check if already MP3 64kbps - just move the file instead of converting
+  const alreadyOptimal = await isAlreadyMp3_64kbps(inputPath);
+  if (alreadyOptimal) {
+    try {
+      // Just move/copy the file to output location
+      fs.copyFileSync(inputPath, outputPath);
+      fs.unlinkSync(inputPath);
+      
+      const stats = fs.statSync(outputPath);
+      const duration = await getAudioDuration(outputPath);
+      
+      console.log("[AudioConverter] Skipped conversion, file already optimal:", outputPath);
+      
+      return {
+        success: true,
+        outputPath,
+        duration,
+        fileSize: stats.size,
+        skipped: true
+      };
+    } catch (err) {
+      console.error("[AudioConverter] Error moving file:", err);
+      // Fall through to conversion
     }
-
+  }
+  
+  return new Promise((resolve) => {
     const args = [
       "-i", inputPath,
       "-codec:a", "libmp3lame",
