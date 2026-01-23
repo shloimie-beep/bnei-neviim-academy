@@ -171,6 +171,7 @@ export const videos = pgTable("videos", {
   storageType: text("storage_type").default("local"),
   bunnyStorageUrl: text("bunny_storage_url"),
   vimeoVideoId: text("vimeo_video_id"),
+  vimeoEmbedUrl: text("vimeo_embed_url"), // Stores the player embed URL with hash for private videos
 });
 
 // PDF documents for subscriber content

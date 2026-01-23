@@ -2720,7 +2720,7 @@ export async function registerRoutes(
     }
   });
 
-  // Admin: Fix Vimeo privacy settings for all videos to allow embedding
+  // Admin: Fix Vimeo privacy settings and fetch embed URLs for all videos
   app.post("/api/admin/videos/vimeo/fix-privacy", requireAdmin, async (req, res) => {
     try {
       // Get all videos with Vimeo IDs
@@ -2738,16 +2738,25 @@ export async function registerRoutes(
       // Process videos one at a time with delay to avoid rate limiting
       for (const video of vimeoVideos) {
         try {
+          // First update privacy settings
           const success = await vimeoService.updatePrivacySettings(video.vimeoVideoId);
-          if (success) {
+          
+          // Then fetch and store the embed URL (which includes hash for private videos)
+          const playback = await vimeoService.getAuthenticatedPlaybackUrl(video.vimeoVideoId);
+          if (playback?.url) {
+            await storage.updateVideo(video.id, { vimeoEmbedUrl: playback.url } as any);
+            console.log(`[Admin] Stored embed URL for ${video.title}: ${playback.url}`);
+          }
+          
+          if (success || playback?.url) {
             fixed++;
-            console.log(`[Admin] Fixed privacy for video ${video.title} (${video.vimeoVideoId})`);
+            console.log(`[Admin] Fixed video ${video.title} (${video.vimeoVideoId})`);
           } else {
             failed++;
-            errors.push(`${video.title}: Privacy update returned false`);
+            errors.push(`${video.title}: Could not fix privacy or get embed URL`);
           }
-          // Wait 500ms between updates to avoid rate limiting
-          await new Promise(resolve => setTimeout(resolve, 500));
+          // Wait 600ms between updates to avoid rate limiting
+          await new Promise(resolve => setTimeout(resolve, 600));
         } catch (error) {
           failed++;
           errors.push(`${video.title}: ${error instanceof Error ? error.message : 'Unknown error'}`);

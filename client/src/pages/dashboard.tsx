@@ -92,12 +92,16 @@ function PhoneNumberCard({ phoneNumber, onDelete }: { phoneNumber: PhoneNumber; 
 }
 
 function VideoEmbedPlayer({ video }: { video: VideoType }) {
-  // For Vimeo videos, use embed directly without API call to avoid rate limiting
+  // For Vimeo videos, use stored embed URL (includes hash for private videos)
+  // or fall back to constructing URL from vimeoVideoId
   const vimeoVideoId = (video as any).vimeoVideoId;
+  const storedEmbedUrl = (video as any).vimeoEmbedUrl;
   
-  // Construct Vimeo embed URL directly - no API call needed
-  // Vimeo embed player handles authentication via iframe embedding
-  const embedUrl = `https://player.vimeo.com/video/${vimeoVideoId}?autoplay=1&title=0&byline=0&portrait=0`;
+  // Use stored embed URL if available (includes hash for private videos)
+  // Otherwise construct basic URL (works for unlisted/public videos)
+  const embedUrl = storedEmbedUrl 
+    ? (storedEmbedUrl.includes('?') ? `${storedEmbedUrl}&autoplay=1` : `${storedEmbedUrl}?autoplay=1`)
+    : `https://player.vimeo.com/video/${vimeoVideoId}?autoplay=1&title=0&byline=0&portrait=0`;
   
   // Increment view count in background (fire and forget)
   useEffect(() => {
