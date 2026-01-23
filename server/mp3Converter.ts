@@ -114,61 +114,88 @@ export async function convertHlsToMp3(bunnyGuid: string, outputPath: string): Pr
 }
 
 // Use yt-dlp to extract and convert video to MP3 (works for embed-only videos)
+// Uses a two-step process: download best audio with yt-dlp, then convert with ffmpeg
 async function convertVimeoWithYtDlp(vimeoVideoId: string, outputPath: string, fullLink?: string): Promise<void> {
   // Use the full link with hash if available (for unlisted videos)
   const vimeoUrl = fullLink || `https://vimeo.com/${vimeoVideoId}`;
   console.log(`[MP3] Using yt-dlp to extract audio from: ${vimeoUrl}`);
   
-  return new Promise((resolve, reject) => {
-    // yt-dlp can extract audio and pipe to ffmpeg for conversion
-    const ytdlp = spawn("yt-dlp", [
-      "--no-warnings",
-      "--no-check-certificate",
-      "-x",  // Extract audio
-      "--audio-format", "mp3",
-      "--audio-quality", "64K",
-      "--postprocessor-args", "ffmpeg:-ar 22050 -ac 1",
-      "-o", outputPath.replace(/\.mp3$/, ".%(ext)s"),  // yt-dlp adds extension
-      vimeoUrl,
-    ]);
-    
-    let stdout = "";
-    let stderr = "";
-    
-    ytdlp.stdout.on("data", (data) => {
-      stdout += data.toString();
-      console.log(`[yt-dlp] ${data.toString().trim()}`);
-    });
-    
-    ytdlp.stderr.on("data", (data) => {
-      stderr += data.toString();
-    });
-    
-    ytdlp.on("close", (code) => {
-      if (code === 0) {
-        // yt-dlp may create file with different extension, rename if needed
-        const expectedPath = outputPath.replace(/\.mp3$/, ".mp3");
-        if (fs.existsSync(expectedPath)) {
-          console.log(`[MP3] Successfully extracted audio with yt-dlp: ${expectedPath}`);
+  const tempVideoPath = outputPath.replace(/\.mp3$/, `_temp_${Date.now()}.mp4`);
+  
+  try {
+    // Step 1: Download best audio stream with yt-dlp
+    await new Promise<void>((resolve, reject) => {
+      const ytdlp = spawn("yt-dlp", [
+        "--no-warnings",
+        "--no-check-certificate",
+        "-f", "bestaudio/best",  // Get best audio quality
+        "-o", tempVideoPath,
+        vimeoUrl,
+      ]);
+      
+      let stderr = "";
+      
+      ytdlp.stdout.on("data", (data) => {
+        console.log(`[yt-dlp] ${data.toString().trim()}`);
+      });
+      
+      ytdlp.stderr.on("data", (data) => {
+        stderr += data.toString();
+      });
+      
+      ytdlp.on("close", (code) => {
+        if (code === 0 && fs.existsSync(tempVideoPath)) {
+          console.log(`[MP3] Downloaded audio stream to: ${tempVideoPath}`);
           resolve();
         } else {
-          // Check for the file without double extension
-          if (fs.existsSync(outputPath)) {
-            console.log(`[MP3] Successfully extracted audio with yt-dlp: ${outputPath}`);
-            resolve();
-          } else {
-            reject(new Error(`yt-dlp completed but output file not found`));
-          }
+          reject(new Error(`yt-dlp failed with code ${code}: ${stderr.slice(-500)}`));
         }
-      } else {
-        reject(new Error(`yt-dlp failed with code ${code}: ${stderr.slice(-500)}`));
-      }
+      });
+      
+      ytdlp.on("error", reject);
     });
     
-    ytdlp.on("error", (err) => {
-      reject(err);
+    // Step 2: Convert to MP3 with ffmpeg
+    await new Promise<void>((resolve, reject) => {
+      const ffmpeg = spawn("ffmpeg", [
+        "-y",
+        "-i", tempVideoPath,
+        "-vn",
+        "-acodec", "libmp3lame",
+        "-ab", "64k",
+        "-ar", "22050",
+        "-ac", "1",
+        outputPath,
+      ]);
+      
+      let stderr = "";
+      
+      ffmpeg.stderr.on("data", (data) => {
+        stderr += data.toString();
+      });
+      
+      ffmpeg.on("close", (code) => {
+        if (code === 0 && fs.existsSync(outputPath)) {
+          console.log(`[MP3] Successfully converted to MP3: ${outputPath}`);
+          resolve();
+        } else {
+          reject(new Error(`FFmpeg conversion failed with code ${code}: ${stderr.slice(-500)}`));
+        }
+      });
+      
+      ffmpeg.on("error", reject);
     });
-  });
+  } finally {
+    // Always clean up temp file
+    if (fs.existsSync(tempVideoPath)) {
+      try {
+        fs.unlinkSync(tempVideoPath);
+        console.log(`[MP3] Cleaned up temp file: ${tempVideoPath}`);
+      } catch (e) {
+        console.error(`[MP3] Failed to clean up temp file: ${tempVideoPath}`);
+      }
+    }
+  }
 }
 
 export async function convertVimeoToMp3(vimeoVideoId: string, outputPath: string): Promise<void> {
