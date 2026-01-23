@@ -583,14 +583,20 @@ function VideoCard({ video, isNew, onView, categoryName }: { video: VideoType; i
   // Use a stable cache-bust value per page load to avoid infinite rerenders
   const [cacheBust] = useState(() => Date.now());
 
+  // Convert Vimeo thumbnail URL to use smaller size for faster loading
+  const getSmallThumbnail = (url: string) => {
+    // Replace size suffixes like _640x360, _960x540, _1280x720 with smaller _295x166
+    return url.replace(/_\d+x\d+/, '_295x166');
+  };
+
   const thumbnailSrc = (() => {
     // Vimeo thumbnail URL stored directly (starts with https://i.vimeocdn.com)
     if (video.thumbnailPath?.startsWith("https://i.vimeocdn.com")) {
-      return video.thumbnailPath;
+      return getSmallThumbnail(video.thumbnailPath);
     }
     // Legacy vimeo:// prefix format
     if (video.thumbnailPath?.startsWith("vimeo://")) {
-      return video.thumbnailPath.replace("vimeo://", "");
+      return getSmallThumbnail(video.thumbnailPath.replace("vimeo://", ""));
     }
     // Custom thumbnail path (local storage)
     if (video.thumbnailPath) {
@@ -598,7 +604,7 @@ function VideoCard({ video, isNew, onView, categoryName }: { video: VideoType; i
     }
     // Vimeo thumbnail from API response
     if ((video as any).vimeoThumbnailUrl) {
-      return (video as any).vimeoThumbnailUrl;
+      return getSmallThumbnail((video as any).vimeoThumbnailUrl);
     }
     return null;
   })();
