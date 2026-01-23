@@ -366,6 +366,34 @@ class VimeoService {
     }
   }
 
+  // Get the full video link including hash for unlisted videos
+  async getVideoLink(videoId: string): Promise<string | null> {
+    try {
+      const token = this.getDownloadToken();
+      const response = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}?fields=link`, {
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/vnd.vimeo.*+json;version=3.4",
+        },
+      });
+
+      if (!response.ok) {
+        console.log(`[Vimeo] Failed to get video link for ${videoId}: ${response.status}`);
+        return null;
+      }
+
+      const data = await response.json() as { link?: string };
+      if (data.link) {
+        console.log(`[Vimeo] Got video link: ${data.link}`);
+        return data.link;
+      }
+      return null;
+    } catch (error) {
+      console.error(`[Vimeo] Error getting video link for ${videoId}:`, error);
+      return null;
+    }
+  }
+
   async updateVideoPrivacy(videoId: string): Promise<boolean> {
     try {
       const token = await this.getAccessToken();

@@ -113,58 +113,121 @@ export async function convertHlsToMp3(bunnyGuid: string, outputPath: string): Pr
   });
 }
 
-export async function convertVimeoToMp3(vimeoVideoId: string, outputPath: string): Promise<void> {
-  console.log(`[MP3] Getting playback URL for Vimeo video: ${vimeoVideoId}`);
-  
-  const playback = await vimeoService.getAuthenticatedPlaybackUrl(vimeoVideoId);
-  if (!playback) {
-    throw new Error("Could not get Vimeo playback URL");
-  }
-  
-  let inputUrl: string;
-  if (playback.type === 'hls') {
-    inputUrl = playback.url;
-    console.log(`[MP3] Using Vimeo HLS stream`);
-  } else if (playback.type === 'progressive') {
-    inputUrl = playback.url;
-    console.log(`[MP3] Using Vimeo progressive download`);
-  } else {
-    throw new Error("Vimeo video does not have a downloadable stream (embed-only)");
-  }
-  
-  console.log(`[MP3] Converting Vimeo video to MP3 64kbps mono...`);
+// Use yt-dlp to extract and convert video to MP3 (works for embed-only videos)
+async function convertVimeoWithYtDlp(vimeoVideoId: string, outputPath: string, fullLink?: string): Promise<void> {
+  // Use the full link with hash if available (for unlisted videos)
+  const vimeoUrl = fullLink || `https://vimeo.com/${vimeoVideoId}`;
+  console.log(`[MP3] Using yt-dlp to extract audio from: ${vimeoUrl}`);
   
   return new Promise((resolve, reject) => {
-    const ffmpeg = spawn("ffmpeg", [
-      "-y",
-      "-i", inputUrl,
-      "-vn",
-      "-acodec", "libmp3lame",
-      "-ab", "64k",
-      "-ar", "22050",
-      "-ac", "1",
-      outputPath,
+    // yt-dlp can extract audio and pipe to ffmpeg for conversion
+    const ytdlp = spawn("yt-dlp", [
+      "--no-warnings",
+      "--no-check-certificate",
+      "-x",  // Extract audio
+      "--audio-format", "mp3",
+      "--audio-quality", "64K",
+      "--postprocessor-args", "ffmpeg:-ar 22050 -ac 1",
+      "-o", outputPath.replace(/\.mp3$/, ".%(ext)s"),  // yt-dlp adds extension
+      vimeoUrl,
     ]);
     
+    let stdout = "";
     let stderr = "";
     
-    ffmpeg.stderr.on("data", (data) => {
+    ytdlp.stdout.on("data", (data) => {
+      stdout += data.toString();
+      console.log(`[yt-dlp] ${data.toString().trim()}`);
+    });
+    
+    ytdlp.stderr.on("data", (data) => {
       stderr += data.toString();
     });
     
-    ffmpeg.on("close", (code) => {
+    ytdlp.on("close", (code) => {
       if (code === 0) {
-        console.log(`[MP3] Successfully converted Vimeo video to MP3: ${outputPath}`);
-        resolve();
+        // yt-dlp may create file with different extension, rename if needed
+        const expectedPath = outputPath.replace(/\.mp3$/, ".mp3");
+        if (fs.existsSync(expectedPath)) {
+          console.log(`[MP3] Successfully extracted audio with yt-dlp: ${expectedPath}`);
+          resolve();
+        } else {
+          // Check for the file without double extension
+          if (fs.existsSync(outputPath)) {
+            console.log(`[MP3] Successfully extracted audio with yt-dlp: ${outputPath}`);
+            resolve();
+          } else {
+            reject(new Error(`yt-dlp completed but output file not found`));
+          }
+        }
       } else {
-        reject(new Error(`FFmpeg Vimeo conversion failed with code ${code}: ${stderr.slice(-500)}`));
+        reject(new Error(`yt-dlp failed with code ${code}: ${stderr.slice(-500)}`));
       }
     });
     
-    ffmpeg.on("error", (err) => {
+    ytdlp.on("error", (err) => {
       reject(err);
     });
   });
+}
+
+export async function convertVimeoToMp3(vimeoVideoId: string, outputPath: string): Promise<void> {
+  console.log(`[MP3] Getting playback URL for Vimeo video: ${vimeoVideoId}`);
+  
+  // Get the full video link with hash for unlisted videos (needed for yt-dlp)
+  const videoLink = await vimeoService.getVideoLink(vimeoVideoId);
+  
+  const playback = await vimeoService.getAuthenticatedPlaybackUrl(vimeoVideoId);
+  
+  // If we got a usable stream URL from the API, use ffmpeg directly
+  if (playback && (playback.type === 'hls' || playback.type === 'progressive')) {
+    const inputUrl = playback.url;
+    console.log(`[MP3] Using Vimeo ${playback.type} stream with ffmpeg`);
+    
+    return new Promise((resolve, reject) => {
+      const ffmpeg = spawn("ffmpeg", [
+        "-y",
+        "-i", inputUrl,
+        "-vn",
+        "-acodec", "libmp3lame",
+        "-ab", "64k",
+        "-ar", "22050",
+        "-ac", "1",
+        outputPath,
+      ]);
+      
+      let stderr = "";
+      
+      ffmpeg.stderr.on("data", (data) => {
+        stderr += data.toString();
+      });
+      
+      ffmpeg.on("close", (code) => {
+        if (code === 0) {
+          console.log(`[MP3] Successfully converted Vimeo video to MP3: ${outputPath}`);
+          resolve();
+        } else {
+          // FFmpeg failed, try yt-dlp as fallback with full link
+          console.log(`[MP3] FFmpeg failed, trying yt-dlp fallback...`);
+          convertVimeoWithYtDlp(vimeoVideoId, outputPath, videoLink || undefined)
+            .then(resolve)
+            .catch(reject);
+        }
+      });
+      
+      ffmpeg.on("error", (err) => {
+        // FFmpeg error, try yt-dlp as fallback with full link
+        console.log(`[MP3] FFmpeg error, trying yt-dlp fallback...`);
+        convertVimeoWithYtDlp(vimeoVideoId, outputPath, videoLink || undefined)
+          .then(resolve)
+          .catch(reject);
+      });
+    });
+  }
+  
+  // No API stream available - use yt-dlp directly with full link (handles embed-only videos)
+  console.log(`[MP3] No API stream available, using yt-dlp for embed-only video`);
+  return convertVimeoWithYtDlp(vimeoVideoId, outputPath, videoLink || undefined);
 }
 
 export async function convertToMp3(inputBuffer: Buffer, outputPath: string): Promise<void> {
