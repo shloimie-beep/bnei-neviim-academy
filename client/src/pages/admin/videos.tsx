@@ -999,6 +999,7 @@ export default function VideoManagement() {
     setIsFixing(true);
     
     try {
+      // First, fix database records
       const res = await fetch("/api/admin/videos/fix-vimeo", {
         method: "POST",
         credentials: "include",
@@ -1011,10 +1012,24 @@ export default function VideoManagement() {
         throw new Error(result.message || "Fix failed");
       }
       
+      // Then, fix Vimeo privacy settings to allow embedding
+      toast({ 
+        title: "Fixing Vimeo privacy settings...", 
+        description: "This may take a minute" 
+      });
+      
+      const privacyRes = await fetch("/api/admin/videos/vimeo/fix-privacy", {
+        method: "POST",
+        credentials: "include",
+        headers: getAuthHeaders(),
+      });
+      
+      const privacyResult = await privacyRes.json();
+      
       queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
       toast({ 
         title: "Fix complete", 
-        description: result.message 
+        description: `${result.message}. Privacy: ${privacyResult.fixed || 0} videos updated.` 
       });
     } catch (error: any) {
       toast({ 

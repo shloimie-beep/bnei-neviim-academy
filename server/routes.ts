@@ -2720,6 +2720,53 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Fix Vimeo privacy settings for all videos to allow embedding
+  app.post("/api/admin/videos/vimeo/fix-privacy", requireAdmin, async (req, res) => {
+    try {
+      // Get all videos with Vimeo IDs
+      const allVideos = await storage.getVideos();
+      const vimeoVideos = allVideos.filter(v => v.vimeoVideoId && v.mediaType === 'video');
+      
+      if (vimeoVideos.length === 0) {
+        return res.json({ message: "No Vimeo videos found", fixed: 0, failed: 0 });
+      }
+
+      let fixed = 0;
+      let failed = 0;
+      const errors: string[] = [];
+
+      // Process videos one at a time with delay to avoid rate limiting
+      for (const video of vimeoVideos) {
+        try {
+          const success = await vimeoService.updatePrivacySettings(video.vimeoVideoId);
+          if (success) {
+            fixed++;
+            console.log(`[Admin] Fixed privacy for video ${video.title} (${video.vimeoVideoId})`);
+          } else {
+            failed++;
+            errors.push(`${video.title}: Privacy update returned false`);
+          }
+          // Wait 500ms between updates to avoid rate limiting
+          await new Promise(resolve => setTimeout(resolve, 500));
+        } catch (error) {
+          failed++;
+          errors.push(`${video.title}: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        }
+      }
+
+      res.json({ 
+        message: `Fixed ${fixed} of ${vimeoVideos.length} videos`, 
+        fixed, 
+        failed,
+        total: vimeoVideos.length,
+        errors: errors.length > 0 ? errors : undefined
+      });
+    } catch (error) {
+      console.error("Fix Vimeo privacy error:", error);
+      res.status(500).json({ message: "Failed to fix Vimeo privacy settings" });
+    }
+  });
+
   // Admin: Generate/regenerate thumbnail for a video
   app.post("/api/admin/videos/:id/generate-thumbnail", requireAdmin, async (req, res) => {
     try {
