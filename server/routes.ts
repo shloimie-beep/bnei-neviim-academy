@@ -2702,17 +2702,21 @@ export async function registerRoutes(
       // Increment view count
       await storage.incrementVideoViewCount(req.params.id);
       
-      // Get authenticated playback URL (HLS, progressive, or embed)
-      const playback = await vimeoService.getAuthenticatedPlaybackUrl(video.vimeoVideoId);
-      if (!playback) {
-        return res.status(500).json({ message: "Failed to get video playback" });
+      // Use embed URL directly to avoid rate limiting
+      // Extract hash from thumbnailPath URL if it contains one (for unlisted videos)
+      let hash: string | undefined;
+      if (video.thumbnailPath) {
+        const hashMatch = video.thumbnailPath.match(/\/(\w{10,})[-_]/);
+        if (hashMatch) hash = hashMatch[1];
       }
       
-      // Return playback info - frontend handles different types
+      const embedUrl = vimeoService.getEmbedUrl(video.vimeoVideoId, hash);
+      
+      // Return playback info - frontend handles embed player
       res.json({ 
-        embedUrl: playback.url,  // Backward compatible
-        playbackType: playback.type,
-        videoUrl: playback.url
+        embedUrl: embedUrl,
+        playbackType: 'embed',
+        videoUrl: embedUrl
       });
     } catch (error) {
       console.error("Get Vimeo playback error:", error);
@@ -4216,16 +4220,13 @@ export async function registerRoutes(
       // If video is on Vimeo (only for video content, not audio)
       if (video.vimeoVideoId && video.mediaType === "video") {
         await storage.incrementVideoViewCount(video.id);
-        // Get authenticated playback URL (HLS, progressive, or embed)
-        const playback = await vimeoService.getAuthenticatedPlaybackUrl(video.vimeoVideoId);
-        if (!playback) {
-          return res.status(500).json({ message: "Failed to get video playback" });
-        }
+        // Use embed URL directly to avoid rate limiting
+        const embedUrl = vimeoService.getEmbedUrl(video.vimeoVideoId);
         return res.json({ 
           vimeo: true, 
-          embedUrl: playback.url,
-          videoUrl: playback.url,
-          playbackType: playback.type
+          embedUrl: embedUrl,
+          videoUrl: embedUrl,
+          playbackType: 'embed'
         });
       }
 

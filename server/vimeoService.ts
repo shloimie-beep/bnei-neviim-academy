@@ -659,6 +659,16 @@ class VimeoService {
     }
   }
 
+  // Get embed URL for playback without API calls (avoids rate limiting)
+  // This is the most reliable way for video playback
+  getEmbedUrl(videoId: string, hash?: string): string {
+    // If we have a hash for unlisted videos, include it
+    if (hash) {
+      return `https://player.vimeo.com/video/${videoId}?h=${hash}&autoplay=1&title=0&byline=0&portrait=0`;
+    }
+    return `https://player.vimeo.com/video/${videoId}?autoplay=1&title=0&byline=0&portrait=0`;
+  }
+
   // Get authenticated playback URL for private videos
   // Returns HLS or progressive download URL with signed token
   async getAuthenticatedPlaybackUrl(videoId: string): Promise<{ type: 'hls' | 'progressive' | 'embed'; url: string } | null> {
