@@ -1748,6 +1748,19 @@ export async function registerRoutes(
             }
 
             console.log(`Video ${video.id} converted successfully`);
+            
+            // Auto-generate thumbnail if none was provided
+            if (!thumbnailFile) {
+              try {
+                const thumbnailPath = await generateThumbnailFromLocalVideo(video.id, convertedPath);
+                if (thumbnailPath) {
+                  await storage.updateVideo(video.id, { thumbnailPath });
+                  console.log(`Auto-generated thumbnail for video ${video.id}`);
+                }
+              } catch (thumbError) {
+                console.error(`Failed to auto-generate thumbnail for ${video.id}:`, thumbError);
+              }
+            }
           } catch (conversionError) {
             console.error(`Video conversion failed for ${video.id}:`, conversionError);
             await storage.updateVideo(video.id, { status: "failed" });
