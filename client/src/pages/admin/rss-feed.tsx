@@ -282,12 +282,6 @@ export default function RssFeedManagement() {
             <Copy className="h-4 w-4 mr-2" />
             Copy RSS URL
           </Button>
-          <a href={rssUrl} target="_blank" rel="noopener noreferrer">
-            <Button variant="outline" data-testid="button-view-rss-feed">
-              <ExternalLink className="h-4 w-4 mr-2" />
-              View Feed
-            </Button>
-          </a>
         </div>
       </div>
 
