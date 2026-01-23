@@ -1009,8 +1009,13 @@ export default function VideoManagement() {
     setIsFixing(true);
     
     try {
-      // First, fix database records
-      const res = await fetch("/api/admin/videos/fix-vimeo", {
+      toast({ 
+        title: "Fetching embed URLs...", 
+        description: "This may take a few minutes for many videos. Please wait." 
+      });
+      
+      // Fetch Vimeo embed URLs with hash codes for all videos
+      const res = await fetch("/api/admin/videos/vimeo/fix-embed-urls", {
         method: "POST",
         credentials: "include",
         headers: getAuthHeaders(),
@@ -1022,24 +1027,10 @@ export default function VideoManagement() {
         throw new Error(result.message || "Fix failed");
       }
       
-      toast({ 
-        title: "Fetching embed URLs...", 
-        description: "This may take a few minutes for many videos" 
-      });
-      
-      // Then, fix Vimeo embed URLs (with hash codes)
-      const privacyRes = await fetch("/api/admin/videos/vimeo/fix-privacy", {
-        method: "POST",
-        credentials: "include",
-        headers: getAuthHeaders(),
-      });
-      
-      const privacyResult = await privacyRes.json();
-      
       queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
       toast({ 
         title: "Fix complete", 
-        description: `${result.message}. ${privacyResult.fixed || 0} videos now have embed URLs with hash codes.` 
+        description: `${result.fixed || 0} of ${result.total || 0} videos now have embed URLs with hash codes.` 
       });
     } catch (error: any) {
       toast({ 
