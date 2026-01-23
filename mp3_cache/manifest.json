@@ -493,5 +493,10 @@
     "videoId": "f6442b55-5d8a-4f81-97d3-f64129cb29af",
     "mp3Path": "/home/runner/workspace/mp3_cache/f6442b55-5d8a-4f81-97d3-f64129cb29af_Chasing_happiness_mp4.mp3",
     "createdAt": 1768952030773
+  },
+  {
+    "videoId": "9d26a160-d6b6-4a91-89dd-be492c4bdab2",
+    "mp3Path": "/home/runner/workspace/mp3_cache/9d26a160-d6b6-4a91-89dd-be492c4bdab2_Avos_Ubonim_2.mp3",
+    "createdAt": 1769129872293
   }
 ]
