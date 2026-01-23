@@ -100,6 +100,78 @@ class VimeoService {
     return this.accessToken;
   }
 
+  // Get download link directly from Vimeo API (for PRO/Business accounts with download access)
+  async getDownloadLink(videoId: string): Promise<{ type: 'progressive', url: string, quality: string } | null> {
+    try {
+      // Try both tokens - customer token first, then access token
+      const tokens = [this.customerToken, this.accessToken].filter(Boolean);
+      
+      for (const token of tokens) {
+        console.log(`[Vimeo] Requesting download links for video ${videoId}...`);
+        
+        // Request the video with download field
+        const response = await this.fetchWithRetry(
+          `https://api.vimeo.com/videos/${videoId}?fields=uri,name,download,files,status`,
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Accept": "application/vnd.vimeo.*+json;version=3.4",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          console.log(`[Vimeo] Download request failed with status ${response.status}`);
+          continue;
+        }
+
+        const data = await response.json() as any;
+        
+        // Check for download field (source files available on PRO+ accounts)
+        if (data.download && Array.isArray(data.download) && data.download.length > 0) {
+          // Sort by quality (prefer source or highest quality)
+          const downloads = data.download.sort((a: any, b: any) => {
+            // Prefer source file
+            if (a.quality === 'source') return -1;
+            if (b.quality === 'source') return 1;
+            // Then by resolution
+            return (b.height || 0) - (a.height || 0);
+          });
+          
+          const best = downloads[0];
+          console.log(`[Vimeo] Found download link: ${best.quality} (${best.type})`);
+          return { 
+            type: 'progressive', 
+            url: best.link,
+            quality: best.quality
+          };
+        }
+        
+        // Also check files field
+        if (data.files && Array.isArray(data.files) && data.files.length > 0) {
+          const mp4Files = data.files.filter((f: any) => f.type === 'video/mp4');
+          if (mp4Files.length > 0) {
+            const sorted = mp4Files.sort((a: any, b: any) => (b.height || 0) - (a.height || 0));
+            const best = sorted[0];
+            console.log(`[Vimeo] Found file link: ${best.quality} (${best.type})`);
+            return {
+              type: 'progressive',
+              url: best.link,
+              quality: best.quality
+            };
+          }
+        }
+        
+        console.log(`[Vimeo] No download/files available in API response`);
+      }
+      
+      return null;
+    } catch (error) {
+      console.error(`[Vimeo] Error getting download link for ${videoId}:`, error);
+      return null;
+    }
+  }
+
   private async getAccessToken(): Promise<string> {
     // Use personal access token if available
     if (this.accessToken) {
@@ -563,6 +635,14 @@ class VimeoService {
   // Returns HLS or progressive download URL with signed token
   async getAuthenticatedPlaybackUrl(videoId: string): Promise<{ type: 'hls' | 'progressive' | 'embed'; url: string } | null> {
     try {
+      // Priority 0: Try direct download API first (most reliable for audio extraction)
+      console.log(`[Vimeo] Attempting direct download API for ${videoId}`);
+      const downloadLink = await this.getDownloadLink(videoId);
+      if (downloadLink) {
+        console.log(`[Vimeo] Using direct download link (${downloadLink.quality}) for ${videoId}`);
+        return { type: 'progressive', url: downloadLink.url };
+      }
+      
       // Use the download token (master API key) for full access to files
       const token = this.getDownloadToken();
       
