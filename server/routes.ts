@@ -4175,6 +4175,25 @@ export async function registerRoutes(
     }
   });
 
+  // Subscriber: Increment view count (for embed videos that don't call stream endpoint)
+  app.post("/api/videos/:id/view", requireAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      const video = await storage.getVideo(req.params.id);
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+      await storage.incrementVideoViewCount(video.id);
+      return res.json({ success: true });
+    } catch (error) {
+      console.error("Error incrementing view count:", error);
+      return res.status(500).json({ message: "Failed to increment view count" });
+    }
+  });
+
   // Subscriber: Stream a video (requires active subscription)
   app.get("/api/videos/:id/stream", requireAuth, async (req, res) => {
     // Prevent caching of embed URLs - they should always be fetched fresh

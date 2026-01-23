@@ -92,103 +92,28 @@ function PhoneNumberCard({ phoneNumber, onDelete }: { phoneNumber: PhoneNumber; 
 }
 
 function VideoEmbedPlayer({ video }: { video: VideoType }) {
-  const [videoUrl, setVideoUrl] = useState<string | null>(null);
-  const [playbackType, setPlaybackType] = useState<'embed' | 'hls' | 'progressive' | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
+  // For Vimeo videos, use embed directly without API call to avoid rate limiting
+  const vimeoVideoId = (video as any).vimeoVideoId;
+  
+  // Construct Vimeo embed URL directly - no API call needed
+  // Vimeo embed player handles authentication via iframe embedding
+  const embedUrl = `https://player.vimeo.com/video/${vimeoVideoId}?autoplay=1&title=0&byline=0&portrait=0`;
+  
+  // Increment view count in background (fire and forget)
   useEffect(() => {
-    // Reset state when video changes
-    setVideoUrl(null);
-    setPlaybackType(null);
-    setLoading(true);
-    setError(null);
-    
-    // Use backend API to get playback URL
-    fetch(`/api/videos/${video.id}/stream?t=${Date.now()}`, {
-      cache: "no-store",
-      credentials: "include",
+    fetch(`/api/videos/${video.id}/view`, {
+      method: 'POST',
+      credentials: 'include',
       headers: getAuthHeaders(),
-    })
-      .then(res => {
-        if (!res.ok) throw new Error("Failed to load");
-        const contentType = res.headers.get("content-type");
-        if (contentType?.includes("application/json")) {
-          return res.json().then(data => {
-            if (data.videoUrl || data.embedUrl) {
-              setVideoUrl(data.videoUrl || data.embedUrl);
-              setPlaybackType(data.playbackType || 'embed');
-            } else {
-              setError("Video not available");
-            }
-            setLoading(false);
-          });
-        } else {
-          setError("Video format not supported");
-          setLoading(false);
-        }
-      })
-      .catch(() => {
-        setError("Failed to load video");
-        setLoading(false);
-      });
+    }).catch(() => {}); // Ignore errors
   }, [video.id]);
 
-  if (loading) {
-    return (
-      <DialogContent className="max-w-4xl p-0 overflow-hidden">
-        <div className="aspect-video bg-black flex items-center justify-center">
-          <Loader2 className="h-12 w-12 text-white animate-spin" />
-        </div>
-        <div className="p-4">
-          <h3 className="font-semibold text-lg">{video.title}</h3>
-        </div>
-      </DialogContent>
-    );
-  }
-
-  if (error || !videoUrl) {
-    return (
-      <DialogContent className="max-w-4xl p-0 overflow-hidden">
-        <div className="aspect-video bg-black flex items-center justify-center">
-          <p className="text-white">{error || "Video not available"}</p>
-        </div>
-        <div className="p-4">
-          <h3 className="font-semibold text-lg">{video.title}</h3>
-        </div>
-      </DialogContent>
-    );
-  }
-
-  // For HLS or progressive video URLs, use native video player
-  if (playbackType === 'hls' || playbackType === 'progressive') {
-    return (
-      <DialogContent className="max-w-4xl p-0 overflow-hidden">
-        <div className="relative bg-black">
-          <video
-            src={videoUrl}
-            className="w-full aspect-video"
-            controls
-            autoPlay
-            data-testid={`video-player-${video.id}`}
-          />
-        </div>
-        <div className="p-4">
-          <h3 className="font-semibold text-lg">{video.title}</h3>
-          {video.description && (
-            <p className="text-sm text-muted-foreground mt-1">{video.description}</p>
-          )}
-        </div>
-      </DialogContent>
-    );
-  }
-
-  // For embed URLs, use iframe
+  // Use Vimeo embed iframe directly - no loading state needed
   return (
     <DialogContent className="max-w-4xl p-0 overflow-hidden">
       <div className="relative bg-black">
         <iframe
-          src={videoUrl.includes('?') ? `${videoUrl}&autoplay=1` : `${videoUrl}?autoplay=1`}
+          src={embedUrl}
           className="w-full aspect-video"
           frameBorder="0"
           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
