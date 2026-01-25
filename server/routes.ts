@@ -1752,41 +1752,39 @@ export async function registerRoutes(
         return res.status(400).json({ message: "No thumbnail file provided" });
       }
 
-      let thumbnailPath: string | undefined;
+      let thumbnailPath: string;
 
-      // For Vimeo videos - try to upload directly to Vimeo, fall back to object storage if not supported
+      // For Vimeo videos - upload directly to Vimeo (no fallback)
       if (video.vimeoVideoId && video.mediaType === "video") {
-        const imageBuffer = fs.readFileSync(req.file.path);
-        const contentType = req.file.mimetype || "image/jpeg";
-        
-        console.log(`[Thumbnail] Attempting Vimeo upload for video ${video.id} (vimeoId: ${video.vimeoVideoId})`);
-        const success = await vimeoService.uploadThumbnail(video.vimeoVideoId, imageBuffer, contentType);
-        
-        if (success) {
-          // Wait a moment for Vimeo to process the thumbnail
+        try {
+          const imageBuffer = fs.readFileSync(req.file.path);
+          const contentType = req.file.mimetype || "image/jpeg";
+          
+          console.log(`[Thumbnail] Uploading to Vimeo for video ${video.id} (vimeoId: ${video.vimeoVideoId})`);
+          const success = await vimeoService.uploadThumbnail(video.vimeoVideoId, imageBuffer, contentType);
+          
+          if (!success) {
+            throw new Error("Vimeo thumbnail upload failed");
+          }
+          
+          // Wait for Vimeo to process the thumbnail
           await new Promise(r => setTimeout(r, 2000));
           
           // Get the new Vimeo thumbnail URL
           const vimeoThumbnailUrl = await vimeoService.getThumbnailUrl(video.vimeoVideoId);
-          if (vimeoThumbnailUrl) {
-            thumbnailPath = vimeoThumbnailUrl;
-            console.log(`[Thumbnail] Uploaded to Vimeo for video ${video.id}: ${thumbnailPath}`);
-            // Clean up temp file
-            if (fs.existsSync(req.file.path)) {
-              fs.unlinkSync(req.file.path);
-            }
-          } else {
-            console.log(`[Thumbnail] Vimeo upload succeeded but couldn't get URL, falling back to object storage`);
-            // Fall through to object storage
+          if (!vimeoThumbnailUrl) {
+            throw new Error("Failed to get thumbnail URL from Vimeo after upload");
           }
-        } else {
-          console.log(`[Thumbnail] Vimeo upload not supported or failed, falling back to object storage for video ${video.id}`);
-          // Fall through to object storage
+          
+          thumbnailPath = vimeoThumbnailUrl;
+          console.log(`[Thumbnail] Uploaded to Vimeo for video ${video.id}: ${thumbnailPath}`);
+        } finally {
+          // Clean up temp file
+          if (fs.existsSync(req.file.path)) {
+            fs.unlinkSync(req.file.path);
+          }
         }
-      }
-      
-      // Use object storage for audio files, or as fallback for videos if Vimeo upload failed
-      if (!thumbnailPath) {
+      } else {
         // For audio files - upload to object storage
         // Delete old thumbnail from object storage if exists
         if (video.thumbnailPath?.startsWith("/objects/")) {
@@ -1842,7 +1840,8 @@ export async function registerRoutes(
       if (req.file && fs.existsSync(req.file.path)) {
         fs.unlinkSync(req.file.path);
       }
-      res.status(500).json({ message: "Failed to upload thumbnail" });
+      const errorMessage = error instanceof Error ? error.message : "Failed to upload thumbnail";
+      res.status(500).json({ message: errorMessage });
     }
   });
 
