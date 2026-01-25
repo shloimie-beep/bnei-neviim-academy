@@ -557,51 +557,70 @@ class VimeoService {
   // Following Vimeo API docs: https://developer.vimeo.com/api/upload/thumbnails
   async uploadThumbnail(videoId: string, imageBuffer: Buffer, contentType: string = "image/jpeg"): Promise<boolean> {
     try {
-      // Use upload token (customer token) for thumbnail uploads - it has proper permissions
+      // Use customer token (admin API key) for thumbnail uploads
       const token = this.getUploadToken() || await this.getAccessToken();
-      console.log(`[Vimeo] Starting thumbnail upload for video ${videoId} (using ${this.customerToken ? 'customer token' : 'access token'})`);
+      console.log(`[Vimeo] Starting thumbnail upload for video ${videoId}`);
       
-      // Step 1: Create a picture resource to get upload link
-      // POST to /videos/{video_id}/pictures with empty body
-      console.log(`[Vimeo] Step 1: Creating picture resource...`);
-      const createResponse = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}/pictures`, {
+      // Step 1: Get the pictures URI from the video
+      // GET /videos/{video_id}?fields=metadata.connections.pictures.uri
+      console.log(`[Vimeo] Step 1: Getting pictures URI...`);
+      const videoResponse = await fetch(`https://api.vimeo.com/videos/${videoId}?fields=metadata.connections.pictures.uri`, {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Accept": "application/vnd.vimeo.*+json;version=3.4",
+        },
+      });
+
+      if (!videoResponse.ok) {
+        const errorText = await videoResponse.text();
+        console.error(`[Vimeo] Failed to get video info for ${videoId}: ${videoResponse.status} - ${errorText}`);
+        return false;
+      }
+
+      const videoData = await videoResponse.json() as any;
+      const picturesUri = videoData.metadata?.connections?.pictures?.uri;
+      
+      if (!picturesUri) {
+        console.error(`[Vimeo] No pictures URI found for video ${videoId}`);
+        return false;
+      }
+      
+      console.log(`[Vimeo] Pictures URI: ${picturesUri}`);
+
+      // Step 2: Create the thumbnail resource by POST to pictures URI
+      // POST to {pictures_uri} - returns "link" field for upload
+      console.log(`[Vimeo] Step 2: Creating picture resource...`);
+      const createResponse = await fetch(`https://api.vimeo.com${picturesUri}`, {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
           "Accept": "application/vnd.vimeo.*+json;version=3.4",
         },
-        body: JSON.stringify({}),
       });
 
-      console.log(`[Vimeo] Step 1 response status: ${createResponse.status}`);
+      console.log(`[Vimeo] Step 2 response status: ${createResponse.status}`);
       
       if (!createResponse.ok) {
         const errorText = await createResponse.text();
-        console.error(`[Vimeo] Failed to create picture resource for ${videoId}: ${createResponse.status} - ${errorText}`);
+        console.error(`[Vimeo] Failed to create picture resource: ${createResponse.status} - ${errorText}`);
         return false;
       }
 
       const pictureData = await createResponse.json() as any;
       const pictureUri = pictureData.uri;
+      const uploadLink = pictureData.link;
 
-      console.log(`[Vimeo] Picture resource response:`, JSON.stringify(pictureData, null, 2));
+      console.log(`[Vimeo] Picture resource created. URI: ${pictureUri}, Upload link: ${uploadLink ? 'received' : 'missing'}`);
 
-      // Vimeo returns "upload.link" field for the upload URL (inside upload object)
-      if (!pictureData.upload?.link) {
-        console.error(`[Vimeo] No 'upload.link' field returned for picture on ${videoId}`);
-        console.error(`[Vimeo] Available fields: ${Object.keys(pictureData).join(', ')}`);
-        if (pictureData.upload) {
-          console.error(`[Vimeo] Upload object fields: ${Object.keys(pictureData.upload).join(', ')}`);
-        }
+      if (!uploadLink) {
+        console.error(`[Vimeo] No 'link' field in response. Available fields: ${Object.keys(pictureData).join(', ')}`);
         return false;
       }
-      
-      const uploadLink = pictureData.upload.link;
-      console.log(`[Vimeo] Step 2: Uploading thumbnail to ${uploadLink}`);
 
-      // Step 2: Upload the image to the upload link
-      // According to Vimeo docs: Authorization header is NOT needed for the PUT upload
+      // Step 3: Upload the thumbnail image file
+      // PUT to {link} with binary image data - NO Authorization header needed
+      console.log(`[Vimeo] Step 3: Uploading thumbnail image...`);
       const uploadResponse = await fetch(uploadLink, {
         method: "PUT",
         headers: {
@@ -610,29 +629,33 @@ class VimeoService {
         body: imageBuffer,
       });
       
-      console.log(`[Vimeo] Step 2 response status: ${uploadResponse.status}`);
+      console.log(`[Vimeo] Step 3 response status: ${uploadResponse.status}`);
 
       if (!uploadResponse.ok) {
         const errorText = await uploadResponse.text();
-        console.error(`[Vimeo] Failed to upload thumbnail for ${videoId}: ${uploadResponse.status} - ${errorText}`);
+        console.error(`[Vimeo] Failed to upload thumbnail: ${uploadResponse.status} - ${errorText}`);
         return false;
       }
 
-      // Step 3: Set the thumbnail as active
-      if (pictureUri) {
-        const activateResponse = await this.fetchWithRetry(`https://api.vimeo.com${pictureUri}`, {
-          method: "PATCH",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-            "Accept": "application/vnd.vimeo.*+json;version=3.4",
-          },
-          body: JSON.stringify({ active: true }),
-        });
-        
-        if (!activateResponse.ok) {
-          console.log(`[Vimeo] Warning: Could not activate thumbnail for ${videoId}, but upload succeeded`);
-        }
+      // Step 4: Set the thumbnail as active
+      // PATCH to {pictures_uri} with { "active": true }
+      console.log(`[Vimeo] Step 4: Activating thumbnail...`);
+      const activateResponse = await fetch(`https://api.vimeo.com${pictureUri}`, {
+        method: "PATCH",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Accept": "application/vnd.vimeo.*+json;version=3.4",
+        },
+        body: JSON.stringify({ active: true }),
+      });
+      
+      console.log(`[Vimeo] Step 4 response status: ${activateResponse.status}`);
+      
+      if (!activateResponse.ok) {
+        const errorText = await activateResponse.text();
+        console.log(`[Vimeo] Warning: Could not activate thumbnail: ${activateResponse.status} - ${errorText}`);
+        // Still return true since upload succeeded
       }
 
       console.log(`[Vimeo] Successfully uploaded and activated thumbnail for video ${videoId}`);
