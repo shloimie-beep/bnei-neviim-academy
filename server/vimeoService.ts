@@ -557,8 +557,9 @@ class VimeoService {
   // Following Vimeo API docs: https://developer.vimeo.com/api/upload/thumbnails
   async uploadThumbnail(videoId: string, imageBuffer: Buffer, contentType: string = "image/jpeg"): Promise<boolean> {
     try {
-      const token = await this.getAccessToken();
-      console.log(`[Vimeo] Starting thumbnail upload for video ${videoId}`);
+      // Use upload token (customer token) for thumbnail uploads - it has proper permissions
+      const token = this.getUploadToken() || await this.getAccessToken();
+      console.log(`[Vimeo] Starting thumbnail upload for video ${videoId} (using ${this.customerToken ? 'customer token' : 'access token'})`);
       
       // Step 1: Create a picture resource to get upload link
       // POST to /videos/{video_id}/pictures with empty body
