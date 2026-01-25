@@ -1579,79 +1579,63 @@ export async function registerRoutes(
                         mediaFile.mimetype === "audio/mp3" || 
                         mediaFile.originalname.toLowerCase().endsWith(".mp3");
       
-      // For audio files: save locally, only convert WAV to MP3
+      // For audio files: convert ALL to MP3 128kbps to save space, delete originals
       // For video files: use existing conversion logic
       if (isAudio) {
-        // Audio files are saved locally (not to Bunny)
-        if (isWavFile) {
-          // WAV files need conversion to MP3
-          const convertedFilename = `${Date.now()}-converted.mp3`;
-          const convertedPath = path.join(videoUploadDir, convertedFilename);
-          
-          const video = await storage.createVideo({
-            title,
-            description: description || null,
-            filename: mediaFile.originalname,
-            filepath: originalPath,
-            fileSize: mediaFile.size,
-            status: "processing",
-            mediaType,
-            categoryId: categoryId || null,
-            uploadedBy: req.session.userId!,
-            thumbnailPath: thumbnailFile?.path || null,
-            storageType: "local",
-          });
+        // All audio files are converted to MP3 128kbps
+        const convertedFilename = `${Date.now()}-converted.mp3`;
+        const convertedPath = path.join(videoUploadDir, convertedFilename);
+        
+        const video = await storage.createVideo({
+          title,
+          description: description || null,
+          filename: mediaFile.originalname,
+          filepath: originalPath,
+          fileSize: mediaFile.size,
+          status: "processing",
+          mediaType,
+          categoryId: categoryId || null,
+          uploadedBy: req.session.userId!,
+          thumbnailPath: thumbnailFile?.path || null,
+          storageType: "local",
+        });
 
-          res.json(video);
+        res.json(video);
 
-          // Convert WAV to MP3 in background
-          (async () => {
-            try {
-              const ffmpegCommand = `ffmpeg -i "${originalPath}" -c:a libmp3lame -b:a 192k -y "${convertedPath}"`;
-              await execAsync(ffmpegCommand, { timeout: 1800000 });
+        // Convert to MP3 128kbps in background
+        (async () => {
+          try {
+            // Convert any audio format to MP3 128kbps
+            const ffmpegCommand = `ffmpeg -i "${originalPath}" -c:a libmp3lame -b:a 128k -y "${convertedPath}"`;
+            await execAsync(ffmpegCommand, { timeout: 1800000 });
 
-              const stats = fs.statSync(convertedPath);
+            const stats = fs.statSync(convertedPath);
 
-              await storage.updateVideo(video.id, {
-                filepath: convertedPath,
-                filename: convertedFilename,
-                fileSize: stats.size,
-                status: "ready",
-              });
+            await storage.updateVideo(video.id, {
+              filepath: convertedPath,
+              filename: convertedFilename,
+              fileSize: stats.size,
+              status: "ready",
+            });
 
-              if (fs.existsSync(originalPath)) {
-                fs.unlinkSync(originalPath);
-              }
-
-              console.log(`Audio ${video.id} converted from WAV to MP3 successfully`);
-            } catch (conversionError) {
-              console.error(`Audio conversion failed for ${video.id}:`, conversionError);
-              await storage.updateVideo(video.id, { status: "failed" });
-              
-              if (fs.existsSync(convertedPath)) {
-                fs.unlinkSync(convertedPath);
-              }
+            // Delete original file to save space
+            if (fs.existsSync(originalPath)) {
+              fs.unlinkSync(originalPath);
+              console.log(`Deleted original audio file: ${originalPath}`);
             }
-          })();
-        } else {
-          // MP3 and other audio files: always use local storage (permanent URLs)
-          const video = await storage.createVideo({
-            title,
-            description: description || null,
-            filename: mediaFile.originalname,
-            filepath: originalPath,
-            fileSize: mediaFile.size,
-            status: "ready",
-            mediaType,
-            categoryId: categoryId || null,
-            uploadedBy: req.session.userId!,
-            thumbnailPath: thumbnailFile?.path || null,
-            storageType: "local",
-          });
 
-          console.log(`Audio ${video.id} saved locally with permanent URL`);
-          res.json(video);
-        }
+            const savedPercent = Math.round((1 - stats.size / mediaFile.size) * 100);
+            console.log(`Audio ${video.id} converted to MP3 128kbps successfully (${Math.round(mediaFile.size/1024)}KB -> ${Math.round(stats.size/1024)}KB, saved ${savedPercent}%)`);
+          } catch (conversionError) {
+            console.error(`Audio conversion failed for ${video.id}:`, conversionError);
+            await storage.updateVideo(video.id, { status: "failed" });
+            
+            // Clean up on failure
+            if (fs.existsSync(convertedPath)) {
+              fs.unlinkSync(convertedPath);
+            }
+          }
+        })();
       } else {
         // Video files: use existing conversion logic
         const convertedFilename = `${Date.now()}-converted.mp4`;

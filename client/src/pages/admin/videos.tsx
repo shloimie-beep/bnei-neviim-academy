@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw, Download, GripVertical, ChevronDown, ChevronRight, Folder, FolderOpen } from "lucide-react";
+import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw, Download, GripVertical, ChevronDown, ChevronRight, Folder, FolderOpen, ImageIcon } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import * as tus from "tus-js-client";
 import { Button } from "@/components/ui/button";
@@ -462,6 +462,8 @@ interface UploadQueueItem {
   progress: number;
   error?: string;
   objectPath?: string;
+  thumbnail?: File;
+  thumbnailPreview?: string;
 }
 
 export default function VideoManagement() {
@@ -768,6 +770,11 @@ export default function VideoManagement() {
     let vimeoVideoId: string | undefined;
     let tusUpload: tus.Upload | null = null;
     
+    // Detect if this is an audio file
+    const audioExtensions = /\.(mp3|wav|ogg|m4a|aac|flac)$/i;
+    const audioMimetypes = ["audio/mpeg", "audio/wav", "audio/mp3", "audio/ogg", "audio/x-wav", "audio/x-m4a", "audio/mp4", "audio/aac", "audio/flac"];
+    const isAudio = audioMimetypes.includes(item.file.type) || audioExtensions.test(item.file.name);
+    
     try {
       if (cancelledRef.current) {
         throw new Error("Upload cancelled");
@@ -775,6 +782,52 @@ export default function VideoManagement() {
       
       updateQueueItem(index, { status: 'uploading', progress: 5 });
 
+      // Different upload path for audio vs video files
+      if (isAudio) {
+        // Audio files: Use FormData upload to server (will be converted to MP3 128kbps)
+        const formData = new FormData();
+        formData.append("media", item.file);
+        formData.append("title", item.title);
+        formData.append("description", "");
+        if (uploadCategoryId && uploadCategoryId !== "none") {
+          formData.append("categoryId", uploadCategoryId);
+        }
+        if (item.thumbnail) {
+          formData.append("thumbnail", item.thumbnail);
+        }
+
+        const xhr = new XMLHttpRequest();
+        currentXhrRef.current = xhr;
+
+        const uploadResponse = await new Promise<Response>((resolve, reject) => {
+          xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+              const percent = Math.round((e.loaded / e.total) * 90);
+              updateQueueItem(index, { progress: percent });
+            }
+          };
+          xhr.onload = () => {
+            if (xhr.status >= 200 && xhr.status < 300) {
+              resolve(new Response(xhr.response, { status: xhr.status }));
+            } else {
+              reject(new Error(`Upload failed with status ${xhr.status}`));
+            }
+          };
+          xhr.onerror = () => reject(new Error("Network error during audio upload"));
+          xhr.onabort = () => reject(new Error("Upload cancelled"));
+          xhr.open("POST", "/api/admin/videos/upload");
+          xhr.send(formData);
+        });
+
+        if (!uploadResponse.ok) {
+          throw new Error("Failed to upload audio file");
+        }
+
+        updateQueueItem(index, { status: 'done', progress: 100 });
+        return true;
+      }
+
+      // Video files: Use Vimeo TUS upload
       // Step 1: Create video on Vimeo and get TUS upload URL
       const createResponse = await fetch("/api/admin/videos/vimeo/create", {
         method: "POST",
@@ -866,6 +919,24 @@ export default function VideoManagement() {
 
       if (finalizeError || !finalizeResponse?.ok) {
         throw finalizeError || new Error("Failed to finalize upload after 3 attempts");
+      }
+
+      // Get the created video ID from the response
+      const videoData = await finalizeResponse.json();
+      
+      // Upload thumbnail if provided
+      if (item.thumbnail && videoData?.id) {
+        try {
+          const thumbnailFormData = new FormData();
+          thumbnailFormData.append("thumbnail", item.thumbnail);
+          await fetch(`/api/admin/videos/${videoData.id}/thumbnail`, {
+            method: "POST",
+            body: thumbnailFormData,
+          });
+          console.log(`Thumbnail uploaded for video ${videoData.id}`);
+        } catch (thumbError) {
+          console.error("Failed to upload thumbnail (non-fatal):", thumbError);
+        }
       }
 
       updateQueueItem(index, { status: 'done', progress: 100 });
@@ -1400,9 +1471,34 @@ export default function VideoManagement() {
               {uploadQueue.length > 0 && (
                 <div className="space-y-2">
                   <Label>Upload Queue ({uploadQueue.filter(q => q.status === 'done').length}/{uploadQueue.length} complete)</Label>
-                  <div className="max-h-60 overflow-y-auto space-y-2 border rounded-md p-2">
+                  <div className="max-h-80 overflow-y-auto space-y-2 border rounded-md p-2">
                     {uploadQueue.map((item, index) => (
-                      <div key={index} className="flex items-center gap-2 p-2 bg-muted/50 rounded">
+                      <div key={index} className="flex items-start gap-2 p-2 bg-muted/50 rounded">
+                        <div className="relative h-12 w-12 flex-shrink-0 rounded overflow-hidden bg-muted flex items-center justify-center">
+                          {item.thumbnailPreview ? (
+                            <img src={item.thumbnailPreview} alt="" className="h-full w-full object-cover" />
+                          ) : (
+                            <ImageIcon className="h-5 w-5 text-muted-foreground" />
+                          )}
+                          {!isUploading && item.status === 'pending' && (
+                            <label className="absolute inset-0 cursor-pointer flex items-center justify-center bg-black/50 opacity-0 hover:opacity-100 transition-opacity">
+                              <Plus className="h-4 w-4 text-white" />
+                              <input
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0];
+                                  if (file) {
+                                    const preview = URL.createObjectURL(file);
+                                    updateQueueItem(index, { thumbnail: file, thumbnailPreview: preview });
+                                  }
+                                }}
+                                data-testid={`input-thumbnail-${index}`}
+                              />
+                            </label>
+                          )}
+                        </div>
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium truncate">{item.title}</p>
                           <p className="text-xs text-muted-foreground">{formatFileSize(item.file.size)}</p>
