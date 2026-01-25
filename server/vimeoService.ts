@@ -559,6 +559,7 @@ class VimeoService {
       const token = await this.getAccessToken();
       
       // Step 1: Create a picture resource to get upload link
+      // POST to /videos/{video_id}/pictures - don't set active:true yet, just create the resource
       const createResponse = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}/pictures`, {
         method: "POST",
         headers: {
@@ -566,9 +567,7 @@ class VimeoService {
           "Content-Type": "application/json",
           "Accept": "application/vnd.vimeo.*+json;version=3.4",
         },
-        body: JSON.stringify({
-          active: true,
-        }),
+        body: JSON.stringify({}),
       });
 
       if (!createResponse.ok) {
@@ -582,25 +581,22 @@ class VimeoService {
 
       console.log(`[Vimeo] Picture resource response:`, JSON.stringify(pictureData, null, 2));
 
-      // Vimeo should return upload_link for custom image upload
-      // If not present, the API may not support custom thumbnails for this account type
-      if (!pictureData.upload_link) {
-        console.error(`[Vimeo] No upload_link returned for picture on ${videoId}. Response: ${JSON.stringify(pictureData)}`);
-        console.log(`[Vimeo] Custom thumbnail upload may not be available for this account or video`);
+      // Vimeo returns "link" field for the upload URL (not "upload_link")
+      if (!pictureData.link) {
+        console.error(`[Vimeo] No 'link' field returned for picture on ${videoId}. Response: ${JSON.stringify(pictureData)}`);
         return false;
       }
       
-      const uploadLink = pictureData.upload_link;
+      const uploadLink = pictureData.link;
 
       console.log(`[Vimeo] Uploading thumbnail to ${uploadLink}`);
 
       // Step 2: Upload the image to the upload link
+      // According to Vimeo docs: Authorization header is NOT needed for the PUT upload
       const uploadResponse = await fetch(uploadLink, {
         method: "PUT",
         headers: {
-          "Authorization": `Bearer ${token}`,
           "Content-Type": contentType,
-          "Accept": "application/vnd.vimeo.*+json;version=3.4",
         },
         body: imageBuffer,
       });
