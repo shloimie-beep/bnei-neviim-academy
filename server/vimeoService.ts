@@ -659,6 +659,57 @@ class VimeoService {
     }
   }
 
+  // Reset thumbnail to Vimeo's default (auto-generated from video frame)
+  // This creates a new thumbnail from a frame of the video at the specified time (default: 1 second)
+  // Uses Vimeo's "Creating a thumbnail" API: POST /videos/{id}/pictures with { time, active: true }
+  async resetToDefaultThumbnail(videoId: string, timeInSeconds: number = 1): Promise<string | null> {
+    try {
+      const token = await this.getAccessToken();
+      
+      // Create a thumbnail from a video frame using Vimeo's API
+      // When 'time' is provided, Vimeo grabs that frame from the video as the thumbnail
+      const response = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}/pictures`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Accept": "application/vnd.vimeo.*+json;version=3.4",
+        },
+        body: JSON.stringify({
+          time: timeInSeconds,
+          active: true,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`[Vimeo] Failed to reset thumbnail for ${videoId}: ${response.status} - ${errorText}`);
+        return null;
+      }
+
+      const data = await response.json();
+      console.log(`[Vimeo] Created thumbnail from video frame for ${videoId}:`, JSON.stringify(data, null, 2));
+      
+      // Return the new thumbnail URL from the response
+      if (data.base_link) {
+        let url = data.base_link;
+        if (!url.includes('_')) {
+          url = url.replace(/\?.*$/, '') + '_640x360';
+        }
+        return url;
+      }
+      
+      // Small delay to allow Vimeo to process the new thumbnail
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Fetch the updated thumbnail URL
+      return await this.getThumbnailUrl(videoId);
+    } catch (error) {
+      console.error(`[Vimeo] Error resetting thumbnail for ${videoId}:`, error);
+      return null;
+    }
+  }
+
   // Get embed URL for playback without API calls (avoids rate limiting)
   // This is the most reliable way for video playback
   getEmbedUrl(videoId: string, hash?: string): string {

@@ -29,26 +29,37 @@ The frontend follows a page-based structure with protected routes for authentica
 - **Session Management**: express-session with connect-pg-simple for PostgreSQL session storage
 - **Authentication**: Session-based auth with bcryptjs for password hashing
 - **File Uploads**: Multer for audio file handling
-- **Video Hosting**: Bunny Stream CDN for video uploads and delivery
+- **Video Hosting**: Vimeo for video uploads and delivery
+- **Audio Storage**: Replit Object Storage for audio files with permanent URLs
 - **API Structure**: RESTful endpoints under `/api` prefix
 
 The backend handles user authentication, subscription management, phone number registration, audio file management, IVR menu configuration, and video content management.
 
 ### Video Upload Architecture
-- **Video Hosting**: Bunny Stream CDN for reliable video delivery and automatic transcoding
+- **Video Hosting**: Vimeo for reliable video delivery and automatic transcoding
 - **Upload Flow**: 
-  1. Admin creates video on Bunny Stream via `/api/admin/videos/bunny/create`
-  2. Frontend uploads directly to Bunny CDN using the returned upload URL
-  3. Backend finalizes record via `/api/admin/videos/bunny/finalize`
-  4. Bunny automatically transcodes video to multiple resolutions
-  5. Backend polls Bunny API to update video status when ready
-- **Playback**: Uses Bunny's embedded iframe player for new videos, legacy videos still stream from original storage
-- **Domain Restriction**: Bunny library settings allow domain restrictions to prevent unauthorized video sharing
-- **Max Size**: Up to 10GB video files supported
+  1. Admin uploads video directly to Vimeo via the admin panel
+  2. Backend uses Vimeo API to manage video metadata and privacy settings
+  3. Vimeo automatically transcodes video to multiple resolutions
+  4. Videos are served using Vimeo's embedded iframe player with secure hash codes
+- **Embed URL Format**: `https://player.vimeo.com/video/{id}?h={hash}&dnt=1` for private/unlisted videos
 - **Key Files**: 
-  - `server/bunnyStream.ts` - Bunny Stream API service
-  - Video schema includes `bunnyGuid`, `bunnyVideoId`, `storageType` fields for Bunny videos
-- **Legacy Support**: Videos without `bunnyGuid` continue to use local/cloud storage streaming
+  - `server/vimeoService.ts` - Vimeo API service
+  - Video schema includes `vimeoVideoId`, `vimeoHash`, `embedUrl` fields for Vimeo videos
+
+### Thumbnail Architecture
+- **Video Thumbnails**: Stored and served entirely from Vimeo (no local storage)
+  - Custom thumbnails: Uploaded directly to Vimeo via their API
+  - Reset to default: Uses Vimeo's auto-generated thumbnail from video frame
+  - Thumbnail URLs stored in `thumbnailPath` field as Vimeo CDN URLs (https://i.vimeocdn.com/...)
+- **Audio Thumbnails**: Stored in Replit's Object Storage
+  - Uploaded via admin panel to object storage
+  - Served through `/api/videos/:id/thumbnail` endpoint
+  - Paths stored as `/objects/...` format
+- **Key Endpoints**:
+  - `POST /api/admin/videos/:id/thumbnail` - Upload thumbnail (Vimeo for videos, object storage for audio)
+  - `DELETE /api/admin/videos/:id/thumbnail` - Reset to Vimeo default (videos) or clear (audio)
+  - `GET /api/videos/:id/thumbnail` - Serve thumbnail (redirects to Vimeo or streams from object storage)
 
 ### Document Viewer Architecture
 - **Processing Flow**: PDFs are converted to page images on upload for better viewing

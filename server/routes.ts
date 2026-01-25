@@ -1755,6 +1755,8 @@ export async function registerRoutes(
   });
 
   // Admin: Upload video thumbnail
+  // For videos (with vimeoVideoId): Upload directly to Vimeo, store Vimeo URL
+  // For audio files: Upload to object storage
   app.post("/api/admin/videos/:id/thumbnail", requireAdmin, imageUpload.single("thumbnail"), async (req, res) => {
     try {
       const video = await storage.getVideo(req.params.id);
@@ -1766,10 +1768,37 @@ export async function registerRoutes(
         return res.status(400).json({ message: "No thumbnail file provided" });
       }
 
-      // Delete old thumbnail if exists
-      if (video.thumbnailPath) {
-        // Delete from cloud storage if it's a cloud path
-        if (video.thumbnailPath.startsWith("/objects/")) {
+      let thumbnailPath: string;
+
+      // For Vimeo videos - upload directly to Vimeo, store Vimeo URL
+      if (video.vimeoVideoId && video.mediaType === "video") {
+        try {
+          const imageBuffer = fs.readFileSync(req.file.path);
+          const contentType = req.file.mimetype || "image/jpeg";
+          const success = await vimeoService.uploadThumbnail(video.vimeoVideoId, imageBuffer, contentType);
+          
+          if (!success) {
+            throw new Error("Failed to upload thumbnail to Vimeo");
+          }
+          
+          // Get the new Vimeo thumbnail URL
+          const vimeoThumbnailUrl = await vimeoService.getThumbnailUrl(video.vimeoVideoId);
+          if (!vimeoThumbnailUrl) {
+            throw new Error("Failed to get Vimeo thumbnail URL after upload");
+          }
+          
+          thumbnailPath = vimeoThumbnailUrl;
+          console.log(`[Thumbnail] Uploaded to Vimeo for video ${video.id}: ${thumbnailPath}`);
+        } finally {
+          // Clean up temp file
+          if (fs.existsSync(req.file.path)) {
+            fs.unlinkSync(req.file.path);
+          }
+        }
+      } else {
+        // For audio files - upload to object storage
+        // Delete old thumbnail from object storage if exists
+        if (video.thumbnailPath?.startsWith("/objects/")) {
           try {
             const oldObjectFile = await objectStorageService.getObjectEntityFile(video.thumbnailPath);
             await oldObjectFile.delete();
@@ -1777,70 +1806,44 @@ export async function registerRoutes(
           } catch (err) {
             console.error(`Failed to delete old thumbnail from cloud storage:`, err);
           }
-        } else if (fs.existsSync(video.thumbnailPath)) {
-          fs.unlinkSync(video.thumbnailPath);
         }
-      }
 
-      // Upload thumbnail to cloud storage
-      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
-      const thumbnailPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
-      
-      console.log(`[Thumbnail Upload] uploadURL: ${uploadURL.substring(0, 100)}...`);
-      console.log(`[Thumbnail Upload] normalized thumbnailPath: ${thumbnailPath}`);
-      
-      // Parse the URL to get bucket and object name for direct upload
-      const url = new URL(uploadURL);
-      const pathParts = url.pathname.slice(1).split("/");
-      const bucketName = pathParts[0];
-      const objectName = pathParts.slice(1).join("/");
-      
-      const bucket = objectStorageClient.bucket(bucketName);
-      const thumbnailFile = bucket.file(objectName);
-      
-      // Read the temp file and upload to cloud
-      await new Promise<void>((resolve, reject) => {
-        const readStream = fs.createReadStream(req.file!.path);
-        const writeStream = thumbnailFile.createWriteStream({
-          resumable: false,
-          contentType: req.file!.mimetype,
+        // Upload thumbnail to object storage
+        const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+        thumbnailPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
+        
+        const url = new URL(uploadURL);
+        const pathParts = url.pathname.slice(1).split("/");
+        const bucketName = pathParts[0];
+        const objectName = pathParts.slice(1).join("/");
+        
+        const bucket = objectStorageClient.bucket(bucketName);
+        const thumbnailFile = bucket.file(objectName);
+        
+        await new Promise<void>((resolve, reject) => {
+          const readStream = fs.createReadStream(req.file!.path);
+          const writeStream = thumbnailFile.createWriteStream({
+            resumable: false,
+            contentType: req.file!.mimetype,
+          });
+          readStream.on("error", reject);
+          writeStream.on("error", reject);
+          writeStream.on("finish", resolve);
+          readStream.pipe(writeStream);
         });
-        readStream.on("error", reject);
-        writeStream.on("error", reject);
-        writeStream.on("finish", resolve);
-        readStream.pipe(writeStream);
-      });
-      
-      // Delete the temp file from local storage
-      if (fs.existsSync(req.file.path)) {
-        fs.unlinkSync(req.file.path);
-      }
-      
-      console.log(`Thumbnail uploaded to cloud: ${thumbnailPath}`);
-
-      // Also upload to Vimeo if it's a Vimeo video
-      if (video.vimeoVideoId) {
-        try {
-          // Read the original file for Vimeo upload
-          const imageBuffer = await bucket.file(objectName).download();
-          const contentType = req.file!.mimetype || "image/jpeg";
-          const success = await vimeoService.uploadThumbnail(video.vimeoVideoId, imageBuffer[0], contentType);
-          if (success) {
-            console.log(`Thumbnail also uploaded to Vimeo for video ${video.id}`);
-          } else {
-            console.log(`Failed to upload thumbnail to Vimeo for video ${video.id} (non-fatal)`);
-          }
-        } catch (vimeoErr) {
-          console.error(`Error uploading thumbnail to Vimeo for ${video.id}:`, vimeoErr);
-          // Continue anyway - cloud storage upload succeeded
+        
+        // Delete the temp file
+        if (fs.existsSync(req.file.path)) {
+          fs.unlinkSync(req.file.path);
         }
+        
+        console.log(`[Thumbnail] Uploaded to object storage for audio ${video.id}: ${thumbnailPath}`);
       }
 
       const updatedVideo = await storage.updateVideo(video.id, { thumbnailPath });
       res.json(updatedVideo);
     } catch (error) {
       console.error("Thumbnail upload error:", error);
-      // Clean up temp file if it exists
       if (req.file && fs.existsSync(req.file.path)) {
         fs.unlinkSync(req.file.path);
       }
@@ -2833,6 +2836,8 @@ export async function registerRoutes(
   });
 
   // Admin: Generate/regenerate thumbnail for a video
+  // For Vimeo videos: Fetch thumbnail from Vimeo API
+  // For local/audio files: Generate from video file (if available)
   app.post("/api/admin/videos/:id/generate-thumbnail", requireAdmin, async (req, res) => {
     try {
       const video = await storage.getVideo(req.params.id);
@@ -2842,8 +2847,14 @@ export async function registerRoutes(
 
       let thumbnailPath: string | null = null;
 
-      if (video.filepath) {
-        // Generate from local/cloud video file
+      // For Vimeo videos - get thumbnail from Vimeo
+      if (video.vimeoVideoId && video.mediaType === "video") {
+        thumbnailPath = await vimeoService.getThumbnailUrl(video.vimeoVideoId);
+        if (thumbnailPath) {
+          console.log(`[Thumbnail] Fetched Vimeo thumbnail for video ${video.id}: ${thumbnailPath}`);
+        }
+      } else if (video.filepath) {
+        // Generate from local/cloud video file (for audio files with video cover art, etc.)
         thumbnailPath = await generateThumbnailFromLocalVideo(video.id, video.filepath, 5);
       }
 
@@ -2851,17 +2862,13 @@ export async function registerRoutes(
         return res.status(500).json({ message: "Failed to generate thumbnail" });
       }
 
-      // Delete old thumbnail if exists
-      if (video.thumbnailPath) {
-        if (video.thumbnailPath.startsWith("/objects/")) {
-          try {
-            const oldFile = await objectStorageService.getObjectEntityFile(video.thumbnailPath);
-            await oldFile.delete();
-          } catch (err) {
-            console.error("Failed to delete old thumbnail:", err);
-          }
-        } else if (fs.existsSync(video.thumbnailPath)) {
-          fs.unlinkSync(video.thumbnailPath);
+      // Delete old thumbnail from object storage if exists (only for non-Vimeo paths)
+      if (video.thumbnailPath?.startsWith("/objects/")) {
+        try {
+          const oldFile = await objectStorageService.getObjectEntityFile(video.thumbnailPath);
+          await oldFile.delete();
+        } catch (err) {
+          console.error("Failed to delete old thumbnail:", err);
         }
       }
 
@@ -2874,6 +2881,7 @@ export async function registerRoutes(
   });
 
   // Admin: Generate thumbnails for all videos without thumbnails
+  // Uses Vimeo API for Vimeo videos, local generation for others
   app.post("/api/admin/videos/generate-all-thumbnails", requireAdmin, async (req, res) => {
     try {
       const videos = await storage.getAllVideos();
@@ -2890,7 +2898,11 @@ export async function registerRoutes(
           try {
             let thumbnailPath: string | null = null;
             
-            if (video.filepath) {
+            // For Vimeo videos - fetch from Vimeo
+            if (video.vimeoVideoId && video.mediaType === "video") {
+              thumbnailPath = await vimeoService.getThumbnailUrl(video.vimeoVideoId);
+            } else if (video.filepath) {
+              // Generate from local file for audio files
               thumbnailPath = await generateThumbnailFromLocalVideo(video.id, video.filepath, 5);
             }
 
@@ -3368,7 +3380,9 @@ export async function registerRoutes(
     }
   });
 
-  // Admin: Delete custom thumbnail and optionally regenerate from video
+  // Admin: Delete custom thumbnail and reset to Vimeo default (for videos) or clear (for audio)
+  // For Vimeo videos: Reset to Vimeo's auto-generated thumbnail from video frame
+  // For audio files: Clear the thumbnail (no auto-generation)
   app.delete("/api/admin/videos/:id/thumbnail", requireAdmin, async (req, res) => {
     try {
       const video = await storage.getVideo(req.params.id);
@@ -3376,29 +3390,33 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Video not found" });
       }
 
-      // Delete existing thumbnail
-      if (video.thumbnailPath) {
-        if (video.thumbnailPath.startsWith("/objects/")) {
-          try {
-            const thumbnailFile = await objectStorageService.getObjectEntityFile(video.thumbnailPath);
-            await thumbnailFile.delete();
-            console.log(`[Thumbnail] Deleted custom thumbnail for video ${video.id}`);
-          } catch (err) {
-            console.error("Failed to delete thumbnail from cloud storage:", err);
-          }
-        } else if (fs.existsSync(video.thumbnailPath)) {
-          fs.unlinkSync(video.thumbnailPath);
+      // Delete existing thumbnail from object storage if it's stored there (audio files only)
+      if (video.thumbnailPath?.startsWith("/objects/")) {
+        try {
+          const thumbnailFile = await objectStorageService.getObjectEntityFile(video.thumbnailPath);
+          await thumbnailFile.delete();
+          console.log(`[Thumbnail] Deleted custom thumbnail from object storage for ${video.id}`);
+        } catch (err) {
+          console.error("Failed to delete thumbnail from cloud storage:", err);
         }
       }
 
-      // Check if user wants to regenerate
       const regenerate = req.query.regenerate === "true";
       let newThumbnailPath: string | null = null;
 
-      if (regenerate && video.status === "ready" && video.filepath) {
-        // Try to regenerate thumbnail from video source
-        newThumbnailPath = await generateThumbnailFromLocalVideo(video.id, video.filepath, 5);
+      // For Vimeo videos - reset to Vimeo's default thumbnail (auto-generated from video frame)
+      if (video.vimeoVideoId && video.mediaType === "video" && regenerate) {
+        const vimeoThumbnailUrl = await vimeoService.resetToDefaultThumbnail(video.vimeoVideoId, 1);
+        if (vimeoThumbnailUrl) {
+          newThumbnailPath = vimeoThumbnailUrl;
+          console.log(`[Thumbnail] Reset to Vimeo default for video ${video.id}: ${newThumbnailPath}`);
+        } else {
+          // Fallback: just get the current Vimeo thumbnail
+          newThumbnailPath = await vimeoService.getThumbnailUrl(video.vimeoVideoId);
+          console.log(`[Thumbnail] Using existing Vimeo thumbnail for video ${video.id}: ${newThumbnailPath}`);
+        }
       }
+      // For audio files - no auto-generation, just clear the thumbnail
 
       const updatedVideo = await storage.updateVideo(video.id, { thumbnailPath: newThumbnailPath });
       
