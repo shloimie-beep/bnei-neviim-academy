@@ -1274,27 +1274,6 @@ export default function VideoManagement() {
             )}
             Sync from Vimeo
           </Button>
-          <Button 
-            variant="outline" 
-            onClick={async () => {
-              try {
-                const res = await fetch("/api/admin/cleanup-bunny-audio", { method: "POST" });
-                const data = await res.json();
-                if (res.ok) {
-                  toast({ title: "Cleanup Complete", description: data.message });
-                  queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
-                } else {
-                  toast({ title: "Error", description: data.message, variant: "destructive" });
-                }
-              } catch (err) {
-                toast({ title: "Error", description: "Failed to cleanup", variant: "destructive" });
-              }
-            }}
-            data-testid="button-cleanup-bunny-audio"
-          >
-            <Trash2 className="h-4 w-4 mr-2" />
-            Cleanup Bunny Audio
-          </Button>
           <Dialog open={isSingleDialogOpen} onOpenChange={setIsSingleDialogOpen}>
             <DialogTrigger asChild>
               <Button data-testid="button-upload-single-video">
