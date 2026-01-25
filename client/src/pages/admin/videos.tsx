@@ -128,9 +128,9 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
     try {
       await onResetThumbnail(true);
       setThumbnailCacheBust(Date.now());
-      toast({ title: "Thumbnail generated", description: "Generated new thumbnail from video" });
+      toast({ title: "Thumbnail reset", description: "Reset to Vimeo default thumbnail" });
     } catch (error: any) {
-      toast({ title: "Failed to generate thumbnail", description: error.message, variant: "destructive" });
+      toast({ title: "Failed to reset thumbnail", description: error.message, variant: "destructive" });
     } finally {
       setIsResettingThumbnail(false);
     }
@@ -248,13 +248,13 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
                   onClick={handleResetThumbnail}
                   disabled={isUploadingThumbnail || isResettingThumbnail}
                   className="p-1.5 rounded-full bg-white/20 hover:bg-white/30 transition-colors"
-                  title="Generate new thumbnail from video"
+                  title="Reset to Vimeo default thumbnail"
                   data-testid={`button-reset-thumbnail-${video.id}`}
                 >
                   {isResettingThumbnail ? (
                     <Loader2 className="h-4 w-4 text-white animate-spin" />
                   ) : (
-                    <RotateCcw className="h-4 w-4 text-white" />
+                    <Trash2 className="h-4 w-4 text-white" />
                   )}
                 </button>
               )}
