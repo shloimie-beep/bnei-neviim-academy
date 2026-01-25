@@ -700,50 +700,75 @@ class VimeoService {
     }
   }
 
-  // Reset thumbnail to Vimeo's default (auto-generated from video frame)
-  // This creates a new thumbnail from a frame of the video at the specified time (default: 1 second)
-  // Uses Vimeo's "Creating a thumbnail" API: POST /videos/{id}/pictures with { time, active: true }
+  // Delete custom thumbnail from Vimeo and reset to Vimeo's auto-generated default
+  // This deletes any user-uploaded custom thumbnails and lets Vimeo use its auto-generated one
   async resetToDefaultThumbnail(videoId: string, timeInSeconds: number = 1): Promise<string | null> {
     try {
       const token = await this.getAccessToken();
       
-      // Create a thumbnail from a video frame using Vimeo's API
-      // When 'time' is provided, Vimeo grabs that frame from the video as the thumbnail
-      const response = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}/pictures`, {
-        method: "POST",
+      // Step 1: Get all pictures/thumbnails for this video
+      console.log(`[Vimeo] Fetching thumbnails for video ${videoId} to find custom ones to delete`);
+      const listResponse = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}/pictures`, {
         headers: {
           "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
           "Accept": "application/vnd.vimeo.*+json;version=3.4",
         },
-        body: JSON.stringify({
-          time: timeInSeconds,
-          active: true,
-        }),
       });
 
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`[Vimeo] Failed to reset thumbnail for ${videoId}: ${response.status} - ${errorText}`);
+      if (!listResponse.ok) {
+        const errorText = await listResponse.text();
+        console.error(`[Vimeo] Failed to list thumbnails for ${videoId}: ${listResponse.status} - ${errorText}`);
         return null;
       }
 
-      const data = await response.json();
-      console.log(`[Vimeo] Created thumbnail from video frame for ${videoId}:`, JSON.stringify(data, null, 2));
+      const picturesData = await listResponse.json();
+      console.log(`[Vimeo] Found ${picturesData.total} thumbnails for video ${videoId}`);
       
-      // Return the new thumbnail URL from the response
-      if (data.base_link) {
-        let url = data.base_link;
-        if (!url.includes('_')) {
-          url = url.replace(/\?.*$/, '') + '_640x360';
+      // Step 2: Find and delete custom uploaded thumbnails (type: "custom")
+      // Vimeo thumbnails have a 'type' field: "default" for auto-generated, "custom" for uploaded
+      let deletedCustom = false;
+      if (picturesData.data && Array.isArray(picturesData.data)) {
+        for (const picture of picturesData.data) {
+          // Custom thumbnails have type "custom", default ones have type "default"
+          // Also check if it's the active one and was uploaded (not auto-generated)
+          const isCustom = picture.type === "custom" || 
+                          (picture.active && picturesData.data.length > 1);
+          
+          if (isCustom && picture.uri) {
+            console.log(`[Vimeo] Deleting custom thumbnail: ${picture.uri}`);
+            try {
+              const deleteResponse = await this.fetchWithRetry(`https://api.vimeo.com${picture.uri}`, {
+                method: "DELETE",
+                headers: {
+                  "Authorization": `Bearer ${token}`,
+                  "Accept": "application/vnd.vimeo.*+json;version=3.4",
+                },
+              });
+              
+              if (deleteResponse.ok || deleteResponse.status === 204) {
+                console.log(`[Vimeo] Successfully deleted custom thumbnail ${picture.uri}`);
+                deletedCustom = true;
+              } else {
+                const errorText = await deleteResponse.text();
+                console.error(`[Vimeo] Failed to delete thumbnail ${picture.uri}: ${deleteResponse.status} - ${errorText}`);
+              }
+            } catch (deleteError) {
+              console.error(`[Vimeo] Error deleting thumbnail ${picture.uri}:`, deleteError);
+            }
+          }
         }
-        return url;
       }
       
-      // Small delay to allow Vimeo to process the new thumbnail
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (deletedCustom) {
+        console.log(`[Vimeo] Deleted custom thumbnails for video ${videoId}, waiting for Vimeo to update...`);
+      } else {
+        console.log(`[Vimeo] No custom thumbnails found to delete for video ${videoId}`);
+      }
       
-      // Fetch the updated thumbnail URL
+      // Wait for Vimeo to process the deletion
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // Fetch the updated (default) thumbnail URL
       return await this.getThumbnailUrl(videoId);
     } catch (error) {
       console.error(`[Vimeo] Error resetting thumbnail for ${videoId}:`, error);
