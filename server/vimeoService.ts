@@ -765,11 +765,13 @@ class VimeoService {
   // Optimized for playback - prioritizes embed player to avoid API rate limiting
   async getAuthenticatedPlaybackUrl(videoId: string): Promise<{ type: 'hls' | 'progressive' | 'embed'; url: string } | null> {
     try {
-      // For playback, make a single API call to get the video info with embed URL
-      const token = this.getDownloadToken();
+      // For playback, use the upload token (customer token) which has full access to all videos
+      const token = this.getUploadToken() || this.getDownloadToken();
       
-      // Request only essential fields for playback
-      const response = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}?fields=uri,link,player_embed_url,play`, {
+      console.log(`[Vimeo] Getting playback URL for video ${videoId}`);
+      
+      // Request essential fields for playback including embed info
+      const response = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}?fields=uri,link,player_embed_url,play,privacy,embed`, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Accept": "application/vnd.vimeo.*+json;version=3.4",
@@ -777,7 +779,8 @@ class VimeoService {
       });
 
       if (!response.ok) {
-        console.error(`[Vimeo] Failed to get video ${videoId}: ${response.status}`);
+        const errorText = await response.text();
+        console.error(`[Vimeo] Failed to get video ${videoId}: ${response.status} - ${errorText}`);
         // If API fails, try player config directly (works without API)
         const playerConfig = await this.getPlayerConfig(videoId);
         if (playerConfig?.hls) {
@@ -788,6 +791,7 @@ class VimeoService {
       }
 
       const video: VimeoVideo = await response.json();
+      console.log(`[Vimeo] Video ${videoId} response: link=${video.link}, player_embed_url=${video.player_embed_url}, privacy=${JSON.stringify(video.privacy)}`);
       
       // Priority 1: HLS streaming from play object (best for adaptive quality)
       if (video.play?.hls?.link) {

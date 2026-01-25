@@ -2350,12 +2350,26 @@ export async function registerRoutes(
                 console.error(`[Vimeo] Failed to get thumbnail for ${video.id}:`, thumbErr);
               }
               
+              // Get the secure embed URL with hash for unlisted videos
+              let vimeoEmbedUrl: string | null = null;
+              try {
+                vimeoEmbedUrl = await vimeoService.getSecureEmbedUrl(vimeoVideoId);
+                if (vimeoEmbedUrl) {
+                  console.log(`[Vimeo] Got embed URL for video ${video.id}: ${vimeoEmbedUrl}`);
+                } else {
+                  console.warn(`[Vimeo] No embed URL returned for video ${video.id}`);
+                }
+              } catch (embedErr) {
+                console.error(`[Vimeo] Failed to get embed URL for ${video.id}:`, embedErr);
+              }
+              
               await storage.updateVideo(video.id, { 
                 status: "ready",
                 duration: vimeoVideo.duration || 0,
                 thumbnailPath,
+                vimeoEmbedUrl,
               });
-              console.log(`[Vimeo] Video ${video.id} is ready`);
+              console.log(`[Vimeo] Video ${video.id} is ready with embedUrl: ${vimeoEmbedUrl}`);
               break;
             } else if (vimeoVideo.status === "uploading_error" || vimeoVideo.status === "transcode_error") {
               await storage.updateVideo(video.id, { status: "failed" });
@@ -4058,11 +4072,31 @@ export async function registerRoutes(
       // If video is on Vimeo (only for video content, not audio)
       if (video.vimeoVideoId && video.mediaType === "video") {
         await storage.incrementVideoViewCount(video.id);
-        // Get authenticated playback URL with proper hash for private videos
+        
+        // First, try to use stored embed URL with hash (most reliable for unlisted videos)
+        if (video.vimeoEmbedUrl) {
+          console.log(`[Stream] Using stored embed URL for video ${video.id}: ${video.vimeoEmbedUrl}`);
+          return res.json({ 
+            vimeo: true, 
+            embedUrl: video.vimeoEmbedUrl,
+            videoUrl: video.vimeoEmbedUrl,
+            playbackType: 'embed'
+          });
+        }
+        
+        // Fallback: Get authenticated playback URL from Vimeo API
+        console.log(`[Stream] No stored embed URL for video ${video.id}, fetching from Vimeo API`);
         const playback = await vimeoService.getAuthenticatedPlaybackUrl(video.vimeoVideoId);
         if (!playback) {
           return res.status(500).json({ message: "Failed to get video playback" });
         }
+        
+        // If we got a good embed URL with hash, store it for next time
+        if (playback.type === 'embed' && playback.url.includes('?h=')) {
+          console.log(`[Stream] Storing embed URL for video ${video.id}: ${playback.url}`);
+          await storage.updateVideo(video.id, { vimeoEmbedUrl: playback.url });
+        }
+        
         return res.json({ 
           vimeo: true, 
           embedUrl: playback.url,
