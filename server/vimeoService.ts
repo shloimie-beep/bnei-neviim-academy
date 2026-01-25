@@ -486,15 +486,26 @@ class VimeoService {
 
   async deleteVideo(videoId: string): Promise<boolean> {
     try {
-      const token = await this.getAccessToken();
+      // Use customer token (admin API key) for delete operations
+      const token = this.getUploadToken() || await this.getAccessToken();
+      console.log(`[Vimeo] Deleting video ${videoId}...`);
+      
       const response = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`,
+          "Accept": "application/vnd.vimeo.*+json;version=3.4",
         },
       });
 
-      return response.ok || response.status === 204;
+      if (response.ok || response.status === 204) {
+        console.log(`[Vimeo] Successfully deleted video ${videoId}`);
+        return true;
+      } else {
+        const errorText = await response.text();
+        console.error(`[Vimeo] Failed to delete video ${videoId}: ${response.status} - ${errorText}`);
+        return false;
+      }
     } catch (error) {
       console.error(`[Vimeo] Error deleting video ${videoId}:`, error);
       return false;
