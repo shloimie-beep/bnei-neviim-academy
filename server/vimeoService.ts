@@ -554,12 +554,15 @@ class VimeoService {
   }
 
   // Upload a custom thumbnail to Vimeo
+  // Following Vimeo API docs: https://developer.vimeo.com/api/upload/thumbnails
   async uploadThumbnail(videoId: string, imageBuffer: Buffer, contentType: string = "image/jpeg"): Promise<boolean> {
     try {
       const token = await this.getAccessToken();
+      console.log(`[Vimeo] Starting thumbnail upload for video ${videoId}`);
       
       // Step 1: Create a picture resource to get upload link
-      // POST to /videos/{video_id}/pictures - don't set active:true yet, just create the resource
+      // POST to /videos/{video_id}/pictures with empty body
+      console.log(`[Vimeo] Step 1: Creating picture resource...`);
       const createResponse = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}/pictures`, {
         method: "POST",
         headers: {
@@ -570,26 +573,28 @@ class VimeoService {
         body: JSON.stringify({}),
       });
 
+      console.log(`[Vimeo] Step 1 response status: ${createResponse.status}`);
+      
       if (!createResponse.ok) {
         const errorText = await createResponse.text();
         console.error(`[Vimeo] Failed to create picture resource for ${videoId}: ${createResponse.status} - ${errorText}`);
         return false;
       }
 
-      const pictureData = await createResponse.json();
+      const pictureData = await createResponse.json() as any;
       const pictureUri = pictureData.uri;
 
       console.log(`[Vimeo] Picture resource response:`, JSON.stringify(pictureData, null, 2));
 
-      // Vimeo returns "link" field for the upload URL (not "upload_link")
+      // Vimeo returns "link" field for the upload URL
       if (!pictureData.link) {
-        console.error(`[Vimeo] No 'link' field returned for picture on ${videoId}. Response: ${JSON.stringify(pictureData)}`);
+        console.error(`[Vimeo] No 'link' field returned for picture on ${videoId}`);
+        console.error(`[Vimeo] Available fields: ${Object.keys(pictureData).join(', ')}`);
         return false;
       }
       
       const uploadLink = pictureData.link;
-
-      console.log(`[Vimeo] Uploading thumbnail to ${uploadLink}`);
+      console.log(`[Vimeo] Step 2: Uploading thumbnail to ${uploadLink}`);
 
       // Step 2: Upload the image to the upload link
       // According to Vimeo docs: Authorization header is NOT needed for the PUT upload
@@ -600,6 +605,8 @@ class VimeoService {
         },
         body: imageBuffer,
       });
+      
+      console.log(`[Vimeo] Step 2 response status: ${uploadResponse.status}`);
 
       if (!uploadResponse.ok) {
         const errorText = await uploadResponse.text();
