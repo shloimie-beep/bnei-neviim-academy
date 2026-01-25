@@ -347,8 +347,9 @@ class VimeoService {
 
   async getVideo(videoId: string): Promise<VimeoVideo | null> {
     try {
-      const token = await this.getAccessToken();
-      const response = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}`, {
+      // Use customer token (admin API key) for full access to video info including hashes
+      const token = this.getUploadToken() || await this.getAccessToken();
+      const response = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}?fields=uri,name,link,status,duration,pictures,player_embed_url,privacy,embed`, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Accept": "application/vnd.vimeo.*+json;version=3.4",
@@ -356,10 +357,13 @@ class VimeoService {
       });
 
       if (!response.ok) {
+        console.error(`[Vimeo] Failed to get video ${videoId}: ${response.status}`);
         return null;
       }
 
-      return await response.json();
+      const video = await response.json();
+      console.log(`[Vimeo] Got video ${videoId}: link=${video?.link}, player_embed_url=${video?.player_embed_url}`);
+      return video;
     } catch (error) {
       console.error(`[Vimeo] Error getting video ${videoId}:`, error);
       return null;
