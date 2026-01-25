@@ -501,10 +501,6 @@ class VimeoService {
     }
   }
 
-  getEmbedUrl(videoId: string): string {
-    return `https://player.vimeo.com/video/${videoId}`;
-  }
-
   async getSecureEmbedUrl(videoId: string): Promise<string | null> {
     try {
       const video = await this.getVideo(videoId);

@@ -1752,34 +1752,41 @@ export async function registerRoutes(
         return res.status(400).json({ message: "No thumbnail file provided" });
       }
 
-      let thumbnailPath: string;
+      let thumbnailPath: string | undefined;
 
-      // For Vimeo videos - upload directly to Vimeo, store Vimeo URL
+      // For Vimeo videos - try to upload directly to Vimeo, fall back to object storage if not supported
       if (video.vimeoVideoId && video.mediaType === "video") {
-        try {
-          const imageBuffer = fs.readFileSync(req.file.path);
-          const contentType = req.file.mimetype || "image/jpeg";
-          const success = await vimeoService.uploadThumbnail(video.vimeoVideoId, imageBuffer, contentType);
-          
-          if (!success) {
-            throw new Error("Failed to upload thumbnail to Vimeo");
-          }
+        const imageBuffer = fs.readFileSync(req.file.path);
+        const contentType = req.file.mimetype || "image/jpeg";
+        
+        console.log(`[Thumbnail] Attempting Vimeo upload for video ${video.id} (vimeoId: ${video.vimeoVideoId})`);
+        const success = await vimeoService.uploadThumbnail(video.vimeoVideoId, imageBuffer, contentType);
+        
+        if (success) {
+          // Wait a moment for Vimeo to process the thumbnail
+          await new Promise(r => setTimeout(r, 2000));
           
           // Get the new Vimeo thumbnail URL
           const vimeoThumbnailUrl = await vimeoService.getThumbnailUrl(video.vimeoVideoId);
-          if (!vimeoThumbnailUrl) {
-            throw new Error("Failed to get Vimeo thumbnail URL after upload");
+          if (vimeoThumbnailUrl) {
+            thumbnailPath = vimeoThumbnailUrl;
+            console.log(`[Thumbnail] Uploaded to Vimeo for video ${video.id}: ${thumbnailPath}`);
+            // Clean up temp file
+            if (fs.existsSync(req.file.path)) {
+              fs.unlinkSync(req.file.path);
+            }
+          } else {
+            console.log(`[Thumbnail] Vimeo upload succeeded but couldn't get URL, falling back to object storage`);
+            // Fall through to object storage
           }
-          
-          thumbnailPath = vimeoThumbnailUrl;
-          console.log(`[Thumbnail] Uploaded to Vimeo for video ${video.id}: ${thumbnailPath}`);
-        } finally {
-          // Clean up temp file
-          if (fs.existsSync(req.file.path)) {
-            fs.unlinkSync(req.file.path);
-          }
+        } else {
+          console.log(`[Thumbnail] Vimeo upload not supported or failed, falling back to object storage for video ${video.id}`);
+          // Fall through to object storage
         }
-      } else {
+      }
+      
+      // Use object storage for audio files, or as fallback for videos if Vimeo upload failed
+      if (!thumbnailPath) {
         // For audio files - upload to object storage
         // Delete old thumbnail from object storage if exists
         if (video.thumbnailPath?.startsWith("/objects/")) {
@@ -1821,7 +1828,11 @@ export async function registerRoutes(
           fs.unlinkSync(req.file.path);
         }
         
-        console.log(`[Thumbnail] Uploaded to object storage for audio ${video.id}: ${thumbnailPath}`);
+        console.log(`[Thumbnail] Uploaded to object storage for ${video.mediaType} ${video.id}: ${thumbnailPath}`);
+      }
+
+      if (!thumbnailPath) {
+        throw new Error("Failed to upload thumbnail - no path generated");
       }
 
       const updatedVideo = await storage.updateVideo(video.id, { thumbnailPath });
@@ -6417,6 +6428,38 @@ export async function registerRoutes(
     console.log("[Cleanup] Running scheduled weekly orphaned upload cleanup...");
     await cleanupOrphanedUploads();
   }, 7 * 24 * 60 * 60 * 1000); // Every week
+
+  // Clear Bunny CDN audio URLs from database (audio is now in object storage)
+  app.post("/api/admin/cleanup-bunny-audio", requireAdmin, async (req, res) => {
+    try {
+      console.log("[Cleanup] Clearing Bunny audio URLs from database...");
+      
+      // Get all videos with bunnyStorageUrl set
+      const allVideos = await storage.getAllVideos();
+      const bunnyAudioVideos = allVideos.filter(v => 
+        v.mediaType === "audio" && v.bunnyStorageUrl
+      );
+      
+      let cleared = 0;
+      for (const video of bunnyAudioVideos) {
+        await storage.updateVideo(video.id, { 
+          bunnyStorageUrl: null,
+          bunnyVideoId: null,
+          bunnyGuid: null,
+        });
+        cleared++;
+      }
+      
+      console.log(`[Cleanup] Cleared Bunny URLs from ${cleared} audio files`);
+      res.json({
+        message: `Cleared Bunny URLs from ${cleared} audio files`,
+        count: cleared,
+      });
+    } catch (error) {
+      console.error("Bunny audio cleanup error:", error);
+      res.status(500).json({ message: "Failed to cleanup Bunny audio URLs" });
+    }
+  });
 
   // ============ DATABASE EXPORT/IMPORT FOR PRODUCTION SYNC ============
   // Admin: Export all videos and categories for production sync
