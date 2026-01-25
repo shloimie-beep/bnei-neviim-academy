@@ -586,14 +586,17 @@ class VimeoService {
 
       console.log(`[Vimeo] Picture resource response:`, JSON.stringify(pictureData, null, 2));
 
-      // Vimeo returns "link" field for the upload URL
-      if (!pictureData.link) {
-        console.error(`[Vimeo] No 'link' field returned for picture on ${videoId}`);
+      // Vimeo returns "upload.link" field for the upload URL (inside upload object)
+      if (!pictureData.upload?.link) {
+        console.error(`[Vimeo] No 'upload.link' field returned for picture on ${videoId}`);
         console.error(`[Vimeo] Available fields: ${Object.keys(pictureData).join(', ')}`);
+        if (pictureData.upload) {
+          console.error(`[Vimeo] Upload object fields: ${Object.keys(pictureData.upload).join(', ')}`);
+        }
         return false;
       }
       
-      const uploadLink = pictureData.link;
+      const uploadLink = pictureData.upload.link;
       console.log(`[Vimeo] Step 2: Uploading thumbnail to ${uploadLink}`);
 
       // Step 2: Upload the image to the upload link
