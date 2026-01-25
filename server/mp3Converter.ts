@@ -2,7 +2,6 @@ import { spawn } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 import fetch from "node-fetch";
-import { getVideo, BUNNY_API_KEY, BUNNY_LIBRARY_ID, getPullZoneHostname } from "./bunnyStream";
 import { vimeoService } from "./vimeoService";
 
 const MP3_CACHE_DIR = path.join(process.cwd(), "mp3_cache");
@@ -72,45 +71,6 @@ export function getCachedMp3Path(videoId: string): string | null {
 
 function sanitizeFilename(name: string): string {
   return name.replace(/[^a-zA-Z0-9_-]/g, "_").substring(0, 50);
-}
-
-export async function convertHlsToMp3(bunnyGuid: string, outputPath: string): Promise<void> {
-  const pullZone = await getPullZoneHostname();
-  const hlsUrl = `https://${pullZone}.b-cdn.net/${bunnyGuid}/playlist.m3u8`;
-  
-  console.log(`[MP3] Streaming audio from HLS: ${hlsUrl}`);
-  
-  return new Promise((resolve, reject) => {
-    const ffmpeg = spawn("ffmpeg", [
-      "-y",
-      "-i", hlsUrl,
-      "-vn",
-      "-acodec", "libmp3lame",
-      "-ab", "128k",
-      "-ar", "44100",
-      "-ac", "2",
-      outputPath,
-    ]);
-    
-    let stderr = "";
-    
-    ffmpeg.stderr.on("data", (data) => {
-      stderr += data.toString();
-    });
-    
-    ffmpeg.on("close", (code) => {
-      if (code === 0) {
-        console.log(`[MP3] Successfully converted HLS to MP3: ${outputPath}`);
-        resolve();
-      } else {
-        reject(new Error(`FFmpeg HLS conversion failed with code ${code}: ${stderr.slice(-500)}`));
-      }
-    });
-    
-    ffmpeg.on("error", (err) => {
-      reject(err);
-    });
-  });
 }
 
 // Use yt-dlp to extract and convert video to MP3 (works for embed-only videos)
@@ -301,33 +261,6 @@ export async function convertToMp3(inputBuffer: Buffer, outputPath: string): Pro
   });
 }
 
-export async function getOrCreateMp3(videoId: string, bunnyGuid: string, title: string): Promise<string> {
-  const cached = getCachedMp3Path(videoId);
-  if (cached) {
-    console.log(`[MP3] Serving cached MP3 for video ${videoId}`);
-    return cached;
-  }
-  
-  console.log(`[MP3] Converting video ${videoId} to MP3...`);
-  
-  const safeTitle = sanitizeFilename(title);
-  const mp3Filename = `${videoId}_${safeTitle}.mp3`;
-  const mp3Path = path.join(MP3_CACHE_DIR, mp3Filename);
-  
-  await convertHlsToMp3(bunnyGuid, mp3Path);
-  
-  cacheManifest.set(videoId, {
-    videoId,
-    mp3Path,
-    createdAt: Date.now(),
-  });
-  saveManifest();
-  
-  console.log(`[MP3] Created MP3 for video ${videoId}: ${mp3Path}`);
-  
-  return mp3Path;
-}
-
 export async function getOrCreateVimeoMp3(videoId: string, vimeoVideoId: string, title: string): Promise<string> {
   const cached = getCachedMp3Path(videoId);
   if (cached) {
@@ -353,22 +286,6 @@ export async function getOrCreateVimeoMp3(videoId: string, vimeoVideoId: string,
   console.log(`[MP3] Created MP3 for Vimeo video ${videoId}: ${mp3Path}`);
   
   return mp3Path;
-}
-
-export async function preGenerateMp3(videoId: string, bunnyGuid: string, title: string, skipStatusCheck: boolean = false): Promise<void> {
-  try {
-    if (!skipStatusCheck) {
-      const bunnyVideo = await getVideo(bunnyGuid);
-      if (bunnyVideo.status !== 4) {
-        console.log(`[MP3] Video ${videoId} not ready (status ${bunnyVideo.status}), skipping pre-generation`);
-        return;
-      }
-    }
-    
-    await getOrCreateMp3(videoId, bunnyGuid, title);
-  } catch (err) {
-    console.error(`[MP3] Failed to pre-generate MP3 for ${videoId}:`, err);
-  }
 }
 
 export function cleanupOldMp3Files(): void {

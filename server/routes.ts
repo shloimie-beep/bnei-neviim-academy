@@ -19,13 +19,11 @@ import { sql } from "drizzle-orm";
 import { db } from "./db";
 import { pool } from "./db";
 import { ObjectStorageService, objectStorageClient } from "./replit_integrations/object_storage";
-import * as bunnyStream from "./bunnyStream";
-import * as bunnyStorage from "./bunnyStorage";
-import { generateThumbnailFromBunny, generateThumbnailFromLocalVideo } from "./thumbnailGenerator";
+import { generateThumbnailFromLocalVideo } from "./thumbnailGenerator";
 import { vimeoService } from "./vimeoService";
 import { voitexService } from "./voitexService";
 import { WebhookHandlers } from "./webhookHandlers";
-import { getOrCreateMp3, getOrCreateVimeoMp3, getCachedMp3Path, preGenerateMp3 } from "./mp3Converter";
+import { getOrCreateVimeoMp3, getCachedMp3Path } from "./mp3Converter";
 import { generateMobileToken, verifyMobileToken, requireMobileAuth, requireMobileOrSessionAuth } from "./mobileAuth";
 import { convertToMp3 } from "./audioConverter";
 
@@ -260,62 +258,8 @@ export async function registerRoutes(
 ): Promise<Server> {
   const isProduction = process.env.NODE_ENV === "production";
   
-  // Initialize Bunny Stream service (caches CDN hostname)
-  await bunnyStream.initializeBunnyStream();
-  
-  // Initialize Bunny Storage service (for audio files)
-  bunnyStorage.initializeBunnyStorage();
-  
   // Initialize Voitex service for contact sync
   voitexService.initialize();
-  
-  // Sync stuck video statuses from Bunny on startup
-  (async () => {
-    try {
-      const allVideos = await storage.getAllVideos();
-      const stuckVideos = allVideos.filter(v => 
-        v.bunnyGuid && 
-        (v.status === "processing" || v.status === "uploading")
-      );
-      
-      if (stuckVideos.length > 0) {
-        console.log(`[Bunny Sync] Found ${stuckVideos.length} videos with pending status, checking Bunny...`);
-        
-        for (const video of stuckVideos) {
-          try {
-            const bunnyVideo = await bunnyStream.getVideo(video.bunnyGuid!);
-            
-            // Status: 0=created, 1=uploaded, 2=processing, 3=transcoding, 4=finished, 5=error
-            if (bunnyVideo.status === 4) {
-              await storage.updateVideo(video.id, { 
-                status: "ready",
-                duration: bunnyVideo.length,
-              });
-              console.log(`[Bunny Sync] Updated video ${video.id} to ready`);
-              
-              // Pre-generate MP3 for download
-              if (video.bunnyGuid) {
-                preGenerateMp3(video.id, video.bunnyGuid, video.title, true).catch(err => {
-                  console.error(`[MP3] Background pre-generation failed for ${video.id}:`, err);
-                });
-              }
-            } else if (bunnyVideo.status === 5) {
-              await storage.updateVideo(video.id, { status: "failed" });
-              console.log(`[Bunny Sync] Updated video ${video.id} to failed`);
-            } else {
-              console.log(`[Bunny Sync] Video ${video.id} still processing on Bunny (status: ${bunnyVideo.status})`);
-            }
-          } catch (err) {
-            console.error(`[Bunny Sync] Failed to check video ${video.id}:`, err);
-          }
-        }
-        
-        console.log(`[Bunny Sync] Sync complete`);
-      }
-    } catch (err) {
-      console.error("[Bunny Sync] Startup sync failed:", err);
-    }
-  })();
   
   // Trust proxy for Replit (uses reverse proxy in both dev and prod)
   app.set("trust proxy", 1);
@@ -1961,50 +1905,6 @@ export async function registerRoutes(
     }
   });
 
-  // Admin: Bulk delete all Bunny Stream videos
-  app.delete("/api/admin/videos/bunny/bulk-delete", requireAdmin, async (req, res) => {
-    try {
-      const allVideos = await storage.getAllVideos();
-      const bunnyVideos = allVideos.filter(v => v.bunnyGuid && !v.vimeoVideoId);
-      
-      if (bunnyVideos.length === 0) {
-        return res.json({ message: "No Bunny videos found", deletedCount: 0 });
-      }
-
-      let deletedCount = 0;
-      const errors: string[] = [];
-
-      for (const video of bunnyVideos) {
-        try {
-          // Delete from Bunny Stream
-          if (video.bunnyGuid) {
-            try {
-              await bunnyStream.deleteVideo(video.bunnyGuid);
-            } catch (err) {
-              console.error(`Failed to delete video ${video.id} from Bunny:`, err);
-            }
-          }
-          
-          // Delete from database
-          await storage.deleteVideo(video.id);
-          deletedCount++;
-        } catch (err) {
-          errors.push(`Failed to delete ${video.title}: ${err}`);
-        }
-      }
-
-      res.json({ 
-        message: `Deleted ${deletedCount} Bunny videos`, 
-        deletedCount,
-        totalFound: bunnyVideos.length,
-        errors: errors.length > 0 ? errors : undefined
-      });
-    } catch (error) {
-      console.error("Bulk delete Bunny videos error:", error);
-      res.status(500).json({ message: "Failed to delete Bunny videos" });
-    }
-  });
-
   // Admin: Delete a video
   app.delete("/api/admin/videos/:id", requireAdmin, async (req, res) => {
     try {
@@ -2013,20 +1913,13 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Video not found" });
       }
 
-      // Delete video file from Vimeo, Bunny Stream, cloud storage, or local filesystem
+      // Delete video file from Vimeo or cloud storage
       if (video.vimeoVideoId) {
         try {
           await vimeoService.deleteVideo(video.vimeoVideoId);
           console.log(`Deleted video ${req.params.id} from Vimeo`);
         } catch (err) {
           console.error(`Failed to delete video ${req.params.id} from Vimeo:`, err);
-        }
-      } else if (video.bunnyGuid) {
-        try {
-          await bunnyStream.deleteVideo(video.bunnyGuid);
-          console.log(`Deleted video ${req.params.id} from Bunny Stream`);
-        } catch (err) {
-          console.error(`Failed to delete video ${req.params.id} from Bunny Stream:`, err);
         }
       }
       
@@ -2375,161 +2268,6 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Cancel upload cleanup error:", error);
       res.status(500).json({ message: "Failed to cleanup cancelled upload" });
-    }
-  });
-
-  // ============ BUNNY STREAM VIDEO UPLOAD ============
-  // Admin: Create a video on Bunny Stream and get upload URL
-  app.post("/api/admin/videos/bunny/create", requireAdmin, async (req, res) => {
-    try {
-      const { title } = req.body;
-      if (!title) {
-        return res.status(400).json({ message: "Title is required" });
-      }
-
-      const bunnyVideo = await bunnyStream.createVideo(title);
-      const uploadUrl = bunnyStream.getUploadUrl(bunnyVideo.guid);
-      
-      console.log(`[Bunny Stream] Created video "${title}" with guid: ${bunnyVideo.guid}`);
-      
-      res.json({
-        bunnyGuid: bunnyVideo.guid,
-        uploadUrl,
-        apiKey: process.env.BUNNY_API_KEY,
-      });
-    } catch (error: any) {
-      console.error("Bunny create video error:", error);
-      res.status(500).json({ message: error.message || "Failed to create video on Bunny Stream" });
-    }
-  });
-
-  // Admin: Finalize Bunny Stream video (create local record after upload)
-  app.post("/api/admin/videos/bunny/finalize", requireAdmin, async (req, res) => {
-    try {
-      const { title, description, categoryId, bunnyGuid, filename, fileSize } = req.body;
-
-      if (!title || !bunnyGuid) {
-        return res.status(400).json({ message: "Title and bunnyGuid are required" });
-      }
-
-      console.log(`[Bunny Stream] Finalizing video "${title}" with guid: ${bunnyGuid}`);
-
-      const video = await storage.createVideo({
-        title,
-        description: description || null,
-        filename: filename || null,
-        filepath: null,
-        fileSize: fileSize || null,
-        status: "processing",
-        categoryId: categoryId || null,
-        uploadedBy: req.session.userId!,
-        thumbnailPath: null,
-        bunnyGuid,
-        bunnyVideoId: bunnyGuid,
-        storageType: "bunny",
-      });
-
-      console.log(`[Bunny Stream] Created video record ${video.id}`);
-
-      // Poll Bunny for processing status
-      (async () => {
-        let attempts = 0;
-        const maxAttempts = 60; // 10 minutes max
-        
-        while (attempts < maxAttempts) {
-          try {
-            await new Promise(r => setTimeout(r, 10000)); // Check every 10 seconds
-            const bunnyVideo = await bunnyStream.getVideo(bunnyGuid);
-            
-            // Status: 0=created, 1=uploaded, 2=processing, 3=transcoding, 4=finished, 5=error
-            if (bunnyVideo.status === 4) {
-              await storage.updateVideo(video.id, { 
-                status: "ready",
-                duration: bunnyVideo.length,
-              });
-              console.log(`[Bunny Stream] Video ${video.id} is ready`);
-              
-              // Auto-generate thumbnail if none exists
-              const currentVideo = await storage.getVideo(video.id);
-              if (currentVideo && !currentVideo.thumbnailPath) {
-                console.log(`[Bunny Stream] Generating thumbnail for ${video.id}...`);
-                const thumbnailPath = await generateThumbnailFromBunny(video.id, bunnyGuid, 10);
-                if (thumbnailPath) {
-                  await storage.updateVideo(video.id, { thumbnailPath });
-                  console.log(`[Bunny Stream] Thumbnail generated for ${video.id}`);
-                }
-              }
-              
-              // Pre-generate MP3 for download
-              preGenerateMp3(video.id, bunnyGuid, title, true).catch(err => {
-                console.error(`[MP3] Background pre-generation failed for ${video.id}:`, err);
-              });
-              break;
-            } else if (bunnyVideo.status === 5) {
-              await storage.updateVideo(video.id, { status: "failed" });
-              console.log(`[Bunny Stream] Video ${video.id} failed processing`);
-              break;
-            }
-            
-            attempts++;
-          } catch (err) {
-            console.error(`[Bunny Stream] Error checking status for ${video.id}:`, err);
-            attempts++;
-          }
-        }
-      })();
-
-      res.json(video);
-    } catch (error: any) {
-      console.error("Bunny finalize video error:", error);
-      res.status(500).json({ message: error.message || "Failed to finalize video" });
-    }
-  });
-
-  // Admin: Get Bunny embed URL for a video
-  app.get("/api/admin/videos/:id/bunny-embed", requireAdmin, async (req, res) => {
-    try {
-      const video = await storage.getVideo(req.params.id);
-      if (!video) {
-        return res.status(404).json({ message: "Video not found" });
-      }
-      
-      if (!video.bunnyGuid) {
-        return res.status(400).json({ message: "Video is not hosted on Bunny Stream" });
-      }
-      
-      res.json({
-        embedUrl: bunnyStream.getEmbedUrl(video.bunnyGuid),
-        thumbnailUrl: await bunnyStream.getThumbnailUrl(video.bunnyGuid),
-      });
-    } catch (error) {
-      console.error("Get Bunny embed error:", error);
-      res.status(500).json({ message: "Failed to get embed URL" });
-    }
-  });
-
-  // Public: Get Bunny embed URL for subscribers
-  app.get("/api/videos/:id/bunny-embed", requireAuth, async (req, res) => {
-    try {
-      const video = await storage.getVideo(req.params.id);
-      if (!video) {
-        return res.status(404).json({ message: "Video not found" });
-      }
-      
-      if (!video.bunnyGuid) {
-        return res.status(400).json({ message: "Video is not hosted on Bunny Stream" });
-      }
-
-      // Increment view count
-      await storage.incrementVideoViewCount(req.params.id);
-      
-      res.json({
-        embedUrl: bunnyStream.getEmbedUrl(video.bunnyGuid),
-        thumbnailUrl: await bunnyStream.getThumbnailUrl(video.bunnyGuid),
-      });
-    } catch (error) {
-      console.error("Get Bunny embed error:", error);
-      res.status(500).json({ message: "Failed to get embed URL" });
     }
   });
 
@@ -3104,10 +2842,7 @@ export async function registerRoutes(
 
       let thumbnailPath: string | null = null;
 
-      if (video.bunnyGuid) {
-        // Generate from Bunny Stream
-        thumbnailPath = await generateThumbnailFromBunny(video.id, video.bunnyGuid, 5);
-      } else if (video.filepath) {
+      if (video.filepath) {
         // Generate from local/cloud video file
         thumbnailPath = await generateThumbnailFromLocalVideo(video.id, video.filepath, 5);
       }
@@ -3155,9 +2890,7 @@ export async function registerRoutes(
           try {
             let thumbnailPath: string | null = null;
             
-            if (video.bunnyGuid) {
-              thumbnailPath = await generateThumbnailFromBunny(video.id, video.bunnyGuid, 5);
-            } else if (video.filepath) {
+            if (video.filepath) {
               thumbnailPath = await generateThumbnailFromLocalVideo(video.id, video.filepath, 5);
             }
 
@@ -3174,50 +2907,6 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Generate all thumbnails error:", error);
       res.status(500).json({ message: "Failed to start thumbnail generation" });
-    }
-  });
-
-  // Admin: Refresh a single video's status from Bunny
-  app.post("/api/admin/videos/:id/refresh-status", requireAdmin, async (req, res) => {
-    try {
-      const video = await storage.getVideo(req.params.id);
-      if (!video) {
-        return res.status(404).json({ message: "Video not found" });
-      }
-
-      if (!video.bunnyGuid) {
-        return res.status(400).json({ message: "Video is not hosted on Bunny Stream" });
-      }
-
-      const bunnyVideo = await bunnyStream.getVideo(video.bunnyGuid);
-      
-      let newStatus = video.status;
-      // Status: 0=created, 1=uploaded, 2=processing, 3=transcoding, 4=finished, 5=error
-      if (bunnyVideo.status === 4) {
-        newStatus = "ready";
-      } else if (bunnyVideo.status === 5) {
-        newStatus = "failed";
-      } else if (bunnyVideo.status >= 1 && bunnyVideo.status <= 3) {
-        newStatus = "processing";
-      }
-
-      const updatedVideo = await storage.updateVideo(video.id, { 
-        status: newStatus,
-        duration: bunnyVideo.length || video.duration,
-      });
-
-      console.log(`[Bunny Refresh] Video ${video.id} status: ${video.status} -> ${newStatus}`);
-
-      if (newStatus === "ready" && video.status !== "ready" && video.bunnyGuid) {
-        preGenerateMp3(video.id, video.bunnyGuid, video.title, true).catch(err => {
-          console.error(`[MP3] Background pre-generation failed for ${video.id}:`, err);
-        });
-      }
-
-      res.json(updatedVideo);
-    } catch (error: any) {
-      console.error("Refresh video status error:", error);
-      res.status(500).json({ message: error.message || "Failed to refresh video status" });
     }
   });
 
@@ -3240,15 +2929,7 @@ export async function registerRoutes(
         res.setHeader("Content-Type", "audio/mpeg");
         res.setHeader("Content-Disposition", `attachment; filename="${safeTitle}.mp3"`);
         
-        if (video.bunnyStorageUrl) {
-          // Bunny storage audio - proxy the download
-          const response = await fetch(video.bunnyStorageUrl);
-          if (!response.ok) {
-            throw new Error(`Failed to download from Bunny storage: ${response.status}`);
-          }
-          const buffer = await response.arrayBuffer();
-          return res.send(Buffer.from(buffer));
-        } else if (video.filepath) {
+        if (video.filepath) {
           // Local audio file
           const localPath = path.join(process.cwd(), "uploads", "videos", path.basename(video.filepath));
           if (fs.existsSync(localPath)) {
@@ -3266,17 +2947,11 @@ export async function registerRoutes(
       }
 
       // For videos, convert to MP3
-      let mp3Path: string;
-      
-      if (video.vimeoVideoId) {
-        // Vimeo video - extract audio as MP3 64kbps mono
-        mp3Path = await getOrCreateVimeoMp3(video.id, video.vimeoVideoId, video.title);
-      } else if (video.bunnyGuid) {
-        // Bunny video - extract audio as MP3
-        mp3Path = await getOrCreateMp3(video.id, video.bunnyGuid, video.title);
-      } else {
-        return res.status(400).json({ message: "Video does not have a streamable source (Vimeo or Bunny)" });
+      if (!video.vimeoVideoId) {
+        return res.status(400).json({ message: "Video does not have a streamable source (Vimeo)" });
       }
+      
+      const mp3Path = await getOrCreateVimeoMp3(video.id, video.vimeoVideoId, video.title);
       
       res.setHeader("Content-Type", "audio/mpeg");
       res.setHeader("Content-Disposition", `attachment; filename="${safeTitle}.mp3"`);
@@ -3297,198 +2972,13 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Video not found" });
       }
 
-      const cached = (video.bunnyGuid || video.vimeoVideoId) ? getCachedMp3Path(video.id) : null;
+      const cached = video.vimeoVideoId ? getCachedMp3Path(video.id) : null;
       res.json({ 
-        available: (video.bunnyGuid || video.vimeoVideoId) && video.status === "ready",
+        available: video.vimeoVideoId && video.status === "ready",
         cached: !!cached 
       });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
-    }
-  });
-
-  // Admin: Refresh all stuck video statuses from Bunny
-  app.post("/api/admin/videos/refresh-all-statuses", requireAdmin, async (req, res) => {
-    try {
-      const allVideos = await storage.getAllVideos();
-      const stuckVideos = allVideos.filter(v => 
-        v.bunnyGuid && 
-        (v.status === "processing" || v.status === "uploading")
-      );
-
-      if (stuckVideos.length === 0) {
-        return res.json({ message: "No videos with pending status", updated: 0 });
-      }
-
-      let updatedCount = 0;
-      
-      for (const video of stuckVideos) {
-        try {
-          const bunnyVideo = await bunnyStream.getVideo(video.bunnyGuid!);
-          
-          if (bunnyVideo.status === 4) {
-            await storage.updateVideo(video.id, { 
-              status: "ready",
-              duration: bunnyVideo.length,
-            });
-            updatedCount++;
-            console.log(`[Bunny Refresh] Updated video ${video.id} to ready`);
-            
-            if (video.bunnyGuid) {
-              preGenerateMp3(video.id, video.bunnyGuid, video.title, true).catch(err => {
-                console.error(`[MP3] Background pre-generation failed for ${video.id}:`, err);
-              });
-            }
-          } else if (bunnyVideo.status === 5) {
-            await storage.updateVideo(video.id, { status: "failed" });
-            updatedCount++;
-            console.log(`[Bunny Refresh] Updated video ${video.id} to failed`);
-          }
-        } catch (err) {
-          console.error(`[Bunny Refresh] Failed to check video ${video.id}:`, err);
-        }
-      }
-
-      res.json({ 
-        message: `Checked ${stuckVideos.length} videos, updated ${updatedCount}`,
-        checked: stuckVideos.length,
-        updated: updatedCount
-      });
-    } catch (error) {
-      console.error("Refresh all statuses error:", error);
-      res.status(500).json({ message: "Failed to refresh video statuses" });
-    }
-  });
-
-  // Admin: Sync videos from Bunny library to database
-  app.post("/api/admin/videos/sync-from-bunny", requireAdmin, async (req, res) => {
-    try {
-      // Get all videos from Bunny library
-      let allBunnyVideos: any[] = [];
-      let page = 1;
-      let hasMore = true;
-      
-      while (hasMore) {
-        const result = await bunnyStream.listVideos(page, 100);
-        allBunnyVideos = allBunnyVideos.concat(result.items);
-        hasMore = allBunnyVideos.length < result.totalItems;
-        page++;
-      }
-      
-      console.log(`[Bunny Sync] Found ${allBunnyVideos.length} videos in Bunny library`);
-
-      // Get all videos from database
-      const dbVideos = await storage.getAllVideos();
-      const existingGuids = new Set(dbVideos.filter(v => v.bunnyGuid).map(v => v.bunnyGuid));
-
-      // Find videos in Bunny that don't exist in database
-      const missingVideos = allBunnyVideos.filter(bv => !existingGuids.has(bv.guid));
-      
-      console.log(`[Bunny Sync] ${missingVideos.length} videos need to be imported`);
-
-      let importedCount = 0;
-      let deletedFromBunnyCount = 0;
-      
-      for (const bunnyVideo of missingVideos) {
-        try {
-          // Delete failed videos from Bunny instead of importing them
-          // Bunny status: 5 = failed processing, 6 = upload failed
-          if (bunnyVideo.status === 5 || bunnyVideo.status === 6) {
-            console.log(`[Bunny Sync] Deleting failed video from Bunny: ${bunnyVideo.title} (${bunnyVideo.guid}) status=${bunnyVideo.status}`);
-            await bunnyStream.deleteVideo(bunnyVideo.guid);
-            deletedFromBunnyCount++;
-            continue;
-          }
-          
-          // Only import videos that are finished processing (status 4) or still processing
-          const status = bunnyVideo.status === 4 ? "ready" : "processing";
-          const videoTitle = bunnyVideo.title || `Video ${bunnyVideo.guid}`;
-          
-          const newVideo = await storage.createVideo({
-            title: videoTitle,
-            description: null,
-            filename: `${videoTitle}.mp4`,
-            filepath: null,
-            fileSize: bunnyVideo.storageSize || 0,
-            duration: bunnyVideo.length || 0,
-            status,
-            mediaType: "video",
-            storageType: "bunny",
-            bunnyGuid: bunnyVideo.guid,
-            bunnyVideoId: bunnyVideo.guid,
-            categoryId: null,
-            thumbnailPath: null,
-          });
-          
-          importedCount++;
-          console.log(`[Bunny Sync] Imported video: ${videoTitle} (${bunnyVideo.guid})`);
-          
-          // Pre-generate MP3 if video is already ready
-          if (status === "ready") {
-            preGenerateMp3(newVideo.id, bunnyVideo.guid, videoTitle, true).catch(err => {
-              console.error(`[MP3] Background pre-generation failed for ${newVideo.id}:`, err);
-            });
-          }
-        } catch (err) {
-          console.error(`[Bunny Sync] Failed to import video ${bunnyVideo.guid}:`, err);
-        }
-      }
-
-      // Also refresh status of any existing videos that are stuck in processing
-      const allDbVideos = await storage.getAllVideos();
-      const stuckVideos = allDbVideos.filter(v => 
-        v.bunnyGuid && 
-        (v.status === "processing" || v.status === "uploading" || v.status === "failed")
-      );
-      
-      let updatedCount = 0;
-      let deletedFromDbCount = 0;
-      
-      for (const video of stuckVideos) {
-        try {
-          const bunnyVideo = await bunnyStream.getVideo(video.bunnyGuid!);
-          console.log(`[Bunny Sync] Video ${video.title} (${video.bunnyGuid}) has Bunny status: ${bunnyVideo.status}, encodeProgress: ${bunnyVideo.encodeProgress}`);
-          
-          // Bunny status: 4 = ready, 5 = failed processing, 6 = upload failed, 3 = transcoding, 1 = queued, 0 = created
-          if (bunnyVideo.status === 4 || bunnyVideo.encodeProgress === 100) {
-            await storage.updateVideo(video.id, { 
-              status: "ready",
-              duration: bunnyVideo.length,
-              fileSize: bunnyVideo.storageSize || video.fileSize,
-            });
-            updatedCount++;
-            console.log(`[Bunny Sync] Updated video ${video.id} to ready`);
-            
-            if (video.bunnyGuid) {
-              preGenerateMp3(video.id, video.bunnyGuid, video.title, true).catch(err => {
-                console.error(`[MP3] Background pre-generation failed for ${video.id}:`, err);
-              });
-            }
-          } else if (bunnyVideo.status === 5 || bunnyVideo.status === 6) {
-            // Delete failed videos from both Bunny and database
-            console.log(`[Bunny Sync] Deleting failed video: ${video.title} (${video.bunnyGuid}) status=${bunnyVideo.status}`);
-            await bunnyStream.deleteVideo(video.bunnyGuid!);
-            await storage.deleteVideo(video.id);
-            deletedFromDbCount++;
-            deletedFromBunnyCount++;
-          }
-        } catch (err) {
-          console.error(`[Bunny Sync] Failed to check video ${video.id}:`, err);
-        }
-      }
-
-      res.json({ 
-        message: `Found ${allBunnyVideos.length} videos in Bunny, imported ${importedCount} new, updated ${updatedCount} statuses, deleted ${deletedFromBunnyCount} failed`,
-        totalInBunny: allBunnyVideos.length,
-        alreadyImported: dbVideos.length,
-        newlyImported: importedCount,
-        statusesUpdated: updatedCount,
-        deletedFromBunny: deletedFromBunnyCount,
-        deletedFromDb: deletedFromDbCount
-      });
-    } catch (error: any) {
-      console.error("Bunny sync error:", error);
-      res.status(500).json({ message: error.message || "Failed to sync videos from Bunny" });
     }
   });
 
@@ -3736,143 +3226,6 @@ export async function registerRoutes(
     }
   });
 
-  // Admin: Migrate audio files from Bunny Storage to Object Storage (works in production)
-  app.post("/api/admin/migrate-audio-to-local", requireAdmin, async (req, res) => {
-    try {
-      const videos = await storage.getAllVideos();
-      const albums = await storage.getAllAlbums();
-      
-      // Find all audio files with bunnyStorageUrl that need migration to object storage
-      const bunnyAudioFiles = videos.filter(v => 
-        v.mediaType === "audio" && 
-        v.bunnyStorageUrl &&
-        !v.filepath?.startsWith("/objects/") // Not already in object storage
-      );
-      
-      // Find all album tracks on Bunny that need migration
-      let bunnyTracks: any[] = [];
-      for (const album of albums) {
-        const tracks = await storage.getAlbumTracks(album.id);
-        const tracksToMigrate = tracks.filter(t => 
-          t.bunnyStorageUrl && 
-          !t.filepath?.startsWith("/objects/") // Not already in object storage
-        );
-        bunnyTracks = [...bunnyTracks, ...tracksToMigrate];
-      }
-      
-      let migratedAudio = 0;
-      let migratedTracks = 0;
-      let errors = 0;
-      
-      // Get the private object dir for uploads
-      const privateObjectDir = process.env.PRIVATE_OBJECT_DIR || "";
-      if (!privateObjectDir) {
-        return res.status(500).json({ message: "Object storage not configured. Please set up object storage first." });
-      }
-      
-      const { bucketName, objectName: basePath } = (() => {
-        const pathParts = privateObjectDir.slice(1).split("/");
-        return {
-          bucketName: pathParts[0],
-          objectName: pathParts.slice(1).join("/"),
-        };
-      })();
-      
-      const bucket = objectStorageClient.bucket(bucketName);
-      
-      // Migrate audio files (videos with mediaType=audio)
-      for (const audio of bunnyAudioFiles) {
-        try {
-          console.log(`Migrating audio: ${audio.title} from ${audio.bunnyStorageUrl}`);
-          const response = await fetch(audio.bunnyStorageUrl!);
-          if (!response.ok) {
-            throw new Error(`Failed to download: ${response.status}`);
-          }
-          
-          const buffer = Buffer.from(await response.arrayBuffer());
-          const extension = path.extname(audio.filename || "file.mp3") || ".mp3";
-          const objectFilename = `audio/${Date.now()}-${Math.round(Math.random() * 1e9)}${extension}`;
-          const fullObjectName = `${basePath}/${objectFilename}`;
-          const objectPath = `/objects/${objectFilename}`;
-          
-          const objectFile = bucket.file(fullObjectName);
-          
-          await new Promise<void>((resolve, reject) => {
-            const writeStream = objectFile.createWriteStream({
-              resumable: false,
-              contentType: "audio/mpeg",
-            });
-            writeStream.on("error", reject);
-            writeStream.on("finish", resolve);
-            writeStream.end(buffer);
-          });
-          
-          await storage.updateVideo(audio.id, {
-            filepath: objectPath,
-            storageType: "object_storage",
-          });
-          
-          migratedAudio++;
-          console.log(`Migrated audio ${audio.id} to object storage: ${objectPath}`);
-        } catch (error) {
-          console.error(`Failed to migrate audio ${audio.id}:`, error);
-          errors++;
-        }
-      }
-      
-      // Migrate album tracks
-      for (const track of bunnyTracks) {
-        try {
-          console.log(`Migrating track: ${track.title} from ${track.bunnyStorageUrl}`);
-          const response = await fetch(track.bunnyStorageUrl);
-          if (!response.ok) {
-            throw new Error(`Failed to download: ${response.status}`);
-          }
-          
-          const buffer = Buffer.from(await response.arrayBuffer());
-          const extension = path.extname(track.filename || "track.mp3") || ".mp3";
-          const objectFilename = `tracks/${Date.now()}-${Math.round(Math.random() * 1e9)}${extension}`;
-          const fullObjectName = `${basePath}/${objectFilename}`;
-          const objectPath = `/objects/${objectFilename}`;
-          
-          const objectFile = bucket.file(fullObjectName);
-          
-          await new Promise<void>((resolve, reject) => {
-            const writeStream = objectFile.createWriteStream({
-              resumable: false,
-              contentType: "audio/mpeg",
-            });
-            writeStream.on("error", reject);
-            writeStream.on("finish", resolve);
-            writeStream.end(buffer);
-          });
-          
-          await storage.updateAlbumTrack(track.id, {
-            filepath: objectPath,
-          });
-          
-          migratedTracks++;
-          console.log(`Migrated track ${track.id} to object storage: ${objectPath}`);
-        } catch (error) {
-          console.error(`Failed to migrate track ${track.id}:`, error);
-          errors++;
-        }
-      }
-      
-      res.json({
-        message: `Migration complete: ${migratedAudio} audio files, ${migratedTracks} album tracks migrated to object storage, ${errors} errors`,
-        migratedAudio,
-        migratedTracks,
-        errors,
-        totalAudioToMigrate: bunnyAudioFiles.length,
-        totalTracksToMigrate: bunnyTracks.length,
-      });
-    } catch (error: any) {
-      console.error("Audio migration error:", error);
-      res.status(500).json({ message: error.message || "Failed to migrate audio files" });
-    }
-  });
-
   // Admin: Migrate RSS audio files from local filesystem to object storage
   app.post("/api/admin/migrate-rss-audio", requireAdmin, async (req, res) => {
     try {
@@ -4042,13 +3395,9 @@ export async function registerRoutes(
       const regenerate = req.query.regenerate === "true";
       let newThumbnailPath: string | null = null;
 
-      if (regenerate && video.status === "ready") {
+      if (regenerate && video.status === "ready" && video.filepath) {
         // Try to regenerate thumbnail from video source
-        if (video.bunnyGuid) {
-          newThumbnailPath = await generateThumbnailFromBunny(video.id, video.bunnyGuid, 5);
-        } else if (video.filepath) {
-          newThumbnailPath = await generateThumbnailFromLocalVideo(video.id, video.filepath, 5);
-        }
+        newThumbnailPath = await generateThumbnailFromLocalVideo(video.id, video.filepath, 5);
       }
 
       const updatedVideo = await storage.updateVideo(video.id, { thumbnailPath: newThumbnailPath });
@@ -4061,78 +3410,6 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Delete thumbnail error:", error);
       res.status(500).json({ message: "Failed to delete thumbnail" });
-    }
-  });
-
-  // Admin: Delete Bunny Stream video
-  app.delete("/api/admin/videos/:id/bunny", requireAdmin, async (req, res) => {
-    try {
-      const video = await storage.getVideo(req.params.id);
-      if (!video) {
-        return res.status(404).json({ message: "Video not found" });
-      }
-      
-      if (video.bunnyGuid) {
-        try {
-          await bunnyStream.deleteVideo(video.bunnyGuid);
-          console.log(`[Bunny Stream] Deleted video ${video.bunnyGuid} from Bunny`);
-        } catch (err) {
-          console.error(`[Bunny Stream] Failed to delete from Bunny:`, err);
-        }
-      }
-      
-      // Delete custom thumbnail if exists (cloud or local)
-      if (video.thumbnailPath) {
-        if (video.thumbnailPath.startsWith("/objects/")) {
-          try {
-            const thumbnailFile = await objectStorageService.getObjectEntityFile(video.thumbnailPath);
-            await thumbnailFile.delete();
-            console.log(`Deleted custom thumbnail for Bunny video ${req.params.id} from cloud storage`);
-          } catch (err) {
-            console.error(`Failed to delete thumbnail from cloud storage:`, err);
-          }
-        } else if (fs.existsSync(video.thumbnailPath)) {
-          fs.unlinkSync(video.thumbnailPath);
-          console.log(`Deleted custom thumbnail for Bunny video ${req.params.id} from local filesystem`);
-        }
-      }
-      
-      await storage.deleteVideo(req.params.id);
-      res.json({ success: true });
-    } catch (error) {
-      console.error("Delete Bunny video error:", error);
-      res.status(500).json({ message: "Failed to delete video" });
-    }
-  });
-
-  // Admin: Get Bunny library settings (domain restrictions)
-  app.get("/api/admin/bunny/settings", requireAdmin, async (req, res) => {
-    try {
-      const settings = await bunnyStream.getLibrarySettings();
-      res.json({
-        allowedReferrers: settings.AllowedReferrers || [],
-        blockedReferrers: settings.BlockedReferrers || [],
-      });
-    } catch (error: any) {
-      console.error("Get Bunny settings error:", error);
-      res.status(500).json({ message: error.message || "Failed to get Bunny settings" });
-    }
-  });
-
-  // Admin: Set allowed domains for video playback
-  app.post("/api/admin/bunny/allowed-domains", requireAdmin, async (req, res) => {
-    try {
-      const { domains } = req.body;
-      if (!Array.isArray(domains)) {
-        return res.status(400).json({ message: "Domains must be an array of strings" });
-      }
-      
-      await bunnyStream.setAllowedReferrers(domains);
-      console.log(`[Bunny Stream] Updated allowed domains:`, domains);
-      res.json({ success: true, domains });
-    } catch (error: any) {
-      console.error("Set Bunny allowed domains error:", error);
-      res.status(500).json({ message: error.message || "Failed to set allowed domains" });
     }
   });
 
@@ -4782,15 +4059,6 @@ export async function registerRoutes(
         });
       }
 
-      // If video is on Bunny Stream (legacy), redirect to embed endpoint
-      if (video.bunnyGuid) {
-        await storage.incrementVideoViewCount(video.id);
-        return res.json({ 
-          bunny: true, 
-          embedUrl: bunnyStream.getEmbedUrl(video.bunnyGuid) 
-        });
-      }
-
       // If audio is in object storage, serve from there (works in production)
       if (video.mediaType === "audio" && video.filepath?.startsWith("/objects/")) {
         await storage.incrementVideoViewCount(video.id);
@@ -4807,16 +4075,6 @@ export async function registerRoutes(
         return res.json({ 
           localAudio: true, 
           streamUrl: `/api/audio/${video.id}/stream`,
-          mediaType: video.mediaType,
-        });
-      }
-
-      // Fallback: If audio has bunnyStorageUrl, use Bunny CDN (for un-migrated files)
-      if (video.mediaType === "audio" && video.bunnyStorageUrl) {
-        await storage.incrementVideoViewCount(video.id);
-        return res.json({ 
-          bunnyStorage: true, 
-          cdnUrl: video.bunnyStorageUrl,
           mediaType: video.mediaType,
         });
       }
@@ -6710,28 +5968,15 @@ export async function registerRoutes(
         }
       }
 
-      // Delete track files from Bunny storage
+      // Delete track files from object storage
       const tracks = await storage.getAlbumTracks(album.id);
-      const bunnyStorageZone = process.env.BUNNY_STORAGE_ZONE;
-      const bunnyStoragePassword = process.env.BUNNY_STORAGE_PASSWORD;
-      if (bunnyStorageZone && bunnyStoragePassword) {
-        for (const track of tracks) {
-          if (track.bunnyStorageUrl) {
-            try {
-              const bunnyUrl = new URL(track.bunnyStorageUrl);
-              const filePath = bunnyUrl.pathname;
-              const deleteResponse = await fetch(`https://storage.bunnycdn.com/${bunnyStorageZone}${filePath}`, {
-                method: "DELETE",
-                headers: {
-                  "AccessKey": bunnyStoragePassword,
-                },
-              });
-              if (!deleteResponse.ok) {
-                console.warn(`Bunny track delete returned ${deleteResponse.status} for ${filePath}`);
-              }
-            } catch (err) {
-              console.error("Failed to delete track from Bunny:", err);
-            }
+      for (const track of tracks) {
+        if (track.filepath?.startsWith("/objects/")) {
+          try {
+            const trackFile = await objectStorageService.getObjectEntityFile(track.filepath);
+            await trackFile.delete();
+          } catch (err) {
+            console.error("Failed to delete track from object storage:", err);
           }
         }
       }
@@ -7066,11 +6311,6 @@ export async function registerRoutes(
         }
       }
 
-      // Fallback: Redirect to Bunny CDN URL for legacy tracks
-      if (track.bunnyStorageUrl) {
-        return res.redirect(track.bunnyStorageUrl);
-      }
-
       res.status(404).json({ message: "Track audio not available" });
     } catch (error) {
       console.error("Stream track error:", error);
@@ -7265,8 +6505,6 @@ export async function registerRoutes(
           mediaType: video.mediaType || "video",
           duration: video.duration || null,
           fileSize: video.fileSize || null,
-          bunnyGuid: video.bunnyGuid || null,
-          bunnyVideoId: video.bunnyVideoId || null,
           storageType: video.storageType || null,
           vimeoVideoId: video.vimeoVideoId || null,
         });

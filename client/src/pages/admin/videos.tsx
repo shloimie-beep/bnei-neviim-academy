@@ -154,9 +154,9 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
       return;
     }
     
-    // For videos, need vimeoVideoId. For audio, can have bunnyStorageUrl or filepath
+    // For videos, need vimeoVideoId. For audio, need filepath
     const canDownload = video.mediaType === "audio" 
-      ? (video.bunnyStorageUrl || video.filepath) 
+      ? video.filepath 
       : video.vimeoVideoId;
       
     if (!canDownload) {
@@ -987,74 +987,6 @@ export default function VideoManagement() {
       });
     } finally {
       setIsSyncing(false);
-    }
-  };
-
-  const handleExportCategories = async () => {
-    setIsExportingCategories(true);
-    try {
-      const res = await fetch("/api/admin/videos/export-categories", {
-        credentials: "include",
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.message || "Export failed");
-      }
-      const data = await res.json();
-      
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `category-assignments-${new Date().toISOString().split("T")[0]}.json`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-      
-      toast({ 
-        title: "Categories exported", 
-        description: `Exported ${data.totalAssignments} category assignments` 
-      });
-    } catch (error: any) {
-      toast({ 
-        title: "Export failed", 
-        description: error.message, 
-        variant: "destructive" 
-      });
-    } finally {
-      setIsExportingCategories(false);
-    }
-  };
-
-  const handleApplyCategories = async (file: File) => {
-    setIsApplyingCategories(true);
-    try {
-      const text = await file.text();
-      const data = JSON.parse(text);
-      
-      const res = await fetch("/api/admin/videos/apply-categories", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify(data),
-      });
-      if (!res.ok) {
-        const err = await res.json();
-        throw new Error(err.message || "Apply failed");
-      }
-      const result = await res.json();
-      queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
-      toast({ 
-        title: "Categories applied", 
-        description: result.message 
-      });
-    } catch (error: any) {
-      toast({ 
-        title: "Apply failed", 
-        description: error.message, 
-        variant: "destructive" 
-      });
     }
   };
 
@@ -2196,60 +2128,6 @@ export default function VideoManagement() {
           )}
         </div>
       ) : null}
-
-      {/* Fix Vimeo Progress Dialog */}
-      <Dialog open={showFixProgress} onOpenChange={setShowFixProgress}>
-        <DialogContent className="max-w-lg max-h-[80vh] overflow-hidden flex flex-col">
-          <DialogHeader>
-            <DialogTitle>Fixing Vimeo Videos</DialogTitle>
-            <DialogDescription>
-              {fixProgress ? `Processing ${fixProgress.current} of ${fixProgress.total} videos` : 'Starting...'}
-            </DialogDescription>
-          </DialogHeader>
-          <div className="flex-1 overflow-auto space-y-3">
-            {fixProgress && (
-              <>
-                <div className="p-3 bg-muted rounded-lg">
-                  <div className="flex items-center gap-2">
-                    {fixProgress.status === 'processing' ? (
-                      <Loader2 className="h-4 w-4 animate-spin text-blue-500" />
-                    ) : fixProgress.status === 'success' ? (
-                      <div className="h-4 w-4 rounded-full bg-green-500" />
-                    ) : (
-                      <div className="h-4 w-4 rounded-full bg-red-500" />
-                    )}
-                    <span className="font-medium truncate">{fixProgress.videoTitle}</span>
-                  </div>
-                </div>
-                <div className="space-y-1 max-h-60 overflow-auto">
-                  {fixProgress.logs.slice().reverse().map((log, i) => (
-                    <div key={i} className="flex items-center gap-2 text-sm py-1 px-2 rounded hover:bg-muted/50">
-                      {log.status === 'success' ? (
-                        <div className="h-2 w-2 rounded-full bg-green-500 shrink-0" />
-                      ) : (
-                        <div className="h-2 w-2 rounded-full bg-red-500 shrink-0" />
-                      )}
-                      <span className="truncate flex-1">{log.title}</span>
-                      <span className={log.status === 'success' ? 'text-green-600' : 'text-red-600'}>
-                        {log.status === 'success' ? 'Done' : 'Failed'}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
-          <DialogFooter>
-            <Button 
-              variant="outline" 
-              onClick={() => setShowFixProgress(false)}
-              disabled={isFixing}
-            >
-              {isFixing ? 'Processing...' : 'Close'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

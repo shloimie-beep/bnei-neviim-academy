@@ -339,11 +339,11 @@ function AlbumCard({ album, onDelete, onUpdate, onRefresh }: {
                         <p className="font-medium truncate">{track.title}</p>
                         <p className="text-xs text-muted-foreground truncate">{track.filename}</p>
                       </div>
-                      {track.bunnyStorageUrl && (
+                      {track.filepath && (
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => window.open(track.bunnyStorageUrl!, "_blank")}
+                          onClick={() => window.open(`/api/albums/${album.id}/tracks/${track.id}/stream`, "_blank")}
                           title="Play"
                           data-testid={`button-play-track-${track.id}`}
                         >
