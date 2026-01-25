@@ -1976,6 +1976,7 @@ export default function VideoManagement() {
                 const res = await fetch(`/api/admin/videos/${video.id}/thumbnail`, {
                   method: "POST",
                   body: formData,
+                  credentials: "include",
                 });
                 if (!res.ok) throw new Error("Failed to upload thumbnail");
                 queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
@@ -1983,6 +1984,7 @@ export default function VideoManagement() {
               onResetThumbnail={async (regenerate) => {
                 const res = await fetch(`/api/admin/videos/${video.id}/thumbnail?regenerate=${regenerate}`, {
                   method: "DELETE",
+                  credentials: "include",
                 });
                 if (!res.ok) throw new Error("Failed to reset thumbnail");
                 queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
@@ -1990,6 +1992,7 @@ export default function VideoManagement() {
               onRefreshStatus={async () => {
                 const res = await fetch(`/api/admin/videos/${video.id}/refresh-status`, {
                   method: "POST",
+                  credentials: "include",
                 });
                 if (!res.ok) {
                   const err = await res.json();
@@ -2096,6 +2099,7 @@ export default function VideoManagement() {
                                             const res = await fetch(`/api/admin/videos/${video.id}/thumbnail`, {
                                               method: "POST",
                                               body: formData,
+                                              credentials: "include",
                                             });
                                             if (!res.ok) throw new Error("Failed to upload thumbnail");
                                             queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
@@ -2103,6 +2107,7 @@ export default function VideoManagement() {
                                           onResetThumbnail={async (regenerate) => {
                                             const res = await fetch(`/api/admin/videos/${video.id}/thumbnail?regenerate=${regenerate}`, {
                                               method: "DELETE",
+                                              credentials: "include",
                                             });
                                             if (!res.ok) throw new Error("Failed to reset thumbnail");
                                             queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
@@ -2110,6 +2115,7 @@ export default function VideoManagement() {
                                           onRefreshStatus={async () => {
                                             const res = await fetch(`/api/admin/videos/${video.id}/refresh-status`, {
                                               method: "POST",
+                                              credentials: "include",
                                             });
                                             if (!res.ok) {
                                               const err = await res.json();
@@ -2140,6 +2146,7 @@ export default function VideoManagement() {
                                 const res = await fetch(`/api/admin/videos/${video.id}/thumbnail`, {
                                   method: "POST",
                                   body: formData,
+                                  credentials: "include",
                                 });
                                 if (!res.ok) throw new Error("Failed to upload thumbnail");
                                 queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
@@ -2147,6 +2154,7 @@ export default function VideoManagement() {
                               onResetThumbnail={async (regenerate) => {
                                 const res = await fetch(`/api/admin/videos/${video.id}/thumbnail?regenerate=${regenerate}`, {
                                   method: "DELETE",
+                                  credentials: "include",
                                 });
                                 if (!res.ok) throw new Error("Failed to reset thumbnail");
                                 queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
@@ -2154,6 +2162,7 @@ export default function VideoManagement() {
                               onRefreshStatus={async () => {
                                 const res = await fetch(`/api/admin/videos/${video.id}/refresh-status`, {
                                   method: "POST",
+                                  credentials: "include",
                                 });
                                 if (!res.ok) {
                                   const err = await res.json();
@@ -2215,6 +2224,7 @@ export default function VideoManagement() {
                           const res = await fetch(`/api/admin/videos/${video.id}/thumbnail`, {
                             method: "POST",
                             body: formData,
+                            credentials: "include",
                           });
                           if (!res.ok) throw new Error("Failed to upload thumbnail");
                           queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
@@ -2222,6 +2232,7 @@ export default function VideoManagement() {
                         onResetThumbnail={async (regenerate) => {
                           const res = await fetch(`/api/admin/videos/${video.id}/thumbnail?regenerate=${regenerate}`, {
                             method: "DELETE",
+                            credentials: "include",
                           });
                           if (!res.ok) throw new Error("Failed to reset thumbnail");
                           queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
@@ -2229,6 +2240,7 @@ export default function VideoManagement() {
                         onRefreshStatus={async () => {
                           const res = await fetch(`/api/admin/videos/${video.id}/refresh-status`, {
                             method: "POST",
+                            credentials: "include",
                           });
                           if (!res.ok) {
                             const err = await res.json();

@@ -75,6 +75,7 @@ function AlbumCard({ album, onDelete, onUpdate, onRefresh }: {
       const res = await fetch(`/api/admin/albums/${album.id}/thumbnail`, {
         method: "POST",
         body: formData,
+        credentials: "include",
       });
       if (!res.ok) throw new Error("Failed to upload thumbnail");
       toast({ title: "Thumbnail uploaded" });
