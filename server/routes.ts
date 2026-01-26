@@ -2363,9 +2363,12 @@ export async function registerRoutes(
                 console.error(`[Vimeo] Failed to get embed URL for ${video.id}:`, embedErr);
               }
               
-              // Parse Vimeo's created_time (ISO 8601 format)
+              // Parse Vimeo's modified_time (ISO 8601 format) - use modified instead of created for "recent" sorting
               let vimeoCreatedAt: Date | null = null;
-              if (vimeoVideo.created_time) {
+              if (vimeoVideo.modified_time) {
+                vimeoCreatedAt = new Date(vimeoVideo.modified_time);
+                console.log(`[Vimeo] Video ${video.id} modified at: ${vimeoCreatedAt.toISOString()}`);
+              } else if (vimeoVideo.created_time) {
                 vimeoCreatedAt = new Date(vimeoVideo.created_time);
                 console.log(`[Vimeo] Video ${video.id} created at: ${vimeoCreatedAt.toISOString()}`);
               }
@@ -2413,8 +2416,10 @@ export async function registerRoutes(
       for (const video of vimeoVideos) {
         try {
           const vimeoData = await vimeoService.getVideo(video.vimeoVideoId!);
-          if (vimeoData?.created_time) {
-            const vimeoCreatedAt = new Date(vimeoData.created_time);
+          // Use modified_time for "recent" sorting, fallback to created_time
+          const timestamp = vimeoData?.modified_time || vimeoData?.created_time;
+          if (timestamp) {
+            const vimeoCreatedAt = new Date(timestamp);
             await storage.updateVideo(video.id, { vimeoCreatedAt });
             console.log(`[Vimeo] Updated timestamp for video ${video.id}: ${vimeoCreatedAt.toISOString()}`);
             updated++;

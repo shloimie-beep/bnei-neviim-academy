@@ -20,6 +20,7 @@ interface VimeoVideo {
   status: string;
   duration: number;
   created_time?: string; // ISO 8601 timestamp of when video was uploaded to Vimeo
+  modified_time?: string; // ISO 8601 timestamp of when video was last modified on Vimeo
   pictures?: {
     base_link: string;
     sizes?: Array<{ width: number; height: number; link: string }>;
@@ -350,7 +351,7 @@ class VimeoService {
     try {
       // Use customer token (admin API key) for full access to video info including hashes
       const token = this.getUploadToken() || await this.getAccessToken();
-      const response = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}?fields=uri,name,link,status,duration,pictures,player_embed_url,privacy,embed,created_time`, {
+      const response = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}?fields=uri,name,link,status,duration,pictures,player_embed_url,privacy,embed,created_time,modified_time`, {
         headers: {
           "Authorization": `Bearer ${token}`,
           "Accept": "application/vnd.vimeo.*+json;version=3.4",
