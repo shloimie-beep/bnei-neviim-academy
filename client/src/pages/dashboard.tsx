@@ -1170,13 +1170,16 @@ export default function DashboardPage() {
     return isRecent && !hasViewed;
   };
 
-  // Get 10 most recent videos for the Recent section
+  // Get 10 most recent videos for the Recent section (sorted by Vimeo upload time)
   const recentVideos = useMemo(() => {
     if (!videos) return [];
     return [...videos]
       .sort((a, b) => {
-        const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
-        const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
+        // Use Vimeo's upload timestamp if available, fallback to server createdAt
+        const dateA = (a as any).vimeoCreatedAt ? new Date((a as any).vimeoCreatedAt).getTime() : 
+                      (a.createdAt ? new Date(a.createdAt).getTime() : 0);
+        const dateB = (b as any).vimeoCreatedAt ? new Date((b as any).vimeoCreatedAt).getTime() : 
+                      (b.createdAt ? new Date(b.createdAt).getTime() : 0);
         return dateB - dateA;
       })
       .slice(0, 10);

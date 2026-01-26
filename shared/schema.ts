@@ -172,6 +172,7 @@ export const videos = pgTable("videos", {
   bunnyStorageUrl: text("bunny_storage_url"),
   vimeoVideoId: text("vimeo_video_id"),
   vimeoEmbedUrl: text("vimeo_embed_url"), // Stores the player embed URL with hash for private videos
+  vimeoCreatedAt: timestamp("vimeo_created_at"), // Vimeo's upload timestamp for sorting "Recent" videos
 });
 
 // PDF documents for subscriber content

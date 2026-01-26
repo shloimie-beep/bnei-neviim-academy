@@ -2363,11 +2363,19 @@ export async function registerRoutes(
                 console.error(`[Vimeo] Failed to get embed URL for ${video.id}:`, embedErr);
               }
               
+              // Parse Vimeo's created_time (ISO 8601 format)
+              let vimeoCreatedAt: Date | null = null;
+              if (vimeoVideo.created_time) {
+                vimeoCreatedAt = new Date(vimeoVideo.created_time);
+                console.log(`[Vimeo] Video ${video.id} created at: ${vimeoCreatedAt.toISOString()}`);
+              }
+              
               await storage.updateVideo(video.id, { 
                 status: "ready",
                 duration: vimeoVideo.duration || 0,
                 thumbnailPath,
                 vimeoEmbedUrl,
+                vimeoCreatedAt,
               });
               console.log(`[Vimeo] Video ${video.id} is ready with embedUrl: ${vimeoEmbedUrl}`);
               break;
@@ -2389,6 +2397,47 @@ export async function registerRoutes(
     } catch (error: any) {
       console.error("Vimeo finalize video error:", error);
       res.status(500).json({ message: error.message || "Failed to finalize video" });
+    }
+  });
+
+  // Admin: Sync Vimeo timestamps for all existing videos (backfill vimeoCreatedAt)
+  app.post("/api/admin/videos/sync-vimeo-timestamps", requireAdmin, async (req, res) => {
+    try {
+      console.log("[Vimeo] Starting timestamp sync for all videos...");
+      const allVideos = await storage.getAllVideos();
+      const vimeoVideos = allVideos.filter((v: any) => v.vimeoVideoId && v.storageType === "vimeo");
+      
+      let updated = 0;
+      let failed = 0;
+      
+      for (const video of vimeoVideos) {
+        try {
+          const vimeoData = await vimeoService.getVideo(video.vimeoVideoId!);
+          if (vimeoData?.created_time) {
+            const vimeoCreatedAt = new Date(vimeoData.created_time);
+            await storage.updateVideo(video.id, { vimeoCreatedAt });
+            console.log(`[Vimeo] Updated timestamp for video ${video.id}: ${vimeoCreatedAt.toISOString()}`);
+            updated++;
+          }
+        } catch (err) {
+          console.error(`[Vimeo] Failed to sync timestamp for video ${video.id}:`, err);
+          failed++;
+        }
+        // Small delay to avoid rate limiting
+        await new Promise(r => setTimeout(r, 200));
+      }
+      
+      console.log(`[Vimeo] Timestamp sync complete: ${updated} updated, ${failed} failed`);
+      res.json({ 
+        success: true, 
+        message: `Synced ${updated} videos, ${failed} failed`,
+        updated,
+        failed,
+        total: vimeoVideos.length
+      });
+    } catch (error: any) {
+      console.error("Vimeo timestamp sync error:", error);
+      res.status(500).json({ message: error.message || "Failed to sync timestamps" });
     }
   });
 
