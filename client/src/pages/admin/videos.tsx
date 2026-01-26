@@ -522,6 +522,7 @@ export default function VideoManagement() {
   
   // Vimeo sync state
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isSyncingTimestamps, setIsSyncingTimestamps] = useState(false);
   
   // Fuzzy search helper - normalizes and checks if search terms appear in text
   const fuzzyMatch = (text: string, query: string): boolean => {
@@ -1052,12 +1053,41 @@ export default function VideoManagement() {
       });
     } catch (error: any) {
       toast({ 
-        title: "Sync failed", 
+        title: "Sync failed",
         description: error.message, 
         variant: "destructive" 
       });
     } finally {
       setIsSyncing(false);
+    }
+  };
+
+  const handleSyncTimestamps = async () => {
+    setIsSyncingTimestamps(true);
+    try {
+      const res = await fetch("/api/admin/videos/sync-vimeo-timestamps", {
+        method: "POST",
+        credentials: "include",
+        headers: getAuthHeaders(),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.message || "Sync failed");
+      }
+      const result = await res.json();
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+      toast({ 
+        title: "Timestamps synced", 
+        description: result.message 
+      });
+    } catch (error: any) {
+      toast({ 
+        title: "Sync failed",
+        description: error.message, 
+        variant: "destructive" 
+      });
+    } finally {
+      setIsSyncingTimestamps(false);
     }
   };
 
@@ -1273,6 +1303,19 @@ export default function VideoManagement() {
               <RefreshCw className="h-4 w-4 mr-2" />
             )}
             Sync from Vimeo
+          </Button>
+          <Button 
+            variant="outline" 
+            onClick={handleSyncTimestamps} 
+            disabled={isSyncingTimestamps}
+            data-testid="button-sync-timestamps"
+          >
+            {isSyncingTimestamps ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4 mr-2" />
+            )}
+            Sync Timestamps
           </Button>
           <Dialog open={isSingleDialogOpen} onOpenChange={setIsSingleDialogOpen}>
             <DialogTrigger asChild>
