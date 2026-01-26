@@ -6108,7 +6108,7 @@ export async function registerRoutes(
     }
   });
 
-  // Admin: Add track to album (upload audio to local storage with permanent URLs)
+  // Admin: Add track to album (upload audio to Object Storage with permanent URLs)
   app.post("/api/admin/albums/:id/tracks", requireAdmin, upload.single("audio"), async (req, res) => {
     try {
       if (!req.file) {
@@ -6131,19 +6131,47 @@ export async function registerRoutes(
         title = path.basename(originalName, path.extname(originalName));
       }
 
-      // Store track file locally with permanent URL
       const nextTrackNumber = await storage.getNextTrackNumber(album.id);
+
+      // Upload to Object Storage for permanent URL
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
+      
+      const url = new URL(uploadURL);
+      const pathParts = url.pathname.slice(1).split("/");
+      const bucketName = pathParts[0];
+      const objectName = pathParts.slice(1).join("/");
+      
+      const bucket = objectStorageClient.bucket(bucketName);
+      const audioFile = bucket.file(objectName);
+      
+      await new Promise<void>((resolve, reject) => {
+        const readStream = fs.createReadStream(req.file!.path);
+        const writeStream = audioFile.createWriteStream({
+          resumable: false,
+          contentType: req.file!.mimetype || "audio/mpeg",
+        });
+        readStream.on("error", reject);
+        writeStream.on("error", reject);
+        writeStream.on("finish", resolve);
+        readStream.pipe(writeStream);
+      });
+
+      // Delete temporary local file
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
 
       const track = await storage.createAlbumTrack({
         albumId: album.id,
         title,
         trackNumber: nextTrackNumber,
         filename: req.file.originalname,
-        filepath: req.file.path,
+        filepath: objectPath,
         fileSize: req.file.size,
       });
 
-      console.log(`Album track ${track.id} saved locally with permanent URL: ${req.file.path}`);
+      console.log(`Album track ${track.id} uploaded to Object Storage with permanent URL: ${objectPath}`);
       res.json(track);
     } catch (error) {
       console.error("Add album track error:", error);
@@ -6319,7 +6347,28 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Track not found" });
       }
 
-      // Serve from local storage (permanent URL)
+      // Serve from Object Storage (permanent URL)
+      if (track.filepath?.startsWith("/objects/")) {
+        try {
+          const objectFile = await objectStorageService.getObjectEntityFile(track.filepath);
+          const [metadata] = await objectFile.getMetadata();
+          
+          res.set({
+            "Content-Type": metadata.contentType || "audio/mpeg",
+            "Content-Length": metadata.size,
+            "Accept-Ranges": "bytes",
+            "Cache-Control": "public, max-age=31536000",
+          });
+          
+          objectFile.createReadStream().pipe(res);
+          return;
+        } catch (err) {
+          console.error(`Failed to stream track from Object Storage:`, err);
+          return res.status(404).json({ message: "Track audio not found in storage" });
+        }
+      }
+      
+      // Fallback: Serve from local storage (for legacy tracks)
       if (track.filepath && fs.existsSync(track.filepath)) {
         const stat = fs.statSync(track.filepath);
         const fileSize = stat.size;

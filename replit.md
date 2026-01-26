@@ -81,10 +81,10 @@ The backend handles user authentication, subscription management, phone number r
 - **Display**: Albums appear in their own dedicated "Albums" section in the customer portal (not mixed with video categories)
 - **Database Tables**:
   - `albums` - Album metadata (title, description, thumbnail, status)
-  - `albumTracks` - Individual audio tracks with track numbers and Bunny CDN storage
+  - `albumTracks` - Individual audio tracks with track numbers and Object Storage
 - **Storage**:
-  - Album thumbnails: Object storage (uploaded by hovering over album image)
-  - Audio tracks: Bunny CDN at `album-tracks/{albumId}/{timestamp}.mp3`
+  - Album thumbnails: Replit Object Storage (uploaded by hovering over album image)
+  - Audio tracks: Replit Object Storage with permanent URLs (never expire or change)
 - **Admin Endpoints**:
   - `GET/POST /api/admin/albums` - List and create albums
   - `PATCH/DELETE /api/admin/albums/:id` - Update and delete albums
@@ -95,7 +95,7 @@ The backend handles user authentication, subscription management, phone number r
   - `GET /api/albums` - List published albums with track counts
   - `GET /api/albums/:id` - Get album with all tracks
   - `GET /api/albums/:id/thumbnail` - Stream album cover image
-  - `GET /api/albums/:albumId/tracks/:trackId/stream` - Stream track audio (redirects to Bunny CDN)
+  - `GET /api/albums/:albumId/tracks/:trackId/stream` - Stream track audio from Object Storage
 - **Key Files**:
   - `client/src/pages/admin/albums.tsx` - Admin album management UI
   - Album schema in `shared/schema.ts` with CASCADE delete for tracks
@@ -133,7 +133,7 @@ The backend handles user authentication, subscription management, phone number r
   - `conferenceParticipants` - Call participants tracking
   - `callLogs` - Call history and analytics
   - `albums` - Audio albums with metadata and thumbnails
-  - `albumTracks` - Individual tracks within albums (Bunny CDN storage)
+  - `albumTracks` - Individual tracks within albums (Object Storage)
 
 ### Authentication & Authorization
 - **Web (Browser)**: Session-based authentication stored in PostgreSQL
