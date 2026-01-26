@@ -675,6 +675,21 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteVideoCategory(id: string): Promise<void> {
+    // First, nullify categoryId for all videos in this category
+    await db.update(videos).set({ categoryId: null }).where(eq(videos.categoryId, id));
+    await db.update(documents).set({ categoryId: null }).where(eq(documents.categoryId, id));
+    await db.update(albums).set({ categoryId: null }).where(eq(albums.categoryId, id));
+    
+    // Find and delete subcategories (and nullify their videos first)
+    const subcategories = await db.select().from(videoCategories).where(eq(videoCategories.parentCategoryId, id));
+    for (const sub of subcategories) {
+      await db.update(videos).set({ categoryId: null }).where(eq(videos.categoryId, sub.id));
+      await db.update(documents).set({ categoryId: null }).where(eq(documents.categoryId, sub.id));
+      await db.update(albums).set({ categoryId: null }).where(eq(albums.categoryId, sub.id));
+      await db.delete(videoCategories).where(eq(videoCategories.id, sub.id));
+    }
+    
+    // Finally delete the category
     await db.delete(videoCategories).where(eq(videoCategories.id, id));
   }
 
