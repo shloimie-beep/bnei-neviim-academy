@@ -514,17 +514,16 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
           <DialogHeader>
             <DialogTitle>Upload to Hotline</DialogTitle>
             <DialogDescription>
-              Convert "{video.title}" to audio and upload to the hotline RSS feed. Select a folder or leave empty for no folder.
+              Convert "{video.title}" to audio and upload to the hotline RSS feed. You must select a folder.
             </DialogDescription>
           </DialogHeader>
           <div className="py-4">
-            <Label htmlFor="hotline-folder">Folder (optional)</Label>
+            <Label htmlFor="hotline-folder">Folder (required)</Label>
             <Select value={selectedHotlineFolderId || "none"} onValueChange={(val) => setSelectedHotlineFolderId(val === "none" ? "" : val)}>
               <SelectTrigger id="hotline-folder" data-testid="select-hotline-folder">
-                <SelectValue placeholder="No folder (root level)" />
+                <SelectValue placeholder="Select a folder" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">No folder (root level)</SelectItem>
                 {rssFolders.map((folder) => (
                   <SelectItem key={folder.id} value={folder.id}>
                     {folder.name}
@@ -532,12 +531,19 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
                 ))}
               </SelectContent>
             </Select>
+            {rssFolders.length === 0 && (
+              <p className="text-sm text-muted-foreground mt-2">No folders available. Create a folder in the Hotline section first.</p>
+            )}
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowHotlineDialog(false)} data-testid="button-cancel-hotline">
               Cancel
             </Button>
-            <Button onClick={handleUploadToHotline} data-testid="button-confirm-hotline">
+            <Button 
+              onClick={handleUploadToHotline} 
+              disabled={!selectedHotlineFolderId || rssFolders.length === 0}
+              data-testid="button-confirm-hotline"
+            >
               <Phone className="h-4 w-4 mr-2" />
               Upload to Hotline
             </Button>
