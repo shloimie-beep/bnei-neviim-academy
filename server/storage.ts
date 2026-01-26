@@ -859,9 +859,6 @@ export class DatabaseStorage implements IStorage {
   }
 
   async deleteAlbum(id: string): Promise<void> {
-    // Manually delete tracks first (in case CASCADE isn't set up in production DB)
-    await db.delete(albumTracks).where(eq(albumTracks.albumId, id));
-    // Then delete the album
     await db.delete(albums).where(eq(albums.id, id));
   }
 
