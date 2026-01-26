@@ -519,12 +519,12 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
           </DialogHeader>
           <div className="py-4">
             <Label htmlFor="hotline-folder">Folder (optional)</Label>
-            <Select value={selectedHotlineFolderId} onValueChange={setSelectedHotlineFolderId}>
+            <Select value={selectedHotlineFolderId || "none"} onValueChange={(val) => setSelectedHotlineFolderId(val === "none" ? "" : val)}>
               <SelectTrigger id="hotline-folder" data-testid="select-hotline-folder">
                 <SelectValue placeholder="No folder (root level)" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">No folder (root level)</SelectItem>
+                <SelectItem value="none">No folder (root level)</SelectItem>
                 {rssFolders.map((folder) => (
                   <SelectItem key={folder.id} value={folder.id}>
                     {folder.name}
