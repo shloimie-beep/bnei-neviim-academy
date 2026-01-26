@@ -236,17 +236,6 @@ function TestimonialCarousel() {
 export default function LandingPage() {
   return (
     <div className="min-h-screen bg-[#161616]">
-      <div className="bg-[#08779C] py-2 text-center">
-        <Link href="/gadlus-haadam">
-          <span 
-            className="text-white text-sm font-medium hover:underline cursor-pointer"
-            data-testid="link-promo-banner"
-          >
-            Check out our Gadlus Ha'Adam Skills → GROUPS FORMING NOW IN LAKEWOOD
-          </span>
-        </Link>
-      </div>
-
       <header className="sticky top-0 z-50 bg-[#161616]/95 backdrop-blur border-b border-white/10">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-6">
