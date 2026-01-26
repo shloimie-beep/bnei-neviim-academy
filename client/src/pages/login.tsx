@@ -131,23 +131,13 @@ export default function LoginPage() {
             <Link href="/forgot-password" className="text-sm text-muted-foreground hover:underline" data-testid="link-forgot-password">
               Forgot your password?
             </Link>
-            <div className="text-sm text-center text-muted-foreground">
-              Don't have an account?{" "}
-              <Link href="/register" className="text-primary hover:underline" data-testid="link-register">
-                Sign up
+            <div className="w-full pt-4 border-t text-center">
+              <p className="text-sm text-muted-foreground mb-3">Don't have an account?</p>
+              <Link href="/register">
+                <Button variant="outline" className="w-full" data-testid="link-register">
+                  Sign Up
+                </Button>
               </Link>
-            </div>
-            <div className="mt-4 p-4 bg-muted rounded-lg text-center">
-              <p className="font-medium text-foreground">Looking for The Academy Login?</p>
-              <a 
-                href="https://academy.onetimeonetime.com/login" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="inline-block mt-2 text-primary font-semibold hover:underline"
-                data-testid="link-academy-login"
-              >
-                Click here to access the old Academy
-              </a>
             </div>
           </CardFooter>
         </Card>
