@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw, Download, GripVertical, ChevronDown, ChevronRight, Folder, FolderOpen, ImageIcon } from "lucide-react";
+import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw, Download, GripVertical, ChevronDown, ChevronRight, Folder, FolderOpen, ImageIcon, Phone } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import * as tus from "tus-js-client";
 import { Button } from "@/components/ui/button";
@@ -42,6 +42,9 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
   const [isResettingThumbnail, setIsResettingThumbnail] = useState(false);
   const [isRefreshingStatus, setIsRefreshingStatus] = useState(false);
   const [isDownloadingMp3, setIsDownloadingMp3] = useState(false);
+  const [isUploadingToHotline, setIsUploadingToHotline] = useState(false);
+  const [showHotlineDialog, setShowHotlineDialog] = useState(false);
+  const [selectedHotlineFolderId, setSelectedHotlineFolderId] = useState<string>("");
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [editTitle, setEditTitle] = useState(video.title);
   const [editDescription, setEditDescription] = useState(video.description || "");
@@ -55,6 +58,12 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
   const [thumbnailError, setThumbnailError] = useState(false);
   
   const categoryName = categories.find(c => c.id === video.categoryId)?.name;
+
+  // Fetch RSS folders for hotline upload dialog
+  const { data: rssFolders = [] } = useQuery<{ id: string; name: string; description?: string }[]>({
+    queryKey: ["/api/admin/rss-folders"],
+    enabled: showHotlineDialog,
+  });
 
   // Convert Vimeo thumbnail URL to use smaller size for faster loading
   const getSmallThumbnail = (url: string) => {
@@ -192,6 +201,38 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
       toast({ title: "Download failed", description: error.message, variant: "destructive" });
     } finally {
       setIsDownloadingMp3(false);
+    }
+  };
+
+  const handleUploadToHotline = async () => {
+    if (video.status !== "ready" || !video.vimeoVideoId) {
+      toast({ title: "Video not ready for upload", variant: "destructive" });
+      return;
+    }
+    
+    setIsUploadingToHotline(true);
+    setShowHotlineDialog(false);
+    toast({ title: "Uploading to hotline...", description: "Converting video to audio. This may take a moment." });
+    
+    try {
+      const response = await fetch(`/api/admin/videos/${video.id}/upload-to-hotline`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ folderId: selectedHotlineFolderId || null }),
+      });
+      
+      if (!response.ok) {
+        const err = await response.json();
+        throw new Error(err.message || "Upload failed");
+      }
+      
+      toast({ title: "Uploaded to hotline!", description: "Audio is now available in the RSS feed." });
+      setSelectedHotlineFolderId("");
+    } catch (error: any) {
+      toast({ title: "Upload failed", description: error.message, variant: "destructive" });
+    } finally {
+      setIsUploadingToHotline(false);
     }
   };
 
@@ -376,6 +417,22 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
                   {video.createdAt ? new Date(video.createdAt).toLocaleDateString() : "Unknown date"}
                 </span>
                 <div className="flex gap-1 ml-auto">
+                  {video.status === "ready" && video.vimeoVideoId && video.mediaType !== "audio" && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => setShowHotlineDialog(true)}
+                      disabled={isUploadingToHotline}
+                      title="Upload to Hotline"
+                      data-testid={`button-upload-hotline-${video.id}`}
+                    >
+                      {isUploadingToHotline ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <Phone className="h-4 w-4" />
+                      )}
+                    </Button>
+                  )}
                   {video.status === "ready" && (
                     (video.vimeoVideoId || video.mediaType === "audio") && (
                       <Button
@@ -451,6 +508,42 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      
+      <Dialog open={showHotlineDialog} onOpenChange={setShowHotlineDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Upload to Hotline</DialogTitle>
+            <DialogDescription>
+              Convert "{video.title}" to audio and upload to the hotline RSS feed. Select a folder or leave empty for no folder.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="py-4">
+            <Label htmlFor="hotline-folder">Folder (optional)</Label>
+            <Select value={selectedHotlineFolderId} onValueChange={setSelectedHotlineFolderId}>
+              <SelectTrigger id="hotline-folder" data-testid="select-hotline-folder">
+                <SelectValue placeholder="No folder (root level)" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="">No folder (root level)</SelectItem>
+                {rssFolders.map((folder) => (
+                  <SelectItem key={folder.id} value={folder.id}>
+                    {folder.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowHotlineDialog(false)} data-testid="button-cancel-hotline">
+              Cancel
+            </Button>
+            <Button onClick={handleUploadToHotline} data-testid="button-confirm-hotline">
+              <Phone className="h-4 w-4 mr-2" />
+              Upload to Hotline
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </Card>
   );
 }

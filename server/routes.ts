@@ -2984,6 +2984,89 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Convert video to MP3 and upload directly to hotline (RSS feed)
+  app.post("/api/admin/videos/:id/upload-to-hotline", requireAdmin, async (req, res) => {
+    let tempMp3Path: string | null = null;
+    
+    try {
+      const { folderId } = req.body;
+      
+      const video = await storage.getVideo(req.params.id);
+      if (!video) {
+        return res.status(404).json({ message: "Media not found" });
+      }
+
+      if (video.status !== "ready") {
+        return res.status(400).json({ message: "Media must be fully processed before upload" });
+      }
+
+      if (!video.vimeoVideoId) {
+        return res.status(400).json({ message: "Video does not have a streamable source (Vimeo)" });
+      }
+      
+      // Validate folder if provided
+      if (folderId) {
+        const folder = await storage.getRssFolder(folderId);
+        if (!folder) {
+          return res.status(404).json({ message: "Selected folder not found" });
+        }
+      }
+
+      console.log(`[Hotline Upload] Converting video ${video.id} to MP3 for hotline...`);
+      
+      // Convert to 64kbps mono MP3 (reuse existing conversion logic)
+      const mp3Path = await getOrCreateVimeoMp3(video.id, video.vimeoVideoId, video.title);
+      tempMp3Path = mp3Path;
+      
+      // Read the converted MP3 file
+      const mp3Buffer = fs.readFileSync(mp3Path);
+      
+      // Generate unique filename for hotline
+      const safeTitle = video.title.replace(/[^a-zA-Z0-9\s_-]/g, "").substring(0, 50) || "audio";
+      const outputFilename = `${Date.now()}_${safeTitle}.mp3`;
+      
+      // Upload to Object Storage for RSS feed
+      const objectStoragePath = `/objects/.private/rss-audio/${outputFilename}`;
+      await objectStorageService.uploadBuffer(objectStoragePath, mp3Buffer, "audio/mpeg");
+      
+      // Get audio duration using ffprobe
+      let duration = 0;
+      try {
+        const { execSync } = require("child_process");
+        const durationOutput = execSync(
+          `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${mp3Path}"`,
+          { encoding: "utf-8" }
+        );
+        duration = Math.round(parseFloat(durationOutput.trim()) || 0);
+      } catch (e) {
+        console.warn("[Hotline Upload] Could not determine audio duration");
+      }
+
+      // Create RSS audio item in database
+      const rssAudioItem = await storage.createRssAudioItem({
+        title: video.title,
+        description: video.description || "",
+        filename: outputFilename,
+        filepath: objectStoragePath,
+        duration,
+        fileSize: mp3Buffer.length,
+        folderId: folderId || null,
+        sortOrder: 0,
+      });
+      
+      console.log(`[Hotline Upload] Successfully uploaded "${video.title}" to hotline`);
+
+      res.json({ 
+        success: true, 
+        message: "Audio uploaded to hotline successfully",
+        rssAudioItem 
+      });
+    } catch (error: any) {
+      console.error("Hotline upload error:", error);
+      res.status(500).json({ message: error.message || "Failed to upload to hotline" });
+    }
+  });
+
   // Admin: Check if MP3 is cached for a video
   app.get("/api/admin/videos/:id/mp3-status", requireAdmin, async (req, res) => {
     try {
