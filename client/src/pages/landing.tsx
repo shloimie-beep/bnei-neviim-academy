@@ -606,27 +606,27 @@ export default function LandingPage() {
           </h3>
           <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
             <div className="space-y-4">
-              <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-xl">
+              <div className="rounded-lg overflow-hidden shadow-xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
                 <iframe
-                  src="https://player.vimeo.com/video/1138747998?title=0&byline=0&portrait=0"
-                  className="w-full h-full"
+                  src="https://player.vimeo.com/video/1138747998?h=456811057a&badge=0&autopause=0&player_id=0&app_id=58479"
                   frameBorder="0"
-                  allow="autoplay; fullscreen; picture-in-picture"
-                  allowFullScreen
-                  title="A Birthday Surprise"
+                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+                  title="Epic Birthday Prank!"
                 />
               </div>
               <h4 className="font-bold text-white text-lg">A Birthday Surprise</h4>
               <p className="text-white/70">An interesting birthday surprise for my mother</p>
             </div>
             <div className="space-y-4">
-              <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-xl">
+              <div className="rounded-lg overflow-hidden shadow-xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
                 <iframe
-                  src="https://player.vimeo.com/video/1050076957?title=0&byline=0&portrait=0"
-                  className="w-full h-full"
+                  src="https://player.vimeo.com/video/1050076957?h=99d1edd7d6&badge=0&autopause=0&player_id=0&app_id=58479"
                   frameBorder="0"
-                  allow="autoplay; fullscreen; picture-in-picture"
-                  allowFullScreen
+                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
                   title="The Secret Mission"
                 />
               </div>
@@ -634,14 +634,14 @@ export default function LandingPage() {
               <p className="text-white/70">When an old man gets upset at the kids in the community...</p>
             </div>
             <div className="space-y-4">
-              <div className="aspect-video bg-black rounded-lg overflow-hidden shadow-xl">
+              <div className="rounded-lg overflow-hidden shadow-xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
                 <iframe
-                  src="https://player.vimeo.com/video/1138749816?title=0&byline=0&portrait=0"
-                  className="w-full h-full"
+                  src="https://player.vimeo.com/video/1138749816?h=70374df2cc&badge=0&autopause=0&player_id=0&app_id=58479"
                   frameBorder="0"
-                  allow="autoplay; fullscreen; picture-in-picture"
-                  allowFullScreen
-                  title="Meet The Evil Inclination"
+                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+                  title="MEET THE EVIL INCLINATION"
                 />
               </div>
               <h4 className="font-bold text-white text-lg">Meet The Evil Inclination</h4>
