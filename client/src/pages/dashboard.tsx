@@ -1649,7 +1649,7 @@ export default function DashboardPage() {
                           data-testid="button-start-trial-settings"
                         >
                           {createCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                          {user?.hasUsedTrial ? "Subscribe Now - $9.99/mo" : "Start 14-Day Free Trial"}
+                          {user?.hasUsedTrial ? "Subscribe Now - $9.99/mo" : "Start 7-Day Free Trial"}
                         </Button>
                       )}
                     </div>
@@ -2099,7 +2099,7 @@ export default function DashboardPage() {
                   data-testid="button-subscribe-videos"
                 >
                   {createCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                  {user?.hasUsedTrial ? "Subscribe Now" : "Start 14-Day Free Trial"}
+                  {user?.hasUsedTrial ? "Subscribe Now" : "Start 7-Day Free Trial"}
                 </Button>
                 <p className="text-sm text-muted-foreground mt-4">
                   {user?.hasUsedTrial ? "$9.99/month. Cancel anytime." : "$9.99/month after trial ends. Cancel anytime."}

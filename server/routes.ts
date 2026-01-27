@@ -1276,7 +1276,7 @@ export async function registerRoutes(
       // Only add trial for users who haven't used one
       if (canUseTrial) {
         sessionConfig.subscription_data = {
-          trial_period_days: 14, // 2-week free trial
+          trial_period_days: 7, // 1-week free trial
           trial_settings: {
             end_behavior: {
               missing_payment_method: 'cancel', // Cancel if no payment method
