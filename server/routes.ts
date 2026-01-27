@@ -1708,7 +1708,7 @@ export async function registerRoutes(
   // Admin: Update video details
   app.patch("/api/admin/videos/:id", requireAdmin, async (req, res) => {
     try {
-      const { title, description, status, categoryId } = req.body;
+      const { title, description, status, categoryId, excludeFromRecent } = req.body;
       
       // Get current video to check if it's a Vimeo video
       const currentVideo = await storage.getVideo(req.params.id);
@@ -1730,7 +1730,7 @@ export async function registerRoutes(
         }
       }
       
-      const video = await storage.updateVideo(req.params.id, { title, description, status, categoryId });
+      const video = await storage.updateVideo(req.params.id, { title, description, status, categoryId, excludeFromRecent });
       res.json(video);
     } catch (error) {
       console.error("Update video error:", error);
@@ -2296,7 +2296,7 @@ export async function registerRoutes(
   // Admin: Finalize Vimeo video (create local record after upload)
   app.post("/api/admin/videos/vimeo/finalize", requireAdmin, async (req, res) => {
     try {
-      const { title, description, categoryId, vimeoVideoId, filename, fileSize } = req.body;
+      const { title, description, categoryId, vimeoVideoId, filename, fileSize, excludeFromRecent } = req.body;
 
       if (!title || !vimeoVideoId) {
         return res.status(400).json({ message: "Title and vimeoVideoId are required" });
@@ -2318,6 +2318,7 @@ export async function registerRoutes(
         bunnyVideoId: null,
         storageType: "vimeo",
         vimeoVideoId,
+        excludeFromRecent: excludeFromRecent === true || excludeFromRecent === "true",
       });
 
       console.log(`[Vimeo] Created video record ${video.id}`);

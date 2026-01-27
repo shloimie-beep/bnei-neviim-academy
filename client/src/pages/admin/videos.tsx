@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw, Download, GripVertical, ChevronDown, ChevronRight, Folder, FolderOpen, ImageIcon, Phone } from "lucide-react";
+import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw, Download, GripVertical, ChevronDown, ChevronRight, Folder, FolderOpen, ImageIcon, Phone, Clock, TimerOff } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import * as tus from "tus-js-client";
 import { Button } from "@/components/ui/button";
@@ -113,6 +113,10 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
 
   const toggleStatus = () => {
     onUpdate({ status: video.status === "ready" ? "hidden" : "ready" });
+  };
+
+  const toggleExcludeFromRecent = () => {
+    onUpdate({ excludeFromRecent: !(video as any).excludeFromRecent });
   };
 
   const handleThumbnailSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -463,6 +467,15 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
                   <Button
                     variant="ghost"
                     size="icon"
+                    onClick={toggleExcludeFromRecent}
+                    title={(video as any).excludeFromRecent ? "Show in Recent" : "Hide from Recent"}
+                    data-testid={`button-toggle-recent-${video.id}`}
+                  >
+                    {(video as any).excludeFromRecent ? <TimerOff className="h-4 w-4 text-orange-500" /> : <Clock className="h-4 w-4" />}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
                     onClick={() => setIsEditing(true)}
                     data-testid={`button-edit-video-${video.id}`}
                   >
@@ -589,6 +602,7 @@ export default function VideoManagement() {
   const [singleDescription, setSingleDescription] = useState("");
   const [singleCategoryId, setSingleCategoryId] = useState("");
   const [singleThumbnail, setSingleThumbnail] = useState<File | null>(null);
+  const [singleExcludeFromRecent, setSingleExcludeFromRecent] = useState(false);
   const [singleUploadProgress, setSingleUploadProgress] = useState(0);
   const [isSingleUploading, setIsSingleUploading] = useState(false);
   
@@ -1186,6 +1200,9 @@ export default function VideoManagement() {
         if (singleThumbnail) {
           formData.append("thumbnail", singleThumbnail);
         }
+        if (singleExcludeFromRecent) {
+          formData.append("excludeFromRecent", "true");
+        }
 
         const response = await new Promise<Response>((resolve, reject) => {
           const xhr = new XMLHttpRequest();
@@ -1281,6 +1298,7 @@ export default function VideoManagement() {
                 vimeoVideoId,
                 filename: singleFile.name,
                 fileSize: singleFile.size,
+                excludeFromRecent: singleExcludeFromRecent,
               }),
             });
             
@@ -1333,6 +1351,7 @@ export default function VideoManagement() {
       setSingleTitle("");
       setSingleDescription("");
       setSingleCategoryId("");
+      setSingleExcludeFromRecent(false);
       if (singleFileInputRef.current) singleFileInputRef.current.value = "";
       if (thumbnailInputRef.current) thumbnailInputRef.current.value = "";
     } catch (error: any) {
@@ -1474,6 +1493,20 @@ export default function VideoManagement() {
                       Selected: {singleThumbnail.name}
                     </p>
                   )}
+                </div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="single-exclude-from-recent"
+                    checked={singleExcludeFromRecent}
+                    onChange={(e) => setSingleExcludeFromRecent(e.target.checked)}
+                    disabled={isSingleUploading}
+                    className="h-4 w-4"
+                    data-testid="checkbox-exclude-from-recent"
+                  />
+                  <Label htmlFor="single-exclude-from-recent" className="text-sm font-normal cursor-pointer">
+                    Exclude from Recent section
+                  </Label>
                 </div>
                 {isSingleUploading && (
                   <div className="space-y-2">

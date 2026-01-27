@@ -1170,10 +1170,11 @@ export default function DashboardPage() {
     return isRecent && !hasViewed;
   };
 
-  // Get 10 most recent videos for the Recent section
+  // Get 10 most recent videos for the Recent section (excluding those marked to hide from recent)
   const recentVideos = useMemo(() => {
     if (!videos) return [];
     return [...videos]
+      .filter(v => !(v as any).excludeFromRecent)
       .sort((a, b) => {
         const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
         const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
