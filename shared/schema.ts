@@ -172,7 +172,6 @@ export const videos = pgTable("videos", {
   bunnyStorageUrl: text("bunny_storage_url"),
   vimeoVideoId: text("vimeo_video_id"),
   vimeoEmbedUrl: text("vimeo_embed_url"), // Stores the player embed URL with hash for private videos
-  excludeFromRecent: boolean("exclude_from_recent").default(false), // Exclude from Recent tab in customer portal
 });
 
 // PDF documents for subscriber content
