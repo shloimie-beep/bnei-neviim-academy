@@ -251,7 +251,7 @@ export const rssFolders = pgTable("rss_folders", {
 // folderName is stored for reliable matching even if folders are recreated
 export const rssAudioItems = pgTable("rss_audio_items", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  folderId: varchar("folder_id").references(() => rssFolders.id, { onDelete: "set null" }),
+  folderId: varchar("folder_id").references(() => rssFolders.id, { onDelete: "cascade" }),
   folderName: text("folder_name"), // Stored folder name for reliable matching by name
   title: text("title").notNull(),
   description: text("description"),
