@@ -85,26 +85,7 @@ export default function RegisterPage() {
           <div className="text-center">
             <p className="font-bold text-lg">The Hotline is Still in Development</p>
             <p className="text-sm mt-1">
-              The hotline phone line is not working yet. In the meantime, you can{" "}
-              <a 
-                href="https://academy.onetimeonetime.com/the-onetime-onetime-academy" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="underline font-semibold hover:text-yellow-300"
-                data-testid="link-old-academy-signup"
-              >
-                sign up for the old Academy
-              </a>
-              {" "}or{" "}
-              <a 
-                href="https://academy.onetimeonetime.com/login" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="underline font-semibold hover:text-yellow-300"
-                data-testid="link-old-academy-login"
-              >
-                login if you already have an account
-              </a>.
+              The hotline phone line is not ready yet. However you will still get the full online access.
             </p>
           </div>
         </div>
