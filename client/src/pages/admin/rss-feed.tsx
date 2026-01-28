@@ -329,39 +329,35 @@ export default function RssFeedManagement() {
           <CardContent className="space-y-2">
             {foldersLoading ? (
               <Skeleton className="h-10 w-full" />
+            ) : folders.length === 0 ? (
+              <p className="text-sm text-muted-foreground py-2">No folders yet. Create one to get started.</p>
             ) : (
-              <>
-                {folders.length === 0 ? (
-                  <p className="text-sm text-muted-foreground py-2">No folders yet. Create one to get started.</p>
-                ) : (
-                  folders.map((folder) => (
-                    <div key={folder.id} className="flex items-center gap-1">
-                      <Button
-                        variant={selectedFolderId === folder.id ? "secondary" : "ghost"}
-                        className="flex-1 justify-start"
-                        onClick={() => setSelectedFolderId(folder.id)}
-                        data-testid={`button-folder-${folder.id}`}
-                      >
-                        <Folder className="h-4 w-4 mr-2" />
-                        <span className="truncate">{folder.name}</span>
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        onClick={() => {
-                          setEditingFolder(folder);
-                          setNewFolderName(folder.name);
-                          setNewFolderDescription(folder.description || "");
-                          setShowEditFolderDialog(true);
-                        }}
-                        data-testid={`button-edit-folder-${folder.id}`}
-                      >
-                        <Edit2 className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  ))
-                )}
-              </>
+              folders.map((folder) => (
+                <div key={folder.id} className="flex items-center gap-1">
+                  <Button
+                    variant={selectedFolderId === folder.id ? "secondary" : "ghost"}
+                    className="flex-1 justify-start"
+                    onClick={() => setSelectedFolderId(folder.id)}
+                    data-testid={`button-folder-${folder.id}`}
+                  >
+                    <Folder className="h-4 w-4 mr-2" />
+                    <span className="truncate">{folder.name}</span>
+                  </Button>
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    onClick={() => {
+                      setEditingFolder(folder);
+                      setNewFolderName(folder.name);
+                      setNewFolderDescription(folder.description || "");
+                      setShowEditFolderDialog(true);
+                    }}
+                    data-testid={`button-edit-folder-${folder.id}`}
+                  >
+                    <Edit2 className="h-3 w-3" />
+                  </Button>
+                </div>
+              ))
             )}
           </CardContent>
         </Card>

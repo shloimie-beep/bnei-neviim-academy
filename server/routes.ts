@@ -1276,7 +1276,7 @@ export async function registerRoutes(
       // Only add trial for users who haven't used one
       if (canUseTrial) {
         sessionConfig.subscription_data = {
-          trial_period_days: 7, // 1-week free trial
+          trial_period_days: 14, // 2-week free trial
           trial_settings: {
             end_behavior: {
               missing_payment_method: 'cancel', // Cancel if no payment method
@@ -3728,22 +3728,6 @@ export async function registerRoutes(
       res.status(500).json({ message: "Failed to get RSS audio items" });
     }
   });
-  
-  // Admin: Sync folder names for existing RSS audio items (for migration)
-  app.post("/api/admin/rss-audio/sync-folder-names", requireAdmin, async (req, res) => {
-    try {
-      // This endpoint is deprecated - folderName feature removed
-      res.json({ 
-        success: true, 
-        message: "Folder name sync is no longer needed",
-        totalItems: 0,
-        updatedCount: 0 
-      });
-    } catch (error) {
-      console.error("Sync folder names error:", error);
-      res.status(500).json({ message: "Failed to sync folder names" });
-    }
-  });
 
   // Admin: Upload RSS audio (converts to MP3 64kbps, stores in object storage)
   const rssTempDir = path.join(process.cwd(), "uploads", "rss-temp");
@@ -3772,8 +3756,6 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Title is required" });
       }
 
-      const effectiveFolderId = folderId === "null" || !folderId ? null : folderId;
-
       const outputFilename = `${Date.now()}-${Math.round(Math.random() * 1e9)}.mp3`;
       const conversionResult = await convertToMp3(req.file.path, rssTempDir, outputFilename);
 
@@ -3792,7 +3774,7 @@ export async function registerRoutes(
       }
 
       const item = await storage.createRssAudioItem({
-        folderId: effectiveFolderId,
+        folderId: folderId === "null" || !folderId ? null : folderId,
         title,
         description: description || null,
         filename: outputFilename,
@@ -3820,12 +3802,7 @@ export async function registerRoutes(
       const updateData: any = {};
       if (title !== undefined) updateData.title = title;
       if (description !== undefined) updateData.description = description;
-      
-      if (folderId !== undefined) {
-        const effectiveFolderId = folderId === "null" ? null : folderId;
-        updateData.folderId = effectiveFolderId;
-      }
-      
+      if (folderId !== undefined) updateData.folderId = folderId === "null" ? null : folderId;
       if (sortOrder !== undefined) updateData.sortOrder = sortOrder;
       
       const item = await storage.updateRssAudioItem(req.params.id, updateData);

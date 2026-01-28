@@ -923,15 +923,12 @@ export class DatabaseStorage implements IStorage {
     return db.select().from(rssAudioItems).orderBy(rssAudioItems.sortOrder, desc(rssAudioItems.createdAt));
   }
 
-  // Get RSS audio items by folder
   async getRssAudioItemsByFolder(folderId: string | null): Promise<RssAudioItem[]> {
     if (folderId === null) {
-      // Get items with no folder assigned
       return db.select().from(rssAudioItems)
         .where(sql`${rssAudioItems.folderId} IS NULL`)
         .orderBy(rssAudioItems.sortOrder, desc(rssAudioItems.createdAt));
     }
-    
     return db.select().from(rssAudioItems)
       .where(eq(rssAudioItems.folderId, folderId))
       .orderBy(rssAudioItems.sortOrder, desc(rssAudioItems.createdAt));

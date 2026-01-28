@@ -1,16 +1,7 @@
 import { sql, relations } from "drizzle-orm";
-import { pgTable, text, varchar, boolean, integer, timestamp, json, bigint } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, boolean, integer, timestamp, jsonb, bigint } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
-
-// Session storage table (used by connect-pg-simple for user login sessions)
-// Note: This table is managed by connect-pg-simple, not Drizzle. Schema defined here to prevent accidental deletion.
-// Do NOT modify this table structure - it must match what connect-pg-simple created in production.
-export const userSessions = pgTable("user_sessions", {
-  sid: varchar("sid").primaryKey(),
-  sess: json("sess").notNull(),
-  expire: timestamp("expire").notNull(),
-});
 
 // Users table - for admin and customer accounts
 export const users = pgTable("users", {
@@ -181,7 +172,6 @@ export const videos = pgTable("videos", {
   bunnyStorageUrl: text("bunny_storage_url"),
   vimeoVideoId: text("vimeo_video_id"),
   vimeoEmbedUrl: text("vimeo_embed_url"), // Stores the player embed URL with hash for private videos
-  vimeoCreatedAt: timestamp("vimeo_created_at"), // When video was created on Vimeo
 });
 
 // PDF documents for subscriber content
