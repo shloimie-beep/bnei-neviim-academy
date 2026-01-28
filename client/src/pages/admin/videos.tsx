@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw, Download, GripVertical, ChevronDown, ChevronRight, Folder, FolderOpen, ImageIcon, Phone, Clock } from "lucide-react";
+import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw, Download, GripVertical, ChevronDown, ChevronRight, Folder, FolderOpen, ImageIcon, Phone, Clock, ArrowUp, ArrowDown } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import * as tus from "tus-js-client";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,7 @@ function formatFileSize(bytes: number | null): string {
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
-function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbnail, onRefreshStatus, categories }: { 
+function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbnail, onRefreshStatus, categories, onMoveUp, onMoveDown, canMoveUp, canMoveDown }: { 
   video: VideoType; 
   onDelete: () => void;
   onUpdate: (data: Partial<VideoType>) => void;
@@ -33,6 +33,10 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
   onResetThumbnail: (regenerate: boolean) => Promise<void>;
   onRefreshStatus: () => Promise<void>;
   categories: VideoCategory[];
+  onMoveUp?: () => void;
+  onMoveDown?: () => void;
+  canMoveUp?: boolean;
+  canMoveDown?: boolean;
 }) {
   const { toast } = useToast();
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
@@ -469,6 +473,30 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
                   >
                     <Clock className={`h-4 w-4 ${video.excludeFromRecent ? "text-destructive" : ""}`} />
                   </Button>
+                  {onMoveUp && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={onMoveUp}
+                      disabled={!canMoveUp}
+                      title="Move up"
+                      data-testid={`button-move-up-${video.id}`}
+                    >
+                      <ArrowUp className="h-4 w-4" />
+                    </Button>
+                  )}
+                  {onMoveDown && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={onMoveDown}
+                      disabled={!canMoveDown}
+                      title="Move down"
+                      data-testid={`button-move-down-${video.id}`}
+                    >
+                      <ArrowDown className="h-4 w-4" />
+                    </Button>
+                  )}
                   <Button
                     variant="ghost"
                     size="icon"
@@ -783,6 +811,34 @@ export default function VideoManagement() {
       toast({ title: "Failed to update category", description: error.message, variant: "destructive" });
     },
   });
+
+  // Move video up or down in the list
+  const moveVideo = async (videoId: string, direction: "up" | "down") => {
+    if (!videos) return;
+    const currentIndex = videos.findIndex(v => v.id === videoId);
+    if (currentIndex === -1) return;
+    
+    const newIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
+    if (newIndex < 0 || newIndex >= videos.length) return;
+    
+    // Get the video IDs in the new order
+    const reorderedIds = [...videos.map(v => v.id)];
+    const [movedId] = reorderedIds.splice(currentIndex, 1);
+    reorderedIds.splice(newIndex, 0, movedId);
+    
+    try {
+      const res = await fetch("/api/admin/videos/reorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ videoIds: reorderedIds }),
+      });
+      if (!res.ok) throw new Error("Failed to reorder videos");
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+    } catch (error: any) {
+      toast({ title: "Failed to reorder", description: error.message, variant: "destructive" });
+    }
+  };
 
   const reorderCategoriesMutation = useMutation({
     mutationFn: async (categoryIds: string[]) => {
@@ -2078,7 +2134,7 @@ export default function VideoManagement() {
           <p className="text-sm text-muted-foreground">
             Found {filteredVideos.length} video{filteredVideos.length !== 1 ? 's' : ''} matching "{searchQuery}"
           </p>
-          {filteredVideos.map((video) => (
+          {filteredVideos.map((video, index) => (
             <VideoCard
               key={video.id}
               video={video}
@@ -2115,6 +2171,10 @@ export default function VideoManagement() {
                 }
                 queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
               }}
+              onMoveUp={() => moveVideo(video.id, "up")}
+              onMoveDown={() => moveVideo(video.id, "down")}
+              canMoveUp={index > 0}
+              canMoveDown={index < filteredVideos.length - 1}
             />
           ))}
         </div>

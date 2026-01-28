@@ -613,15 +613,15 @@ export class DatabaseStorage implements IStorage {
     return db.select().from(systemSettings);
   }
 
-  // Videos
+  // Videos - sorted by sortOrder ASC (lower = higher priority), then createdAt DESC (newest first)
   async getAllVideos(): Promise<Video[]> {
-    return db.select().from(videos).orderBy(desc(videos.createdAt));
+    return db.select().from(videos).orderBy(videos.sortOrder, desc(videos.createdAt));
   }
 
   async getPublishedVideos(): Promise<Video[]> {
     return db.select().from(videos)
       .where(eq(videos.status, "ready"))
-      .orderBy(desc(videos.createdAt));
+      .orderBy(videos.sortOrder, desc(videos.createdAt));
   }
 
   async getVideo(id: string): Promise<Video | undefined> {
