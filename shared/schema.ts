@@ -4,11 +4,14 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Session storage table (used by connect-pg-simple for user login sessions)
+// Note: This table is managed by connect-pg-simple, schema defined here to prevent accidental deletion
 export const userSessions = pgTable("user_sessions", {
   sid: varchar("sid").primaryKey(),
   sess: jsonb("sess").notNull(),
-  expire: timestamp("expire", { precision: 6 }).notNull(),
-});
+  expire: timestamp("expire").notNull(),
+}, (table) => [
+  { name: "IDX_session_expire", columns: [table.expire] }
+]);
 
 // Users table - for admin and customer accounts
 export const users = pgTable("users", {
