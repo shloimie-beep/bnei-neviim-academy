@@ -3,6 +3,13 @@ import { pgTable, text, varchar, boolean, integer, timestamp, jsonb, bigint } fr
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
+// Session storage table (used by connect-pg-simple for user login sessions)
+export const userSessions = pgTable("user_sessions", {
+  sid: varchar("sid").primaryKey(),
+  sess: jsonb("sess").notNull(),
+  expire: timestamp("expire", { precision: 6 }).notNull(),
+});
+
 // Users table - for admin and customer accounts
 export const users = pgTable("users", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
