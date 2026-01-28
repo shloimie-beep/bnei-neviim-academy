@@ -1961,6 +1961,133 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: Check and update Vimeo video transcoding status
+  app.post("/api/admin/videos/:id/check-vimeo-status", requireAdmin, async (req, res) => {
+    try {
+      const video = await storage.getVideo(req.params.id);
+      if (!video) {
+        return res.status(404).json({ message: "Video not found" });
+      }
+
+      if (!video.vimeoVideoId) {
+        return res.status(400).json({ message: "Not a Vimeo video" });
+      }
+
+      // Get video status from Vimeo
+      const vimeoVideo = await vimeoService.getVideo(video.vimeoVideoId);
+      if (!vimeoVideo) {
+        return res.status(404).json({ message: "Video not found on Vimeo" });
+      }
+
+      console.log(`[Vimeo Status Check] Video ${video.id}: Vimeo status = ${vimeoVideo.status}`);
+
+      // Vimeo status values: "available", "transcoding", "uploading", "quota_exceeded", etc.
+      let newStatus = video.status;
+      let updates: any = {};
+
+      if (vimeoVideo.status === "available" && video.status === "processing") {
+        newStatus = "ready";
+        updates.status = "ready";
+        
+        // Also get the embed URL if we don't have it
+        if (!video.vimeoEmbedUrl) {
+          const embedUrl = await vimeoService.getSecureEmbedUrl(video.vimeoVideoId);
+          if (embedUrl) {
+            updates.vimeoEmbedUrl = embedUrl;
+          }
+        }
+
+        // Get thumbnail if we don't have one
+        if (!video.thumbnailPath) {
+          const thumbnailUrl = await vimeoService.getThumbnailUrl(video.vimeoVideoId);
+          if (thumbnailUrl) {
+            updates.thumbnailPath = thumbnailUrl;
+          }
+        }
+
+        // Get duration if we don't have it
+        if (!video.duration && vimeoVideo.duration) {
+          updates.duration = vimeoVideo.duration;
+        }
+
+        await storage.updateVideo(video.id, updates);
+        console.log(`[Vimeo Status Check] Video ${video.id} updated to ready`);
+      }
+
+      res.json({ 
+        vimeoStatus: vimeoVideo.status, 
+        localStatus: newStatus,
+        updated: Object.keys(updates).length > 0 
+      });
+    } catch (error) {
+      console.error("Check Vimeo status error:", error);
+      res.status(500).json({ message: "Failed to check video status" });
+    }
+  });
+
+  // Admin: Batch check Vimeo status for all processing videos
+  app.post("/api/admin/videos/check-processing", requireAdmin, async (req, res) => {
+    try {
+      const allVideos = await storage.getAllVideos();
+      const processingVideos = allVideos.filter(v => v.status === "processing" && v.vimeoVideoId);
+      
+      const results = [];
+      for (const video of processingVideos) {
+        try {
+          const vimeoVideo = await vimeoService.getVideo(video.vimeoVideoId!);
+          if (vimeoVideo && vimeoVideo.status === "available") {
+            const updates: any = { status: "ready" };
+            
+            if (!video.vimeoEmbedUrl) {
+              const embedUrl = await vimeoService.getSecureEmbedUrl(video.vimeoVideoId!);
+              if (embedUrl) updates.vimeoEmbedUrl = embedUrl;
+            }
+            if (!video.thumbnailPath) {
+              const thumbnailUrl = await vimeoService.getThumbnailUrl(video.vimeoVideoId!);
+              if (thumbnailUrl) updates.thumbnailPath = thumbnailUrl;
+            }
+            if (!video.duration && vimeoVideo.duration) {
+              updates.duration = vimeoVideo.duration;
+            }
+            
+            await storage.updateVideo(video.id, updates);
+            results.push({ id: video.id, updated: true, status: "ready" });
+          } else {
+            results.push({ id: video.id, updated: false, status: vimeoVideo?.status || "unknown" });
+          }
+        } catch (err) {
+          results.push({ id: video.id, updated: false, error: true });
+        }
+      }
+      
+      res.json({ checked: processingVideos.length, results });
+    } catch (error) {
+      console.error("Check processing videos error:", error);
+      res.status(500).json({ message: "Failed to check processing videos" });
+    }
+  });
+
+  // Admin: Reorder videos
+  app.post("/api/admin/videos/reorder", requireAdmin, async (req, res) => {
+    try {
+      const { videoIds } = req.body;
+      
+      if (!Array.isArray(videoIds)) {
+        return res.status(400).json({ message: "videoIds must be an array" });
+      }
+
+      // Update sortOrder for each video based on position
+      for (let i = 0; i < videoIds.length; i++) {
+        await storage.updateVideo(videoIds[i], { sortOrder: i + 1 });
+      }
+
+      res.json({ success: true, count: videoIds.length });
+    } catch (error) {
+      console.error("Reorder videos error:", error);
+      res.status(500).json({ message: "Failed to reorder videos" });
+    }
+  });
+
   // ============ CLOUD VIDEO UPLOAD ============
   // objectStorageService is initialized at the top of the file
 

@@ -647,11 +647,39 @@ export default function VideoManagement() {
     refetchInterval: (query) => {
       const data = query.state.data;
       if (data?.some(v => v.status === "processing")) {
-        return 5000;
+        return 10000; // Check every 10 seconds when processing
       }
       return false;
     },
   });
+  
+  // Auto-check Vimeo status for processing videos
+  useEffect(() => {
+    const processingVideos = videos?.filter(v => v.status === "processing" && v.vimeoVideoId);
+    if (!processingVideos?.length) return;
+
+    const checkProcessing = async () => {
+      try {
+        const res = await fetch("/api/admin/videos/check-processing", {
+          method: "POST",
+          credentials: "include",
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.results?.some((r: any) => r.updated)) {
+            queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+          }
+        }
+      } catch (e) {
+        console.error("Failed to check processing videos:", e);
+      }
+    };
+
+    // Check immediately and then every 15 seconds
+    checkProcessing();
+    const interval = setInterval(checkProcessing, 15000);
+    return () => clearInterval(interval);
+  }, [videos?.filter(v => v.status === "processing" && v.vimeoVideoId).length]);
 
   const { data: categories = [] } = useQuery<VideoCategory[]>({
     queryKey: ["/api/admin/video-categories"],
@@ -2077,7 +2105,7 @@ export default function VideoManagement() {
                 queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
               }}
               onRefreshStatus={async () => {
-                const res = await fetch(`/api/admin/videos/${video.id}/refresh-status`, {
+                const res = await fetch(`/api/admin/videos/${video.id}/check-vimeo-status`, {
                   method: "POST",
                   credentials: "include",
                 });
@@ -2200,7 +2228,7 @@ export default function VideoManagement() {
                                             queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
                                           }}
                                           onRefreshStatus={async () => {
-                                            const res = await fetch(`/api/admin/videos/${video.id}/refresh-status`, {
+                                            const res = await fetch(`/api/admin/videos/${video.id}/check-vimeo-status`, {
                                               method: "POST",
                                               credentials: "include",
                                             });
@@ -2247,7 +2275,7 @@ export default function VideoManagement() {
                                 queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
                               }}
                               onRefreshStatus={async () => {
-                                const res = await fetch(`/api/admin/videos/${video.id}/refresh-status`, {
+                                const res = await fetch(`/api/admin/videos/${video.id}/check-vimeo-status`, {
                                   method: "POST",
                                   credentials: "include",
                                 });
@@ -2325,7 +2353,7 @@ export default function VideoManagement() {
                           queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
                         }}
                         onRefreshStatus={async () => {
-                          const res = await fetch(`/api/admin/videos/${video.id}/refresh-status`, {
+                          const res = await fetch(`/api/admin/videos/${video.id}/check-vimeo-status`, {
                             method: "POST",
                             credentials: "include",
                           });
