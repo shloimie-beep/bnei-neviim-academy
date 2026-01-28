@@ -155,7 +155,7 @@ export default function RegisterPage() {
               </div>
               <CardTitle className="text-2xl">Create Your Account</CardTitle>
               <CardDescription>
-                Sign up for your 2-week free trial
+                Sign up for your 7-day free trial
               </CardDescription>
             </CardHeader>
             <CardContent>

@@ -198,7 +198,7 @@ The backend handles user authentication, subscription management, phone number r
 
 ### Payment Integration
 - **Stripe Integration**: Uses `stripe-replit-sync` package for webhook handling and data synchronization
-- **Subscription Model**: $9.99/month with 14-day free trial
+- **Subscription Model**: $9.99/month with 7-day free trial
 - **Webhook Processing**: Handles checkout completion, subscription updates, and cancellations
 - **Stripe Schema**: Separate `stripe` schema in PostgreSQL for synced Stripe data
 
