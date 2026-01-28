@@ -172,6 +172,7 @@ export const videos = pgTable("videos", {
   bunnyStorageUrl: text("bunny_storage_url"),
   vimeoVideoId: text("vimeo_video_id"),
   vimeoEmbedUrl: text("vimeo_embed_url"), // Stores the player embed URL with hash for private videos
+  vimeoCreatedAt: timestamp("vimeo_created_at"), // When the video was created on Vimeo
   excludeFromRecent: boolean("exclude_from_recent").default(false), // Hide from Recent section in customer view
 });
 
@@ -240,6 +241,7 @@ export const rssFolders = pgTable("rss_folders", {
 export const rssAudioItems = pgTable("rss_audio_items", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   folderId: varchar("folder_id").references(() => rssFolders.id, { onDelete: "cascade" }),
+  folderName: text("folder_name"), // Cached folder name for display
   title: text("title").notNull(),
   description: text("description"),
   filename: text("filename").notNull(), // converted mp3 filename
