@@ -183,6 +183,7 @@ export const videos = pgTable("videos", {
   vimeoEmbedUrl: text("vimeo_embed_url"), // Stores the player embed URL with hash for private videos
   vimeoCreatedAt: timestamp("vimeo_created_at"), // When the video was created on Vimeo
   excludeFromRecent: boolean("exclude_from_recent").default(false), // Hide from Recent section in customer view
+  sortOrder: integer("sort_order").default(0), // For manual ordering (lower = higher priority, null uses createdAt)
 });
 
 // PDF documents for subscriber content
