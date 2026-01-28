@@ -3716,7 +3716,10 @@ export async function registerRoutes(
     try {
       const { folderId } = req.query;
       let items;
-      if (folderId === "null" || folderId === "") {
+      if (folderId === "orphaned") {
+        // Get items with folder_ids that don't match any existing folder
+        items = await storage.getOrphanedRssAudioItems();
+      } else if (folderId === "null" || folderId === "") {
         items = await storage.getRssAudioItemsByFolder(null);
       } else if (folderId) {
         items = await storage.getRssAudioItemsByFolder(folderId as string);

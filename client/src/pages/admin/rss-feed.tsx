@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Folder, Trash2, Loader2, Edit2, Plus, Music, GripVertical, ExternalLink, FolderPlus, Copy, Play, Pause, RefreshCw } from "lucide-react";
+import { Upload, Folder, Trash2, Loader2, Edit2, Plus, Music, GripVertical, ExternalLink, FolderPlus, Copy, Play, Pause, RefreshCw, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -51,6 +51,16 @@ export default function RssFeedManagement() {
 
   const { data: folders = [], isLoading: foldersLoading } = useQuery<RssFolder[]>({
     queryKey: ["/api/admin/rss-folders"],
+  });
+
+  // Check for orphaned items (items with folder_ids that don't match any existing folder)
+  const { data: orphanedItems = [] } = useQuery<RssAudioItem[]>({
+    queryKey: ["/api/admin/rss-audio", "orphaned"],
+    queryFn: async () => {
+      const res = await fetch("/api/admin/rss-audio?folderId=orphaned", { credentials: "include" });
+      if (!res.ok) throw new Error("Failed to fetch orphaned items");
+      return res.json();
+    },
   });
 
   const { data: audioItems = [], isLoading: itemsLoading, refetch: refetchItems } = useQuery<RssAudioItem[]>({
@@ -331,44 +341,46 @@ export default function RssFeedManagement() {
               <Skeleton className="h-10 w-full" />
             ) : (
               <>
-                <Button
-                  variant={selectedFolderId === null ? "secondary" : "ghost"}
-                  className="w-full justify-start"
-                  onClick={() => setSelectedFolderId(null)}
-                  data-testid="button-folder-all"
-                >
-                  <Folder className="h-4 w-4 mr-2" />
-                  <span>All Files</span>
-                </Button>
+                {orphanedItems.length > 0 && (
+                  <Button
+                    variant={selectedFolderId === "orphaned" ? "secondary" : "ghost"}
+                    className="w-full justify-start text-orange-600 dark:text-orange-400"
+                    onClick={() => setSelectedFolderId("orphaned")}
+                    data-testid="button-folder-orphaned"
+                  >
+                    <AlertTriangle className="h-4 w-4 mr-2" />
+                    <span>Orphaned Files ({orphanedItems.length})</span>
+                  </Button>
+                )}
                 {folders.length === 0 ? (
                   <p className="text-sm text-muted-foreground py-2">No folders yet. Create one to get started.</p>
                 ) : (
                   folders.map((folder) => (
-                <div key={folder.id} className="flex items-center gap-1">
-                  <Button
-                    variant={selectedFolderId === folder.id ? "secondary" : "ghost"}
-                    className="flex-1 justify-start"
-                    onClick={() => setSelectedFolderId(folder.id)}
-                    data-testid={`button-folder-${folder.id}`}
-                  >
-                    <Folder className="h-4 w-4 mr-2" />
-                    <span className="truncate">{folder.name}</span>
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => {
-                      setEditingFolder(folder);
-                      setNewFolderName(folder.name);
-                      setNewFolderDescription(folder.description || "");
-                      setShowEditFolderDialog(true);
-                    }}
-                    data-testid={`button-edit-folder-${folder.id}`}
-                  >
-                    <Edit2 className="h-3 w-3" />
-                  </Button>
-                </div>
-              ))
+                    <div key={folder.id} className="flex items-center gap-1">
+                      <Button
+                        variant={selectedFolderId === folder.id ? "secondary" : "ghost"}
+                        className="flex-1 justify-start"
+                        onClick={() => setSelectedFolderId(folder.id)}
+                        data-testid={`button-folder-${folder.id}`}
+                      >
+                        <Folder className="h-4 w-4 mr-2" />
+                        <span className="truncate">{folder.name}</span>
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => {
+                          setEditingFolder(folder);
+                          setNewFolderName(folder.name);
+                          setNewFolderDescription(folder.description || "");
+                          setShowEditFolderDialog(true);
+                        }}
+                        data-testid={`button-edit-folder-${folder.id}`}
+                      >
+                        <Edit2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  ))
                 )}
               </>
             )}
@@ -380,10 +392,12 @@ export default function RssFeedManagement() {
             <CardTitle className="flex items-center justify-between gap-4">
               <span>
                 {selectedFolderId === null 
-                  ? "All Files" 
-                  : folders.find(f => f.id === selectedFolderId)?.name || "Audio Files"}
+                  ? "Select a Folder" 
+                  : selectedFolderId === "orphaned"
+                    ? "Orphaned Files"
+                    : folders.find(f => f.id === selectedFolderId)?.name || "Audio Files"}
               </span>
-              <Button onClick={() => setShowUploadDialog(true)} disabled={!selectedFolderId} data-testid="button-upload-audio">
+              <Button onClick={() => setShowUploadDialog(true)} disabled={!selectedFolderId || selectedFolderId === "orphaned"} data-testid="button-upload-audio">
                 <Upload className="h-4 w-4 mr-2" />
                 Upload Audio
               </Button>

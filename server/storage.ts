@@ -923,6 +923,14 @@ export class DatabaseStorage implements IStorage {
     return db.select().from(rssAudioItems).orderBy(rssAudioItems.sortOrder, desc(rssAudioItems.createdAt));
   }
 
+  // Get orphaned RSS audio items (items with folder_ids that don't match any existing folder)
+  async getOrphanedRssAudioItems(): Promise<RssAudioItem[]> {
+    const allFolders = await this.getAllRssFolders();
+    const folderIds = allFolders.map(f => f.id);
+    const allItems = await this.getAllRssAudioItems();
+    return allItems.filter(item => item.folderId && !folderIds.includes(item.folderId));
+  }
+
   async getRssAudioItemsByFolder(folderId: string | null): Promise<RssAudioItem[]> {
     if (folderId === null) {
       return db.select().from(rssAudioItems)
