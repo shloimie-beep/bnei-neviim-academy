@@ -2264,7 +2264,7 @@ export default function VideoManagement() {
                                         <p className="text-sm text-muted-foreground py-2 text-center">
                                           No videos in this subcategory
                                         </p>
-                                      ) : subVideos.map((video) => (
+                                      ) : subVideos.map((video, idx) => (
                                         <VideoCard
                                           key={video.id}
                                           video={video}
@@ -2301,8 +2301,8 @@ export default function VideoManagement() {
                                             }
                                             queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
                                           }}
-                                          position={getVideoPosition(video.id)}
-                                          totalCount={totalVideoCount}
+                                          position={idx + 1}
+                                          totalCount={subVideos.length}
                                           onPositionChange={(newPos) => moveVideoToPosition(video.id, newPos)}
                                         />
                                       ))}
@@ -2314,7 +2314,7 @@ export default function VideoManagement() {
                           })}
                           
                           {/* Videos directly in this category - shown after subcategories */}
-                          {categoryVideos.map((video) => (
+                          {categoryVideos.map((video, idx) => (
                             <VideoCard
                               key={video.id}
                               video={video}
@@ -2351,8 +2351,8 @@ export default function VideoManagement() {
                                 }
                                 queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
                               }}
-                              position={getVideoPosition(video.id)}
-                              totalCount={totalVideoCount}
+                              position={idx + 1}
+                              totalCount={categoryVideos.length}
                               onPositionChange={(newPos) => moveVideoToPosition(video.id, newPos)}
                             />
                           ))}
@@ -2395,7 +2395,7 @@ export default function VideoManagement() {
                 </CollapsibleTrigger>
                 <CollapsibleContent>
                   <CardContent className="pt-0 space-y-3">
-                    {expandedCategories.has("__uncategorized__") ? videosByCategory.uncategorized.map((video) => (
+                    {expandedCategories.has("__uncategorized__") ? videosByCategory.uncategorized.map((video, idx) => (
                       <VideoCard
                         key={video.id}
                         video={video}
@@ -2432,8 +2432,8 @@ export default function VideoManagement() {
                           }
                           queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
                         }}
-                        position={getVideoPosition(video.id)}
-                        totalCount={totalVideoCount}
+                        position={idx + 1}
+                        totalCount={videosByCategory.uncategorized.length}
                         onPositionChange={(newPos) => moveVideoToPosition(video.id, newPos)}
                       />
                     )) : null}
