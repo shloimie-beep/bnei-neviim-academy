@@ -21,7 +21,7 @@ export default function AdminDashboard() {
     <div className="space-y-8">
       <div>
         <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
-        <p className="text-muted-foreground">Overview of your Kids' Hotline system.</p>
+        <p className="text-muted-foreground">Overview of your OneTimeOneTime system.</p>
       </div>
 
       {/* Stats Grid */}

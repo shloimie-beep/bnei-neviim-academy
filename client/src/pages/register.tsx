@@ -115,7 +115,7 @@ export default function RegisterPage() {
           <div className="hidden md:block space-y-6 p-6">
             <h2 className="text-2xl font-bold">Start Your Free Trial</h2>
             <p className="text-muted-foreground">
-              Get full access to the Kids' Hotline for 2 weeks, absolutely free.
+              Get full access to OneTimeOneTime for 7 days, absolutely free.
             </p>
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
