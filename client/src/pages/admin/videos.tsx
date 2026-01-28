@@ -1320,7 +1320,7 @@ export default function VideoManagement() {
         }
 
         setSingleUploadProgress(100);
-        queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+        await queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
         toast({ title: "Audio uploaded", description: "Audio file saved successfully." });
       } else {
         // Video files: Upload to Vimeo using TUS protocol
@@ -1415,11 +1415,11 @@ export default function VideoManagement() {
         }
 
         setSingleUploadProgress(100);
-        queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+        await queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
         toast({ title: "Video uploaded", description: "Video is being processed and will be ready shortly." });
       }
       
-      // Reset form
+      // Reset form and close dialog after refetch
       setIsSingleDialogOpen(false);
       setSingleFile(null);
       setSingleThumbnail(null);
