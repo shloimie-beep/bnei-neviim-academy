@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw, Download, GripVertical, ChevronDown, ChevronRight, Folder, FolderOpen, ImageIcon, Phone } from "lucide-react";
+import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw, Download, GripVertical, ChevronDown, ChevronRight, Folder, FolderOpen, ImageIcon, Phone, Clock } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import * as tus from "tus-js-client";
 import { Button } from "@/components/ui/button";
@@ -459,6 +459,15 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
                     data-testid={`button-toggle-visibility-${video.id}`}
                   >
                     {video.status === "ready" ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => onUpdate({ excludeFromRecent: !video.excludeFromRecent })}
+                    title={video.excludeFromRecent ? "Show in Recent tab" : "Hide from Recent tab"}
+                    data-testid={`button-toggle-recent-${video.id}`}
+                  >
+                    <Clock className={`h-4 w-4 ${video.excludeFromRecent ? "text-destructive" : ""}`} />
                   </Button>
                   <Button
                     variant="ghost"
