@@ -720,6 +720,15 @@ export default function VideoManagement() {
   // Filtered videos based on search
   const filteredVideos = videos?.filter(video => fuzzyMatch(video.title, searchQuery)) || [];
   
+  // Helper to get global position of a video (1-indexed)
+  const getVideoPosition = (videoId: string) => {
+    if (!videos) return undefined;
+    const index = videos.findIndex(v => v.id === videoId);
+    return index >= 0 ? index + 1 : undefined;
+  };
+  
+  const totalVideoCount = videos?.length || 0;
+  
   // Group videos by category for folder view (only when not searching)
   const videosByCategory = useMemo(() => {
     if (!videos || searchQuery.trim()) return null;
@@ -2292,6 +2301,9 @@ export default function VideoManagement() {
                                             }
                                             queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
                                           }}
+                                          position={getVideoPosition(video.id)}
+                                          totalCount={totalVideoCount}
+                                          onPositionChange={(newPos) => moveVideoToPosition(video.id, newPos)}
                                         />
                                       ))}
                                     </div>
@@ -2339,6 +2351,9 @@ export default function VideoManagement() {
                                 }
                                 queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
                               }}
+                              position={getVideoPosition(video.id)}
+                              totalCount={totalVideoCount}
+                              onPositionChange={(newPos) => moveVideoToPosition(video.id, newPos)}
                             />
                           ))}
                         </>
@@ -2417,6 +2432,9 @@ export default function VideoManagement() {
                           }
                           queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
                         }}
+                        position={getVideoPosition(video.id)}
+                        totalCount={totalVideoCount}
+                        onPositionChange={(newPos) => moveVideoToPosition(video.id, newPos)}
                       />
                     )) : null}
                   </CardContent>
