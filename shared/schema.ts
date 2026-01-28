@@ -5,11 +5,11 @@ import { z } from "zod";
 
 // Session storage table (used by connect-pg-simple for user login sessions)
 // Note: This table is managed by connect-pg-simple, not Drizzle. Schema defined here to prevent accidental deletion.
-// Do NOT modify this table structure - it must match what connect-pg-simple expects.
+// Do NOT modify this table structure - it must match what connect-pg-simple created in production.
 export const userSessions = pgTable("user_sessions", {
   sid: varchar("sid").primaryKey(),
   sess: json("sess").notNull(),
-  expire: timestamp("expire", { precision: 6, withTimezone: true }).notNull(),
+  expire: timestamp("expire").notNull(),
 });
 
 // Users table - for admin and customer accounts
@@ -182,7 +182,6 @@ export const videos = pgTable("videos", {
   vimeoVideoId: text("vimeo_video_id"),
   vimeoEmbedUrl: text("vimeo_embed_url"), // Stores the player embed URL with hash for private videos
   vimeoCreatedAt: timestamp("vimeo_created_at"), // When video was created on Vimeo
-  excludeFromRecent: boolean("exclude_from_recent").default(false), // Hide from Recent section in customer portal
 });
 
 // PDF documents for subscriber content
@@ -247,11 +246,9 @@ export const rssFolders = pgTable("rss_folders", {
 });
 
 // RSS audio items - converted to MP3 64kbps
-// folderName is stored for reliable matching even if folders are recreated
 export const rssAudioItems = pgTable("rss_audio_items", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   folderId: varchar("folder_id").references(() => rssFolders.id, { onDelete: "cascade" }),
-  folderName: text("folder_name"), // Stored folder name for reliable matching by name
   title: text("title").notNull(),
   description: text("description"),
   filename: text("filename").notNull(), // converted mp3 filename

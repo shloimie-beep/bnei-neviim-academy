@@ -1708,7 +1708,7 @@ export async function registerRoutes(
   // Admin: Update video details
   app.patch("/api/admin/videos/:id", requireAdmin, async (req, res) => {
     try {
-      const { title, description, status, categoryId, excludeFromRecent } = req.body;
+      const { title, description, status, categoryId } = req.body;
       
       // Get current video to check if it's a Vimeo video
       const currentVideo = await storage.getVideo(req.params.id);
@@ -1730,7 +1730,7 @@ export async function registerRoutes(
         }
       }
       
-      const video = await storage.updateVideo(req.params.id, { title, description, status, categoryId, excludeFromRecent });
+      const video = await storage.updateVideo(req.params.id, { title, description, status, categoryId });
       res.json(video);
     } catch (error) {
       console.error("Update video error:", error);
@@ -2296,7 +2296,7 @@ export async function registerRoutes(
   // Admin: Finalize Vimeo video (create local record after upload)
   app.post("/api/admin/videos/vimeo/finalize", requireAdmin, async (req, res) => {
     try {
-      const { title, description, categoryId, vimeoVideoId, filename, fileSize, excludeFromRecent } = req.body;
+      const { title, description, categoryId, vimeoVideoId, filename, fileSize } = req.body;
 
       if (!title || !vimeoVideoId) {
         return res.status(400).json({ message: "Title and vimeoVideoId are required" });
@@ -2318,7 +2318,6 @@ export async function registerRoutes(
         bunnyVideoId: null,
         storageType: "vimeo",
         vimeoVideoId,
-        excludeFromRecent: excludeFromRecent === true || excludeFromRecent === "true",
       });
 
       console.log(`[Vimeo] Created video record ${video.id}`);
@@ -3005,14 +3004,12 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Video does not have a streamable source (Vimeo)" });
       }
       
-      // Validate folder if provided and get folder name for reliable matching
-      let folderName: string | null = null;
+      // Validate folder if provided
       if (folderId) {
         const folder = await storage.getRssFolder(folderId);
         if (!folder) {
           return res.status(404).json({ message: "Selected folder not found" });
         }
-        folderName = folder.name;
       }
 
       console.log(`[Hotline Upload] Converting video ${video.id} to MP3 for hotline...`);
@@ -3045,7 +3042,7 @@ export async function registerRoutes(
         console.warn("[Hotline Upload] Could not determine audio duration");
       }
 
-      // Create RSS audio item in database with folder name for reliable matching
+      // Create RSS audio item in database
       const rssAudioItem = await storage.createRssAudioItem({
         title: video.title,
         description: video.description || "",
@@ -3054,7 +3051,6 @@ export async function registerRoutes(
         duration,
         fileSize: mp3Buffer.length,
         folderId: folderId || null,
-        folderName: folderName,
         sortOrder: 0,
       });
       
@@ -3736,26 +3732,12 @@ export async function registerRoutes(
   // Admin: Sync folder names for existing RSS audio items (for migration)
   app.post("/api/admin/rss-audio/sync-folder-names", requireAdmin, async (req, res) => {
     try {
-      const allItems = await storage.getAllRssAudioItems();
-      const allFolders = await storage.getAllRssFolders();
-      
-      let updatedCount = 0;
-      for (const item of allItems) {
-        if (item.folderId && !item.folderName) {
-          // Find folder by ID and set the name
-          const folder = allFolders.find(f => f.id === item.folderId);
-          if (folder) {
-            await storage.updateRssAudioItem(item.id, { folderName: folder.name });
-            updatedCount++;
-          }
-        }
-      }
-      
+      // This endpoint is deprecated - folderName feature removed
       res.json({ 
         success: true, 
-        message: `Updated ${updatedCount} items with folder names`,
-        totalItems: allItems.length,
-        updatedCount 
+        message: "Folder name sync is no longer needed",
+        totalItems: 0,
+        updatedCount: 0 
       });
     } catch (error) {
       console.error("Sync folder names error:", error);
@@ -3790,15 +3772,7 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Title is required" });
       }
 
-      // Look up folder name for reliable matching even if folders are recreated
-      let folderName: string | null = null;
       const effectiveFolderId = folderId === "null" || !folderId ? null : folderId;
-      if (effectiveFolderId) {
-        const folder = await storage.getRssFolder(effectiveFolderId);
-        if (folder) {
-          folderName = folder.name;
-        }
-      }
 
       const outputFilename = `${Date.now()}-${Math.round(Math.random() * 1e9)}.mp3`;
       const conversionResult = await convertToMp3(req.file.path, rssTempDir, outputFilename);
@@ -3819,7 +3793,6 @@ export async function registerRoutes(
 
       const item = await storage.createRssAudioItem({
         folderId: effectiveFolderId,
-        folderName: folderName,
         title,
         description: description || null,
         filename: outputFilename,
@@ -3848,17 +3821,9 @@ export async function registerRoutes(
       if (title !== undefined) updateData.title = title;
       if (description !== undefined) updateData.description = description;
       
-      // When folderId changes, also update folderName for reliable matching
       if (folderId !== undefined) {
         const effectiveFolderId = folderId === "null" ? null : folderId;
         updateData.folderId = effectiveFolderId;
-        
-        if (effectiveFolderId) {
-          const folder = await storage.getRssFolder(effectiveFolderId);
-          updateData.folderName = folder ? folder.name : null;
-        } else {
-          updateData.folderName = null;
-        }
       }
       
       if (sortOrder !== undefined) updateData.sortOrder = sortOrder;

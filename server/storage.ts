@@ -923,29 +923,17 @@ export class DatabaseStorage implements IStorage {
     return db.select().from(rssAudioItems).orderBy(rssAudioItems.sortOrder, desc(rssAudioItems.createdAt));
   }
 
-  // Get RSS audio items by folder - matches by folder ID OR folder name (case-insensitive)
-  // This ensures files show up even if folders are recreated with the same name
+  // Get RSS audio items by folder
   async getRssAudioItemsByFolder(folderId: string | null): Promise<RssAudioItem[]> {
     if (folderId === null) {
-      // Get items with no folder assigned AND no folder name
+      // Get items with no folder assigned
       return db.select().from(rssAudioItems)
-        .where(sql`${rssAudioItems.folderId} IS NULL AND ${rssAudioItems.folderName} IS NULL`)
+        .where(sql`${rssAudioItems.folderId} IS NULL`)
         .orderBy(rssAudioItems.sortOrder, desc(rssAudioItems.createdAt));
     }
     
-    // Get the folder to find its name for matching
-    const folder = await this.getRssFolder(folderId);
-    if (!folder) {
-      // Folder doesn't exist, return items with this folder ID only
-      return db.select().from(rssAudioItems)
-        .where(eq(rssAudioItems.folderId, folderId))
-        .orderBy(rssAudioItems.sortOrder, desc(rssAudioItems.createdAt));
-    }
-    
-    // Match by folder ID OR by folder name (case-insensitive)
-    // This ensures items show up even if folder was recreated with same name
     return db.select().from(rssAudioItems)
-      .where(sql`${rssAudioItems.folderId} = ${folderId} OR LOWER(${rssAudioItems.folderName}) = LOWER(${folder.name})`)
+      .where(eq(rssAudioItems.folderId, folderId))
       .orderBy(rssAudioItems.sortOrder, desc(rssAudioItems.createdAt));
   }
 
