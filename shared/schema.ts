@@ -1,17 +1,16 @@
 import { sql, relations } from "drizzle-orm";
-import { pgTable, text, varchar, boolean, integer, timestamp, jsonb, bigint } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, boolean, integer, timestamp, json, bigint } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
 // Session storage table (used by connect-pg-simple for user login sessions)
-// Note: This table is managed by connect-pg-simple, schema defined here to prevent accidental deletion
+// Note: This table is managed by connect-pg-simple, not Drizzle. Schema defined here to prevent accidental deletion.
+// Do NOT modify this table structure - it must match what connect-pg-simple expects.
 export const userSessions = pgTable("user_sessions", {
   sid: varchar("sid").primaryKey(),
-  sess: jsonb("sess").notNull(),
-  expire: timestamp("expire").notNull(),
-}, (table) => [
-  { name: "IDX_session_expire", columns: [table.expire] }
-]);
+  sess: json("sess").notNull(),
+  expire: timestamp("expire", { precision: 6, withTimezone: true }).notNull(),
+});
 
 // Users table - for admin and customer accounts
 export const users = pgTable("users", {
