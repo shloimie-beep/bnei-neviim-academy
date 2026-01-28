@@ -1,6 +1,6 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw, Download, GripVertical, ChevronDown, ChevronRight, Folder, FolderOpen, ImageIcon, Phone, Clock, ArrowUp, ArrowDown } from "lucide-react";
+import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw, Download, GripVertical, ChevronDown, ChevronRight, Folder, FolderOpen, ImageIcon, Phone, Clock } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import * as tus from "tus-js-client";
 import { Button } from "@/components/ui/button";
@@ -25,7 +25,7 @@ function formatFileSize(bytes: number | null): string {
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
-function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbnail, onRefreshStatus, categories, onMoveUp, onMoveDown, canMoveUp, canMoveDown }: { 
+function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbnail, onRefreshStatus, categories, position, totalCount, onPositionChange }: { 
   video: VideoType; 
   onDelete: () => void;
   onUpdate: (data: Partial<VideoType>) => void;
@@ -33,10 +33,9 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
   onResetThumbnail: (regenerate: boolean) => Promise<void>;
   onRefreshStatus: () => Promise<void>;
   categories: VideoCategory[];
-  onMoveUp?: () => void;
-  onMoveDown?: () => void;
-  canMoveUp?: boolean;
-  canMoveDown?: boolean;
+  position?: number;
+  totalCount?: number;
+  onPositionChange?: (newPosition: number) => void;
 }) {
   const { toast } = useToast();
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
@@ -473,29 +472,24 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
                   >
                     <Clock className={`h-4 w-4 ${video.excludeFromRecent ? "text-destructive" : ""}`} />
                   </Button>
-                  {onMoveUp && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={onMoveUp}
-                      disabled={!canMoveUp}
-                      title="Move up"
-                      data-testid={`button-move-up-${video.id}`}
-                    >
-                      <ArrowUp className="h-4 w-4" />
-                    </Button>
-                  )}
-                  {onMoveDown && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={onMoveDown}
-                      disabled={!canMoveDown}
-                      title="Move down"
-                      data-testid={`button-move-down-${video.id}`}
-                    >
-                      <ArrowDown className="h-4 w-4" />
-                    </Button>
+                  {position !== undefined && totalCount !== undefined && onPositionChange && (
+                    <div className="flex items-center gap-1">
+                      <span className="text-xs text-muted-foreground">#</span>
+                      <Input
+                        type="number"
+                        min={1}
+                        max={totalCount}
+                        value={position}
+                        onChange={(e) => {
+                          const newPos = parseInt(e.target.value);
+                          if (newPos >= 1 && newPos <= totalCount && newPos !== position) {
+                            onPositionChange(newPos);
+                          }
+                        }}
+                        className="w-14 h-8 text-center text-sm"
+                        data-testid={`input-position-${video.id}`}
+                      />
+                    </div>
                   )}
                   <Button
                     variant="ghost"
@@ -812,14 +806,15 @@ export default function VideoManagement() {
     },
   });
 
-  // Move video up or down in the list
-  const moveVideo = async (videoId: string, direction: "up" | "down") => {
+  // Move video to a specific position (1-indexed)
+  const moveVideoToPosition = async (videoId: string, newPosition: number) => {
     if (!videos) return;
     const currentIndex = videos.findIndex(v => v.id === videoId);
     if (currentIndex === -1) return;
     
-    const newIndex = direction === "up" ? currentIndex - 1 : currentIndex + 1;
-    if (newIndex < 0 || newIndex >= videos.length) return;
+    // Convert 1-indexed position to 0-indexed
+    const newIndex = newPosition - 1;
+    if (newIndex < 0 || newIndex >= videos.length || newIndex === currentIndex) return;
     
     // Get the video IDs in the new order
     const reorderedIds = [...videos.map(v => v.id)];
@@ -2171,10 +2166,9 @@ export default function VideoManagement() {
                 }
                 queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
               }}
-              onMoveUp={() => moveVideo(video.id, "up")}
-              onMoveDown={() => moveVideo(video.id, "down")}
-              canMoveUp={index > 0}
-              canMoveDown={index < filteredVideos.length - 1}
+              position={index + 1}
+              totalCount={filteredVideos.length}
+              onPositionChange={(newPos) => moveVideoToPosition(video.id, newPos)}
             />
           ))}
         </div>
