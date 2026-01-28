@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Folder, Trash2, Loader2, Edit2, Plus, Music, GripVertical, ExternalLink, FolderPlus, Copy, Play, Pause, RefreshCw, AlertTriangle } from "lucide-react";
+import { Upload, Folder, Trash2, Loader2, Edit2, Plus, Music, GripVertical, ExternalLink, FolderPlus, Copy, Play, Pause, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -51,16 +51,6 @@ export default function RssFeedManagement() {
 
   const { data: folders = [], isLoading: foldersLoading } = useQuery<RssFolder[]>({
     queryKey: ["/api/admin/rss-folders"],
-  });
-
-  // Check for orphaned items (items with folder_ids that don't match any existing folder)
-  const { data: orphanedItems = [] } = useQuery<RssAudioItem[]>({
-    queryKey: ["/api/admin/rss-audio", "orphaned"],
-    queryFn: async () => {
-      const res = await fetch("/api/admin/rss-audio?folderId=orphaned", { credentials: "include" });
-      if (!res.ok) throw new Error("Failed to fetch orphaned items");
-      return res.json();
-    },
   });
 
   const { data: audioItems = [], isLoading: itemsLoading, refetch: refetchItems } = useQuery<RssAudioItem[]>({
@@ -341,17 +331,6 @@ export default function RssFeedManagement() {
               <Skeleton className="h-10 w-full" />
             ) : (
               <>
-                {orphanedItems.length > 0 && (
-                  <Button
-                    variant={selectedFolderId === "orphaned" ? "secondary" : "ghost"}
-                    className="w-full justify-start text-orange-600 dark:text-orange-400"
-                    onClick={() => setSelectedFolderId("orphaned")}
-                    data-testid="button-folder-orphaned"
-                  >
-                    <AlertTriangle className="h-4 w-4 mr-2" />
-                    <span>Orphaned Files ({orphanedItems.length})</span>
-                  </Button>
-                )}
                 {folders.length === 0 ? (
                   <p className="text-sm text-muted-foreground py-2">No folders yet. Create one to get started.</p>
                 ) : (
@@ -393,11 +372,9 @@ export default function RssFeedManagement() {
               <span>
                 {selectedFolderId === null 
                   ? "Select a Folder" 
-                  : selectedFolderId === "orphaned"
-                    ? "Orphaned Files"
-                    : folders.find(f => f.id === selectedFolderId)?.name || "Audio Files"}
+                  : folders.find(f => f.id === selectedFolderId)?.name || "Audio Files"}
               </span>
-              <Button onClick={() => setShowUploadDialog(true)} disabled={!selectedFolderId || selectedFolderId === "orphaned"} data-testid="button-upload-audio">
+              <Button onClick={() => setShowUploadDialog(true)} disabled={!selectedFolderId} data-testid="button-upload-audio">
                 <Upload className="h-4 w-4 mr-2" />
                 Upload Audio
               </Button>

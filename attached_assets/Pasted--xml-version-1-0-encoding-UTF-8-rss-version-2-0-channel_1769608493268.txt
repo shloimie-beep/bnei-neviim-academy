@@ -1,0 +1,367 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Audio Feed</title>
+    <link>https://onetimeonetime.com</link>
+    <description>Latest audio content</description>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 28 Jan 2026 13:41:58 GMT</lastBuildDate>
+    <item>
+      <title><![CDATA[LV and LA ]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/266fa586-c29c-43f8-b7f6-efe7809a8af4/stream" length="6605360" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/266fa586-c29c-43f8-b7f6-efe7809a8af4/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 20:36:32 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[The Great Escape.mp4]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/84aba1f2-d84d-4906-988f-1ccc12c022ec/stream" length="2175411" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/84aba1f2-d84d-4906-988f-1ccc12c022ec/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 20:32:32 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[The 4 Minute Mile]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/50136832-6d12-4b21-b472-e7bc11d9c99a/stream" length="1451297" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/50136832-6d12-4b21-b472-e7bc11d9c99a/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 20:32:32 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[The Mean Grocer ]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/3d84b5d4-8274-4023-a8c2-4b21e5fc6c07/stream" length="2762435" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/3d84b5d4-8274-4023-a8c2-4b21e5fc6c07/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 20:32:31 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[War Time]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/ece4c389-bf81-41a7-9890-d511ad2eeb88/stream" length="726765" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/ece4c389-bf81-41a7-9890-d511ad2eeb88/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 20:32:18 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[I Met a Jew - Who Did Not Look Like a Jew]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/145c2a6d-cd01-4af2-aae4-8514961ca295/stream" length="3202546" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/145c2a6d-cd01-4af2-aae4-8514961ca295/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 20:32:13 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[This Question They Ask by The Top Law Firms ]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/753e084c-3e89-422e-9e40-5b5ea403538d/stream" length="4181824" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/753e084c-3e89-422e-9e40-5b5ea403538d/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 20:32:11 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[My Friend Levi]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/8cee84c8-a99e-4487-a599-6fde21b569a7/stream" length="1724224" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/8cee84c8-a99e-4487-a599-6fde21b569a7/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 20:32:11 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[Why the "Problem Child" Might Be the Best Teacher]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/daf22c9d-b263-4472-ba14-0d3a71fefb45/stream" length="1697684" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/daf22c9d-b263-4472-ba14-0d3a71fefb45/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 20:32:09 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[Yossel the Contractor]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/c70f2476-7b95-4ae6-b77f-419b7fe3e38d/stream" length="2172276" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/c70f2476-7b95-4ae6-b77f-419b7fe3e38d/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 20:32:09 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[How a Suitcase Got Him Past Security]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/1005ac41-8d07-4f33-8def-de855217141a/stream" length="4593723" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/1005ac41-8d07-4f33-8def-de855217141a/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 20:32:08 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[Why Two Executives Visited my Neighbor's Garage  ]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/bc7fe4f9-3367-4ec2-bb66-25ee5efd1b8e/stream" length="2162454" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/bc7fe4f9-3367-4ec2-bb66-25ee5efd1b8e/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 20:32:07 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[Putting my Kids to Bed]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/36aa00b9-b33b-4a10-a212-a7c4dacd390a/stream" length="971062" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/36aa00b9-b33b-4a10-a212-a7c4dacd390a/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 20:31:48 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[Marginal Gains]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/b1f0ed70-207b-4732-98ba-fbbef44d8bbc/stream" length="2385854" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/b1f0ed70-207b-4732-98ba-fbbef44d8bbc/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 20:31:45 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[California on Fire]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/598693a5-25fb-4a98-9b55-944fdbb59321/stream" length="1813458" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/598693a5-25fb-4a98-9b55-944fdbb59321/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 20:31:23 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[Do Barbers Exist?]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/f7617ab9-c26c-40a3-8ed6-9725656e6e4e/stream" length="1478255" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/f7617ab9-c26c-40a3-8ed6-9725656e6e4e/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 20:31:20 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[The Elevator experiment]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/335932c3-880a-48cd-9aee-484c469cdf15/stream" length="1854209" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/335932c3-880a-48cd-9aee-484c469cdf15/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 20:31:01 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[Avos U'bonim Vayeira]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/13211c45-7a46-40a9-985e-f41a8fef19b7/stream" length="3576201" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/13211c45-7a46-40a9-985e-f41a8fef19b7/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 20:30:59 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[Chanukah 2022]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/14d94e04-c0e6-4c67-813c-1b0fe8106501/stream" length="3090951" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/14d94e04-c0e6-4c67-813c-1b0fe8106501/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 20:30:58 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[Facing the Giants]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/58e784bb-91d8-4ff6-a49e-1a3a98320477/stream" length="2678634" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/58e784bb-91d8-4ff6-a49e-1a3a98320477/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 16:39:59 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[The Deje Rebbe]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/99a180f9-3326-4756-86ee-a9a08f0b660d/stream" length="1806771" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/99a180f9-3326-4756-86ee-a9a08f0b660d/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 16:39:50 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[The Crash I'll Never Forget ]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/42473a94-0574-4a11-9da7-b553192a7b0f/stream" length="2003839" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/42473a94-0574-4a11-9da7-b553192a7b0f/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 16:39:50 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[A Pesach Miracle: The Letter That Saved a Home]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/22ec92e5-07a7-496b-81dd-c31c73b33d75/stream" length="3381223" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/22ec92e5-07a7-496b-81dd-c31c73b33d75/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 16:39:49 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[Check the Cameras!.mp4]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/72478013-ac2b-4d49-b45c-5e134513bcca/stream" length="2557217" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/72478013-ac2b-4d49-b45c-5e134513bcca/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 16:39:47 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[The Layer Who Thought he Outsmarted the Judge]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/b72dfb55-6ce8-44a9-9bc6-307c04df05c9/stream" length="1976254" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/b72dfb55-6ce8-44a9-9bc6-307c04df05c9/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 16:39:45 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[The Long Journey Home: From Washington State to Bnei Brak]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/78578381-0541-4753-8dcf-956a604d976a/stream" length="6572551" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/78578381-0541-4753-8dcf-956a604d976a/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 16:39:45 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[The Long Journey Home: From Washington State to Bnei Brak]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/2a35efaa-1c3d-4273-ad39-a867324843e4/stream" length="6572551" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/2a35efaa-1c3d-4273-ad39-a867324843e4/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 16:39:40 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[The Slap on my Face]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/1a8a709e-7010-4b12-b590-c12ddc76830c/stream" length="2861909" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/1a8a709e-7010-4b12-b590-c12ddc76830c/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 16:39:34 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[He Almost Tricked the Army]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/72b3fc35-28c4-4113-a594-afcdf0fad9ed/stream" length="1483062" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/72b3fc35-28c4-4113-a594-afcdf0fad9ed/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 16:39:27 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[Vintage Lakewood And A Miracle in St. Louis.mp4]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/f9bc549b-a203-4871-a211-95162bfb72bc/stream" length="2813426" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/f9bc549b-a203-4871-a211-95162bfb72bc/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 16:39:26 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[Speed vs. Ego: The Matzah Challenge]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/6b137081-1a24-45f6-b932-f3a48fe950da/stream" length="2475715" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/6b137081-1a24-45f6-b932-f3a48fe950da/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 16:39:20 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[A kid Who Did Not See His Father in 20 Years.... now what?]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/7514e8c1-b0d8-4e81-a487-66d3d7f3bdca/stream" length="5246366" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/7514e8c1-b0d8-4e81-a487-66d3d7f3bdca/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 16:39:18 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[The Ultimate Golf Cart Ride]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/0908bdf8-e81d-4a5c-a2cd-81b309bf5543/stream" length="1641259" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/0908bdf8-e81d-4a5c-a2cd-81b309bf5543/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 16:39:14 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[The Prisoner Exchange]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/7cf67d79-d911-4aea-9d60-7b7e88843ff5/stream" length="2315636" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/7cf67d79-d911-4aea-9d60-7b7e88843ff5/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 16:39:13 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[A Prisoner on the Loose]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/bd5b5442-e338-4776-8913-6abc92b5c190/stream" length="1942608" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/bd5b5442-e338-4776-8913-6abc92b5c190/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 16:39:02 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[Advice from a Billlionaire]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/1d0e0b7e-3d63-4d52-8065-d7eb4aa17263/stream" length="2189204" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/1d0e0b7e-3d63-4d52-8065-d7eb4aa17263/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 16:38:58 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[How a Cancelled Summer Started My Own Camp]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/94fdb276-aced-413d-8f2f-b2aa2d474895/stream" length="2532975" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/94fdb276-aced-413d-8f2f-b2aa2d474895/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 16:38:56 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[Yossi Od Pa'am]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/638343e6-9d1d-4279-8b53-4e82fa50368c/stream" length="2373315" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/638343e6-9d1d-4279-8b53-4e82fa50368c/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 16:38:52 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[Why Hashem Made Us Needy]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/3aa0da3b-89df-4e29-a64d-73a36292af2a/stream" length="1198849" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/3aa0da3b-89df-4e29-a64d-73a36292af2a/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 16:16:25 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[The Science of a Boom]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/fed5e66d-f841-4ed9-85f5-be504c2b3f65/stream" length="2361194" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/fed5e66d-f841-4ed9-85f5-be504c2b3f65/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 16:15:21 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[The 51 Minute Countdown to Mashiach]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/d4df6458-3ba5-4615-b86f-1d09d9f112cd/stream" length="2685530" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/d4df6458-3ba5-4615-b86f-1d09d9f112cd/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 16:15:15 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[Why Getting "Off Course" is Part of the Plan]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/d3fef13d-f2be-4664-b8ed-9dd51a8b4d19/stream" length="860512" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/d3fef13d-f2be-4664-b8ed-9dd51a8b4d19/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 13:44:50 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[The Secret to Hitting Home Runs in Life]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/91c9ee5e-b54e-488a-a06d-8c541301a8cd/stream" length="844838" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/91c9ee5e-b54e-488a-a06d-8c541301a8cd/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 13:44:46 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[The Truth of Cocoa cola]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/a600af1b-93d5-405a-a76d-468f21593ad4/stream" length="3198575" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/a600af1b-93d5-405a-a76d-468f21593ad4/stream</guid>
+      <pubDate>Tue, 27 Jan 2026 13:41:24 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[The Deadness of the dead Sea ]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/5e223ed5-7bd9-416a-9b82-c0a51bce398a/stream" length="921743" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/5e223ed5-7bd9-416a-9b82-c0a51bce398a/stream</guid>
+      <pubDate>Mon, 26 Jan 2026 20:19:41 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[ No Show at the Party]]></title>
+      <description><![CDATA[]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/c37bff15-5610-4476-80b0-b7ef612fc5cc/stream" length="2532975" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/c37bff15-5610-4476-80b0-b7ef612fc5cc/stream</guid>
+      <pubDate>Mon, 26 Jan 2026 19:20:15 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[Shabbos 2]]></title>
+      <description><![CDATA[ (Folder: Mishna)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/95035e26-d430-46a9-96f0-aeb1b205897a/stream" length="10398758" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/95035e26-d430-46a9-96f0-aeb1b205897a/stream</guid>
+      <pubDate>Mon, 26 Jan 2026 19:09:45 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[Shabbos 1]]></title>
+      <description><![CDATA[ (Folder: Mishna)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/07de3023-9a82-4480-a2ea-7a94b5c1948e/stream" length="13122389" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/07de3023-9a82-4480-a2ea-7a94b5c1948e/stream</guid>
+      <pubDate>Mon, 26 Jan 2026 19:09:33 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[The Slap on my Face]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/2ce6a64c-9ae5-48ca-8fb3-cc3cb3f6e8f8/stream" length="2861909" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/2ce6a64c-9ae5-48ca-8fb3-cc3cb3f6e8f8/stream</guid>
+      <pubDate>Mon, 26 Jan 2026 19:04:20 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[the dead sea]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/9992484e-798e-4cec-9fdf-2a7aa435a7c6/stream" length="921743" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/9992484e-798e-4cec-9fdf-2a7aa435a7c6/stream</guid>
+      <pubDate>Mon, 26 Jan 2026 19:03:50 GMT</pubDate>
+    </item>
+    <item>
+      <title><![CDATA[A kid Who Did Not See His Father in 20 Years]]></title>
+      <description><![CDATA[ (Folder: Stories)]]></description>
+      <enclosure url="https://onetimeonetime.com/api/rss-audio/3fafafd8-5eed-4b88-b050-4fe7d7e14e6c/stream" length="5246366" type="audio/mpeg"/>
+      <guid isPermaLink="true">https://onetimeonetime.com/api/rss-audio/3fafafd8-5eed-4b88-b050-4fe7d7e14e6c/stream</guid>
+      <pubDate>Mon, 26 Jan 2026 19:04:08 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

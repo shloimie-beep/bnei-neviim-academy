@@ -3005,12 +3005,14 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Video does not have a streamable source (Vimeo)" });
       }
       
-      // Validate folder if provided
+      // Validate folder if provided and get folder name for reliable matching
+      let folderName: string | null = null;
       if (folderId) {
         const folder = await storage.getRssFolder(folderId);
         if (!folder) {
           return res.status(404).json({ message: "Selected folder not found" });
         }
+        folderName = folder.name;
       }
 
       console.log(`[Hotline Upload] Converting video ${video.id} to MP3 for hotline...`);
@@ -3043,7 +3045,7 @@ export async function registerRoutes(
         console.warn("[Hotline Upload] Could not determine audio duration");
       }
 
-      // Create RSS audio item in database
+      // Create RSS audio item in database with folder name for reliable matching
       const rssAudioItem = await storage.createRssAudioItem({
         title: video.title,
         description: video.description || "",
@@ -3052,6 +3054,7 @@ export async function registerRoutes(
         duration,
         fileSize: mp3Buffer.length,
         folderId: folderId || null,
+        folderName: folderName,
         sortOrder: 0,
       });
       
@@ -3716,10 +3719,7 @@ export async function registerRoutes(
     try {
       const { folderId } = req.query;
       let items;
-      if (folderId === "orphaned") {
-        // Get items with folder_ids that don't match any existing folder
-        items = await storage.getOrphanedRssAudioItems();
-      } else if (folderId === "null" || folderId === "") {
+      if (folderId === "null" || folderId === "") {
         items = await storage.getRssAudioItemsByFolder(null);
       } else if (folderId) {
         items = await storage.getRssAudioItemsByFolder(folderId as string);
@@ -3730,6 +3730,36 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Get RSS audio items error:", error);
       res.status(500).json({ message: "Failed to get RSS audio items" });
+    }
+  });
+  
+  // Admin: Sync folder names for existing RSS audio items (for migration)
+  app.post("/api/admin/rss-audio/sync-folder-names", requireAdmin, async (req, res) => {
+    try {
+      const allItems = await storage.getAllRssAudioItems();
+      const allFolders = await storage.getAllRssFolders();
+      
+      let updatedCount = 0;
+      for (const item of allItems) {
+        if (item.folderId && !item.folderName) {
+          // Find folder by ID and set the name
+          const folder = allFolders.find(f => f.id === item.folderId);
+          if (folder) {
+            await storage.updateRssAudioItem(item.id, { folderName: folder.name });
+            updatedCount++;
+          }
+        }
+      }
+      
+      res.json({ 
+        success: true, 
+        message: `Updated ${updatedCount} items with folder names`,
+        totalItems: allItems.length,
+        updatedCount 
+      });
+    } catch (error) {
+      console.error("Sync folder names error:", error);
+      res.status(500).json({ message: "Failed to sync folder names" });
     }
   });
 
@@ -3760,6 +3790,16 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Title is required" });
       }
 
+      // Look up folder name for reliable matching even if folders are recreated
+      let folderName: string | null = null;
+      const effectiveFolderId = folderId === "null" || !folderId ? null : folderId;
+      if (effectiveFolderId) {
+        const folder = await storage.getRssFolder(effectiveFolderId);
+        if (folder) {
+          folderName = folder.name;
+        }
+      }
+
       const outputFilename = `${Date.now()}-${Math.round(Math.random() * 1e9)}.mp3`;
       const conversionResult = await convertToMp3(req.file.path, rssTempDir, outputFilename);
 
@@ -3778,7 +3818,8 @@ export async function registerRoutes(
       }
 
       const item = await storage.createRssAudioItem({
-        folderId: folderId === "null" || !folderId ? null : folderId,
+        folderId: effectiveFolderId,
+        folderName: folderName,
         title,
         description: description || null,
         filename: outputFilename,
@@ -3806,7 +3847,20 @@ export async function registerRoutes(
       const updateData: any = {};
       if (title !== undefined) updateData.title = title;
       if (description !== undefined) updateData.description = description;
-      if (folderId !== undefined) updateData.folderId = folderId === "null" ? null : folderId;
+      
+      // When folderId changes, also update folderName for reliable matching
+      if (folderId !== undefined) {
+        const effectiveFolderId = folderId === "null" ? null : folderId;
+        updateData.folderId = effectiveFolderId;
+        
+        if (effectiveFolderId) {
+          const folder = await storage.getRssFolder(effectiveFolderId);
+          updateData.folderName = folder ? folder.name : null;
+        } else {
+          updateData.folderName = null;
+        }
+      }
+      
       if (sortOrder !== undefined) updateData.sortOrder = sortOrder;
       
       const item = await storage.updateRssAudioItem(req.params.id, updateData);
