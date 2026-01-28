@@ -329,10 +329,21 @@ export default function RssFeedManagement() {
           <CardContent className="space-y-2">
             {foldersLoading ? (
               <Skeleton className="h-10 w-full" />
-            ) : folders.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-2">No folders yet. Create one to get started.</p>
             ) : (
-              folders.map((folder) => (
+              <>
+                <Button
+                  variant={selectedFolderId === null ? "secondary" : "ghost"}
+                  className="w-full justify-start"
+                  onClick={() => setSelectedFolderId(null)}
+                  data-testid="button-folder-all"
+                >
+                  <Folder className="h-4 w-4 mr-2" />
+                  <span>All Files</span>
+                </Button>
+                {folders.length === 0 ? (
+                  <p className="text-sm text-muted-foreground py-2">No folders yet. Create one to get started.</p>
+                ) : (
+                  folders.map((folder) => (
                 <div key={folder.id} className="flex items-center gap-1">
                   <Button
                     variant={selectedFolderId === folder.id ? "secondary" : "ghost"}
@@ -358,6 +369,8 @@ export default function RssFeedManagement() {
                   </Button>
                 </div>
               ))
+                )}
+              </>
             )}
           </CardContent>
         </Card>
@@ -367,7 +380,7 @@ export default function RssFeedManagement() {
             <CardTitle className="flex items-center justify-between gap-4">
               <span>
                 {selectedFolderId === null 
-                  ? "Select a Folder" 
+                  ? "All Files" 
                   : folders.find(f => f.id === selectedFolderId)?.name || "Audio Files"}
               </span>
               <Button onClick={() => setShowUploadDialog(true)} disabled={!selectedFolderId} data-testid="button-upload-audio">
