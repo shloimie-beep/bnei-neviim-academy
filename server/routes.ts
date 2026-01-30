@@ -1989,12 +1989,11 @@ export async function registerRoutes(
         newStatus = "ready";
         updates.status = "ready";
         
-        // Also get the embed URL if we don't have it
-        if (!video.vimeoEmbedUrl) {
-          const embedUrl = await vimeoService.getSecureEmbedUrl(video.vimeoVideoId);
-          if (embedUrl) {
-            updates.vimeoEmbedUrl = embedUrl;
-          }
+        // Always get the embed URL to ensure we have the correct hash
+        const embedUrl = await vimeoService.getSecureEmbedUrl(video.vimeoVideoId);
+        if (embedUrl) {
+          updates.vimeoEmbedUrl = embedUrl;
+          console.log(`[Vimeo Status Check] Embed URL: ${embedUrl}`);
         }
 
         // Get thumbnail if we don't have one
@@ -2011,7 +2010,7 @@ export async function registerRoutes(
         }
 
         await storage.updateVideo(video.id, updates);
-        console.log(`[Vimeo Status Check] Video ${video.id} updated to ready`);
+        console.log(`[Vimeo Status Check] Video ${video.id} updated to ready with embedUrl: ${embedUrl}`);
       }
 
       res.json({ 
@@ -2031,35 +2030,48 @@ export async function registerRoutes(
       const allVideos = await storage.getAllVideos();
       const processingVideos = allVideos.filter(v => v.status === "processing" && v.vimeoVideoId);
       
+      console.log(`[Vimeo Check] Checking ${processingVideos.length} processing videos...`);
+      
       const results = [];
       for (const video of processingVideos) {
         try {
           const vimeoVideo = await vimeoService.getVideo(video.vimeoVideoId!);
+          console.log(`[Vimeo Check] Video ${video.id} (${video.vimeoVideoId}): Vimeo status = ${vimeoVideo?.status}`);
+          
           if (vimeoVideo && vimeoVideo.status === "available") {
             const updates: any = { status: "ready" };
             
-            if (!video.vimeoEmbedUrl) {
-              const embedUrl = await vimeoService.getSecureEmbedUrl(video.vimeoVideoId!);
-              if (embedUrl) updates.vimeoEmbedUrl = embedUrl;
+            // Always get the embed URL to ensure we have the hash
+            const embedUrl = await vimeoService.getSecureEmbedUrl(video.vimeoVideoId!);
+            if (embedUrl) {
+              updates.vimeoEmbedUrl = embedUrl;
+              console.log(`[Vimeo Check] Video ${video.id} embed URL: ${embedUrl}`);
             }
+            
+            // Get thumbnail if we don't have one
             if (!video.thumbnailPath) {
               const thumbnailUrl = await vimeoService.getThumbnailUrl(video.vimeoVideoId!);
               if (thumbnailUrl) updates.thumbnailPath = thumbnailUrl;
             }
+            
+            // Get duration if we don't have it
             if (!video.duration && vimeoVideo.duration) {
               updates.duration = vimeoVideo.duration;
             }
             
             await storage.updateVideo(video.id, updates);
+            console.log(`[Vimeo Check] Video ${video.id} updated to ready`);
             results.push({ id: video.id, updated: true, status: "ready" });
           } else {
             results.push({ id: video.id, updated: false, status: vimeoVideo?.status || "unknown" });
           }
         } catch (err) {
+          console.error(`[Vimeo Check] Error checking video ${video.id}:`, err);
           results.push({ id: video.id, updated: false, error: true });
         }
       }
       
+      console.log(`[Vimeo Check] Complete. Results: ${JSON.stringify(results)}`);
       res.json({ checked: processingVideos.length, results });
     } catch (error) {
       console.error("Check processing videos error:", error);
@@ -2431,30 +2443,60 @@ export async function registerRoutes(
 
       console.log(`[Vimeo] Finalizing video "${title}" with id: ${vimeoVideoId}`);
 
+      // Try to get the embed URL immediately - Vimeo often provides it right after upload
+      let initialEmbedUrl: string | null = null;
+      let initialThumbnail: string | null = null;
+      let initialDuration: number | null = null;
+      let initialStatus = "processing";
+      
+      try {
+        const vimeoVideo = await vimeoService.getVideo(vimeoVideoId);
+        if (vimeoVideo) {
+          console.log(`[Vimeo] Initial check - status: ${vimeoVideo.status}, link: ${vimeoVideo.link}`);
+          
+          // Get embed URL immediately if available
+          initialEmbedUrl = await vimeoService.getSecureEmbedUrl(vimeoVideoId);
+          console.log(`[Vimeo] Initial embed URL: ${initialEmbedUrl}`);
+          
+          // If video is already available (transcoded), set it as ready
+          if (vimeoVideo.status === "available") {
+            initialStatus = "ready";
+            initialDuration = vimeoVideo.duration || null;
+            initialThumbnail = await vimeoService.getThumbnailUrl(vimeoVideoId);
+          }
+        }
+      } catch (err) {
+        console.log(`[Vimeo] Could not get initial video info (may still be processing): ${err}`);
+      }
+
       const video = await storage.createVideo({
         title,
         description: description || null,
         filename: filename || null,
         filepath: null,
         fileSize: fileSize || null,
-        status: "processing",
+        status: initialStatus,
         categoryId: categoryId || null,
         uploadedBy: req.session.userId!,
-        thumbnailPath: null,
+        thumbnailPath: initialThumbnail,
         bunnyGuid: null,
         bunnyVideoId: null,
         storageType: "vimeo",
         vimeoVideoId,
+        vimeoEmbedUrl: initialEmbedUrl,
+        duration: initialDuration,
       });
 
-      console.log(`[Vimeo] Created video record ${video.id}`);
+      console.log(`[Vimeo] Created video record ${video.id} with embedUrl: ${initialEmbedUrl}`);
 
-      // Poll Vimeo for processing status
-      (async () => {
-        let attempts = 0;
-        const maxAttempts = 120; // 20 minutes max
-        
-        while (attempts < maxAttempts) {
+      // Only poll if video is still processing
+      if (initialStatus === "processing") {
+        // Poll Vimeo for processing status
+        (async () => {
+          let attempts = 0;
+          const maxAttempts = 120; // 20 minutes max
+          
+          while (attempts < maxAttempts) {
           try {
             await new Promise(r => setTimeout(r, 10000)); // Check every 10 seconds
             const vimeoVideo = await vimeoService.getVideo(vimeoVideoId);
@@ -2510,7 +2552,8 @@ export async function registerRoutes(
             attempts++;
           }
         }
-      })();
+        })();
+      }
 
       res.json(video);
     } catch (error: any) {
