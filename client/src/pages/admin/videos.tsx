@@ -1,8 +1,11 @@
 import { useState, useRef, useCallback, useMemo, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw, Download, GripVertical, ChevronDown, ChevronRight, Folder, FolderOpen, ImageIcon, Phone, Clock } from "lucide-react";
+import { Upload, Video, Trash2, Loader2, FileVideo, Edit2, Eye, EyeOff, Plus, FolderPlus, X, ImagePlus, BarChart2, Trash, Music, RotateCcw, RefreshCw, Download, GripVertical, ChevronDown, ChevronRight, Folder, FolderOpen, ImageIcon, Phone, Clock, ArrowUpDown } from "lucide-react";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import * as tus from "tus-js-client";
+import { DndContext, closestCenter, KeyboardSensor, PointerSensor, useSensor, useSensors, DragEndEvent } from "@dnd-kit/core";
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -25,7 +28,7 @@ function formatFileSize(bytes: number | null): string {
   return `${(bytes / (1024 * 1024 * 1024)).toFixed(2)} GB`;
 }
 
-function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbnail, onRefreshStatus, categories, position, totalCount, onPositionChange }: { 
+function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbnail, onRefreshStatus, categories }: { 
   video: VideoType; 
   onDelete: () => void;
   onUpdate: (data: Partial<VideoType>) => void;
@@ -33,9 +36,6 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
   onResetThumbnail: (regenerate: boolean) => Promise<void>;
   onRefreshStatus: () => Promise<void>;
   categories: VideoCategory[];
-  position?: number;
-  totalCount?: number;
-  onPositionChange?: (newPosition: number) => void;
 }) {
   const { toast } = useToast();
   const thumbnailInputRef = useRef<HTMLInputElement>(null);
@@ -472,25 +472,6 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
                   >
                     <Clock className={`h-4 w-4 ${video.excludeFromRecent ? "text-destructive" : ""}`} />
                   </Button>
-                  {position !== undefined && totalCount !== undefined && onPositionChange && (
-                    <div className="flex items-center gap-1">
-                      <span className="text-xs text-muted-foreground">#</span>
-                      <Input
-                        type="number"
-                        min={1}
-                        max={totalCount}
-                        value={position}
-                        onChange={(e) => {
-                          const newPos = parseInt(e.target.value);
-                          if (newPos >= 1 && newPos <= totalCount && newPos !== position) {
-                            onPositionChange(newPos);
-                          }
-                        }}
-                        className="w-14 h-8 text-center text-sm"
-                        data-testid={`input-position-${video.id}`}
-                      />
-                    </div>
-                  )}
                   <Button
                     variant="ghost"
                     size="icon"
@@ -585,6 +566,132 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
   );
 }
 
+// Sortable item for drag-and-drop reordering
+function SortableVideoItem({ video }: { video: VideoType }) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id: video.id });
+  
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+  
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="flex items-center gap-3 p-3 bg-card border rounded-md cursor-grab active:cursor-grabbing"
+      {...attributes}
+      {...listeners}
+    >
+      <GripVertical className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+      <div className="flex-1 min-w-0">
+        <p className="font-medium truncate">{video.title}</p>
+        <p className="text-sm text-muted-foreground">
+          {video.storageType === "vimeo" ? "Video" : "Audio"} 
+          {video.status === "processing" && " (Processing)"}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+// Dialog for reordering videos in a category via drag-and-drop
+function ReorderVideosDialog({ 
+  open, 
+  onOpenChange, 
+  videos,
+  categoryName,
+  onSave 
+}: { 
+  open: boolean; 
+  onOpenChange: (open: boolean) => void;
+  videos: VideoType[];
+  categoryName: string;
+  onSave: (orderedVideoIds: string[]) => Promise<void>;
+}) {
+  const [orderedVideos, setOrderedVideos] = useState<VideoType[]>(videos);
+  const [isSaving, setIsSaving] = useState(false);
+  
+  const sensors = useSensors(
+    useSensor(PointerSensor),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
+  
+  // Reset order when dialog opens
+  useEffect(() => {
+    if (open) {
+      setOrderedVideos(videos);
+    }
+  }, [open, videos]);
+  
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    
+    if (over && active.id !== over.id) {
+      setOrderedVideos((items) => {
+        const oldIndex = items.findIndex(v => v.id === active.id);
+        const newIndex = items.findIndex(v => v.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
+  };
+  
+  const handleSave = async () => {
+    setIsSaving(true);
+    try {
+      await onSave(orderedVideos.map(v => v.id));
+      onOpenChange(false);
+    } finally {
+      setIsSaving(false);
+    }
+  };
+  
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="max-w-lg max-h-[80vh] flex flex-col">
+        <DialogHeader>
+          <DialogTitle>Reorder Videos</DialogTitle>
+          <DialogDescription>
+            Drag and drop to reorder videos in "{categoryName}"
+          </DialogDescription>
+        </DialogHeader>
+        
+        <div className="flex-1 overflow-y-auto py-4">
+          <DndContext
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext
+              items={orderedVideos.map(v => v.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              <div className="space-y-2">
+                {orderedVideos.map((video) => (
+                  <SortableVideoItem key={video.id} video={video} />
+                ))}
+              </div>
+            </SortableContext>
+          </DndContext>
+        </div>
+        
+        <DialogFooter>
+          <Button variant="outline" onClick={() => onOpenChange(false)} disabled={isSaving}>
+            Cancel
+          </Button>
+          <Button onClick={handleSave} disabled={isSaving}>
+            {isSaving ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+            Save Order
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 interface UploadQueueItem {
   file: File;
   title: string;
@@ -637,6 +744,38 @@ export default function VideoManagement() {
   
   // Category folder expansion state
   const [expandedCategories, setExpandedCategories] = useState<Set<string>>(new Set());
+  
+  // Reorder dialog state
+  const [reorderDialogOpen, setReorderDialogOpen] = useState(false);
+  const [reorderCategoryId, setReorderCategoryId] = useState<string | null>(null);
+  const [reorderCategoryName, setReorderCategoryName] = useState("");
+  const [reorderVideos, setReorderVideos] = useState<VideoType[]>([]);
+  
+  // Open reorder dialog for a specific category
+  const openReorderDialog = (categoryId: string | null, categoryName: string, videos: VideoType[]) => {
+    setReorderCategoryId(categoryId);
+    setReorderCategoryName(categoryName);
+    setReorderVideos(videos);
+    setReorderDialogOpen(true);
+  };
+  
+  // Save reordered videos
+  const saveReorderedVideos = async (orderedVideoIds: string[]) => {
+    try {
+      const res = await fetch("/api/admin/videos/reorder", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ videoIds: orderedVideoIds }),
+      });
+      if (!res.ok) throw new Error("Failed to save order");
+      await queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
+      toast({ title: "Video order saved" });
+    } catch (error: any) {
+      toast({ title: "Failed to save order", description: error.message, variant: "destructive" });
+      throw error;
+    }
+  };
   
   const toggleCategory = (categoryId: string) => {
     setExpandedCategories(prev => {
@@ -2175,9 +2314,6 @@ export default function VideoManagement() {
                 }
                 queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
               }}
-              position={index + 1}
-              totalCount={filteredVideos.length}
-              onPositionChange={(newPos) => moveVideoToPosition(video.id, newPos)}
             />
           ))}
         </div>
@@ -2215,6 +2351,20 @@ export default function VideoManagement() {
                             )}
                           </CardTitle>
                         </div>
+                        {categoryVideos.length > 1 && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openReorderDialog(category.id, category.name, categoryVideos);
+                            }}
+                            data-testid={`button-reorder-${category.id}`}
+                          >
+                            <ArrowUpDown className="h-4 w-4 mr-1" />
+                            Reorder
+                          </Button>
+                        )}
                         {isExpanded ? (
                           <ChevronDown className="h-5 w-5 text-muted-foreground" />
                         ) : (
@@ -2251,10 +2401,25 @@ export default function VideoManagement() {
                                       <Badge variant="outline" className="border-primary/50 text-primary text-xs">
                                         {subVideos.length} video{subVideos.length !== 1 ? 's' : ''}
                                       </Badge>
+                                      {subVideos.length > 1 && (
+                                        <Button
+                                          variant="outline"
+                                          size="sm"
+                                          className="ml-auto h-7 text-xs"
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            openReorderDialog(subcat.id, subcat.name, subVideos);
+                                          }}
+                                          data-testid={`button-reorder-${subcat.id}`}
+                                        >
+                                          <ArrowUpDown className="h-3 w-3 mr-1" />
+                                          Reorder
+                                        </Button>
+                                      )}
                                       {isSubExpanded ? (
-                                        <ChevronDown className="h-4 w-4 text-primary/60 ml-auto" />
+                                        <ChevronDown className="h-4 w-4 text-primary/60" />
                                       ) : (
-                                        <ChevronRight className="h-4 w-4 text-primary/60 ml-auto" />
+                                        <ChevronRight className="h-4 w-4 text-primary/60" />
                                       )}
                                     </div>
                                   </CollapsibleTrigger>
@@ -2301,9 +2466,6 @@ export default function VideoManagement() {
                                             }
                                             queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
                                           }}
-                                          position={idx + 1}
-                                          totalCount={subVideos.length}
-                                          onPositionChange={(newPos) => moveVideoToPosition(video.id, newPos)}
                                         />
                                       ))}
                                     </div>
@@ -2351,9 +2513,6 @@ export default function VideoManagement() {
                                 }
                                 queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
                               }}
-                              position={idx + 1}
-                              totalCount={categoryVideos.length}
-                              onPositionChange={(newPos) => moveVideoToPosition(video.id, newPos)}
                             />
                           ))}
                         </>
@@ -2385,6 +2544,20 @@ export default function VideoManagement() {
                           </Badge>
                         </CardTitle>
                       </div>
+                      {videosByCategory.uncategorized.length > 1 && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openReorderDialog(null, "Uncategorized", videosByCategory.uncategorized);
+                          }}
+                          data-testid="button-reorder-uncategorized"
+                        >
+                          <ArrowUpDown className="h-4 w-4 mr-1" />
+                          Reorder
+                        </Button>
+                      )}
                       {expandedCategories.has("__uncategorized__") ? (
                         <ChevronDown className="h-5 w-5 text-muted-foreground" />
                       ) : (
@@ -2432,9 +2605,6 @@ export default function VideoManagement() {
                           }
                           queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
                         }}
-                        position={idx + 1}
-                        totalCount={videosByCategory.uncategorized.length}
-                        onPositionChange={(newPos) => moveVideoToPosition(video.id, newPos)}
                       />
                     )) : null}
                   </CardContent>
@@ -2444,6 +2614,15 @@ export default function VideoManagement() {
           )}
         </div>
       ) : null}
+      
+      {/* Reorder Videos Dialog */}
+      <ReorderVideosDialog
+        open={reorderDialogOpen}
+        onOpenChange={setReorderDialogOpen}
+        videos={reorderVideos}
+        categoryName={reorderCategoryName}
+        onSave={saveReorderedVideos}
+      />
     </div>
   );
 }
