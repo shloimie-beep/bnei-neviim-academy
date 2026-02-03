@@ -1151,6 +1151,7 @@ export default function VideoManagement() {
           xhr.onerror = () => reject(new Error("Network error during audio upload"));
           xhr.onabort = () => reject(new Error("Upload cancelled"));
           xhr.open("POST", "/api/admin/videos/upload");
+          xhr.withCredentials = true; // Send session cookies
           xhr.send(formData);
         });
 
@@ -1167,6 +1168,7 @@ export default function VideoManagement() {
       const createResponse = await fetch("/api/admin/videos/vimeo/create", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ title: item.title, fileSize: item.file.size }),
       });
 
@@ -1226,6 +1228,7 @@ export default function VideoManagement() {
           finalizeResponse = await fetch("/api/admin/videos/vimeo/finalize", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
+            credentials: "include",
             body: JSON.stringify({
               title: item.title,
               description: "",
@@ -1266,6 +1269,7 @@ export default function VideoManagement() {
           thumbnailFormData.append("thumbnail", item.thumbnail);
           await fetch(`/api/admin/videos/${videoData.id}/thumbnail`, {
             method: "POST",
+            credentials: "include",
             body: thumbnailFormData,
           });
           console.log(`Thumbnail uploaded for video ${videoData.id}`);
@@ -1454,6 +1458,7 @@ export default function VideoManagement() {
           xhr.ontimeout = () => reject(new Error("Upload timed out - your connection may be too slow or unstable. Try a smaller file or faster connection."));
           xhr.timeout = 3600000; // 1 hour timeout
           xhr.open("POST", "/api/admin/videos");
+          xhr.withCredentials = true; // Send session cookies
           xhr.send(formData);
         });
 
@@ -1471,6 +1476,7 @@ export default function VideoManagement() {
         const createResponse = await fetch("/api/admin/videos/vimeo/create", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
+          credentials: "include",
           body: JSON.stringify({ title: singleTitle, fileSize: singleFile.size }),
         });
 
@@ -1510,6 +1516,7 @@ export default function VideoManagement() {
             finalizeResponse = await fetch("/api/admin/videos/vimeo/finalize", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
+              credentials: "include",
               body: JSON.stringify({
                 title: singleTitle,
                 description: singleDescription,
@@ -1549,6 +1556,7 @@ export default function VideoManagement() {
           
           const thumbnailResponse = await fetch(`/api/admin/videos/${videoData.id}/thumbnail`, {
             method: "POST",
+            credentials: "include",
             body: thumbnailFormData,
           });
           
