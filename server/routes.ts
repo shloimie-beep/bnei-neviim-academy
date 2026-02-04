@@ -1602,7 +1602,7 @@ export async function registerRoutes(
 
         res.json(video);
 
-        // Convert to MP3 128kbps in background
+        // Convert to MP3 128kbps and upload to Object Storage in background
         (async () => {
           try {
             // Convert any audio format to MP3 128kbps
@@ -1610,22 +1610,30 @@ export async function registerRoutes(
             await execAsync(ffmpegCommand, { timeout: 1800000 });
 
             const stats = fs.statSync(convertedPath);
+            const mp3Buffer = fs.readFileSync(convertedPath);
+            
+            // Upload to Object Storage for permanent storage
+            const objectStoragePath = `/objects/.private/audio/${video.id}.mp3`;
+            await objectStorageService.uploadBuffer(objectStoragePath, mp3Buffer, "audio/mpeg");
+            console.log(`Audio ${video.id} uploaded to Object Storage: ${objectStoragePath}`);
 
             await storage.updateVideo(video.id, {
-              filepath: convertedPath,
-              filename: convertedFilename,
+              filepath: objectStoragePath,
+              filename: `${video.id}.mp3`,
               fileSize: stats.size,
               status: "ready",
             });
 
-            // Delete original file to save space
+            // Delete local files to save space
             if (fs.existsSync(originalPath)) {
               fs.unlinkSync(originalPath);
-              console.log(`Deleted original audio file: ${originalPath}`);
+            }
+            if (fs.existsSync(convertedPath)) {
+              fs.unlinkSync(convertedPath);
             }
 
             const savedPercent = Math.round((1 - stats.size / mediaFile.size) * 100);
-            console.log(`Audio ${video.id} converted to MP3 128kbps successfully (${Math.round(mediaFile.size/1024)}KB -> ${Math.round(stats.size/1024)}KB, saved ${savedPercent}%)`);
+            console.log(`Audio ${video.id} converted to MP3 128kbps and stored in Object Storage (${Math.round(mediaFile.size/1024)}KB -> ${Math.round(stats.size/1024)}KB, saved ${savedPercent}%)`);
           } catch (conversionError) {
             console.error(`Audio conversion failed for ${video.id}:`, conversionError);
             await storage.updateVideo(video.id, { status: "failed" });
@@ -1633,6 +1641,9 @@ export async function registerRoutes(
             // Clean up on failure
             if (fs.existsSync(convertedPath)) {
               fs.unlinkSync(convertedPath);
+            }
+            if (fs.existsSync(originalPath)) {
+              fs.unlinkSync(originalPath);
             }
           }
         })();
@@ -3552,6 +3563,67 @@ export async function registerRoutes(
     } catch (error: any) {
       console.error("RSS audio migration error:", error);
       res.status(500).json({ message: error.message || "Failed to migrate RSS audio files" });
+    }
+  });
+
+  // Admin: Migrate Media Library audio files from local filesystem to object storage
+  app.post("/api/admin/migrate-audio-to-object-storage", requireAdmin, async (req, res) => {
+    try {
+      const allVideos = await storage.getAllVideos();
+      
+      // Filter to only local audio files (not already in object storage)
+      const localAudioFiles = allVideos.filter(v => 
+        v.mediaType === "audio" && 
+        v.filepath && 
+        !v.filepath.startsWith("/objects/") &&
+        fs.existsSync(v.filepath)
+      );
+      
+      if (localAudioFiles.length === 0) {
+        return res.json({ message: "No local audio files to migrate", migrated: 0, errors: 0 });
+      }
+
+      let migrated = 0;
+      let errors = 0;
+
+      for (const audio of localAudioFiles) {
+        try {
+          if (!audio.filepath) {
+            errors++;
+            continue;
+          }
+
+          // Upload to object storage
+          const objectPath = `/objects/.private/audio/${audio.id}.mp3`;
+          const fileBuffer = fs.readFileSync(audio.filepath);
+          await objectStorageService.uploadBuffer(objectPath, fileBuffer, "audio/mpeg");
+          
+          // Update database record
+          await storage.updateVideo(audio.id, { 
+            filepath: objectPath,
+            filename: `${audio.id}.mp3`
+          });
+          
+          // Delete local file after successful migration
+          fs.unlinkSync(audio.filepath);
+          
+          migrated++;
+          console.log(`Migrated audio ${audio.id} (${audio.title}) to object storage: ${objectPath}`);
+        } catch (error) {
+          console.error(`Failed to migrate audio ${audio.id}:`, error);
+          errors++;
+        }
+      }
+
+      res.json({
+        message: `Migration complete: ${migrated} audio files migrated to Object Storage, ${errors} errors`,
+        migrated,
+        errors,
+        total: localAudioFiles.length,
+      });
+    } catch (error: any) {
+      console.error("Audio migration error:", error);
+      res.status(500).json({ message: error.message || "Failed to migrate audio files" });
     }
   });
 
