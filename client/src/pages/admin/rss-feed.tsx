@@ -248,22 +248,17 @@ export default function RssFeedManagement() {
     reorderMutation.mutate(newOrder.map(i => i.id));
   };
 
-  // Fetch the secure RSS feed URL from backend
-  const { data: rssFeedData } = useQuery<{ url: string }>({
-    queryKey: ["/api/admin/rss-feed-url"],
+  const { data: rssFeedData } = useQuery<{ folders: { folderId: string; folderName: string; url: string }[] }>({
+    queryKey: ["/api/admin/rss-feed-urls"],
   });
-  
-  const rssUrl = rssFeedData?.url || "Loading...";
 
-  const copyRssUrl = () => {
-    if (rssFeedData?.url) {
-      const confirmed = window.confirm(
-        "Warning: This URL contains a private access token. Do not share it publicly.\n\nCopy URL to clipboard?"
-      );
-      if (confirmed) {
-        navigator.clipboard.writeText(rssFeedData.url);
-        toast({ title: "RSS URL copied to clipboard" });
-      }
+  const copyFolderRssUrl = (folder: { folderName: string; url: string }) => {
+    const confirmed = window.confirm(
+      `Warning: This URL contains a private access token. Do not share it publicly.\n\nCopy RSS URL for "${folder.folderName}" to clipboard?`
+    );
+    if (confirmed) {
+      navigator.clipboard.writeText(folder.url);
+      toast({ title: `RSS URL for "${folder.folderName}" copied` });
     }
   };
 
@@ -309,10 +304,6 @@ export default function RssFeedManagement() {
             {isMigrating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <RefreshCw className="h-4 w-4 mr-2" />}
             Migrate to Cloud
           </Button>
-          <Button variant="outline" onClick={copyRssUrl} data-testid="button-copy-rss-url">
-            <Copy className="h-4 w-4 mr-2" />
-            Copy RSS URL
-          </Button>
         </div>
       </div>
 
@@ -332,32 +323,46 @@ export default function RssFeedManagement() {
             ) : folders.length === 0 ? (
               <p className="text-sm text-muted-foreground py-2">No folders yet. Create one to get started.</p>
             ) : (
-              folders.map((folder) => (
-                <div key={folder.id} className="flex items-center gap-1">
-                  <Button
-                    variant={selectedFolderId === folder.id ? "secondary" : "ghost"}
-                    className="flex-1 justify-start"
-                    onClick={() => setSelectedFolderId(folder.id)}
-                    data-testid={`button-folder-${folder.id}`}
-                  >
-                    <Folder className="h-4 w-4 mr-2" />
-                    <span className="truncate">{folder.name}</span>
-                  </Button>
-                  <Button
-                    size="icon"
-                    variant="ghost"
-                    onClick={() => {
-                      setEditingFolder(folder);
-                      setNewFolderName(folder.name);
-                      setNewFolderDescription(folder.description || "");
-                      setShowEditFolderDialog(true);
-                    }}
-                    data-testid={`button-edit-folder-${folder.id}`}
-                  >
-                    <Edit2 className="h-3 w-3" />
-                  </Button>
-                </div>
-              ))
+              folders.map((folder) => {
+                const folderFeedInfo = rssFeedData?.folders?.find(f => f.folderId === folder.id);
+                return (
+                  <div key={folder.id} className="flex items-center gap-1">
+                    <Button
+                      variant={selectedFolderId === folder.id ? "secondary" : "ghost"}
+                      className="flex-1 justify-start"
+                      onClick={() => setSelectedFolderId(folder.id)}
+                      data-testid={`button-folder-${folder.id}`}
+                    >
+                      <Folder className="h-4 w-4 mr-2" />
+                      <span className="truncate">{folder.name}</span>
+                    </Button>
+                    {folderFeedInfo && (
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        onClick={() => copyFolderRssUrl(folderFeedInfo)}
+                        title={`Copy RSS URL for ${folder.name}`}
+                        data-testid={`button-copy-rss-${folder.id}`}
+                      >
+                        <Copy className="h-3 w-3" />
+                      </Button>
+                    )}
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      onClick={() => {
+                        setEditingFolder(folder);
+                        setNewFolderName(folder.name);
+                        setNewFolderDescription(folder.description || "");
+                        setShowEditFolderDialog(true);
+                      }}
+                      data-testid={`button-edit-folder-${folder.id}`}
+                    >
+                      <Edit2 className="h-3 w-3" />
+                    </Button>
+                  </div>
+                );
+              })
             )}
           </CardContent>
         </Card>
@@ -474,6 +479,11 @@ export default function RssFeedManagement() {
             <DialogDescription>Create a folder to organize your audio files</DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
+            <div className="rounded-md border border-yellow-500/50 bg-yellow-500/10 p-3">
+              <p className="text-sm font-medium text-yellow-700 dark:text-yellow-400">
+                Important: Creating a new folder will generate a new RSS feed URL. You must contact your phone company to set up the new feed before it becomes active.
+              </p>
+            </div>
             <div className="space-y-2">
               <Label htmlFor="folder-name">Folder Name</Label>
               <Input
@@ -570,8 +580,11 @@ export default function RssFeedManagement() {
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete Folder?</AlertDialogTitle>
-            <AlertDialogDescription>
-              This will delete the folder "{editingFolder?.name}" and all audio files inside it. This action cannot be undone.
+            <AlertDialogDescription className="space-y-3">
+              <span className="block">This will delete the folder "{editingFolder?.name}" and all audio files inside it. This action cannot be undone.</span>
+              <span className="block font-medium text-yellow-700 dark:text-yellow-400">
+                Important: You must contact your phone company to remove this feed from their system, otherwise callers may hear an error.
+              </span>
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

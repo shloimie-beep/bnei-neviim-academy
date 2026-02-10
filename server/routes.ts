@@ -4166,52 +4166,54 @@ export async function registerRoutes(
   
   const RSS_FEED_SECRET = getRssFeedSecret();
   
-  // Admin endpoint to get RSS feed URL with secret
-  app.get("/api/admin/rss-feed-url", requireAdmin, async (req, res) => {
+  // Admin endpoint to get RSS feed URLs per folder
+  app.get("/api/admin/rss-feed-urls", requireAdmin, async (req, res) => {
     const baseUrl = `${req.protocol}://${req.get("host")}`;
-    res.json({ url: `${baseUrl}/rss/feed/${RSS_FEED_SECRET}.xml` });
+    const folders = await storage.getAllRssFolders();
+    const folderUrls = folders.map(folder => ({
+      folderId: folder.id,
+      folderName: folder.name,
+      url: `${baseUrl}/rss/feed/${RSS_FEED_SECRET}/${folder.id}.xml`,
+    }));
+    res.json({ folders: folderUrls });
   });
 
-  // Public: RSS Feed XML (requires secret token in URL)
-  app.get("/rss/feed/:token.xml", async (req, res) => {
+  // Public: RSS Feed XML per folder (requires secret token in URL, uses folder ID so URL never changes)
+  app.get("/rss/feed/:token/:folderId.xml", async (req, res) => {
     try {
-      const { token } = req.params;
+      const { token, folderId } = req.params;
       
-      // Validate the secret token
       if (token !== RSS_FEED_SECRET) {
         return res.status(404).send("Not Found");
       }
+
+      const folder = await storage.getRssFolder(folderId);
+      if (!folder) {
+        return res.status(404).send("Feed not found");
+      }
       
-      const items = await storage.getAllRssAudioItems();
-      const folders = await storage.getAllRssFolders();
-      const folderMap = new Map(folders.map(f => [f.id, f]));
-      
+      const items = await storage.getRssAudioItemsByFolder(folderId);
       const baseUrl = `${req.protocol}://${req.get("host")}`;
-      const feedTitle = "Audio Feed";
-      const feedDescription = "Latest audio content";
-      const feedLink = baseUrl;
 
       let xml = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0">
   <channel>
-    <title>${feedTitle}</title>
-    <link>${feedLink}</link>
-    <description>${feedDescription}</description>
+    <title><![CDATA[${folder.name}]]></title>
+    <link>${baseUrl}</link>
+    <description><![CDATA[${folder.description || folder.name}]]></description>
     <language>en-us</language>
     <lastBuildDate>${new Date().toUTCString()}</lastBuildDate>
 `;
 
       for (const item of items) {
         const audioUrl = `${baseUrl}/api/rss-audio/${item.id}/stream`;
-        const folderName = item.folderId ? folderMap.get(item.folderId)?.name || "" : "";
         const pubDate = item.createdAt ? new Date(item.createdAt).toUTCString() : new Date().toUTCString();
-        const durationStr = item.duration ? formatDuration(item.duration) : "00:00";
         
         xml += `    <item>
       <title><![CDATA[${item.title}]]></title>
-      <description><![CDATA[${item.description || ""}${folderName ? ` (Folder: ${folderName})` : ""}]]></description>
+      <description><![CDATA[${item.description || ""}]]></description>
       <enclosure url="${audioUrl}" length="${item.fileSize || 0}" type="audio/mpeg"/>
-      <guid isPermaLink="true">${audioUrl}</guid>
+      <guid isPermaLink="false">${item.id}</guid>
       <pubDate>${pubDate}</pubDate>
     </item>
 `;
