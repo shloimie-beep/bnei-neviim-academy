@@ -182,6 +182,7 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
     try {
       const response = await fetch(`/api/admin/videos/${video.id}/download-mp3`, {
         credentials: "include",
+        headers: getAuthHeaders(),
       });
       
       if (!response.ok) {
@@ -220,7 +221,7 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
     try {
       const response = await fetch(`/api/admin/videos/${video.id}/upload-to-hotline`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         credentials: "include",
         body: JSON.stringify({ folderId: selectedHotlineFolderId || null }),
       });
@@ -764,7 +765,7 @@ export default function VideoManagement() {
     try {
       const res = await fetch("/api/admin/videos/reorder", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         credentials: "include",
         body: JSON.stringify({ videoIds: orderedVideoIds }),
       });
@@ -824,6 +825,7 @@ export default function VideoManagement() {
         const res = await fetch("/api/admin/videos/check-processing", {
           method: "POST",
           credentials: "include",
+          headers: getAuthHeaders(),
         });
         if (res.ok) {
           const data = await res.json();
@@ -972,7 +974,7 @@ export default function VideoManagement() {
     try {
       const res = await fetch("/api/admin/videos/reorder", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         credentials: "include",
         body: JSON.stringify({ videoIds: reorderedIds }),
       });
@@ -1046,7 +1048,7 @@ export default function VideoManagement() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(`/api/admin/videos/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/videos/${id}`, { method: "DELETE", credentials: "include", headers: getAuthHeaders() });
       if (!res.ok) throw new Error("Failed to delete");
     },
     onSuccess: () => {
@@ -1062,7 +1064,8 @@ export default function VideoManagement() {
     mutationFn: async ({ id, data }: { id: string; data: Partial<VideoType> }) => {
       const res = await fetch(`/api/admin/videos/${id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        credentials: "include",
         body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error("Failed to update");
@@ -1167,7 +1170,7 @@ export default function VideoManagement() {
       // Step 1: Create video on Vimeo and get TUS upload URL
       const createResponse = await fetch("/api/admin/videos/vimeo/create", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         credentials: "include",
         body: JSON.stringify({ title: item.title, fileSize: item.file.size }),
       });
@@ -1227,7 +1230,7 @@ export default function VideoManagement() {
         try {
           finalizeResponse = await fetch("/api/admin/videos/vimeo/finalize", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", ...getAuthHeaders() },
             credentials: "include",
             body: JSON.stringify({
               title: item.title,
@@ -1270,6 +1273,7 @@ export default function VideoManagement() {
           await fetch(`/api/admin/videos/${videoData.id}/thumbnail`, {
             method: "POST",
             credentials: "include",
+            headers: getAuthHeaders(),
             body: thumbnailFormData,
           });
           console.log(`Thumbnail uploaded for video ${videoData.id}`);
@@ -1291,6 +1295,8 @@ export default function VideoManagement() {
           try {
             await fetch(`/api/admin/videos/${vimeoVideoId}/vimeo`, {
               method: "DELETE",
+              credentials: "include",
+              headers: getAuthHeaders(),
             });
           } catch (cleanupError) {
             console.error("Failed to cleanup cancelled upload:", cleanupError);
@@ -1475,7 +1481,7 @@ export default function VideoManagement() {
         setSingleUploadProgress(5);
         const createResponse = await fetch("/api/admin/videos/vimeo/create", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", ...getAuthHeaders() },
           credentials: "include",
           body: JSON.stringify({ title: singleTitle, fileSize: singleFile.size }),
         });
@@ -1515,7 +1521,7 @@ export default function VideoManagement() {
           try {
             finalizeResponse = await fetch("/api/admin/videos/vimeo/finalize", {
               method: "POST",
-              headers: { "Content-Type": "application/json" },
+              headers: { "Content-Type": "application/json", ...getAuthHeaders() },
               credentials: "include",
               body: JSON.stringify({
                 title: singleTitle,
@@ -1557,6 +1563,7 @@ export default function VideoManagement() {
           const thumbnailResponse = await fetch(`/api/admin/videos/${videoData.id}/thumbnail`, {
             method: "POST",
             credentials: "include",
+            headers: getAuthHeaders(),
             body: thumbnailFormData,
           });
           
@@ -2299,6 +2306,7 @@ export default function VideoManagement() {
                   method: "POST",
                   body: formData,
                   credentials: "include",
+                  headers: getAuthHeaders(),
                 });
                 if (!res.ok) throw new Error("Failed to upload thumbnail");
                 queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
@@ -2307,6 +2315,7 @@ export default function VideoManagement() {
                 const res = await fetch(`/api/admin/videos/${video.id}/thumbnail?regenerate=${regenerate}`, {
                   method: "DELETE",
                   credentials: "include",
+                  headers: getAuthHeaders(),
                 });
                 if (!res.ok) throw new Error("Failed to reset thumbnail");
                 queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
@@ -2315,6 +2324,7 @@ export default function VideoManagement() {
                 const res = await fetch(`/api/admin/videos/${video.id}/check-vimeo-status`, {
                   method: "POST",
                   credentials: "include",
+                  headers: getAuthHeaders(),
                 });
                 if (!res.ok) {
                   const err = await res.json();
@@ -2451,6 +2461,7 @@ export default function VideoManagement() {
                                               method: "POST",
                                               body: formData,
                                               credentials: "include",
+                                              headers: getAuthHeaders(),
                                             });
                                             if (!res.ok) throw new Error("Failed to upload thumbnail");
                                             queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
@@ -2459,6 +2470,7 @@ export default function VideoManagement() {
                                             const res = await fetch(`/api/admin/videos/${video.id}/thumbnail?regenerate=${regenerate}`, {
                                               method: "DELETE",
                                               credentials: "include",
+                                              headers: getAuthHeaders(),
                                             });
                                             if (!res.ok) throw new Error("Failed to reset thumbnail");
                                             queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
@@ -2467,6 +2479,7 @@ export default function VideoManagement() {
                                             const res = await fetch(`/api/admin/videos/${video.id}/check-vimeo-status`, {
                                               method: "POST",
                                               credentials: "include",
+                                              headers: getAuthHeaders(),
                                             });
                                             if (!res.ok) {
                                               const err = await res.json();
@@ -2498,6 +2511,7 @@ export default function VideoManagement() {
                                   method: "POST",
                                   body: formData,
                                   credentials: "include",
+                                  headers: getAuthHeaders(),
                                 });
                                 if (!res.ok) throw new Error("Failed to upload thumbnail");
                                 queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
@@ -2506,6 +2520,7 @@ export default function VideoManagement() {
                                 const res = await fetch(`/api/admin/videos/${video.id}/thumbnail?regenerate=${regenerate}`, {
                                   method: "DELETE",
                                   credentials: "include",
+                                  headers: getAuthHeaders(),
                                 });
                                 if (!res.ok) throw new Error("Failed to reset thumbnail");
                                 queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
@@ -2514,6 +2529,7 @@ export default function VideoManagement() {
                                 const res = await fetch(`/api/admin/videos/${video.id}/check-vimeo-status`, {
                                   method: "POST",
                                   credentials: "include",
+                                  headers: getAuthHeaders(),
                                 });
                                 if (!res.ok) {
                                   const err = await res.json();
@@ -2590,6 +2606,7 @@ export default function VideoManagement() {
                             method: "POST",
                             body: formData,
                             credentials: "include",
+                            headers: getAuthHeaders(),
                           });
                           if (!res.ok) throw new Error("Failed to upload thumbnail");
                           queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
@@ -2598,6 +2615,7 @@ export default function VideoManagement() {
                           const res = await fetch(`/api/admin/videos/${video.id}/thumbnail?regenerate=${regenerate}`, {
                             method: "DELETE",
                             credentials: "include",
+                            headers: getAuthHeaders(),
                           });
                           if (!res.ok) throw new Error("Failed to reset thumbnail");
                           queryClient.invalidateQueries({ queryKey: ["/api/admin/videos"] });
@@ -2606,6 +2624,7 @@ export default function VideoManagement() {
                           const res = await fetch(`/api/admin/videos/${video.id}/check-vimeo-status`, {
                             method: "POST",
                             credentials: "include",
+                            headers: getAuthHeaders(),
                           });
                           if (!res.ok) {
                             const err = await res.json();

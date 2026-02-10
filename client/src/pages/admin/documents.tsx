@@ -14,6 +14,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
+import { getAuthHeaders } from "@/lib/auth-context";
 import type { Document, VideoCategory } from "@shared/schema";
 
 function formatFileSize(bytes: number | null): string {
@@ -239,7 +240,7 @@ export default function DocumentManagement() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(`/api/admin/documents/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/documents/${id}`, { method: "DELETE", credentials: "include", headers: getAuthHeaders() });
       if (!res.ok) throw new Error("Failed to delete");
     },
     onSuccess: () => {
@@ -255,7 +256,8 @@ export default function DocumentManagement() {
     mutationFn: async ({ id, data }: { id: string; data: Partial<Document> }) => {
       const res = await fetch(`/api/admin/documents/${id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        credentials: "include",
         body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error("Failed to update");
@@ -288,6 +290,8 @@ export default function DocumentManagement() {
       const res = await fetch("/api/admin/documents", {
         method: "POST",
         body: formData,
+        credentials: "include",
+        headers: getAuthHeaders(),
       });
 
       if (!res.ok) {

@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
+import { getAuthHeaders } from "@/lib/auth-context";
 import type { Album, AlbumTrack } from "@shared/schema";
 
 type AlbumWithCount = Album & { trackCount: number };
@@ -38,7 +39,10 @@ function AlbumCard({ album, onDelete, onUpdate, onRefresh }: {
   const { data: tracks = [], isLoading: tracksLoading } = useQuery<AlbumTrack[]>({
     queryKey: ["/api/admin/albums", album.id, "tracks"],
     queryFn: async () => {
-      const res = await fetch(`/api/admin/albums/${album.id}/tracks`);
+      const res = await fetch(`/api/admin/albums/${album.id}/tracks`, {
+        credentials: "include",
+        headers: getAuthHeaders(),
+      });
       if (!res.ok) throw new Error("Failed to fetch tracks");
       return res.json();
     },
@@ -76,6 +80,7 @@ function AlbumCard({ album, onDelete, onUpdate, onRefresh }: {
         method: "POST",
         body: formData,
         credentials: "include",
+        headers: getAuthHeaders(),
       });
       if (!res.ok) throw new Error("Failed to upload thumbnail");
       toast({ title: "Thumbnail uploaded" });
@@ -103,6 +108,8 @@ function AlbumCard({ album, onDelete, onUpdate, onRefresh }: {
       const res = await fetch(`/api/admin/albums/${album.id}/tracks`, {
         method: "POST",
         body: formData,
+        credentials: "include",
+        headers: getAuthHeaders(),
       });
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
@@ -124,6 +131,8 @@ function AlbumCard({ album, onDelete, onUpdate, onRefresh }: {
     try {
       const res = await fetch(`/api/admin/albums/${album.id}/tracks/${trackId}`, {
         method: "DELETE",
+        credentials: "include",
+        headers: getAuthHeaders(),
       });
       if (!res.ok) throw new Error("Failed to delete track");
       toast({ title: "Track deleted" });
@@ -390,7 +399,8 @@ export default function AlbumManagement() {
     mutationFn: async (data: { title: string; description: string }) => {
       const res = await fetch("/api/admin/albums", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        credentials: "include",
         body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error("Failed to create album");
@@ -410,7 +420,7 @@ export default function AlbumManagement() {
 
   const deleteAlbumMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(`/api/admin/albums/${id}`, { method: "DELETE" });
+      const res = await fetch(`/api/admin/albums/${id}`, { method: "DELETE", credentials: "include", headers: getAuthHeaders() });
       if (!res.ok) throw new Error("Failed to delete album");
     },
     onSuccess: () => {
@@ -426,7 +436,8 @@ export default function AlbumManagement() {
     mutationFn: async ({ id, data }: { id: string; data: Partial<Album> }) => {
       const res = await fetch(`/api/admin/albums/${id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        credentials: "include",
         body: JSON.stringify(data),
       });
       if (!res.ok) throw new Error("Failed to update album");
@@ -452,7 +463,8 @@ export default function AlbumManagement() {
       // Create the album first
       const res = await fetch("/api/admin/albums", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        credentials: "include",
         body: JSON.stringify({
           title: newAlbumTitle.trim(),
           description: newAlbumDescription.trim(),
@@ -468,6 +480,8 @@ export default function AlbumManagement() {
         await fetch(`/api/admin/albums/${album.id}/thumbnail`, {
           method: "POST",
           body: thumbFormData,
+          credentials: "include",
+          headers: getAuthHeaders(),
         });
       }
       
@@ -479,6 +493,8 @@ export default function AlbumManagement() {
         await fetch(`/api/admin/albums/${album.id}/tracks`, {
           method: "POST",
           body: trackFormData,
+          credentials: "include",
+          headers: getAuthHeaders(),
         });
       }
       

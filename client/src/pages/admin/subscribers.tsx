@@ -10,6 +10,7 @@ import { Loader2, Users, DollarSign, Clock, Search, RefreshCw, Ban, Calendar, Do
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { getAuthHeaders } from "@/lib/auth-context";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -106,6 +107,7 @@ export default function SubscribersManagement() {
     queryFn: async () => {
       const res = await fetch(`/api/admin/subscribers?month=${selectedMonth}`, {
         credentials: "include",
+        headers: getAuthHeaders(),
       });
       if (!res.ok) throw new Error("Failed to fetch subscribers");
       return res.json();

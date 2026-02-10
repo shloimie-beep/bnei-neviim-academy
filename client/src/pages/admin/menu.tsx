@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Slider } from "@/components/ui/slider";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
+import { getAuthHeaders } from "@/lib/auth-context";
 import type { MenuOption, AudioFile } from "@shared/schema";
 
 type FunctionType = "none" | "play_mp3" | "submenu" | "conference";
@@ -390,7 +391,7 @@ export default function MenuManagement() {
       const url = currentMenuId
         ? `/api/admin/menu-options?parentMenuId=${currentMenuId}`
         : "/api/admin/menu-options?parentMenuId=null";
-      const res = await fetch(url);
+      const res = await fetch(url, { credentials: "include", headers: getAuthHeaders() });
       return res.json();
     },
   });
@@ -398,7 +399,7 @@ export default function MenuManagement() {
   const { data: allMenuOptions } = useQuery<MenuOption[]>({
     queryKey: ["/api/admin/menu-options/all"],
     queryFn: async () => {
-      const res = await fetch("/api/admin/menu-options/all");
+      const res = await fetch("/api/admin/menu-options/all", { credentials: "include", headers: getAuthHeaders() });
       return res.json();
     },
   });
@@ -461,6 +462,8 @@ export default function MenuManagement() {
       const res = await fetch("/api/admin/audio-files/upload-and-assign", {
         method: "POST",
         body: formData,
+        credentials: "include",
+        headers: getAuthHeaders(),
       });
 
       if (!res.ok) {
@@ -475,7 +478,8 @@ export default function MenuManagement() {
         try {
           await fetch("/api/admin/audio-files/cleanup", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+            credentials: "include",
             body: JSON.stringify({ audioFileId: newAudio.oldAudioIdToDelete }),
           });
         } catch {}
@@ -508,6 +512,8 @@ export default function MenuManagement() {
     const res = await fetch("/api/admin/audio-files/upload-and-assign", {
       method: "POST",
       body: formData,
+      credentials: "include",
+      headers: getAuthHeaders(),
     });
 
     if (!res.ok) {
@@ -530,7 +536,8 @@ export default function MenuManagement() {
       try {
         await fetch("/api/admin/audio-files/cleanup", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+          credentials: "include",
           body: JSON.stringify({ audioFileId: newAudio.oldAudioIdToDelete }),
         });
       } catch {

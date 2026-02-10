@@ -13,6 +13,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
+import { getAuthHeaders } from "@/lib/auth-context";
 import type { RssFolder, RssAudioItem } from "@shared/schema";
 
 function formatDuration(seconds: number | null): string {
@@ -62,7 +63,7 @@ export default function RssFeedManagement() {
     queryKey: ["/api/admin/rss-audio", selectedFolderId],
     queryFn: async () => {
       const params = selectedFolderId !== null ? `?folderId=${selectedFolderId}` : "";
-      const res = await fetch(`/api/admin/rss-audio${params}`, { credentials: "include" });
+      const res = await fetch(`/api/admin/rss-audio${params}`, { credentials: "include", headers: getAuthHeaders() });
       if (!res.ok) throw new Error("Failed to fetch audio items");
       return res.json();
     },
@@ -72,7 +73,7 @@ export default function RssFeedManagement() {
     mutationFn: async (data: { name: string; description?: string }) => {
       const res = await fetch("/api/admin/rss-folders", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body: JSON.stringify(data),
         credentials: "include",
       });
@@ -95,7 +96,7 @@ export default function RssFeedManagement() {
     mutationFn: async ({ id, data }: { id: string; data: Partial<RssFolder> }) => {
       const res = await fetch(`/api/admin/rss-folders/${id}`, {
         method: "PATCH",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body: JSON.stringify(data),
         credentials: "include",
       });
@@ -115,7 +116,7 @@ export default function RssFeedManagement() {
 
   const deleteFolderMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(`/api/admin/rss-folders/${id}`, { method: "DELETE", credentials: "include" });
+      const res = await fetch(`/api/admin/rss-folders/${id}`, { method: "DELETE", credentials: "include", headers: getAuthHeaders() });
       if (!res.ok) throw new Error("Failed to delete folder");
       return res.json();
     },
@@ -140,6 +141,7 @@ export default function RssFeedManagement() {
       const res = await fetch("/api/admin/migrate-rss-audio", {
         method: "POST",
         credentials: "include",
+        headers: getAuthHeaders(),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Migration failed");
@@ -209,7 +211,7 @@ export default function RssFeedManagement() {
 
   const deleteAudioMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(`/api/admin/rss-audio/${id}`, { method: "DELETE", credentials: "include" });
+      const res = await fetch(`/api/admin/rss-audio/${id}`, { method: "DELETE", credentials: "include", headers: getAuthHeaders() });
       if (!res.ok) throw new Error("Failed to delete audio");
       return res.json();
     },
@@ -227,7 +229,7 @@ export default function RssFeedManagement() {
     mutationFn: async (itemIds: string[]) => {
       const res = await fetch("/api/admin/rss-audio/reorder", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
         body: JSON.stringify({ itemIds }),
         credentials: "include",
       });
@@ -281,6 +283,7 @@ export default function RssFeedManagement() {
         method: "POST",
         body: formData,
         credentials: "include",
+        headers: getAuthHeaders(),
       });
       if (!res.ok) {
         const data = await res.json();
