@@ -110,7 +110,7 @@ export async function convertToMp3(
       "-codec:a", "libmp3lame",
       "-b:a", "64k",
       "-ar", "44100",
-      "-ac", "2",
+      "-ac", "1",
       "-y",
       outputPath
     ];

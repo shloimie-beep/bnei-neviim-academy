@@ -4101,6 +4101,83 @@ export async function registerRoutes(
     }
   });
 
+  // ===== Hotline Greeting Audio =====
+  const GREETING_OBJECT_PATH = "/objects/.private/rss-audio/greeting.mp3";
+
+  app.get("/api/admin/rss-greeting", requireAdmin, async (req, res) => {
+    try {
+      const objectFile = await objectStorageService.getObjectEntityFile(GREETING_OBJECT_PATH);
+      const [metadata] = await objectFile.getMetadata();
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      res.json({
+        exists: true,
+        url: `${baseUrl}/api/rss-greeting.mp3`,
+        fileSize: parseInt(metadata.size as string, 10),
+      });
+    } catch {
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      res.json({
+        exists: false,
+        url: `${baseUrl}/api/rss-greeting.mp3`,
+        fileSize: 0,
+      });
+    }
+  });
+
+  app.post("/api/admin/rss-greeting", requireAdmin, rssUpload.single("audio"), async (req, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "Audio file is required" });
+      }
+
+      const outputFilename = `greeting-temp-${Date.now()}.mp3`;
+      const conversionResult = await convertToMp3(req.file.path, rssTempDir, outputFilename);
+
+      if (!conversionResult.success) {
+        return res.status(500).json({ message: "Audio conversion failed: " + conversionResult.error });
+      }
+
+      const fileBuffer = fs.readFileSync(conversionResult.outputPath!);
+      await objectStorageService.uploadBuffer(GREETING_OBJECT_PATH, fileBuffer, "audio/mpeg");
+
+      if (fs.existsSync(conversionResult.outputPath!)) {
+        fs.unlinkSync(conversionResult.outputPath!);
+      }
+
+      const baseUrl = `${req.protocol}://${req.get("host")}`;
+      res.json({
+        success: true,
+        url: `${baseUrl}/api/rss-greeting.mp3`,
+        fileSize: conversionResult.fileSize,
+        duration: conversionResult.duration,
+      });
+    } catch (error) {
+      console.error("Upload greeting error:", error);
+      if (req.file && fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+      res.status(500).json({ message: "Failed to upload greeting" });
+    }
+  });
+
+  app.get("/api/rss-greeting.mp3", async (req, res) => {
+    try {
+      const objectFile = await objectStorageService.getObjectEntityFile(GREETING_OBJECT_PATH);
+      const [metadata] = await objectFile.getMetadata();
+      const fileSize = parseInt(metadata.size as string, 10);
+
+      res.setHeader("Content-Type", "audio/mpeg");
+      res.setHeader("Content-Length", fileSize);
+      res.setHeader("Accept-Ranges", "bytes");
+      res.setHeader("Cache-Control", "no-cache");
+
+      const stream = await objectFile.createReadStream();
+      stream.pipe(res);
+    } catch {
+      res.status(404).json({ message: "Greeting audio not found" });
+    }
+  });
+
   // Public: Stream RSS audio file (from object storage or legacy local)
   app.get("/api/rss-audio/:id/stream", async (req, res) => {
     try {

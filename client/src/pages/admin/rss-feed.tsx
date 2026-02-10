@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Upload, Folder, Trash2, Loader2, Edit2, Plus, Music, GripVertical, ExternalLink, FolderPlus, Copy, Play, Pause, RefreshCw } from "lucide-react";
+import { Upload, Folder, Trash2, Loader2, Edit2, Plus, Music, GripVertical, ExternalLink, FolderPlus, Copy, Play, Pause, RefreshCw, Mic } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -48,6 +48,11 @@ export default function RssFeedManagement() {
   const [deletingItemId, setDeletingItemId] = useState<string | null>(null);
   const [playingItemId, setPlayingItemId] = useState<string | null>(null);
   const [isMigrating, setIsMigrating] = useState(false);
+  const [showGreetingDialog, setShowGreetingDialog] = useState(false);
+  const [greetingFile, setGreetingFile] = useState<File | null>(null);
+  const [isUploadingGreeting, setIsUploadingGreeting] = useState(false);
+  const [isPlayingGreeting, setIsPlayingGreeting] = useState(false);
+  const greetingAudioRef = useRef<HTMLAudioElement>(null);
 
   const { data: folders = [], isLoading: foldersLoading } = useQuery<RssFolder[]>({
     queryKey: ["/api/admin/rss-folders"],
@@ -262,6 +267,57 @@ export default function RssFeedManagement() {
     }
   };
 
+  const { data: greetingData, refetch: refetchGreeting } = useQuery<{ exists: boolean; url: string; fileSize: number }>({
+    queryKey: ["/api/admin/rss-greeting"],
+  });
+
+  const handleGreetingUpload = async () => {
+    if (!greetingFile) return;
+    setIsUploadingGreeting(true);
+    try {
+      const formData = new FormData();
+      formData.append("audio", greetingFile);
+      const res = await fetch("/api/admin/rss-greeting", {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || "Upload failed");
+      }
+      toast({ title: "Greeting updated" });
+      setGreetingFile(null);
+      refetchGreeting();
+    } catch (error: any) {
+      toast({ title: "Failed to upload greeting", description: error.message, variant: "destructive" });
+    } finally {
+      setIsUploadingGreeting(false);
+    }
+  };
+
+  const togglePlayGreeting = () => {
+    if (isPlayingGreeting) {
+      greetingAudioRef.current?.pause();
+      setIsPlayingGreeting(false);
+    } else if (greetingData?.exists && greetingAudioRef.current) {
+      greetingAudioRef.current.src = "/api/rss-greeting.mp3";
+      greetingAudioRef.current.load();
+      greetingAudioRef.current.play().catch(() => {
+        setIsPlayingGreeting(false);
+        toast({ title: "Failed to play greeting", variant: "destructive" });
+      });
+      setIsPlayingGreeting(true);
+    }
+  };
+
+  const copyGreetingUrl = () => {
+    if (greetingData?.url) {
+      navigator.clipboard.writeText(greetingData.url);
+      toast({ title: "Greeting URL copied to clipboard" });
+    }
+  };
+
   const togglePlayAudio = (itemId: string) => {
     if (playingItemId === itemId) {
       audioRef.current?.pause();
@@ -289,12 +345,29 @@ export default function RssFeedManagement() {
         onError={() => setPlayingItemId(null)}
         className="hidden" 
       />
+      <audio
+        ref={greetingAudioRef}
+        onEnded={() => setIsPlayingGreeting(false)}
+        onError={() => setIsPlayingGreeting(false)}
+        className="hidden"
+      />
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold" data-testid="text-page-title">Hotline</h1>
           <p className="text-muted-foreground">Manage audio files for your hotline</p>
         </div>
         <div className="flex items-center gap-2 flex-wrap">
+          <Button
+            variant="outline"
+            onClick={() => setShowGreetingDialog(true)}
+            data-testid="button-greeting"
+          >
+            <Mic className="h-4 w-4 mr-2" />
+            Greeting
+            {greetingData?.exists && (
+              <Badge variant="secondary" className="ml-2">Active</Badge>
+            )}
+          </Button>
           <Button 
             variant="outline" 
             onClick={handleMigrate} 
@@ -671,6 +744,90 @@ export default function RssFeedManagement() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Dialog open={showGreetingDialog} onOpenChange={(open) => {
+        setShowGreetingDialog(open);
+        if (!open) {
+          setGreetingFile(null);
+          if (isPlayingGreeting) {
+            greetingAudioRef.current?.pause();
+            setIsPlayingGreeting(false);
+          }
+        }
+      }}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Hotline Greeting</DialogTitle>
+            <DialogDescription>
+              Upload or replace your hotline greeting audio. The URL stays the same when you replace the file.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            {greetingData?.exists ? (
+              <div className="flex items-center gap-2 rounded-md border p-3">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={togglePlayGreeting}
+                  data-testid="button-play-greeting"
+                >
+                  {isPlayingGreeting ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
+                </Button>
+                <div className="flex-1">
+                  <p className="text-sm font-medium">Current Greeting</p>
+                  <p className="text-xs text-muted-foreground">{formatFileSize(greetingData.fileSize)}</p>
+                </div>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={copyGreetingUrl}
+                  title="Copy greeting URL"
+                  data-testid="button-copy-greeting-url"
+                >
+                  <Copy className="h-4 w-4" />
+                </Button>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">No greeting uploaded yet.</p>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor="greeting-file">{greetingData?.exists ? "Replace Greeting" : "Upload Greeting"}</Label>
+              <Input
+                id="greeting-file"
+                type="file"
+                accept="audio/*"
+                onChange={(e) => setGreetingFile(e.target.files?.[0] || null)}
+                data-testid="input-greeting-file"
+              />
+              {greetingFile && (
+                <p className="text-sm text-muted-foreground">
+                  Selected: {greetingFile.name} ({formatFileSize(greetingFile.size)})
+                </p>
+              )}
+              <p className="text-xs text-muted-foreground">
+                Will be converted to MP3 64kbps mono
+              </p>
+            </div>
+          </div>
+          <DialogFooter className="gap-2">
+            {greetingData?.exists && (
+              <Button variant="outline" onClick={copyGreetingUrl} data-testid="button-copy-greeting-url-footer">
+                <Copy className="h-4 w-4 mr-2" />
+                Copy URL
+              </Button>
+            )}
+            <Button
+              onClick={handleGreetingUpload}
+              disabled={!greetingFile || isUploadingGreeting}
+              data-testid="button-upload-greeting"
+            >
+              {isUploadingGreeting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              {greetingData?.exists ? "Replace Greeting" : "Upload Greeting"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
