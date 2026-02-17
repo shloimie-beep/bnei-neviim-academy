@@ -44,8 +44,14 @@ The application uses a monorepo architecture, separating the frontend and backen
     - Album art and tracks stored in Replit Object Storage.
 - **RSS Feed Architecture**:
     - Distributes audio content via an RSS podcast feed.
-    - All audio is converted to MP3 64kbps using ffmpeg and stored locally.
+    - All audio is converted to MP3 64kbps mono using ffmpeg and stored in Replit Object Storage.
     - Supports hierarchical folder organization and manual reordering of audio items.
+- **Audio Storage Architecture**:
+    - ALL audio files (IVR/menu, media, RSS, albums) are stored in Replit Object Storage for persistence across deployments.
+    - IVR/menu audio stored at `/objects/.private/audio/{uuid}.mp3`.
+    - RSS audio stored at `/objects/.private/rss-audio/{filename}.mp3`.
+    - Greeting stored at fixed path `/objects/.private/rss-audio/greeting.mp3`.
+    - NEVER use local disk paths for audio storage — local files are wiped on every deployment.
 
 ### Data Storage
 - **Primary Database**: PostgreSQL, with schema defined using Drizzle ORM.

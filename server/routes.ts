@@ -1368,7 +1368,6 @@ export async function registerRoutes(
 
       let voitexRecordingId: string | null = null;
 
-      // Optionally sync to Voitex
       if (syncToVoitex === "true" && voitexAlbum) {
         try {
           const { getVoitexClient } = await import("./voitexClient");
@@ -1394,10 +1393,20 @@ export async function registerRoutes(
         }
       }
 
+      const tempId = crypto.randomUUID();
+      const objectPath = `/objects/.private/audio/${tempId}.mp3`;
+      const fileBuffer = fs.readFileSync(req.file.path);
+      await objectStorageService.uploadBuffer(objectPath, fileBuffer, "audio/mpeg");
+      console.log(`Audio file uploaded to Object Storage: ${objectPath}`);
+
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+
       const audioFile = await storage.createAudioFile({
         name,
         filename: req.file.originalname,
-        filepath: req.file.path,
+        filepath: objectPath,
         type,
         uploadedBy: req.session.userId!,
         voitexAlbum: voitexAlbum || null,
@@ -1419,8 +1428,15 @@ export async function registerRoutes(
         return res.status(404).json({ message: "Audio file not found" });
       }
 
-      // Delete the file from disk
-      if (fs.existsSync(file.filepath)) {
+      if (file.filepath.startsWith("/objects/")) {
+        try {
+          const objectFile = await objectStorageService.getObjectEntityFile(file.filepath);
+          await objectFile.delete();
+          console.log(`Deleted audio file from Object Storage: ${file.filepath}`);
+        } catch (err) {
+          console.error("Failed to delete audio from Object Storage:", err);
+        }
+      } else if (fs.existsSync(file.filepath)) {
         fs.unlinkSync(file.filepath);
       }
 
@@ -1436,6 +1452,38 @@ export async function registerRoutes(
       const file = await storage.getAudioFile(req.params.id);
       if (!file) {
         return res.status(404).json({ message: "Audio file not found" });
+      }
+
+      if (file.filepath.startsWith("/objects/")) {
+        try {
+          const objectFile = await objectStorageService.getObjectEntityFile(file.filepath);
+          const [metadata] = await objectFile.getMetadata();
+          const fileSize = parseInt(metadata.size as string, 10);
+          const range = req.headers.range;
+
+          res.setHeader("Accept-Ranges", "bytes");
+          res.setHeader("Content-Type", "audio/mpeg");
+
+          if (range) {
+            const parts = range.replace(/bytes=/, "").split("-");
+            const start = parseInt(parts[0], 10);
+            const end = parts[1] ? parseInt(parts[1], 10) : fileSize - 1;
+            const chunksize = (end - start) + 1;
+            res.writeHead(206, {
+              'Content-Range': `bytes ${start}-${end}/${fileSize}`,
+              'Content-Length': chunksize,
+            });
+            const stream = objectFile.createReadStream({ start, end });
+            stream.pipe(res);
+          } else {
+            res.setHeader("Content-Length", fileSize);
+            objectFile.createReadStream().pipe(res);
+          }
+          return;
+        } catch (err) {
+          console.error("Object Storage audio stream error:", err);
+          return res.status(404).json({ message: "Audio file not found in storage" });
+        }
       }
 
       if (!fs.existsSync(file.filepath)) {
@@ -1485,11 +1533,20 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Name is required" });
       }
 
-      // Create new audio file first
+      const tempId = crypto.randomUUID();
+      const objectPath = `/objects/.private/audio/${tempId}.mp3`;
+      const fileBuffer = fs.readFileSync(req.file.path);
+      await objectStorageService.uploadBuffer(objectPath, fileBuffer, "audio/mpeg");
+      console.log(`Audio file (upload-and-assign) uploaded to Object Storage: ${objectPath}`);
+
+      if (fs.existsSync(req.file.path)) {
+        fs.unlinkSync(req.file.path);
+      }
+
       const audioFile = await storage.createAudioFile({
         name,
         filename: req.file.originalname,
-        filepath: req.file.path,
+        filepath: objectPath,
         type,
         uploadedBy: req.session.userId!,
         voitexAlbum: null,
@@ -1497,7 +1554,6 @@ export async function registerRoutes(
         voitexRecordingId: null,
       });
 
-      // Return the new file - old file will be cleaned up separately
       res.json({ ...audioFile, oldAudioIdToDelete: replaceAudioId || null });
     } catch (error) {
       console.error("Upload and assign error:", error);
@@ -1505,7 +1561,6 @@ export async function registerRoutes(
     }
   });
 
-  // Delete orphaned audio file after menu option is updated
   app.post("/api/admin/audio-files/cleanup", requireAdmin, async (req, res) => {
     try {
       const { audioFileId } = req.body;
@@ -1515,17 +1570,21 @@ export async function registerRoutes(
 
       const file = await storage.getAudioFile(audioFileId);
       if (file) {
-        // Delete from disk
-        if (fs.existsSync(file.filepath)) {
+        if (file.filepath.startsWith("/objects/")) {
+          try {
+            const objectFile = await objectStorageService.getObjectEntityFile(file.filepath);
+            await objectFile.delete();
+          } catch (err) {
+            console.error("Failed to delete orphaned audio from Object Storage:", err);
+          }
+        } else if (fs.existsSync(file.filepath)) {
           fs.unlinkSync(file.filepath);
         }
-        // Delete from database
         await storage.deleteAudioFile(audioFileId);
       }
       res.json({ success: true });
     } catch (error) {
       console.error("Cleanup error:", error);
-      // Don't fail - this is cleanup
       res.json({ success: false });
     }
   });
@@ -4509,18 +4568,7 @@ export async function registerRoutes(
         });
       }
 
-      // If audio is in object storage, serve from there (works in production)
-      if (video.mediaType === "audio" && video.filepath?.startsWith("/objects/")) {
-        await storage.incrementVideoViewCount(video.id);
-        return res.json({ 
-          localAudio: true, 
-          streamUrl: `/api/audio/${video.id}/stream`,
-          mediaType: video.mediaType,
-        });
-      }
-
-      // If audio has a local filepath, serve from local storage
-      if (video.mediaType === "audio" && video.filepath && fs.existsSync(video.filepath)) {
+      if (video.mediaType === "audio" && video.filepath) {
         await storage.incrementVideoViewCount(video.id);
         return res.json({ 
           localAudio: true, 
