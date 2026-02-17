@@ -3190,12 +3190,19 @@ export async function registerRoutes(
         res.setHeader("Content-Disposition", `attachment; filename="${safeTitle}.mp3"`);
         
         if (video.filepath) {
-          // Local audio file
+          if (video.filepath.startsWith("/objects/")) {
+            try {
+              const objectFile = await objectStorageService.getObjectEntityFile(video.filepath);
+              return objectFile.createReadStream().pipe(res);
+            } catch (err) {
+              console.error("Object storage download error:", err);
+              throw new Error("Audio file not found in storage");
+            }
+          }
           const localPath = path.join(process.cwd(), "uploads", "videos", path.basename(video.filepath));
           if (fs.existsSync(localPath)) {
             return fs.createReadStream(localPath).pipe(res);
           }
-          // Try alternative path
           const altPath = video.filepath.startsWith("/") ? video.filepath : path.join(process.cwd(), video.filepath);
           if (fs.existsSync(altPath)) {
             return fs.createReadStream(altPath).pipe(res);
