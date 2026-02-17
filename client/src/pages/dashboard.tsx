@@ -12,7 +12,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth, getAuthHeaders } from "@/lib/auth-context";
+import { useAuth, getAuthHeaders, getStoredAuthToken } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { DocumentViewer } from "@/components/document-viewer";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -154,12 +154,10 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
   const [thumbnailCacheBust] = useState(() => Date.now());
 
   useEffect(() => {
-    // Reset state when video changes
     setStreamUrl(null);
     setStreamLoading(true);
     setStreamError(null);
     
-    // Always use the backend API with cache-buster
     fetch(`/api/videos/${video.id}/stream?t=${Date.now()}`, {
       cache: "no-store",
       credentials: "include",
@@ -171,7 +169,9 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
         if (contentType?.includes("application/json")) {
           return res.json().then(data => {
             if (data.localAudio && data.streamUrl) {
-              setStreamUrl(data.streamUrl);
+              const token = getStoredAuthToken();
+              const tokenParam = token ? `?token=${encodeURIComponent(token)}` : "";
+              setStreamUrl(`${data.streamUrl}${tokenParam}`);
             } else if (data.cdnUrl) {
               setStreamUrl(data.cdnUrl);
             } else if (data.embedUrl) {
@@ -182,8 +182,9 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
             setStreamLoading(false);
           });
         } else {
-          // Direct stream (for legacy videos)
-          setStreamUrl(`/api/videos/${video.id}/stream?t=${Date.now()}`);
+          const legacyToken = getStoredAuthToken();
+          const legacyTokenParam = legacyToken ? `&token=${encodeURIComponent(legacyToken)}` : "";
+          setStreamUrl(`/api/videos/${video.id}/stream?t=${Date.now()}${legacyTokenParam}`);
           setStreamLoading(false);
         }
       })
@@ -741,7 +742,10 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
     if (audioRef.current) {
       audioRef.current.pause();
     }
-    const audio = new Audio(`/api/albums/${album.id}/tracks/${track.id}/stream`);
+
+    const token = getStoredAuthToken();
+    const tokenParam = token ? `?token=${encodeURIComponent(token)}` : "";
+    const audio = new Audio(`/api/albums/${album.id}/tracks/${track.id}/stream${tokenParam}`);
     
     audio.ontimeupdate = () => setCurrentTime(audio.currentTime);
     audio.onloadedmetadata = () => setDuration(audio.duration);

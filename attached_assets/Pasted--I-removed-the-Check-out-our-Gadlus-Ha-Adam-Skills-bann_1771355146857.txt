@@ -1,0 +1,53 @@
+
+I removed the "Check out our Gadlus Ha'Adam Skills" banner from the landing page. How does it look now?
+
+on my homepage, change the embed for the video "A Birthday Surprise" to <div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/1138747998?h=456811057a&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position:absolute;top:0;left:0;width:100%;height:100%;" title="Epic Birthday Prank!"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
+
+and The Secret Mission to <div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/1050076957?h=99d1edd7d6&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position:absolute;top:0;left:0;width:100%;height:100%;" title="The Secret Mission"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
+
+and Meet The Evil Inclination to <div style="padding:56.25% 0 0 0;position:relative;"><iframe src="https://player.vimeo.com/video/1138749816?h=70374df2cc&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" style="position:absolute;top:0;left:0;width:100%;height:100%;" title="MEET THE EVIL INCLINATION"></iframe></div><script src="https://player.vimeo.com/api/player.js"></script>
+
+I updated all three featured video embeds on the homepage with the new Vimeo codes you provided. Check if they play correctly now.
+
+on my published site, I checked the albums and when I tried to play an audio track, it would play (it said it couldn't be found). I reupload a track and it played. So I just want to make sure for sure that from now on even the audio urls for albums are stored in the cloud with a never-expering/chaning url?
+
+I updated album tracks to now store in permanent cloud storage. Any new tracks you upload will have URLs that never expire or change. Old tracks with broken URLs will need to be re-uploaded. Would you like to test uploading a new track?
+
+and the thumbnails will also remain forver?
+
+in the admin media section make a button (next to the download button) that functions sililarly to the download button... that is it makes a 64 kb/bs mono mp3 out of th video and instead of downloading it to the computer, it uploads that file direclty into hotline... (a little diaolog should appear asking which folder).... again, the vimeo file used for conversion should be cleanedup from the server automatically.
+
+I added a phone icon button in the admin media section. Click it to convert any video to audio and upload directly to your hotline with folder selection. Would you like to test it?
+
+the phone button doesn't work... when I press it, the pages just turns white
+
+I fixed the dropdown issue. Can you try clicking the phone button again?
+
+Optimized Agent memory
+require when selecting to upload media file to phone line that it pulls the names of the existing hotline folders and requires you to select one (not root)
+
+Folder selection is now required. Try clicking the phone button - you'll need to select a folder before uploading.
+
+change the video in the backround of my homepage to https://vimeo.com/1158542993/daa31d3417?fl=ls&fe=ec
+
+Done! I've updated the homepage background video to your new Vimeo video.
+
+The background video on your homepage is now updated. Does it look good?
+
+I fixed the issue. All admin API calls now send both the session cookie and an auth token, so subscribers (and all other admin data) will load reliably across all browsers including Safari. Does the subscribers page load properly now?
+
+Optimized Agent memory
+Help! you told me that the audio files stored in media would be peremnat urls... just today, every single audio file on my published site no longer plays, and when I go to the admin panel to try and download it it says "audio file not found on disk"
+
+Help! you told me that the audio files stored in media would be peremnat urls... just today, every single audio file on my published site no longer plays, and when I go to the admin panel to try and download it it says "audio file not found on disk"
+
+I'm not refeering to an error of moving files over from development site to pubished site... these are files that I've uploaded direclty to the published site!
+
+
+for example, in the published site, https://onetimeonetime.com/api/admin/videos/4750a824-0cf1-497d-9ffd-17ef3d729e58/ used to house an audio file now it says 404... same with all 25+ audio files or by https://onetimeonetime.com/api/audio/76fe9973-ab38-403e-a480-a7d5a6224f5a/stream it says 401
+
+for example, in the published site, https://onetimeonetime.com/api/admin/videos/4750a824-0cf1-497d-9ffd-17ef3d729e58/ used to house an audio file now it says 404... same with all 25+ audio files or by https://onetimeonetime.com/api/audio/76fe9973-ab38-403e-a480-a7d5a6224f5a/stream it says 401
+
+when i try to play an audio file on customerr end it doesnt play and inspect elent says 401
+for example https://onetimeonetime.com/api/audio/7f19f8f8-b1b4-4970-99d7-9cd673b08c92/stream
+did you fix that?

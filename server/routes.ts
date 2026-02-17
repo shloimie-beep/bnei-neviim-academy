@@ -205,13 +205,23 @@ function getAuthUserId(req: Request): string | null {
   return req.session?.userId || null;
 }
 
-// Auth middleware - supports both session (web) and Bearer token (mobile)
+// Auth middleware - supports session (web), Bearer token (mobile), and query token (media elements)
 function requireAuth(req: Request, res: Response, next: NextFunction) {
-  // Check for Bearer token (mobile app)
+  // Check for Bearer token (mobile app / web API calls)
   const authHeader = req.headers.authorization;
   if (authHeader && authHeader.startsWith("Bearer ")) {
     const token = authHeader.substring(7);
     const payload = verifyMobileToken(token);
+    if (payload) {
+      req.mobileUser = payload;
+      return next();
+    }
+  }
+
+  // Check for token in query parameter (for <audio>/<video> elements that can't send headers)
+  const queryToken = req.query.token as string | undefined;
+  if (queryToken) {
+    const payload = verifyMobileToken(queryToken);
     if (payload) {
       req.mobileUser = payload;
       return next();
