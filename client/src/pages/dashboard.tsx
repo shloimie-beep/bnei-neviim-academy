@@ -1673,7 +1673,7 @@ export default function DashboardPage() {
       <div className="bg-[#EDE518] py-2 text-center" data-testid="banner-hotline-number">
         <span className="text-black text-sm font-bold uppercase tracking-wide flex items-center justify-center gap-2">
           <Phone className="h-4 w-4" />
-          Call the Hotline at 360-ONE-TIME (360-663-8463)
+          Call the Hotline at (605) 313-4793
         </span>
       </div>
 
