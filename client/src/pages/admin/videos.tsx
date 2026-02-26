@@ -209,14 +209,14 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
   };
 
   const handleUploadToHotline = async () => {
-    if (video.status !== "ready" || !video.vimeoVideoId) {
-      toast({ title: "Video not ready for upload", variant: "destructive" });
+    if (video.status !== "ready" || (!video.vimeoVideoId && video.mediaType !== "audio")) {
+      toast({ title: "Media not ready for upload", variant: "destructive" });
       return;
     }
     
     setIsUploadingToHotline(true);
     setShowHotlineDialog(false);
-    toast({ title: "Uploading to hotline...", description: "Converting video to audio. This may take a moment." });
+    toast({ title: "Uploading to hotline...", description: video.mediaType === "audio" ? "Adding audio to the hotline feed." : "Converting video to audio. This may take a moment." });
     
     try {
       const response = await fetch(`/api/admin/videos/${video.id}/upload-to-hotline`, {
@@ -421,7 +421,7 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
                   {video.createdAt ? new Date(video.createdAt).toLocaleDateString() : "Unknown date"}
                 </span>
                 <div className="flex gap-1 ml-auto">
-                  {video.status === "ready" && video.vimeoVideoId && video.mediaType !== "audio" && (
+                  {video.status === "ready" && (video.vimeoVideoId || video.mediaType === "audio") && (
                     <Button
                       variant="ghost"
                       size="icon"

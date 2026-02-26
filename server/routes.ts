@@ -5,6 +5,7 @@ import connectPgSimple from "connect-pg-simple";
 import cors from "cors";
 import bcrypt from "bcryptjs";
 import multer from "multer";
+import os from "os";
 import path from "path";
 import fs from "fs";
 import { exec } from "child_process";
@@ -3257,8 +3258,12 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Media must be fully processed before upload" });
       }
 
-      if (!video.vimeoVideoId) {
-        return res.status(400).json({ message: "Video does not have a streamable source (Vimeo)" });
+      if (video.mediaType === "audio" && (!video.filepath || !video.filepath.startsWith("/objects/"))) {
+        return res.status(400).json({ message: "Audio file not available in storage. Please re-upload the audio." });
+      }
+
+      if (!video.vimeoVideoId && video.mediaType !== "audio") {
+        return res.status(400).json({ message: "Media does not have a streamable source" });
       }
       
       // Validate folder if provided
@@ -3269,35 +3274,64 @@ export async function registerRoutes(
         }
       }
 
-      console.log(`[Hotline Upload] Converting video ${video.id} to MP3 for hotline...`);
-      
-      // Convert to 64kbps mono MP3 (reuse existing conversion logic)
-      const mp3Path = await getOrCreateVimeoMp3(video.id, video.vimeoVideoId, video.title);
-      tempMp3Path = mp3Path;
-      
-      // Read the converted MP3 file
-      const mp3Buffer = fs.readFileSync(mp3Path);
-      
-      // Generate unique filename for hotline
+      let mp3Buffer: Buffer;
+      let duration = 0;
       const safeTitle = video.title.replace(/[^a-zA-Z0-9\s_-]/g, "").substring(0, 50) || "audio";
       const outputFilename = `${Date.now()}_${safeTitle}.mp3`;
+
+      if (video.mediaType === "audio" && video.filepath) {
+        console.log(`[Hotline Upload] Processing audio file ${video.id} for hotline...`);
+        
+        const audioFile = await objectStorageService.getObjectEntityFile(video.filepath);
+        const [audioData] = await audioFile.download();
+
+        const tempInputPath = path.join(os.tmpdir(), `hotline-input-${video.id}-${Date.now()}.mp3`);
+        const tempOutputPath = path.join(os.tmpdir(), `hotline-output-${video.id}-${Date.now()}.mp3`);
+        tempMp3Path = tempOutputPath;
+
+        try {
+          fs.writeFileSync(tempInputPath, audioData);
+          const { execSync } = require("child_process");
+          execSync(
+            `ffmpeg -i "${tempInputPath}" -ac 1 -ab 64k -ar 22050 -y "${tempOutputPath}"`,
+            { timeout: 120000 }
+          );
+          mp3Buffer = fs.readFileSync(tempOutputPath);
+
+          try {
+            const durationOutput = execSync(
+              `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${tempOutputPath}"`,
+              { encoding: "utf-8" }
+            );
+            duration = Math.round(parseFloat(durationOutput.trim()) || 0);
+          } catch (e) {
+            console.warn("[Hotline Upload] Could not determine audio duration");
+          }
+        } finally {
+          try { fs.unlinkSync(tempInputPath); } catch {}
+        }
+      } else {
+        console.log(`[Hotline Upload] Converting video ${video.id} to MP3 for hotline...`);
+        
+        const mp3Path = await getOrCreateVimeoMp3(video.id, video.vimeoVideoId!, video.title);
+        tempMp3Path = mp3Path;
+        mp3Buffer = fs.readFileSync(mp3Path);
+
+        try {
+          const { execSync } = require("child_process");
+          const durationOutput = execSync(
+            `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${mp3Path}"`,
+            { encoding: "utf-8" }
+          );
+          duration = Math.round(parseFloat(durationOutput.trim()) || 0);
+        } catch (e) {
+          console.warn("[Hotline Upload] Could not determine audio duration");
+        }
+      }
       
       // Upload to Object Storage for RSS feed
       const objectStoragePath = `/objects/.private/rss-audio/${outputFilename}`;
       await objectStorageService.uploadBuffer(objectStoragePath, mp3Buffer, "audio/mpeg");
-      
-      // Get audio duration using ffprobe
-      let duration = 0;
-      try {
-        const { execSync } = require("child_process");
-        const durationOutput = execSync(
-          `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${mp3Path}"`,
-          { encoding: "utf-8" }
-        );
-        duration = Math.round(parseFloat(durationOutput.trim()) || 0);
-      } catch (e) {
-        console.warn("[Hotline Upload] Could not determine audio duration");
-      }
 
       // Create RSS audio item in database
       const rssAudioItem = await storage.createRssAudioItem({
