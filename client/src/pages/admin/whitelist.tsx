@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Loader2, Plus, Trash2, Phone, ShieldCheck, Mail, Video } from "lucide-react";
+import { Loader2, Plus, Trash2, Phone, ShieldCheck, Mail, Video, Clock, AlertCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import {
@@ -44,6 +44,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 
 const countryCodes = [
   { code: "+1", country: "USA/Canada" },
@@ -62,6 +63,7 @@ interface WhitelistedNumber {
   id: string;
   phoneNumber: string;
   label: string | null;
+  expiresAt: string | null;
   createdAt: string;
 }
 
@@ -69,7 +71,35 @@ interface WhitelistedEmail {
   id: string;
   email: string;
   label: string | null;
+  expiresAt: string | null;
   createdAt: string;
+}
+
+function isExpired(expiresAt: string | null): boolean {
+  if (!expiresAt) return false;
+  return new Date(expiresAt) < new Date();
+}
+
+function ExpirationBadge({ expiresAt }: { expiresAt: string | null }) {
+  if (!expiresAt) {
+    return <span className="text-muted-foreground text-sm">Never</span>;
+  }
+  const expired = isExpired(expiresAt);
+  const date = new Date(expiresAt).toLocaleDateString();
+  if (expired) {
+    return (
+      <Badge variant="destructive" className="gap-1">
+        <AlertCircle className="h-3 w-3" />
+        Expired {date}
+      </Badge>
+    );
+  }
+  return (
+    <Badge variant="outline" className="gap-1">
+      <Clock className="h-3 w-3" />
+      {date}
+    </Badge>
+  );
 }
 
 export default function WhitelistManagement() {
@@ -78,9 +108,11 @@ export default function WhitelistManagement() {
   const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
   const [newPhoneNumber, setNewPhoneNumber] = useState("");
   const [newPhoneLabel, setNewPhoneLabel] = useState("");
+  const [newPhoneExpires, setNewPhoneExpires] = useState("");
   const [phoneCountryCode, setPhoneCountryCode] = useState("+1");
   const [newEmail, setNewEmail] = useState("");
   const [newEmailLabel, setNewEmailLabel] = useState("");
+  const [newEmailExpires, setNewEmailExpires] = useState("");
 
   const { data: whitelistedNumbers, isLoading: loadingNumbers } = useQuery<WhitelistedNumber[]>({
     queryKey: ["/api/admin/whitelisted-numbers"],
@@ -91,7 +123,7 @@ export default function WhitelistManagement() {
   });
 
   const addPhoneMutation = useMutation({
-    mutationFn: async (data: { phoneNumber: string; label?: string }) => {
+    mutationFn: async (data: { phoneNumber: string; label?: string; expiresAt?: string }) => {
       return apiRequest("POST", "/api/admin/whitelisted-numbers", data);
     },
     onSuccess: () => {
@@ -99,6 +131,7 @@ export default function WhitelistManagement() {
       setIsPhoneDialogOpen(false);
       setNewPhoneNumber("");
       setNewPhoneLabel("");
+      setNewPhoneExpires("");
       setPhoneCountryCode("+1");
       toast({ title: "Number added", description: "The phone number has been whitelisted." });
     },
@@ -121,7 +154,7 @@ export default function WhitelistManagement() {
   });
 
   const addEmailMutation = useMutation({
-    mutationFn: async (data: { email: string; label?: string }) => {
+    mutationFn: async (data: { email: string; label?: string; expiresAt?: string }) => {
       return apiRequest("POST", "/api/admin/whitelisted-emails", data);
     },
     onSuccess: () => {
@@ -129,6 +162,7 @@ export default function WhitelistManagement() {
       setIsEmailDialogOpen(false);
       setNewEmail("");
       setNewEmailLabel("");
+      setNewEmailExpires("");
       toast({ title: "Email added", description: "The email has been whitelisted for free video access." });
     },
     onError: (error: Error) => {
@@ -151,13 +185,13 @@ export default function WhitelistManagement() {
 
   const handleAddPhone = () => {
     if (!newPhoneNumber.trim()) return;
-    // Build full E.164 number: country code (without +) + cleaned local number
     const countryCodeDigits = phoneCountryCode.replace(/\D/g, "");
     const localNumber = newPhoneNumber.replace(/^0+/, '').replace(/\D/g, "");
     const fullNumber = countryCodeDigits + localNumber;
     addPhoneMutation.mutate({
       phoneNumber: fullNumber,
       label: newPhoneLabel.trim() || undefined,
+      expiresAt: newPhoneExpires || undefined,
     });
   };
 
@@ -166,6 +200,7 @@ export default function WhitelistManagement() {
     addEmailMutation.mutate({
       email: newEmail.trim(),
       label: newEmailLabel.trim() || undefined,
+      expiresAt: newEmailExpires || undefined,
     });
   };
 
@@ -239,6 +274,19 @@ export default function WhitelistManagement() {
                       data-testid="input-whitelist-email-label"
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="email-expires">Expiration Date (Optional)</Label>
+                    <Input
+                      id="email-expires"
+                      type="date"
+                      value={newEmailExpires}
+                      onChange={(e) => setNewEmailExpires(e.target.value)}
+                      data-testid="input-whitelist-email-expires"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Leave empty for no expiration. Access will be automatically revoked after this date.
+                    </p>
+                  </div>
                 </div>
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setIsEmailDialogOpen(false)}>Cancel</Button>
@@ -277,15 +325,19 @@ export default function WhitelistManagement() {
                     <TableRow>
                       <TableHead>Email</TableHead>
                       <TableHead>Label</TableHead>
+                      <TableHead>Expires</TableHead>
                       <TableHead>Added</TableHead>
                       <TableHead className="w-[80px]">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {whitelistedEmails.map((entry) => (
-                      <TableRow key={entry.id} data-testid={`row-email-whitelist-${entry.id}`}>
+                      <TableRow key={entry.id} data-testid={`row-email-whitelist-${entry.id}`} className={isExpired(entry.expiresAt) ? "opacity-60" : ""}>
                         <TableCell>{entry.email}</TableCell>
                         <TableCell className="text-muted-foreground">{entry.label || "-"}</TableCell>
+                        <TableCell>
+                          <ExpirationBadge expiresAt={entry.expiresAt} />
+                        </TableCell>
                         <TableCell className="text-muted-foreground">
                           {new Date(entry.createdAt).toLocaleDateString()}
                         </TableCell>
@@ -385,6 +437,19 @@ export default function WhitelistManagement() {
                       data-testid="input-whitelist-phone-label"
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="phone-expires">Expiration Date (Optional)</Label>
+                    <Input
+                      id="phone-expires"
+                      type="date"
+                      value={newPhoneExpires}
+                      onChange={(e) => setNewPhoneExpires(e.target.value)}
+                      data-testid="input-whitelist-phone-expires"
+                    />
+                    <p className="text-xs text-muted-foreground">
+                      Leave empty for no expiration. Access will be automatically revoked after this date.
+                    </p>
+                  </div>
                 </div>
                 <DialogFooter>
                   <Button variant="outline" onClick={() => setIsPhoneDialogOpen(false)}>Cancel</Button>
@@ -423,15 +488,19 @@ export default function WhitelistManagement() {
                     <TableRow>
                       <TableHead>Phone Number</TableHead>
                       <TableHead>Label</TableHead>
+                      <TableHead>Expires</TableHead>
                       <TableHead>Added</TableHead>
                       <TableHead className="w-[80px]">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {whitelistedNumbers.map((number) => (
-                      <TableRow key={number.id} data-testid={`row-phone-whitelist-${number.id}`}>
+                      <TableRow key={number.id} data-testid={`row-phone-whitelist-${number.id}`} className={isExpired(number.expiresAt) ? "opacity-60" : ""}>
                         <TableCell className="font-mono">{formatPhoneNumber(number.phoneNumber)}</TableCell>
                         <TableCell className="text-muted-foreground">{number.label || "-"}</TableCell>
+                        <TableCell>
+                          <ExpirationBadge expiresAt={number.expiresAt} />
+                        </TableCell>
                         <TableCell className="text-muted-foreground">
                           {new Date(number.createdAt).toLocaleDateString()}
                         </TableCell>

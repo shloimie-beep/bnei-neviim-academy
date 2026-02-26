@@ -5063,9 +5063,19 @@ export async function registerRoutes(
 
   app.post("/api/admin/whitelisted-numbers", requireAdmin, async (req, res) => {
     try {
-      const { phoneNumber, label } = req.body;
+      const { phoneNumber, label, expiresAt } = req.body;
       if (!phoneNumber) {
         return res.status(400).json({ message: "Phone number is required" });
+      }
+
+      let parsedExpiry: Date | null = null;
+      if (expiresAt) {
+        const d = new Date(expiresAt);
+        if (isNaN(d.getTime())) {
+          return res.status(400).json({ message: "Invalid expiration date" });
+        }
+        d.setHours(23, 59, 59, 999);
+        parsedExpiry = d;
       }
 
       // Check if already whitelisted
@@ -5077,6 +5087,7 @@ export async function registerRoutes(
       const num = await storage.createWhitelistedNumber({
         phoneNumber,
         label: label || null,
+        expiresAt: parsedExpiry,
         createdBy: req.session.userId,
       });
       res.json(num);
@@ -5106,9 +5117,19 @@ export async function registerRoutes(
 
   app.post("/api/admin/whitelisted-emails", requireAdmin, async (req, res) => {
     try {
-      const { email, label } = req.body;
+      const { email, label, expiresAt } = req.body;
       if (!email) {
         return res.status(400).json({ message: "Email is required" });
+      }
+
+      let parsedExpiry: Date | null = null;
+      if (expiresAt) {
+        const d = new Date(expiresAt);
+        if (isNaN(d.getTime())) {
+          return res.status(400).json({ message: "Invalid expiration date" });
+        }
+        d.setHours(23, 59, 59, 999);
+        parsedExpiry = d;
       }
 
       // Check if already whitelisted
@@ -5120,6 +5141,7 @@ export async function registerRoutes(
       const entry = await storage.createWhitelistedEmail({
         email: email.toLowerCase().trim(),
         label: label || null,
+        expiresAt: parsedExpiry,
         createdBy: req.session.userId,
       });
       res.json(entry);

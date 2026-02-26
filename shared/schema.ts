@@ -126,7 +126,8 @@ export const callLogs = pgTable("call_logs", {
 export const whitelistedNumbers = pgTable("whitelisted_numbers", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   phoneNumber: text("phone_number").notNull().unique(),
-  label: text("label"), // optional note about who/why
+  label: text("label"),
+  expiresAt: timestamp("expires_at"),
   createdBy: varchar("created_by").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
 });
@@ -135,7 +136,8 @@ export const whitelistedNumbers = pgTable("whitelisted_numbers", {
 export const whitelistedEmails = pgTable("whitelisted_emails", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   email: text("email").notNull().unique(),
-  label: text("label"), // optional note about who/why
+  label: text("label"),
+  expiresAt: timestamp("expires_at"),
   createdBy: varchar("created_by").references(() => users.id),
   createdAt: timestamp("created_at").defaultNow(),
 });

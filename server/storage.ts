@@ -465,7 +465,9 @@ export class DatabaseStorage implements IStorage {
 
   async isWhitelistedPhoneNumber(phoneNumber: string): Promise<boolean> {
     const num = await this.getWhitelistedNumber(phoneNumber);
-    return !!num;
+    if (!num) return false;
+    if (num.expiresAt && new Date(num.expiresAt) < new Date()) return false;
+    return true;
   }
 
   // Whitelisted Emails (for free video access)
@@ -489,7 +491,9 @@ export class DatabaseStorage implements IStorage {
 
   async isWhitelistedEmailAddress(email: string): Promise<boolean> {
     const entry = await this.getWhitelistedEmail(email);
-    return !!entry;
+    if (!entry) return false;
+    if (entry.expiresAt && new Date(entry.expiresAt) < new Date()) return false;
+    return true;
   }
 
   // Monthly call stats per subscriber
