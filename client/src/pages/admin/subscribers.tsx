@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Users, DollarSign, Clock, Search, RefreshCw, Ban, Calendar, Download, MoreHorizontal, Key, Trash2, Mail } from "lucide-react";
+import { Loader2, Users, DollarSign, Clock, Search, RefreshCw, Ban, Calendar, Download, MoreHorizontal, Key, Trash2, Mail, Phone } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -91,6 +91,8 @@ export default function SubscribersManagement() {
   const [emailDialogOpen, setEmailDialogOpen] = useState(false);
   const [emailSubject, setEmailSubject] = useState("");
   const [emailMessage, setEmailMessage] = useState("");
+  const [phoneDialogOpen, setPhoneDialogOpen] = useState(false);
+  const [newPhoneNumber, setNewPhoneNumber] = useState("");
 
   const monthOptions: MonthOption[] = [];
   const now = new Date();
@@ -225,6 +227,29 @@ export default function SubscribersManagement() {
       toast({
         title: "Delete failed",
         description: error.message || "Failed to delete subscriber.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const changePhoneMutation = useMutation({
+    mutationFn: async (data: { userId: string; phoneNumber: string }) => {
+      return apiRequest("POST", `/api/admin/subscribers/${data.userId}/change-phone`, { phoneNumber: data.phoneNumber });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/subscribers"] });
+      setPhoneDialogOpen(false);
+      setSelectedSubscriber(null);
+      setNewPhoneNumber("");
+      toast({
+        title: "Phone number updated",
+        description: "The subscriber's phone number has been changed.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Update failed",
+        description: error.message || "Failed to update phone number.",
         variant: "destructive",
       });
     },
@@ -543,6 +568,17 @@ export default function SubscribersManagement() {
                             <DropdownMenuItem
                               onClick={() => {
                                 setSelectedSubscriber(subscriber);
+                                setNewPhoneNumber(subscriber.phoneNumbers?.[0]?.phoneNumber || "");
+                                setPhoneDialogOpen(true);
+                              }}
+                              data-testid={`menu-phone-${subscriber.id}`}
+                            >
+                              <Phone className="h-4 w-4 mr-2" />
+                              Change Phone Number
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => {
+                                setSelectedSubscriber(subscriber);
                                 setDeleteDialogOpen(true);
                               }}
                               className="text-destructive"
@@ -745,6 +781,50 @@ export default function SubscribersManagement() {
             >
               {changePasswordMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
               Change Password
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={phoneDialogOpen} onOpenChange={setPhoneDialogOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Change Phone Number</DialogTitle>
+            <DialogDescription>
+              Update the phone number for {selectedSubscriber?.email}. Include the country code (e.g. +1 for USA).
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="newPhone">Phone Number</Label>
+              <Input
+                id="newPhone"
+                type="tel"
+                placeholder="+15551234567"
+                value={newPhoneNumber}
+                onChange={(e) => setNewPhoneNumber(e.target.value)}
+                data-testid="input-new-phone"
+              />
+              <p className="text-xs text-muted-foreground">
+                Include country code with + prefix. Dashes and spaces are removed automatically.
+              </p>
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setPhoneDialogOpen(false)}>
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                if (selectedSubscriber && newPhoneNumber.trim()) {
+                  changePhoneMutation.mutate({ userId: selectedSubscriber.id, phoneNumber: newPhoneNumber.trim() });
+                }
+              }}
+              disabled={changePhoneMutation.isPending || !newPhoneNumber.trim()}
+              data-testid="button-confirm-phone"
+            >
+              {changePhoneMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              Update Phone
             </Button>
           </DialogFooter>
         </DialogContent>

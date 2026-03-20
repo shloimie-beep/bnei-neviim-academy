@@ -579,8 +579,9 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Email already registered" });
       }
 
-      // Combine country code with phone number
-      const fullPhoneNumber = countryCode + phoneNumber.replace(/^0+/, '');
+      // Combine country code with phone number, strip all non-digit chars except leading +
+      const rawFull = countryCode + phoneNumber.replace(/^0+/, '');
+      const fullPhoneNumber = '+' + rawFull.replace(/\D/g, '');
 
       // Check if phone number is already registered
       const existingPhone = await storage.getPhoneNumberByNumber(fullPhoneNumber);
@@ -5384,6 +5385,45 @@ export async function registerRoutes(
     } catch (error: any) {
       console.error("Change password error:", error);
       res.status(500).json({ message: error.message || "Failed to change password" });
+    }
+  });
+
+  // Admin change subscriber phone number
+  app.post("/api/admin/subscribers/:id/change-phone", requireAdmin, async (req, res) => {
+    try {
+      const { phoneNumber } = req.body;
+      if (!phoneNumber || typeof phoneNumber !== "string") {
+        return res.status(400).json({ message: "Phone number is required" });
+      }
+
+      // Sanitize: keep only digits and a leading +
+      const sanitized = '+' + phoneNumber.replace(/\D/g, '');
+      if (sanitized.length < 7) {
+        return res.status(400).json({ message: "Phone number is too short" });
+      }
+
+      const user = await storage.getUser(req.params.id);
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Check if number is already used by another user
+      const existing = await storage.getPhoneNumberByNumber(sanitized);
+      if (existing && existing.userId !== user.id) {
+        return res.status(400).json({ message: "Phone number already registered to another user" });
+      }
+
+      const phones = await storage.getPhoneNumbersByUser(user.id);
+      if (phones.length > 0) {
+        await storage.updatePhoneNumber(phones[0].id, sanitized);
+      } else {
+        await storage.createPhoneNumber({ userId: user.id, phoneNumber: sanitized, isActive: true });
+      }
+
+      res.json({ success: true, message: "Phone number updated successfully" });
+    } catch (error: any) {
+      console.error("Change phone error:", error);
+      res.status(500).json({ message: error.message || "Failed to change phone number" });
     }
   });
 
