@@ -790,7 +790,7 @@ export default function LandingPage() {
           <div className="max-w-md mx-auto space-y-6 text-center">
             <div className="flex items-center justify-center gap-4">
               <MapPin className="h-6 w-6 text-[#EDE518]" />
-              <span className="text-lg">Lakewood, New Jersey, United States</span>
+              <span className="text-lg">Ramat Eshkol, Israel</span>
             </div>
             <div className="flex items-center justify-center gap-4">
               <Phone className="h-6 w-6 text-[#EDE518]" />
