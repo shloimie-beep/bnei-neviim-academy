@@ -1194,7 +1194,7 @@ export default function DashboardPage() {
       return res.json();
     },
     enabled: isPlus,
-    refetchInterval: 60_000,
+    refetchInterval: 10_000,
   });
 
   const videosByCategory = useMemo(() => {
