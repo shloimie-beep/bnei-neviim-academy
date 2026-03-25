@@ -53,9 +53,15 @@ The application uses a monorepo architecture, separating the frontend and backen
     - Greeting stored at fixed path `/objects/.private/rss-audio/greeting.mp3`.
     - NEVER use local disk paths for audio storage — local files are wiped on every deployment.
 
+### Announcement Banner
+- Scrolling marquee displayed at the top of the subscriber dashboard when active.
+- Admin manages via `/admin/announcement` — edits text and toggles visibility.
+- Webhook endpoint `POST /api/webhook/announcement` allows external apps to update the banner using a secret key (`x-webhook-secret` header).
+- Stored as a singleton row in the `site_announcement` DB table; webhook secret auto-generated on first use.
+
 ### Data Storage
 - **Primary Database**: PostgreSQL, with schema defined using Drizzle ORM.
-- **Key Tables**: `users`, `phoneNumbers`, `audioFiles`, `menuOptions`, `conferenceSessions`, `albums`, `albumTracks`, `rss_folders`, `rss_audio_items`, `videoCategories`.
+- **Key Tables**: `users`, `phoneNumbers`, `audioFiles`, `menuOptions`, `conferenceSessions`, `albums`, `albumTracks`, `rss_folders`, `rss_audio_items`, `videoCategories`, `site_announcement`.
 
 ### Authentication & Authorization
 - **Web**: Session-based authentication stored in PostgreSQL.

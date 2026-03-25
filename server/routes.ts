@@ -1357,6 +1357,63 @@ export async function registerRoutes(
     }
   });
 
+  // Public: get current announcement (for dashboard banner)
+  app.get("/api/announcement", async (req, res) => {
+    try {
+      const ann = await storage.getAnnouncement();
+      if (!ann || !ann.isActive || !ann.text.trim()) {
+        return res.json({ text: "", isActive: false });
+      }
+      res.json({ text: ann.text, isActive: ann.isActive });
+    } catch {
+      res.json({ text: "", isActive: false });
+    }
+  });
+
+  // Admin: get full announcement settings (includes webhook secret)
+  app.get("/api/admin/announcement", requireAdmin, async (req, res) => {
+    try {
+      const ann = await storage.getAnnouncement();
+      res.json(ann ?? { text: "", isActive: true, webhookSecret: "" });
+    } catch {
+      res.status(500).json({ message: "Failed to get announcement" });
+    }
+  });
+
+  // Admin: update announcement
+  app.post("/api/admin/announcement", requireAdmin, async (req, res) => {
+    try {
+      const { text = "", isActive = true } = req.body;
+      await storage.setAnnouncement(String(text), Boolean(isActive));
+      res.json({ success: true });
+    } catch {
+      res.status(500).json({ message: "Failed to save announcement" });
+    }
+  });
+
+  // Webhook: external services can update the announcement using the secret
+  app.post("/api/webhook/announcement", async (req, res) => {
+    try {
+      const secret = req.headers["x-webhook-secret"] as string;
+      if (!secret) return res.status(401).json({ message: "Missing x-webhook-secret header" });
+
+      const ann = await storage.getAnnouncement();
+      const validSecret = ann?.webhookSecret;
+      if (!validSecret || secret !== validSecret) {
+        return res.status(403).json({ message: "Invalid webhook secret" });
+      }
+
+      const { text, isActive } = req.body;
+      await storage.setAnnouncement(
+        text !== undefined ? String(text) : (ann?.text ?? ""),
+        isActive !== undefined ? Boolean(isActive) : (ann?.isActive ?? true),
+      );
+      res.json({ success: true });
+    } catch {
+      res.status(500).json({ message: "Failed to process webhook" });
+    }
+  });
+
   // Record a dashboard session (called when user opens their dashboard)
   app.post("/api/session-ping", requireAuth, async (req, res) => {
     try {

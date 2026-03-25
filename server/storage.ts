@@ -22,6 +22,7 @@ import {
   rssFolders,
   rssAudioItems,
   userDashboardSessions,
+  siteAnnouncement,
   type User,
   type InsertUser,
   type PhoneNumber,
@@ -86,6 +87,8 @@ export interface IStorage {
   // Dashboard Sessions
   recordDashboardSession(userId: string): Promise<void>;
   getDashboardSessionCount(userId: string, since: Date): Promise<number>;
+  getAnnouncement(): Promise<{ text: string; isActive: boolean; webhookSecret: string } | null>;
+  setAnnouncement(text: string, isActive: boolean): Promise<void>;
 
   // Audio Files
   getAllAudioFiles(): Promise<AudioFile[]>;
@@ -226,6 +229,21 @@ export class DatabaseStorage implements IStorage {
       WHERE user_id = ${userId} AND created_at >= ${since.toISOString()}
     `);
     return Number((result.rows[0] as any)?.count || 0);
+  }
+
+  async getAnnouncement(): Promise<{ text: string; isActive: boolean; webhookSecret: string } | null> {
+    const rows = await db.select().from(siteAnnouncement).where(eq(siteAnnouncement.id, 1));
+    if (rows.length === 0) return null;
+    return { text: rows[0].text, isActive: rows[0].isActive, webhookSecret: rows[0].webhookSecret };
+  }
+
+  async setAnnouncement(text: string, isActive: boolean): Promise<void> {
+    await db.insert(siteAnnouncement)
+      .values({ id: 1, text, isActive })
+      .onConflictDoUpdate({
+        target: siteAnnouncement.id,
+        set: { text, isActive, updatedAt: new Date() },
+      });
   }
 
   // Audio Files

@@ -1062,6 +1062,11 @@ export default function DashboardPage() {
     });
   };
 
+  const { data: announcement } = useQuery<{ text: string; isActive: boolean }>({
+    queryKey: ["/api/announcement"],
+    refetchInterval: 60_000,
+  });
+
   // Record a session ping when the dashboard loads
   useEffect(() => {
     fetch("/api/session-ping", {
@@ -1685,6 +1690,25 @@ export default function DashboardPage() {
           Call the Hotline at (605) 313-4793
         </span>
       </div>
+
+      {/* Scrolling Announcement Banner */}
+      {announcement?.isActive && announcement.text?.trim() && (
+        <div className="bg-primary text-primary-foreground overflow-hidden" data-testid="banner-announcement">
+          <div className="flex items-center">
+            <div className="shrink-0 px-4 py-2 bg-primary/80 border-r border-primary-foreground/20 text-xs font-bold uppercase tracking-widest whitespace-nowrap">
+              Update
+            </div>
+            <div className="overflow-hidden flex-1 py-2">
+              <p
+                className="whitespace-nowrap text-sm font-medium"
+                style={{ animation: "marquee 22s linear infinite" }}
+              >
+                {announcement.text}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{announcement.text}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
 
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto space-y-8">

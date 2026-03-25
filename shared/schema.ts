@@ -281,6 +281,15 @@ export const userDashboardSessions = pgTable("user_dashboard_sessions", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Singleton announcement banner shown on the user dashboard
+export const siteAnnouncement = pgTable("site_announcement", {
+  id: integer("id").primaryKey().default(1),
+  text: text("text").notNull().default(""),
+  isActive: boolean("is_active").notNull().default(true),
+  webhookSecret: varchar("webhook_secret", { length: 64 }).notNull().default(sql`gen_random_uuid()`),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   phoneNumbers: many(phoneNumbers),
