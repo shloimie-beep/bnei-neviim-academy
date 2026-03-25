@@ -320,7 +320,7 @@ export default function RegisterPage() {
                           {selectedPlan === "plus" && <Check className="h-4 w-4 text-primary" />}
                         </div>
                         <p className="text-lg font-bold">$29.99<span className="text-xs font-normal text-muted-foreground">/mo</span></p>
-                        <p className="text-xs text-muted-foreground mt-1">Live meetings + updates</p>
+                        <p className="text-xs text-muted-foreground mt-1">Standard features + Live classes</p>
                       </button>
                     </div>
                     {selectedPlan === "plus" && (

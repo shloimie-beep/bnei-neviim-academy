@@ -1028,6 +1028,47 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
   );
 }
 
+const ANNOUNCEMENT_TRUNCATE_AT = 120;
+
+function AnnouncementBanner({ text }: { text: string }) {
+  const [open, setOpen] = useState(false);
+  const isTruncated = text.length > ANNOUNCEMENT_TRUNCATE_AT;
+  const displayText = isTruncated ? text.slice(0, ANNOUNCEMENT_TRUNCATE_AT).trimEnd() + "…" : text;
+
+  return (
+    <div className="bg-primary text-primary-foreground" data-testid="banner-announcement">
+      <div className="flex items-center gap-3 px-4 py-2">
+        <span className="shrink-0 text-xs font-bold uppercase tracking-widest opacity-80 border-r border-primary-foreground/30 pr-3">
+          Update
+        </span>
+        <p className="text-sm font-medium flex-1">{displayText}</p>
+        {isTruncated && (
+          <>
+            <button
+              onClick={() => setOpen(true)}
+              className="shrink-0 text-xs font-semibold underline underline-offset-2 opacity-90 hover:opacity-100 whitespace-nowrap"
+              data-testid="button-announcement-read-more"
+            >
+              Read more
+            </button>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>Announcement</DialogTitle>
+                </DialogHeader>
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">{text}</p>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setOpen(false)}>Close</Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const { user, logout, refreshUser } = useAuth();
   const { toast } = useToast();
@@ -1742,23 +1783,9 @@ export default function DashboardPage() {
         </span>
       </div>
 
-      {/* Scrolling Announcement Banner */}
+      {/* Announcement Banner */}
       {announcement?.isActive && announcement.text?.trim() && (
-        <div className="bg-primary text-primary-foreground overflow-hidden" data-testid="banner-announcement">
-          <div className="flex items-center">
-            <div className="shrink-0 px-4 py-2 bg-primary/80 border-r border-primary-foreground/20 text-xs font-bold uppercase tracking-widest whitespace-nowrap">
-              Update
-            </div>
-            <div className="overflow-hidden flex-1 py-2">
-              <p
-                className="whitespace-nowrap text-sm font-medium"
-                style={{ animation: "marquee 22s linear infinite" }}
-              >
-                {announcement.text}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{announcement.text}
-              </p>
-            </div>
-          </div>
-        </div>
+        <AnnouncementBanner text={announcement.text} />
       )}
 
       <main className="container mx-auto px-4 py-8">
