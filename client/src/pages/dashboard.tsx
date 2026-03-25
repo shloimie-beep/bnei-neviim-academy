@@ -1084,6 +1084,7 @@ export default function DashboardPage() {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [previewMode, setPreviewMode] = useState<"standard" | "plus">("standard");
   const recentScrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(true);
@@ -1178,19 +1179,21 @@ export default function DashboardPage() {
     enabled: hasActiveSubscription,
   });
 
-  const isPlus = user?.accountType === "plus";
+  const isPlus = user?.role === "admin" ? previewMode === "plus" : user?.accountType === "plus";
+
+  const liveMeetingEndpoint = user?.role === "admin" ? "/api/admin/live-meeting" : "/api/live-meeting";
 
   const { data: liveMeeting } = useQuery<{ meetingUrl: string; isActive: boolean; updatesText: string }>({
-    queryKey: ["/api/live-meeting"],
+    queryKey: [liveMeetingEndpoint],
     queryFn: async () => {
-      const res = await fetch("/api/live-meeting", {
+      const res = await fetch(liveMeetingEndpoint, {
         credentials: "include",
         headers: getAuthHeaders(),
       });
       if (!res.ok) throw new Error("Not available");
       return res.json();
     },
-    enabled: isPlus && hasActiveSubscription,
+    enabled: isPlus,
     refetchInterval: 60_000,
   });
 
@@ -1788,6 +1791,45 @@ export default function DashboardPage() {
           Call the Hotline at (605) 313-4793
         </span>
       </div>
+
+      {/* Admin Preview Toggle — only visible to admins */}
+      {user?.role === "admin" && (
+        <div className="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-800" data-testid="bar-admin-preview">
+          <div className="container mx-auto px-4 py-2 flex items-center gap-3">
+            <span className="text-xs font-semibold uppercase tracking-widest text-amber-700 dark:text-amber-400 shrink-0">
+              Admin Preview
+            </span>
+            <div className="flex items-center gap-1 rounded-full border border-amber-300 dark:border-amber-700 bg-white dark:bg-amber-900/30 p-0.5">
+              <button
+                onClick={() => setPreviewMode("standard")}
+                data-testid="button-preview-standard"
+                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
+                  previewMode === "standard"
+                    ? "bg-amber-500 text-white shadow-sm"
+                    : "text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50"
+                }`}
+              >
+                Standard
+              </button>
+              <button
+                onClick={() => setPreviewMode("plus")}
+                data-testid="button-preview-plus"
+                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors flex items-center gap-1 ${
+                  previewMode === "plus"
+                    ? "bg-amber-500 text-white shadow-sm"
+                    : "text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50"
+                }`}
+              >
+                <Star className="h-3 w-3" />
+                Plus
+              </button>
+            </div>
+            <span className="text-xs text-amber-600 dark:text-amber-500">
+              Viewing as {previewMode === "plus" ? "Plus" : "Standard"} subscriber
+            </span>
+          </div>
+        </div>
+      )}
 
       {/* Announcement Banner */}
       {announcement?.isActive && announcement.text?.trim() && (
