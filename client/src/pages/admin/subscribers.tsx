@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Users, DollarSign, Clock, Search, RefreshCw, Ban, Calendar, Download, MoreHorizontal, Key, Trash2, Mail, Phone } from "lucide-react";
+import { Loader2, Users, DollarSign, Activity, Search, RefreshCw, Ban, Calendar, Download, MoreHorizontal, Key, Trash2, Mail, Phone } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -61,24 +62,25 @@ interface Subscriber {
   role: string;
   subscriptionStatus: string | null;
   stripeCustomerId: string | null;
+  stripeSubscriptionId: string | null;
   trialEndsAt: string | null;
   createdAt: string;
   phoneNumbers: { phoneNumber: string }[];
-  monthlyCallMinutes: number;
+  monthlySessions: number;
 }
 
-interface MonthOption {
-  value: string;
-  label: string;
+interface CancellationReason {
+  reason: string | null;
+  comment: string | null;
+  cancelAt: string | null;
+  canceledAt: string | null;
 }
 
 export default function SubscribersManagement() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState(() => {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-  });
+  const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [cancellationCache, setCancellationCache] = useState<Record<string, CancellationReason | null>>({});
   const [refundDialogOpen, setRefundDialogOpen] = useState(false);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const [extendTrialDialogOpen, setExtendTrialDialogOpen] = useState(false);
@@ -94,20 +96,10 @@ export default function SubscribersManagement() {
   const [phoneDialogOpen, setPhoneDialogOpen] = useState(false);
   const [newPhoneNumber, setNewPhoneNumber] = useState("");
 
-  const monthOptions: MonthOption[] = [];
-  const now = new Date();
-  for (let i = 0; i < 12; i++) {
-    const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
-    monthOptions.push({
-      value: `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`,
-      label: date.toLocaleDateString("en-US", { month: "long", year: "numeric" }),
-    });
-  }
-
   const { data: subscribers, isLoading, refetch } = useQuery<Subscriber[]>({
-    queryKey: ["/api/admin/subscribers", selectedMonth],
+    queryKey: ["/api/admin/subscribers"],
     queryFn: async () => {
-      const res = await fetch(`/api/admin/subscribers?month=${selectedMonth}`, {
+      const res = await fetch(`/api/admin/subscribers`, {
         credentials: "include",
         headers: getAuthHeaders(),
       });
@@ -115,6 +107,23 @@ export default function SubscribersManagement() {
       return res.json();
     },
   });
+
+  const fetchCancellationReason = async (subscriberId: string) => {
+    if (subscriberId in cancellationCache) return;
+    setCancellationCache((prev) => ({ ...prev, [subscriberId]: null }));
+    try {
+      const res = await fetch(`/api/admin/subscribers/${subscriberId}/cancellation-reason`, {
+        credentials: "include",
+        headers: getAuthHeaders(),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setCancellationCache((prev) => ({ ...prev, [subscriberId]: data }));
+      }
+    } catch {
+      // ignore
+    }
+  };
 
   const refundMutation = useMutation({
     mutationFn: async (data: { stripeCustomerId: string; amount: number }) => {
@@ -330,15 +339,6 @@ export default function SubscribersManagement() {
     });
   };
 
-  const formatMinutes = (minutes: number | null | undefined) => {
-    if (minutes === null || minutes === undefined || isNaN(minutes)) return "0 min";
-    if (minutes < 1) return "< 1 min";
-    if (minutes < 60) return `${Math.round(minutes)} min`;
-    const hours = Math.floor(minutes / 60);
-    const mins = Math.round(minutes % 60);
-    return `${hours}h ${mins}m`;
-  };
-
   const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return "-";
     const date = new Date(dateString);
@@ -346,29 +346,80 @@ export default function SubscribersManagement() {
     return date.toLocaleDateString();
   };
 
-  const getStatusBadge = (status: string | null) => {
+  const getStatusBadge = (status: string | null, subscriber?: Subscriber) => {
     switch (status) {
       case "active":
         return <Badge variant="default">Active</Badge>;
       case "trial":
         return <Badge variant="secondary">Trial</Badge>;
       case "past_due":
-        return <Badge variant="destructive">Past Due</Badge>;
+        return (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Badge variant="destructive" className="cursor-help">Past Due</Badge>
+              </TooltipTrigger>
+              <TooltipContent>Payment failed — Stripe is retrying</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
       case "cancelled":
-        return <Badge variant="outline">Cancelled</Badge>;
+        if (!subscriber) return <Badge variant="outline">Cancelled</Badge>;
+        return (
+          <TooltipProvider>
+            <Tooltip onOpenChange={(open) => open && fetchCancellationReason(subscriber.id)}>
+              <TooltipTrigger asChild>
+                <Badge variant="outline" className="cursor-help border-muted-foreground/40">Cancelled</Badge>
+              </TooltipTrigger>
+              <TooltipContent className="max-w-[260px] space-y-1 text-xs">
+                {!(subscriber.id in cancellationCache) ? (
+                  <p className="text-muted-foreground">Loading...</p>
+                ) : cancellationCache[subscriber.id] === null || (!cancellationCache[subscriber.id]?.reason && !cancellationCache[subscriber.id]?.comment) ? (
+                  <p className="text-muted-foreground">No reason provided</p>
+                ) : (
+                  <>
+                    {cancellationCache[subscriber.id]?.reason && (
+                      <p><span className="font-medium">Reason:</span> {cancellationCache[subscriber.id]!.reason}</p>
+                    )}
+                    {cancellationCache[subscriber.id]?.comment && (
+                      <p><span className="font-medium">Comment:</span> {cancellationCache[subscriber.id]!.comment}</p>
+                    )}
+                    {cancellationCache[subscriber.id]?.canceledAt && (
+                      <p className="text-muted-foreground">Cancelled on {cancellationCache[subscriber.id]!.canceledAt}</p>
+                    )}
+                  </>
+                )}
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
       default:
         return <Badge variant="outline">None</Badge>;
     }
   };
 
+  const statusCounts = {
+    all: subscribers?.length ?? 0,
+    active: subscribers?.filter((s) => s.subscriptionStatus === "active").length ?? 0,
+    trial: subscribers?.filter((s) => s.subscriptionStatus === "trial").length ?? 0,
+    past_due: subscribers?.filter((s) => s.subscriptionStatus === "past_due").length ?? 0,
+    cancelled: subscribers?.filter((s) => s.subscriptionStatus === "cancelled").length ?? 0,
+    none: subscribers?.filter((s) => !s.subscriptionStatus || s.subscriptionStatus === "none").length ?? 0,
+  };
+
   const filteredSubscribers = subscribers?.filter((sub) => {
     const term = searchTerm.toLowerCase();
-    return (
+    const matchesSearch =
       sub.email.toLowerCase().includes(term) ||
       (sub.familyName?.toLowerCase() || "").includes(term) ||
       (sub.location?.toLowerCase() || "").includes(term) ||
-      (sub.phoneNumbers || []).some((p) => p.phoneNumber.includes(searchTerm))
-    );
+      (sub.phoneNumbers || []).some((p) => p.phoneNumber.includes(searchTerm));
+    const matchesStatus =
+      statusFilter === "all" ||
+      (statusFilter === "none"
+        ? !sub.subscriptionStatus || sub.subscriptionStatus === "none"
+        : sub.subscriptionStatus === statusFilter);
+    return matchesSearch && matchesStatus;
   });
 
   const formatPhoneNumber = (phone: string) => {
@@ -385,7 +436,7 @@ export default function SubscribersManagement() {
         <div>
           <h1 className="text-3xl font-bold" data-testid="text-page-title">Subscribers</h1>
           <p className="text-muted-foreground">
-            View subscriber details, call statistics, and issue refunds.
+            View subscriber details, session counts, and manage accounts.
           </p>
         </div>
         <div className="flex flex-wrap items-center gap-2">
@@ -432,10 +483,39 @@ export default function SubscribersManagement() {
             Subscriber List
           </CardTitle>
           <CardDescription>
-            Monthly call time statistics for all subscribers.
+            Dashboard session counts and subscriber details for all members.
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="flex flex-wrap gap-3 mb-4">
+            {(["all", "active", "trial", "past_due", "cancelled", "none"] as const).map((s) => {
+              const labels: Record<string, string> = {
+                all: "All",
+                active: "Active",
+                trial: "Trial",
+                past_due: "Past Due",
+                cancelled: "Cancelled",
+                none: "No Sub",
+              };
+              const count = statusCounts[s];
+              const isActive = statusFilter === s;
+              return (
+                <Button
+                  key={s}
+                  variant={isActive ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setStatusFilter(s)}
+                  data-testid={`button-filter-${s}`}
+                  className="gap-1.5"
+                >
+                  {labels[s]}
+                  <span className={`text-xs rounded-full px-1.5 py-0.5 ${isActive ? "bg-primary-foreground/20 text-primary-foreground" : "bg-muted text-muted-foreground"}`}>
+                    {count}
+                  </span>
+                </Button>
+              );
+            })}
+          </div>
           <div className="flex flex-wrap gap-4 mb-6">
             <div className="flex-1 min-w-[200px]">
               <Label htmlFor="search" className="sr-only">Search</Label>
@@ -443,27 +523,13 @@ export default function SubscribersManagement() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="search"
-                  placeholder="Search by email or phone..."
+                  placeholder="Search by name, email or phone..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="pl-9"
                   data-testid="input-search-subscribers"
                 />
               </div>
-            </div>
-            <div className="w-[200px]">
-              <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                <SelectTrigger data-testid="select-month">
-                  <SelectValue placeholder="Select month" />
-                </SelectTrigger>
-                <SelectContent>
-                  {monthOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
           </div>
 
@@ -485,8 +551,8 @@ export default function SubscribersManagement() {
                     <TableHead>Status</TableHead>
                     <TableHead>
                       <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        Call Time
+                        <Activity className="h-4 w-4" />
+                        Sessions
                       </div>
                     </TableHead>
                     <TableHead>Joined</TableHead>
@@ -504,8 +570,8 @@ export default function SubscribersManagement() {
                           : "-"}
                       </TableCell>
                       <TableCell className="text-muted-foreground">{subscriber.location || "-"}</TableCell>
-                      <TableCell>{getStatusBadge(subscriber.subscriptionStatus)}</TableCell>
-                      <TableCell>{formatMinutes(subscriber.monthlyCallMinutes)}</TableCell>
+                      <TableCell>{getStatusBadge(subscriber.subscriptionStatus, subscriber)}</TableCell>
+                      <TableCell>{subscriber.monthlySessions ?? 0}</TableCell>
                       <TableCell className="text-muted-foreground">
                         {formatDate(subscriber.createdAt)}
                       </TableCell>

@@ -274,6 +274,13 @@ export const trialPhoneNumbers = pgTable("trial_phone_numbers", {
   releasedAt: timestamp("released_at"), // When admin releases it for reuse
 });
 
+// Track user dashboard sessions (opens) for engagement metrics
+export const userDashboardSessions = pgTable("user_dashboard_sessions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   phoneNumbers: many(phoneNumbers),

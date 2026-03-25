@@ -1357,6 +1357,18 @@ export async function registerRoutes(
     }
   });
 
+  // Record a dashboard session (called when user opens their dashboard)
+  app.post("/api/session-ping", requireAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      await storage.recordDashboardSession(userId);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to record session" });
+    }
+  });
+
   // Audio Files
   app.get("/api/admin/audio-files", requireAdmin, async (req, res) => {
     try {
@@ -5385,6 +5397,32 @@ export async function registerRoutes(
     } catch (error: any) {
       console.error("Change password error:", error);
       res.status(500).json({ message: error.message || "Failed to change password" });
+    }
+  });
+
+  // Admin: get Stripe cancellation reason for a subscriber
+  app.get("/api/admin/subscribers/:id/cancellation-reason", requireAdmin, async (req, res) => {
+    try {
+      const user = await storage.getUser(req.params.id);
+      if (!user) return res.status(404).json({ message: "User not found" });
+      if (!user.stripeSubscriptionId) return res.json({ reason: null, comment: null });
+
+      const stripe = await getUncachableStripeClient();
+      try {
+        const subscription = await stripe.subscriptions.retrieve(user.stripeSubscriptionId);
+        const details = (subscription as any).cancellation_details;
+        res.json({
+          reason: details?.feedback || null,
+          comment: details?.comment || null,
+          cancelAt: subscription.cancel_at ? new Date(subscription.cancel_at * 1000).toLocaleDateString() : null,
+          canceledAt: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toLocaleDateString() : null,
+        });
+      } catch (stripeErr: any) {
+        // Subscription may have been deleted from Stripe
+        res.json({ reason: null, comment: null });
+      }
+    } catch (error: any) {
+      res.status(500).json({ message: "Failed to get cancellation reason" });
     }
   });
 

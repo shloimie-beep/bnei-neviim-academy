@@ -21,6 +21,7 @@ import {
   albumTracks,
   rssFolders,
   rssAudioItems,
+  userDashboardSessions,
   type User,
   type InsertUser,
   type PhoneNumber,
@@ -81,6 +82,10 @@ export interface IStorage {
   deletePhoneNumber(id: string): Promise<void>;
   updatePhoneNumber(id: string, phoneNumber: string): Promise<PhoneNumber>;
   isSubscribedPhoneNumber(phoneNumber: string): Promise<boolean>;
+
+  // Dashboard Sessions
+  recordDashboardSession(userId: string): Promise<void>;
+  getDashboardSessionCount(userId: string, since: Date): Promise<number>;
 
   // Audio Files
   getAllAudioFiles(): Promise<AudioFile[]>;
@@ -208,6 +213,19 @@ export class DatabaseStorage implements IStorage {
       return new Date(user.trialEndsAt) > new Date();
     }
     return false;
+  }
+
+  // Dashboard Sessions
+  async recordDashboardSession(userId: string): Promise<void> {
+    await db.insert(userDashboardSessions).values({ userId });
+  }
+
+  async getDashboardSessionCount(userId: string, since: Date): Promise<number> {
+    const result = await db.execute(sql`
+      SELECT COUNT(*) as count FROM user_dashboard_sessions
+      WHERE user_id = ${userId} AND created_at >= ${since.toISOString()}
+    `);
+    return Number((result.rows[0] as any)?.count || 0);
   }
 
   // Audio Files
@@ -524,12 +542,9 @@ export class DatabaseStorage implements IStorage {
 
   // Get all subscribers with their phone numbers and call stats
   async getSubscriberList(): Promise<any[]> {
-    // Get current month for call stats
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
     
-    // Use subqueries to avoid duplicate rows from LEFT JOINs
     const result = await db.execute(sql`
       SELECT 
         u.id,
@@ -546,18 +561,16 @@ export class DatabaseStorage implements IStorage {
           ARRAY[]::text[]
         ) as phone_numbers,
         COALESCE(
-          (SELECT SUM(cl.duration) FROM call_logs cl 
-           WHERE cl.from_number IN (SELECT phone_number FROM phone_numbers WHERE user_id = u.id)
-             AND cl.created_at >= ${startOfMonth.toISOString()} 
-             AND cl.created_at < ${endOfMonth.toISOString()}),
+          (SELECT COUNT(*) FROM user_dashboard_sessions uds
+           WHERE uds.user_id = u.id
+             AND uds.created_at >= ${startOfMonth.toISOString()}),
           0
-        ) as monthly_call_seconds
+        ) as monthly_sessions
       FROM users u
       WHERE u.role = 'customer'
       ORDER BY u.created_at DESC
     `);
     
-    // Transform to camelCase and format phone numbers
     return result.rows.map((row: any) => ({
       id: row.id,
       email: row.email,
@@ -569,7 +582,7 @@ export class DatabaseStorage implements IStorage {
       trialEndsAt: row.trial_ends_at,
       createdAt: row.created_at,
       phoneNumbers: (row.phone_numbers || []).map((p: string) => ({ phoneNumber: p })),
-      monthlyCallMinutes: Math.round((row.monthly_call_seconds || 0) / 60),
+      monthlySessions: Number(row.monthly_sessions || 0),
     }));
   }
 

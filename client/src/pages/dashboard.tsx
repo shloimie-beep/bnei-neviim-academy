@@ -1062,6 +1062,15 @@ export default function DashboardPage() {
     });
   };
 
+  // Record a session ping when the dashboard loads
+  useEffect(() => {
+    fetch("/api/session-ping", {
+      method: "POST",
+      credentials: "include",
+      headers: getAuthHeaders(),
+    }).catch(() => {});
+  }, []);
+
   const { data: phoneNumbers, isLoading: phonesLoading } = useQuery<PhoneNumber[]>({
     queryKey: ["/api/phone-numbers"],
   });
