@@ -1724,8 +1724,9 @@ export default function DashboardPage() {
                         Billing
                         {isPlus && <Badge variant="default" className="text-xs"><Star className="h-3 w-3 mr-1" />Plus</Badge>}
                       </h3>
-                      {(user?.subscriptionStatus === "active" || user?.subscriptionStatus === "trial") && subscription?.stripeCustomerId ? (
-                        <div className="space-y-2">
+                      <div className="space-y-2">
+                        {/* Manage billing portal — only when Stripe customer exists */}
+                        {subscription?.stripeCustomerId && (
                           <Button
                             variant="outline"
                             className="w-full"
@@ -1736,32 +1737,37 @@ export default function DashboardPage() {
                             {createPortalMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                             Manage Billing
                           </Button>
-                          {!isPlus && user?.subscriptionStatus === "active" && (
-                            <Button
-                              variant="outline"
-                              className="w-full border-primary/50 text-primary hover:bg-primary/5"
-                              onClick={() => createPlusCheckoutMutation.mutate()}
-                              disabled={createPlusCheckoutMutation.isPending}
-                              data-testid="button-upgrade-plus"
-                            >
-                              {createPlusCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                              <Star className="h-4 w-4 mr-2" />
-                              Upgrade to Plus — $29.99/mo
-                            </Button>
-                          )}
-                        </div>
-                      ) : (
-                        <Button
-                          variant="outline"
-                          className="w-full"
-                          onClick={() => createCheckoutMutation.mutate()}
-                          disabled={createCheckoutMutation.isPending}
-                          data-testid="button-start-trial-settings"
-                        >
-                          {createCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                          {user?.hasUsedTrial ? "Subscribe Now - $9.99/mo" : "Start 7-Day Free Trial"}
-                        </Button>
-                      )}
+                        )}
+
+                        {/* Start subscription — when no active sub */}
+                        {(user?.subscriptionStatus === "none" || user?.subscriptionStatus === "cancelled") && (
+                          <Button
+                            variant="outline"
+                            className="w-full"
+                            onClick={() => createCheckoutMutation.mutate()}
+                            disabled={createCheckoutMutation.isPending}
+                            data-testid="button-start-trial-settings"
+                          >
+                            {createCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                            {user?.hasUsedTrial ? "Subscribe Now — $9.99/mo" : "Start 7-Day Free Trial"}
+                          </Button>
+                        )}
+
+                        {/* Upgrade to Plus — always visible for non-Plus subscribers */}
+                        {!isPlus && (
+                          <Button
+                            variant="outline"
+                            className="w-full border-primary/50 text-primary hover:bg-primary/5"
+                            onClick={() => createPlusCheckoutMutation.mutate()}
+                            disabled={createPlusCheckoutMutation.isPending}
+                            data-testid="button-upgrade-plus"
+                          >
+                            {createPlusCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                            <Star className="h-4 w-4 mr-2" />
+                            Upgrade to Plus — $29.99/mo
+                          </Button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </DialogContent>
