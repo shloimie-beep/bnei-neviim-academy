@@ -2,16 +2,18 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Phone, ArrowLeft, Loader2, Check, ChevronDown } from "lucide-react";
+import { Phone, ArrowLeft, Loader2, Check, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage, FormDescription } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { registerSchema, type RegisterInput } from "@shared/schema";
+import { getAuthHeaders } from "@/lib/auth-context";
 
 const countryCodes = [
   { code: "+1", country: "USA/Canada", flag: "US" },
@@ -31,6 +33,7 @@ export default function RegisterPage() {
   const { register } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedPlan, setSelectedPlan] = useState<"standard" | "plus">("standard");
 
   const form = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
@@ -49,6 +52,20 @@ export default function RegisterPage() {
     setIsLoading(true);
     try {
       await register(data);
+      if (selectedPlan === "plus") {
+        // Redirect to Plus checkout immediately after registration
+        const res = await fetch("/api/create-plus-checkout", {
+          method: "POST",
+          credentials: "include",
+          headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+          body: JSON.stringify({}),
+        });
+        if (res.ok) {
+          const { url } = await res.json();
+          window.location.href = url;
+          return;
+        }
+      }
       toast({
         title: "Account created!",
         description: "Welcome! Complete your subscription to access the hotline.",
@@ -272,6 +289,45 @@ export default function RegisterPage() {
                       This number will be used to access the hotline
                     </p>
                   </div>
+                  {/* Plan selection */}
+                  <div className="space-y-2">
+                    <FormLabel>Choose your plan</FormLabel>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedPlan("standard")}
+                        data-testid="button-plan-standard"
+                        className={`rounded-lg border-2 p-3 text-left transition-colors ${selectedPlan === "standard" ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/40"}`}
+                      >
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-semibold text-sm">Standard</span>
+                          {selectedPlan === "standard" && <Check className="h-4 w-4 text-primary" />}
+                        </div>
+                        <p className="text-lg font-bold">$9.99<span className="text-xs font-normal text-muted-foreground">/mo</span></p>
+                        <p className="text-xs text-muted-foreground mt-1">7-day free trial</p>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSelectedPlan("plus")}
+                        data-testid="button-plan-plus"
+                        className={`rounded-lg border-2 p-3 text-left transition-colors relative ${selectedPlan === "plus" ? "border-primary bg-primary/5" : "border-muted hover:border-muted-foreground/40"}`}
+                      >
+                        <Badge className="absolute -top-2 -right-2 text-xs" variant="default">
+                          <Star className="h-3 w-3 mr-1" />Plus
+                        </Badge>
+                        <div className="flex items-center justify-between mb-1">
+                          <span className="font-semibold text-sm">Plus</span>
+                          {selectedPlan === "plus" && <Check className="h-4 w-4 text-primary" />}
+                        </div>
+                        <p className="text-lg font-bold">$29.99<span className="text-xs font-normal text-muted-foreground">/mo</span></p>
+                        <p className="text-xs text-muted-foreground mt-1">Live meetings + updates</p>
+                      </button>
+                    </div>
+                    {selectedPlan === "plus" && (
+                      <p className="text-xs text-muted-foreground">No free trial — billing starts immediately after signup.</p>
+                    )}
+                  </div>
+
                   <Button
                     type="submit"
                     className="w-full"
@@ -279,7 +335,7 @@ export default function RegisterPage() {
                     data-testid="button-submit-register"
                   >
                     {isLoading && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                    Start Free Trial
+                    {selectedPlan === "plus" ? "Create Account & Subscribe to Plus" : "Start Free Trial"}
                   </Button>
                 </form>
               </Form>

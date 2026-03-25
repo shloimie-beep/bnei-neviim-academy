@@ -53,6 +53,19 @@ The application uses a monorepo architecture, separating the frontend and backen
     - Greeting stored at fixed path `/objects/.private/rss-audio/greeting.mp3`.
     - NEVER use local disk paths for audio storage — local files are wiped on every deployment.
 
+### Plus Plan ($29.99/month)
+- `accountType` column on `users` table: `'standard'` (default) | `'plus'`.
+- Plus plan has **no free trial** — billing starts immediately.
+- Checkout route: `POST /api/create-plus-checkout` — creates/finds "Kids' Hotline Plus Monthly" Stripe product at $29.99; no trial period.
+- Webhook handler sets `accountType: 'plus'` on Plus checkout completion and resets to `'standard'` on cancellation.
+- `live_meeting` singleton table (id=1): `meetingUrl`, `isActive`, `updatesText`.
+  - Admin manages via `/admin/live-meeting` tab.
+  - `GET /api/admin/live-meeting` / `POST /api/admin/live-meeting` (admin-only).
+  - `GET /api/live-meeting` — Plus-only endpoint; returns 403 for standard users.
+- Dashboard: Plus members see a "Plus Member" card with Google Meet join button (when active) and updates text.
+- Account Settings: Active standard subscribers see "Upgrade to Plus" button.
+- Register page: Plan selector (Standard $9.99 with trial / Plus $29.99 no trial) before submit button.
+
 ### Announcement Banner
 - Scrolling marquee displayed at the top of the subscriber dashboard when active.
 - Admin manages via `/admin/announcement` — edits text and toggles visibility.

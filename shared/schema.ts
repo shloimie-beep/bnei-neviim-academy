@@ -20,6 +20,7 @@ export const users = pgTable("users", {
   familyName: text("family_name"),
   location: text("location"), // city/state/country
   role: text("role").notNull().default("customer"), // 'admin' or 'customer'
+  accountType: text("account_type").notNull().default("standard"), // 'standard' or 'plus'
   stripeCustomerId: text("stripe_customer_id"),
   stripeSubscriptionId: text("stripe_subscription_id"),
   subscriptionStatus: text("subscription_status").default("none"), // 'none', 'trial', 'active', 'cancelled', 'past_due'
@@ -279,6 +280,15 @@ export const userDashboardSessions = pgTable("user_dashboard_sessions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
   createdAt: timestamp("created_at").defaultNow(),
+});
+
+// Singleton live meeting panel (Plus subscribers only)
+export const liveMeeting = pgTable("live_meeting", {
+  id: integer("id").primaryKey().default(1),
+  meetingUrl: text("meeting_url").default(""),
+  isActive: boolean("is_active").notNull().default(false),
+  updatesText: text("updates_text").notNull().default(""),
+  updatedAt: timestamp("updated_at").defaultNow(),
 });
 
 // Singleton announcement banner shown on the user dashboard

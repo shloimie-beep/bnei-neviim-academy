@@ -1306,6 +1306,131 @@ export async function registerRoutes(
     }
   });
 
+  // Get or create Plus subscription price ($29.99/month)
+  async function getPlusPriceId(): Promise<string | null> {
+    try {
+      const result = await db.execute(sql`
+        SELECT p.id as price_id
+        FROM stripe.prices p
+        JOIN stripe.products prod ON p.product = prod.id
+        WHERE prod.name = 'Kids'' Hotline Plus Monthly'
+        AND p.active = true
+        LIMIT 1
+      `);
+      if (result.rows.length > 0) return (result.rows[0] as any).price_id;
+      return null;
+    } catch {
+      return null;
+    }
+  }
+
+  app.post("/api/create-plus-checkout", requireAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) return res.status(401).json({ message: "Authentication required" });
+      const user = await storage.getUser(userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      const stripe = await getUncachableStripeClient();
+
+      // Get or create the Plus price
+      let priceId = await getPlusPriceId();
+      if (!priceId) {
+        const existingProducts = await stripe.products.search({ query: "name:'Kids\\' Hotline Plus Monthly'" });
+        let productId: string;
+        if (existingProducts.data.length > 0) {
+          productId = existingProducts.data[0].id;
+        } else {
+          const product = await stripe.products.create({
+            name: "Kids' Hotline Plus Monthly",
+            description: "Plus membership with live Google Meet access and exclusive updates.",
+          });
+          productId = product.id;
+        }
+        const existingPrices = await stripe.prices.list({ product: productId, active: true });
+        if (existingPrices.data.length > 0) {
+          priceId = existingPrices.data[0].id;
+        } else {
+          const price = await stripe.prices.create({
+            product: productId,
+            unit_amount: 2999, // $29.99
+            currency: 'usd',
+            recurring: { interval: 'month' },
+          });
+          priceId = price.id;
+        }
+      }
+
+      // Create or get Stripe customer
+      let customerId = user.stripeCustomerId;
+      if (!customerId) {
+        const customer = await stripe.customers.create({ email: user.email, metadata: { userId: user.id } });
+        await storage.updateUser(user.id, { stripeCustomerId: customer.id });
+        customerId = customer.id;
+      }
+
+      const baseUrl = process.env.PUBLIC_APP_URL || 'https://onetimeonetime.com';
+
+      // If user already has an active subscription, create a subscription update via portal
+      // otherwise create a new checkout session
+      const sessionConfig: any = {
+        customer: customerId,
+        payment_method_types: ['card'],
+        payment_method_collection: 'always',
+        line_items: [{ price: priceId, quantity: 1 }],
+        mode: 'subscription',
+        success_url: `${baseUrl}/dashboard?checkout=success&plan=plus`,
+        cancel_url: `${baseUrl}/dashboard`,
+        metadata: { userId: user.id, planType: 'plus' },
+        subscription_data: { metadata: { planType: 'plus' } },
+        // No trial for Plus accounts
+      };
+
+      const session = await stripe.checkout.sessions.create(sessionConfig);
+      res.json({ url: session.url });
+    } catch (error: any) {
+      console.error("Plus checkout error:", error);
+      res.status(500).json({ message: error.message || "Failed to create Plus checkout" });
+    }
+  });
+
+  // Public: get live meeting for Plus users
+  app.get("/api/live-meeting", requireAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(userId);
+      if (!user || user.accountType !== 'plus') {
+        return res.status(403).json({ message: "Plus membership required" });
+      }
+      const meeting = await storage.getLiveMeeting();
+      res.json(meeting ?? { meetingUrl: "", isActive: false, updatesText: "" });
+    } catch {
+      res.status(500).json({ message: "Failed to get meeting" });
+    }
+  });
+
+  // Admin: get live meeting settings
+  app.get("/api/admin/live-meeting", requireAdmin, async (req, res) => {
+    try {
+      const meeting = await storage.getLiveMeeting();
+      res.json(meeting ?? { meetingUrl: "", isActive: false, updatesText: "" });
+    } catch {
+      res.status(500).json({ message: "Failed to get meeting" });
+    }
+  });
+
+  // Admin: update live meeting settings
+  app.post("/api/admin/live-meeting", requireAdmin, async (req, res) => {
+    try {
+      const { meetingUrl = "", isActive = false, updatesText = "" } = req.body;
+      await storage.setLiveMeeting(String(meetingUrl), Boolean(isActive), String(updatesText));
+      res.json({ success: true });
+    } catch {
+      res.status(500).json({ message: "Failed to save meeting" });
+    }
+  });
+
   app.post("/api/create-portal", requireAuth, async (req, res) => {
     try {
       const userId = getAuthUserId(req);

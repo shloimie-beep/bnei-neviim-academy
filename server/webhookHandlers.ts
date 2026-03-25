@@ -53,6 +53,7 @@ export class WebhookHandlers {
           const subscription = await stripe.subscriptions.retrieve(subscriptionId);
           const isTrialing = subscription.status === 'trialing';
           const trialEnd = subscription.trial_end ? new Date(subscription.trial_end * 1000) : null;
+          const isPlus = session.metadata?.planType === 'plus' || subscription.metadata?.planType === 'plus';
           
           await storage.updateUser(userId, {
             stripeCustomerId: customerId,
@@ -60,6 +61,7 @@ export class WebhookHandlers {
             subscriptionStatus: isTrialing ? 'trial' : 'active',
             trialEndsAt: trialEnd,
             hasUsedTrial: isTrialing ? true : undefined, // Mark trial as used if starting one
+            accountType: isPlus ? 'plus' : 'standard',
           });
           
           // If starting a trial, record the phone numbers as used in trial
@@ -140,6 +142,7 @@ export class WebhookHandlers {
             stripeSubscriptionId: null,
             trialEndsAt: null,
             hasUsedTrial: true,
+            accountType: 'standard',
           });
           console.log(`User ${user.id} subscription deleted - access revoked, trial used`);
         }

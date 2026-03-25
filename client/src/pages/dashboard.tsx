@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff } from "lucide-react";
+import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -1137,6 +1137,22 @@ export default function DashboardPage() {
     enabled: hasActiveSubscription,
   });
 
+  const isPlus = user?.accountType === "plus";
+
+  const { data: liveMeeting } = useQuery<{ meetingUrl: string; isActive: boolean; updatesText: string }>({
+    queryKey: ["/api/live-meeting"],
+    queryFn: async () => {
+      const res = await fetch("/api/live-meeting", {
+        credentials: "include",
+        headers: getAuthHeaders(),
+      });
+      if (!res.ok) throw new Error("Not available");
+      return res.json();
+    },
+    enabled: isPlus && hasActiveSubscription,
+    refetchInterval: 60_000,
+  });
+
   const videosByCategory = useMemo(() => {
     if (!videos) return {};
     const grouped: Record<string, VideoType[]> = {};
@@ -1365,6 +1381,25 @@ export default function DashboardPage() {
     },
     onError: (error: any) => {
       toast({ title: "Portal access failed", description: error.message, variant: "destructive" });
+    },
+  });
+
+  const createPlusCheckoutMutation = useMutation({
+    mutationFn: async () => {
+      const res = await fetch("/api/create-plus-checkout", {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+        body: JSON.stringify({}),
+      });
+      if (!res.ok) throw new Error("Failed to create checkout");
+      return res.json();
+    },
+    onSuccess: (data) => {
+      if (data.url) window.location.href = data.url;
+    },
+    onError: (error: any) => {
+      toast({ title: "Checkout failed", description: error.message, variant: "destructive" });
     },
   });
 
@@ -1646,18 +1681,34 @@ export default function DashboardPage() {
                       <h3 className="font-medium flex items-center gap-2">
                         <CreditCard className="h-4 w-4" />
                         Billing
+                        {isPlus && <Badge variant="default" className="text-xs"><Star className="h-3 w-3 mr-1" />Plus</Badge>}
                       </h3>
                       {(user?.subscriptionStatus === "active" || user?.subscriptionStatus === "trial") && subscription?.stripeCustomerId ? (
-                        <Button
-                          variant="outline"
-                          className="w-full"
-                          onClick={() => createPortalMutation.mutate()}
-                          disabled={createPortalMutation.isPending}
-                          data-testid="button-manage-billing-settings"
-                        >
-                          {createPortalMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                          Manage Billing
-                        </Button>
+                        <div className="space-y-2">
+                          <Button
+                            variant="outline"
+                            className="w-full"
+                            onClick={() => createPortalMutation.mutate()}
+                            disabled={createPortalMutation.isPending}
+                            data-testid="button-manage-billing-settings"
+                          >
+                            {createPortalMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                            Manage Billing
+                          </Button>
+                          {!isPlus && user?.subscriptionStatus === "active" && (
+                            <Button
+                              variant="outline"
+                              className="w-full border-primary/50 text-primary hover:bg-primary/5"
+                              onClick={() => createPlusCheckoutMutation.mutate()}
+                              disabled={createPlusCheckoutMutation.isPending}
+                              data-testid="button-upgrade-plus"
+                            >
+                              {createPlusCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                              <Star className="h-4 w-4 mr-2" />
+                              Upgrade to Plus — $29.99/mo
+                            </Button>
+                          )}
+                        </div>
                       ) : (
                         <Button
                           variant="outline"
@@ -1715,6 +1766,58 @@ export default function DashboardPage() {
 
           {hasActiveSubscription ? (
             <>
+              {/* Plus Member Panel */}
+              {isPlus && (
+                <Card className="border-primary/50 bg-primary/5" data-testid="card-plus-panel">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-base">
+                      <Star className="h-4 w-4 text-primary" />
+                      Plus Member
+                      <Badge variant="default" className="text-xs ml-1">Plus</Badge>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {/* Live Meeting */}
+                      <div className="rounded-lg border bg-background p-4 space-y-3">
+                        <div className="flex items-center gap-2">
+                          <MonitorPlay className="h-4 w-4 text-muted-foreground" />
+                          <span className="text-sm font-medium">Live Meeting</span>
+                        </div>
+                        {liveMeeting?.isActive && liveMeeting.meetingUrl ? (
+                          <a
+                            href={liveMeeting.meetingUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            data-testid="button-join-meeting"
+                          >
+                            <Button className="w-full gap-2" size="sm">
+                              <MonitorPlay className="h-4 w-4" />
+                              Join Live Meeting
+                            </Button>
+                          </a>
+                        ) : (
+                          <p className="text-sm text-muted-foreground italic">No meeting happening right now</p>
+                        )}
+                      </div>
+
+                      {/* Updates */}
+                      {liveMeeting?.updatesText?.trim() && (
+                        <div className="rounded-lg border bg-background p-4 space-y-2">
+                          <div className="flex items-center gap-2">
+                            <FileText className="h-4 w-4 text-muted-foreground" />
+                            <span className="text-sm font-medium">Updates</span>
+                          </div>
+                          <p className="text-sm whitespace-pre-wrap text-muted-foreground leading-relaxed">
+                            {liveMeeting.updatesText}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Search Bar */}
               <div className="max-w-md">
                 <Input

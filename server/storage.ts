@@ -23,6 +23,7 @@ import {
   rssAudioItems,
   userDashboardSessions,
   siteAnnouncement,
+  liveMeeting,
   type User,
   type InsertUser,
   type PhoneNumber,
@@ -89,6 +90,8 @@ export interface IStorage {
   getDashboardSessionCount(userId: string, since: Date): Promise<number>;
   getAnnouncement(): Promise<{ text: string; isActive: boolean; webhookSecret: string } | null>;
   setAnnouncement(text: string, isActive: boolean): Promise<void>;
+  getLiveMeeting(): Promise<{ meetingUrl: string; isActive: boolean; updatesText: string } | null>;
+  setLiveMeeting(meetingUrl: string, isActive: boolean, updatesText: string): Promise<void>;
 
   // Audio Files
   getAllAudioFiles(): Promise<AudioFile[]>;
@@ -243,6 +246,21 @@ export class DatabaseStorage implements IStorage {
       .onConflictDoUpdate({
         target: siteAnnouncement.id,
         set: { text, isActive, updatedAt: new Date() },
+      });
+  }
+
+  async getLiveMeeting(): Promise<{ meetingUrl: string; isActive: boolean; updatesText: string } | null> {
+    const rows = await db.select().from(liveMeeting).where(eq(liveMeeting.id, 1));
+    if (rows.length === 0) return null;
+    return { meetingUrl: rows[0].meetingUrl ?? "", isActive: rows[0].isActive, updatesText: rows[0].updatesText };
+  }
+
+  async setLiveMeeting(meetingUrl: string, isActive: boolean, updatesText: string): Promise<void> {
+    await db.insert(liveMeeting)
+      .values({ id: 1, meetingUrl, isActive, updatesText })
+      .onConflictDoUpdate({
+        target: liveMeeting.id,
+        set: { meetingUrl, isActive, updatesText, updatedAt: new Date() },
       });
   }
 
