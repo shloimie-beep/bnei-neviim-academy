@@ -296,6 +296,7 @@ export const siteAnnouncement = pgTable("site_announcement", {
   id: integer("id").primaryKey().default(1),
   text: text("text").notNull().default(""),
   isActive: boolean("is_active").notNull().default(true),
+  imageUrl: text("image_url"),
   webhookSecret: varchar("webhook_secret", { length: 64 }).notNull().default(sql`gen_random_uuid()`),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

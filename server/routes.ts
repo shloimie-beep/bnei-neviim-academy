@@ -1486,12 +1486,12 @@ export async function registerRoutes(
   app.get("/api/announcement", async (req, res) => {
     try {
       const ann = await storage.getAnnouncement();
-      if (!ann || !ann.isActive || !ann.text.trim()) {
-        return res.json({ text: "", isActive: false });
+      if (!ann || !ann.isActive || (!ann.text.trim() && !ann.imageUrl)) {
+        return res.json({ text: "", isActive: false, imageUrl: null });
       }
-      res.json({ text: ann.text, isActive: ann.isActive });
+      res.json({ text: ann.text, isActive: ann.isActive, imageUrl: ann.imageUrl ?? null });
     } catch {
-      res.json({ text: "", isActive: false });
+      res.json({ text: "", isActive: false, imageUrl: null });
     }
   });
 
@@ -1499,7 +1499,7 @@ export async function registerRoutes(
   app.get("/api/admin/announcement", requireAdmin, async (req, res) => {
     try {
       const ann = await storage.getAnnouncement();
-      res.json(ann ?? { text: "", isActive: true, webhookSecret: "" });
+      res.json(ann ?? { text: "", isActive: true, imageUrl: null, webhookSecret: "" });
     } catch {
       res.status(500).json({ message: "Failed to get announcement" });
     }
@@ -1513,6 +1513,89 @@ export async function registerRoutes(
       res.json({ success: true });
     } catch {
       res.status(500).json({ message: "Failed to save announcement" });
+    }
+  });
+
+  // Admin: upload announcement image
+  app.post("/api/admin/announcement/image", requireAdmin, imageUpload.single("image"), async (req, res) => {
+    try {
+      if (!req.file) return res.status(400).json({ message: "No image file provided" });
+
+      const ann = await storage.getAnnouncement();
+
+      // Delete old image if exists
+      if (ann?.imageUrl && ann.imageUrl.startsWith("/objects/")) {
+        try {
+          const oldFile = await objectStorageService.getObjectEntityFile(ann.imageUrl);
+          await oldFile.delete();
+        } catch (err) {
+          console.error("Failed to delete old announcement image:", err);
+        }
+      }
+
+      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
+      const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
+
+      const url = new URL(uploadURL);
+      const pathParts = url.pathname.slice(1).split("/");
+      const bucketName = pathParts[0];
+      const objectName = pathParts.slice(1).join("/");
+
+      const bucket = objectStorageClient.bucket(bucketName);
+      const objectFile = bucket.file(objectName);
+
+      await new Promise<void>((resolve, reject) => {
+        const readStream = fs.createReadStream(req.file!.path);
+        const writeStream = objectFile.createWriteStream({ resumable: false, contentType: req.file!.mimetype });
+        readStream.on("error", reject);
+        writeStream.on("error", reject);
+        writeStream.on("finish", resolve);
+        readStream.pipe(writeStream);
+      });
+
+      if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+
+      await storage.setAnnouncement(ann?.text ?? "", ann?.isActive ?? true, objectPath);
+      res.json({ success: true, imageUrl: objectPath });
+    } catch (err) {
+      console.error("Announcement image upload error:", err);
+      res.status(500).json({ message: "Failed to upload image" });
+    }
+  });
+
+  // Admin: delete announcement image
+  app.delete("/api/admin/announcement/image", requireAdmin, async (req, res) => {
+    try {
+      const ann = await storage.getAnnouncement();
+      if (ann?.imageUrl && ann.imageUrl.startsWith("/objects/")) {
+        try {
+          const oldFile = await objectStorageService.getObjectEntityFile(ann.imageUrl);
+          await oldFile.delete();
+        } catch (err) {
+          console.error("Failed to delete announcement image:", err);
+        }
+      }
+      await storage.setAnnouncement(ann?.text ?? "", ann?.isActive ?? true, null);
+      res.json({ success: true });
+    } catch {
+      res.status(500).json({ message: "Failed to delete image" });
+    }
+  });
+
+  // Public: serve announcement image
+  app.get("/api/announcement/image", async (req, res) => {
+    try {
+      const ann = await storage.getAnnouncement();
+      if (!ann?.imageUrl || !ann.imageUrl.startsWith("/objects/")) {
+        return res.status(404).json({ message: "No image" });
+      }
+      const objectFile = await objectStorageService.getObjectEntityFile(ann.imageUrl);
+      const [metadata] = await objectFile.getMetadata();
+      res.setHeader("Content-Type", metadata.contentType || "image/jpeg");
+      res.setHeader("Cache-Control", "public, max-age=3600");
+      objectFile.createReadStream().pipe(res);
+    } catch {
+      res.status(404).json({ message: "Image not found" });
     }
   });
 

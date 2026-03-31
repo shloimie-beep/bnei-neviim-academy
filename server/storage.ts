@@ -88,8 +88,8 @@ export interface IStorage {
   // Dashboard Sessions
   recordDashboardSession(userId: string): Promise<void>;
   getDashboardSessionCount(userId: string, since: Date): Promise<number>;
-  getAnnouncement(): Promise<{ text: string; isActive: boolean; webhookSecret: string } | null>;
-  setAnnouncement(text: string, isActive: boolean): Promise<void>;
+  getAnnouncement(): Promise<{ text: string; isActive: boolean; imageUrl: string | null; webhookSecret: string } | null>;
+  setAnnouncement(text: string, isActive: boolean, imageUrl?: string | null): Promise<void>;
   getLiveMeeting(): Promise<{ meetingUrl: string; isActive: boolean; updatesText: string } | null>;
   setLiveMeeting(meetingUrl: string, isActive: boolean, updatesText: string): Promise<void>;
 
@@ -234,18 +234,23 @@ export class DatabaseStorage implements IStorage {
     return Number((result.rows[0] as any)?.count || 0);
   }
 
-  async getAnnouncement(): Promise<{ text: string; isActive: boolean; webhookSecret: string } | null> {
+  async getAnnouncement(): Promise<{ text: string; isActive: boolean; imageUrl: string | null; webhookSecret: string } | null> {
     const rows = await db.select().from(siteAnnouncement).where(eq(siteAnnouncement.id, 1));
     if (rows.length === 0) return null;
-    return { text: rows[0].text, isActive: rows[0].isActive, webhookSecret: rows[0].webhookSecret };
+    return { text: rows[0].text, isActive: rows[0].isActive, imageUrl: rows[0].imageUrl ?? null, webhookSecret: rows[0].webhookSecret };
   }
 
-  async setAnnouncement(text: string, isActive: boolean): Promise<void> {
+  async setAnnouncement(text: string, isActive: boolean, imageUrl?: string | null): Promise<void> {
     await db.insert(siteAnnouncement)
-      .values({ id: 1, text, isActive })
+      .values({ id: 1, text, isActive, imageUrl: imageUrl !== undefined ? imageUrl : null })
       .onConflictDoUpdate({
         target: siteAnnouncement.id,
-        set: { text, isActive, updatedAt: new Date() },
+        set: {
+          text,
+          isActive,
+          ...(imageUrl !== undefined ? { imageUrl } : {}),
+          updatedAt: new Date(),
+        },
       });
   }
 

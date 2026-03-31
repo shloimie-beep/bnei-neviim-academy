@@ -1030,8 +1030,9 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
 
 const ANNOUNCEMENT_TRUNCATE_AT = 120;
 
-function AnnouncementBanner({ text }: { text: string }) {
+function AnnouncementBanner({ text, imageUrl }: { text: string; imageUrl?: string | null }) {
   const [open, setOpen] = useState(false);
+  const [imageCollapsed, setImageCollapsed] = useState(false);
   const isTruncated = text.length > ANNOUNCEMENT_TRUNCATE_AT;
   const displayText = isTruncated ? text.slice(0, ANNOUNCEMENT_TRUNCATE_AT).trimEnd() + "…" : text;
 
@@ -1064,7 +1065,26 @@ function AnnouncementBanner({ text }: { text: string }) {
             </Dialog>
           </>
         )}
+        {imageUrl && (
+          <button
+            onClick={() => setImageCollapsed((c) => !c)}
+            className="shrink-0 text-xs font-semibold underline underline-offset-2 opacity-90 hover:opacity-100 whitespace-nowrap"
+            data-testid="button-announcement-toggle-image"
+          >
+            {imageCollapsed ? "Show image" : "Hide image"}
+          </button>
+        )}
       </div>
+      {imageUrl && !imageCollapsed && (
+        <div className="px-4 pb-3" data-testid="announcement-image-container">
+          <img
+            src="/api/announcement/image"
+            alt="Announcement"
+            className="max-h-72 w-auto rounded-lg object-contain"
+            data-testid="img-announcement"
+          />
+        </div>
+      )}
     </div>
   );
 }
@@ -1104,7 +1124,7 @@ export default function DashboardPage() {
     });
   };
 
-  const { data: announcement } = useQuery<{ text: string; isActive: boolean }>({
+  const { data: announcement } = useQuery<{ text: string; isActive: boolean; imageUrl: string | null }>({
     queryKey: ["/api/announcement"],
     refetchInterval: 60_000,
   });
@@ -1832,8 +1852,8 @@ export default function DashboardPage() {
       )}
 
       {/* Announcement Banner */}
-      {announcement?.isActive && announcement.text?.trim() && (
-        <AnnouncementBanner text={announcement.text} />
+      {announcement?.isActive && (announcement.text?.trim() || announcement.imageUrl) && (
+        <AnnouncementBanner text={announcement.text} imageUrl={announcement.imageUrl} />
       )}
 
       <main className="container mx-auto px-4 py-8">
