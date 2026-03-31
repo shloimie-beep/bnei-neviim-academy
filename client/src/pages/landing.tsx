@@ -468,11 +468,6 @@ export default function LandingPage() {
                 <h4 className="font-bold text-white mb-1">IT'S ALL GOOD</h4>
                 <p className="text-sm text-white/70 mb-2">Inspirational / Comical Film</p>
                 <p className="text-xs text-[#EDE518]">Included in the Academy & Hotline</p>
-                <a href="https://eli-schellergenerous.sellfy.store/p/its-all-good/" target="_blank" rel="noopener noreferrer">
-                  <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm" data-testid="button-product-itsallgood">
-                    Stream - $7.99
-                  </Button>
-                </a>
               </CardContent>
             </Card>
 
