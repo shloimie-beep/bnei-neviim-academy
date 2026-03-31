@@ -488,11 +488,6 @@ export default function LandingPage() {
                 <h4 className="font-bold text-white mb-1">Experience Eretz Yisrael</h4>
                 <p className="text-sm text-white/70 mb-2">Inspirational Film</p>
                 <p className="text-xs text-[#EDE518]">Included in the Academy & Hotline</p>
-                <a href="https://eli-schellergenerous.sellfy.store/p/experience-eretz-yisrael/" target="_blank" rel="noopener noreferrer">
-                  <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm" data-testid="button-product-eretzyisrael">
-                    Stream - $12.99
-                  </Button>
-                </a>
               </CardContent>
             </Card>
 
@@ -508,11 +503,6 @@ export default function LandingPage() {
                 <h4 className="font-bold text-white mb-1">Searching for Happiness</h4>
                 <p className="text-sm text-white/70 mb-2">A Comedy Adventure Film</p>
                 <p className="text-xs text-[#EDE518]">Included in the Academy & Hotline</p>
-                <a href="https://eli-schellergenerous.sellfy.store/p/chasing-happiness/" target="_blank" rel="noopener noreferrer">
-                  <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm" data-testid="button-product-happiness">
-                    Stream - $12.99
-                  </Button>
-                </a>
               </CardContent>
             </Card>
 
@@ -528,11 +518,6 @@ export default function LandingPage() {
                 <h4 className="font-bold text-white mb-1">The Purim Shpiel 2025</h4>
                 <p className="text-sm text-white/70 mb-2">Hilarious Comedy Film</p>
                 <p className="text-xs text-[#EDE518]">Included in the Academy & Hotline</p>
-                <a href="https://eli-schellergenerous.sellfy.store/p/purim-shpiel-2025/" target="_blank" rel="noopener noreferrer">
-                  <Button className="w-full mt-3 bg-[#EDE518] text-black font-semibold text-sm" data-testid="button-product-purim">
-                    Stream - $12.99
-                  </Button>
-                </a>
               </CardContent>
             </Card>
 
