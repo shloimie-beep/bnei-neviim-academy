@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Users, DollarSign, Activity, Search, RefreshCw, Ban, Calendar, Download, MoreHorizontal, Key, Trash2, Mail, Phone } from "lucide-react";
+import { Loader2, Users, DollarSign, Activity, Search, RefreshCw, Ban, Calendar, Download, MoreHorizontal, Key, Trash2, Mail, Phone, Star } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
@@ -60,6 +60,7 @@ interface Subscriber {
   familyName: string | null;
   location: string | null;
   role: string;
+  accountType: string | null;
   subscriptionStatus: string | null;
   stripeCustomerId: string | null;
   stripeSubscriptionId: string | null;
@@ -563,7 +564,17 @@ export default function SubscribersManagement() {
                   {filteredSubscribers.map((subscriber) => (
                     <TableRow key={subscriber.id} data-testid={`row-subscriber-${subscriber.id}`}>
                       <TableCell className="font-medium">{subscriber.familyName || "-"}</TableCell>
-                      <TableCell>{subscriber.email}</TableCell>
+                      <TableCell>
+                        <div className="flex items-center gap-2">
+                          <span>{subscriber.email}</span>
+                          {subscriber.accountType === "plus" && (
+                            <Badge variant="default" className="text-xs gap-1 shrink-0" data-testid={`badge-plus-${subscriber.id}`}>
+                              <Star className="h-3 w-3" />
+                              Plus
+                            </Badge>
+                          )}
+                        </div>
+                      </TableCell>
                       <TableCell className="font-mono text-sm">
                         {(subscriber.phoneNumbers || []).length > 0
                           ? formatPhoneNumber(subscriber.phoneNumbers[0].phoneNumber)
