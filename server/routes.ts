@@ -3613,6 +3613,15 @@ export async function registerRoutes(
             let thumbUrl = vv.pictures?.base_link || null;
             if (thumbUrl && !thumbUrl.includes('_')) thumbUrl = thumbUrl.replace(/\?.*$/, '') + '_640x360';
             if (thumbUrl && thumbUrl !== dbVideo.thumbnailPath) updates.thumbnailPath = thumbUrl;
+            // Fix missing embed URL (critical for video playback - private videos need hash)
+            if (!dbVideo.vimeoEmbedUrl && vv.player_embed_url) {
+              const eu = new URL(vv.player_embed_url);
+              eu.searchParams.set('dnt', '1');
+              eu.searchParams.set('title', '0');
+              eu.searchParams.set('byline', '0');
+              eu.searchParams.set('portrait', '0');
+              updates.vimeoEmbedUrl = eu.toString();
+            }
             if (Object.keys(updates).length > 0) {
               await storage.updateVideo(dbVideo.id, updates);
               updated++;
