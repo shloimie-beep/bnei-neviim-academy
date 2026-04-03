@@ -641,6 +641,20 @@ export default function LandingPage() {
               <h4 className="font-bold text-white text-lg">Mishnayas Pesachim Chapter Ten</h4>
               <p className="text-white/70">Dive into one of the most exciting chapters in the Mishnah! Rabbi Eli Scheller brings Pesachim Chapter Ten to life with energy, humor, and razor-sharp clarity that makes learning impossible to forget.</p>
             </div>
+            <div className="space-y-4">
+              <div className="rounded-lg overflow-hidden shadow-xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
+                <iframe
+                  src="https://player.vimeo.com/video/1174681253?h=f1589236ec&badge=0&autopause=0&player_id=0&app_id=58479"
+                  frameBorder="0"
+                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+                  title="An Interview with Kids in RBS, Israel"
+                />
+              </div>
+              <h4 className="font-bold text-white text-lg">An Interview with Kids in RBS, Israel</h4>
+              <p className="text-white/70">What's it really like to be a kid growing up in Israel during wartime? Hear straight from the kids of Ramat Beit Shemesh — their raw, honest, and inspiring answers will move you, surprise you, and leave you thinking.</p>
+            </div>
           </div>
         </div>
       </section>
