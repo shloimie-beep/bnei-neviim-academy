@@ -829,9 +829,10 @@ export default function LandingPage() {
 
       <section className="py-16 bg-[#08779C]">
         <div className="container mx-auto px-4 text-center">
-          <img src={logoImage} alt="OneTime OneTime" className="h-20 w-auto mx-auto mb-6" />
-          <h2 className="text-3xl font-bold text-white mb-6">
-            Ready to bring OneTime OneTime into your home?
+          <h2 className="text-3xl font-bold text-white mb-6 flex flex-wrap items-center justify-center gap-3">
+            Ready to bring
+            <img src={logoImage} alt="OneTime OneTime" className="h-10 w-auto inline-block" />
+            into your home?
           </h2>
           <p className="text-xl text-white/90 mb-8">
             Join thousands of families enjoying weekly Torah content.
