@@ -593,18 +593,32 @@ function CategoryBanner({ category, theme }: { category: VideoCategory; theme: C
   const { bannerStyle, accent, accentSecondary, headerBg, headerText, emoji, tagline } = theme;
 
   if (bannerStyle === "stories") return (
-    <div className="relative overflow-hidden rounded-xl mb-6 p-6" style={{ background: headerBg, border: `1px solid ${accent}30` }}>
-      <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `repeating-linear-gradient(45deg, ${accent} 0px, ${accent} 1px, transparent 1px, transparent 30px)` }} />
-      <div className="absolute right-4 top-1/2 -translate-y-1/2 text-8xl opacity-20 select-none">{emoji}</div>
-      <div className="relative z-10">
-        <div className="flex items-center gap-2 mb-1">
-          <span className="text-3xl">{emoji}</span>
-          <span className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: accent }}>OneTime Academy</span>
+    <div className="relative overflow-hidden rounded-xl mb-6" style={{ background: headerBg, border: `1px solid ${accent}30` }}>
+      {/* Diagonal line texture */}
+      <div className="absolute inset-0 opacity-[0.06]" style={{ backgroundImage: `repeating-linear-gradient(135deg, ${accent} 0px, ${accent} 1px, transparent 1px, transparent 28px)` }} />
+      {/* Glow orb */}
+      <div className="absolute -right-16 -top-16 w-64 h-64 rounded-full opacity-10 blur-3xl" style={{ background: accent }} />
+      {/* Decorative SVG stars */}
+      <svg className="absolute right-8 top-1/2 -translate-y-1/2 opacity-15" width="120" height="80" viewBox="0 0 120 80" fill="none">
+        <polygon points="60,4 67,24 88,24 72,37 78,57 60,44 42,57 48,37 32,24 53,24" fill={accent} />
+        <polygon points="96,20 99.5,30 110,30 101.5,36 105,46 96,40 87,46 90.5,36 82,30 92.5,30" fill={accentSecondary} opacity="0.7" />
+        <polygon points="24,20 27.5,30 38,30 29.5,36 33,46 24,40 15,46 18.5,36 10,30 20.5,30" fill={accentSecondary} opacity="0.7" />
+      </svg>
+      <div className="relative z-10 p-6 pr-36">
+        <div className="flex items-center gap-2 mb-2">
+          <div className="h-px w-6 rounded" style={{ background: accent }} />
+          <span className="text-xs font-bold uppercase tracking-[0.35em]" style={{ color: accent }}>Rabbi Eli Scheller</span>
         </div>
-        <h2 className="text-3xl font-black" style={{ color: headerText }}>{category.name}</h2>
-        <p className="text-sm mt-1 opacity-70" style={{ color: headerText }}>{tagline}</p>
-        <div className="flex gap-1 mt-3">{[1,2,3,4,5].map(i => <span key={i} className="text-lg" style={{ color: accent }}>★</span>)}</div>
+        <h2 className="text-3xl font-black leading-tight" style={{ color: headerText }}>{category.name}</h2>
+        <p className="text-sm mt-1.5 font-medium" style={{ color: `${headerText}99` }}>{tagline}</p>
+        <div className="flex gap-0.5 mt-3">
+          {[1,2,3,4,5].map(i => (
+            <svg key={i} width="14" height="14" viewBox="0 0 14 14" fill={accent}><polygon points="7,1 8.5,5 13,5 9.5,7.5 11,12 7,9.5 3,12 4.5,7.5 1,5 5.5,5"/></svg>
+          ))}
+        </div>
       </div>
+      {/* Bottom accent line */}
+      <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{ background: `linear-gradient(to right, ${accent}80, ${accent}20, transparent)` }} />
     </div>
   );
 
@@ -755,31 +769,11 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default" }: 
   // Use a stable cache-bust value per page load to avoid infinite rerenders
   const [cacheBust] = useState(() => Date.now());
 
-  // Convert Vimeo thumbnail URL to use smaller size for faster loading
-  const getSmallThumbnail = (url: string) => {
-    // Replace size suffixes like _640x360, _960x540, _1280x720 with smaller _295x166
-    return url.replace(/_\d+x\d+/, '_295x166');
-  };
-
-  const thumbnailSrc = (() => {
-    // Vimeo thumbnail URL stored directly (starts with https://i.vimeocdn.com)
-    if (video.thumbnailPath?.startsWith("https://i.vimeocdn.com")) {
-      return getSmallThumbnail(video.thumbnailPath);
-    }
-    // Legacy vimeo:// prefix format
-    if (video.thumbnailPath?.startsWith("vimeo://")) {
-      return getSmallThumbnail(video.thumbnailPath.replace("vimeo://", ""));
-    }
-    // Custom thumbnail path (local storage)
-    if (video.thumbnailPath) {
-      return `/api/videos/${video.id}/thumbnail?v=${cacheBust}`;
-    }
-    // Vimeo thumbnail from API response
-    if ((video as any).vimeoThumbnailUrl) {
-      return getSmallThumbnail((video as any).vimeoThumbnailUrl);
-    }
-    return null;
-  })();
+  // Always route through our API endpoint so thumbnail handling is centralised.
+  // The endpoint handles: Vimeo CDN URLs (redirect), Object Storage paths, local paths.
+  const thumbnailSrc = video.thumbnailPath
+    ? `/api/videos/${video.id}/thumbnail?v=${cacheBust}`
+    : null;
 
   const handleOpenChange = (open: boolean) => {
     setIsOpen(open);
