@@ -2184,11 +2184,24 @@ export async function registerRoutes(
             throw new Error("Vimeo thumbnail upload failed");
           }
           
-          // Wait for Vimeo to process the thumbnail
-          await new Promise(r => setTimeout(r, 2000));
-          
-          // Get the new Vimeo thumbnail URL
-          const vimeoThumbnailUrl = await vimeoService.getThumbnailUrl(video.vimeoVideoId);
+          // Poll Vimeo until the thumbnail URL changes (custom thumbnail replaces the old one)
+          const oldThumbnailUrl = video.thumbnailPath;
+          let vimeoThumbnailUrl: string | null = null;
+          const pollIntervals = [3000, 5000, 5000, 7000, 10000]; // up to ~30s total
+          for (const delay of pollIntervals) {
+            await new Promise(r => setTimeout(r, delay));
+            const fetchedUrl = await vimeoService.getThumbnailUrl(video.vimeoVideoId);
+            if (fetchedUrl && fetchedUrl !== oldThumbnailUrl) {
+              vimeoThumbnailUrl = fetchedUrl;
+              console.log(`[Thumbnail] Got new Vimeo thumbnail URL after polling`);
+              break;
+            }
+            console.log(`[Thumbnail] Thumbnail not updated yet, polling again...`);
+          }
+          // If URL didn't change after all polls, use the latest URL we got
+          if (!vimeoThumbnailUrl) {
+            vimeoThumbnailUrl = await vimeoService.getThumbnailUrl(video.vimeoVideoId);
+          }
           if (!vimeoThumbnailUrl) {
             throw new Error("Failed to get thumbnail URL from Vimeo after upload");
           }
@@ -3514,6 +3527,107 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Generate all thumbnails error:", error);
       res.status(500).json({ message: "Failed to start thumbnail generation" });
+    }
+  });
+
+  // Admin: Sync ALL videos from Vimeo - imports new videos AND refreshes titles/thumbnails
+  // Runs in background, responds immediately with a status message
+  app.post("/api/admin/videos/sync-from-vimeo", requireAdmin, async (req, res) => {
+    try {
+      // Fetch all videos from Vimeo library
+      let allVimeoVideos: any[] = [];
+      let page = 1;
+      let hasMore = true;
+      while (hasMore) {
+        const result = await vimeoService.listVideos(page, 100);
+        allVimeoVideos = allVimeoVideos.concat(result.items);
+        hasMore = allVimeoVideos.length < result.totalItems;
+        page++;
+      }
+
+      const dbVideos = await storage.getAllVideos();
+      const dbByVimeoId: Record<string, any> = {};
+      for (const v of dbVideos) { if (v.vimeoVideoId) dbByVimeoId[v.vimeoVideoId] = v; }
+
+      const missing = allVimeoVideos.filter(vv => {
+        const id = vv.uri?.replace("/videos/", "");
+        return id && !dbByVimeoId[id] && vv.status === "available";
+      });
+
+      res.json({ 
+        message: `Syncing ${allVimeoVideos.length} Vimeo videos (${missing.length} new to import). Refresh in a moment.`,
+        totalInVimeo: allVimeoVideos.length,
+        toImport: missing.length
+      });
+
+      // Run the full sync in background
+      (async () => {
+        const cleanTitle = (name: string) => name.replace(/\.(mp4|mov|avi|mkv|webm|MP4|MOV)(\.mp4)?$/, '').trim();
+        let imported = 0, updated = 0, failed = 0;
+
+        // 1. Import missing videos
+        for (const vv of missing) {
+          try {
+            const videoId = vv.uri.replace("/videos/", "");
+            let thumbnailPath = vv.pictures?.base_link || null;
+            if (thumbnailPath && !thumbnailPath.includes('_')) {
+              thumbnailPath = thumbnailPath.replace(/\?.*$/, '') + '_640x360';
+            }
+            let embedUrl: string | null = null;
+            if (vv.player_embed_url) {
+              const url = new URL(vv.player_embed_url);
+              url.searchParams.set('dnt', '1');
+              url.searchParams.set('title', '0');
+              url.searchParams.set('byline', '0');
+              url.searchParams.set('portrait', '0');
+              embedUrl = url.toString();
+            }
+            await storage.createVideo({
+              title: cleanTitle(vv.name || `Video ${videoId}`),
+              description: null, filename: `${videoId}.mp4`, filepath: null,
+              fileSize: 0, duration: vv.duration || 0, status: "ready",
+              mediaType: "video", storageType: "vimeo", vimeoVideoId: videoId,
+              categoryId: null, thumbnailPath, vimeoEmbedUrl: embedUrl,
+            });
+            imported++;
+          } catch (err) {
+            console.error(`[VimeoSync] Import error:`, err);
+            failed++;
+          }
+          await new Promise(r => setTimeout(r, 100));
+        }
+
+        // 2. Refresh titles + thumbnails for existing Vimeo videos
+        for (const vv of allVimeoVideos) {
+          const videoId = vv.uri?.replace("/videos/", "");
+          const dbVideo = dbByVimeoId[videoId];
+          if (!dbVideo || dbVideo.mediaType !== "video") continue;
+          try {
+            const updates: Record<string, any> = {};
+            // Only update title if Vimeo has a cleaner version (user-set via admin)
+            const vimeoClean = cleanTitle(vv.name || "");
+            if (vimeoClean && vimeoClean !== dbVideo.title && !vv.name?.match(/\.(mp4|mov|avi|mkv|webm)$/i)) {
+              updates.title = vimeoClean;
+            }
+            // Always refresh thumbnail URL
+            let thumbUrl = vv.pictures?.base_link || null;
+            if (thumbUrl && !thumbUrl.includes('_')) thumbUrl = thumbUrl.replace(/\?.*$/, '') + '_640x360';
+            if (thumbUrl && thumbUrl !== dbVideo.thumbnailPath) updates.thumbnailPath = thumbUrl;
+            if (Object.keys(updates).length > 0) {
+              await storage.updateVideo(dbVideo.id, updates);
+              updated++;
+            }
+          } catch (err) {
+            console.error(`[VimeoSync] Update error for ${videoId}:`, err);
+            failed++;
+          }
+          await new Promise(r => setTimeout(r, 80));
+        }
+        console.log(`[VimeoSync] Done. Imported: ${imported}, Updated: ${updated}, Failed: ${failed}`);
+      })();
+    } catch (error: any) {
+      console.error("Vimeo sync error:", error);
+      res.status(500).json({ message: error.message || "Failed to sync from Vimeo" });
     }
   });
 

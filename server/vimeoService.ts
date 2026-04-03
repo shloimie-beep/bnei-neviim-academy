@@ -463,7 +463,8 @@ class VimeoService {
   // Update video metadata on Vimeo (title, description)
   async updateVideoMetadata(videoId: string, metadata: { name?: string; description?: string }): Promise<boolean> {
     try {
-      const token = await this.getAccessToken();
+      // Use customer token (upload key) for write operations - matches the account that owns the videos
+      const token = this.getUploadToken() || await this.getAccessToken();
       const response = await this.fetchWithRetry(`https://api.vimeo.com/videos/${videoId}`, {
         method: "PATCH",
         headers: {
