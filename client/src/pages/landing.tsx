@@ -831,7 +831,7 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-white mb-6 flex flex-wrap items-center justify-center gap-3">
             Ready to bring
-            <img src={logoImage} alt="OneTime OneTime" className="h-10 w-auto inline-block" />
+            <img src={logoImage} alt="OneTime OneTime" className="h-16 w-auto inline-block" />
             into your home?
           </h2>
           <p className="text-xl text-white/90 mb-8">
