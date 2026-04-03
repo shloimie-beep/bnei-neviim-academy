@@ -597,7 +597,7 @@ export default function LandingPage() {
                 />
               </div>
               <h4 className="font-bold text-white text-lg">A Birthday Surprise</h4>
-              <p className="text-white/70">What happens when Rabbi Scheller decides to pull off the ultimate birthday surprise? A heartwarming, laugh-out-loud moment you won't see coming.</p>
+              <p className="text-white/70">A film. What happens when Rabbi Scheller decides to pull off the ultimate birthday surprise? A heartwarming, laugh-out-loud moment you won't see coming.</p>
             </div>
             <div className="space-y-4">
               <div className="rounded-lg overflow-hidden shadow-xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
@@ -611,7 +611,7 @@ export default function LandingPage() {
                 />
               </div>
               <h4 className="font-bold text-white text-lg">The Secret Mission</h4>
-              <p className="text-white/70">When a grumpy neighbor has had enough of the neighborhood kids, they decide to do something unexpected. A moving story about kindness, courage, and the power of doing the right thing.</p>
+              <p className="text-white/70">A film. When a grumpy neighbor has had enough of the neighborhood kids, they decide to do something unexpected. A moving story about kindness, courage, and the power of doing the right thing.</p>
             </div>
             <div className="space-y-4">
               <div className="rounded-lg overflow-hidden shadow-xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
@@ -625,7 +625,7 @@ export default function LandingPage() {
                 />
               </div>
               <h4 className="font-bold text-white text-lg">Meet The Evil Inclination</h4>
-              <p className="text-white/70">The Yetzer Tov vs. the Yetzer Hara — brought to life in the most creative, hilarious way possible. Watch the inner battle every person faces play out right before your eyes.</p>
+              <p className="text-white/70">A film. The Yetzer Tov vs. the Yetzer Hara — brought to life in the most creative, hilarious way possible. Watch the inner battle every person faces play out right before your eyes.</p>
             </div>
             <div className="space-y-4">
               <div className="rounded-lg overflow-hidden shadow-xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
