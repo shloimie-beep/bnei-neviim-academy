@@ -597,7 +597,7 @@ export default function LandingPage() {
                 />
               </div>
               <h4 className="font-bold text-white text-lg">A Birthday Surprise</h4>
-              <p className="text-white/70">An interesting birthday surprise for my mother</p>
+              <p className="text-white/70">What happens when Rabbi Eli's kids decide to pull off the ultimate birthday surprise? A heartwarming, laugh-out-loud moment you won't see coming.</p>
             </div>
             <div className="space-y-4">
               <div className="rounded-lg overflow-hidden shadow-xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
@@ -611,7 +611,7 @@ export default function LandingPage() {
                 />
               </div>
               <h4 className="font-bold text-white text-lg">The Secret Mission</h4>
-              <p className="text-white/70">When an old man gets upset at the kids in the community...</p>
+              <p className="text-white/70">When a grumpy neighbor has had enough of the neighborhood kids, they decide to do something unexpected. A moving story about kindness, courage, and the power of doing the right thing.</p>
             </div>
             <div className="space-y-4">
               <div className="rounded-lg overflow-hidden shadow-xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
@@ -625,7 +625,7 @@ export default function LandingPage() {
                 />
               </div>
               <h4 className="font-bold text-white text-lg">Meet The Evil Inclination</h4>
-              <p className="text-white/70">See the battle of the Yetzer tov and Yetzer Hara play out</p>
+              <p className="text-white/70">The Yetzer Tov vs. the Yetzer Hara — brought to life in the most creative, hilarious way possible. Watch the inner battle every person faces play out right before your eyes.</p>
             </div>
             <div className="space-y-4">
               <div className="rounded-lg overflow-hidden shadow-xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
