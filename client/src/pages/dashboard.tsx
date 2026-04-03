@@ -549,8 +549,8 @@ function VideoCard({ video, isNew, onView, categoryName }: { video: VideoType; i
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Card className="overflow-hidden cursor-pointer hover-elevate active-elevate-2" data-testid={`card-video-${video.id}`}>
-          <div className={`aspect-video flex items-center justify-center relative group overflow-hidden ${isAudio ? "bg-black" : "bg-muted"}`}>
+        <Card className="overflow-hidden cursor-pointer hover-elevate active-elevate-2 border border-white/10 hover:border-[#EDE518]/40 transition-colors" style={{background: "linear-gradient(145deg, #0e1e35 0%, #0a1628 100%)"}} data-testid={`card-video-${video.id}`}>
+          <div className={`aspect-video flex items-center justify-center relative group overflow-hidden ${isAudio ? "bg-[#060e1a]" : "bg-[#060e1a]"}`}>
             {thumbnailSrc ? (
               <>
                 <img 
@@ -565,13 +565,13 @@ function VideoCard({ video, isNew, onView, categoryName }: { video: VideoType; i
                 )}
               </>
             ) : isAudio ? (
-              <Music className="h-12 w-12 text-muted-foreground" />
+              <Music className="h-12 w-12 text-[#08779C]" />
             ) : (
-              <FileVideo className="h-12 w-12 text-muted-foreground" />
+              <FileVideo className="h-12 w-12 text-[#08779C]" />
             )}
             {isNew && (
               <div className="absolute top-2 right-2">
-                <Badge variant="destructive" className="text-xs" data-testid={`badge-new-${video.id}`}>New</Badge>
+                <Badge className="text-xs bg-[#EDE518] text-black font-bold" data-testid={`badge-new-${video.id}`}>New</Badge>
               </div>
             )}
             {durationText && (
@@ -579,31 +579,31 @@ function VideoCard({ video, isNew, onView, categoryName }: { video: VideoType; i
                 {durationText}
               </div>
             )}
-            <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-              <div className="h-14 w-14 rounded-full bg-primary flex items-center justify-center">
-                <Play className="h-6 w-6 text-primary-foreground ml-1" />
+            <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="h-14 w-14 rounded-full bg-[#EDE518] flex items-center justify-center shadow-[0_0_20px_rgba(237,229,24,0.5)]">
+                <Play className="h-6 w-6 text-black ml-1" />
               </div>
             </div>
           </div>
           <CardContent className="p-4">
             <div className="flex items-center gap-2">
-              <h3 className="font-medium line-clamp-1 flex-1" data-testid={`text-video-title-${video.id}`}>
+              <h3 className="font-semibold line-clamp-1 flex-1 text-white" data-testid={`text-video-title-${video.id}`}>
                 {video.title}
               </h3>
               {isAudio && (
-                <span className="text-xs text-muted-foreground flex items-center gap-1 flex-shrink-0">
+                <span className="text-xs text-[#08779C] flex items-center gap-1 flex-shrink-0">
                   <Music className="h-3 w-3" />
                   Audio
                 </span>
               )}
             </div>
             {categoryName && (
-              <Badge variant="secondary" className="mt-1 text-xs" data-testid={`badge-category-${video.id}`}>
+              <span className="mt-1.5 inline-block text-xs font-semibold text-[#EDE518] uppercase tracking-wider" data-testid={`badge-category-${video.id}`}>
                 {categoryName}
-              </Badge>
+              </span>
             )}
             {video.description && (
-              <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+              <p className="text-sm text-slate-400 mt-1 line-clamp-2">
                 {video.description}
               </p>
             )}
@@ -621,27 +621,28 @@ function DocumentCard({ doc }: { doc: Document }) {
   return (
     <>
       <Card 
-        className="overflow-hidden cursor-pointer hover-elevate active-elevate-2" 
+        className="overflow-hidden cursor-pointer hover-elevate active-elevate-2 border border-white/10 hover:border-[#08779C]/40 transition-colors" 
+        style={{background: "linear-gradient(145deg, #0e1e35 0%, #0a1628 100%)"}}
         onClick={() => setIsViewerOpen(true)}
         data-testid={`card-doc-${doc.id}`}
       >
-        <div className="aspect-video bg-muted flex items-center justify-center relative group">
-          <FileText className="h-12 w-12 text-muted-foreground" />
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <div className="h-14 w-14 rounded-full bg-primary flex items-center justify-center">
-              <ExternalLink className="h-6 w-6 text-primary-foreground" />
+        <div className="aspect-video bg-[#060e1a] flex items-center justify-center relative group">
+          <FileText className="h-12 w-12 text-[#08779C]" />
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="h-14 w-14 rounded-full bg-[#08779C] flex items-center justify-center shadow-[0_0_20px_rgba(8,119,156,0.5)]">
+              <ExternalLink className="h-6 w-6 text-white" />
             </div>
           </div>
         </div>
         <CardContent className="p-4">
           <div className="flex items-center gap-2">
-            <h3 className="font-medium line-clamp-1 flex-1" data-testid={`text-doc-title-${doc.id}`}>
+            <h3 className="font-semibold line-clamp-1 flex-1 text-white" data-testid={`text-doc-title-${doc.id}`}>
               {doc.title}
             </h3>
-            <Badge variant="secondary" className="text-xs flex-shrink-0">PDF</Badge>
+            <span className="text-xs font-bold text-[#08779C] border border-[#08779C]/30 px-1.5 py-0.5 rounded flex-shrink-0">PDF</span>
           </div>
           {doc.description && (
-            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+            <p className="text-sm text-slate-400 mt-1 line-clamp-2">
               {doc.description}
             </p>
           )}
@@ -827,11 +828,12 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
   return (
     <>
       <Card 
-        className="overflow-hidden cursor-pointer hover-elevate active-elevate-2" 
+        className="overflow-hidden cursor-pointer hover-elevate active-elevate-2 border border-white/10 hover:border-[#EDE518]/40 transition-colors" 
+        style={{background: "linear-gradient(145deg, #0e1e35 0%, #0a1628 100%)"}}
         onClick={handleOpen}
         data-testid={`card-album-${album.id}`}
       >
-        <div className="aspect-video bg-muted flex items-center justify-center relative group">
+        <div className="aspect-video bg-[#060e1a] flex items-center justify-center relative group">
           {album.thumbnailPath ? (
             <img 
               src={`/api/albums/${album.id}/thumbnail`} 
@@ -839,25 +841,25 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
               className="w-full h-full object-cover"
             />
           ) : (
-            <Disc className="h-12 w-12 text-muted-foreground" />
+            <Disc className="h-12 w-12 text-[#EDE518]" />
           )}
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-            <div className="h-14 w-14 rounded-full bg-primary flex items-center justify-center">
-              <Play className="h-6 w-6 text-primary-foreground ml-1" />
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            <div className="h-14 w-14 rounded-full bg-[#EDE518] flex items-center justify-center shadow-[0_0_20px_rgba(237,229,24,0.5)]">
+              <Play className="h-6 w-6 text-black ml-1" />
             </div>
           </div>
         </div>
         <CardContent className="p-4">
           <div className="flex items-center gap-2">
-            <h3 className="font-medium line-clamp-1 flex-1" data-testid={`text-album-title-${album.id}`}>
+            <h3 className="font-semibold line-clamp-1 flex-1 text-white" data-testid={`text-album-title-${album.id}`}>
               {album.title}
             </h3>
-            <Badge variant="secondary" className="text-xs flex-shrink-0">
+            <span className="text-xs font-bold text-[#EDE518] border border-[#EDE518]/30 px-1.5 py-0.5 rounded flex-shrink-0">
               {album.trackCount} {album.trackCount === 1 ? "track" : "tracks"}
-            </Badge>
+            </span>
           </div>
           {album.description && (
-            <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+            <p className="text-sm text-slate-400 mt-1 line-clamp-2">
               {album.description}
             </p>
           )}
@@ -1511,8 +1513,8 @@ export default function DashboardPage() {
   const registeredPhone = phoneNumbers?.[0];
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="sticky top-0 z-50 border-b bg-background/95 backdrop-blur">
+    <div className="min-h-screen" style={{background: "linear-gradient(135deg, #071220 0%, #0a1a35 30%, #071830 60%, #0a1220 100%)"}}>
+      <header className="sticky top-0 z-50 border-b border-[#EDE518]/20" style={{background: "linear-gradient(90deg, #040d1a 0%, #081630 50%, #040d1a 100%)", backdropFilter: "blur(12px)"}}>
         <div className="container mx-auto px-4 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <img 
@@ -1520,7 +1522,7 @@ export default function DashboardPage() {
               alt="OneTimeOneTime" 
               className="h-10 w-auto"
             />
-            <span className="text-xl font-bold">OneTimeOneTime</span>
+            <span className="text-xl font-bold text-white">OneTimeOneTime</span>
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
@@ -1856,6 +1858,30 @@ export default function DashboardPage() {
         <AnnouncementBanner text={announcement.text} imageUrl={announcement.imageUrl} />
       )}
 
+      {/* Academy Hero Banner */}
+      <div className="relative overflow-hidden border-b border-white/10" style={{background: "linear-gradient(135deg, #0d1a35 0%, #0a2040 40%, #071830 70%, #0d1a35 100%)"}}>
+        {/* Decorative color blobs */}
+        <div className="absolute top-0 left-0 w-64 h-full opacity-20" style={{background: "radial-gradient(ellipse at left center, #EDE518 0%, transparent 70%)"}} />
+        <div className="absolute top-0 right-0 w-64 h-full opacity-20" style={{background: "radial-gradient(ellipse at right center, #08779C 0%, transparent 70%)"}} />
+        {/* Bottom accent stripe */}
+        <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{background: "linear-gradient(90deg, transparent 0%, #EDE518 30%, #08779C 70%, transparent 100%)"}} />
+        <div className="relative container mx-auto px-4 py-8 flex items-center justify-between gap-4">
+          <div>
+            <p className="text-[#EDE518] text-xs font-black uppercase tracking-[0.25em] mb-2">✦ Members Area</p>
+            <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">OneTime <span style={{color: "#EDE518"}}>Academy</span></h1>
+            <p className="text-slate-300 text-sm mt-1">Your exclusive Torah content library</p>
+          </div>
+          <div className="hidden sm:flex flex-col items-end gap-2">
+            <span className="flex items-center gap-2 text-sm font-medium text-white bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
+              <span className="w-2 h-2 rounded-full bg-[#EDE518] inline-block shadow-[0_0_6px_#EDE518]" />Videos & Films
+            </span>
+            <span className="flex items-center gap-2 text-sm font-medium text-white bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
+              <span className="w-2 h-2 rounded-full bg-[#08779C] inline-block shadow-[0_0_6px_#08779C]" />Audio & Albums
+            </span>
+          </div>
+        </div>
+      </div>
+
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto space-y-8">
 
@@ -1863,12 +1889,12 @@ export default function DashboardPage() {
             <>
               {/* Plus Member Panel */}
               {isPlus && (
-                <Card className="border-primary/50 bg-primary/5" data-testid="card-plus-panel">
+                <Card className="border-[#EDE518]/30 bg-gradient-to-br from-[#0d1a2e] to-[#0a1020]" data-testid="card-plus-panel">
                   <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-base">
-                      <Star className="h-4 w-4 text-primary" />
+                    <CardTitle className="flex items-center gap-2 text-base text-white">
+                      <Star className="h-4 w-4 text-[#EDE518]" />
                       Plus Member
-                      <Badge variant="default" className="text-xs ml-1">Plus</Badge>
+                      <Badge className="text-xs ml-1 bg-[#EDE518] text-black">Plus</Badge>
                     </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-4">
@@ -1919,7 +1945,7 @@ export default function DashboardPage() {
                   placeholder="Search videos..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full"
+                  className="w-full bg-[#0d1828] border-white/10 text-white placeholder:text-slate-500 focus:border-[#EDE518]/50"
                   data-testid="input-search-videos"
                 />
               </div>
@@ -1928,7 +1954,8 @@ export default function DashboardPage() {
               {searchQuery.trim() && (
                 <div>
                   <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-lg font-semibold">
+                    <h2 className="text-lg font-semibold text-white flex items-center gap-2">
+                      <span className="w-1 h-5 bg-[#EDE518] rounded-full inline-block" />
                       Search Results ({searchResults.length})
                     </h2>
                     <Button 
@@ -1964,7 +1991,10 @@ export default function DashboardPage() {
               {/* Recent Videos Section - Horizontal Scrolling (hidden when searching) */}
               {!searchQuery.trim() && recentVideos.length > 0 && (
                 <div>
-                  <h2 className="text-lg font-semibold mb-4">Recent</h2>
+                  <div className="flex items-center gap-2 mb-4">
+                    <span className="w-1 h-5 bg-[#EDE518] rounded-full inline-block" />
+                    <h2 className="text-lg font-semibold text-white">Recent</h2>
+                  </div>
                   <div className="grid grid-cols-[40px_1fr_40px] gap-2 items-center">
                     {/* Left control column - always reserves space */}
                     <div className="flex items-center justify-center">
@@ -2032,8 +2062,9 @@ export default function DashboardPage() {
               {!searchQuery.trim() && trendingVideos.length > 0 && (
                 <div>
                   <div className="flex items-center gap-2 mb-4">
-                    <TrendingUp className="h-5 w-5 text-orange-500" />
-                    <h2 className="text-lg font-semibold">Trending</h2>
+                    <span className="w-1 h-5 bg-[#08779C] rounded-full inline-block" />
+                    <TrendingUp className="h-5 w-5 text-[#08779C]" />
+                    <h2 className="text-lg font-semibold text-white">Trending</h2>
                     <Button
                       variant="ghost"
                       size="sm"
@@ -2119,10 +2150,11 @@ export default function DashboardPage() {
                     return (
                       <Button
                         key={category.id}
-                        variant={isSelected ? "default" : "outline"}
+                        className={isSelected
+                          ? "bg-[#EDE518] text-black font-semibold hover:bg-[#EDE518]/90 border-0"
+                          : "bg-[#0d1828] text-slate-300 border border-white/10 hover:bg-[#EDE518]/10 hover:text-white hover:border-[#EDE518]/40"}
                         onClick={() => {
                           setSelectedCategory(category.id);
-                          // Always expand subcategories when main category is selected
                           setExpandedCategory(category.id);
                         }}
                         data-testid={`button-category-${category.id}`}
@@ -2136,7 +2168,9 @@ export default function DashboardPage() {
                   })}
                   {videosByCategory.uncategorized && videosByCategory.uncategorized.length > 0 && (
                     <Button
-                      variant={selectedCategory === "uncategorized" ? "default" : "outline"}
+                      className={selectedCategory === "uncategorized"
+                        ? "bg-[#EDE518] text-black font-semibold hover:bg-[#EDE518]/90 border-0"
+                        : "bg-[#0d1828] text-slate-300 border border-white/10 hover:bg-[#EDE518]/10 hover:text-white hover:border-[#EDE518]/40"}
                       onClick={() => setSelectedCategory("uncategorized")}
                       data-testid="button-category-uncategorized"
                     >
@@ -2145,7 +2179,9 @@ export default function DashboardPage() {
                   )}
                   {albums && albums.length > 0 && (
                     <Button
-                      variant={selectedCategory === "albums" ? "default" : "outline"}
+                      className={selectedCategory === "albums"
+                        ? "bg-[#EDE518] text-black font-semibold hover:bg-[#EDE518]/90 border-0"
+                        : "bg-[#0d1828] text-slate-300 border border-white/10 hover:bg-[#EDE518]/10 hover:text-white hover:border-[#EDE518]/40"}
                       onClick={() => setSelectedCategory("albums")}
                       data-testid="button-category-albums"
                     >
@@ -2155,7 +2191,9 @@ export default function DashboardPage() {
                   )}
                   {documents && documents.length > 0 && (
                     <Button
-                      variant={selectedCategory === "documents" ? "default" : "outline"}
+                      className={selectedCategory === "documents"
+                        ? "bg-[#EDE518] text-black font-semibold hover:bg-[#EDE518]/90 border-0"
+                        : "bg-[#0d1828] text-slate-300 border border-white/10 hover:bg-[#EDE518]/10 hover:text-white hover:border-[#EDE518]/40"}
                       onClick={() => setSelectedCategory("documents")}
                       data-testid="button-category-documents"
                     >
@@ -2164,22 +2202,20 @@ export default function DashboardPage() {
                     </Button>
                   )}
                 </div>
-                {/* Subcategories - shown below parent when main category selected, in distinct accent color */}
+                {/* Subcategories */}
                 {(() => {
-                  // Show subcategories if selectedCategory is a main category with subcategories
                   const mainCatId = topLevelCategories.find(c => c.id === selectedCategory)?.id 
                     || topLevelCategories.find(c => getSubcategories(c.id).some(s => s.id === selectedCategory))?.id;
                   const subsToShow = mainCatId ? getSubcategories(mainCatId) : [];
                   if (subsToShow.length === 0) return null;
                   return (
-                    <div className="flex flex-wrap gap-2 ml-4 pl-4 border-l-2 border-primary/50">
+                    <div className="flex flex-wrap gap-2 ml-4 pl-4 border-l-2 border-[#08779C]/50">
                       {subsToShow.map((subcat) => (
                         <Button
                           key={subcat.id}
-                          variant={selectedCategory === subcat.id ? "default" : "outline"}
-                          className={selectedCategory === subcat.id 
-                            ? "bg-primary/80 text-primary-foreground" 
-                            : "border-primary/50 text-primary hover:bg-primary/10"}
+                          className={selectedCategory === subcat.id
+                            ? "bg-[#08779C] text-white font-semibold hover:bg-[#08779C]/90 border-0"
+                            : "bg-[#0d1828] text-slate-400 border border-[#08779C]/30 hover:bg-[#08779C]/10 hover:text-white"}
                           onClick={() => setSelectedCategory(subcat.id)}
                           data-testid={`button-subcategory-${subcat.id}`}
                         >
@@ -2213,13 +2249,11 @@ export default function DashboardPage() {
                       ))}
                     </div>
                   ) : (
-                    <Card>
+                    <Card className="border border-white/10" style={{background: "linear-gradient(145deg, #0e1e35 0%, #0a1628 100%)"}}>
                       <CardContent className="py-12 text-center">
-                        <Disc className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                        <h3 className="font-semibold text-lg mb-2">No Albums Yet</h3>
-                        <p className="text-muted-foreground">
-                          Check back soon for new album content!
-                        </p>
+                        <Disc className="h-16 w-16 mx-auto text-[#EDE518] mb-4" />
+                        <h3 className="font-semibold text-lg mb-2 text-white">No Albums Yet</h3>
+                        <p className="text-slate-400">Check back soon for new album content!</p>
                       </CardContent>
                     </Card>
                   )}
@@ -2245,13 +2279,11 @@ export default function DashboardPage() {
                       ))}
                     </div>
                   ) : (
-                    <Card>
+                    <Card className="border border-white/10" style={{background: "linear-gradient(145deg, #0e1e35 0%, #0a1628 100%)"}}>
                       <CardContent className="py-12 text-center">
-                        <FileText className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                        <h3 className="font-semibold text-lg mb-2">No Documents Yet</h3>
-                        <p className="text-muted-foreground">
-                          Check back soon for new document content!
-                        </p>
+                        <FileText className="h-16 w-16 mx-auto text-[#08779C] mb-4" />
+                        <h3 className="font-semibold text-lg mb-2 text-white">No Documents Yet</h3>
+                        <p className="text-slate-400">Check back soon for new document content!</p>
                       </CardContent>
                     </Card>
                   )}
@@ -2282,13 +2314,11 @@ export default function DashboardPage() {
                       ))}
                     </div>
                   ) : (
-                    <Card>
+                    <Card className="border border-white/10" style={{background: "linear-gradient(145deg, #0e1e35 0%, #0a1628 100%)"}}>
                       <CardContent className="py-12 text-center">
-                        <FileVideo className="h-16 w-16 mx-auto text-muted-foreground mb-4" />
-                        <h3 className="font-semibold text-lg mb-2">No Content Yet</h3>
-                        <p className="text-muted-foreground">
-                          Check back soon for new content!
-                        </p>
+                        <FileVideo className="h-16 w-16 mx-auto text-[#08779C] mb-4" />
+                        <h3 className="font-semibold text-lg mb-2 text-white">No Content Yet</h3>
+                        <p className="text-slate-400">Check back soon for new content!</p>
                       </CardContent>
                     </Card>
                   )}
@@ -2319,16 +2349,18 @@ export default function DashboardPage() {
               </CardContent>
             </Card>
           ) : (
-            <Card className="border-2 border-dashed">
-              <CardContent className="py-16 text-center">
-                <Video className="h-16 w-16 mx-auto text-muted-foreground mb-6" />
-                <h2 className="text-2xl font-bold mb-2">Unlock Video Content</h2>
-                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+            <Card className="border border-[#EDE518]/20 overflow-hidden" style={{background: "linear-gradient(135deg, #0d1a35 0%, #0a2040 50%, #071830 100%)"}}>
+              <CardContent className="py-16 text-center relative">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 opacity-20" style={{background: "radial-gradient(ellipse at top, #EDE518 0%, transparent 70%)"}} />
+                <Video className="h-16 w-16 mx-auto text-[#EDE518] mb-6 relative" />
+                <h2 className="text-2xl font-bold mb-2 text-white relative">Unlock Video Content</h2>
+                <p className="text-slate-300 mb-6 max-w-md mx-auto relative">
                   Subscribe to access our library of exclusive video content for kids, 
                   plus phone hotline access with stories and live calls.
                 </p>
                 <Button
                   size="lg"
+                  className="bg-[#EDE518] text-black font-bold hover:bg-[#EDE518]/90 shadow-[0_0_20px_rgba(237,229,24,0.3)] relative"
                   onClick={() => createCheckoutMutation.mutate()}
                   disabled={createCheckoutMutation.isPending}
                   data-testid="button-subscribe-videos"
@@ -2336,7 +2368,7 @@ export default function DashboardPage() {
                   {createCheckoutMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
                   {user?.hasUsedTrial ? "Subscribe Now" : "Start 7-Day Free Trial"}
                 </Button>
-                <p className="text-sm text-muted-foreground mt-4">
+                <p className="text-sm text-slate-400 mt-4 relative">
                   {user?.hasUsedTrial ? "$9.99/month. Cancel anytime." : "$9.99/month after trial ends. Cancel anytime."}
                 </p>
               </CardContent>
