@@ -829,6 +829,7 @@ export default function LandingPage() {
 
       <section className="py-16 bg-[#08779C]">
         <div className="container mx-auto px-4 text-center">
+          <img src={logoImage} alt="OneTime OneTime" className="h-20 w-auto mx-auto mb-6" />
           <h2 className="text-3xl font-bold text-white mb-6">
             Ready to bring OneTime OneTime into your home?
           </h2>
