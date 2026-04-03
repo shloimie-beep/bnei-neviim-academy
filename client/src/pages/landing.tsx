@@ -668,11 +668,11 @@ export default function LandingPage() {
                   allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
                   referrerPolicy="strict-origin-when-cross-origin"
                   style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
-                  title="A Story"
+                  title="The Secret to Hitting Home Runs in Life"
                 />
               </div>
               <div>
-                <h5 className="font-semibold text-white text-sm mb-1">A Story</h5>
+                <h5 className="font-semibold text-white text-sm mb-1">The Secret to Hitting Home Runs in Life</h5>
                 <p className="text-white/40 text-xs leading-relaxed">A captivating story brought to life — the kind that stays with you long after it ends.</p>
               </div>
             </div>
