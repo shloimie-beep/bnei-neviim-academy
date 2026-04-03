@@ -1,5 +1,5 @@
 import { Link, useLocation, Redirect } from "wouter";
-import { Settings, LogOut, ShieldCheck, CreditCard, Video, FileText, Disc, Phone, Megaphone, MonitorPlay, Clapperboard } from "lucide-react";
+import { Settings, LogOut, ShieldCheck, CreditCard, Video, FileText, Disc, Phone, Megaphone, MonitorPlay } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -26,7 +26,6 @@ import AlbumManagement from "./albums";
 import RssFeedManagement from "./rss-feed";
 import AnnouncementManagement from "./announcement";
 import LiveMeetingManagement from "./live-meeting";
-import FeaturedVideosManagement from "./featured-videos";
 
 const adminRoutes = [
   { path: "/admin/videos", label: "Media", icon: Video },
@@ -34,7 +33,6 @@ const adminRoutes = [
   { path: "/admin/rss-feed", label: "Hotline", icon: Phone },
   { path: "/admin/live-meeting", label: "Live Meeting", icon: MonitorPlay },
   { path: "/admin/announcement", label: "Announcement", icon: Megaphone },
-  { path: "/admin/featured-videos", label: "Featured Videos", icon: Clapperboard },
   { path: "/admin/whitelist", label: "Whitelist", icon: ShieldCheck },
   { path: "/admin/subscribers", label: "Subscribers", icon: CreditCard },
   { path: "/admin/documents", label: "Documents", icon: FileText },
@@ -129,8 +127,6 @@ export default function AdminLayout() {
         return <LiveMeetingManagement />;
       case "/admin/announcement":
         return <AnnouncementManagement />;
-      case "/admin/featured-videos":
-        return <FeaturedVideosManagement />;
       case "/admin/documents":
         return <DocumentManagement />;
       case "/admin/settings":
