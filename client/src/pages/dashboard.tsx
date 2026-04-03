@@ -492,7 +492,249 @@ function VideoPlayer({ video, onClose }: { video: VideoType; onClose: () => void
   return <LegacyVideoPlayer video={video} onClose={onClose} />;
 }
 
-function VideoCard({ video, isNew, onView, categoryName }: { video: VideoType; isNew?: boolean; onView?: () => void; categoryName?: string }) {
+// ─── Category Theme System ───────────────────────────────────────────────────
+
+type CardVariant = "default" | "portrait" | "square" | "wide" | "list";
+
+interface CategoryTheme {
+  accent: string;
+  accentSecondary: string;
+  headerBg: string;
+  headerText: string;
+  cardBorder: string;
+  cardBg: string;
+  gridCols: string;
+  cardVariant: CardVariant;
+  featuredFirst: boolean;
+  emoji: string;
+  tagline: string;
+  bannerStyle: "stories" | "shorts" | "music" | "films" | "torah" | "podcast" | "vlog" | "interview" | "comedy" | "default";
+}
+
+const CATEGORY_THEMES: Record<string, CategoryTheme> = {
+  "Stories": {
+    accent: "#F59E0B", accentSecondary: "#D97706",
+    headerBg: "linear-gradient(135deg, #1c0f02 0%, #2d1a06 50%, #1a0e04 100%)",
+    headerText: "#FCD34D", cardBorder: "border-amber-700/40", cardBg: "linear-gradient(145deg, #1c1205 0%, #120c03 100%)",
+    gridCols: "grid-cols-2 md:grid-cols-3", cardVariant: "default", featuredFirst: true,
+    emoji: "📖", tagline: "Tales & Adventures", bannerStyle: "stories",
+  },
+  "Shorts": {
+    accent: "#EC4899", accentSecondary: "#A855F7",
+    headerBg: "linear-gradient(135deg, #1a0030 0%, #2d0050 40%, #0d0020 100%)",
+    headerText: "#F472B6", cardBorder: "border-pink-500/40", cardBg: "linear-gradient(145deg, #1a0030 0%, #100020 100%)",
+    gridCols: "grid-cols-3 sm:grid-cols-4 gap-2", cardVariant: "portrait", featuredFirst: false,
+    emoji: "📱", tagline: "Quick & Snappy", bannerStyle: "shorts",
+  },
+  "Music Videos": {
+    accent: "#A855F7", accentSecondary: "#EC4899",
+    headerBg: "linear-gradient(135deg, #0d0020 0%, #1e003a 50%, #0a0015 100%)",
+    headerText: "#C084FC", cardBorder: "border-purple-500/40", cardBg: "linear-gradient(145deg, #150028 0%, #0d0020 100%)",
+    gridCols: "grid-cols-2 sm:grid-cols-3 md:grid-cols-4", cardVariant: "square", featuredFirst: false,
+    emoji: "🎵", tagline: "Feel the Beat", bannerStyle: "music",
+  },
+  "Films": {
+    accent: "#DC2626", accentSecondary: "#F59E0B",
+    headerBg: "linear-gradient(135deg, #0a0000 0%, #1a0505 50%, #0a0000 100%)",
+    headerText: "#FCA5A5", cardBorder: "border-red-800/40", cardBg: "linear-gradient(145deg, #1a0505 0%, #0e0202 100%)",
+    gridCols: "grid-cols-1 md:grid-cols-2", cardVariant: "wide", featuredFirst: true,
+    emoji: "🎬", tagline: "Lights, Camera, Action", bannerStyle: "films",
+  },
+  "Mishnayos": {
+    accent: "#FBBF24", accentSecondary: "#2563EB",
+    headerBg: "linear-gradient(135deg, #020b18 0%, #051a30 50%, #020b18 100%)",
+    headerText: "#FDE68A", cardBorder: "border-blue-800/40", cardBg: "linear-gradient(145deg, #051a30 0%, #030f1e 100%)",
+    gridCols: "grid-cols-1", cardVariant: "list", featuredFirst: false,
+    emoji: "📜", tagline: "Daily Learning", bannerStyle: "torah",
+  },
+  "Pirkei Avos": {
+    accent: "#F59E0B", accentSecondary: "#7C3AED",
+    headerBg: "linear-gradient(135deg, #0f0520 0%, #1a0835 50%, #0a0318 100%)",
+    headerText: "#FCD34D", cardBorder: "border-yellow-700/40", cardBg: "linear-gradient(145deg, #1a0835 0%, #0f0520 100%)",
+    gridCols: "grid-cols-1", cardVariant: "list", featuredFirst: false,
+    emoji: "🕍", tagline: "Words of Wisdom", bannerStyle: "torah",
+  },
+  "OneDafOneDaf": {
+    accent: "#3B82F6", accentSecondary: "#FBBF24",
+    headerBg: "linear-gradient(135deg, #020a1a 0%, #051530 50%, #020a1a 100%)",
+    headerText: "#93C5FD", cardBorder: "border-blue-700/40", cardBg: "linear-gradient(145deg, #051530 0%, #030d22 100%)",
+    gridCols: "grid-cols-1 md:grid-cols-2", cardVariant: "default", featuredFirst: false,
+    emoji: "📚", tagline: "One Page Every Day", bannerStyle: "torah",
+  },
+  "Interviews": {
+    accent: "#0D9488", accentSecondary: "#6366F1",
+    headerBg: "linear-gradient(135deg, #00100e 0%, #001c1a 50%, #000e0c 100%)",
+    headerText: "#5EEAD4", cardBorder: "border-teal-700/40", cardBg: "linear-gradient(145deg, #001c1a 0%, #00100e 100%)",
+    gridCols: "grid-cols-1 md:grid-cols-2", cardVariant: "wide", featuredFirst: true,
+    emoji: "🎙️", tagline: "One-on-One Conversations", bannerStyle: "interview",
+  },
+  "Just Kidding Podcast": {
+    accent: "#F97316", accentSecondary: "#EDE518",
+    headerBg: "linear-gradient(135deg, #180a00 0%, #2d1200 50%, #180a00 100%)",
+    headerText: "#FB923C", cardBorder: "border-orange-600/40", cardBg: "linear-gradient(145deg, #2d1200 0%, #1a0a00 100%)",
+    gridCols: "grid-cols-2 md:grid-cols-3", cardVariant: "default", featuredFirst: false,
+    emoji: "🎤", tagline: "Laugh, Learn & Listen", bannerStyle: "comedy",
+  },
+  "Vloging with Reb Eli": {
+    accent: "#F97316", accentSecondary: "#EDE518",
+    headerBg: "linear-gradient(135deg, #100800 0%, #1e1000 50%, #100800 100%)",
+    headerText: "#FDBA74", cardBorder: "border-orange-700/40", cardBg: "linear-gradient(145deg, #1e1000 0%, #100800 100%)",
+    gridCols: "grid-cols-2 sm:grid-cols-3 md:grid-cols-3", cardVariant: "square", featuredFirst: false,
+    emoji: "🎥", tagline: "Life Behind the Lens", bannerStyle: "vlog",
+  },
+};
+
+function getCategoryTheme(categoryName: string | null): CategoryTheme | null {
+  if (!categoryName) return null;
+  return CATEGORY_THEMES[categoryName] || null;
+}
+
+function CategoryBanner({ category, theme }: { category: VideoCategory; theme: CategoryTheme }) {
+  const { bannerStyle, accent, accentSecondary, headerBg, headerText, emoji, tagline } = theme;
+
+  if (bannerStyle === "stories") return (
+    <div className="relative overflow-hidden rounded-xl mb-6 p-6" style={{ background: headerBg, border: `1px solid ${accent}30` }}>
+      <div className="absolute inset-0 opacity-10" style={{ backgroundImage: `repeating-linear-gradient(45deg, ${accent} 0px, ${accent} 1px, transparent 1px, transparent 30px)` }} />
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 text-8xl opacity-20 select-none">{emoji}</div>
+      <div className="relative z-10">
+        <div className="flex items-center gap-2 mb-1">
+          <span className="text-3xl">{emoji}</span>
+          <span className="text-xs font-bold uppercase tracking-[0.3em]" style={{ color: accent }}>OneTime Academy</span>
+        </div>
+        <h2 className="text-3xl font-black" style={{ color: headerText }}>{category.name}</h2>
+        <p className="text-sm mt-1 opacity-70" style={{ color: headerText }}>{tagline}</p>
+        <div className="flex gap-1 mt-3">{[1,2,3,4,5].map(i => <span key={i} className="text-lg" style={{ color: accent }}>★</span>)}</div>
+      </div>
+    </div>
+  );
+
+  if (bannerStyle === "shorts") return (
+    <div className="relative overflow-hidden rounded-xl mb-6" style={{ background: headerBg, border: `1px solid ${accent}40` }}>
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(8)].map((_, i) => (
+          <div key={i} className="absolute w-px h-full opacity-10" style={{ left: `${i * 14}%`, background: `linear-gradient(to bottom, transparent, ${accent}, transparent)` }} />
+        ))}
+      </div>
+      <div className="relative z-10 p-6 flex items-center gap-6">
+        <div className="flex-shrink-0 w-14 h-24 rounded-xl border-2 flex items-center justify-center text-3xl" style={{ borderColor: accent, background: `${accent}15` }}>📱</div>
+        <div>
+          <div className="text-xs font-bold uppercase tracking-[0.3em] mb-1" style={{ color: accent }}>Vertical Content</div>
+          <h2 className="text-3xl font-black" style={{ color: headerText }}>{category.name}</h2>
+          <p className="text-sm mt-1 opacity-60" style={{ color: headerText }}>{tagline}</p>
+        </div>
+        <div className="ml-auto flex flex-col gap-1.5 opacity-40">
+          {[80, 100, 60, 90, 70].map((h, i) => <div key={i} className="w-1.5 rounded-full" style={{ height: h/10+'rem', background: i % 2 ? accentSecondary : accent }} />)}
+        </div>
+      </div>
+    </div>
+  );
+
+  if (bannerStyle === "music") return (
+    <div className="relative overflow-hidden rounded-xl mb-6 p-6" style={{ background: headerBg, border: `1px solid ${accent}40` }}>
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 opacity-15">
+        <div className="w-32 h-32 rounded-full border-8 flex items-center justify-center" style={{ borderColor: accent }}>
+          <div className="w-8 h-8 rounded-full" style={{ background: accent }} />
+        </div>
+      </div>
+      <div className="absolute bottom-0 left-0 right-0 h-1" style={{ background: `linear-gradient(to right, ${accent}, ${accentSecondary}, ${accent})` }} />
+      <div className="relative z-10">
+        <div className="text-xs font-bold uppercase tracking-[0.3em] mb-1" style={{ color: accent }}>🎵 Now Playing</div>
+        <h2 className="text-3xl font-black" style={{ color: headerText }}>{category.name}</h2>
+        <p className="text-sm mt-1 opacity-60" style={{ color: headerText }}>{tagline}</p>
+        <div className="flex gap-0.5 mt-3 items-end h-6">
+          {[4,7,3,8,5,9,4,6,7,3,8,5].map((h, i) => (
+            <div key={i} className="w-1.5 rounded-t animate-pulse" style={{ height: `${h*8}%`, background: i%2 ? accent : accentSecondary, animationDelay: `${i*0.1}s` }} />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+
+  if (bannerStyle === "films") return (
+    <div className="relative overflow-hidden rounded-xl mb-6" style={{ background: headerBg, border: `1px solid ${accent}40` }}>
+      <div className="absolute top-0 left-0 right-0 h-4 flex gap-2 px-2 items-center" style={{ background: "rgba(0,0,0,0.8)" }}>
+        {[...Array(12)].map((_, i) => <div key={i} className="w-4 h-3 rounded-sm flex-shrink-0" style={{ background: accent+'40', border: `1px solid ${accent}60` }} />)}
+      </div>
+      <div className="absolute bottom-0 left-0 right-0 h-4 flex gap-2 px-2 items-center" style={{ background: "rgba(0,0,0,0.8)" }}>
+        {[...Array(12)].map((_, i) => <div key={i} className="w-4 h-3 rounded-sm flex-shrink-0" style={{ background: accent+'40', border: `1px solid ${accent}60` }} />)}
+      </div>
+      <div className="relative z-10 p-8 pt-8 flex items-center gap-6">
+        <div className="text-6xl select-none">{emoji}</div>
+        <div>
+          <div className="text-xs font-bold uppercase tracking-[0.3em] mb-1" style={{ color: accent }}>Now Showing</div>
+          <h2 className="text-3xl font-black" style={{ color: headerText }}>{category.name}</h2>
+          <p className="text-sm mt-1 opacity-60" style={{ color: headerText }}>{tagline}</p>
+        </div>
+      </div>
+    </div>
+  );
+
+  if (bannerStyle === "torah") return (
+    <div className="relative overflow-hidden rounded-xl mb-6 p-6" style={{ background: headerBg, border: `1px solid ${accent}40` }}>
+      <div className="absolute inset-0 opacity-5" style={{ backgroundImage: `repeating-linear-gradient(0deg, ${accent} 0px, transparent 1px, transparent 40px)` }} />
+      <div className="absolute right-6 top-1/2 -translate-y-1/2 text-7xl opacity-15 select-none">{emoji}</div>
+      <div className="relative z-10">
+        <div className="text-xs font-bold uppercase tracking-[0.3em] mb-1" style={{ color: accent }}>Torah Learning</div>
+        <h2 className="text-3xl font-black" style={{ color: headerText }}>{category.name}</h2>
+        <p className="text-sm mt-1 opacity-60" style={{ color: headerText }}>{tagline}</p>
+        <div className="mt-3 h-0.5 w-24 rounded" style={{ background: `linear-gradient(to right, ${accent}, transparent)` }} />
+      </div>
+    </div>
+  );
+
+  if (bannerStyle === "interview") return (
+    <div className="relative overflow-hidden rounded-xl mb-6 p-6" style={{ background: headerBg, border: `1px solid ${accent}40` }}>
+      <div className="absolute right-6 top-1/2 -translate-y-1/2 flex gap-3 opacity-15">
+        <div className="w-8 h-16 rounded-full" style={{ background: accent }} />
+        <div className="w-8 h-16 rounded-full mt-4" style={{ background: accentSecondary }} />
+      </div>
+      <div className="relative z-10">
+        <div className="text-xs font-bold uppercase tracking-[0.3em] mb-1" style={{ color: accent }}>🎙️ Studio Sessions</div>
+        <h2 className="text-3xl font-black" style={{ color: headerText }}>{category.name}</h2>
+        <p className="text-sm mt-1 opacity-60" style={{ color: headerText }}>{tagline}</p>
+      </div>
+    </div>
+  );
+
+  if (bannerStyle === "comedy") return (
+    <div className="relative overflow-hidden rounded-xl mb-6 p-6" style={{ background: headerBg, border: `1px solid ${accent}40` }}>
+      <div className="absolute right-4 top-1/2 -translate-y-1/2 text-8xl opacity-20 select-none rotate-12">😂</div>
+      <div className="absolute top-2 left-2 text-2xl opacity-30 rotate-[-20deg]">🎤</div>
+      <div className="relative z-10">
+        <div className="text-xs font-bold uppercase tracking-[0.3em] mb-1" style={{ color: accent }}>{emoji} Podcast</div>
+        <h2 className="text-3xl font-black" style={{ color: headerText }}>{category.name}</h2>
+        <p className="text-sm mt-1 opacity-60" style={{ color: headerText }}>{tagline}</p>
+      </div>
+    </div>
+  );
+
+  if (bannerStyle === "vlog") return (
+    <div className="relative overflow-hidden rounded-xl mb-6 p-6" style={{ background: headerBg, border: `1px solid ${accent}40` }}>
+      <div className="absolute inset-0 opacity-5" style={{ backgroundImage: `radial-gradient(circle at 20% 50%, ${accent} 0%, transparent 50%), radial-gradient(circle at 80% 50%, ${accentSecondary} 0%, transparent 50%)` }} />
+      <div className="absolute right-6 top-1/2 -translate-y-1/2 text-7xl opacity-20 select-none">{emoji}</div>
+      <div className="relative z-10">
+        <div className="text-xs font-bold uppercase tracking-[0.3em] mb-1" style={{ color: accent }}>Follow Along</div>
+        <h2 className="text-3xl font-black" style={{ color: headerText }}>{category.name}</h2>
+        <p className="text-sm mt-1 opacity-60" style={{ color: headerText }}>{tagline}</p>
+      </div>
+    </div>
+  );
+
+  // default
+  return (
+    <div className="relative overflow-hidden rounded-xl mb-6 p-6" style={{ background: headerBg, border: `1px solid ${accent}40` }}>
+      <div className="relative z-10">
+        <div className="text-xs font-bold uppercase tracking-[0.3em] mb-1" style={{ color: accent }}>{emoji} Category</div>
+        <h2 className="text-3xl font-black" style={{ color: headerText }}>{category.name}</h2>
+        <p className="text-sm mt-1 opacity-60" style={{ color: headerText }}>{tagline}</p>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+function VideoCard({ video, isNew, onView, categoryName, variant = "default" }: { video: VideoType; isNew?: boolean; onView?: () => void; categoryName?: string; variant?: CardVariant }) {
   const [isOpen, setIsOpen] = useState(false);
   const isAudio = video.mediaType === "audio";
 
@@ -546,17 +788,59 @@ function VideoCard({ video, isNew, onView, categoryName }: { video: VideoType; i
     }
   };
 
+  const aspectClass = variant === "portrait" ? "aspect-[9/16]"
+    : variant === "square" ? "aspect-square"
+    : variant === "wide" ? "aspect-[16/7]"
+    : "aspect-video";
+
+  // List variant: horizontal layout
+  if (variant === "list") {
+    return (
+      <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+        <DialogTrigger asChild>
+          <div className="flex gap-4 p-4 rounded-xl cursor-pointer border border-white/10 hover:border-white/25 transition-all group" style={{background: "linear-gradient(135deg, #051a30 0%, #030f1e 100%)"}} data-testid={`card-video-${video.id}`}>
+            <div className="flex-shrink-0 w-32 aspect-video rounded-lg overflow-hidden relative bg-[#060e1a]">
+              {thumbnailSrc ? (
+                <img src={thumbnailSrc} alt={video.title} className="w-full h-full object-cover" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <Play className="h-6 w-6 text-white/40" />
+                </div>
+              )}
+              <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="h-8 w-8 rounded-full bg-[#FBBF24] flex items-center justify-center">
+                  <Play className="h-3 w-3 text-black ml-0.5" />
+                </div>
+              </div>
+              {durationText && (
+                <div className="absolute bottom-1 right-1 bg-black/80 text-white text-[10px] px-1 py-0.5 rounded">{durationText}</div>
+              )}
+            </div>
+            <div className="flex-1 min-w-0 flex flex-col justify-center">
+              <div className="flex items-start gap-2">
+                <h3 className="font-semibold text-white line-clamp-2 flex-1" data-testid={`text-video-title-${video.id}`}>{video.title}</h3>
+                {isNew && <Badge className="text-xs bg-[#FBBF24] text-black font-bold flex-shrink-0" data-testid={`badge-new-${video.id}`}>New</Badge>}
+              </div>
+              {video.description && <p className="text-xs text-slate-400 mt-1 line-clamp-2">{video.description}</p>}
+            </div>
+          </div>
+        </DialogTrigger>
+        <VideoPlayer video={video} onClose={() => setIsOpen(false)} />
+      </Dialog>
+    );
+  }
+
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Card className="overflow-hidden cursor-pointer hover-elevate active-elevate-2 border border-white/10 hover:border-[#EDE518]/40 transition-colors" style={{background: "linear-gradient(145deg, #0e1e35 0%, #0a1628 100%)"}} data-testid={`card-video-${video.id}`}>
-          <div className={`aspect-video flex items-center justify-center relative group overflow-hidden ${isAudio ? "bg-[#060e1a]" : "bg-[#060e1a]"}`}>
+        <Card className="overflow-hidden cursor-pointer hover-elevate active-elevate-2 border border-white/10 hover:border-white/25 transition-colors relative" style={{background: "linear-gradient(145deg, #0e1e35 0%, #0a1628 100%)"}} data-testid={`card-video-${video.id}`}>
+          <div className={`${aspectClass} flex items-center justify-center relative group overflow-hidden bg-[#060e1a]`}>
             {thumbnailSrc ? (
               <>
                 <img 
                   src={thumbnailSrc} 
                   alt={video.title}
-                  className={`h-full w-full ${isAudio ? "object-contain" : "object-cover"}`}
+                  className="h-full w-full object-cover"
                 />
                 {isAudio && (
                   <div className="absolute top-2 left-2 bg-black/60 rounded-full p-1.5">
@@ -585,29 +869,35 @@ function VideoCard({ video, isNew, onView, categoryName }: { video: VideoType; i
               </div>
             </div>
           </div>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <h3 className="font-semibold line-clamp-1 flex-1 text-white" data-testid={`text-video-title-${video.id}`}>
-                {video.title}
-              </h3>
-              {isAudio && (
-                <span className="text-xs text-[#08779C] flex items-center gap-1 flex-shrink-0">
-                  <Music className="h-3 w-3" />
-                  Audio
+          {variant !== "square" && (
+            <CardContent className="p-3">
+              <div className="flex items-center gap-2">
+                <h3 className="font-semibold line-clamp-1 flex-1 text-white text-sm" data-testid={`text-video-title-${video.id}`}>
+                  {video.title}
+                </h3>
+                {isAudio && (
+                  <span className="text-xs text-[#08779C] flex items-center gap-1 flex-shrink-0">
+                    <Music className="h-3 w-3" />
+                  </span>
+                )}
+              </div>
+              {categoryName && (
+                <span className="mt-1 inline-block text-xs font-semibold text-[#EDE518] uppercase tracking-wider" data-testid={`badge-category-${video.id}`}>
+                  {categoryName}
                 </span>
               )}
+              {video.description && variant === "wide" && (
+                <p className="text-xs text-slate-400 mt-1 line-clamp-2">
+                  {video.description}
+                </p>
+              )}
+            </CardContent>
+          )}
+          {variant === "square" && (
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-2">
+              <h3 className="font-semibold line-clamp-1 text-white text-xs" data-testid={`text-video-title-${video.id}`}>{video.title}</h3>
             </div>
-            {categoryName && (
-              <span className="mt-1.5 inline-block text-xs font-semibold text-[#EDE518] uppercase tracking-wider" data-testid={`badge-category-${video.id}`}>
-                {categoryName}
-              </span>
-            )}
-            {video.description && (
-              <p className="text-sm text-slate-400 mt-1 line-clamp-2">
-                {video.description}
-              </p>
-            )}
-          </CardContent>
+          )}
         </Card>
       </DialogTrigger>
       <VideoPlayer video={video} onClose={() => setIsOpen(false)} />
@@ -1513,7 +1803,7 @@ export default function DashboardPage() {
   const registeredPhone = phoneNumbers?.[0];
 
   return (
-    <div className="min-h-screen" style={{background: "linear-gradient(135deg, #071220 0%, #0a1a35 30%, #071830 60%, #0a1220 100%)"}}>
+    <div className="min-h-screen" style={{background: "radial-gradient(ellipse at 15% 10%, rgba(237,229,24,0.13) 0%, transparent 45%), radial-gradient(ellipse at 85% 15%, rgba(8,119,156,0.18) 0%, transparent 45%), radial-gradient(ellipse at 75% 60%, rgba(237,229,24,0.09) 0%, transparent 40%), radial-gradient(ellipse at 20% 75%, rgba(8,119,156,0.14) 0%, transparent 45%), radial-gradient(ellipse at 50% 40%, rgba(8,50,120,0.20) 0%, transparent 60%), linear-gradient(160deg, #060e20 0%, #071830 40%, #060f1e 70%, #07101f 100%)"}}>
       <header className="sticky top-0 z-50 border-b border-[#EDE518]/20" style={{background: "linear-gradient(90deg, #040d1a 0%, #081630 50%, #040d1a 100%)", backdropFilter: "blur(12px)"}}>
         <div className="container mx-auto px-4 py-4 flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
@@ -1859,7 +2149,7 @@ export default function DashboardPage() {
       )}
 
       {/* Academy Hero Banner */}
-      <div className="relative overflow-hidden border-b border-white/10" style={{background: "linear-gradient(135deg, #0d1a35 0%, #0a2040 40%, #071830 70%, #0d1a35 100%)"}}>
+      <div className="relative overflow-hidden border-b border-white/10" style={{background: "linear-gradient(135deg, #0d1f40 0%, #0a2850 40%, #061e3a 70%, #0d1f40 100%)"}}>
         {/* Decorative color blobs */}
         <div className="absolute top-0 left-0 w-64 h-full opacity-20" style={{background: "radial-gradient(ellipse at left center, #EDE518 0%, transparent 70%)"}} />
         <div className="absolute top-0 right-0 w-64 h-full opacity-20" style={{background: "radial-gradient(ellipse at right center, #08779C 0%, transparent 70%)"}} />
@@ -2241,51 +2531,83 @@ export default function DashboardPage() {
                   )}
                 </div>
               ) : (
-                <div>
-                  {/* Section label */}
-                  {selectedCategory && !videosLoading && (
-                    <div className="flex items-center gap-3 mb-5">
-                      <div className="flex-shrink-0 h-8 w-1.5 rounded-full bg-[#EDE518] shadow-[0_0_8px_#EDE518]" />
-                      <h2 className="text-xl font-black text-white uppercase tracking-wide">
-                        {categories.find(c => c.id === selectedCategory)?.name || "All Content"}
-                      </h2>
-                      <div className="flex-1 h-px bg-gradient-to-r from-[#EDE518]/30 to-transparent" />
-                    </div>
-                  )}
-                  {videosLoading ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {[1, 2, 3, 4, 5, 6].map((i) => (
-                        <Card key={i} className="overflow-hidden border border-white/10" style={{background: "linear-gradient(145deg, #0e1e35, #0a1628)"}}>
-                          <Skeleton className="aspect-video bg-white/5" />
-                          <CardContent className="p-3 space-y-2">
-                            <Skeleton className="h-4 w-3/4 bg-white/5" />
-                            <Skeleton className="h-3 w-full bg-white/5" />
+                (() => {
+                  const selectedCat = categories.find(c => c.id === selectedCategory) || null;
+                  const theme = selectedCat ? getCategoryTheme(selectedCat.name) : null;
+                  const gridCols = theme ? theme.gridCols : "grid-cols-2 md:grid-cols-3";
+                  const cardVariant = theme ? theme.cardVariant : "default";
+                  const featuredFirst = theme ? theme.featuredFirst : true;
+
+                  return (
+                    <div>
+                      {/* Category Banner — unique per category */}
+                      {selectedCat && theme && !videosLoading && (
+                        <CategoryBanner category={selectedCat} theme={theme} />
+                      )}
+                      {/* Generic section label for no-theme or no-category */}
+                      {selectedCat && !theme && !videosLoading && (
+                        <div className="flex items-center gap-3 mb-5">
+                          <div className="flex-shrink-0 h-8 w-1.5 rounded-full bg-[#EDE518] shadow-[0_0_8px_#EDE518]" />
+                          <h2 className="text-xl font-black text-white uppercase tracking-wide">{selectedCat.name}</h2>
+                          <div className="flex-1 h-px bg-gradient-to-r from-[#EDE518]/30 to-transparent" />
+                        </div>
+                      )}
+                      {videosLoading ? (
+                        <div className={`grid ${gridCols} gap-4`}>
+                          {[1, 2, 3, 4, 5, 6].map((i) => (
+                            <Card key={i} className="overflow-hidden border border-white/10" style={{background: "linear-gradient(145deg, #0e1e35, #0a1628)"}}>
+                              <Skeleton className="aspect-video bg-white/5" />
+                              <CardContent className="p-3 space-y-2">
+                                <Skeleton className="h-4 w-3/4 bg-white/5" />
+                                <Skeleton className="h-3 w-full bg-white/5" />
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      ) : filteredVideos.length > 0 ? (
+                        cardVariant === "list" ? (
+                          <div className="flex flex-col gap-3">
+                            {filteredVideos.map((video) => (
+                              <VideoCard
+                                key={video.id}
+                                video={video}
+                                isNew={isVideoNew(video)}
+                                onView={() => markVideoViewedMutation.mutate(video.id)}
+                                variant="list"
+                              />
+                            ))}
+                          </div>
+                        ) : (
+                          <div className={`grid ${gridCols} gap-3`}>
+                            {filteredVideos.map((video, index) => (
+                              <div
+                                key={video.id}
+                                className={featuredFirst && index === 0 && filteredVideos.length > 1 && cardVariant !== "portrait" && cardVariant !== "square"
+                                  ? "col-span-2"
+                                  : ""}
+                              >
+                                <VideoCard
+                                  video={video}
+                                  isNew={isVideoNew(video)}
+                                  onView={() => markVideoViewedMutation.mutate(video.id)}
+                                  variant={cardVariant}
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        )
+                      ) : (
+                        <Card className="border border-white/10" style={{background: "linear-gradient(145deg, #0e1e35 0%, #0a1628 100%)"}}>
+                          <CardContent className="py-12 text-center">
+                            <FileVideo className="h-16 w-16 mx-auto text-[#08779C] mb-4" />
+                            <h3 className="font-semibold text-lg mb-2 text-white">No Content Yet</h3>
+                            <p className="text-slate-400">Check back soon for new content!</p>
                           </CardContent>
                         </Card>
-                      ))}
+                      )}
                     </div>
-                  ) : filteredVideos.length > 0 ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                      {filteredVideos.map((video, index) => (
-                        <div key={video.id} className={index === 0 ? "col-span-2 md:col-span-2" : ""}>
-                          <VideoCard 
-                            video={video}
-                            isNew={isVideoNew(video)}
-                            onView={() => markVideoViewedMutation.mutate(video.id)}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <Card className="border border-white/10" style={{background: "linear-gradient(145deg, #0e1e35 0%, #0a1628 100%)"}}>
-                      <CardContent className="py-12 text-center">
-                        <FileVideo className="h-16 w-16 mx-auto text-[#08779C] mb-4" />
-                        <h3 className="font-semibold text-lg mb-2 text-white">No Content Yet</h3>
-                        <p className="text-slate-400">Check back soon for new content!</p>
-                      </CardContent>
-                    </Card>
-                  )}
-                </div>
+                  );
+                })()
               )}
 
             </>
