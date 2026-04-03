@@ -587,15 +587,15 @@ export default function LandingPage() {
             <p className="text-white/45 text-base max-w-lg mx-auto leading-relaxed">A glimpse of the films, Torah, stories, and interviews waiting for you inside.</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-12 max-w-6xl mx-auto">
 
             {/* Films */}
-            <div className="bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/[0.07] flex flex-col shadow-xl">
-              <div className="px-5 pt-4 pb-3 flex items-center gap-2.5 border-b border-white/[0.07]">
-                <div className="w-1 h-4 rounded-full bg-[#EDE518]" />
-                <span className="text-[#EDE518] font-bold text-[10px] uppercase tracking-[0.18em]">Films</span>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-3">
+                <span className="text-[#EDE518] font-bold text-[10px] uppercase tracking-[0.22em]">Films</span>
+                <div className="h-px flex-1 bg-[#EDE518]/20" />
               </div>
-              <div style={{ padding: "56.25% 0 0 0", position: "relative" }}>
+              <div className="rounded-xl overflow-hidden shadow-2xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
                 <iframe
                   src="https://player.vimeo.com/video/1138747998?h=456811057a&badge=0&autopause=0&player_id=0&app_id=58479"
                   frameBorder="0"
@@ -605,19 +605,19 @@ export default function LandingPage() {
                   title="A Birthday Surprise"
                 />
               </div>
-              <div className="p-5 flex flex-col gap-1.5 flex-1">
-                <h5 className="font-semibold text-white text-sm leading-snug">A Birthday Surprise</h5>
-                <p className="text-white/45 text-xs leading-relaxed">What happens when Rabbi Scheller pulls off the ultimate birthday surprise? A heartwarming, laugh-out-loud moment you won't see coming.</p>
+              <div>
+                <h5 className="font-semibold text-white text-sm mb-1">A Birthday Surprise</h5>
+                <p className="text-white/40 text-xs leading-relaxed">What happens when Rabbi Scheller pulls off the ultimate birthday surprise? A heartwarming, laugh-out-loud moment you won't see coming.</p>
               </div>
             </div>
 
             {/* Mishnayas */}
-            <div className="bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/[0.07] flex flex-col shadow-xl">
-              <div className="px-5 pt-4 pb-3 flex items-center gap-2.5 border-b border-white/[0.07]">
-                <div className="w-1 h-4 rounded-full bg-[#EDE518]" />
-                <span className="text-[#EDE518] font-bold text-[10px] uppercase tracking-[0.18em]">Mishnayas</span>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-3">
+                <span className="text-[#EDE518] font-bold text-[10px] uppercase tracking-[0.22em]">Mishnayas</span>
+                <div className="h-px flex-1 bg-[#EDE518]/20" />
               </div>
-              <div style={{ padding: "56.25% 0 0 0", position: "relative" }}>
+              <div className="rounded-xl overflow-hidden shadow-2xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
                 <iframe
                   src="https://player.vimeo.com/video/1178363755?h=282ea2577c&badge=0&autopause=0&player_id=0&app_id=58479"
                   frameBorder="0"
@@ -627,19 +627,19 @@ export default function LandingPage() {
                   title="Mishnayas Pesachim Chapter Ten"
                 />
               </div>
-              <div className="p-5 flex flex-col gap-1.5 flex-1">
-                <h5 className="font-semibold text-white text-sm leading-snug">Mishnayas Pesachim Chapter Ten</h5>
-                <p className="text-white/45 text-xs leading-relaxed">Energy, humor, and razor-sharp clarity that makes learning impossible to forget.</p>
+              <div>
+                <h5 className="font-semibold text-white text-sm mb-1">Mishnayas Pesachim Chapter Ten</h5>
+                <p className="text-white/40 text-xs leading-relaxed">Energy, humor, and razor-sharp clarity that makes learning impossible to forget.</p>
               </div>
             </div>
 
             {/* Interviews */}
-            <div className="bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/[0.07] flex flex-col shadow-xl">
-              <div className="px-5 pt-4 pb-3 flex items-center gap-2.5 border-b border-white/[0.07]">
-                <div className="w-1 h-4 rounded-full bg-[#EDE518]" />
-                <span className="text-[#EDE518] font-bold text-[10px] uppercase tracking-[0.18em]">Interviews</span>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-3">
+                <span className="text-[#EDE518] font-bold text-[10px] uppercase tracking-[0.22em]">Interviews</span>
+                <div className="h-px flex-1 bg-[#EDE518]/20" />
               </div>
-              <div style={{ padding: "56.25% 0 0 0", position: "relative" }}>
+              <div className="rounded-xl overflow-hidden shadow-2xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
                 <iframe
                   src="https://player.vimeo.com/video/1174681253?h=f1589236ec&badge=0&autopause=0&player_id=0&app_id=58479"
                   frameBorder="0"
@@ -649,19 +649,19 @@ export default function LandingPage() {
                   title="An Interview with Kids in RBS, Israel"
                 />
               </div>
-              <div className="p-5 flex flex-col gap-1.5 flex-1">
-                <h5 className="font-semibold text-white text-sm leading-snug">An Interview with Kids in RBS, Israel</h5>
-                <p className="text-white/45 text-xs leading-relaxed">Hear straight from the kids of Ramat Beit Shemesh — raw, honest answers about life in Israel during wartime.</p>
+              <div>
+                <h5 className="font-semibold text-white text-sm mb-1">An Interview with Kids in RBS, Israel</h5>
+                <p className="text-white/40 text-xs leading-relaxed">Hear straight from the kids of Ramat Beit Shemesh — raw, honest answers about life in Israel during wartime.</p>
               </div>
             </div>
 
             {/* Stories */}
-            <div className="bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/[0.07] flex flex-col shadow-xl">
-              <div className="px-5 pt-4 pb-3 flex items-center gap-2.5 border-b border-white/[0.07]">
-                <div className="w-1 h-4 rounded-full bg-[#EDE518]" />
-                <span className="text-[#EDE518] font-bold text-[10px] uppercase tracking-[0.18em]">Stories</span>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-3">
+                <span className="text-[#EDE518] font-bold text-[10px] uppercase tracking-[0.22em]">Stories</span>
+                <div className="h-px flex-1 bg-[#EDE518]/20" />
               </div>
-              <div style={{ padding: "56.25% 0 0 0", position: "relative" }}>
+              <div className="rounded-xl overflow-hidden shadow-2xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
                 <iframe
                   src="https://player.vimeo.com/video/1158589767?h=598ba5e5ba&badge=0&autopause=0&player_id=0&app_id=58479"
                   frameBorder="0"
@@ -671,19 +671,19 @@ export default function LandingPage() {
                   title="A Story"
                 />
               </div>
-              <div className="p-5 flex flex-col gap-1.5 flex-1">
-                <h5 className="font-semibold text-white text-sm leading-snug">A Story</h5>
-                <p className="text-white/45 text-xs leading-relaxed">A captivating story brought to life — the kind that stays with you long after it ends.</p>
+              <div>
+                <h5 className="font-semibold text-white text-sm mb-1">A Story</h5>
+                <p className="text-white/40 text-xs leading-relaxed">A captivating story brought to life — the kind that stays with you long after it ends.</p>
               </div>
             </div>
 
             {/* Navi */}
-            <div className="bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/[0.07] flex flex-col shadow-xl">
-              <div className="px-5 pt-4 pb-3 flex items-center gap-2.5 border-b border-white/[0.07]">
-                <div className="w-1 h-4 rounded-full bg-[#EDE518]" />
-                <span className="text-[#EDE518] font-bold text-[10px] uppercase tracking-[0.18em]">Navi</span>
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center gap-3">
+                <span className="text-[#EDE518] font-bold text-[10px] uppercase tracking-[0.22em]">Navi</span>
+                <div className="h-px flex-1 bg-[#EDE518]/20" />
               </div>
-              <div style={{ padding: "56.25% 0 0 0", position: "relative" }}>
+              <div className="rounded-xl overflow-hidden shadow-2xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
                 <iframe
                   src="https://player.vimeo.com/video/1158803771?h=188d9a4d33&badge=0&autopause=0&player_id=0&app_id=58479"
                   frameBorder="0"
@@ -693,9 +693,9 @@ export default function LandingPage() {
                   title="Navi Perek Gimel - Shoftim"
                 />
               </div>
-              <div className="p-5 flex flex-col gap-1.5 flex-1">
-                <h5 className="font-semibold text-white text-sm leading-snug">Navi Perek Gimel — Shoftim</h5>
-                <p className="text-white/45 text-xs leading-relaxed">Journey through the Prophets with energy and insight that makes every pasuk come alive.</p>
+              <div>
+                <h5 className="font-semibold text-white text-sm mb-1">Navi Perek Gimel — Shoftim</h5>
+                <p className="text-white/40 text-xs leading-relaxed">Journey through the Prophets with energy and insight that makes every pasuk come alive.</p>
               </div>
             </div>
 
