@@ -291,7 +291,7 @@ export default function LandingPage() {
               Global Educator & Creator of the OneTime OneTime Experience
             </p>
             <p className="text-lg text-white/80 animate-fade-in-up" style={{animationDelay: '0.25s'}}>
-              Inspiring Families Through Stories and Humor
+              Inspiring Families. Building Torah Homes.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8 animate-fade-in-up" style={{animationDelay: '0.3s'}}>
               <Link href="/register">
@@ -335,32 +335,32 @@ export default function LandingPage() {
           <div className="max-w-4xl mx-auto text-center space-y-6">
             <ScrollReveal delay={0.15}>
               <p className="text-xl font-bold text-[#EDE518]">
-                A Family Experience That Keeps You Inspired All Week Long!
+                Add Torah to Your Family — and Watch It Transform.
               </p>
             </ScrollReveal>
             <ScrollReveal delay={0.2}>
               <p className="text-lg text-white/80">
-                Bring Torah, inspiration, and excitement into your home — in the simple, clear, engaging style kids love and parents trust.
+                There's nothing more powerful than a home filled with Torah. And there's no easier, more enjoyable way to get there than OneTime OneTime — stories, learning, and inspiration your whole family will look forward to every single week.
               </p>
             </ScrollReveal>
             <ScrollReveal delay={0.25}>
               <p className="text-lg text-white/80">
-                Join families around the world who are already enjoying the OneTime OneTime experience.
+                Kids absorb Torah when it's exciting. Parents feel it when their children come home quoting a story, singing a niggun, or asking questions about the parsha. That's what OneTime OneTime does — it brings Torah alive in your home.
               </p>
             </ScrollReveal>
             <ScrollReveal delay={0.3}>
               <p className="text-xl font-bold text-white">
-                Stories. Parsha. Mishnayos. Gemara. Jokes. Plus exclusive video content!
+                Stories. Parsha. Mishnayos. Navi. Gemara. Jokes. Plus exclusive video content!
               </p>
             </ScrollReveal>
             <ScrollReveal delay={0.35}>
               <p className="text-lg text-white/80">
-                Weekly growth for kids, teens, and the whole family — delivered in the OneTime style you love.
+                Weekly Torah for kids, teens, and the whole family — delivered with the warmth, humor, and energy that makes it impossible to forget.
               </p>
             </ScrollReveal>
             <ScrollReveal delay={0.4}>
               <p className="text-lg text-[#EDE518] font-semibold">
-                All members get full access to our video library on the website!
+                Thousands of families around the world are already bringing Torah into their homes through OneTime OneTime. Join them.
               </p>
             </ScrollReveal>
             
