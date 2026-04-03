@@ -6,6 +6,7 @@ import { createServer } from "http";
 import { runMigrations } from 'stripe-replit-sync';
 import { getStripeSync } from "./stripeClient";
 import { WebhookHandlers } from "./webhookHandlers";
+import { pool } from "./db";
 
 const app = express();
 const httpServer = createServer(app);
@@ -86,9 +87,26 @@ async function initStripe() {
   }
 }
 
+async function runDataMigrations() {
+  try {
+    // Rename "Adar Jokes 2026 #1" → "Joke Track Academy" in JKP category
+    await pool.query(
+      `UPDATE videos SET title = 'Joke Track Academy'
+       WHERE id = '06bfa733-9464-499a-b55c-b3e6cdd68df2'
+       AND title != 'Joke Track Academy'`
+    );
+    log('Data migrations complete', 'migration');
+  } catch (err: any) {
+    log(`Data migration error: ${err.message}`, 'migration');
+  }
+}
+
 (async () => {
   // Initialize Stripe first
   await initStripe();
+
+  // Run one-time data migrations
+  await runDataMigrations();
 
   // Register Stripe webhook route BEFORE express.json()
   // This is critical - webhook needs raw Buffer, not parsed JSON
