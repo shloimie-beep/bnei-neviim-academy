@@ -584,7 +584,7 @@ export default function LandingPage() {
           <h3 className="text-2xl md:text-3xl font-bold text-center mb-12 text-white">
             Featured Videos
           </h3>
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+          <div className="grid sm:grid-cols-2 gap-8 max-w-5xl mx-auto">
             <div className="space-y-4">
               <div className="rounded-lg overflow-hidden shadow-xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
                 <iframe
@@ -626,6 +626,20 @@ export default function LandingPage() {
               </div>
               <h4 className="font-bold text-white text-lg">Meet The Evil Inclination</h4>
               <p className="text-white/70">See the battle of the Yetzer tov and Yetzer Hara play out</p>
+            </div>
+            <div className="space-y-4">
+              <div className="rounded-lg overflow-hidden shadow-xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
+                <iframe
+                  src="https://player.vimeo.com/video/1178363755?h=282ea2577c&badge=0&autopause=0&player_id=0&app_id=58479"
+                  frameBorder="0"
+                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+                  title="Mishnayas Pesachim Chapter Ten"
+                />
+              </div>
+              <h4 className="font-bold text-white text-lg">Mishnayas Pesachim Chapter Ten</h4>
+              <p className="text-white/70">Dive into one of the most exciting chapters in the Mishnah! Rabbi Eli Scheller brings Pesachim Chapter Ten to life with energy, humor, and razor-sharp clarity that makes learning impossible to forget.</p>
             </div>
           </div>
         </div>
