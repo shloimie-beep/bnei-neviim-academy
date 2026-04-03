@@ -827,20 +827,20 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="py-16 bg-[#08779C]">
+      <section className="py-20 bg-[#08779C]">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl font-bold text-white mb-6 flex flex-wrap items-center justify-center gap-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-white mb-8 flex flex-wrap items-center justify-center gap-5 leading-tight">
             Bring
             <img
               src={logoImage}
               alt="OneTime OneTime"
-              className="h-20 w-auto"
-              style={{ filter: "drop-shadow(0 0 20px rgba(237,229,24,0.6)) drop-shadow(0 4px 12px rgba(0,0,0,0.4))" }}
+              className="h-24 w-auto"
+              style={{ filter: "drop-shadow(0 0 24px rgba(237,229,24,0.7)) drop-shadow(0 4px 16px rgba(0,0,0,0.5))" }}
             />
             into your home.
           </h2>
-          <p className="text-xl text-white/90 mb-8">
-            Join thousands of families enjoying weekly Torah content.
+          <p className="text-xl text-white/85 mb-8 max-w-lg mx-auto leading-relaxed">
+            Torah, inspiration, and joy — for your kids, your teens, and your whole family. Every week.
           </p>
           <Link href="/register">
             <Button size="lg" className="bg-[#EDE518] text-black font-bold px-12 text-lg">
