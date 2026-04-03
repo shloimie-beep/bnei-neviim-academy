@@ -24,6 +24,7 @@ import {
   userDashboardSessions,
   siteAnnouncement,
   liveMeeting,
+  featuredVideos,
   type User,
   type InsertUser,
   type PhoneNumber,
@@ -88,6 +89,13 @@ export interface IStorage {
   // Dashboard Sessions
   recordDashboardSession(userId: string): Promise<void>;
   getDashboardSessionCount(userId: string, since: Date): Promise<number>;
+  // Featured Videos (public homepage)
+  getFeaturedVideos(): Promise<{ id: number; title: string; description: string; vimeoEmbedUrl: string; displayOrder: number }[]>;
+  addFeaturedVideo(title: string, description: string, vimeoEmbedUrl: string): Promise<{ id: number }>;
+  updateFeaturedVideo(id: number, title: string, description: string, vimeoEmbedUrl: string): Promise<void>;
+  deleteFeaturedVideo(id: number): Promise<void>;
+  reorderFeaturedVideos(ids: number[]): Promise<void>;
+
   getAnnouncement(): Promise<{ text: string; isActive: boolean; imageUrl: string | null; webhookSecret: string } | null>;
   setAnnouncement(text: string, isActive: boolean, imageUrl?: string | null): Promise<void>;
   getLiveMeeting(): Promise<{ meetingUrl: string; isActive: boolean; updatesText: string } | null>;
@@ -232,6 +240,37 @@ export class DatabaseStorage implements IStorage {
       WHERE user_id = ${userId} AND created_at >= ${since.toISOString()}
     `);
     return Number((result.rows[0] as any)?.count || 0);
+  }
+
+  async getFeaturedVideos(): Promise<{ id: number; title: string; description: string; vimeoEmbedUrl: string; displayOrder: number }[]> {
+    return db.select({
+      id: featuredVideos.id,
+      title: featuredVideos.title,
+      description: featuredVideos.description,
+      vimeoEmbedUrl: featuredVideos.vimeoEmbedUrl,
+      displayOrder: featuredVideos.displayOrder,
+    }).from(featuredVideos).orderBy(featuredVideos.displayOrder, featuredVideos.id);
+  }
+
+  async addFeaturedVideo(title: string, description: string, vimeoEmbedUrl: string): Promise<{ id: number }> {
+    const maxOrder = await db.select({ val: featuredVideos.displayOrder }).from(featuredVideos).orderBy(sql`display_order desc`).limit(1);
+    const nextOrder = maxOrder.length > 0 ? (maxOrder[0].val ?? 0) + 1 : 0;
+    const [row] = await db.insert(featuredVideos).values({ title, description, vimeoEmbedUrl, displayOrder: nextOrder }).returning({ id: featuredVideos.id });
+    return { id: row.id };
+  }
+
+  async updateFeaturedVideo(id: number, title: string, description: string, vimeoEmbedUrl: string): Promise<void> {
+    await db.update(featuredVideos).set({ title, description, vimeoEmbedUrl }).where(eq(featuredVideos.id, id));
+  }
+
+  async deleteFeaturedVideo(id: number): Promise<void> {
+    await db.delete(featuredVideos).where(eq(featuredVideos.id, id));
+  }
+
+  async reorderFeaturedVideos(ids: number[]): Promise<void> {
+    for (let i = 0; i < ids.length; i++) {
+      await db.update(featuredVideos).set({ displayOrder: i }).where(eq(featuredVideos.id, ids[i]));
+    }
   }
 
   async getAnnouncement(): Promise<{ text: string; isActive: boolean; imageUrl: string | null; webhookSecret: string } | null> {

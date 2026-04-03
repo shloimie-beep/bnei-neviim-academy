@@ -1,5 +1,5 @@
 import { sql, relations } from "drizzle-orm";
-import { pgTable, text, varchar, boolean, integer, timestamp, jsonb, bigint, index } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, boolean, integer, serial, timestamp, jsonb, bigint, index } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -289,6 +289,16 @@ export const liveMeeting = pgTable("live_meeting", {
   isActive: boolean("is_active").notNull().default(false),
   updatesText: text("updates_text").notNull().default(""),
   updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Featured videos shown on the public homepage
+export const featuredVideos = pgTable("featured_videos", {
+  id: serial("id").primaryKey(),
+  title: text("title").notNull(),
+  description: text("description").notNull().default(""),
+  vimeoEmbedUrl: text("vimeo_embed_url").notNull(),
+  displayOrder: integer("display_order").notNull().default(0),
+  createdAt: timestamp("created_at").defaultNow(),
 });
 
 // Singleton announcement banner shown on the user dashboard

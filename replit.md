@@ -74,7 +74,8 @@ The application uses a monorepo architecture, separating the frontend and backen
 
 ### Data Storage
 - **Primary Database**: PostgreSQL, with schema defined using Drizzle ORM.
-- **Key Tables**: `users`, `phoneNumbers`, `audioFiles`, `menuOptions`, `conferenceSessions`, `albums`, `albumTracks`, `rss_folders`, `rss_audio_items`, `videoCategories`, `site_announcement`.
+- **Key Tables**: `users`, `phoneNumbers`, `audioFiles`, `menuOptions`, `conferenceSessions`, `albums`, `albumTracks`, `rss_folders`, `rss_audio_items`, `videoCategories`, `site_announcement`, `featured_videos`.
+- **Featured Videos**: Managed via admin `/admin/featured-videos`. Dynamic Vimeo embeds shown on the public homepage; supports add, edit, delete, and drag reorder. Public endpoint `GET /api/featured-videos`.
 
 ### Authentication & Authorization
 - **Web**: Session-based authentication stored in PostgreSQL.

@@ -1482,6 +1482,64 @@ export async function registerRoutes(
     }
   });
 
+  // Public: get featured videos for homepage
+  app.get("/api/featured-videos", async (req, res) => {
+    try {
+      const videos = await storage.getFeaturedVideos();
+      res.json(videos);
+    } catch {
+      res.json([]);
+    }
+  });
+
+  // Admin: add featured video
+  app.post("/api/admin/featured-videos", requireAdmin, async (req, res) => {
+    try {
+      const { title, description = "", vimeoEmbedUrl } = req.body;
+      if (!title || !vimeoEmbedUrl) return res.status(400).json({ message: "title and vimeoEmbedUrl are required" });
+      const result = await storage.addFeaturedVideo(String(title), String(description), String(vimeoEmbedUrl));
+      res.json({ success: true, id: result.id });
+    } catch {
+      res.status(500).json({ message: "Failed to add featured video" });
+    }
+  });
+
+  // Admin: update featured video
+  app.put("/api/admin/featured-videos/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { title, description = "", vimeoEmbedUrl } = req.body;
+      if (!title || !vimeoEmbedUrl) return res.status(400).json({ message: "title and vimeoEmbedUrl are required" });
+      await storage.updateFeaturedVideo(id, String(title), String(description), String(vimeoEmbedUrl));
+      res.json({ success: true });
+    } catch {
+      res.status(500).json({ message: "Failed to update featured video" });
+    }
+  });
+
+  // Admin: delete featured video
+  app.delete("/api/admin/featured-videos/:id", requireAdmin, async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      await storage.deleteFeaturedVideo(id);
+      res.json({ success: true });
+    } catch {
+      res.status(500).json({ message: "Failed to delete featured video" });
+    }
+  });
+
+  // Admin: reorder featured videos
+  app.post("/api/admin/featured-videos/reorder", requireAdmin, async (req, res) => {
+    try {
+      const { ids } = req.body;
+      if (!Array.isArray(ids)) return res.status(400).json({ message: "ids must be an array" });
+      await storage.reorderFeaturedVideos(ids.map(Number));
+      res.json({ success: true });
+    } catch {
+      res.status(500).json({ message: "Failed to reorder" });
+    }
+  });
+
   // Public: get current announcement (for dashboard banner)
   app.get("/api/announcement", async (req, res) => {
     try {

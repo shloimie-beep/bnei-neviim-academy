@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Phone, Mail, MapPin, Menu } from "lucide-react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import logoImage from "@assets/qt=q_95_1767830887218.webp";
 import silverSpringImg from "@assets/Silver_Spring_1767899261416.jpg";
 import bocaMapImg from "@assets/Boca_Raton_1767898934153.webp";
@@ -233,7 +234,19 @@ function TestimonialCarousel() {
   );
 }
 
+interface FeaturedVideo {
+  id: number;
+  title: string;
+  description: string;
+  vimeoEmbedUrl: string;
+  displayOrder: number;
+}
+
 export default function LandingPage() {
+  const { data: featuredVideos = [] } = useQuery<FeaturedVideo[]>({
+    queryKey: ["/api/featured-videos"],
+  });
+
   return (
     <div className="min-h-screen bg-[#161616]">
       <header className="sticky top-0 z-50 bg-[#161616]/95 backdrop-blur border-b border-white/10">
@@ -579,57 +592,33 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="py-20 bg-[#161616]">
-        <div className="container mx-auto px-4">
-          <h3 className="text-2xl md:text-3xl font-bold text-center mb-12 text-white">
-            Featured Videos
-          </h3>
-          <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-            <div className="space-y-4">
-              <div className="rounded-lg overflow-hidden shadow-xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
-                <iframe
-                  src="https://player.vimeo.com/video/1138747998?h=456811057a&badge=0&autopause=0&player_id=0&app_id=58479"
-                  frameBorder="0"
-                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
-                  title="Epic Birthday Prank!"
-                />
-              </div>
-              <h4 className="font-bold text-white text-lg">A Birthday Surprise</h4>
-              <p className="text-white/70">An interesting birthday surprise for my mother</p>
-            </div>
-            <div className="space-y-4">
-              <div className="rounded-lg overflow-hidden shadow-xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
-                <iframe
-                  src="https://player.vimeo.com/video/1050076957?h=99d1edd7d6&badge=0&autopause=0&player_id=0&app_id=58479"
-                  frameBorder="0"
-                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
-                  title="The Secret Mission"
-                />
-              </div>
-              <h4 className="font-bold text-white text-lg">The Secret Mission</h4>
-              <p className="text-white/70">When an old man gets upset at the kids in the community...</p>
-            </div>
-            <div className="space-y-4">
-              <div className="rounded-lg overflow-hidden shadow-xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
-                <iframe
-                  src="https://player.vimeo.com/video/1138749816?h=70374df2cc&badge=0&autopause=0&player_id=0&app_id=58479"
-                  frameBorder="0"
-                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
-                  title="MEET THE EVIL INCLINATION"
-                />
-              </div>
-              <h4 className="font-bold text-white text-lg">Meet The Evil Inclination</h4>
-              <p className="text-white/70">See the battle of the Yetzer tov and Yetzer Hara play out</p>
+      {featuredVideos.length > 0 && (
+        <section className="py-20 bg-[#161616]">
+          <div className="container mx-auto px-4">
+            <h3 className="text-2xl md:text-3xl font-bold text-center mb-12 text-white">
+              Featured Videos
+            </h3>
+            <div className={`grid gap-8 max-w-6xl mx-auto ${featuredVideos.length === 1 ? "md:grid-cols-1 max-w-xl" : featuredVideos.length === 2 ? "md:grid-cols-2" : "md:grid-cols-3"}`}>
+              {featuredVideos.map((video) => (
+                <div key={video.id} className="space-y-4" data-testid={`featured-video-${video.id}`}>
+                  <div className="rounded-lg overflow-hidden shadow-xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
+                    <iframe
+                      src={video.vimeoEmbedUrl}
+                      frameBorder="0"
+                      allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                      style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+                      title={video.title}
+                    />
+                  </div>
+                  <h4 className="font-bold text-white text-lg">{video.title}</h4>
+                  {video.description && <p className="text-white/70">{video.description}</p>}
+                </div>
+              ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section className="py-16 bg-[#08779C]">
         <div className="container mx-auto px-4">
