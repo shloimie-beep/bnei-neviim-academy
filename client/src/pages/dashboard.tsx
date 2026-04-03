@@ -796,6 +796,15 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default" }: 
             <div className="flex-shrink-0 w-32 aspect-video rounded-lg overflow-hidden relative bg-[#060e1a]">
               {thumbnailSrc ? (
                 <img src={thumbnailSrc} alt={video.title} className="w-full h-full object-cover" />
+              ) : isAudio ? (
+                <div className="w-full h-full flex items-center justify-center"
+                  style={{background: categoryName === "Just Kidding Podcast"
+                    ? "linear-gradient(135deg, #1a0800 0%, #2d1200 100%)"
+                    : "linear-gradient(135deg, #051a30 0%, #030d22 100%)"}}>
+                  <span className="text-2xl select-none">
+                    {categoryName === "Just Kidding Podcast" ? "🎤" : "🎵"}
+                  </span>
+                </div>
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <Play className="h-6 w-6 text-white/40" />
@@ -843,7 +852,22 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default" }: 
                 )}
               </>
             ) : isAudio ? (
-              <Music className="h-12 w-12 text-[#08779C]" />
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-3"
+                style={{background: categoryName === "Just Kidding Podcast"
+                  ? "linear-gradient(135deg, #1a0800 0%, #2d1200 40%, #1a0800 100%)"
+                  : "linear-gradient(135deg, #051a30 0%, #030d22 100%)"}}>
+                <div className="relative flex items-center justify-center">
+                  <div className="absolute w-16 h-16 rounded-full opacity-20 blur-xl"
+                    style={{background: categoryName === "Just Kidding Podcast" ? "#F97316" : "#08779C"}} />
+                  <span className="text-4xl select-none relative z-10">
+                    {categoryName === "Just Kidding Podcast" ? "🎤" : "🎵"}
+                  </span>
+                </div>
+                <p className="text-center text-xs font-semibold line-clamp-2 leading-tight"
+                  style={{color: categoryName === "Just Kidding Podcast" ? "#FB923C" : "#93C5FD"}}>
+                  {video.title}
+                </p>
+              </div>
             ) : (
               <FileVideo className="h-12 w-12 text-[#08779C]" />
             )}
