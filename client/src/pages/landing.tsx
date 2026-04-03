@@ -661,7 +661,7 @@ export default function LandingPage() {
                 <span className="text-[#EDE518] font-bold text-[10px] uppercase tracking-[0.22em]">Stories</span>
                 <div className="h-px flex-1 bg-[#EDE518]/20" />
               </div>
-              <div className="rounded-xl overflow-hidden shadow-2xl" style={{ padding: "177.78% 0 0 0", position: "relative" }}>
+              <div className="rounded-xl overflow-hidden shadow-2xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
                 <iframe
                   src="https://player.vimeo.com/video/1158589767?h=598ba5e5ba&badge=0&autopause=0&player_id=0&app_id=58479"
                   frameBorder="0"
