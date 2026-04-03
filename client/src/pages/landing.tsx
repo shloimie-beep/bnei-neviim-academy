@@ -830,14 +830,14 @@ export default function LandingPage() {
       <section className="py-16 bg-[#08779C]">
         <div className="container mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold text-white mb-6 flex flex-wrap items-center justify-center gap-4">
-            Ready to bring
+            Bring
             <img
               src={logoImage}
               alt="OneTime OneTime"
               className="h-20 w-auto"
               style={{ filter: "drop-shadow(0 0 20px rgba(237,229,24,0.6)) drop-shadow(0 4px 12px rgba(0,0,0,0.4))" }}
             />
-            into your home?
+            into your home.
           </h2>
           <p className="text-xl text-white/90 mb-8">
             Join thousands of families enjoying weekly Torah content.
