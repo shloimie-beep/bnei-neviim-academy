@@ -597,7 +597,7 @@ export default function LandingPage() {
                 />
               </div>
               <h4 className="font-bold text-white text-lg">A Birthday Surprise</h4>
-              <p className="text-white/70">What happens when Rabbi Eli's kids decide to pull off the ultimate birthday surprise? A heartwarming, laugh-out-loud moment you won't see coming.</p>
+              <p className="text-white/70">What happens when Rabbi Scheller decides to pull off the ultimate birthday surprise? A heartwarming, laugh-out-loud moment you won't see coming.</p>
             </div>
             <div className="space-y-4">
               <div className="rounded-lg overflow-hidden shadow-xl" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
