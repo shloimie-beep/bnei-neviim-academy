@@ -1991,40 +1991,86 @@ export default function DashboardPage() {
               {/* Recent Videos Section - Horizontal Scrolling (hidden when searching) */}
               {!searchQuery.trim() && recentVideos.length > 0 && (
                 <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="w-1 h-5 bg-[#EDE518] rounded-full inline-block" />
-                    <h2 className="text-lg font-semibold text-white">Recent</h2>
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="flex-shrink-0 h-8 w-1.5 rounded-full bg-[#EDE518] shadow-[0_0_8px_#EDE518]" />
+                    <h2 className="text-xl font-black text-white uppercase tracking-wide">Recently Added</h2>
+                    <div className="flex-1 h-px bg-gradient-to-r from-[#EDE518]/30 to-transparent" />
                   </div>
-                  <div className="grid grid-cols-[40px_1fr_40px] gap-2 items-center">
-                    {/* Left control column - always reserves space */}
-                    <div className="flex items-center justify-center">
-                      {canScrollLeft ? (
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => scrollRecent("left")}
-                          data-testid="button-scroll-recent-left"
-                        >
-                          <ChevronLeft className="h-4 w-4" />
-                        </Button>
-                      ) : (
-                        <div className="w-9 h-9" /> 
-                      )}
+                  <div className="relative -mx-4 sm:mx-0">
+                    {/* Left Arrow */}
+                    <button
+                      onClick={() => scrollRecent("left")}
+                      disabled={!canScrollLeft}
+                      className={`absolute left-1 sm:left-0 top-1/2 -translate-y-1/2 z-20 h-11 w-11 rounded-full flex items-center justify-center shadow-xl transition-all duration-200 ${canScrollLeft ? 'bg-[#EDE518] text-black hover:scale-110 shadow-[0_0_12px_rgba(237,229,24,0.5)]' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}
+                      data-testid="button-scroll-recent-left"
+                    >
+                      <ChevronLeft className="h-5 w-5" />
+                    </button>
+                    {/* Scrollable track */}
+                    <div 
+                      ref={recentScrollRef}
+                      className="flex gap-3 overflow-x-auto pb-3 px-14 sm:px-12"
+                      style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+                    >
+                      {recentVideos.map((video) => (
+                        <div key={video.id} className="flex-shrink-0 w-[75vw] sm:w-64 md:w-72">
+                          <VideoCard 
+                            video={video}
+                            isNew={isVideoNew(video)}
+                            onView={() => markVideoViewedMutation.mutate(video.id)}
+                          />
+                        </div>
+                      ))}
                     </div>
-                    
-                    {/* Scrollable video track */}
-                    <div className="relative overflow-hidden">
-                      {/* Left fade gradient */}
-                      {canScrollLeft && (
-                        <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
-                      )}
+                    {/* Right Arrow */}
+                    <button
+                      onClick={() => scrollRecent("right")}
+                      disabled={!canScrollRight}
+                      className={`absolute right-1 sm:right-0 top-1/2 -translate-y-1/2 z-20 h-11 w-11 rounded-full flex items-center justify-center shadow-xl transition-all duration-200 ${canScrollRight ? 'bg-[#EDE518] text-black hover:scale-110 shadow-[0_0_12px_rgba(237,229,24,0.5)]' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}
+                      data-testid="button-scroll-recent-right"
+                    >
+                      <ChevronRight className="h-5 w-5" />
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Trending Videos Section */}
+              {!searchQuery.trim() && trendingVideos.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="flex-shrink-0 h-8 w-1.5 rounded-full bg-[#08779C] shadow-[0_0_8px_#08779C]" />
+                    <TrendingUp className="h-5 w-5 text-[#08779C]" />
+                    <h2 className="text-xl font-black text-white uppercase tracking-wide">Trending Now</h2>
+                    <div className="flex-1 h-px bg-gradient-to-r from-[#08779C]/30 to-transparent" />
+                    <button
+                      onClick={() => setShowTrending(!showTrending)}
+                      className="text-xs text-slate-400 hover:text-white flex items-center gap-1"
+                      data-testid="button-toggle-trending"
+                    >
+                      {showTrending ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
+                      {showTrending ? "Hide" : "Show"}
+                    </button>
+                  </div>
+                  {showTrending && (
+                    <div className="relative -mx-4 sm:mx-0">
+                      {/* Left Arrow */}
+                      <button
+                        onClick={() => scrollTrending("left")}
+                        disabled={!trendingCanScrollLeft}
+                        className={`absolute left-1 sm:left-0 top-1/2 -translate-y-1/2 z-20 h-11 w-11 rounded-full flex items-center justify-center shadow-xl transition-all duration-200 ${trendingCanScrollLeft ? 'bg-[#08779C] text-white hover:scale-110 shadow-[0_0_12px_rgba(8,119,156,0.5)]' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}
+                        data-testid="button-scroll-trending-left"
+                      >
+                        <ChevronLeft className="h-5 w-5" />
+                      </button>
+                      {/* Scrollable track */}
                       <div 
-                        ref={recentScrollRef}
-                        className="flex gap-4 overflow-x-auto scrollbar-hide px-2 pb-2"
+                        ref={trendingScrollRef}
+                        className="flex gap-3 overflow-x-auto pb-3 px-14 sm:px-12"
                         style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
                       >
-                        {recentVideos.map((video) => (
-                          <div key={video.id} className="flex-shrink-0 w-56">
+                        {trendingVideos.map((video) => (
+                          <div key={video.id} className="flex-shrink-0 w-[75vw] sm:w-64 md:w-72">
                             <VideoCard 
                               video={video}
                               isNew={isVideoNew(video)}
@@ -2033,109 +2079,15 @@ export default function DashboardPage() {
                           </div>
                         ))}
                       </div>
-                      {/* Right fade gradient */}
-                      {canScrollRight && (
-                        <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
-                      )}
-                    </div>
-                    
-                    {/* Right control column - always reserves space */}
-                    <div className="flex items-center justify-center">
-                      {canScrollRight ? (
-                        <Button
-                          variant="outline"
-                          size="icon"
-                          onClick={() => scrollRecent("right")}
-                          data-testid="button-scroll-recent-right"
-                        >
-                          <ChevronRight className="h-4 w-4" />
-                        </Button>
-                      ) : (
-                        <div className="w-9 h-9" />
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Trending Videos Section - Horizontal Scrolling (hidden when searching) */}
-              {!searchQuery.trim() && trendingVideos.length > 0 && (
-                <div>
-                  <div className="flex items-center gap-2 mb-4">
-                    <span className="w-1 h-5 bg-[#08779C] rounded-full inline-block" />
-                    <TrendingUp className="h-5 w-5 text-[#08779C]" />
-                    <h2 className="text-lg font-semibold text-white">Trending</h2>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setShowTrending(!showTrending)}
-                      data-testid="button-toggle-trending"
-                      className="ml-auto"
-                    >
-                      {showTrending ? <EyeOff className="h-4 w-4 mr-1" /> : <Eye className="h-4 w-4 mr-1" />}
-                      {showTrending ? "Hide" : "Show"}
-                    </Button>
-                  </div>
-                  {showTrending && (
-                    <div className="grid grid-cols-[40px_1fr_40px] gap-2 items-center">
-                      {/* Left control column - always reserves space */}
-                      <div className="flex items-center justify-center">
-                        {trendingCanScrollLeft ? (
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => scrollTrending("left")}
-                            data-testid="button-scroll-trending-left"
-                          >
-                            <ChevronLeft className="h-4 w-4" />
-                          </Button>
-                        ) : (
-                          <div className="w-9 h-9" /> 
-                        )}
-                      </div>
-                      
-                      {/* Scrollable video track */}
-                      <div className="relative overflow-hidden">
-                        {/* Left fade gradient */}
-                        {trendingCanScrollLeft && (
-                          <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
-                        )}
-                        <div 
-                          ref={trendingScrollRef}
-                          className="flex gap-4 overflow-x-auto scrollbar-hide px-2 pb-2"
-                          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-                        >
-                          {trendingVideos.map((video) => (
-                            <div key={video.id} className="flex-shrink-0 w-56">
-                              <VideoCard 
-                                video={video}
-                                isNew={isVideoNew(video)}
-                                onView={() => markVideoViewedMutation.mutate(video.id)}
-                              />
-                            </div>
-                          ))}
-                        </div>
-                        {/* Right fade gradient */}
-                        {trendingCanScrollRight && (
-                          <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
-                        )}
-                      </div>
-                      
-                      {/* Right control column - always reserves space */}
-                      <div className="flex items-center justify-center">
-                        {trendingCanScrollRight ? (
-                          <Button
-                            variant="outline"
-                            size="icon"
-                            onClick={() => scrollTrending("right")}
-                            data-testid="button-scroll-trending-right"
-                          >
-                            <ChevronRight className="h-4 w-4" />
-                          </Button>
-                        ) : (
-                          <div className="w-9 h-9" />
-                        )}
-                      </div>
+                      {/* Right Arrow */}
+                      <button
+                        onClick={() => scrollTrending("right")}
+                        disabled={!trendingCanScrollRight}
+                        className={`absolute right-1 sm:right-0 top-1/2 -translate-y-1/2 z-20 h-11 w-11 rounded-full flex items-center justify-center shadow-xl transition-all duration-200 ${trendingCanScrollRight ? 'bg-[#08779C] text-white hover:scale-110 shadow-[0_0_12px_rgba(8,119,156,0.5)]' : 'bg-white/5 text-white/20 cursor-not-allowed'}`}
+                        data-testid="button-scroll-trending-right"
+                      >
+                        <ChevronRight className="h-5 w-5" />
+                      </button>
                     </div>
                   )}
                 </div>
@@ -2290,27 +2242,38 @@ export default function DashboardPage() {
                 </div>
               ) : (
                 <div>
+                  {/* Section label */}
+                  {selectedCategory && !videosLoading && (
+                    <div className="flex items-center gap-3 mb-5">
+                      <div className="flex-shrink-0 h-8 w-1.5 rounded-full bg-[#EDE518] shadow-[0_0_8px_#EDE518]" />
+                      <h2 className="text-xl font-black text-white uppercase tracking-wide">
+                        {categories.find(c => c.id === selectedCategory)?.name || "All Content"}
+                      </h2>
+                      <div className="flex-1 h-px bg-gradient-to-r from-[#EDE518]/30 to-transparent" />
+                    </div>
+                  )}
                   {videosLoading ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                       {[1, 2, 3, 4, 5, 6].map((i) => (
-                        <Card key={i} className="overflow-hidden">
-                          <Skeleton className="aspect-video" />
-                          <CardContent className="p-4 space-y-2">
-                            <Skeleton className="h-5 w-3/4" />
-                            <Skeleton className="h-4 w-full" />
+                        <Card key={i} className="overflow-hidden border border-white/10" style={{background: "linear-gradient(145deg, #0e1e35, #0a1628)"}}>
+                          <Skeleton className="aspect-video bg-white/5" />
+                          <CardContent className="p-3 space-y-2">
+                            <Skeleton className="h-4 w-3/4 bg-white/5" />
+                            <Skeleton className="h-3 w-full bg-white/5" />
                           </CardContent>
                         </Card>
                       ))}
                     </div>
                   ) : filteredVideos.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                      {filteredVideos.map((video) => (
-                        <VideoCard 
-                          key={video.id} 
-                          video={video}
-                          isNew={isVideoNew(video)}
-                          onView={() => markVideoViewedMutation.mutate(video.id)}
-                        />
+                    <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                      {filteredVideos.map((video, index) => (
+                        <div key={video.id} className={index === 0 ? "col-span-2 md:col-span-2" : ""}>
+                          <VideoCard 
+                            video={video}
+                            isNew={isVideoNew(video)}
+                            onView={() => markVideoViewedMutation.mutate(video.id)}
+                          />
+                        </div>
                       ))}
                     </div>
                   ) : (
