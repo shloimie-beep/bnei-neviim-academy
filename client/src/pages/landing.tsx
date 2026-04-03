@@ -319,7 +319,7 @@ export default function LandingPage() {
         </div>
       </a>
 
-      <section id="hotline" className="py-20 bg-[#161616]">
+      <section id="hotline" className="py-20 bg-gradient-to-b from-[#08090f] to-[#0d1220]">
         <div className="container mx-auto px-4">
           <ScrollReveal>
             <h2 className="text-3xl md:text-5xl font-bold text-center mb-4 text-white">
@@ -377,7 +377,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="learn-more" className="py-16 bg-[#0B1D2B]">
+      <section id="learn-more" className="py-16 bg-gradient-to-b from-[#0d1220] to-[#091525]">
         <div className="container mx-auto px-4">
           <ScrollReveal>
             <h3 className="text-2xl md:text-3xl font-bold text-center mb-10 text-white">
@@ -448,7 +448,7 @@ export default function LandingPage() {
 
       <AsSeenSection />
 
-      <section className="py-20 bg-[#0B1D2B]">
+      <section className="py-20 bg-gradient-to-b from-[#091525] to-[#06101c]">
         <div className="container mx-auto px-4">
           <ScrollReveal>
             <h3 className="text-2xl md:text-3xl font-bold text-center mb-12 text-white">
@@ -456,7 +456,7 @@ export default function LandingPage() {
             </h3>
           </ScrollReveal>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            <Card className="bg-[#1a2a3a] border-none overflow-hidden group animate-fade-in-up">
+            <Card className="bg-[#0e1e30] border border-white/10 overflow-hidden group animate-fade-in-up">
               <div className="aspect-[3/4] overflow-hidden">
                 <img 
                   src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Black%20White%20Modern%20Grunge%20Typographic%20Brand%20Lo.jpg/:/cr=t:1.79%25,l:32.74%25,w:66.96%25,h:89.28%25/rs=w:365,h:486,cg:true,m" 
@@ -471,7 +471,7 @@ export default function LandingPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-[#1a2a3a] border-none overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.1s'}}>
+            <Card className="bg-[#0e1e30] border border-white/10 overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.1s'}}>
               <div className="aspect-[3/4] overflow-hidden">
                 <img 
                   src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Beige%20Green%20Travel%20To%20The%20World%20Flyer-2.png/:/cr=t:2.87%25,l:0%25,w:100%25,h:94.27%25/rs=w:365,h:486,cg:true" 
@@ -486,7 +486,7 @@ export default function LandingPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-[#1a2a3a] border-none overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.2s'}}>
+            <Card className="bg-[#0e1e30] border border-white/10 overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.2s'}}>
               <div className="aspect-[3/4] overflow-hidden">
                 <img 
                   src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/blob-ad680e5.png/:/cr=t:0%25,l:34.44%25,w:29.3%25,h:100%25/rs=w:365,h:486,cg:true" 
@@ -501,7 +501,7 @@ export default function LandingPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-[#1a2a3a] border-none overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.3s'}}>
+            <Card className="bg-[#0e1e30] border border-white/10 overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.3s'}}>
               <div className="aspect-[3/4] overflow-hidden">
                 <img 
                   src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/brown_mystery_movie_poster_video-e60181e.jpg/:/cr=t:0%25,l:27.22%25,w:42.19%25,h:100%25/rs=w:365,h:486,cg:true" 
@@ -516,7 +516,7 @@ export default function LandingPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-[#1a2a3a] border-none overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.4s'}}>
+            <Card className="bg-[#0e1e30] border border-white/10 overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.4s'}}>
               <div className="aspect-[3/4] overflow-hidden">
                 <img 
                   src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Yellow%20and%20Red%20Bold%20Burger%20Food%20Marketing%20Inst.png/:/cr=t:11.49%25,l:4.96%25,w:89.29%25,h:84.17%25/rs=w:365,h:486,cg:true,m" 
@@ -536,7 +536,7 @@ export default function LandingPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-[#1a2a3a] border-none overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.5s'}}>
+            <Card className="bg-[#0e1e30] border border-white/10 overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.5s'}}>
               <div className="aspect-[3/4] overflow-hidden">
                 <img 
                   src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/Blue%20Professional%20Annual%20Report%20Book%20Cover%20(6%20.png/:/cr=t:6.46%25,l:0%25,w:100%25,h:88.87%25/rs=w:365,h:486,cg:true" 
@@ -556,7 +556,7 @@ export default function LandingPage() {
               </CardContent>
             </Card>
 
-            <Card className="bg-[#1a2a3a] border-none overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.6s'}}>
+            <Card className="bg-[#0e1e30] border border-white/10 overflow-hidden group animate-fade-in-up" style={{animationDelay: '0.6s'}}>
               <div className="aspect-[3/4] overflow-hidden">
                 <img 
                   src="https://img1.wsimg.com/isteam/ip/9232a2e1-8896-45ef-b6c8-3888ab135144/ChatGPT%20Image%20Oct%2026%2C%202025%20at%2004_35_46%20PM.png/:/cr=t:0.59%25,l:0%25,w:100%25,h:88.89%25/rs=w:365,h:486,cg:true" 
@@ -579,7 +579,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="py-24 bg-[#0e0e0e]">
+      <section className="py-24 bg-gradient-to-b from-[#06101c] to-[#08090f]">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <span className="inline-block text-[#EDE518] text-xs font-bold uppercase tracking-[0.2em] mb-4">Preview</span>
@@ -816,7 +816,7 @@ export default function LandingPage() {
 
       <TestimonialCarousel />
 
-      <section id="story" className="py-20 bg-[#161616]">
+      <section id="story" className="py-20 bg-gradient-to-b from-[#08090f] to-[#0d1220]">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl md:text-4xl font-bold text-center mb-4 text-[#EDE518]">
             The Story
@@ -875,7 +875,7 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section id="contact" className="py-20 bg-[#161616] text-white">
+      <section id="contact" className="py-20 bg-gradient-to-b from-[#0d1220] to-[#08090f] text-white">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12 text-[#EDE518]">
             Contact
