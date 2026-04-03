@@ -579,98 +579,132 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="py-20 bg-[#161616]">
+      <section className="py-24 bg-[#0e0e0e]">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-14">
-            <h3 className="text-2xl md:text-3xl font-bold text-white mb-3">Inside the Academy</h3>
-            <p className="text-white/50 text-sm max-w-md mx-auto">A glimpse of what's waiting for subscribers — films, Torah, interviews, and more.</p>
+          <div className="text-center mb-16">
+            <span className="inline-block text-[#EDE518] text-xs font-bold uppercase tracking-[0.2em] mb-4">Preview</span>
+            <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">Inside the Academy</h3>
+            <p className="text-white/45 text-base max-w-lg mx-auto leading-relaxed">A glimpse of the films, Torah, stories, and interviews waiting for you inside.</p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-10 max-w-5xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
 
             {/* Films */}
-            <div>
-              <div className="flex items-center gap-3 mb-5">
-                <span className="text-[#EDE518] font-bold text-xs uppercase tracking-widest">🎬 Films</span>
-                <div className="h-px flex-1 bg-white/10" />
+            <div className="bg-[#181818] rounded-2xl overflow-hidden border border-white/8 flex flex-col">
+              <div className="px-4 pt-4 pb-3 flex items-center gap-2 border-b border-white/8">
+                <span className="text-base">🎬</span>
+                <span className="text-[#EDE518] font-bold text-xs uppercase tracking-widest">Films</span>
               </div>
-              <div className="space-y-3">
-                <div className="rounded-lg overflow-hidden shadow-lg" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
-                  <iframe
-                    src="https://player.vimeo.com/video/1138747998?h=456811057a&badge=0&autopause=0&player_id=0&app_id=58479"
-                    frameBorder="0"
-                    allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                    referrerPolicy="strict-origin-when-cross-origin"
-                    style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
-                    title="A Birthday Surprise"
-                  />
-                </div>
-                <h5 className="font-semibold text-white">A Birthday Surprise</h5>
-                <p className="text-white/55 text-sm">What happens when Rabbi Scheller decides to pull off the ultimate birthday surprise? A heartwarming, laugh-out-loud moment you won't see coming.</p>
+              <div style={{ padding: "56.25% 0 0 0", position: "relative" }}>
+                <iframe
+                  src="https://player.vimeo.com/video/1138747998?h=456811057a&badge=0&autopause=0&player_id=0&app_id=58479"
+                  frameBorder="0"
+                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+                  title="A Birthday Surprise"
+                />
+              </div>
+              <div className="p-4 flex flex-col gap-1 flex-1">
+                <h5 className="font-semibold text-white text-sm">A Birthday Surprise</h5>
+                <p className="text-white/50 text-xs leading-relaxed">What happens when Rabbi Scheller pulls off the ultimate birthday surprise? A heartwarming, laugh-out-loud moment you won't see coming.</p>
               </div>
             </div>
 
             {/* Mishnayas */}
-            <div>
-              <div className="flex items-center gap-3 mb-5">
-                <span className="text-[#EDE518] font-bold text-xs uppercase tracking-widest">📖 Mishnayas</span>
-                <div className="h-px flex-1 bg-white/10" />
+            <div className="bg-[#181818] rounded-2xl overflow-hidden border border-white/8 flex flex-col">
+              <div className="px-4 pt-4 pb-3 flex items-center gap-2 border-b border-white/8">
+                <span className="text-base">📖</span>
+                <span className="text-[#EDE518] font-bold text-xs uppercase tracking-widest">Mishnayas</span>
               </div>
-              <div className="space-y-3">
-                <div className="rounded-lg overflow-hidden shadow-lg" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
-                  <iframe
-                    src="https://player.vimeo.com/video/1178363755?h=282ea2577c&badge=0&autopause=0&player_id=0&app_id=58479"
-                    frameBorder="0"
-                    allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                    referrerPolicy="strict-origin-when-cross-origin"
-                    style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
-                    title="Mishnayas Pesachim Chapter Ten"
-                  />
-                </div>
-                <h5 className="font-semibold text-white">Mishnayas Pesachim Chapter Ten</h5>
-                <p className="text-white/55 text-sm">Dive into one of the most exciting chapters in the Mishnah! Energy, humor, and razor-sharp clarity that makes learning impossible to forget.</p>
+              <div style={{ padding: "56.25% 0 0 0", position: "relative" }}>
+                <iframe
+                  src="https://player.vimeo.com/video/1178363755?h=282ea2577c&badge=0&autopause=0&player_id=0&app_id=58479"
+                  frameBorder="0"
+                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+                  title="Mishnayas Pesachim Chapter Ten"
+                />
+              </div>
+              <div className="p-4 flex flex-col gap-1 flex-1">
+                <h5 className="font-semibold text-white text-sm">Mishnayas Pesachim Chapter Ten</h5>
+                <p className="text-white/50 text-xs leading-relaxed">Energy, humor, and razor-sharp clarity that makes learning impossible to forget.</p>
               </div>
             </div>
 
             {/* Interviews */}
-            <div>
-              <div className="flex items-center gap-3 mb-5">
-                <span className="text-[#EDE518] font-bold text-xs uppercase tracking-widest">🎙️ Interviews</span>
-                <div className="h-px flex-1 bg-white/10" />
+            <div className="bg-[#181818] rounded-2xl overflow-hidden border border-white/8 flex flex-col">
+              <div className="px-4 pt-4 pb-3 flex items-center gap-2 border-b border-white/8">
+                <span className="text-base">🎙️</span>
+                <span className="text-[#EDE518] font-bold text-xs uppercase tracking-widest">Interviews</span>
               </div>
-              <div className="space-y-3">
-                <div className="rounded-lg overflow-hidden shadow-lg" style={{ padding: "56.25% 0 0 0", position: "relative" }}>
-                  <iframe
-                    src="https://player.vimeo.com/video/1174681253?h=f1589236ec&badge=0&autopause=0&player_id=0&app_id=58479"
-                    frameBorder="0"
-                    allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                    referrerPolicy="strict-origin-when-cross-origin"
-                    style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
-                    title="An Interview with Kids in RBS, Israel"
-                  />
-                </div>
-                <h5 className="font-semibold text-white">An Interview with Kids in RBS, Israel</h5>
-                <p className="text-white/55 text-sm">Hear straight from the kids of Ramat Beit Shemesh — their raw, honest answers about life in Israel during wartime will move you and leave you thinking.</p>
+              <div style={{ padding: "56.25% 0 0 0", position: "relative" }}>
+                <iframe
+                  src="https://player.vimeo.com/video/1174681253?h=f1589236ec&badge=0&autopause=0&player_id=0&app_id=58479"
+                  frameBorder="0"
+                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+                  title="An Interview with Kids in RBS, Israel"
+                />
+              </div>
+              <div className="p-4 flex flex-col gap-1 flex-1">
+                <h5 className="font-semibold text-white text-sm">An Interview with Kids in RBS, Israel</h5>
+                <p className="text-white/50 text-xs leading-relaxed">Hear straight from the kids of Ramat Beit Shemesh — raw, honest answers about life in Israel during wartime.</p>
               </div>
             </div>
 
             {/* Stories */}
-            <div>
-              <div className="flex items-center gap-3 mb-5">
-                <span className="text-[#EDE518] font-bold text-xs uppercase tracking-widest">📚 Stories</span>
-                <div className="h-px flex-1 bg-white/10" />
+            <div className="bg-[#181818] rounded-2xl overflow-hidden border border-white/8 flex flex-col">
+              <div className="px-4 pt-4 pb-3 flex items-center gap-2 border-b border-white/8">
+                <span className="text-base">📚</span>
+                <span className="text-[#EDE518] font-bold text-xs uppercase tracking-widest">Stories</span>
               </div>
-              <div className="rounded-xl border border-white/10 bg-white/5 flex flex-col items-center justify-center py-14 px-6 text-center gap-2">
-                <p className="text-white/60 font-medium">Coming Soon</p>
-                <p className="text-white/35 text-sm">Story content is on its way to the Academy.</p>
+              <div style={{ padding: "56.25% 0 0 0", position: "relative" }}>
+                <iframe
+                  src="https://player.vimeo.com/video/1158803771?h=188d9a4d33&badge=0&autopause=0&player_id=0&app_id=58479"
+                  frameBorder="0"
+                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+                  title="Story"
+                />
+              </div>
+              <div className="p-4 flex flex-col gap-1 flex-1">
+                <h5 className="font-semibold text-white text-sm">Story</h5>
+                <p className="text-white/50 text-xs leading-relaxed">A captivating story brought to life — the kind that stays with you long after it ends.</p>
+              </div>
+            </div>
+
+            {/* Navi */}
+            <div className="bg-[#181818] rounded-2xl overflow-hidden border border-white/8 flex flex-col">
+              <div className="px-4 pt-4 pb-3 flex items-center gap-2 border-b border-white/8">
+                <span className="text-base">✡️</span>
+                <span className="text-[#EDE518] font-bold text-xs uppercase tracking-widest">Navi</span>
+              </div>
+              <div style={{ padding: "56.25% 0 0 0", position: "relative" }}>
+                <iframe
+                  src="https://player.vimeo.com/video/1158589767?h=598ba5e5ba&badge=0&autopause=0&player_id=0&app_id=58479"
+                  frameBorder="0"
+                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+                  title="Navi"
+                />
+              </div>
+              <div className="p-4 flex flex-col gap-1 flex-1">
+                <h5 className="font-semibold text-white text-sm">Navi</h5>
+                <p className="text-white/50 text-xs leading-relaxed">Journey through the Prophets with energy and insight that makes every pasuk come alive.</p>
               </div>
             </div>
 
           </div>
 
-          <div className="text-center mt-12">
+          <div className="text-center mt-14">
+            <p className="text-white/40 text-sm mb-4">All this and more — available inside the Academy</p>
             <Link href="/register">
-              <Button className="bg-[#EDE518] text-black font-semibold px-8 hover:bg-[#EDE518]/90" data-testid="button-academy-preview-join">
+              <Button className="bg-[#EDE518] text-black font-bold px-10 py-5 text-base hover:bg-[#EDE518]/90 rounded-full" data-testid="button-academy-preview-join">
                 Join the Academy
               </Button>
             </Link>
