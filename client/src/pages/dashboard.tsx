@@ -579,7 +579,7 @@ const CATEGORY_THEMES: Record<string, CategoryTheme> = {
     accent: "#F97316", accentSecondary: "#EDE518",
     headerBg: "linear-gradient(135deg, #100800 0%, #1e1000 50%, #100800 100%)",
     headerText: "#FDBA74", cardBorder: "border-orange-700/40", cardBg: "linear-gradient(145deg, #1e1000 0%, #100800 100%)",
-    gridCols: "grid-cols-2 sm:grid-cols-3 md:grid-cols-3", cardVariant: "square", featuredFirst: false,
+    gridCols: "grid-cols-1 sm:grid-cols-2 md:grid-cols-3", cardVariant: "default", featuredFirst: false,
     emoji: "🎥", tagline: "Life Behind the Lens", bannerStyle: "vlog",
   },
 };
