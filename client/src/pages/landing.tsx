@@ -587,13 +587,13 @@ export default function LandingPage() {
             <p className="text-white/45 text-base max-w-lg mx-auto leading-relaxed">A glimpse of the films, Torah, stories, and interviews waiting for you inside.</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5 max-w-6xl mx-auto">
 
             {/* Films */}
-            <div className="bg-[#181818] rounded-2xl overflow-hidden border border-white/8 flex flex-col">
-              <div className="px-4 pt-4 pb-3 flex items-center gap-2 border-b border-white/8">
-                <span className="text-base">🎬</span>
-                <span className="text-[#EDE518] font-bold text-xs uppercase tracking-widest">Films</span>
+            <div className="bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/[0.07] flex flex-col shadow-xl">
+              <div className="px-5 pt-4 pb-3 flex items-center gap-2.5 border-b border-white/[0.07]">
+                <div className="w-1 h-4 rounded-full bg-[#EDE518]" />
+                <span className="text-[#EDE518] font-bold text-[10px] uppercase tracking-[0.18em]">Films</span>
               </div>
               <div style={{ padding: "56.25% 0 0 0", position: "relative" }}>
                 <iframe
@@ -605,17 +605,17 @@ export default function LandingPage() {
                   title="A Birthday Surprise"
                 />
               </div>
-              <div className="p-4 flex flex-col gap-1 flex-1">
-                <h5 className="font-semibold text-white text-sm">A Birthday Surprise</h5>
-                <p className="text-white/50 text-xs leading-relaxed">What happens when Rabbi Scheller pulls off the ultimate birthday surprise? A heartwarming, laugh-out-loud moment you won't see coming.</p>
+              <div className="p-5 flex flex-col gap-1.5 flex-1">
+                <h5 className="font-semibold text-white text-sm leading-snug">A Birthday Surprise</h5>
+                <p className="text-white/45 text-xs leading-relaxed">What happens when Rabbi Scheller pulls off the ultimate birthday surprise? A heartwarming, laugh-out-loud moment you won't see coming.</p>
               </div>
             </div>
 
             {/* Mishnayas */}
-            <div className="bg-[#181818] rounded-2xl overflow-hidden border border-white/8 flex flex-col">
-              <div className="px-4 pt-4 pb-3 flex items-center gap-2 border-b border-white/8">
-                <span className="text-base">📖</span>
-                <span className="text-[#EDE518] font-bold text-xs uppercase tracking-widest">Mishnayas</span>
+            <div className="bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/[0.07] flex flex-col shadow-xl">
+              <div className="px-5 pt-4 pb-3 flex items-center gap-2.5 border-b border-white/[0.07]">
+                <div className="w-1 h-4 rounded-full bg-[#EDE518]" />
+                <span className="text-[#EDE518] font-bold text-[10px] uppercase tracking-[0.18em]">Mishnayas</span>
               </div>
               <div style={{ padding: "56.25% 0 0 0", position: "relative" }}>
                 <iframe
@@ -627,17 +627,17 @@ export default function LandingPage() {
                   title="Mishnayas Pesachim Chapter Ten"
                 />
               </div>
-              <div className="p-4 flex flex-col gap-1 flex-1">
-                <h5 className="font-semibold text-white text-sm">Mishnayas Pesachim Chapter Ten</h5>
-                <p className="text-white/50 text-xs leading-relaxed">Energy, humor, and razor-sharp clarity that makes learning impossible to forget.</p>
+              <div className="p-5 flex flex-col gap-1.5 flex-1">
+                <h5 className="font-semibold text-white text-sm leading-snug">Mishnayas Pesachim Chapter Ten</h5>
+                <p className="text-white/45 text-xs leading-relaxed">Energy, humor, and razor-sharp clarity that makes learning impossible to forget.</p>
               </div>
             </div>
 
             {/* Interviews */}
-            <div className="bg-[#181818] rounded-2xl overflow-hidden border border-white/8 flex flex-col">
-              <div className="px-4 pt-4 pb-3 flex items-center gap-2 border-b border-white/8">
-                <span className="text-base">🎙️</span>
-                <span className="text-[#EDE518] font-bold text-xs uppercase tracking-widest">Interviews</span>
+            <div className="bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/[0.07] flex flex-col shadow-xl">
+              <div className="px-5 pt-4 pb-3 flex items-center gap-2.5 border-b border-white/[0.07]">
+                <div className="w-1 h-4 rounded-full bg-[#EDE518]" />
+                <span className="text-[#EDE518] font-bold text-[10px] uppercase tracking-[0.18em]">Interviews</span>
               </div>
               <div style={{ padding: "56.25% 0 0 0", position: "relative" }}>
                 <iframe
@@ -649,39 +649,17 @@ export default function LandingPage() {
                   title="An Interview with Kids in RBS, Israel"
                 />
               </div>
-              <div className="p-4 flex flex-col gap-1 flex-1">
-                <h5 className="font-semibold text-white text-sm">An Interview with Kids in RBS, Israel</h5>
-                <p className="text-white/50 text-xs leading-relaxed">Hear straight from the kids of Ramat Beit Shemesh — raw, honest answers about life in Israel during wartime.</p>
+              <div className="p-5 flex flex-col gap-1.5 flex-1">
+                <h5 className="font-semibold text-white text-sm leading-snug">An Interview with Kids in RBS, Israel</h5>
+                <p className="text-white/45 text-xs leading-relaxed">Hear straight from the kids of Ramat Beit Shemesh — raw, honest answers about life in Israel during wartime.</p>
               </div>
             </div>
 
             {/* Stories */}
-            <div className="bg-[#181818] rounded-2xl overflow-hidden border border-white/8 flex flex-col">
-              <div className="px-4 pt-4 pb-3 flex items-center gap-2 border-b border-white/8">
-                <span className="text-base">📚</span>
-                <span className="text-[#EDE518] font-bold text-xs uppercase tracking-widest">Stories</span>
-              </div>
-              <div style={{ padding: "56.25% 0 0 0", position: "relative" }}>
-                <iframe
-                  src="https://player.vimeo.com/video/1158803771?h=188d9a4d33&badge=0&autopause=0&player_id=0&app_id=58479"
-                  frameBorder="0"
-                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
-                  referrerPolicy="strict-origin-when-cross-origin"
-                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
-                  title="Story"
-                />
-              </div>
-              <div className="p-4 flex flex-col gap-1 flex-1">
-                <h5 className="font-semibold text-white text-sm">Story</h5>
-                <p className="text-white/50 text-xs leading-relaxed">A captivating story brought to life — the kind that stays with you long after it ends.</p>
-              </div>
-            </div>
-
-            {/* Navi */}
-            <div className="bg-[#181818] rounded-2xl overflow-hidden border border-white/8 flex flex-col">
-              <div className="px-4 pt-4 pb-3 flex items-center gap-2 border-b border-white/8">
-                <span className="text-base">✡️</span>
-                <span className="text-[#EDE518] font-bold text-xs uppercase tracking-widest">Navi</span>
+            <div className="bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/[0.07] flex flex-col shadow-xl">
+              <div className="px-5 pt-4 pb-3 flex items-center gap-2.5 border-b border-white/[0.07]">
+                <div className="w-1 h-4 rounded-full bg-[#EDE518]" />
+                <span className="text-[#EDE518] font-bold text-[10px] uppercase tracking-[0.18em]">Stories</span>
               </div>
               <div style={{ padding: "56.25% 0 0 0", position: "relative" }}>
                 <iframe
@@ -690,12 +668,34 @@ export default function LandingPage() {
                   allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
                   referrerPolicy="strict-origin-when-cross-origin"
                   style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
-                  title="Navi"
+                  title="A Story"
                 />
               </div>
-              <div className="p-4 flex flex-col gap-1 flex-1">
-                <h5 className="font-semibold text-white text-sm">Navi</h5>
-                <p className="text-white/50 text-xs leading-relaxed">Journey through the Prophets with energy and insight that makes every pasuk come alive.</p>
+              <div className="p-5 flex flex-col gap-1.5 flex-1">
+                <h5 className="font-semibold text-white text-sm leading-snug">A Story</h5>
+                <p className="text-white/45 text-xs leading-relaxed">A captivating story brought to life — the kind that stays with you long after it ends.</p>
+              </div>
+            </div>
+
+            {/* Navi */}
+            <div className="bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/[0.07] flex flex-col shadow-xl">
+              <div className="px-5 pt-4 pb-3 flex items-center gap-2.5 border-b border-white/[0.07]">
+                <div className="w-1 h-4 rounded-full bg-[#EDE518]" />
+                <span className="text-[#EDE518] font-bold text-[10px] uppercase tracking-[0.18em]">Navi</span>
+              </div>
+              <div style={{ padding: "56.25% 0 0 0", position: "relative" }}>
+                <iframe
+                  src="https://player.vimeo.com/video/1158803771?h=188d9a4d33&badge=0&autopause=0&player_id=0&app_id=58479"
+                  frameBorder="0"
+                  allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+                  title="Navi Perek Gimel - Shoftim"
+                />
+              </div>
+              <div className="p-5 flex flex-col gap-1.5 flex-1">
+                <h5 className="font-semibold text-white text-sm leading-snug">Navi Perek Gimel — Shoftim</h5>
+                <p className="text-white/45 text-xs leading-relaxed">Journey through the Prophets with energy and insight that makes every pasuk come alive.</p>
               </div>
             </div>
 
