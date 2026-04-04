@@ -25,6 +25,9 @@ import {
   siteAnnouncement,
   liveMeeting,
   featuredVideos,
+  videoComments,
+  type VideoComment,
+  type InsertVideoComment,
   type User,
   type InsertUser,
   type PhoneNumber,
@@ -145,6 +148,11 @@ export interface IStorage {
 
   // Trending
   getTrendingVideos(limit?: number): Promise<Video[]>;
+
+  // Video Comments
+  getVideoComments(videoId: string): Promise<(VideoComment & { userEmail: string; familyName: string | null })[]>;
+  createVideoComment(data: InsertVideoComment): Promise<VideoComment>;
+  deleteVideoComment(id: string): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1060,6 +1068,36 @@ export class DatabaseStorage implements IStorage {
     const items = await this.getRssAudioItemsByFolder(folderId);
     if (items.length === 0) return 0;
     return Math.max(...items.map(i => i.sortOrder || 0)) + 1;
+  }
+
+  // Video Comments
+  async getVideoComments(videoId: string): Promise<(VideoComment & { userEmail: string; familyName: string | null })[]> {
+    const rows = await db
+      .select({
+        id: videoComments.id,
+        videoId: videoComments.videoId,
+        userId: videoComments.userId,
+        text: videoComments.text,
+        parentId: videoComments.parentId,
+        isAdminReply: videoComments.isAdminReply,
+        createdAt: videoComments.createdAt,
+        userEmail: users.email,
+        familyName: users.familyName,
+      })
+      .from(videoComments)
+      .innerJoin(users, eq(videoComments.userId, users.id))
+      .where(eq(videoComments.videoId, videoId))
+      .orderBy(videoComments.createdAt);
+    return rows;
+  }
+
+  async createVideoComment(data: InsertVideoComment): Promise<VideoComment> {
+    const [comment] = await db.insert(videoComments).values(data).returning();
+    return comment;
+  }
+
+  async deleteVideoComment(id: string): Promise<void> {
+    await db.delete(videoComments).where(eq(videoComments.id, id));
   }
 }
 

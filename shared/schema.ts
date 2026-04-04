@@ -384,6 +384,19 @@ export const insertAlbumTrackSchema = createInsertSchema(albumTracks).omit({ id:
 export const insertRssFolderSchema = createInsertSchema(rssFolders).omit({ id: true, createdAt: true });
 export const insertRssAudioItemSchema = createInsertSchema(rssAudioItems).omit({ id: true, createdAt: true });
 
+// Video Comments table
+export const videoComments = pgTable("video_comments", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  videoId: varchar("video_id").notNull(),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  text: text("text").notNull(),
+  parentId: varchar("parent_id"),
+  isAdminReply: boolean("is_admin_reply").default(false),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertVideoCommentSchema = createInsertSchema(videoComments).omit({ id: true, createdAt: true });
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -427,6 +440,8 @@ export type RssFolder = typeof rssFolders.$inferSelect;
 export type InsertRssFolder = z.infer<typeof insertRssFolderSchema>;
 export type RssAudioItem = typeof rssAudioItems.$inferSelect;
 export type InsertRssAudioItem = z.infer<typeof insertRssAudioItemSchema>;
+export type VideoComment = typeof videoComments.$inferSelect;
+export type InsertVideoComment = z.infer<typeof insertVideoCommentSchema>;
 
 // Validation schemas for forms
 export const loginSchema = z.object({

@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay } from "lucide-react";
+import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay, MessageSquare } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth, getAuthHeaders, getStoredAuthToken } from "@/lib/auth-context";
@@ -91,6 +92,199 @@ function PhoneNumberCard({ phoneNumber, onDelete }: { phoneNumber: PhoneNumber; 
   );
 }
 
+function CommentsSection({ videoId }: { videoId: string }) {
+  const { user } = useAuth();
+  const { toast } = useToast();
+  const isAdmin = (user as any)?.role === "admin";
+  const [newComment, setNewComment] = useState("");
+  const [replyTo, setReplyTo] = useState<string | null>(null);
+  const [replyText, setReplyText] = useState("");
+
+  type CommentWithUser = {
+    id: string;
+    videoId: string;
+    userId: string;
+    text: string;
+    parentId: string | null;
+    isAdminReply: boolean | null;
+    createdAt: string | null;
+    userEmail: string;
+    familyName: string | null;
+  };
+
+  const { data: comments = [], isLoading } = useQuery<CommentWithUser[]>({
+    queryKey: ["/api/videos", videoId, "comments"],
+    queryFn: async () => {
+      const res = await fetch(`/api/videos/${videoId}/comments`, {
+        credentials: "include",
+        headers: getAuthHeaders(),
+      });
+      if (!res.ok) throw new Error("Failed to fetch comments");
+      return res.json();
+    },
+  });
+
+  const postMutation = useMutation({
+    mutationFn: async ({ text, parentId }: { text: string; parentId?: string }) =>
+      apiRequest("POST", `/api/videos/${videoId}/comments`, { text, parentId }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/videos", videoId, "comments"] });
+      setNewComment("");
+      setReplyTo(null);
+      setReplyText("");
+    },
+    onError: () => toast({ title: "Failed to post comment", variant: "destructive" }),
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string) => apiRequest("DELETE", `/api/comments/${id}`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/videos", videoId, "comments"] }),
+    onError: () => toast({ title: "Failed to delete", variant: "destructive" }),
+  });
+
+  const topLevel = comments.filter(c => !c.parentId);
+  const getReplies = (id: string) => comments.filter(c => c.parentId === id);
+
+  const formatTime = (d: string | null) => {
+    if (!d) return "";
+    const date = new Date(d);
+    const diff = Date.now() - date.getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return "just now";
+    if (mins < 60) return `${mins}m ago`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours}h ago`;
+    return `${Math.floor(hours / 24)}d ago`;
+  };
+
+  return (
+    <div className="p-4 border-t">
+      <h4 className="font-semibold text-sm mb-3 flex items-center gap-2">
+        <MessageSquare className="h-4 w-4" />
+        Comments {topLevel.length > 0 ? `(${topLevel.length})` : ""}
+      </h4>
+
+      <div className="mb-4 space-y-2">
+        <Textarea
+          placeholder="Write a comment..."
+          value={newComment}
+          onChange={e => setNewComment(e.target.value)}
+          className="text-sm resize-none"
+          rows={2}
+          data-testid="input-new-comment"
+        />
+        <Button
+          size="sm"
+          onClick={() => postMutation.mutate({ text: newComment })}
+          disabled={!newComment.trim() || postMutation.isPending}
+          data-testid="button-submit-comment"
+        >
+          {postMutation.isPending && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
+          Post Comment
+        </Button>
+      </div>
+
+      {isLoading ? (
+        <div className="space-y-2">
+          <Skeleton className="h-14 w-full" />
+          <Skeleton className="h-14 w-full" />
+        </div>
+      ) : topLevel.length === 0 ? (
+        <p className="text-sm text-muted-foreground">No comments yet. Be the first!</p>
+      ) : (
+        <div className="space-y-3">
+          {topLevel.map(comment => (
+            <div key={comment.id}>
+              <div className="bg-muted/50 rounded-lg p-3">
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <span className="text-xs font-medium">{comment.familyName || comment.userEmail}</span>
+                    <span className="text-xs text-muted-foreground ml-2">{formatTime(comment.createdAt)}</span>
+                    <p className="text-sm mt-1 break-words">{comment.text}</p>
+                  </div>
+                  {isAdmin && (
+                    <div className="flex gap-1 shrink-0">
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 px-2 text-xs"
+                        onClick={() => setReplyTo(replyTo === comment.id ? null : comment.id)}
+                        data-testid={`button-reply-${comment.id}`}
+                      >
+                        Reply
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 px-2 text-xs text-destructive hover:text-destructive"
+                        onClick={() => deleteMutation.mutate(comment.id)}
+                        data-testid={`button-delete-comment-${comment.id}`}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {getReplies(comment.id).map(reply => (
+                <div key={reply.id} className="ml-6 mt-1 bg-primary/5 border-l-2 border-primary rounded-r-lg p-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <span className="text-xs font-semibold text-primary">Rabbi Eli</span>
+                      <span className="text-xs text-muted-foreground ml-2">{formatTime(reply.createdAt)}</span>
+                      <p className="text-sm mt-1 break-words">{reply.text}</p>
+                    </div>
+                    {isAdmin && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className="h-6 px-2 text-xs text-destructive hover:text-destructive shrink-0"
+                        onClick={() => deleteMutation.mutate(reply.id)}
+                        data-testid={`button-delete-reply-${reply.id}`}
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+
+              {isAdmin && replyTo === comment.id && (
+                <div className="ml-6 mt-2 space-y-2">
+                  <Textarea
+                    placeholder="Write a reply..."
+                    value={replyText}
+                    onChange={e => setReplyText(e.target.value)}
+                    className="text-sm resize-none"
+                    rows={2}
+                    data-testid={`input-reply-${comment.id}`}
+                    autoFocus
+                  />
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      onClick={() => postMutation.mutate({ text: replyText, parentId: comment.id })}
+                      disabled={!replyText.trim() || postMutation.isPending}
+                      data-testid={`button-submit-reply-${comment.id}`}
+                    >
+                      {postMutation.isPending && <Loader2 className="h-3 w-3 animate-spin mr-1" />}
+                      Post Reply
+                    </Button>
+                    <Button size="sm" variant="ghost" onClick={() => { setReplyTo(null); setReplyText(""); }}>
+                      Cancel
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 function VideoEmbedPlayer({ video }: { video: VideoType }) {
   // For Vimeo videos, use stored embed URL (includes hash for private videos)
   // or fall back to constructing URL from vimeoVideoId
@@ -114,7 +308,7 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
 
   // Use Vimeo embed iframe directly - no loading state needed
   return (
-    <DialogContent className="max-w-4xl p-0 overflow-hidden">
+    <DialogContent className="max-w-4xl p-0 overflow-y-auto max-h-[90vh]">
       <div className="relative bg-black">
         <iframe
           src={embedUrl}
@@ -131,6 +325,7 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
           <p className="text-sm text-muted-foreground mt-1">{video.description}</p>
         )}
       </div>
+      <CommentsSection videoId={video.id} />
     </DialogContent>
   );
 }
@@ -313,7 +508,7 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
   }
 
   return (
-    <DialogContent className="max-w-4xl p-0 overflow-hidden">
+    <DialogContent className="max-w-4xl p-0 overflow-y-auto max-h-[90vh]">
       <div 
         className="relative bg-black group"
         onMouseMove={handleMouseMove}
@@ -480,6 +675,7 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
           <p className="text-sm text-muted-foreground mt-1">{video.description}</p>
         )}
       </div>
+      <CommentsSection videoId={video.id} />
     </DialogContent>
   );
 }

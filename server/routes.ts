@@ -7699,5 +7699,53 @@ export async function registerRoutes(
     }
   });
 
+  // Video Comments
+  app.get("/api/videos/:id/comments", requireMobileOrSessionAuth, async (req, res) => {
+    try {
+      const comments = await storage.getVideoComments(req.params.id);
+      res.json(comments);
+    } catch (error) {
+      console.error("Get comments error:", error);
+      res.status(500).json({ message: "Failed to fetch comments" });
+    }
+  });
+
+  app.post("/api/videos/:id/comments", requireMobileOrSessionAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const { text, parentId } = req.body;
+      if (!text || typeof text !== "string" || text.trim().length === 0) {
+        return res.status(400).json({ message: "Comment text is required" });
+      }
+      let isAdminReply = false;
+      if (parentId) {
+        const u = await storage.getUser(userId);
+        isAdminReply = u?.role === "admin";
+      }
+      const comment = await storage.createVideoComment({
+        videoId: req.params.id,
+        userId,
+        text: text.trim(),
+        parentId: parentId || null,
+        isAdminReply,
+      });
+      res.status(201).json(comment);
+    } catch (error) {
+      console.error("Create comment error:", error);
+      res.status(500).json({ message: "Failed to post comment" });
+    }
+  });
+
+  app.delete("/api/comments/:id", requireAdmin, async (req, res) => {
+    try {
+      await storage.deleteVideoComment(req.params.id);
+      res.json({ message: "Comment deleted" });
+    } catch (error) {
+      console.error("Delete comment error:", error);
+      res.status(500).json({ message: "Failed to delete comment" });
+    }
+  });
+
   return httpServer;
 }
