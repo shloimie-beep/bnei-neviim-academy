@@ -96,12 +96,12 @@ async function runDataMigrations() {
        AND title != 'Joke Track Academy'`
     );
 
-    // Create "Partial" category if it doesn't exist
+    // Create "Series / Ongoing" category if it doesn't exist
     const partialCatId = 'c8f03153-0cad-40b9-8f3b-04a8f1f9ca2d';
     await pool.query(
       `INSERT INTO video_categories (id, name, parent_category_id)
-       VALUES ($1, 'Partial', NULL)
-       ON CONFLICT (id) DO NOTHING`,
+       VALUES ($1, 'Series / Ongoing', NULL)
+       ON CONFLICT (id) DO UPDATE SET name = 'Series / Ongoing'`,
       [partialCatId]
     );
 

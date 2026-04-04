@@ -582,6 +582,27 @@ const CATEGORY_THEMES: Record<string, CategoryTheme> = {
     gridCols: "grid-cols-1 sm:grid-cols-2 md:grid-cols-3", cardVariant: "default", featuredFirst: false,
     emoji: "🎥", tagline: "Life Behind the Lens", bannerStyle: "vlog",
   },
+  "Navi": {
+    accent: "#34D399", accentSecondary: "#059669",
+    headerBg: "linear-gradient(135deg, #00140a 0%, #002918 50%, #00140a 100%)",
+    headerText: "#6EE7B7", cardBorder: "border-emerald-700/40", cardBg: "linear-gradient(145deg, #001f10 0%, #000f08 100%)",
+    gridCols: "grid-cols-1", cardVariant: "list", featuredFirst: false,
+    emoji: "📜", tagline: "Prophets & Visions", bannerStyle: "torah",
+  },
+  "Gemara": {
+    accent: "#60A5FA", accentSecondary: "#FBBF24",
+    headerBg: "linear-gradient(135deg, #020a1a 0%, #041830 50%, #020a1a 100%)",
+    headerText: "#BFDBFE", cardBorder: "border-blue-700/40", cardBg: "linear-gradient(145deg, #041830 0%, #020a14 100%)",
+    gridCols: "grid-cols-1", cardVariant: "list", featuredFirst: false,
+    emoji: "🕯️", tagline: "Deep Torah Study", bannerStyle: "torah",
+  },
+  "Series / Ongoing": {
+    accent: "#A78BFA", accentSecondary: "#C084FC",
+    headerBg: "linear-gradient(135deg, #0a0318 0%, #150828 50%, #0a0318 100%)",
+    headerText: "#DDD6FE", cardBorder: "border-violet-700/40", cardBg: "linear-gradient(145deg, #150828 0%, #0a0318 100%)",
+    gridCols: "grid-cols-1 md:grid-cols-2", cardVariant: "default", featuredFirst: true,
+    emoji: "📺", tagline: "Multi-Part Learning", bannerStyle: "default",
+  },
 };
 
 function getCategoryTheme(categoryName: string | null): CategoryTheme | null {
@@ -746,6 +767,57 @@ function CategoryBanner({ category, theme }: { category: VideoCategory; theme: C
   );
 }
 
+// ─── Spotlight Card (rotating daily featured video) ──────────────────────────
+
+function SpotlightCard({ video, theme, onView }: { video: VideoType; theme: CategoryTheme | null; onView?: () => void }) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [cacheBust] = useState(() => Date.now());
+  const thumbnailSrc = video.thumbnailPath ? `/api/videos/${video.id}/thumbnail?v=${cacheBust}` : null;
+  const accent = theme?.accent || "#EDE518";
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (open && onView) onView();
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      <DialogTrigger asChild>
+        <div className="relative rounded-2xl overflow-hidden cursor-pointer group mb-6 shadow-2xl" style={{ border: `1px solid ${accent}25` }} data-testid={`spotlight-${video.id}`}>
+          <div className="aspect-[21/9] sm:aspect-[3/1] relative overflow-hidden bg-[#060e1a]">
+            {thumbnailSrc ? (
+              <img src={thumbnailSrc} alt={video.title} className="absolute inset-0 w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-700" />
+            ) : (
+              <div className="absolute inset-0" style={{ background: theme?.headerBg || "linear-gradient(135deg, #060e1a, #0d1828)" }} />
+            )}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-black/10" />
+            <div className="absolute inset-0" style={{ background: `linear-gradient(to right, ${accent}08 0%, transparent 60%)` }} />
+            {/* Animated corner accent */}
+            <div className="absolute top-0 left-0 w-24 h-24 opacity-20 pointer-events-none" style={{ background: `radial-gradient(circle at top left, ${accent}, transparent 70%)` }} />
+          </div>
+          <div className="absolute inset-0 flex items-end p-4 sm:p-6">
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2 mb-2">
+                <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-[0.3em] px-2.5 py-1 rounded-full" style={{ background: `${accent}22`, color: accent, border: `1px solid ${accent}40` }}>
+                  <span className="animate-pulse">★</span> Today's Spotlight
+                </span>
+              </div>
+              <h3 className="text-xl sm:text-2xl font-black text-white leading-tight drop-shadow-lg line-clamp-2">{video.title}</h3>
+              {video.description && <p className="text-sm text-white/55 mt-1 line-clamp-1 hidden sm:block">{video.description}</p>}
+            </div>
+            <div className="flex-shrink-0 ml-4">
+              <div className="h-14 w-14 sm:h-16 sm:w-16 rounded-full flex items-center justify-center shadow-2xl group-hover:scale-110 transition-transform duration-200" style={{ background: accent, boxShadow: `0 0 28px ${accent}60` }}>
+                <Play className="h-6 w-6 sm:h-7 sm:w-7 text-black ml-0.5" fill="black" />
+              </div>
+            </div>
+          </div>
+        </div>
+      </DialogTrigger>
+      <VideoPlayer video={video} onClose={() => setIsOpen(false)} />
+    </Dialog>
+  );
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 
 function VideoCard({ video, isNew, onView, categoryName, variant = "default" }: { video: VideoType; isNew?: boolean; onView?: () => void; categoryName?: string; variant?: CardVariant }) {
@@ -795,7 +867,7 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default" }: 
           <div className="flex gap-4 p-4 rounded-xl cursor-pointer border border-white/10 hover:border-white/25 transition-all group" style={{background: "linear-gradient(135deg, #051a30 0%, #030f1e 100%)"}} data-testid={`card-video-${video.id}`}>
             <div className="flex-shrink-0 w-32 aspect-video rounded-lg overflow-hidden relative bg-[#060e1a]">
               {thumbnailSrc ? (
-                <img src={thumbnailSrc} alt={video.title} className="w-full h-full object-cover" />
+                <img src={thumbnailSrc} alt={video.title} className="absolute inset-0 w-full h-full object-cover" />
               ) : isAudio ? (
                 <div className="w-full h-full flex items-center justify-center"
                   style={{background: categoryName === "Just Kidding Podcast"
@@ -843,7 +915,7 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default" }: 
                 <img 
                   src={thumbnailSrc} 
                   alt={video.title}
-                  className="h-full w-full object-cover"
+                  className="absolute inset-0 w-full h-full object-cover"
                 />
                 {isAudio && (
                   <div className="absolute top-2 left-2 bg-black/60 rounded-full p-1.5">
@@ -2583,37 +2655,110 @@ export default function DashboardPage() {
                           ))}
                         </div>
                       ) : filteredVideos.length > 0 ? (
-                        cardVariant === "list" ? (
-                          <div className="flex flex-col gap-3">
-                            {filteredVideos.map((video) => (
-                              <VideoCard
-                                key={video.id}
-                                video={video}
-                                isNew={isVideoNew(video)}
-                                onView={() => markVideoViewedMutation.mutate(video.id)}
-                                variant="list"
-                              />
-                            ))}
-                          </div>
-                        ) : (
-                          <div className={`grid ${gridCols} gap-3`}>
-                            {filteredVideos.map((video, index) => (
-                              <div
-                                key={video.id}
-                                className={featuredFirst && index === 0 && filteredVideos.length > 1 && cardVariant !== "portrait" && cardVariant !== "square"
-                                  ? "col-span-2"
-                                  : ""}
-                              >
-                                <VideoCard
-                                  video={video}
-                                  isNew={isVideoNew(video)}
-                                  onView={() => markVideoViewedMutation.mutate(video.id)}
-                                  variant={cardVariant}
+                        (() => {
+                          const isMainCat = topLevelCategories.some(c => c.id === selectedCategory);
+                          const subcats = isMainCat ? getSubcategories(selectedCategory!) : [];
+                          const hasSubcats = subcats.length > 0;
+
+                          // Sort all videos by sortOrder then createdAt
+                          const videosSorted = [...filteredVideos].sort((a, b) =>
+                            ((a as any).sortOrder ?? 0) - ((b as any).sortOrder ?? 0) ||
+                            (a.createdAt ? new Date(a.createdAt).getTime() : 0) - (b.createdAt ? new Date(b.createdAt).getTime() : 0)
+                          );
+
+                          // Spotlight: rotate daily; skip for list/portrait/square categories
+                          const canSpotlight = cardVariant !== "list" && cardVariant !== "portrait" && cardVariant !== "square" && videosSorted.length >= 4;
+                          const dayIdx = Math.floor(Date.now() / 86400000);
+                          const spotlightVideo = canSpotlight ? videosSorted[dayIdx % videosSorted.length] : null;
+                          const gridVideos = spotlightVideo ? videosSorted.filter(v => v.id !== spotlightVideo.id) : videosSorted;
+
+                          return (
+                            <>
+                              {spotlightVideo && (
+                                <SpotlightCard
+                                  video={spotlightVideo}
+                                  theme={theme}
+                                  onView={() => markVideoViewedMutation.mutate(spotlightVideo.id)}
                                 />
-                              </div>
-                            ))}
-                          </div>
-                        )
+                              )}
+                              {hasSubcats && isMainCat && cardVariant === "list" ? (
+                                // Grouped by subcategory (e.g. Mishnayos → Shabbos, Eiruvin…)
+                                <div className="space-y-8">
+                                  {subcats.map(subcat => {
+                                    const subcatVideos = gridVideos
+                                      .filter(v => v.categoryId === subcat.id)
+                                      .sort((a, b) => ((a as any).sortOrder ?? 0) - ((b as any).sortOrder ?? 0));
+                                    if (subcatVideos.length === 0) return null;
+                                    return (
+                                      <div key={subcat.id}>
+                                        <div className="flex items-center gap-3 mb-3">
+                                          <div className="flex-shrink-0 h-5 w-1 rounded-full" style={{ background: theme?.accent || "#EDE518" }} />
+                                          <h3 className="text-base font-bold text-white/90">{subcat.name}</h3>
+                                          <div className="flex-1 h-px" style={{ background: `linear-gradient(to right, ${theme?.accent || "#EDE518"}40, transparent)` }} />
+                                        </div>
+                                        <div className="flex flex-col gap-3">
+                                          {subcatVideos.map(video => (
+                                            <VideoCard
+                                              key={video.id}
+                                              video={video}
+                                              isNew={isVideoNew(video)}
+                                              onView={() => markVideoViewedMutation.mutate(video.id)}
+                                              variant="list"
+                                            />
+                                          ))}
+                                        </div>
+                                      </div>
+                                    );
+                                  })}
+                                  {/* Videos directly in the main category */}
+                                  {(() => {
+                                    const directVids = gridVideos.filter(v => v.categoryId === selectedCategory)
+                                      .sort((a, b) => ((a as any).sortOrder ?? 0) - ((b as any).sortOrder ?? 0));
+                                    if (directVids.length === 0) return null;
+                                    return (
+                                      <div className="flex flex-col gap-3">
+                                        {directVids.map(video => (
+                                          <VideoCard
+                                            key={video.id}
+                                            video={video}
+                                            isNew={isVideoNew(video)}
+                                            onView={() => markVideoViewedMutation.mutate(video.id)}
+                                            variant="list"
+                                          />
+                                        ))}
+                                      </div>
+                                    );
+                                  })()}
+                                </div>
+                              ) : cardVariant === "list" ? (
+                                <div className="flex flex-col gap-3">
+                                  {gridVideos.map((video) => (
+                                    <VideoCard
+                                      key={video.id}
+                                      video={video}
+                                      isNew={isVideoNew(video)}
+                                      onView={() => markVideoViewedMutation.mutate(video.id)}
+                                      variant="list"
+                                    />
+                                  ))}
+                                </div>
+                              ) : (
+                                <div className={`grid ${gridCols} gap-3`}>
+                                  {gridVideos.map((video) => (
+                                    <div key={video.id}>
+                                      <VideoCard
+                                        video={video}
+                                        isNew={isVideoNew(video)}
+                                        onView={() => markVideoViewedMutation.mutate(video.id)}
+                                        variant={cardVariant}
+                                      />
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </>
+                          );
+                        })()
                       ) : (
                         <Card className="border border-white/10" style={{background: "linear-gradient(145deg, #0e1e35 0%, #0a1628 100%)"}}>
                           <CardContent className="py-12 text-center">
