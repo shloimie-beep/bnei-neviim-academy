@@ -97,20 +97,98 @@ async function runDataMigrations() {
     );
 
     // Create "Series / Ongoing" category if it doesn't exist
-    const partialCatId = 'c8f03153-0cad-40b9-8f3b-04a8f1f9ca2d';
     await pool.query(
       `INSERT INTO video_categories (id, name, parent_category_id)
-       VALUES ($1, 'Series / Ongoing', NULL)
-       ON CONFLICT (id) DO UPDATE SET name = 'Series / Ongoing'`,
-      [partialCatId]
+       VALUES (gen_random_uuid()::varchar, 'Series / Ongoing', NULL)
+       ON CONFLICT (name) DO NOTHING`
     );
 
-    // Move "The ultimate letter/ Iggeres Haramban {part 1}" to Partial category
+    // Move "The ultimate letter/ Iggeres Haramban {part 1}" to Series / Ongoing
     await pool.query(
-      `UPDATE videos SET category_id = $1
-       WHERE id = '5b8df136-6468-437c-96cf-b3320ad948c8'`,
-      [partialCatId]
+      `UPDATE videos SET category_id = (
+         SELECT id FROM video_categories WHERE name = 'Series / Ongoing' LIMIT 1
+       )
+       WHERE id = '5b8df136-6468-437c-96cf-b3320ad948c8'`
     );
+
+    // ── Schema: direct_messages table ───────────────────────────────────────
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS direct_messages (
+        id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid()::varchar,
+        user_id VARCHAR NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        text TEXT NOT NULL,
+        from_admin BOOLEAN DEFAULT FALSE,
+        read_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+
+    // ── Schema: dashboard_banners table ─────────────────────────────────────
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS dashboard_banners (
+        id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid()::varchar,
+        title TEXT NOT NULL,
+        subtitle TEXT,
+        image_url TEXT,
+        video_id VARCHAR,
+        is_active BOOLEAN DEFAULT TRUE,
+        is_auto_generated BOOLEAN DEFAULT FALSE,
+        display_order INTEGER DEFAULT 0,
+        created_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+
+    // ── Seed: story sub-categories (idempotent by name + parent) ────────────
+    const storiesRow = await pool.query(
+      `SELECT id FROM video_categories WHERE name = 'Stories' AND parent_category_id IS NULL LIMIT 1`
+    );
+    if (storiesRow.rows.length > 0) {
+      const storiesId = storiesRow.rows[0].id;
+      const subCats = [
+        'Shabbos Stories',
+        'Yom Tov Stories',
+        'Emunah Stories',
+        'Middos & Character',
+        'Tzaddikim Stories',
+        'Everyday Life',
+        'History & Miracles',
+      ];
+      for (let i = 0; i < subCats.length; i++) {
+        await pool.query(
+          `INSERT INTO video_categories (id, name, sort_order, parent_category_id)
+           VALUES (gen_random_uuid()::varchar, $1, $2, $3)
+           ON CONFLICT (name) DO NOTHING`,
+          [subCats[i], i + 1, storiesId]
+        );
+      }
+    }
+
+    // ── Seed: banner slides from recent Stories videos (if banners table is empty) ──
+    const bannerCount = await pool.query(`SELECT COUNT(*) FROM dashboard_banners`);
+    if (parseInt(bannerCount.rows[0].count) === 0) {
+      // Pick up to 6 recent ready Stories videos with thumbnails
+      const recentStories = await pool.query(`
+        SELECT v.id, v.title, v.thumbnail_path
+        FROM videos v
+        JOIN video_categories vc ON v.category_id = vc.id
+        WHERE (vc.name = 'Stories' OR vc.parent_category_id = (
+          SELECT id FROM video_categories WHERE name = 'Stories' AND parent_category_id IS NULL LIMIT 1
+        ))
+        AND v.status = 'ready'
+        AND v.thumbnail_path IS NOT NULL
+        AND v.thumbnail_path != ''
+        ORDER BY v.created_at DESC
+        LIMIT 6
+      `);
+      for (let i = 0; i < recentStories.rows.length; i++) {
+        const { id, title, thumbnail_path } = recentStories.rows[i];
+        await pool.query(
+          `INSERT INTO dashboard_banners (id, title, subtitle, image_url, video_id, is_active, is_auto_generated, display_order)
+           VALUES (gen_random_uuid()::varchar, $1, $2, $3, $4, TRUE, TRUE, $5)`,
+          [title, 'New story just added — tap to watch!', thumbnail_path, id, i]
+        );
+      }
+    }
 
     log('Data migrations complete', 'migration');
   } catch (err: any) {
