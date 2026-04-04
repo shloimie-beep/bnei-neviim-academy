@@ -71,6 +71,9 @@ import {
   type InsertRssFolder,
   type RssAudioItem,
   type InsertRssAudioItem,
+  directMessages,
+  type DirectMessage,
+  type InsertDirectMessage,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -165,6 +168,12 @@ export interface IStorage {
   updateBanner(id: string, data: Partial<InsertDashboardBanner>): Promise<DashboardBanner>;
   deleteBanner(id: string): Promise<void>;
   reorderBanners(ids: string[]): Promise<void>;
+
+  // Direct Messages
+  getDirectMessages(userId: string): Promise<DirectMessage[]>;
+  getAllConversations(): Promise<{ userId: string; userEmail: string; familyName: string | null; lastMessage: DirectMessage; unreadCount: number }[]>;
+  sendDirectMessage(data: { userId: string; text: string; fromAdmin: boolean }): Promise<DirectMessage>;
+  markMessagesRead(userId: string, fromAdmin: boolean): Promise<void>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -1180,6 +1189,67 @@ export class DatabaseStorage implements IStorage {
     for (let i = 0; i < ids.length; i++) {
       await db.update(dashboardBanners).set({ displayOrder: i }).where(eq(dashboardBanners.id, ids[i]));
     }
+  }
+
+  // Direct Messages
+  async getDirectMessages(userId: string): Promise<DirectMessage[]> {
+    return db
+      .select()
+      .from(directMessages)
+      .where(eq(directMessages.userId, userId))
+      .orderBy(directMessages.createdAt);
+  }
+
+  async getAllConversations(): Promise<{ userId: string; userEmail: string; familyName: string | null; lastMessage: DirectMessage; unreadCount: number }[]> {
+    const msgs = await db
+      .select()
+      .from(directMessages)
+      .leftJoin(users, eq(directMessages.userId, users.id))
+      .orderBy(directMessages.createdAt);
+
+    const byUser = new Map<string, { userEmail: string; familyName: string | null; messages: DirectMessage[] }>();
+    for (const row of msgs) {
+      const uid = row.direct_messages.userId;
+      if (!byUser.has(uid)) {
+        byUser.set(uid, {
+          userEmail: row.users?.email ?? uid,
+          familyName: row.users?.familyName ?? null,
+          messages: [],
+        });
+      }
+      byUser.get(uid)!.messages.push(row.direct_messages);
+    }
+
+    const result = [];
+    for (const [userId, data] of byUser.entries()) {
+      const last = data.messages[data.messages.length - 1];
+      const unread = data.messages.filter(m => !m.fromAdmin && !m.readAt).length;
+      result.push({ userId, userEmail: data.userEmail, familyName: data.familyName, lastMessage: last, unreadCount: unread });
+    }
+    // Sort by last message time descending
+    result.sort((a, b) => new Date(b.lastMessage.createdAt!).getTime() - new Date(a.lastMessage.createdAt!).getTime());
+    return result;
+  }
+
+  async sendDirectMessage(data: { userId: string; text: string; fromAdmin: boolean }): Promise<DirectMessage> {
+    const [msg] = await db.insert(directMessages).values(data).returning();
+    return msg;
+  }
+
+  async markMessagesRead(userId: string, fromAdmin: boolean): Promise<void> {
+    // Mark messages as read where they came from the OTHER side
+    // If admin is reading, mark user messages (fromAdmin=false) as read
+    // If user is reading, mark admin messages (fromAdmin=true) as read
+    await db
+      .update(directMessages)
+      .set({ readAt: new Date() })
+      .where(
+        and(
+          eq(directMessages.userId, userId),
+          eq(directMessages.fromAdmin, fromAdmin),
+          sql`${directMessages.readAt} IS NULL`
+        )
+      );
   }
 }
 

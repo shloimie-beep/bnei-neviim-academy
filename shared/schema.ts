@@ -399,6 +399,18 @@ export const dashboardBanners = pgTable("dashboard_banners", {
 
 export const insertDashboardBannerSchema = createInsertSchema(dashboardBanners).omit({ id: true, createdAt: true });
 
+// Direct Messages table (Plus-member one-on-one with Rabbi Eli)
+export const directMessages = pgTable("direct_messages", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  text: text("text").notNull(),
+  fromAdmin: boolean("from_admin").default(false),
+  readAt: timestamp("read_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertDirectMessageSchema = createInsertSchema(directMessages).omit({ id: true, createdAt: true, readAt: true });
+
 // Video Comments table
 export const videoComments = pgTable("video_comments", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -459,6 +471,8 @@ export type VideoComment = typeof videoComments.$inferSelect;
 export type InsertVideoComment = z.infer<typeof insertVideoCommentSchema>;
 export type DashboardBanner = typeof dashboardBanners.$inferSelect;
 export type InsertDashboardBanner = z.infer<typeof insertDashboardBannerSchema>;
+export type DirectMessage = typeof directMessages.$inferSelect;
+export type InsertDirectMessage = z.infer<typeof insertDirectMessageSchema>;
 
 // Validation schemas for forms
 export const loginSchema = z.object({

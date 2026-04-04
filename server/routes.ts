@@ -1431,6 +1431,82 @@ export async function registerRoutes(
     }
   });
 
+  // ─── Direct Messages (Plus-only) ───────────────────────────────────────
+
+  // Member: get own messages
+  app.get("/api/direct-messages", requireAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(userId);
+      if (!user || user.accountType !== 'plus') {
+        return res.status(403).json({ message: "Plus membership required" });
+      }
+      const msgs = await storage.getDirectMessages(userId);
+      // Mark admin messages as read when member fetches
+      await storage.markMessagesRead(userId, true);
+      res.json(msgs);
+    } catch {
+      res.status(500).json({ message: "Failed to get messages" });
+    }
+  });
+
+  // Member: send a message
+  app.post("/api/direct-messages", requireAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const user = await storage.getUser(userId);
+      if (!user || user.accountType !== 'plus') {
+        return res.status(403).json({ message: "Plus membership required" });
+      }
+      const { text } = req.body;
+      if (!text || String(text).trim().length === 0) {
+        return res.status(400).json({ message: "Message text is required" });
+      }
+      const msg = await storage.sendDirectMessage({ userId, text: String(text).trim(), fromAdmin: false });
+      res.json(msg);
+    } catch {
+      res.status(500).json({ message: "Failed to send message" });
+    }
+  });
+
+  // Admin: get all conversations
+  app.get("/api/admin/direct-messages", requireAdmin, async (req, res) => {
+    try {
+      const convos = await storage.getAllConversations();
+      res.json(convos);
+    } catch {
+      res.status(500).json({ message: "Failed to get conversations" });
+    }
+  });
+
+  // Admin: get messages for a specific user
+  app.get("/api/admin/direct-messages/:userId", requireAdmin, async (req, res) => {
+    try {
+      const msgs = await storage.getDirectMessages(req.params.userId);
+      // Mark user messages as read when admin views them
+      await storage.markMessagesRead(req.params.userId, false);
+      res.json(msgs);
+    } catch {
+      res.status(500).json({ message: "Failed to get messages" });
+    }
+  });
+
+  // Admin: reply to a user
+  app.post("/api/admin/direct-messages/:userId/reply", requireAdmin, async (req, res) => {
+    try {
+      const { text } = req.body;
+      if (!text || String(text).trim().length === 0) {
+        return res.status(400).json({ message: "Reply text is required" });
+      }
+      const msg = await storage.sendDirectMessage({ userId: req.params.userId, text: String(text).trim(), fromAdmin: true });
+      res.json(msg);
+    } catch {
+      res.status(500).json({ message: "Failed to send reply" });
+    }
+  });
+
   app.post("/api/create-portal", requireAuth, async (req, res) => {
     try {
       const userId = getAuthUserId(req);

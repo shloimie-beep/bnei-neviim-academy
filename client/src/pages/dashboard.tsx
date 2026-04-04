@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay, MessageSquare } from "lucide-react";
+import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay, MessageSquare, Send } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -2253,6 +2253,22 @@ export default function DashboardPage() {
     },
   });
 
+  // Direct Messaging (Plus-only)
+  const [dmText, setDmText] = useState("");
+  const { data: dmMessages = [], refetch: refetchDms } = useQuery<{ id: string; text: string; fromAdmin: boolean; createdAt: string }[]>({
+    queryKey: ["/api/direct-messages"],
+    enabled: isPlus,
+    refetchInterval: isPlus ? 8000 : false,
+  });
+  const sendDmMutation = useMutation({
+    mutationFn: (text: string) => apiRequest("POST", "/api/direct-messages", { text }),
+    onSuccess: () => {
+      setDmText("");
+      queryClient.invalidateQueries({ queryKey: ["/api/direct-messages"] });
+    },
+    onError: () => toast({ title: "Failed to send message", variant: "destructive" }),
+  });
+
   const changePasswordMutation = useMutation({
     mutationFn: async ({ currentPassword, newPassword }: { currentPassword: string; newPassword: string }) => {
       const res = await apiRequest("POST", "/api/auth/change-password", { currentPassword, newPassword });
@@ -2723,6 +2739,83 @@ export default function DashboardPage() {
                           </p>
                         </div>
                       )}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Direct Message — Message Rabbi Eli (Plus only) */}
+              {isPlus && (
+                <Card className="border-[#EDE518]/30 bg-gradient-to-br from-[#0d1a2e] to-[#0a1020]" data-testid="card-dm-panel">
+                  <CardHeader className="pb-3">
+                    <CardTitle className="flex items-center gap-2 text-base text-white">
+                      <MessageSquare className="h-4 w-4 text-[#EDE518]" />
+                      Message Rabbi Eli Scheller
+                      <Badge className="text-xs ml-auto bg-[#EDE518]/20 text-[#EDE518] border border-[#EDE518]/30">
+                        Private
+                      </Badge>
+                    </CardTitle>
+                    <p className="text-xs text-white/50 mt-1">Send a personal message — Rabbi Eli will reply directly to you here.</p>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {/* Message thread */}
+                    <div className="rounded-xl bg-black/30 border border-white/5 p-3 space-y-3 max-h-72 overflow-y-auto">
+                      {dmMessages.length === 0 ? (
+                        <div className="text-center py-6">
+                          <MessageSquare className="h-8 w-8 mx-auto mb-2 text-white/20" />
+                          <p className="text-sm text-white/40">No messages yet — say hello!</p>
+                        </div>
+                      ) : (
+                        dmMessages.map(msg => (
+                          <div key={msg.id} className={`flex ${msg.fromAdmin ? "justify-start" : "justify-end"}`}>
+                            {msg.fromAdmin && (
+                              <div className="w-7 h-7 rounded-full bg-[#EDE518] flex items-center justify-center shrink-0 mr-2 mt-0.5 text-black font-bold text-xs">R</div>
+                            )}
+                            <div
+                              className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm ${
+                                msg.fromAdmin
+                                  ? "bg-white/10 text-white rounded-tl-sm"
+                                  : "bg-[#EDE518] text-black rounded-tr-sm font-medium"
+                              }`}
+                            >
+                              {msg.fromAdmin && (
+                                <p className="text-[10px] text-[#EDE518] font-semibold mb-1">Rabbi Eli Scheller</p>
+                              )}
+                              <p className="whitespace-pre-wrap break-words leading-relaxed">{msg.text}</p>
+                              <p className={`text-[10px] mt-1 ${msg.fromAdmin ? "text-white/40" : "text-black/50"}`}>
+                                {new Date(msg.createdAt).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                              </p>
+                            </div>
+                          </div>
+                        ))
+                      )}
+                    </div>
+
+                    {/* Compose box */}
+                    <div className="flex gap-2">
+                      <Textarea
+                        data-testid="input-dm-message"
+                        value={dmText}
+                        onChange={e => setDmText(e.target.value)}
+                        placeholder="Type your message to Rabbi Eli…"
+                        className="min-h-[44px] max-h-28 resize-none bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-[#EDE518]/50"
+                        rows={1}
+                        onKeyDown={e => {
+                          if (e.key === "Enter" && !e.shiftKey) {
+                            e.preventDefault();
+                            if (dmText.trim()) sendDmMutation.mutate(dmText.trim());
+                          }
+                        }}
+                      />
+                      <Button
+                        data-testid="button-send-dm"
+                        onClick={() => { if (dmText.trim()) sendDmMutation.mutate(dmText.trim()); }}
+                        disabled={!dmText.trim() || sendDmMutation.isPending}
+                        size="icon"
+                        className="shrink-0 h-10 w-10 bg-[#EDE518] hover:bg-[#EDE518]/80 text-black"
+                      >
+                        {sendDmMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
