@@ -840,23 +840,10 @@ function CategoryBanner({ category, theme }: { category: VideoCategory; theme: C
   );
 
   if (bannerStyle === "shorts") return (
-    <div className="relative overflow-hidden rounded-xl mb-6" style={{ background: headerBg, border: `1px solid ${accent}40` }}>
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(8)].map((_, i) => (
-          <div key={i} className="absolute w-px h-full opacity-10" style={{ left: `${i * 14}%`, background: `linear-gradient(to bottom, transparent, ${accent}, transparent)` }} />
-        ))}
-      </div>
-      <div className="relative z-10 p-6 flex items-center gap-6">
-        <div className="flex-shrink-0 w-14 h-24 rounded-xl border-2 flex items-center justify-center text-3xl" style={{ borderColor: accent, background: `${accent}15` }}>📱</div>
-        <div>
-          <div className="text-xs font-bold uppercase tracking-[0.3em] mb-1" style={{ color: accent }}>Vertical Content</div>
-          <h2 className="text-3xl font-black" style={{ color: headerText }}>{category.name}</h2>
-          <p className="text-sm mt-1 opacity-60" style={{ color: headerText }}>{tagline}</p>
-        </div>
-        <div className="ml-auto flex flex-col gap-1.5 opacity-40">
-          {[80, 100, 60, 90, 70].map((h, i) => <div key={i} className="w-1.5 rounded-full" style={{ height: h/10+'rem', background: i % 2 ? accentSecondary : accent }} />)}
-        </div>
-      </div>
+    <div className="flex items-center gap-3 mb-4 pb-3" style={{ borderBottom: `1px solid ${accent}30` }}>
+      <span className="text-xl">{emoji}</span>
+      <h2 className="text-xl font-bold" style={{ color: headerText }}>{category.name}</h2>
+      <span className="text-xs font-semibold px-2 py-0.5 rounded-full ml-1" style={{ background: `${accent}20`, color: accent }}>{tagline}</span>
     </div>
   );
 
@@ -3110,6 +3097,19 @@ export default function DashboardPage() {
                                       onView={() => markVideoViewedMutation.mutate(video.id)}
                                       variant="list"
                                     />
+                                  ))}
+                                </div>
+                              ) : cardVariant === "portrait" ? (
+                                <div className="flex gap-3 overflow-x-auto pb-3 snap-x snap-mandatory scroll-smooth" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+                                  {gridVideos.map((video) => (
+                                    <div key={video.id} className="flex-shrink-0 w-32 sm:w-36 snap-start">
+                                      <VideoCard
+                                        video={video}
+                                        isNew={isVideoNew(video)}
+                                        onView={() => markVideoViewedMutation.mutate(video.id)}
+                                        variant="portrait"
+                                      />
+                                    </div>
                                   ))}
                                 </div>
                               ) : (
