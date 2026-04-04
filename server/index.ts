@@ -95,6 +95,23 @@ async function runDataMigrations() {
        WHERE id = '06bfa733-9464-499a-b55c-b3e6cdd68df2'
        AND title != 'Joke Track Academy'`
     );
+
+    // Create "Partial" category if it doesn't exist
+    const partialCatId = 'c8f03153-0cad-40b9-8f3b-04a8f1f9ca2d';
+    await pool.query(
+      `INSERT INTO video_categories (id, name, parent_category_id)
+       VALUES ($1, 'Partial', NULL)
+       ON CONFLICT (id) DO NOTHING`,
+      [partialCatId]
+    );
+
+    // Move "The ultimate letter/ Iggeres Haramban {part 1}" to Partial category
+    await pool.query(
+      `UPDATE videos SET category_id = $1
+       WHERE id = '5b8df136-6468-437c-96cf-b3320ad948c8'`,
+      [partialCatId]
+    );
+
     log('Data migrations complete', 'migration');
   } catch (err: any) {
     log(`Data migration error: ${err.message}`, 'migration');
