@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Plus, Trash2, Edit2, Eye, EyeOff, Upload, Image, Loader2, ChevronUp, ChevronDown, Sparkles } from "lucide-react";
+import { Plus, Trash2, Edit2, Eye, EyeOff, Upload, Image, Loader2, ChevronUp, ChevronDown, Sparkles, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -37,28 +37,59 @@ export default function BannersManagement() {
   const [uploadingImageFor, setUploadingImageFor] = useState<string | null>(null);
 
   const [form, setForm] = useState({ title: "", subtitle: "", imageUrl: "", videoId: "" });
+  const [pendingImageFile, setPendingImageFile] = useState<File | null>(null);
+  const [pendingImagePreview, setPendingImagePreview] = useState<string | null>(null);
+  const [editPendingFile, setEditPendingFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const editFileInputRef = useRef<HTMLInputElement>(null);
 
   const { data: banners = [], isLoading } = useQuery<Banner[]>({
     queryKey: ["/api/admin/banners"],
   });
 
+  const uploadImageToNewBanner = async (bannerId: string, file: File) => {
+    const fd = new FormData();
+    fd.append("image", file);
+    const res = await fetch(`/api/admin/banners/${bannerId}/image`, {
+      method: "POST",
+      body: fd,
+      credentials: "include",
+    });
+    if (!res.ok) throw new Error("Image upload failed");
+  };
+
   const createMutation = useMutation({
-    mutationFn: (data: typeof form) => apiRequest("POST", "/api/admin/banners", data),
+    mutationFn: async (data: typeof form) => {
+      const res = await apiRequest("POST", "/api/admin/banners", data);
+      const banner = await res.json();
+      if (pendingImageFile) {
+        await uploadImageToNewBanner(banner.id, pendingImageFile);
+      }
+      return banner;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/banners"] });
       setShowAddDialog(false);
       setForm({ title: "", subtitle: "", imageUrl: "", videoId: "" });
+      setPendingImageFile(null);
+      setPendingImagePreview(null);
       toast({ title: "Slide added!" });
     },
     onError: () => toast({ title: "Failed to add slide", variant: "destructive" }),
   });
 
   const updateMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: Partial<Banner> }) =>
-      apiRequest("PUT", `/api/admin/banners/${id}`, data),
+    mutationFn: async ({ id, data }: { id: string; data: Partial<Banner> }) => {
+      const res = await apiRequest("PUT", `/api/admin/banners/${id}`, data);
+      if (editPendingFile) {
+        await uploadImageToNewBanner(id, editPendingFile);
+      }
+      return res;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/banners"] });
       setEditingBanner(null);
+      setEditPendingFile(null);
       toast({ title: "Slide updated!" });
     },
     onError: () => toast({ title: "Failed to update", variant: "destructive" }),
@@ -86,14 +117,7 @@ export default function BannersManagement() {
   const handleImageUpload = async (bannerId: string, file: File) => {
     setUploadingImageFor(bannerId);
     try {
-      const fd = new FormData();
-      fd.append("image", file);
-      const res = await fetch(`/api/admin/banners/${bannerId}/image`, {
-        method: "POST",
-        body: fd,
-        credentials: "include",
-      });
-      if (!res.ok) throw new Error();
+      await uploadImageToNewBanner(bannerId, file);
       await queryClient.invalidateQueries({ queryKey: ["/api/admin/banners"] });
       toast({ title: "Image uploaded!" });
     } catch {
@@ -101,6 +125,17 @@ export default function BannersManagement() {
     } finally {
       setUploadingImageFor(null);
     }
+  };
+
+  const handleFileSelect = (file: File) => {
+    setPendingImageFile(file);
+    setPendingImagePreview(URL.createObjectURL(file));
+    setForm(f => ({ ...f, imageUrl: "" }));
+  };
+
+  const handleEditFileSelect = (file: File) => {
+    setEditPendingFile(file);
+    setEditingBanner(b => b ? ({ ...b, imageUrl: URL.createObjectURL(file) }) : b);
   };
 
   const moveUp = (idx: number) => {
@@ -223,7 +258,7 @@ export default function BannersManagement() {
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8"
-                      onClick={() => setEditingBanner(banner)}
+                      onClick={() => { setEditingBanner(banner); setEditPendingFile(null); }}
                       data-testid={`button-edit-${banner.id}`}
                     >
                       <Edit2 className="h-4 w-4" />
@@ -249,7 +284,10 @@ export default function BannersManagement() {
       </div>
 
       {/* Add Slide Dialog */}
-      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+      <Dialog open={showAddDialog} onOpenChange={(open) => {
+        if (!open) { setPendingImageFile(null); setPendingImagePreview(null); setForm({ title: "", subtitle: "", imageUrl: "", videoId: "" }); }
+        setShowAddDialog(open);
+      }}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Add Banner Slide</DialogTitle>
@@ -269,7 +307,7 @@ export default function BannersManagement() {
               <Label htmlFor="slide-subtitle">Subtext</Label>
               <Textarea
                 id="slide-subtitle"
-                placeholder="e.g. Get your copy today — beautiful and inspiring!"
+                placeholder="e.g. A beautiful and inspiring message for the whole family!"
                 value={form.subtitle}
                 onChange={e => setForm(f => ({ ...f, subtitle: e.target.value }))}
                 rows={2}
@@ -277,19 +315,58 @@ export default function BannersManagement() {
               />
             </div>
             <div>
-              <Label htmlFor="slide-image">Image URL (optional)</Label>
-              <Input
-                id="slide-image"
-                placeholder="https://... (you can also upload after creating)"
-                value={form.imageUrl}
-                onChange={e => setForm(f => ({ ...f, imageUrl: e.target.value }))}
-                data-testid="input-slide-image"
-              />
-              <p className="text-xs text-muted-foreground mt-1">Paste an image URL, or upload a file after creating the slide.</p>
+              <Label>Image</Label>
+              {pendingImagePreview ? (
+                <div className="space-y-2">
+                  <div className="relative w-full h-32 rounded-lg overflow-hidden border border-border">
+                    <img src={pendingImagePreview} alt="Preview" className="w-full h-full object-cover" />
+                    <Button
+                      size="icon"
+                      variant="destructive"
+                      className="absolute top-1 right-1 h-6 w-6"
+                      onClick={() => { setPendingImageFile(null); setPendingImagePreview(null); }}
+                    >
+                      <X className="h-3 w-3" />
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{pendingImageFile?.name}</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Paste image URL…"
+                      value={form.imageUrl}
+                      onChange={e => setForm(f => ({ ...f, imageUrl: e.target.value }))}
+                      data-testid="input-slide-image"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="shrink-0 gap-1.5"
+                      onClick={() => {
+                        const input = document.createElement("input");
+                        input.type = "file";
+                        input.accept = "image/*";
+                        input.onchange = (e) => {
+                          const file = (e.target as HTMLInputElement).files?.[0];
+                          if (file) handleFileSelect(file);
+                        };
+                        input.click();
+                      }}
+                      data-testid="button-pick-image-file"
+                    >
+                      <Upload className="h-4 w-4" />
+                      Upload
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted-foreground">Paste a URL or upload a photo from your computer.</p>
+                </div>
+              )}
             </div>
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setShowAddDialog(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => { setShowAddDialog(false); setPendingImageFile(null); setPendingImagePreview(null); }}>Cancel</Button>
             <Button
               onClick={() => createMutation.mutate(form)}
               disabled={!form.title.trim() || createMutation.isPending}
@@ -304,7 +381,7 @@ export default function BannersManagement() {
 
       {/* Edit Slide Dialog */}
       {editingBanner && (
-        <Dialog open={true} onOpenChange={() => setEditingBanner(null)}>
+        <Dialog open={true} onOpenChange={() => { setEditingBanner(null); setEditPendingFile(null); }}>
           <DialogContent className="max-w-md">
             <DialogHeader>
               <DialogTitle>Edit Slide</DialogTitle>
@@ -328,19 +405,68 @@ export default function BannersManagement() {
                 />
               </div>
               <div>
-                <Label>Image URL</Label>
-                <Input
-                  value={editingBanner.imageUrl || ""}
-                  onChange={e => setEditingBanner(b => b ? ({ ...b, imageUrl: e.target.value }) : b)}
-                  placeholder="https://..."
-                  data-testid="input-edit-image"
-                />
+                <Label>Image</Label>
+                {editPendingFile ? (
+                  <div className="space-y-2">
+                    <div className="relative w-full h-32 rounded-lg overflow-hidden border border-border">
+                      <img src={editingBanner.imageUrl || ""} alt="Preview" className="w-full h-full object-cover" />
+                      <Button
+                        size="icon"
+                        variant="destructive"
+                        className="absolute top-1 right-1 h-6 w-6"
+                        onClick={() => { setEditPendingFile(null); setEditingBanner(b => b ? ({ ...b, imageUrl: null }) : b); }}
+                      >
+                        <X className="h-3 w-3" />
+                      </Button>
+                    </div>
+                    <p className="text-xs text-muted-foreground">{editPendingFile.name}</p>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <div className="flex gap-2">
+                      <Input
+                        value={editingBanner.imageUrl || ""}
+                        onChange={e => setEditingBanner(b => b ? ({ ...b, imageUrl: e.target.value }) : b)}
+                        placeholder="https://..."
+                        data-testid="input-edit-image"
+                      />
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="shrink-0 gap-1.5"
+                        onClick={() => {
+                          const input = document.createElement("input");
+                          input.type = "file";
+                          input.accept = "image/*";
+                          input.onchange = (e) => {
+                            const file = (e.target as HTMLInputElement).files?.[0];
+                            if (file) handleEditFileSelect(file);
+                          };
+                          input.click();
+                        }}
+                        data-testid="button-edit-pick-image"
+                      >
+                        <Upload className="h-4 w-4" />
+                        Upload
+                      </Button>
+                    </div>
+                    {(editingBanner.imageUrl && !editPendingFile) && (
+                      <div className="w-full h-24 rounded-lg overflow-hidden border border-border">
+                        <img
+                          src={imageDisplayUrl(editingBanner.id, editingBanner.imageUrl) || editingBanner.imageUrl}
+                          alt="Current"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
             <DialogFooter>
-              <Button variant="outline" onClick={() => setEditingBanner(null)}>Cancel</Button>
+              <Button variant="outline" onClick={() => { setEditingBanner(null); setEditPendingFile(null); }}>Cancel</Button>
               <Button
-                onClick={() => updateMutation.mutate({ id: editingBanner.id, data: { title: editingBanner.title, subtitle: editingBanner.subtitle, imageUrl: editingBanner.imageUrl } })}
+                onClick={() => updateMutation.mutate({ id: editingBanner.id, data: { title: editingBanner.title, subtitle: editingBanner.subtitle, imageUrl: editPendingFile ? undefined : editingBanner.imageUrl } })}
                 disabled={!editingBanner.title.trim() || updateMutation.isPending}
                 data-testid="button-save-edit"
               >

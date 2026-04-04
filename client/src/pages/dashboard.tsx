@@ -2744,18 +2744,18 @@ export default function DashboardPage() {
                 </Card>
               )}
 
-              {/* Direct Message — Message Rabbi Eli (Plus only) */}
+              {/* Ask the Rabbi — Plus only */}
               {isPlus && (
                 <Card className="border-[#EDE518]/30 bg-gradient-to-br from-[#0d1a2e] to-[#0a1020]" data-testid="card-dm-panel">
                   <CardHeader className="pb-3">
                     <CardTitle className="flex items-center gap-2 text-base text-white">
                       <MessageSquare className="h-4 w-4 text-[#EDE518]" />
-                      Message Rabbi Eli Scheller
+                      Ask Rabbi Eli
                       <Badge className="text-xs ml-auto bg-[#EDE518]/20 text-[#EDE518] border border-[#EDE518]/30">
-                        Private
+                        Plus Only
                       </Badge>
                     </CardTitle>
-                    <p className="text-xs text-white/50 mt-1">Send a personal message — Rabbi Eli will reply directly to you here.</p>
+                    <p className="text-xs text-white/50 mt-1">Ask about life, personal growth, emunah, parenting, or anything on your mind. Rabbi Eli replies personally.</p>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     {/* Message thread */}
@@ -2763,7 +2763,7 @@ export default function DashboardPage() {
                       {dmMessages.length === 0 ? (
                         <div className="text-center py-6">
                           <MessageSquare className="h-8 w-8 mx-auto mb-2 text-white/20" />
-                          <p className="text-sm text-white/40">No messages yet — say hello!</p>
+                          <p className="text-sm text-white/40">Ask your first question — Rabbi Eli is here to help!</p>
                         </div>
                       ) : (
                         dmMessages.map(msg => (
@@ -2797,7 +2797,7 @@ export default function DashboardPage() {
                         data-testid="input-dm-message"
                         value={dmText}
                         onChange={e => setDmText(e.target.value)}
-                        placeholder="Type your message to Rabbi Eli…"
+                        placeholder="Ask your question — about life, growth, emunah, parenting…"
                         className="min-h-[44px] max-h-28 resize-none bg-white/5 border-white/10 text-white placeholder:text-white/30 focus:border-[#EDE518]/50"
                         rows={1}
                         onKeyDown={e => {

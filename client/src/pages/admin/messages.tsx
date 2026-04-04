@@ -72,8 +72,8 @@ export default function AdminMessagesPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold">Member Messages</h1>
-        <p className="text-muted-foreground mt-1">One-on-one conversations with Plus members</p>
+        <h1 className="text-2xl font-bold">Ask the Rabbi — Member Questions</h1>
+        <p className="text-muted-foreground mt-1">Personal questions from Plus members about life, growth, emunah, and more</p>
       </div>
 
       <div className="flex gap-4 h-[600px]">
@@ -190,7 +190,7 @@ export default function AdminMessagesPage() {
                   data-testid="admin-reply-input"
                   value={replyText}
                   onChange={e => setReplyText(e.target.value)}
-                  placeholder="Type a reply as Rabbi Eli Scheller…"
+                  placeholder="Type your answer as Rabbi Eli Scheller…"
                   className="min-h-[44px] max-h-32 resize-none"
                   rows={1}
                   onKeyDown={e => {
