@@ -1667,6 +1667,167 @@ function AnnouncementBanner({ text, imageUrl }: { text: string; imageUrl?: strin
   );
 }
 
+const SLIDE_GRADIENTS = [
+  "linear-gradient(135deg, #0d1f40 0%, #08779C 60%, #0d1f40 100%)",
+  "linear-gradient(135deg, #1a0d00 0%, #c45c00 60%, #1a0d00 100%)",
+  "linear-gradient(135deg, #0d0d2b 0%, #6c3fc5 60%, #0d0d2b 100%)",
+  "linear-gradient(135deg, #001a12 0%, #0e7a4a 60%, #001a12 100%)",
+  "linear-gradient(135deg, #1a000d 0%, #b0194a 60%, #1a000d 100%)",
+];
+const SLIDE_ACCENTS = ["#08779C", "#e8800a", "#9b6ee0", "#11a867", "#e0245e"];
+
+type BannerItem = {
+  id: string;
+  title: string;
+  subtitle: string | null;
+  imageUrl: string | null;
+  videoId: string | null;
+  isActive: boolean;
+};
+
+function DashboardBannerSlideshow({ banners, videos }: { banners: BannerItem[]; videos: VideoType[] }) {
+  const [current, setCurrent] = useState(0);
+  const [openVideo, setOpenVideo] = useState<VideoType | null>(null);
+  const [isOpenVideo, setIsOpenVideo] = useState(false);
+  const totalSlides = banners.length;
+
+  const goTo = (idx: number) => setCurrent(((idx % totalSlides) + totalSlides) % totalSlides);
+  const prev = () => goTo(current - 1);
+  const next = () => goTo(current + 1);
+
+  useEffect(() => {
+    if (totalSlides <= 1) return;
+    const timer = setInterval(() => setCurrent(c => (c + 1) % totalSlides), 5500);
+    return () => clearInterval(timer);
+  }, [totalSlides]);
+
+  if (totalSlides === 0) return null;
+
+  const slide = banners[current];
+  const accent = SLIDE_ACCENTS[current % SLIDE_ACCENTS.length];
+  const bg = SLIDE_GRADIENTS[current % SLIDE_GRADIENTS.length];
+
+  const imageUrl = slide.imageUrl
+    ? slide.imageUrl.startsWith("/objects/")
+      ? `/api/banners/${slide.id}/image`
+      : slide.imageUrl
+    : null;
+
+  const handleClick = () => {
+    if (!slide.videoId) return;
+    const v = videos.find(v => v.id === slide.videoId);
+    if (v) { setOpenVideo(v); setIsOpenVideo(true); }
+  };
+
+  return (
+    <>
+      <div
+        className="relative overflow-hidden border-b border-white/10 select-none"
+        style={{ background: bg, minHeight: 120 }}
+        data-testid="banner-slideshow"
+      >
+        {/* Animated glow blobs */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute -top-8 -left-8 w-48 h-48 rounded-full opacity-30 blur-3xl" style={{ background: accent }} />
+          <div className="absolute -bottom-8 -right-8 w-48 h-48 rounded-full opacity-20 blur-3xl" style={{ background: accent }} />
+        </div>
+
+        {/* Background image overlay */}
+        {imageUrl && (
+          <div className="absolute inset-0">
+            <img src={imageUrl} alt="" className="w-full h-full object-cover opacity-30" />
+            <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0.1) 100%)" }} />
+          </div>
+        )}
+
+        {/* Content */}
+        <div
+          className={`relative flex items-center gap-4 px-4 sm:px-6 py-5 ${slide.videoId ? "cursor-pointer" : ""}`}
+          onClick={handleClick}
+        >
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1.5">
+              <span
+                className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.3em] px-2.5 py-0.5 rounded-full border animate-pulse"
+                style={{ background: `${accent}25`, color: accent, borderColor: `${accent}50` }}
+              >
+                <span>★</span> Update
+              </span>
+            </div>
+            <h2 className="text-lg sm:text-xl font-black text-white leading-tight line-clamp-1 drop-shadow-lg">{slide.title}</h2>
+            {slide.subtitle && (
+              <p className="text-sm text-white/70 mt-0.5 line-clamp-1">{slide.subtitle}</p>
+            )}
+          </div>
+
+          {/* Right side: image preview or icon */}
+          {imageUrl && (
+            <div className="hidden sm:block flex-shrink-0 w-20 h-14 rounded-xl overflow-hidden border-2 shadow-2xl" style={{ borderColor: `${accent}50` }}>
+              <img src={imageUrl} alt={slide.title} className="w-full h-full object-cover" />
+            </div>
+          )}
+
+          {/* Play button (if linked to video) */}
+          {slide.videoId && (
+            <div
+              className="flex-shrink-0 h-12 w-12 rounded-full flex items-center justify-center shadow-xl"
+              style={{ background: accent, boxShadow: `0 0 20px ${accent}60` }}
+            >
+              <Play className="h-5 w-5 text-black ml-0.5" fill="black" />
+            </div>
+          )}
+        </div>
+
+        {/* Prev/Next arrows (only if multiple slides) */}
+        {totalSlides > 1 && (
+          <>
+            <button
+              onClick={(e) => { e.stopPropagation(); prev(); }}
+              className="absolute left-2 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-black/40 hover:bg-black/70 flex items-center justify-center transition-colors"
+              data-testid="button-banner-prev"
+            >
+              <ChevronLeft className="h-4 w-4 text-white" />
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); next(); }}
+              className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-black/40 hover:bg-black/70 flex items-center justify-center transition-colors"
+              data-testid="button-banner-next"
+            >
+              <ChevronRight className="h-4 w-4 text-white" />
+            </button>
+          </>
+        )}
+
+        {/* Dot indicators */}
+        {totalSlides > 1 && (
+          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5" data-testid="banner-dots">
+            {banners.map((_, i) => (
+              <button
+                key={i}
+                onClick={(e) => { e.stopPropagation(); goTo(i); }}
+                className="rounded-full transition-all duration-300"
+                style={{
+                  width: i === current ? 20 : 6,
+                  height: 6,
+                  background: i === current ? accent : "rgba(255,255,255,0.3)",
+                }}
+                data-testid={`banner-dot-${i}`}
+              />
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Video dialog (when banner is clicked) */}
+      {openVideo && (
+        <Dialog open={isOpenVideo} onOpenChange={(o) => { setIsOpenVideo(o); if (!o) setOpenVideo(null); }}>
+          <VideoPlayer video={openVideo} onClose={() => { setIsOpenVideo(false); setOpenVideo(null); }} />
+        </Dialog>
+      )}
+    </>
+  );
+}
+
 export default function DashboardPage() {
   const { user, logout, refreshUser } = useAuth();
   const { toast } = useToast();
@@ -1705,6 +1866,11 @@ export default function DashboardPage() {
   const { data: announcement } = useQuery<{ text: string; isActive: boolean; imageUrl: string | null }>({
     queryKey: ["/api/announcement"],
     refetchInterval: 60_000,
+  });
+
+  const { data: banners = [] } = useQuery<BannerItem[]>({
+    queryKey: ["/api/banners"],
+    refetchInterval: 120_000,
   });
 
   // Record a session ping when the dashboard loads
@@ -2434,6 +2600,11 @@ export default function DashboardPage() {
         <AnnouncementBanner text={announcement.text} imageUrl={announcement.imageUrl} />
       )}
 
+      {/* Dashboard Banner Slideshow */}
+      {banners.length > 0 && (
+        <DashboardBannerSlideshow banners={banners} videos={videos || []} />
+      )}
+
       {/* Academy Hero Banner */}
       <div className="relative overflow-hidden border-b border-white/10" style={{background: "linear-gradient(135deg, #0d1f40 0%, #0a2850 40%, #061e3a 70%, #0d1f40 100%)"}}>
         {/* Decorative color blobs */}
@@ -2863,9 +3034,12 @@ export default function DashboardPage() {
                           );
 
                           // Spotlight: rotate daily; skip for list/portrait/square categories
+                          // Prefer videos with thumbnails so the spotlight always looks great
                           const canSpotlight = cardVariant !== "list" && cardVariant !== "portrait" && cardVariant !== "square" && videosSorted.length >= 4;
                           const dayIdx = Math.floor(Date.now() / 86400000);
-                          const spotlightVideo = canSpotlight ? videosSorted[dayIdx % videosSorted.length] : null;
+                          const videosWithThumbs = videosSorted.filter(v => v.thumbnailPath);
+                          const spotlightPool = videosWithThumbs.length >= 2 ? videosWithThumbs : videosSorted;
+                          const spotlightVideo = canSpotlight ? spotlightPool[dayIdx % spotlightPool.length] : null;
                           const gridVideos = spotlightVideo ? videosSorted.filter(v => v.id !== spotlightVideo.id) : videosSorted;
 
                           return (

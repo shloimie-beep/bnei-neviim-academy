@@ -1,5 +1,5 @@
 import { Link, useLocation, Redirect } from "wouter";
-import { Settings, LogOut, ShieldCheck, CreditCard, Video, FileText, Disc, Phone, Megaphone, MonitorPlay } from "lucide-react";
+import { Settings, LogOut, ShieldCheck, CreditCard, Video, FileText, Disc, Phone, Megaphone, MonitorPlay, MessageSquare, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -26,6 +26,8 @@ import AlbumManagement from "./albums";
 import RssFeedManagement from "./rss-feed";
 import AnnouncementManagement from "./announcement";
 import LiveMeetingManagement from "./live-meeting";
+import AdminCommentsPage from "./comments";
+import BannersManagement from "./banners";
 
 const adminRoutes = [
   { path: "/admin/videos", label: "Media", icon: Video },
@@ -33,6 +35,8 @@ const adminRoutes = [
   { path: "/admin/rss-feed", label: "Hotline", icon: Phone },
   { path: "/admin/live-meeting", label: "Live Meeting", icon: MonitorPlay },
   { path: "/admin/announcement", label: "Announcement", icon: Megaphone },
+  { path: "/admin/banners", label: "Banners", icon: Image },
+  { path: "/admin/comments", label: "Comments", icon: MessageSquare },
   { path: "/admin/whitelist", label: "Whitelist", icon: ShieldCheck },
   { path: "/admin/subscribers", label: "Subscribers", icon: CreditCard },
   { path: "/admin/documents", label: "Documents", icon: FileText },
@@ -129,6 +133,10 @@ export default function AdminLayout() {
         return <AnnouncementManagement />;
       case "/admin/documents":
         return <DocumentManagement />;
+      case "/admin/banners":
+        return <BannersManagement />;
+      case "/admin/comments":
+        return <AdminCommentsPage />;
       case "/admin/settings":
         return <AdminSettingsPage />;
       default:
