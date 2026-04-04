@@ -1142,7 +1142,7 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default" }: 
               </div>
             </div>
           </div>
-          {variant !== "square" && (
+          {variant !== "square" && variant !== "portrait" && (
             <CardContent className="p-3">
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold line-clamp-1 flex-1 text-white text-sm" data-testid={`text-video-title-${video.id}`}>
@@ -1166,9 +1166,9 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default" }: 
               )}
             </CardContent>
           )}
-          {variant === "square" && (
-            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-2">
-              <h3 className="font-semibold line-clamp-1 text-white text-xs" data-testid={`text-video-title-${video.id}`}>{video.title}</h3>
+          {(variant === "square" || variant === "portrait") && (
+            <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/95 via-black/60 to-transparent p-2 pt-6">
+              <h3 className="font-bold line-clamp-2 text-white text-xs leading-tight" data-testid={`text-video-title-${video.id}`}>{video.title}</h3>
             </div>
           )}
         </Card>
@@ -1654,14 +1654,15 @@ function AnnouncementBanner({ text, imageUrl }: { text: string; imageUrl?: strin
   );
 }
 
-const SLIDE_GRADIENTS = [
-  "linear-gradient(135deg, #0d1f40 0%, #08779C 60%, #0d1f40 100%)",
-  "linear-gradient(135deg, #1a0d00 0%, #c45c00 60%, #1a0d00 100%)",
-  "linear-gradient(135deg, #0d0d2b 0%, #6c3fc5 60%, #0d0d2b 100%)",
-  "linear-gradient(135deg, #001a12 0%, #0e7a4a 60%, #001a12 100%)",
-  "linear-gradient(135deg, #1a000d 0%, #b0194a 60%, #1a000d 100%)",
+const SLIDE_ACCENTS = ["#EDE518", "#08779C", "#e8800a", "#9b6ee0", "#e0245e", "#11a867"];
+const SLIDE_DARK_OVERLAYS = [
+  "linear-gradient(105deg, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.75) 45%, rgba(0,0,0,0.15) 100%)",
+  "linear-gradient(105deg, rgba(0,5,20,0.93) 0%, rgba(0,10,30,0.78) 45%, rgba(0,0,0,0.1) 100%)",
+  "linear-gradient(105deg, rgba(20,0,5,0.93) 0%, rgba(30,5,0,0.78) 45%, rgba(0,0,0,0.1) 100%)",
+  "linear-gradient(105deg, rgba(10,0,25,0.93) 0%, rgba(15,0,35,0.78) 45%, rgba(0,0,0,0.1) 100%)",
+  "linear-gradient(105deg, rgba(25,0,5,0.93) 0%, rgba(35,0,5,0.78) 45%, rgba(0,0,0,0.1) 100%)",
+  "linear-gradient(105deg, rgba(0,15,5,0.93) 0%, rgba(0,25,8,0.78) 45%, rgba(0,0,0,0.1) 100%)",
 ];
-const SLIDE_ACCENTS = ["#08779C", "#e8800a", "#9b6ee0", "#11a867", "#e0245e"];
 
 type BannerItem = {
   id: string;
@@ -1674,17 +1675,30 @@ type BannerItem = {
 
 function DashboardBannerSlideshow({ banners, videos }: { banners: BannerItem[]; videos: VideoType[] }) {
   const [current, setCurrent] = useState(0);
+  const [prev2, setPrev2] = useState<number | null>(null);
   const [openVideo, setOpenVideo] = useState<VideoType | null>(null);
   const [isOpenVideo, setIsOpenVideo] = useState(false);
   const totalSlides = banners.length;
 
-  const goTo = (idx: number) => setCurrent(((idx % totalSlides) + totalSlides) % totalSlides);
-  const prev = () => goTo(current - 1);
-  const next = () => goTo(current + 1);
+  const goTo = (idx: number) => {
+    const next = ((idx % totalSlides) + totalSlides) % totalSlides;
+    setPrev2(current);
+    setCurrent(next);
+    setTimeout(() => setPrev2(null), 500);
+  };
+  const prevSlide = () => goTo(current - 1);
+  const nextSlide = () => goTo(current + 1);
 
   useEffect(() => {
     if (totalSlides <= 1) return;
-    const timer = setInterval(() => setCurrent(c => (c + 1) % totalSlides), 5500);
+    const timer = setInterval(() => {
+      setPrev2(current);
+      setCurrent(c => {
+        const next = (c + 1) % totalSlides;
+        setTimeout(() => setPrev2(null), 500);
+        return next;
+      });
+    }, 6000);
     return () => clearInterval(timer);
   }, [totalSlides]);
 
@@ -1692,7 +1706,8 @@ function DashboardBannerSlideshow({ banners, videos }: { banners: BannerItem[]; 
 
   const slide = banners[current];
   const accent = SLIDE_ACCENTS[current % SLIDE_ACCENTS.length];
-  const bg = SLIDE_GRADIENTS[current % SLIDE_GRADIENTS.length];
+  const overlay = SLIDE_DARK_OVERLAYS[current % SLIDE_DARK_OVERLAYS.length];
+  const accentIsYellow = accent === "#EDE518";
 
   const imageUrl = slide.imageUrl
     ? slide.imageUrl.startsWith("/objects/")
@@ -1709,75 +1724,107 @@ function DashboardBannerSlideshow({ banners, videos }: { banners: BannerItem[]; 
   return (
     <>
       <div
-        className="relative overflow-hidden border-b border-white/10 select-none"
-        style={{ background: bg, minHeight: 120 }}
+        className="relative overflow-hidden select-none"
+        style={{ minHeight: 220, background: "#060e1a" }}
         data-testid="banner-slideshow"
       >
-        {/* Animated glow blobs */}
-        <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-8 -left-8 w-48 h-48 rounded-full opacity-30 blur-3xl" style={{ background: accent }} />
-          <div className="absolute -bottom-8 -right-8 w-48 h-48 rounded-full opacity-20 blur-3xl" style={{ background: accent }} />
-        </div>
-
-        {/* Background image overlay */}
+        {/* Full-bleed background image */}
         {imageUrl && (
-          <div className="absolute inset-0">
-            <img src={imageUrl} alt="" className="w-full h-full object-cover opacity-30" />
-            <div className="absolute inset-0" style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.3) 60%, rgba(0,0,0,0.1) 100%)" }} />
+          <div className="absolute inset-0 transition-opacity duration-500">
+            <img
+              src={imageUrl}
+              alt=""
+              className="w-full h-full object-cover"
+              style={{ filter: "brightness(0.55) saturate(1.2)" }}
+            />
           </div>
         )}
 
+        {/* Dark directional overlay — text side is always dark */}
+        <div className="absolute inset-0" style={{ background: overlay }} />
+
+        {/* Accent glow blob behind text */}
+        <div
+          className="absolute -left-16 top-1/2 -translate-y-1/2 w-72 h-72 rounded-full blur-3xl pointer-events-none"
+          style={{ background: accent, opacity: 0.12 }}
+        />
+
         {/* Content */}
         <div
-          className={`relative flex items-center gap-4 px-4 sm:px-6 py-5 ${slide.videoId ? "cursor-pointer" : ""}`}
+          className={`relative flex items-end gap-4 px-5 sm:px-8 pt-7 pb-9 ${slide.videoId ? "cursor-pointer" : ""}`}
+          style={{ minHeight: 220 }}
           onClick={handleClick}
         >
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1.5">
+            {/* Badge */}
+            <div className="flex items-center gap-2 mb-3">
               <span
-                className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.3em] px-2.5 py-0.5 rounded-full border animate-pulse"
-                style={{ background: `${accent}25`, color: accent, borderColor: `${accent}50` }}
+                className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] px-3 py-1 rounded-full"
+                style={{
+                  background: accent,
+                  color: accentIsYellow ? "#000" : "#fff",
+                  boxShadow: `0 0 16px ${accent}80`,
+                }}
               >
-                <span>★</span> Update
+                ✦ New Update
               </span>
             </div>
-            <h2 className="text-lg sm:text-xl font-black text-white leading-tight line-clamp-1 drop-shadow-lg">{slide.title}</h2>
+
+            {/* Title */}
+            <h2
+              className="text-2xl sm:text-3xl font-black text-white leading-tight line-clamp-2 drop-shadow-2xl mb-1.5"
+              style={{ textShadow: "0 2px 20px rgba(0,0,0,0.8)" }}
+            >
+              {slide.title}
+            </h2>
+
+            {/* Subtitle */}
             {slide.subtitle && (
-              <p className="text-sm text-white/70 mt-0.5 line-clamp-1">{slide.subtitle}</p>
+              <p className="text-sm sm:text-base text-white/75 line-clamp-1 mb-4 drop-shadow">
+                {slide.subtitle}
+              </p>
+            )}
+
+            {/* Watch Now CTA */}
+            {slide.videoId && (
+              <div
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-black shadow-xl transition-transform hover:scale-105"
+                style={{
+                  background: accent,
+                  color: accentIsYellow ? "#000" : "#fff",
+                  boxShadow: `0 4px 24px ${accent}60`,
+                }}
+              >
+                <Play className="h-4 w-4 fill-current" />
+                Watch Now
+              </div>
             )}
           </div>
 
-          {/* Right side: image preview or icon */}
+          {/* Right-side thumbnail (larger preview, visible on sm+) */}
           {imageUrl && (
-            <div className="hidden sm:block flex-shrink-0 w-20 h-14 rounded-xl overflow-hidden border-2 shadow-2xl" style={{ borderColor: `${accent}50` }}>
-              <img src={imageUrl} alt={slide.title} className="w-full h-full object-cover" />
-            </div>
-          )}
-
-          {/* Play button (if linked to video) */}
-          {slide.videoId && (
             <div
-              className="flex-shrink-0 h-12 w-12 rounded-full flex items-center justify-center shadow-xl"
-              style={{ background: accent, boxShadow: `0 0 20px ${accent}60` }}
+              className="hidden sm:block flex-shrink-0 w-28 h-20 md:w-40 md:h-28 rounded-2xl overflow-hidden border-2 shadow-2xl"
+              style={{ borderColor: `${accent}60`, boxShadow: `0 8px 32px rgba(0,0,0,0.6), 0 0 20px ${accent}30` }}
             >
-              <Play className="h-5 w-5 text-black ml-0.5" fill="black" />
+              <img src={imageUrl} alt={slide.title} className="w-full h-full object-cover" />
             </div>
           )}
         </div>
 
-        {/* Prev/Next arrows (only if multiple slides) */}
+        {/* Prev/Next arrows */}
         {totalSlides > 1 && (
           <>
             <button
-              onClick={(e) => { e.stopPropagation(); prev(); }}
-              className="absolute left-2 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-black/40 hover:bg-black/70 flex items-center justify-center transition-colors"
+              onClick={(e) => { e.stopPropagation(); prevSlide(); }}
+              className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-black/50 hover:bg-black/80 border border-white/10 flex items-center justify-center transition-all hover:scale-110 z-10"
               data-testid="button-banner-prev"
             >
               <ChevronLeft className="h-4 w-4 text-white" />
             </button>
             <button
-              onClick={(e) => { e.stopPropagation(); next(); }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 h-7 w-7 rounded-full bg-black/40 hover:bg-black/70 flex items-center justify-center transition-colors"
+              onClick={(e) => { e.stopPropagation(); nextSlide(); }}
+              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-black/50 hover:bg-black/80 border border-white/10 flex items-center justify-center transition-all hover:scale-110 z-10"
               data-testid="button-banner-next"
             >
               <ChevronRight className="h-4 w-4 text-white" />
@@ -1787,20 +1834,28 @@ function DashboardBannerSlideshow({ banners, videos }: { banners: BannerItem[]; 
 
         {/* Dot indicators */}
         {totalSlides > 1 && (
-          <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5" data-testid="banner-dots">
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10" data-testid="banner-dots">
             {banners.map((_, i) => (
               <button
                 key={i}
                 onClick={(e) => { e.stopPropagation(); goTo(i); }}
-                className="rounded-full transition-all duration-300"
+                className="rounded-full transition-all duration-400"
                 style={{
-                  width: i === current ? 20 : 6,
+                  width: i === current ? 24 : 6,
                   height: 6,
-                  background: i === current ? accent : "rgba(255,255,255,0.3)",
+                  background: i === current ? accent : "rgba(255,255,255,0.35)",
+                  boxShadow: i === current ? `0 0 8px ${accent}` : "none",
                 }}
                 data-testid={`banner-dot-${i}`}
               />
             ))}
+          </div>
+        )}
+
+        {/* Slide count badge (top right) */}
+        {totalSlides > 1 && (
+          <div className="absolute top-3 right-3 text-[10px] text-white/40 font-bold tabular-nums z-10">
+            {current + 1} / {totalSlides}
           </div>
         )}
       </div>
