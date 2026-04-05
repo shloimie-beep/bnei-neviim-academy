@@ -1,5 +1,5 @@
 import { sql, relations } from "drizzle-orm";
-import { pgTable, text, varchar, boolean, integer, serial, timestamp, jsonb, bigint, index } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, boolean, integer, serial, timestamp, jsonb, bigint, index, uniqueIndex } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -213,7 +213,7 @@ export const userVideoViews = pgTable("user_video_views", {
   userId: varchar("user_id").notNull().references(() => users.id),
   videoId: varchar("video_id").notNull().references(() => videos.id, { onDelete: "cascade" }),
   firstViewedAt: timestamp("first_viewed_at").defaultNow(),
-});
+}, (t) => [uniqueIndex("user_video_views_user_video_unique").on(t.userId, t.videoId)]);
 
 // Albums - collection of audio tracks
 export const albums = pgTable("albums", {

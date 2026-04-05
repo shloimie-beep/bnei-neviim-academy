@@ -3124,8 +3124,9 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Video is not hosted on Vimeo" });
       }
 
-      // Increment view count
-      await storage.incrementVideoViewCount(req.params.id);
+      // Increment view count (deduplicated per user)
+      const newVimeoView = await storage.markVideoAsViewed(userId, video.id);
+      if (newVimeoView) await storage.incrementVideoViewCount(video.id);
       
       // Get authenticated playback URL with proper hash for private videos
       const playback = await vimeoService.getAuthenticatedPlaybackUrl(video.vimeoVideoId);
@@ -5062,6 +5063,7 @@ export async function registerRoutes(
   });
 
   // Subscriber: Increment view count (for embed videos that don't call stream endpoint)
+  // Deduplicated per user — only counts once per user per video
   app.post("/api/videos/:id/view", requireAuth, async (req, res) => {
     try {
       const userId = getAuthUserId(req);
@@ -5072,7 +5074,11 @@ export async function registerRoutes(
       if (!video) {
         return res.status(404).json({ message: "Video not found" });
       }
-      await storage.incrementVideoViewCount(video.id);
+      // Only increment view_count the FIRST time this user watches this video
+      const newView = await storage.markVideoAsViewed(userId, video.id);
+      if (newView) {
+        await storage.incrementVideoViewCount(video.id);
+      }
       return res.json({ success: true });
     } catch (error) {
       console.error("Error incrementing view count:", error);
@@ -5120,7 +5126,8 @@ export async function registerRoutes(
 
       // If video is on Vimeo (only for video content, not audio)
       if (video.vimeoVideoId && video.mediaType === "video") {
-        await storage.incrementVideoViewCount(video.id);
+        const newStreamView = await storage.markVideoAsViewed(userId, video.id);
+        if (newStreamView) await storage.incrementVideoViewCount(video.id);
         
         // First, try to use stored embed URL with hash (most reliable for unlisted videos)
         if (video.vimeoEmbedUrl) {
@@ -5178,9 +5185,10 @@ export async function registerRoutes(
           const fileSize = parseInt(metadata.size as string, 10);
           const range = req.headers.range;
           
-          // Increment view count only on initial request
+          // Increment view count only on initial request (deduplicated per user)
           if (!range || range === "bytes=0-") {
-            await storage.incrementVideoViewCount(video.id);
+            const newObjView = await storage.markVideoAsViewed(userId, video.id);
+            if (newObjView) await storage.incrementVideoViewCount(video.id);
           }
 
           if (range) {
@@ -5239,9 +5247,10 @@ export async function registerRoutes(
         };
         const contentType = mimeTypes[ext] || (video.mediaType === "audio" ? "audio/mpeg" : "video/mp4");
 
-        // Increment view count only on initial request (not range requests from seeking)
+        // Increment view count only on initial request (deduplicated per user)
         if (!range || range === "bytes=0-") {
-          await storage.incrementVideoViewCount(video.id);
+          const newLocalView = await storage.markVideoAsViewed(userId, video.id);
+          if (newLocalView) await storage.incrementVideoViewCount(video.id);
         }
 
         if (range) {

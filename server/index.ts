@@ -111,6 +111,32 @@ async function runDataMigrations() {
        WHERE id = '5b8df136-6468-437c-96cf-b3320ad948c8'`
     );
 
+    // ── Schema: user_video_views unique constraint (deduplicate per user/video) ──
+    await pool.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM pg_indexes
+          WHERE tablename = 'user_video_views'
+          AND indexname = 'user_video_views_user_video_unique'
+        ) THEN
+          -- Remove duplicates first (keep earliest entry)
+          DELETE FROM user_video_views
+          WHERE id NOT IN (
+            SELECT MIN(id) FROM user_video_views GROUP BY user_id, video_id
+          );
+          -- Add unique constraint
+          ALTER TABLE user_video_views
+          ADD CONSTRAINT user_video_views_user_video_unique UNIQUE (user_id, video_id);
+          -- Reset view counts to match unique actual viewers
+          UPDATE videos v
+          SET view_count = (
+            SELECT COUNT(*) FROM user_video_views uvv WHERE uvv.video_id = v.id
+          );
+        END IF;
+      END $$
+    `);
+
     // ── Schema: direct_messages table ───────────────────────────────────────
     await pool.query(`
       CREATE TABLE IF NOT EXISTS direct_messages (
