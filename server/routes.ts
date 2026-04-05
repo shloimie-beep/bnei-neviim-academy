@@ -5767,6 +5767,82 @@ export async function registerRoutes(
     }
   });
 
+  // Analytics: daily/weekly active users and engagement stats
+  app.get("/api/admin/analytics", requireAdmin, async (req, res) => {
+    try {
+      const [
+        dailyActive,
+        weeklyActive,
+        monthlyActive,
+        topVideos,
+        topUsers,
+        activityByDay,
+      ] = await Promise.all([
+        // Unique users who watched something in the last 24 hours
+        pool.query(`
+          SELECT COUNT(DISTINCT uvv.user_id) as count
+          FROM user_video_views uvv
+          WHERE uvv.first_viewed_at > NOW() - INTERVAL '1 day'
+        `),
+        // Unique users who watched something in the last 7 days
+        pool.query(`
+          SELECT COUNT(DISTINCT uvv.user_id) as count
+          FROM user_video_views uvv
+          WHERE uvv.first_viewed_at > NOW() - INTERVAL '7 days'
+        `),
+        // Unique users who watched something in the last 30 days
+        pool.query(`
+          SELECT COUNT(DISTINCT uvv.user_id) as count
+          FROM user_video_views uvv
+          WHERE uvv.first_viewed_at > NOW() - INTERVAL '30 days'
+        `),
+        // Top 10 most-watched videos (unique viewers)
+        pool.query(`
+          SELECT v.title, COUNT(DISTINCT uvv.user_id) as unique_viewers
+          FROM videos v
+          JOIN user_video_views uvv ON uvv.video_id = v.id
+          WHERE uvv.first_viewed_at > NOW() - INTERVAL '30 days'
+          GROUP BY v.id, v.title
+          ORDER BY unique_viewers DESC
+          LIMIT 10
+        `),
+        // Most active users last 30 days (videos watched)
+        pool.query(`
+          SELECT u.email, u.family_name, COUNT(uvv.video_id) as videos_watched,
+                 MAX(uvv.first_viewed_at) as last_active
+          FROM users u
+          JOIN user_video_views uvv ON uvv.user_id = u.id
+          WHERE uvv.first_viewed_at > NOW() - INTERVAL '30 days'
+          GROUP BY u.id, u.email, u.family_name
+          ORDER BY videos_watched DESC
+          LIMIT 10
+        `),
+        // Daily unique active users for the last 14 days
+        pool.query(`
+          SELECT DATE(first_viewed_at) as day,
+                 COUNT(DISTINCT user_id) as unique_users,
+                 COUNT(*) as total_views
+          FROM user_video_views
+          WHERE first_viewed_at > NOW() - INTERVAL '14 days'
+          GROUP BY DATE(first_viewed_at)
+          ORDER BY day DESC
+        `),
+      ]);
+
+      res.json({
+        dailyActiveUsers: parseInt(dailyActive.rows[0].count),
+        weeklyActiveUsers: parseInt(weeklyActive.rows[0].count),
+        monthlyActiveUsers: parseInt(monthlyActive.rows[0].count),
+        topVideos: topVideos.rows,
+        topUsers: topUsers.rows,
+        activityByDay: activityByDay.rows,
+      });
+    } catch (error: any) {
+      console.error("Analytics error:", error);
+      res.status(500).json({ message: "Failed to get analytics" });
+    }
+  });
+
   // Monthly call stats
   app.get("/api/admin/call-stats", requireAdmin, async (req, res) => {
     try {

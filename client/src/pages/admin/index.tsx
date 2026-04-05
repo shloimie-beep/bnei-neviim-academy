@@ -1,5 +1,5 @@
 import { Link, useLocation, Redirect } from "wouter";
-import { Settings, LogOut, ShieldCheck, CreditCard, Video, FileText, Disc, Phone, Megaphone, MonitorPlay, MessageSquare, Image, Mail } from "lucide-react";
+import { Settings, LogOut, ShieldCheck, CreditCard, Video, FileText, Disc, Phone, Megaphone, MonitorPlay, MessageSquare, Image, Mail, BarChart2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
@@ -29,6 +29,7 @@ import LiveMeetingManagement from "./live-meeting";
 import AdminCommentsPage from "./comments";
 import BannersManagement from "./banners";
 import AdminMessagesPage from "./messages";
+import AdminAnalyticsPage from "./analytics";
 
 const adminRoutes = [
   { path: "/admin/videos", label: "Media", icon: Video },
@@ -41,6 +42,7 @@ const adminRoutes = [
   { path: "/admin/messages", label: "Messages", icon: Mail },
   { path: "/admin/whitelist", label: "Whitelist", icon: ShieldCheck },
   { path: "/admin/subscribers", label: "Subscribers", icon: CreditCard },
+  { path: "/admin/analytics", label: "Analytics", icon: BarChart2 },
   { path: "/admin/documents", label: "Documents", icon: FileText },
   { path: "/admin/settings", label: "Settings", icon: Settings },
 ];
@@ -141,6 +143,8 @@ export default function AdminLayout() {
         return <AdminCommentsPage />;
       case "/admin/messages":
         return <AdminMessagesPage />;
+      case "/admin/analytics":
+        return <AdminAnalyticsPage />;
       case "/admin/settings":
         return <AdminSettingsPage />;
       default:
