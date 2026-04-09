@@ -2909,9 +2909,8 @@ export default function DashboardPage() {
             {user?.role !== "admin" && (
               <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="outline" size="sm" data-testid="button-account-settings">
-                    <Settings className="h-4 w-4 mr-2" />
-                    Account Settings
+                  <Button variant="ghost" size="sm" className="relative" title="Settings" data-testid="button-account-settings">
+                    <Settings className="h-5 w-5 text-white/80" />
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-md overflow-y-auto max-h-[85vh]">
