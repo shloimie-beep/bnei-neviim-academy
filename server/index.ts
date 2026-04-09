@@ -204,7 +204,7 @@ async function runDataMigrations() {
         ],
         'Tzaddikim Stories': [
           'DEJE REBBE', "R' Chaim kaniefsky", 'Ishbitz',
-          "The Rebbe's Coffee", 'Ger Lutzk', 'Sar Hamazel',
+          'Ger Lutzk', 'Sar Hamazel',
         ],
         'Emunah Stories': [
           'Yearning', 'Searching for Happiness', 'Higher and Higher', 'Dreams',
@@ -259,6 +259,15 @@ async function runDataMigrations() {
         );
       }
     }
+
+    // "The Rebbe's Coffee" belongs in Films, not Tzaddikim Stories
+    await pool.query(
+      `UPDATE videos SET category_id = (
+         SELECT id FROM video_categories WHERE name = 'Films' AND parent_category_id IS NULL LIMIT 1
+       )
+       WHERE title = $1`,
+      ["The Rebbe's Coffee"]
+    );
 
     // ── Seed: banner slides from recent Stories videos (if banners table is empty) ──
     const bannerCount = await pool.query(`SELECT COUNT(*) FROM dashboard_banners`);
