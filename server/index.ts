@@ -438,14 +438,15 @@ async function runDataMigrations() {
         if (!customer || customer.deleted || !customer.email) return;
         const email = customer.email.toLowerCase().trim();
         const existingUser = await pool.query(`SELECT id FROM users WHERE email = $1 LIMIT 1`, [email]);
+        const customerName = customer.name || null;
         if (existingUser.rows.length === 0) {
           const subStatus = sub.status === 'trialing' ? 'trial' : 'active';
           const trialEnd = sub.trial_end ? new Date(sub.trial_end * 1000).toISOString() : null;
           await pool.query(
-            `INSERT INTO users (id, email, password, role, account_type, subscription_status, stripe_customer_id, stripe_subscription_id, trial_ends_at, has_used_trial, needs_password_reset, created_at)
-             VALUES (gen_random_uuid()::varchar, $1, $2, 'customer', 'standard', $3, $4, $5, $6, true, true, NOW())
+            `INSERT INTO users (id, email, password, family_name, role, account_type, subscription_status, stripe_customer_id, stripe_subscription_id, trial_ends_at, has_used_trial, needs_password_reset, created_at)
+             VALUES (gen_random_uuid()::varchar, $1, $2, $3, 'customer', 'standard', $4, $5, $6, $7, true, true, NOW())
              ON CONFLICT (email) DO NOTHING`,
-            [email, tempPasswordHash, subStatus, customer.id, sub.id, trialEnd]
+            [email, tempPasswordHash, customerName, subStatus, customer.id, sub.id, trialEnd]
           );
           return true;
         } else {
@@ -460,9 +461,10 @@ async function runDataMigrations() {
              stripe_customer_id = COALESCE(stripe_customer_id, $1),
              stripe_subscription_id = $2,
              subscription_status = $3,
-             trial_ends_at = CASE WHEN $4::text IS NOT NULL THEN $4::timestamp ELSE trial_ends_at END
+             trial_ends_at = CASE WHEN $4::text IS NOT NULL THEN $4::timestamp ELSE trial_ends_at END,
+             family_name = CASE WHEN family_name IS NULL AND $6::text IS NOT NULL THEN $6 ELSE family_name END
              WHERE email = $5`,
-            [customer.id, sub.id, subStatus, trialEnd, email]
+            [customer.id, sub.id, subStatus, trialEnd, email, customerName]
           );
           return false;
         }
@@ -499,15 +501,24 @@ async function runDataMigrations() {
         for (const customer of customers.data) {
           if (!customer.email || customer.deleted) continue;
           const email = customer.email.toLowerCase().trim();
+          const customerName = customer.name || null;
           const existingUser = await pool.query(`SELECT id FROM users WHERE email = $1 LIMIT 1`, [email]);
           if (existingUser.rows.length === 0) {
             await pool.query(
-              `INSERT INTO users (id, email, password, role, account_type, subscription_status, stripe_customer_id, has_used_trial, needs_password_reset, created_at)
-               VALUES (gen_random_uuid()::varchar, $1, $2, 'customer', 'standard', 'cancelled', $3, true, true, NOW())
+              `INSERT INTO users (id, email, password, family_name, role, account_type, subscription_status, stripe_customer_id, has_used_trial, needs_password_reset, created_at)
+               VALUES (gen_random_uuid()::varchar, $1, $2, $3, 'customer', 'standard', 'cancelled', $4, true, true, NOW())
                ON CONFLICT (email) DO NOTHING`,
-              [email, tempPasswordHash, customer.id]
+              [email, tempPasswordHash, customerName, customer.id]
             );
             recovered++;
+          } else {
+            // Fill in name if missing
+            if (customerName) {
+              await pool.query(
+                `UPDATE users SET family_name = $1 WHERE email = $2 AND family_name IS NULL`,
+                [customerName, email]
+              );
+            }
           }
         }
         custHasMore = customers.has_more;
