@@ -364,11 +364,10 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
       thumbnail_path: rv.thumbnail_path,
       categoryId: rv.category_id,
       category_id: rv.category_id,
-      vimeoEmbedUrl: null,
-      vimeo_embed_url: null,
+      vimeoEmbedUrl: rv.vimeo_embed_url || null,
+      vimeo_embed_url: rv.vimeo_embed_url || null,
       createdAt: rv.created_at,
     });
-    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   const watchNextVideos = relatedVideos.slice(0, 3);
@@ -484,6 +483,7 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
 }
 
 function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () => void }) {
+  const [currentVideo, setCurrentVideo] = useState<any>(video);
   const videoRef = useRef<HTMLVideoElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -501,12 +501,40 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
   const [streamError, setStreamError] = useState<string | null>(null);
   const [thumbnailCacheBust] = useState(() => Date.now());
 
+  // Related items for Listen/Watch Next
+  const { data: relatedItems = [] } = useQuery<any[]>({
+    queryKey: ["/api/videos", currentVideo.id, "related"],
+    queryFn: async () => {
+      const res = await fetch(`/api/videos/${currentVideo.id}/related`, { credentials: "include", headers: getAuthHeaders() });
+      return res.json();
+    },
+  });
+  const nextItems = relatedItems.slice(0, 3);
+  const isAudioMedia = currentVideo.mediaType === "audio" || currentVideo.media_type === "audio";
+
+  const playNext = (rv: any) => {
+    setCurrentVideo({
+      id: rv.id,
+      title: rv.title,
+      description: rv.description || null,
+      mediaType: rv.media_type || rv.mediaType || "audio",
+      media_type: rv.media_type || rv.mediaType || "audio",
+      thumbnailPath: rv.thumbnail_path,
+      thumbnail_path: rv.thumbnail_path,
+      categoryId: rv.category_id,
+      category_id: rv.category_id,
+    });
+    setIsPlaying(false);
+    setCurrentTime(0);
+    setDuration(0);
+  };
+
   useEffect(() => {
     setStreamUrl(null);
     setStreamLoading(true);
     setStreamError(null);
     
-    fetch(`/api/videos/${video.id}/stream?t=${Date.now()}`, {
+    fetch(`/api/videos/${currentVideo.id}/stream?t=${Date.now()}`, {
       cache: "no-store",
       credentials: "include",
       headers: getAuthHeaders(),
@@ -532,7 +560,7 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
         } else {
           const legacyToken = getStoredAuthToken();
           const legacyTokenParam = legacyToken ? `&token=${encodeURIComponent(legacyToken)}` : "";
-          setStreamUrl(`/api/videos/${video.id}/stream?t=${Date.now()}${legacyTokenParam}`);
+          setStreamUrl(`/api/videos/${currentVideo.id}/stream?t=${Date.now()}${legacyTokenParam}`);
           setStreamLoading(false);
         }
       })
@@ -540,7 +568,7 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
         setStreamError("Failed to load video");
         setStreamLoading(false);
       });
-  }, [video.id]);
+  }, [currentVideo.id]);
 
   const speedOptions = [0.5, 0.75, 1, 1.25, 1.5, 2];
 
@@ -632,7 +660,7 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
   const progress = duration > 0 ? (currentTime / duration) * 100 : 0;
   const bufferedProgress = duration > 0 ? (buffered / duration) * 100 : 0;
 
-  const isAudio = video.mediaType === "audio";
+  const isAudio = isAudioMedia;
 
   if (streamLoading) {
     return (
@@ -641,7 +669,7 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
           <Loader2 className="h-12 w-12 text-white animate-spin" />
         </div>
         <div className="p-4">
-          <h3 className="font-semibold text-lg">{video.title}</h3>
+          <h3 className="font-semibold text-lg">{currentVideo.title}</h3>
         </div>
       </DialogContent>
     );
@@ -654,7 +682,7 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
           <p className="text-white">{streamError || "Media not available"}</p>
         </div>
         <div className="p-4">
-          <h3 className="font-semibold text-lg">{video.title}</h3>
+          <h3 className="font-semibold text-lg">{currentVideo.title}</h3>
         </div>
       </DialogContent>
     );
@@ -670,6 +698,7 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
         {isAudio ? (
           <div className="w-full aspect-video flex items-center justify-center bg-black">
             <audio
+              key={currentVideo.id}
               ref={videoRef as React.RefObject<HTMLAudioElement>}
               src={streamUrl}
               autoPlay
@@ -679,12 +708,12 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
               onPause={() => setIsPlaying(false)}
               onTimeUpdate={handleTimeUpdate}
               onLoadedMetadata={handleLoadedMetadata}
-              data-testid={`audio-player-${video.id}`}
+              data-testid={`audio-player-${currentVideo.id}`}
             />
-            {video.thumbnailPath ? (
+            {currentVideo.thumbnailPath ? (
               <img 
-                src={`/api/videos/${video.id}/thumbnail?v=${thumbnailCacheBust}`}
-                alt={video.title}
+                src={`/api/videos/${currentVideo.id}/thumbnail?v=${thumbnailCacheBust}`}
+                alt={currentVideo.title}
                 className="max-h-[50%] max-w-[50%] object-contain rounded-lg"
                 onContextMenu={(e) => e.preventDefault()}
               />
@@ -708,7 +737,7 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
             onPause={() => setIsPlaying(false)}
             onTimeUpdate={handleTimeUpdate}
             onLoadedMetadata={handleLoadedMetadata}
-            data-testid={`video-player-${video.id}`}
+            data-testid={`video-player-${currentVideo.id}`}
           />
         )}
         
@@ -823,12 +852,71 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
         </div>
       </div>
       <div className="p-4">
-        <h3 className="font-semibold text-lg">{video.title}</h3>
-        {video.description && (
-          <p className="text-sm text-muted-foreground mt-1">{video.description}</p>
+        <h3 className="font-semibold text-lg">{currentVideo.title}</h3>
+        {currentVideo.description && (
+          <p className="text-sm text-muted-foreground mt-1">{currentVideo.description}</p>
         )}
       </div>
-      <CommentsSection videoId={video.id} />
+      <CommentsSection videoId={currentVideo.id} />
+
+      {/* Listen Next / Watch Next strip */}
+      {nextItems.length > 0 && (
+        <div className="bg-[#060e1a] border-t border-white/10">
+          <div className="px-4 pt-3 pb-2 flex items-center gap-2">
+            {isAudio ? (
+              <Music className="h-3.5 w-3.5 text-[#EDE518]" />
+            ) : (
+              <Play className="h-3.5 w-3.5 text-[#EDE518] fill-[#EDE518]" />
+            )}
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#EDE518]">
+              {isAudio ? "Listen Next" : "Watch Next"}
+            </span>
+          </div>
+          <div className="grid grid-cols-3 gap-2 px-3 pb-3">
+            {nextItems.map((rv: any) => (
+              <button
+                key={rv.id}
+                onClick={() => playNext(rv)}
+                className="group relative rounded-xl overflow-hidden text-left focus:outline-none focus:ring-2 focus:ring-[#EDE518]"
+                data-testid={`button-next-${rv.id}`}
+              >
+                <div className="relative aspect-video w-full overflow-hidden rounded-xl bg-[#0d1a35]">
+                  {rv.thumbnail_path ? (
+                    <img
+                      src={`/api/videos/${rv.id}/thumbnail`}
+                      alt={rv.title}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      {isAudio ? <Music className="h-6 w-6 text-white/20" /> : <Play className="h-6 w-6 text-white/20" />}
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors duration-200" />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div
+                      className="rounded-full p-2.5 transition-all duration-200 group-hover:scale-110"
+                      style={{ background: "rgba(237,229,24,0.15)", border: "1.5px solid rgba(237,229,24,0.4)" }}
+                    >
+                      {isAudio ? (
+                        <Music className="h-5 w-5 text-[#EDE518]" />
+                      ) : (
+                        <Play className="h-5 w-5 text-[#EDE518] fill-[#EDE518]" />
+                      )}
+                    </div>
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 px-2 py-2 bg-gradient-to-t from-black/90 via-black/60 to-transparent">
+                    <p className="text-white text-[11px] font-semibold leading-tight line-clamp-2">{rv.title}</p>
+                    <p className="text-[#EDE518] text-[10px] font-bold mt-0.5">
+                      {isAudio ? "Tap to listen" : "Tap to watch"}
+                    </p>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
     </DialogContent>
   );
 }
@@ -1930,20 +2018,6 @@ function DashboardBannerSlideshow({ banners, videos }: { banners: BannerItem[]; 
           onClick={handleClick}
         >
           <div className="flex-1 min-w-0">
-            {/* Badge */}
-            <div className="flex items-center gap-2 mb-3">
-              <span
-                className="inline-flex items-center gap-1.5 text-[10px] font-black uppercase tracking-[0.25em] px-3 py-1 rounded-full"
-                style={{
-                  background: accent,
-                  color: accentIsYellow ? "#000" : "#fff",
-                  boxShadow: `0 0 16px ${accent}80`,
-                }}
-              >
-                Watch Now
-              </span>
-            </div>
-
             {/* Title */}
             <h2
               className="text-2xl sm:text-3xl font-black text-white leading-tight line-clamp-2 drop-shadow-2xl mb-4"
@@ -1951,21 +2025,6 @@ function DashboardBannerSlideshow({ banners, videos }: { banners: BannerItem[]; 
             >
               {slide.title}
             </h2>
-
-            {/* Watch Now CTA */}
-            {slide.videoId && (
-              <div
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-black shadow-xl transition-transform hover:scale-105"
-                style={{
-                  background: accent,
-                  color: accentIsYellow ? "#000" : "#fff",
-                  boxShadow: `0 4px 24px ${accent}60`,
-                }}
-              >
-                <Play className="h-4 w-4 fill-current" />
-                Watch Now
-              </div>
-            )}
           </div>
 
           {/* Right-side thumbnail (larger preview, visible on sm+) */}
@@ -2863,44 +2922,6 @@ export default function DashboardPage() {
         </span>
       </div>
 
-      {/* Admin Preview Toggle — only visible to admins */}
-      {user?.role === "admin" && (
-        <div className="bg-amber-50 dark:bg-amber-950/40 border-b border-amber-200 dark:border-amber-800" data-testid="bar-admin-preview">
-          <div className="container mx-auto px-4 py-2 flex items-center gap-3">
-            <span className="text-xs font-semibold uppercase tracking-widest text-amber-700 dark:text-amber-400 shrink-0">
-              Admin Preview
-            </span>
-            <div className="flex items-center gap-1 rounded-full border border-amber-300 dark:border-amber-700 bg-white dark:bg-amber-900/30 p-0.5">
-              <button
-                onClick={() => setPreviewMode("standard")}
-                data-testid="button-preview-standard"
-                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors ${
-                  previewMode === "standard"
-                    ? "bg-amber-500 text-white shadow-sm"
-                    : "text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50"
-                }`}
-              >
-                Standard
-              </button>
-              <button
-                onClick={() => setPreviewMode("plus")}
-                data-testid="button-preview-plus"
-                className={`rounded-full px-3 py-1 text-xs font-medium transition-colors flex items-center gap-1 ${
-                  previewMode === "plus"
-                    ? "bg-amber-500 text-white shadow-sm"
-                    : "text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/50"
-                }`}
-              >
-                <Star className="h-3 w-3" />
-                Plus
-              </button>
-            </div>
-            <span className="text-xs text-amber-600 dark:text-amber-500">
-              Viewing as {previewMode === "plus" ? "Plus" : "Standard"} subscriber
-            </span>
-          </div>
-        </div>
-      )}
 
       {/* Announcement Banner */}
       {announcement?.isActive && (announcement.text?.trim() || announcement.imageUrl) && (

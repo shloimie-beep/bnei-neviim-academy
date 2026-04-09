@@ -8117,12 +8117,15 @@ export async function registerRoutes(
   app.get("/api/videos/:id/related", requireMobileOrSessionAuth, async (req, res) => {
     try {
       const rows = await db.execute(sql`
-        SELECT v.id, v.title, v.thumbnail_path, v.vimeo_video_id, v.bunny_video_id, v.category_id, v.created_at
+        SELECT v.id, v.title, v.thumbnail_path, v.vimeo_video_id, v.bunny_video_id,
+               v.category_id, v.created_at, v.vimeo_embed_url, v.media_type
         FROM videos v
-        WHERE v.category_id = (SELECT category_id FROM videos WHERE id = ${req.params.id})
-          AND v.id != ${req.params.id}
+        WHERE v.id != ${req.params.id}
           AND v.status = 'ready'
-        ORDER BY v.created_at DESC
+          AND v.media_type = (SELECT media_type FROM videos WHERE id = ${req.params.id})
+        ORDER BY
+          CASE WHEN v.category_id = (SELECT category_id FROM videos WHERE id = ${req.params.id}) THEN 0 ELSE 1 END,
+          v.created_at DESC
         LIMIT 8
       `);
       res.json((rows as any).rows);
