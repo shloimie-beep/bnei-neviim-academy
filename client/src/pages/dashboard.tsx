@@ -2177,7 +2177,11 @@ export default function DashboardPage() {
   const [defaultSpeed, setDefaultSpeedState] = useState<number>(() => parseFloat(localStorage.getItem("pref_defaultSpeed") || "1"));
   const [defaultCategory, setDefaultCategoryState] = useState<string>(() => localStorage.getItem("pref_defaultCategory") || "");
 
-  const setTextSize = (v: 'small'|'normal'|'large') => { setTextSizeState(v); localStorage.setItem("pref_textSize", v); };
+  const applyTextSize = (v: 'small'|'normal'|'large') => {
+    document.documentElement.style.fontSize = v === 'small' ? '13px' : v === 'large' ? '18px' : '16px';
+  };
+  useEffect(() => { applyTextSize(textSize); }, [textSize]);
+  const setTextSize = (v: 'small'|'normal'|'large') => { setTextSizeState(v); localStorage.setItem("pref_textSize", v); applyTextSize(v); };
   const setCardSize = (v: 'compact'|'normal'|'large') => { setCardSizeState(v); localStorage.setItem("pref_cardSize", v); };
   const setAutoplayNext = (v: boolean) => { setAutoplayNextState(v); localStorage.setItem("pref_autoplayNext", String(v)); };
   const setShowCardDescriptions = (v: boolean) => { setShowCardDescriptionsState(v); localStorage.setItem("pref_showCardDescriptions", String(v)); };
@@ -3502,7 +3506,7 @@ export default function DashboardPage() {
         <DashboardBannerSlideshow banners={banners} videos={videos || []} />
       )}
 
-      <main className="container mx-auto px-4 py-8" style={{ fontSize: textSize === 'small' ? '90%' : textSize === 'large' ? '115%' : '100%' }}>
+      <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto space-y-8">
 
           {hasActiveSubscription ? (
