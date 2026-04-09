@@ -1948,24 +1948,17 @@ function DashboardBannerSlideshow({ banners, videos }: { banners: BannerItem[]; 
                   boxShadow: `0 0 16px ${accent}80`,
                 }}
               >
-                ✦ New Update
+                Watch Now
               </span>
             </div>
 
             {/* Title */}
             <h2
-              className="text-2xl sm:text-3xl font-black text-white leading-tight line-clamp-2 drop-shadow-2xl mb-1.5"
+              className="text-2xl sm:text-3xl font-black text-white leading-tight line-clamp-2 drop-shadow-2xl mb-4"
               style={{ textShadow: "0 2px 20px rgba(0,0,0,0.8)" }}
             >
               {slide.title}
             </h2>
-
-            {/* Subtitle */}
-            {slide.subtitle && (
-              <p className="text-sm sm:text-base text-white/75 line-clamp-1 mb-4 drop-shadow">
-                {slide.subtitle}
-              </p>
-            )}
 
             {/* Watch Now CTA */}
             {slide.videoId && (
@@ -2862,9 +2855,9 @@ export default function DashboardPage() {
                 </DialogContent>
               </Dialog>
             )}
-            <Button variant="ghost" size="sm" onClick={handleLogout} data-testid="button-logout">
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-white/70 hover:text-red-400 hover:bg-red-500/10 border border-white/15" data-testid="button-logout">
               <LogOut className="h-4 w-4 mr-2" />
-              Logout
+              Log out
             </Button>
           </div>
         </div>
@@ -2926,30 +2919,6 @@ export default function DashboardPage() {
       {banners.length > 0 && (
         <DashboardBannerSlideshow banners={banners} videos={videos || []} />
       )}
-
-      {/* Academy Hero Banner */}
-      <div className="relative overflow-hidden border-b border-white/10" style={{background: "linear-gradient(135deg, #0d1f40 0%, #0a2850 40%, #061e3a 70%, #0d1f40 100%)"}}>
-        {/* Decorative color blobs */}
-        <div className="absolute top-0 left-0 w-64 h-full opacity-20" style={{background: "radial-gradient(ellipse at left center, #EDE518 0%, transparent 70%)"}} />
-        <div className="absolute top-0 right-0 w-64 h-full opacity-20" style={{background: "radial-gradient(ellipse at right center, #08779C 0%, transparent 70%)"}} />
-        {/* Bottom accent stripe */}
-        <div className="absolute bottom-0 left-0 right-0 h-0.5" style={{background: "linear-gradient(90deg, transparent 0%, #EDE518 30%, #08779C 70%, transparent 100%)"}} />
-        <div className="relative container mx-auto px-4 py-8 flex items-center justify-between gap-4">
-          <div>
-            <p className="text-[#EDE518] text-xs font-black uppercase tracking-[0.25em] mb-2">✦ Members Area</p>
-            <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">OneTime <span style={{color: "#EDE518"}}>Academy</span></h1>
-            <p className="text-slate-300 text-sm mt-1">Your exclusive Torah content library</p>
-          </div>
-          <div className="hidden sm:flex flex-col items-end gap-2">
-            <span className="flex items-center gap-2 text-sm font-medium text-white bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
-              <span className="w-2 h-2 rounded-full bg-[#EDE518] inline-block shadow-[0_0_6px_#EDE518]" />Videos & Films
-            </span>
-            <span className="flex items-center gap-2 text-sm font-medium text-white bg-white/5 border border-white/10 px-3 py-1.5 rounded-full">
-              <span className="w-2 h-2 rounded-full bg-[#08779C] inline-block shadow-[0_0_6px_#08779C]" />Audio & Albums
-            </span>
-          </div>
-        </div>
-      </div>
 
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto space-y-8">
