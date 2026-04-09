@@ -5,9 +5,12 @@ import { serveStatic } from "./static";
 import { createServer } from "http";
 import { runMigrations } from 'stripe-replit-sync';
 import { getStripeSync, getUncachableStripeClient } from "./stripeClient";
+import { getUncachableResendClient } from "./resendClient";
+import { FROM_EMAIL, getPasswordResetEmail } from "./emailTemplates";
 import { WebhookHandlers } from "./webhookHandlers";
 import { pool } from "./db";
 import bcrypt from "bcryptjs";
+import crypto from "crypto";
 
 const app = express();
 const httpServer = createServer(app);
@@ -419,87 +422,109 @@ async function runDataMigrations() {
       log('Admin user created in production DB', 'migration');
     }
 
+    // ── Schema: needs_password_reset column ─────────────────────────────────
+    await pool.query(`
+      ALTER TABLE users ADD COLUMN IF NOT EXISTS needs_password_reset BOOLEAN DEFAULT false
+    `);
+
     // ── Stripe subscriber recovery — recreate missing user accounts ──────────
     try {
       const stripe = await getUncachableStripeClient();
       const tempPasswordHash = await bcrypt.hash('Welcome1!', 10);
+      const baseUrl = process.env.PUBLIC_APP_URL || 'https://onetimeonetime.com';
 
-      // Paginate through all active + trialing subscriptions
-      let hasMore = true;
-      let startingAfter: string | undefined;
-      let recovered = 0;
-
-      while (hasMore) {
-        const subs: any = await stripe.subscriptions.list({
-          status: 'active',
-          limit: 100,
-          expand: ['data.customer'],
-          ...(startingAfter ? { starting_after: startingAfter } : {}),
-        });
-
-        for (const sub of subs.data) {
-          const customer = sub.customer as any;
-          if (!customer || customer.deleted || !customer.email) continue;
-
-          const email = customer.email.toLowerCase().trim();
-          const existingUser = await pool.query(
-            `SELECT id FROM users WHERE email = $1 LIMIT 1`, [email]
-          );
-
-          if (existingUser.rows.length === 0) {
-            // Create account and link Stripe IDs
-            const subStatus = sub.status === 'trialing' ? 'trial' : 'active';
-            const trialEnd = sub.trial_end ? new Date(sub.trial_end * 1000).toISOString() : null;
-            await pool.query(
-              `INSERT INTO users (id, email, password, role, account_type, subscription_status, stripe_customer_id, stripe_subscription_id, trial_ends_at, has_used_trial, created_at)
-               VALUES (gen_random_uuid()::varchar, $1, $2, 'customer', 'standard', $3, $4, $5, $6, true, NOW())
-               ON CONFLICT (email) DO NOTHING`,
-              [email, tempPasswordHash, subStatus, customer.id, sub.id, trialEnd]
-            );
-            recovered++;
-          } else {
-            // Update Stripe IDs on existing account if missing
-            await pool.query(
-              `UPDATE users SET stripe_customer_id = COALESCE(stripe_customer_id, $1),
-               stripe_subscription_id = COALESCE(stripe_subscription_id, $2),
-               subscription_status = CASE WHEN subscription_status = 'none' THEN $3 ELSE subscription_status END
-               WHERE email = $4`,
-              [customer.id, sub.id, sub.status === 'trialing' ? 'trial' : 'active', email]
-            );
-          }
-        }
-
-        hasMore = subs.has_more;
-        if (hasMore && subs.data.length > 0) {
-          startingAfter = subs.data[subs.data.length - 1].id;
-        }
-      }
-
-      // Also check trialing subscriptions
-      const trialing: any = await stripe.subscriptions.list({
-        status: 'trialing',
-        limit: 100,
-        expand: ['data.customer'],
-      });
-      for (const sub of trialing.data) {
+      const processSubscription = async (sub: any) => {
         const customer = sub.customer as any;
-        if (!customer || customer.deleted || !customer.email) continue;
+        if (!customer || customer.deleted || !customer.email) return;
         const email = customer.email.toLowerCase().trim();
         const existingUser = await pool.query(`SELECT id FROM users WHERE email = $1 LIMIT 1`, [email]);
         if (existingUser.rows.length === 0) {
+          const subStatus = sub.status === 'trialing' ? 'trial' : 'active';
           const trialEnd = sub.trial_end ? new Date(sub.trial_end * 1000).toISOString() : null;
           await pool.query(
-            `INSERT INTO users (id, email, password, role, account_type, subscription_status, stripe_customer_id, stripe_subscription_id, trial_ends_at, has_used_trial, created_at)
-             VALUES (gen_random_uuid()::varchar, $1, $2, 'customer', 'standard', 'trial', $3, $4, $5, true, NOW())
+            `INSERT INTO users (id, email, password, role, account_type, subscription_status, stripe_customer_id, stripe_subscription_id, trial_ends_at, has_used_trial, needs_password_reset, created_at)
+             VALUES (gen_random_uuid()::varchar, $1, $2, 'customer', 'standard', $3, $4, $5, $6, true, true, NOW())
              ON CONFLICT (email) DO NOTHING`,
-            [email, tempPasswordHash, customer.id, sub.id, trialEnd]
+            [email, tempPasswordHash, subStatus, customer.id, sub.id, trialEnd]
           );
-          recovered++;
+          return true;
+        } else {
+          await pool.query(
+            `UPDATE users SET stripe_customer_id = COALESCE(stripe_customer_id, $1),
+             stripe_subscription_id = COALESCE(stripe_subscription_id, $2),
+             subscription_status = CASE WHEN subscription_status = 'none' THEN $3 ELSE subscription_status END
+             WHERE email = $4`,
+            [customer.id, sub.id, sub.status === 'trialing' ? 'trial' : 'active', email]
+          );
+          return false;
         }
+      };
+
+      // Active subscriptions
+      let hasMore = true;
+      let startingAfter: string | undefined;
+      let recovered = 0;
+      while (hasMore) {
+        const subs: any = await stripe.subscriptions.list({
+          status: 'active', limit: 100, expand: ['data.customer'],
+          ...(startingAfter ? { starting_after: startingAfter } : {}),
+        });
+        for (const sub of subs.data) {
+          if (await processSubscription(sub)) recovered++;
+        }
+        hasMore = subs.has_more;
+        if (hasMore && subs.data.length > 0) startingAfter = subs.data[subs.data.length - 1].id;
+      }
+
+      // Trialing subscriptions
+      const trialing: any = await stripe.subscriptions.list({ status: 'trialing', limit: 100, expand: ['data.customer'] });
+      for (const sub of trialing.data) {
+        if (await processSubscription(sub)) recovered++;
       }
 
       if (recovered > 0) {
         log(`Stripe recovery: recreated ${recovered} subscriber account(s)`, 'migration');
+      }
+
+      // ── Mark accounts from previous recovery run (first deployment) ─────────
+      // These were created on April 9 2026 when accounts were lost; mark them too
+      await pool.query(`
+        UPDATE users SET needs_password_reset = true
+        WHERE role = 'customer'
+          AND stripe_customer_id IS NOT NULL
+          AND needs_password_reset = false
+          AND created_at >= '2026-04-09 12:00:00'
+      `);
+
+      // ── Send password reset emails to all accounts that need it ────────────
+      const needsReset = await pool.query(
+        `SELECT id, email FROM users WHERE needs_password_reset = true AND role = 'customer'`
+      );
+      if (needsReset.rows.length > 0) {
+        try {
+          const { client: emailClient } = await getUncachableResendClient();
+          let emailsSent = 0;
+          for (const row of needsReset.rows) {
+            try {
+              const token = crypto.randomBytes(32).toString('hex');
+              const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+              await pool.query(
+                `INSERT INTO password_reset_tokens (id, token, user_id, expires_at) VALUES (gen_random_uuid()::varchar, $1, $2, $3) ON CONFLICT DO NOTHING`,
+                [token, row.id, expiresAt.toISOString()]
+              );
+              const resetLink = `${baseUrl}/reset-password?token=${token}`;
+              await emailClient.emails.send({
+                from: FROM_EMAIL,
+                to: row.email,
+                subject: 'Set Your Password - OneTimeOneTime',
+                html: getPasswordResetEmail(resetLink),
+              });
+              await pool.query(`UPDATE users SET needs_password_reset = false WHERE id = $1`, [row.id]);
+              emailsSent++;
+            } catch (_) {}
+          }
+          if (emailsSent > 0) log(`Sent password reset emails to ${emailsSent} subscriber(s)`, 'migration');
+        } catch (_) {}
       }
     } catch (stripeErr: any) {
       log(`Stripe recovery skipped: ${stripeErr.message}`, 'migration');

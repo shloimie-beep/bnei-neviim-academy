@@ -640,7 +640,22 @@ export async function registerRoutes(
       const valid = await bcrypt.compare(password, user.password);
       if (!valid) {
         console.log("Login failed: invalid password for email:", email);
-        return res.status(401).json({ message: "Invalid email or password" });
+        // Auto-send a password reset email so the subscriber can regain access
+        try {
+          const token = crypto.randomBytes(32).toString("hex");
+          const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+          await storage.createPasswordResetToken({ id: crypto.randomUUID(), token, userId: user.id, expiresAt });
+          const baseUrl = process.env.PUBLIC_APP_URL || 'https://onetimeonetime.com';
+          const resetLink = `${baseUrl}/reset-password?token=${token}`;
+          const { client } = await getUncachableResendClient();
+          await client.emails.send({
+            from: FROM_EMAIL,
+            to: user.email,
+            subject: "Reset Your Password - OneTimeOneTime",
+            html: getPasswordResetEmail(resetLink),
+          });
+        } catch (_) {}
+        return res.status(401).json({ message: "Wrong password — we've emailed you a reset link. Please check your inbox.", resetSent: true });
       }
 
       req.session.userId = user.id;

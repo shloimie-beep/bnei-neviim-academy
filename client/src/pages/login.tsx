@@ -41,11 +41,19 @@ export default function LoginPage() {
         setLocation("/dashboard");
       }
     } catch (error: any) {
-      toast({
-        title: "Login failed",
-        description: error.message || "Please check your credentials and try again.",
-        variant: "destructive",
-      });
+      const msg: string = error.message || "";
+      if (msg.includes("emailed you a reset link") || msg.includes("resetSent")) {
+        toast({
+          title: "Check your email",
+          description: "We sent a password reset link to your inbox. Click it to set a new password and log in.",
+        });
+      } else {
+        toast({
+          title: "Login failed",
+          description: msg || "Please check your credentials and try again.",
+          variant: "destructive",
+        });
+      }
     } finally {
       setIsLoading(false);
     }
