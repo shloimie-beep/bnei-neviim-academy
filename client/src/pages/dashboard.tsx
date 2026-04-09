@@ -1674,7 +1674,8 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const handleCardMouseEnter = () => {
     if (isLocked || isAudio) return;
-    hoverTimerRef.current = setTimeout(() => setShowPreview(true), 600);
+    console.log('[HoverPreview] mouseenter', video.id, 'embedBase:', (video as any).vimeoEmbedUrl || (video as any).vimeo_embed_url);
+    hoverTimerRef.current = setTimeout(() => { console.log('[HoverPreview] timer fired', video.id); setShowPreview(true); }, 600);
   };
   const handleCardMouseLeave = () => {
     clearTimeout(hoverTimerRef.current);
@@ -1846,15 +1847,10 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
               <FileVideo className="h-12 w-12 text-[#08779C]" />
             )}
             {/* Hover video preview — inside thumbnail container to avoid stacking context conflicts */}
-            {showPreview && hoverEmbedUrl && !isLocked && (
-              <iframe
-                src={hoverEmbedUrl}
-                className="absolute inset-0 w-full h-full z-10"
-                allow="autoplay; fullscreen"
-                frameBorder="0"
-                title={`Preview: ${video.title}`}
-                style={{ pointerEvents: 'none', display: 'block' }}
-              />
+            {showPreview && !isLocked && (
+              <div className="absolute inset-0 z-10 bg-red-500 flex items-center justify-center" style={{ pointerEvents: 'none' }}>
+                <span className="text-white font-bold text-sm">PREVIEW</span>
+              </div>
             )}
             {isNew && (
               <div className="absolute top-2 right-2 z-20">
