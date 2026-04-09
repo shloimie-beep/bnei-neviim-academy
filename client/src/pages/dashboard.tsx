@@ -1628,7 +1628,7 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
   useEffect(() => {
     if (autoOpen) { setIsOpen(true); onAutoOpenConsumed?.(); }
   }, [autoOpen]);
-  const isAudio = video.mediaType === "audio";
+  const isAudio = video.mediaType === "audio" || (video as any).media_type === "audio";
   const { toast } = useToast();
 
   const { data: userFavorites = [] } = useQuery<string[]>({
@@ -1804,19 +1804,6 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
       onMouseEnter={handleCardMouseEnter}
       onMouseLeave={handleCardMouseLeave}
     >
-      {/* Hover video preview — muted autoplay Vimeo embed, outside Dialog so Radix doesn't interfere */}
-      {showPreview && hoverEmbedUrl && !isLocked && (
-        <div className="absolute inset-0 z-20 overflow-hidden rounded-lg" style={{ pointerEvents: 'none' }}>
-          <iframe
-            src={hoverEmbedUrl}
-            className="w-full h-full"
-            allow="autoplay; fullscreen"
-            frameBorder="0"
-            title={`Preview: ${video.title}`}
-            style={{ pointerEvents: 'none', display: 'block' }}
-          />
-        </div>
-      )}
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Card
@@ -1858,14 +1845,25 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
             ) : (
               <FileVideo className="h-12 w-12 text-[#08779C]" />
             )}
+            {/* Hover video preview — inside thumbnail container to avoid stacking context conflicts */}
+            {showPreview && hoverEmbedUrl && !isLocked && (
+              <iframe
+                src={hoverEmbedUrl}
+                className="absolute inset-0 w-full h-full z-10"
+                allow="autoplay; fullscreen"
+                frameBorder="0"
+                title={`Preview: ${video.title}`}
+                style={{ pointerEvents: 'none', display: 'block' }}
+              />
+            )}
             {isNew && (
-              <div className="absolute top-2 right-2">
+              <div className="absolute top-2 right-2 z-20">
                 <Badge className="text-xs bg-[#EDE518] text-black font-bold" data-testid={`badge-new-${video.id}`}>New</Badge>
               </div>
             )}
             {!isNew && (
               <button
-                className={`absolute top-2 right-2 z-10 p-1.5 rounded-full transition-all ${isFavorited ? "bg-black/70 opacity-100" : "bg-black/50 opacity-0 group-hover:opacity-100"}`}
+                className={`absolute top-2 right-2 z-20 p-1.5 rounded-full transition-all ${isFavorited ? "bg-black/70 opacity-100" : "bg-black/50 opacity-0 group-hover:opacity-100"}`}
                 onClick={e => { e.stopPropagation(); favoriteMutation.mutate(); }}
                 data-testid={`button-card-favorite-${video.id}`}
               >
@@ -1873,19 +1871,19 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
               </button>
             )}
             {durationText && (
-              <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded font-medium" data-testid={`duration-${video.id}`}>
+              <div className="absolute bottom-2 right-2 z-20 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded font-medium" data-testid={`duration-${video.id}`}>
                 {durationText}
               </div>
             )}
             {isLocked ? (
-              <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center gap-1.5">
+              <div className="absolute inset-0 z-20 bg-black/70 flex flex-col items-center justify-center gap-1.5">
                 <div className="h-12 w-12 rounded-full bg-[#EDE518]/10 border border-[#EDE518]/40 flex items-center justify-center">
                   <Lock className="h-5 w-5 text-[#EDE518]" />
                 </div>
                 <span className="text-[10px] font-bold text-[#EDE518]/80 uppercase tracking-widest">Time limit reached</span>
               </div>
             ) : (
-              <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="absolute inset-0 z-20 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                 <div className="h-14 w-14 rounded-full bg-[#EDE518] flex items-center justify-center shadow-[0_0_20px_rgba(237,229,24,0.5)]">
                   <Play className="h-6 w-6 text-black ml-1" />
                 </div>
