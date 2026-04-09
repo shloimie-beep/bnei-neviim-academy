@@ -2906,8 +2906,7 @@ export default function DashboardPage() {
                 </Button>
               </Link>
             )}
-            {user?.role !== "admin" && (
-              <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
+            <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
                 <DialogTrigger asChild>
                   <Button variant="ghost" size="sm" className="relative" title="Settings" data-testid="button-account-settings">
                     <Settings className="h-5 w-5 text-white/80" />
@@ -3245,7 +3244,6 @@ export default function DashboardPage() {
                   </div>
                 </DialogContent>
               </Dialog>
-            )}
             <Button variant="ghost" size="sm" onClick={handleLogout} className="text-white/70 hover:text-red-400 hover:bg-red-500/10 border border-white/15" data-testid="button-logout">
               <LogOut className="h-4 w-4 mr-2" />
               Log out
