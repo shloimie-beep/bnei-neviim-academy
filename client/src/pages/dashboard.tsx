@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay, MessageSquare, Send, Heart, ThumbsUp, Bell, BellDot, History, Shield, ShieldCheck, ShieldAlert, TimerReset, User, Shuffle, X, Smile, Sparkles, ArrowRight, Search, Download, WifiOff, Trash, CheckCheck } from "lucide-react";
+import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay, MessageSquare, Send, Heart, ThumbsUp, Bell, BellDot, History, Shield, ShieldCheck, ShieldAlert, TimerReset, User, Shuffle, X, Smile, Sparkles, ArrowRight, Search, CheckCheck, BookmarkPlus, BookmarkCheck, WifiOff } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
@@ -20,7 +20,6 @@ import { DocumentViewer } from "@/components/document-viewer";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useState, useRef, useMemo, useEffect, createContext, useContext } from "react";
 import type { PhoneNumber, Video as VideoType, VideoCategory, Document, Album, AlbumTrack } from "@shared/schema";
-import { useOfflineAudio, type OfflineMeta } from "@/hooks/use-offline-audio";
 
 const countryCodes = [
   { code: "+1", country: "USA/Canada" },
@@ -735,26 +734,12 @@ function LegacyVideoPlayer({ video, onClose, onMinimize }: { video: VideoType; o
     setDuration(0);
   };
 
-  const offlineCtxLVP = useContext(OfflineAudioContext);
-
   useEffect(() => {
     setStreamUrl(null);
     setStreamLoading(true);
     setStreamError(null);
 
     const loadStream = async () => {
-      // Check IndexedDB offline cache first for audio items
-      if (isAudioMedia) {
-        try {
-          const offlineUrl = await offlineCtxLVP.getOfflineUrl(currentVideo.id);
-          if (offlineUrl) {
-            setStreamUrl(offlineUrl);
-            setStreamLoading(false);
-            return;
-          }
-        } catch {}
-      }
-
       fetch(`/api/videos/${currentVideo.id}/stream?t=${Date.now()}`, {
         cache: "no-store",
         credentials: "include",
@@ -1627,24 +1612,6 @@ const ParentalControlsContext = createContext<ParentalControlsCtx>({
   timePeriod: 'day',
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Offline Audio Context — shared with VideoCard and LegacyVideoPlayer
-type OfflineAudioCtx = {
-  isDownloaded: (id: string) => boolean;
-  downloading: Record<string, number>;
-  downloadAudio: (id: string, meta: Omit<OfflineMeta, "downloadedAt" | "size">) => Promise<void>;
-  getOfflineUrl: (id: string) => Promise<string | null>;
-  removeDownload: (id: string) => Promise<void>;
-  isOnline: boolean;
-};
-const OfflineAudioContext = createContext<OfflineAudioCtx>({
-  isDownloaded: () => false,
-  downloading: {},
-  downloadAudio: async () => {},
-  getOfflineUrl: async () => null,
-  removeDownload: async () => {},
-  isOnline: true,
-});
 
 function VideoCard({ video, isNew, onView, categoryName, variant = "default", autoOpen, onAutoOpenConsumed }: { video: VideoType; isNew?: boolean; onView?: () => void; categoryName?: string; variant?: CardVariant; autoOpen?: boolean; onAutoOpenConsumed?: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -1691,32 +1658,6 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
   const parental = useContext(ParentalControlsContext);
   const isLocked = parental.isVideoBlocked(video.categoryId);
   const progressMap = useContext(VideoProgressContext);
-  const offlineCtx = useContext(OfflineAudioContext);
-  const dlProgress = isAudio ? offlineCtx.downloading[video.id] : undefined;
-  const dlDone = isAudio ? offlineCtx.isDownloaded(video.id) : false;
-
-  const handleDownload = async (e: React.MouseEvent) => {
-    e.stopPropagation();
-    if (dlDone) {
-      await offlineCtx.removeDownload(video.id);
-      toast({ title: "Removed from downloads", description: `"${video.title}" deleted from your device.` });
-      return;
-    }
-    toast({ title: "⬇️ Downloading…", description: `Saving "${video.title}" — this may take a moment for large files.` });
-    try {
-      await offlineCtx.downloadAudio(video.id, {
-        id: video.id,
-        title: video.title,
-        categoryName,
-        duration: video.duration,
-        thumbnailPath: video.thumbnailPath,
-        mediaType: "audio",
-      });
-      toast({ title: "✅ Download complete!", description: `"${video.title}" is saved. Find it in Downloaded Stories.` });
-    } catch (err: any) {
-      toast({ title: "Download failed", description: err?.message ?? "Please try again.", variant: "destructive" });
-    }
-  };
 
   // Hover preview handled via CSS group-hover (instant, no iframe needed)
   const progressPct = progressMap.get(video.id) ?? 0;
@@ -1935,23 +1876,16 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
                 {isAudio ? (
                   <>
                     <button
-                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider transition-all active:scale-95 ${dlDone ? "bg-[#08779C] text-white" : "bg-white/10 text-white/70 hover:bg-white/15"}`}
-                      onClick={handleDownload}
-                      title={dlDone ? "Tap to remove download" : dlProgress !== undefined ? `Downloading…` : "Save for offline"}
-                      data-testid={`button-card-download-${video.id}`}
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider transition-all active:scale-95 ${isFavorited ? "bg-[#08779C] text-white" : "bg-white/10 text-white/70 hover:bg-white/15"}`}
+                      onClick={e => { e.stopPropagation(); favoriteMutation.mutate(); }}
+                      data-testid={`button-card-save-${video.id}`}
                     >
-                      {dlProgress !== undefined && !dlDone ? (
-                        <Loader2 className="h-3 w-3 animate-spin text-[#EDE518]" />
-                      ) : dlDone ? (
+                      {isFavorited ? (
                         <CheckCheck className="h-3 w-3" />
                       ) : (
-                        <Download className="h-3 w-3" />
+                        <BookmarkPlus className="h-3 w-3" />
                       )}
-                      {dlProgress !== undefined && !dlDone
-                        ? `${dlProgress >= 0 ? dlProgress + "%" : "…"}`
-                        : dlDone
-                        ? "Saved"
-                        : "Save offline"}
+                      {isFavorited ? "Saved" : "Save story"}
                     </button>
                     <span className="text-[10px] text-slate-500 ml-auto">tap to play →</span>
                   </>
@@ -2516,8 +2450,8 @@ const FEATURE_PROMO_CARDS = [
   {
     id: "feat-offline",
     badge: "⬇️ New Feature",
-    title: "Download Stories",
-    subtitle: "See the download icon on any audio story card — tap it to save for offline listening!",
+    title: "Save Stories",
+    subtitle: "Tap \"Save story\" on any audio card to add it to your personal Saved Stories section!",
     emoji: "⬇️",
     bg: "linear-gradient(135deg, #064e3b 0%, #059669 100%)",
     accent: "#10b981",
@@ -3369,14 +3303,24 @@ export default function DashboardPage() {
     onError: () => toast({ title: "Failed to update name", variant: "destructive" }),
   });
 
-  // ── Favorites ──────────────────────────────────────────────────────────────
+  // ── Favorites & Saved Stories ──────────────────────────────────────────────
   const { data: favoritedIds = [] } = useQuery<string[]>({
     queryKey: ["/api/user/favorites"],
     enabled: hasActiveSubscription,
   });
+  const savedStories = useMemo(() => {
+    if (!videos || !favoritedIds.length) return [];
+    return favoritedIds
+      .map(id => videos.find(v => v.id === id))
+      .filter(Boolean)
+      .filter(v => (v as VideoType).mediaType === "audio" || (v as any).media_type === "audio") as VideoType[];
+  }, [videos, favoritedIds]);
   const favoriteVideos = useMemo(() => {
     if (!videos || !favoritedIds.length) return [];
-    return favoritedIds.map(id => videos.find(v => v.id === id)).filter(Boolean) as VideoType[];
+    return favoritedIds
+      .map(id => videos.find(v => v.id === id))
+      .filter(Boolean)
+      .filter(v => (v as VideoType).mediaType !== "audio" && (v as any).media_type !== "audio") as VideoType[];
   }, [videos, favoritedIds]);
 
   // ── Continue Watching ──────────────────────────────────────────────────────
@@ -3384,17 +3328,6 @@ export default function DashboardPage() {
     queryKey: ["/api/user/continue-watching"],
     enabled: hasActiveSubscription,
   });
-
-  // ── Offline Audio ──────────────────────────────────────────────────────────
-  const offlineAudio = useOfflineAudio();
-  const offlineCtxValue: OfflineAudioCtx = {
-    isDownloaded: offlineAudio.isDownloaded,
-    downloading: offlineAudio.downloading,
-    downloadAudio: offlineAudio.downloadAudio,
-    getOfflineUrl: offlineAudio.getOfflineUrl,
-    removeDownload: offlineAudio.removeDownload,
-    isOnline: offlineAudio.isOnline,
-  };
 
   // ── Mini Player & Intro Animation state ───────────────────────────────────
   const [miniPlayerState, setMiniPlayerState] = useState<MiniPlayerState>(null);
@@ -3786,7 +3719,6 @@ export default function DashboardPage() {
   const registeredPhone = phoneNumbers?.[0];
 
   return (
-    <OfflineAudioContext.Provider value={offlineCtxValue}>
     <MiniPlayerContext.Provider value={{ setMiniPlayer: setMiniPlayerState }}>
     <VideoProgressContext.Provider value={progressMap}>
     <ParentalControlsContext.Provider value={parentalCtxValue}>
@@ -5170,39 +5102,22 @@ export default function DashboardPage() {
                 </div>
               )}
               
-              {/* Downloaded Stories Section */}
-              {!selectedMood && !searchQuery.trim() && offlineAudio.downloadedList.length > 0 && (
+              {/* Saved Stories Section */}
+              {!selectedMood && !searchQuery.trim() && savedStories.length > 0 && (
                 <div>
                   <div className="flex items-center gap-3 mb-5">
                     <div className="flex-shrink-0 h-8 w-1.5 rounded-full bg-[#08779C] shadow-[0_0_8px_#08779C]" />
-                    <WifiOff className="h-5 w-5 text-[#08779C]" />
-                    <h2 className="text-xl font-black text-white uppercase tracking-wide">Downloaded Stories</h2>
-                    <span className="text-xs text-white/40 font-medium">Available offline</span>
+                    <BookmarkCheck className="h-5 w-5 text-[#08779C]" />
+                    <h2 className="text-xl font-black text-white uppercase tracking-wide">Saved Stories</h2>
+                    <span className="text-xs text-white/40 font-medium">Your saved audio</span>
                     <div className="flex-1 h-px bg-gradient-to-r from-[#08779C]/30 to-transparent" />
                   </div>
                   <div className="flex gap-3 overflow-x-auto pb-3" style={{ scrollbarWidth: 'none' }}>
-                    {offlineAudio.downloadedList.map((meta) => {
-                      const vid = videos?.find(v => v.id === meta.id);
-                      if (!vid) return (
-                        <div key={meta.id} className="flex-shrink-0 w-[75vw] sm:w-64 md:w-72 rounded-xl border border-[#08779C]/30 bg-[#0d1a35] p-4 flex flex-col gap-2">
-                          <div className="flex items-center gap-2">
-                            <Music className="h-8 w-8 text-[#08779C] flex-shrink-0" />
-                            <div className="flex-1 min-w-0">
-                              <p className="font-semibold text-white text-sm line-clamp-2">{meta.title}</p>
-                              {meta.categoryName && <p className="text-xs text-white/40">{meta.categoryName}</p>}
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-between mt-auto pt-2">
-                            <span className="text-xs text-white/30">{offlineAudio.formatSize(meta.size)}</span>
-                            <button onClick={() => offlineAudio.removeDownload(meta.id)} className="p-1.5 rounded-full bg-red-900/40 hover:bg-red-700/40 transition-colors" title="Remove download">
-                              <Trash className="h-3.5 w-3.5 text-red-400" />
-                            </button>
-                          </div>
-                        </div>
-                      );
+                    {savedStories.map((vid) => {
+                      const category = categories?.find((c: any) => c.id === vid.categoryId);
                       return (
-                        <div key={meta.id} className="flex-shrink-0 w-[75vw] sm:w-64 md:w-72">
-                          <VideoCard video={vid} onView={() => markVideoViewedMutation.mutate(vid.id)} />
+                        <div key={vid.id} className="flex-shrink-0 w-[75vw] sm:w-64 md:w-72">
+                          <VideoCard video={vid} onView={() => markVideoViewedMutation.mutate(vid.id)} categoryName={category?.name} />
                         </div>
                       );
                     })}
@@ -5794,6 +5709,5 @@ export default function DashboardPage() {
       </Dialog>
     )}
     </MiniPlayerContext.Provider>
-    </OfflineAudioContext.Provider>
   );
 }
