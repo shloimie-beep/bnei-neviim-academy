@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay, MessageSquare, Send, Heart, ThumbsUp, Bell, BellDot, History, Shield, ShieldCheck, ShieldAlert, TimerReset, User } from "lucide-react";
+import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay, MessageSquare, Send, Heart, ThumbsUp, Bell, BellDot, History, Shield, ShieldCheck, ShieldAlert, TimerReset, User, Shuffle } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
@@ -1254,8 +1254,11 @@ const ParentalControlsContext = createContext<ParentalControlsCtx>({
   timePeriod: 'day',
 });
 
-function VideoCard({ video, isNew, onView, categoryName, variant = "default" }: { video: VideoType; isNew?: boolean; onView?: () => void; categoryName?: string; variant?: CardVariant }) {
+function VideoCard({ video, isNew, onView, categoryName, variant = "default", autoOpen, onAutoOpenConsumed }: { video: VideoType; isNew?: boolean; onView?: () => void; categoryName?: string; variant?: CardVariant; autoOpen?: boolean; onAutoOpenConsumed?: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
+  useEffect(() => {
+    if (autoOpen) { setIsOpen(true); onAutoOpenConsumed?.(); }
+  }, [autoOpen]);
   const isAudio = video.mediaType === "audio";
   const { toast } = useToast();
 
@@ -2199,6 +2202,7 @@ export default function DashboardPage() {
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [surpriseVideoId, setSurpriseVideoId] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState<"standard" | "plus">("standard");
   const recentScrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -2476,6 +2480,26 @@ export default function DashboardPage() {
 
     return { grouped, uncategorized };
   }, [videos]);
+
+  const getCategoryVideoCount = (categoryId: string): number => {
+    const grouped = (videosByCategory as any).grouped || {};
+    const subcats = getSubcategories ? getSubcategories(categoryId) : [];
+    let count = (grouped[categoryId] || []).length;
+    subcats.forEach((s: any) => { count += (grouped[s.id] || []).length; });
+    return count;
+  };
+
+  const handleSurpriseMe = () => {
+    if (!videos || videos.length === 0) return;
+    const pool = videos.filter(v => v.mediaType !== "album" && v.mediaType !== "document");
+    if (pool.length === 0) return;
+    const pick = pool[Math.floor(Math.random() * pool.length)];
+    setSurpriseVideoId(pick.id);
+    if (pick.categoryId) {
+      setSelectedCategory(pick.categoryId);
+    }
+    setSearchQuery("");
+  };
 
   // Set default category to preference or first available category when loaded
   useEffect(() => {
@@ -3640,15 +3664,25 @@ export default function DashboardPage() {
                 </Card>
               )}
 
-              {/* Search Bar */}
-              <div className="max-w-md">
-                <Input
-                  placeholder="Search videos..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-[#0d1828] border-white/10 text-white placeholder:text-slate-500 focus:border-[#EDE518]/50"
-                  data-testid="input-search-videos"
-                />
+              {/* Search Bar + Surprise Me */}
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex-1 min-w-[200px] max-w-md">
+                  <Input
+                    placeholder="Search videos..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-[#0d1828] border-white/10 text-white placeholder:text-slate-500 focus:border-[#EDE518]/50"
+                    data-testid="input-search-videos"
+                  />
+                </div>
+                <Button
+                  onClick={handleSurpriseMe}
+                  className="bg-gradient-to-r from-[#EDE518] to-[#f5d800] text-black font-bold hover:from-[#f5d800] hover:to-[#EDE518] shadow-[0_0_12px_#EDE51860] hover:shadow-[0_0_20px_#EDE51880] transition-all gap-2 shrink-0"
+                  data-testid="button-surprise-me"
+                >
+                  <Shuffle className="h-4 w-4" />
+                  Surprise Me
+                </Button>
               </div>
               
               {/* Search Results - shown when searching */}
@@ -3848,6 +3882,7 @@ export default function DashboardPage() {
                   {topLevelCategories.map((category) => {
                     const subcats = getSubcategories(category.id);
                     const isSelected = selectedCategory === category.id || subcats.some(s => s.id === selectedCategory);
+                    const count = getCategoryVideoCount(category.id);
                     return (
                       <Button
                         key={category.id}
@@ -3861,6 +3896,11 @@ export default function DashboardPage() {
                         data-testid={`button-category-${category.id}`}
                       >
                         {category.name}
+                        {count > 0 && (
+                          <span className={`ml-1.5 text-xs font-normal px-1.5 py-0.5 rounded-full ${isSelected ? "bg-black/20 text-black" : "bg-white/10 text-slate-400"}`}>
+                            {count}
+                          </span>
+                        )}
                         {subcats.length > 0 && (
                           <ChevronRight className={`h-4 w-4 ml-1 transition-transform ${expandedCategory === category.id ? "rotate-90" : ""}`} />
                         )}
@@ -4218,6 +4258,20 @@ export default function DashboardPage() {
           )}
         </div>
       </main>
+
+      {/* Surprise Me Dialog */}
+      {surpriseVideoId && videos && (() => {
+        const sv = videos.find(v => v.id === surpriseVideoId);
+        if (!sv) return null;
+        return (
+          <Dialog open={!!surpriseVideoId} onOpenChange={(o) => { if (!o) setSurpriseVideoId(null); }}>
+            <DialogContent className="max-w-5xl w-full p-0 bg-transparent border-0 shadow-none" data-testid="dialog-surprise-video" aria-describedby={undefined}>
+              <DialogTitle className="sr-only">Surprise Video: {sv.title}</DialogTitle>
+              <VideoPlayer video={sv} onClose={() => setSurpriseVideoId(null)} />
+            </DialogContent>
+          </Dialog>
+        );
+      })()}
     </div>
     </ParentalControlsContext.Provider>
   );
