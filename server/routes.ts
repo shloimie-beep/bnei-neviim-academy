@@ -14,7 +14,7 @@ import { storage } from "./storage";
 import { registerSchema, loginSchema, phoneNumberSchema, forgotPasswordSchema, resetPasswordSchema, users } from "@shared/schema";
 import { getUncachableStripeClient, getStripePublishableKey } from "./stripeClient";
 import { getUncachableResendClient } from "./resendClient";
-import { FROM_EMAIL, getPasswordResetEmail, getBulkEmail } from "./emailTemplates";
+import { FROM_EMAIL, getPasswordResetEmail, getNewPasswordEmail, getBulkEmail } from "./emailTemplates";
 import crypto from "crypto";
 import { sql } from "drizzle-orm";
 import { db } from "./db";
@@ -874,6 +874,50 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Forgot password error:", error);
       res.status(500).json({ message: "An error occurred. Please try again." });
+    }
+  });
+
+  // Send a brand-new auto-generated password directly to the user's email
+  app.post("/api/auth/send-new-password", async (req, res) => {
+    try {
+      const { email } = req.body;
+      if (!email || typeof email !== "string") {
+        return res.status(400).json({ message: "Email required" });
+      }
+
+      const user = await storage.getUserByEmail(email.toLowerCase().trim());
+      // Always return success to prevent email enumeration
+      if (!user) {
+        return res.json({ success: true });
+      }
+
+      // Generate a readable random password: Word + number + Word
+      const adjectives = ["Blue","Gold","Calm","Bold","Wise","Kind","Bright","Fresh","Happy","Swift"];
+      const nouns = ["Star","Moon","Hill","Lion","Bear","Oak","Lake","Sky","Rose","Wave"];
+      const adj = adjectives[Math.floor(Math.random() * adjectives.length)];
+      const noun = nouns[Math.floor(Math.random() * nouns.length)];
+      const num = Math.floor(Math.random() * 90) + 10;
+      const newPassword = `${adj}${num}${noun}`;
+
+      const hashedPassword = await bcrypt.hash(newPassword, 10);
+      await storage.updateUser(user.id, { password: hashedPassword });
+
+      try {
+        const { client } = await getUncachableResendClient();
+        await client.emails.send({
+          from: FROM_EMAIL,
+          to: user.email,
+          subject: "Your New Password - OneTimeOneTime",
+          html: getNewPasswordEmail(newPassword),
+        });
+      } catch (emailError) {
+        console.error("Email send error:", emailError);
+      }
+
+      res.json({ success: true });
+    } catch (err: any) {
+      console.error("send-new-password error:", err);
+      res.status(500).json({ message: "Something went wrong. Please try again." });
     }
   });
 

@@ -54,6 +54,25 @@ export function getPasswordResetEmail(resetLink: string): string {
   `);
 }
 
+export function getNewPasswordEmail(newPassword: string): string {
+  return wrapEmailTemplate(`
+    <h2 style="color: #333; margin-bottom: 20px;">Your New Password</h2>
+    <p>We reset your password as requested. Here is your new temporary password:</p>
+    <div style="text-align: center; margin: 30px 0;">
+      <div style="display: inline-block; background: #f4f4f4; border: 2px dashed #ccc; border-radius: 8px; padding: 16px 32px;">
+        <span style="font-size: 28px; font-weight: bold; letter-spacing: 4px; color: #1a1a1a; font-family: monospace;">${newPassword}</span>
+      </div>
+    </div>
+    <p>Once you log in, you can change your password in your account settings.</p>
+    <p style="text-align: center; margin: 24px 0;">
+      <a href="https://onetimeonetime.com/login" style="display: inline-block; background: #2563eb; color: #fff; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: 500;">
+        Log In Now
+      </a>
+    </p>
+    <p style="color: #666; font-size: 14px;">If you didn't request this, please contact us at info@onetimeonetime.com.</p>
+  `);
+}
+
 export function getBulkEmail(subject: string, messageBody: string): string {
   return wrapEmailTemplate(`
     <div style="white-space: pre-wrap;">${messageBody}</div>
