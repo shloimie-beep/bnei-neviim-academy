@@ -1669,22 +1669,28 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
   const isLocked = parental.isVideoBlocked(video.categoryId);
   const progressMap = useContext(VideoProgressContext);
 
-  // Hover preview — show a muted Vimeo embed after 600 ms hover
+  // Hover preview — preload Vimeo iframe immediately on hover, show after brief delay
+  const [isHovered, setIsHovered] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
   const hoverTimerRef = useRef<ReturnType<typeof setTimeout>>();
   const handleCardMouseEnter = () => {
     if (isLocked || isAudio) return;
-    console.log('[HoverPreview] mouseenter', video.id, 'embedBase:', (video as any).vimeoEmbedUrl || (video as any).vimeo_embed_url);
-    hoverTimerRef.current = setTimeout(() => { console.log('[HoverPreview] timer fired', video.id); setShowPreview(true); }, 600);
+    setIsHovered(true);
+    hoverTimerRef.current = setTimeout(() => setShowPreview(true), 400);
   };
   const handleCardMouseLeave = () => {
     clearTimeout(hoverTimerRef.current);
+    setIsHovered(false);
     setShowPreview(false);
   };
   const embedBase = (video as any).vimeoEmbedUrl || (video as any).vimeo_embed_url;
   const hoverEmbedUrl = embedBase && !isAudio
-    ? embedBase.replace(/[?&]autoplay=\d/, "").replace(/[?&]muted=\d/, "") +
-      (embedBase.includes("?") ? "&" : "?") + "autoplay=1&muted=1&background=1&loop=1&controls=0"
+    ? embedBase
+        .replace(/[?&]autoplay=\d/, "")
+        .replace(/[?&]muted=\d/, "")
+        .replace(/[?&]dnt=\d/, "")
+        .replace(/[?&]controls=\d/, "") +
+      (embedBase.includes("?") ? "&" : "?") + "autoplay=1&muted=1&loop=1&controls=0&background=1&transparent=0"
     : null;
   const progressPct = progressMap.get(video.id) ?? 0;
   const { setMiniPlayer } = useContext(MiniPlayerContext);
@@ -1846,11 +1852,17 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
             ) : (
               <FileVideo className="h-12 w-12 text-[#08779C]" />
             )}
-            {/* Hover video preview — inside thumbnail container to avoid stacking context conflicts */}
-            {showPreview && !isLocked && (
-              <div className="absolute inset-0 z-10 bg-red-500 flex items-center justify-center" style={{ pointerEvents: 'none' }}>
-                <span className="text-white font-bold text-sm">PREVIEW</span>
-              </div>
+            {/* Hover video preview — preloaded immediately, faded in after delay */}
+            {isHovered && hoverEmbedUrl && !isLocked && (
+              <iframe
+                src={hoverEmbedUrl}
+                className="absolute inset-0 w-full h-full z-10 transition-opacity duration-300"
+                style={{ opacity: showPreview ? 1 : 0, pointerEvents: 'none', display: 'block' }}
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+                frameBorder="0"
+                title={`Preview: ${video.title}`}
+              />
             )}
             {isNew && (
               <div className="absolute top-2 right-2 z-20">
