@@ -460,26 +460,50 @@ async function runDataMigrations() {
         }
       };
 
-      // Active subscriptions
-      let hasMore = true;
-      let startingAfter: string | undefined;
+      // All subscription statuses — recover everyone who ever had an account
+      const statuses = ['active', 'trialing', 'past_due', 'canceled', 'unpaid', 'incomplete'];
       let recovered = 0;
-      while (hasMore) {
-        const subs: any = await stripe.subscriptions.list({
-          status: 'active', limit: 100, expand: ['data.customer'],
-          ...(startingAfter ? { starting_after: startingAfter } : {}),
-        });
-        for (const sub of subs.data) {
-          if (await processSubscription(sub)) recovered++;
+
+      for (const status of statuses) {
+        let hasMore = true;
+        let startingAfter: string | undefined;
+        while (hasMore) {
+          const subs: any = await stripe.subscriptions.list({
+            status: status as any, limit: 100, expand: ['data.customer'],
+            ...(startingAfter ? { starting_after: startingAfter } : {}),
+          });
+          for (const sub of subs.data) {
+            if (await processSubscription(sub)) recovered++;
+          }
+          hasMore = subs.has_more;
+          if (hasMore && subs.data.length > 0) startingAfter = subs.data[subs.data.length - 1].id;
         }
-        hasMore = subs.has_more;
-        if (hasMore && subs.data.length > 0) startingAfter = subs.data[subs.data.length - 1].id;
       }
 
-      // Trialing subscriptions
-      const trialing: any = await stripe.subscriptions.list({ status: 'trialing', limit: 100, expand: ['data.customer'] });
-      for (const sub of trialing.data) {
-        if (await processSubscription(sub)) recovered++;
+      // Also check all Stripe customers directly (catches customers without subscriptions)
+      let custHasMore = true;
+      let custStartingAfter: string | undefined;
+      while (custHasMore) {
+        const customers: any = await stripe.customers.list({
+          limit: 100,
+          ...(custStartingAfter ? { starting_after: custStartingAfter } : {}),
+        });
+        for (const customer of customers.data) {
+          if (!customer.email || customer.deleted) continue;
+          const email = customer.email.toLowerCase().trim();
+          const existingUser = await pool.query(`SELECT id FROM users WHERE email = $1 LIMIT 1`, [email]);
+          if (existingUser.rows.length === 0) {
+            await pool.query(
+              `INSERT INTO users (id, email, password, role, account_type, subscription_status, stripe_customer_id, has_used_trial, needs_password_reset, created_at)
+               VALUES (gen_random_uuid()::varchar, $1, $2, 'customer', 'standard', 'cancelled', $3, true, true, NOW())
+               ON CONFLICT (email) DO NOTHING`,
+              [email, tempPasswordHash, customer.id]
+            );
+            recovered++;
+          }
+        }
+        custHasMore = customers.has_more;
+        if (custHasMore && customers.data.length > 0) custStartingAfter = customers.data[customers.data.length - 1].id;
       }
 
       if (recovered > 0) {
