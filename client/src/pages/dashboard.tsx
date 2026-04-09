@@ -2514,17 +2514,16 @@ const FEATURE_PROMO_CARDS = [
 ];
 
 function DashboardBannerSlideshow({ banners, videos }: { banners: BannerItem[]; videos: VideoType[] }) {
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [activeIdx, setActiveIdx] = useState(0);
+  const [current, setCurrent] = useState(0);
   const [openVideo, setOpenVideo] = useState<VideoType | null>(null);
   const [isOpenVideo, setIsOpenVideo] = useState(false);
 
-  // Combine feature promos + admin banners into one list
-  const allCards = [
+  // Combine built-in promo slides + admin banners
+  const allSlides = [
     ...FEATURE_PROMO_CARDS,
     ...banners.map(b => ({
       id: b.id,
-      badge: b.subtitle ? "✨ " + b.subtitle.slice(0, 30) : "✨ Featured",
+      badge: "✨ Featured",
       title: b.title,
       subtitle: b.subtitle ?? "",
       emoji: "🎬",
@@ -2538,174 +2537,168 @@ function DashboardBannerSlideshow({ banners, videos }: { banners: BannerItem[]; 
     })),
   ];
 
-  const total = allCards.length;
+  const total = allSlides.length;
 
-  const scrollTo = (idx: number) => {
-    const clamped = Math.max(0, Math.min(idx, total - 1));
-    setActiveIdx(clamped);
-    const el = scrollRef.current;
-    if (!el) return;
-    const card = el.children[clamped] as HTMLElement;
-    if (card) card.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-  };
+  const goTo = (idx: number) => setCurrent(((idx % total) + total) % total);
+  const prevSlide = () => goTo(current - 1);
+  const nextSlide = () => goTo(current + 1);
 
-  // Auto-advance every 5s
   useEffect(() => {
     if (total <= 1) return;
-    const t = setInterval(() => {
-      setActiveIdx(prev => {
-        const next = (prev + 1) % total;
-        const el = scrollRef.current;
-        if (el) {
-          const card = el.children[next] as HTMLElement;
-          if (card) card.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
-        }
-        return next;
-      });
-    }, 5000);
+    const t = setInterval(() => setCurrent(c => (c + 1) % total), 6000);
     return () => clearInterval(t);
-  }, [total]);
-
-  // Track which card is most visible via IntersectionObserver
-  useEffect(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      (entries) => {
-        let best = { idx: 0, ratio: 0 };
-        entries.forEach((e) => {
-          const idx = parseInt((e.target as HTMLElement).dataset.idx ?? "0");
-          if (e.intersectionRatio > best.ratio) best = { idx, ratio: e.intersectionRatio };
-        });
-        if (best.ratio > 0) setActiveIdx(best.idx);
-      },
-      { root: el, threshold: [0.5] }
-    );
-    Array.from(el.children).forEach(c => obs.observe(c));
-    return () => obs.disconnect();
   }, [total]);
 
   if (total === 0) return null;
 
+  const slide = allSlides[current];
+  const accent = slide.accent;
+
   return (
     <>
-      <div className="px-4 sm:px-6 py-4" data-testid="banner-slideshow">
-        {/* Section header */}
-        <div className="flex items-center justify-between mb-3">
-          <div className="flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-[#EDE518]" />
-            <span className="text-sm font-black uppercase tracking-widest text-white/70">What's New</span>
+      <div
+        className="relative overflow-hidden select-none"
+        style={{ minHeight: 220, background: "#060e1a" }}
+        data-testid="banner-slideshow"
+      >
+        {/* Full-bleed background image */}
+        {slide.imageUrl && (
+          <div className="absolute inset-0 transition-opacity duration-500">
+            <img
+              src={slide.imageUrl}
+              alt=""
+              className="w-full h-full object-cover"
+              style={{ filter: "brightness(0.5) saturate(1.2)" }}
+            />
           </div>
-          {/* Dot indicators */}
-          <div className="flex items-center gap-1.5">
-            {allCards.map((_, i) => (
+        )}
+
+        {/* Gradient background for promo slides without image */}
+        {!slide.imageUrl && (
+          <div className="absolute inset-0 transition-all duration-500" style={{ background: slide.bg }} />
+        )}
+
+        {/* Dark directional overlay */}
+        <div
+          className="absolute inset-0"
+          style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.35) 100%)" }}
+        />
+
+        {/* Accent glow blob */}
+        <div
+          className="absolute -left-16 top-1/2 -translate-y-1/2 w-72 h-72 rounded-full blur-3xl pointer-events-none"
+          style={{ background: accent, opacity: 0.15 }}
+        />
+
+        {/* Content */}
+        <div
+          className={`relative flex items-end gap-4 px-5 sm:px-8 pt-7 pb-10 ${slide.videoId ? "cursor-pointer" : ""}`}
+          style={{ minHeight: 220 }}
+          onClick={() => {
+            if (!slide.videoId) return;
+            const v = videos.find(v => v.id === slide.videoId);
+            if (v) { setOpenVideo(v); setIsOpenVideo(true); }
+          }}
+        >
+          <div className="flex-1 min-w-0">
+            {/* Badge */}
+            <span
+              className="inline-flex items-center text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full mb-3"
+              style={{ background: `${accent}25`, color: accent, border: `1px solid ${accent}50` }}
+            >
+              {slide.badge}
+            </span>
+
+            {/* Emoji for non-image slides */}
+            {!slide.imageUrl && (
+              <div className="text-4xl mb-2 leading-none">{slide.emoji}</div>
+            )}
+
+            {/* Title */}
+            <h2
+              className="text-2xl sm:text-3xl font-black text-white leading-tight line-clamp-2 drop-shadow-2xl mb-2"
+              style={{ textShadow: "0 2px 20px rgba(0,0,0,0.8)" }}
+            >
+              {slide.title}
+            </h2>
+
+            {/* Subtitle */}
+            {slide.subtitle && (
+              <p className="text-white/60 text-sm line-clamp-2 max-w-xs leading-snug">
+                {slide.subtitle}
+              </p>
+            )}
+
+            {/* CTA for video slides */}
+            {slide.videoId && (
+              <div className="flex items-center gap-1.5 mt-3">
+                <div className="h-6 w-6 rounded-full flex items-center justify-center" style={{ background: accent }}>
+                  <Play className="h-3 w-3 text-black ml-0.5" />
+                </div>
+                <span className="text-xs font-bold" style={{ color: accent }}>Watch now</span>
+              </div>
+            )}
+          </div>
+
+          {/* Right-side thumbnail (visible on sm+) */}
+          {slide.imageUrl && (
+            <div
+              className="hidden sm:block flex-shrink-0 w-28 h-20 md:w-40 md:h-28 rounded-2xl overflow-hidden border-2 shadow-2xl"
+              style={{ borderColor: `${accent}60`, boxShadow: `0 8px 32px rgba(0,0,0,0.6), 0 0 20px ${accent}30` }}
+            >
+              <img src={slide.imageUrl} alt={slide.title} className="w-full h-full object-cover" />
+            </div>
+          )}
+        </div>
+
+        {/* Prev / Next arrows */}
+        {total > 1 && (
+          <>
+            <button
+              onClick={(e) => { e.stopPropagation(); prevSlide(); }}
+              className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-black/50 hover:bg-black/80 border border-white/10 flex items-center justify-center transition-all hover:scale-110 z-10"
+              data-testid="button-banner-prev"
+            >
+              <ChevronLeft className="h-4 w-4 text-white" />
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); nextSlide(); }}
+              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-black/50 hover:bg-black/80 border border-white/10 flex items-center justify-center transition-all hover:scale-110 z-10"
+              data-testid="button-banner-next"
+            >
+              <ChevronRight className="h-4 w-4 text-white" />
+            </button>
+          </>
+        )}
+
+        {/* Dot indicators */}
+        {total > 1 && (
+          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10" data-testid="banner-dots">
+            {allSlides.map((s, i) => (
               <button
                 key={i}
-                onClick={() => scrollTo(i)}
+                onClick={(e) => { e.stopPropagation(); goTo(i); }}
                 className="rounded-full transition-all duration-300"
                 style={{
-                  width: i === activeIdx ? 20 : 5,
-                  height: 5,
-                  background: i === activeIdx ? allCards[i].accent : "rgba(255,255,255,0.2)",
-                  boxShadow: i === activeIdx ? `0 0 8px ${allCards[i].glow}` : "none",
+                  width: i === current ? 24 : 6,
+                  height: 6,
+                  background: i === current ? s.accent : "rgba(255,255,255,0.3)",
+                  boxShadow: i === current ? `0 0 8px ${s.accent}` : "none",
                 }}
                 data-testid={`banner-dot-${i}`}
               />
             ))}
           </div>
-        </div>
+        )}
 
-        {/* Horizontal card strip */}
-        <div
-          ref={scrollRef}
-          className="flex gap-3 overflow-x-auto pb-1"
-          style={{ scrollbarWidth: "none", scrollSnapType: "x mandatory" }}
-        >
-          {allCards.map((card, i) => {
-            const isActive = i === activeIdx;
-            return (
-              <div
-                key={card.id}
-                data-idx={i}
-                onClick={() => {
-                  scrollTo(i);
-                  if (card.videoId) {
-                    const v = videos.find(v => v.id === card.videoId);
-                    if (v) { setOpenVideo(v); setIsOpenVideo(true); }
-                  }
-                }}
-                className="flex-shrink-0 relative overflow-hidden rounded-2xl cursor-pointer select-none transition-all duration-300"
-                style={{
-                  width: "clamp(200px, 55vw, 260px)",
-                  height: 160,
-                  background: card.bg,
-                  scrollSnapAlign: "center",
-                  border: isActive ? `2px solid ${card.accent}60` : "2px solid rgba(255,255,255,0.06)",
-                  boxShadow: isActive ? `0 8px 32px rgba(0,0,0,0.5), 0 0 20px ${card.glow}30` : "0 4px 16px rgba(0,0,0,0.3)",
-                  transform: isActive ? "scale(1)" : "scale(0.97)",
-                }}
-                data-testid={`banner-card-${card.id}`}
-              >
-                {/* Background image if present */}
-                {card.imageUrl && (
-                  <img
-                    src={card.imageUrl}
-                    alt=""
-                    className="absolute inset-0 w-full h-full object-cover"
-                    style={{ opacity: 0.35 }}
-                  />
-                )}
-
-                {/* Gradient overlay for readability */}
-                <div
-                  className="absolute inset-0"
-                  style={{ background: `linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 100%)` }}
-                />
-
-                {/* Accent glow blob */}
-                <div
-                  className="absolute -bottom-8 -right-8 w-32 h-32 rounded-full blur-2xl pointer-events-none"
-                  style={{ background: card.accent, opacity: 0.25 }}
-                />
-
-                {/* Content */}
-                <div className="relative h-full flex flex-col justify-between p-3.5">
-                  {/* Badge */}
-                  <div>
-                    <span
-                      className="inline-flex items-center text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full"
-                      style={{ background: `${card.accent}30`, color: card.accent, border: `1px solid ${card.accent}50` }}
-                    >
-                      {card.badge}
-                    </span>
-                  </div>
-
-                  {/* Bottom: emoji + title + subtitle */}
-                  <div>
-                    {!card.imageUrl && (
-                      <div className="text-3xl mb-1 leading-none">{card.emoji}</div>
-                    )}
-                    <h3 className="font-black text-white text-base leading-tight line-clamp-1 drop-shadow-lg">
-                      {card.title}
-                    </h3>
-                    <p className="text-white/60 text-[11px] leading-snug line-clamp-2 mt-0.5">
-                      {card.subtitle}
-                    </p>
-                    {card.videoId && (
-                      <div className="flex items-center gap-1 mt-1.5">
-                        <Play className="h-3 w-3" style={{ color: card.accent }} />
-                        <span className="text-[10px] font-bold" style={{ color: card.accent }}>Watch now</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        {/* Slide counter */}
+        {total > 1 && (
+          <div className="absolute top-3 right-3 text-[10px] text-white/40 font-bold tabular-nums z-10">
+            {current + 1} / {total}
+          </div>
+        )}
       </div>
 
-      {/* Video dialog (when banner is clicked) */}
       {openVideo && (
         <Dialog open={isOpenVideo} onOpenChange={(o) => { setIsOpenVideo(o); if (!o) setOpenVideo(null); }}>
           <VideoPlayer video={openVideo} onClose={() => { setIsOpenVideo(false); setOpenVideo(null); }} />
