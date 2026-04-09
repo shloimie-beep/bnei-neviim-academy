@@ -376,6 +376,28 @@ async function runDataMigrations() {
       )
     `);
 
+    // ── Schema: banner expires_at column ───────────────────────────────────
+    await pool.query(`
+      ALTER TABLE dashboard_banners
+      ADD COLUMN IF NOT EXISTS expires_at TIMESTAMP
+    `);
+
+    // ── Insert Parental Controls promotional banner ─────────────────────────
+    await pool.query(`
+      INSERT INTO dashboard_banners (id, title, subtitle, is_active, display_order, expires_at, created_at)
+      SELECT
+        'promo-parental-controls-2026',
+        '🛡️ NEW: Screen Time Controls',
+        'Parents — you are in control. Set daily, weekly, or monthly limits so your kids enjoy great content without going overboard. Quick to set up right in your Account Settings.',
+        TRUE,
+        -1,
+        NOW() + INTERVAL '7 days',
+        NOW()
+      WHERE NOT EXISTS (
+        SELECT 1 FROM dashboard_banners WHERE id = 'promo-parental-controls-2026'
+      )
+    `);
+
     log('Data migrations complete', 'migration');
   } catch (err: any) {
     log(`Data migration error: ${err.message}`, 'migration');

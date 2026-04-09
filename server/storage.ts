@@ -1,4 +1,4 @@
-import { eq, and, sql, desc, ilike, gte, inArray } from "drizzle-orm";
+import { eq, and, or, sql, desc, ilike, gte, gt, isNull, inArray } from "drizzle-orm";
 import { db } from "./db";
 import {
   users,
@@ -1162,11 +1162,20 @@ export class DatabaseStorage implements IStorage {
 
   // Dashboard Banners
   async getBanners(activeOnly = false): Promise<DashboardBanner[]> {
-    const q = db.select().from(dashboardBanners);
     if (activeOnly) {
-      return q.where(eq(dashboardBanners.isActive, true)).orderBy(dashboardBanners.displayOrder);
+      return db.select().from(dashboardBanners)
+        .where(
+          and(
+            eq(dashboardBanners.isActive, true),
+            or(
+              isNull(dashboardBanners.expiresAt),
+              gt(dashboardBanners.expiresAt, new Date())
+            )
+          )
+        )
+        .orderBy(dashboardBanners.displayOrder);
     }
-    return q.orderBy(dashboardBanners.displayOrder);
+    return db.select().from(dashboardBanners).orderBy(dashboardBanners.displayOrder);
   }
 
   async getBannerById(id: string): Promise<DashboardBanner | undefined> {

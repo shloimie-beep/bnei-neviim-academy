@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay, MessageSquare, Send, Heart, ThumbsUp, Bell, BellDot, History, Shield, ShieldCheck, ShieldAlert, TimerReset, User, Shuffle } from "lucide-react";
+import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay, MessageSquare, Send, Heart, ThumbsUp, Bell, BellDot, History, Shield, ShieldCheck, ShieldAlert, TimerReset, User, Shuffle, X } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
@@ -474,7 +474,7 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
   );
 }
 
-function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () => void }) {
+function LegacyVideoPlayer({ video, onClose, onMinimize }: { video: VideoType; onClose: () => void; onMinimize?: (streamUrl: string, currentTime: number, isAudio: boolean) => void }) {
   const [currentVideo, setCurrentVideo] = useState<any>(video);
   const videoRef = useRef<HTMLVideoElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
@@ -832,6 +832,24 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
               </DropdownMenuContent>
             </DropdownMenu>
             
+            {onMinimize && (
+              <Button
+                size="icon"
+                variant="ghost"
+                className="text-white hover:bg-white/20"
+                onClick={() => {
+                  if (streamUrl) {
+                    const t = videoRef.current?.currentTime ?? 0;
+                    onMinimize(streamUrl, t, isAudioMedia);
+                    onClose();
+                  }
+                }}
+                title="Play while browsing"
+                data-testid="button-minimize-player"
+              >
+                <ChevronLeft className="h-5 w-5 rotate-90" />
+              </Button>
+            )}
             <Button
               size="icon"
               variant="ghost"
@@ -914,12 +932,11 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
   );
 }
 
-function VideoPlayer({ video, onClose }: { video: VideoType; onClose: () => void }) {
-  // Use embed player for Vimeo videos
+function VideoPlayer({ video, onClose, onMinimize }: { video: VideoType; onClose: () => void; onMinimize?: (streamUrl: string, currentTime: number, isAudio: boolean) => void }) {
   if ((video as any).vimeoVideoId) {
     return <VideoEmbedPlayer video={video} />;
   }
-  return <LegacyVideoPlayer video={video} onClose={onClose} />;
+  return <LegacyVideoPlayer video={video} onClose={onClose} onMinimize={onMinimize} />;
 }
 
 // ─── Category Theme System ───────────────────────────────────────────────────
@@ -1189,6 +1206,7 @@ function CategoryBanner({ category, theme }: { category: VideoCategory; theme: C
 function SpotlightCard({ video, theme, onView }: { video: VideoType; theme: CategoryTheme | null; onView?: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
   const [cacheBust] = useState(() => Date.now());
+  const { setMiniPlayer } = useContext(MiniPlayerContext);
   const thumbnailSrc = video.thumbnailPath ? `/api/videos/${video.id}/thumbnail?v=${cacheBust}` : null;
   const accent = theme?.accent || "#EDE518";
 
@@ -1298,6 +1316,13 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
 
   const parental = useContext(ParentalControlsContext);
   const isLocked = parental.isVideoBlocked(video.categoryId);
+  const progressMap = useContext(VideoProgressContext);
+  const progressPct = progressMap.get(video.id) ?? 0;
+  const { setMiniPlayer } = useContext(MiniPlayerContext);
+  const handleMinimize = (streamUrl: string, currentTime: number, isAudioType: boolean) => {
+    setMiniPlayer({ video, streamUrl, currentTime, isAudio: isAudioType });
+    setIsOpen(false);
+  };
 
   const handleOpenChange = (open: boolean) => {
     if (open && isLocked) {
@@ -1379,7 +1404,7 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
             </div>
           </div>
         </DialogTrigger>
-        <VideoPlayer video={video} onClose={() => setIsOpen(false)} />
+        <VideoPlayer video={video} onClose={() => setIsOpen(false)} onMinimize={handleMinimize} />
       </Dialog>
     );
   }
@@ -1485,9 +1510,21 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
               <h3 className="font-bold line-clamp-2 text-white text-xs leading-tight" data-testid={`text-video-title-${video.id}`}>{video.title}</h3>
             </div>
           )}
+          {progressPct > 0 && (
+            <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-white/10">
+              <div className="h-full bg-[#EDE518]" style={{ width: `${progressPct}%` }} />
+            </div>
+          )}
         </Card>
       </DialogTrigger>
-      <VideoPlayer video={video} onClose={() => setIsOpen(false)} />
+      <VideoPlayer
+        video={video}
+        onClose={() => setIsOpen(false)}
+        onMinimize={(streamUrl, currentTime, isAudioType) => {
+          setMiniPlayer({ video, streamUrl, currentTime, isAudio: isAudioType });
+          setIsOpen(false);
+        }}
+      />
     </Dialog>
   );
 }
@@ -2019,7 +2056,8 @@ function DashboardBannerSlideshow({ banners, videos }: { banners: BannerItem[]; 
   if (totalSlides === 0) return null;
 
   const slide = banners[current];
-  const accent = SLIDE_ACCENTS[current % SLIDE_ACCENTS.length];
+  const isPromo = slide.id.startsWith("promo-");
+  const accent = isPromo ? "#EDE518" : SLIDE_ACCENTS[current % SLIDE_ACCENTS.length];
   const overlay = SLIDE_DARK_OVERLAYS[current % SLIDE_DARK_OVERLAYS.length];
   const accentIsYellow = accent === "#EDE518";
 
@@ -2145,6 +2183,136 @@ function DashboardBannerSlideshow({ banners, videos }: { banners: BannerItem[]; 
         </Dialog>
       )}
     </>
+  );
+}
+
+// ── Video Progress Context ──────────────────────────────────────────────────
+const VideoProgressContext = createContext<Map<string, number>>(new Map());
+
+// ── Mini Player Context ─────────────────────────────────────────────────────
+type MiniPlayerState = { video: VideoType; streamUrl: string; currentTime: number; isAudio: boolean } | null;
+const MiniPlayerContext = createContext<{ setMiniPlayer: (s: MiniPlayerState) => void }>({ setMiniPlayer: () => {} });
+
+// ── Floating Mini Player ────────────────────────────────────────────────────
+function FloatingMiniPlayer({ state, onClose, onExpand }: { state: MiniPlayerState; onClose: () => void; onExpand: () => void }) {
+  const audioRef = useRef<HTMLAudioElement>(null);
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [elapsed, setElapsed] = useState(0);
+
+  useEffect(() => {
+    if (audioRef.current && state?.isAudio) {
+      audioRef.current.currentTime = state.currentTime;
+      audioRef.current.play().catch(() => {});
+    }
+  }, [state]);
+
+  useEffect(() => {
+    if (!state?.isAudio) return;
+    const interval = setInterval(() => {
+      if (audioRef.current && !audioRef.current.paused) {
+        setElapsed(audioRef.current.currentTime);
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [state]);
+
+  if (!state) return null;
+  const thumbSrc = state.video.thumbnailPath ? `/api/videos/${state.video.id}/thumbnail` : null;
+
+  return (
+    <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[9999] w-[min(90vw,420px)] animate-in slide-in-from-bottom-4 duration-300">
+      {state.isAudio && (
+        <audio ref={audioRef} src={state.streamUrl} onPlay={() => setIsPlaying(true)} onPause={() => setIsPlaying(false)} className="hidden" />
+      )}
+      <div className="bg-[#060e1a] border border-[#EDE518]/30 rounded-2xl shadow-[0_8px_40px_rgba(0,0,0,0.8),0_0_20px_rgba(237,229,24,0.1)] overflow-hidden">
+        <div className="flex items-center gap-3 p-2.5">
+          <div className="w-11 h-11 rounded-xl overflow-hidden flex-shrink-0 bg-[#0d1a35] flex items-center justify-center">
+            {thumbSrc ? <img src={thumbSrc} alt="" className="w-full h-full object-cover" /> : <Music className="h-5 w-5 text-[#08779C]" />}
+          </div>
+          <div className="flex-1 min-w-0 cursor-pointer" onClick={onExpand}>
+            <p className="text-white text-sm font-semibold truncate">{state.video.title}</p>
+            <p className="text-slate-400 text-xs">{state.isAudio ? "Now Playing" : "Paused"}</p>
+          </div>
+          {state.isAudio && (
+            <button
+              onClick={() => {
+                if (audioRef.current) {
+                  if (isPlaying) audioRef.current.pause(); else audioRef.current.play();
+                }
+              }}
+              className="h-9 w-9 rounded-full bg-[#EDE518] flex items-center justify-center hover:bg-[#EDE518]/80 transition-colors flex-shrink-0"
+            >
+              {isPlaying ? <Pause className="h-4 w-4 text-black" /> : <Play className="h-4 w-4 text-black ml-0.5" />}
+            </button>
+          )}
+          {!state.isAudio && (
+            <button onClick={onExpand} className="h-9 w-9 rounded-full bg-[#EDE518] flex items-center justify-center hover:bg-[#EDE518]/80 flex-shrink-0">
+              <Play className="h-4 w-4 text-black ml-0.5" />
+            </button>
+          )}
+          <button onClick={onClose} className="h-7 w-7 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center flex-shrink-0">
+            <X className="h-3.5 w-3.5 text-white" />
+          </button>
+        </div>
+        {state.isAudio && (
+          <div className="h-0.5 bg-[#EDE518]/20 mx-2.5 mb-2.5 rounded-full overflow-hidden">
+            <div className="h-full bg-[#EDE518] transition-all duration-1000" style={{ width: `${state.video.duration ? Math.min(100, (elapsed / state.video.duration) * 100) : 0}%` }} />
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ── Branded Intro Animation ─────────────────────────────────────────────────
+function IntroAnimation({ onDone }: { onDone: () => void }) {
+  const [phase, setPhase] = useState<'in' | 'hold' | 'out'>('in');
+  useEffect(() => {
+    const t1 = setTimeout(() => setPhase('hold'), 400);
+    const t2 = setTimeout(() => setPhase('out'), 2400);
+    const t3 = setTimeout(() => onDone(), 3000);
+    return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); };
+  }, []);
+  return (
+    <div
+      className="fixed inset-0 z-[99999] flex flex-col items-center justify-center select-none transition-opacity duration-700"
+      style={{
+        background: "linear-gradient(135deg, #020813 0%, #060e1a 50%, #030b18 100%)",
+        opacity: phase === 'out' ? 0 : 1,
+        pointerEvents: phase === 'out' ? 'none' : 'all',
+      }}
+    >
+      <div
+        className="flex flex-col items-center gap-4 transition-all duration-500"
+        style={{ opacity: phase === 'in' ? 0 : 1, transform: phase === 'in' ? 'scale(0.85) translateY(16px)' : 'scale(1) translateY(0)' }}
+      >
+        <div className="relative">
+          <div className="absolute -inset-6 rounded-full blur-3xl opacity-30 animate-pulse" style={{ background: "#EDE518" }} />
+          <div className="relative h-24 w-24 rounded-full bg-[#EDE518] flex items-center justify-center shadow-[0_0_60px_rgba(237,229,24,0.5)]">
+            <Play className="h-12 w-12 text-black ml-1" />
+          </div>
+        </div>
+        <div className="text-center">
+          <h1 className="text-4xl font-black text-white tracking-tight" style={{ textShadow: "0 0 40px rgba(237,229,24,0.4)" }}>
+            One Time<span style={{ color: "#EDE518" }}>.</span>
+          </h1>
+          <p className="text-slate-400 text-sm mt-1 tracking-widest uppercase">Rabbi Eli Scheller</p>
+        </div>
+        <div className="flex gap-1.5 mt-2">
+          {[0, 1, 2].map(i => (
+            <div
+              key={i}
+              className="h-1.5 rounded-full bg-[#EDE518]"
+              style={{
+                width: phase === 'hold' ? (i === 1 ? 24 : 6) : 6,
+                opacity: phase === 'hold' ? (i === 1 ? 1 : 0.4) : 0.3,
+                transition: `all 0.4s ease ${i * 0.1}s`,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -2461,6 +2629,24 @@ export default function DashboardPage() {
     queryKey: ["/api/user/continue-watching"],
     enabled: hasActiveSubscription,
   });
+
+  // ── Mini Player & Intro Animation state ───────────────────────────────────
+  const [miniPlayerState, setMiniPlayerState] = useState<MiniPlayerState>(null);
+  const [miniExpandVideo, setMiniExpandVideo] = useState<VideoType | null>(null);
+  const [showIntro, setShowIntro] = useState<boolean>(() => {
+    try { return !sessionStorage.getItem("intro_shown"); } catch { return false; }
+  });
+
+  // ── Video Progress Map ─────────────────────────────────────────────────────
+  const progressMap = useMemo(() => {
+    const m = new Map<string, number>();
+    for (const item of continueWatching) {
+      if (item.duration_seconds > 0) {
+        m.set(String(item.video_id), Math.min(99, Math.round((item.position_seconds / item.duration_seconds) * 100)));
+      }
+    }
+    return m;
+  }, [continueWatching]);
 
   const videosByCategory = useMemo(() => {
     if (!videos) return {};
@@ -2794,6 +2980,8 @@ export default function DashboardPage() {
   const registeredPhone = phoneNumbers?.[0];
 
   return (
+    <MiniPlayerContext.Provider value={{ setMiniPlayer: setMiniPlayerState }}>
+    <VideoProgressContext.Provider value={progressMap}>
     <ParentalControlsContext.Provider value={parentalCtxValue}>
     {/* ── PIN Unlock Dialog ────────────────────────────────────────────── */}
     <Dialog open={isPinUnlockOpen} onOpenChange={(o) => { setIsPinUnlockOpen(o); if (!o) setPinUnlockCallback(null); }}>
@@ -4274,5 +4462,36 @@ export default function DashboardPage() {
       })()}
     </div>
     </ParentalControlsContext.Provider>
+    </VideoProgressContext.Provider>
+    {showIntro && (
+      <IntroAnimation onDone={() => {
+        setShowIntro(false);
+        try { sessionStorage.setItem("intro_shown", "1"); } catch {}
+      }} />
+    )}
+    {miniPlayerState && (
+      <FloatingMiniPlayer
+        state={miniPlayerState}
+        onClose={() => setMiniPlayerState(null)}
+        onExpand={() => {
+          setMiniExpandVideo(miniPlayerState.video);
+          setMiniPlayerState(null);
+        }}
+      />
+    )}
+    {miniExpandVideo && (
+      <Dialog open={true} onOpenChange={(o) => { if (!o) setMiniExpandVideo(null); }}>
+        <DialogTitle className="sr-only">{miniExpandVideo.title}</DialogTitle>
+        <VideoPlayer
+          video={miniExpandVideo}
+          onClose={() => setMiniExpandVideo(null)}
+          onMinimize={(streamUrl, currentTime, isAudioType) => {
+            setMiniPlayerState({ video: miniExpandVideo!, streamUrl, currentTime, isAudio: isAudioType });
+            setMiniExpandVideo(null);
+          }}
+        />
+      </Dialog>
+    )}
+    </MiniPlayerContext.Provider>
   );
 }
