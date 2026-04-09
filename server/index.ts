@@ -540,6 +540,23 @@ async function runDataMigrations() {
       log(`Stripe recovery skipped: ${stripeErr.message}`, 'migration');
     }
 
+    // ── Restore whitelisted emails ────────────────────────────────────────────
+    const whitelistEmails = [
+      'shlomoaron@gmail.com','jbaer1981@gmail.com','budikdavid@gmail.com','rhazan613@gmail.com',
+      'aryehdeutch1@gmail.com','yzeprice@gmail.com','ye1000ye@gmail.com','raepstein9@gmail.com',
+      'danielfalik@gmail.com','yonatan.frankel@gmail.com','friedlander.arik@gmail.com','eligelernter@gmail.com',
+      'tzvimail@gmail.com','nesanelgoode@gmail.com','arigreenis@gmail.com','adami191@yahoo.com',
+      'mordykatz@gmail.com','ekreinberg@gmail.com','ykushner@yandllandscaping.com','sammyleibowitz@gmail.com',
+      'ydleibowitz@gmail.com','nissan.lifschitz@gmail.com','hloebmann@gmail.com','boruchlubling@gmail.com',
+      'a029995171@gmail.com','shabsiem@gmail.com','jneuhof@gmail.com','yoavpreiss@gmail.com',
+      'rabinowitz.ari@gmail.com','gershirap@gmail.com','ylrubelow@gmail.com','ceo4rx@gmail.com',
+      'schellereli@gmail.com','evmisc90@gmail.com','mandssch@gmail.com','elischwartz@gmail.com',
+      'meircshimborsky@gmail.com','ycshwekey@gmail.com','yonatansklar@gmail.com','yonahs@gmail.com',
+      'swsamweber@gmail.com','vahashayvosa@gmail.com','ejzwick@gmail.com','ilanzb@gmail.com',
+    ];
+    const wlValues = whitelistEmails.map(e => `(gen_random_uuid()::varchar, '${e}', NOW())`).join(',');
+    await pool.query(`INSERT INTO whitelisted_emails (id, email, created_at) VALUES ${wlValues} ON CONFLICT (email) DO NOTHING`);
+
     log('Data migrations complete', 'migration');
   } catch (err: any) {
     log(`Data migration error: ${err.message}`, 'migration');
