@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay, MessageSquare, Send, Heart, ThumbsUp, Bell, BellDot, History, Shield, ShieldCheck, ShieldAlert, TimerReset, User, Shuffle, X } from "lucide-react";
+import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay, MessageSquare, Send, Heart, ThumbsUp, Bell, BellDot, History, Shield, ShieldCheck, ShieldAlert, TimerReset, User, Shuffle, X, Smile, Sparkles, ArrowRight } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
@@ -2311,15 +2311,19 @@ function JokeButton({ onGoToDocs }: { onGoToDocs: () => void }) {
 
   return (
     <>
-      <button
-        onClick={() => { setJokeIndex(Math.floor(Math.random() * JOKES.length)); setOpen(true); }}
-        className="fixed bottom-24 right-4 z-[9000] h-14 w-14 rounded-full shadow-[0_4px_24px_rgba(0,0,0,0.5),0_0_16px_rgba(237,229,24,0.25)] flex items-center justify-center text-2xl hover:scale-110 active:scale-95 transition-transform"
-        style={{ background: "linear-gradient(135deg, #EDE518 0%, #f5c800 100%)" }}
-        title="Random Joke"
-        data-testid="button-random-joke"
-      >
-        😂
-      </button>
+      <div className="fixed bottom-24 right-4 z-[9000] flex flex-col items-center gap-1 group">
+        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/90 text-white text-[10px] font-bold px-2 py-1 rounded-lg whitespace-nowrap shadow-lg border border-white/10 pointer-events-none">
+          Click for a one-time joke! 😂
+        </div>
+        <button
+          onClick={() => { setJokeIndex(Math.floor(Math.random() * JOKES.length)); setOpen(true); }}
+          className="h-14 w-14 rounded-full shadow-[0_4px_24px_rgba(0,0,0,0.5),0_0_16px_rgba(237,229,24,0.25)] flex items-center justify-center text-2xl hover:scale-110 active:scale-95 transition-transform"
+          style={{ background: "linear-gradient(135deg, #EDE518 0%, #f5c800 100%)" }}
+          data-testid="button-random-joke"
+        >
+          😂
+        </button>
+      </div>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-md" style={{ background: "linear-gradient(145deg, #060e1a 0%, #0a1628 100%)", border: "1px solid rgba(237,229,24,0.2)" }}>
           <DialogHeader>
@@ -2340,10 +2344,10 @@ function JokeButton({ onGoToDocs }: { onGoToDocs: () => void }) {
             </Button>
             <Button
               variant="ghost"
-              className="text-slate-400 hover:text-white text-xs gap-1"
+              className="text-[#EDE518]/70 hover:text-[#EDE518] text-xs gap-1 border border-[#EDE518]/20 hover:border-[#EDE518]/50"
               onClick={() => { setOpen(false); onGoToDocs(); }}
             >
-              <FileText className="h-3.5 w-3.5" /> Download the Full Joke Book →
+              <FileText className="h-3.5 w-3.5" /> Did you see the full joke book? Get it here →
             </Button>
           </div>
         </DialogContent>
@@ -2824,7 +2828,7 @@ export default function DashboardPage() {
   };
 
   const moodMatchedVideoIds = useMemo<Set<string> | null>(() => {
-    if (!moodFilter || !videos || !categories) return null;
+    if (!moodFilter || moodFilter === "open" || !videos || !categories) return null;
     const keywords = MOOD_KEYWORDS[moodFilter] || [];
     const matchedCatIds = new Set<string>();
     categories.forEach((cat: any) => {
@@ -3214,113 +3218,149 @@ export default function DashboardPage() {
 
     {/* ── Parental Controls Setup Dialog ──────────────────────────────── */}
     <Dialog open={isParentalSetupOpen} onOpenChange={setIsParentalSetupOpen}>
-      <DialogContent className="max-w-md overflow-y-auto max-h-[90vh]">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <ShieldCheck className="h-5 w-5 text-[#EDE518]" />
-            {parentalData ? "Edit Parental Controls" : "Set Up Parental Controls"}
-          </DialogTitle>
-          <DialogDescription>Set a daily, weekly, or monthly screen-time limit. Kids can't bypass it without your PIN.</DialogDescription>
-        </DialogHeader>
-        <div className="space-y-4 py-2">
-          {parentalData && (
-            <div>
-              <Label>Current PIN (required to make changes)</Label>
-              <Input type="password" inputMode="numeric" maxLength={6} placeholder="Your current PIN" value={pcCurrentPin} onChange={(e) => setPcCurrentPin(e.target.value)} data-testid="input-pc-current-pin" />
-            </div>
-          )}
-          <div>
-            <Label>Parent Email</Label>
-            <Input type="email" placeholder="parent@example.com" value={pcEmail} onChange={(e) => setPcEmail(e.target.value)} data-testid="input-pc-email" />
-            <p className="text-xs text-muted-foreground mt-1">For your reference only — stored with the settings</p>
-          </div>
-          <div>
-            <Label>New PIN (4–6 digits)</Label>
-            <Input type="password" inputMode="numeric" maxLength={6} placeholder="New PIN" value={pcPin} onChange={(e) => setPcPin(e.target.value)} data-testid="input-pc-pin" />
-          </div>
-          <div>
-            <Label>Confirm New PIN</Label>
-            <Input type="password" inputMode="numeric" maxLength={6} placeholder="Confirm PIN" value={pcPinConfirm} onChange={(e) => setPcPinConfirm(e.target.value)} data-testid="input-pc-pin-confirm" />
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label>Time Limit</Label>
-              <Select value={pcLimitHours} onValueChange={setPcLimitHours}>
-                <SelectTrigger data-testid="select-pc-limit"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {["0.25","0.5","1","1.5","2","3","4","5","6","8","10","12","15","20"].map(h => (
-                    <SelectItem key={h} value={h}>
-                      {Number(h) < 1 ? `${Number(h)*60} min` : `${h} hr${Number(h) !== 1 ? 's' : ''}`}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+      <DialogContent className="max-w-md overflow-y-auto max-h-[92vh] p-0" style={{ background: "linear-gradient(145deg, #060e1a 0%, #0a1628 100%)", border: "1px solid rgba(237,229,24,0.15)" }}>
+        {/* Header */}
+        <div className="relative overflow-hidden px-6 pt-6 pb-4 border-b border-white/5">
+          <div className="absolute -top-8 -right-8 w-32 h-32 rounded-full opacity-15 blur-3xl" style={{ background: "#EDE518" }} />
+          <div className="flex items-center gap-3 relative">
+            <div className="h-11 w-11 rounded-2xl bg-[#EDE518] flex items-center justify-center shadow-[0_0_20px_rgba(237,229,24,0.3)]">
+              <ShieldCheck className="h-6 w-6 text-black" />
             </div>
             <div>
-              <Label>Per Period</Label>
-              <Select value={pcPeriod} onValueChange={setPcPeriod}>
-                <SelectTrigger data-testid="select-pc-period"><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="day">Per Day</SelectItem>
-                  <SelectItem value="week">Per Week</SelectItem>
-                  <SelectItem value="month">Per Month</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div>
-            <Label className="mb-2 block">Apply limit to</Label>
-            <p className="text-xs text-muted-foreground mb-3">Tap a category to restrict it, or select "All Categories".</p>
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => { setPcCategoryAll(true); setPcCategoryIds([]); }}
-                className={`text-xs px-3 py-1.5 rounded-full border transition-all font-medium ${pcCategoryAll || pcCategoryIds.length === 0 ? 'bg-[#EDE518] text-black border-[#EDE518]' : 'border-border text-foreground/70 bg-muted hover:border-[#EDE518] hover:text-foreground'}`}
-                data-testid="button-pc-all-categories"
-              >
-                All Categories
-              </button>
-              {categories.map(cat => (
-                <button
-                  key={cat.id}
-                  type="button"
-                  onClick={() => {
-                    setPcCategoryAll(false);
-                    setPcCategoryIds(prev => prev.includes(cat.id) ? prev.filter(id => id !== cat.id) : [...prev, cat.id]);
-                  }}
-                  className={`text-xs px-3 py-1.5 rounded-full border transition-all font-medium ${pcCategoryIds.includes(cat.id) ? 'bg-[#EDE518] text-black border-[#EDE518]' : 'border-border text-foreground/70 bg-muted hover:border-[#EDE518] hover:text-foreground'}`}
-                  data-testid={`button-pc-cat-${cat.id}`}
-                >
-                  {cat.parentCategoryId ? `↳ ${cat.name}` : cat.name}
-                </button>
-              ))}
+              <DialogTitle className="text-white font-black text-lg">
+                {parentalData ? "Edit Parental Controls" : "Set Up Parental Controls"}
+              </DialogTitle>
+              <p className="text-slate-400 text-xs mt-0.5">Kids stay safe — you stay in control</p>
             </div>
           </div>
         </div>
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setIsParentalSetupOpen(false)}>Cancel</Button>
+
+        <div className="px-6 py-4 space-y-5">
+          {/* How to activate steps — only shown when setting up for the first time */}
+          {!parentalData && (
+            <div className="rounded-xl border border-[#EDE518]/20 overflow-hidden" style={{ background: "rgba(237,229,24,0.04)" }}>
+              <div className="px-4 py-2 border-b border-[#EDE518]/10">
+                <span className="text-[10px] font-black uppercase tracking-widest text-[#EDE518]">How to Activate</span>
+              </div>
+              <div className="px-4 py-3 space-y-2.5">
+                {[
+                  { step: "1", text: "Go to Settings (top right gear icon)" },
+                  { step: "2", text: "Tap 'Parental Controls' in the menu" },
+                  { step: "3", text: "Choose a secret PIN only you know" },
+                  { step: "4", text: "Set your time limit & which videos to restrict" },
+                  { step: "5", text: "Tap 'Save' — protection starts immediately!" },
+                ].map(({ step, text }) => (
+                  <div key={step} className="flex items-start gap-3">
+                    <div className="h-5 w-5 rounded-full bg-[#EDE518] flex items-center justify-center shrink-0 mt-0.5">
+                      <span className="text-[9px] font-black text-black">{step}</span>
+                    </div>
+                    <p className="text-slate-300 text-xs leading-relaxed">{text}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Form fields */}
+          <div className="space-y-4">
+            {parentalData && (
+              <div className="space-y-1.5">
+                <Label className="text-slate-300 text-xs font-semibold uppercase tracking-wide">Current PIN (required to make changes)</Label>
+                <Input type="password" inputMode="numeric" maxLength={6} placeholder="Your current PIN" value={pcCurrentPin} onChange={(e) => setPcCurrentPin(e.target.value)}
+                  className="bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus:border-[#EDE518]/50" data-testid="input-pc-current-pin" />
+              </div>
+            )}
+            <div className="space-y-1.5">
+              <Label className="text-slate-300 text-xs font-semibold uppercase tracking-wide">Parent Email</Label>
+              <Input type="email" placeholder="parent@example.com" value={pcEmail} onChange={(e) => setPcEmail(e.target.value)}
+                className="bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus:border-[#EDE518]/50" data-testid="input-pc-email" />
+              <p className="text-xs text-slate-600">For your records only</p>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label className="text-slate-300 text-xs font-semibold uppercase tracking-wide">New PIN</Label>
+                <Input type="password" inputMode="numeric" maxLength={6} placeholder="4–6 digits" value={pcPin} onChange={(e) => setPcPin(e.target.value)}
+                  className="bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus:border-[#EDE518]/50" data-testid="input-pc-pin" />
+              </div>
+              <div className="space-y-1.5">
+                <Label className="text-slate-300 text-xs font-semibold uppercase tracking-wide">Confirm PIN</Label>
+                <Input type="password" inputMode="numeric" maxLength={6} placeholder="Same PIN" value={pcPinConfirm} onChange={(e) => setPcPinConfirm(e.target.value)}
+                  className="bg-white/5 border-white/10 text-white placeholder:text-slate-600 focus:border-[#EDE518]/50" data-testid="input-pc-pin-confirm" />
+              </div>
+            </div>
+            <div className="rounded-xl border border-white/8 overflow-hidden">
+              <div className="px-4 py-2 border-b border-white/5" style={{ background: "rgba(255,255,255,0.03)" }}>
+                <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Screen Time Limit</span>
+              </div>
+              <div className="px-4 py-3 grid grid-cols-2 gap-3">
+                <div className="space-y-1.5">
+                  <Label className="text-slate-400 text-xs">Limit</Label>
+                  <Select value={pcLimitHours} onValueChange={setPcLimitHours}>
+                    <SelectTrigger className="bg-white/5 border-white/10 text-white" data-testid="select-pc-limit"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {["0.25","0.5","1","1.5","2","3","4","5","6","8","10","12","15","20"].map(h => (
+                        <SelectItem key={h} value={h}>
+                          {Number(h) < 1 ? `${Number(h)*60} min` : `${h} hr${Number(h) !== 1 ? 's' : ''}`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-slate-400 text-xs">Period</Label>
+                  <Select value={pcPeriod} onValueChange={setPcPeriod}>
+                    <SelectTrigger className="bg-white/5 border-white/10 text-white" data-testid="select-pc-period"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="day">Per Day</SelectItem>
+                      <SelectItem value="week">Per Week</SelectItem>
+                      <SelectItem value="month">Per Month</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label className="text-slate-300 text-xs font-semibold uppercase tracking-wide">Apply limit to</Label>
+              <p className="text-xs text-slate-600">Tap to select which categories to restrict:</p>
+              <div className="flex flex-wrap gap-2">
+                <button type="button" onClick={() => { setPcCategoryAll(true); setPcCategoryIds([]); }}
+                  className={`text-xs px-3 py-1.5 rounded-full border transition-all font-medium ${pcCategoryAll || pcCategoryIds.length === 0 ? 'bg-[#EDE518] text-black border-[#EDE518]' : 'border-white/10 text-slate-400 bg-white/5 hover:border-[#EDE518]/40'}`}
+                  data-testid="button-pc-all-categories">All Categories</button>
+                {categories.map(cat => (
+                  <button key={cat.id} type="button"
+                    onClick={() => { setPcCategoryAll(false); setPcCategoryIds(prev => prev.includes(cat.id) ? prev.filter(id => id !== cat.id) : [...prev, cat.id]); }}
+                    className={`text-xs px-3 py-1.5 rounded-full border transition-all font-medium ${pcCategoryIds.includes(cat.id) ? 'bg-[#EDE518] text-black border-[#EDE518]' : 'border-white/10 text-slate-400 bg-white/5 hover:border-[#EDE518]/40'}`}
+                    data-testid={`button-pc-cat-${cat.id}`}>
+                    {cat.parentCategoryId ? `↳ ${cat.name}` : cat.name}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="px-6 pb-6 flex gap-3">
+          <Button variant="outline" className="border-white/10 text-slate-400 hover:text-white hover:border-white/20" onClick={() => setIsParentalSetupOpen(false)}>Cancel</Button>
           <Button
+            className="flex-1 bg-[#EDE518] text-black font-bold hover:bg-[#EDE518]/90 shadow-[0_0_16px_rgba(237,229,24,0.3)]"
             onClick={() => {
               if (pcPin !== pcPinConfirm) { toast({ title: "PINs do not match", variant: "destructive" }); return; }
               if (pcPin.length < 4) { toast({ title: "PIN must be at least 4 digits", variant: "destructive" }); return; }
               if (!pcEmail) { toast({ title: "Parent email is required", variant: "destructive" }); return; }
               const limitMinutes = Math.round(Number(pcLimitHours) * 60);
               setupParentalMutation.mutate({
-                pin: pcPin,
-                currentPin: pcCurrentPin || undefined,
-                parentEmail: pcEmail,
-                timeLimitMinutes: limitMinutes,
-                timePeriod: pcPeriod,
-                categoryIds: pcCategoryAll ? [] : pcCategoryIds,
+                pin: pcPin, currentPin: pcCurrentPin || undefined,
+                parentEmail: pcEmail, timeLimitMinutes: limitMinutes,
+                timePeriod: pcPeriod, categoryIds: pcCategoryAll ? [] : pcCategoryIds,
               });
             }}
             disabled={setupParentalMutation.isPending}
             data-testid="button-pc-save"
           >
-            {setupParentalMutation.isPending && <Loader2 className="h-4 w-4 mr-1 animate-spin" />}
-            Save Controls
+            {setupParentalMutation.isPending ? <Loader2 className="h-4 w-4 mr-1 animate-spin" /> : <ShieldCheck className="h-4 w-4 mr-1" />}
+            {parentalData ? "Save Changes" : "Activate Parental Controls"}
           </Button>
-        </DialogFooter>
+        </div>
       </DialogContent>
     </Dialog>
 
@@ -4050,71 +4090,146 @@ export default function DashboardPage() {
                 </Card>
               )}
 
-              {/* Search Bar + Surprise Me */}
-              <div className="flex items-center gap-3 flex-wrap">
-                <div className="flex-1 min-w-[200px] max-w-md">
-                  <Input
-                    placeholder="Search videos..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full bg-[#0d1828] border-white/10 text-white placeholder:text-slate-500 focus:border-[#EDE518]/50"
-                    data-testid="input-search-videos"
-                  />
-                </div>
-                <Button
-                  onClick={handleSurpriseMe}
-                  className="bg-gradient-to-r from-[#EDE518] to-[#f5d800] text-black font-bold hover:from-[#f5d800] hover:to-[#EDE518] shadow-[0_0_12px_#EDE51860] hover:shadow-[0_0_20px_#EDE51880] transition-all gap-2 shrink-0"
-                  data-testid="button-surprise-me"
-                >
-                  <Shuffle className="h-4 w-4" />
-                  Surprise Me
-                </Button>
-              </div>
-              
-              {/* Pick Your Mood */}
-              {!searchQuery.trim() && (
-                <div>
-                  <div className="flex items-center gap-2 mb-2.5">
-                    <span className="text-xs font-black uppercase tracking-widest text-slate-400">Pick Your Mood</span>
-                    {moodFilter && (
-                      <button onClick={() => setMoodFilter(null)} className="text-xs text-slate-500 hover:text-slate-300 underline transition-colors">
-                        Clear
+              {/* ── Start Here Banner ─────────────────────────────────────── */}
+              {!selectedCategory && !searchQuery.trim() && !moodFilter && (() => {
+                const startHereVideos = (videos || []).slice(0, 5);
+                if (startHereVideos.length === 0) return null;
+                return (
+                  <div
+                    className="relative overflow-hidden rounded-2xl border border-[#EDE518]/25 cursor-pointer group"
+                    style={{ background: "linear-gradient(135deg, #0a1830 0%, #0d2040 60%, #0a1628 100%)" }}
+                    onClick={() => {
+                      const v = startHereVideos[0];
+                      if (v) {
+                        const el = document.querySelector(`[data-video-id="${v.id}"]`) as HTMLElement;
+                        el?.click();
+                      }
+                    }}
+                    data-testid="banner-start-here"
+                  >
+                    {/* Glow effect */}
+                    <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-[#EDE518]/60 to-transparent" />
+                    <div className="absolute -top-10 -left-10 w-40 h-40 rounded-full opacity-20 blur-3xl" style={{ background: "#EDE518" }} />
+                    <div className="flex items-center gap-4 p-4">
+                      <div className="h-12 w-12 rounded-2xl bg-[#EDE518] flex items-center justify-center shrink-0 shadow-[0_0_20px_rgba(237,229,24,0.4)] group-hover:shadow-[0_0_30px_rgba(237,229,24,0.6)] transition-shadow">
+                        <Play className="h-6 w-6 text-black ml-0.5" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-0.5">
+                          <Sparkles className="h-3.5 w-3.5 text-[#EDE518]" />
+                          <span className="text-[10px] font-black uppercase tracking-[0.15em] text-[#EDE518]">New here?</span>
+                        </div>
+                        <p className="text-white font-black text-lg leading-tight">Start Here 👉</p>
+                        <p className="text-slate-400 text-xs mt-0.5">Jump straight to our best videos — picked just for you</p>
+                      </div>
+                      <ArrowRight className="h-5 w-5 text-[#EDE518]/60 group-hover:text-[#EDE518] group-hover:translate-x-1 transition-all shrink-0" />
+                    </div>
+                    {/* Thumbnail strip */}
+                    <div className="flex gap-1 px-4 pb-3">
+                      {startHereVideos.slice(0, 4).map(v => (
+                        <div
+                          key={v.id}
+                          className="flex-1 aspect-video rounded-lg overflow-hidden bg-[#0d1828] opacity-70 group-hover:opacity-90 transition-opacity"
+                        >
+                          {v.thumbnailPath ? (
+                            <img src={`/api/videos/${v.id}/thumbnail`} alt="" className="w-full h-full object-cover" />
+                          ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                              <Play className="h-4 w-4 text-slate-600" />
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
+
+              {/* Search Bar + Mood Filter + Surprise Me */}
+              <div className="space-y-0">
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 min-w-[160px] relative">
+                    <Input
+                      placeholder="Search videos..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="w-full bg-[#0d1828] border-white/10 text-white placeholder:text-slate-500 focus:border-[#EDE518]/50 pr-10"
+                      data-testid="input-search-videos"
+                    />
+                    {/* Mood filter toggle icon inside search bar */}
+                    {!searchQuery.trim() && (
+                      <button
+                        onClick={() => setMoodFilter(moodFilter ? null : "open")}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 flex items-center justify-center rounded-full transition-all hover:scale-110"
+                        style={moodFilter && moodFilter !== "open" ? { color: "#EDE518" } : { color: "#64748b" }}
+                        title="Pick Your Mood"
+                        data-testid="button-mood-toggle"
+                      >
+                        {moodFilter && moodFilter !== "open" ? (
+                          <span className="text-base leading-none">
+                            {moodFilter === "funny" ? "😂" : moodFilter === "crazy" ? "🤪" : moodFilter === "smart" ? "🧠" : "😌"}
+                          </span>
+                        ) : (
+                          <Smile className="h-4 w-4" />
+                        )}
                       </button>
                     )}
                   </div>
-                  <div className="flex gap-2 flex-wrap">
-                    {[
-                      { id: "funny", emoji: "😂", label: "Funny" },
-                      { id: "crazy", emoji: "🤪", label: "Crazy" },
-                      { id: "smart", emoji: "🧠", label: "Smart" },
-                      { id: "chill", emoji: "😌", label: "Chill" },
-                    ].map(mood => (
-                      <button
-                        key={mood.id}
-                        onClick={() => setMoodFilter(moodFilter === mood.id ? null : mood.id)}
-                        className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold border transition-all hover:scale-105 active:scale-95"
-                        style={moodFilter === mood.id ? {
-                          background: "linear-gradient(135deg, #EDE518 0%, #f5c800 100%)",
-                          color: "#000",
-                          borderColor: "#EDE518",
-                          boxShadow: "0 0 16px rgba(237,229,24,0.4)",
-                        } : {
-                          background: "rgba(255,255,255,0.05)",
-                          color: "#94a3b8",
-                          borderColor: "rgba(255,255,255,0.1)",
-                        }}
-                        data-testid={`button-mood-${mood.id}`}
-                      >
-                        <span className="text-base">{mood.emoji}</span>
-                        {mood.label}
-                      </button>
-                    ))}
-                  </div>
-                  {moodFilter && moodMatchedVideoIds === null && (
-                    <p className="text-xs text-slate-500 mt-2">Showing all videos — no specific matches for this mood yet.</p>
-                  )}
+                  <Button
+                    onClick={handleSurpriseMe}
+                    className="bg-gradient-to-r from-[#EDE518] to-[#f5d800] text-black font-bold hover:from-[#f5d800] hover:to-[#EDE518] shadow-[0_0_12px_#EDE51860] hover:shadow-[0_0_20px_#EDE51880] transition-all gap-2 shrink-0"
+                    data-testid="button-surprise-me"
+                  >
+                    <Shuffle className="h-4 w-4" />
+                    Surprise Me
+                  </Button>
                 </div>
-              )}
+
+                {/* Mood dropdown panel — slides in when mood icon clicked */}
+                {!searchQuery.trim() && (moodFilter === "open" || (moodFilter && moodFilter !== "open")) && (
+                  <div
+                    className="mt-2 rounded-2xl border border-[#EDE518]/20 overflow-hidden animate-in slide-in-from-top-2 duration-200"
+                    style={{ background: "linear-gradient(135deg, #060e1a 0%, #0a1628 100%)" }}
+                  >
+                    <div className="px-4 pt-3 pb-1 flex items-center justify-between">
+                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Pick Your Mood</span>
+                      {moodFilter && moodFilter !== "open" && (
+                        <button onClick={() => setMoodFilter(null)} className="text-[10px] text-slate-500 hover:text-[#EDE518] underline transition-colors">
+                          Clear filter
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex gap-2 px-4 pb-3 flex-wrap">
+                      {[
+                        { id: "funny", emoji: "😂", label: "Funny" },
+                        { id: "crazy", emoji: "🤪", label: "Crazy" },
+                        { id: "smart", emoji: "🧠", label: "Smart" },
+                        { id: "chill", emoji: "😌", label: "Chill" },
+                      ].map(mood => (
+                        <button
+                          key={mood.id}
+                          onClick={() => setMoodFilter(moodFilter === mood.id ? null : mood.id)}
+                          className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold border transition-all hover:scale-105 active:scale-95"
+                          style={moodFilter === mood.id ? {
+                            background: "linear-gradient(135deg, #EDE518 0%, #f5c800 100%)",
+                            color: "#000",
+                            borderColor: "#EDE518",
+                            boxShadow: "0 0 16px rgba(237,229,24,0.4)",
+                          } : {
+                            background: "rgba(255,255,255,0.05)",
+                            color: "#94a3b8",
+                            borderColor: "rgba(255,255,255,0.1)",
+                          }}
+                          data-testid={`button-mood-${mood.id}`}
+                        >
+                          <span className="text-base">{mood.emoji}</span>
+                          {mood.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
 
               {/* Search Results - shown when searching */}
               {searchQuery.trim() && (
