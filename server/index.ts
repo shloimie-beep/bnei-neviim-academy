@@ -189,6 +189,77 @@ async function runDataMigrations() {
       }
     }
 
+    // ── Categorize Stories videos into subcategories by title (idempotent) ─────
+    if (storiesRow.rows.length > 0) {
+      const storiesId = storiesRow.rows[0].id;
+      // Map: subcategory name → array of video titles that belong there
+      const categoryTitleMap: Record<string, string[]> = {
+        'Yom Tov Stories': [
+          'Chanukah 2022', 'Copy of Purim 5780', 'Pesach #1 - Jump',
+          'Purim The Train Conductor', 'chol hamod 4', 'chol hamoed #2',
+          'new story chol hamod 3',
+        ],
+        'Shabbos Stories': [
+          'Avos Ubonim 2', 'Avos Ubonim Vayeira', 'Lutzk Avos Ubonim',
+        ],
+        'Tzaddikim Stories': [
+          'DEJE REBBE', "R' Chaim kaniefsky", 'Ishbitz',
+          "The Rebbe's Coffee", 'Ger Lutzk', 'Sar Hamazel',
+        ],
+        'Emunah Stories': [
+          'Yearning', 'Searching for Happiness', 'Higher and Higher', 'Dreams',
+          'Ill Always be There For you', '6 Constant Mitzvos', 'become jewish',
+          'Two Brothers - Two Worlds Apart', 'Moving to Israel', 'Lila',
+          'The Cancelled Snowtubing Trip',
+        ],
+        'History & Miracles': [
+          'Operation Thunderbolt', 'The Great Escape', 'The Versailles Disaster',
+          'The Incredible Story of the MIG 21', 'Henry Ford', 'War Time',
+          'insane hostege rescue', 'Stuck in Moscow', 'The Boston Surgeon',
+          'The 4 Minute Mile', 'Living on the Lebanon Border',
+          'Vintage Lakewood & A Miracle in St. Louis', 'The Secret Mission',
+          'Prisoner Exchange', 'African', 'California on Fire', 'Facing the Giants',
+          'The black coat', 'japan', 'japan 2', 'japan 3',
+          'Parshas Ki Sisa', 'Parshas Teruma', 'Parshas Tetzave',
+          'A prisoner on the loose', 'Sharks in tank', 'Siamese Twins',
+          'The Science of a Boom', 'Moshlei 1',
+        ],
+        'Middos & Character': [
+          'Marginal Gains', 'Marshmellow experiment', 'The Partnership',
+          'Advice from a Billlionaire', 'The mean Grocer new!',
+          'The Homeless Restaurant Owner', 'Who Packs Your Parachute',
+          'Speed & Humility', 'The Convention', 'STOP',
+          "It's All in the Preparation", 'Why two Executives', 'The Misfit',
+          'A Unique Competition in London', 'Yossel the Contractor',
+          'Do Barbers exist?', 'Ziggy',
+        ],
+        'Everyday Life': [
+          'My First Flight', 'Pizza Place', 'Garbage can', 'Elevator experiment',
+          'Pinks HOt Dogs', 'Check the Cameras!', 'Visiting MDY', 'florida',
+          'football in south bend', 'Army Trick Gone Wrong! 🤣 See What Happened! 😲',
+          'Batting cages 2', 'Crash', 'Cocoa cola', 'Sprayed with gas',
+          'Shibuya Scramble', 'plane', 'MC DONALDS', '51 minutes', 'shewki',
+          'weel chair', 'Camp Video cchf', "mendy's revenge",
+          'The Road Coninues', '⏯️⏸️▶️ no show party',
+        ],
+      };
+      for (const [subCatName, titles] of Object.entries(categoryTitleMap)) {
+        if (!titles.length) continue;
+        await pool.query(
+          `UPDATE videos
+           SET category_id = (
+             SELECT vc.id FROM video_categories vc
+             WHERE vc.name = $1
+               AND vc.parent_category_id = $2
+             LIMIT 1
+           )
+           WHERE title = ANY($3)
+             AND category_id = $2`,
+          [subCatName, storiesId, titles]
+        );
+      }
+    }
+
     // ── Seed: banner slides from recent Stories videos (if banners table is empty) ──
     const bannerCount = await pool.query(`SELECT COUNT(*) FROM dashboard_banners`);
     if (parseInt(bannerCount.rows[0].count) === 0) {
