@@ -1890,9 +1890,9 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
             )}
             {isAudio && (
               <button
-                className={`absolute top-2 left-2 z-20 p-1.5 rounded-full transition-all ${dlDone ? "bg-[#08779C]/90 opacity-100" : "bg-black/50 opacity-0 group-hover:opacity-100"}`}
+                className={`absolute top-2 left-2 z-20 p-1.5 rounded-full transition-all shadow-md ${dlDone ? "bg-[#08779C]/90 opacity-100" : dlProgress !== undefined ? "bg-black/70 opacity-100" : "bg-black/50 opacity-100"}`}
                 onClick={handleDownload}
-                title={dlDone ? "Remove download" : dlProgress !== undefined ? `Downloading… ${dlProgress}%` : "Download for offline"}
+                title={dlDone ? "Remove download" : dlProgress !== undefined ? `Downloading… ${dlProgress >= 0 ? dlProgress + "%" : "…"}` : "Download for offline"}
                 data-testid={`button-card-download-${video.id}`}
               >
                 {dlProgress !== undefined && !dlDone ? (
@@ -1900,7 +1900,7 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
                 ) : dlDone ? (
                   <CheckCheck className="h-3.5 w-3.5 text-white" />
                 ) : (
-                  <Download className="h-3.5 w-3.5 text-white" />
+                  <Download className="h-3.5 w-3.5 text-white/80" />
                 )}
               </button>
             )}
@@ -2486,34 +2486,37 @@ const FEATURE_PROMO_CARDS = [
     glow: "#08779Caa",
     videoId: null as string | null,
     imageUrl: null as string | null,
+    action: null as string | null,
   },
   {
     id: "feat-parental",
     badge: "🛡️ New Feature",
     title: "Parental Controls",
-    subtitle: "Set daily, weekly or monthly screen-time limits — right inside Account Settings.",
+    subtitle: "Set daily, weekly, or monthly screen-time limits. Tap here to set it up now!",
     emoji: "🛡️",
     bg: "linear-gradient(135deg, #2d1463 0%, #4c1d95 100%)",
     accent: "#8b5cf6",
     glow: "#8b5cf6aa",
     videoId: null as string | null,
     imageUrl: null as string | null,
+    action: "settings" as string | null,
   },
   {
     id: "feat-offline",
     badge: "⬇️ New Feature",
     title: "Download Stories",
-    subtitle: "Save any audio story to your device and listen offline — no internet needed!",
+    subtitle: "See the download icon on any audio story card — tap it to save for offline listening!",
     emoji: "⬇️",
     bg: "linear-gradient(135deg, #064e3b 0%, #059669 100%)",
     accent: "#10b981",
     glow: "#10b981aa",
     videoId: null as string | null,
     imageUrl: null as string | null,
+    action: null as string | null,
   },
 ];
 
-function DashboardBannerSlideshow({ banners, videos }: { banners: BannerItem[]; videos: VideoType[] }) {
+function DashboardBannerSlideshow({ banners, videos, onOpenSettings }: { banners: BannerItem[]; videos: VideoType[]; onOpenSettings?: () => void }) {
   const [current, setCurrent] = useState(0);
   const [openVideo, setOpenVideo] = useState<VideoType | null>(null);
   const [isOpenVideo, setIsOpenVideo] = useState(false);
@@ -2534,6 +2537,7 @@ function DashboardBannerSlideshow({ banners, videos }: { banners: BannerItem[]; 
       imageUrl: b.imageUrl
         ? b.imageUrl.startsWith("/objects/") ? `/api/banners/${b.id}/image` : b.imageUrl
         : null,
+      action: null as string | null,
     })),
   ];
 
@@ -2592,50 +2596,59 @@ function DashboardBannerSlideshow({ banners, videos }: { banners: BannerItem[]; 
 
         {/* Content */}
         <div
-          className={`relative flex items-end gap-4 px-5 sm:px-8 pt-7 pb-10 ${slide.videoId ? "cursor-pointer" : ""}`}
-          style={{ minHeight: 220 }}
+          className={`relative flex items-end gap-4 px-5 sm:px-8 pt-8 pb-12 ${(slide.videoId || slide.action) ? "cursor-pointer" : ""}`}
+          style={{ minHeight: 240 }}
           onClick={() => {
+            if (slide.action === "settings") { onOpenSettings?.(); return; }
             if (!slide.videoId) return;
             const v = videos.find(v => v.id === slide.videoId);
             if (v) { setOpenVideo(v); setIsOpenVideo(true); }
           }}
         >
           <div className="flex-1 min-w-0">
-            {/* Badge */}
-            <span
-              className="inline-flex items-center text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full mb-3"
-              style={{ background: `${accent}25`, color: accent, border: `1px solid ${accent}50` }}
-            >
-              {slide.badge}
-            </span>
+            {/* Badge pill */}
+            <div className="mb-3">
+              <span
+                className="inline-flex items-center text-[11px] font-bold px-3 py-1 rounded-full"
+                style={{ background: `${accent}20`, color: accent, border: `1.5px solid ${accent}45`, letterSpacing: "0.04em" }}
+              >
+                {slide.badge}
+              </span>
+            </div>
 
-            {/* Emoji for non-image slides */}
+            {/* Large emoji for non-image slides */}
             {!slide.imageUrl && (
-              <div className="text-4xl mb-2 leading-none">{slide.emoji}</div>
+              <div className="text-5xl mb-3 leading-none drop-shadow-lg">{slide.emoji}</div>
             )}
 
             {/* Title */}
             <h2
-              className="text-2xl sm:text-3xl font-black text-white leading-tight line-clamp-2 drop-shadow-2xl mb-2"
-              style={{ textShadow: "0 2px 20px rgba(0,0,0,0.8)" }}
+              className="text-2xl sm:text-[1.75rem] font-black text-white leading-tight line-clamp-2 drop-shadow-2xl mb-2"
+              style={{ textShadow: "0 2px 24px rgba(0,0,0,0.9)" }}
             >
               {slide.title}
             </h2>
 
             {/* Subtitle */}
             {slide.subtitle && (
-              <p className="text-white/60 text-sm line-clamp-2 max-w-xs leading-snug">
+              <p className="text-white/65 text-sm line-clamp-2 leading-snug max-w-sm">
                 {slide.subtitle}
               </p>
             )}
 
-            {/* CTA for video slides */}
-            {slide.videoId && (
-              <div className="flex items-center gap-1.5 mt-3">
-                <div className="h-6 w-6 rounded-full flex items-center justify-center" style={{ background: accent }}>
-                  <Play className="h-3 w-3 text-black ml-0.5" />
+            {/* CTA button */}
+            {(slide.videoId || slide.action) && (
+              <div className="flex items-center gap-2 mt-4">
+                <div
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold"
+                  style={{ background: accent, color: accent === "#EDE518" ? "#000" : "#fff" }}
+                >
+                  {slide.videoId ? (
+                    <><Play className="h-3 w-3 fill-current" /> Watch now</>
+                  ) : (
+                    <><Settings className="h-3 w-3" /> Open Settings</>
+                  )}
                 </div>
-                <span className="text-xs font-bold" style={{ color: accent }}>Watch now</span>
               </div>
             )}
           </div>
@@ -2643,7 +2656,7 @@ function DashboardBannerSlideshow({ banners, videos }: { banners: BannerItem[]; 
           {/* Right-side thumbnail (visible on sm+) */}
           {slide.imageUrl && (
             <div
-              className="hidden sm:block flex-shrink-0 w-28 h-20 md:w-40 md:h-28 rounded-2xl overflow-hidden border-2 shadow-2xl"
+              className="hidden sm:block flex-shrink-0 w-28 h-20 md:w-44 md:h-32 rounded-2xl overflow-hidden border-2 shadow-2xl"
               style={{ borderColor: `${accent}60`, boxShadow: `0 8px 32px rgba(0,0,0,0.6), 0 0 20px ${accent}30` }}
             >
               <img src={slide.imageUrl} alt={slide.title} className="w-full h-full object-cover" />
@@ -4542,9 +4555,7 @@ export default function DashboardPage() {
 
 
       {/* Dashboard Banner Slideshow */}
-      {banners.length > 0 && (
-        <DashboardBannerSlideshow banners={banners} videos={videos || []} />
-      )}
+      <DashboardBannerSlideshow banners={banners} videos={videos || []} onOpenSettings={() => setIsSettingsOpen(true)} />
 
       {/* ── Full Mood Page — fixed overlay above everything (z-[60] > header z-50) ── */}
       {selectedMood && (() => {
