@@ -1889,22 +1889,6 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
                 <Heart className={`h-3.5 w-3.5 ${isFavorited ? "fill-[#EDE518] text-[#EDE518]" : "text-white"}`} />
               </button>
             )}
-            {isAudio && (
-              <button
-                className={`absolute top-2 left-2 z-20 p-1.5 rounded-full transition-all shadow-md ${dlDone ? "bg-[#08779C]/90 opacity-100" : dlProgress !== undefined ? "bg-black/70 opacity-100" : "bg-black/50 opacity-100"}`}
-                onClick={handleDownload}
-                title={dlDone ? "Remove download" : dlProgress !== undefined ? `Downloading… ${dlProgress >= 0 ? dlProgress + "%" : "…"}` : "Download for offline"}
-                data-testid={`button-card-download-${video.id}`}
-              >
-                {dlProgress !== undefined && !dlDone ? (
-                  <Loader2 className="h-3.5 w-3.5 text-[#EDE518] animate-spin" />
-                ) : dlDone ? (
-                  <CheckCheck className="h-3.5 w-3.5 text-white" />
-                ) : (
-                  <Download className="h-3.5 w-3.5 text-white/80" />
-                )}
-              </button>
-            )}
             {durationText && (
               <div className="absolute bottom-2 right-2 z-20 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded font-medium" data-testid={`duration-${video.id}`}>
                 {durationText}
@@ -1948,9 +1932,36 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
                 </p>
               )}
               <div className="flex items-center gap-1.5 mt-2 pb-2.5 border-t border-white/5 pt-2">
-                <Play className="h-3 w-3 text-[#EDE518] fill-[#EDE518]" />
-                <span className="text-[10px] font-bold text-[#EDE518] uppercase tracking-widest">Watch Next</span>
-                <span className="text-[10px] text-slate-500 ml-auto">tap to open →</span>
+                {isAudio ? (
+                  <>
+                    <button
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider transition-all active:scale-95 ${dlDone ? "bg-[#08779C] text-white" : "bg-white/10 text-white/70 hover:bg-white/15"}`}
+                      onClick={handleDownload}
+                      title={dlDone ? "Tap to remove download" : dlProgress !== undefined ? `Downloading…` : "Save for offline"}
+                      data-testid={`button-card-download-${video.id}`}
+                    >
+                      {dlProgress !== undefined && !dlDone ? (
+                        <Loader2 className="h-3 w-3 animate-spin text-[#EDE518]" />
+                      ) : dlDone ? (
+                        <CheckCheck className="h-3 w-3" />
+                      ) : (
+                        <Download className="h-3 w-3" />
+                      )}
+                      {dlProgress !== undefined && !dlDone
+                        ? `${dlProgress >= 0 ? dlProgress + "%" : "…"}`
+                        : dlDone
+                        ? "Saved"
+                        : "Save offline"}
+                    </button>
+                    <span className="text-[10px] text-slate-500 ml-auto">tap to play →</span>
+                  </>
+                ) : (
+                  <>
+                    <Play className="h-3 w-3 text-[#EDE518] fill-[#EDE518]" />
+                    <span className="text-[10px] font-bold text-[#EDE518] uppercase tracking-widest">Watch Next</span>
+                    <span className="text-[10px] text-slate-500 ml-auto">tap to open →</span>
+                  </>
+                )}
               </div>
             </CardContent>
           )}
