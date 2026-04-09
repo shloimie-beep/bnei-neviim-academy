@@ -1891,8 +1891,18 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
                   </>
                 ) : (
                   <>
-                    <Play className="h-3 w-3 text-[#EDE518] fill-[#EDE518]" />
-                    <span className="text-[10px] font-bold text-[#EDE518] uppercase tracking-widest">Watch Next</span>
+                    <button
+                      className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-wider transition-all active:scale-95 ${isFavorited ? "bg-[#EDE518] text-black" : "bg-white/10 text-white/70 hover:bg-white/15"}`}
+                      onClick={e => { e.stopPropagation(); favoriteMutation.mutate(); }}
+                      data-testid={`button-card-save-${video.id}`}
+                    >
+                      {isFavorited ? (
+                        <CheckCheck className="h-3 w-3" />
+                      ) : (
+                        <BookmarkPlus className="h-3 w-3" />
+                      )}
+                      {isFavorited ? "Saved" : "Save"}
+                    </button>
                     <span className="text-[10px] text-slate-500 ml-auto">tap to open →</span>
                   </>
                 )}
