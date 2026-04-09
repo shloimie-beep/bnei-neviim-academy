@@ -319,11 +319,29 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
     );
   };
 
-  const handleIframeLoad = () => {
+  // pending seek: stores the fraction (0-1) to jump to once duration is known
+  const pendingSkipRef = useRef<number | null>(null);
+  // track if Vimeo player is ready to receive commands
+  const vimeoReadyRef = useRef(false);
+  // store duration in a ref too so message handler always reads latest value
+  const vimeoDurationRef = useRef(0);
+
+  const registerVimeoListeners = () => {
     sendVimeo('addEventListener', 'pause');
     sendVimeo('addEventListener', 'play');
     sendVimeo('addEventListener', 'timeupdate');
     sendVimeo('addEventListener', 'ended');
+    sendVimeo('getDuration');
+  };
+
+  // onLoad fires when the iframe HTML loads; Vimeo will then fire "ready" via postMessage
+  const handleIframeLoad = () => {
+    // Fallback: try registering immediately AND wait for ready message
+    // (some Vimeo embeds fire ready before onLoad completes)
+    vimeoReadyRef.current = false;
+    setTimeout(() => {
+      if (!vimeoReadyRef.current) registerVimeoListeners();
+    }, 800);
   };
 
   // Reset engagement state when video changes
@@ -331,8 +349,11 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
     setShowPauseNudge(false);
     setShowWhatNext(false);
     whatNextShownRef.current = false;
+    vimeoReadyRef.current = false;
+    pendingSkipRef.current = null;
     setVimeoDuration(0);
     setVimeoCurrentTime(0);
+    vimeoDurationRef.current = 0;
     clearTimeout(pauseNudgeTimerRef.current);
   }, [currentVideo.id]);
 
@@ -343,11 +364,30 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
       let data: any;
       try { data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch { return; }
 
+      // Vimeo fires {event:"ready"} when player is initialized — register listeners then
+      if (data.event === 'ready') {
+        vimeoReadyRef.current = true;
+        registerVimeoListeners();
+        return;
+      }
+
+      // Response to getDuration: {method:"getDuration", value: N}
+      if (data.method === 'getDuration' && typeof data.value === 'number' && data.value > 0) {
+        setVimeoDuration(data.value);
+        vimeoDurationRef.current = data.value;
+        if (pendingSkipRef.current !== null) {
+          const frac = pendingSkipRef.current;
+          pendingSkipRef.current = null;
+          sendVimeo('setCurrentTime', data.value * frac);
+          sendVimeo('play');
+        }
+        return;
+      }
+
       if (data.event === 'pause') {
-        const ct = data.data?.seconds ?? vimeoCurrentTime;
-        const dur = data.data?.duration ?? vimeoDuration;
-        // Only show nudge if paused mid-video (not at start or very end)
-        if (ct > 8 && dur > 0 && ct < dur - 8) {
+        const ct = data.data?.seconds ?? 0;
+        const dur = data.data?.duration ?? vimeoDurationRef.current;
+        if (dur > 0 && ct > 8 && ct < dur - 8) {
           clearTimeout(pauseNudgeTimerRef.current);
           pauseNudgeTimerRef.current = setTimeout(() => setShowPauseNudge(true), 1200);
         }
@@ -360,12 +400,10 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
         const ct = data.data?.seconds ?? 0;
         const dur = data.data?.duration ?? 0;
         setVimeoCurrentTime(ct);
-        if (dur > 0) setVimeoDuration(dur);
-        // Show "What happens next?" at ~35% through, once
+        if (dur > 0) { setVimeoDuration(dur); vimeoDurationRef.current = dur; }
         if (!whatNextShownRef.current && dur > 30 && ct / dur > 0.35 && ct / dur < 0.38) {
           whatNextShownRef.current = true;
           setShowWhatNext(true);
-          // Pause the video while overlay is shown
           sendVimeo('pause');
         }
       }
@@ -379,14 +417,21 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
       window.removeEventListener('message', handler);
       clearTimeout(pauseNudgeTimerRef.current);
     };
-  }, [vimeoCurrentTime, vimeoDuration]);
+  }, []);
 
-  const handleSkipToCraziestPart = () => {
-    if (vimeoDuration > 0) {
-      sendVimeo('setCurrentTime', vimeoDuration * 0.72);
+  const doSkip = (fraction: number) => {
+    const dur = vimeoDurationRef.current;
+    if (dur > 0) {
+      sendVimeo('setCurrentTime', dur * fraction);
       sendVimeo('play');
+    } else {
+      // duration not yet known — store pending and request it
+      pendingSkipRef.current = fraction;
+      sendVimeo('getDuration');
     }
   };
+
+  const handleSkipToCraziestPart = () => doSkip(0.72);
 
   const handleKeepWatching = () => {
     setShowPauseNudge(false);
@@ -550,7 +595,7 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
           😲 Skip to craziest part
         </button>
         <button
-          onClick={() => { if (vimeoDuration > 0) { sendVimeo('setCurrentTime', vimeoDuration * 0.6); sendVimeo('play'); } }}
+          onClick={() => doSkip(0.6)}
           className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] border border-[#08779C]/25"
           style={{ background: "rgba(8,119,156,0.08)", color: "#38bdf8" }}
           data-testid="button-jump-best-moment"
