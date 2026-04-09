@@ -2655,6 +2655,7 @@ export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [surpriseVideoId, setSurpriseVideoId] = useState<string | null>(null);
   const [moodFilter, setMoodFilter] = useState<string | null>(null);
+  const [selectedMood, setSelectedMood] = useState<string | null>(null);
   const [isSearchPanelOpen, setIsSearchPanelOpen] = useState(false);
   const liveViewerCount = useMemo(() => Math.floor(Math.random() * 16) + 8, []);
   const [previewMode, setPreviewMode] = useState<"standard" | "plus">("standard");
@@ -2682,6 +2683,7 @@ export default function DashboardPage() {
   const [pcPeriod, setPcPeriod] = useState("day");
   const [pcCategoryAll, setPcCategoryAll] = useState(true);
   const [pcCategoryIds, setPcCategoryIds] = useState<string[]>([]);
+  const [pcStep, setPcStep] = useState(0);
   const [isDisablingParental, setIsDisablingParental] = useState(false);
   const [pcDisablePin, setPcDisablePin] = useState("");
 
@@ -3351,30 +3353,51 @@ export default function DashboardPage() {
         </div>
 
         <div className="px-6 py-4 space-y-5">
-          {/* How to activate steps — only shown when setting up for the first time */}
-          {!parentalData && (
-            <div className="rounded-xl border border-[#EDE518]/20 overflow-hidden" style={{ background: "rgba(237,229,24,0.04)" }}>
-              <div className="px-4 py-2 border-b border-[#EDE518]/10">
-                <span className="text-[10px] font-black uppercase tracking-widest text-[#EDE518]">How to Activate</span>
-              </div>
-              <div className="px-4 py-3 space-y-2.5">
-                {[
-                  { step: "1", text: "Go to Settings (top right gear icon)" },
-                  { step: "2", text: "Tap 'Parental Controls' in the menu" },
-                  { step: "3", text: "Choose a secret PIN only you know" },
-                  { step: "4", text: "Set your time limit & which videos to restrict" },
-                  { step: "5", text: "Tap 'Save' — protection starts immediately!" },
-                ].map(({ step, text }) => (
-                  <div key={step} className="flex items-start gap-3">
-                    <div className="h-5 w-5 rounded-full bg-[#EDE518] flex items-center justify-center shrink-0 mt-0.5">
-                      <span className="text-[9px] font-black text-black">{step}</span>
-                    </div>
-                    <p className="text-slate-300 text-xs leading-relaxed">{text}</p>
+          {/* How to activate — step-by-step slideshow */}
+          {!parentalData && (() => {
+            const PC_STEPS = [
+              { emoji: "⚙️", title: "Open Settings", text: "Tap the gear icon in the top right corner of the dashboard." },
+              { emoji: "🛡️", title: "Tap Parental Controls", text: "Find 'Parental Controls' in the settings menu and tap it." },
+              { emoji: "🔒", title: "Create a Secret PIN", text: "Choose a 4–6 digit PIN that only YOU know — kids can't guess it!" },
+              { emoji: "⏱️", title: "Set Time Limits", text: "Pick a daily, weekly, or monthly time limit. Choose which categories to restrict." },
+              { emoji: "✅", title: "Save & Done!", text: "Tap 'Activate Parental Controls' — protection starts right away!" },
+            ];
+            return (
+              <div className="rounded-2xl border border-[#EDE518]/25 overflow-hidden" style={{ background: "linear-gradient(135deg, rgba(237,229,24,0.04) 0%, rgba(8,119,156,0.04) 100%)" }}>
+                <div className="px-5 pt-5 pb-4 text-center min-h-[120px] flex flex-col items-center justify-center gap-2">
+                  <div className="text-4xl mb-1">{PC_STEPS[pcStep].emoji}</div>
+                  <p className="text-[#EDE518] font-black text-sm">{PC_STEPS[pcStep].title}</p>
+                  <p className="text-slate-300 text-xs leading-relaxed max-w-xs">{PC_STEPS[pcStep].text}</p>
+                </div>
+                <div className="px-5 pb-4 flex items-center gap-3">
+                  <button
+                    onClick={() => setPcStep(s => Math.max(0, s - 1))}
+                    disabled={pcStep === 0}
+                    className="h-7 w-7 rounded-full flex items-center justify-center border border-white/10 transition-all disabled:opacity-25 hover:border-[#EDE518]/40"
+                    style={{ background: "rgba(255,255,255,0.05)" }}
+                  >
+                    <ChevronLeft className="h-4 w-4 text-white" />
+                  </button>
+                  <div className="flex-1 flex items-center justify-center gap-1.5">
+                    {PC_STEPS.map((_, i) => (
+                      <button key={i} onClick={() => setPcStep(i)}
+                        className="rounded-full transition-all"
+                        style={{ width: i === pcStep ? 20 : 6, height: 6, background: i === pcStep ? "#EDE518" : "rgba(255,255,255,0.2)" }}
+                      />
+                    ))}
                   </div>
-                ))}
+                  <button
+                    onClick={() => setPcStep(s => Math.min(PC_STEPS.length - 1, s + 1))}
+                    disabled={pcStep === PC_STEPS.length - 1}
+                    className="h-7 w-7 rounded-full flex items-center justify-center border border-white/10 transition-all disabled:opacity-25 hover:border-[#EDE518]/40"
+                    style={{ background: "rgba(255,255,255,0.05)" }}
+                  >
+                    <ChevronRight className="h-4 w-4 text-white" />
+                  </button>
+                </div>
               </div>
-            </div>
-          )}
+            );
+          })()}
 
           {/* Form fields */}
           <div className="space-y-4">
@@ -4348,6 +4371,7 @@ export default function DashboardPage() {
                             <button
                               key={mood.id}
                               onClick={() => {
+                                setSelectedMood(mood.id);
                                 setMoodFilter(mood.id);
                                 setSearchQuery("");
                                 setIsSearchPanelOpen(false);
@@ -4436,14 +4460,76 @@ export default function DashboardPage() {
                 </div>
               )}
               
-              {/* Mood Results Section — shown on home view when mood filter active */}
-              {!searchQuery.trim() && moodFilter && moodMatchedVideoIds && !selectedCategory && (
+              {/* ── Full Mood Page — takes over when a mood is selected ── */}
+              {selectedMood && moodMatchedVideoIds && !searchQuery.trim() && !selectedCategory && (() => {
+                const MOOD_META: Record<string, { emoji: string; label: string; tagline: string; color: string; bg: string }> = {
+                  funny: { emoji: "😂", label: "Funny Stuff", tagline: "Jokes, comedy & everything that'll make you crack up!", color: "#f59e0b", bg: "linear-gradient(135deg, #1a0f00 0%, #0d1828 60%)" },
+                  crazy: { emoji: "🤪", label: "Wild & Crazy", tagline: "Adventures, sports & totally out-there moments!", color: "#8b5cf6", bg: "linear-gradient(135deg, #0d0a1a 0%, #0d1828 60%)" },
+                  smart: { emoji: "🧠", label: "Learn Something", tagline: "Torah, stories & things that'll blow your mind!", color: "#08779C", bg: "linear-gradient(135deg, #001524 0%, #0d1828 60%)" },
+                  chill: { emoji: "😌", label: "Chill Out", tagline: "Music, calm stories & good vibes only.", color: "#10b981", bg: "linear-gradient(135deg, #001a10 0%, #0d1828 60%)" },
+                };
+                const meta = MOOD_META[selectedMood] || MOOD_META.funny;
+                const moodVideos = (videos || []).filter(v => moodMatchedVideoIds!.has(v.id));
+                return (
+                  <div className="animate-in fade-in slide-in-from-bottom-4 duration-400">
+                    {/* Hero header */}
+                    <div className="rounded-3xl overflow-hidden mb-6 relative" style={{ background: meta.bg }}>
+                      <div className="absolute inset-0 opacity-10" style={{ background: `radial-gradient(circle at 30% 50%, ${meta.color}, transparent 70%)` }} />
+                      <div className="relative px-6 py-7 flex flex-col gap-3">
+                        <button
+                          onClick={() => { setSelectedMood(null); setMoodFilter(null); }}
+                          className="flex items-center gap-1.5 text-xs font-semibold w-fit px-2.5 py-1 rounded-full border transition-all hover:border-white/30"
+                          style={{ color: "#94a3b8", borderColor: "rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)" }}
+                        >
+                          <ChevronLeft className="h-3 w-3" /> Back
+                        </button>
+                        <div className="flex items-center gap-4">
+                          <div className="text-6xl">{meta.emoji}</div>
+                          <div>
+                            <h1 className="text-3xl font-black text-white leading-tight">{meta.label}</h1>
+                            <p className="text-sm mt-1" style={{ color: meta.color }}>{meta.tagline}</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: meta.color }} />
+                          <span className="text-xs font-semibold" style={{ color: "#94a3b8" }}>
+                            {moodVideos.length} videos just for this vibe
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    {/* Video grid */}
+                    {moodVideos.length > 0 ? (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                        {moodVideos.map(video => {
+                          const cat = categories?.find((c: any) => c.id === video.categoryId);
+                          return (
+                            <VideoCard
+                              key={video.id}
+                              video={video}
+                              isNew={isVideoNew(video)}
+                              onView={() => markVideoViewedMutation.mutate(video.id)}
+                              categoryName={cat?.name}
+                            />
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="text-center py-16 text-slate-500">
+                        <div className="text-5xl mb-3">{meta.emoji}</div>
+                        <p className="font-semibold">Nothing here yet — check back soon!</p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+
+              {/* Legacy inline mood results fallback (if moodFilter set but not selectedMood) */}
+              {!selectedMood && !searchQuery.trim() && moodFilter && moodMatchedVideoIds && !selectedCategory && (
                 <div>
                   <div className="flex items-center gap-3 mb-5">
                     <div className="flex-shrink-0 h-8 w-1.5 rounded-full bg-[#EDE518] shadow-[0_0_8px_#EDE518]" />
-                    <span className="text-xl">
-                      {moodFilter === "funny" ? "😂" : moodFilter === "crazy" ? "🤪" : moodFilter === "smart" ? "🧠" : "😌"}
-                    </span>
+                    <span className="text-xl">{moodFilter === "funny" ? "😂" : moodFilter === "crazy" ? "🤪" : moodFilter === "smart" ? "🧠" : "😌"}</span>
                     <h2 className="text-xl font-black text-white uppercase tracking-wide">
                       {moodFilter === "funny" ? "Funny Picks" : moodFilter === "crazy" ? "Crazy Picks" : moodFilter === "smart" ? "Smart Picks" : "Chill Picks"}
                     </h2>
@@ -4471,7 +4557,7 @@ export default function DashboardPage() {
               )}
 
               {/* Continue Watching Section */}
-              {!searchQuery.trim() && continueWatching.length > 0 && (
+              {!selectedMood && !searchQuery.trim() && continueWatching.length > 0 && (
                 <div>
                   <div className="flex items-center gap-3 mb-5">
                     <div className="flex-shrink-0 h-8 w-1.5 rounded-full bg-[#08779C] shadow-[0_0_8px_#08779C]" />
@@ -4500,7 +4586,7 @@ export default function DashboardPage() {
               )}
 
               {/* Favorites Section */}
-              {!searchQuery.trim() && favoriteVideos.length > 0 && (
+              {!selectedMood && !searchQuery.trim() && favoriteVideos.length > 0 && (
                 <div>
                   <div className="flex items-center gap-3 mb-5">
                     <div className="flex-shrink-0 h-8 w-1.5 rounded-full bg-[#EDE518] shadow-[0_0_8px_#EDE518]" />
@@ -4624,7 +4710,7 @@ export default function DashboardPage() {
               )}
 
               {/* Category Filter Buttons */}
-              <div className="space-y-2">
+              {!selectedMood && (<div className="space-y-2">
                 <div className="flex flex-wrap gap-2">
                   {topLevelCategories.map((category) => {
                     const subcats = getSubcategories(category.id);
@@ -4714,6 +4800,7 @@ export default function DashboardPage() {
                   );
                 })()}
               </div>
+              )}
 
               {/* Content based on selected category (always visible) */}
               {selectedCategory === "albums" ? (
