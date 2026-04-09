@@ -289,13 +289,114 @@ function CommentsSection({ videoId }: { videoId: string }) {
 function VideoEmbedPlayer({ video }: { video: VideoType }) {
   const { toast } = useToast();
   const [currentVideo, setCurrentVideo] = useState<any>(video);
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  // Vimeo postMessage state
+  const [vimeoDuration, setVimeoDuration] = useState(0);
+  const [vimeoCurrentTime, setVimeoCurrentTime] = useState(0);
+  const [showPauseNudge, setShowPauseNudge] = useState(false);
+  const [showWhatNext, setShowWhatNext] = useState(false);
+  const whatNextShownRef = useRef(false);
+  const pauseNudgeTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const vimeoVideoId = currentVideo.vimeoVideoId || currentVideo.vimeo_video_id;
   const storedEmbedUrl = currentVideo.vimeoEmbedUrl || currentVideo.vimeo_embed_url;
 
-  const embedUrl = storedEmbedUrl
-    ? (storedEmbedUrl.includes('?') ? `${storedEmbedUrl}&autoplay=1` : `${storedEmbedUrl}?autoplay=1`)
-    : `https://player.vimeo.com/video/${vimeoVideoId}?autoplay=1&title=0&byline=0&portrait=0`;
+  // Include api=1 so Vimeo postMessage API works
+  const embedUrl = (() => {
+    const base = storedEmbedUrl
+      ? (storedEmbedUrl.includes('?') ? `${storedEmbedUrl}&autoplay=1&api=1` : `${storedEmbedUrl}?autoplay=1&api=1`)
+      : `https://player.vimeo.com/video/${vimeoVideoId}?autoplay=1&api=1&title=0&byline=0&portrait=0`;
+    return base;
+  })();
+
+  // Vimeo postMessage API: register events after iframe loads
+  const sendVimeo = (method: string, value?: any) => {
+    if (!iframeRef.current?.contentWindow) return;
+    iframeRef.current.contentWindow.postMessage(
+      JSON.stringify({ method, value }),
+      '*'
+    );
+  };
+
+  const handleIframeLoad = () => {
+    sendVimeo('addEventListener', 'pause');
+    sendVimeo('addEventListener', 'play');
+    sendVimeo('addEventListener', 'timeupdate');
+    sendVimeo('addEventListener', 'ended');
+  };
+
+  // Reset engagement state when video changes
+  useEffect(() => {
+    setShowPauseNudge(false);
+    setShowWhatNext(false);
+    whatNextShownRef.current = false;
+    setVimeoDuration(0);
+    setVimeoCurrentTime(0);
+    clearTimeout(pauseNudgeTimerRef.current);
+  }, [currentVideo.id]);
+
+  // Listen to Vimeo messages
+  useEffect(() => {
+    const handler = (e: MessageEvent) => {
+      if (!iframeRef.current) return;
+      let data: any;
+      try { data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch { return; }
+
+      if (data.event === 'pause') {
+        const ct = data.data?.seconds ?? vimeoCurrentTime;
+        const dur = data.data?.duration ?? vimeoDuration;
+        // Only show nudge if paused mid-video (not at start or very end)
+        if (ct > 8 && dur > 0 && ct < dur - 8) {
+          clearTimeout(pauseNudgeTimerRef.current);
+          pauseNudgeTimerRef.current = setTimeout(() => setShowPauseNudge(true), 1200);
+        }
+      }
+      if (data.event === 'play') {
+        clearTimeout(pauseNudgeTimerRef.current);
+        setShowPauseNudge(false);
+      }
+      if (data.event === 'timeupdate') {
+        const ct = data.data?.seconds ?? 0;
+        const dur = data.data?.duration ?? 0;
+        setVimeoCurrentTime(ct);
+        if (dur > 0) setVimeoDuration(dur);
+        // Show "What happens next?" at ~35% through, once
+        if (!whatNextShownRef.current && dur > 30 && ct / dur > 0.35 && ct / dur < 0.38) {
+          whatNextShownRef.current = true;
+          setShowWhatNext(true);
+          // Pause the video while overlay is shown
+          sendVimeo('pause');
+        }
+      }
+      if (data.event === 'ended') {
+        setShowPauseNudge(false);
+        setShowWhatNext(false);
+      }
+    };
+    window.addEventListener('message', handler);
+    return () => {
+      window.removeEventListener('message', handler);
+      clearTimeout(pauseNudgeTimerRef.current);
+    };
+  }, [vimeoCurrentTime, vimeoDuration]);
+
+  const handleSkipToCraziestPart = () => {
+    if (vimeoDuration > 0) {
+      sendVimeo('setCurrentTime', vimeoDuration * 0.72);
+      sendVimeo('play');
+    }
+  };
+
+  const handleKeepWatching = () => {
+    setShowPauseNudge(false);
+    sendVimeo('play');
+  };
+
+  const handleWhatNextContinue = () => {
+    setShowWhatNext(false);
+    sendVimeo('play');
+  };
 
   useEffect(() => {
     fetch(`/api/videos/${currentVideo.id}/view`, {
@@ -377,13 +478,85 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
       <div className="relative bg-black">
         <iframe
           key={currentVideo.id}
+          ref={iframeRef}
           src={embedUrl}
           className="w-full aspect-video"
           frameBorder="0"
           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
+          onLoad={handleIframeLoad}
           data-testid={`video-player-${currentVideo.id}`}
         />
+
+        {/* Pause Nudge Overlay */}
+        {showPauseNudge && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/65 animate-in fade-in duration-300">
+            <div className="rounded-2xl px-6 py-6 text-center max-w-[260px] shadow-2xl border border-[#EDE518]/20"
+              style={{ background: "linear-gradient(145deg, #0b1829 0%, #0d2040 100%)" }}>
+              <div className="text-5xl mb-3">⏸️</div>
+              <h3 className="text-white font-black text-lg leading-tight">Don't stop now!</h3>
+              <p className="text-slate-400 text-sm mt-2 leading-relaxed">You're so close to the best part! 👀</p>
+              <button
+                onClick={handleKeepWatching}
+                className="mt-4 w-full py-2.5 rounded-xl font-black text-black text-sm hover:scale-105 active:scale-95 transition-transform shadow-[0_0_18px_rgba(237,229,24,0.4)]"
+                style={{ background: "linear-gradient(135deg, #EDE518 0%, #f5c800 100%)" }}
+                data-testid="button-keep-watching"
+              >
+                ▶ Keep Watching
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* What Happens Next Overlay */}
+        {showWhatNext && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/70 animate-in fade-in duration-300">
+            <div className="rounded-2xl px-6 py-6 text-center max-w-[280px] shadow-2xl border border-[#08779C]/30"
+              style={{ background: "linear-gradient(145deg, #060e1a 0%, #0a1a30 100%)" }}>
+              <div className="text-5xl mb-3">🤔</div>
+              <h3 className="text-white font-black text-lg leading-tight">What happens next?</h3>
+              <p className="text-slate-400 text-sm mt-2">This is where it gets really good...</p>
+              <div className="space-y-2 mt-4 text-left">
+                {[
+                  { emoji: "🤯", text: "Something totally unexpected!" },
+                  { emoji: "😊", text: "Everything works out great" },
+                ].map((opt, i) => (
+                  <button
+                    key={i}
+                    onClick={handleWhatNextContinue}
+                    className="w-full px-4 py-2.5 rounded-xl font-semibold text-white text-sm flex items-center gap-3 border border-white/10 hover:border-[#08779C]/40 transition-colors active:scale-[0.98]"
+                    style={{ background: i === 0 ? "rgba(8,119,156,0.2)" : "rgba(237,229,24,0.08)" }}
+                  >
+                    <span className="text-xl">{opt.emoji}</span> {opt.text}
+                  </button>
+                ))}
+              </div>
+              <button onClick={() => { setShowWhatNext(false); sendVimeo('play'); }} className="text-slate-600 hover:text-slate-400 text-xs mt-3 underline transition-colors">
+                Skip
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Skip to craziest part buttons */}
+      <div className="flex gap-2 px-4 pt-3 pb-1">
+        <button
+          onClick={handleSkipToCraziestPart}
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] border border-[#EDE518]/25"
+          style={{ background: "rgba(237,229,24,0.08)", color: "#EDE518" }}
+          data-testid="button-skip-craziest-part"
+        >
+          😲 Skip to craziest part
+        </button>
+        <button
+          onClick={() => { if (vimeoDuration > 0) { sendVimeo('setCurrentTime', vimeoDuration * 0.6); sendVimeo('play'); } }}
+          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] border border-[#08779C]/25"
+          style={{ background: "rgba(8,119,156,0.08)", color: "#38bdf8" }}
+          data-testid="button-jump-best-moment"
+        >
+          👉 Jump to best moment
+        </button>
       </div>
 
       <div className="p-4 border-b border-white/10">
