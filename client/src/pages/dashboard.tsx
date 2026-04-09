@@ -1444,6 +1444,23 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
   const parental = useContext(ParentalControlsContext);
   const isLocked = parental.isVideoBlocked(video.categoryId);
   const progressMap = useContext(VideoProgressContext);
+
+  // Hover preview — show a muted Vimeo embed after 600 ms hover
+  const [showPreview, setShowPreview] = useState(false);
+  const hoverTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const handleCardMouseEnter = () => {
+    if (isLocked || isAudio) return;
+    hoverTimerRef.current = setTimeout(() => setShowPreview(true), 600);
+  };
+  const handleCardMouseLeave = () => {
+    clearTimeout(hoverTimerRef.current);
+    setShowPreview(false);
+  };
+  const embedBase = (video as any).vimeoEmbedUrl || (video as any).vimeo_embed_url;
+  const hoverEmbedUrl = embedBase && !isAudio
+    ? embedBase.replace(/[?&]autoplay=\d/, "").replace(/[?&]muted=\d/, "") +
+      (embedBase.includes("?") ? "&" : "?") + "autoplay=1&muted=1&background=1&loop=1&controls=0"
+    : null;
   const progressPct = progressMap.get(video.id) ?? 0;
   const { setMiniPlayer } = useContext(MiniPlayerContext);
   const handleMinimize = (streamUrl: string, currentTime: number, isAudioType: boolean) => {
@@ -1560,7 +1577,13 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
   return (
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
-        <Card className="overflow-hidden cursor-pointer hover-elevate active-elevate-2 border border-white/10 hover:border-white/25 transition-colors relative" style={{background: "linear-gradient(145deg, #0e1e35 0%, #0a1628 100%)"}} data-testid={`card-video-${video.id}`}>
+        <Card
+          className="overflow-hidden cursor-pointer hover-elevate active-elevate-2 border border-white/10 hover:border-white/25 transition-colors relative"
+          style={{background: "linear-gradient(145deg, #0e1e35 0%, #0a1628 100%)"}}
+          data-testid={`card-video-${video.id}`}
+          onMouseEnter={handleCardMouseEnter}
+          onMouseLeave={handleCardMouseLeave}
+        >
           <div className={`${aspectClass} flex items-center justify-center relative group overflow-hidden bg-[#060e1a]`}>
             {thumbnailSrc ? (
               <>
@@ -1614,6 +1637,18 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
                 {durationText}
               </div>
             )}
+            {/* Hover video preview — muted autoplay Vimeo embed */}
+            {showPreview && hoverEmbedUrl && !isLocked && (
+              <div className="absolute inset-0 z-10 pointer-events-none">
+                <iframe
+                  src={hoverEmbedUrl}
+                  className="w-full h-full"
+                  allow="autoplay; fullscreen"
+                  frameBorder="0"
+                  title={`Preview: ${video.title}`}
+                />
+              </div>
+            )}
             {isLocked ? (
               <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center gap-1.5">
                 <div className="h-12 w-12 rounded-full bg-[#EDE518]/10 border border-[#EDE518]/40 flex items-center justify-center">
@@ -1622,7 +1657,7 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
                 <span className="text-[10px] font-bold text-[#EDE518]/80 uppercase tracking-widest">Time limit reached</span>
               </div>
             ) : (
-              <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className={`absolute inset-0 bg-black/50 flex items-center justify-center transition-opacity ${showPreview ? "opacity-0" : "opacity-0 group-hover:opacity-100"}`}>
                 <div className="h-14 w-14 rounded-full bg-[#EDE518] flex items-center justify-center shadow-[0_0_20px_rgba(237,229,24,0.5)]">
                   <Play className="h-6 w-6 text-black ml-1" />
                 </div>
@@ -2501,7 +2536,53 @@ function FloatingMiniPlayer({ state, onClose, onExpand }: { state: MiniPlayerSta
 
   if (!state) return null;
   const thumbSrc = state.video.thumbnailPath ? `/api/videos/${state.video.id}/thumbnail` : null;
+  const videoEmbedBase = !state.isAudio
+    ? ((state.video as any).vimeoEmbedUrl || (state.video as any).vimeo_embed_url)
+    : null;
+  const miniVideoEmbedUrl = videoEmbedBase
+    ? videoEmbedBase + (videoEmbedBase.includes("?") ? "&" : "?") + `autoplay=1&muted=0&t=${Math.floor(state.currentTime)}`
+    : null;
 
+  // Video mini player — YouTube-style corner player
+  if (!state.isAudio && miniVideoEmbedUrl) {
+    return (
+      <div className="fixed bottom-4 right-4 z-[9999] w-[min(90vw,320px)] animate-in slide-in-from-bottom-4 duration-300 group">
+        <div className="relative rounded-xl overflow-hidden shadow-[0_8px_40px_rgba(0,0,0,0.9)] border border-white/10">
+          {/* Video iframe */}
+          <div className="aspect-video bg-black">
+            <iframe
+              src={miniVideoEmbedUrl}
+              className="w-full h-full"
+              allow="autoplay; fullscreen"
+              frameBorder="0"
+              title={state.video.title}
+            />
+          </div>
+          {/* Controls overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-between p-2 pointer-events-none group-hover:pointer-events-auto">
+            {/* Top row: close */}
+            <div className="flex justify-end">
+              <button onClick={onClose} className="h-7 w-7 rounded-full bg-black/60 hover:bg-black/80 flex items-center justify-center">
+                <X className="h-3.5 w-3.5 text-white" />
+              </button>
+            </div>
+            {/* Bottom row: title + expand */}
+            <div className="flex items-end gap-2">
+              <p className="text-white text-xs font-semibold flex-1 line-clamp-1 drop-shadow">{state.video.title}</p>
+              <button
+                onClick={onExpand}
+                className="h-8 w-8 rounded-full bg-[#EDE518] flex items-center justify-center flex-shrink-0 hover:bg-[#EDE518]/80"
+              >
+                <Maximize className="h-3.5 w-3.5 text-black" />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Audio mini player (or video without embed URL — show compact bar)
   return (
     <div className="fixed bottom-4 left-1/2 -translate-x-1/2 z-[9999] w-[min(90vw,420px)] animate-in slide-in-from-bottom-4 duration-300">
       {state.isAudio && (
@@ -2514,7 +2595,7 @@ function FloatingMiniPlayer({ state, onClose, onExpand }: { state: MiniPlayerSta
           </div>
           <div className="flex-1 min-w-0 cursor-pointer" onClick={onExpand}>
             <p className="text-white text-sm font-semibold truncate">{state.video.title}</p>
-            <p className="text-slate-400 text-xs">{state.isAudio ? "Now Playing" : "Paused"}</p>
+            <p className="text-slate-400 text-xs">{state.isAudio ? "Now Playing" : "Tap to resume"}</p>
           </div>
           {state.isAudio && (
             <button
@@ -2937,11 +3018,16 @@ export default function DashboardPage() {
   }, [continueWatching]);
 
   // ── Mood Filter Logic ──────────────────────────────────────────────────────
+  // Each keyword is matched against lowercase category names using `name.includes(kw)`
+  // Actual DB categories: Eiruvin, Emunah Stories, Everyday Life, Films, Gemara, History & Miracles,
+  // Interviews, Just Kidding Podcast, Middos & Character, Mishnayos, Music Videos, Navi, OneDafOneDaf,
+  // Pesachim, Pirkei Avos, Series / Ongoing, Shabbos, Shabbos Stories, Shekalim, Shorts, Stories,
+  // Taanis, Tzaddikim Stories, Vloging with Reb Eli, Yom Tov Stories
   const MOOD_KEYWORDS: Record<string, string[]> = {
-    funny:  ["joke","funny","comedy","laugh","kidding","humor","silly","purim","shpiel","prank","epic","just kidding","films","film","shorts","vlog"],
-    crazy:  ["life","everyday","experiment","batting","football","sport","adventure","wild","travel","trip","game","challenge","stunt","vacation","history","miracles","interview","series","ongoing"],
-    smart:  ["torah","gemara","shiur","parasha","parshas","navi","shoftim","eiruvin","eruvin","yomi","daf","halacha","musar","hashkafa","mishna","mishnayos","pirkei","avos","middos","character","shabbos","pesachim","taanis","shekalim","learning"],
-    chill:  ["music","chill","story","stories","emunah","tzaddikim","yom tov","relax","album","song","peaceful","calm","searching","yearning","spiritual","lila"],
+    funny:  ["just kidding","kidding","films","shorts","vloging","vlog","funny","comedy","purim","shpiel","prank","laugh"],
+    crazy:  ["everyday life","everyday","history","miracles","interview","series","ongoing","adventure","wild","sport"],
+    smart:  ["gemara","navi","eiruvin","mishnayos","pesachim","pirkei","avos","shekalim","taanis","onedaf","middos","character","shabbos","learning"],
+    chill:  ["music","emunah","tzaddikim","yom tov","stories","story"],
   };
 
   const moodMatchedVideoIds = useMemo<Set<string> | null>(() => {
@@ -4092,20 +4178,20 @@ export default function DashboardPage() {
         <DashboardBannerSlideshow banners={banners} videos={videos || []} />
       )}
 
-      {/* ── Full Mood Page — fixed overlay covers the whole screen ── */}
+      {/* ── Full Mood Page — fixed overlay above everything (z-[60] > header z-50) ── */}
       {selectedMood && (() => {
         const MOOD_META: Record<string, { emoji: string; label: string; tagline: string; color: string; bg: string }> = {
-          funny: { emoji: "😂", label: "Funny Stuff", tagline: "Jokes, comedy & everything that'll make you crack up!", color: "#f59e0b", bg: "linear-gradient(135deg, #1a0f00 0%, #0d1828 60%)" },
-          crazy: { emoji: "🤪", label: "Wild & Crazy", tagline: "Adventures, sports & totally out-there moments!", color: "#8b5cf6", bg: "linear-gradient(135deg, #0d0a1a 0%, #0d1828 60%)" },
-          smart: { emoji: "🧠", label: "Learn Something", tagline: "Torah, stories & things that'll blow your mind!", color: "#08779C", bg: "linear-gradient(135deg, #001524 0%, #0d1828 60%)" },
-          chill: { emoji: "😌", label: "Chill Out", tagline: "Music, calm stories & good vibes only.", color: "#10b981", bg: "linear-gradient(135deg, #001a10 0%, #0d1828 60%)" },
+          funny: { emoji: "😂", label: "Just for Laughs", tagline: "Podcasts, skits & videos that'll have you rolling on the floor!", color: "#f59e0b", bg: "linear-gradient(135deg, #1a0f00 0%, #0d1828 60%)" },
+          crazy: { emoji: "🤩", label: "Action & Adventure", tagline: "Real life, history & mind-blowing moments!", color: "#8b5cf6", bg: "linear-gradient(135deg, #0d0a1a 0%, #0d1828 60%)" },
+          smart: { emoji: "🧠", label: "Torah Time", tagline: "Gemara, Navi, Mishnayos & deep Torah learning!", color: "#08779C", bg: "linear-gradient(135deg, #001524 0%, #0d1828 60%)" },
+          chill: { emoji: "😌", label: "Stories & Chill", tagline: "Inspiring stories, music & good vibes only.", color: "#10b981", bg: "linear-gradient(135deg, #001a10 0%, #0d1828 60%)" },
         };
         const meta = MOOD_META[selectedMood] || MOOD_META.funny;
         const moodVideos = moodMatchedVideoIds
           ? (videos || []).filter(v => moodMatchedVideoIds.has(v.id))
           : (videos || []);
         return (
-          <div className="fixed inset-0 z-40 overflow-y-auto" style={{ background: "#0d1828" }}>
+          <div className="fixed inset-0 z-[60] overflow-y-auto" style={{ background: "#0d1828" }}>
             {/* Hero header */}
             <div className="relative overflow-hidden" style={{ background: meta.bg }}>
               <div className="absolute inset-0 opacity-15" style={{ background: `radial-gradient(circle at 30% 50%, ${meta.color}, transparent 70%)` }} />
@@ -4427,10 +4513,10 @@ export default function DashboardPage() {
                         </p>
                         <div className="grid grid-cols-2 gap-2">
                           {[
-                            { id: "funny", emoji: "😂", label: "Funny", sub: "Jokes & comedy", color: "#f59e0b" },
-                            { id: "crazy", emoji: "🤪", label: "Wild & Crazy", sub: "Adventures & sports", color: "#8b5cf6" },
-                            { id: "smart", emoji: "🧠", label: "Learn Something", sub: "Torah & stories", color: "#08779C" },
-                            { id: "chill", emoji: "😌", label: "Chill Out", sub: "Music & calm vibes", color: "#10b981" },
+                            { id: "funny", emoji: "😂", label: "Just for Laughs", sub: "Podcast, skits & comedy", color: "#f59e0b" },
+                            { id: "crazy", emoji: "🤩", label: "Action & Adventure", sub: "Real life & history", color: "#8b5cf6" },
+                            { id: "smart", emoji: "🧠", label: "Torah Time", sub: "Gemara, Navi & more", color: "#08779C" },
+                            { id: "chill", emoji: "😌", label: "Stories & Chill", sub: "Inspiring stories & music", color: "#10b981" },
                           ].map(mood => (
                             <button
                               key={mood.id}
