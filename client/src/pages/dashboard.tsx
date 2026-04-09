@@ -486,7 +486,7 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showControls, setShowControls] = useState(true);
   const [buffered, setBuffered] = useState(0);
-  const [playbackRate, setPlaybackRate] = useState(1);
+  const [playbackRate, setPlaybackRate] = useState(() => parseFloat(localStorage.getItem("pref_defaultSpeed") || "1"));
   const controlsTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const [streamUrl, setStreamUrl] = useState<string | null>(null);
   const [streamLoading, setStreamLoading] = useState(true);
@@ -721,6 +721,7 @@ function LegacyVideoPlayer({ video, onClose }: { video: VideoType; onClose: () =
             src={streamUrl}
             autoPlay
             preload="auto"
+            loop={localStorage.getItem("pref_loopVideo") === "true"}
             className="w-full aspect-video"
             controlsList="nodownload nofullscreen noremoteplayback"
             disablePictureInPicture
@@ -2152,6 +2153,41 @@ export default function DashboardPage() {
   const [isAddingPhone, setIsAddingPhone] = useState(false);
   const [isPhoneDialogOpen, setIsPhoneDialogOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  // ── Display Preferences (localStorage) ────────────────────────────────────
+  const [textSize, setTextSizeState] = useState<'small'|'normal'|'large'>(() => {
+    return (localStorage.getItem("pref_textSize") as any) || "normal";
+  });
+  const [cardSize, setCardSizeState] = useState<'compact'|'normal'|'large'>(() => {
+    return (localStorage.getItem("pref_cardSize") as any) || "normal";
+  });
+  const [autoplayNext, setAutoplayNextState] = useState<boolean>(() => {
+    return localStorage.getItem("pref_autoplayNext") === "true";
+  });
+  const [showCardDescriptions, setShowCardDescriptionsState] = useState<boolean>(() => {
+    return localStorage.getItem("pref_showCardDescriptions") !== "false";
+  });
+  const [sortOrder, setSortOrderState] = useState<'default'|'newest'|'oldest'|'az'|'popular'>(() => {
+    return (localStorage.getItem("pref_sortOrder") as any) || "default";
+  });
+  const [hideWatched, setHideWatchedState] = useState<boolean>(() => localStorage.getItem("pref_hideWatched") === "true");
+  const [showNewBadges, setShowNewBadgesState] = useState<boolean>(() => localStorage.getItem("pref_showNewBadges") !== "false");
+  const [showViewCounts, setShowViewCountsState] = useState<boolean>(() => localStorage.getItem("pref_showViewCounts") !== "false");
+  const [loopVideo, setLoopVideoState] = useState<boolean>(() => localStorage.getItem("pref_loopVideo") === "true");
+  const [defaultSpeed, setDefaultSpeedState] = useState<number>(() => parseFloat(localStorage.getItem("pref_defaultSpeed") || "1"));
+  const [defaultCategory, setDefaultCategoryState] = useState<string>(() => localStorage.getItem("pref_defaultCategory") || "");
+
+  const setTextSize = (v: 'small'|'normal'|'large') => { setTextSizeState(v); localStorage.setItem("pref_textSize", v); };
+  const setCardSize = (v: 'compact'|'normal'|'large') => { setCardSizeState(v); localStorage.setItem("pref_cardSize", v); };
+  const setAutoplayNext = (v: boolean) => { setAutoplayNextState(v); localStorage.setItem("pref_autoplayNext", String(v)); };
+  const setShowCardDescriptions = (v: boolean) => { setShowCardDescriptionsState(v); localStorage.setItem("pref_showCardDescriptions", String(v)); };
+  const setSortOrder = (v: 'default'|'newest'|'oldest'|'az'|'popular') => { setSortOrderState(v); localStorage.setItem("pref_sortOrder", v); };
+  const setHideWatched = (v: boolean) => { setHideWatchedState(v); localStorage.setItem("pref_hideWatched", String(v)); };
+  const setShowNewBadges = (v: boolean) => { setShowNewBadgesState(v); localStorage.setItem("pref_showNewBadges", String(v)); };
+  const setShowViewCounts = (v: boolean) => { setShowViewCountsState(v); localStorage.setItem("pref_showViewCounts", String(v)); };
+  const setLoopVideo = (v: boolean) => { setLoopVideoState(v); localStorage.setItem("pref_loopVideo", String(v)); };
+  const setDefaultSpeed = (v: number) => { setDefaultSpeedState(v); localStorage.setItem("pref_defaultSpeed", String(v)); };
+  const setDefaultCategory = (v: string) => { setDefaultCategoryState(v); localStorage.setItem("pref_defaultCategory", v); };
   const [isEditingPhone, setIsEditingPhone] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -2437,14 +2473,14 @@ export default function DashboardPage() {
     return { grouped, uncategorized };
   }, [videos]);
 
-  // Set default category to first available category when loaded
+  // Set default category to preference or first available category when loaded
   useEffect(() => {
     if (selectedCategory === null && categories.length > 0) {
-      const firstCategory = categories[0];
-      setSelectedCategory(firstCategory.id);
-      // Also expand if it's a top-level category with subcategories
-      if (!firstCategory.parentCategoryId) {
-        setExpandedCategory(firstCategory.id);
+      const preferred = defaultCategory && categories.find(c => c.id === defaultCategory);
+      const target = preferred || categories[0];
+      setSelectedCategory(target.id);
+      if (!target.parentCategoryId) {
+        setExpandedCategory(target.id);
       }
     }
   }, [categories, selectedCategory]);
@@ -2461,6 +2497,7 @@ export default function DashboardPage() {
 
   // Check if a video is new (uploaded in last 24 hours and not viewed by user)
   const isVideoNew = (video: VideoType): boolean => {
+    if (!showNewBadges) return false;
     if (!video.createdAt) return false;
     const uploadedAt = new Date(video.createdAt);
     const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
@@ -2495,22 +2532,23 @@ export default function DashboardPage() {
     if (selectedCategory === null) return [];
     if (selectedCategory === "documents") return [];
     if (selectedCategory === "albums") return [];
+    let result: VideoType[];
     if (selectedCategory === "uncategorized") {
-      return videos.filter(v => !v.categoryId);
+      result = videos.filter(v => !v.categoryId);
+    } else {
+      const isMainCategory = topLevelCategories.some(c => c.id === selectedCategory);
+      if (isMainCategory) {
+        const subcategoryIds = getSubcategories(selectedCategory).map(s => s.id);
+        result = videos.filter(v => v.categoryId === selectedCategory || subcategoryIds.includes(v.categoryId || ""));
+      } else {
+        result = videos.filter(v => v.categoryId === selectedCategory);
+      }
     }
-    
-    // Check if selectedCategory is a main (top-level) category
-    const isMainCategory = topLevelCategories.some(c => c.id === selectedCategory);
-    if (isMainCategory) {
-      // Get all subcategory IDs for this main category
-      const subcategoryIds = getSubcategories(selectedCategory).map(s => s.id);
-      // Include videos from main category AND all its subcategories
-      return videos.filter(v => v.categoryId === selectedCategory || subcategoryIds.includes(v.categoryId || ""));
+    if (hideWatched) {
+      result = result.filter(v => !viewedVideoIds.includes(v.id));
     }
-    
-    // It's a subcategory - show only videos in that subcategory
-    return videos.filter(v => v.categoryId === selectedCategory);
-  }, [videos, selectedCategory, topLevelCategories, getSubcategories]);
+    return result;
+  }, [videos, selectedCategory, topLevelCategories, getSubcategories, hideWatched, viewedVideoIds]);
 
   // Check scroll position to show/hide arrows
   const checkScrollPosition = () => {
@@ -2881,7 +2919,12 @@ export default function DashboardPage() {
               alt="OneTimeOneTime" 
               className="h-10 w-auto"
             />
-            <span className="text-xl font-bold text-white">OneTimeOneTime</span>
+            <div>
+              <span className="text-xl font-bold text-white block leading-tight">OneTimeOneTime</span>
+              {user?.familyName && (
+                <span className="text-xs text-[#EDE518]/80 font-medium leading-tight block">Hello, {user.familyName}!</span>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
@@ -3294,6 +3337,146 @@ export default function DashboardPage() {
                         )}
                       </div>
                     </div>
+
+                    {/* ── Appearance ────────────────────────────────────── */}
+                    <div className="space-y-4 border-t pt-4">
+                      <h3 className="font-medium flex items-center gap-2 text-[#EDE518]">
+                        <Settings className="h-4 w-4" />
+                        Appearance
+                      </h3>
+
+                      {/* Text Size */}
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium">Text Size</p>
+                        <div className="flex gap-2">
+                          {([['small','A','Small'],['normal','Aa','Normal'],['large','AAA','Large']] as const).map(([v,icon,label]) => (
+                            <button key={v} onClick={() => setTextSize(v)} data-testid={`button-textsize-${v}`}
+                              className={`flex-1 py-2 rounded-lg border text-center transition-colors ${textSize === v ? "bg-[#EDE518] text-black border-[#EDE518] font-bold" : "bg-muted/40 text-foreground/70 border-border hover:border-[#EDE518]/50"}`}>
+                              <span className="block font-medium">{icon}</span>
+                              <span className="block text-xs mt-0.5">{label}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Card Size */}
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium">Video Card Size</p>
+                        <div className="flex gap-2">
+                          {([['compact','⊞','Compact'],['normal','▣','Normal'],['large','▢','Large']] as const).map(([v,icon,label]) => (
+                            <button key={v} onClick={() => setCardSize(v)} data-testid={`button-cardsize-${v}`}
+                              className={`flex-1 py-2 rounded-lg border text-center transition-colors ${cardSize === v ? "bg-[#EDE518] text-black border-[#EDE518] font-bold" : "bg-muted/40 text-foreground/70 border-border hover:border-[#EDE518]/50"}`}>
+                              <span className="block text-lg">{icon}</span>
+                              <span className="block text-xs mt-0.5">{label}</span>
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Appearance Toggles */}
+                      <div className="space-y-3">
+                        {[
+                          { label: "Show Descriptions", desc: "Show video descriptions under thumbnails", val: showCardDescriptions, set: setShowCardDescriptions, id: "switch-show-descriptions" },
+                          { label: 'Show "New" Badges', desc: "Show NEW badge on recently uploaded videos", val: showNewBadges, set: setShowNewBadges, id: "switch-show-new-badges" },
+                        ].map(({ label, desc, val, set, id }) => (
+                          <div key={id} className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium">{label}</p>
+                              <p className="text-xs text-muted-foreground">{desc}</p>
+                            </div>
+                            <Switch checked={val} onCheckedChange={set} data-testid={id} />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* ── Video Playback ─────────────────────────────────── */}
+                    <div className="space-y-4 border-t pt-4">
+                      <h3 className="font-medium flex items-center gap-2 text-[#EDE518]">
+                        <Play className="h-4 w-4" />
+                        Video Playback
+                      </h3>
+
+                      {/* Default Playback Speed */}
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium">Default Speed</p>
+                        <p className="text-xs text-muted-foreground">Speed when an audio/video player opens</p>
+                        <div className="flex gap-1.5 flex-wrap">
+                          {[0.75, 1, 1.25, 1.5, 2].map(s => (
+                            <button key={s} onClick={() => setDefaultSpeed(s)} data-testid={`button-speed-${s}`}
+                              className={`px-3 py-1.5 rounded-lg border text-sm font-medium transition-colors ${defaultSpeed === s ? "bg-[#EDE518] text-black border-[#EDE518]" : "bg-muted/40 text-foreground/70 border-border hover:border-[#EDE518]/50"}`}>
+                              {s}x
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Playback Toggles */}
+                      <div className="space-y-3">
+                        {[
+                          { label: "Autoplay Next Video", desc: "Automatically go to the next video when one ends", val: autoplayNext, set: setAutoplayNext, id: "switch-autoplay" },
+                          { label: "Loop Video", desc: "Replay the same video when it ends", val: loopVideo, set: setLoopVideo, id: "switch-loop" },
+                        ].map(({ label, desc, val, set, id }) => (
+                          <div key={id} className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium">{label}</p>
+                              <p className="text-xs text-muted-foreground">{desc}</p>
+                            </div>
+                            <Switch checked={val} onCheckedChange={set} data-testid={id} />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* ── Content Filters ────────────────────────────────── */}
+                    <div className="space-y-4 border-t pt-4">
+                      <h3 className="font-medium flex items-center gap-2 text-[#EDE518]">
+                        <Eye className="h-4 w-4" />
+                        Content & Sorting
+                      </h3>
+
+                      {/* Sort Order */}
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium">Sort Videos By</p>
+                        <div className="grid grid-cols-2 gap-2">
+                          {([['default','Default order'],['newest','Newest first'],['oldest','Oldest first'],['az','A → Z'],['popular','Most popular']] as const).map(([v,label]) => (
+                            <button key={v} onClick={() => setSortOrder(v)} data-testid={`button-sort-${v}`}
+                              className={`py-2 px-3 rounded-lg border text-sm text-left transition-colors ${sortOrder === v ? "bg-[#EDE518] text-black border-[#EDE518] font-bold" : "bg-muted/40 text-foreground/70 border-border hover:border-[#EDE518]/50"}`}>
+                              {label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Content Toggles */}
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm font-medium">Hide Watched Videos</p>
+                            <p className="text-xs text-muted-foreground">Remove videos you've already watched from the grid</p>
+                          </div>
+                          <Switch checked={hideWatched} onCheckedChange={setHideWatched} data-testid="switch-hide-watched" />
+                        </div>
+                      </div>
+
+                      {/* Default Category */}
+                      <div className="space-y-2">
+                        <p className="text-sm font-medium">Default Category on Load</p>
+                        <p className="text-xs text-muted-foreground">Which category opens when you first visit</p>
+                        <select
+                          value={defaultCategory}
+                          onChange={(e) => setDefaultCategory(e.target.value)}
+                          data-testid="select-default-category"
+                          className="w-full rounded-lg border border-border bg-muted/40 text-foreground px-3 py-2 text-sm"
+                        >
+                          <option value="">Home screen (default)</option>
+                          {topLevelCategories.map(c => (
+                            <option key={c.id} value={c.id}>{c.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
                   </div>
                 </DialogContent>
               </Dialog>
@@ -3319,7 +3502,7 @@ export default function DashboardPage() {
         <DashboardBannerSlideshow banners={banners} videos={videos || []} />
       )}
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8" style={{ fontSize: textSize === 'small' ? '90%' : textSize === 'large' ? '115%' : '100%' }}>
         <div className="max-w-6xl mx-auto space-y-8">
 
           {hasActiveSubscription ? (
@@ -3806,7 +3989,12 @@ export default function DashboardPage() {
                 (() => {
                   const selectedCat = categories.find(c => c.id === selectedCategory) || null;
                   const theme = selectedCat ? getCategoryTheme(selectedCat.name) : null;
-                  const gridCols = theme ? theme.gridCols : "grid-cols-2 md:grid-cols-3";
+                  const baseGridCols = theme ? theme.gridCols : "grid-cols-2 md:grid-cols-3";
+                  const gridCols = cardSize === 'compact'
+                    ? "grid-cols-3 sm:grid-cols-4 md:grid-cols-5"
+                    : cardSize === 'large'
+                    ? "grid-cols-1 sm:grid-cols-2"
+                    : baseGridCols;
                   const cardVariant = theme ? theme.cardVariant : "default";
                   const featuredFirst = theme ? theme.featuredFirst : true;
 
@@ -3842,11 +4030,15 @@ export default function DashboardPage() {
                           const subcats = isMainCat ? getSubcategories(selectedCategory!) : [];
                           const hasSubcats = subcats.length > 0;
 
-                          // Sort all videos by sortOrder then createdAt
-                          const videosSorted = [...filteredVideos].sort((a, b) =>
-                            ((a as any).sortOrder ?? 0) - ((b as any).sortOrder ?? 0) ||
-                            (a.createdAt ? new Date(a.createdAt).getTime() : 0) - (b.createdAt ? new Date(b.createdAt).getTime() : 0)
-                          );
+                          // Sort all videos per user preference
+                          const videosSorted = [...filteredVideos].sort((a, b) => {
+                            if (sortOrder === 'newest') return (b.createdAt ? new Date(b.createdAt).getTime() : 0) - (a.createdAt ? new Date(a.createdAt).getTime() : 0);
+                            if (sortOrder === 'oldest') return (a.createdAt ? new Date(a.createdAt).getTime() : 0) - (b.createdAt ? new Date(b.createdAt).getTime() : 0);
+                            if (sortOrder === 'az') return a.title.localeCompare(b.title);
+                            if (sortOrder === 'popular') return (b.viewCount ?? 0) - (a.viewCount ?? 0);
+                            // default: sortOrder field then createdAt
+                            return (((a as any).sortOrder ?? 0) - ((b as any).sortOrder ?? 0)) || ((a.createdAt ? new Date(a.createdAt).getTime() : 0) - (b.createdAt ? new Date(b.createdAt).getTime() : 0));
+                          });
 
                           // Spotlight: rotate daily; skip for list/portrait/square categories
                           // Prefer videos with thumbnails so the spotlight always looks great
