@@ -492,6 +492,7 @@ function LegacyVideoPlayer({ video, onClose, onMinimize }: { video: VideoType; o
   const [streamLoading, setStreamLoading] = useState(true);
   const [streamError, setStreamError] = useState<string | null>(null);
   const [thumbnailCacheBust] = useState(() => Date.now());
+  const [isEnded, setIsEnded] = useState(false);
 
   // Related items for Listen/Watch Next
   const { data: relatedItems = [] } = useQuery<any[]>({
@@ -589,7 +590,13 @@ function LegacyVideoPlayer({ video, onClose, onMinimize }: { video: VideoType; o
 
   const handleTimeUpdate = () => {
     if (videoRef.current) {
-      setCurrentTime(videoRef.current.currentTime);
+      const t = videoRef.current.currentTime;
+      const d = videoRef.current.duration || 0;
+      setCurrentTime(t);
+      if (d > 0) {
+        _liveVideoProgress.videoId = currentVideo.id;
+        _liveVideoProgress.pct = t / d;
+      }
       if (videoRef.current.buffered.length > 0) {
         setBuffered(videoRef.current.buffered.end(videoRef.current.buffered.length - 1));
       }
@@ -599,6 +606,22 @@ function LegacyVideoPlayer({ video, onClose, onMinimize }: { video: VideoType; o
   const handleLoadedMetadata = () => {
     if (videoRef.current) {
       setDuration(videoRef.current.duration);
+    }
+  };
+
+  const handleEnded = () => {
+    setIsPlaying(false);
+    setIsEnded(true);
+  };
+
+  const handleReplayBestMoment = () => {
+    if (videoRef.current && duration > 0) {
+      // "Best moment" = around 20-30% in (typically the hook/punchline setup)
+      const replayAt = duration * 0.2;
+      videoRef.current.currentTime = replayAt;
+      videoRef.current.play().catch(() => {});
+      setIsEnded(false);
+      setIsPlaying(true);
     }
   };
 
@@ -696,8 +719,9 @@ function LegacyVideoPlayer({ video, onClose, onMinimize }: { video: VideoType; o
               autoPlay
               preload="auto"
               className="hidden"
-              onPlay={() => setIsPlaying(true)}
+              onPlay={() => { setIsPlaying(true); setIsEnded(false); }}
               onPause={() => setIsPlaying(false)}
+              onEnded={handleEnded}
               onTimeUpdate={handleTimeUpdate}
               onLoadedMetadata={handleLoadedMetadata}
               data-testid={`audio-player-${currentVideo.id}`}
@@ -726,8 +750,9 @@ function LegacyVideoPlayer({ video, onClose, onMinimize }: { video: VideoType; o
             controlsList="nodownload nofullscreen noremoteplayback"
             disablePictureInPicture
             onContextMenu={(e) => e.preventDefault()}
-            onPlay={() => setIsPlaying(true)}
+            onPlay={() => { setIsPlaying(true); setIsEnded(false); }}
             onPause={() => setIsPlaying(false)}
+            onEnded={handleEnded}
             onTimeUpdate={handleTimeUpdate}
             onLoadedMetadata={handleLoadedMetadata}
             data-testid={`video-player-${currentVideo.id}`}
@@ -738,12 +763,37 @@ function LegacyVideoPlayer({ video, onClose, onMinimize }: { video: VideoType; o
           className={`absolute inset-0 flex items-center justify-center cursor-pointer transition-opacity ${showControls ? 'opacity-100' : 'opacity-0'}`}
           onClick={handlePlayPause}
         >
-          {!isPlaying && (
+          {!isPlaying && !isEnded && (
             <div className="h-16 w-16 rounded-full bg-primary/90 flex items-center justify-center">
               <Play className="h-8 w-8 text-primary-foreground ml-1" />
             </div>
           )}
         </div>
+
+        {/* Replay That Moment overlay */}
+        {isEnded && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-black/75 z-10 animate-in fade-in duration-400">
+            <div className="text-center mb-2">
+              <p className="text-white/60 text-sm uppercase tracking-widest font-bold">Finished!</p>
+              <h3 className="text-white font-black text-xl mt-1">{currentVideo.title}</h3>
+            </div>
+            <button
+              onClick={handleReplayBestMoment}
+              className="flex items-center gap-2 px-6 py-3 rounded-full font-bold text-black text-sm shadow-[0_0_24px_rgba(237,229,24,0.5)] hover:scale-105 active:scale-95 transition-transform"
+              style={{ background: "linear-gradient(135deg, #EDE518 0%, #f5c800 100%)" }}
+              data-testid="button-replay-best-moment"
+            >
+              <SkipBack className="h-4 w-4" />
+              Watch best part again ✨
+            </button>
+            <button
+              onClick={() => { setIsEnded(false); if (videoRef.current) { videoRef.current.currentTime = 0; videoRef.current.play().catch(() => {}); } }}
+              className="text-white/60 hover:text-white text-xs underline transition-colors"
+            >
+              Watch from beginning
+            </button>
+          </div>
+        )}
 
         <div className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 transition-opacity ${showControls ? 'opacity-100' : 'opacity-0'}`}>
           <div 
@@ -1331,6 +1381,22 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
         if (onView) onView();
       });
       return;
+    }
+    if (!open && isOpen) {
+      // "Almost There" — show toast if user leaves 50–90% through
+      if (_liveVideoProgress.videoId === video.id) {
+        const pct = _liveVideoProgress.pct;
+        if (pct >= 0.5 && pct < 0.92) {
+          const pctDisplay = Math.round(pct * 100);
+          setTimeout(() => toast({
+            title: `You were ${pctDisplay}% done — finish it! 🎯`,
+            description: "Tap the card to pick up where you left off.",
+            duration: 5000,
+          }), 400);
+        }
+        _liveVideoProgress.videoId = "";
+        _liveVideoProgress.pct = 0;
+      }
     }
     setIsOpen(open);
     if (open && onView) {
@@ -2186,6 +2252,106 @@ function DashboardBannerSlideshow({ banners, videos }: { banners: BannerItem[]; 
   );
 }
 
+// Shared ref so VideoCard can read LegacyVideoPlayer's live progress on close
+const _liveVideoProgress = { videoId: "", pct: 0 };
+
+// ── Joke Book ──────────────────────────────────────────────────────────────
+const JOKES: { title: string; body: string }[] = [
+  { title: "Bus #180", body: "An Amish man named Jeremiah asked which bus goes to the mall. A lady said, 'Bus 180.' That evening she sees him still waiting. He says, 'I'm still waiting — 176 buses passed, just four more!'" },
+  { title: "Losing Weight", body: "Jeremiah sees a man go into an elevator, heavy — and come out skinny. He shouts 'Jacob, come quick!' and they race inside together." },
+  { title: "Dropping Weight", body: "Jacob joins a gym. Three minutes later he's back in tears. 'There's a sign that says DO NOT DROP THE WEIGHT — but the whole reason I signed up was to drop the weight!'" },
+  { title: "Press It with Your Elbow", body: "Grandmother calls: 'Why do I press all the buttons with my elbow?' Grandson: 'I'm sure your hands will be full of presents you're bringing me.'" },
+  { title: "It Hurts Because It's Empty", body: "Jacob tells his stomachache secret: 'It hurts because it's empty — fill it up.' Weeks later the rabbi has a headache, and Jacob cheerfully suggests the same remedy." },
+  { title: "Building a House", body: "A man builds a house exactly as the Gemara says. It collapses the next day. He runs to the rabbi. The rabbi says: 'Actually, Tosfos asks that question.'" },
+  { title: "Peanuts", body: "The rabbi eats Mrs. Gold's peanuts while she talks. He apologizes. She smiles: 'Don't worry, Rabbi — I can't eat peanuts. I just like to nibble the chocolate off them.'" },
+  { title: "Getting an Aliyah", body: "Izzy practiced the Torah blessings all week. At the bar mitzvah he stands up confidently and says 'Borechu es Hashem Hamevorach.' Everyone responds. He shouts: 'EVERYONE QUIET! I can do it myself!'" },
+  { title: "Flucky", body: "Zalman got hit by a car. His wife panics: 'You have flucky!' Neighbors argue ice vs. heat. She calls the doctor: 'He got off LUCKY.'" },
+  { title: "Up and Down", body: "Kids say 'wait UP, hold UP, stay UP.' Parents say 'calm DOWN, sit DOWN.' Then an adult says 'meet UP for ice cream?' And the kid says 'I'm DOWN.'" },
+  { title: "75th Floor", body: "No elevator — 75 floors to climb! Guy 1 tells jokes, guy 2 sings, guy 3 tells sad stories. Floor 74: 'I have the saddest story of all… we left the key at the front desk.'" },
+  { title: "A Worrier", body: "Robert hired someone to do all his worrying for him. His friend Steven asks: 'Where are you getting the money to pay him?' Robert says: 'Let him worry about that.'" },
+  { title: "Dr. Geezer", body: "The farmer-turned-doctor cures Mark's lost taste with 'gasoline.' Then restores his memory with the same — 'That's gasoline!' — 'Congratulations, you got your memory back. $500 please.' When Mark claims lost vision: 'Here's $1000.' 'But it's only $500!' 'Congratulations — you got your vision back.'" },
+  { title: "Too Many Questions", body: "Yossel saw his neighbor's Christmas tree and asked: which species of tree? Minimum height? Maximum? How close to the window? Do too many decorations disqualify it? The neighbor's father stormed over furious." },
+  { title: "Hagbah", body: "Moishe, the weakest man, trained six months after an embarrassing Hagbah. He lifts the Torah perfectly, spins around, smiles at the gabbai. Gabbai: 'That was very nice. But we called you up for Shishi.'" },
+  { title: "My Mother", body: "A girl skips school and calls in herself: 'Hi, Lauren Feldman is sick today.' Secretary: 'Who's calling?' Girl: '…This is my mother.'" },
+  { title: "Slippers", body: "'I've got good news and bad news. Bad first?' 'Your legs have to come off.' 'And the good news?' 'Jose, our gardener, may be interested in buying your slippers.'" },
+  { title: "Half Are Crooks", body: "Editor: HEADLINE: 'Half the Shul Members Are Crooks.' After pressure, the retraction: 'Half the Shul Members Are NOT Crooks.'" },
+  { title: "Darts", body: "'Throw this dart at the map — wherever it lands, that's our vacation.' She throws it. They spend the vacation behind the fridge." },
+  { title: "Detergent", body: "Grandfather's dirty plates: 'As clean as Detergent can clean them.' At the end: 'Detergent, get out of the way!' The dog's name was Detergent." },
+  { title: "The Three Answers", body: "Zevi memorizes Nachum's answers: different place every day, three trillion, and 'the president is investigating.' The counselor asks Zevi's address. 'It's in a different place every day.' 'Your phone number?' 'Three trillion.'" },
+  { title: "Unique", body: "Friend: 'When there's U-E at the end, they're silent. It's UNIQUE.' Other guy: 'Okay, I'm not going to ARG with you.'" },
+  { title: "The Janitor's Vacuum", body: "Scientists couldn't explain why patients in Room 152 died every Tuesday at 11:25. They livestreamed it. At 11:25, the janitor walked in, unplugged the life support, and plugged in his vacuum." },
+  { title: "Robert's Watch", body: "A truck knocked off Robert's car door — and his arm. The officer said 'Your arm is gone!' Robert screamed: 'MY WATCH! My brand-new watch is gone!'" },
+  { title: "Yoni's Chessed", body: "'I did a great kindness today — me and nine friends helped an old lady cross the street!' Father: 'Why nine friends?' Yoni: 'She didn't really want to cross.'" },
+  { title: "Lefties", body: "Lefties get a bad deal: two left hands, two left feet, left field, leftovers… and where did all the party guests go? THEY LEFT." },
+  { title: "Vladimir's Electronics", body: "Vladimir's store was tiny, sandwiched between two huge electronics stores. His rabbi said: put up a sign reading 'CHEAP ELECTRONICS – MAIN ENTRANCE.'" },
+  { title: "Cats #1", body: "Steven chases the cat out of the house. He finally gets in the Uber: 'Sorry I was late — the annoying thing was hiding under the bed and I had to poke her with a coat hanger to get her out.' The Uber driver now thinks he's talking about his mother-in-law." },
+  { title: "Shema Yisroel", body: "The horse runs toward a cliff. Gavriel panics, can't remember the stop word. Tries every prayer he knows. Finally remembers — 'SHEMA YISRAEL!' Horse stops right at the cliff's edge. Gavriel exhales: 'Baruch Hashem!' — and the horse bolts again." },
+  { title: "Carlos the Painter", body: "The can said 'For best results, use two coats' — so Carlos put on two coats. His own coat and one he found in the house." },
+  { title: "Mud Coffee", body: "Carlos: 'This coffee tastes like mud.' Waiter points to the can: 'FRESH GROUND.'" },
+  { title: "Brose", body: "Carlos: 'I was sniffing a brose.' Friend: 'You mean a ROSE?' Carlos: 'No, a brose.' Friend: 'There's no B in rose.' Carlos: 'Well, there was a bee in that rose.'" },
+  { title: "Give Me a Push", body: "3am knock on the door: 'I need someone to push me!' The man sends him away. Wife guilts him into going back out. He searches in the dark: 'SIR, WHERE ARE YOU?' 'Over here — on the swings!'" },
+  { title: "The Bottom Line", body: "When I was 20, I cared what everyone thought about me. At 30, I didn't care what others thought. At 60, I realized — no one was thinking about me at all." },
+  { title: "Breaking News", body: "Breaking news: kidnapping at school at 12:15. Numerous rabbis and principals converged. At 12:40, the lunch bell rang — and the kid who was napping finally woke up." },
+];
+
+function JokeButton({ onGoToDocs }: { onGoToDocs: () => void }) {
+  const [open, setOpen] = useState(false);
+  const [jokeIndex, setJokeIndex] = useState(() => Math.floor(Math.random() * JOKES.length));
+  const [isAnimating, setIsAnimating] = useState(false);
+
+  const nextJoke = () => {
+    setIsAnimating(true);
+    setTimeout(() => {
+      setJokeIndex(Math.floor(Math.random() * JOKES.length));
+      setIsAnimating(false);
+    }, 200);
+  };
+
+  const joke = JOKES[jokeIndex];
+
+  return (
+    <>
+      <button
+        onClick={() => { setJokeIndex(Math.floor(Math.random() * JOKES.length)); setOpen(true); }}
+        className="fixed bottom-24 right-4 z-[9000] h-14 w-14 rounded-full shadow-[0_4px_24px_rgba(0,0,0,0.5),0_0_16px_rgba(237,229,24,0.25)] flex items-center justify-center text-2xl hover:scale-110 active:scale-95 transition-transform"
+        style={{ background: "linear-gradient(135deg, #EDE518 0%, #f5c800 100%)" }}
+        title="Random Joke"
+        data-testid="button-random-joke"
+      >
+        😂
+      </button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-md" style={{ background: "linear-gradient(145deg, #060e1a 0%, #0a1628 100%)", border: "1px solid rgba(237,229,24,0.2)" }}>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2 text-[#EDE518]">
+              <span className="text-xl">😂</span> Today's Joke
+            </DialogTitle>
+          </DialogHeader>
+          <div
+            className="py-4 transition-all duration-200"
+            style={{ opacity: isAnimating ? 0 : 1, transform: isAnimating ? 'translateY(8px)' : 'translateY(0)' }}
+          >
+            <h3 className="font-black text-white text-lg mb-3">{joke.title}</h3>
+            <p className="text-slate-300 leading-relaxed text-sm">{joke.body}</p>
+          </div>
+          <div className="flex flex-col gap-2 pt-2 border-t border-white/10">
+            <Button onClick={nextJoke} className="bg-[#EDE518] text-black font-bold hover:bg-[#f5d800] gap-2 w-full">
+              <Shuffle className="h-4 w-4" /> Next Joke
+            </Button>
+            <Button
+              variant="ghost"
+              className="text-slate-400 hover:text-white text-xs gap-1"
+              onClick={() => { setOpen(false); onGoToDocs(); }}
+            >
+              <FileText className="h-3.5 w-3.5" /> Download the Full Joke Book →
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
+  );
+}
+
 // ── Video Progress Context ──────────────────────────────────────────────────
 const VideoProgressContext = createContext<Map<string, number>>(new Map());
 
@@ -2371,6 +2537,7 @@ export default function DashboardPage() {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [surpriseVideoId, setSurpriseVideoId] = useState<string | null>(null);
+  const [moodFilter, setMoodFilter] = useState<string | null>(null);
   const [previewMode, setPreviewMode] = useState<"standard" | "plus">("standard");
   const recentScrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -2648,6 +2815,34 @@ export default function DashboardPage() {
     return m;
   }, [continueWatching]);
 
+  // ── Mood Filter Logic ──────────────────────────────────────────────────────
+  const MOOD_KEYWORDS: Record<string, string[]> = {
+    funny:  ["joke","funny","comedy","laugh","kidding","humor","stand","silly","absurd"],
+    crazy:  ["crazy","wild","extreme","sport","adventure","travel","game","trip","vacation","stunt","challenge"],
+    smart:  ["torah","gemara","shiur","parasha","parshas","class","learning","davar","navi","shoftim","eiruvin","yomi","daf","halacha","musar","hashkafa"],
+    chill:  ["music","chill","story","stories","relax","album","podcast","radio","song","bedtime","peaceful","calm"],
+  };
+
+  const moodMatchedVideoIds = useMemo<Set<string> | null>(() => {
+    if (!moodFilter || !videos || !categories) return null;
+    const keywords = MOOD_KEYWORDS[moodFilter] || [];
+    const matchedCatIds = new Set<string>();
+    categories.forEach((cat: any) => {
+      const name = (cat.name || "").toLowerCase();
+      if (keywords.some(kw => name.includes(kw))) matchedCatIds.add(cat.id);
+    });
+    // Fall back to matching video titles if no categories match
+    const matchedVideoIds = new Set<string>();
+    videos.forEach(v => {
+      const inMatchedCat = v.categoryId && matchedCatIds.has(v.categoryId);
+      const titleMatch = keywords.some(kw => (v.title || "").toLowerCase().includes(kw));
+      if (inMatchedCat || titleMatch) matchedVideoIds.add(v.id);
+    });
+    // If almost nothing matches, return all (don't filter too aggressively)
+    if (matchedVideoIds.size < 3) return null;
+    return matchedVideoIds;
+  }, [moodFilter, videos, categories]);
+
   const videosByCategory = useMemo(() => {
     if (!videos) return {};
     const grouped: Record<string, VideoType[]> = {};
@@ -2761,8 +2956,11 @@ export default function DashboardPage() {
     if (hideWatched) {
       result = result.filter(v => !viewedVideoIds.includes(v.id));
     }
+    if (moodFilter && moodMatchedVideoIds) {
+      result = result.filter(v => moodMatchedVideoIds.has(v.id));
+    }
     return result;
-  }, [videos, selectedCategory, topLevelCategories, getSubcategories, hideWatched, viewedVideoIds]);
+  }, [videos, selectedCategory, topLevelCategories, getSubcategories, hideWatched, viewedVideoIds, moodFilter, moodMatchedVideoIds]);
 
   // Check scroll position to show/hide arrows
   const checkScrollPosition = () => {
@@ -3873,6 +4071,51 @@ export default function DashboardPage() {
                 </Button>
               </div>
               
+              {/* Pick Your Mood */}
+              {!searchQuery.trim() && (
+                <div>
+                  <div className="flex items-center gap-2 mb-2.5">
+                    <span className="text-xs font-black uppercase tracking-widest text-slate-400">Pick Your Mood</span>
+                    {moodFilter && (
+                      <button onClick={() => setMoodFilter(null)} className="text-xs text-slate-500 hover:text-slate-300 underline transition-colors">
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
+                    {[
+                      { id: "funny", emoji: "😂", label: "Funny" },
+                      { id: "crazy", emoji: "🤪", label: "Crazy" },
+                      { id: "smart", emoji: "🧠", label: "Smart" },
+                      { id: "chill", emoji: "😌", label: "Chill" },
+                    ].map(mood => (
+                      <button
+                        key={mood.id}
+                        onClick={() => setMoodFilter(moodFilter === mood.id ? null : mood.id)}
+                        className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold border transition-all hover:scale-105 active:scale-95"
+                        style={moodFilter === mood.id ? {
+                          background: "linear-gradient(135deg, #EDE518 0%, #f5c800 100%)",
+                          color: "#000",
+                          borderColor: "#EDE518",
+                          boxShadow: "0 0 16px rgba(237,229,24,0.4)",
+                        } : {
+                          background: "rgba(255,255,255,0.05)",
+                          color: "#94a3b8",
+                          borderColor: "rgba(255,255,255,0.1)",
+                        }}
+                        data-testid={`button-mood-${mood.id}`}
+                      >
+                        <span className="text-base">{mood.emoji}</span>
+                        {mood.label}
+                      </button>
+                    ))}
+                  </div>
+                  {moodFilter && moodMatchedVideoIds === null && (
+                    <p className="text-xs text-slate-500 mt-2">Showing all videos — no specific matches for this mood yet.</p>
+                  )}
+                </div>
+              )}
+
               {/* Search Results - shown when searching */}
               {searchQuery.trim() && (
                 <div>
@@ -3911,6 +4154,40 @@ export default function DashboardPage() {
                 </div>
               )}
               
+              {/* Mood Results Section — shown on home view when mood filter active */}
+              {!searchQuery.trim() && moodFilter && moodMatchedVideoIds && !selectedCategory && (
+                <div>
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="flex-shrink-0 h-8 w-1.5 rounded-full bg-[#EDE518] shadow-[0_0_8px_#EDE518]" />
+                    <span className="text-xl">
+                      {moodFilter === "funny" ? "😂" : moodFilter === "crazy" ? "🤪" : moodFilter === "smart" ? "🧠" : "😌"}
+                    </span>
+                    <h2 className="text-xl font-black text-white uppercase tracking-wide">
+                      {moodFilter === "funny" ? "Funny Picks" : moodFilter === "crazy" ? "Crazy Picks" : moodFilter === "smart" ? "Smart Picks" : "Chill Picks"}
+                    </h2>
+                    <span className="text-sm text-slate-500 font-medium">{moodMatchedVideoIds.size} videos</span>
+                    <div className="flex-1 h-px bg-gradient-to-r from-[#EDE518]/30 to-transparent" />
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                    {(videos || []).filter(v => moodMatchedVideoIds.has(v.id)).slice(0, 12).map(video => {
+                      const cat = categories?.find((c: any) => c.id === video.categoryId);
+                      return (
+                        <VideoCard
+                          key={video.id}
+                          video={video}
+                          isNew={isVideoNew(video)}
+                          onView={() => markVideoViewedMutation.mutate(video.id)}
+                          categoryName={cat?.name}
+                        />
+                      );
+                    })}
+                  </div>
+                  {moodMatchedVideoIds.size > 12 && (
+                    <p className="text-xs text-slate-500 text-center mt-3">Showing 12 of {moodMatchedVideoIds.size} — browse a category for more</p>
+                  )}
+                </div>
+              )}
+
               {/* Continue Watching Section */}
               {!searchQuery.trim() && continueWatching.length > 0 && (
                 <div>
@@ -4463,6 +4740,7 @@ export default function DashboardPage() {
     </div>
     </ParentalControlsContext.Provider>
     </VideoProgressContext.Provider>
+    <JokeButton onGoToDocs={() => setSelectedCategory("documents")} />
     {showIntro && (
       <IntroAnimation onDone={() => {
         setShowIntro(false);
