@@ -3352,7 +3352,7 @@ export default function DashboardPage() {
 
         <div className="px-6 py-4 space-y-5">
           {/* How to activate — step-by-step slideshow */}
-          {!parentalData?.isEnabled && (() => {
+          {(() => {
             const PC_STEPS = [
               { emoji: "⚙️", title: "Open Settings", text: "Tap the gear icon in the top right corner of the dashboard." },
               { emoji: "🛡️", title: "Tap Parental Controls", text: "Find 'Parental Controls' in the settings menu and tap it." },
@@ -4092,6 +4092,72 @@ export default function DashboardPage() {
         <DashboardBannerSlideshow banners={banners} videos={videos || []} />
       )}
 
+      {/* ── Full Mood Page — fixed overlay covers the whole screen ── */}
+      {selectedMood && (() => {
+        const MOOD_META: Record<string, { emoji: string; label: string; tagline: string; color: string; bg: string }> = {
+          funny: { emoji: "😂", label: "Funny Stuff", tagline: "Jokes, comedy & everything that'll make you crack up!", color: "#f59e0b", bg: "linear-gradient(135deg, #1a0f00 0%, #0d1828 60%)" },
+          crazy: { emoji: "🤪", label: "Wild & Crazy", tagline: "Adventures, sports & totally out-there moments!", color: "#8b5cf6", bg: "linear-gradient(135deg, #0d0a1a 0%, #0d1828 60%)" },
+          smart: { emoji: "🧠", label: "Learn Something", tagline: "Torah, stories & things that'll blow your mind!", color: "#08779C", bg: "linear-gradient(135deg, #001524 0%, #0d1828 60%)" },
+          chill: { emoji: "😌", label: "Chill Out", tagline: "Music, calm stories & good vibes only.", color: "#10b981", bg: "linear-gradient(135deg, #001a10 0%, #0d1828 60%)" },
+        };
+        const meta = MOOD_META[selectedMood] || MOOD_META.funny;
+        const moodVideos = moodMatchedVideoIds
+          ? (videos || []).filter(v => moodMatchedVideoIds.has(v.id))
+          : (videos || []);
+        return (
+          <div className="fixed inset-0 z-40 overflow-y-auto" style={{ background: "#0d1828" }}>
+            {/* Hero header */}
+            <div className="relative overflow-hidden" style={{ background: meta.bg }}>
+              <div className="absolute inset-0 opacity-15" style={{ background: `radial-gradient(circle at 30% 50%, ${meta.color}, transparent 70%)` }} />
+              <div className="relative px-5 pt-5 pb-6 max-w-4xl mx-auto">
+                <button
+                  onClick={() => { setSelectedMood(null); setMoodFilter(null); }}
+                  className="flex items-center gap-1.5 text-xs font-bold w-fit px-3 py-1.5 rounded-full border mb-4 transition-all active:scale-95"
+                  style={{ color: "#94a3b8", borderColor: "rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.08)" }}
+                >
+                  <ChevronLeft className="h-3.5 w-3.5" /> Back to Home
+                </button>
+                <div className="flex items-center gap-4">
+                  <div className="text-6xl">{meta.emoji}</div>
+                  <div>
+                    <h1 className="text-3xl font-black text-white leading-tight">{meta.label}</h1>
+                    <p className="text-sm mt-1" style={{ color: meta.color }}>{meta.tagline}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 mt-3">
+                  <span className="h-2 w-2 rounded-full animate-pulse" style={{ background: meta.color }} />
+                  <span className="text-xs font-semibold text-slate-400">{moodVideos.length} videos in this vibe</span>
+                </div>
+              </div>
+            </div>
+            {/* Video grid */}
+            <div className="px-4 py-5 max-w-4xl mx-auto pb-20">
+              {moodVideos.length > 0 ? (
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {moodVideos.map(video => {
+                    const cat = categories?.find((c: any) => c.id === video.categoryId);
+                    return (
+                      <VideoCard
+                        key={video.id}
+                        video={video}
+                        isNew={isVideoNew(video)}
+                        onView={() => markVideoViewedMutation.mutate(video.id)}
+                        categoryName={cat?.name}
+                      />
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-20 text-slate-500">
+                  <div className="text-5xl mb-3">{meta.emoji}</div>
+                  <p className="font-semibold">Nothing here yet — check back soon!</p>
+                </div>
+              )}
+            </div>
+          </div>
+        );
+      })()}
+
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto space-y-8">
 
@@ -4458,104 +4524,6 @@ export default function DashboardPage() {
                 </div>
               )}
               
-              {/* ── Full Mood Page — takes over when a mood is selected ── */}
-              {selectedMood && !searchQuery.trim() && !selectedCategory && (() => {
-                const MOOD_META: Record<string, { emoji: string; label: string; tagline: string; color: string; bg: string }> = {
-                  funny: { emoji: "😂", label: "Funny Stuff", tagline: "Jokes, comedy & everything that'll make you crack up!", color: "#f59e0b", bg: "linear-gradient(135deg, #1a0f00 0%, #0d1828 60%)" },
-                  crazy: { emoji: "🤪", label: "Wild & Crazy", tagline: "Adventures, sports & totally out-there moments!", color: "#8b5cf6", bg: "linear-gradient(135deg, #0d0a1a 0%, #0d1828 60%)" },
-                  smart: { emoji: "🧠", label: "Learn Something", tagline: "Torah, stories & things that'll blow your mind!", color: "#08779C", bg: "linear-gradient(135deg, #001524 0%, #0d1828 60%)" },
-                  chill: { emoji: "😌", label: "Chill Out", tagline: "Music, calm stories & good vibes only.", color: "#10b981", bg: "linear-gradient(135deg, #001a10 0%, #0d1828 60%)" },
-                };
-                const meta = MOOD_META[selectedMood] || MOOD_META.funny;
-                const moodVideos = moodMatchedVideoIds
-                  ? (videos || []).filter(v => moodMatchedVideoIds.has(v.id))
-                  : [];
-                return (
-                  <div className="animate-in fade-in slide-in-from-bottom-4 duration-400">
-                    {/* Hero header */}
-                    <div className="rounded-3xl overflow-hidden mb-6 relative" style={{ background: meta.bg }}>
-                      <div className="absolute inset-0 opacity-10" style={{ background: `radial-gradient(circle at 30% 50%, ${meta.color}, transparent 70%)` }} />
-                      <div className="relative px-6 py-7 flex flex-col gap-3">
-                        <button
-                          onClick={() => { setSelectedMood(null); setMoodFilter(null); }}
-                          className="flex items-center gap-1.5 text-xs font-semibold w-fit px-2.5 py-1 rounded-full border transition-all hover:border-white/30"
-                          style={{ color: "#94a3b8", borderColor: "rgba(255,255,255,0.1)", background: "rgba(255,255,255,0.05)" }}
-                        >
-                          <ChevronLeft className="h-3 w-3" /> Back
-                        </button>
-                        <div className="flex items-center gap-4">
-                          <div className="text-6xl">{meta.emoji}</div>
-                          <div>
-                            <h1 className="text-3xl font-black text-white leading-tight">{meta.label}</h1>
-                            <p className="text-sm mt-1" style={{ color: meta.color }}>{meta.tagline}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="h-1.5 w-1.5 rounded-full animate-pulse" style={{ background: meta.color }} />
-                          <span className="text-xs font-semibold" style={{ color: "#94a3b8" }}>
-                            {moodVideos.length} videos just for this vibe
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    {/* Video grid */}
-                    {moodVideos.length > 0 ? (
-                      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                        {moodVideos.map(video => {
-                          const cat = categories?.find((c: any) => c.id === video.categoryId);
-                          return (
-                            <VideoCard
-                              key={video.id}
-                              video={video}
-                              isNew={isVideoNew(video)}
-                              onView={() => markVideoViewedMutation.mutate(video.id)}
-                              categoryName={cat?.name}
-                            />
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <div className="text-center py-16 text-slate-500">
-                        <div className="text-5xl mb-3">{meta.emoji}</div>
-                        <p className="font-semibold">Nothing here yet — check back soon!</p>
-                      </div>
-                    )}
-                  </div>
-                );
-              })()}
-
-              {/* Legacy inline mood results fallback (if moodFilter set but not selectedMood) */}
-              {!selectedMood && !searchQuery.trim() && moodFilter && moodMatchedVideoIds && !selectedCategory && (
-                <div>
-                  <div className="flex items-center gap-3 mb-5">
-                    <div className="flex-shrink-0 h-8 w-1.5 rounded-full bg-[#EDE518] shadow-[0_0_8px_#EDE518]" />
-                    <span className="text-xl">{moodFilter === "funny" ? "😂" : moodFilter === "crazy" ? "🤪" : moodFilter === "smart" ? "🧠" : "😌"}</span>
-                    <h2 className="text-xl font-black text-white uppercase tracking-wide">
-                      {moodFilter === "funny" ? "Funny Picks" : moodFilter === "crazy" ? "Crazy Picks" : moodFilter === "smart" ? "Smart Picks" : "Chill Picks"}
-                    </h2>
-                    <span className="text-sm text-slate-500 font-medium">{moodMatchedVideoIds.size} videos</span>
-                    <div className="flex-1 h-px bg-gradient-to-r from-[#EDE518]/30 to-transparent" />
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-                    {(videos || []).filter(v => moodMatchedVideoIds.has(v.id)).slice(0, 12).map(video => {
-                      const cat = categories?.find((c: any) => c.id === video.categoryId);
-                      return (
-                        <VideoCard
-                          key={video.id}
-                          video={video}
-                          isNew={isVideoNew(video)}
-                          onView={() => markVideoViewedMutation.mutate(video.id)}
-                          categoryName={cat?.name}
-                        />
-                      );
-                    })}
-                  </div>
-                  {moodMatchedVideoIds.size > 12 && (
-                    <p className="text-xs text-slate-500 text-center mt-3">Showing 12 of {moodMatchedVideoIds.size} — browse a category for more</p>
-                  )}
-                </div>
-              )}
-
               {/* Continue Watching Section */}
               {!selectedMood && !searchQuery.trim() && continueWatching.length > 0 && (
                 <div>
