@@ -529,46 +529,8 @@ async function runDataMigrations() {
         log(`Stripe recovery: recreated ${recovered} subscriber account(s)`, 'migration');
       }
 
-      // ── Mark accounts from previous recovery run (first deployment) ─────────
-      // These were created on April 9 2026 when accounts were lost; mark them too
-      await pool.query(`
-        UPDATE users SET needs_password_reset = true
-        WHERE role = 'customer'
-          AND stripe_customer_id IS NOT NULL
-          AND needs_password_reset = false
-          AND created_at >= '2026-04-09 12:00:00'
-      `);
-
-      // ── Send password reset emails to all accounts that need it ────────────
-      const needsReset = await pool.query(
-        `SELECT id, email FROM users WHERE needs_password_reset = true AND role = 'customer'`
-      );
-      if (needsReset.rows.length > 0) {
-        try {
-          const { client: emailClient } = await getUncachableResendClient();
-          let emailsSent = 0;
-          for (const row of needsReset.rows) {
-            try {
-              const token = crypto.randomBytes(32).toString('hex');
-              const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
-              await pool.query(
-                `INSERT INTO password_reset_tokens (id, token, user_id, expires_at) VALUES (gen_random_uuid()::varchar, $1, $2, $3) ON CONFLICT DO NOTHING`,
-                [token, row.id, expiresAt.toISOString()]
-              );
-              const resetLink = `${baseUrl}/reset-password?token=${token}`;
-              await emailClient.emails.send({
-                from: FROM_EMAIL,
-                to: row.email,
-                subject: 'Set Your Password - OneTimeOneTime',
-                html: getPasswordResetEmail(resetLink),
-              });
-              await pool.query(`UPDATE users SET needs_password_reset = false WHERE id = $1`, [row.id]);
-              emailsSent++;
-            } catch (_) {}
-          }
-          if (emailsSent > 0) log(`Sent password reset emails to ${emailsSent} subscriber(s)`, 'migration');
-        } catch (_) {}
-      }
+      // ── Clear any pending password reset flags (no longer auto-sending) ─────
+      await pool.query(`UPDATE users SET needs_password_reset = false WHERE needs_password_reset = true`);
     } catch (stripeErr: any) {
       log(`Stripe recovery skipped: ${stripeErr.message}`, 'migration');
     }
