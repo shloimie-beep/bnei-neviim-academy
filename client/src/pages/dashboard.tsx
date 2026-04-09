@@ -4443,6 +4443,78 @@ export default function DashboardPage() {
                 );
               })()}
 
+              {/* ── Parental Controls Promo Slideshow ───────────────── */}
+              {!selectedCategory && !searchQuery.trim() && !moodFilter && (() => {
+                const PC_PROMO_STEPS = [
+                  { emoji: "🛡️", title: "Keep Kids Safe", text: "Set screen-time limits so kids enjoy great content — without going overboard." },
+                  { emoji: "⚙️", title: "1 · Open Settings", text: "Tap the gear icon in the top-right corner of the dashboard." },
+                  { emoji: "🔒", title: "2 · Create a Secret PIN", text: "Choose a 4–6 digit PIN that only YOU know." },
+                  { emoji: "⏱️", title: "3 · Set Time Limits", text: "Pick daily, weekly, or monthly limits. Choose which categories to restrict." },
+                  { emoji: "✅", title: "4 · Done!", text: "Tap 'Activate Parental Controls' and protection starts right away!" },
+                ];
+                return (
+                  <div
+                    className="rounded-2xl border border-[#EDE518]/20 overflow-hidden"
+                    style={{ background: "linear-gradient(135deg, rgba(237,229,24,0.05) 0%, rgba(8,119,156,0.05) 100%)" }}
+                  >
+                    {/* Top bar */}
+                    <div className="flex items-center justify-between px-4 pt-4 pb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="h-7 w-7 rounded-full bg-[#EDE518]/15 flex items-center justify-center">
+                          <ShieldCheck className="h-3.5 w-3.5 text-[#EDE518]" />
+                        </div>
+                        <span className="text-[11px] font-black uppercase tracking-widest text-[#EDE518]">Parental Controls</span>
+                      </div>
+                      <button
+                        onClick={() => { setPcEmail(""); setPcPin(""); setPcPinConfirm(""); setPcCurrentPin(""); setPcLimitHours("1"); setPcPeriod("day"); setPcCategoryAll(true); setPcCategoryIds([]); setIsParentalSetupOpen(true); }}
+                        className="text-[11px] font-bold text-white/60 hover:text-[#EDE518] transition-colors"
+                        data-testid="button-promo-setup-parental"
+                      >
+                        {parentalData?.isEnabled ? "Edit →" : "Set Up →"}
+                      </button>
+                    </div>
+                    {/* Step content */}
+                    <div className="px-5 pb-3 text-center min-h-[100px] flex flex-col items-center justify-center gap-1.5">
+                      <div className="text-3xl">{PC_PROMO_STEPS[pcStep].emoji}</div>
+                      <p className="text-[#EDE518] font-black text-sm">{PC_PROMO_STEPS[pcStep].title}</p>
+                      <p className="text-slate-400 text-xs leading-relaxed max-w-xs">{PC_PROMO_STEPS[pcStep].text}</p>
+                    </div>
+                    {/* Nav dots + arrows */}
+                    <div className="px-5 pb-4 flex items-center gap-3">
+                      <button
+                        onClick={() => setPcStep(s => Math.max(0, s - 1))}
+                        disabled={pcStep === 0}
+                        className="h-7 w-7 rounded-full flex items-center justify-center border border-white/10 transition-all disabled:opacity-20 hover:border-[#EDE518]/40"
+                        style={{ background: "rgba(255,255,255,0.05)" }}
+                        data-testid="button-promo-pc-prev"
+                      >
+                        <ChevronLeft className="h-4 w-4 text-white" />
+                      </button>
+                      <div className="flex-1 flex items-center justify-center gap-1.5">
+                        {PC_PROMO_STEPS.map((_, i) => (
+                          <button
+                            key={i}
+                            onClick={() => setPcStep(i)}
+                            className="rounded-full transition-all"
+                            style={{ width: i === pcStep ? 18 : 5, height: 5, background: i === pcStep ? "#EDE518" : "rgba(255,255,255,0.2)" }}
+                            data-testid={`button-promo-pc-dot-${i}`}
+                          />
+                        ))}
+                      </div>
+                      <button
+                        onClick={() => setPcStep(s => Math.min(PC_PROMO_STEPS.length - 1, s + 1))}
+                        disabled={pcStep === PC_PROMO_STEPS.length - 1}
+                        className="h-7 w-7 rounded-full flex items-center justify-center border border-white/10 transition-all disabled:opacity-20 hover:border-[#EDE518]/40"
+                        style={{ background: "rgba(255,255,255,0.05)" }}
+                        data-testid="button-promo-pc-next"
+                      >
+                        <ChevronRight className="h-4 w-4 text-white" />
+                      </button>
+                    </div>
+                  </div>
+                );
+              })()}
+
               {/* ── Live Viewer Count ──────────────────────────────── */}
               <div className="flex items-center gap-1.5 px-1">
                 <span className="inline-block h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
