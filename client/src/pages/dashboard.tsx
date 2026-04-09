@@ -2562,42 +2562,41 @@ function DashboardBannerSlideshow({ banners, videos, onOpenSettings }: { banners
     <>
       <div
         className="relative overflow-hidden select-none"
-        style={{ minHeight: 220, background: "#060e1a" }}
+        style={{ minHeight: 300, background: "#04080f" }}
         data-testid="banner-slideshow"
       >
         {/* Full-bleed background image */}
         {slide.imageUrl && (
-          <div className="absolute inset-0 transition-opacity duration-500">
-            <img
-              src={slide.imageUrl}
-              alt=""
-              className="w-full h-full object-cover"
-              style={{ filter: "brightness(0.5) saturate(1.2)" }}
-            />
-          </div>
+          <img
+            src={slide.imageUrl}
+            alt=""
+            className="absolute inset-0 w-full h-full object-cover"
+            style={{ filter: "brightness(0.38) saturate(1.3)", transform: "scale(1.05)" }}
+          />
         )}
 
-        {/* Gradient background for promo slides without image */}
+        {/* Gradient background for promo slides */}
         {!slide.imageUrl && (
-          <div className="absolute inset-0 transition-all duration-500" style={{ background: slide.bg }} />
+          <div className="absolute inset-0" style={{ background: slide.bg }} />
         )}
 
-        {/* Dark directional overlay */}
-        <div
-          className="absolute inset-0"
-          style={{ background: "linear-gradient(90deg, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 60%, rgba(0,0,0,0.35) 100%)" }}
-        />
+        {/* Layered cinematic overlay */}
+        <div className="absolute inset-0" style={{ background: "linear-gradient(135deg, rgba(0,0,0,0.72) 0%, rgba(0,0,0,0.08) 55%, rgba(0,0,0,0.55) 100%)" }} />
+        {/* Bottom fade for dots */}
+        <div className="absolute bottom-0 left-0 right-0 h-20" style={{ background: "linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 100%)" }} />
 
-        {/* Accent glow blob */}
-        <div
-          className="absolute -left-16 top-1/2 -translate-y-1/2 w-72 h-72 rounded-full blur-3xl pointer-events-none"
-          style={{ background: accent, opacity: 0.15 }}
-        />
+        {/* Large accent glow — left side */}
+        <div className="absolute -left-24 top-0 bottom-0 w-96 pointer-events-none" style={{ background: `radial-gradient(ellipse at left center, ${accent}28 0%, transparent 70%)` }} />
+        {/* Secondary glow — bottom right */}
+        <div className="absolute -bottom-16 -right-16 w-72 h-72 rounded-full blur-3xl pointer-events-none" style={{ background: accent, opacity: 0.12 }} />
 
-        {/* Content */}
+        {/* Decorative accent bar */}
+        <div className="absolute top-0 left-0 right-0 h-[3px]" style={{ background: `linear-gradient(90deg, ${accent} 0%, transparent 60%)` }} />
+
+        {/* Content wrapper */}
         <div
-          className={`relative flex items-end gap-4 px-5 sm:px-8 pt-8 pb-12 ${(slide.videoId || slide.action) ? "cursor-pointer" : ""}`}
-          style={{ minHeight: 240 }}
+          className={`relative flex items-center gap-6 px-6 sm:px-10 py-8 ${(slide.videoId || slide.action) ? "cursor-pointer" : ""}`}
+          style={{ minHeight: 300 }}
           onClick={() => {
             if (slide.action === "settings") { onOpenSettings?.(); return; }
             if (!slide.videoId) return;
@@ -2605,59 +2604,76 @@ function DashboardBannerSlideshow({ banners, videos, onOpenSettings }: { banners
             if (v) { setOpenVideo(v); setIsOpenVideo(true); }
           }}
         >
+          {/* Left: text content */}
           <div className="flex-1 min-w-0">
-            {/* Badge pill */}
-            <div className="mb-3">
+            {/* Badge */}
+            <div className="mb-4">
               <span
-                className="inline-flex items-center text-[11px] font-bold px-3 py-1 rounded-full"
-                style={{ background: `${accent}20`, color: accent, border: `1.5px solid ${accent}45`, letterSpacing: "0.04em" }}
+                className="inline-flex items-center gap-1.5 text-xs font-black uppercase tracking-[0.12em] px-3 py-1.5 rounded-full"
+                style={{ background: `${accent}18`, color: accent, border: `2px solid ${accent}40` }}
               >
                 {slide.badge}
               </span>
             </div>
 
-            {/* Large emoji for non-image slides */}
+            {/* Big emoji — promo slides only */}
             {!slide.imageUrl && (
-              <div className="text-5xl mb-3 leading-none drop-shadow-lg">{slide.emoji}</div>
+              <div className="text-6xl mb-4 leading-none" style={{ filter: `drop-shadow(0 4px 16px ${accent}60)` }}>
+                {slide.emoji}
+              </div>
             )}
 
-            {/* Title */}
+            {/* TITLE — huge */}
             <h2
-              className="text-2xl sm:text-[1.75rem] font-black text-white leading-tight line-clamp-2 drop-shadow-2xl mb-2"
-              style={{ textShadow: "0 2px 24px rgba(0,0,0,0.9)" }}
+              className="font-black text-white leading-[1.05] mb-3"
+              style={{
+                fontSize: "clamp(1.85rem, 6vw, 3rem)",
+                textShadow: `0 2px 30px rgba(0,0,0,0.95), 0 0 60px ${accent}25`,
+                letterSpacing: "-0.01em",
+              }}
             >
               {slide.title}
             </h2>
 
             {/* Subtitle */}
             {slide.subtitle && (
-              <p className="text-white/65 text-sm line-clamp-2 leading-snug max-w-sm">
+              <p
+                className="text-white/70 leading-relaxed mb-5 max-w-md"
+                style={{ fontSize: "clamp(0.85rem, 2.5vw, 1rem)" }}
+              >
                 {slide.subtitle}
               </p>
             )}
 
-            {/* CTA button */}
+            {/* CTA */}
             {(slide.videoId || slide.action) && (
-              <div className="flex items-center gap-2 mt-4">
-                <div
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold"
-                  style={{ background: accent, color: accent === "#EDE518" ? "#000" : "#fff" }}
-                >
-                  {slide.videoId ? (
-                    <><Play className="h-3 w-3 fill-current" /> Watch now</>
-                  ) : (
-                    <><Settings className="h-3 w-3" /> Open Settings</>
-                  )}
-                </div>
-              </div>
+              <button
+                className="inline-flex items-center gap-2 font-black rounded-full shadow-lg transition-all active:scale-95"
+                style={{
+                  background: accent,
+                  color: accent === "#EDE518" ? "#0a0a0a" : "#fff",
+                  fontSize: "0.85rem",
+                  padding: "0.6rem 1.4rem",
+                  boxShadow: `0 4px 20px ${accent}50`,
+                }}
+              >
+                {slide.videoId
+                  ? <><Play className="h-4 w-4 fill-current" /> Watch Now</>
+                  : <><Settings className="h-4 w-4" /> Open Settings</>
+                }
+              </button>
             )}
           </div>
 
-          {/* Right-side thumbnail (visible on sm+) */}
+          {/* Right: big thumbnail for video banners */}
           {slide.imageUrl && (
             <div
-              className="hidden sm:block flex-shrink-0 w-28 h-20 md:w-44 md:h-32 rounded-2xl overflow-hidden border-2 shadow-2xl"
-              style={{ borderColor: `${accent}60`, boxShadow: `0 8px 32px rgba(0,0,0,0.6), 0 0 20px ${accent}30` }}
+              className="hidden md:block flex-shrink-0 rounded-2xl overflow-hidden shadow-2xl"
+              style={{
+                width: 200, height: 140,
+                border: `2px solid ${accent}50`,
+                boxShadow: `0 12px 48px rgba(0,0,0,0.7), 0 0 30px ${accent}25`,
+              }}
             >
               <img src={slide.imageUrl} alt={slide.title} className="w-full h-full object-cover" />
             </div>
@@ -2669,17 +2685,17 @@ function DashboardBannerSlideshow({ banners, videos, onOpenSettings }: { banners
           <>
             <button
               onClick={(e) => { e.stopPropagation(); prevSlide(); }}
-              className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-black/50 hover:bg-black/80 border border-white/10 flex items-center justify-center transition-all hover:scale-110 z-10"
+              className="absolute left-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-black/50 hover:bg-black/80 border border-white/15 flex items-center justify-center transition-all hover:scale-110 z-10 backdrop-blur-sm"
               data-testid="button-banner-prev"
             >
-              <ChevronLeft className="h-4 w-4 text-white" />
+              <ChevronLeft className="h-5 w-5 text-white" />
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); nextSlide(); }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-black/50 hover:bg-black/80 border border-white/10 flex items-center justify-center transition-all hover:scale-110 z-10"
+              className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-black/50 hover:bg-black/80 border border-white/15 flex items-center justify-center transition-all hover:scale-110 z-10 backdrop-blur-sm"
               data-testid="button-banner-next"
             >
-              <ChevronRight className="h-4 w-4 text-white" />
+              <ChevronRight className="h-5 w-5 text-white" />
             </button>
           </>
         )}
