@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Plus, Trash2, Edit2, Upload, Image, Loader2, ChevronUp, ChevronDown, Sparkles, X, Clock, Calendar } from "lucide-react";
+import { getAuthHeaders } from "@/lib/auth-context";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -83,8 +84,12 @@ export default function BannersManagement() {
       method: "POST",
       body: fd,
       credentials: "include",
+      headers: getAuthHeaders(),
     });
-    if (!res.ok) throw new Error("Image upload failed");
+    if (!res.ok) {
+      const text = await res.text().catch(() => "");
+      throw new Error(`Image upload failed (${res.status}): ${text}`);
+    }
   };
 
   const createMutation = useMutation({
@@ -151,8 +156,8 @@ export default function BannersManagement() {
       await uploadImageToNewBanner(bannerId, file);
       await queryClient.invalidateQueries({ queryKey: ["/api/admin/banners"] });
       toast({ title: "Image uploaded!" });
-    } catch {
-      toast({ title: "Image upload failed", variant: "destructive" });
+    } catch (err: any) {
+      toast({ title: "Image upload failed", description: err?.message || "Unknown error", variant: "destructive" });
     } finally {
       setUploadingImageFor(null);
     }
