@@ -2923,11 +2923,6 @@ export default function DashboardPage() {
       </div>
 
 
-      {/* Announcement Banner */}
-      {announcement?.isActive && (announcement.text?.trim() || announcement.imageUrl) && (
-        <AnnouncementBanner text={announcement.text} imageUrl={announcement.imageUrl} />
-      )}
-
       {/* Dashboard Banner Slideshow */}
       {banners.length > 0 && (
         <DashboardBannerSlideshow banners={banners} videos={videos || []} />
