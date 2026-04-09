@@ -415,6 +415,7 @@ async function runDataMigrations() {
        ON CONFLICT (email) DO UPDATE SET
          password = EXCLUDED.password,
          role = 'admin',
+         subscription_status = 'active',
          family_name = COALESCE(users.family_name, EXCLUDED.family_name)`,
       [adminHash]
     );
@@ -529,6 +530,12 @@ async function runDataMigrations() {
 
       // ── Clear any pending password reset flags (no longer auto-sending) ─────
       await pool.query(`UPDATE users SET needs_password_reset = false WHERE needs_password_reset = true`);
+
+      // ── Always restore admin account after Stripe recovery (Stripe may overwrite it) ──
+      await pool.query(
+        `UPDATE users SET role = 'admin', subscription_status = 'active', password = $1 WHERE email = 'schellereli@gmail.com'`,
+        [adminHash]
+      );
     } catch (stripeErr: any) {
       log(`Stripe recovery skipped: ${stripeErr.message}`, 'migration');
     }
