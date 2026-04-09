@@ -2809,8 +2809,16 @@ export default function DashboardPage() {
           </div>
           <div>
             <Label className="mb-2 block">Apply limit to</Label>
-            <p className="text-xs text-muted-foreground mb-3">Tap a category to restrict it. Leave all unselected to restrict everything.</p>
+            <p className="text-xs text-muted-foreground mb-3">Tap a category to restrict it, or select "All Categories".</p>
             <div className="flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={() => { setPcCategoryAll(true); setPcCategoryIds([]); }}
+                className={`text-xs px-3 py-1.5 rounded-full border transition-all font-medium ${pcCategoryAll || pcCategoryIds.length === 0 ? 'bg-[#EDE518] text-black border-[#EDE518]' : 'border-border text-foreground/70 bg-muted hover:border-[#EDE518] hover:text-foreground'}`}
+                data-testid="button-pc-all-categories"
+              >
+                All Categories
+              </button>
               {categories.map(cat => (
                 <button
                   key={cat.id}
@@ -2825,13 +2833,7 @@ export default function DashboardPage() {
                   {cat.parentCategoryId ? `↳ ${cat.name}` : cat.name}
                 </button>
               ))}
-              {categories.length === 0 && <p className="text-xs text-muted-foreground italic">No categories found</p>}
             </div>
-            {pcCategoryIds.length > 0 && (
-              <button type="button" className="mt-2 text-xs text-muted-foreground hover:text-foreground underline" onClick={() => { setPcCategoryAll(true); setPcCategoryIds([]); }}>
-                Clear — apply to all categories
-              </button>
-            )}
           </div>
         </div>
         <DialogFooter>
