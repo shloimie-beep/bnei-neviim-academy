@@ -302,21 +302,22 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
   const vimeoVideoId = currentVideo.vimeoVideoId || currentVideo.vimeo_video_id;
   const storedEmbedUrl = currentVideo.vimeoEmbedUrl || currentVideo.vimeo_embed_url;
 
-  // Include api=1 so Vimeo postMessage API works
+  // Include api=1&player_id=vimeo1 so Vimeo postMessage API works
+  const VIMEO_PLAYER_ID = 'vimeo1';
   const embedUrl = (() => {
-    const base = storedEmbedUrl
-      ? (storedEmbedUrl.includes('?') ? `${storedEmbedUrl}&autoplay=1&api=1` : `${storedEmbedUrl}?autoplay=1&api=1`)
-      : `https://player.vimeo.com/video/${vimeoVideoId}?autoplay=1&api=1&title=0&byline=0&portrait=0`;
-    return base;
+    const extra = `autoplay=1&api=1&player_id=${VIMEO_PLAYER_ID}`;
+    if (storedEmbedUrl) {
+      return storedEmbedUrl.includes('?') ? `${storedEmbedUrl}&${extra}` : `${storedEmbedUrl}?${extra}`;
+    }
+    return `https://player.vimeo.com/video/${vimeoVideoId}?${extra}&title=0&byline=0&portrait=0`;
   })();
 
-  // Vimeo postMessage API: register events after iframe loads
+  // Vimeo postMessage API: send command to iframe
   const sendVimeo = (method: string, value?: any) => {
     if (!iframeRef.current?.contentWindow) return;
-    iframeRef.current.contentWindow.postMessage(
-      JSON.stringify({ method, value }),
-      '*'
-    );
+    const msg: any = { method };
+    if (value !== undefined) msg.value = value;
+    iframeRef.current.contentWindow.postMessage(JSON.stringify(msg), 'https://player.vimeo.com');
   };
 
   // pending seek: stores the fraction (0-1) to jump to once duration is known
@@ -361,8 +362,13 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
   useEffect(() => {
     const handler = (e: MessageEvent) => {
       if (!iframeRef.current) return;
+      // Only handle messages from Vimeo
+      if (typeof e.origin === 'string' && e.origin !== 'https://player.vimeo.com') return;
       let data: any;
       try { data = typeof e.data === 'string' ? JSON.parse(e.data) : e.data; } catch { return; }
+      if (!data || typeof data !== 'object') return;
+      // Filter to our player only (player_id check)
+      if (data.player_id && data.player_id !== VIMEO_PLAYER_ID) return;
 
       // Vimeo fires {event:"ready"} when player is initialized — register listeners then
       if (data.event === 'ready') {
@@ -2977,6 +2983,7 @@ export default function DashboardPage() {
   const [pinUnlockError, setPinUnlockError] = useState("");
   const [pinUnlockCallback, setPinUnlockCallback] = useState<(() => void) | null>(null);
   const [parentalUnlockExpiry, setParentalUnlockExpiry] = useState<number | null>(null);
+  const parentalUnlockExpiryRef = useRef<number | null>(null);
   const [isParentalSetupOpen, setIsParentalSetupOpen] = useState(false);
   const [pcSetupStep, setPcSetupStep] = useState<'form' | 'confirm'>('form');
   const [pcEmail, setPcEmail] = useState("");
@@ -3058,9 +3065,16 @@ export default function DashboardPage() {
 
   const isParentalUnlocked = parentalUnlockExpiry !== null && Date.now() < parentalUnlockExpiry;
 
+  // Keep ref in sync so isVideoBlocked always reads the latest value (no stale closure)
+  useEffect(() => {
+    parentalUnlockExpiryRef.current = parentalUnlockExpiry;
+  }, [parentalUnlockExpiry]);
+
   const isVideoBlocked = (categoryId?: string | null): boolean => {
     if (!parentalData?.isEnabled) return false;
-    if (isParentalUnlocked) return false;
+    // Use the ref so this always checks the live unlock state
+    const expiry = parentalUnlockExpiryRef.current;
+    if (expiry !== null && Date.now() < expiry) return false;
     const timeLimitSeconds = (parentalData.timeLimitMinutes ?? 0) * 60;
     const timeUsedSeconds = parentalData.timeUsedSeconds ?? 0;
     if (timeUsedSeconds < timeLimitSeconds) return false;
@@ -3080,7 +3094,9 @@ export default function DashboardPage() {
     mutationFn: (pin: string) => apiRequest("POST", "/api/parental-controls/verify-pin", { pin }),
     onSuccess: async (data: any) => {
       if (data.valid) {
-        setParentalUnlockExpiry(Date.now() + 30 * 60 * 1000);
+        const expiry = Date.now() + 30 * 60 * 1000;
+        parentalUnlockExpiryRef.current = expiry;
+        setParentalUnlockExpiry(expiry);
         setIsPinUnlockOpen(false);
         if (pinUnlockCallback) {
           pinUnlockCallback();
