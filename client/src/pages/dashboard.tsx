@@ -1582,13 +1582,14 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
     >
       {/* Hover video preview — muted autoplay Vimeo embed, outside Dialog so Radix doesn't interfere */}
       {showPreview && hoverEmbedUrl && !isLocked && (
-        <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden rounded-lg">
+        <div className="absolute inset-0 z-20 overflow-hidden rounded-lg" style={{ pointerEvents: 'none' }}>
           <iframe
             src={hoverEmbedUrl}
             className="w-full h-full"
             allow="autoplay; fullscreen"
             frameBorder="0"
             title={`Preview: ${video.title}`}
+            style={{ pointerEvents: 'none', display: 'block' }}
           />
         </div>
       )}
@@ -2769,6 +2770,7 @@ export default function DashboardPage() {
   const [pcCategoryAll, setPcCategoryAll] = useState(true);
   const [pcCategoryIds, setPcCategoryIds] = useState<string[]>([]);
   const [pcStep, setPcStep] = useState(0);
+  const [pcPromoStep, setPcPromoStep] = useState(0);
   const [isDisablingParental, setIsDisablingParental] = useState(false);
   const [pcDisablePin, setPcDisablePin] = useState("");
 
@@ -4445,67 +4447,160 @@ export default function DashboardPage() {
 
               {/* ── Parental Controls Promo Slideshow ───────────────── */}
               {!selectedCategory && !searchQuery.trim() && !moodFilter && (() => {
-                const PC_PROMO_STEPS = [
-                  { emoji: "🛡️", title: "Keep Kids Safe", text: "Set screen-time limits so kids enjoy great content — without going overboard." },
-                  { emoji: "⚙️", title: "1 · Open Settings", text: "Tap the gear icon in the top-right corner of the dashboard." },
-                  { emoji: "🔒", title: "2 · Create a Secret PIN", text: "Choose a 4–6 digit PIN that only YOU know." },
-                  { emoji: "⏱️", title: "3 · Set Time Limits", text: "Pick daily, weekly, or monthly limits. Choose which categories to restrict." },
-                  { emoji: "✅", title: "4 · Done!", text: "Tap 'Activate Parental Controls' and protection starts right away!" },
+                const PC_PROMO_SLIDES = [
+                  {
+                    bg: "linear-gradient(135deg, #0d2235 0%, #0a3352 50%, #083060 100%)",
+                    accent: "#38bdf8",
+                    icon: (
+                      <svg viewBox="0 0 80 80" className="w-16 h-16" fill="none">
+                        <circle cx="40" cy="40" r="36" fill="rgba(56,189,248,0.15)" />
+                        <path d="M40 12 L62 22 L62 42 C62 55 52 65 40 70 C28 65 18 55 18 42 L18 22 Z" fill="rgba(56,189,248,0.25)" stroke="#38bdf8" strokeWidth="2" strokeLinejoin="round"/>
+                        <path d="M32 40 L38 46 L50 34" stroke="#38bdf8" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    ),
+                    title: "Keep Your Kids Safe",
+                    subtitle: "Parental Controls",
+                    text: "Set screen-time limits so your kids enjoy great content — without going overboard.",
+                  },
+                  {
+                    bg: "linear-gradient(135deg, #1a1035 0%, #2d1a52 50%, #1e1060 100%)",
+                    accent: "#a78bfa",
+                    icon: (
+                      <svg viewBox="0 0 80 80" className="w-16 h-16" fill="none">
+                        <circle cx="40" cy="40" r="36" fill="rgba(167,139,250,0.15)" />
+                        <circle cx="40" cy="40" r="14" fill="rgba(167,139,250,0.2)" stroke="#a78bfa" strokeWidth="2"/>
+                        <circle cx="40" cy="40" r="5" fill="#a78bfa"/>
+                        {[0,45,90,135,180,225,270,315].map((deg, i) => {
+                          const r = 26;
+                          const x = 40 + r * Math.cos(deg * Math.PI / 180);
+                          const y = 40 + r * Math.sin(deg * Math.PI / 180);
+                          return <circle key={i} cx={x} cy={y} r="3" fill="#a78bfa" opacity="0.6"/>;
+                        })}
+                      </svg>
+                    ),
+                    title: "Step 1 — Open Settings",
+                    subtitle: "Getting Started",
+                    text: "Tap the gear icon ⚙️ in the top-right corner of your dashboard to open Account Settings.",
+                  },
+                  {
+                    bg: "linear-gradient(135deg, #0d2a1a 0%, #0a3d25 50%, #083520 100%)",
+                    accent: "#34d399",
+                    icon: (
+                      <svg viewBox="0 0 80 80" className="w-16 h-16" fill="none">
+                        <circle cx="40" cy="40" r="36" fill="rgba(52,211,153,0.15)" />
+                        <rect x="24" y="38" width="32" height="22" rx="4" fill="rgba(52,211,153,0.2)" stroke="#34d399" strokeWidth="2"/>
+                        <path d="M30 38 L30 30 C30 22 50 22 50 30 L50 38" stroke="#34d399" strokeWidth="2" strokeLinecap="round"/>
+                        <circle cx="40" cy="50" r="4" fill="#34d399"/>
+                        <line x1="40" y1="54" x2="40" y2="57" stroke="#34d399" strokeWidth="2" strokeLinecap="round"/>
+                      </svg>
+                    ),
+                    title: "Step 2 — Create a PIN",
+                    subtitle: "Secret Protection",
+                    text: "Choose a 4–6 digit PIN that only YOU know. This PIN protects your parental settings.",
+                  },
+                  {
+                    bg: "linear-gradient(135deg, #2a1a0d 0%, #3d2a0a 50%, #352008 100%)",
+                    accent: "#fb923c",
+                    icon: (
+                      <svg viewBox="0 0 80 80" className="w-16 h-16" fill="none">
+                        <circle cx="40" cy="40" r="36" fill="rgba(251,146,60,0.15)" />
+                        <circle cx="40" cy="40" r="18" fill="rgba(251,146,60,0.15)" stroke="#fb923c" strokeWidth="2"/>
+                        <line x1="40" y1="40" x2="40" y2="26" stroke="#fb923c" strokeWidth="3" strokeLinecap="round"/>
+                        <line x1="40" y1="40" x2="50" y2="46" stroke="#fb923c" strokeWidth="2.5" strokeLinecap="round"/>
+                        <circle cx="40" cy="40" r="3" fill="#fb923c"/>
+                      </svg>
+                    ),
+                    title: "Step 3 — Set Time Limits",
+                    subtitle: "Control Screen Time",
+                    text: "Pick daily, weekly, or monthly limits. Optionally restrict specific content categories.",
+                  },
+                  {
+                    bg: "linear-gradient(135deg, #2a2600 0%, #3d3800 50%, #201e00 100%)",
+                    accent: "#EDE518",
+                    icon: (
+                      <svg viewBox="0 0 80 80" className="w-16 h-16" fill="none">
+                        <circle cx="40" cy="40" r="36" fill="rgba(237,229,24,0.15)" />
+                        <circle cx="40" cy="40" r="22" fill="rgba(237,229,24,0.15)" stroke="#EDE518" strokeWidth="2"/>
+                        <path d="M28 40 L36 48 L54 32" stroke="#EDE518" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    ),
+                    title: "You're All Set!",
+                    subtitle: "Protection Active",
+                    text: "Tap 'Activate Parental Controls' and kids are protected from the moment you're done.",
+                  },
                 ];
+                const slide = PC_PROMO_SLIDES[pcPromoStep];
                 return (
                   <div
-                    className="rounded-2xl border border-[#EDE518]/20 overflow-hidden"
-                    style={{ background: "linear-gradient(135deg, rgba(237,229,24,0.05) 0%, rgba(8,119,156,0.05) 100%)" }}
+                    className="rounded-2xl overflow-hidden border border-white/10"
+                    style={{ background: "#0b1729" }}
                   >
-                    {/* Top bar */}
-                    <div className="flex items-center justify-between px-4 pt-4 pb-2">
-                      <div className="flex items-center gap-2">
-                        <div className="h-7 w-7 rounded-full bg-[#EDE518]/15 flex items-center justify-center">
-                          <ShieldCheck className="h-3.5 w-3.5 text-[#EDE518]" />
-                        </div>
-                        <span className="text-[11px] font-black uppercase tracking-widest text-[#EDE518]">Parental Controls</span>
+                    {/* Illustrated visual area */}
+                    <div
+                      className="relative h-[140px] flex items-center justify-center overflow-hidden"
+                      style={{ background: slide.bg, transition: "background 0.5s ease" }}
+                    >
+                      {/* Ambient glow */}
+                      <div className="absolute inset-0" style={{ background: `radial-gradient(circle at 50% 60%, ${slide.accent}22 0%, transparent 70%)` }} />
+                      {/* Decorative circles */}
+                      <div className="absolute -top-8 -left-8 w-32 h-32 rounded-full opacity-20" style={{ background: slide.accent, filter: "blur(30px)" }} />
+                      <div className="absolute -bottom-8 -right-8 w-28 h-28 rounded-full opacity-15" style={{ background: slide.accent, filter: "blur(25px)" }} />
+                      {/* SVG icon */}
+                      <div style={{ filter: `drop-shadow(0 0 16px ${slide.accent}66)`, transition: "all 0.4s ease" }}>
+                        {slide.icon}
                       </div>
+                      {/* Step badge */}
+                      <div className="absolute top-3 left-3 px-2 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider" style={{ background: `${slide.accent}22`, color: slide.accent, border: `1px solid ${slide.accent}44` }}>
+                        {slide.subtitle}
+                      </div>
+                      {/* Setup CTA top-right */}
                       <button
                         onClick={() => { setPcEmail(""); setPcPin(""); setPcPinConfirm(""); setPcCurrentPin(""); setPcLimitHours("1"); setPcPeriod("day"); setPcCategoryAll(true); setPcCategoryIds([]); setIsParentalSetupOpen(true); }}
-                        className="text-[11px] font-bold text-white/60 hover:text-[#EDE518] transition-colors"
+                        className="absolute top-3 right-3 px-2.5 py-1 rounded-full text-[10px] font-bold transition-all hover:scale-105 active:scale-95"
+                        style={{ background: slide.accent, color: "#000" }}
                         data-testid="button-promo-setup-parental"
                       >
-                        {parentalData?.isEnabled ? "Edit →" : "Set Up →"}
+                        {parentalData?.isEnabled ? "Edit" : "Set Up"}
                       </button>
                     </div>
-                    {/* Step content */}
-                    <div className="px-5 pb-3 text-center min-h-[100px] flex flex-col items-center justify-center gap-1.5">
-                      <div className="text-3xl">{PC_PROMO_STEPS[pcStep].emoji}</div>
-                      <p className="text-[#EDE518] font-black text-sm">{PC_PROMO_STEPS[pcStep].title}</p>
-                      <p className="text-slate-400 text-xs leading-relaxed max-w-xs">{PC_PROMO_STEPS[pcStep].text}</p>
+
+                    {/* Text content */}
+                    <div className="px-5 pt-4 pb-2 text-center">
+                      <p className="font-black text-base text-white leading-tight" style={{ transition: "all 0.3s ease" }}>
+                        {slide.title}
+                      </p>
+                      <p className="text-slate-400 text-xs leading-relaxed mt-1.5 max-w-xs mx-auto">
+                        {slide.text}
+                      </p>
                     </div>
+
                     {/* Nav dots + arrows */}
-                    <div className="px-5 pb-4 flex items-center gap-3">
+                    <div className="px-5 pb-4 pt-2 flex items-center gap-3">
                       <button
-                        onClick={() => setPcStep(s => Math.max(0, s - 1))}
-                        disabled={pcStep === 0}
-                        className="h-7 w-7 rounded-full flex items-center justify-center border border-white/10 transition-all disabled:opacity-20 hover:border-[#EDE518]/40"
-                        style={{ background: "rgba(255,255,255,0.05)" }}
+                        onClick={() => setPcPromoStep(s => Math.max(0, s - 1))}
+                        disabled={pcPromoStep === 0}
+                        className="h-7 w-7 rounded-full flex items-center justify-center transition-all disabled:opacity-20 active:scale-90"
+                        style={{ background: "rgba(255,255,255,0.08)", border: `1px solid rgba(255,255,255,0.12)` }}
                         data-testid="button-promo-pc-prev"
                       >
                         <ChevronLeft className="h-4 w-4 text-white" />
                       </button>
                       <div className="flex-1 flex items-center justify-center gap-1.5">
-                        {PC_PROMO_STEPS.map((_, i) => (
+                        {PC_PROMO_SLIDES.map((s, i) => (
                           <button
                             key={i}
-                            onClick={() => setPcStep(i)}
-                            className="rounded-full transition-all"
-                            style={{ width: i === pcStep ? 18 : 5, height: 5, background: i === pcStep ? "#EDE518" : "rgba(255,255,255,0.2)" }}
+                            onClick={() => setPcPromoStep(i)}
+                            className="rounded-full transition-all duration-300"
+                            style={{ width: i === pcPromoStep ? 20 : 6, height: 6, background: i === pcPromoStep ? slide.accent : "rgba(255,255,255,0.2)" }}
                             data-testid={`button-promo-pc-dot-${i}`}
                           />
                         ))}
                       </div>
                       <button
-                        onClick={() => setPcStep(s => Math.min(PC_PROMO_STEPS.length - 1, s + 1))}
-                        disabled={pcStep === PC_PROMO_STEPS.length - 1}
-                        className="h-7 w-7 rounded-full flex items-center justify-center border border-white/10 transition-all disabled:opacity-20 hover:border-[#EDE518]/40"
-                        style={{ background: "rgba(255,255,255,0.05)" }}
+                        onClick={() => setPcPromoStep(s => Math.min(PC_PROMO_SLIDES.length - 1, s + 1))}
+                        disabled={pcPromoStep === PC_PROMO_SLIDES.length - 1}
+                        className="h-7 w-7 rounded-full flex items-center justify-center transition-all disabled:opacity-20 active:scale-90"
+                        style={{ background: "rgba(255,255,255,0.08)", border: `1px solid rgba(255,255,255,0.12)` }}
                         data-testid="button-promo-pc-next"
                       >
                         <ChevronRight className="h-4 w-4 text-white" />
