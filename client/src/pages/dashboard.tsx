@@ -1669,29 +1669,7 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
   const isLocked = parental.isVideoBlocked(video.categoryId);
   const progressMap = useContext(VideoProgressContext);
 
-  // Hover preview — preload Vimeo iframe immediately on hover, show after brief delay
-  const [isHovered, setIsHovered] = useState(false);
-  const [showPreview, setShowPreview] = useState(false);
-  const hoverTimerRef = useRef<ReturnType<typeof setTimeout>>();
-  const handleCardMouseEnter = () => {
-    if (isLocked || isAudio) return;
-    setIsHovered(true);
-    hoverTimerRef.current = setTimeout(() => setShowPreview(true), 400);
-  };
-  const handleCardMouseLeave = () => {
-    clearTimeout(hoverTimerRef.current);
-    setIsHovered(false);
-    setShowPreview(false);
-  };
-  const embedBase = (video as any).vimeoEmbedUrl || (video as any).vimeo_embed_url;
-  const hoverEmbedUrl = embedBase && !isAudio
-    ? embedBase
-        .replace(/[?&]autoplay=\d/, "")
-        .replace(/[?&]muted=\d/, "")
-        .replace(/[?&]dnt=\d/, "")
-        .replace(/[?&]controls=\d/, "") +
-      (embedBase.includes("?") ? "&" : "?") + "autoplay=1&muted=1&loop=1&controls=0&background=1&transparent=0"
-    : null;
+  // Hover preview handled via CSS group-hover (instant, no iframe needed)
   const progressPct = progressMap.get(video.id) ?? 0;
   const { setMiniPlayer } = useContext(MiniPlayerContext);
   const handleMinimize = (streamUrl: string, currentTime: number, isAudioType: boolean) => {
@@ -1806,11 +1784,7 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
   }
 
   return (
-    <div
-      className="relative"
-      onMouseEnter={handleCardMouseEnter}
-      onMouseLeave={handleCardMouseLeave}
-    >
+    <div className="relative">
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Card
@@ -1824,7 +1798,7 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
                 <img 
                   src={thumbnailSrc} 
                   alt={video.title}
-                  className="absolute inset-0 w-full h-full object-cover"
+                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"
                 />
                 {isAudio && (
                   <div className="absolute top-2 left-2 bg-black/60 rounded-full p-1.5">
@@ -1851,18 +1825,6 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
               </div>
             ) : (
               <FileVideo className="h-12 w-12 text-[#08779C]" />
-            )}
-            {/* Hover video preview — preloaded immediately, faded in after delay */}
-            {isHovered && hoverEmbedUrl && !isLocked && (
-              <iframe
-                src={hoverEmbedUrl}
-                className="absolute inset-0 w-full h-full z-10 transition-opacity duration-300"
-                style={{ opacity: showPreview ? 1 : 0, pointerEvents: 'none', display: 'block' }}
-                allow="autoplay; fullscreen; picture-in-picture"
-                allowFullScreen
-                frameBorder="0"
-                title={`Preview: ${video.title}`}
-              />
             )}
             {isNew && (
               <div className="absolute top-2 right-2 z-20">
@@ -1891,8 +1853,8 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
                 <span className="text-[10px] font-bold text-[#EDE518]/80 uppercase tracking-widest">Time limit reached</span>
               </div>
             ) : (
-              <div className="absolute inset-0 z-20 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                <div className="h-14 w-14 rounded-full bg-[#EDE518] flex items-center justify-center shadow-[0_0_20px_rgba(237,229,24,0.5)]">
+              <div className="absolute inset-0 z-20 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
+                <div className="h-14 w-14 rounded-full bg-[#EDE518] flex items-center justify-center shadow-[0_0_30px_rgba(237,229,24,0.7)] scale-75 group-hover:scale-100 transition-transform duration-300">
                   <Play className="h-6 w-6 text-black ml-1" />
                 </div>
               </div>
