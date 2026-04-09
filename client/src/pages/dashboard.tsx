@@ -371,8 +371,7 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const upNext = relatedVideos[0];
-  const moreVideos = relatedVideos.slice(1);
+  const watchNextVideos = relatedVideos.slice(0, 3);
 
   return (
     <DialogContent className="max-w-4xl p-0 overflow-y-auto max-h-[90vh]">
@@ -387,6 +386,59 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
           data-testid={`video-player-${currentVideo.id}`}
         />
       </div>
+
+      {/* Watch Next — 3 cards right below the player */}
+      {watchNextVideos.length > 0 && (
+        <div className="bg-[#060e1a] border-b border-white/10">
+          <div className="px-4 pt-3 pb-2 flex items-center gap-2">
+            <Play className="h-3.5 w-3.5 text-[#EDE518] fill-[#EDE518]" />
+            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-[#EDE518]">Watch Next</span>
+          </div>
+          <div className="grid grid-cols-3 gap-2 px-3 pb-3">
+            {watchNextVideos.map((rv: any) => (
+              <button
+                key={rv.id}
+                onClick={() => playRelated(rv)}
+                className="group relative rounded-xl overflow-hidden text-left focus:outline-none focus:ring-2 focus:ring-[#EDE518]"
+                data-testid={`button-watch-next-${rv.id}`}
+              >
+                <div className="relative aspect-video w-full overflow-hidden rounded-xl">
+                  {rv.thumbnail_path ? (
+                    <img
+                      src={`/api/videos/${rv.id}/thumbnail`}
+                      alt={rv.title}
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-[#0d1a35] flex items-center justify-center">
+                      <Play className="h-6 w-6 text-white/20" />
+                    </div>
+                  )}
+                  {/* Dark overlay */}
+                  <div className="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors duration-200" />
+                  {/* Play button center */}
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div
+                      className="rounded-full p-2.5 transition-all duration-200 group-hover:scale-110"
+                      style={{ background: "rgba(237,229,24,0.15)", border: "1.5px solid rgba(237,229,24,0.4)" }}
+                    >
+                      <Play className="h-5 w-5 text-[#EDE518] fill-[#EDE518]" />
+                    </div>
+                  </div>
+                  {/* Bottom gradient with title */}
+                  <div className="absolute bottom-0 left-0 right-0 px-2 py-2 bg-gradient-to-t from-black/90 via-black/60 to-transparent">
+                    <p className="text-white text-[11px] font-semibold leading-tight line-clamp-2">{rv.title}</p>
+                    <p className="text-[#EDE518] text-[10px] font-bold mt-0.5 flex items-center gap-1">
+                      Tap to watch
+                    </p>
+                  </div>
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="p-4">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
@@ -423,69 +475,9 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
       </div>
       <CommentsSection videoId={currentVideo.id} />
 
-      {upNext && (
-        <div className="border-t border-white/10">
-          <div className="p-4 pb-2">
-            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Up Next</h4>
-          </div>
-          <button
-            onClick={() => playRelated(upNext)}
-            className="w-full text-left group relative overflow-hidden"
-            data-testid={`button-up-next-${upNext.id}`}
-          >
-            <div className="relative aspect-video w-full overflow-hidden">
-              {upNext.thumbnail_path ? (
-                <img
-                  src={`/api/videos/${upNext.id}/thumbnail`}
-                  alt={upNext.title}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                />
-              ) : (
-                <div className="w-full h-full bg-[#060e1a] flex items-center justify-center">
-                  <Play className="h-12 w-12 text-white/30" />
-                </div>
-              )}
-              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-200" />
-              <div className="absolute inset-0 flex items-center justify-center">
-                <div className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-full p-4 group-hover:bg-[#EDE518]/80 group-hover:border-[#EDE518] transition-all duration-200">
-                  <Play className="h-8 w-8 text-white fill-white" />
-                </div>
-              </div>
-              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/50 to-transparent">
-                <p className="text-white font-semibold text-base leading-tight line-clamp-2">{upNext.title}</p>
-                <p className="text-white/60 text-sm mt-1">Watch this video next</p>
-              </div>
-            </div>
-          </button>
-
-          {moreVideos.length > 0 && (
-            <div className="p-4 pt-3 space-y-1">
-              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">More Like This</h4>
-              {moreVideos.map((rv: any) => (
-                <button
-                  key={rv.id}
-                  onClick={() => playRelated(rv)}
-                  className="flex gap-3 items-center p-2 rounded-lg hover:bg-white/5 cursor-pointer w-full text-left"
-                  data-testid={`button-related-${rv.id}`}
-                >
-                  <div className="w-28 aspect-video rounded bg-[#060e1a] overflow-hidden flex-shrink-0 relative group">
-                    {rv.thumbnail_path ? (
-                      <img src={`/api/videos/${rv.id}/thumbnail`} alt={rv.title} className="w-full h-full object-cover" />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <Play className="h-4 w-4 text-white/30" />
-                      </div>
-                    )}
-                    <div className="absolute inset-0 bg-black/0 hover:bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-all">
-                      <Play className="h-5 w-5 text-white fill-white" />
-                    </div>
-                  </div>
-                  <p className="text-sm font-medium text-white line-clamp-2 flex-1">{rv.title}</p>
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
+      {/* keep a spacer so comments aren't right at the bottom edge */}
+      {watchNextVideos.length === 0 && (
+        <div className="h-4" />
       )}
     </DialogContent>
   );
