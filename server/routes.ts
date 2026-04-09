@@ -2201,7 +2201,7 @@ export async function registerRoutes(
   // Admin: Update video details
   app.patch("/api/admin/videos/:id", requireAdmin, async (req, res) => {
     try {
-      const { title, description, status, categoryId, excludeFromRecent } = req.body;
+      const { title, description, status, categoryId, excludeFromRecent, customMood } = req.body;
       
       // Get current video to check if it's a Vimeo video
       const currentVideo = await storage.getVideo(req.params.id);
@@ -2223,7 +2223,7 @@ export async function registerRoutes(
         }
       }
       
-      const video = await storage.updateVideo(req.params.id, { title, description, status, categoryId, excludeFromRecent });
+      const video = await storage.updateVideo(req.params.id, { title, description, status, categoryId, excludeFromRecent, customMood: customMood === "auto" ? null : customMood });
       res.json(video);
     } catch (error) {
       console.error("Update video error:", error);

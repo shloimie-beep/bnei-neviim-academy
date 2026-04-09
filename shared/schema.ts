@@ -188,6 +188,7 @@ export const videos = pgTable("videos", {
   vimeoCreatedAt: timestamp("vimeo_created_at"), // When the video was created on Vimeo
   excludeFromRecent: boolean("exclude_from_recent").default(false), // Hide from Recent section in customer view
   sortOrder: integer("sort_order").default(0), // For manual ordering (lower = higher priority, null uses createdAt)
+  customMood: text("custom_mood"), // Admin-assigned mood override: 'funny' | 'crazy' | 'smart' | 'chill' | null
 });
 
 // PDF documents for subscriber content

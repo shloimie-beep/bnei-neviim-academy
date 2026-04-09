@@ -1575,14 +1575,29 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
   }
 
   return (
+    <div
+      className="relative"
+      onMouseEnter={handleCardMouseEnter}
+      onMouseLeave={handleCardMouseLeave}
+    >
+      {/* Hover video preview — muted autoplay Vimeo embed, outside Dialog so Radix doesn't interfere */}
+      {showPreview && hoverEmbedUrl && !isLocked && (
+        <div className="absolute inset-0 z-20 pointer-events-none overflow-hidden rounded-lg">
+          <iframe
+            src={hoverEmbedUrl}
+            className="w-full h-full"
+            allow="autoplay; fullscreen"
+            frameBorder="0"
+            title={`Preview: ${video.title}`}
+          />
+        </div>
+      )}
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Card
           className="overflow-hidden cursor-pointer hover-elevate active-elevate-2 border border-white/10 hover:border-white/25 transition-colors relative"
           style={{background: "linear-gradient(145deg, #0e1e35 0%, #0a1628 100%)"}}
           data-testid={`card-video-${video.id}`}
-          onMouseEnter={handleCardMouseEnter}
-          onMouseLeave={handleCardMouseLeave}
         >
           <div className={`${aspectClass} flex items-center justify-center relative group overflow-hidden bg-[#060e1a]`}>
             {thumbnailSrc ? (
@@ -1637,18 +1652,6 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
                 {durationText}
               </div>
             )}
-            {/* Hover video preview — muted autoplay Vimeo embed */}
-            {showPreview && hoverEmbedUrl && !isLocked && (
-              <div className="absolute inset-0 z-10 pointer-events-none">
-                <iframe
-                  src={hoverEmbedUrl}
-                  className="w-full h-full"
-                  allow="autoplay; fullscreen"
-                  frameBorder="0"
-                  title={`Preview: ${video.title}`}
-                />
-              </div>
-            )}
             {isLocked ? (
               <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center gap-1.5">
                 <div className="h-12 w-12 rounded-full bg-[#EDE518]/10 border border-[#EDE518]/40 flex items-center justify-center">
@@ -1657,7 +1660,7 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
                 <span className="text-[10px] font-bold text-[#EDE518]/80 uppercase tracking-widest">Time limit reached</span>
               </div>
             ) : (
-              <div className={`absolute inset-0 bg-black/50 flex items-center justify-center transition-opacity ${showPreview ? "opacity-0" : "opacity-0 group-hover:opacity-100"}`}>
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
                 <div className="h-14 w-14 rounded-full bg-[#EDE518] flex items-center justify-center shadow-[0_0_20px_rgba(237,229,24,0.5)]">
                   <Play className="h-6 w-6 text-black ml-1" />
                 </div>
@@ -1709,6 +1712,7 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
         }}
       />
     </Dialog>
+    </div>
   );
 }
 
@@ -3038,9 +3042,15 @@ export default function DashboardPage() {
       const name = (cat.name || "").toLowerCase();
       if (keywords.some(kw => name.includes(kw))) matchedCatIds.add(cat.id);
     });
-    // Fall back to matching video titles if no categories match
     const matchedVideoIds = new Set<string>();
     videos.forEach(v => {
+      // Admin-assigned mood override takes priority
+      const customMood = (v as any).customMood || (v as any).custom_mood;
+      if (customMood) {
+        if (customMood === moodFilter) matchedVideoIds.add(v.id);
+        return; // Don't also check keyword matching if admin assigned a mood
+      }
+      // Keyword-based category matching
       const inMatchedCat = v.categoryId && matchedCatIds.has(v.categoryId);
       const titleMatch = keywords.some(kw => (v.title || "").toLowerCase().includes(kw));
       if (inMatchedCat || titleMatch) matchedVideoIds.add(v.id);

@@ -398,6 +398,11 @@ async function runDataMigrations() {
       )
     `);
 
+    // ── Schema: custom_mood column on videos ────────────────────────────────
+    await pool.query(`
+      ALTER TABLE videos ADD COLUMN IF NOT EXISTS custom_mood TEXT
+    `);
+
     log('Data migrations complete', 'migration');
   } catch (err: any) {
     log(`Data migration error: ${err.message}`, 'migration');

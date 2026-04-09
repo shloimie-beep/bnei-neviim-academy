@@ -52,6 +52,7 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
   const [editTitle, setEditTitle] = useState(video.title);
   const [editDescription, setEditDescription] = useState(video.description || "");
   const [editCategoryId, setEditCategoryId] = useState(video.categoryId || "");
+  const [editMood, setEditMood] = useState((video as any).customMood || "auto");
   
   // Derive top-level categories and subcategories for the dropdown
   const topLevelCategories = useMemo(() => categories.filter(c => !c.parentCategoryId), [categories]);
@@ -110,7 +111,7 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
   };
 
   const handleSave = () => {
-    onUpdate({ title: editTitle, description: editDescription, categoryId: editCategoryId || null });
+    onUpdate({ title: editTitle, description: editDescription, categoryId: editCategoryId || null, customMood: editMood } as any);
     setIsEditing(false);
   };
 
@@ -349,6 +350,18 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
                         })}
                       </SelectContent>
                     </Select>
+                    <Select value={editMood} onValueChange={setEditMood}>
+                      <SelectTrigger data-testid={`select-edit-mood-${video.id}`}>
+                        <SelectValue placeholder="Mood (auto)" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="auto">🤖 Auto (from category)</SelectItem>
+                        <SelectItem value="funny">😂 Just for Laughs</SelectItem>
+                        <SelectItem value="crazy">🤩 Action & Adventure</SelectItem>
+                        <SelectItem value="smart">🧠 Torah Time</SelectItem>
+                        <SelectItem value="chill">✨ Stories & Chill</SelectItem>
+                      </SelectContent>
+                    </Select>
                     <div className="flex gap-2">
                       <Button size="sm" onClick={handleSave} data-testid={`button-save-video-${video.id}`}>
                         Save
@@ -372,6 +385,11 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
                       )}
                       {categoryName && (
                         <Badge variant="outline" className="text-xs">{categoryName}</Badge>
+                      )}
+                      {(video as any).customMood && (video as any).customMood !== "auto" && (
+                        <Badge variant="outline" className="text-xs border-yellow-500 text-yellow-600">
+                          {{funny:"😂 Laughs",crazy:"🤩 Adventure",smart:"🧠 Torah",chill:"✨ Chill"}[(video as any).customMood] || (video as any).customMood}
+                        </Badge>
                       )}
                     </div>
                     {video.description && (
