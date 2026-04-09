@@ -4,7 +4,7 @@ import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
 import { runMigrations } from 'stripe-replit-sync';
-import { getStripeSync } from "./stripeClient";
+import { getStripeSync, getUncachableStripeClient } from "./stripeClient";
 import { WebhookHandlers } from "./webhookHandlers";
 import { pool } from "./db";
 import bcrypt from "bcryptjs";
@@ -417,6 +417,92 @@ async function runDataMigrations() {
         [adminHash]
       );
       log('Admin user created in production DB', 'migration');
+    }
+
+    // ── Stripe subscriber recovery — recreate missing user accounts ──────────
+    try {
+      const stripe = await getUncachableStripeClient();
+      const tempPasswordHash = await bcrypt.hash('Welcome1!', 10);
+
+      // Paginate through all active + trialing subscriptions
+      let hasMore = true;
+      let startingAfter: string | undefined;
+      let recovered = 0;
+
+      while (hasMore) {
+        const subs: any = await stripe.subscriptions.list({
+          status: 'active',
+          limit: 100,
+          expand: ['data.customer'],
+          ...(startingAfter ? { starting_after: startingAfter } : {}),
+        });
+
+        for (const sub of subs.data) {
+          const customer = sub.customer as any;
+          if (!customer || customer.deleted || !customer.email) continue;
+
+          const email = customer.email.toLowerCase().trim();
+          const existingUser = await pool.query(
+            `SELECT id FROM users WHERE email = $1 LIMIT 1`, [email]
+          );
+
+          if (existingUser.rows.length === 0) {
+            // Create account and link Stripe IDs
+            const subStatus = sub.status === 'trialing' ? 'trial' : 'active';
+            const trialEnd = sub.trial_end ? new Date(sub.trial_end * 1000).toISOString() : null;
+            await pool.query(
+              `INSERT INTO users (id, email, password, role, account_type, subscription_status, stripe_customer_id, stripe_subscription_id, trial_ends_at, has_used_trial, created_at)
+               VALUES (gen_random_uuid()::varchar, $1, $2, 'customer', 'standard', $3, $4, $5, $6, true, NOW())
+               ON CONFLICT (email) DO NOTHING`,
+              [email, tempPasswordHash, subStatus, customer.id, sub.id, trialEnd]
+            );
+            recovered++;
+          } else {
+            // Update Stripe IDs on existing account if missing
+            await pool.query(
+              `UPDATE users SET stripe_customer_id = COALESCE(stripe_customer_id, $1),
+               stripe_subscription_id = COALESCE(stripe_subscription_id, $2),
+               subscription_status = CASE WHEN subscription_status = 'none' THEN $3 ELSE subscription_status END
+               WHERE email = $4`,
+              [customer.id, sub.id, sub.status === 'trialing' ? 'trial' : 'active', email]
+            );
+          }
+        }
+
+        hasMore = subs.has_more;
+        if (hasMore && subs.data.length > 0) {
+          startingAfter = subs.data[subs.data.length - 1].id;
+        }
+      }
+
+      // Also check trialing subscriptions
+      const trialing: any = await stripe.subscriptions.list({
+        status: 'trialing',
+        limit: 100,
+        expand: ['data.customer'],
+      });
+      for (const sub of trialing.data) {
+        const customer = sub.customer as any;
+        if (!customer || customer.deleted || !customer.email) continue;
+        const email = customer.email.toLowerCase().trim();
+        const existingUser = await pool.query(`SELECT id FROM users WHERE email = $1 LIMIT 1`, [email]);
+        if (existingUser.rows.length === 0) {
+          const trialEnd = sub.trial_end ? new Date(sub.trial_end * 1000).toISOString() : null;
+          await pool.query(
+            `INSERT INTO users (id, email, password, role, account_type, subscription_status, stripe_customer_id, stripe_subscription_id, trial_ends_at, has_used_trial, created_at)
+             VALUES (gen_random_uuid()::varchar, $1, $2, 'customer', 'standard', 'trial', $3, $4, $5, true, NOW())
+             ON CONFLICT (email) DO NOTHING`,
+            [email, tempPasswordHash, customer.id, sub.id, trialEnd]
+          );
+          recovered++;
+        }
+      }
+
+      if (recovered > 0) {
+        log(`Stripe recovery: recreated ${recovered} subscriber account(s)`, 'migration');
+      }
+    } catch (stripeErr: any) {
+      log(`Stripe recovery skipped: ${stripeErr.message}`, 'migration');
     }
 
     log('Data migrations complete', 'migration');
