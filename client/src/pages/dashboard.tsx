@@ -288,40 +288,42 @@ function CommentsSection({ videoId }: { videoId: string }) {
 
 function VideoEmbedPlayer({ video }: { video: VideoType }) {
   const { toast } = useToast();
-  const vimeoVideoId = (video as any).vimeoVideoId;
-  const storedEmbedUrl = (video as any).vimeoEmbedUrl;
-  
-  const embedUrl = storedEmbedUrl 
+  const [currentVideo, setCurrentVideo] = useState<any>(video);
+
+  const vimeoVideoId = currentVideo.vimeoVideoId || currentVideo.vimeo_video_id;
+  const storedEmbedUrl = currentVideo.vimeoEmbedUrl || currentVideo.vimeo_embed_url;
+
+  const embedUrl = storedEmbedUrl
     ? (storedEmbedUrl.includes('?') ? `${storedEmbedUrl}&autoplay=1` : `${storedEmbedUrl}?autoplay=1`)
     : `https://player.vimeo.com/video/${vimeoVideoId}?autoplay=1&title=0&byline=0&portrait=0`;
-  
+
   useEffect(() => {
-    fetch(`/api/videos/${video.id}/view`, {
+    fetch(`/api/videos/${currentVideo.id}/view`, {
       method: 'POST',
       credentials: 'include',
       headers: getAuthHeaders(),
     }).catch(() => {});
-  }, [video.id]);
+  }, [currentVideo.id]);
 
   // Likes
   const { data: userLikes = [] } = useQuery<string[]>({
     queryKey: ["/api/user/likes"],
   });
-  const isLiked = userLikes.includes(video.id);
+  const isLiked = userLikes.includes(currentVideo.id);
 
   const { data: likeCountData } = useQuery<{ count: number }>({
-    queryKey: ["/api/videos", video.id, "like-count"],
+    queryKey: ["/api/videos", currentVideo.id, "like-count"],
     queryFn: async () => {
-      const res = await fetch(`/api/videos/${video.id}/like-count`, { credentials: "include", headers: getAuthHeaders() });
+      const res = await fetch(`/api/videos/${currentVideo.id}/like-count`, { credentials: "include", headers: getAuthHeaders() });
       return res.json();
     },
   });
 
   const likeMutation = useMutation({
-    mutationFn: () => apiRequest("POST", `/api/videos/${video.id}/like`),
+    mutationFn: () => apiRequest("POST", `/api/videos/${currentVideo.id}/like`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/user/likes"] });
-      queryClient.invalidateQueries({ queryKey: ["/api/videos", video.id, "like-count"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/videos", currentVideo.id, "like-count"] });
     },
     onError: () => toast({ title: "Failed to update like", variant: "destructive" }),
   });
@@ -330,10 +332,10 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
   const { data: userFavorites = [] } = useQuery<string[]>({
     queryKey: ["/api/user/favorites"],
   });
-  const isFavorited = userFavorites.includes(video.id);
+  const isFavorited = userFavorites.includes(currentVideo.id);
 
   const favoriteMutation = useMutation({
-    mutationFn: () => apiRequest("POST", `/api/videos/${video.id}/favorite`),
+    mutationFn: () => apiRequest("POST", `/api/videos/${currentVideo.id}/favorite`),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/user/favorites"] });
     },
@@ -342,31 +344,55 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
 
   // Related videos
   const { data: relatedVideos = [] } = useQuery<any[]>({
-    queryKey: ["/api/videos", video.id, "related"],
+    queryKey: ["/api/videos", currentVideo.id, "related"],
     queryFn: async () => {
-      const res = await fetch(`/api/videos/${video.id}/related`, { credentials: "include", headers: getAuthHeaders() });
+      const res = await fetch(`/api/videos/${currentVideo.id}/related`, { credentials: "include", headers: getAuthHeaders() });
       return res.json();
     },
   });
+
+  const playRelated = (rv: any) => {
+    setCurrentVideo({
+      id: rv.id,
+      title: rv.title,
+      description: rv.description || null,
+      vimeoVideoId: rv.vimeo_video_id,
+      vimeo_video_id: rv.vimeo_video_id,
+      bunnyVideoId: rv.bunny_video_id,
+      bunny_video_id: rv.bunny_video_id,
+      thumbnailPath: rv.thumbnail_path,
+      thumbnail_path: rv.thumbnail_path,
+      categoryId: rv.category_id,
+      category_id: rv.category_id,
+      vimeoEmbedUrl: null,
+      vimeo_embed_url: null,
+      createdAt: rv.created_at,
+    });
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const upNext = relatedVideos[0];
+  const moreVideos = relatedVideos.slice(1);
 
   return (
     <DialogContent className="max-w-4xl p-0 overflow-y-auto max-h-[90vh]">
       <div className="relative bg-black">
         <iframe
+          key={currentVideo.id}
           src={embedUrl}
           className="w-full aspect-video"
           frameBorder="0"
           allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
           allowFullScreen
-          data-testid={`video-player-${video.id}`}
+          data-testid={`video-player-${currentVideo.id}`}
         />
       </div>
       <div className="p-4">
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1">
-            <h3 className="font-semibold text-lg">{video.title}</h3>
-            {video.description && (
-              <p className="text-sm text-muted-foreground mt-1">{video.description}</p>
+            <h3 className="font-semibold text-lg">{currentVideo.title}</h3>
+            {currentVideo.description && (
+              <p className="text-sm text-muted-foreground mt-1">{currentVideo.description}</p>
             )}
           </div>
           <div className="flex items-center gap-2 flex-shrink-0">
@@ -376,7 +402,7 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
               onClick={() => likeMutation.mutate()}
               disabled={likeMutation.isPending}
               className={`gap-1.5 ${isLiked ? "text-[#08779C]" : "text-muted-foreground hover:text-[#08779C]"}`}
-              data-testid={`button-like-${video.id}`}
+              data-testid={`button-like-${currentVideo.id}`}
             >
               <ThumbsUp className={`h-4 w-4 ${isLiked ? "fill-current" : ""}`} />
               <span className="text-xs">{likeCountData?.count ?? 0}</span>
@@ -387,7 +413,7 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
               onClick={() => favoriteMutation.mutate()}
               disabled={favoriteMutation.isPending}
               className={`gap-1.5 ${isFavorited ? "text-[#EDE518]" : "text-muted-foreground hover:text-[#EDE518]"}`}
-              data-testid={`button-favorite-${video.id}`}
+              data-testid={`button-favorite-${currentVideo.id}`}
             >
               <Heart className={`h-4 w-4 ${isFavorited ? "fill-current" : ""}`} />
               <span className="text-xs">{isFavorited ? "Saved" : "Save"}</span>
@@ -395,26 +421,70 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
           </div>
         </div>
       </div>
-      <CommentsSection videoId={video.id} />
-      {relatedVideos.length > 0 && (
-        <div className="p-4 border-t border-white/10">
-          <h4 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">More Like This</h4>
-          <div className="space-y-2">
-            {relatedVideos.map((rv: any) => (
-              <div key={rv.video_id || rv.id} className="flex gap-3 items-center p-2 rounded-lg hover:bg-white/5 cursor-pointer group">
-                <div className="w-24 aspect-video rounded bg-[#060e1a] overflow-hidden flex-shrink-0 relative">
-                  {rv.thumbnail_path ? (
-                    <img src={`/api/videos/${rv.video_id || rv.id}/thumbnail`} alt={rv.title} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center">
-                      <Play className="h-4 w-4 text-white/30" />
-                    </div>
-                  )}
-                </div>
-                <p className="text-sm font-medium text-white line-clamp-2 flex-1">{rv.title}</p>
-              </div>
-            ))}
+      <CommentsSection videoId={currentVideo.id} />
+
+      {upNext && (
+        <div className="border-t border-white/10">
+          <div className="p-4 pb-2">
+            <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Up Next</h4>
           </div>
+          <button
+            onClick={() => playRelated(upNext)}
+            className="w-full text-left group relative overflow-hidden"
+            data-testid={`button-up-next-${upNext.id}`}
+          >
+            <div className="relative aspect-video w-full overflow-hidden">
+              {upNext.thumbnail_path ? (
+                <img
+                  src={`/api/videos/${upNext.id}/thumbnail`}
+                  alt={upNext.title}
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              ) : (
+                <div className="w-full h-full bg-[#060e1a] flex items-center justify-center">
+                  <Play className="h-12 w-12 text-white/30" />
+                </div>
+              )}
+              <div className="absolute inset-0 bg-black/40 group-hover:bg-black/20 transition-colors duration-200" />
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-full p-4 group-hover:bg-[#EDE518]/80 group-hover:border-[#EDE518] transition-all duration-200">
+                  <Play className="h-8 w-8 text-white fill-white" />
+                </div>
+              </div>
+              <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/90 via-black/50 to-transparent">
+                <p className="text-white font-semibold text-base leading-tight line-clamp-2">{upNext.title}</p>
+                <p className="text-white/60 text-sm mt-1">Watch this video next</p>
+              </div>
+            </div>
+          </button>
+
+          {moreVideos.length > 0 && (
+            <div className="p-4 pt-3 space-y-1">
+              <h4 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">More Like This</h4>
+              {moreVideos.map((rv: any) => (
+                <button
+                  key={rv.id}
+                  onClick={() => playRelated(rv)}
+                  className="flex gap-3 items-center p-2 rounded-lg hover:bg-white/5 cursor-pointer w-full text-left"
+                  data-testid={`button-related-${rv.id}`}
+                >
+                  <div className="w-28 aspect-video rounded bg-[#060e1a] overflow-hidden flex-shrink-0 relative group">
+                    {rv.thumbnail_path ? (
+                      <img src={`/api/videos/${rv.id}/thumbnail`} alt={rv.title} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <Play className="h-4 w-4 text-white/30" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-black/0 hover:bg-black/20 flex items-center justify-center opacity-0 hover:opacity-100 transition-all">
+                      <Play className="h-5 w-5 text-white fill-white" />
+                    </div>
+                  </div>
+                  <p className="text-sm font-medium text-white line-clamp-2 flex-1">{rv.title}</p>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </DialogContent>
@@ -2479,7 +2549,7 @@ export default function DashboardPage() {
               <DropdownMenu open={isNotifOpen} onOpenChange={(o) => { setIsNotifOpen(o); if (o && unreadCount > 0) markAllReadMutation.mutate(); }}>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" size="sm" className="relative" data-testid="button-notifications">
-                    {unreadCount > 0 ? <BellDot className="h-5 w-5 text-[#EDE518]" /> : <Bell className="h-5 w-5" />}
+                    {unreadCount > 0 ? <BellDot className="h-5 w-5 text-[#EDE518]" /> : <Bell className="h-5 w-5 text-white/80" />}
                     {unreadCount > 0 && (
                       <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-[#EDE518] text-black text-[10px] font-bold flex items-center justify-center">
                         {unreadCount > 9 ? "9+" : unreadCount}

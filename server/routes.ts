@@ -8039,7 +8039,7 @@ export async function registerRoutes(
       if (!userId) return res.status(401).json({ message: "Not authenticated" });
       const rows = await db.execute(sql`
         SELECT vp.video_id, vp.position_seconds, vp.duration_seconds, vp.completed, vp.updated_at,
-               v.title, v.thumbnail_path, v.vimeo_id, v.bunny_video_id, v.category_id
+               v.title, v.thumbnail_path, v.vimeo_video_id, v.bunny_video_id, v.category_id
         FROM video_progress vp
         JOIN videos v ON v.id = vp.video_id
         WHERE vp.user_id = ${userId} AND vp.completed = false AND vp.position_seconds > 10
