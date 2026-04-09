@@ -2809,23 +2809,28 @@ export default function DashboardPage() {
           </div>
           <div>
             <Label className="mb-2 block">Apply limit to</Label>
-            <div className="flex gap-3">
-              <Button size="sm" variant={pcCategoryAll ? "default" : "outline"} onClick={() => { setPcCategoryAll(true); setPcCategoryIds([]); }} data-testid="button-pc-all-categories">All Categories</Button>
-              <Button size="sm" variant={!pcCategoryAll ? "default" : "outline"} onClick={() => setPcCategoryAll(false)} data-testid="button-pc-specific-categories">Specific Categories</Button>
+            <p className="text-xs text-muted-foreground mb-3">Tap a category to restrict it. Leave all unselected to restrict everything.</p>
+            <div className="flex flex-wrap gap-2">
+              {categories.map(cat => (
+                <button
+                  key={cat.id}
+                  type="button"
+                  onClick={() => {
+                    setPcCategoryAll(false);
+                    setPcCategoryIds(prev => prev.includes(cat.id) ? prev.filter(id => id !== cat.id) : [...prev, cat.id]);
+                  }}
+                  className={`text-xs px-3 py-1.5 rounded-full border transition-all ${pcCategoryIds.includes(cat.id) ? 'bg-[#EDE518] text-black border-[#EDE518] font-semibold' : 'border-white/20 text-white/60 hover:border-[#EDE518]/50 hover:text-white'}`}
+                  data-testid={`button-pc-cat-${cat.id}`}
+                >
+                  {cat.parentCategoryId ? `↳ ${cat.name}` : cat.name}
+                </button>
+              ))}
+              {categories.length === 0 && <p className="text-xs text-muted-foreground italic">No categories loaded</p>}
             </div>
-            {!pcCategoryAll && (
-              <div className="mt-3 flex flex-wrap gap-2">
-                {categories.filter(c => !c.parentCategoryId).map(cat => (
-                  <button
-                    key={cat.id}
-                    onClick={() => setPcCategoryIds(prev => prev.includes(cat.id) ? prev.filter(id => id !== cat.id) : [...prev, cat.id])}
-                    className={`text-xs px-3 py-1.5 rounded-full border transition-all ${pcCategoryIds.includes(cat.id) ? 'bg-[#EDE518] text-black border-[#EDE518]' : 'border-white/20 text-white/70 hover:border-white/40'}`}
-                    data-testid={`button-pc-cat-${cat.id}`}
-                  >
-                    {cat.name}
-                  </button>
-                ))}
-              </div>
+            {pcCategoryIds.length > 0 && (
+              <button type="button" className="mt-2 text-xs text-[#EDE518]/70 hover:text-[#EDE518] underline" onClick={() => { setPcCategoryAll(true); setPcCategoryIds([]); }}>
+                Clear selection (apply to all)
+              </button>
             )}
           </div>
         </div>
@@ -3130,7 +3135,9 @@ export default function DashboardPage() {
                                   : `${parentalData.timeLimitMinutes}m`} per {parentalData.timePeriod}
                               </p>
                               <p className="text-xs text-muted-foreground">
-                                {parentalData.categoryIds?.length > 0 ? `${parentalData.categoryIds.length} category restriction(s)` : "All categories"}
+                                {parentalData.categoryIds?.length > 0
+                                  ? parentalData.categoryIds.map((id: string) => categories.find((c: any) => c.id === id)?.name).filter(Boolean).join(", ") || `${parentalData.categoryIds.length} categories`
+                                  : "All categories"}
                               </p>
                             </div>
                             <ShieldCheck className="h-5 w-5 text-[#EDE518]" />
