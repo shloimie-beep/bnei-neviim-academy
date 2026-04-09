@@ -26,6 +26,7 @@ export const users = pgTable("users", {
   subscriptionStatus: text("subscription_status").default("none"), // 'none', 'trial', 'active', 'cancelled', 'past_due'
   trialEndsAt: timestamp("trial_ends_at"),
   hasUsedTrial: boolean("has_used_trial").default(false), // Track if user has ever started a trial
+  emailNotifications: boolean("email_notifications").default(true), // opt-out of new content emails
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -424,6 +425,52 @@ export const videoComments = pgTable("video_comments", {
 
 export const insertVideoCommentSchema = createInsertSchema(videoComments).omit({ id: true, createdAt: true });
 
+// Video Favorites (bookmarks)
+export const videoFavorites = pgTable("video_favorites", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  videoId: varchar("video_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (t) => [uniqueIndex("video_favorites_user_video_unique").on(t.userId, t.videoId)]);
+
+export const insertVideoFavoriteSchema = createInsertSchema(videoFavorites).omit({ id: true, createdAt: true });
+
+// Video Progress (continue watching)
+export const videoProgress = pgTable("video_progress", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  videoId: varchar("video_id").notNull(),
+  positionSeconds: integer("position_seconds").default(0),
+  durationSeconds: integer("duration_seconds"),
+  completed: boolean("completed").default(false),
+  updatedAt: timestamp("updated_at").defaultNow(),
+}, (t) => [uniqueIndex("video_progress_user_video_unique").on(t.userId, t.videoId)]);
+
+export const insertVideoProgressSchema = createInsertSchema(videoProgress).omit({ id: true, updatedAt: true });
+
+// Video Likes (thumbs-up)
+export const videoLikes = pgTable("video_likes", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  videoId: varchar("video_id").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+}, (t) => [uniqueIndex("video_likes_user_video_unique").on(t.userId, t.videoId)]);
+
+export const insertVideoLikeSchema = createInsertSchema(videoLikes).omit({ id: true, createdAt: true });
+
+// In-app notifications
+export const notifications = pgTable("notifications", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  title: text("title").notNull(),
+  body: text("body"),
+  videoId: varchar("video_id"),
+  readAt: timestamp("read_at"),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertNotificationSchema = createInsertSchema(notifications).omit({ id: true, createdAt: true, readAt: true });
+
 // Types
 export type User = typeof users.$inferSelect;
 export type InsertUser = z.infer<typeof insertUserSchema>;
@@ -469,6 +516,14 @@ export type RssAudioItem = typeof rssAudioItems.$inferSelect;
 export type InsertRssAudioItem = z.infer<typeof insertRssAudioItemSchema>;
 export type VideoComment = typeof videoComments.$inferSelect;
 export type InsertVideoComment = z.infer<typeof insertVideoCommentSchema>;
+export type VideoFavorite = typeof videoFavorites.$inferSelect;
+export type InsertVideoFavorite = z.infer<typeof insertVideoFavoriteSchema>;
+export type VideoProgressRecord = typeof videoProgress.$inferSelect;
+export type InsertVideoProgress = z.infer<typeof insertVideoProgressSchema>;
+export type VideoLike = typeof videoLikes.$inferSelect;
+export type InsertVideoLike = z.infer<typeof insertVideoLikeSchema>;
+export type Notification = typeof notifications.$inferSelect;
+export type InsertNotification = z.infer<typeof insertNotificationSchema>;
 export type DashboardBanner = typeof dashboardBanners.$inferSelect;
 export type InsertDashboardBanner = z.infer<typeof insertDashboardBannerSchema>;
 export type DirectMessage = typeof directMessages.$inferSelect;

@@ -1,6 +1,7 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay, MessageSquare, Send } from "lucide-react";
+import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay, MessageSquare, Send, Heart, ThumbsUp, Bell, BellDot, History } from "lucide-react";
+import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -286,27 +287,68 @@ function CommentsSection({ videoId }: { videoId: string }) {
 }
 
 function VideoEmbedPlayer({ video }: { video: VideoType }) {
-  // For Vimeo videos, use stored embed URL (includes hash for private videos)
-  // or fall back to constructing URL from vimeoVideoId
+  const { toast } = useToast();
   const vimeoVideoId = (video as any).vimeoVideoId;
   const storedEmbedUrl = (video as any).vimeoEmbedUrl;
   
-  // Use stored embed URL if available (includes hash for private videos)
-  // Otherwise construct basic URL (works for unlisted/public videos)
   const embedUrl = storedEmbedUrl 
     ? (storedEmbedUrl.includes('?') ? `${storedEmbedUrl}&autoplay=1` : `${storedEmbedUrl}?autoplay=1`)
     : `https://player.vimeo.com/video/${vimeoVideoId}?autoplay=1&title=0&byline=0&portrait=0`;
   
-  // Increment view count in background (fire and forget)
   useEffect(() => {
     fetch(`/api/videos/${video.id}/view`, {
       method: 'POST',
       credentials: 'include',
       headers: getAuthHeaders(),
-    }).catch(() => {}); // Ignore errors
+    }).catch(() => {});
   }, [video.id]);
 
-  // Use Vimeo embed iframe directly - no loading state needed
+  // Likes
+  const { data: userLikes = [] } = useQuery<string[]>({
+    queryKey: ["/api/user/likes"],
+  });
+  const isLiked = userLikes.includes(video.id);
+
+  const { data: likeCountData } = useQuery<{ count: number }>({
+    queryKey: ["/api/videos", video.id, "like-count"],
+    queryFn: async () => {
+      const res = await fetch(`/api/videos/${video.id}/like-count`, { credentials: "include", headers: getAuthHeaders() });
+      return res.json();
+    },
+  });
+
+  const likeMutation = useMutation({
+    mutationFn: () => apiRequest("POST", `/api/videos/${video.id}/like`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user/likes"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/videos", video.id, "like-count"] });
+    },
+    onError: () => toast({ title: "Failed to update like", variant: "destructive" }),
+  });
+
+  // Favorites
+  const { data: userFavorites = [] } = useQuery<string[]>({
+    queryKey: ["/api/user/favorites"],
+  });
+  const isFavorited = userFavorites.includes(video.id);
+
+  const favoriteMutation = useMutation({
+    mutationFn: () => apiRequest("POST", `/api/videos/${video.id}/favorite`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user/favorites"] });
+    },
+    onError: () => toast({ title: "Failed to update favorite", variant: "destructive" }),
+  });
+
+  // Related videos
+  const { data: relatedVideos = [] } = useQuery<any[]>({
+    queryKey: ["/api/videos", video.id, "related"],
+    queryFn: async () => {
+      const res = await fetch(`/api/videos/${video.id}/related`, { credentials: "include", headers: getAuthHeaders() });
+      return res.json();
+    },
+  });
+
   return (
     <DialogContent className="max-w-4xl p-0 overflow-y-auto max-h-[90vh]">
       <div className="relative bg-black">
@@ -320,12 +362,61 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
         />
       </div>
       <div className="p-4">
-        <h3 className="font-semibold text-lg">{video.title}</h3>
-        {video.description && (
-          <p className="text-sm text-muted-foreground mt-1">{video.description}</p>
-        )}
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1">
+            <h3 className="font-semibold text-lg">{video.title}</h3>
+            {video.description && (
+              <p className="text-sm text-muted-foreground mt-1">{video.description}</p>
+            )}
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => likeMutation.mutate()}
+              disabled={likeMutation.isPending}
+              className={`gap-1.5 ${isLiked ? "text-[#08779C]" : "text-muted-foreground hover:text-[#08779C]"}`}
+              data-testid={`button-like-${video.id}`}
+            >
+              <ThumbsUp className={`h-4 w-4 ${isLiked ? "fill-current" : ""}`} />
+              <span className="text-xs">{likeCountData?.count ?? 0}</span>
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => favoriteMutation.mutate()}
+              disabled={favoriteMutation.isPending}
+              className={`gap-1.5 ${isFavorited ? "text-[#EDE518]" : "text-muted-foreground hover:text-[#EDE518]"}`}
+              data-testid={`button-favorite-${video.id}`}
+            >
+              <Heart className={`h-4 w-4 ${isFavorited ? "fill-current" : ""}`} />
+              <span className="text-xs">{isFavorited ? "Saved" : "Save"}</span>
+            </Button>
+          </div>
+        </div>
       </div>
       <CommentsSection videoId={video.id} />
+      {relatedVideos.length > 0 && (
+        <div className="p-4 border-t border-white/10">
+          <h4 className="text-sm font-semibold text-muted-foreground mb-3 uppercase tracking-wider">More Like This</h4>
+          <div className="space-y-2">
+            {relatedVideos.map((rv: any) => (
+              <div key={rv.video_id || rv.id} className="flex gap-3 items-center p-2 rounded-lg hover:bg-white/5 cursor-pointer group">
+                <div className="w-24 aspect-video rounded bg-[#060e1a] overflow-hidden flex-shrink-0 relative">
+                  {rv.thumbnail_path ? (
+                    <img src={`/api/videos/${rv.video_id || rv.id}/thumbnail`} alt={rv.title} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center">
+                      <Play className="h-4 w-4 text-white/30" />
+                    </div>
+                  )}
+                </div>
+                <p className="text-sm font-medium text-white line-clamp-2 flex-1">{rv.title}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </DialogContent>
   );
 }
@@ -1006,6 +1097,18 @@ function SpotlightCard({ video, theme, onView }: { video: VideoType; theme: Cate
 function VideoCard({ video, isNew, onView, categoryName, variant = "default" }: { video: VideoType; isNew?: boolean; onView?: () => void; categoryName?: string; variant?: CardVariant }) {
   const [isOpen, setIsOpen] = useState(false);
   const isAudio = video.mediaType === "audio";
+  const { toast } = useToast();
+
+  const { data: userFavorites = [] } = useQuery<string[]>({
+    queryKey: ["/api/user/favorites"],
+  });
+  const isFavorited = userFavorites.includes(video.id);
+
+  const favoriteMutation = useMutation({
+    mutationFn: () => apiRequest("POST", `/api/videos/${video.id}/favorite`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/user/favorites"] }),
+    onError: () => toast({ title: "Failed to update favorite", variant: "destructive" }),
+  });
 
   // Format duration from seconds to MM:SS or HH:MM:SS
   const formatDuration = (seconds: number | null | undefined): string | null => {
@@ -1130,6 +1233,15 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default" }: 
               <div className="absolute top-2 right-2">
                 <Badge className="text-xs bg-[#EDE518] text-black font-bold" data-testid={`badge-new-${video.id}`}>New</Badge>
               </div>
+            )}
+            {!isNew && (
+              <button
+                className={`absolute top-2 right-2 z-10 p-1.5 rounded-full transition-all ${isFavorited ? "bg-black/70 opacity-100" : "bg-black/50 opacity-0 group-hover:opacity-100"}`}
+                onClick={e => { e.stopPropagation(); favoriteMutation.mutate(); }}
+                data-testid={`button-card-favorite-${video.id}`}
+              >
+                <Heart className={`h-3.5 w-3.5 ${isFavorited ? "fill-[#EDE518] text-[#EDE518]" : "text-white"}`} />
+              </button>
             )}
             {durationText && (
               <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-1.5 py-0.5 rounded font-medium" data-testid={`duration-${video.id}`}>
@@ -2003,6 +2115,43 @@ export default function DashboardPage() {
     refetchInterval: 10_000,
   });
 
+  // ── Notifications ──────────────────────────────────────────────────────────
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const { data: notifications = [] } = useQuery<any[]>({
+    queryKey: ["/api/notifications"],
+    enabled: hasActiveSubscription,
+    refetchInterval: 60_000,
+  });
+  const unreadCount = notifications.filter((n: any) => !n.read_at).length;
+
+  const markAllReadMutation = useMutation({
+    mutationFn: () => apiRequest("PATCH", "/api/notifications/read-all"),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/notifications"] }),
+  });
+
+  // ── Email Notification Preference ──────────────────────────────────────────
+  const emailPrefMutation = useMutation({
+    mutationFn: (emailNotifications: boolean) => apiRequest("PATCH", "/api/user/preferences", { emailNotifications }),
+    onSuccess: () => { refreshUser(); toast({ title: "Notification preference saved" }); },
+    onError: () => toast({ title: "Failed to save preference", variant: "destructive" }),
+  });
+
+  // ── Favorites ──────────────────────────────────────────────────────────────
+  const { data: favoritedIds = [] } = useQuery<string[]>({
+    queryKey: ["/api/user/favorites"],
+    enabled: hasActiveSubscription,
+  });
+  const favoriteVideos = useMemo(() => {
+    if (!videos || !favoritedIds.length) return [];
+    return favoritedIds.map(id => videos.find(v => v.id === id)).filter(Boolean) as VideoType[];
+  }, [videos, favoritedIds]);
+
+  // ── Continue Watching ──────────────────────────────────────────────────────
+  const { data: continueWatching = [] } = useQuery<any[]>({
+    queryKey: ["/api/user/continue-watching"],
+    enabled: hasActiveSubscription,
+  });
+
   const videosByCategory = useMemo(() => {
     if (!videos) return {};
     const grouped: Record<string, VideoType[]> = {};
@@ -2326,6 +2475,35 @@ export default function DashboardPage() {
           </div>
           <div className="flex items-center gap-2">
             <ThemeToggle />
+            {hasActiveSubscription && (
+              <DropdownMenu open={isNotifOpen} onOpenChange={(o) => { setIsNotifOpen(o); if (o && unreadCount > 0) markAllReadMutation.mutate(); }}>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" size="sm" className="relative" data-testid="button-notifications">
+                    {unreadCount > 0 ? <BellDot className="h-5 w-5 text-[#EDE518]" /> : <Bell className="h-5 w-5" />}
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-[#EDE518] text-black text-[10px] font-bold flex items-center justify-center">
+                        {unreadCount > 9 ? "9+" : unreadCount}
+                      </span>
+                    )}
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-80 max-h-96 overflow-y-auto">
+                  {notifications.length === 0 ? (
+                    <div className="py-6 text-center text-sm text-muted-foreground">No notifications</div>
+                  ) : (
+                    notifications.map((n: any) => (
+                      <DropdownMenuItem key={n.id} className={`flex flex-col items-start gap-1 py-3 ${!n.read_at ? "bg-[#EDE518]/5" : ""}`}>
+                        <div className="flex items-center gap-2 w-full">
+                          <span className="font-medium text-sm flex-1">{n.title}</span>
+                          {!n.read_at && <span className="h-2 w-2 rounded-full bg-[#EDE518] flex-shrink-0" />}
+                        </div>
+                        {n.body && <p className="text-xs text-muted-foreground line-clamp-2">{n.body}</p>}
+                      </DropdownMenuItem>
+                    ))
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
             {user?.role === "admin" && (
               <Link href="/admin">
                 <Button variant="destructive" size="sm" data-testid="button-admin">
@@ -2577,6 +2755,22 @@ export default function DashboardPage() {
                             {user?.hasUsedTrial ? "Subscribe Now — $9.99/mo" : "Start 7-Day Free Trial"}
                           </Button>
                         )}
+
+                        {/* Email Notifications Toggle */}
+                        <div className="pt-2 border-t border-white/10">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium">Email Notifications</p>
+                              <p className="text-xs text-muted-foreground">Receive emails when new content is added</p>
+                            </div>
+                            <Switch
+                              checked={user?.emailNotifications !== false}
+                              onCheckedChange={(checked) => emailPrefMutation.mutate(checked)}
+                              disabled={emailPrefMutation.isPending}
+                              data-testid="switch-email-notifications"
+                            />
+                          </div>
+                        </div>
 
                         {/* Upgrade to Plus — always visible for non-Plus subscribers */}
                         {!isPlus && (
@@ -2870,6 +3064,54 @@ export default function DashboardPage() {
                 </div>
               )}
               
+              {/* Continue Watching Section */}
+              {!searchQuery.trim() && continueWatching.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="flex-shrink-0 h-8 w-1.5 rounded-full bg-[#08779C] shadow-[0_0_8px_#08779C]" />
+                    <History className="h-5 w-5 text-[#08779C]" />
+                    <h2 className="text-xl font-black text-white uppercase tracking-wide">Continue Watching</h2>
+                    <div className="flex-1 h-px bg-gradient-to-r from-[#08779C]/30 to-transparent" />
+                  </div>
+                  <div className="flex gap-3 overflow-x-auto pb-3" style={{ scrollbarWidth: 'none' }}>
+                    {continueWatching.map((item: any) => {
+                      const vid = videos?.find(v => v.id === item.video_id);
+                      if (!vid) return null;
+                      const pct = item.duration_seconds > 0 ? Math.min(100, Math.round((item.position_seconds / item.duration_seconds) * 100)) : 0;
+                      return (
+                        <div key={item.video_id} className="flex-shrink-0 w-[75vw] sm:w-64 md:w-72 relative">
+                          <VideoCard video={vid} onView={() => markVideoViewedMutation.mutate(vid.id)} />
+                          {pct > 0 && (
+                            <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/20 rounded-b-lg overflow-hidden">
+                              <div className="h-full bg-[#08779C]" style={{ width: `${pct}%` }} />
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Favorites Section */}
+              {!searchQuery.trim() && favoriteVideos.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-3 mb-5">
+                    <div className="flex-shrink-0 h-8 w-1.5 rounded-full bg-[#EDE518] shadow-[0_0_8px_#EDE518]" />
+                    <Heart className="h-5 w-5 fill-[#EDE518] text-[#EDE518]" />
+                    <h2 className="text-xl font-black text-white uppercase tracking-wide">My Favorites</h2>
+                    <div className="flex-1 h-px bg-gradient-to-r from-[#EDE518]/30 to-transparent" />
+                  </div>
+                  <div className="flex gap-3 overflow-x-auto pb-3" style={{ scrollbarWidth: 'none' }}>
+                    {favoriteVideos.map((video) => (
+                      <div key={video.id} className="flex-shrink-0 w-[75vw] sm:w-64 md:w-72">
+                        <VideoCard video={video} onView={() => markVideoViewedMutation.mutate(video.id)} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               {/* Recent Videos Section - Horizontal Scrolling (hidden when searching) */}
               {!searchQuery.trim() && recentVideos.length > 0 && (
                 <div>

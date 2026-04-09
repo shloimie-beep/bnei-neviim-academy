@@ -72,9 +72,17 @@ The application uses a monorepo architecture, separating the frontend and backen
 - Webhook endpoint `POST /api/webhook/announcement` allows external apps to update the banner using a secret key (`x-webhook-secret` header).
 - Stored as a singleton row in the `site_announcement` DB table; webhook secret auto-generated on first use.
 
+### User Engagement Features
+- **Favorites**: Users can save videos with heart button on cards or "Save" in dialog. `POST /api/videos/:id/favorite` toggles. `GET /api/user/favorites` returns IDs. Table: `video_favorites`.
+- **Likes**: Thumbs-up button in video dialog with count. `POST /api/videos/:id/like` toggles. `GET /api/videos/:id/like-count`. Table: `video_likes`.
+- **Continue Watching**: Progress saved via `POST /api/videos/:id/progress`. Dashboard shows "Continue Watching" row with progress bar. `GET /api/user/continue-watching`. Table: `video_progress`.
+- **Related Videos**: Bottom of video dialog shows same-category videos. `GET /api/videos/:id/related`.
+- **Notifications**: Bell icon in header with unread badge. `GET /api/notifications`, `PATCH /api/notifications/read-all`. Table: `notifications`.
+- **Email Opt-out**: Toggle in Account Settings dialog. `PATCH /api/user/preferences` with `emailNotifications: boolean`. Column `email_notifications` on `users` table.
+
 ### Data Storage
 - **Primary Database**: PostgreSQL, with schema defined using Drizzle ORM.
-- **Key Tables**: `users`, `phoneNumbers`, `audioFiles`, `menuOptions`, `conferenceSessions`, `albums`, `albumTracks`, `rss_folders`, `rss_audio_items`, `videoCategories`, `site_announcement`, `featured_videos`.
+- **Key Tables**: `users`, `phoneNumbers`, `audioFiles`, `menuOptions`, `conferenceSessions`, `albums`, `albumTracks`, `rss_folders`, `rss_audio_items`, `videoCategories`, `site_announcement`, `featured_videos`, `video_favorites`, `video_likes`, `video_progress`, `notifications`.
 - **Featured Videos**: Managed via admin `/admin/featured-videos`. Dynamic Vimeo embeds shown on the public homepage; supports add, edit, delete, and drag reorder. Public endpoint `GET /api/featured-videos`.
 
 ### Authentication & Authorization

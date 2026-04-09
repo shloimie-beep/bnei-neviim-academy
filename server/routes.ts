@@ -7919,6 +7919,219 @@ export async function registerRoutes(
     }
   });
 
+  // ── Favorites ─────────────────────────────────────────────────────────────
+  app.get("/api/user/favorites", requireMobileOrSessionAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const rows = await db.execute(
+        sql`SELECT video_id FROM video_favorites WHERE user_id = ${userId} ORDER BY created_at DESC`
+      );
+      res.json((rows as any).rows.map((r: any) => r.video_id));
+    } catch (error) {
+      console.error("Get favorites error:", error);
+      res.status(500).json({ message: "Failed to fetch favorites" });
+    }
+  });
+
+  app.post("/api/videos/:id/favorite", requireMobileOrSessionAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const videoId = req.params.id;
+      const existing = await db.execute(
+        sql`SELECT id FROM video_favorites WHERE user_id = ${userId} AND video_id = ${videoId}`
+      );
+      if ((existing as any).rows.length > 0) {
+        await db.execute(
+          sql`DELETE FROM video_favorites WHERE user_id = ${userId} AND video_id = ${videoId}`
+        );
+        res.json({ favorited: false });
+      } else {
+        await db.execute(
+          sql`INSERT INTO video_favorites (id, user_id, video_id) VALUES (gen_random_uuid()::varchar, ${userId}, ${videoId})`
+        );
+        res.json({ favorited: true });
+      }
+    } catch (error) {
+      console.error("Toggle favorite error:", error);
+      res.status(500).json({ message: "Failed to toggle favorite" });
+    }
+  });
+
+  // ── Video Likes ───────────────────────────────────────────────────────────
+  app.get("/api/user/likes", requireMobileOrSessionAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const rows = await db.execute(
+        sql`SELECT video_id FROM video_likes WHERE user_id = ${userId}`
+      );
+      res.json((rows as any).rows.map((r: any) => r.video_id));
+    } catch (error) {
+      console.error("Get likes error:", error);
+      res.status(500).json({ message: "Failed to fetch likes" });
+    }
+  });
+
+  app.post("/api/videos/:id/like", requireMobileOrSessionAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const videoId = req.params.id;
+      const existing = await db.execute(
+        sql`SELECT id FROM video_likes WHERE user_id = ${userId} AND video_id = ${videoId}`
+      );
+      if ((existing as any).rows.length > 0) {
+        await db.execute(
+          sql`DELETE FROM video_likes WHERE user_id = ${userId} AND video_id = ${videoId}`
+        );
+        res.json({ liked: false });
+      } else {
+        await db.execute(
+          sql`INSERT INTO video_likes (id, user_id, video_id) VALUES (gen_random_uuid()::varchar, ${userId}, ${videoId})`
+        );
+        res.json({ liked: true });
+      }
+    } catch (error) {
+      console.error("Toggle like error:", error);
+      res.status(500).json({ message: "Failed to toggle like" });
+    }
+  });
+
+  app.get("/api/videos/:id/like-count", requireMobileOrSessionAuth, async (req, res) => {
+    try {
+      const result = await db.execute(
+        sql`SELECT COUNT(*) as count FROM video_likes WHERE video_id = ${req.params.id}`
+      );
+      res.json({ count: parseInt((result as any).rows[0].count) });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch like count" });
+    }
+  });
+
+  // ── Video Progress / Continue Watching ────────────────────────────────────
+  app.post("/api/videos/:id/progress", requireMobileOrSessionAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const videoId = req.params.id;
+      const { positionSeconds, durationSeconds, completed } = req.body;
+      await db.execute(sql`
+        INSERT INTO video_progress (id, user_id, video_id, position_seconds, duration_seconds, completed, updated_at)
+        VALUES (gen_random_uuid()::varchar, ${userId}, ${videoId}, ${positionSeconds || 0}, ${durationSeconds || null}, ${completed || false}, NOW())
+        ON CONFLICT (user_id, video_id) DO UPDATE SET
+          position_seconds = EXCLUDED.position_seconds,
+          duration_seconds = EXCLUDED.duration_seconds,
+          completed = EXCLUDED.completed,
+          updated_at = NOW()
+      `);
+      res.json({ success: true });
+    } catch (error) {
+      console.error("Save progress error:", error);
+      res.status(500).json({ message: "Failed to save progress" });
+    }
+  });
+
+  app.get("/api/user/continue-watching", requireMobileOrSessionAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const rows = await db.execute(sql`
+        SELECT vp.video_id, vp.position_seconds, vp.duration_seconds, vp.completed, vp.updated_at,
+               v.title, v.thumbnail_path, v.vimeo_id, v.bunny_video_id, v.category_id
+        FROM video_progress vp
+        JOIN videos v ON v.id = vp.video_id
+        WHERE vp.user_id = ${userId} AND vp.completed = false AND vp.position_seconds > 10
+        ORDER BY vp.updated_at DESC
+        LIMIT 12
+      `);
+      res.json((rows as any).rows);
+    } catch (error) {
+      console.error("Continue watching error:", error);
+      res.status(500).json({ message: "Failed to fetch continue watching" });
+    }
+  });
+
+  // ── Notifications ─────────────────────────────────────────────────────────
+  app.get("/api/notifications", requireMobileOrSessionAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const rows = await db.execute(sql`
+        SELECT * FROM notifications WHERE user_id = ${userId} ORDER BY created_at DESC LIMIT 30
+      `);
+      res.json((rows as any).rows);
+    } catch (error) {
+      console.error("Get notifications error:", error);
+      res.status(500).json({ message: "Failed to fetch notifications" });
+    }
+  });
+
+  app.patch("/api/notifications/:id/read", requireMobileOrSessionAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      await db.execute(sql`
+        UPDATE notifications SET read_at = NOW() WHERE id = ${req.params.id} AND user_id = ${userId}
+      `);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to mark read" });
+    }
+  });
+
+  app.patch("/api/notifications/read-all", requireMobileOrSessionAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      await db.execute(sql`
+        UPDATE notifications SET read_at = NOW() WHERE user_id = ${userId} AND read_at IS NULL
+      `);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to mark all read" });
+    }
+  });
+
+  // ── User Preferences ──────────────────────────────────────────────────────
+  app.patch("/api/user/preferences", requireMobileOrSessionAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const { emailNotifications } = req.body;
+      if (typeof emailNotifications !== "boolean") {
+        return res.status(400).json({ message: "emailNotifications must be boolean" });
+      }
+      await db.execute(sql`
+        UPDATE users SET email_notifications = ${emailNotifications} WHERE id = ${userId}
+      `);
+      res.json({ success: true, emailNotifications });
+    } catch (error) {
+      console.error("Update preferences error:", error);
+      res.status(500).json({ message: "Failed to update preferences" });
+    }
+  });
+
+  // ── Related Videos ────────────────────────────────────────────────────────
+  app.get("/api/videos/:id/related", requireMobileOrSessionAuth, async (req, res) => {
+    try {
+      const rows = await db.execute(sql`
+        SELECT v.id, v.title, v.thumbnail_path, v.vimeo_video_id, v.bunny_video_id, v.category_id, v.created_at
+        FROM videos v
+        WHERE v.category_id = (SELECT category_id FROM videos WHERE id = ${req.params.id})
+          AND v.id != ${req.params.id}
+          AND v.status = 'ready'
+        ORDER BY v.created_at DESC
+        LIMIT 8
+      `);
+      res.json((rows as any).rows);
+    } catch (error) {
+      console.error("Related videos error:", error);
+      res.status(500).json({ message: "Failed to fetch related videos" });
+    }
+  });
+
   // Dashboard Banners — public read
   app.get("/api/banners", requireMobileOrSessionAuth, async (_req, res) => {
     try {

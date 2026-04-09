@@ -260,6 +260,58 @@ async function runDataMigrations() {
       }
     }
 
+    // ── Schema: email_notifications column on users ──────────────────────────
+    await pool.query(`ALTER TABLE users ADD COLUMN IF NOT EXISTS email_notifications BOOLEAN DEFAULT true`);
+
+    // ── Schema: video_favorites table ────────────────────────────────────────
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS video_favorites (
+        id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid()::varchar,
+        user_id VARCHAR NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        video_id VARCHAR NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
+        UNIQUE (user_id, video_id)
+      )
+    `);
+
+    // ── Schema: video_progress table ─────────────────────────────────────────
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS video_progress (
+        id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid()::varchar,
+        user_id VARCHAR NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        video_id VARCHAR NOT NULL,
+        position_seconds INTEGER DEFAULT 0,
+        duration_seconds INTEGER,
+        completed BOOLEAN DEFAULT false,
+        updated_at TIMESTAMP DEFAULT NOW(),
+        UNIQUE (user_id, video_id)
+      )
+    `);
+
+    // ── Schema: video_likes table ─────────────────────────────────────────────
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS video_likes (
+        id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid()::varchar,
+        user_id VARCHAR NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        video_id VARCHAR NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW(),
+        UNIQUE (user_id, video_id)
+      )
+    `);
+
+    // ── Schema: notifications table ───────────────────────────────────────────
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS notifications (
+        id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid()::varchar,
+        user_id VARCHAR NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        title TEXT NOT NULL,
+        body TEXT,
+        video_id VARCHAR,
+        read_at TIMESTAMP,
+        created_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+
     // "The Rebbe's Coffee" belongs in Films, not Tzaddikim Stories
     await pool.query(
       `UPDATE videos SET category_id = (
