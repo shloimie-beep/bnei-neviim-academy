@@ -590,25 +590,6 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
         )}
       </div>
 
-      {/* Skip to craziest part buttons */}
-      <div className="flex gap-2 px-4 pt-3 pb-1">
-        <button
-          onClick={handleSkipToCraziestPart}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] border border-[#EDE518]/25"
-          style={{ background: "rgba(237,229,24,0.08)", color: "#EDE518" }}
-          data-testid="button-skip-craziest-part"
-        >
-          😲 Skip to craziest part
-        </button>
-        <button
-          onClick={() => doSkip(0.6)}
-          className="flex-1 flex items-center justify-center gap-1.5 py-2 rounded-xl font-bold text-sm transition-all hover:scale-[1.02] active:scale-[0.98] border border-[#08779C]/25"
-          style={{ background: "rgba(8,119,156,0.08)", color: "#38bdf8" }}
-          data-testid="button-jump-best-moment"
-        >
-          👉 Jump to best moment
-        </button>
-      </div>
 
       <div className="p-4 border-b border-white/10">
         <div className="flex items-start justify-between gap-4">
@@ -4812,13 +4793,6 @@ export default function DashboardPage() {
                 );
               })()}
 
-              {/* ── Live Viewer Count ──────────────────────────────── */}
-              <div className="flex items-center gap-1.5 px-1">
-                <span className="inline-block h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
-                <span className="text-[11px] font-semibold" style={{ color: "#94a3b8" }}>
-                  {liveViewerCount} people watching right now
-                </span>
-              </div>
 
               {/* ── Search + Mood slide-down panel ─────────────────── */}
               <div className="space-y-0 relative">
