@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay, MessageSquare, Send, Heart, ThumbsUp, Bell, BellDot, History, Shield, ShieldCheck, ShieldAlert, TimerReset, User, Shuffle, X, Smile, Sparkles, ArrowRight } from "lucide-react";
+import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay, MessageSquare, Send, Heart, ThumbsUp, Bell, BellDot, History, Shield, ShieldCheck, ShieldAlert, TimerReset, User, Shuffle, X, Smile, Sparkles, ArrowRight, Search } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
@@ -493,6 +493,9 @@ function LegacyVideoPlayer({ video, onClose, onMinimize }: { video: VideoType; o
   const [streamError, setStreamError] = useState<string | null>(null);
   const [thumbnailCacheBust] = useState(() => Date.now());
   const [isEnded, setIsEnded] = useState(false);
+  const [guessState, setGuessState] = useState<'hidden' | 'asking' | 'answered'>('hidden');
+  const [guessChoice, setGuessChoice] = useState<string | null>(null);
+  const [guessTriggeredAt, setGuessTriggeredAt] = useState(0);
 
   // Related items for Listen/Watch Next
   const { data: relatedItems = [] } = useQuery<any[]>({
@@ -596,6 +599,18 @@ function LegacyVideoPlayer({ video, onClose, onMinimize }: { video: VideoType; o
       if (d > 0) {
         _liveVideoProgress.videoId = currentVideo.id;
         _liveVideoProgress.pct = t / d;
+        // Guess the Ending — trigger once per video at ~70% for non-audio, one-time-ever
+        const pct = t / d;
+        if (!isAudioMedia && pct >= 0.68 && pct < 0.73 && guessState === 'hidden' && guessTriggeredAt === 0) {
+          try {
+            const shown = localStorage.getItem("guess_ending_shown");
+            if (!shown) {
+              setGuessState('asking');
+              setGuessTriggeredAt(t);
+              videoRef.current.pause();
+            }
+          } catch {}
+        }
       }
       if (videoRef.current.buffered.length > 0) {
         setBuffered(videoRef.current.buffered.end(videoRef.current.buffered.length - 1));
@@ -769,6 +784,68 @@ function LegacyVideoPlayer({ video, onClose, onMinimize }: { video: VideoType; o
             </div>
           )}
         </div>
+
+        {/* ── Guess the Ending overlay ───────────────────────────────── */}
+        {guessState !== 'hidden' && (
+          <div className="absolute inset-0 z-20 flex flex-col items-center justify-center animate-in fade-in duration-400"
+            style={{ background: "rgba(4, 10, 24, 0.93)", backdropFilter: "blur(4px)" }}>
+            {guessState === 'asking' && (
+              <div className="flex flex-col items-center gap-4 px-6 text-center max-w-sm">
+                <div className="text-5xl animate-bounce">🤔</div>
+                <h2 className="text-white font-black text-2xl leading-tight">
+                  Guess the Ending!
+                </h2>
+                <p className="text-slate-300 text-sm">What do you think happens next?</p>
+                <div className="flex flex-col gap-3 w-full mt-2">
+                  {[
+                    { id: "A", label: "Something totally unexpected happens! 🤯", color: "#08779C" },
+                    { id: "B", label: "Everyone lives happily ever after 😊", color: "#EDE518" },
+                  ].map(opt => (
+                    <button
+                      key={opt.id}
+                      onClick={() => {
+                        setGuessChoice(opt.id);
+                        setGuessState('answered');
+                        try { localStorage.setItem("guess_ending_shown", "1"); } catch {}
+                      }}
+                      className="w-full px-5 py-3.5 rounded-2xl font-bold text-sm text-left flex items-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-transform border border-white/10"
+                      style={{ background: opt.color === "#EDE518" ? "rgba(237,229,24,0.12)" : "rgba(8,119,156,0.15)", color: "white" }}
+                    >
+                      <span className="h-7 w-7 rounded-full flex items-center justify-center shrink-0 font-black text-sm"
+                        style={{ background: opt.color, color: opt.color === "#EDE518" ? "#000" : "#fff" }}
+                      >{opt.id}</span>
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+                <button onClick={() => {
+                  setGuessState('hidden');
+                  try { localStorage.setItem("guess_ending_shown", "1"); } catch {}
+                  if (videoRef.current) videoRef.current.play().catch(() => {});
+                }} className="text-slate-600 hover:text-slate-400 text-xs mt-1 underline transition-colors">
+                  Skip
+                </button>
+              </div>
+            )}
+            {guessState === 'answered' && (
+              <div className="flex flex-col items-center gap-4 px-6 text-center max-w-sm animate-in fade-in duration-300">
+                <div className="text-5xl">🎬</div>
+                <h2 className="text-white font-black text-xl">You picked {guessChoice}!</h2>
+                <p className="text-slate-300 text-sm">Let's see what actually happens... 👀</p>
+                <button
+                  onClick={() => {
+                    setGuessState('hidden');
+                    if (videoRef.current) videoRef.current.play().catch(() => {});
+                  }}
+                  className="px-8 py-3 rounded-2xl font-black text-black text-sm hover:scale-105 active:scale-95 transition-transform shadow-[0_0_24px_rgba(237,229,24,0.5)]"
+                  style={{ background: "linear-gradient(135deg, #EDE518 0%, #f5c800 100%)" }}
+                >
+                  ▶ Reveal the ending!
+                </button>
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Replay That Moment overlay */}
         {isEnded && (
@@ -1383,14 +1460,19 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
       return;
     }
     if (!open && isOpen) {
-      // "Almost There" — show toast if user leaves 50–90% through
+      // "Almost Done" — show toast when user closes mid-video
       if (_liveVideoProgress.videoId === video.id) {
         const pct = _liveVideoProgress.pct;
-        if (pct >= 0.5 && pct < 0.92) {
-          const pctDisplay = Math.round(pct * 100);
+        if (pct >= 0.65 && pct < 0.95) {
           setTimeout(() => toast({
-            title: `You were ${pctDisplay}% done — finish it! 🎯`,
-            description: "Tap the card to pick up where you left off.",
+            title: "You're almost done! 🎉",
+            description: "Just a little more — tap to finish it!",
+            duration: 5000,
+          }), 400);
+        } else if (pct >= 0.3 && pct < 0.65) {
+          setTimeout(() => toast({
+            title: "Don't stop now! 👀",
+            description: "You were halfway through — come back and finish!",
             duration: 5000,
           }), 400);
         }
@@ -2298,6 +2380,22 @@ function JokeButton({ onGoToDocs }: { onGoToDocs: () => void }) {
   const [open, setOpen] = useState(false);
   const [jokeIndex, setJokeIndex] = useState(() => Math.floor(Math.random() * JOKES.length));
   const [isAnimating, setIsAnimating] = useState(false);
+  const [bubbleVisible, setBubbleVisible] = useState(false);
+
+  // Periodic speech bubble that peeks out from the joke button
+  useEffect(() => {
+    const BUBBLE_PHRASES = ["Need a laugh? 😂", "Tap me! 👆", "Joke time! 🎭", "Make me smile! 😁"];
+    let phraseIdx = 0;
+    const show = () => {
+      setBubbleVisible(true);
+      phraseIdx = (phraseIdx + 1) % BUBBLE_PHRASES.length;
+      setTimeout(() => setBubbleVisible(false), 3200);
+    };
+    // first show after 8 seconds, then every 40 seconds
+    const firstTimer = setTimeout(show, 8000);
+    const interval = setInterval(show, 40000);
+    return () => { clearTimeout(firstTimer); clearInterval(interval); };
+  }, []);
 
   const nextJoke = () => {
     setIsAnimating(true);
@@ -2309,20 +2407,35 @@ function JokeButton({ onGoToDocs }: { onGoToDocs: () => void }) {
 
   const joke = JOKES[jokeIndex];
 
+  const BUBBLE_PHRASES = ["Need a laugh? 😂", "Tap me! 👆", "Joke time! 🎭", "Make me smile! 😁"];
+  const bubbleText = BUBBLE_PHRASES[jokeIndex % BUBBLE_PHRASES.length];
+
   return (
     <>
-      <div className="fixed bottom-24 right-4 z-[9000] flex flex-col items-center gap-1 group">
-        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/90 text-white text-[10px] font-bold px-2 py-1 rounded-lg whitespace-nowrap shadow-lg border border-white/10 pointer-events-none">
-          Click for a one-time joke! 😂
-        </div>
-        <button
-          onClick={() => { setJokeIndex(Math.floor(Math.random() * JOKES.length)); setOpen(true); }}
-          className="h-14 w-14 rounded-full shadow-[0_4px_24px_rgba(0,0,0,0.5),0_0_16px_rgba(237,229,24,0.25)] flex items-center justify-center text-2xl hover:scale-110 active:scale-95 transition-transform"
-          style={{ background: "linear-gradient(135deg, #EDE518 0%, #f5c800 100%)" }}
-          data-testid="button-random-joke"
+      <div className="fixed bottom-24 right-4 z-[9000] flex flex-col items-end gap-1">
+        {/* Animated speech bubble */}
+        <div
+          className="flex items-end gap-1 transition-all duration-500"
+          style={{ opacity: bubbleVisible ? 1 : 0, transform: bubbleVisible ? "translateY(0) scale(1)" : "translateY(6px) scale(0.9)", pointerEvents: "none" }}
         >
-          😂
-        </button>
+          <div className="relative bg-[#EDE518] text-black text-[11px] font-black px-3 py-1.5 rounded-2xl rounded-br-none shadow-lg whitespace-nowrap max-w-[140px]">
+            {bubbleText}
+            <div className="absolute bottom-0 right-0 w-0 h-0" style={{ borderLeft: "8px solid transparent", borderTop: "8px solid #EDE518", transform: "translateX(4px)" }} />
+          </div>
+        </div>
+        <div className="flex flex-col items-center gap-1 group">
+          <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-200 bg-black/90 text-white text-[10px] font-bold px-2 py-1 rounded-lg whitespace-nowrap shadow-lg border border-white/10 pointer-events-none">
+            Click for a one-time joke! 😂
+          </div>
+          <button
+            onClick={() => { setJokeIndex(Math.floor(Math.random() * JOKES.length)); setOpen(true); setBubbleVisible(false); }}
+            className="h-14 w-14 rounded-full shadow-[0_4px_24px_rgba(0,0,0,0.5),0_0_16px_rgba(237,229,24,0.25)] flex items-center justify-center text-2xl hover:scale-110 active:scale-95 transition-transform"
+            style={{ background: "linear-gradient(135deg, #EDE518 0%, #f5c800 100%)" }}
+            data-testid="button-random-joke"
+          >
+            😂
+          </button>
+        </div>
       </div>
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-md" style={{ background: "linear-gradient(145deg, #060e1a 0%, #0a1628 100%)", border: "1px solid rgba(237,229,24,0.2)" }}>
@@ -2542,6 +2655,8 @@ export default function DashboardPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [surpriseVideoId, setSurpriseVideoId] = useState<string | null>(null);
   const [moodFilter, setMoodFilter] = useState<string | null>(null);
+  const [isSearchPanelOpen, setIsSearchPanelOpen] = useState(false);
+  const liveViewerCount = useMemo(() => Math.floor(Math.random() * 16) + 8, []);
   const [previewMode, setPreviewMode] = useState<"standard" | "plus">("standard");
   const recentScrollRef = useRef<HTMLDivElement>(null);
   const [canScrollLeft, setCanScrollLeft] = useState(false);
@@ -4145,36 +4260,39 @@ export default function DashboardPage() {
                 );
               })()}
 
-              {/* Search Bar + Mood Filter + Surprise Me */}
-              <div className="space-y-0">
+              {/* ── Live Viewer Count ──────────────────────────────── */}
+              <div className="flex items-center gap-1.5 px-1">
+                <span className="inline-block h-1.5 w-1.5 rounded-full bg-red-500 animate-pulse" />
+                <span className="text-[11px] font-semibold" style={{ color: "#94a3b8" }}>
+                  {liveViewerCount} people watching right now
+                </span>
+              </div>
+
+              {/* ── Search + Mood slide-down panel ─────────────────── */}
+              <div className="space-y-0 relative">
+                {/* Top bar: tappable search trigger + Surprise Me */}
                 <div className="flex items-center gap-2">
-                  <div className="flex-1 min-w-[160px] relative">
-                    <Input
-                      placeholder="Search videos..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      className="w-full bg-[#0d1828] border-white/10 text-white placeholder:text-slate-500 focus:border-[#EDE518]/50 pr-10"
-                      data-testid="input-search-videos"
-                    />
-                    {/* Mood filter toggle icon inside search bar */}
-                    {!searchQuery.trim() && (
-                      <button
-                        onClick={() => setMoodFilter(moodFilter ? null : "open")}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 h-6 w-6 flex items-center justify-center rounded-full transition-all hover:scale-110"
-                        style={moodFilter && moodFilter !== "open" ? { color: "#EDE518" } : { color: "#64748b" }}
-                        title="Pick Your Mood"
-                        data-testid="button-mood-toggle"
-                      >
-                        {moodFilter && moodFilter !== "open" ? (
-                          <span className="text-base leading-none">
-                            {moodFilter === "funny" ? "😂" : moodFilter === "crazy" ? "🤪" : moodFilter === "smart" ? "🧠" : "😌"}
-                          </span>
-                        ) : (
-                          <Smile className="h-4 w-4" />
-                        )}
-                      </button>
+                  {/* Search trigger button */}
+                  <button
+                    onClick={() => { setIsSearchPanelOpen(true); setMoodFilter(null); }}
+                    className="flex-1 min-w-0 flex items-center gap-2 px-3 h-10 rounded-lg border text-sm transition-all hover:border-[#EDE518]/40 text-left"
+                    style={{ background: "#0d1828", borderColor: isSearchPanelOpen || searchQuery.trim() ? "rgba(237,229,24,0.4)" : "rgba(255,255,255,0.1)", color: searchQuery.trim() ? "#fff" : "#64748b" }}
+                    data-testid="button-open-search-panel"
+                  >
+                    <Search className="h-4 w-4 shrink-0" style={{ color: "#64748b" }} />
+                    <span className="flex-1 truncate">{searchQuery.trim() ? searchQuery : "Search or pick your vibe..."}</span>
+                    {(searchQuery.trim() || moodFilter) && (
+                      <span
+                        onClick={(e) => { e.stopPropagation(); setSearchQuery(""); setMoodFilter(null); }}
+                        className="text-slate-500 hover:text-white transition-colors text-xs font-bold px-1"
+                      >✕</span>
                     )}
-                  </div>
+                    {moodFilter && moodFilter !== "open" && (
+                      <span className="text-base leading-none">
+                        {moodFilter === "funny" ? "😂" : moodFilter === "crazy" ? "🤪" : moodFilter === "smart" ? "🧠" : "😌"}
+                      </span>
+                    )}
+                  </button>
                   <Button
                     onClick={handleSurpriseMe}
                     className="bg-gradient-to-r from-[#EDE518] to-[#f5d800] text-black font-bold hover:from-[#f5d800] hover:to-[#EDE518] shadow-[0_0_12px_#EDE51860] hover:shadow-[0_0_20px_#EDE51880] transition-all gap-2 shrink-0"
@@ -4185,48 +4303,97 @@ export default function DashboardPage() {
                   </Button>
                 </div>
 
-                {/* Mood dropdown panel — slides in when mood icon clicked */}
-                {!searchQuery.trim() && (moodFilter === "open" || (moodFilter && moodFilter !== "open")) && (
-                  <div
-                    className="mt-2 rounded-2xl border border-[#EDE518]/20 overflow-hidden animate-in slide-in-from-top-2 duration-200"
-                    style={{ background: "linear-gradient(135deg, #060e1a 0%, #0a1628 100%)" }}
-                  >
-                    <div className="px-4 pt-3 pb-1 flex items-center justify-between">
-                      <span className="text-[10px] font-black uppercase tracking-widest text-slate-500">Pick Your Mood</span>
-                      {moodFilter && moodFilter !== "open" && (
-                        <button onClick={() => setMoodFilter(null)} className="text-[10px] text-slate-500 hover:text-[#EDE518] underline transition-colors">
-                          Clear filter
-                        </button>
-                      )}
+                {/* ── Full slide-down search panel ── */}
+                {isSearchPanelOpen && (
+                  <>
+                    {/* Backdrop */}
+                    <div
+                      className="fixed inset-0 z-[300]"
+                      onClick={() => { setIsSearchPanelOpen(false); if (!searchQuery.trim()) setMoodFilter(null); }}
+                    />
+                    {/* Panel */}
+                    <div
+                      className="absolute left-0 right-0 top-12 z-[301] rounded-2xl overflow-hidden animate-in slide-in-from-top-3 duration-250 shadow-2xl"
+                      style={{ background: "linear-gradient(160deg, #070d1b 0%, #0d1828 60%, #101f34 100%)", border: "1px solid rgba(237,229,24,0.25)" }}
+                    >
+                      {/* Search input inside panel */}
+                      <div className="px-4 pt-4 pb-3 border-b border-white/5">
+                        <div className="relative">
+                          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "#EDE518" }} />
+                          <input
+                            autoFocus
+                            placeholder="Type to search..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === "Escape") setIsSearchPanelOpen(false); }}
+                            className="w-full pl-9 pr-4 py-2.5 rounded-xl text-white text-sm font-medium outline-none border focus:border-[#EDE518]/60 placeholder:text-slate-600"
+                            style={{ background: "rgba(255,255,255,0.05)", borderColor: "rgba(255,255,255,0.1)" }}
+                            data-testid="input-search-videos"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Mood picker */}
+                      <div className="px-4 pt-3 pb-4">
+                        <p className="text-[10px] font-black uppercase tracking-[0.15em] mb-3" style={{ color: "#EDE518" }}>
+                          ✨ Pick Your Vibe
+                        </p>
+                        <div className="grid grid-cols-2 gap-2">
+                          {[
+                            { id: "funny", emoji: "😂", label: "Funny", sub: "Jokes & comedy", color: "#f59e0b" },
+                            { id: "crazy", emoji: "🤪", label: "Wild & Crazy", sub: "Adventures & sports", color: "#8b5cf6" },
+                            { id: "smart", emoji: "🧠", label: "Learn Something", sub: "Torah & stories", color: "#08779C" },
+                            { id: "chill", emoji: "😌", label: "Chill Out", sub: "Music & calm vibes", color: "#10b981" },
+                          ].map(mood => (
+                            <button
+                              key={mood.id}
+                              onClick={() => {
+                                setMoodFilter(mood.id);
+                                setSearchQuery("");
+                                setIsSearchPanelOpen(false);
+                                setSelectedCategory(null);
+                              }}
+                              className="flex items-center gap-3 px-3 py-3 rounded-2xl border text-left hover:scale-[1.02] active:scale-[0.98] transition-all"
+                              style={moodFilter === mood.id ? {
+                                background: `${mood.color}22`,
+                                borderColor: mood.color,
+                                boxShadow: `0 0 12px ${mood.color}44`,
+                              } : {
+                                background: "rgba(255,255,255,0.04)",
+                                borderColor: "rgba(255,255,255,0.08)",
+                              }}
+                              data-testid={`button-mood-${mood.id}`}
+                            >
+                              <span className="text-2xl">{mood.emoji}</span>
+                              <div className="min-w-0">
+                                <p className="text-white font-bold text-xs leading-tight">{mood.label}</p>
+                                <p className="text-slate-500 text-[10px] leading-tight truncate">{mood.sub}</p>
+                              </div>
+                            </button>
+                          ))}
+                        </div>
+                        {(searchQuery.trim() || moodFilter) && (
+                          <button
+                            onClick={() => { setSearchQuery(""); setMoodFilter(null); setIsSearchPanelOpen(false); }}
+                            className="mt-3 w-full text-center text-xs text-slate-600 hover:text-slate-400 transition-colors underline"
+                          >
+                            Clear all filters
+                          </button>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex gap-2 px-4 pb-3 flex-wrap">
-                      {[
-                        { id: "funny", emoji: "😂", label: "Funny" },
-                        { id: "crazy", emoji: "🤪", label: "Crazy" },
-                        { id: "smart", emoji: "🧠", label: "Smart" },
-                        { id: "chill", emoji: "😌", label: "Chill" },
-                      ].map(mood => (
-                        <button
-                          key={mood.id}
-                          onClick={() => setMoodFilter(moodFilter === mood.id ? null : mood.id)}
-                          className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold border transition-all hover:scale-105 active:scale-95"
-                          style={moodFilter === mood.id ? {
-                            background: "linear-gradient(135deg, #EDE518 0%, #f5c800 100%)",
-                            color: "#000",
-                            borderColor: "#EDE518",
-                            boxShadow: "0 0 16px rgba(237,229,24,0.4)",
-                          } : {
-                            background: "rgba(255,255,255,0.05)",
-                            color: "#94a3b8",
-                            borderColor: "rgba(255,255,255,0.1)",
-                          }}
-                          data-testid={`button-mood-${mood.id}`}
-                        >
-                          <span className="text-base">{mood.emoji}</span>
-                          {mood.label}
-                        </button>
-                      ))}
-                    </div>
+                  </>
+                )}
+
+                {/* Active mood badge below bar */}
+                {moodFilter && moodFilter !== "open" && !isSearchPanelOpen && (
+                  <div className="mt-2 flex items-center gap-2 px-1">
+                    <span className="text-xs text-slate-400">Showing:</span>
+                    <span className="flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold border"
+                      style={{ background: "rgba(237,229,24,0.1)", borderColor: "rgba(237,229,24,0.3)", color: "#EDE518" }}>
+                      {moodFilter === "funny" ? "😂 Funny" : moodFilter === "crazy" ? "🤪 Wild & Crazy" : moodFilter === "smart" ? "🧠 Learn Something" : "😌 Chill"}
+                    </span>
+                    <button onClick={() => setMoodFilter(null)} className="text-[10px] text-slate-600 hover:text-white underline transition-colors">clear</button>
                   </div>
                 )}
               </div>
