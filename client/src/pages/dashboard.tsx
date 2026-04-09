@@ -2473,156 +2473,236 @@ type BannerItem = {
   isActive: boolean;
 };
 
+// ── Built-in feature announcement cards (always visible) ─────────────────────
+const FEATURE_PROMO_CARDS = [
+  {
+    id: "feat-mishnayos",
+    badge: "📖 New Series",
+    title: "Mishnayos Daily",
+    subtitle: "Learn a Mishna every day with Reb Eli — quick, fun, and clear!",
+    emoji: "📖",
+    bg: "linear-gradient(135deg, #003d5c 0%, #086b8a 100%)",
+    accent: "#08779C",
+    glow: "#08779Caa",
+    videoId: null as string | null,
+    imageUrl: null as string | null,
+  },
+  {
+    id: "feat-parental",
+    badge: "🛡️ New Feature",
+    title: "Parental Controls",
+    subtitle: "Set daily, weekly or monthly screen-time limits — right inside Account Settings.",
+    emoji: "🛡️",
+    bg: "linear-gradient(135deg, #2d1463 0%, #4c1d95 100%)",
+    accent: "#8b5cf6",
+    glow: "#8b5cf6aa",
+    videoId: null as string | null,
+    imageUrl: null as string | null,
+  },
+  {
+    id: "feat-offline",
+    badge: "⬇️ New Feature",
+    title: "Download Stories",
+    subtitle: "Save any audio story to your device and listen offline — no internet needed!",
+    emoji: "⬇️",
+    bg: "linear-gradient(135deg, #064e3b 0%, #059669 100%)",
+    accent: "#10b981",
+    glow: "#10b981aa",
+    videoId: null as string | null,
+    imageUrl: null as string | null,
+  },
+];
+
 function DashboardBannerSlideshow({ banners, videos }: { banners: BannerItem[]; videos: VideoType[] }) {
-  const [current, setCurrent] = useState(0);
-  const [prev2, setPrev2] = useState<number | null>(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [activeIdx, setActiveIdx] = useState(0);
   const [openVideo, setOpenVideo] = useState<VideoType | null>(null);
   const [isOpenVideo, setIsOpenVideo] = useState(false);
-  const totalSlides = banners.length;
 
-  const goTo = (idx: number) => {
-    const next = ((idx % totalSlides) + totalSlides) % totalSlides;
-    setPrev2(current);
-    setCurrent(next);
-    setTimeout(() => setPrev2(null), 500);
+  // Combine feature promos + admin banners into one list
+  const allCards = [
+    ...FEATURE_PROMO_CARDS,
+    ...banners.map(b => ({
+      id: b.id,
+      badge: b.subtitle ? "✨ " + b.subtitle.slice(0, 30) : "✨ Featured",
+      title: b.title,
+      subtitle: b.subtitle ?? "",
+      emoji: "🎬",
+      bg: "linear-gradient(135deg, #0d1a35 0%, #1a2a4a 100%)",
+      accent: "#EDE518",
+      glow: "#EDE518aa",
+      videoId: b.videoId ?? null,
+      imageUrl: b.imageUrl
+        ? b.imageUrl.startsWith("/objects/") ? `/api/banners/${b.id}/image` : b.imageUrl
+        : null,
+    })),
+  ];
+
+  const total = allCards.length;
+
+  const scrollTo = (idx: number) => {
+    const clamped = Math.max(0, Math.min(idx, total - 1));
+    setActiveIdx(clamped);
+    const el = scrollRef.current;
+    if (!el) return;
+    const card = el.children[clamped] as HTMLElement;
+    if (card) card.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
   };
-  const prevSlide = () => goTo(current - 1);
-  const nextSlide = () => goTo(current + 1);
 
+  // Auto-advance every 5s
   useEffect(() => {
-    if (totalSlides <= 1) return;
-    const timer = setInterval(() => {
-      setPrev2(current);
-      setCurrent(c => {
-        const next = (c + 1) % totalSlides;
-        setTimeout(() => setPrev2(null), 500);
+    if (total <= 1) return;
+    const t = setInterval(() => {
+      setActiveIdx(prev => {
+        const next = (prev + 1) % total;
+        const el = scrollRef.current;
+        if (el) {
+          const card = el.children[next] as HTMLElement;
+          if (card) card.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+        }
         return next;
       });
-    }, 6000);
-    return () => clearInterval(timer);
-  }, [totalSlides]);
+    }, 5000);
+    return () => clearInterval(t);
+  }, [total]);
 
-  if (totalSlides === 0) return null;
+  // Track which card is most visible via IntersectionObserver
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      (entries) => {
+        let best = { idx: 0, ratio: 0 };
+        entries.forEach((e) => {
+          const idx = parseInt((e.target as HTMLElement).dataset.idx ?? "0");
+          if (e.intersectionRatio > best.ratio) best = { idx, ratio: e.intersectionRatio };
+        });
+        if (best.ratio > 0) setActiveIdx(best.idx);
+      },
+      { root: el, threshold: [0.5] }
+    );
+    Array.from(el.children).forEach(c => obs.observe(c));
+    return () => obs.disconnect();
+  }, [total]);
 
-  const slide = banners[current];
-  const isPromo = slide.id.startsWith("promo-");
-  const accent = isPromo ? "#EDE518" : SLIDE_ACCENTS[current % SLIDE_ACCENTS.length];
-  const overlay = SLIDE_DARK_OVERLAYS[current % SLIDE_DARK_OVERLAYS.length];
-  const accentIsYellow = accent === "#EDE518";
-
-  const imageUrl = slide.imageUrl
-    ? slide.imageUrl.startsWith("/objects/")
-      ? `/api/banners/${slide.id}/image`
-      : slide.imageUrl
-    : null;
-
-  const handleClick = () => {
-    if (!slide.videoId) return;
-    const v = videos.find(v => v.id === slide.videoId);
-    if (v) { setOpenVideo(v); setIsOpenVideo(true); }
-  };
+  if (total === 0) return null;
 
   return (
     <>
-      <div
-        className="relative overflow-hidden select-none"
-        style={{ minHeight: 220, background: "#060e1a" }}
-        data-testid="banner-slideshow"
-      >
-        {/* Full-bleed background image */}
-        {imageUrl && (
-          <div className="absolute inset-0 transition-opacity duration-500">
-            <img
-              src={imageUrl}
-              alt=""
-              className="w-full h-full object-cover"
-              style={{ filter: "brightness(0.55) saturate(1.2)" }}
-            />
+      <div className="px-4 sm:px-6 py-4" data-testid="banner-slideshow">
+        {/* Section header */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Sparkles className="h-4 w-4 text-[#EDE518]" />
+            <span className="text-sm font-black uppercase tracking-widest text-white/70">What's New</span>
           </div>
-        )}
-
-        {/* Dark directional overlay — text side is always dark */}
-        <div className="absolute inset-0" style={{ background: overlay }} />
-
-        {/* Accent glow blob behind text */}
-        <div
-          className="absolute -left-16 top-1/2 -translate-y-1/2 w-72 h-72 rounded-full blur-3xl pointer-events-none"
-          style={{ background: accent, opacity: 0.12 }}
-        />
-
-        {/* Content */}
-        <div
-          className={`relative flex items-end gap-4 px-5 sm:px-8 pt-7 pb-9 ${slide.videoId ? "cursor-pointer" : ""}`}
-          style={{ minHeight: 220 }}
-          onClick={handleClick}
-        >
-          <div className="flex-1 min-w-0">
-            {/* Title */}
-            <h2
-              className="text-2xl sm:text-3xl font-black text-white leading-tight line-clamp-2 drop-shadow-2xl mb-4"
-              style={{ textShadow: "0 2px 20px rgba(0,0,0,0.8)" }}
-            >
-              {slide.title}
-            </h2>
-          </div>
-
-          {/* Right-side thumbnail (larger preview, visible on sm+) */}
-          {imageUrl && (
-            <div
-              className="hidden sm:block flex-shrink-0 w-28 h-20 md:w-40 md:h-28 rounded-2xl overflow-hidden border-2 shadow-2xl"
-              style={{ borderColor: `${accent}60`, boxShadow: `0 8px 32px rgba(0,0,0,0.6), 0 0 20px ${accent}30` }}
-            >
-              <img src={imageUrl} alt={slide.title} className="w-full h-full object-cover" />
-            </div>
-          )}
-        </div>
-
-        {/* Prev/Next arrows */}
-        {totalSlides > 1 && (
-          <>
-            <button
-              onClick={(e) => { e.stopPropagation(); prevSlide(); }}
-              className="absolute left-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-black/50 hover:bg-black/80 border border-white/10 flex items-center justify-center transition-all hover:scale-110 z-10"
-              data-testid="button-banner-prev"
-            >
-              <ChevronLeft className="h-4 w-4 text-white" />
-            </button>
-            <button
-              onClick={(e) => { e.stopPropagation(); nextSlide(); }}
-              className="absolute right-2 top-1/2 -translate-y-1/2 h-8 w-8 rounded-full bg-black/50 hover:bg-black/80 border border-white/10 flex items-center justify-center transition-all hover:scale-110 z-10"
-              data-testid="button-banner-next"
-            >
-              <ChevronRight className="h-4 w-4 text-white" />
-            </button>
-          </>
-        )}
-
-        {/* Dot indicators */}
-        {totalSlides > 1 && (
-          <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1.5 z-10" data-testid="banner-dots">
-            {banners.map((_, i) => (
+          {/* Dot indicators */}
+          <div className="flex items-center gap-1.5">
+            {allCards.map((_, i) => (
               <button
                 key={i}
-                onClick={(e) => { e.stopPropagation(); goTo(i); }}
-                className="rounded-full transition-all duration-400"
+                onClick={() => scrollTo(i)}
+                className="rounded-full transition-all duration-300"
                 style={{
-                  width: i === current ? 24 : 6,
-                  height: 6,
-                  background: i === current ? accent : "rgba(255,255,255,0.35)",
-                  boxShadow: i === current ? `0 0 8px ${accent}` : "none",
+                  width: i === activeIdx ? 20 : 5,
+                  height: 5,
+                  background: i === activeIdx ? allCards[i].accent : "rgba(255,255,255,0.2)",
+                  boxShadow: i === activeIdx ? `0 0 8px ${allCards[i].glow}` : "none",
                 }}
                 data-testid={`banner-dot-${i}`}
               />
             ))}
           </div>
-        )}
+        </div>
 
-        {/* Slide count badge (top right) */}
-        {totalSlides > 1 && (
-          <div className="absolute top-3 right-3 text-[10px] text-white/40 font-bold tabular-nums z-10">
-            {current + 1} / {totalSlides}
-          </div>
-        )}
+        {/* Horizontal card strip */}
+        <div
+          ref={scrollRef}
+          className="flex gap-3 overflow-x-auto pb-1"
+          style={{ scrollbarWidth: "none", scrollSnapType: "x mandatory" }}
+        >
+          {allCards.map((card, i) => {
+            const isActive = i === activeIdx;
+            return (
+              <div
+                key={card.id}
+                data-idx={i}
+                onClick={() => {
+                  scrollTo(i);
+                  if (card.videoId) {
+                    const v = videos.find(v => v.id === card.videoId);
+                    if (v) { setOpenVideo(v); setIsOpenVideo(true); }
+                  }
+                }}
+                className="flex-shrink-0 relative overflow-hidden rounded-2xl cursor-pointer select-none transition-all duration-300"
+                style={{
+                  width: "clamp(200px, 55vw, 260px)",
+                  height: 160,
+                  background: card.bg,
+                  scrollSnapAlign: "center",
+                  border: isActive ? `2px solid ${card.accent}60` : "2px solid rgba(255,255,255,0.06)",
+                  boxShadow: isActive ? `0 8px 32px rgba(0,0,0,0.5), 0 0 20px ${card.glow}30` : "0 4px 16px rgba(0,0,0,0.3)",
+                  transform: isActive ? "scale(1)" : "scale(0.97)",
+                }}
+                data-testid={`banner-card-${card.id}`}
+              >
+                {/* Background image if present */}
+                {card.imageUrl && (
+                  <img
+                    src={card.imageUrl}
+                    alt=""
+                    className="absolute inset-0 w-full h-full object-cover"
+                    style={{ opacity: 0.35 }}
+                  />
+                )}
+
+                {/* Gradient overlay for readability */}
+                <div
+                  className="absolute inset-0"
+                  style={{ background: `linear-gradient(135deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.2) 100%)` }}
+                />
+
+                {/* Accent glow blob */}
+                <div
+                  className="absolute -bottom-8 -right-8 w-32 h-32 rounded-full blur-2xl pointer-events-none"
+                  style={{ background: card.accent, opacity: 0.25 }}
+                />
+
+                {/* Content */}
+                <div className="relative h-full flex flex-col justify-between p-3.5">
+                  {/* Badge */}
+                  <div>
+                    <span
+                      className="inline-flex items-center text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full"
+                      style={{ background: `${card.accent}30`, color: card.accent, border: `1px solid ${card.accent}50` }}
+                    >
+                      {card.badge}
+                    </span>
+                  </div>
+
+                  {/* Bottom: emoji + title + subtitle */}
+                  <div>
+                    {!card.imageUrl && (
+                      <div className="text-3xl mb-1 leading-none">{card.emoji}</div>
+                    )}
+                    <h3 className="font-black text-white text-base leading-tight line-clamp-1 drop-shadow-lg">
+                      {card.title}
+                    </h3>
+                    <p className="text-white/60 text-[11px] leading-snug line-clamp-2 mt-0.5">
+                      {card.subtitle}
+                    </p>
+                    {card.videoId && (
+                      <div className="flex items-center gap-1 mt-1.5">
+                        <Play className="h-3 w-3" style={{ color: card.accent }} />
+                        <span className="text-[10px] font-bold" style={{ color: card.accent }}>Watch now</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
       {/* Video dialog (when banner is clicked) */}
