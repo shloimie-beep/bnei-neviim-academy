@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay, MessageSquare, Send, Heart, ThumbsUp, Bell, BellDot, History, Shield, ShieldCheck, ShieldAlert, TimerReset } from "lucide-react";
+import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay, MessageSquare, Send, Heart, ThumbsUp, Bell, BellDot, History, Shield, ShieldCheck, ShieldAlert, TimerReset, User } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
@@ -2393,6 +2393,15 @@ export default function DashboardPage() {
     onError: () => toast({ title: "Failed to save preference", variant: "destructive" }),
   });
 
+  // ── Family Name ─────────────────────────────────────────────────────────────
+  const [editingName, setEditingName] = useState(false);
+  const [nameInput, setNameInput] = useState("");
+  const nameMutation = useMutation({
+    mutationFn: (familyName: string) => apiRequest("PATCH", "/api/user/preferences", { familyName }),
+    onSuccess: () => { refreshUser(); setEditingName(false); toast({ title: "Name updated" }); },
+    onError: () => toast({ title: "Failed to update name", variant: "destructive" }),
+  });
+
   // ── Favorites ──────────────────────────────────────────────────────────────
   const { data: favoritedIds = [] } = useQuery<string[]>({
     queryKey: ["/api/user/favorites"],
@@ -2929,17 +2938,52 @@ export default function DashboardPage() {
                   <div className="space-y-6 py-4">
                     {/* Email Display */}
                     <div className="space-y-3">
-                      <h3 className="font-medium">Email</h3>
-                      <p className="text-sm text-muted-foreground" data-testid="text-user-email">
-                        {user?.email}
-                      </p>
+                      <h3 className="font-medium">Account</h3>
+                      <div className="rounded-lg border bg-muted/40 px-4 py-3 space-y-1">
+                        <p className="text-xs text-muted-foreground">Email</p>
+                        <p className="text-sm font-medium" data-testid="text-user-email">{user?.email}</p>
+                      </div>
+                    </div>
+
+                    {/* Family Name */}
+                    <div className="space-y-3">
+                      <h3 className="font-medium flex items-center gap-2">
+                        <User className="h-4 w-4" />
+                        Display Name
+                      </h3>
+                      {editingName ? (
+                        <div className="flex gap-2">
+                          <Input
+                            placeholder="e.g. The Goldberg Family"
+                            value={nameInput}
+                            onChange={(e) => setNameInput(e.target.value)}
+                            autoFocus
+                            data-testid="input-family-name"
+                          />
+                          <Button size="sm" onClick={() => nameMutation.mutate(nameInput)} disabled={nameMutation.isPending} data-testid="button-save-name">
+                            {nameMutation.isPending ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save"}
+                          </Button>
+                          <Button size="sm" variant="ghost" onClick={() => setEditingName(false)}>✕</Button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-between rounded-lg border bg-muted/40 px-4 py-3">
+                          <div>
+                            <p className="text-sm font-medium">{user?.familyName || <span className="text-muted-foreground italic">Not set</span>}</p>
+                            <p className="text-xs text-muted-foreground">Shown in your dashboard greeting</p>
+                          </div>
+                          <Button variant="ghost" size="sm" onClick={() => { setNameInput(user?.familyName || ""); setEditingName(true); }} data-testid="button-edit-name">
+                            <Edit2 className="h-4 w-4" />
+                          </Button>
+                        </div>
+                      )}
                     </div>
 
                     <div className="space-y-3">
                       <h3 className="font-medium flex items-center gap-2">
                         <Phone className="h-4 w-4" />
-                        Phone Number
+                        Hotline Phone Number
                       </h3>
+                      <p className="text-xs text-muted-foreground -mt-1">The phone number your child calls the hotline from at (605) 313-4793</p>
                       {registeredPhone ? (
                         <div className="p-4 border rounded-lg">
                           {isEditingPhone ? (

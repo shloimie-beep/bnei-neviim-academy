@@ -8099,14 +8099,18 @@ export async function registerRoutes(
     try {
       const userId = getAuthUserId(req);
       if (!userId) return res.status(401).json({ message: "Not authenticated" });
-      const { emailNotifications } = req.body;
-      if (typeof emailNotifications !== "boolean") {
-        return res.status(400).json({ message: "emailNotifications must be boolean" });
+      const { emailNotifications, familyName } = req.body;
+      if (emailNotifications !== undefined) {
+        if (typeof emailNotifications !== "boolean") {
+          return res.status(400).json({ message: "emailNotifications must be boolean" });
+        }
+        await db.execute(sql`UPDATE users SET email_notifications = ${emailNotifications} WHERE id = ${userId}`);
       }
-      await db.execute(sql`
-        UPDATE users SET email_notifications = ${emailNotifications} WHERE id = ${userId}
-      `);
-      res.json({ success: true, emailNotifications });
+      if (familyName !== undefined) {
+        const trimmed = typeof familyName === "string" ? familyName.trim() : null;
+        await db.execute(sql`UPDATE users SET family_name = ${trimmed || null} WHERE id = ${userId}`);
+      }
+      res.json({ success: true });
     } catch (error) {
       console.error("Update preferences error:", error);
       res.status(500).json({ message: "Failed to update preferences" });
