@@ -540,6 +540,37 @@ async function runDataMigrations() {
       log(`Stripe recovery skipped: ${stripeErr.message}`, 'migration');
     }
 
+    // ── Seed video categories ─────────────────────────────────────────────────
+    await pool.query(`
+      INSERT INTO video_categories (id, name, parent_category_id, sort_order, created_at) VALUES
+        ('d770cece-eacb-4269-86ad-e4e2963d301c', 'Gemara',              NULL,                                   0, NOW()),
+        ('ec6b73e4-491e-4f63-8249-cd0f0e2e23b2', 'Navi',               NULL,                                   0, NOW()),
+        ('8393d928-cdd2-4fcd-abe8-a2f0de2ff66c', 'Series / Ongoing',   NULL,                                   0, NOW()),
+        ('8375fb3b-3def-4a30-9b43-fa1b662a81bb', 'Stories',            NULL,                                   0, NOW()),
+        ('aebbeae8-bf78-4f51-8e2b-2f27b98faf61', 'OneDafOneDaf',       NULL,                                   1, NOW()),
+        ('284ef232-4099-4ffd-9c05-85ebce55079a', 'Shorts',             NULL,                                   2, NOW()),
+        ('3956a6c1-82e9-4e7f-bedb-3d3c122dbb54', 'Music Videos',       NULL,                                   3, NOW()),
+        ('69fa0d1a-9ed7-4324-9712-3f01ffa41b63', 'Films',              NULL,                                   4, NOW()),
+        ('f74c98ce-8e18-4084-bf17-9ada2ce44efe', 'Mishnayos',          NULL,                                   5, NOW()),
+        ('8abaa8dd-a9c5-4dbe-b085-19d9496885e1', 'Pirkei Avos',        NULL,                                   6, NOW()),
+        ('e76a9cac-713c-44f8-a380-fa502c384b0a', 'Interviews',         NULL,                                   7, NOW()),
+        ('347c9bc0-ca78-482b-99d5-99cb726a9731', 'Vloging with Reb Eli', NULL,                                 8, NOW()),
+        ('bdfad49d-10c4-431a-86f8-c0641398de42', 'Just Kidding Podcast', NULL,                                 9, NOW()),
+        ('11b066a7-dcb4-4b91-b3f7-c2726895191b', 'Shabbos Stories',   '8375fb3b-3def-4a30-9b43-fa1b662a81bb', 1, NOW()),
+        ('175cdc2d-7b66-4660-ba91-e2abd25bf24c', 'Yom Tov Stories',   '8375fb3b-3def-4a30-9b43-fa1b662a81bb', 2, NOW()),
+        ('224c5392-7225-46c3-966e-b903831db594', 'Emunah Stories',     '8375fb3b-3def-4a30-9b43-fa1b662a81bb', 3, NOW()),
+        ('bf1bef4e-27d7-4d39-81ae-ed67cef75a90', 'Middos & Character', '8375fb3b-3def-4a30-9b43-fa1b662a81bb', 4, NOW()),
+        ('7affc281-c9e1-4608-a1cf-9185915b8b1b', 'Tzaddikim Stories',  '8375fb3b-3def-4a30-9b43-fa1b662a81bb', 5, NOW()),
+        ('b85ac7b4-5f88-40d6-80fb-beacfb12c53b', 'Everyday Life',      '8375fb3b-3def-4a30-9b43-fa1b662a81bb', 6, NOW()),
+        ('4874ea86-60fe-403c-acf3-09181e916233', 'History & Miracles', '8375fb3b-3def-4a30-9b43-fa1b662a81bb', 7, NOW()),
+        ('aa2135a2-a04d-423d-841d-c1c0ead21f35', 'Eiruvin',            'f74c98ce-8e18-4084-bf17-9ada2ce44efe', 0, NOW()),
+        ('369b2c7d-4fc5-4b06-a0c4-0a1405adc860', 'Pesachim',           'f74c98ce-8e18-4084-bf17-9ada2ce44efe', 0, NOW()),
+        ('beb8f486-c657-4d27-8ac4-573140a875fd', 'Shabbos',            'f74c98ce-8e18-4084-bf17-9ada2ce44efe', 0, NOW()),
+        ('7c6379a1-8368-421b-8fab-3c282e185c88', 'Shekalim',           'f74c98ce-8e18-4084-bf17-9ada2ce44efe', 0, NOW()),
+        ('a08449d5-deef-449a-8c28-510efdc40226', 'Taanis',             'f74c98ce-8e18-4084-bf17-9ada2ce44efe', 0, NOW())
+      ON CONFLICT (id) DO NOTHING
+    `);
+
     // ── Restore whitelisted emails ────────────────────────────────────────────
     const whitelistEmails = [
       'shlomoaron@gmail.com','jbaer1981@gmail.com','budikdavid@gmail.com','rhazan613@gmail.com',
