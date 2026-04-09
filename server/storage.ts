@@ -74,6 +74,9 @@ import {
   directMessages,
   type DirectMessage,
   type InsertDirectMessage,
+  parentalControls,
+  watchTimeLogs,
+  type ParentalControls,
 } from "@shared/schema";
 
 export interface IStorage {
@@ -1234,6 +1237,62 @@ export class DatabaseStorage implements IStorage {
   async sendDirectMessage(data: { userId: string; text: string; fromAdmin: boolean }): Promise<DirectMessage> {
     const [msg] = await db.insert(directMessages).values(data).returning();
     return msg;
+  }
+
+  // Parental Controls
+  async getParentalControls(userId: string): Promise<ParentalControls | undefined> {
+    const [row] = await db.select().from(parentalControls).where(eq(parentalControls.userId, userId));
+    return row;
+  }
+
+  async setParentalControls(userId: string, data: {
+    isEnabled?: boolean;
+    pinHash?: string;
+    parentEmail?: string;
+    timeLimitMinutes?: number;
+    timePeriod?: string;
+    categoryIds?: string[] | null;
+  }): Promise<ParentalControls> {
+    const existing = await this.getParentalControls(userId);
+    if (existing) {
+      const [updated] = await db.update(parentalControls)
+        .set({ ...data, updatedAt: new Date() })
+        .where(eq(parentalControls.userId, userId))
+        .returning();
+      return updated;
+    } else {
+      const [created] = await db.insert(parentalControls)
+        .values({ userId, isEnabled: true, pinHash: data.pinHash!, parentEmail: data.parentEmail!, timeLimitMinutes: data.timeLimitMinutes!, timePeriod: data.timePeriod!, categoryIds: data.categoryIds ?? null })
+        .returning();
+      return created;
+    }
+  }
+
+  async deleteParentalControls(userId: string): Promise<void> {
+    await db.delete(parentalControls).where(eq(parentalControls.userId, userId));
+  }
+
+  async logWatchTime(userId: string, videoId: string | null, seconds: number, logDate: string): Promise<void> {
+    if (seconds <= 0) return;
+    await db.insert(watchTimeLogs).values({ userId, videoId: videoId ?? null, secondsWatched: seconds, logDate });
+  }
+
+  async getWatchTimeUsed(userId: string, period: string): Promise<number> {
+    const now = new Date();
+    let startDate: string;
+    if (period === 'day') {
+      startDate = now.toISOString().split('T')[0];
+    } else if (period === 'week') {
+      const d = new Date(now);
+      d.setDate(d.getDate() - d.getDay());
+      startDate = d.toISOString().split('T')[0];
+    } else {
+      startDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+    }
+    const result = await db.select({ total: sql<number>`COALESCE(SUM(${watchTimeLogs.secondsWatched}), 0)` })
+      .from(watchTimeLogs)
+      .where(and(eq(watchTimeLogs.userId, userId), gte(watchTimeLogs.logDate, startDate)));
+    return Number(result[0]?.total ?? 0);
   }
 
   async markMessagesRead(userId: string, fromAdmin: boolean): Promise<void> {

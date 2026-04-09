@@ -120,6 +120,16 @@ The application uses a monorepo architecture, separating the frontend and backen
 - `bcryptjs`
 - `zod`
 
+### Parental Controls
+- PIN-protected screen-time limits per account (daily / weekly / monthly).
+- Tables: `parental_controls` (settings + bcrypt-hashed PIN), `watch_time_logs` (per-day seconds tracked).
+- Managed via Account Settings dialog → "Parental Controls" section.
+- When a time limit is reached, video card thumbnails show a lock overlay; clicking any locked video shows a PIN unlock dialog.
+- Parent enters PIN → unlocked for 30 minutes (stored in React state, resets on page refresh).
+- Watch time logged every 30 seconds while a video is open, and on close for the remainder.
+- Category restriction optional: limit can apply to all categories or a specific subset.
+- Routes: `GET /api/parental-controls`, `POST /api/parental-controls`, `POST /api/parental-controls/disable`, `POST /api/parental-controls/verify-pin`, `POST /api/watch-time`.
+
 ### Environment Variables
 - `DATABASE_URL`
 - `SESSION_SECRET` (critical for session and JWT)

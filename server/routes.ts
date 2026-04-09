@@ -8279,5 +8279,93 @@ export async function registerRoutes(
     }
   });
 
+  // ── Parental Controls ─────────────────────────────────────────────────────
+
+  // GET current parental controls settings + time used this period
+  app.get("/api/parental-controls", requireMobileOrSessionAuth, async (req: any, res) => {
+    try {
+      const userId = req.user?.id || req.session?.userId;
+      const controls = await storage.getParentalControls(userId);
+      if (!controls) return res.json(null);
+      const timeUsedSeconds = controls.isEnabled
+        ? await storage.getWatchTimeUsed(userId, controls.timePeriod)
+        : 0;
+      const { pinHash, ...safe } = controls;
+      res.json({ ...safe, timeUsedSeconds });
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  // POST set up or update parental controls
+  app.post("/api/parental-controls", requireMobileOrSessionAuth, async (req: any, res) => {
+    try {
+      const userId = req.user?.id || req.session?.userId;
+      const { pin, currentPin, parentEmail, timeLimitMinutes, timePeriod, categoryIds } = req.body;
+      if (!pin || !parentEmail || !timeLimitMinutes || !timePeriod) {
+        return res.status(400).json({ message: "pin, parentEmail, timeLimitMinutes and timePeriod are required" });
+      }
+      const existing = await storage.getParentalControls(userId);
+      if (existing) {
+        if (!currentPin) return res.status(400).json({ message: "Current PIN required to update settings" });
+        const valid = await bcrypt.compare(String(currentPin), existing.pinHash);
+        if (!valid) return res.status(401).json({ message: "Incorrect current PIN" });
+      }
+      const pinHash = await bcrypt.hash(String(pin), 10);
+      const controls = await storage.setParentalControls(userId, {
+        pinHash, parentEmail, timeLimitMinutes: Number(timeLimitMinutes),
+        timePeriod, categoryIds: categoryIds && categoryIds.length > 0 ? categoryIds : null,
+        isEnabled: true,
+      });
+      const { pinHash: _ph, ...safe } = controls;
+      res.json(safe);
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  // POST disable parental controls (requires PIN)
+  app.post("/api/parental-controls/disable", requireMobileOrSessionAuth, async (req: any, res) => {
+    try {
+      const userId = req.user?.id || req.session?.userId;
+      const { pin } = req.body;
+      const controls = await storage.getParentalControls(userId);
+      if (!controls) return res.status(404).json({ message: "No parental controls set up" });
+      const valid = await bcrypt.compare(String(pin), controls.pinHash);
+      if (!valid) return res.status(401).json({ message: "Incorrect PIN" });
+      await storage.deleteParentalControls(userId);
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  // POST verify PIN (for temporary unlock)
+  app.post("/api/parental-controls/verify-pin", requireMobileOrSessionAuth, async (req: any, res) => {
+    try {
+      const userId = req.user?.id || req.session?.userId;
+      const { pin } = req.body;
+      const controls = await storage.getParentalControls(userId);
+      if (!controls) return res.json({ valid: false });
+      const valid = await bcrypt.compare(String(pin), controls.pinHash);
+      res.json({ valid });
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
+  // POST log watch time
+  app.post("/api/watch-time", requireMobileOrSessionAuth, async (req: any, res) => {
+    try {
+      const userId = req.user?.id || req.session?.userId;
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const { videoId, seconds, logDate } = req.body;
+      await storage.logWatchTime(userId, videoId || null, Number(seconds) || 0, logDate || new Date().toISOString().split('T')[0]);
+      res.json({ success: true });
+    } catch (err: any) {
+      res.status(500).json({ message: err.message });
+    }
+  });
+
   return httpServer;
 }

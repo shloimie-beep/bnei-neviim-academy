@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay, MessageSquare, Send, Heart, ThumbsUp, Bell, BellDot, History } from "lucide-react";
+import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay, MessageSquare, Send, Heart, ThumbsUp, Bell, BellDot, History, Shield, ShieldCheck, ShieldAlert, TimerReset } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
@@ -18,7 +18,7 @@ import { useAuth, getAuthHeaders, getStoredAuthToken } from "@/lib/auth-context"
 import { ThemeToggle } from "@/components/theme-toggle";
 import { DocumentViewer } from "@/components/document-viewer";
 import { apiRequest, queryClient } from "@/lib/queryClient";
-import { useState, useRef, useMemo, useEffect } from "react";
+import { useState, useRef, useMemo, useEffect, createContext, useContext } from "react";
 import type { PhoneNumber, Video as VideoType, VideoCategory, Document, Album, AlbumTrack } from "@shared/schema";
 
 const countryCodes = [
@@ -1235,6 +1235,23 @@ function SpotlightCard({ video, theme, onView }: { video: VideoType; theme: Cate
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// Parental Controls Context — shared with VideoCard
+type ParentalControlsCtx = {
+  isEnabled: boolean;
+  isVideoBlocked: (categoryId?: string | null) => boolean;
+  requestUnlock: (callback: () => void) => void;
+  timeUsedSeconds: number;
+  timeLimitSeconds: number;
+  timePeriod: string;
+};
+const ParentalControlsContext = createContext<ParentalControlsCtx>({
+  isEnabled: false,
+  isVideoBlocked: () => false,
+  requestUnlock: (cb) => cb(),
+  timeUsedSeconds: 0,
+  timeLimitSeconds: 0,
+  timePeriod: 'day',
+});
 
 function VideoCard({ video, isNew, onView, categoryName, variant = "default" }: { video: VideoType; isNew?: boolean; onView?: () => void; categoryName?: string; variant?: CardVariant }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -1275,12 +1292,42 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default" }: 
     ? `/api/videos/${video.id}/thumbnail?v=${cacheBust}`
     : null;
 
+  const parental = useContext(ParentalControlsContext);
+  const isLocked = parental.isVideoBlocked(video.categoryId);
+
   const handleOpenChange = (open: boolean) => {
+    if (open && isLocked) {
+      parental.requestUnlock(() => {
+        setIsOpen(true);
+        if (onView) onView();
+      });
+      return;
+    }
     setIsOpen(open);
     if (open && onView) {
       onView();
     }
   };
+
+  // Track watch time while video is open
+  const watchStartRef = useRef<number>(0);
+  useEffect(() => {
+    if (!isOpen) return;
+    watchStartRef.current = Date.now();
+    const logDate = new Date().toISOString().split('T')[0];
+    const interval = setInterval(() => {
+      apiRequest("POST", "/api/watch-time", { videoId: video.id, seconds: 30, logDate });
+      queryClient.invalidateQueries({ queryKey: ["/api/parental-controls"] });
+    }, 30000);
+    return () => {
+      clearInterval(interval);
+      const elapsed = Math.round((Date.now() - watchStartRef.current) / 1000) % 30;
+      if (elapsed > 0) {
+        apiRequest("POST", "/api/watch-time", { videoId: video.id, seconds: elapsed, logDate });
+        queryClient.invalidateQueries({ queryKey: ["/api/parental-controls"] });
+      }
+    };
+  }, [isOpen]);
 
   const aspectClass = variant === "portrait" ? "aspect-[9/16]"
     : variant === "square" ? "aspect-square"
@@ -1390,11 +1437,20 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default" }: 
                 {durationText}
               </div>
             )}
-            <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-              <div className="h-14 w-14 rounded-full bg-[#EDE518] flex items-center justify-center shadow-[0_0_20px_rgba(237,229,24,0.5)]">
-                <Play className="h-6 w-6 text-black ml-1" />
+            {isLocked ? (
+              <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center gap-1.5">
+                <div className="h-12 w-12 rounded-full bg-[#EDE518]/10 border border-[#EDE518]/40 flex items-center justify-center">
+                  <Lock className="h-5 w-5 text-[#EDE518]" />
+                </div>
+                <span className="text-[10px] font-bold text-[#EDE518]/80 uppercase tracking-widest">Time limit reached</span>
               </div>
-            </div>
+            ) : (
+              <div className="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="h-14 w-14 rounded-full bg-[#EDE518] flex items-center justify-center shadow-[0_0_20px_rgba(237,229,24,0.5)]">
+                  <Play className="h-6 w-6 text-black ml-1" />
+                </div>
+              </div>
+            )}
           </div>
           {variant !== "square" && variant !== "portrait" && (
             <CardContent className="p-3">
@@ -2111,8 +2167,27 @@ export default function DashboardPage() {
   const [trendingCanScrollLeft, setTrendingCanScrollLeft] = useState(false);
   const [trendingCanScrollRight, setTrendingCanScrollRight] = useState(true);
   const [showTrending, setShowTrending] = useState(true);
-  
-  // Fuzzy search helper - normalizes and checks if search terms appear in text
+
+  // ── Parental Controls state ────────────────────────────────────────────────
+  const [isPinUnlockOpen, setIsPinUnlockOpen] = useState(false);
+  const [pinUnlockEntry, setPinUnlockEntry] = useState("");
+  const [pinUnlockError, setPinUnlockError] = useState("");
+  const [pinUnlockCallback, setPinUnlockCallback] = useState<(() => void) | null>(null);
+  const [parentalUnlockExpiry, setParentalUnlockExpiry] = useState<number | null>(null);
+  const [isParentalSetupOpen, setIsParentalSetupOpen] = useState(false);
+  const [pcSetupStep, setPcSetupStep] = useState<'form' | 'confirm'>('form');
+  const [pcEmail, setPcEmail] = useState("");
+  const [pcPin, setPcPin] = useState("");
+  const [pcPinConfirm, setPcPinConfirm] = useState("");
+  const [pcCurrentPin, setPcCurrentPin] = useState("");
+  const [pcLimitHours, setPcLimitHours] = useState("1");
+  const [pcPeriod, setPcPeriod] = useState("day");
+  const [pcCategoryAll, setPcCategoryAll] = useState(true);
+  const [pcCategoryIds, setPcCategoryIds] = useState<string[]>([]);
+  const [isDisablingParental, setIsDisablingParental] = useState(false);
+  const [pcDisablePin, setPcDisablePin] = useState("");
+
+  // ── Fuzzy search helper - normalizes and checks if search terms appear in text
   const fuzzyMatch = (text: string, query: string): boolean => {
     if (!query.trim()) return true;
     const normalizedText = text.toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -2168,6 +2243,82 @@ export default function DashboardPage() {
   const { data: categories = [] } = useQuery<VideoCategory[]>({
     queryKey: ["/api/video-categories"],
   });
+
+  // Parental Controls query
+  const { data: parentalData } = useQuery<any>({
+    queryKey: ["/api/parental-controls"],
+    refetchInterval: 60_000,
+    enabled: hasActiveSubscription && user?.role !== "admin",
+  });
+
+  const isParentalUnlocked = parentalUnlockExpiry !== null && Date.now() < parentalUnlockExpiry;
+
+  const isVideoBlocked = (categoryId?: string | null): boolean => {
+    if (!parentalData?.isEnabled) return false;
+    if (isParentalUnlocked) return false;
+    const timeLimitSeconds = (parentalData.timeLimitMinutes ?? 0) * 60;
+    const timeUsedSeconds = parentalData.timeUsedSeconds ?? 0;
+    if (timeUsedSeconds < timeLimitSeconds) return false;
+    // Check if restriction applies to this category
+    if (!parentalData.categoryIds || parentalData.categoryIds.length === 0) return true;
+    return !!categoryId && parentalData.categoryIds.includes(categoryId);
+  };
+
+  const requestUnlock = (callback: () => void) => {
+    setPinUnlockCallback(() => callback);
+    setPinUnlockEntry("");
+    setPinUnlockError("");
+    setIsPinUnlockOpen(true);
+  };
+
+  const verifyPinMutation = useMutation({
+    mutationFn: (pin: string) => apiRequest("POST", "/api/parental-controls/verify-pin", { pin }),
+    onSuccess: async (data: any) => {
+      if (data.valid) {
+        setParentalUnlockExpiry(Date.now() + 30 * 60 * 1000);
+        setIsPinUnlockOpen(false);
+        if (pinUnlockCallback) {
+          pinUnlockCallback();
+          setPinUnlockCallback(null);
+        }
+        toast({ title: "Unlocked for 30 minutes" });
+      } else {
+        setPinUnlockError("Incorrect PIN. Please try again.");
+      }
+    },
+    onError: () => setPinUnlockError("Something went wrong. Try again."),
+  });
+
+  const setupParentalMutation = useMutation({
+    mutationFn: (data: any) => apiRequest("POST", "/api/parental-controls", data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/parental-controls"] });
+      setIsParentalSetupOpen(false);
+      setPcPin(""); setPcPinConfirm(""); setPcCurrentPin(""); setPcEmail("");
+      toast({ title: "Parental controls saved" });
+    },
+    onError: (err: any) => toast({ title: err.message || "Failed to save parental controls", variant: "destructive" }),
+  });
+
+  const disableParentalMutation = useMutation({
+    mutationFn: (pin: string) => apiRequest("POST", "/api/parental-controls/disable", { pin }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/parental-controls"] });
+      setIsDisablingParental(false);
+      setPcDisablePin("");
+      toast({ title: "Parental controls disabled" });
+    },
+    onError: (err: any) => toast({ title: err.message || "Incorrect PIN", variant: "destructive" }),
+  });
+
+  const parentalCtxValue: ParentalControlsCtx = {
+    isEnabled: !!parentalData?.isEnabled,
+    isVideoBlocked,
+    requestUnlock,
+    timeUsedSeconds: parentalData?.timeUsedSeconds ?? 0,
+    timeLimitSeconds: (parentalData?.timeLimitMinutes ?? 0) * 60,
+    timePeriod: parentalData?.timePeriod ?? 'day',
+  };
 
   // Top-level categories (no parent) for display
   const topLevelCategories = useMemo(() => {
@@ -2568,6 +2719,143 @@ export default function DashboardPage() {
   const registeredPhone = phoneNumbers?.[0];
 
   return (
+    <ParentalControlsContext.Provider value={parentalCtxValue}>
+    {/* ── PIN Unlock Dialog ────────────────────────────────────────────── */}
+    <Dialog open={isPinUnlockOpen} onOpenChange={(o) => { setIsPinUnlockOpen(o); if (!o) setPinUnlockCallback(null); }}>
+      <DialogContent className="max-w-xs">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2"><Shield className="h-5 w-5 text-[#EDE518]" />Parent Unlock</DialogTitle>
+          <DialogDescription>Enter your 4-digit parental PIN to unlock videos for 30 minutes.</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-3 py-2">
+          <Input
+            type="password"
+            inputMode="numeric"
+            maxLength={6}
+            placeholder="Enter PIN"
+            value={pinUnlockEntry}
+            onChange={(e) => { setPinUnlockEntry(e.target.value); setPinUnlockError(""); }}
+            onKeyDown={(e) => { if (e.key === "Enter" && pinUnlockEntry) verifyPinMutation.mutate(pinUnlockEntry); }}
+            data-testid="input-parental-pin-unlock"
+            autoFocus
+          />
+          {pinUnlockError && <p className="text-xs text-red-400">{pinUnlockError}</p>}
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setIsPinUnlockOpen(false)}>Cancel</Button>
+          <Button onClick={() => verifyPinMutation.mutate(pinUnlockEntry)} disabled={!pinUnlockEntry || verifyPinMutation.isPending} data-testid="button-parental-pin-submit">
+            {verifyPinMutation.isPending && <Loader2 className="h-4 w-4 mr-1 animate-spin" />}
+            Unlock
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
+    {/* ── Parental Controls Setup Dialog ──────────────────────────────── */}
+    <Dialog open={isParentalSetupOpen} onOpenChange={setIsParentalSetupOpen}>
+      <DialogContent className="max-w-md overflow-y-auto max-h-[90vh]">
+        <DialogHeader>
+          <DialogTitle className="flex items-center gap-2">
+            <ShieldCheck className="h-5 w-5 text-[#EDE518]" />
+            {parentalData ? "Edit Parental Controls" : "Set Up Parental Controls"}
+          </DialogTitle>
+          <DialogDescription>Set a daily, weekly, or monthly screen-time limit. Kids can't bypass it without your PIN.</DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4 py-2">
+          {parentalData && (
+            <div>
+              <Label>Current PIN (required to make changes)</Label>
+              <Input type="password" inputMode="numeric" maxLength={6} placeholder="Your current PIN" value={pcCurrentPin} onChange={(e) => setPcCurrentPin(e.target.value)} data-testid="input-pc-current-pin" />
+            </div>
+          )}
+          <div>
+            <Label>Parent Email</Label>
+            <Input type="email" placeholder="parent@example.com" value={pcEmail} onChange={(e) => setPcEmail(e.target.value)} data-testid="input-pc-email" />
+            <p className="text-xs text-muted-foreground mt-1">For your reference only — stored with the settings</p>
+          </div>
+          <div>
+            <Label>New PIN (4–6 digits)</Label>
+            <Input type="password" inputMode="numeric" maxLength={6} placeholder="New PIN" value={pcPin} onChange={(e) => setPcPin(e.target.value)} data-testid="input-pc-pin" />
+          </div>
+          <div>
+            <Label>Confirm New PIN</Label>
+            <Input type="password" inputMode="numeric" maxLength={6} placeholder="Confirm PIN" value={pcPinConfirm} onChange={(e) => setPcPinConfirm(e.target.value)} data-testid="input-pc-pin-confirm" />
+          </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <Label>Time Limit</Label>
+              <Select value={pcLimitHours} onValueChange={setPcLimitHours}>
+                <SelectTrigger data-testid="select-pc-limit"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {["0.25","0.5","1","1.5","2","3","4","5","6","8","10","12","15","20"].map(h => (
+                    <SelectItem key={h} value={h}>
+                      {Number(h) < 1 ? `${Number(h)*60} min` : `${h} hr${Number(h) !== 1 ? 's' : ''}`}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div>
+              <Label>Per Period</Label>
+              <Select value={pcPeriod} onValueChange={setPcPeriod}>
+                <SelectTrigger data-testid="select-pc-period"><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="day">Per Day</SelectItem>
+                  <SelectItem value="week">Per Week</SelectItem>
+                  <SelectItem value="month">Per Month</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <div>
+            <Label className="mb-2 block">Apply limit to</Label>
+            <div className="flex gap-3">
+              <Button size="sm" variant={pcCategoryAll ? "default" : "outline"} onClick={() => { setPcCategoryAll(true); setPcCategoryIds([]); }} data-testid="button-pc-all-categories">All Categories</Button>
+              <Button size="sm" variant={!pcCategoryAll ? "default" : "outline"} onClick={() => setPcCategoryAll(false)} data-testid="button-pc-specific-categories">Specific Categories</Button>
+            </div>
+            {!pcCategoryAll && (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {categories.filter(c => !c.parentCategoryId).map(cat => (
+                  <button
+                    key={cat.id}
+                    onClick={() => setPcCategoryIds(prev => prev.includes(cat.id) ? prev.filter(id => id !== cat.id) : [...prev, cat.id])}
+                    className={`text-xs px-3 py-1.5 rounded-full border transition-all ${pcCategoryIds.includes(cat.id) ? 'bg-[#EDE518] text-black border-[#EDE518]' : 'border-white/20 text-white/70 hover:border-white/40'}`}
+                    data-testid={`button-pc-cat-${cat.id}`}
+                  >
+                    {cat.name}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setIsParentalSetupOpen(false)}>Cancel</Button>
+          <Button
+            onClick={() => {
+              if (pcPin !== pcPinConfirm) { toast({ title: "PINs do not match", variant: "destructive" }); return; }
+              if (pcPin.length < 4) { toast({ title: "PIN must be at least 4 digits", variant: "destructive" }); return; }
+              if (!pcEmail) { toast({ title: "Parent email is required", variant: "destructive" }); return; }
+              const limitMinutes = Math.round(Number(pcLimitHours) * 60);
+              setupParentalMutation.mutate({
+                pin: pcPin,
+                currentPin: pcCurrentPin || undefined,
+                parentEmail: pcEmail,
+                timeLimitMinutes: limitMinutes,
+                timePeriod: pcPeriod,
+                categoryIds: pcCategoryAll ? [] : pcCategoryIds,
+              });
+            }}
+            disabled={setupParentalMutation.isPending}
+            data-testid="button-pc-save"
+          >
+            {setupParentalMutation.isPending && <Loader2 className="h-4 w-4 mr-1 animate-spin" />}
+            Save Controls
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+
     <div className="min-h-screen" style={{background: "radial-gradient(ellipse at 15% 10%, rgba(237,229,24,0.13) 0%, transparent 45%), radial-gradient(ellipse at 85% 15%, rgba(8,119,156,0.18) 0%, transparent 45%), radial-gradient(ellipse at 75% 60%, rgba(237,229,24,0.09) 0%, transparent 40%), radial-gradient(ellipse at 20% 75%, rgba(8,119,156,0.14) 0%, transparent 45%), radial-gradient(ellipse at 50% 40%, rgba(8,50,120,0.20) 0%, transparent 60%), linear-gradient(160deg, #060e20 0%, #071830 40%, #060f1e 70%, #07101f 100%)"}}>
       <header className="sticky top-0 z-50 border-b border-[#EDE518]/20" style={{background: "linear-gradient(90deg, #040d1a 0%, #081630 50%, #040d1a 100%)", backdropFilter: "blur(12px)"}}>
         <div className="container mx-auto px-4 py-4 flex items-center justify-between gap-4">
@@ -2626,7 +2914,7 @@ export default function DashboardPage() {
                     Account Settings
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-md">
+                <DialogContent className="max-w-md overflow-y-auto max-h-[85vh]">
                   <DialogHeader>
                     <DialogTitle>Account Settings</DialogTitle>
                     <DialogDescription>
@@ -2823,6 +3111,67 @@ export default function DashboardPage() {
                           data-testid="button-change-password"
                         >
                           Change Password
+                        </Button>
+                      )}
+                    </div>
+
+                    {/* Parental Controls */}
+                    <div className="space-y-3">
+                      <h3 className="font-medium flex items-center gap-2">
+                        <Shield className="h-4 w-4" />
+                        Parental Controls
+                        {parentalData?.isEnabled && <Badge className="text-xs bg-[#EDE518] text-black">On</Badge>}
+                      </h3>
+                      {parentalData ? (
+                        <div className="rounded-lg border border-[#EDE518]/20 bg-[#EDE518]/5 p-3 space-y-2">
+                          <div className="flex items-center justify-between">
+                            <div>
+                              <p className="text-sm font-medium">
+                                {parentalData.timeLimitMinutes >= 60
+                                  ? `${Math.floor(parentalData.timeLimitMinutes/60)}h${parentalData.timeLimitMinutes%60>0?` ${parentalData.timeLimitMinutes%60}m`:''}`
+                                  : `${parentalData.timeLimitMinutes}m`} per {parentalData.timePeriod}
+                              </p>
+                              <p className="text-xs text-muted-foreground">
+                                {parentalData.categoryIds?.length > 0 ? `${parentalData.categoryIds.length} category restriction(s)` : "All categories"}
+                              </p>
+                            </div>
+                            <ShieldCheck className="h-5 w-5 text-[#EDE518]" />
+                          </div>
+                          <div className="space-y-1">
+                            <div className="flex justify-between text-xs text-muted-foreground">
+                              <span>Used this {parentalData.timePeriod}</span>
+                              <span>{Math.floor((parentalData.timeUsedSeconds||0)/60)}m / {parentalData.timeLimitMinutes}m</span>
+                            </div>
+                            <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                              <div className="h-full bg-[#EDE518] rounded-full transition-all" style={{width: `${Math.min(100, ((parentalData.timeUsedSeconds||0) / (parentalData.timeLimitMinutes*60)) * 100)}%`}} />
+                            </div>
+                          </div>
+                          <div className="flex gap-2 pt-1">
+                            <Button size="sm" variant="outline" className="flex-1" onClick={() => {
+                              setPcEmail(parentalData.parentEmail || "");
+                              setPcLimitHours(String(parentalData.timeLimitMinutes/60));
+                              setPcPeriod(parentalData.timePeriod);
+                              setPcCategoryAll(!parentalData.categoryIds?.length);
+                              setPcCategoryIds(parentalData.categoryIds || []);
+                              setIsParentalSetupOpen(true);
+                            }} data-testid="button-edit-parental">Edit</Button>
+                            {isDisablingParental ? (
+                              <div className="flex gap-2 flex-1">
+                                <Input type="password" inputMode="numeric" maxLength={6} placeholder="Enter PIN" value={pcDisablePin} onChange={(e) => setPcDisablePin(e.target.value)} className="text-sm h-8" />
+                                <Button size="sm" variant="destructive" onClick={() => disableParentalMutation.mutate(pcDisablePin)} disabled={disableParentalMutation.isPending || !pcDisablePin} data-testid="button-confirm-disable-parental">
+                                  {disableParentalMutation.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : "Off"}
+                                </Button>
+                                <Button size="sm" variant="ghost" onClick={() => { setIsDisablingParental(false); setPcDisablePin(""); }}>✕</Button>
+                              </div>
+                            ) : (
+                              <Button size="sm" variant="outline" className="text-red-400 border-red-400/30 hover:bg-red-400/10" onClick={() => setIsDisablingParental(true)} data-testid="button-disable-parental">Disable</Button>
+                            )}
+                          </div>
+                        </div>
+                      ) : (
+                        <Button variant="outline" className="w-full" onClick={() => { setPcEmail(""); setPcPin(""); setPcPinConfirm(""); setPcCurrentPin(""); setPcLimitHours("1"); setPcPeriod("day"); setPcCategoryAll(true); setPcCategoryIds([]); setIsParentalSetupOpen(true); }} data-testid="button-setup-parental">
+                          <ShieldAlert className="h-4 w-4 mr-2" />
+                          Set Up Parental Controls
                         </Button>
                       )}
                     </div>
@@ -3624,5 +3973,6 @@ export default function DashboardPage() {
         </div>
       </main>
     </div>
+    </ParentalControlsContext.Provider>
   );
 }

@@ -348,6 +348,34 @@ async function runDataMigrations() {
       }
     }
 
+    // ── Schema: parental_controls table ──────────────────────────────────────
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS parental_controls (
+        id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid()::varchar,
+        user_id VARCHAR NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+        is_enabled BOOLEAN NOT NULL DEFAULT TRUE,
+        pin_hash TEXT NOT NULL,
+        parent_email TEXT NOT NULL,
+        time_limit_minutes INTEGER NOT NULL,
+        time_period TEXT NOT NULL,
+        category_ids TEXT[],
+        created_at TIMESTAMP DEFAULT NOW(),
+        updated_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+
+    // ── Schema: watch_time_logs table ────────────────────────────────────────
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS watch_time_logs (
+        id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid()::varchar,
+        user_id VARCHAR NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        video_id VARCHAR,
+        seconds_watched INTEGER NOT NULL DEFAULT 0,
+        log_date TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+
     log('Data migrations complete', 'migration');
   } catch (err: any) {
     log(`Data migration error: ${err.message}`, 'migration');

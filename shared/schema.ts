@@ -458,6 +458,32 @@ export const videoLikes = pgTable("video_likes", {
 
 export const insertVideoLikeSchema = createInsertSchema(videoLikes).omit({ id: true, createdAt: true });
 
+// Parental Controls — one row per user, PIN-protected time limits
+export const parentalControls = pgTable("parental_controls", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().unique().references(() => users.id, { onDelete: "cascade" }),
+  isEnabled: boolean("is_enabled").default(true).notNull(),
+  pinHash: text("pin_hash").notNull(),
+  parentEmail: text("parent_email").notNull(),
+  timeLimitMinutes: integer("time_limit_minutes").notNull(),
+  timePeriod: text("time_period").notNull(), // 'day' | 'week' | 'month'
+  categoryIds: text("category_ids").array(), // null = all categories restricted
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const insertParentalControlsSchema = createInsertSchema(parentalControls).omit({ id: true, createdAt: true, updatedAt: true, pinHash: true });
+
+// Watch time logs — daily seconds watched per user
+export const watchTimeLogs = pgTable("watch_time_logs", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").notNull().references(() => users.id, { onDelete: "cascade" }),
+  videoId: varchar("video_id"),
+  secondsWatched: integer("seconds_watched").notNull().default(0),
+  logDate: text("log_date").notNull(), // 'YYYY-MM-DD'
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 // In-app notifications
 export const notifications = pgTable("notifications", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
@@ -528,6 +554,9 @@ export type DashboardBanner = typeof dashboardBanners.$inferSelect;
 export type InsertDashboardBanner = z.infer<typeof insertDashboardBannerSchema>;
 export type DirectMessage = typeof directMessages.$inferSelect;
 export type InsertDirectMessage = z.infer<typeof insertDirectMessageSchema>;
+export type ParentalControls = typeof parentalControls.$inferSelect;
+export type InsertParentalControls = z.infer<typeof insertParentalControlsSchema>;
+export type WatchTimeLog = typeof watchTimeLogs.$inferSelect;
 
 // Validation schemas for forms
 export const loginSchema = z.object({
