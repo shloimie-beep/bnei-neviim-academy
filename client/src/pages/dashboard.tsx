@@ -2938,10 +2938,10 @@ export default function DashboardPage() {
 
   // ── Mood Filter Logic ──────────────────────────────────────────────────────
   const MOOD_KEYWORDS: Record<string, string[]> = {
-    funny:  ["joke","funny","comedy","laugh","kidding","humor","stand","silly","absurd"],
-    crazy:  ["crazy","wild","extreme","sport","adventure","travel","game","trip","vacation","stunt","challenge"],
-    smart:  ["torah","gemara","shiur","parasha","parshas","class","learning","davar","navi","shoftim","eiruvin","yomi","daf","halacha","musar","hashkafa"],
-    chill:  ["music","chill","story","stories","relax","album","podcast","radio","song","bedtime","peaceful","calm"],
+    funny:  ["joke","funny","comedy","laugh","kidding","humor","silly","purim","shpiel","prank","epic","just kidding","films","film","shorts","vlog"],
+    crazy:  ["life","everyday","experiment","batting","football","sport","adventure","wild","travel","trip","game","challenge","stunt","vacation","history","miracles","interview","series","ongoing"],
+    smart:  ["torah","gemara","shiur","parasha","parshas","navi","shoftim","eiruvin","eruvin","yomi","daf","halacha","musar","hashkafa","mishna","mishnayos","pirkei","avos","middos","character","shabbos","pesachim","taanis","shekalim","learning"],
+    chill:  ["music","chill","story","stories","emunah","tzaddikim","yom tov","relax","album","song","peaceful","calm","searching","yearning","spiritual","lila"],
   };
 
   const moodMatchedVideoIds = useMemo<Set<string> | null>(() => {
@@ -2959,8 +2959,6 @@ export default function DashboardPage() {
       const titleMatch = keywords.some(kw => (v.title || "").toLowerCase().includes(kw));
       if (inMatchedCat || titleMatch) matchedVideoIds.add(v.id);
     });
-    // If almost nothing matches, return all (don't filter too aggressively)
-    if (matchedVideoIds.size < 3) return null;
     return matchedVideoIds;
   }, [moodFilter, videos, categories]);
 
@@ -3354,7 +3352,7 @@ export default function DashboardPage() {
 
         <div className="px-6 py-4 space-y-5">
           {/* How to activate — step-by-step slideshow */}
-          {!parentalData && (() => {
+          {!parentalData?.isEnabled && (() => {
             const PC_STEPS = [
               { emoji: "⚙️", title: "Open Settings", text: "Tap the gear icon in the top right corner of the dashboard." },
               { emoji: "🛡️", title: "Tap Parental Controls", text: "Find 'Parental Controls' in the settings menu and tap it." },
@@ -4461,7 +4459,7 @@ export default function DashboardPage() {
               )}
               
               {/* ── Full Mood Page — takes over when a mood is selected ── */}
-              {selectedMood && moodMatchedVideoIds && !searchQuery.trim() && !selectedCategory && (() => {
+              {selectedMood && !searchQuery.trim() && !selectedCategory && (() => {
                 const MOOD_META: Record<string, { emoji: string; label: string; tagline: string; color: string; bg: string }> = {
                   funny: { emoji: "😂", label: "Funny Stuff", tagline: "Jokes, comedy & everything that'll make you crack up!", color: "#f59e0b", bg: "linear-gradient(135deg, #1a0f00 0%, #0d1828 60%)" },
                   crazy: { emoji: "🤪", label: "Wild & Crazy", tagline: "Adventures, sports & totally out-there moments!", color: "#8b5cf6", bg: "linear-gradient(135deg, #0d0a1a 0%, #0d1828 60%)" },
@@ -4469,7 +4467,9 @@ export default function DashboardPage() {
                   chill: { emoji: "😌", label: "Chill Out", tagline: "Music, calm stories & good vibes only.", color: "#10b981", bg: "linear-gradient(135deg, #001a10 0%, #0d1828 60%)" },
                 };
                 const meta = MOOD_META[selectedMood] || MOOD_META.funny;
-                const moodVideos = (videos || []).filter(v => moodMatchedVideoIds!.has(v.id));
+                const moodVideos = moodMatchedVideoIds
+                  ? (videos || []).filter(v => moodMatchedVideoIds.has(v.id))
+                  : [];
                 return (
                   <div className="animate-in fade-in slide-in-from-bottom-4 duration-400">
                     {/* Hero header */}
