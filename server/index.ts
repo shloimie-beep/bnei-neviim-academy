@@ -449,12 +449,20 @@ async function runDataMigrations() {
           );
           return true;
         } else {
+          // Always sync subscription status from Stripe (source of truth)
+          const subStatus = sub.status === 'trialing' ? 'trial'
+            : sub.status === 'active' ? 'active'
+            : sub.status === 'past_due' ? 'past_due'
+            : 'cancelled';
+          const trialEnd = sub.trial_end ? new Date(sub.trial_end * 1000).toISOString() : null;
           await pool.query(
-            `UPDATE users SET stripe_customer_id = COALESCE(stripe_customer_id, $1),
-             stripe_subscription_id = COALESCE(stripe_subscription_id, $2),
-             subscription_status = CASE WHEN subscription_status = 'none' THEN $3 ELSE subscription_status END
-             WHERE email = $4`,
-            [customer.id, sub.id, sub.status === 'trialing' ? 'trial' : 'active', email]
+            `UPDATE users SET 
+             stripe_customer_id = COALESCE(stripe_customer_id, $1),
+             stripe_subscription_id = $2,
+             subscription_status = $3,
+             trial_ends_at = CASE WHEN $4::text IS NOT NULL THEN $4::timestamp ELSE trial_ends_at END
+             WHERE email = $5`,
+            [customer.id, sub.id, subStatus, trialEnd, email]
           );
           return false;
         }
