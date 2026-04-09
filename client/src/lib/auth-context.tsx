@@ -43,7 +43,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const refreshUser = async () => {
+  const refreshUser = async (retries = 2) => {
     try {
       const token = getStoredAuthToken();
       const headers: Record<string, string> = {};
@@ -58,11 +58,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (response.ok) {
         const data = await response.json();
         setUser(data.user);
+      } else if (response.status === 503 || response.status === 502 || response.status === 504) {
+        // Server restarting — retry after a delay
+        if (retries > 0) {
+          await new Promise(r => setTimeout(r, 3000));
+          return refreshUser(retries - 1);
+        }
+        setUser(null);
       } else {
         setUser(null);
         localStorage.removeItem(AUTH_TOKEN_KEY);
       }
     } catch {
+      // Network error — server may be restarting, retry
+      if (retries > 0) {
+        await new Promise(r => setTimeout(r, 3000));
+        return refreshUser(retries - 1);
+      }
       setUser(null);
     } finally {
       setIsLoading(false);
