@@ -495,7 +495,7 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
   });
 
   // Related videos
-  const { data: relatedVideos = [] } = useQuery<any[]>({
+  const { data: relatedVideos = [], isLoading: relatedLoading } = useQuery<any[]>({
     queryKey: ["/api/videos", currentVideo.id, "related"],
     queryFn: async () => {
       const res = await fetch(`/api/videos/${currentVideo.id}/related`, { credentials: "include", headers: getAuthHeaders() });
@@ -626,15 +626,19 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
         </div>
       </div>
 
-      {/* Watch Next — below the title for maximum visibility */}
-      {watchNextVideos.length > 0 && (
-        <div className="bg-[#060e1a]">
-          <div className="px-4 pt-3 pb-2 flex items-center gap-2 border-b border-[#EDE518]/20">
-            <Play className="h-3.5 w-3.5 text-[#EDE518] fill-[#EDE518]" />
-            <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#EDE518]">Watch Next</span>
-          </div>
-          <div className="grid grid-cols-3 gap-2 px-3 py-3">
-            {watchNextVideos.map((rv: any) => (
+      {/* Watch Next — always shown for every video */}
+      <div className="bg-[#060e1a]">
+        <div className="px-4 pt-3 pb-2 flex items-center gap-2 border-b border-[#EDE518]/20">
+          <Play className="h-3.5 w-3.5 text-[#EDE518] fill-[#EDE518]" />
+          <span className="text-[11px] font-black uppercase tracking-[0.2em] text-[#EDE518]">Watch Next</span>
+        </div>
+        <div className="grid grid-cols-3 gap-2 px-3 py-3">
+          {relatedLoading ? (
+            [1,2,3].map(i => (
+              <div key={i} className="rounded-xl overflow-hidden aspect-video bg-white/5 animate-pulse" />
+            ))
+          ) : watchNextVideos.length > 0 ? (
+            watchNextVideos.map((rv: any) => (
               <button
                 key={rv.id}
                 onClick={() => playRelated(rv)}
@@ -668,10 +672,10 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
                   </div>
                 </div>
               </button>
-            ))}
-          </div>
+            ))
+          ) : null}
         </div>
-      )}
+      </div>
 
       <CommentsSection videoId={currentVideo.id} />
       <div className="h-4" />
@@ -1842,7 +1846,7 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
             )}
           </div>
           {variant !== "square" && variant !== "portrait" && (
-            <CardContent className="p-3">
+            <CardContent className="p-3 pb-0">
               <div className="flex items-center gap-2">
                 <h3 className="font-semibold line-clamp-1 flex-1 text-white text-sm" data-testid={`text-video-title-${video.id}`}>
                   {video.title}
@@ -1863,6 +1867,11 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
                   {video.description}
                 </p>
               )}
+              <div className="flex items-center gap-1.5 mt-2 pb-2.5 border-t border-white/5 pt-2">
+                <Play className="h-3 w-3 text-[#EDE518] fill-[#EDE518]" />
+                <span className="text-[10px] font-bold text-[#EDE518] uppercase tracking-widest">Watch Next</span>
+                <span className="text-[10px] text-slate-500 ml-auto">tap to open →</span>
+              </div>
             </CardContent>
           )}
           {(variant === "square" || variant === "portrait") && (
