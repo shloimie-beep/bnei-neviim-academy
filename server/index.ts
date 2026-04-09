@@ -7,6 +7,7 @@ import { runMigrations } from 'stripe-replit-sync';
 import { getStripeSync } from "./stripeClient";
 import { WebhookHandlers } from "./webhookHandlers";
 import { pool } from "./db";
+import bcrypt from "bcryptjs";
 
 const app = express();
 const httpServer = createServer(app);
@@ -402,6 +403,21 @@ async function runDataMigrations() {
     await pool.query(`
       ALTER TABLE videos ADD COLUMN IF NOT EXISTS custom_mood TEXT
     `);
+
+    // ── Seed: admin user (schellereli@gmail.com) — creates if missing ────────
+    const adminCheck = await pool.query(
+      `SELECT id FROM users WHERE email = 'schellereli@gmail.com' LIMIT 1`
+    );
+    if (adminCheck.rows.length === 0) {
+      const adminHash = await bcrypt.hash('dd99617a', 10);
+      await pool.query(
+        `INSERT INTO users (id, email, password, family_name, role, account_type, subscription_status, has_used_trial, created_at)
+         VALUES (gen_random_uuid()::varchar, 'schellereli@gmail.com', $1, 'Rabbi Eli Scheller', 'admin', 'standard', 'active', true, NOW())
+         ON CONFLICT (email) DO NOTHING`,
+        [adminHash]
+      );
+      log('Admin user created in production DB', 'migration');
+    }
 
     log('Data migrations complete', 'migration');
   } catch (err: any) {
