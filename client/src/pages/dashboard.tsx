@@ -2819,17 +2819,17 @@ export default function DashboardPage() {
                     setPcCategoryAll(false);
                     setPcCategoryIds(prev => prev.includes(cat.id) ? prev.filter(id => id !== cat.id) : [...prev, cat.id]);
                   }}
-                  className={`text-xs px-3 py-1.5 rounded-full border transition-all ${pcCategoryIds.includes(cat.id) ? 'bg-[#EDE518] text-black border-[#EDE518] font-semibold' : 'border-white/20 text-white/60 hover:border-[#EDE518]/50 hover:text-white'}`}
+                  className={`text-xs px-3 py-1.5 rounded-full border transition-all font-medium ${pcCategoryIds.includes(cat.id) ? 'bg-[#EDE518] text-black border-[#EDE518]' : 'border-border text-foreground/70 bg-muted hover:border-[#EDE518] hover:text-foreground'}`}
                   data-testid={`button-pc-cat-${cat.id}`}
                 >
                   {cat.parentCategoryId ? `↳ ${cat.name}` : cat.name}
                 </button>
               ))}
-              {categories.length === 0 && <p className="text-xs text-muted-foreground italic">No categories loaded</p>}
+              {categories.length === 0 && <p className="text-xs text-muted-foreground italic">No categories found</p>}
             </div>
             {pcCategoryIds.length > 0 && (
-              <button type="button" className="mt-2 text-xs text-[#EDE518]/70 hover:text-[#EDE518] underline" onClick={() => { setPcCategoryAll(true); setPcCategoryIds([]); }}>
-                Clear selection (apply to all)
+              <button type="button" className="mt-2 text-xs text-muted-foreground hover:text-foreground underline" onClick={() => { setPcCategoryAll(true); setPcCategoryIds([]); }}>
+                Clear — apply to all categories
               </button>
             )}
           </div>
