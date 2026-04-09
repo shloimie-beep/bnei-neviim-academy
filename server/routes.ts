@@ -1711,25 +1711,10 @@ export async function registerRoutes(
         }
       }
 
-      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
-      const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
-
-      const url = new URL(uploadURL);
-      const pathParts = url.pathname.slice(1).split("/");
-      const bucketName = pathParts[0];
-      const objectName = pathParts.slice(1).join("/");
-
-      const bucket = objectStorageClient.bucket(bucketName);
-      const objectFile = bucket.file(objectName);
-
-      await new Promise<void>((resolve, reject) => {
-        const readStream = fs.createReadStream(req.file!.path);
-        const writeStream = objectFile.createWriteStream({ resumable: false, contentType: req.file!.mimetype });
-        readStream.on("error", reject);
-        writeStream.on("error", reject);
-        writeStream.on("finish", resolve);
-        readStream.pipe(writeStream);
-      });
+      const annExt = req.file.originalname.split(".").pop()?.toLowerCase() || "jpg";
+      const objectPath = `/objects/announcement-images/${crypto.randomUUID()}.${annExt}`;
+      const annBuffer = fs.readFileSync(req.file.path);
+      await objectStorageService.uploadBuffer(objectPath, annBuffer, req.file.mimetype);
 
       if (fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
 
@@ -8322,30 +8307,17 @@ export async function registerRoutes(
         } catch {}
       }
 
-      const uploadURL = await objectStorageService.getObjectEntityUploadURL();
-      const objectPath = objectStorageService.normalizeObjectEntityPath(uploadURL);
-      const url = new URL(uploadURL);
-      const pathParts = url.pathname.slice(1).split("/");
-      const bucketName = pathParts[0];
-      const objectName = pathParts.slice(1).join("/");
-      const bucket = objectStorageClient.bucket(bucketName);
-      const objectFile = bucket.file(objectName);
-
-      await new Promise<void>((resolve, reject) => {
-        const readStream = fs.createReadStream(req.file!.path);
-        const writeStream = objectFile.createWriteStream({ resumable: false, contentType: req.file!.mimetype });
-        readStream.on("error", reject);
-        writeStream.on("error", reject);
-        writeStream.on("finish", resolve);
-        readStream.pipe(writeStream);
-      });
-
+      const ext = req.file.originalname.split(".").pop()?.toLowerCase() || "jpg";
+      const objectPath = `/objects/banner-images/${crypto.randomUUID()}.${ext}`;
+      const fileBuffer = fs.readFileSync(req.file.path);
+      await objectStorageService.uploadBuffer(objectPath, fileBuffer, req.file.mimetype);
       fs.unlink(req.file.path, () => {});
+
       const updated = await storage.updateBanner(req.params.id, { imageUrl: objectPath });
       res.json({ imageUrl: objectPath, banner: updated });
     } catch (error) {
       console.error("Banner image upload error:", error);
-      res.status(500).json({ message: "Failed to upload image" });
+      res.status(500).json({ message: "Failed to upload image", detail: String(error) });
     }
   });
 
