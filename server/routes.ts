@@ -5674,6 +5674,28 @@ export async function registerRoutes(
     }
   });
 
+  app.post("/api/admin/whitelisted-numbers/bulk", requireAdmin, async (req, res) => {
+    try {
+      const { phoneNumbers } = req.body;
+      if (!Array.isArray(phoneNumbers) || phoneNumbers.length === 0) {
+        return res.status(400).json({ message: "Phone numbers array is required" });
+      }
+      let added = 0;
+      let skipped = 0;
+      for (const rawNumber of phoneNumbers) {
+        const phoneNumber = String(rawNumber).replace(/\D/g, "");
+        if (!phoneNumber) continue;
+        const existing = await storage.getWhitelistedNumber(phoneNumber);
+        if (existing) { skipped++; continue; }
+        await storage.createWhitelistedNumber({ phoneNumber, label: null, expiresAt: null, createdBy: req.session.userId });
+        added++;
+      }
+      res.json({ added, skipped });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to bulk add whitelisted numbers" });
+    }
+  });
+
   app.delete("/api/admin/whitelisted-numbers/:id", requireAdmin, async (req, res) => {
     try {
       await storage.deleteWhitelistedNumber(req.params.id);

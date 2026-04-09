@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Loader2, Plus, Trash2, Phone, ShieldCheck, Mail, Video, Clock, AlertCircle } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Loader2, Plus, Trash2, Phone, ShieldCheck, Mail, Video, Clock, AlertCircle, Upload } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import {
@@ -105,11 +106,13 @@ function ExpirationBadge({ expiresAt }: { expiresAt: string | null }) {
 export default function WhitelistManagement() {
   const { toast } = useToast();
   const [isPhoneDialogOpen, setIsPhoneDialogOpen] = useState(false);
+  const [isBulkDialogOpen, setIsBulkDialogOpen] = useState(false);
   const [isEmailDialogOpen, setIsEmailDialogOpen] = useState(false);
   const [newPhoneNumber, setNewPhoneNumber] = useState("");
   const [newPhoneLabel, setNewPhoneLabel] = useState("");
   const [newPhoneExpires, setNewPhoneExpires] = useState("");
   const [phoneCountryCode, setPhoneCountryCode] = useState("+1");
+  const [bulkNumbers, setBulkNumbers] = useState("");
   const [newEmail, setNewEmail] = useState("");
   const [newEmailLabel, setNewEmailLabel] = useState("");
   const [newEmailExpires, setNewEmailExpires] = useState("");
@@ -183,6 +186,24 @@ export default function WhitelistManagement() {
     },
   });
 
+  const bulkAddMutation = useMutation({
+    mutationFn: async (phoneNumbers: string[]) => {
+      return apiRequest("POST", "/api/admin/whitelisted-numbers/bulk", { phoneNumbers });
+    },
+    onSuccess: (data: any) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/whitelisted-numbers"] });
+      setIsBulkDialogOpen(false);
+      setBulkNumbers("");
+      toast({
+        title: "Bulk upload complete",
+        description: `${data.added} number(s) added, ${data.skipped} already existed.`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Error", description: error.message || "Failed to bulk add numbers.", variant: "destructive" });
+    },
+  });
+
   const handleAddPhone = () => {
     if (!newPhoneNumber.trim()) return;
     const countryCodeDigits = phoneCountryCode.replace(/\D/g, "");
@@ -193,6 +214,14 @@ export default function WhitelistManagement() {
       label: newPhoneLabel.trim() || undefined,
       expiresAt: newPhoneExpires || undefined,
     });
+  };
+
+  const handleBulkAdd = () => {
+    const lines = bulkNumbers.split(/[\n,]+/).map(l => l.trim()).filter(Boolean);
+    if (lines.length === 0) return;
+    // Strip country code prefix formatting but keep digits
+    const numbers = lines.map(l => l.replace(/\D/g, "")).filter(n => n.length >= 7);
+    bulkAddMutation.mutate(numbers);
   };
 
   const handleAddEmail = () => {
@@ -385,7 +414,49 @@ export default function WhitelistManagement() {
         </TabsContent>
 
         <TabsContent value="phones" className="space-y-4">
-          <div className="flex justify-end">
+          <div className="flex justify-end gap-2">
+            {/* Bulk Upload Dialog */}
+            <Dialog open={isBulkDialogOpen} onOpenChange={setIsBulkDialogOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" data-testid="button-bulk-add-phones">
+                  <Upload className="h-4 w-4 mr-2" />
+                  Bulk Add
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Bulk Add Phone Numbers</DialogTitle>
+                  <DialogDescription>
+                    Paste phone numbers below — one per line. Any format works (dashes, spaces, country codes). Duplicates are skipped automatically.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-3 py-2">
+                  <Textarea
+                    placeholder={`14431234567\n13052345678\n19177654321`}
+                    rows={10}
+                    value={bulkNumbers}
+                    onChange={(e) => setBulkNumbers(e.target.value)}
+                    className="font-mono text-sm"
+                    data-testid="textarea-bulk-phones"
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    {bulkNumbers.split(/[\n,]+/).map(l => l.trim()).filter(Boolean).length} number(s) detected
+                  </p>
+                </div>
+                <DialogFooter>
+                  <Button variant="outline" onClick={() => setIsBulkDialogOpen(false)}>Cancel</Button>
+                  <Button
+                    onClick={handleBulkAdd}
+                    disabled={bulkAddMutation.isPending || !bulkNumbers.trim()}
+                    data-testid="button-confirm-bulk-add-phones"
+                  >
+                    {bulkAddMutation.isPending && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+                    Add All
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
             <Dialog open={isPhoneDialogOpen} onOpenChange={setIsPhoneDialogOpen}>
               <DialogTrigger asChild>
                 <Button data-testid="button-add-phone-whitelist">
