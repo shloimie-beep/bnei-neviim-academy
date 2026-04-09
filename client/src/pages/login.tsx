@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Loader2, Info } from "lucide-react";
+import { ArrowLeft, Loader2, Info, Mail, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -11,6 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { loginSchema, type LoginInput } from "@shared/schema";
+import { apiRequest } from "@/lib/queryClient";
 import logoImage from "@assets/qt=q_95_1767830887218.webp";
 
 export default function LoginPage() {
@@ -18,6 +19,9 @@ export default function LoginPage() {
   const { login } = useAuth();
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
+  const [loginFailed, setLoginFailed] = useState(false);
+  const [isSendingReset, setIsSendingReset] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
@@ -27,8 +31,12 @@ export default function LoginPage() {
     },
   });
 
+  const emailValue = form.watch("email");
+
   const onSubmit = async (data: LoginInput) => {
     setIsLoading(true);
+    setLoginFailed(false);
+    setResetSent(false);
     try {
       const user = await login(data.email, data.password);
       toast({
@@ -41,14 +49,27 @@ export default function LoginPage() {
         setLocation("/dashboard");
       }
     } catch (error: any) {
-      const msg: string = error.message || "";
+      setLoginFailed(true);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const sendResetEmail = async () => {
+    const email = emailValue;
+    if (!email) return;
+    setIsSendingReset(true);
+    try {
+      await apiRequest("POST", "/api/auth/forgot-password", { email });
+      setResetSent(true);
+    } catch (error: any) {
       toast({
-        title: "Login failed",
-        description: msg || "Please check your credentials and try again.",
+        title: "Error",
+        description: "Could not send reset email. Please try again.",
         variant: "destructive",
       });
     } finally {
-      setIsLoading(false);
+      setIsSendingReset(false);
     }
   };
 
@@ -75,11 +96,10 @@ export default function LoginPage() {
           <div className="rounded-lg border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700 p-4 flex gap-3">
             <Info className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
             <div className="text-sm text-amber-800 dark:text-amber-300 space-y-1">
-              <p className="font-semibold">Password reset required for some accounts</p>
+              <p className="font-semibold">Password not working?</p>
               <p>
-                We recently did a system update that required all accounts to be restored. If your password
-                isn't working, simply click <strong>"Reset My Password"</strong> below — it takes under a minute
-                and your subscription stays fully intact.
+                We recently restored all accounts after a system update. Your subscription is fully intact —
+                just reset your password and you're good to go.
               </p>
             </div>
           </div>
@@ -142,12 +162,47 @@ export default function LoginPage() {
                   </Button>
                 </form>
               </Form>
+
+              {/* Shown after a failed login */}
+              {loginFailed && !resetSent && (
+                <div className="mt-4 rounded-lg border border-red-200 bg-red-50 dark:bg-red-950/30 dark:border-red-800 p-4 space-y-3">
+                  <p className="text-sm font-semibold text-red-800 dark:text-red-300">
+                    Password didn't work
+                  </p>
+                  <p className="text-sm text-red-700 dark:text-red-400">
+                    Click below and we'll email you a reset link right away — it only takes a moment.
+                  </p>
+                  <Button
+                    className="w-full bg-amber-500 hover:bg-amber-600 text-white"
+                    onClick={sendResetEmail}
+                    disabled={isSendingReset || !emailValue}
+                    data-testid="button-send-reset"
+                  >
+                    {isSendingReset ? (
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    ) : (
+                      <Mail className="h-4 w-4 mr-2" />
+                    )}
+                    {isSendingReset ? "Sending..." : `Send reset link to ${emailValue || "my email"}`}
+                  </Button>
+                </div>
+              )}
+
+              {/* Shown after reset email sent */}
+              {resetSent && (
+                <div className="mt-4 rounded-lg border border-green-200 bg-green-50 dark:bg-green-950/30 dark:border-green-800 p-4 flex gap-3">
+                  <CheckCircle className="h-5 w-5 text-green-600 dark:text-green-400 shrink-0 mt-0.5" />
+                  <div className="text-sm text-green-800 dark:text-green-300">
+                    <p className="font-semibold">Reset link sent!</p>
+                    <p>Check your email for a link to reset your password.</p>
+                  </div>
+                </div>
+              )}
             </CardContent>
             <CardFooter className="flex flex-col gap-3">
-              {/* Prominent reset button */}
               <Link href="/forgot-password" className="w-full" data-testid="link-forgot-password">
-                <Button variant="outline" className="w-full border-amber-400 text-amber-700 dark:text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-950/30">
-                  Password not working? Reset My Password
+                <Button variant="ghost" className="w-full text-muted-foreground text-sm">
+                  Use a different email to reset password
                 </Button>
               </Link>
               <div className="w-full pt-3 border-t text-center">
