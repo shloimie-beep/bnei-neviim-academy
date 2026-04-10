@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { ArrowLeft, Loader2, Mail, CheckCircle } from "lucide-react";
+import { ArrowLeft, Loader2, Info, Mail, CheckCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -89,6 +89,14 @@ export default function LoginPage() {
 
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-md space-y-4">
+
+          <div className="rounded-lg border border-amber-300 bg-amber-50 dark:bg-amber-950/30 dark:border-amber-700 p-4 flex gap-3">
+            <Info className="h-5 w-5 text-amber-600 dark:text-amber-400 shrink-0 mt-0.5" />
+            <div className="text-sm text-amber-800 dark:text-amber-300">
+              <p className="font-semibold">Having trouble logging in?</p>
+              <p>We recently restored all accounts after a system update. If your password isn't working, you can get a new one sent to your email instantly.</p>
+            </div>
+          </div>
 
           <Card>
             <CardHeader className="text-center">
