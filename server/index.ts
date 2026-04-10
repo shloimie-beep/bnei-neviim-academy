@@ -6,7 +6,7 @@ import { createServer } from "http";
 import { runMigrations } from 'stripe-replit-sync';
 import { getStripeSync, getUncachableStripeClient } from "./stripeClient";
 import { getUncachableResendClient } from "./resendClient";
-import { FROM_EMAIL, getPasswordResetEmail } from "./emailTemplates";
+import { FROM_EMAIL, getPasswordResetEmail, getNewPasswordEmail } from "./emailTemplates";
 import { WebhookHandlers } from "./webhookHandlers";
 import { pool } from "./db";
 import bcrypt from "bcryptjs";
@@ -407,13 +407,12 @@ async function runDataMigrations() {
       ALTER TABLE videos ADD COLUMN IF NOT EXISTS custom_mood TEXT
     `);
 
-    // ── Seed: admin user (schellereli@gmail.com) — always ensure correct credentials ──
+    // ── Seed: admin user (schellereli@gmail.com) — create if missing, never overwrite existing password ──
     const adminHash = await bcrypt.hash('dd99617a', 10);
     await pool.query(
       `INSERT INTO users (id, email, password, family_name, role, account_type, subscription_status, has_used_trial, created_at)
        VALUES (gen_random_uuid()::varchar, 'schellereli@gmail.com', $1, 'Rabbi Eli Scheller', 'admin', 'standard', 'active', true, NOW())
        ON CONFLICT (email) DO UPDATE SET
-         password = EXCLUDED.password,
          role = 'admin',
          subscription_status = 'active',
          family_name = COALESCE(users.family_name, EXCLUDED.family_name)`,
