@@ -5919,7 +5919,7 @@ export async function registerRoutes(
         ),
         // Total watch time from watch_time_logs
         pool.query(
-          `SELECT COALESCE(SUM(wtl.seconds), 0) as total_seconds
+          `SELECT COALESCE(SUM(wtl.seconds_watched), 0) as total_seconds
            FROM watch_time_logs wtl
            JOIN users u ON u.id = wtl.user_id
            WHERE u.email = $1`,

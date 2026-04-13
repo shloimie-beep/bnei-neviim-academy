@@ -241,7 +241,7 @@ function UserDetailView({ email, onBack }: { email: string; onBack: () => void }
               detailTab === t ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
-            {t === "progress" ? `Content Progress (${progWithDur.length})` : t === "activity" ? `Activity (${data?.recentEvents.length ?? 0})` : `Saved (${s?.favorites_count ?? 0})`}
+            {t === "progress" ? `Content Progress (${progWithDur.length})` : t === "activity" ? `Activity (${data?.recentEvents?.length ?? 0})` : `Saved (${s?.favorites_count ?? 0})`}
           </button>
         ))}
       </div>
@@ -249,7 +249,7 @@ function UserDetailView({ email, onBack }: { email: string; onBack: () => void }
       {/* Progress tab */}
       {detailTab === "progress" && (
         <div className="space-y-2">
-          {!prog.length && !data?.videoStats.length ? (
+          {!prog.length && !data?.videoStats?.length ? (
             <p className="text-sm text-muted-foreground py-8 text-center">No content played yet.</p>
           ) : (() => {
             const progressMap = new Map(prog.map(p => [p.video_id, p]));
@@ -307,7 +307,7 @@ function UserDetailView({ email, onBack }: { email: string; onBack: () => void }
       {/* Activity tab */}
       {detailTab === "activity" && (
         <div className="space-y-1">
-          {!data?.recentEvents.length ? (
+          {!data?.recentEvents?.length ? (
             <p className="text-sm text-muted-foreground py-8 text-center">No activity recorded.</p>
           ) : data.recentEvents.map((ev, i) => (
             <div key={i} className="flex items-start gap-2 px-3 py-2 rounded-lg hover:bg-muted/40 text-sm">
@@ -325,7 +325,7 @@ function UserDetailView({ email, onBack }: { email: string; onBack: () => void }
       {/* Favorites tab */}
       {detailTab === "favorites" && (
         <div className="space-y-1">
-          {!data?.favoritesData.length ? (
+          {!data?.favoritesData?.length ? (
             <p className="text-sm text-muted-foreground py-8 text-center">No saved content yet.</p>
           ) : data.favoritesData.map((f, i) => (
             <div key={i} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-muted/40">
@@ -501,7 +501,7 @@ export default function AdminAnalyticsPage() {
       return new Date(b.last_active).getTime() - new Date(a.last_active).getTime();
     });
 
-  const t = summary?.totals;
+  const totals = summary?.totals;
   const cs = summary?.completionStats;
   const overallCompRate = cs && parseInt(cs.total_count as any) > 0
     ? Math.round((parseInt(cs.completed_count as any) / parseInt(cs.total_count as any)) * 100)
@@ -546,14 +546,14 @@ export default function AdminAnalyticsPage() {
             <StatCard label="Active today" value={legacyLoading ? "—" : (legacy?.dailyActiveUsers ?? 0)} icon={Users} color="text-blue-500" />
             <StatCard label="Active this week" value={legacyLoading ? "—" : (legacy?.weeklyActiveUsers ?? 0)} icon={TrendingUp} color="text-indigo-500" />
             <StatCard label="Active this month" value={legacyLoading ? "—" : (legacy?.monthlyActiveUsers ?? 0)} icon={Calendar} color="text-violet-500" />
-            <StatCard label="Total video plays" value={summaryLoading ? "—" : (t?.total_video_plays ?? 0)} icon={Play} color="text-blue-400" />
-            <StatCard label="Total audio plays" value={summaryLoading ? "—" : (t?.total_audio_plays ?? 0)} icon={Music} color="text-purple-400" />
-            <StatCard label="Total completions" value={summaryLoading ? "—" : (t?.total_completions ?? 0)} icon={CheckCircle2} color="text-green-500" />
+            <StatCard label="Total video plays" value={summaryLoading ? "—" : (totals?.total_video_plays ?? 0)} icon={Play} color="text-blue-400" />
+            <StatCard label="Total audio plays" value={summaryLoading ? "—" : (totals?.total_audio_plays ?? 0)} icon={Music} color="text-purple-400" />
+            <StatCard label="Total completions" value={summaryLoading ? "—" : (totals?.total_completions ?? 0)} icon={CheckCircle2} color="text-green-500" />
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <StatCard label="Total logins" value={summaryLoading ? "—" : (t?.total_logins ?? 0)} icon={LogIn} color="text-emerald-500" />
-            <StatCard label="Tracked members" value={summaryLoading ? "—" : (t?.total_tracked_users ?? 0)} icon={Users} color="text-cyan-500" />
+            <StatCard label="Total logins" value={summaryLoading ? "—" : (totals?.total_logins ?? 0)} icon={LogIn} color="text-emerald-500" />
+            <StatCard label="Tracked members" value={summaryLoading ? "—" : (totals?.total_tracked_users ?? 0)} icon={Users} color="text-cyan-500" />
             <StatCard label="Overall completion rate" value={overallCompRate !== null ? `${overallCompRate}%` : "—"} icon={Percent} color="text-amber-500" sub="of started sessions" />
             <StatCard label="Avg % watched" value={cs?.avg_watch_pct != null ? `${Math.round(cs.avg_watch_pct as any)}%` : "—"} icon={BarChart3} color="text-orange-500" sub="across all content" />
           </div>
