@@ -140,6 +140,15 @@ function fmtSeconds(secs: number) {
   return `${m}m`;
 }
 
+function fmtTime(secs: number) {
+  if (!secs || secs < 0) return "0:00";
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  const s = Math.floor(secs % 60);
+  if (h > 0) return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  return `${m}:${String(s).padStart(2, "0")}`;
+}
+
 function statColor(status: string | null) {
   if (status === "active") return "text-green-500";
   if (status === "trialing") return "text-blue-500";
@@ -294,9 +303,17 @@ function UserDetailView({ email, onBack }: { email: string; onBack: () => void }
                     <div key={row.id || row.title} className="grid grid-cols-[1fr_70px_120px_80px] gap-2 px-3 py-2 rounded-lg hover:bg-muted/40 items-center">
                       <div className="min-w-0">
                         <p className="text-sm font-medium truncate">{row.title}</p>
-                        <div className="flex gap-1 mt-0.5">
-                          {isCompleted && <Badge className="text-[9px] h-4 bg-green-500 text-white border-0">✓ Finished</Badge>}
-                          {isPaused && <Badge variant="outline" className="text-[9px] h-4 text-amber-500 border-amber-400">⏸ Paused</Badge>}
+                        <div className="flex gap-1 mt-0.5 flex-wrap">
+                          {isCompleted && (
+                            <Badge className="text-[9px] h-4 bg-green-500 text-white border-0">
+                              ✓ Watched full{p?.duration_seconds ? ` (${fmtTime(p.duration_seconds)})` : ""}
+                            </Badge>
+                          )}
+                          {isPaused && p && (
+                            <Badge variant="outline" className="text-[9px] h-4 text-amber-500 border-amber-400">
+                              ⏸ Stopped at {fmtTime(p.position_seconds)}{p.duration_seconds ? ` of ${fmtTime(p.duration_seconds)}` : ""}
+                            </Badge>
+                          )}
                           {!p && <Badge variant="outline" className="text-[9px] h-4 text-muted-foreground">No position saved</Badge>}
                         </div>
                       </div>
