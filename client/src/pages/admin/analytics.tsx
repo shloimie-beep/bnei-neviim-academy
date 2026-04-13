@@ -5,7 +5,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Users, TrendingUp, Eye, Calendar, Play, Music, LogIn, Heart, ArrowLeft, Search, RefreshCw, Activity, Star, Clock } from "lucide-react";
+import {
+  Users, TrendingUp, Eye, Calendar, Play, Music, LogIn, Heart,
+  ArrowLeft, Search, RefreshCw, Activity, Star, Clock, CheckCircle2,
+  BarChart3, Pause, Video, FileAudio, ThumbsUp, Bookmark, Percent,
+} from "lucide-react";
 import { getAuthHeaders } from "@/lib/auth-context";
 
 // ── Types ──────────────────────────────────────────────────────────────────
@@ -16,6 +20,31 @@ interface LegacyAnalytics {
   topVideos: { title: string; unique_viewers: number }[];
   topUsers: { email: string; family_name: string | null; videos_watched: number; last_active: string }[];
   activityByDay: { day: string; unique_users: number; total_views: number }[];
+}
+
+interface SummaryData {
+  totals: {
+    total_video_plays: number;
+    total_audio_plays: number;
+    total_completions: number;
+    total_logins: number;
+    total_tracked_users: number;
+    total_unique_content_played: number;
+  };
+  subscriptionBreakdown: { subscription_status: string; count: number }[];
+  completionStats: { completed_count: number; total_count: number; avg_watch_pct: number };
+  dailyTrend: { day: string; unique_users: number; total_events: number; video_plays: number; audio_plays: number; completions: number }[];
+}
+
+interface ContentRow {
+  video_id: string;
+  title: string;
+  media_type: string;
+  total_plays: number;
+  unique_viewers: number;
+  completions: number;
+  last_played: string;
+  avg_watch_pct: number | null;
 }
 
 interface UserRow {
@@ -51,6 +80,8 @@ interface ProgressRow {
   updated_at: string;
 }
 
+interface FavoriteRow { title: string | null; created_at: string; }
+
 interface UserDetail {
   email: string;
   summary: {
@@ -59,16 +90,23 @@ interface UserDetail {
     total_completions: number;
     total_logins: number;
     unique_videos_watched: number;
+    unique_audio_played: number;
     first_seen: string;
     last_active: string;
+    completion_rate: number | null;
+    avg_watch_pct: number | null;
+    total_watch_seconds: number;
+    favorites_count: number;
   };
   videoStats: { resource_title: string; resource_id: string; play_count: number; last_played: string }[];
   recentEvents: EventRow[];
   progressData: ProgressRow[];
+  favoritesData: FavoriteRow[];
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 function relTime(dateStr: string) {
+  if (!dateStr) return "never";
   const ms = Date.now() - new Date(dateStr).getTime();
   const mins = Math.floor(ms / 60000);
   if (mins < 1) return "just now";
@@ -84,18 +122,33 @@ function absTime(dateStr: string) {
   return new Date(dateStr).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit" });
 }
 
+function fmtSeconds(secs: number) {
+  if (!secs || secs <= 0) return "0m";
+  const h = Math.floor(secs / 3600);
+  const m = Math.floor((secs % 3600) / 60);
+  if (h > 0) return `${h}h ${m}m`;
+  return `${m}m`;
+}
+
+function statColor(status: string | null) {
+  if (status === "active") return "text-green-500";
+  if (status === "trialing") return "text-blue-500";
+  if (status === "canceled" || status === "cancelled") return "text-red-400";
+  return "text-muted-foreground";
+}
+
 const EVENT_LABELS: Record<string, { label: string; icon: any; color: string }> = {
-  video_play:    { label: "Watched video",  icon: Play,    color: "text-blue-500" },
-  audio_play:    { label: "Played audio",   icon: Music,   color: "text-purple-500" },
-  video_complete:{ label: "Finished video", icon: Star,    color: "text-yellow-500" },
-  login:         { label: "Logged in",      icon: LogIn,   color: "text-green-500" },
-  page_view:     { label: "Visited site",   icon: Eye,     color: "text-gray-400" },
-  video_save:    { label: "Saved video",    icon: Heart,   color: "text-pink-500" },
-  audio_save:    { label: "Saved audio",    icon: Heart,   color: "text-pink-400" },
-  video_unsave:  { label: "Unsaved video",  icon: Heart,   color: "text-gray-400" },
-  audio_unsave:  { label: "Unsaved audio",  icon: Heart,   color: "text-gray-400" },
-  video_like:    { label: "Liked video",    icon: TrendingUp, color: "text-orange-500" },
-  video_unlike:  { label: "Unliked video",  icon: TrendingUp, color: "text-gray-400" },
+  video_play:    { label: "Watched video",  icon: Play,          color: "text-blue-500" },
+  audio_play:    { label: "Played audio",   icon: Music,         color: "text-purple-500" },
+  video_complete:{ label: "Finished video", icon: CheckCircle2,  color: "text-green-500" },
+  login:         { label: "Logged in",      icon: LogIn,         color: "text-emerald-500" },
+  page_view:     { label: "Visited site",   icon: Eye,           color: "text-gray-400" },
+  video_save:    { label: "Saved video",    icon: Bookmark,      color: "text-pink-500" },
+  audio_save:    { label: "Saved audio",    icon: Bookmark,      color: "text-pink-400" },
+  video_unsave:  { label: "Unsaved video",  icon: Bookmark,      color: "text-gray-400" },
+  audio_unsave:  { label: "Unsaved audio",  icon: Bookmark,      color: "text-gray-400" },
+  video_like:    { label: "Liked video",    icon: ThumbsUp,      color: "text-orange-500" },
+  video_unlike:  { label: "Unliked video",  icon: ThumbsUp,      color: "text-gray-400" },
 };
 
 function EventIcon({ type }: { type: string }) {
@@ -104,12 +157,39 @@ function EventIcon({ type }: { type: string }) {
   return <Icon className={`h-3.5 w-3.5 ${cfg.color}`} />;
 }
 
-function EventLabel({ type }: { type: string }) {
-  return <span>{EVENT_LABELS[type]?.label || type}</span>;
+// ── Stat Card ───────────────────────────────────────────────────────────────
+function StatCard({ label, value, sub, icon: Icon, color }: { label: string; value: any; sub?: string; icon: any; color: string }) {
+  return (
+    <Card>
+      <CardContent className="p-4 flex items-center gap-3">
+        <div className={`rounded-lg p-2 bg-muted`}><Icon className={`h-5 w-5 ${color}`} /></div>
+        <div className="min-w-0">
+          <div className="text-2xl font-bold">{value ?? "—"}</div>
+          <div className="text-xs text-muted-foreground leading-tight">{label}</div>
+          {sub && <div className="text-[10px] text-muted-foreground">{sub}</div>}
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+// ── Progress Bar ─────────────────────────────────────────────────────────────
+function PctBar({ pct, completed }: { pct: number | null; completed?: boolean }) {
+  if (pct === null) return <span className="text-xs text-muted-foreground">—</span>;
+  const safe = Math.max(Math.min(pct, 100), 2);
+  return (
+    <div className="flex items-center gap-1.5">
+      <div className="flex-1 bg-muted rounded-full h-1.5 overflow-hidden min-w-[60px]">
+        <div className={`h-full rounded-full ${completed || pct >= 95 ? "bg-green-500" : "bg-amber-400"}`} style={{ width: `${safe}%` }} />
+      </div>
+      <span className="text-[10px] text-muted-foreground w-7 text-right">{pct}%</span>
+    </div>
+  );
 }
 
 // ── User Detail View ───────────────────────────────────────────────────────
 function UserDetailView({ email, onBack }: { email: string; onBack: () => void }) {
+  const [detailTab, setDetailTab] = useState<"progress" | "activity" | "favorites">("progress");
   const { data, isLoading } = useQuery<UserDetail>({
     queryKey: ["/api/admin/analytics/user", email],
     queryFn: async () => {
@@ -128,9 +208,12 @@ function UserDetailView({ email, onBack }: { email: string; onBack: () => void }
   );
 
   const s = data?.summary;
+  const prog = data?.progressData || [];
+  const progWithDur = prog.filter(p => p.duration_seconds && p.duration_seconds > 0);
+
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-wrap">
         <Button variant="ghost" size="sm" onClick={onBack} className="gap-1"><ArrowLeft className="h-4 w-4" />All Users</Button>
         <div>
           <h2 className="font-bold text-lg">{email}</h2>
@@ -139,110 +222,228 @@ function UserDetailView({ email, onBack }: { email: string; onBack: () => void }
       </div>
 
       {/* Summary stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        {[
-          { label: "Video plays", value: s?.total_video_plays ?? 0, icon: Play, color: "text-blue-500" },
-          { label: "Unique videos", value: s?.unique_videos_watched ?? 0, icon: Eye, color: "text-indigo-500" },
-          { label: "Audio plays", value: s?.total_audio_plays ?? 0, icon: Music, color: "text-purple-500" },
-          { label: "Logins", value: s?.total_logins ?? 0, icon: LogIn, color: "text-green-500" },
-        ].map(({ label, value, icon: Icon, color }) => (
-          <Card key={label}>
-            <CardContent className="p-4 flex items-center gap-3">
-              <Icon className={`h-6 w-6 ${color}`} />
-              <div>
-                <div className="text-2xl font-bold">{value}</div>
-                <div className="text-xs text-muted-foreground">{label}</div>
-              </div>
-            </CardContent>
-          </Card>
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+        <StatCard label="Video plays" value={s?.total_video_plays ?? 0} icon={Play} color="text-blue-500" />
+        <StatCard label="Audio plays" value={s?.total_audio_plays ?? 0} icon={Music} color="text-purple-500" />
+        <StatCard label="Completions" value={s?.total_completions ?? 0} icon={CheckCircle2} color="text-green-500" />
+        <StatCard label="Watch time" value={fmtSeconds(s?.total_watch_seconds ?? 0)} icon={Clock} color="text-amber-500" />
+        <StatCard label="Avg watched" value={s?.avg_watch_pct != null ? `${s.avg_watch_pct}%` : "—"} icon={Percent} color="text-cyan-500" />
+        <StatCard label="Saved" value={s?.favorites_count ?? 0} icon={Heart} color="text-pink-500" />
+      </div>
+
+      {/* Inner tabs */}
+      <div className="flex gap-1 border-b">
+        {(["progress", "activity", "favorites"] as const).map(t => (
+          <button
+            key={t}
+            onClick={() => setDetailTab(t)}
+            className={`px-4 py-2 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${
+              detailTab === t ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {t === "progress" ? `Content Progress (${progWithDur.length})` : t === "activity" ? `Activity (${data?.recentEvents.length ?? 0})` : `Saved (${s?.favorites_count ?? 0})`}
+          </button>
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Videos watched with progress */}
-        <Card>
-          <CardHeader><CardTitle className="text-sm flex items-center gap-2"><Play className="h-4 w-4" />Videos Watched — Progress & Completion</CardTitle></CardHeader>
-          <CardContent>
-            {!data?.videoStats.length && !data?.progressData.length ? (
-              <p className="text-sm text-muted-foreground">No videos played yet.</p>
-            ) : (
-              <div className="space-y-3 max-h-80 overflow-y-auto">
-                {/* Merge videoStats with progressData */}
-                {(() => {
-                  const progressMap = new Map((data?.progressData || []).map(p => [p.video_id, p]));
-                  // Show all videos from videoStats, enriched with progress
-                  const rows = (data?.videoStats || []).map(v => ({
-                    id: v.resource_id,
-                    title: v.resource_title || "Unknown",
-                    playCount: parseInt(v.play_count as any),
-                    lastPlayed: v.last_played,
-                    progress: progressMap.get(v.resource_id),
-                  }));
-                  // Also add any progress rows not in videoStats (older tracking)
-                  (data?.progressData || []).forEach(p => {
-                    if (!rows.find(r => r.id === p.video_id)) {
-                      rows.push({ id: p.video_id, title: p.title || "Unknown", playCount: 1, lastPlayed: p.updated_at, progress: p });
-                    }
-                  });
-                  return rows.map(row => {
-                    const p = row.progress;
-                    const pct = p && p.duration_seconds && p.duration_seconds > 0
-                      ? Math.min(100, Math.round((p.position_seconds / p.duration_seconds) * 100))
-                      : null;
-                    const isCompleted = p?.completed || (pct !== null && pct >= 95);
-                    const isPaused = !isCompleted && pct !== null && pct > 5;
-                    return (
-                      <div key={row.id || row.title} className="space-y-1">
-                        <div className="flex items-center justify-between gap-2">
-                          <span className="text-sm truncate min-w-0 font-medium">{row.title}</span>
-                          <div className="flex items-center gap-1.5 shrink-0">
-                            <Badge variant="secondary" className="text-[10px]">{row.playCount}× played</Badge>
-                            {isCompleted && <Badge className="text-[10px] bg-green-500 text-white border-0">✓ Finished</Badge>}
-                            {isPaused && <Badge variant="outline" className="text-[10px] text-amber-500 border-amber-400">⏸ Paused</Badge>}
-                          </div>
+      {/* Progress tab */}
+      {detailTab === "progress" && (
+        <div className="space-y-2">
+          {!prog.length && !data?.videoStats.length ? (
+            <p className="text-sm text-muted-foreground py-8 text-center">No content played yet.</p>
+          ) : (() => {
+            const progressMap = new Map(prog.map(p => [p.video_id, p]));
+            const rows = (data?.videoStats || []).map(v => ({
+              id: v.resource_id,
+              title: v.resource_title || "Unknown",
+              playCount: parseInt(v.play_count as any),
+              lastPlayed: v.last_played,
+              progress: progressMap.get(v.resource_id),
+            }));
+            prog.forEach(p => {
+              if (!rows.find(r => r.id === p.video_id)) {
+                rows.push({ id: p.video_id, title: p.title || "Unknown", playCount: 1, lastPlayed: p.updated_at, progress: p });
+              }
+            });
+            return (
+              <div className="space-y-1">
+                <div className="grid grid-cols-[1fr_70px_120px_80px] gap-2 px-3 py-1.5 text-xs font-medium text-muted-foreground border-b">
+                  <span>Content</span>
+                  <span className="text-center">Plays</span>
+                  <span>Progress</span>
+                  <span className="text-right">Last played</span>
+                </div>
+                {rows.map(row => {
+                  const p = row.progress;
+                  const pct = p && p.duration_seconds && p.duration_seconds > 0
+                    ? Math.min(100, Math.round((p.position_seconds / p.duration_seconds) * 100))
+                    : null;
+                  const isCompleted = p?.completed || (pct !== null && pct >= 95);
+                  const isPaused = !isCompleted && pct !== null && pct > 5;
+                  return (
+                    <div key={row.id || row.title} className="grid grid-cols-[1fr_70px_120px_80px] gap-2 px-3 py-2 rounded-lg hover:bg-muted/40 items-center">
+                      <div className="min-w-0">
+                        <p className="text-sm font-medium truncate">{row.title}</p>
+                        <div className="flex gap-1 mt-0.5">
+                          {isCompleted && <Badge className="text-[9px] h-4 bg-green-500 text-white border-0">✓ Finished</Badge>}
+                          {isPaused && <Badge variant="outline" className="text-[9px] h-4 text-amber-500 border-amber-400">⏸ Paused</Badge>}
+                          {!p && <Badge variant="outline" className="text-[9px] h-4 text-muted-foreground">No position saved</Badge>}
                         </div>
-                        {pct !== null && (
-                          <div className="flex items-center gap-2">
-                            <div className="flex-1 bg-muted rounded-full h-1.5 overflow-hidden">
-                              <div
-                                className={`h-full rounded-full ${isCompleted ? "bg-green-500" : "bg-amber-400"}`}
-                                style={{ width: `${Math.max(pct, 2)}%` }}
-                              />
-                            </div>
-                            <span className="text-[10px] text-muted-foreground w-8 text-right">{pct}%</span>
-                          </div>
-                        )}
-                        <p className="text-[10px] text-muted-foreground">Last: {relTime(row.lastPlayed)}</p>
                       </div>
-                    );
-                  });
-                })()}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        {/* Recent activity */}
-        <Card>
-          <CardHeader><CardTitle className="text-sm flex items-center gap-2"><Activity className="h-4 w-4" />Recent Activity</CardTitle></CardHeader>
-          <CardContent>
-            {!data?.recentEvents.length ? <p className="text-sm text-muted-foreground">No activity recorded.</p> : (
-              <div className="space-y-2 max-h-72 overflow-y-auto">
-                {data.recentEvents.map((ev, i) => (
-                  <div key={i} className="flex items-start gap-2 text-sm">
-                    <EventIcon type={ev.event_type} />
-                    <div className="min-w-0 flex-1">
-                      <span className="font-medium"><EventLabel type={ev.event_type} /></span>
-                      {ev.resource_title && <span className="text-muted-foreground"> — {ev.resource_title}</span>}
+                      <div className="text-center">
+                        <span className="text-sm font-bold">{row.playCount}</span>
+                      </div>
+                      <PctBar pct={pct} completed={isCompleted} />
+                      <p className="text-[11px] text-muted-foreground text-right">{relTime(row.lastPlayed)}</p>
                     </div>
-                    <span className="text-[10px] text-muted-foreground shrink-0">{relTime(ev.created_at)}</span>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
-            )}
-          </CardContent>
-        </Card>
+            );
+          })()}
+        </div>
+      )}
+
+      {/* Activity tab */}
+      {detailTab === "activity" && (
+        <div className="space-y-1">
+          {!data?.recentEvents.length ? (
+            <p className="text-sm text-muted-foreground py-8 text-center">No activity recorded.</p>
+          ) : data.recentEvents.map((ev, i) => (
+            <div key={i} className="flex items-start gap-2 px-3 py-2 rounded-lg hover:bg-muted/40 text-sm">
+              <EventIcon type={ev.event_type} />
+              <div className="min-w-0 flex-1">
+                <span className="font-medium">{EVENT_LABELS[ev.event_type]?.label || ev.event_type}</span>
+                {ev.resource_title && <span className="text-muted-foreground"> — {ev.resource_title}</span>}
+              </div>
+              <span className="text-[10px] text-muted-foreground shrink-0">{relTime(ev.created_at)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Favorites tab */}
+      {detailTab === "favorites" && (
+        <div className="space-y-1">
+          {!data?.favoritesData.length ? (
+            <p className="text-sm text-muted-foreground py-8 text-center">No saved content yet.</p>
+          ) : data.favoritesData.map((f, i) => (
+            <div key={i} className="flex items-center justify-between px-3 py-2 rounded-lg hover:bg-muted/40">
+              <p className="text-sm font-medium">{f.title || "Unknown"}</p>
+              <span className="text-xs text-muted-foreground">{relTime(f.created_at)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Content Tab ──────────────────────────────────────────────────────────────
+function ContentTab() {
+  const [sort, setSort] = useState<"plays" | "unique" | "completions" | "avgpct">("plays");
+  const [typeFilter, setTypeFilter] = useState("all");
+  const [search, setSearch] = useState("");
+
+  const { data: content = [], isLoading } = useQuery<ContentRow[]>({
+    queryKey: ["/api/admin/analytics/content"],
+    queryFn: async () => {
+      const res = await fetch("/api/admin/analytics/content", { headers: getAuthHeaders(), credentials: "include" });
+      return res.json();
+    },
+  });
+
+  const filtered = content
+    .filter(c => typeFilter === "all" || c.media_type === typeFilter)
+    .filter(c => !search || c.title?.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => {
+      if (sort === "plays") return parseInt(b.total_plays as any) - parseInt(a.total_plays as any);
+      if (sort === "unique") return parseInt(b.unique_viewers as any) - parseInt(a.unique_viewers as any);
+      if (sort === "completions") return parseInt(b.completions as any) - parseInt(a.completions as any);
+      if (sort === "avgpct") return (b.avg_watch_pct ?? 0) - (a.avg_watch_pct ?? 0);
+      return 0;
+    });
+
+  const maxPlays = Math.max(...filtered.map(c => parseInt(c.total_plays as any)), 1);
+
+  return (
+    <div className="space-y-4">
+      {/* Filters */}
+      <div className="flex flex-wrap items-center gap-2">
+        <div className="relative flex-1 min-w-[180px] max-w-xs">
+          <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+          <Input placeholder="Search content…" className="pl-8" value={search} onChange={e => setSearch(e.target.value)} />
+        </div>
+        <Select value={typeFilter} onValueChange={setTypeFilter}>
+          <SelectTrigger className="w-32"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All types</SelectItem>
+            <SelectItem value="video">Videos</SelectItem>
+            <SelectItem value="audio">Audio</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={sort} onValueChange={v => setSort(v as any)}>
+          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="plays">Sort: Total plays</SelectItem>
+            <SelectItem value="unique">Sort: Unique viewers</SelectItem>
+            <SelectItem value="completions">Sort: Completions</SelectItem>
+            <SelectItem value="avgpct">Sort: Avg % watched</SelectItem>
+          </SelectContent>
+        </Select>
+        <p className="text-sm text-muted-foreground">{filtered.length} items</p>
       </div>
+
+      {isLoading ? (
+        <div className="animate-pulse space-y-2">{[1,2,3,4,5].map(i => <div key={i} className="h-14 bg-muted rounded" />)}</div>
+      ) : !filtered.length ? (
+        <div className="text-center py-12 text-muted-foreground">No content found yet. Data appears here once users start watching.</div>
+      ) : (
+        <div className="space-y-1">
+          <div className="grid grid-cols-[1fr_70px_70px_70px_100px_80px] gap-2 px-3 py-1.5 text-xs font-medium text-muted-foreground border-b">
+            <span>Title</span>
+            <span className="text-center">Plays</span>
+            <span className="text-center">Viewers</span>
+            <span className="text-center">Finished</span>
+            <span>Avg watched</span>
+            <span className="text-right">Last played</span>
+          </div>
+          {filtered.map(c => {
+            const plays = parseInt(c.total_plays as any);
+            const viewers = parseInt(c.unique_viewers as any);
+            const comps = parseInt(c.completions as any);
+            const compRate = viewers > 0 ? Math.round((comps / viewers) * 100) : 0;
+            const barPct = Math.round((plays / maxPlays) * 100);
+            return (
+              <div key={c.video_id} className="px-3 py-2.5 rounded-lg hover:bg-muted/40 space-y-1.5">
+                <div className="grid grid-cols-[1fr_70px_70px_70px_100px_80px] gap-2 items-center">
+                  <div className="min-w-0">
+                    <p className="text-sm font-medium truncate">{c.title || "Untitled"}</p>
+                    <div className="flex gap-1 mt-0.5">
+                      {c.media_type === "audio"
+                        ? <Badge variant="outline" className="text-[9px] h-4 text-purple-400 border-purple-400"><FileAudio className="h-2.5 w-2.5 mr-0.5" />Audio</Badge>
+                        : <Badge variant="outline" className="text-[9px] h-4 text-blue-400 border-blue-400"><Video className="h-2.5 w-2.5 mr-0.5" />Video</Badge>
+                      }
+                    </div>
+                  </div>
+                  <div className="text-center font-bold text-blue-500">{plays}</div>
+                  <div className="text-center font-bold text-indigo-400">{viewers}</div>
+                  <div className="text-center">
+                    <span className="font-bold text-green-500">{comps}</span>
+                    {viewers > 0 && <p className="text-[9px] text-muted-foreground">{compRate}%</p>}
+                  </div>
+                  <PctBar pct={c.avg_watch_pct !== null ? Math.round(c.avg_watch_pct) : null} />
+                  <p className="text-[11px] text-muted-foreground text-right">{relTime(c.last_played)}</p>
+                </div>
+                {/* Mini bar */}
+                <div className="h-1 bg-muted rounded-full overflow-hidden">
+                  <div className="h-full bg-primary/40 rounded-full" style={{ width: `${Math.max(barPct, 1)}%` }} />
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
@@ -250,12 +451,21 @@ function UserDetailView({ email, onBack }: { email: string; onBack: () => void }
 // ── Main Analytics Page ────────────────────────────────────────────────────
 export default function AdminAnalyticsPage() {
   const [selectedEmail, setSelectedEmail] = useState<string | null>(null);
-  const [tab, setTab] = useState<"overview" | "users" | "events">("overview");
+  const [tab, setTab] = useState<"overview" | "content" | "users" | "events">("overview");
   const [search, setSearch] = useState("");
   const [eventFilter, setEventFilter] = useState("all");
+  const [userSort, setUserSort] = useState<"last_active" | "video_plays" | "audio_plays">("last_active");
 
-  const { data: legacy, isLoading: legacyLoading } = useQuery<LegacyAnalytics>({
+  const { data: legacy, isLoading: legacyLoading, refetch: refetchLegacy } = useQuery<LegacyAnalytics>({
     queryKey: ["/api/admin/analytics"],
+  });
+
+  const { data: summary, isLoading: summaryLoading, refetch: refetchSummary } = useQuery<SummaryData>({
+    queryKey: ["/api/admin/analytics/summary"],
+    queryFn: async () => {
+      const res = await fetch("/api/admin/analytics/summary", { headers: getAuthHeaders(), credentials: "include" });
+      return res.json();
+    },
   });
 
   const { data: users = [], isLoading: usersLoading, refetch: refetchUsers } = useQuery<UserRow[]>({
@@ -269,51 +479,61 @@ export default function AdminAnalyticsPage() {
   const { data: events = [], isLoading: eventsLoading, refetch: refetchEvents } = useQuery<EventRow[]>({
     queryKey: ["/api/admin/analytics/events", eventFilter],
     queryFn: async () => {
-      const params = new URLSearchParams({ limit: "200" });
+      const params = new URLSearchParams({ limit: "300" });
       if (eventFilter !== "all") params.set("type", eventFilter);
       const res = await fetch(`/api/admin/analytics/events?${params}`, { headers: getAuthHeaders(), credentials: "include" });
       return res.json();
     },
   });
 
+  const handleRefreshAll = () => { refetchLegacy(); refetchSummary(); refetchUsers(); refetchEvents(); };
+
   // If a user is selected, show their detail view
   if (selectedEmail) {
     return <UserDetailView email={selectedEmail} onBack={() => setSelectedEmail(null)} />;
   }
 
-  const filteredUsers = users.filter(u =>
-    !search || u.user_email.toLowerCase().includes(search.toLowerCase()) || (u.family_name || "").toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredUsers = users
+    .filter(u => !search || u.user_email.toLowerCase().includes(search.toLowerCase()) || (u.family_name || "").toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => {
+      if (userSort === "video_plays") return parseInt(b.video_plays as any) - parseInt(a.video_plays as any);
+      if (userSort === "audio_plays") return parseInt(b.audio_plays as any) - parseInt(a.audio_plays as any);
+      return new Date(b.last_active).getTime() - new Date(a.last_active).getTime();
+    });
+
+  const t = summary?.totals;
+  const cs = summary?.completionStats;
+  const overallCompRate = cs && parseInt(cs.total_count as any) > 0
+    ? Math.round((parseInt(cs.completed_count as any) / parseInt(cs.total_count as any)) * 100)
+    : null;
+
+  const trendMax = Math.max(...(summary?.dailyTrend.map(d => parseInt(d.unique_users as any)) || [1]), 1);
 
   const formatDay = (dateStr: string) => {
     const d = new Date(dateStr);
     return d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
   };
 
-  const maxDayUsers = Math.max(...(legacy?.activityByDay.map(d => parseInt(d.unique_users as any)) || [1]), 1);
-
   return (
     <div className="p-6 space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Analytics</h1>
-        <div className="flex items-center gap-2">
-          <Button variant="outline" size="sm" onClick={() => { refetchUsers(); refetchEvents(); }} className="gap-1">
-            <RefreshCw className="h-3.5 w-3.5" />Refresh
-          </Button>
-        </div>
+        <Button variant="outline" size="sm" onClick={handleRefreshAll} className="gap-1">
+          <RefreshCw className="h-3.5 w-3.5" />Refresh
+        </Button>
       </div>
 
       {/* Tab switcher */}
-      <div className="flex gap-1 border-b">
-        {(["overview", "users", "events"] as const).map(t => (
+      <div className="flex gap-1 border-b overflow-x-auto">
+        {(["overview", "content", "users", "events"] as const).map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`px-4 py-2 text-sm font-medium capitalize transition-colors border-b-2 -mb-px ${
+            className={`px-4 py-2 text-sm font-medium whitespace-nowrap transition-colors border-b-2 -mb-px ${
               tab === t ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
-            {t === "overview" ? "Overview" : t === "users" ? `Users (${users.length})` : `Live Feed`}
+            {t === "overview" ? "Overview" : t === "content" ? "Content" : t === "users" ? `Members (${users.length})` : "Live Feed"}
           </button>
         ))}
       </div>
@@ -321,66 +541,61 @@ export default function AdminAnalyticsPage() {
       {/* ── OVERVIEW TAB ── */}
       {tab === "overview" && (
         <div className="space-y-6">
-          <p className="text-muted-foreground text-sm">Active users = subscribers who watched at least one video in the period.</p>
-
-          {/* Summary cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card data-testid="stat-daily-active">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Active Today</CardTitle>
-                <Users className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-4xl font-bold">{legacyLoading ? "—" : (legacy?.dailyActiveUsers ?? 0)}</div>
-                <p className="text-xs text-muted-foreground mt-1">unique subscribers in last 24h</p>
-              </CardContent>
-            </Card>
-
-            <Card data-testid="stat-weekly-active">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Active This Week</CardTitle>
-                <TrendingUp className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-4xl font-bold">{legacyLoading ? "—" : (legacy?.weeklyActiveUsers ?? 0)}</div>
-                <p className="text-xs text-muted-foreground mt-1">unique subscribers in last 7 days</p>
-              </CardContent>
-            </Card>
-
-            <Card data-testid="stat-monthly-active">
-              <CardHeader className="flex flex-row items-center justify-between pb-2">
-                <CardTitle className="text-sm font-medium text-muted-foreground">Active This Month</CardTitle>
-                <Calendar className="h-4 w-4 text-muted-foreground" />
-              </CardHeader>
-              <CardContent>
-                <div className="text-4xl font-bold">{legacyLoading ? "—" : (legacy?.monthlyActiveUsers ?? 0)}</div>
-                <p className="text-xs text-muted-foreground mt-1">unique subscribers in last 30 days</p>
-              </CardContent>
-            </Card>
+          {/* Platform-wide stats */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <StatCard label="Active today" value={legacyLoading ? "—" : (legacy?.dailyActiveUsers ?? 0)} icon={Users} color="text-blue-500" />
+            <StatCard label="Active this week" value={legacyLoading ? "—" : (legacy?.weeklyActiveUsers ?? 0)} icon={TrendingUp} color="text-indigo-500" />
+            <StatCard label="Active this month" value={legacyLoading ? "—" : (legacy?.monthlyActiveUsers ?? 0)} icon={Calendar} color="text-violet-500" />
+            <StatCard label="Total video plays" value={summaryLoading ? "—" : (t?.total_video_plays ?? 0)} icon={Play} color="text-blue-400" />
+            <StatCard label="Total audio plays" value={summaryLoading ? "—" : (t?.total_audio_plays ?? 0)} icon={Music} color="text-purple-400" />
+            <StatCard label="Total completions" value={summaryLoading ? "—" : (t?.total_completions ?? 0)} icon={CheckCircle2} color="text-green-500" />
           </div>
 
-          {/* Daily activity chart */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <StatCard label="Total logins" value={summaryLoading ? "—" : (t?.total_logins ?? 0)} icon={LogIn} color="text-emerald-500" />
+            <StatCard label="Tracked members" value={summaryLoading ? "—" : (t?.total_tracked_users ?? 0)} icon={Users} color="text-cyan-500" />
+            <StatCard label="Overall completion rate" value={overallCompRate !== null ? `${overallCompRate}%` : "—"} icon={Percent} color="text-amber-500" sub="of started sessions" />
+            <StatCard label="Avg % watched" value={cs?.avg_watch_pct != null ? `${Math.round(cs.avg_watch_pct as any)}%` : "—"} icon={BarChart3} color="text-orange-500" sub="across all content" />
+          </div>
+
+          {/* Subscription breakdown */}
+          {summary?.subscriptionBreakdown && summary.subscriptionBreakdown.length > 0 && (
+            <Card>
+              <CardHeader><CardTitle className="text-sm flex items-center gap-2"><Users className="h-4 w-4" />Subscription Status Breakdown</CardTitle></CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-4">
+                  {summary.subscriptionBreakdown.map(sb => (
+                    <div key={sb.subscription_status} className="flex items-center gap-2">
+                      <span className={`text-2xl font-bold ${statColor(sb.subscription_status)}`}>{sb.count}</span>
+                      <span className="text-sm text-muted-foreground capitalize">{sb.subscription_status || "unknown"}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {/* 30-day daily trend */}
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Eye className="h-4 w-4" />Daily Activity — Last 14 Days</CardTitle>
-            </CardHeader>
+            <CardHeader><CardTitle className="flex items-center gap-2"><Eye className="h-4 w-4" />Daily Activity — Last 30 Days</CardTitle></CardHeader>
             <CardContent>
-              {!legacy?.activityByDay.length ? (
+              {!summary?.dailyTrend.length ? (
                 <p className="text-muted-foreground text-sm">No activity recorded yet.</p>
               ) : (
-                <div className="space-y-2">
-                  {[...legacy.activityByDay].reverse().map((day) => {
+                <div className="space-y-1.5 max-h-96 overflow-y-auto">
+                  {[...summary.dailyTrend].reverse().map((day) => {
                     const usersCount = parseInt(day.unique_users as any);
-                    const views = parseInt(day.total_views as any);
-                    const pct = Math.round((usersCount / maxDayUsers) * 100);
+                    const plays = parseInt(day.video_plays as any) + parseInt(day.audio_plays as any);
+                    const comps = parseInt(day.completions as any);
+                    const pct = Math.round((usersCount / trendMax) * 100);
                     return (
                       <div key={day.day} className="flex items-center gap-3">
                         <span className="text-xs text-muted-foreground w-28 shrink-0">{formatDay(day.day)}</span>
-                        <div className="flex-1 bg-muted rounded-full h-5 overflow-hidden">
-                          <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${Math.max(pct, 2)}%` }} />
+                        <div className="flex-1 bg-muted rounded-full h-4 overflow-hidden">
+                          <div className="h-full bg-primary rounded-full transition-all" style={{ width: `${Math.max(pct, 1)}%` }} />
                         </div>
-                        <span className="text-xs font-medium w-28 text-right shrink-0">
-                          {usersCount} {usersCount === 1 ? "user" : "users"} · {views} views
+                        <span className="text-xs font-medium w-52 text-right shrink-0">
+                          {usersCount} {usersCount === 1 ? "user" : "users"} · {plays} plays · {comps} finished
                         </span>
                       </div>
                     );
@@ -391,23 +606,23 @@ export default function AdminAnalyticsPage() {
           </Card>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {/* Most active users */}
+            {/* Most active members */}
             <Card>
               <CardHeader><CardTitle className="text-base">Most Active Members (30 days)</CardTitle></CardHeader>
               <CardContent>
                 {!legacy?.topUsers.length ? (
                   <p className="text-muted-foreground text-sm">No activity yet.</p>
                 ) : (
-                  <div className="space-y-3">
-                    {legacy.topUsers.map((u, i) => (
-                      <div key={u.email} className="flex items-center justify-between gap-3 cursor-pointer hover:bg-muted/50 rounded p-1 -mx-1" onClick={() => { setSelectedEmail(u.email); }}>
+                  <div className="space-y-2">
+                    {legacy.topUsers.map((u) => (
+                      <div key={u.email} className="flex items-center justify-between gap-3 cursor-pointer hover:bg-muted/50 rounded p-1.5 -mx-1.5" onClick={() => setSelectedEmail(u.email)}>
                         <div className="min-w-0">
                           <p className="text-sm font-medium truncate">{u.family_name || u.email}</p>
                           <p className="text-xs text-muted-foreground truncate">{u.email}</p>
                           <p className="text-xs text-muted-foreground">Last active: {relTime(u.last_active)}</p>
                         </div>
                         <div className="text-right shrink-0 ml-4">
-                          <span className="text-lg font-bold">{u.videos_watched}</span>
+                          <span className="text-lg font-bold text-blue-500">{u.videos_watched}</span>
                           <p className="text-xs text-muted-foreground">videos</p>
                         </div>
                       </div>
@@ -417,19 +632,19 @@ export default function AdminAnalyticsPage() {
               </CardContent>
             </Card>
 
-            {/* Most popular videos */}
+            {/* Most popular content */}
             <Card>
-              <CardHeader><CardTitle className="text-base">Most Popular Videos (30 days)</CardTitle></CardHeader>
+              <CardHeader><CardTitle className="text-base">Most Popular Content (30 days)</CardTitle></CardHeader>
               <CardContent>
                 {!legacy?.topVideos.length ? (
                   <p className="text-muted-foreground text-sm">No views recorded yet.</p>
                 ) : (
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     {legacy.topVideos.map((v, i) => (
                       <div key={i} className="flex items-center justify-between gap-3">
                         <p className="text-sm truncate min-w-0">{v.title}</p>
                         <div className="text-right shrink-0">
-                          <span className="text-lg font-bold">{v.unique_viewers}</span>
+                          <span className="text-lg font-bold text-indigo-500">{v.unique_viewers}</span>
                           <p className="text-xs text-muted-foreground">{parseInt(v.unique_viewers as any) === 1 ? "viewer" : "viewers"}</p>
                         </div>
                       </div>
@@ -442,14 +657,25 @@ export default function AdminAnalyticsPage() {
         </div>
       )}
 
-      {/* ── USERS TAB ── */}
+      {/* ── CONTENT TAB ── */}
+      {tab === "content" && <ContentTab />}
+
+      {/* ── MEMBERS TAB ── */}
       {tab === "users" && (
         <div className="space-y-4">
-          <div className="flex items-center gap-2">
-            <div className="relative flex-1 max-w-sm">
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="relative flex-1 min-w-[180px] max-w-sm">
               <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
               <Input placeholder="Search by email or name…" className="pl-8" value={search} onChange={e => setSearch(e.target.value)} />
             </div>
+            <Select value={userSort} onValueChange={v => setUserSort(v as any)}>
+              <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="last_active">Sort: Last active</SelectItem>
+                <SelectItem value="video_plays">Sort: Most videos</SelectItem>
+                <SelectItem value="audio_plays">Sort: Most audio</SelectItem>
+              </SelectContent>
+            </Select>
             <p className="text-sm text-muted-foreground">{filteredUsers.length} member{filteredUsers.length !== 1 ? "s" : ""}</p>
           </div>
 
@@ -457,40 +683,36 @@ export default function AdminAnalyticsPage() {
             <div className="animate-pulse space-y-2">{[1,2,3,4,5].map(i => <div key={i} className="h-16 bg-muted rounded" />)}</div>
           ) : !filteredUsers.length ? (
             <div className="text-center py-12 text-muted-foreground">
-              {search ? "No members match that search." : "No activity tracked yet. Activity will appear here once members start using the site."}
+              {search ? "No members match that search." : "No activity tracked yet."}
             </div>
           ) : (
             <div className="space-y-1">
-              {/* Header */}
-              <div className="grid grid-cols-[1fr_80px_80px_80px_100px] gap-2 px-3 py-1.5 text-xs font-medium text-muted-foreground border-b">
+              <div className="grid grid-cols-[1fr_70px_70px_80px_90px] gap-2 px-3 py-1.5 text-xs font-medium text-muted-foreground border-b">
                 <span>Member</span>
-                <span className="text-center">Video plays</span>
-                <span className="text-center">Audio plays</span>
-                <span className="text-center">Unique videos</span>
+                <span className="text-center">Videos</span>
+                <span className="text-center">Audio</span>
+                <span className="text-center">Unique content</span>
                 <span className="text-right">Last active</span>
               </div>
               {filteredUsers.map(u => (
                 <div
                   key={u.user_email}
-                  className="grid grid-cols-[1fr_80px_80px_80px_100px] gap-2 px-3 py-2.5 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
+                  className="grid grid-cols-[1fr_70px_70px_80px_90px] gap-2 px-3 py-2.5 rounded-lg hover:bg-muted/50 cursor-pointer transition-colors"
                   onClick={() => setSelectedEmail(u.user_email)}
                 >
                   <div className="min-w-0">
                     <p className="text-sm font-medium truncate">{u.family_name || u.user_email}</p>
                     <p className="text-xs text-muted-foreground truncate">{u.user_email}</p>
+                    {u.subscription_status && (
+                      <Badge variant="outline" className={`text-[9px] h-4 mt-0.5 ${statColor(u.subscription_status)} border-current`}>
+                        {u.subscription_status}
+                      </Badge>
+                    )}
                   </div>
-                  <div className="text-center">
-                    <span className="text-sm font-bold text-blue-500">{u.video_plays}</span>
-                  </div>
-                  <div className="text-center">
-                    <span className="text-sm font-bold text-purple-500">{u.audio_plays}</span>
-                  </div>
-                  <div className="text-center">
-                    <span className="text-sm font-bold">{u.unique_videos}</span>
-                  </div>
-                  <div className="text-right text-xs text-muted-foreground">
-                    {u.last_active ? relTime(u.last_active) : "never"}
-                  </div>
+                  <div className="text-center"><span className="text-sm font-bold text-blue-500">{u.video_plays}</span></div>
+                  <div className="text-center"><span className="text-sm font-bold text-purple-500">{u.audio_plays}</span></div>
+                  <div className="text-center"><span className="text-sm font-bold text-indigo-400">{u.unique_videos}</span></div>
+                  <div className="text-right"><span className="text-xs text-muted-foreground">{relTime(u.last_active)}</span></div>
                 </div>
               ))}
             </div>
@@ -498,57 +720,47 @@ export default function AdminAnalyticsPage() {
         </div>
       )}
 
-      {/* ── EVENTS / LIVE FEED TAB ── */}
+      {/* ── LIVE FEED TAB ── */}
       {tab === "events" && (
         <div className="space-y-4">
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <Select value={eventFilter} onValueChange={setEventFilter}>
-              <SelectTrigger className="w-44">
-                <SelectValue placeholder="Filter by type" />
-              </SelectTrigger>
+              <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All events</SelectItem>
                 <SelectItem value="video_play">Video plays</SelectItem>
                 <SelectItem value="audio_play">Audio plays</SelectItem>
                 <SelectItem value="video_complete">Completions</SelectItem>
                 <SelectItem value="login">Logins</SelectItem>
-                <SelectItem value="page_view">Page views</SelectItem>
                 <SelectItem value="video_save">Saves</SelectItem>
                 <SelectItem value="video_like">Likes</SelectItem>
+                <SelectItem value="page_view">Page views</SelectItem>
               </SelectContent>
             </Select>
-            <Button variant="outline" size="sm" onClick={() => refetchEvents()} className="gap-1">
-              <RefreshCw className="h-3.5 w-3.5" />Refresh
-            </Button>
-            <p className="text-sm text-muted-foreground">{events.length} events shown</p>
+            <Button variant="outline" size="sm" onClick={() => refetchEvents()} className="gap-1"><RefreshCw className="h-3.5 w-3.5" />Refresh</Button>
+            <p className="text-sm text-muted-foreground">{events.length} events</p>
           </div>
 
           {eventsLoading ? (
             <div className="animate-pulse space-y-2">{[1,2,3,4,5].map(i => <div key={i} className="h-12 bg-muted rounded" />)}</div>
           ) : !events.length ? (
-            <div className="text-center py-12 text-muted-foreground">No events recorded yet.</div>
+            <div className="text-center py-12 text-muted-foreground">No events found.</div>
           ) : (
-            <div className="space-y-1">
-              {/* Header */}
-              <div className="grid grid-cols-[140px_1fr_160px_90px] gap-2 px-3 py-1.5 text-xs font-medium text-muted-foreground border-b">
-                <span>Email</span>
-                <span>Event</span>
-                <span>Content</span>
-                <span className="text-right">When</span>
-              </div>
-              {events.map(ev => (
-                <div
-                  key={ev.id}
-                  className="grid grid-cols-[140px_1fr_160px_90px] gap-2 px-3 py-2 rounded hover:bg-muted/40 cursor-pointer text-sm"
-                  onClick={() => setSelectedEmail(ev.user_email)}
-                >
-                  <span className="truncate text-xs text-muted-foreground" title={ev.user_email}>{ev.user_email}</span>
-                  <span className="flex items-center gap-1.5 font-medium">
-                    <EventIcon type={ev.event_type} />
-                    <EventLabel type={ev.event_type} />
-                  </span>
-                  <span className="truncate text-xs text-muted-foreground">{ev.resource_title || ""}</span>
-                  <span className="text-right text-xs text-muted-foreground">{relTime(ev.created_at)}</span>
+            <div className="space-y-0.5">
+              {events.map((ev, i) => (
+                <div key={i} className="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-muted/40 text-sm">
+                  <EventIcon type={ev.event_type} />
+                  <div className="min-w-0 flex-1">
+                    <span
+                      className="font-medium text-blue-400 hover:underline cursor-pointer"
+                      onClick={() => setSelectedEmail(ev.user_email)}
+                    >
+                      {ev.family_name || ev.user_email}
+                    </span>
+                    <span className="text-muted-foreground"> {EVENT_LABELS[ev.event_type]?.label?.toLowerCase() || ev.event_type}</span>
+                    {ev.resource_title && <span className="text-muted-foreground"> — <span className="text-foreground">{ev.resource_title}</span></span>}
+                  </div>
+                  <span className="text-[10px] text-muted-foreground shrink-0">{relTime(ev.created_at)}</span>
                 </div>
               ))}
             </div>

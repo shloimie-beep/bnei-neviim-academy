@@ -847,33 +847,32 @@ function LegacyVideoPlayer({ video, onClose, onMinimize }: { video: VideoType; o
     }
   };
 
-  // Save progress to server every 15 seconds while playing
+  // Reset refs when video changes so we don't save stale position for new video
+  useEffect(() => {
+    currentTimeRef.current = 0;
+    durationRef.current = 0;
+    isEndedRef.current = false;
+  }, [currentVideo.id]);
+
+  // Save progress to server every 10 seconds while playing, and on unmount
   useEffect(() => {
     const vid = currentVideo.id;
-    const interval = setInterval(() => {
+    const save = (forceComplete?: boolean) => {
       const pos = currentTimeRef.current;
       const dur = durationRef.current;
-      if (pos > 2 && dur > 0) {
-        apiRequest("POST", `/api/videos/${vid}/progress`, {
-          positionSeconds: Math.round(pos),
-          durationSeconds: Math.round(dur),
-          completed: false,
-        }).catch(() => {});
-      }
-    }, 15000);
-    // Save on unmount (user closed the player)
+      if (pos < 3 || dur <= 0) return;
+      const completed = forceComplete || isEndedRef.current || (pos / dur >= 0.95);
+      apiRequest("POST", `/api/videos/${vid}/progress`, {
+        positionSeconds: Math.round(pos),
+        durationSeconds: Math.round(dur),
+        completed,
+      }).catch(() => {});
+    };
+    const interval = setInterval(() => save(), 10000);
     return () => {
       clearInterval(interval);
-      const pos = currentTimeRef.current;
-      const dur = durationRef.current;
-      const completed = isEndedRef.current || (dur > 0 && pos / dur >= 0.95);
-      if (pos > 2 && dur > 0) {
-        apiRequest("POST", `/api/videos/${vid}/progress`, {
-          positionSeconds: Math.round(pos),
-          durationSeconds: Math.round(dur),
-          completed,
-        }).catch(() => {});
-      }
+      // On unmount save final position (unless already saved as complete by handleEnded)
+      if (!isEndedRef.current) save();
     };
   }, [currentVideo.id]);
 

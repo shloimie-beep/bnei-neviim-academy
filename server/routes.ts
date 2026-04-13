@@ -5870,7 +5870,7 @@ export async function registerRoutes(
   app.get("/api/admin/analytics/user/:email", requireAdmin, async (req, res) => {
     try {
       const email = req.params.email;
-      const [events, videoStats, summary, progressData] = await Promise.all([
+      const [events, videoStats, summary, progressData, favData, watchTime] = await Promise.all([
         pool.query(
           `SELECT ae.event_type, ae.resource_id, ae.resource_title, ae.resource_type, ae.metadata, ae.created_at
            FROM activity_events ae WHERE ae.user_email = $1 ORDER BY ae.created_at DESC LIMIT 500`,
@@ -5879,7 +5879,7 @@ export async function registerRoutes(
         pool.query(
           `SELECT ae.resource_title, ae.resource_id, COUNT(*) as play_count, MAX(ae.created_at) as last_played
            FROM activity_events ae
-           WHERE ae.user_email = $1 AND ae.event_type = 'video_play'
+           WHERE ae.user_email = $1 AND ae.event_type IN ('video_play', 'audio_play')
            GROUP BY ae.resource_id, ae.resource_title
            ORDER BY play_count DESC`,
           [email]
@@ -5891,6 +5891,7 @@ export async function registerRoutes(
              COUNT(*) FILTER (WHERE event_type = 'video_complete') as total_completions,
              COUNT(*) FILTER (WHERE event_type = 'login') as total_logins,
              COUNT(DISTINCT resource_id) FILTER (WHERE event_type = 'video_play') as unique_videos_watched,
+             COUNT(DISTINCT resource_id) FILTER (WHERE event_type = 'audio_play') as unique_audio_played,
              MIN(created_at) as first_seen,
              MAX(created_at) as last_active
            FROM activity_events WHERE user_email = $1`,
@@ -5906,13 +5907,44 @@ export async function registerRoutes(
            ORDER BY vp.updated_at DESC`,
           [email]
         ),
+        // Saved/favorited videos
+        pool.query(
+          `SELECT v.title, vf.created_at
+           FROM video_favorites vf
+           JOIN users u ON u.id = vf.user_id
+           LEFT JOIN videos v ON v.id = vf.video_id
+           WHERE u.email = $1
+           ORDER BY vf.created_at DESC`,
+          [email]
+        ),
+        // Total watch time from watch_time_logs
+        pool.query(
+          `SELECT COALESCE(SUM(wtl.seconds), 0) as total_seconds
+           FROM watch_time_logs wtl
+           JOIN users u ON u.id = wtl.user_id
+           WHERE u.email = $1`,
+          [email]
+        ),
       ]);
+      // Compute completion rate from progress data
+      const prog = progressData.rows;
+      const completedCount = prog.filter((r: any) => r.completed || (r.duration_seconds > 0 && r.position_seconds / r.duration_seconds >= 0.95)).length;
+      const avgWatchPct = prog.length > 0
+        ? Math.round(prog.filter((r: any) => r.duration_seconds > 0).reduce((sum: number, r: any) => sum + (r.position_seconds / r.duration_seconds) * 100, 0) / Math.max(prog.filter((r: any) => r.duration_seconds > 0).length, 1))
+        : null;
       res.json({
         email,
-        summary: summary.rows[0],
+        summary: {
+          ...summary.rows[0],
+          completion_rate: prog.length > 0 ? Math.round((completedCount / prog.length) * 100) : null,
+          avg_watch_pct: avgWatchPct,
+          total_watch_seconds: parseInt(watchTime.rows[0]?.total_seconds || "0"),
+          favorites_count: favData.rows.length,
+        },
         videoStats: videoStats.rows,
         recentEvents: events.rows,
         progressData: progressData.rows,
+        favoritesData: favData.rows,
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to get user analytics" });
@@ -5942,6 +5974,94 @@ export async function registerRoutes(
       res.json(result.rows);
     } catch (error) {
       res.status(500).json({ message: "Failed to get user list" });
+    }
+  });
+
+  // GET /api/admin/analytics/content — per-video aggregated stats
+  app.get("/api/admin/analytics/content", requireAdmin, async (req, res) => {
+    try {
+      const result = await pool.query(`
+        SELECT
+          ae.resource_id as video_id,
+          ae.resource_title as title,
+          ae.resource_type as media_type,
+          COUNT(*) as total_plays,
+          COUNT(DISTINCT ae.user_email) as unique_viewers,
+          COUNT(*) FILTER (WHERE ae.event_type = 'video_complete') as completions,
+          MAX(ae.created_at) as last_played,
+          ROUND(
+            AVG(
+              CASE WHEN vp.duration_seconds > 0
+                THEN (vp.position_seconds::float / vp.duration_seconds::float) * 100
+                ELSE NULL
+              END
+            )
+          ) as avg_watch_pct
+        FROM activity_events ae
+        LEFT JOIN video_progress vp ON vp.video_id = ae.resource_id
+          AND vp.user_id = (SELECT id FROM users WHERE email = ae.user_email LIMIT 1)
+        WHERE ae.event_type IN ('video_play', 'audio_play', 'video_complete')
+          AND ae.resource_id IS NOT NULL
+        GROUP BY ae.resource_id, ae.resource_title, ae.resource_type
+        ORDER BY total_plays DESC
+        LIMIT 100
+      `);
+      res.json(result.rows);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get content analytics" });
+    }
+  });
+
+  // GET /api/admin/analytics/summary — platform-wide totals
+  app.get("/api/admin/analytics/summary", requireAdmin, async (req, res) => {
+    try {
+      const [totals, subBreakdown, completionRate, avgSession] = await Promise.all([
+        pool.query(`
+          SELECT
+            COUNT(*) FILTER (WHERE event_type = 'video_play') as total_video_plays,
+            COUNT(*) FILTER (WHERE event_type = 'audio_play') as total_audio_plays,
+            COUNT(*) FILTER (WHERE event_type = 'video_complete') as total_completions,
+            COUNT(*) FILTER (WHERE event_type = 'login') as total_logins,
+            COUNT(DISTINCT user_email) as total_tracked_users,
+            COUNT(DISTINCT resource_id) FILTER (WHERE event_type IN ('video_play','audio_play')) as total_unique_content_played
+          FROM activity_events
+        `),
+        pool.query(`
+          SELECT subscription_status, COUNT(*) as count
+          FROM users
+          WHERE role = 'customer'
+          GROUP BY subscription_status
+        `),
+        pool.query(`
+          SELECT
+            COUNT(*) FILTER (WHERE completed = true) as completed_count,
+            COUNT(*) as total_count,
+            ROUND(AVG(CASE WHEN duration_seconds > 0 THEN (position_seconds::float / duration_seconds::float) * 100 ELSE NULL END)) as avg_watch_pct
+          FROM video_progress
+          WHERE duration_seconds > 0
+        `),
+        pool.query(`
+          SELECT
+            DATE_TRUNC('day', created_at) as day,
+            COUNT(DISTINCT user_email) as unique_users,
+            COUNT(*) as total_events,
+            COUNT(*) FILTER (WHERE event_type = 'video_play') as video_plays,
+            COUNT(*) FILTER (WHERE event_type = 'audio_play') as audio_plays,
+            COUNT(*) FILTER (WHERE event_type = 'video_complete') as completions
+          FROM activity_events
+          WHERE created_at > NOW() - INTERVAL '30 days'
+          GROUP BY DATE_TRUNC('day', created_at)
+          ORDER BY day DESC
+        `),
+      ]);
+      res.json({
+        totals: totals.rows[0],
+        subscriptionBreakdown: subBreakdown.rows,
+        completionStats: completionRate.rows[0],
+        dailyTrend: avgSession.rows,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get analytics summary" });
     }
   });
 
