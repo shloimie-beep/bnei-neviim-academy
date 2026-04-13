@@ -6065,6 +6065,107 @@ export async function registerRoutes(
     }
   });
 
+  // GET /api/admin/analytics/retention — growth, at-risk, power users, peak hours
+  app.get("/api/admin/analytics/retention", requireAdmin, async (req, res) => {
+    try {
+      const [growth, atRisk, powerUsers, peakHours, neverActive, binge] = await Promise.all([
+        // New signups per week (last 12 weeks)
+        pool.query(`
+          SELECT
+            DATE_TRUNC('week', created_at) as week,
+            COUNT(*) as new_users,
+            COUNT(*) FILTER (WHERE subscription_status IN ('active','trialing','trial')) as paid_signups
+          FROM users
+          WHERE role = 'customer' AND created_at > NOW() - INTERVAL '12 weeks'
+          GROUP BY DATE_TRUNC('week', created_at)
+          ORDER BY week DESC
+        `),
+        // At-risk: active subscribers who haven't logged in or watched anything for 30+ days
+        pool.query(`
+          SELECT u.email, u.family_name, u.subscription_status, u.created_at,
+            MAX(ae.created_at) as last_activity
+          FROM users u
+          LEFT JOIN activity_events ae ON ae.user_email = u.email
+          WHERE u.role = 'customer'
+            AND u.subscription_status IN ('active', 'trialing', 'trial')
+          GROUP BY u.email, u.family_name, u.subscription_status, u.created_at
+          HAVING MAX(ae.created_at) < NOW() - INTERVAL '30 days'
+             OR MAX(ae.created_at) IS NULL
+          ORDER BY last_activity ASC NULLS FIRST
+          LIMIT 20
+        `),
+        // Power users: top 10 by total video + audio plays (all time)
+        pool.query(`
+          SELECT ae.user_email, u.family_name, u.subscription_status,
+            COUNT(*) FILTER (WHERE ae.event_type = 'video_play') as video_plays,
+            COUNT(*) FILTER (WHERE ae.event_type = 'audio_play') as audio_plays,
+            COUNT(*) FILTER (WHERE ae.event_type = 'video_complete') as completions,
+            COUNT(*) as total_plays,
+            MAX(ae.created_at) as last_active
+          FROM activity_events ae
+          LEFT JOIN users u ON u.email = ae.user_email
+          WHERE ae.event_type IN ('video_play', 'audio_play', 'video_complete')
+          GROUP BY ae.user_email, u.family_name, u.subscription_status
+          ORDER BY total_plays DESC
+          LIMIT 10
+        `),
+        // Peak hours: which hour of the day (UTC) sees the most activity
+        pool.query(`
+          SELECT
+            EXTRACT(HOUR FROM created_at) as hour,
+            COUNT(*) FILTER (WHERE event_type IN ('video_play','audio_play')) as plays,
+            COUNT(DISTINCT user_email) as unique_users
+          FROM activity_events
+          WHERE created_at > NOW() - INTERVAL '60 days'
+          GROUP BY EXTRACT(HOUR FROM created_at)
+          ORDER BY hour
+        `),
+        // Subscribed but never watched anything
+        pool.query(`
+          SELECT u.email, u.family_name, u.subscription_status, u.created_at
+          FROM users u
+          LEFT JOIN activity_events ae ON ae.user_email = u.email
+            AND ae.event_type IN ('video_play', 'audio_play')
+          WHERE u.role = 'customer'
+            AND u.subscription_status IN ('active', 'trialing', 'trial')
+            AND ae.id IS NULL
+          ORDER BY u.created_at DESC
+          LIMIT 10
+        `),
+        // Binge watchers: users who watched 3+ items in a single day
+        pool.query(`
+          SELECT ae.user_email, u.family_name,
+            MAX(daily_plays) as max_day_plays,
+            COUNT(DISTINCT play_day) as binge_days
+          FROM (
+            SELECT user_email, DATE_TRUNC('day', created_at) as play_day,
+              COUNT(*) as daily_plays
+            FROM activity_events
+            WHERE event_type IN ('video_play', 'audio_play')
+            GROUP BY user_email, DATE_TRUNC('day', created_at)
+            HAVING COUNT(*) >= 3
+          ) sub
+          JOIN activity_events ae ON ae.user_email = sub.user_email
+          LEFT JOIN users u ON u.email = ae.user_email
+          GROUP BY ae.user_email, u.family_name
+          ORDER BY max_day_plays DESC
+          LIMIT 8
+        `),
+      ]);
+      res.json({
+        growth: growth.rows,
+        atRisk: atRisk.rows,
+        powerUsers: powerUsers.rows,
+        peakHours: peakHours.rows,
+        neverActive: neverActive.rows,
+        bingeWatchers: binge.rows,
+      });
+    } catch (error) {
+      console.error("Retention analytics error:", error);
+      res.status(500).json({ message: "Failed to get retention analytics" });
+    }
+  });
+
   // Analytics: daily/weekly active users and engagement stats
   app.get("/api/admin/analytics", requireAdmin, async (req, res) => {
     try {

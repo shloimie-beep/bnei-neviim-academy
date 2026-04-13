@@ -9,6 +9,7 @@ import {
   Users, TrendingUp, Eye, Calendar, Play, Music, LogIn, Heart,
   ArrowLeft, Search, RefreshCw, Activity, Star, Clock, CheckCircle2,
   BarChart3, Pause, Video, FileAudio, ThumbsUp, Bookmark, Percent,
+  AlertTriangle, Flame, Zap, UserX, Moon,
 } from "lucide-react";
 import { getAuthHeaders } from "@/lib/auth-context";
 
@@ -102,6 +103,15 @@ interface UserDetail {
   recentEvents: EventRow[];
   progressData: ProgressRow[];
   favoritesData: FavoriteRow[];
+}
+
+interface RetentionData {
+  growth: { week: string; new_users: number; paid_signups: number }[];
+  atRisk: { email: string; family_name: string | null; subscription_status: string; created_at: string; last_activity: string | null }[];
+  powerUsers: { user_email: string; family_name: string | null; subscription_status: string; video_plays: number; audio_plays: number; completions: number; total_plays: number; last_active: string }[];
+  peakHours: { hour: number; plays: number; unique_users: number }[];
+  neverActive: { email: string; family_name: string | null; subscription_status: string; created_at: string }[];
+  bingeWatchers: { user_email: string; family_name: string | null; max_day_plays: number; binge_days: number }[];
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -448,10 +458,218 @@ function ContentTab() {
   );
 }
 
+// ── Retention Tab ──────────────────────────────────────────────────────────
+function RetentionTab({ onSelectEmail }: { onSelectEmail: (email: string) => void }) {
+  const { data, isLoading } = useQuery<RetentionData>({
+    queryKey: ["/api/admin/analytics/retention"],
+    queryFn: async () => {
+      const res = await fetch("/api/admin/analytics/retention", { headers: getAuthHeaders(), credentials: "include" });
+      return res.json();
+    },
+  });
+
+  if (isLoading) return <div className="animate-pulse space-y-3">{[1,2,3,4].map(i => <div key={i} className="h-36 bg-muted rounded" />)}</div>;
+  if (!data) return null;
+
+  const peakMax = Math.max(...(data.peakHours.map(h => parseInt(h.plays as any))), 1);
+  const growthMax = Math.max(...(data.growth.map(g => parseInt(g.new_users as any))), 1);
+
+  const formatWeek = (dateStr: string) => {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  };
+
+  const formatHour = (h: number) => {
+    if (h === 0) return "12am";
+    if (h < 12) return `${h}am`;
+    if (h === 12) return "12pm";
+    return `${h - 12}pm`;
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Summary alert row */}
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+        <StatCard label="At-risk subscribers" value={data.atRisk.length} icon={AlertTriangle} color="text-amber-500" sub="No activity 30+ days" />
+        <StatCard label="Never watched" value={data.neverActive.length} icon={UserX} color="text-red-500" sub="Subscribed, no plays" />
+        <StatCard label="Power users" value={data.powerUsers.length} icon={Flame} color="text-orange-500" sub="All-time top watchers" />
+        <StatCard label="Binge watchers" value={data.bingeWatchers.length} icon={Zap} color="text-yellow-500" sub="3+ plays in a day" />
+      </div>
+
+      {/* Growth chart */}
+      <Card>
+        <CardHeader><CardTitle className="flex items-center gap-2"><TrendingUp className="h-4 w-4" />New Signups — Last 12 Weeks</CardTitle></CardHeader>
+        <CardContent>
+          {!data.growth.length ? (
+            <p className="text-sm text-muted-foreground">No signup data yet.</p>
+          ) : (
+            <div className="space-y-1.5">
+              {[...data.growth].reverse().map(g => {
+                const total = parseInt(g.new_users as any);
+                const paid = parseInt(g.paid_signups as any);
+                const pct = Math.round((total / growthMax) * 100);
+                return (
+                  <div key={g.week} className="flex items-center gap-3">
+                    <span className="text-xs text-muted-foreground w-20 shrink-0">Wk {formatWeek(g.week)}</span>
+                    <div className="flex-1 bg-muted rounded-full h-4 overflow-hidden">
+                      <div className="h-full bg-emerald-500/70 rounded-full" style={{ width: `${Math.max(pct, 1)}%` }} />
+                    </div>
+                    <span className="text-xs font-medium w-36 text-right shrink-0 text-muted-foreground">
+                      {total} total · <span className="text-emerald-400">{paid} paid</span>
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* Peak hours chart */}
+      <Card>
+        <CardHeader><CardTitle className="flex items-center gap-2"><Moon className="h-4 w-4" />Peak Activity Hours (last 60 days, UTC)</CardTitle></CardHeader>
+        <CardContent>
+          {!data.peakHours.length ? (
+            <p className="text-sm text-muted-foreground">No activity data yet.</p>
+          ) : (
+            <div className="flex items-end gap-1 h-28">
+              {Array.from({ length: 24 }, (_, h) => {
+                const row = data.peakHours.find(p => parseInt(p.hour as any) === h);
+                const plays = row ? parseInt(row.plays as any) : 0;
+                const heightPct = Math.round((plays / peakMax) * 100);
+                return (
+                  <div key={h} className="flex-1 flex flex-col items-center gap-0.5 group relative">
+                    <div
+                      className="w-full bg-blue-500/60 rounded-t hover:bg-blue-500 transition-colors"
+                      style={{ height: `${Math.max(heightPct, 2)}%` }}
+                    />
+                    {h % 3 === 0 && (
+                      <span className="text-[9px] text-muted-foreground leading-none mt-0.5">{formatHour(h)}</span>
+                    )}
+                    {/* tooltip */}
+                    <div className="absolute bottom-full mb-1 hidden group-hover:flex bg-popover border rounded px-1.5 py-1 text-[10px] shadow whitespace-nowrap z-10 flex-col items-center">
+                      <span className="font-semibold">{formatHour(h)}</span>
+                      <span>{plays} plays</span>
+                      <span className="text-muted-foreground">{row ? parseInt(row.unique_users as any) : 0} users</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </CardContent>
+      </Card>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* At-risk subscribers */}
+        <Card className="border-amber-500/30">
+          <CardHeader><CardTitle className="flex items-center gap-2 text-amber-500"><AlertTriangle className="h-4 w-4" />At-Risk Subscribers</CardTitle></CardHeader>
+          <CardContent>
+            {!data.atRisk.length ? (
+              <p className="text-sm text-muted-foreground">No at-risk subscribers — great!</p>
+            ) : (
+              <div className="space-y-2">
+                {data.atRisk.map(u => (
+                  <div key={u.email} className="flex items-center justify-between gap-2 hover:bg-muted/50 rounded p-1.5 -mx-1.5 cursor-pointer" onClick={() => onSelectEmail(u.email)}>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">{u.family_name || u.email}</p>
+                      <p className="text-xs text-muted-foreground truncate">{u.email}</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="text-xs text-amber-500 font-medium">{u.last_activity ? relTime(u.last_activity) : "never active"}</p>
+                      <Badge variant="outline" className={`text-[9px] h-4 ${statColor(u.subscription_status)} border-current`}>{u.subscription_status}</Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Never active */}
+        <Card className="border-red-500/30">
+          <CardHeader><CardTitle className="flex items-center gap-2 text-red-500"><UserX className="h-4 w-4" />Subscribed But Never Watched</CardTitle></CardHeader>
+          <CardContent>
+            {!data.neverActive.length ? (
+              <p className="text-sm text-muted-foreground">Everyone has watched something!</p>
+            ) : (
+              <div className="space-y-2">
+                {data.neverActive.map(u => (
+                  <div key={u.email} className="flex items-center justify-between gap-2 hover:bg-muted/50 rounded p-1.5 -mx-1.5 cursor-pointer" onClick={() => onSelectEmail(u.email)}>
+                    <div className="min-w-0">
+                      <p className="text-sm font-medium truncate">{u.family_name || u.email}</p>
+                      <p className="text-xs text-muted-foreground truncate">{u.email}</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <p className="text-xs text-muted-foreground">Joined {relTime(u.created_at)}</p>
+                      <Badge variant="outline" className={`text-[9px] h-4 ${statColor(u.subscription_status)} border-current`}>{u.subscription_status}</Badge>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Power users */}
+        <Card className="border-orange-500/30">
+          <CardHeader><CardTitle className="flex items-center gap-2 text-orange-500"><Flame className="h-4 w-4" />Power Users — All Time</CardTitle></CardHeader>
+          <CardContent>
+            {!data.powerUsers.length ? (
+              <p className="text-sm text-muted-foreground">No activity tracked yet.</p>
+            ) : (
+              <div className="space-y-2">
+                {data.powerUsers.map((u, i) => (
+                  <div key={u.user_email} className="flex items-center gap-3 hover:bg-muted/50 rounded p-1.5 -mx-1.5 cursor-pointer" onClick={() => onSelectEmail(u.user_email)}>
+                    <span className="text-xs text-muted-foreground w-4 shrink-0">#{i + 1}</span>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium truncate">{u.family_name || u.user_email}</p>
+                      <p className="text-xs text-muted-foreground">{parseInt(u.video_plays as any)} videos · {parseInt(u.audio_plays as any)} audio · {parseInt(u.completions as any)} finished</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="text-lg font-bold text-orange-500">{parseInt(u.total_plays as any)}</span>
+                      <p className="text-[10px] text-muted-foreground">total plays</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Binge watchers */}
+        <Card className="border-yellow-500/30">
+          <CardHeader><CardTitle className="flex items-center gap-2 text-yellow-500"><Zap className="h-4 w-4" />Binge Watchers</CardTitle></CardHeader>
+          <CardContent>
+            {!data.bingeWatchers.length ? (
+              <p className="text-sm text-muted-foreground">No binge sessions recorded yet.</p>
+            ) : (
+              <div className="space-y-2">
+                {data.bingeWatchers.map(u => (
+                  <div key={u.user_email} className="flex items-center gap-3 hover:bg-muted/50 rounded p-1.5 -mx-1.5 cursor-pointer" onClick={() => onSelectEmail(u.user_email)}>
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-medium truncate">{u.family_name || u.user_email}</p>
+                      <p className="text-xs text-muted-foreground">{parseInt(u.binge_days as any)} binge day{parseInt(u.binge_days as any) !== 1 ? "s" : ""}</p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className="text-lg font-bold text-yellow-500">{parseInt(u.max_day_plays as any)}</span>
+                      <p className="text-[10px] text-muted-foreground">max in a day</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}
+
 // ── Main Analytics Page ────────────────────────────────────────────────────
 export default function AdminAnalyticsPage() {
   const [selectedEmail, setSelectedEmail] = useState<string | null>(null);
-  const [tab, setTab] = useState<"overview" | "content" | "users" | "events">("overview");
+  const [tab, setTab] = useState<"overview" | "content" | "users" | "events" | "retention">("overview");
   const [search, setSearch] = useState("");
   const [eventFilter, setEventFilter] = useState("all");
   const [userSort, setUserSort] = useState<"last_active" | "video_plays" | "audio_plays">("last_active");
@@ -525,7 +743,7 @@ export default function AdminAnalyticsPage() {
 
       {/* Tab switcher */}
       <div className="flex gap-1 border-b overflow-x-auto">
-        {(["overview", "content", "users", "events"] as const).map(t => (
+        {(["overview", "content", "users", "retention", "events"] as const).map(t => (
           <button
             key={t}
             onClick={() => setTab(t)}
@@ -533,7 +751,7 @@ export default function AdminAnalyticsPage() {
               tab === t ? "border-primary text-primary" : "border-transparent text-muted-foreground hover:text-foreground"
             }`}
           >
-            {t === "overview" ? "Overview" : t === "content" ? "Content" : t === "users" ? `Members (${users.length})` : "Live Feed"}
+            {t === "overview" ? "Overview" : t === "content" ? "Content" : t === "users" ? `Members (${users.length})` : t === "retention" ? "Retention" : "Live Feed"}
           </button>
         ))}
       </div>
@@ -659,6 +877,9 @@ export default function AdminAnalyticsPage() {
 
       {/* ── CONTENT TAB ── */}
       {tab === "content" && <ContentTab />}
+
+      {/* ── RETENTION TAB ── */}
+      {tab === "retention" && <RetentionTab onSelectEmail={setSelectedEmail} />}
 
       {/* ── MEMBERS TAB ── */}
       {tab === "users" && (
