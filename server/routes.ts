@@ -5870,7 +5870,7 @@ export async function registerRoutes(
   app.get("/api/admin/analytics/user/:email", requireAdmin, async (req, res) => {
     try {
       const email = req.params.email;
-      const [events, videoStats, summary] = await Promise.all([
+      const [events, videoStats, summary, progressData] = await Promise.all([
         pool.query(
           `SELECT ae.event_type, ae.resource_id, ae.resource_title, ae.resource_type, ae.metadata, ae.created_at
            FROM activity_events ae WHERE ae.user_email = $1 ORDER BY ae.created_at DESC LIMIT 500`,
@@ -5896,12 +5896,23 @@ export async function registerRoutes(
            FROM activity_events WHERE user_email = $1`,
           [email]
         ),
+        // Video progress: exact position + completion status from video_progress table
+        pool.query(
+          `SELECT vp.video_id, v.title, vp.position_seconds, vp.duration_seconds, vp.completed, vp.updated_at
+           FROM video_progress vp
+           JOIN users u ON u.id = vp.user_id
+           LEFT JOIN videos v ON v.id = vp.video_id
+           WHERE u.email = $1
+           ORDER BY vp.updated_at DESC`,
+          [email]
+        ),
       ]);
       res.json({
         email,
         summary: summary.rows[0],
         videoStats: videoStats.rows,
         recentEvents: events.rows,
+        progressData: progressData.rows,
       });
     } catch (error) {
       res.status(500).json({ message: "Failed to get user analytics" });

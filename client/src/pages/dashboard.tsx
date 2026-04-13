@@ -691,6 +691,11 @@ function LegacyVideoPlayer({ video, onClose, onMinimize }: { video: VideoType; o
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const trackEv = useTrackEvent();
+  // Live refs for progress saving (avoid stale closure)
+  const currentTimeRef = useRef(0);
+  const durationRef = useRef(0);
+  const isEndedRef = useRef(false);
   const [volume, setVolume] = useState(1);
   const [isMuted, setIsMuted] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -810,6 +815,8 @@ function LegacyVideoPlayer({ video, onClose, onMinimize }: { video: VideoType; o
       const t = videoRef.current.currentTime;
       const d = videoRef.current.duration || 0;
       setCurrentTime(t);
+      currentTimeRef.current = t;
+      durationRef.current = d;
       if (d > 0) {
         _liveVideoProgress.videoId = currentVideo.id;
         _liveVideoProgress.pct = t / d;
@@ -834,13 +841,58 @@ function LegacyVideoPlayer({ video, onClose, onMinimize }: { video: VideoType; o
 
   const handleLoadedMetadata = () => {
     if (videoRef.current) {
-      setDuration(videoRef.current.duration);
+      const d = videoRef.current.duration;
+      setDuration(d);
+      durationRef.current = d;
     }
   };
+
+  // Save progress to server every 15 seconds while playing
+  useEffect(() => {
+    const vid = currentVideo.id;
+    const interval = setInterval(() => {
+      const pos = currentTimeRef.current;
+      const dur = durationRef.current;
+      if (pos > 2 && dur > 0) {
+        apiRequest("POST", `/api/videos/${vid}/progress`, {
+          positionSeconds: Math.round(pos),
+          durationSeconds: Math.round(dur),
+          completed: false,
+        }).catch(() => {});
+      }
+    }, 15000);
+    // Save on unmount (user closed the player)
+    return () => {
+      clearInterval(interval);
+      const pos = currentTimeRef.current;
+      const dur = durationRef.current;
+      const completed = isEndedRef.current || (dur > 0 && pos / dur >= 0.95);
+      if (pos > 2 && dur > 0) {
+        apiRequest("POST", `/api/videos/${vid}/progress`, {
+          positionSeconds: Math.round(pos),
+          durationSeconds: Math.round(dur),
+          completed,
+        }).catch(() => {});
+      }
+    };
+  }, [currentVideo.id]);
 
   const handleEnded = () => {
     setIsPlaying(false);
     setIsEnded(true);
+    isEndedRef.current = true;
+    // Save completion immediately
+    const pos = currentTimeRef.current;
+    const dur = durationRef.current;
+    if (dur > 0) {
+      apiRequest("POST", `/api/videos/${currentVideo.id}/progress`, {
+        positionSeconds: Math.round(dur),
+        durationSeconds: Math.round(dur),
+        completed: true,
+      }).catch(() => {});
+      // Fire analytics event for video completion
+      trackEv({ eventType: "video_complete", resourceId: currentVideo.id, resourceTitle: currentVideo.title, resourceType: isAudioMedia ? "audio" : "video" });
+    }
   };
 
   const handleReplayBestMoment = () => {

@@ -42,6 +42,15 @@ interface EventRow {
   created_at: string;
 }
 
+interface ProgressRow {
+  video_id: string;
+  title: string | null;
+  position_seconds: number;
+  duration_seconds: number | null;
+  completed: boolean;
+  updated_at: string;
+}
+
 interface UserDetail {
   email: string;
   summary: {
@@ -55,6 +64,7 @@ interface UserDetail {
   };
   videoStats: { resource_title: string; resource_id: string; play_count: number; last_played: string }[];
   recentEvents: EventRow[];
+  progressData: ProgressRow[];
 }
 
 // ── Helpers ────────────────────────────────────────────────────────────────
@@ -149,21 +159,64 @@ function UserDetailView({ email, onBack }: { email: string; onBack: () => void }
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Videos watched */}
+        {/* Videos watched with progress */}
         <Card>
-          <CardHeader><CardTitle className="text-sm flex items-center gap-2"><Play className="h-4 w-4" />Videos Watched (by play count)</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="text-sm flex items-center gap-2"><Play className="h-4 w-4" />Videos Watched — Progress & Completion</CardTitle></CardHeader>
           <CardContent>
-            {!data?.videoStats.length ? <p className="text-sm text-muted-foreground">No videos played yet.</p> : (
-              <div className="space-y-2 max-h-72 overflow-y-auto">
-                {data.videoStats.map((v) => (
-                  <div key={v.resource_id || v.resource_title} className="flex items-center justify-between gap-2">
-                    <span className="text-sm truncate min-w-0">{v.resource_title || "Unknown"}</span>
-                    <div className="text-right shrink-0">
-                      <Badge variant="secondary">{v.play_count}×</Badge>
-                      <p className="text-[10px] text-muted-foreground mt-0.5">{relTime(v.last_played)}</p>
-                    </div>
-                  </div>
-                ))}
+            {!data?.videoStats.length && !data?.progressData.length ? (
+              <p className="text-sm text-muted-foreground">No videos played yet.</p>
+            ) : (
+              <div className="space-y-3 max-h-80 overflow-y-auto">
+                {/* Merge videoStats with progressData */}
+                {(() => {
+                  const progressMap = new Map((data?.progressData || []).map(p => [p.video_id, p]));
+                  // Show all videos from videoStats, enriched with progress
+                  const rows = (data?.videoStats || []).map(v => ({
+                    id: v.resource_id,
+                    title: v.resource_title || "Unknown",
+                    playCount: parseInt(v.play_count as any),
+                    lastPlayed: v.last_played,
+                    progress: progressMap.get(v.resource_id),
+                  }));
+                  // Also add any progress rows not in videoStats (older tracking)
+                  (data?.progressData || []).forEach(p => {
+                    if (!rows.find(r => r.id === p.video_id)) {
+                      rows.push({ id: p.video_id, title: p.title || "Unknown", playCount: 1, lastPlayed: p.updated_at, progress: p });
+                    }
+                  });
+                  return rows.map(row => {
+                    const p = row.progress;
+                    const pct = p && p.duration_seconds && p.duration_seconds > 0
+                      ? Math.min(100, Math.round((p.position_seconds / p.duration_seconds) * 100))
+                      : null;
+                    const isCompleted = p?.completed || (pct !== null && pct >= 95);
+                    const isPaused = !isCompleted && pct !== null && pct > 5;
+                    return (
+                      <div key={row.id || row.title} className="space-y-1">
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-sm truncate min-w-0 font-medium">{row.title}</span>
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            <Badge variant="secondary" className="text-[10px]">{row.playCount}× played</Badge>
+                            {isCompleted && <Badge className="text-[10px] bg-green-500 text-white border-0">✓ Finished</Badge>}
+                            {isPaused && <Badge variant="outline" className="text-[10px] text-amber-500 border-amber-400">⏸ Paused</Badge>}
+                          </div>
+                        </div>
+                        {pct !== null && (
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 bg-muted rounded-full h-1.5 overflow-hidden">
+                              <div
+                                className={`h-full rounded-full ${isCompleted ? "bg-green-500" : "bg-amber-400"}`}
+                                style={{ width: `${Math.max(pct, 2)}%` }}
+                              />
+                            </div>
+                            <span className="text-[10px] text-muted-foreground w-8 text-right">{pct}%</span>
+                          </div>
+                        )}
+                        <p className="text-[10px] text-muted-foreground">Last: {relTime(row.lastPlayed)}</p>
+                      </div>
+                    );
+                  });
+                })()}
               </div>
             )}
           </CardContent>
