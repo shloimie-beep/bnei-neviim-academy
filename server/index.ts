@@ -606,6 +606,12 @@ async function runDataMigrations() {
     await pool.query(`CREATE INDEX IF NOT EXISTS activity_events_created_idx ON activity_events(created_at)`);
     await pool.query(`CREATE INDEX IF NOT EXISTS activity_events_type_idx ON activity_events(event_type)`);
 
+    // One-time fix: restore rmadicker@gmail.com — cancelled by bug, Stripe confirmed active
+    await pool.query(`
+      UPDATE users SET subscription_status = 'active'
+      WHERE email = 'rmadicker@gmail.com' AND subscription_status = 'cancelled'
+    `);
+
     log('Data migrations complete', 'migration');
   } catch (err: any) {
     log(`Data migration error: ${err.message}`, 'migration');
