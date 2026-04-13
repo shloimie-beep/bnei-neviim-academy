@@ -5824,16 +5824,23 @@ export async function registerRoutes(
   app.post("/api/analytics/event", requireAuth, async (req, res) => {
     try {
       const { eventType, resourceId, resourceTitle, resourceType, metadata } = req.body;
-      if (!eventType) return res.status(400).json({ message: "eventType required" });
-      const user = (req as any).user;
+      if (!eventType) return res.json({ ok: true });
+      const userId = getAuthUserId(req);
+      if (!userId) return res.json({ ok: true });
+      // Get email from session lookup or mobile token
+      let userEmail: string | null = req.mobileUser?.email || null;
+      if (!userEmail && req.session?.userId) {
+        const row = await pool.query(`SELECT email FROM users WHERE id = $1`, [userId]);
+        userEmail = row.rows[0]?.email || null;
+      }
       await pool.query(
         `INSERT INTO activity_events (user_id, user_email, event_type, resource_id, resource_title, resource_type, metadata)
          VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-        [user.id, user.email, eventType, resourceId || null, resourceTitle || null, resourceType || null, metadata ? JSON.stringify(metadata) : null]
+        [userId, userEmail, eventType, resourceId || null, resourceTitle || null, resourceType || null, metadata ? JSON.stringify(metadata) : null]
       );
       res.json({ ok: true });
-    } catch (error) {
-      // Silently swallow — analytics must never break the main app
+    } catch (error: any) {
+      console.error("[analytics/event] Insert failed:", error?.message, error?.code);
       res.json({ ok: true });
     }
   });
