@@ -6166,7 +6166,7 @@ export async function registerRoutes(
     }
   });
 
-  // Analytics: daily/weekly active users and engagement stats
+  // Analytics: daily/weekly active users and engagement stats (uses activity_events — real play data only)
   app.get("/api/admin/analytics", requireAdmin, async (req, res) => {
     try {
       const [
@@ -6177,53 +6177,60 @@ export async function registerRoutes(
         topUsers,
         activityByDay,
       ] = await Promise.all([
-        // Unique users who watched something in the last 24 hours
+        // Unique users who actually played something in the last 24 hours
         pool.query(`
-          SELECT COUNT(DISTINCT uvv.user_id) as count
-          FROM user_video_views uvv
-          WHERE uvv.first_viewed_at > NOW() - INTERVAL '1 day'
+          SELECT COUNT(DISTINCT user_email) as count
+          FROM activity_events
+          WHERE event_type IN ('video_play', 'audio_play')
+            AND created_at > NOW() - INTERVAL '1 day'
         `),
-        // Unique users who watched something in the last 7 days
+        // Unique users who actually played something in the last 7 days
         pool.query(`
-          SELECT COUNT(DISTINCT uvv.user_id) as count
-          FROM user_video_views uvv
-          WHERE uvv.first_viewed_at > NOW() - INTERVAL '7 days'
+          SELECT COUNT(DISTINCT user_email) as count
+          FROM activity_events
+          WHERE event_type IN ('video_play', 'audio_play')
+            AND created_at > NOW() - INTERVAL '7 days'
         `),
-        // Unique users who watched something in the last 30 days
+        // Unique users who actually played something in the last 30 days
         pool.query(`
-          SELECT COUNT(DISTINCT uvv.user_id) as count
-          FROM user_video_views uvv
-          WHERE uvv.first_viewed_at > NOW() - INTERVAL '30 days'
+          SELECT COUNT(DISTINCT user_email) as count
+          FROM activity_events
+          WHERE event_type IN ('video_play', 'audio_play')
+            AND created_at > NOW() - INTERVAL '30 days'
         `),
-        // Top 10 most-watched videos (unique viewers)
+        // Top 10 most-played videos by unique viewers (real plays only)
         pool.query(`
-          SELECT v.title, COUNT(DISTINCT uvv.user_id) as unique_viewers
-          FROM videos v
-          JOIN user_video_views uvv ON uvv.video_id = v.id
-          WHERE uvv.first_viewed_at > NOW() - INTERVAL '30 days'
-          GROUP BY v.id, v.title
+          SELECT ae.resource_title as title, COUNT(DISTINCT ae.user_email) as unique_viewers
+          FROM activity_events ae
+          WHERE ae.event_type = 'video_play'
+            AND ae.created_at > NOW() - INTERVAL '30 days'
+            AND ae.resource_title IS NOT NULL
+          GROUP BY ae.resource_title
           ORDER BY unique_viewers DESC
           LIMIT 10
         `),
-        // Most active users last 30 days (videos watched)
+        // Most active users last 30 days — real video plays only
         pool.query(`
-          SELECT u.email, u.family_name, COUNT(uvv.video_id) as videos_watched,
-                 MAX(uvv.first_viewed_at) as last_active
-          FROM users u
-          JOIN user_video_views uvv ON uvv.user_id = u.id
-          WHERE uvv.first_viewed_at > NOW() - INTERVAL '30 days'
-          GROUP BY u.id, u.email, u.family_name
+          SELECT ae.user_email as email, u.family_name,
+                 COUNT(*) FILTER (WHERE ae.event_type = 'video_play') as videos_watched,
+                 MAX(ae.created_at) as last_active
+          FROM activity_events ae
+          LEFT JOIN users u ON u.email = ae.user_email
+          WHERE ae.event_type IN ('video_play', 'audio_play')
+            AND ae.created_at > NOW() - INTERVAL '30 days'
+          GROUP BY ae.user_email, u.family_name
           ORDER BY videos_watched DESC
           LIMIT 10
         `),
         // Daily unique active users for the last 14 days
         pool.query(`
-          SELECT DATE(first_viewed_at) as day,
-                 COUNT(DISTINCT user_id) as unique_users,
+          SELECT DATE(created_at) as day,
+                 COUNT(DISTINCT user_email) as unique_users,
                  COUNT(*) as total_views
-          FROM user_video_views
-          WHERE first_viewed_at > NOW() - INTERVAL '14 days'
-          GROUP BY DATE(first_viewed_at)
+          FROM activity_events
+          WHERE event_type IN ('video_play', 'audio_play')
+            AND created_at > NOW() - INTERVAL '14 days'
+          GROUP BY DATE(created_at)
           ORDER BY day DESC
         `),
       ]);
