@@ -587,6 +587,23 @@ export const phoneNumberSchema = z.object({
   phoneNumber: z.string().min(10, "Please enter a valid phone number"),
 });
 
+// Comprehensive activity event log — every meaningful user action
+export const activityEvents = pgTable("activity_events", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  userId: varchar("user_id").references(() => users.id, { onDelete: "set null" }),
+  userEmail: text("user_email"), // denormalized so we keep data even if user deleted
+  eventType: text("event_type").notNull(), // 'video_play','video_complete','audio_play','page_view','login','video_save','audio_save','video_like','video_unlike','audio_unsave','video_unsave'
+  resourceId: varchar("resource_id"),      // video / audio / rss item id
+  resourceTitle: text("resource_title"),   // denormalized title at time of event
+  resourceType: text("resource_type"),     // 'video' | 'audio' | 'rss' | 'page'
+  metadata: text("metadata"),              // JSON string for extra info
+  createdAt: timestamp("created_at").defaultNow(),
+}, (t) => [
+  index("activity_events_user_idx").on(t.userId),
+  index("activity_events_created_idx").on(t.createdAt),
+  index("activity_events_type_idx").on(t.eventType),
+]);
+
 export const forgotPasswordSchema = z.object({
   email: z.string().email("Please enter a valid email address"),
 });

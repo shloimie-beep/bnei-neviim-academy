@@ -14,6 +14,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
+import { useTrackEvent, trackEvent } from "@/hooks/use-track-event";
 import { useAuth, getAuthHeaders, getStoredAuthToken } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { DocumentViewer } from "@/components/document-viewer";
@@ -1620,6 +1621,7 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
   }, [autoOpen]);
   const isAudio = video.mediaType === "audio" || (video as any).media_type === "audio";
   const { toast } = useToast();
+  const trackEv = useTrackEvent();
 
   const { data: userFavorites = [] } = useQuery<string[]>({
     queryKey: ["/api/user/favorites"],
@@ -1628,7 +1630,16 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
 
   const favoriteMutation = useMutation({
     mutationFn: () => apiRequest("POST", `/api/videos/${video.id}/favorite`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["/api/user/favorites"] }),
+    onSuccess: (_data, _vars, _ctx) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user/favorites"] });
+      const nowFav = !isFavorited;
+      trackEv({
+        eventType: isAudio ? (nowFav ? "audio_save" : "audio_unsave") : (nowFav ? "video_save" : "video_unsave"),
+        resourceId: video.id,
+        resourceTitle: video.title,
+        resourceType: isAudio ? "audio" : "video",
+      });
+    },
     onError: () => toast({ title: "Failed to update favorite", variant: "destructive" }),
   });
 
@@ -1697,8 +1708,15 @@ function VideoCard({ video, isNew, onView, categoryName, variant = "default", au
       }
     }
     setIsOpen(open);
-    if (open && onView) {
-      onView();
+    if (open) {
+      if (onView) onView();
+      trackEv({
+        eventType: "video_play",
+        resourceId: video.id,
+        resourceTitle: video.title,
+        resourceType: isAudio ? "audio" : "video",
+        metadata: { categoryName },
+      });
     }
   };
 
@@ -1989,6 +2007,7 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
   const [duration, setDuration] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const trackEv = useTrackEvent();
   const isPlayingAllRef = useRef(false);
   const progressRef = useRef<HTMLDivElement>(null);
 
@@ -2075,6 +2094,7 @@ function AlbumCard({ album }: { album: Album & { trackCount: number } }) {
     audio.play();
     audioRef.current = audio;
     setPlayingTrackId(track.id);
+    trackEv({ eventType: "audio_play", resourceId: track.id, resourceTitle: track.title || `Track ${track.trackNumber}`, resourceType: "audio", metadata: { albumTitle: album.title, albumId: album.id } });
     
     audio.onended = () => {
       if (isPlayingAllRef.current && index < sortedTracks.length - 1) {
@@ -2557,7 +2577,10 @@ function DashboardBannerSlideshow({ banners, videos, onOpenSettings }: { banners
             if (slide.action === "settings") { onOpenSettings?.(); return; }
             if (!slide.videoId) return;
             const v = videos.find(v => v.id === slide.videoId);
-            if (v) { setOpenVideo(v); setIsOpenVideo(true); }
+            if (v) {
+              setOpenVideo(v); setIsOpenVideo(true);
+              trackEvent({ eventType: "video_play", resourceId: v.id, resourceTitle: v.title, resourceType: "video", metadata: { source: "banner" } });
+            }
           }}
         >
           {/* Left: text */}
@@ -3002,6 +3025,12 @@ function IntroAnimation({ onDone }: { onDone: () => void }) {
 export default function DashboardPage() {
   const { user, logout, refreshUser } = useAuth();
   const { toast } = useToast();
+
+  // Track dashboard page view once on load
+  useEffect(() => {
+    trackEvent({ eventType: "page_view", resourceType: "page", resourceTitle: "Dashboard" });
+  }, []);
+
   const [newPhoneNumber, setNewPhoneNumber] = useState("");
   const [phoneCountryCode, setPhoneCountryCode] = useState("+1");
   const [isAddingPhone, setIsAddingPhone] = useState(false);

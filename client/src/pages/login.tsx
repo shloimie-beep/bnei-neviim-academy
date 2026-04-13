@@ -8,6 +8,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { trackEvent } from "@/hooks/use-track-event";
 import { useAuth } from "@/lib/auth-context";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { loginSchema, type LoginInput } from "@shared/schema";
@@ -39,6 +40,7 @@ export default function LoginPage() {
     setPasswordSent(false);
     try {
       const user = await login(data.email, data.password);
+      trackEvent({ eventType: "login", resourceType: "page", resourceTitle: "Login" });
       toast({
         title: "Welcome back!",
         description: "You've been logged in successfully.",

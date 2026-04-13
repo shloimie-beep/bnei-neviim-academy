@@ -588,6 +588,24 @@ async function runDataMigrations() {
     const wlValues = whitelistEmails.map(e => `(gen_random_uuid()::varchar, '${e}', NOW())`).join(',');
     await pool.query(`INSERT INTO whitelisted_emails (id, email, created_at) VALUES ${wlValues} ON CONFLICT (email) DO NOTHING`);
 
+    // Create activity_events table for comprehensive user tracking
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS activity_events (
+        id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid()::varchar,
+        user_id VARCHAR REFERENCES users(id) ON DELETE SET NULL,
+        user_email TEXT,
+        event_type TEXT NOT NULL,
+        resource_id VARCHAR,
+        resource_title TEXT,
+        resource_type TEXT,
+        metadata TEXT,
+        created_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+    await pool.query(`CREATE INDEX IF NOT EXISTS activity_events_user_idx ON activity_events(user_id)`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS activity_events_created_idx ON activity_events(created_at)`);
+    await pool.query(`CREATE INDEX IF NOT EXISTS activity_events_type_idx ON activity_events(event_type)`);
+
     log('Data migrations complete', 'migration');
   } catch (err: any) {
     log(`Data migration error: ${err.message}`, 'migration');

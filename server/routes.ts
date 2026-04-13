@@ -5818,6 +5818,122 @@ export async function registerRoutes(
     }
   });
 
+  // ── Activity Event Tracking ────────────────────────────────────────────────
+
+  // POST /api/analytics/event — called from frontend to log any user action
+  app.post("/api/analytics/event", requireAuth, async (req, res) => {
+    try {
+      const { eventType, resourceId, resourceTitle, resourceType, metadata } = req.body;
+      if (!eventType) return res.status(400).json({ message: "eventType required" });
+      const user = (req as any).user;
+      await pool.query(
+        `INSERT INTO activity_events (user_id, user_email, event_type, resource_id, resource_title, resource_type, metadata)
+         VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+        [user.id, user.email, eventType, resourceId || null, resourceTitle || null, resourceType || null, metadata ? JSON.stringify(metadata) : null]
+      );
+      res.json({ ok: true });
+    } catch (error) {
+      // Silently swallow — analytics must never break the main app
+      res.json({ ok: true });
+    }
+  });
+
+  // GET /api/admin/analytics/events — recent activity feed
+  app.get("/api/admin/analytics/events", requireAdmin, async (req, res) => {
+    try {
+      const limit = Math.min(parseInt(req.query.limit as string) || 100, 500);
+      const email = req.query.email as string | undefined;
+      const type = req.query.type as string | undefined;
+      const params: any[] = [];
+      const conditions: string[] = [];
+      if (email) { params.push(email); conditions.push(`ae.user_email = $${params.length}`); }
+      if (type && type !== "all") { params.push(type); conditions.push(`ae.event_type = $${params.length}`); }
+      const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+      params.push(limit);
+      const result = await pool.query(
+        `SELECT ae.id, ae.user_email, ae.event_type, ae.resource_id, ae.resource_title, ae.resource_type, ae.metadata, ae.created_at,
+                u.family_name
+         FROM activity_events ae
+         LEFT JOIN users u ON u.id = ae.user_id
+         ${where}
+         ORDER BY ae.created_at DESC
+         LIMIT $${params.length}`,
+        params
+      );
+      res.json(result.rows);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get events" });
+    }
+  });
+
+  // GET /api/admin/analytics/user/:email — full per-user breakdown
+  app.get("/api/admin/analytics/user/:email", requireAdmin, async (req, res) => {
+    try {
+      const email = req.params.email;
+      const [events, videoStats, summary] = await Promise.all([
+        pool.query(
+          `SELECT ae.event_type, ae.resource_id, ae.resource_title, ae.resource_type, ae.metadata, ae.created_at
+           FROM activity_events ae WHERE ae.user_email = $1 ORDER BY ae.created_at DESC LIMIT 500`,
+          [email]
+        ),
+        pool.query(
+          `SELECT ae.resource_title, ae.resource_id, COUNT(*) as play_count, MAX(ae.created_at) as last_played
+           FROM activity_events ae
+           WHERE ae.user_email = $1 AND ae.event_type = 'video_play'
+           GROUP BY ae.resource_id, ae.resource_title
+           ORDER BY play_count DESC`,
+          [email]
+        ),
+        pool.query(
+          `SELECT
+             COUNT(*) FILTER (WHERE event_type = 'video_play') as total_video_plays,
+             COUNT(*) FILTER (WHERE event_type = 'audio_play') as total_audio_plays,
+             COUNT(*) FILTER (WHERE event_type = 'video_complete') as total_completions,
+             COUNT(*) FILTER (WHERE event_type = 'login') as total_logins,
+             COUNT(DISTINCT resource_id) FILTER (WHERE event_type = 'video_play') as unique_videos_watched,
+             MIN(created_at) as first_seen,
+             MAX(created_at) as last_active
+           FROM activity_events WHERE user_email = $1`,
+          [email]
+        ),
+      ]);
+      res.json({
+        email,
+        summary: summary.rows[0],
+        videoStats: videoStats.rows,
+        recentEvents: events.rows,
+      });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get user analytics" });
+    }
+  });
+
+  // GET /api/admin/analytics/users — all users with event-based stats
+  app.get("/api/admin/analytics/users", requireAdmin, async (req, res) => {
+    try {
+      const result = await pool.query(`
+        SELECT
+          ae.user_email,
+          u.family_name,
+          u.subscription_status,
+          COUNT(*) as total_events,
+          COUNT(*) FILTER (WHERE ae.event_type = 'video_play') as video_plays,
+          COUNT(*) FILTER (WHERE ae.event_type = 'audio_play') as audio_plays,
+          COUNT(DISTINCT ae.resource_id) FILTER (WHERE ae.event_type = 'video_play') as unique_videos,
+          MAX(ae.created_at) as last_active,
+          MIN(ae.created_at) as first_seen
+        FROM activity_events ae
+        LEFT JOIN users u ON u.email = ae.user_email
+        WHERE ae.user_email IS NOT NULL
+        GROUP BY ae.user_email, u.family_name, u.subscription_status
+        ORDER BY last_active DESC
+      `);
+      res.json(result.rows);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to get user list" });
+    }
+  });
+
   // Analytics: daily/weekly active users and engagement stats
   app.get("/api/admin/analytics", requireAdmin, async (req, res) => {
     try {

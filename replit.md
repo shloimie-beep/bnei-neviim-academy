@@ -130,6 +130,17 @@ The application uses a monorepo architecture, separating the frontend and backen
 - Category restriction optional: limit can apply to all categories or a specific subset.
 - Routes: `GET /api/parental-controls`, `POST /api/parental-controls`, `POST /api/parental-controls/disable`, `POST /api/parental-controls/verify-pin`, `POST /api/watch-time`.
 
+### Analytics & Activity Tracking
+- **Table**: `activity_events` — logs every user action with userId, userEmail (denormalized), eventType, resourceId, resourceTitle, resourceType, metadata, createdAt.
+- **Tracked events**: `video_play`, `audio_play`, `video_complete`, `page_view`, `login`, `video_save`, `audio_save`, `video_unsave`, `audio_unsave`, `video_like`, `video_unlike`.
+- **Backend endpoints**:
+  - `POST /api/analytics/event` (authenticated) — logs an event.
+  - `GET /api/admin/analytics/events` — recent activity feed with optional `type`/`email` filters.
+  - `GET /api/admin/analytics/user/:email` — full per-user breakdown (summary stats, videos watched with counts, recent timeline).
+  - `GET /api/admin/analytics/users` — all tracked users with totals.
+- **Frontend hook**: `useTrackEvent()` / `trackEvent()` in `client/src/hooks/use-track-event.ts`.
+- **Admin UI**: `/admin/analytics` — three tabs: Overview (legacy charts), Users (per-email table, click to drill down), Live Feed (real-time event stream with filters).
+
 ### Environment Variables
 - `DATABASE_URL`
 - `SESSION_SECRET` (critical for session and JWT)
