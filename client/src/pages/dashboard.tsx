@@ -4090,19 +4090,19 @@ export default function DashboardPage() {
       </DialogContent>
     </Dialog>
 
-    <div className="min-h-screen" style={{background: "radial-gradient(ellipse at 15% 10%, rgba(237,229,24,0.13) 0%, transparent 45%), radial-gradient(ellipse at 85% 15%, rgba(8,119,156,0.18) 0%, transparent 45%), radial-gradient(ellipse at 75% 60%, rgba(237,229,24,0.09) 0%, transparent 40%), radial-gradient(ellipse at 20% 75%, rgba(8,119,156,0.14) 0%, transparent 45%), radial-gradient(ellipse at 50% 40%, rgba(8,50,120,0.20) 0%, transparent 60%), linear-gradient(160deg, #060e20 0%, #071830 40%, #060f1e 70%, #07101f 100%)"}}>
+    <div className="min-h-screen overflow-x-hidden" style={{background: "radial-gradient(ellipse at 15% 10%, rgba(237,229,24,0.13) 0%, transparent 45%), radial-gradient(ellipse at 85% 15%, rgba(8,119,156,0.18) 0%, transparent 45%), radial-gradient(ellipse at 75% 60%, rgba(237,229,24,0.09) 0%, transparent 40%), radial-gradient(ellipse at 20% 75%, rgba(8,119,156,0.14) 0%, transparent 45%), radial-gradient(ellipse at 50% 40%, rgba(8,50,120,0.20) 0%, transparent 60%), linear-gradient(160deg, #060e20 0%, #071830 40%, #060f1e 70%, #07101f 100%)"}}>
       <header className="sticky top-0 z-50 border-b border-[#EDE518]/20" style={{background: "linear-gradient(90deg, #040d1a 0%, #081630 50%, #040d1a 100%)", backdropFilter: "blur(12px)"}}>
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
+        <div className="container mx-auto px-3 sm:px-4 py-3 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 min-w-0">
             <img 
               src="/logo.webp" 
               alt="OneTimeOneTime" 
-              className="h-10 w-auto"
+              className="h-9 w-auto flex-shrink-0"
             />
-            <div>
-              <span className="text-xl font-bold text-white block leading-tight">OneTimeOneTime</span>
+            <div className="min-w-0">
+              <span className="text-base sm:text-xl font-bold text-white block leading-tight truncate">OneTimeOneTime</span>
               {user?.familyName && (
-                <span className="text-xs text-[#EDE518]/80 font-medium leading-tight block">Hello, {user.familyName}!</span>
+                <span className="text-xs text-[#EDE518]/80 font-medium leading-tight block truncate max-w-[140px] sm:max-w-none">Hello, {user.familyName}!</span>
               )}
             </div>
           </div>
@@ -4139,9 +4139,9 @@ export default function DashboardPage() {
             )}
             {user?.role === "admin" && (
               <Link href="/admin">
-                <Button variant="destructive" size="sm" data-testid="button-admin">
-                  <Settings className="h-4 w-4 mr-2" />
-                  Admin Panel
+                <Button variant="destructive" size="sm" className="h-10 min-h-[44px]" data-testid="button-admin">
+                  <Settings className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Admin Panel</span>
                 </Button>
               </Link>
             )}
