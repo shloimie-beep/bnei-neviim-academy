@@ -300,6 +300,48 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
   const whatNextShownRef = useRef(false);
   const pauseNudgeTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
+  // ── Progress tracking refs ──────────────────────────────────────────────────
+  const currentTimeRef = useRef(0);
+  const durationRef2 = useRef(0); // mirrors vimeoDurationRef for save callback
+  const saveIntervalRef = useRef<ReturnType<typeof setInterval>>();
+  const isPlayingRef = useRef(false);
+  const resumeAppliedRef = useRef(false);
+
+  // Fetch saved progress for this video
+  const { data: savedProgress } = useQuery<{ position_seconds: number; duration_seconds: number; completed: boolean } | null>({
+    queryKey: ["/api/videos", currentVideo.id, "progress"],
+    queryFn: async () => {
+      const res = await fetch(`/api/videos/${currentVideo.id}/progress`, { credentials: "include", headers: getAuthHeaders() });
+      if (!res.ok) return null;
+      return res.json();
+    },
+    staleTime: 0,
+  });
+  // Keep a ref so event handlers always see the latest savedProgress without stale closure
+  const savedProgressRef = useRef(savedProgress);
+  useEffect(() => {
+    savedProgressRef.current = savedProgress;
+    // If player already ready but resume not yet applied (data loaded late), apply now
+    if (!resumeAppliedRef.current && vimeoReadyRef.current && savedProgress && !savedProgress.completed && savedProgress.position_seconds > 10) {
+      resumeAppliedRef.current = true;
+      setTimeout(() => sendVimeo('setCurrentTime', savedProgress.position_seconds), 400);
+    }
+  }, [savedProgress]);
+
+  const saveProgress = (completed = false) => {
+    const pos = currentTimeRef.current;
+    const dur = durationRef2.current;
+    if (dur < 5 || pos < 3) return;
+    fetch(`/api/videos/${currentVideo.id}/progress`, {
+      method: "POST",
+      credentials: "include",
+      headers: { "Content-Type": "application/json", ...getAuthHeaders() },
+      body: JSON.stringify({ positionSeconds: Math.round(pos), durationSeconds: Math.round(dur), completed }),
+    }).then(() => {
+      queryClient.invalidateQueries({ queryKey: ["/api/user/continue-watching"] });
+    }).catch(() => {});
+  };
+
   const vimeoVideoId = currentVideo.vimeoVideoId || currentVideo.vimeo_video_id;
   const storedEmbedUrl = currentVideo.vimeoEmbedUrl || currentVideo.vimeo_embed_url;
 
@@ -356,7 +398,12 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
     setVimeoDuration(0);
     setVimeoCurrentTime(0);
     vimeoDurationRef.current = 0;
+    currentTimeRef.current = 0;
+    durationRef2.current = 0;
+    isPlayingRef.current = false;
+    resumeAppliedRef.current = false;
     clearTimeout(pauseNudgeTimerRef.current);
+    clearInterval(saveIntervalRef.current);
   }, [currentVideo.id]);
 
   // Listen to Vimeo messages
@@ -375,6 +422,16 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
       if (data.event === 'ready') {
         vimeoReadyRef.current = true;
         registerVimeoListeners();
+        // Resume from saved position (if >10s into video and not completed)
+        if (!resumeAppliedRef.current) {
+          resumeAppliedRef.current = true;
+          const saved = savedProgressRef.current;
+          if (saved && !saved.completed && saved.position_seconds > 10) {
+            setTimeout(() => {
+              sendVimeo('setCurrentTime', saved.position_seconds);
+            }, 600);
+          }
+        }
         return;
       }
 
@@ -382,6 +439,7 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
       if (data.method === 'getDuration' && typeof data.value === 'number' && data.value > 0) {
         setVimeoDuration(data.value);
         vimeoDurationRef.current = data.value;
+        durationRef2.current = data.value;
         if (pendingSkipRef.current !== null) {
           const frac = pendingSkipRef.current;
           pendingSkipRef.current = null;
@@ -394,6 +452,12 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
       if (data.event === 'pause') {
         const ct = data.data?.seconds ?? 0;
         const dur = data.data?.duration ?? vimeoDurationRef.current;
+        isPlayingRef.current = false;
+        clearInterval(saveIntervalRef.current);
+        // Save position on pause
+        if (ct > 3) { currentTimeRef.current = ct; }
+        if (dur > 0) { durationRef2.current = dur; }
+        saveProgress(false);
         if (dur > 0 && ct > 8 && ct < dur - 8) {
           clearTimeout(pauseNudgeTimerRef.current);
           pauseNudgeTimerRef.current = setTimeout(() => setShowPauseNudge(true), 1200);
@@ -402,12 +466,19 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
       if (data.event === 'play') {
         clearTimeout(pauseNudgeTimerRef.current);
         setShowPauseNudge(false);
+        isPlayingRef.current = true;
+        // Auto-save every 15 seconds while playing
+        clearInterval(saveIntervalRef.current);
+        saveIntervalRef.current = setInterval(() => {
+          if (isPlayingRef.current) saveProgress(false);
+        }, 15000);
       }
       if (data.event === 'timeupdate') {
         const ct = data.data?.seconds ?? 0;
         const dur = data.data?.duration ?? 0;
         setVimeoCurrentTime(ct);
-        if (dur > 0) { setVimeoDuration(dur); vimeoDurationRef.current = dur; }
+        currentTimeRef.current = ct;
+        if (dur > 0) { setVimeoDuration(dur); vimeoDurationRef.current = dur; durationRef2.current = dur; }
         if (!whatNextShownRef.current && dur > 30 && ct / dur > 0.35 && ct / dur < 0.38) {
           whatNextShownRef.current = true;
           setShowWhatNext(true);
@@ -417,14 +488,21 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
       if (data.event === 'ended') {
         setShowPauseNudge(false);
         setShowWhatNext(false);
+        isPlayingRef.current = false;
+        clearInterval(saveIntervalRef.current);
+        // Mark as completed
+        saveProgress(true);
       }
     };
     window.addEventListener('message', handler);
     return () => {
       window.removeEventListener('message', handler);
       clearTimeout(pauseNudgeTimerRef.current);
+      clearInterval(saveIntervalRef.current);
+      // Save position on dialog close if mid-video
+      saveProgress(false);
     };
-  }, []);
+  }, [currentVideo.id, savedProgress]);
 
   const doSkip = (fraction: number) => {
     const dur = vimeoDurationRef.current;

@@ -8432,6 +8432,25 @@ export async function registerRoutes(
   });
 
   // ── Video Progress / Continue Watching ────────────────────────────────────
+  app.get("/api/videos/:id/progress", requireMobileOrSessionAuth, async (req, res) => {
+    try {
+      const userId = getAuthUserId(req);
+      if (!userId) return res.status(401).json({ message: "Not authenticated" });
+      const videoId = req.params.id;
+      const rows = await db.execute(sql`
+        SELECT position_seconds, duration_seconds, completed
+        FROM video_progress
+        WHERE user_id = ${userId} AND video_id = ${videoId}
+        LIMIT 1
+      `);
+      const row = (rows as any).rows?.[0] || null;
+      res.json(row);
+    } catch (error) {
+      console.error("Get progress error:", error);
+      res.status(500).json({ message: "Failed to get progress" });
+    }
+  });
+
   app.post("/api/videos/:id/progress", requireMobileOrSessionAuth, async (req, res) => {
     try {
       const userId = getAuthUserId(req);
