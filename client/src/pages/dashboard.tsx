@@ -4033,7 +4033,7 @@ export default function DashboardPage() {
             {hasActiveSubscription && (
               <DropdownMenu open={isNotifOpen} onOpenChange={(o) => { setIsNotifOpen(o); if (o && unreadCount > 0) markAllReadMutation.mutate(); }}>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" size="sm" className="relative" data-testid="button-notifications">
+                  <Button variant="ghost" size="icon" className="relative h-10 w-10 min-h-[44px] min-w-[44px]" data-testid="button-notifications">
                     {unreadCount > 0 ? <BellDot className="h-5 w-5 text-[#EDE518]" /> : <Bell className="h-5 w-5 text-white/80" />}
                     {unreadCount > 0 && (
                       <span className="absolute -top-0.5 -right-0.5 h-4 w-4 rounded-full bg-[#EDE518] text-black text-[10px] font-bold flex items-center justify-center">
@@ -4069,7 +4069,7 @@ export default function DashboardPage() {
             )}
             <Dialog open={isSettingsOpen} onOpenChange={setIsSettingsOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="ghost" size="sm" className="relative" title="Settings" data-testid="button-account-settings">
+                  <Button variant="ghost" size="icon" className="relative h-10 w-10 min-h-[44px] min-w-[44px]" title="Settings" data-testid="button-account-settings">
                     <Settings className="h-5 w-5 text-white/80" />
                   </Button>
                 </DialogTrigger>
