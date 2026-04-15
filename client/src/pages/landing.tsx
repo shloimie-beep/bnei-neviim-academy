@@ -1,7 +1,7 @@
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Phone, Mail, MapPin, Menu } from "lucide-react";
+import { Phone, Mail, MapPin, Menu, X } from "lucide-react";
 import { motion, useInView, AnimatePresence } from "framer-motion";
 import { useRef, useState, useEffect } from "react";
 import logoImage from "@assets/qt=q_95_1767830887218.webp";
@@ -234,12 +234,15 @@ function TestimonialCarousel() {
 }
 
 export default function LandingPage() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const closeMobileMenu = () => setMobileMenuOpen(false);
+
   return (
-    <div className="min-h-screen bg-[#161616]">
+    <div className="min-h-screen bg-[#161616] overflow-x-hidden">
       <header className="sticky top-0 z-50 bg-[#161616]/95 backdrop-blur border-b border-white/10">
         <div className="container mx-auto px-4 py-3 flex items-center justify-between gap-4">
           <div className="flex items-center gap-6">
-            <a href="#home">
+            <a href="#home" onClick={closeMobileMenu}>
               <img src={logoImage} alt="OneTimeOneTime" className="h-12 w-auto" />
             </a>
             <nav className="hidden lg:flex items-center gap-6">
@@ -256,11 +259,37 @@ export default function LandingPage() {
                 Member Login
               </Button>
             </Link>
-            <Button size="icon" variant="ghost" className="lg:hidden text-white">
-              <Menu className="h-5 w-5" />
+            <Button size="icon" variant="ghost" className="lg:hidden text-white" onClick={() => setMobileMenuOpen(o => !o)} data-testid="button-mobile-menu">
+              {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
           </div>
         </div>
+
+        {/* Mobile nav menu */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.nav
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="lg:hidden overflow-hidden border-t border-white/10 bg-[#161616]"
+            >
+              <div className="flex flex-col px-6 py-4 gap-4">
+                <a href="#home" onClick={closeMobileMenu} className="text-white font-medium text-base uppercase tracking-wide py-2 border-b border-white/10">Home</a>
+                <Link href="/gadlus-haadam" onClick={closeMobileMenu}><span className="text-white font-medium text-base uppercase tracking-wide py-2 border-b border-white/10 block">Gadlus Ha'Adam</span></Link>
+                <a href="#hotline" onClick={closeMobileMenu} className="text-white font-medium text-base uppercase tracking-wide py-2 border-b border-white/10">Academy & Hotline</a>
+                <a href="#story" onClick={closeMobileMenu} className="text-white font-medium text-base uppercase tracking-wide py-2 border-b border-white/10">The Story</a>
+                <a href="#contact" onClick={closeMobileMenu} className="text-white font-medium text-base uppercase tracking-wide py-2">Contact</a>
+                <Link href="/register" onClick={closeMobileMenu}>
+                  <Button className="w-full bg-[#EDE518] text-black font-bold mt-2" data-testid="button-mobile-join">
+                    Join the Academy & Hotline
+                  </Button>
+                </Link>
+              </div>
+            </motion.nav>
+          )}
+        </AnimatePresence>
       </header>
 
       <section 
