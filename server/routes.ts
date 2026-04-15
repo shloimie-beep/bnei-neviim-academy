@@ -1377,8 +1377,16 @@ export async function registerRoutes(
 
       const stripe = await getUncachableStripeClient();
 
-      // Get or create the Plus price
+      // Get or create the Plus price — always verify it still exists in Stripe
       let priceId = await getPlusPriceId();
+      if (priceId) {
+        try {
+          await stripe.prices.retrieve(priceId);
+        } catch {
+          // Price no longer exists in Stripe — clear so we recreate it below
+          priceId = null;
+        }
+      }
       if (!priceId) {
         const existingProducts = await stripe.products.search({ query: "name:'Kids\\' Hotline Plus Monthly'" });
         let productId: string;
