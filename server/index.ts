@@ -407,13 +407,12 @@ async function runDataMigrations() {
       ALTER TABLE videos ADD COLUMN IF NOT EXISTS custom_mood TEXT
     `);
 
-    // ── Seed: admin user (schellereli@gmail.com) — always ensure correct credentials ──
+    // ── Seed: admin user (schellereli@gmail.com) — create if missing, never overwrite password ──
     const adminHash = await bcrypt.hash('dd99617a', 10);
     await pool.query(
       `INSERT INTO users (id, email, password, family_name, role, account_type, subscription_status, has_used_trial, created_at)
        VALUES (gen_random_uuid()::varchar, 'schellereli@gmail.com', $1, 'Rabbi Eli Scheller', 'admin', 'standard', 'active', true, NOW())
        ON CONFLICT (email) DO UPDATE SET
-         password = EXCLUDED.password,
          role = 'admin',
          subscription_status = 'active',
          family_name = COALESCE(users.family_name, EXCLUDED.family_name)`,
@@ -531,10 +530,9 @@ async function runDataMigrations() {
       // ── Clear any pending password reset flags (no longer auto-sending) ─────
       await pool.query(`UPDATE users SET needs_password_reset = false WHERE needs_password_reset = true`);
 
-      // ── Always restore admin account after Stripe recovery (Stripe may overwrite it) ──
+      // ── Always restore admin role after Stripe recovery (never overwrite password) ──
       await pool.query(
-        `UPDATE users SET role = 'admin', subscription_status = 'active', password = $1 WHERE email = 'schellereli@gmail.com'`,
-        [adminHash]
+        `UPDATE users SET role = 'admin', subscription_status = 'active' WHERE email = 'schellereli@gmail.com'`
       );
     } catch (stripeErr: any) {
       log(`Stripe recovery skipped: ${stripeErr.message}`, 'migration');
