@@ -6428,6 +6428,28 @@ export async function registerRoutes(
     }
   });
 
+  // Admin: set account type (standard / plus) for a subscriber
+  app.post("/api/admin/subscribers/:id/set-account-type", requireAdmin, async (req, res) => {
+    try {
+      const { accountType } = req.body;
+      if (!['standard', 'plus'].includes(accountType)) {
+        return res.status(400).json({ message: "accountType must be 'standard' or 'plus'" });
+      }
+      const user = await storage.getUser(req.params.id);
+      if (!user) return res.status(404).json({ message: "User not found" });
+      const updates: any = { accountType };
+      // If upgrading to Plus and subscription is missing/none, also activate it
+      if (accountType === 'plus' && (!user.subscriptionStatus || user.subscriptionStatus === 'none')) {
+        updates.subscriptionStatus = 'active';
+      }
+      await storage.updateUser(req.params.id, updates);
+      res.json({ success: true, accountType });
+    } catch (error: any) {
+      console.error("Set account type error:", error);
+      res.status(500).json({ message: error.message || "Failed to update account type" });
+    }
+  });
+
   // Admin: get Stripe cancellation reason for a subscriber
   app.get("/api/admin/subscribers/:id/cancellation-reason", requireAdmin, async (req, res) => {
     try {

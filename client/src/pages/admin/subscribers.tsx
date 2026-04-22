@@ -197,6 +197,22 @@ export default function SubscribersManagement() {
     },
   });
 
+  const setAccountTypeMutation = useMutation({
+    mutationFn: async (data: { userId: string; accountType: 'standard' | 'plus' }) => {
+      return apiRequest("POST", `/api/admin/subscribers/${data.userId}/set-account-type`, { accountType: data.accountType });
+    },
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/subscribers"] });
+      toast({
+        title: variables.accountType === 'plus' ? "Upgraded to Plus" : "Downgraded to Standard",
+        description: `Subscriber plan updated successfully.`,
+      });
+    },
+    onError: (error: Error) => {
+      toast({ title: "Update failed", description: error.message, variant: "destructive" });
+    },
+  });
+
   const changePasswordMutation = useMutation({
     mutationFn: async (data: { userId: string; newPassword: string }) => {
       return apiRequest("POST", `/api/admin/subscribers/${data.userId}/change-password`, { newPassword: data.newPassword });
@@ -641,6 +657,16 @@ export default function SubscribersManagement() {
                             >
                               <Key className="h-4 w-4 mr-2" />
                               Change Password
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              onClick={() => setAccountTypeMutation.mutate({ userId: subscriber.id, accountType: subscriber.accountType === 'plus' ? 'standard' : 'plus' })}
+                              data-testid={`menu-account-type-${subscriber.id}`}
+                            >
+                              {subscriber.accountType === 'plus' ? (
+                                <><span className="mr-2">⬇️</span>Downgrade to Standard</>
+                              ) : (
+                                <><span className="mr-2">⭐</span>Upgrade to Plus</>
+                              )}
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               onClick={() => {
