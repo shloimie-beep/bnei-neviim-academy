@@ -81,6 +81,7 @@ export default function SubscribersManagement() {
   const { toast } = useToast();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [plusOnly, setPlusOnly] = useState(false);
   const [cancellationCache, setCancellationCache] = useState<Record<string, CancellationReason | null>>({});
   const [refundDialogOpen, setRefundDialogOpen] = useState(false);
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
@@ -436,7 +437,8 @@ export default function SubscribersManagement() {
       (statusFilter === "none"
         ? !sub.subscriptionStatus || sub.subscriptionStatus === "none"
         : sub.subscriptionStatus === statusFilter);
-    return matchesSearch && matchesStatus;
+    const matchesPlus = !plusOnly || sub.accountType === "plus";
+    return matchesSearch && matchesStatus && matchesPlus;
   });
 
   const formatPhoneNumber = (phone: string) => {
@@ -532,6 +534,19 @@ export default function SubscribersManagement() {
                 </Button>
               );
             })}
+            <Button
+              variant={plusOnly ? "default" : "outline"}
+              size="sm"
+              onClick={() => setPlusOnly(p => !p)}
+              data-testid="button-filter-plus"
+              className={`gap-1.5 ${plusOnly ? "bg-yellow-500 hover:bg-yellow-600 text-black border-yellow-500" : "border-yellow-500/50 text-yellow-600"}`}
+            >
+              <Star className="h-3.5 w-3.5" />
+              Plus Only
+              <span className={`text-xs rounded-full px-1.5 py-0.5 ${plusOnly ? "bg-black/20" : "bg-muted text-muted-foreground"}`}>
+                {subscribers?.filter(s => s.accountType === "plus").length ?? 0}
+              </span>
+            </Button>
           </div>
           <div className="flex flex-wrap gap-4 mb-6">
             <div className="flex-1 min-w-[200px]">

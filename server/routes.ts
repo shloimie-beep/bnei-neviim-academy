@@ -1491,7 +1491,7 @@ export async function registerRoutes(
       const userId = getAuthUserId(req);
       if (!userId) return res.status(401).json({ message: "Not authenticated" });
       const user = await storage.getUser(userId);
-      if (!user || user.accountType !== 'plus') {
+      if (!user || (user.accountType !== 'plus' && user.role !== 'admin')) {
         return res.status(403).json({ message: "Plus membership required" });
       }
       const msgs = await storage.getDirectMessages(userId);
@@ -1509,7 +1509,7 @@ export async function registerRoutes(
       const userId = getAuthUserId(req);
       if (!userId) return res.status(401).json({ message: "Not authenticated" });
       const user = await storage.getUser(userId);
-      if (!user || user.accountType !== 'plus') {
+      if (!user || (user.accountType !== 'plus' && user.role !== 'admin')) {
         return res.status(403).json({ message: "Plus membership required" });
       }
       const { text } = req.body;
