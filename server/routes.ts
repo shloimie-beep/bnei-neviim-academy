@@ -1553,6 +1553,11 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Reply text is required" });
       }
       const msg = await storage.sendDirectMessage({ userId: req.params.userId, text: String(text).trim(), fromAdmin: true });
+      // Notify the member that Rabbi Eli replied
+      await db.execute(sql`
+        INSERT INTO notifications (id, user_id, title, body, created_at)
+        VALUES (gen_random_uuid(), ${req.params.userId}, 'Rabbi Eli replied to you', ${String(text).trim().slice(0, 120)}, NOW())
+      `);
       res.json(msg);
     } catch {
       res.status(500).json({ message: "Failed to send reply" });
