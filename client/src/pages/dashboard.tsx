@@ -4138,6 +4138,18 @@ export default function DashboardPage() {
               </DropdownMenu>
             )}
             {user?.role === "admin" && (
+              <Button
+                variant="outline"
+                size="sm"
+                className={`h-10 min-h-[44px] border text-xs font-bold gap-1.5 ${previewMode === "plus" ? "bg-[#EDE518] text-black border-[#EDE518]" : "bg-transparent text-[#EDE518] border-[#EDE518]/50"}`}
+                onClick={() => setPreviewMode(m => m === "plus" ? "standard" : "plus")}
+                data-testid="button-preview-mode"
+              >
+                <Star className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">{previewMode === "plus" ? "Plus View ON" : "Preview Plus"}</span>
+              </Button>
+            )}
+            {user?.role === "admin" && (
               <Link href="/admin">
                 <Button variant="destructive" size="sm" className="h-10 min-h-[44px]" data-testid="button-admin">
                   <Settings className="h-4 w-4 sm:mr-2" />
@@ -4753,54 +4765,60 @@ export default function DashboardPage() {
             <>
               {/* Plus Member Panel */}
               {isPlus && (
-                <Card className="border-[#EDE518]/30 bg-gradient-to-br from-[#0d1a2e] to-[#0a1020]" data-testid="card-plus-panel">
-                  <CardHeader className="pb-3">
-                    <CardTitle className="flex items-center gap-2 text-base text-white">
-                      <Star className="h-4 w-4 text-[#EDE518]" />
-                      Plus Member
-                      <Badge className="text-xs ml-1 bg-[#EDE518] text-black">Plus</Badge>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      {/* Live Meeting */}
-                      <div className="rounded-lg border bg-background p-4 space-y-3">
-                        <div className="flex items-center gap-2">
-                          <MonitorPlay className="h-4 w-4 text-muted-foreground" />
-                          <span className="text-sm font-medium">Live Meeting</span>
-                        </div>
-                        {liveMeeting?.isActive && liveMeeting.meetingUrl ? (
-                          <a
-                            href={liveMeeting.meetingUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            data-testid="button-join-meeting"
-                          >
-                            <Button className="w-full gap-2" size="sm">
-                              <MonitorPlay className="h-4 w-4" />
-                              Join Live Meeting
-                            </Button>
-                          </a>
-                        ) : (
-                          <p className="text-sm text-muted-foreground italic">No meeting happening right now</p>
-                        )}
+                <div className="rounded-2xl overflow-hidden" style={{background: "linear-gradient(135deg, #0d1a2e 0%, #0a1020 50%, #0d1a2e 100%)", border: "1px solid rgba(237,229,24,0.25)", boxShadow: "0 0 40px rgba(237,229,24,0.08)"}} data-testid="card-plus-panel">
+                  {/* Big Plus Hero Banner */}
+                  <div className="relative px-6 pt-8 pb-6 text-center overflow-hidden">
+                    <div className="absolute inset-0 opacity-10" style={{background: "radial-gradient(ellipse at 50% 0%, #EDE518 0%, transparent 70%)"}} />
+                    <div className="relative z-10">
+                      <div className="flex items-center justify-center gap-2 mb-3">
+                        <Star className="h-6 w-6 text-[#EDE518] fill-[#EDE518]" />
+                        <Star className="h-8 w-8 text-[#EDE518] fill-[#EDE518]" />
+                        <Star className="h-6 w-6 text-[#EDE518] fill-[#EDE518]" />
                       </div>
+                      <h2 className="text-3xl sm:text-4xl font-black text-[#EDE518] tracking-tight leading-tight">
+                        You're a Plus Member!
+                      </h2>
+                      <p className="text-white/60 text-sm mt-2 max-w-sm mx-auto">Welcome to the inner circle — live classes, personal access to Rabbi Eli, and exclusive features</p>
+                      <div className="mt-3 inline-block bg-[#EDE518] text-black text-xs font-black uppercase tracking-widest px-4 py-1.5 rounded-full">
+                        Plus Plan Active
+                      </div>
+                    </div>
+                  </div>
 
-                      {/* Updates */}
-                      {liveMeeting?.updatesText?.trim() && (
-                        <div className="rounded-lg border bg-background p-4 space-y-2">
-                          <div className="flex items-center gap-2">
-                            <FileText className="h-4 w-4 text-muted-foreground" />
-                            <span className="text-sm font-medium">Updates</span>
-                          </div>
-                          <p className="text-sm whitespace-pre-wrap text-muted-foreground leading-relaxed">
-                            {liveMeeting.updatesText}
-                          </p>
-                        </div>
+                  {/* Features */}
+                  <div className="px-6 pb-6 grid gap-4 sm:grid-cols-2">
+                    {/* Live Meeting */}
+                    <div className="rounded-xl border border-[#EDE518]/15 bg-white/5 p-4 space-y-3">
+                      <div className="flex items-center gap-2">
+                        <MonitorPlay className="h-4 w-4 text-[#EDE518]" />
+                        <span className="text-sm font-semibold text-white">Live Class with Rabbi Eli</span>
+                      </div>
+                      {liveMeeting?.isActive && liveMeeting.meetingUrl ? (
+                        <a href={liveMeeting.meetingUrl} target="_blank" rel="noopener noreferrer" data-testid="button-join-meeting">
+                          <Button className="w-full gap-2 bg-[#EDE518] hover:bg-[#EDE518]/90 text-black font-bold" size="sm">
+                            <MonitorPlay className="h-4 w-4" />
+                            Join Now — Live!
+                          </Button>
+                        </a>
+                      ) : (
+                        <p className="text-sm text-white/40 italic">No live class right now — check back soon</p>
                       )}
                     </div>
-                  </CardContent>
-                </Card>
+
+                    {/* Updates */}
+                    {liveMeeting?.updatesText?.trim() && (
+                      <div className="rounded-xl border border-[#EDE518]/15 bg-white/5 p-4 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <FileText className="h-4 w-4 text-[#EDE518]" />
+                          <span className="text-sm font-semibold text-white">Updates from Rabbi Eli</span>
+                        </div>
+                        <p className="text-sm whitespace-pre-wrap text-white/60 leading-relaxed">
+                          {liveMeeting.updatesText}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                </div>
               )}
 
               {/* Ask the Rabbi — Plus only */}
