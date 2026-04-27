@@ -1260,8 +1260,18 @@ export async function registerRoutes(
       
       // Get the subscription price ID
       let priceId = await getSubscriptionPriceId();
+
+      // Verify the price actually exists in Stripe (synced DB can have stale IDs)
+      if (priceId) {
+        try {
+          await stripe.prices.retrieve(priceId);
+        } catch (e) {
+          console.log(`[checkout] Price ${priceId} not found in Stripe, will create new one`);
+          priceId = null;
+        }
+      }
       
-      // If no price found, create product and price on the fly
+      // If no valid price found, create product and price on the fly
       if (!priceId) {
         console.log("No price found, creating product and price...");
         
