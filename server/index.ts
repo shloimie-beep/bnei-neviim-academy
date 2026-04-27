@@ -610,6 +610,23 @@ async function runDataMigrations() {
       WHERE email = 'rmadicker@gmail.com' AND subscription_status = 'cancelled'
     `);
 
+    // Create free account for SkylineExpressnJ@gmail.com (Rabbi Eli's brother)
+    {
+      const bcrypt = await import('bcryptjs');
+      const hashedPw = await bcrypt.hash('mYDQt2tbmV', 10);
+      await pool.query(`
+        INSERT INTO users (id, email, password, role, account_type, subscription_status)
+        VALUES (gen_random_uuid()::varchar, 'SkylineExpressnJ@gmail.com', $1, 'customer', 'standard', 'none')
+        ON CONFLICT (email) DO NOTHING
+      `, [hashedPw]);
+      // Whitelist the email for free video access
+      await pool.query(`
+        INSERT INTO whitelisted_emails (id, email, label)
+        VALUES (gen_random_uuid()::varchar, 'SkylineExpressnJ@gmail.com', 'Rabbi Eli''s brother')
+        ON CONFLICT (email) DO NOTHING
+      `);
+    }
+
     log('Data migrations complete', 'migration');
   } catch (err: any) {
     log(`Data migration error: ${err.message}`, 'migration');
