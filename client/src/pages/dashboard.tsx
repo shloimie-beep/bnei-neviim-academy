@@ -1,6 +1,6 @@
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { Link } from "wouter";
-import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay, MessageSquare, Send, Heart, ThumbsUp, Bell, BellDot, History, Shield, ShieldCheck, ShieldAlert, TimerReset, User, Shuffle, X, Smile, Sparkles, ArrowRight, Search, CheckCheck, BookmarkPlus, BookmarkCheck, WifiOff } from "lucide-react";
+import { Phone, CreditCard, Settings, LogOut, Plus, Trash2, Loader2, Clock, CheckCircle, AlertCircle, XCircle, Video, Play, Pause, FileVideo, Volume2, VolumeX, Maximize, Minimize, Edit2, Music, FileText, ExternalLink, Lock, ChevronLeft, ChevronRight, ChevronDown, Disc, SkipBack, SkipForward, TrendingUp, Eye, EyeOff, Star, MonitorPlay, MessageSquare, Send, Heart, ThumbsUp, Bell, BellDot, History, Shield, ShieldCheck, ShieldAlert, TimerReset, User, Shuffle, X, Smile, Sparkles, ArrowRight, Search, CheckCheck, BookmarkPlus, BookmarkCheck, WifiOff, HelpCircle } from "lucide-react";
 import { Switch } from "@/components/ui/switch";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
@@ -90,6 +90,56 @@ function PhoneNumberCard({ phoneNumber, onDelete }: { phoneNumber: PhoneNumber; 
           <Trash2 className="h-4 w-4 text-muted-foreground" />
         )}
       </Button>
+    </div>
+  );
+}
+
+function StudyQuestionsSection({ videoId }: { videoId: string }) {
+  const { data: questions = [], isLoading } = useQuery<any[]>({
+    queryKey: ["/api/videos", videoId, "questions"],
+    queryFn: async () => {
+      const res = await fetch(`/api/videos/${videoId}/questions`, { credentials: "include" });
+      if (!res.ok) return [];
+      return res.json();
+    },
+  });
+  const [openIdx, setOpenIdx] = useState<number | null>(null);
+
+  if (isLoading || questions.length === 0) return null;
+
+  return (
+    <div className="mt-4 mb-2 px-1">
+      <div className="flex items-center gap-2 mb-3">
+        <HelpCircle className="h-4 w-4 text-primary" />
+        <h3 className="font-semibold text-sm">Study Questions ({questions.length})</h3>
+      </div>
+      <div className="space-y-2">
+        {questions.map((q: any, i: number) => (
+          <div key={q.id} className="border rounded-lg overflow-hidden">
+            <button
+              className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left text-sm font-medium hover:bg-muted/50 transition-colors"
+              onClick={() => setOpenIdx(openIdx === i ? null : i)}
+              data-testid={`button-question-${i}`}
+            >
+              <span className="flex items-start gap-2">
+                <span className="text-primary font-bold shrink-0">{i + 1}.</span>
+                <span>{q.question}</span>
+              </span>
+              <ChevronDown className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${openIdx === i ? "rotate-180" : ""}`} />
+            </button>
+            {openIdx === i && q.answer && (
+              <div className="px-4 pb-3 pt-1 bg-muted/30 text-sm text-muted-foreground border-t">
+                <span className="font-semibold text-foreground">Answer: </span>{q.answer}
+              </div>
+            )}
+            {openIdx === i && !q.answer && (
+              <div className="px-4 pb-3 pt-1 bg-muted/30 text-sm text-muted-foreground border-t italic">
+                Think about it — discuss with a friend or ask Rabbi Eli!
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -756,6 +806,7 @@ function VideoEmbedPlayer({ video }: { video: VideoType }) {
         </div>
       </div>
 
+      <StudyQuestionsSection videoId={currentVideo.id} />
       <CommentsSection videoId={currentVideo.id} />
       <div className="h-4" />
     </DialogContent>

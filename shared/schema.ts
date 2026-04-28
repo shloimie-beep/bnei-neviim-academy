@@ -427,6 +427,20 @@ export const videoComments = pgTable("video_comments", {
 
 export const insertVideoCommentSchema = createInsertSchema(videoComments).omit({ id: true, createdAt: true });
 
+// Video Study Questions (Mishnayos class review)
+export const videoQuestions = pgTable("video_questions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  videoId: varchar("video_id").notNull(),
+  question: text("question").notNull(),
+  answer: text("answer"),
+  sortOrder: integer("sort_order").default(0),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertVideoQuestionSchema = createInsertSchema(videoQuestions).omit({ id: true, createdAt: true });
+export type VideoQuestion = typeof videoQuestions.$inferSelect;
+export type InsertVideoQuestion = z.infer<typeof insertVideoQuestionSchema>;
+
 // Video Favorites (bookmarks)
 export const videoFavorites = pgTable("video_favorites", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),

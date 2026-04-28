@@ -8318,6 +8318,61 @@ export async function registerRoutes(
     }
   });
 
+  // ─── Video Study Questions ─────────────────────────────────────────────────
+
+  // Get questions for a video (subscribers)
+  app.get("/api/videos/:id/questions", requireMobileOrSessionAuth, async (req, res) => {
+    try {
+      const questions = await storage.getVideoQuestions(req.params.id);
+      res.json(questions);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch questions" });
+    }
+  });
+
+  // Admin: get all questions grouped by video
+  app.get("/api/admin/questions", requireAdmin, async (req, res) => {
+    try {
+      const grouped = await storage.getAllVideoQuestionsWithTitles();
+      res.json(grouped);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to fetch questions" });
+    }
+  });
+
+  // Admin: add question to a video
+  app.post("/api/admin/videos/:id/questions", requireAdmin, async (req, res) => {
+    try {
+      const { question, answer, sortOrder } = req.body;
+      if (!question) return res.status(400).json({ message: "Question is required" });
+      const q = await storage.createVideoQuestion({ videoId: req.params.id, question, answer: answer || null, sortOrder: sortOrder ?? 0 });
+      res.json(q);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to create question" });
+    }
+  });
+
+  // Admin: update question
+  app.patch("/api/admin/questions/:id", requireAdmin, async (req, res) => {
+    try {
+      const { question, answer, sortOrder } = req.body;
+      const q = await storage.updateVideoQuestion(req.params.id, { question, answer, sortOrder });
+      res.json(q);
+    } catch (error) {
+      res.status(500).json({ message: "Failed to update question" });
+    }
+  });
+
+  // Admin: delete question
+  app.delete("/api/admin/questions/:id", requireAdmin, async (req, res) => {
+    try {
+      await storage.deleteVideoQuestion(req.params.id);
+      res.json({ success: true });
+    } catch (error) {
+      res.status(500).json({ message: "Failed to delete question" });
+    }
+  });
+
   // Video Comments
   app.get("/api/videos/:id/comments", requireMobileOrSessionAuth, async (req, res) => {
     try {

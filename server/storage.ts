@@ -26,7 +26,10 @@ import {
   liveMeeting,
   featuredVideos,
   videoComments,
+  videoQuestions,
   dashboardBanners,
+  type VideoQuestion,
+  type InsertVideoQuestion,
   type VideoComment,
   type InsertVideoComment,
   type DashboardBanner,
@@ -157,6 +160,13 @@ export interface IStorage {
 
   // Trending
   getTrendingVideos(limit?: number): Promise<Video[]>;
+
+  // Video Study Questions
+  getVideoQuestions(videoId: string): Promise<VideoQuestion[]>;
+  getAllVideoQuestionsWithTitles(): Promise<{ videoId: string; videoTitle: string; questions: VideoQuestion[] }[]>;
+  createVideoQuestion(data: InsertVideoQuestion): Promise<VideoQuestion>;
+  updateVideoQuestion(id: string, data: Partial<Pick<VideoQuestion, 'question' | 'answer' | 'sortOrder'>>): Promise<VideoQuestion>;
+  deleteVideoQuestion(id: string): Promise<void>;
 
   // Video Comments
   getVideoComments(videoId: string): Promise<(VideoComment & { userEmail: string; familyName: string | null })[]>;
@@ -1107,6 +1117,53 @@ export class DatabaseStorage implements IStorage {
     const items = await this.getRssAudioItemsByFolder(folderId);
     if (items.length === 0) return 0;
     return Math.max(...items.map(i => i.sortOrder || 0)) + 1;
+  }
+
+  // Video Study Questions
+  async getVideoQuestions(videoId: string): Promise<VideoQuestion[]> {
+    return db.select().from(videoQuestions)
+      .where(eq(videoQuestions.videoId, videoId))
+      .orderBy(videoQuestions.sortOrder, videoQuestions.createdAt);
+  }
+
+  async getAllVideoQuestionsWithTitles(): Promise<{ videoId: string; videoTitle: string; questions: VideoQuestion[] }[]> {
+    const rows = await db.select({
+      id: videoQuestions.id,
+      videoId: videoQuestions.videoId,
+      question: videoQuestions.question,
+      answer: videoQuestions.answer,
+      sortOrder: videoQuestions.sortOrder,
+      createdAt: videoQuestions.createdAt,
+      videoTitle: videos.title,
+    }).from(videoQuestions)
+      .leftJoin(videos, eq(videoQuestions.videoId, videos.id))
+      .orderBy(videos.title, videoQuestions.sortOrder);
+
+    const grouped: Record<string, { videoId: string; videoTitle: string; questions: VideoQuestion[] }> = {};
+    for (const row of rows) {
+      if (!grouped[row.videoId]) {
+        grouped[row.videoId] = { videoId: row.videoId, videoTitle: row.videoTitle ?? row.videoId, questions: [] };
+      }
+      grouped[row.videoId].questions.push({
+        id: row.id, videoId: row.videoId, question: row.question,
+        answer: row.answer ?? null, sortOrder: row.sortOrder ?? 0, createdAt: row.createdAt,
+      });
+    }
+    return Object.values(grouped);
+  }
+
+  async createVideoQuestion(data: InsertVideoQuestion): Promise<VideoQuestion> {
+    const [q] = await db.insert(videoQuestions).values(data).returning();
+    return q;
+  }
+
+  async updateVideoQuestion(id: string, data: Partial<Pick<VideoQuestion, 'question' | 'answer' | 'sortOrder'>>): Promise<VideoQuestion> {
+    const [q] = await db.update(videoQuestions).set(data).where(eq(videoQuestions.id, id)).returning();
+    return q;
+  }
+
+  async deleteVideoQuestion(id: string): Promise<void> {
+    await db.delete(videoQuestions).where(eq(videoQuestions.id, id));
   }
 
   // Video Comments

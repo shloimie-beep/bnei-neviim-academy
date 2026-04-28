@@ -610,6 +610,117 @@ async function runDataMigrations() {
       WHERE email = 'rmadicker@gmail.com' AND subscription_status = 'cancelled'
     `);
 
+    // ── Schema: video_questions table ───────────────────────────────────────
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS video_questions (
+        id VARCHAR PRIMARY KEY DEFAULT gen_random_uuid()::varchar,
+        video_id VARCHAR NOT NULL,
+        question TEXT NOT NULL,
+        answer TEXT,
+        sort_order INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT NOW()
+      )
+    `);
+
+    // Seed Eiruvin Mishnayos study questions (idempotent — skip if questions already exist for a video)
+    const eiruvinQs: { videoId: string; questions: { q: string; a?: string }[] }[] = [
+      {
+        videoId: '312e32ad-5e36-4bda-82a8-1f6a84139a24', // Eiruvin Perek 3
+        questions: [
+          { q: 'What types of food are valid for making an Eruv Chatzeiros or Eruv Techumin?' },
+          { q: 'If the Eruv food is eaten or lost before Shabbos begins, is carrying still permitted in that courtyard?' },
+          { q: 'Can a person make an Eruv on behalf of others without their prior knowledge or permission?' },
+          { q: 'What is the minimum amount (shiur) of food required for an Eruv?' },
+          { q: 'If one resident forgot to contribute their share to the Eruv, what options do the others have?' },
+        ],
+      },
+      {
+        videoId: '729740d1-4567-4878-9328-3be1149cc910', // Eruvin 5
+        questions: [
+          { q: 'How is the 2,000-amah Techum measured — from the edge of the city or from where the person is standing?' },
+          { q: 'What happens when two cities are within 141⅓ amah of each other — how is the combined Techum calculated?' },
+          { q: 'If someone is on a ship or inside a cave when Shabbos begins, from where is his Techum measured?' },
+          { q: 'How do you measure the Techum of an irregularly shaped city?' },
+        ],
+      },
+      {
+        videoId: 'afbba586-9a31-4e10-9fb3-c420e2b89b02', // Mishnayos Eiruvin 5
+        questions: [
+          { q: 'What is the halacha if someone established his Shabbos location inside a cave or under a tree?' },
+          { q: 'Can two people establish their Shabbos locations in different directions to benefit each other?' },
+          { q: 'What does Rabbi Yehuda say about measuring the Techum that differs from the opinion of the Chachamim?' },
+          { q: 'When must an Eruv Techumin be placed — before Shabbos or can it be placed before Yom Tov as well?' },
+        ],
+      },
+      {
+        videoId: '783406a9-36ac-4692-bb1a-0f96a5ed72a7', // Eiruvin 6
+        questions: [
+          { q: 'If a non-Jew lives in the courtyard, what must be done before an Eruv can work for the Jewish residents?' },
+          { q: 'What is Bitul Reshus (nullifying one\'s domain) and when must it be performed?' },
+          { q: 'Can carrying in a shared courtyard be permitted by renting the non-Jew\'s portion?' },
+          { q: 'What is the halacha if a Tzadduki (Sadducee) shares the courtyard — can an Eruv be made with him?' },
+        ],
+      },
+      {
+        videoId: 'b7802a91-fa51-4e0f-aa57-5bceb3db4ef6', // Eiruvin Chapter 7
+        questions: [
+          { q: 'What is the difference between an Eruv Chatzeiros and a Shituf Mevoios?' },
+          { q: 'If a wall between two courtyards has an opening of 10 tefachim wide, can the two courtyards join as one Eruv?' },
+          { q: 'Can a ladder connecting two rooftops or courtyards serve as a connection for Eruv purposes?' },
+          { q: 'If one courtyard forgot to join the Eruv, can Bitul Reshus be done after Shabbos has already begun?' },
+        ],
+      },
+      {
+        videoId: 'a35a0f48-be92-478a-8909-4e1c0d5d46c0', // Eiruvin Perek 8
+        questions: [
+          { q: 'What are the requirements to allow residents to draw water from a shared well on Shabbos?' },
+          { q: 'What is a Karfef (a large enclosed area not meant for dwelling), and what are the carrying rules inside it?' },
+          { q: 'What makes a valid Beis Sha\'ar (gatehouse) in the halachos of Eruvin?' },
+          { q: 'Can animals drink from a semi-public well on Shabbos, and what arrangements need to be made beforehand?' },
+        ],
+      },
+      {
+        videoId: 'ab1177d2-c4ed-47e2-9dc1-4926e329d522', // Eiruvin Chapter 9
+        questions: [
+          { q: 'What is a Karmelis, and is carrying in one a Torah prohibition or a Rabbinic one?' },
+          { q: 'What is a Makom Patur (exempt area), and what may be carried between it and a private or public domain?' },
+          { q: 'Can you carry an object from a Karmelis into a Reshus HaYachid (private domain)?' },
+          { q: 'What is the status of the area directly beneath a roof overhang that extends over a public domain?' },
+        ],
+      },
+      {
+        videoId: '260f1a06-df81-45df-b58a-dc9cf6d936e7', // Eiruvin Chapter 10 (part 1)
+        questions: [
+          { q: 'What is the rule about finding a needle in the public domain on Shabbos — can you pick it up and move it?' },
+          { q: 'Can a Sefer Torah be carried into a public domain to be read there on Shabbos?' },
+          { q: 'What is the halacha about a key that has a metal head shaped like a figure — can it be worn as jewelry on Shabbos?' },
+          { q: 'If a person is carrying a child and the child is holding an object, what is the halacha?' },
+        ],
+      },
+      {
+        videoId: '801c172c-e70c-4332-96b0-96c02fd2df6d', // Eiruvin Chapter 10 (part 2)
+        questions: [
+          { q: 'What are the rules for saving items from a burning house on Shabbos — what may be carried into a public area?' },
+          { q: 'What may a person do if his Shabbos clothing falls into a public domain?' },
+          { q: 'What is the halacha about returning a door that fell off its hinges on Shabbos?' },
+          { q: 'Can a person drag a heavy bed or item across a public domain on Shabbos?' },
+          { q: 'What items may a person wear or carry as clothing that are actually functional tools (e.g., a wooden leg, a key-brooch)?' },
+        ],
+      },
+    ];
+
+    for (const { videoId, questions } of eiruvinQs) {
+      const existing = await pool.query(`SELECT COUNT(*) FROM video_questions WHERE video_id = $1`, [videoId]);
+      if (parseInt(existing.rows[0].count) === 0) {
+        for (let i = 0; i < questions.length; i++) {
+          await pool.query(
+            `INSERT INTO video_questions (id, video_id, question, answer, sort_order) VALUES (gen_random_uuid()::varchar, $1, $2, $3, $4)`,
+            [videoId, questions[i].q, questions[i].a ?? null, i]
+          );
+        }
+      }
+    }
+
     // Create free account for SkylineExpressnJ@gmail.com (Rabbi Eli's brother)
     {
       const bcrypt = await import('bcryptjs');
