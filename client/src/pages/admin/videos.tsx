@@ -14,12 +14,85 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Check, ChevronsUpDown } from "lucide-react";
+import { cn } from "@/lib/utils";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { useToast } from "@/hooks/use-toast";
 import { queryClient } from "@/lib/queryClient";
 import { getAuthHeaders } from "@/lib/auth-context";
 import type { Video as VideoType, VideoCategory } from "@shared/schema";
+
+function CategoryCombobox({
+  value,
+  onChange,
+  categories,
+  disabled,
+  placeholder = "Select a category",
+  testId,
+}: {
+  value: string;
+  onChange: (val: string) => void;
+  categories: VideoCategory[];
+  disabled?: boolean;
+  placeholder?: string;
+  testId?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const topLevel = categories.filter(c => !c.parentCategoryId);
+  const getSubs = (parentId: string) => categories.filter(c => c.parentCategoryId === parentId);
+
+  const allOptions: { id: string; label: string; indent: boolean }[] = [
+    { id: "none", label: "No Category", indent: false },
+    ...topLevel.flatMap(cat => [
+      { id: cat.id, label: cat.name, indent: false },
+      ...getSubs(cat.id).map(sub => ({ id: sub.id, label: sub.name, indent: true })),
+    ]),
+  ];
+
+  const selectedLabel = allOptions.find(o => o.id === value)?.label;
+
+  return (
+    <Popover open={open} onOpenChange={disabled ? undefined : setOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant="outline"
+          role="combobox"
+          aria-expanded={open}
+          disabled={disabled}
+          className="w-full justify-between font-normal"
+          data-testid={testId}
+        >
+          <span className="truncate">{selectedLabel ?? placeholder}</span>
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[320px] p-0 z-[300]" align="start">
+        <Command>
+          <CommandInput placeholder="Search categories..." />
+          <CommandList className="max-h-60">
+            <CommandEmpty>No category found.</CommandEmpty>
+            <CommandGroup>
+              {allOptions.map(opt => (
+                <CommandItem
+                  key={opt.id}
+                  value={opt.label}
+                  onSelect={() => { onChange(opt.id); setOpen(false); }}
+                  className={opt.indent ? "pl-8 text-muted-foreground" : "font-medium"}
+                >
+                  <Check className={cn("mr-2 h-4 w-4 shrink-0", value === opt.id ? "opacity-100" : "opacity-0")} />
+                  {opt.indent ? `└ ${opt.label}` : opt.label}
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
 
 function formatFileSize(bytes: number | null): string {
   if (!bytes) return "Unknown";
@@ -331,25 +404,13 @@ function VideoCard({ video, onDelete, onUpdate, onUploadThumbnail, onResetThumbn
                       rows={2}
                       data-testid={`input-edit-description-${video.id}`}
                     />
-                    <Select value={editCategoryId} onValueChange={setEditCategoryId}>
-                      <SelectTrigger data-testid={`select-edit-category-${video.id}`}>
-                        <SelectValue placeholder="Select category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">No Category</SelectItem>
-                        {topLevelCategories.map((cat) => {
-                          const subs = getSubcategories(cat.id);
-                          return [
-                            <SelectItem key={cat.id} value={cat.id} className="font-medium">{cat.name}</SelectItem>,
-                            ...subs.map((subcat) => (
-                              <SelectItem key={subcat.id} value={subcat.id} className="pl-6 text-muted-foreground">
-                                └ {subcat.name}
-                              </SelectItem>
-                            ))
-                          ];
-                        })}
-                      </SelectContent>
-                    </Select>
+                    <CategoryCombobox
+                      value={editCategoryId}
+                      onChange={setEditCategoryId}
+                      categories={categories}
+                      placeholder="Select category"
+                      testId={`select-edit-category-${video.id}`}
+                    />
                     <Select value={editMood} onValueChange={setEditMood}>
                       <SelectTrigger data-testid={`select-edit-mood-${video.id}`}>
                         <SelectValue placeholder="Mood (auto)" />
@@ -1706,26 +1767,14 @@ export default function VideoManagement() {
                   />
                 </div>
                 <div>
-                  <Label htmlFor="single-video-category">Category (optional)</Label>
-                  <Select value={singleCategoryId} onValueChange={setSingleCategoryId} disabled={isSingleUploading}>
-                    <SelectTrigger data-testid="select-single-video-category">
-                      <SelectValue placeholder="Select a category" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="none">No Category</SelectItem>
-                      {topLevelCategories.map((cat) => {
-                        const subs = getSubcategories(cat.id);
-                        return [
-                          <SelectItem key={cat.id} value={cat.id} className="font-medium">{cat.name}</SelectItem>,
-                          ...subs.map((subcat) => (
-                            <SelectItem key={subcat.id} value={subcat.id} className="pl-6 text-muted-foreground">
-                              └ {subcat.name}
-                            </SelectItem>
-                          ))
-                        ];
-                      })}
-                    </SelectContent>
-                  </Select>
+                  <Label>Category (optional)</Label>
+                  <CategoryCombobox
+                    value={singleCategoryId}
+                    onChange={setSingleCategoryId}
+                    categories={categories}
+                    disabled={isSingleUploading}
+                    testId="select-single-video-category"
+                  />
                 </div>
                 <div>
                   <Label htmlFor="single-video-thumbnail">Thumbnail Image (optional)</Label>
@@ -1814,26 +1863,14 @@ export default function VideoManagement() {
               </div>
               
               <div>
-                <Label htmlFor="video-category">Category for all videos (optional)</Label>
-                <Select value={uploadCategoryId} onValueChange={setUploadCategoryId} disabled={isUploading}>
-                  <SelectTrigger data-testid="select-video-category">
-                    <SelectValue placeholder="Select a category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="none">No Category</SelectItem>
-                    {topLevelCategories.map((cat) => {
-                      const subs = getSubcategories(cat.id);
-                      return [
-                        <SelectItem key={cat.id} value={cat.id} className="font-medium">{cat.name}</SelectItem>,
-                        ...subs.map((subcat) => (
-                          <SelectItem key={subcat.id} value={subcat.id} className="pl-6 text-muted-foreground">
-                            └ {subcat.name}
-                          </SelectItem>
-                        ))
-                      ];
-                    })}
-                  </SelectContent>
-                </Select>
+                <Label>Category for all videos (optional)</Label>
+                <CategoryCombobox
+                  value={uploadCategoryId}
+                  onChange={setUploadCategoryId}
+                  categories={categories}
+                  disabled={isUploading}
+                  testId="select-video-category"
+                />
               </div>
 
               {uploadQueue.length > 0 && (
