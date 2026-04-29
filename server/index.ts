@@ -565,7 +565,8 @@ async function runDataMigrations() {
         ('369b2c7d-4fc5-4b06-a0c4-0a1405adc860', 'Pesachim',           'f74c98ce-8e18-4084-bf17-9ada2ce44efe', 0, NOW()),
         ('beb8f486-c657-4d27-8ac4-573140a875fd', 'Shabbos',            'f74c98ce-8e18-4084-bf17-9ada2ce44efe', 0, NOW()),
         ('7c6379a1-8368-421b-8fab-3c282e185c88', 'Shekalim',           'f74c98ce-8e18-4084-bf17-9ada2ce44efe', 0, NOW()),
-        ('a08449d5-deef-449a-8c28-510efdc40226', 'Taanis',             'f74c98ce-8e18-4084-bf17-9ada2ce44efe', 0, NOW())
+        ('a08449d5-deef-449a-8c28-510efdc40226', 'Taanis',             'f74c98ce-8e18-4084-bf17-9ada2ce44efe', 0, NOW()),
+        ('c3e5f812-1a2b-4d3c-9e7f-6b0a5c8d4e1f', 'Moed Katan',        'f74c98ce-8e18-4084-bf17-9ada2ce44efe', 0, NOW())
       ON CONFLICT (id) DO NOTHING
     `);
 

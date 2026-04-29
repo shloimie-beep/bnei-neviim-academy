@@ -69,10 +69,18 @@ function CategoryCombobox({
           <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[320px] p-0 z-[300]" align="start">
+      <PopoverContent
+        className="w-[320px] p-0 z-[300]"
+        align="start"
+        onWheel={(e) => e.stopPropagation()}
+        onTouchMove={(e) => e.stopPropagation()}
+      >
         <Command>
           <CommandInput placeholder="Search categories..." />
-          <CommandList className="max-h-60">
+          <CommandList
+            className="max-h-64 overflow-y-auto"
+            onWheel={(e) => e.stopPropagation()}
+          >
             <CommandEmpty>No category found.</CommandEmpty>
             <CommandGroup>
               {allOptions.map(opt => (
