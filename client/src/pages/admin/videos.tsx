@@ -2073,21 +2073,14 @@ export default function VideoManagement() {
                     />
                   </div>
                   <div>
-                    <Label htmlFor="parent-category">Parent Category (optional)</Label>
-                    <Select 
-                      value={newCategoryParentId || "none"} 
-                      onValueChange={(val) => setNewCategoryParentId(val === "none" ? null : val)}
-                    >
-                      <SelectTrigger data-testid="select-parent-category">
-                        <SelectValue placeholder="None (top-level)" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="none">None (top-level)</SelectItem>
-                        {topLevelCategories.map((cat) => (
-                          <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <Label>Parent Category (optional)</Label>
+                    <CategoryCombobox
+                      value={newCategoryParentId || "none"}
+                      onChange={(val) => setNewCategoryParentId(val === "none" ? null : val)}
+                      categories={topLevelCategories}
+                      placeholder="None (top-level)"
+                      testId="select-parent-category"
+                    />
                     <p className="text-xs text-muted-foreground mt-1">
                       Leave empty for a main category, or select a parent to create a subcategory
                     </p>
@@ -2270,21 +2263,14 @@ export default function VideoManagement() {
                       />
                     </div>
                     <div>
-                      <Label htmlFor="edit-parent-category">Parent Category</Label>
-                      <Select 
-                        value={editCategoryParentId || "none"} 
-                        onValueChange={(val) => setEditCategoryParentId(val === "none" ? null : val)}
-                      >
-                        <SelectTrigger data-testid="select-edit-parent-category">
-                          <SelectValue placeholder="None (top-level)" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="none">None (top-level)</SelectItem>
-                          {topLevelCategories.filter(c => c.id !== categoryToEdit?.id).map((cat) => (
-                            <SelectItem key={cat.id} value={cat.id}>{cat.name}</SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <Label>Parent Category</Label>
+                      <CategoryCombobox
+                        value={editCategoryParentId || "none"}
+                        onChange={(val) => setEditCategoryParentId(val === "none" ? null : val)}
+                        categories={topLevelCategories.filter(c => c.id !== categoryToEdit?.id)}
+                        placeholder="None (top-level)"
+                        testId="select-edit-parent-category"
+                      />
                     </div>
                   </div>
                   <DialogFooter>
