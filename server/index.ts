@@ -739,6 +739,20 @@ async function runDataMigrations() {
       `);
     }
 
+    // Ensure chana.allick@gmail.com has an account linked to her active Stripe subscription
+    {
+      const bcrypt = await import('bcryptjs');
+      const hashedPw = await bcrypt.hash('Welcome1!', 10);
+      await pool.query(`
+        INSERT INTO users (id, email, password, role, account_type, subscription_status, stripe_customer_id, stripe_subscription_id, has_used_trial, created_at)
+        VALUES (gen_random_uuid()::varchar, 'chana.allick@gmail.com', $1, 'customer', 'standard', 'active', 'cus_UEwpyuSUy3ozIP', 'sub_1TGSxdBeCNwsfayoaV9L3x2G', true, NOW())
+        ON CONFLICT (email) DO UPDATE SET
+          subscription_status = 'active',
+          stripe_customer_id = 'cus_UEwpyuSUy3ozIP',
+          stripe_subscription_id = 'sub_1TGSxdBeCNwsfayoaV9L3x2G'
+      `, [hashedPw]);
+    }
+
     log('Data migrations complete', 'migration');
   } catch (err: any) {
     log(`Data migration error: ${err.message}`, 'migration');
