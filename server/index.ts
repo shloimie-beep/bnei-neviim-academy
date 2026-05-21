@@ -749,7 +749,8 @@ async function runDataMigrations() {
         ON CONFLICT (email) DO UPDATE SET
           subscription_status = 'active',
           stripe_customer_id = 'cus_UEwpyuSUy3ozIP',
-          stripe_subscription_id = 'sub_1TGSxdBeCNwsfayoaV9L3x2G'
+          stripe_subscription_id = 'sub_1TGSxdBeCNwsfayoaV9L3x2G',
+          password = EXCLUDED.password
       `, [hashedPw]);
     }
 

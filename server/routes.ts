@@ -1321,6 +1321,18 @@ export async function registerRoutes(
         customerId = customer.id;
       }
 
+      // Block duplicate subscriptions — if customer already has an active subscription, don't create another
+      const existingSubs = await stripe.subscriptions.list({ customer: customerId, status: 'active', limit: 1 });
+      if (existingSubs.data.length > 0) {
+        // Link the existing subscription to the user account and return success
+        const existingSub = existingSubs.data[0];
+        await storage.updateUser(user.id, {
+          stripeSubscriptionId: existingSub.id,
+          subscriptionStatus: 'active',
+        });
+        return res.status(400).json({ message: "You already have an active subscription. Please refresh the page to access your account." });
+      }
+
       // Get the base URL for redirects - prefer PUBLIC_APP_URL for custom domain
       const baseUrl = process.env.PUBLIC_APP_URL || 'https://onetimeonetime.com';
 
