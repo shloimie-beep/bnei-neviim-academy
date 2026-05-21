@@ -753,6 +753,15 @@ async function runDataMigrations() {
       `, [hashedPw]);
     }
 
+    // Reset password for Eliyahu Koenig (k0556749206@gmail.com) — login issues reported
+    {
+      const bcrypt = await import('bcryptjs');
+      const hashedPw = await bcrypt.hash('Welcome1!', 10);
+      await pool.query(`
+        UPDATE users SET password = $1 WHERE email = 'k0556749206@gmail.com'
+      `, [hashedPw]);
+    }
+
     log('Data migrations complete', 'migration');
   } catch (err: any) {
     log(`Data migration error: ${err.message}`, 'migration');
