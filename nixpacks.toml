@@ -1,8 +1,8 @@
 [phases.setup]
-nixPkgs = ["nodejs"]
+nixPkgs = ["python3"]
 
 [phases.build]
-cmds = ["npm install -g serve"]
+cmds = ["echo 'Static site ready'"]
 
 [start]
-cmd = "serve public -l $PORT"
+cmd = "python3 -m http.server $PORT --directory public"
