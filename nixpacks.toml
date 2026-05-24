@@ -5,4 +5,4 @@ nixPkgs = ["nodejs"]
 cmds = ["echo 'Static site - no build needed'"]
 
 [start]
-cmd = "npx serve@latest -s public -l $PORT"
+cmd = "npx serve@latest public --listen $PORT"
