@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Family Accountability — Launch Control Panel</title>
+<style>
+* { box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; max-width: 1000px; margin: 0 auto; padding: 20px; background: #faf7f2; color: #2d2418; line-height: 1.6; }
+header { background: linear-gradient(135deg, #6b1f1f 0%, #c89b3c 100%); color: white; padding: 30px; border-radius: 16px; margin-bottom: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+header h1 { margin: 0 0 8px 0; font-size: 2.2em; }
+header p { margin: 0; opacity: 0.95; font-size: 1.05em; }
+.progress-bar { background: rgba(255,255,255,0.2); height: 14px; border-radius: 7px; overflow: hidden; margin-top: 22px; }
+.progress-fill { background: #f0d878; height: 100%; transition: width 0.3s ease; }
+.progress-text { color: white; font-size: 1em; margin-top: 10px; font-weight: 500; }
+.section-header { background: #2d2418; color: white; padding: 18px 26px; border-radius: 10px; margin: 30px 0 20px 0; }
+.section-header h2 { margin: 0; font-size: 1.4em; }
+.section-header p { margin: 4px 0 0 0; opacity: 0.85; font-size: 0.95em; }
+.card { background: white; border-radius: 12px; padding: 22px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-left: 6px solid #6b1f1f; transition: all 0.25s; }
+.card.done { opacity: 0.55; border-left-color: #4a7c3c; background: #f4f9f1; }
+.card h3 { margin: 0 0 10px 0; color: #6b1f1f; font-size: 1.2em; display: flex; align-items: center; gap: 12px; }
+.card.done h3 { color: #4a7c3c; }
+.card-num { background: #6b1f1f; color: white; width: 36px; height: 36px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-weight: bold; font-size: 0.95em; flex-shrink: 0; }
+.card.done .card-num { background: #4a7c3c; }
+.what { background: #faf3e1; padding: 12px 18px; border-radius: 8px; margin: 12px 0; font-size: 0.95em; }
+.what strong { color: #6b1f1f; }
+pre.cmd { background: #1a1410; color: #f0d878; padding: 14px 18px; border-radius: 8px; font-family: "Consolas", "Monaco", monospace; font-size: 13px; overflow-x: auto; margin: 10px 0; line-height: 1.5; }
+.copy-btn, .open-btn { display: inline-block; background: #6b1f1f; color: white; padding: 12px 22px; border: none; border-radius: 8px; font-size: 0.98em; font-weight: bold; cursor: pointer; margin: 8px 4px 8px 0; text-decoration: none; transition: background 0.2s; }
+.copy-btn:hover, .open-btn:hover { background: #8b2f2f; }
+.copy-btn.copied { background: #4a7c3c; }
+.open-btn { background: #c89b3c; }
+.open-btn:hover { background: #d4a948; }
+textarea { width: 100%; min-height: 120px; max-height: 250px; font-family: "Consolas", "Monaco", monospace; font-size: 11px; padding: 12px; border: 1px solid #d4c4a0; border-radius: 8px; background: #faf7f2; color: #2d2418; resize: vertical; line-height: 1.5; margin: 8px 0; }
+.done-row { display: flex; align-items: center; gap: 10px; margin-top: 14px; padding-top: 14px; border-top: 1px solid #ebe0c4; }
+.done-row input[type="checkbox"] { width: 22px; height: 22px; cursor: pointer; accent-color: #4a7c3c; }
+.done-row label { font-size: 0.98em; color: #5a4830; cursor: pointer; user-select: none; }
+.warn { background: #fff3cd; border-left: 4px solid #c89b3c; padding: 12px 16px; border-radius: 6px; margin: 12px 0; font-size: 0.93em; color: #5a4830; }
+.warn strong { color: #6b1f1f; }
+footer { text-align: center; padding: 40px 0 20px; color: #8a7855; font-size: 0.9em; }
+</style>
+</head>
+<body>
+
+<header>
+<h1>Family Accountability — Launch</h1>
+<p>Dratler family app · 12 steps to live · ~10 minutes total</p>
+<div class="progress-bar"><div class="progress-fill" id="progress-fill" style="width: 0%"></div></div>
+<div class="progress-text"><span id="progress-count">0</span> of 12 complete</div>
+</header>
+
+<div class="warn">
+<strong>SECURITY NOTE:</strong> The Supabase JWT keys you pasted in chat are now exposed. The 5 steps below in Section A include rotating them — do not skip the rotation step.
+</div>
+
+<!-- =============================================== -->
+<!-- SECTION A — DATABASE                            -->
+<!-- =============================================== -->
+<div class="section-header">
+<h2>Section A — Database setup</h2>
+<p>Apply the schema to the new Supabase project, rotate the leaked keys.</p>
+</div>
+
+<div class="card" data-id="a1">
+<h3><span class="card-num">A1</span>Reset the Supabase DB password</h3>
+<div class="what"><strong>Why:</strong> Need the real password (not the <code>[YOUR-PASSWORD]</code> placeholder) to run schema migrations from the terminal.</div>
+<a class="open-btn" href="https://supabase.com/dashboard/project/amipeuneopdbzuhlnimt/settings/database" target="_blank">Open Supabase → Database settings ↗</a>
+<div class="what" style="margin-top: 12px;">Click <strong>Reset Database Password</strong> → copy the new password (shown once). Paste it directly into the box in step A2.</div>
+<div class="done-row">
+<input type="checkbox" id="done-a1">
+<label for="done-a1">Done — password reset and copied</label>
+</div>
+</div>
+
+<div class="card" data-id="a2">
+<h3><span class="card-num">A2</span>Update DATABASE_URL in .env.local</h3>
+<div class="what"><strong>Find this line in .env.local</strong> (open it in VS Code) — replace <code>[YOUR-PASSWORD]</code> with the password from A1:</div>
+<button class="copy-btn" data-target="t-a2">Copy the line template</button>
+<textarea id="t-a2" readonly>DATABASE_URL=postgresql://postgres:PASTE_PASSWORD_HERE@db.amipeuneopdbzuhlnimt.supabase.co:5432/postgres</textarea>
+<div class="what" style="margin-top: 8px;">Save the file (Ctrl+S).</div>
+<div class="done-row">
+<input type="checkbox" id="done-a2">
+<label for="done-a2">Done — DATABASE_URL updated with real password</label>
+</div>
+</div>
+
+<div class="card" data-id="a3">
+<h3><span class="card-num">A3</span>Apply the schema</h3>
+<div class="what"><strong>Open a terminal in VS Code</strong> (Ctrl+`) and run:</div>
+<pre class="cmd">cd C:/Users/User/family-accountability
+node scripts/apply-schema.mjs</pre>
+<button class="copy-btn" data-target="t-a3">Copy command</button>
+<textarea id="t-a3" readonly style="min-height: 60px;">cd C:/Users/User/family-accountability
+node scripts/apply-schema.mjs</textarea>
+<div class="what" style="margin-top: 8px;"><strong>Expected output:</strong> "Schema apply complete" + list of tables (users, meetings, goals, checkins, notifications, user_preferences, parent_notes, goal_consequences) + seeded users (Menachem, Esther).</div>
+<div class="done-row">
+<input type="checkbox" id="done-a3">
+<label for="done-a3">Done — schema applied, tables visible</label>
+</div>
+</div>
+
+<div class="card" data-id="a4">
+<h3><span class="card-num">A4</span>Create the proofs storage bucket</h3>
+<div class="what"><strong>Why:</strong> Kids upload proof photos. Bucket must be private (not public). One click in the dashboard.</div>
+<a class="open-btn" href="https://supabase.com/dashboard/project/amipeuneopdbzuhlnimt/storage/buckets" target="_blank">Open Supabase → Storage ↗</a>
+<div class="what" style="margin-top: 12px;">Click <strong>New bucket</strong> → name: <code>proofs</code> → toggle <strong>Public bucket OFF</strong> (stays private) → Create bucket.</div>
+<div class="done-row">
+<input type="checkbox" id="done-a4">
+<label for="done-a4">Done — proofs bucket created (private)</label>
+</div>
+</div>
+
+<div class="card" data-id="a5">
+<h3><span class="card-num">A5</span>Rotate the JWT keys (security)</h3>
+<div class="what"><strong>Why:</strong> You pasted the anon + service_role keys in chat earlier. Rotate both now and update .env.local with the new ones.</div>
+<a class="open-btn" href="https://supabase.com/dashboard/project/amipeuneopdbzuhlnimt/settings/api" target="_blank">Open Supabase → API settings ↗</a>
+<div class="what" style="margin-top: 12px;">
+1. Click <strong>Reset service_role key</strong> → confirm → copy the new value → paste into .env.local as <code>SUPABASE_SERVICE_ROLE_KEY</code><br>
+2. Click <strong>Reset anon key</strong> → confirm → copy → paste as <code>NEXT_PUBLIC_SUPABASE_ANON_KEY</code><br>
+3. Save .env.local
+</div>
+<div class="done-row">
+<input type="checkbox" id="done-a5">
+<label for="done-a5">Done — both JWTs rotated and .env.local updated</label>
+</div>
+</div>
+
+<!-- =============================================== -->
+<!-- SECTION B — DEPLOY                              -->
+<!-- =============================================== -->
+<div class="section-header">
+<h2>Section B — Railway deploy</h2>
+<p>Push to Railway, configure env vars, get a public URL.</p>
+</div>
+
+<div class="card" data-id="b1">
+<h3><span class="card-num">B1</span>Log in to Railway</h3>
+<div class="what">Opens a browser tab for OAuth — sign in with your existing Railway account (same one Holy Flow uses).</div>
+<pre class="cmd">railway login</pre>
+<button class="copy-btn" data-target="t-b1">Copy command</button>
+<textarea id="t-b1" readonly style="min-height: 40px;">railway login</textarea>
+<div class="done-row">
+<input type="checkbox" id="done-b1">
+<label for="done-b1">Done — logged in (terminal shows "Logged in as ...")</label>
+</div>
+</div>
+
+<div class="card" data-id="b2">
+<h3><span class="card-num">B2</span>Create a new Railway project</h3>
+<div class="what">Creates an empty Railway project named <code>family-accountability</code> and links this folder to it.</div>
+<pre class="cmd">cd C:/Users/User/family-accountability
+railway init --name family-accountability</pre>
+<button class="copy-btn" data-target="t-b2">Copy command</button>
+<textarea id="t-b2" readonly style="min-height: 60px;">cd C:/Users/User/family-accountability
+railway init --name family-accountability</textarea>
+<div class="what" style="margin-top: 8px;">If it asks "Select an environment" — choose <strong>production</strong> (or accept the default).</div>
+<div class="done-row">
+<input type="checkbox" id="done-b2">
+<label for="done-b2">Done — Railway project created + linked</label>
+</div>
+</div>
+
+<div class="card" data-id="b3">
+<h3><span class="card-num">B3</span>Push env vars to Railway</h3>
+<div class="what">Reads every variable from your local .env.local and pushes each to the Railway project. ~25 vars.</div>
+<pre class="cmd">node scripts/push-env-to-railway.mjs</pre>
+<button class="copy-btn" data-target="t-b3">Copy command</button>
+<textarea id="t-b3" readonly style="min-height: 40px;">node scripts/push-env-to-railway.mjs</textarea>
+<div class="done-row">
+<input type="checkbox" id="done-b3">
+<label for="done-b3">Done — env vars pushed, ~25 checkmarks shown</label>
+</div>
+</div>
+
+<div class="card" data-id="b4">
+<h3><span class="card-num">B4</span>Deploy</h3>
+<div class="what">Builds and deploys the Next.js app. ~2–3 minutes first time.</div>
+<pre class="cmd">railway up</pre>
+<button class="copy-btn" data-target="t-b4">Copy command</button>
+<textarea id="t-b4" readonly style="min-height: 40px;">railway up</textarea>
+<div class="done-row">
+<input type="checkbox" id="done-b4">
+<label for="done-b4">Done — deploy succeeded ("Build successful")</label>
+</div>
+</div>
+
+<div class="card" data-id="b5">
+<h3><span class="card-num">B5</span>Get a public URL</h3>
+<div class="what">Creates a free <code>*.up.railway.app</code> domain. Copy the URL it prints.</div>
+<pre class="cmd">railway domain</pre>
+<button class="copy-btn" data-target="t-b5">Copy command</button>
+<textarea id="t-b5" readonly style="min-height: 40px;">railway domain</textarea>
+<div class="done-row">
+<input type="checkbox" id="done-b5">
+<label for="done-b5">Done — URL like https://family-accountability-production-XXXX.up.railway.app</label>
+</div>
+</div>
+
+<div class="card" data-id="b6">
+<h3><span class="card-num">B6</span>Update NEXT_PUBLIC_APP_URL (both places)</h3>
+<div class="what"><strong>1.</strong> In .env.local — change this line:</div>
+<button class="copy-btn" data-target="t-b6a">Copy template</button>
+<textarea id="t-b6a" readonly style="min-height: 50px;">NEXT_PUBLIC_APP_URL=PASTE_RAILWAY_URL_HERE</textarea>
+<div class="what" style="margin-top: 12px;"><strong>2.</strong> Also tell Railway about it + redeploy:</div>
+<pre class="cmd">railway variables --set "NEXT_PUBLIC_APP_URL=PASTE_RAILWAY_URL_HERE"
+railway up</pre>
+<button class="copy-btn" data-target="t-b6b">Copy commands</button>
+<textarea id="t-b6b" readonly style="min-height: 60px;">railway variables --set "NEXT_PUBLIC_APP_URL=PASTE_RAILWAY_URL_HERE"
+railway up</textarea>
+<div class="done-row">
+<input type="checkbox" id="done-b6">
+<label for="done-b6">Done — both updated, redeploy started</label>
+</div>
+</div>
+
+<!-- =============================================== -->
+<!-- SECTION C — GO LIVE                             -->
+<!-- =============================================== -->
+<div class="section-header">
+<h2>Section C — Go live</h2>
+<p>One command sets the Telegram webhooks and pings your bot.</p>
+</div>
+
+<div class="card" data-id="c1">
+<h3><span class="card-num">C1</span>Run the launch script</h3>
+<div class="what"><strong>What it does:</strong> Sets the Telegram webhook for <code>@shlomofam_bot</code> (and <code>@ahuvafam_bot</code> if she's set up) at your live Railway URL, then sends a launch message with the link to your Telegram.</div>
+<pre class="cmd">node scripts/launch.mjs</pre>
+<button class="copy-btn" data-target="t-c1">Copy command</button>
+<textarea id="t-c1" readonly style="min-height: 40px;">node scripts/launch.mjs</textarea>
+<div class="what" style="margin-top: 10px;"><strong>Expected:</strong> Telegram notification on your phone within 5 seconds containing the live URL + a deeplink to <code>/parent/onboarding</code>.</div>
+<div class="done-row">
+<input type="checkbox" id="done-c1">
+<label for="done-c1">Done — Telegram ping received, app is live</label>
+</div>
+</div>
+
+<footer>
+Family Accountability · Dratler family · Generated 2026-05-13<br>
+Progress saves to localStorage in this browser. Clearing browser data resets the checkboxes.
+</footer>
+
+<script>
+document.querySelectorAll('.copy-btn').forEach(btn => {
+  btn.addEventListener('click', async () => {
+    const ta = document.getElementById(btn.dataset.target);
+    try {
+      await navigator.clipboard.writeText(ta.value);
+      const old = btn.textContent;
+      btn.textContent = '✓ Copied';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = old; btn.classList.remove('copied'); }, 2000);
+    } catch(err) {
+      ta.select(); document.execCommand('copy');
+      btn.textContent = '✓ Copied (selected)';
+    }
+  });
+});
+
+function updateProgress() {
+  const total = document.querySelectorAll('.card').length;
+  const done = document.querySelectorAll('input[id^="done-"]:checked').length;
+  document.getElementById('progress-count').textContent = done;
+  document.getElementById('progress-fill').style.width = (done / total * 100) + '%';
+}
+
+document.querySelectorAll('input[type="checkbox"]').forEach(box => {
+  const key = 'familyacc-' + box.id;
+  box.checked = localStorage.getItem(key) === '1';
+  if (box.checked) box.closest('.card').classList.add('done');
+  box.addEventListener('change', () => {
+    localStorage.setItem(key, box.checked ? '1' : '0');
+    box.closest('.card').classList.toggle('done', box.checked);
+    updateProgress();
+  });
+});
+
+updateProgress();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg:          #FAF6EE;
+  --surface:     #FFFFFF;
+  --ink:         #1A1A1A;
+  --ink-soft:    #5B5B5B;
+  --line:        #E8E1D1;
+  --accent:      #6B2D2D;
+  --accent-soft: #A65454;
+  --gold:        #C8A052;
+  --gold-soft:   #F4ECD8;
+  --rose:        #B45B5B;
+}
+
+@layer base {
+  html, body {
+    background-color: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-body), 'Assistant', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-display), 'Frank Ruhl Libre', serif;
+    color: var(--ink);
+  }
+
+  ::selection {
+    background: var(--gold-soft);
+    color: var(--ink);
+  }
+
+  [dir="rtl"] body { letter-spacing: 0; }
+  [dir="rtl"] .ltr-only { display: none; }
+  [dir="ltr"] .rtl-only { display: none; }
+}
+
+@layer utilities {
+  .surface {
+    background-color: var(--surface);
+    border: 1px solid var(--line);
+  }
+  .ink-soft { color: var(--ink-soft); }
+}

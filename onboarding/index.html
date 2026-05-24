@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <title>Family Accountability — Setup</title>
+    <style>
+      :root {
+        --bg: #FAF6EE;
+        --surface: #FFFFFF;
+        --ink: #1A1A1A;
+        --ink-soft: #5B5B5B;
+        --line: #E8E1D1;
+        --accent: #6B2D2D;
+        --gold: #C8A052;
+        --gold-soft: #F4ECD8;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: 'Assistant', system-ui, sans-serif;
+        line-height: 1.55;
+        font-size: 18px;
+        -webkit-font-smoothing: antialiased;
+      }
+      main {
+        max-width: 640px;
+        margin: 0 auto;
+        padding: 32px 20px 80px;
+      }
+      h1 {
+        font-family: 'Frank Ruhl Libre', serif;
+        font-size: 40px;
+        margin: 0 0 4px;
+        line-height: 1.05;
+      }
+      h2 {
+        font-family: 'Frank Ruhl Libre', serif;
+        font-size: 24px;
+        margin: 32px 0 12px;
+      }
+      p { margin: 8px 0; }
+      .soft { color: var(--ink-soft); font-size: 15px; }
+      .step {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 20px;
+        margin: 14px 0;
+      }
+      .step .n {
+        display: inline-flex;
+        width: 28px; height: 28px;
+        align-items: center; justify-content: center;
+        background: var(--gold-soft);
+        color: var(--ink);
+        border-radius: 50%;
+        font-family: 'Frank Ruhl Libre', serif;
+        font-size: 14px;
+        margin-right: 8px;
+      }
+      .step h3 {
+        display: inline;
+        font-family: 'Frank Ruhl Libre', serif;
+        font-size: 22px;
+      }
+      .step ul { padding-left: 24px; }
+      .btn {
+        display: inline-block;
+        background: var(--accent);
+        color: white;
+        text-decoration: none;
+        padding: 12px 18px;
+        border-radius: 14px;
+        margin: 6px 6px 6px 0;
+        font-weight: 600;
+      }
+      .btn.ghost {
+        background: var(--surface);
+        color: var(--ink);
+        border: 1px solid var(--line);
+      }
+      code {
+        background: var(--gold-soft);
+        padding: 2px 6px;
+        border-radius: 4px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 14px;
+        word-break: break-all;
+      }
+      pre {
+        background: var(--gold-soft);
+        padding: 12px;
+        border-radius: 8px;
+        overflow-x: auto;
+        font-size: 13px;
+        line-height: 1.4;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <h1>Family Accountability</h1>
+      <p class="soft">Six steps. ~15 minutes. You can do them in order on your phone.</p>
+
+      <div class="step">
+        <span class="n">1</span><h3>Open your bot, send any message</h3>
+        <p>Telegram link → <a class="btn" href="https://t.me/shlomofam_bot">Open @shlomofam_bot</a></p>
+        <p class="soft">Send anything like "hi". This registers your chat so the bot can ping you later.</p>
+      </div>
+
+      <div class="step">
+        <span class="n">2</span><h3>Deploy the cloud accounts</h3>
+        <p>Easiest: paste the agent prompt you have into your remote-Claude session and it sets up Supabase + GitHub + Railway + Resend for you. Otherwise, manually:</p>
+        <p>
+          <a class="btn ghost" href="https://supabase.com/dashboard/projects">Supabase</a>
+          <a class="btn ghost" href="https://github.com/new?name=family-accountability&amp;visibility=private">GitHub repo</a>
+          <a class="btn ghost" href="https://railway.app/new">Railway project</a>
+          <a class="btn ghost" href="https://resend.com/api-keys">Resend</a>
+        </p>
+        <ul>
+          <li>Supabase: create project <code>family-accountability</code>, run <code>supabase-schema.sql</code>, then <code>supabase-migration-002.sql</code></li>
+          <li>Railway: deploy from the GitHub repo, paste env vars from <code>.env.local</code></li>
+          <li>Note the deployed URL — you'll need it in step 3</li>
+        </ul>
+      </div>
+
+      <div class="step">
+        <span class="n">3</span><h3>Open the app on your phone, sign in</h3>
+        <p>Replace <code>&lt;URL&gt;</code> with your Railway URL:</p>
+        <p><code>&lt;URL&gt;/parent/login</code></p>
+        <p class="soft">Enter your email → magic link arrives → tap it → onboarding wizard walks you through the rest (kid PINs, install on home screen, first family meeting, invite Ahuva).</p>
+      </div>
+
+      <div class="step">
+        <span class="n">4</span><h3>Set the bot webhooks</h3>
+        <p>One command on your PC:</p>
+        <pre>node scripts/set-webhooks.mjs https://&lt;URL&gt;</pre>
+        <p class="soft">Or paste each curl from <code>scripts/set-webhooks.mjs</code> manually if you'd rather see them run.</p>
+      </div>
+
+      <div class="step">
+        <span class="n">5</span><h3>Forward Ahuva her invite</h3>
+        <p>She does the same as you, on her phone:</p>
+        <ul>
+          <li>Telegram <a href="https://t.me/ahuvafam_bot">@ahuvafam_bot</a> → send "hi"</li>
+          <li><code>&lt;URL&gt;/parent/login</code> → her email → magic link → onboarding</li>
+        </ul>
+      </div>
+
+      <div class="step">
+        <span class="n">6</span><h3>Print the kid QR codes</h3>
+        <p>After deploy, open these in your browser and save the PNGs:</p>
+        <ul>
+          <li><code>&lt;URL&gt;/api/qr/menachem</code></li>
+          <li><code>&lt;URL&gt;/api/qr/esther</code></li>
+        </ul>
+        <p class="soft">Tape to each tablet. A scan opens the PIN entry directly.</p>
+      </div>
+
+      <h2>What you and Ahuva can do from the bots</h2>
+      <p>Type free-text questions in either bot — it goes to Claude with the family data only:</p>
+      <ul>
+        <li><i>"How did Esther do this week?"</i></li>
+        <li><i>"What goals were rejected and why?"</i></li>
+        <li><i>"Add a task for Menachem to take out the trash"</i> (manually use <code>/addgoal</code> for now)</li>
+      </ul>
+      <p>Slash commands: <code>/today</code>, <code>/streak</code>, <code>/meetings</code>, <code>/addgoal &lt;kid&gt; "title"</code>, <code>/freeze &lt;kid&gt;</code>, <code>/unfreeze &lt;kid&gt;</code>, <code>/dashboard</code>, <code>/help</code>.</p>
+    </main>
+  </body>
+</html>
