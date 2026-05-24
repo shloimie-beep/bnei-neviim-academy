@@ -2,7 +2,7 @@
 nixPkgs = ["nodejs"]
 
 [phases.build]
-cmds = ["echo 'Static site - no build needed'"]
+cmds = ["npm install -g serve"]
 
 [start]
-cmd = "npx serve@latest public --listen $PORT"
+cmd = "serve public -l $PORT"
