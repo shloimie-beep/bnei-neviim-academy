@@ -8,12 +8,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --forest-green: #2d4a3e;
-            --sage-green: #7a9e7e;
-            --warm-cream: #f5f1e8;
-            --soft-terracotta: #c17f59;
-            --deep-brown: #3d2914;
-            --golden-tan: #d4a574;
+            --primary-blue: #1e3a5f;
+            --secondary-blue: #2c5282;
+            --light-blue: #e8f0f8;
+            --accent-gold: #c9a227;
+            --dark-text: #1a202c;
+            --white: #ffffff;
+            --whatsapp-green: #25d366;
         }
         
         * {
@@ -24,8 +25,8 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background: var(--warm-cream);
-            color: var(--deep-brown);
+            background: var(--white);
+            color: var(--dark-text);
             line-height: 1.7;
         }
         
@@ -34,11 +35,11 @@
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(245, 241, 232, 0.95);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             z-index: 1000;
             padding: 1rem 2rem;
-            border-bottom: 1px solid rgba(45, 74, 62, 0.1);
+            border-bottom: 1px solid rgba(30, 58, 95, 0.1);
         }
         
         .nav-container {
@@ -53,9 +54,12 @@
             height: 60px;
         }
         
-        .nav-cta {
-            background: var(--soft-terracotta);
-            color: white;
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .nav-btn {
             padding: 0.75rem 1.5rem;
             border-radius: 50px;
             text-decoration: none;
@@ -63,15 +67,30 @@
             transition: all 0.3s ease;
         }
         
-        .nav-cta:hover {
-            background: var(--forest-green);
+        .nav-btn-contact {
+            background: var(--whatsapp-green);
+            color: white;
+        }
+        
+        .nav-btn-contact:hover {
+            background: #128c7e;
+            transform: translateY(-2px);
+        }
+        
+        .nav-btn-signup {
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .nav-btn-signup:hover {
+            background: var(--secondary-blue);
             transform: translateY(-2px);
         }
         
         /* Hero Section */
         .hero {
             min-height: 100vh;
-            background: linear-gradient(rgba(45, 74, 62, 0.7), rgba(45, 74, 62, 0.8)), 
+            background: linear-gradient(rgba(30, 58, 95, 0.85), rgba(30, 58, 95, 0.9)), 
                         url('images/sitting on grass.jpg') center/cover;
             display: flex;
             align-items: center;
@@ -83,7 +102,7 @@
         
         .hero-content {
             max-width: 800px;
-            color: var(--warm-cream);
+            color: var(--white);
         }
         
         .hero-quote {
@@ -117,23 +136,45 @@
             margin-right: auto;
         }
         
-        .hero-cta {
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .hero-btn {
             display: inline-block;
-            background: var(--soft-terracotta);
-            color: white;
             padding: 1rem 2.5rem;
             border-radius: 50px;
             text-decoration: none;
             font-weight: 600;
             font-size: 1.1rem;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(193, 127, 89, 0.4);
         }
         
-        .hero-cta:hover {
-            background: var(--golden-tan);
+        .hero-btn-whatsapp {
+            background: var(--whatsapp-green);
+            color: white;
+            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+        }
+        
+        .hero-btn-whatsapp:hover {
+            background: #128c7e;
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(193, 127, 89, 0.5);
+            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
+        }
+        
+        .hero-btn-signup {
+            background: var(--accent-gold);
+            color: var(--dark-text);
+            box-shadow: 0 4px 15px rgba(201, 162, 39, 0.4);
+        }
+        
+        .hero-btn-signup:hover {
+            background: #d4b43a;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(201, 162, 39, 0.5);
         }
         
         /* Section Styles */
@@ -149,32 +190,49 @@
         .section-title {
             font-family: 'Cormorant Garamond', serif;
             font-size: 2.5rem;
-            color: var(--forest-green);
+            color: var(--primary-blue);
             text-align: center;
             margin-bottom: 3rem;
         }
         
         /* Mission Section */
         .mission {
-            background: var(--warm-cream);
+            background: var(--white);
+        }
+        
+        .mission-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        
+        .mission-image {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(30, 58, 95, 0.15);
+            border: 1px solid rgba(30, 58, 95, 0.1);
+        }
+        
+        .mission-image img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
         }
         
         .mission-text {
             font-size: 1.2rem;
-            text-align: center;
-            max-width: 800px;
-            margin: 0 auto 2rem;
-            color: var(--deep-brown);
+            color: var(--dark-text);
         }
         
         /* Beliefs Section */
         .beliefs {
-            background: var(--forest-green);
-            color: var(--warm-cream);
+            background: var(--primary-blue);
+            color: var(--white);
         }
         
         .beliefs .section-title {
-            color: var(--warm-cream);
+            color: var(--white);
         }
         
         .beliefs-intro {
@@ -193,22 +251,22 @@
         }
         
         .belief-card {
-            background: rgba(245, 241, 232, 0.1);
+            background: rgba(255, 255, 255, 0.1);
             padding: 2rem;
             border-radius: 12px;
-            border-left: 4px solid var(--soft-terracotta);
+            border-left: 4px solid var(--accent-gold);
         }
         
         .belief-card h3 {
             font-family: 'Cormorant Garamond', serif;
             font-size: 1.4rem;
             margin-bottom: 0.75rem;
-            color: var(--golden-tan);
+            color: var(--accent-gold);
         }
         
         /* Learning Section */
         .learning {
-            background: var(--warm-cream);
+            background: var(--light-blue);
             position: relative;
         }
         
@@ -222,7 +280,8 @@
         .learning-image {
             border-radius: 16px;
             overflow: hidden;
-            box-shadow: 0 20px 40px rgba(45, 74, 62, 0.2);
+            box-shadow: 0 20px 40px rgba(30, 58, 95, 0.2);
+            border: 1px solid rgba(30, 58, 95, 0.1);
         }
         
         .learning-image img {
@@ -231,21 +290,27 @@
             object-fit: cover;
         }
         
+        .learning-text {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(30, 58, 95, 0.1);
+            border: 1px solid rgba(30, 58, 95, 0.1);
+        }
+        
         .learning-text h2 {
             font-family: 'Cormorant Garamond', serif;
             font-size: 2.2rem;
-            color: var(--forest-green);
-            margin-bottom: 1rem;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
         }
         
         .learning-time {
-            display: inline-block;
-            background: var(--soft-terracotta);
-            color: white;
-            padding: 0.5rem 1.5rem;
-            border-radius: 50px;
+            font-size: 1.1rem;
+            color: var(--secondary-blue);
             font-weight: 500;
             margin-bottom: 1.5rem;
+            display: block;
         }
         
         .learning-list {
@@ -260,7 +325,7 @@
         
         .learning-list li::before {
             content: "•";
-            color: var(--soft-terracotta);
+            color: var(--accent-gold);
             font-weight: bold;
             position: absolute;
             left: 0;
@@ -268,14 +333,14 @@
         
         /* For Who Section */
         .for-who {
-            background: linear-gradient(rgba(45, 74, 62, 0.85), rgba(45, 74, 62, 0.9)),
+            background: linear-gradient(rgba(30, 58, 95, 0.85), rgba(30, 58, 95, 0.9)),
                         url('images/sitting on couch.jpg') center/cover fixed;
-            color: var(--warm-cream);
+            color: var(--white);
             text-align: center;
         }
         
         .for-who .section-title {
-            color: var(--warm-cream);
+            color: var(--white);
         }
         
         .for-who-content {
@@ -283,20 +348,14 @@
             margin: 0 auto;
         }
         
-        .age-badge {
-            display: inline-block;
-            background: var(--soft-terracotta);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 50px;
+        .for-who-text {
             font-size: 1.3rem;
-            font-weight: 600;
-            margin: 1.5rem 0;
+            line-height: 1.8;
         }
         
         /* Founder Section */
         .founder {
-            background: var(--warm-cream);
+            background: var(--white);
             padding-bottom: 6rem;
         }
         
@@ -316,19 +375,19 @@
         .founder-image img {
             width: 100%;
             border-radius: 50%;
-            border: 8px solid var(--forest-green);
-            box-shadow: 0 10px 30px rgba(45, 74, 62, 0.3);
+            border: 8px solid var(--primary-blue);
+            box-shadow: 0 10px 30px rgba(30, 58, 95, 0.3);
         }
         
         .founder-text h2 {
             font-family: 'Cormorant Garamond', serif;
             font-size: 2rem;
-            color: var(--forest-green);
+            color: var(--primary-blue);
             margin-bottom: 0.5rem;
         }
         
         .founder-text .subtitle {
-            color: var(--soft-terracotta);
+            color: var(--secondary-blue);
             font-weight: 500;
             margin-bottom: 1.5rem;
             display: block;
@@ -339,10 +398,28 @@
             font-size: 1.05rem;
         }
         
+        /* Location Section */
+        .location {
+            background: var(--light-blue);
+            text-align: center;
+            padding: 3rem 2rem;
+        }
+        
+        .location-text {
+            font-size: 1.3rem;
+            color: var(--primary-blue);
+        }
+        
+        .location-hebrew {
+            font-size: 1.5rem;
+            margin-top: 0.5rem;
+            color: var(--secondary-blue);
+        }
+        
         /* CTA Section */
         .cta-section {
-            background: var(--forest-green);
-            color: var(--warm-cream);
+            background: var(--primary-blue);
+            color: var(--white);
             text-align: center;
             padding: 4rem 2rem;
         }
@@ -359,28 +436,49 @@
             opacity: 0.9;
         }
         
+        .cta-buttons {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
         .cta-button {
             display: inline-block;
-            background: var(--soft-terracotta);
-            color: white;
             padding: 1.2rem 3rem;
             border-radius: 50px;
             text-decoration: none;
             font-weight: 600;
             font-size: 1.2rem;
             transition: all 0.3s ease;
+        }
+        
+        .cta-whatsapp {
+            background: var(--whatsapp-green);
+            color: white;
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
         }
         
-        .cta-button:hover {
-            background: var(--golden-tan);
+        .cta-whatsapp:hover {
+            background: #128c7e;
+            transform: translateY(-3px);
+        }
+        
+        .cta-payment {
+            background: var(--accent-gold);
+            color: var(--dark-text);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .cta-payment:hover {
+            background: #d4b43a;
             transform: translateY(-3px);
         }
         
         /* Footer */
         footer {
-            background: var(--deep-brown);
-            color: var(--warm-cream);
+            background: var(--dark-text);
+            color: var(--white);
             text-align: center;
             padding: 2rem;
         }
@@ -395,6 +493,7 @@
                 font-size: 1.5rem;
             }
             
+            .mission-content,
             .learning-content,
             .founder-content {
                 grid-template-columns: 1fr;
@@ -408,6 +507,16 @@
             .beliefs-grid {
                 grid-template-columns: 1fr;
             }
+            
+            .nav-buttons {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .nav-btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
         }
     </style>
 </head>
@@ -416,7 +525,10 @@
     <nav>
         <div class="nav-container">
             <img src="images/bna logo.png" alt="Bnei Nevi'im Academy" class="logo">
-            <a href="#contact" class="nav-cta">Book a Conversation</a>
+            <div class="nav-buttons">
+                <a href="https://wa.me/972534932631" class="nav-btn nav-btn-contact" target="_blank">Contact Us</a>
+                <a href="/signup.html" class="nav-btn nav-btn-signup">Sign Up</a>
+            </div>
         </div>
     </nav>
 
@@ -427,16 +539,25 @@
             <p class="hero-source">— Yeshayahu 11:9</p>
             <h1>Home-Based Integrative Torah Learning for Boys Ages 7–13</h1>
             <p class="hero-subtitle">A calm, relationship-based Torah learning environment for boys who don't fit the system.</p>
-            <a href="#contact" class="hero-cta">Book a Parent Conversation</a>
+            <div class="hero-buttons">
+                <a href="https://wa.me/972534932631" class="hero-btn hero-btn-whatsapp" target="_blank">Contact Us on WhatsApp</a>
+                <a href="/signup.html" class="hero-btn hero-btn-signup">Sign Up</a>
+            </div>
         </div>
     </section>
 
     <!-- Mission Section -->
     <section class="mission">
         <div class="container">
-            <h2 class="section-title">Our Mission</h2>
-            <p class="mission-text">To raise future leaders of the Jewish people who understand their role in society, live with purpose, develop self-governance, and experience Torah and Hashem as a real and meaningful part of daily life.</p>
-            <p class="mission-text">We aim to help boys grow into grounded, responsible, spiritually-connected young men who are internally motivated to learn, think deeply, and contribute meaningfully to the world around them.</p>
+            <div class="mission-content">
+                <div class="mission-image">
+                    <img src="images/sitting on container.jpg" alt="Boy learning Torah">
+                </div>
+                <div class="mission-text">
+                    <h2 class="section-title" style="text-align: left; margin-bottom: 1.5rem;">Our Mission</h2>
+                    <p>To raise future leaders of the Jewish people who understand their role in society, live with purpose, develop self-governance, and experience Torah and Hashem as a real and meaningful part of daily life.</p>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -520,9 +641,10 @@
         <div class="container">
             <div class="for-who-content">
                 <h2 class="section-title">Who This Is For</h2>
-                <p style="font-size: 1.2rem; margin-bottom: 1rem;">Boys Ages 7–13</p>
-                <div class="age-badge">Ages 7 – 13</div>
-                <p>For boys currently not enrolled in traditional schools, who need a calm, relationship-based learning environment.</p>
+                <div class="for-who-text">
+                    <p>Boys ages 7 to 13</p>
+                    <p>Who are not enrolled in a traditional school</p>
+                </div>
             </div>
         </div>
     </section>
@@ -537,19 +659,29 @@
                 <div class="founder-text">
                     <h2>Shloimie Dratler</h2>
                     <span class="subtitle">Founder</span>
-                    <p>Shloimie has over 15 years of experience working with teens and families. His work has focused on helping young people develop responsibility, confidence, emotional well-being, and intrinsic motivation.</p>
-                    <p>More recently, his work has focused on developmental psychology, experiential Torah learning, and intrinsic motivation to address the deeper root causes behind many of the emotional and educational struggles affecting today's youth.</p>
+                    <p>Shloimie has over 15 years of experience working with teens and families, with a focus on developmental psychology, experiential Torah learning, and intrinsic motivation. His work addresses the deeper root causes behind many of the emotional and educational struggles affecting today's youth, helping young people develop responsibility, confidence, emotional well-being, and a genuine love for learning.</p>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <!-- Location Section -->
+    <section class="location">
+        <div class="container">
+            <p class="location-text">Remote • Ramat Beit Shemesh</p>
+            <p class="location-hebrew">רמות בית שמש</p>
         </div>
     </section>
 
     <!-- CTA Section -->
     <section class="cta-section" id="contact">
         <div class="container">
-            <h2>Ready to Learn More?</h2>
-            <p>Schedule a conversation to see if this is the right fit for your son.</p>
-            <a href="https://calendly.com/shloimie-dratler" class="cta-button" target="_blank">Book a Parent Conversation</a>
+            <h2>Ready to Get Started?</h2>
+            <p>Contact us or sign up today.</p>
+            <div class="cta-buttons">
+                <a href="https://wa.me/972534932631" class="cta-button cta-whatsapp" target="_blank">Contact Us on WhatsApp</a>
+                <a href="https://mrng.to/r9DSZhhWE9" class="cta-button cta-payment" target="_blank">Pay Registration Fee</a>
+            </div>
         </div>
     </section>
 

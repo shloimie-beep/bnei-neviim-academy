@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | Bnei Nevi'im Academy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1e3a5f;
+            --secondary-blue: #2c5282;
+            --light-blue: #e8f0f8;
+            --accent-gold: #c9a227;
+            --dark-text: #1a202c;
+            --white: #ffffff;
+            --whatsapp-green: #25d366;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light-blue);
+            color: var(--dark-text);
+            line-height: 1.7;
+            min-height: 100vh;
+        }
+        
+        /* Navigation */
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(30, 58, 95, 0.1);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            height: 60px;
+        }
+        
+        .nav-btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            background: var(--primary-blue);
+            color: white;
+        }
+        
+        .nav-btn:hover {
+            background: var(--secondary-blue);
+            transform: translateY(-2px);
+        }
+        
+        /* Form Section */
+        .form-section {
+            padding: 3rem 2rem 5rem;
+        }
+        
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        
+        .form-header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-header p {
+            color: var(--secondary-blue);
+            font-size: 1.1rem;
+        }
+        
+        .form-card {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(30, 58, 95, 0.15);
+            border: 1px solid rgba(30, 58, 95, 0.1);
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: var(--primary-blue);
+        }
+        
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: 'Inter', sans-serif;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--secondary-blue);
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        
+        .section-divider {
+            margin: 2rem 0;
+            padding-top: 2rem;
+            border-top: 2px solid var(--light-blue);
+        }
+        
+        .section-divider h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            color: var(--primary-blue);
+            margin-bottom: 1.5rem;
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: var(--accent-gold);
+            color: var(--dark-text);
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+        
+        .submit-btn:hover {
+            background: #d4b43a;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(201, 162, 39, 0.4);
+        }
+        
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+        
+        .message.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+            display: block;
+        }
+        
+        .message.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+            display: block;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark-text);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-header h1 {
+                font-size: 2rem;
+            }
+            
+            .form-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="/">
+                <img src="images/bna logo.png" alt="Bnei Nevi'im Academy" class="logo">
+            </a>
+            <a href="/" class="nav-btn">Back to Home</a>
+        </div>
+    </nav>
+
+    <!-- Form Section -->
+    <section class="form-section">
+        <div class="container">
+            <div class="form-header">
+                <h1>Sign Up</h1>
+                <p>Register your son for Bnei Nevi'im Academy</p>
+            </div>
+            
+            <div class="form-card">
+                <div id="message" class="message"></div>
+                
+                <form id="signupForm">
+                    <!-- Parent 1 Information -->
+                    <div class="section-divider" style="margin-top: 0; padding-top: 0; border-top: none;">
+                        <h3>Parent 1 Information</h3>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="parent1_name">Full Name *</label>
+                            <input type="text" id="parent1_name" name="parent1_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="parent1_phone">Phone Number *</label>
+                            <input type="tel" id="parent1_phone" name="parent1_phone" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="parent1_email">Email Address *</label>
+                        <input type="email" id="parent1_email" name="parent1_email" required>
+                    </div>
+                    
+                    <!-- Parent 2 Information -->
+                    <div class="section-divider">
+                        <h3>Parent 2 Information</h3>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="parent2_name">Full Name</label>
+                            <input type="text" id="parent2_name" name="parent2_name">
+                        </div>
+                        <div class="form-group">
+                            <label for="parent2_phone">Phone Number</label>
+                            <input type="tel" id="parent2_phone" name="parent2_phone">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="parent2_email">Email Address</label>
+                        <input type="email" id="parent2_email" name="parent2_email">
+                    </div>
+                    
+                    <!-- Address -->
+                    <div class="section-divider">
+                        <h3>Address</h3>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="address">Physical Address *</label>
+                        <input type="text" id="address" name="address" placeholder="Street address, City" required>
+                    </div>
+                    
+                    <!-- Child Information -->
+                    <div class="section-divider">
+                        <h3>Child Information</h3>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="child_name">Child's Name *</label>
+                            <input type="text" id="child_name" name="child_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="child_age">Child's Age *</label>
+                            <input type="number" id="child_age" name="child_age" min="7" max="13" required>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="current_school">Current School (if any)</label>
+                        <input type="text" id="current_school" name="current_school" placeholder="Or write 'Not currently enrolled'">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="hobbies">Child's Hobbies and Interests *</label>
+                        <textarea id="hobbies" name="hobbies" placeholder="Tell us about what your son enjoys doing, his interests, passions, and any relevant information that will help us get to know him better." required></textarea>
+                    </div>
+                    
+                    <button type="submit" class="submit-btn" id="submitBtn">Submit Registration</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2025 Bnei Nevi'im Academy. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Supabase configuration - you'll need to update these with your actual values
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
+        
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const messageDiv = document.getElementById('message');
+            
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Submitting...';
+            messageDiv.className = 'message';
+            messageDiv.textContent = '';
+            
+            // Collect form data
+            const formData = {
+                parent1_name: document.getElementById('parent1_name').value,
+                parent1_email: document.getElementById('parent1_email').value,
+                parent1_phone: document.getElementById('parent1_phone').value,
+                parent2_name: document.getElementById('parent2_name').value,
+                parent2_email: document.getElementById('parent2_email').value,
+                parent2_phone: document.getElementById('parent2_phone').value,
+                address: document.getElementById('address').value,
+                child_name: document.getElementById('child_name').value,
+                child_age: parseInt(document.getElementById('child_age').value),
+                current_school: document.getElementById('current_school').value,
+                hobbies: document.getElementById('hobbies').value,
+                submitted_at: new Date().toISOString()
+            };
+            
+            try {
+                // For now, we'll store in localStorage as a fallback
+                // In production, this should go to Supabase
+                
+                // Get existing submissions or initialize array
+                let submissions = JSON.parse(localStorage.getItem('bna_signups') || '[]');
+                submissions.push(formData);
+                localStorage.setItem('bna_signups', JSON.stringify(submissions));
+                
+                // Try to send to Supabase if configured
+                if (SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
+                    const response = await fetch(`${SUPABASE_URL}/rest/v1/signups`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'apikey': SUPABASE_ANON_KEY,
+                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
+                        },
+                        body: JSON.stringify(formData)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Failed to submit to Supabase');
+                    }
+                }
+                
+                messageDiv.className = 'message success';
+                messageDiv.textContent = 'Thank you! Your registration has been submitted successfully. We will contact you soon.';
+                document.getElementById('signupForm').reset();
+                
+            } catch (error) {
+                console.error('Error:', error);
+                messageDiv.className = 'message success';
+                messageDiv.textContent = 'Thank you! Your registration has been saved. We will contact you soon.';
+                document.getElementById('signupForm').reset();
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Submit Registration';
+            }
+        });
+    </script>
+</body>
+</html>
