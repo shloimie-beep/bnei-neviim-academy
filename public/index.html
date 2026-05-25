@@ -31,14 +31,6 @@
             display: block;
         }
 
-        section,
-        div,
-        main,
-        header,
-        footer {
-            max-width: 100%;
-        }
-
         :root {
             --primary-blue: #1e3a5f;
             --secondary-blue: #2c5282;
@@ -46,9 +38,6 @@
             --accent-gold: #c9a227;
             --dark-text: #1a202c;
             --white: #ffffff;
-            --navy-dark: #091628;
-            --navy-mid: #10233f;
-            --navy-light: #183c66;
         }
 
         body {
@@ -71,7 +60,7 @@
         }
 
         .nav-container {
-            max-width: min(1600px, calc(100% - 44px));
+            max-width: 1280px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
@@ -152,18 +141,21 @@
         .hero {
             width: 100%;
             display: grid;
-            grid-template-rows: 560px 120px;
+            grid-template-rows: minmax(560px, 70vh) auto;
             margin-top: 70px;
+            padding: 0;
         }
 
         .hero-image {
             position: relative;
             width: 100%;
-            height: 560px;
+            min-height: 560px;
+            height: 70vh;
+            max-height: 760px;
             background-image: url('images/sitting on grass.jpg');
             background-size: cover;
             background-repeat: no-repeat;
-            background-position: center 44%;
+            background-position: center 48%;
             overflow: hidden;
         }
 
@@ -173,45 +165,45 @@
             inset: 0;
             background: linear-gradient(
                 to bottom,
-                rgba(9, 22, 40, 0.58) 0%,
-                rgba(9, 22, 40, 0.44) 28%,
-                rgba(9, 22, 40, 0.26) 58%,
-                rgba(9, 22, 40, 0.10) 100%
+                rgba(5, 16, 30, 0.68) 0%,
+                rgba(5, 16, 30, 0.48) 32%,
+                rgba(5, 16, 30, 0.26) 60%,
+                rgba(5, 16, 30, 0.10) 100%
             );
             z-index: 1;
         }
 
         .hero-verse {
             position: absolute;
-            top: 18px;
+            top: 20px;
             left: 50%;
             transform: translateX(-50%);
-            width: min(1000px, calc(100% - 80px));
+            width: min(980px, calc(100% - 80px));
             text-align: center;
             z-index: 2;
         }
 
         .hero-verse-he {
-            font-size: 28px;
+            font-size: 24px;
             line-height: 1.25;
             font-weight: 700;
             color: #ffffff;
             margin: 0 0 6px 0;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.35);
+            text-shadow: 0 2px 12px rgba(0,0,0,0.55);
         }
 
         .hero-verse-en {
-            font-size: 18px;
+            font-size: 17px;
             line-height: 1.35;
             font-style: italic;
             font-weight: 500;
             color: rgba(255,255,255,0.94);
             margin: 0 0 4px 0;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.35);
+            text-shadow: 0 2px 12px rgba(0,0,0,0.55);
         }
 
         .hero-verse-source {
-            font-size: 15px;
+            font-size: 14px;
             line-height: 1.2;
             font-weight: 700;
             color: #d9aa18;
@@ -220,7 +212,7 @@
 
         .hero-headline {
             position: absolute;
-            top: 120px;
+            top: 132px;
             left: 50%;
             transform: translateX(-50%);
             width: min(760px, calc(100% - 120px));
@@ -230,27 +222,27 @@
 
         .hero-headline h1 {
             margin: 0;
-            font-size: 46px;
-            line-height: 1.08;
+            font-size: clamp(38px, 3.1vw, 48px);
+            line-height: 1.1;
             font-weight: 700;
             letter-spacing: 0.01em;
             color: #ffffff;
-            text-shadow: 0 3px 12px rgba(0,0,0,0.42);
+            text-shadow: 0 3px 14px rgba(0,0,0,0.55);
         }
 
         .hero-cta-strip {
             width: 100%;
-            height: 120px;
+            min-height: 112px;
             background: #ffffff;
             border-top: 1px solid rgba(16,35,63,0.08);
-            box-shadow: 0 -1px 0 rgba(16,35,63,0.05);
+            box-shadow: 0 6px 24px rgba(16,35,63,0.06);
         }
 
         .hero-cta-inner {
-            max-width: min(1600px, calc(100% - 44px));
-            height: 100%;
+            max-width: 1280px;
+            min-height: 112px;
             margin: 0 auto;
-            padding: 0 48px;
+            padding: 22px 42px;
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -259,12 +251,12 @@
 
         .hero-subheadline {
             flex: 1 1 auto;
-            max-width: 620px;
+            max-width: 650px;
         }
 
         .hero-subheadline p {
             margin: 0;
-            font-size: 20px;
+            font-size: 19px;
             line-height: 1.45;
             font-weight: 500;
             color: #10233f;
@@ -278,11 +270,11 @@
         }
 
         .hero-btn {
-            min-width: 170px;
-            height: 54px;
+            min-width: 168px;
+            height: 52px;
             border-radius: 999px;
             padding: 0 28px;
-            font-size: 17px;
+            font-size: 16px;
             font-weight: 700;
             display: inline-flex;
             align-items: center;
@@ -315,95 +307,7 @@
 
         /* ===== MOBILE HERO ===== */
         .hero-mobile {
-            display: none;
-        }
-
-        @media (max-width: 767px) {
-            .hero {
-                display: none;
-            }
-
-            .hero-mobile {
-                display: block;
-                margin-top: 60px;
-            }
-
-            .hero-mobile-text {
-                width: 100%;
-                background: linear-gradient(180deg, #10233f 0%, #183c66 100%);
-                padding: 22px 20px 24px 20px;
-                text-align: center;
-                color: #ffffff;
-            }
-
-            .hero-mobile-photo {
-                width: 100%;
-                height: 290px;
-                background-image: url('images/sitting on grass.jpg');
-                background-size: cover;
-                background-position: center 46%;
-                background-repeat: no-repeat;
-            }
-
-            .hero-mobile-cta {
-                width: 100%;
-                background: #ffffff;
-                padding: 20px 20px 28px 20px;
-                text-align: center;
-                box-shadow: 0 -1px 0 rgba(16,35,63,0.08);
-            }
-
-            .hero-mobile-text .hero-verse-he {
-                font-size: 19px;
-                line-height: 1.35;
-                font-weight: 700;
-                margin: 0 0 6px 0;
-            }
-
-            .hero-mobile-text .hero-verse-en {
-                font-size: 14px;
-                line-height: 1.4;
-                font-style: italic;
-                font-weight: 400;
-                margin: 0 0 5px 0;
-            }
-
-            .hero-mobile-text .hero-verse-source {
-                font-size: 13px;
-                line-height: 1.2;
-                font-weight: 700;
-                color: #d9aa18;
-                margin: 0 0 18px 0;
-            }
-
-            .hero-mobile-text h1 {
-                max-width: 340px;
-                margin: 0 auto;
-                font-size: 34px;
-                line-height: 1.12;
-                font-weight: 700;
-            }
-
-            .hero-mobile-cta p {
-                font-size: 17px;
-                max-width: 340px;
-                margin: 0 auto 18px auto;
-                color: #10233f;
-                font-weight: 500;
-            }
-
-            .hero-mobile-cta .hero-buttons {
-                display: flex;
-                flex-direction: column;
-                width: 100%;
-                gap: 12px;
-                align-items: center;
-            }
-
-            .hero-mobile-cta .hero-btn {
-                width: min(300px, 100%);
-                height: 52px;
-            }
+            display: none !important;
         }
 
         /* ===== SECTION STYLES ===== */
@@ -412,7 +316,7 @@
         }
 
         .container {
-            max-width: min(1600px, calc(100% - 44px));
+            max-width: 1280px;
             margin: 0 auto;
         }
 
@@ -830,73 +734,329 @@
 
         /* ===== MOBILE BREAKPOINT ===== */
         @media (max-width: 767px) {
+            .hero-mobile {
+                display: none !important;
+            }
+
+            .hero {
+                display: grid !important;
+                grid-template-rows: 430px auto;
+                margin-top: 60px;
+                padding: 0;
+                width: 100%;
+            }
+
+            .hero-image {
+                min-height: 430px;
+                height: 430px;
+                max-height: 430px;
+                background-image: url('images/sitting on grass.jpg');
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-position: center 50%;
+                position: relative;
+                overflow: hidden;
+            }
+
+            .hero-image::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(
+                    to bottom,
+                    rgba(5,16,30,0.72) 0%,
+                    rgba(5,16,30,0.52) 34%,
+                    rgba(5,16,30,0.22) 68%,
+                    rgba(5,16,30,0.08) 100%
+                );
+                z-index: 1;
+            }
+
+            .hero-verse {
+                position: absolute;
+                top: 16px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: calc(100% - 32px);
+                text-align: center;
+                z-index: 2;
+            }
+
+            .hero-verse-he {
+                font-size: 17px;
+                line-height: 1.3;
+                font-weight: 700;
+                margin: 0 0 5px 0;
+            }
+
+            .hero-verse-en {
+                font-size: 12.5px;
+                line-height: 1.35;
+                font-style: italic;
+                font-weight: 400;
+                margin: 0 0 4px 0;
+            }
+
+            .hero-verse-source {
+                font-size: 12px;
+                line-height: 1.2;
+                color: #d9aa18;
+                margin: 0;
+            }
+
+            .hero-headline {
+                position: absolute;
+                top: 104px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: calc(100% - 44px);
+                text-align: center;
+                z-index: 2;
+            }
+
+            .hero-headline h1 {
+                font-size: 30px;
+                line-height: 1.12;
+                font-weight: 700;
+                margin: 0;
+                color: #ffffff;
+                text-shadow: 0 3px 14px rgba(0,0,0,0.6);
+            }
+
+            .hero-cta-strip {
+                width: 100%;
+                height: auto;
+                min-height: auto;
+                background: #ffffff;
+                padding: 0;
+            }
+
+            .hero-cta-inner {
+                width: 100%;
+                max-width: 100%;
+                min-height: auto;
+                padding: 20px 20px 26px 20px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 16px;
+                text-align: center;
+            }
+
+            .hero-subheadline {
+                max-width: 340px;
+                margin: 0 auto;
+            }
+
+            .hero-subheadline p {
+                font-size: 16px;
+                line-height: 1.45;
+                margin: 0;
+                color: #10233f;
+                font-weight: 500;
+            }
+
+            .hero-buttons {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 12px;
+                width: 100%;
+            }
+
+            .hero-btn {
+                width: min(300px, 100%);
+                height: 52px;
+                font-size: 17px;
+            }
+
+            /* Mobile nav */
             nav {
-                padding: 0.5rem 1rem;
+                padding: 8px 10px;
+            }
+
+            .nav-container {
+                width: 100%;
+                max-width: 100%;
+                gap: 8px;
+            }
+
+            .nav-brand {
+                gap: 8px;
+                min-width: 0;
+                flex: 1 1 auto;
             }
 
             .nav-logo {
-                height: 40px;
+                height: 38px;
+                width: 38px;
+                flex-shrink: 0;
+            }
+
+            .nav-brand-text {
+                min-width: 0;
             }
 
             .nav-brand-name {
-                font-size: 1rem;
+                font-size: 14px;
+                line-height: 1.1;
+                white-space: normal;
             }
 
             .nav-brand-location {
-                font-size: 0.7rem;
+                font-size: 10px;
+                line-height: 1.15;
+            }
+
+            .nav-buttons {
+                gap: 6px;
+                flex-shrink: 0;
             }
 
             .lang-toggle {
-                display: none;
+                display: none !important;
             }
 
             .nav-btn {
-                padding: 0.5rem 1rem;
-                font-size: 0.85rem;
+                height: 34px;
+                padding: 0 9px;
+                font-size: 11.5px;
+                border-radius: 999px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                white-space: nowrap;
+            }
+
+            /* Mobile page-wide */
+            html,
+            body {
+                width: 100%;
+                overflow-x: hidden;
             }
 
             section {
-                padding: 44px 20px;
+                padding: 42px 0;
             }
 
             .container {
+                width: 100%;
+                max-width: 100%;
                 padding-left: 20px;
                 padding-right: 20px;
+                margin: 0 auto;
             }
 
-            .section-title {
-                font-size: 28px;
-                margin-bottom: 2rem;
+            .mission-content,
+            .learning-content,
+            .martin-card,
+            .founder-content {
+                display: grid !important;
+                grid-template-columns: 1fr !important;
+                gap: 24px;
+            }
+
+            .mission-text,
+            .learning-text,
+            .martin-content,
+            .founder-text {
+                width: 100%;
+                max-width: 100%;
+            }
+
+            .mission-text .section-title {
+                text-align: center !important;
+                font-size: 30px;
+                line-height: 1.15;
+                margin-bottom: 16px !important;
             }
 
             .mission-image img,
             .learning-image img {
+                width: 100%;
                 height: 280px;
+                object-fit: cover;
+                border-radius: 16px;
+            }
+
+            .beliefs {
+                min-height: auto;
+                padding: 54px 0;
+                background-attachment: scroll;
             }
 
             .belief-card {
-                padding: 2rem;
+                width: 100%;
+                padding: 24px 20px;
             }
 
-            .belief-card h3 {
-                font-size: 1.5rem;
+            .slider-container {
+                max-width: 100%;
+            }
+
+            .learning-text {
+                padding: 24px 20px;
+            }
+
+            .martin-card {
+                width: 100%;
+                border-radius: 18px;
+            }
+
+            .martin-photo {
+                min-height: 260px;
             }
 
             .martin-content {
-                padding: 2rem;
+                padding: 24px 20px;
             }
 
-            .martin-name {
-                font-size: 1.8rem;
+            .founder-image {
+                max-width: 220px;
+                margin: 0 auto;
             }
 
-            .cta-section h2 {
-                font-size: 2rem;
+            .cta-section {
+                min-height: auto;
+                padding: 56px 20px;
+                background-attachment: scroll;
+            }
+
+            .cta-buttons {
+                flex-direction: column;
+                align-items: center;
+                gap: 12px;
             }
 
             .cta-button {
-                padding: 1rem 2rem;
-                font-size: 1rem;
+                width: min(300px, 100%);
+                min-height: 52px;
+                padding: 0 24px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            h1 {
+                font-size: 32px;
+                line-height: 1.12;
+            }
+
+            h2,
+            .section-title {
+                font-size: 30px;
+                line-height: 1.18;
+            }
+
+            h3 {
+                font-size: 22px;
+                line-height: 1.25;
+            }
+
+            p,
+            li {
+                font-size: 16px;
+                line-height: 1.6;
             }
         }
     </style>
@@ -920,7 +1080,7 @@
         </div>
     </nav>
 
-    <!-- Hero Section - Desktop -->
+    <!-- Hero Section -->
     <section class="hero">
         <div class="hero-image">
             <div class="hero-verse">
@@ -929,7 +1089,7 @@
                 <div class="hero-verse-source">Yeshayahu 11:9</div>
             </div>
             <div class="hero-headline">
-                <h1>Home-Based Integrative<br>Torah<br>Learning for Boys Ages 7–13</h1>
+                <h1>Home-Based Integrative Torah Learning for Boys Ages 7–13</h1>
             </div>
         </div>
         <div class="hero-cta-strip">
@@ -941,24 +1101,6 @@
                     <a href="https://wa.me/972534932631" class="hero-btn hero-btn-contact" target="_blank">Contact Us</a>
                     <a href="/signup.html" class="hero-btn hero-btn-signup">Sign Up</a>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Hero Section - Mobile (hidden on desktop) -->
-    <section class="hero-mobile">
-        <div class="hero-mobile-text">
-            <div class="hero-verse-he" dir="rtl">כי מלאה הארץ דעה את ה׳ כמים לים מכסים</div>
-            <div class="hero-verse-en">"For the earth will be filled with the knowledge of Hashem as the waters cover the sea."</div>
-            <div class="hero-verse-source">Yeshayahu 11:9</div>
-            <h1>Home-Based Integrative Torah Learning for Boys Ages 7–13</h1>
-        </div>
-        <div class="hero-mobile-photo"></div>
-        <div class="hero-mobile-cta">
-            <p>A calm, relationship-based Torah learning environment for boys who don't fit the system.</p>
-            <div class="hero-buttons">
-                <a href="https://wa.me/972534932631" class="hero-btn hero-btn-contact" target="_blank">Contact Us</a>
-                <a href="/signup.html" class="hero-btn hero-btn-signup">Sign Up</a>
             </div>
         </div>
     </section>

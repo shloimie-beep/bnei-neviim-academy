@@ -4,10 +4,14 @@
   "description": "Bnei Nevi'im Academy Website",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "screenshot": "node tools/screenshot-check.js"
   },
   "dependencies": {
     "express": "^4.18.2",
     "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "playwright": "^1.60.0"
   }
 }
