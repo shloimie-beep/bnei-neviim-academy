@@ -169,10 +169,35 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 - Kimi 2.6 model configured
 - Desktop shortcut created
 - Master document discovered and parsed
+- Visual QA toolchain installed (Playwright, Lighthouse, Prettier)
+- Screenshot testing script (`npm run screenshot`)
+
+### Required Toolchain for UI Work
+**ALWAYS use these tools for any visual changes:**
+
+1. **Playwright** - Screenshot testing across viewports
+   ```bash
+   npm run screenshot  # Captures 360/390/430/768/1440px widths
+   ```
+
+2. **Lighthouse** - Performance/accessibility audits
+   ```bash
+   npm run lighthouse  # Generates report
+   ```
+
+3. **Prettier** - HTML/CSS formatting
+   ```bash
+   npm run format      # Formats public/index.html
+   ```
+
+4. **MCP Browser Tools** - Live inspection
+   - Chrome DevTools MCP for computed styles
+   - Playwright MCP for interactive debugging
+
+**Rule: No CSS changes without screenshot verification.**
 
 ### Pending
-- Telegram bot token (operator has)
+- Telegram bot activation (needs chat ID, webhook setup)
 - Railway hosting setup
 - DNS configuration
-- Website build
-- GHL integration verification
+- Website polish (screenshots show current state)
