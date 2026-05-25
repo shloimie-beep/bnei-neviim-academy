@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bnei Nevi'im Academy | Torah Learning for Boys</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=Noto+Serif+Hebrew:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary-blue: #1e3a5f;
@@ -228,6 +228,7 @@
             justify-content: center;
             align-items: center;
             gap: 18px;
+            flex-wrap: wrap;
         }
         
         .hero-btn {
@@ -241,54 +242,19 @@
             justify-content: center;
             text-decoration: none;
             transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
         }
         
         .hero-btn-contact {
-            background: #22c55e;
-            color: #ffffff;
-        }
-        
-        .hero-btn-contact:hover {
-            background: #16a34a;
-            transform: translateY(-2px);
-        }
-        
-        .hero-btn-signup {
-            background: #d9aa18;
-            color: #10233f;
-        }
-        
-        .hero-btn-signup:hover {
-            background: #c49a16;
-            transform: translateY(-2px);
-        }
-        
-        .hero-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        .hero-btn {
-            display: inline-block;
-            padding: 1rem 2.5rem;
-            border-radius: 50px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 1.1rem;
-            transition: all 0.3s ease;
-        }
-        
-        .hero-btn-whatsapp {
             background: var(--whatsapp-green);
             color: white;
             box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
         }
         
-        .hero-btn-whatsapp:hover {
+        .hero-btn-contact:hover {
             background: #128c7e;
-            transform: translateY(-3px);
+            transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
         }
         
@@ -300,7 +266,7 @@
         
         .hero-btn-signup:hover {
             background: #d4b43a;
-            transform: translateY(-3px);
+            transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(201, 162, 39, 0.5);
         }
         
@@ -817,32 +783,67 @@
         /* Responsive */
         @media (max-width: 768px) {
             .hero {
-                padding: 80px 1.5rem 2rem;
+                min-height: 620px;
+                height: auto;
             }
             
-            .hero h1 {
-                font-size: 2rem;
-            }
-            
-            .hero-quote-top {
-                font-size: 1.2rem;
-            }
-            
-            .hero-source-top {
-                font-size: 0.85rem;
-                margin-bottom: 1.5rem;
-            }
-            
-            .hero-subtitle-card {
-                padding: 1rem 1.5rem;
-            }
-            
-            .hero-subtitle {
-                font-size: 1.1rem;
+            .hero-bg {
+                height: 620px;
+                object-position: center center;
             }
             
             .hero-content {
-                margin-bottom: 10vh;
+                position: absolute;
+                top: 28px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: calc(100% - 32px);
+                margin: 0;
+                padding: 0 16px;
+            }
+            
+            .hero-verse {
+                margin-bottom: 18px;
+            }
+            
+            .hero-verse-hebrew {
+                font-size: 18px;
+                line-height: 1.4;
+            }
+            
+            .hero-verse-english {
+                font-size: 15px;
+                line-height: 1.4;
+            }
+            
+            .hero-verse-ref {
+                font-size: 13px;
+            }
+            
+            .hero h1 {
+                font-size: 34px;
+                line-height: 1.1;
+                max-width: 100%;
+                margin-bottom: 16px;
+            }
+            
+            .hero-subtitle {
+                font-size: 17px;
+                line-height: 1.4;
+                max-width: 95%;
+                margin-bottom: 20px;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                gap: 12px;
+                width: 100%;
+            }
+            
+            .hero-btn {
+                width: min(280px, 90%);
+                height: 52px;
+                font-size: 16px;
             }
             
             .nav-brand {
@@ -932,62 +933,6 @@
             .lang-toggle {
                 padding: 0.4rem 0.8rem;
                 font-size: 0.8rem;
-            }
-            
-            .hero {
-                min-height: 620px;
-                height: auto;
-            }
-            
-            .hero-bg {
-                height: 620px;
-                object-position: center center;
-            }
-            
-            .hero-content {
-                top: 28px;
-                width: calc(100% - 32px);
-            }
-            
-            .hero-verse-hebrew {
-                font-size: 18px;
-            }
-            
-            .hero-verse-english {
-                font-size: 15px;
-            }
-            
-            .hero-verse-ref {
-                font-size: 13px;
-            }
-            
-            .hero-verse {
-                margin-bottom: 18px;
-            }
-            
-            .hero h1 {
-                font-size: 34px;
-                line-height: 1.1;
-                max-width: 100%;
-                margin-bottom: 16px;
-            }
-            
-            .hero-subtitle {
-                font-size: 17px;
-                line-height: 1.4;
-                max-width: 95%;
-                margin-bottom: 20px;
-            }
-            
-            .hero-buttons {
-                flex-direction: column;
-                gap: 12px;
-                width: 100%;
-            }
-            
-            .hero-btn {
-                width: min(280px, 90%);
-                height: 52px;
             }
         }
     </style>
