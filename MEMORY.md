@@ -224,4 +224,4 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 - Railway hosting setup
 - DNS configuration
 - Website polish (screenshots show current state)
-- Sawn integration (research in progress)
+- Voice/AI integration (clarify: "Sawn" not found - did you mean Bland AI, Retell, Vapi, or Twilio?)
