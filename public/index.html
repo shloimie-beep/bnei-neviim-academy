@@ -490,8 +490,8 @@
         
         /* CTA Section */
         .cta-section {
-            background: linear-gradient(rgba(30, 58, 95, 0.88), rgba(30, 58, 95, 0.92)),
-                        url('images/huddle.jpg') center/cover fixed;
+            background: linear-gradient(rgba(30, 58, 95, 0.85), rgba(30, 58, 95, 0.9)),
+                        url('images/huddle.png') center/cover fixed;
             color: var(--white);
             text-align: center;
             padding: 6rem 2rem;
@@ -499,6 +499,60 @@
             display: flex;
             flex-direction: column;
             justify-content: center;
+        }
+        
+        /* Testimonial Section */
+        .testimonial {
+            background: var(--light-blue);
+            padding: 5rem 2rem;
+        }
+        
+        .testimonial-card {
+            background: white;
+            padding: 3rem;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(30, 58, 95, 0.12);
+            max-width: 800px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 200px 1fr;
+            gap: 2.5rem;
+            align-items: center;
+        }
+        
+        .testimonial-image {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(30, 58, 95, 0.15);
+        }
+        
+        .testimonial-image img {
+            width: 100%;
+            height: 220px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .testimonial-content {
+            text-align: left;
+        }
+        
+        .testimonial-quote {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.5rem;
+            font-style: italic;
+            color: var(--dark-text);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-left: 1.5rem;
+            border-left: 4px solid var(--accent-gold);
+        }
+        
+        .testimonial-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: var(--primary-blue);
         }
         
         .cta-section h2 {
@@ -741,6 +795,29 @@
                 padding: 0.4rem 0.8rem;
                 font-size: 0.8rem;
             }
+            
+            .testimonial-card {
+                grid-template-columns: 1fr;
+                text-align: center;
+                padding: 2rem;
+            }
+            
+            .testimonial-content {
+                text-align: center;
+            }
+            
+            .testimonial-image {
+                max-width: 180px;
+                margin: 0 auto;
+            }
+            
+            .testimonial-quote {
+                font-size: 1.3rem;
+                padding-left: 0;
+                border-left: none;
+                border-top: 4px solid var(--accent-gold);
+                padding-top: 1.5rem;
+            }
         }
     </style>
 </head>
@@ -932,6 +1009,22 @@
                     <h2>Shloimie Dratler</h2>
                     <span class="subtitle">Founder</span>
                     <p>Shloimie has over 15 years of experience working with teens and families, with a focus on developmental psychology, experiential Torah learning, and intrinsic motivation. His work addresses the deeper root causes behind many of the emotional and educational struggles affecting today's youth, helping young people develop responsibility, confidence, emotional well-being, and a genuine love for learning.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonial Section -->
+    <section class="testimonial">
+        <div class="container">
+            <h2 class="section-title fade-in">Parent Testimonial</h2>
+            <div class="testimonial-card fade-in">
+                <div class="testimonial-image">
+                    <img src="images/l-bars.png" alt="L. Bars">
+                </div>
+                <div class="testimonial-content">
+                    <p class="testimonial-quote">"After joining the Academy, medication was no longer relevant."</p>
+                    <p class="testimonial-name">— L. Bars</p>
                 </div>
             </div>
         </div>
