@@ -125,17 +125,19 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: flex-start;
             text-align: center;
-            padding: 100px 2rem 2rem;
+            padding: 100px 2rem 3rem;
             position: relative;
         }
         
         .hero-content {
             max-width: 900px;
             color: var(--white);
-            margin-top: auto;
-            margin-bottom: 15vh;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100%;
         }
         
         .hero-quote-top {
@@ -151,7 +153,7 @@
         .hero-source-top {
             font-size: 0.95rem;
             color: var(--accent-gold);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             font-weight: 500;
             text-shadow: 0 2px 8px rgba(0,0,0,0.5);
         }
@@ -160,9 +162,17 @@
             font-family: 'Cormorant Garamond', serif;
             font-size: 3.2rem;
             font-weight: 700;
-            margin-bottom: 1.5rem;
+            margin-bottom: auto;
             line-height: 1.15;
             text-shadow: 0 3px 15px rgba(0,0,0,0.6);
+            padding-bottom: 35vh;
+        }
+        
+        .hero-bottom-content {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
         
         .hero-subtitle-card {
@@ -171,7 +181,7 @@
             padding: 1.5rem 2.5rem;
             border-radius: 16px;
             border: 1px solid rgba(255,255,255,0.15);
-            margin-bottom: 2rem;
+            margin-bottom: 1.5rem;
             display: inline-block;
         }
         
@@ -845,12 +855,14 @@
         <div class="hero-source-top">— Yeshayahu 11:9</div>
         <div class="hero-content">
             <h1>Home-Based Integrative Torah Learning for Boys Ages 7–13</h1>
-            <div class="hero-subtitle-card">
-                <p class="hero-subtitle">A calm, relationship-based Torah learning environment for boys who don't fit the system.</p>
-            </div>
-            <div class="hero-buttons">
-                <a href="https://wa.me/972534932631" class="hero-btn hero-btn-whatsapp" target="_blank">Contact Us</a>
-                <a href="/signup.html" class="hero-btn hero-btn-signup">Sign Up</a>
+            <div class="hero-bottom-content">
+                <div class="hero-subtitle-card">
+                    <p class="hero-subtitle">A calm, relationship-based Torah learning environment for boys who don't fit the system.</p>
+                </div>
+                <div class="hero-buttons">
+                    <a href="https://wa.me/972534932631" class="hero-btn hero-btn-whatsapp" target="_blank">Contact Us</a>
+                    <a href="/signup.html" class="hero-btn hero-btn-signup">Sign Up</a>
+                </div>
             </div>
         </div>
     </section>
