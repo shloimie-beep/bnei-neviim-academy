@@ -135,108 +135,136 @@
             transform: translateY(-2px);
         }
         
-        /* Hero Section - Exact Specifications */
+        /* Hero Section - Two Layer Layout */
         .hero {
+            display: grid;
+            grid-template-rows: 470px 112px;
+            width: 100%;
+        }
+        
+        .hero-image {
             position: relative;
-            min-height: 560px;
-            height: 560px;
+            height: 470px;
+            background-image: url('images/sitting on grass.jpg');
+            background-size: cover;
+            background-position: center 46%;
             overflow: hidden;
         }
         
-        .hero-bg {
+        .hero-image::before {
+            content: "";
             position: absolute;
             inset: 0;
-            width: 100%;
-            height: 560px;
-            object-fit: cover;
-            object-position: center 42%;
-        }
-        
-        .hero-overlay {
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to bottom, rgba(12, 31, 52, 0.58) 0%, rgba(12, 31, 52, 0.28) 42%, rgba(12, 31, 52, 0.08) 100%);
+            background: linear-gradient(
+                to bottom,
+                rgba(16, 35, 63, 0.38) 0%,
+                rgba(16, 35, 63, 0.18) 42%,
+                rgba(16, 35, 63, 0.06) 100%
+            );
             z-index: 1;
         }
         
-        .hero-content {
+        .hero-verse {
             position: absolute;
-            top: 34px;
+            top: 14px;
             left: 50%;
             transform: translateX(-50%);
-            width: min(860px, calc(100% - 64px));
+            width: min(980px, calc(100% - 64px));
             text-align: center;
             z-index: 2;
         }
         
-        .hero-verse {
-            margin-bottom: 22px;
-        }
-        
-        .hero-verse-hebrew {
-            font-size: 22px;
-            line-height: 1.35;
+        .hero-verse-he {
+            font-size: 26px;
+            line-height: 1.22;
+            font-weight: 600;
             color: #ffffff;
-            opacity: 0.95;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.45);
             margin-bottom: 6px;
-            font-family: 'Noto Serif Hebrew', serif;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.35);
         }
         
-        .hero-verse-english {
+        .hero-verse-en {
             font-size: 18px;
             line-height: 1.35;
-            color: #ffffff;
-            opacity: 0.95;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.45);
-            margin-bottom: 4px;
             font-style: italic;
+            font-weight: 500;
+            color: rgba(255,255,255,0.94);
+            margin-bottom: 4px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.35);
         }
         
-        .hero-verse-ref {
-            font-size: 14px;
-            line-height: 1.35;
+        .hero-verse-source {
+            font-size: 15px;
+            line-height: 1.2;
+            font-weight: 600;
             color: #d9aa18;
-            opacity: 0.95;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.45);
         }
         
-        .hero h1 {
-            font-size: clamp(36px, 4.2vw, 56px);
+        .hero-headline {
+            position: absolute;
+            top: 112px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: min(760px, calc(100% - 120px));
+            text-align: center;
+            z-index: 2;
+        }
+        
+        .hero-headline h1 {
+            margin: 0;
+            font-size: 58px;
             line-height: 1.08;
             font-weight: 700;
             letter-spacing: 0.01em;
             color: #ffffff;
-            max-width: 820px;
-            margin: 0 auto 18px auto;
-            text-shadow: 0 3px 12px rgba(0,0,0,0.55);
-            font-family: 'Cormorant Garamond', serif;
+            text-shadow: 0 3px 14px rgba(0,0,0,0.42);
         }
         
-        .hero-subtitle {
-            font-size: 21px;
-            line-height: 1.45;
+        .hero-cta-strip {
+            height: 112px;
+            background: #ffffff;
+            border-top: 1px solid rgba(16, 35, 63, 0.08);
+            box-shadow: 0 -1px 0 rgba(16,35,63,0.04), 0 8px 24px rgba(16,35,63,0.06);
+        }
+        
+        .hero-cta-inner {
+            max-width: 1180px;
+            height: 100%;
+            margin: 0 auto;
+            padding: 0 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 28px;
+        }
+        
+        .hero-subheadline {
+            flex: 1 1 auto;
+            max-width: 680px;
+        }
+        
+        .hero-subheadline p {
+            margin: 0;
+            font-size: 20px;
+            line-height: 1.4;
             font-weight: 500;
-            color: #ffffff;
-            max-width: 720px;
-            margin: 0 auto 24px auto;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.45);
+            color: #10233f;
         }
         
         .hero-buttons {
             display: flex;
-            justify-content: center;
             align-items: center;
-            gap: 18px;
-            flex-wrap: wrap;
+            gap: 16px;
+            flex-shrink: 0;
         }
         
         .hero-btn {
-            min-width: 168px;
+            min-width: 170px;
             height: 54px;
             border-radius: 999px;
             font-size: 17px;
             font-weight: 700;
+            padding: 0 28px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -247,27 +275,23 @@
         }
         
         .hero-btn-contact {
-            background: var(--whatsapp-green);
-            color: white;
-            box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4);
+            background: #22c55e;
+            color: #ffffff;
         }
         
         .hero-btn-contact:hover {
-            background: #128c7e;
+            background: #16a34a;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(37, 211, 102, 0.5);
         }
         
         .hero-btn-signup {
-            background: var(--accent-gold);
-            color: var(--dark-text);
-            box-shadow: 0 4px 15px rgba(201, 162, 39, 0.4);
+            background: #d9aa18;
+            color: #10233f;
         }
         
         .hero-btn-signup:hover {
-            background: #d4b43a;
+            background: #c49a16;
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(201, 162, 39, 0.5);
         }
         
         /* Section Styles */
@@ -783,67 +807,72 @@
         /* Responsive */
         @media (max-width: 768px) {
             .hero {
-                min-height: 620px;
-                height: auto;
+                grid-template-rows: 430px auto;
             }
             
-            .hero-bg {
-                height: 620px;
-                object-position: center center;
-            }
-            
-            .hero-content {
-                position: absolute;
-                top: 28px;
-                left: 50%;
-                transform: translateX(-50%);
-                width: calc(100% - 32px);
-                margin: 0;
-                padding: 0 16px;
+            .hero-image {
+                height: 430px;
+                background-position: center 44%;
             }
             
             .hero-verse {
-                margin-bottom: 18px;
+                top: 12px;
+                width: calc(100% - 28px);
             }
             
-            .hero-verse-hebrew {
-                font-size: 18px;
-                line-height: 1.4;
+            .hero-verse-he {
+                font-size: 20px;
             }
             
-            .hero-verse-english {
-                font-size: 15px;
-                line-height: 1.4;
+            .hero-verse-en {
+                font-size: 14px;
             }
             
-            .hero-verse-ref {
+            .hero-verse-source {
                 font-size: 13px;
             }
             
-            .hero h1 {
-                font-size: 34px;
-                line-height: 1.1;
-                max-width: 100%;
-                margin-bottom: 16px;
+            .hero-headline {
+                top: 98px;
+                width: calc(100% - 36px);
             }
             
-            .hero-subtitle {
+            .hero-headline h1 {
+                font-size: 38px;
+                line-height: 1.1;
+            }
+            
+            .hero-cta-strip {
+                min-height: 150px;
+                padding: 18px 0;
+            }
+            
+            .hero-cta-inner {
+                padding: 0 18px;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 16px;
+                text-align: center;
+            }
+            
+            .hero-subheadline {
+                max-width: 100%;
+            }
+            
+            .hero-subheadline p {
                 font-size: 17px;
-                line-height: 1.4;
-                max-width: 95%;
-                margin-bottom: 20px;
             }
             
             .hero-buttons {
                 flex-direction: column;
-                gap: 12px;
                 width: 100%;
+                gap: 12px;
             }
             
             .hero-btn {
-                width: min(280px, 90%);
+                width: min(300px, 100%);
                 height: 52px;
-                font-size: 16px;
             }
             
             .nav-brand {
@@ -958,19 +987,25 @@
 
     <!-- Hero Section -->
     <section class="hero">
-        <img src="images/sitting on grass.jpg" alt="" class="hero-bg">
-        <div class="hero-overlay"></div>
-        <div class="hero-content">
+        <div class="hero-image">
             <div class="hero-verse">
-                <div class="hero-verse-hebrew" dir="rtl">כי מלאה הארץ דעה את ה׳ כמים לים מכסים</div>
-                <div class="hero-verse-english">"For the earth will be filled with the knowledge of Hashem as the waters cover the sea."</div>
-                <div class="hero-verse-ref">Yeshayahu 11:9</div>
+                <div class="hero-verse-he" dir="rtl">כי מלאה הארץ דעה את ה׳ כמים לים מכסים</div>
+                <div class="hero-verse-en">"For the earth will be filled with the knowledge of Hashem as the waters cover the sea."</div>
+                <div class="hero-verse-source">Yeshayahu 11:9</div>
             </div>
-            <h1>Home-Based Integrative Torah Learning for Boys Ages 7–13</h1>
-            <p class="hero-subtitle">A calm, relationship-based Torah learning environment for boys who don't fit the system.</p>
-            <div class="hero-buttons">
-                <a href="https://wa.me/972534932631" class="hero-btn hero-btn-contact" target="_blank">Contact Us</a>
-                <a href="/signup.html" class="hero-btn hero-btn-signup">Sign Up</a>
+            <div class="hero-headline">
+                <h1>Home-Based Integrative Torah<br>Learning for Boys Ages 7–13</h1>
+            </div>
+        </div>
+        <div class="hero-cta-strip">
+            <div class="hero-cta-inner">
+                <div class="hero-subheadline">
+                    <p>A calm, relationship-based Torah learning environment for boys who don't fit the system.</p>
+                </div>
+                <div class="hero-buttons">
+                    <a href="https://wa.me/972534932631" class="hero-btn hero-btn-contact" target="_blank">Contact Us</a>
+                    <a href="/signup.html" class="hero-btn hero-btn-signup">Sign Up</a>
+                </div>
             </div>
         </div>
     </section>
