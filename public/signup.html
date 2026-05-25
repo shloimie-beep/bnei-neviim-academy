@@ -377,8 +377,17 @@
                 
                 if (response.ok && result.success) {
                     messageDiv.className = 'message success';
-                    messageDiv.textContent = 'Thank you! Your registration has been submitted successfully. We will contact you soon.';
+                    messageDiv.textContent = 'Thank you! Your registration has been submitted. Redirecting to payment...';
                     document.getElementById('signupForm').reset();
+                    
+                    // Redirect to payment after 2 seconds
+                    setTimeout(() => {
+                        if (result.paymentLink) {
+                            window.location.href = result.paymentLink;
+                        } else {
+                            messageDiv.textContent = 'Registration complete! Our team will contact you about payment.';
+                        }
+                    }, 2000);
                 } else {
                     throw new Error(result.error || 'Failed to submit');
                 }
