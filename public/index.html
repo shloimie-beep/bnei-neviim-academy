@@ -87,6 +87,24 @@
         .nav-buttons {
             display: flex;
             gap: 1rem;
+            align-items: center;
+        }
+        
+        .lang-toggle {
+            background: transparent;
+            border: 2px solid var(--primary-blue);
+            color: var(--primary-blue);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .lang-toggle:hover {
+            background: var(--primary-blue);
+            color: white;
         }
         
         .nav-btn {
@@ -120,13 +138,13 @@
         /* Hero Section */
         .hero {
             min-height: 100vh;
-            background: linear-gradient(rgba(30, 58, 95, 0.75), rgba(30, 58, 95, 0.85)), 
-                        url('images/sitting on grass.jpg') center 30%/cover;
+            background: linear-gradient(rgba(30, 58, 95, 0.4), rgba(30, 58, 95, 0.5)), 
+                        url('images/sitting on grass.jpg') center/cover;
             display: flex;
             flex-direction: column;
             align-items: center;
             text-align: center;
-            padding: 100px 2rem 3rem;
+            padding: 100px 0 0;
             position: relative;
         }
         
@@ -137,7 +155,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100%;
+            flex: 1;
         }
         
         .hero-quote-top {
@@ -165,32 +183,35 @@
             margin-bottom: auto;
             line-height: 1.15;
             text-shadow: 0 3px 15px rgba(0,0,0,0.6);
-            padding-bottom: 35vh;
         }
         
-        .hero-bottom-content {
-            margin-top: auto;
+        .hero-bottom-bar {
+            width: 100%;
+            background: rgba(30, 58, 95, 0.6);
+            padding: 1.5rem 2rem;
             display: flex;
-            flex-direction: column;
             align-items: center;
-        }
-        
-        .hero-subtitle-card {
-            background: rgba(30, 58, 95, 0.7);
-            backdrop-filter: blur(10px);
-            padding: 1.5rem 2.5rem;
-            border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.15);
-            margin-bottom: 1.5rem;
-            display: inline-block;
+            justify-content: space-between;
+            gap: 2rem;
+            margin-top: auto;
+            position: relative;
+            top: -5vh;
         }
         
         .hero-subtitle {
-            font-size: 1.4rem;
+            font-size: 1.2rem;
             color: var(--white);
             margin: 0;
             font-weight: 500;
             text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            text-align: left;
+            flex: 1;
+        }
+        
+        .hero-buttons {
+            display: flex;
+            gap: 1rem;
+            flex-shrink: 0;
         }
         
         .hero-buttons {
@@ -693,63 +714,55 @@
             padding: 5rem 2rem;
         }
         
-        .reviews-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-        
-        .review-card {
+        .martin-card {
             background: white;
             border-radius: 20px;
             box-shadow: 0 15px 40px rgba(30, 58, 95, 0.12);
+            max-width: 900px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
             overflow: hidden;
-            text-align: center;
-            display: flex;
-            flex-direction: column;
         }
         
-        .review-card-image {
-            width: 100%;
-            height: 280px;
+        .martin-photo {
+            height: 100%;
+            min-height: 400px;
         }
         
-        .review-card-image img {
+        .martin-photo img {
             width: 100%;
             height: 100%;
             object-fit: cover;
             display: block;
         }
         
-        .review-card-content {
-            padding: 1.5rem 2rem 2rem;
-            flex: 1;
+        .martin-content {
+            padding: 3rem;
             display: flex;
             flex-direction: column;
+            justify-content: center;
         }
         
-        .review-card-name {
+        .martin-name {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 1.6rem;
+            font-size: 2.2rem;
             font-weight: 700;
             color: var(--primary-blue);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.75rem;
         }
         
-        .review-card-stars {
+        .martin-stars {
             color: var(--accent-gold);
-            font-size: 1.4rem;
-            margin-bottom: 1rem;
-            letter-spacing: 0.1rem;
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.15rem;
         }
         
-        .review-card-text {
-            font-size: 1rem;
-            line-height: 1.7;
+        .martin-text {
+            font-size: 1.15rem;
+            line-height: 1.8;
             color: var(--dark-text);
-            flex: 1;
         }
         
         /* Responsive */
@@ -851,13 +864,35 @@
                 padding-top: 1.5rem;
             }
             
-            .reviews-grid {
+            .martin-card {
                 grid-template-columns: 1fr;
-                max-width: 500px;
             }
             
-            .review-card-image {
-                height: 220px;
+            .martin-photo {
+                min-height: 250px;
+            }
+            
+            .martin-content {
+                padding: 2rem;
+            }
+            
+            .martin-name {
+                font-size: 1.8rem;
+            }
+            
+            .hero-bottom-bar {
+                flex-direction: column;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .hero-subtitle {
+                text-align: center;
+            }
+            
+            .lang-toggle {
+                padding: 0.4rem 0.8rem;
+                font-size: 0.8rem;
             }
         }
     </style>
@@ -869,31 +904,30 @@
             <div class="nav-brand">
                 <img src="images/bna-logo-nobg.png" alt="Bnei Nevi'im Academy" class="nav-logo">
                 <div class="nav-brand-text">
-                    <span class="nav-brand-name">Bnei Nevi'im Academy</span>
-                    <span class="nav-brand-location">Ramat Beit Shemesh <span class="hebrew-text" dir="rtl">רמת בית שמש</span></span>
+                    <span class="nav-brand-name" data-en="Bnei Nevi'im Academy" data-he="אקדמיית בני נביאים">Bnei Nevi'im Academy</span>
+                    <span class="nav-brand-location" data-en="Ramat Beit Shemesh" data-he="רמת בית שמש">Ramat Beit Shemesh <span class="hebrew-text" dir="rtl">רמת בית שמש</span></span>
                 </div>
             </div>
             <div class="nav-buttons">
-                <a href="https://wa.me/972534932631" class="nav-btn nav-btn-contact" target="_blank">Contact Us</a>
-                <a href="/signup.html" class="nav-btn nav-btn-signup">Sign Up</a>
+                <button class="lang-toggle" onclick="toggleLanguage()">עברית</button>
+                <a href="https://wa.me/972534932631" class="nav-btn nav-btn-contact" data-en="Contact Us" data-he="צור קשר" target="_blank">Contact Us</a>
+                <a href="/signup.html" class="nav-btn nav-btn-signup" data-en="Sign Up" data-he="הרשמה">Sign Up</a>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
     <section class="hero">
-        <div class="hero-quote-top">"The earth will be filled with the knowledge of Hashem."</div>
-        <div class="hero-source-top">— Yeshayahu 11:9</div>
+        <div class="hero-quote-top" data-en="&quot;The earth will be filled with the knowledge of Hashem.&quot;" data-he="&quot;כי מלאה הארץ דעה את ה'&quot;">"The earth will be filled with the knowledge of Hashem."</div>
+        <div class="hero-source-top" data-en="— Yeshayahu 11:9" data-he="— ישעיהו י׳א:ט׳">— Yeshayahu 11:9</div>
         <div class="hero-content">
-            <h1>Home-Based Integrative Torah Learning for Boys Ages 7–13</h1>
-            <div class="hero-bottom-content">
-                <div class="hero-subtitle-card">
-                    <p class="hero-subtitle">A calm, relationship-based Torah learning environment for boys who don't fit the system.</p>
-                </div>
-                <div class="hero-buttons">
-                    <a href="https://wa.me/972534932631" class="hero-btn hero-btn-whatsapp" target="_blank">Contact Us</a>
-                    <a href="/signup.html" class="hero-btn hero-btn-signup">Sign Up</a>
-                </div>
+            <h1 data-en="Home-Based Integrative Torah Learning for Boys Ages 7–13" data-he="לימוד תורה אינטגרטיבי בבית לבנים בגילאי 7–13">Home-Based Integrative Torah Learning for Boys Ages 7–13</h1>
+        </div>
+        <div class="hero-bottom-bar">
+            <p class="hero-subtitle" data-en="A calm, relationship-based Torah learning environment for boys who don't fit the system." data-he="סביבת לימוד תורה שקטה ומבוססת יחסים לבנים שלא מתאימים למערכת.">A calm, relationship-based Torah learning environment for boys who don't fit the system.</p>
+            <div class="hero-buttons">
+                <a href="https://wa.me/972534932631" class="hero-btn hero-btn-whatsapp" data-en="Contact Us" data-he="צור קשר" target="_blank">Contact Us</a>
+                <a href="/signup.html" class="hero-btn hero-btn-signup" data-en="Sign Up" data-he="הרשמה">Sign Up</a>
             </div>
         </div>
     </section>
@@ -1030,32 +1064,14 @@
 
     <!-- Reviews Section -->
     <section class="reviews">
-        <div class="container">
-            <h2 class="section-title fade-in">What Parents Say</h2>
-            <div class="reviews-grid">
-                <!-- Martin Braka Card -->
-                <div class="review-card fade-in">
-                    <div class="review-card-image">
-                        <img src="images/hillel.png" alt="Martin's son">
-                    </div>
-                    <div class="review-card-content">
-                        <div class="review-card-name">Martin Braka</div>
-                        <div class="review-card-stars">★★★★★</div>
-                        <p class="review-card-text">"Rav Dratler is a very dynamic and motivated individual who is passionate about making serious change within the education system. He is a very talented educator which I have experienced first hand through him teaching my son who was a non motivated student and he aided him to become a child who is enthusiastic and engaged with his learning."</p>
-                    </div>
-                </div>
-                
-                <!-- L Bars Card -->
-                <div class="review-card fade-in">
-                    <div class="review-card-image">
-                        <img src="images/l-bars.png" alt="L. Bars">
-                    </div>
-                    <div class="review-card-content">
-                        <div class="review-card-name">L. Bars</div>
-                        <div class="review-card-stars">★★★★★</div>
-                        <p class="review-card-text">"After joining the Academy, medication was no longer relevant."</p>
-                    </div>
-                </div>
+        <div class="martin-card fade-in">
+            <div class="martin-photo">
+                <img src="images/hillel.png" alt="Martin's son">
+            </div>
+            <div class="martin-content">
+                <div class="martin-name">Martin Braka</div>
+                <div class="martin-stars">★★★★★</div>
+                <p class="martin-text">"Rav Dratler is a very dynamic and motivated individual who is passionate about making serious change within the education system. He is a very talented educator which I have experienced first hand through him teaching my son who was a non motivated student and he aided him to become a child who is enthusiastic and engaged with his learning."</p>
             </div>
         </div>
     </section>
@@ -1151,6 +1167,32 @@
         document.querySelectorAll('.fade-in, .slide-in-left, .slide-in-right').forEach(el => {
             observer.observe(el);
         });
+        
+        // Language Toggle
+        let currentLang = 'en';
+        
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'he' : 'en';
+            const btn = document.querySelector('.lang-toggle');
+            const html = document.documentElement;
+            
+            // Update button text
+            btn.textContent = currentLang === 'en' ? 'עברית' : 'English';
+            
+            // Set RTL for Hebrew
+            if (currentLang === 'he') {
+                html.setAttribute('dir', 'rtl');
+                html.setAttribute('lang', 'he');
+            } else {
+                html.setAttribute('dir', 'ltr');
+                html.setAttribute('lang', 'en');
+            }
+            
+            // Update all elements with data-en and data-he attributes
+            document.querySelectorAll('[data-en][data-he]').forEach(el => {
+                el.innerHTML = el.getAttribute('data-' + currentLang);
+            });
+        }
     </script>
 </body>
 </html>
