@@ -687,68 +687,103 @@
             transform: translateX(0);
         }
         
-        /* Review Section */
+        /* Reviews Section - Redesigned */
         .reviews {
             background: var(--light-blue);
             padding: 5rem 2rem;
         }
         
-        .review-card {
+        /* Martin Braka Card - Two Column Layout */
+        .martin-card {
             background: white;
-            padding: 2.5rem;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(30, 58, 95, 0.1);
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: center;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(30, 58, 95, 0.12);
+            max-width: 1000px;
+            margin: 0 auto 3rem;
             display: grid;
-            grid-template-columns: 180px 1fr;
-            gap: 2rem;
-            align-items: center;
-        }
-        
-        .review-image {
-            border-radius: 12px;
+            grid-template-columns: 1fr 1fr;
             overflow: hidden;
-            box-shadow: 0 8px 20px rgba(30, 58, 95, 0.15);
         }
         
-        .review-image img {
+        .martin-content {
+            padding: 3rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .martin-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+            margin-bottom: 0.75rem;
+        }
+        
+        .martin-stars {
+            color: var(--accent-gold);
+            font-size: 1.8rem;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.15rem;
+        }
+        
+        .martin-text {
+            font-size: 1.15rem;
+            line-height: 1.9;
+            color: var(--dark-text);
+        }
+        
+        .martin-image {
+            height: 100%;
+            min-height: 400px;
+        }
+        
+        .martin-image img {
             width: 100%;
-            height: 180px;
+            height: 100%;
             object-fit: cover;
             display: block;
         }
         
-        .review-content {
-            text-align: left;
+        /* L Bars Card - Stacked Layout */
+        .lbars-card {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 15px 40px rgba(30, 58, 95, 0.12);
+            max-width: 600px;
+            margin: 0 auto;
+            overflow: hidden;
+            text-align: center;
         }
         
-        .reviewer-name {
-            font-weight: 600;
-            font-size: 1.1rem;
+        .lbars-name {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            font-weight: 700;
             color: var(--primary-blue);
-            margin-bottom: 0.25rem;
+            padding: 2rem 2rem 1rem;
         }
         
-        .review-meta {
-            color: var(--secondary-blue);
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
+        .lbars-image {
+            width: 100%;
+            height: 350px;
         }
         
-        .stars {
-            color: var(--accent-gold);
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-            letter-spacing: 0.2rem;
+        .lbars-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
         
-        .review-text {
-            font-size: 1.1rem;
-            line-height: 1.8;
+        .lbars-quote {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8rem;
+            font-weight: 600;
             font-style: italic;
             color: var(--dark-text);
+            padding: 2rem;
+            line-height: 1.5;
         }
         
         /* Responsive */
@@ -850,18 +885,35 @@
                 padding-top: 1.5rem;
             }
             
-            .review-card {
+            .martin-card {
                 grid-template-columns: 1fr;
+            }
+            
+            .martin-content {
                 padding: 2rem;
+                order: 2;
             }
             
-            .review-image {
-                max-width: 150px;
-                margin: 0 auto;
+            .martin-image {
+                min-height: 250px;
+                order: 1;
             }
             
-            .review-content {
-                text-align: center;
+            .martin-name {
+                font-size: 1.6rem;
+            }
+            
+            .martin-text {
+                font-size: 1rem;
+            }
+            
+            .lbars-image {
+                height: 250px;
+            }
+            
+            .lbars-quote {
+                font-size: 1.4rem;
+                padding: 1.5rem;
             }
         }
     </style>
@@ -1032,21 +1084,36 @@
         </div>
     </section>
 
-    <!-- Review Section -->
+    <!-- Reviews Section -->
     <section class="reviews">
-        <div class="container">
-            <h2 class="section-title fade-in">What Parents Say</h2>
-            <div class="review-card fade-in">
-                <div class="review-image">
-                    <img src="images/hillel.png" alt="Hillel">
-                </div>
-                <div class="review-content">
-                    <div class="reviewer-name">Martin Braka</div>
-                    <div class="review-meta">1 review · a month ago</div>
-                    <div class="stars">★★★★★</div>
-                    <p class="review-text">"Rav Dratler is a very dynamic and motivated individual who is passionate about making serious change within the education system. He is a very talented educator which I have experienced first hand through him teaching my son who was a non motivated student and he aided him to become a child who is enthusiastic and engaged with his learning."</p>
-                </div>
+        <!-- Martin Braka Card -->
+        <div class="martin-card fade-in">
+            <div class="martin-content">
+                <div class="martin-name">Martin Braka</div>
+                <div class="martin-stars">★★★★★</div>
+                <p class="martin-text">"Rav Dratler is a very dynamic and motivated individual who is passionate about making serious change within the education system. He is a very talented educator which I have experienced first hand through him teaching my son who was a non motivated student and he aided him to become a child who is enthusiastic and engaged with his learning."</p>
             </div>
+            <div class="martin-image">
+                <img src="images/hillel.png" alt="Martin's son">
+            </div>
+        </div>
+        
+        <!-- L Bars Card -->
+        <div class="lbars-card fade-in">
+            <div class="lbars-name">L. Bars</div>
+            <div class="lbars-image">
+                <img src="images/l-bars.png" alt="L. Bars">
+            </div>
+            <p class="lbars-quote">"After joining the Academy, medication was no longer relevant."</p>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" id="contact">
+        <h2 class="fade-in">Ready to Get Started?</h2>
+        <div class="cta-buttons fade-in">
+            <a href="https://wa.me/972534932631" class="cta-button cta-whatsapp" target="_blank">Contact Us</a>
+            <a href="/signup.html" class="cta-button cta-signup">Sign Up</a>
         </div>
     </section>
 
@@ -1063,31 +1130,6 @@
                     <p>Shloimie has over 15 years of experience working with teens and families, with a focus on developmental psychology, experiential Torah learning, and intrinsic motivation. His work addresses the deeper root causes behind many of the emotional and educational struggles affecting today's youth, helping young people develop responsibility, confidence, emotional well-being, and a genuine love for learning.</p>
                 </div>
             </div>
-        </div>
-    </section>
-
-    <!-- Testimonial Section -->
-    <section class="testimonial">
-        <div class="container">
-            <h2 class="section-title fade-in">Parent Testimonial</h2>
-            <div class="testimonial-card fade-in">
-                <div class="testimonial-image">
-                    <img src="images/l-bars.png" alt="L. Bars">
-                </div>
-                <div class="testimonial-content">
-                    <p class="testimonial-quote">"After joining the Academy, medication was no longer relevant."</p>
-                    <p class="testimonial-name">— L. Bars</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta-section" id="contact">
-        <h2 class="fade-in">Ready to Get Started?</h2>
-        <div class="cta-buttons fade-in">
-            <a href="https://wa.me/972534932631" class="cta-button cta-whatsapp" target="_blank">Contact Us</a>
-            <a href="/signup.html" class="cta-button cta-signup">Sign Up</a>
         </div>
     </section>
 
