@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 8080;
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID_SHLOIMIE = process.env.TELEGRAM_CHAT_ID_SHLOIMIE;
 const TELEGRAM_CHAT_ID_AHUVA = process.env.TELEGRAM_CHAT_ID_AHUVA;
-const PAYMENT_LINK = process.env.PAYMENT_LINK;
+const PAYMENT_LINK = process.env.PAYMENT_LINK || 'https://mrng.to/r9DSZhhWE9';
 
 // Middleware
 app.use(express.json());
