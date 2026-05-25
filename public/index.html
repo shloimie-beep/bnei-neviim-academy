@@ -1,738 +1,561 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bnei Nevi'im Academy | בני נביאים אקדמי</title>
+    <title>Bnei Nevi'im Academy | Torah Learning for Boys</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@300;400;500;700&family=Playfair+Display:wght@400;500;600;700&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --olive: #3d4a2c;
-            --forest: #1e2d1f;
-            --cream: #f5f1e8;
-            --terracotta: #c17a5c;
-            --warm-white: #faf8f3;
-            --charcoal: #2c2c2c;
+            --forest-green: #2d4a3e;
+            --sage-green: #7a9e7e;
+            --warm-cream: #f5f1e8;
+            --soft-terracotta: #c17f59;
+            --deep-brown: #3d2914;
+            --golden-tan: #d4a574;
         }
-
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
-        html {
-            scroll-behavior: smooth;
-        }
-
+        
         body {
-            font-family: 'Lato', sans-serif;
-            background-color: var(--warm-white);
-            color: var(--charcoal);
+            font-family: 'Inter', sans-serif;
+            background: var(--warm-cream);
+            color: var(--deep-brown);
             line-height: 1.7;
         }
-
-        /* Hebrew font support */
-        .hebrew {
-            font-family: 'Frank Ruhl Libre', serif;
-        }
-
+        
         /* Navigation */
         nav {
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(250, 248, 243, 0.95);
+            background: rgba(245, 241, 232, 0.95);
             backdrop-filter: blur(10px);
             z-index: 1000;
             padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(45, 74, 62, 0.1);
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
-
+        
         .logo {
-            font-family: 'Playfair Display', serif;
-            font-size: 1.3rem;
-            color: var(--olive);
-            text-decoration: none;
-            font-weight: 600;
+            height: 60px;
         }
-
-        .logo .hebrew {
-            font-weight: 700;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .nav-links a {
-            text-decoration: none;
-            color: var(--charcoal);
-            font-size: 0.9rem;
-            font-weight: 500;
-            transition: color 0.3s;
-        }
-
-        .nav-links a:hover {
-            color: var(--terracotta);
-        }
-
-        .lang-toggle {
-            background: var(--olive);
+        
+        .nav-cta {
+            background: var(--soft-terracotta);
             color: white;
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 0.85rem;
-            font-weight: 600;
+            padding: 0.75rem 1.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
         }
-
-        .lang-toggle:hover {
-            background: var(--forest);
+        
+        .nav-cta:hover {
+            background: var(--forest-green);
+            transform: translateY(-2px);
         }
-
+        
         /* Hero Section */
         .hero {
             min-height: 100vh;
+            background: linear-gradient(rgba(45, 74, 62, 0.7), rgba(45, 74, 62, 0.8)), 
+                        url('images/sitting on grass.jpg') center/cover;
             display: flex;
             align-items: center;
             justify-content: center;
-            position: relative;
-            background: linear-gradient(135deg, var(--forest) 0%, var(--olive) 100%);
-            overflow: hidden;
-        }
-
-        .hero-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(rgba(30, 45, 31, 0.7), rgba(30, 45, 31, 0.8)),
-                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><rect fill="%233d4a2c" width="1200" height="800"/><text x="50%" y="50%" font-family="serif" font-size="24" fill="%23666" text-anchor="middle">[Hero Image Placeholder: Boys studying together outdoors, natural light, engaged and curious]</text></svg>');
-            background-size: cover;
-            background-position: center;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
             text-align: center;
-            color: var(--cream);
-            max-width: 900px;
-            padding: 2rem;
+            padding: 120px 2rem 4rem;
+            position: relative;
         }
-
-        .hero h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 3.5rem;
-            font-weight: 400;
+        
+        .hero-content {
+            max-width: 800px;
+            color: var(--warm-cream);
+        }
+        
+        .hero-quote {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
             font-style: italic;
             margin-bottom: 1rem;
+            line-height: 1.3;
+        }
+        
+        .hero-source {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 2rem;
+        }
+        
+        .hero h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
             line-height: 1.2;
         }
-
-        .hero h1.hebrew {
-            font-family: 'Frank Ruhl Libre', serif;
-            font-size: 3rem;
-        }
-
+        
         .hero-subtitle {
-            font-size: 1.3rem;
-            margin-bottom: 1rem;
+            font-size: 1.25rem;
             opacity: 0.95;
-        }
-
-        .hero-location {
-            font-size: 1rem;
-            opacity: 0.8;
             margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
         }
-
-        .hero-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-
-        .btn {
-            padding: 1rem 2rem;
-            border-radius: 4px;
+        
+        .hero-cta {
+            display: inline-block;
+            background: var(--soft-terracotta);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
             text-decoration: none;
             font-weight: 600;
-            transition: all 0.3s;
-            display: inline-block;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(193, 127, 89, 0.4);
         }
-
-        .btn-primary {
-            background: var(--terracotta);
-            color: white;
+        
+        .hero-cta:hover {
+            background: var(--golden-tan);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(193, 127, 89, 0.5);
         }
-
-        .btn-primary:hover {
-            background: #a8684a;
-        }
-
-        .btn-secondary {
-            background: transparent;
-            color: var(--cream);
-            border: 2px solid var(--cream);
-        }
-
-        .btn-secondary:hover {
-            background: var(--cream);
-            color: var(--forest);
-        }
-
-        /* Sections */
+        
+        /* Section Styles */
         section {
-            padding: 6rem 2rem;
-            max-width: 1200px;
+            padding: 5rem 2rem;
+        }
+        
+        .container {
+            max-width: 1100px;
             margin: 0 auto;
         }
-
-        section:nth-child(even) {
-            background: var(--cream);
-        }
-
-        h2 {
-            font-family: 'Playfair Display', serif;
+        
+        .section-title {
+            font-family: 'Cormorant Garamond', serif;
             font-size: 2.5rem;
-            color: var(--olive);
-            margin-bottom: 2rem;
+            color: var(--forest-green);
+            text-align: center;
+            margin-bottom: 3rem;
         }
-
-        h2.hebrew {
-            font-family: 'Frank Ruhl Libre', serif;
+        
+        /* Mission Section */
+        .mission {
+            background: var(--warm-cream);
         }
-
-        .section-content {
+        
+        .mission-text {
+            font-size: 1.2rem;
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 2rem;
+            color: var(--deep-brown);
+        }
+        
+        /* Beliefs Section */
+        .beliefs {
+            background: var(--forest-green);
+            color: var(--warm-cream);
+        }
+        
+        .beliefs .section-title {
+            color: var(--warm-cream);
+        }
+        
+        .beliefs-intro {
+            text-align: center;
+            font-size: 1.3rem;
+            margin-bottom: 3rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .beliefs-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+        
+        .belief-card {
+            background: rgba(245, 241, 232, 0.1);
+            padding: 2rem;
+            border-radius: 12px;
+            border-left: 4px solid var(--soft-terracotta);
+        }
+        
+        .belief-card h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.4rem;
+            margin-bottom: 0.75rem;
+            color: var(--golden-tan);
+        }
+        
+        /* Learning Section */
+        .learning {
+            background: var(--warm-cream);
+            position: relative;
+        }
+        
+        .learning-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 4rem;
             align-items: center;
         }
-
-        .section-content.reverse {
-            direction: rtl;
+        
+        .learning-image {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(45, 74, 62, 0.2);
         }
-
-        .section-content.reverse > * {
-            direction: ltr;
+        
+        .learning-image img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
         }
-
-        .section-text p {
-            margin-bottom: 1.5rem;
-            font-size: 1.1rem;
-        }
-
-        .image-placeholder {
-            background: #ddd;
-            border-radius: 8px;
-            min-height: 400px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
-            font-style: italic;
-            text-align: center;
-            padding: 2rem;
-        }
-
-        /* Vision Section */
-        .vision-section {
-            background: var(--warm-white);
-        }
-
-        /* Mission Section */
-        .commitments {
-            list-style: none;
-            margin-top: 2rem;
-        }
-
-        .commitments li {
-            padding: 0.8rem 0;
-            border-bottom: 1px solid rgba(0,0,0,0.1);
-        }
-
-        .commitments li strong {
-            color: var(--olive);
-            display: block;
-            margin-bottom: 0.3rem;
-        }
-
-        /* Philosophy Section */
-        .philosophy-section {
-            background: linear-gradient(rgba(245, 241, 232, 0.9), rgba(245, 241, 232, 0.9)),
-                        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600"><rect fill="%23f5f1e8" width="1200" height="600"/><text x="50%" y="50%" font-family="serif" font-size="20" fill="%23999" text-anchor="middle">[Background Image: Bright airy room with books, plants, chalkboard]</text></svg>');
-            background-size: cover;
-            background-attachment: fixed;
-        }
-
-        .sodas-method {
-            background: white;
-            padding: 2rem;
-            border-radius: 8px;
-            margin-top: 2rem;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .sodas-method h3 {
-            color: var(--olive);
+        
+        .learning-text h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.2rem;
+            color: var(--forest-green);
             margin-bottom: 1rem;
-            font-family: 'Playfair Display', serif;
         }
-
-        .sodas-steps {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1rem;
-            margin-top: 1rem;
+        
+        .learning-time {
+            display: inline-block;
+            background: var(--soft-terracotta);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 500;
+            margin-bottom: 1.5rem;
         }
-
-        .sodas-step {
+        
+        .learning-list {
+            list-style: none;
+        }
+        
+        .learning-list li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+        
+        .learning-list li::before {
+            content: "•";
+            color: var(--soft-terracotta);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+        
+        /* For Who Section */
+        .for-who {
+            background: linear-gradient(rgba(45, 74, 62, 0.85), rgba(45, 74, 62, 0.9)),
+                        url('images/sitting on couch.jpg') center/cover fixed;
+            color: var(--warm-cream);
             text-align: center;
-            padding: 1rem;
         }
-
-        .sodas-step .letter {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--terracotta);
-            display: block;
+        
+        .for-who .section-title {
+            color: var(--warm-cream);
         }
-
-        /* CTA Section */
-        .cta-section {
-            background: var(--forest);
-            color: var(--cream);
-            text-align: center;
-        }
-
-        .cta-section h2 {
-            color: var(--cream);
-        }
-
-        .cta-buttons {
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            margin-top: 3rem;
-            flex-wrap: wrap;
-        }
-
-        .btn-large {
-            padding: 1.2rem 3rem;
-            font-size: 1.1rem;
-        }
-
-        /* Form Section */
-        .form-section {
-            background: var(--warm-white);
-        }
-
-        .form-container {
+        
+        .for-who-content {
             max-width: 600px;
             margin: 0 auto;
         }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
+        
+        .age-badge {
+            display: inline-block;
+            background: var(--soft-terracotta);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 50px;
+            font-size: 1.3rem;
             font-weight: 600;
-            color: var(--olive);
+            margin: 1.5rem 0;
         }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
+        
+        /* Founder Section */
+        .founder {
+            background: var(--warm-cream);
+            padding-bottom: 6rem;
+        }
+        
+        .founder-content {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 4rem;
+            align-items: start;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .founder-image {
+            position: relative;
+        }
+        
+        .founder-image img {
             width: 100%;
-            padding: 0.8rem;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-family: inherit;
-            font-size: 1rem;
+            border-radius: 50%;
+            border: 8px solid var(--forest-green);
+            box-shadow: 0 10px 30px rgba(45, 74, 62, 0.3);
         }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--olive);
+        
+        .founder-text h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            color: var(--forest-green);
+            margin-bottom: 0.5rem;
         }
-
+        
+        .founder-text .subtitle {
+            color: var(--soft-terracotta);
+            font-weight: 500;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+        
+        .founder-text p {
+            margin-bottom: 1rem;
+            font-size: 1.05rem;
+        }
+        
+        /* CTA Section */
+        .cta-section {
+            background: var(--forest-green);
+            color: var(--warm-cream);
+            text-align: center;
+            padding: 4rem 2rem;
+        }
+        
+        .cta-section h2 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .cta-section p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+        
+        .cta-button {
+            display: inline-block;
+            background: var(--soft-terracotta);
+            color: white;
+            padding: 1.2rem 3rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        
+        .cta-button:hover {
+            background: var(--golden-tan);
+            transform: translateY(-3px);
+        }
+        
         /* Footer */
         footer {
-            background: var(--charcoal);
-            color: var(--cream);
+            background: var(--deep-brown);
+            color: var(--warm-cream);
             text-align: center;
             padding: 2rem;
         }
-
+        
         /* Responsive */
         @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
-
             .hero h1 {
-                font-size: 2.2rem;
+                font-size: 2rem;
             }
-
-            .hero h1.hebrew {
-                font-size: 1.8rem;
+            
+            .hero-quote {
+                font-size: 1.5rem;
             }
-
-            .section-content {
+            
+            .learning-content,
+            .founder-content {
                 grid-template-columns: 1fr;
-                gap: 2rem;
             }
-
-            .section-content.reverse {
-                direction: ltr;
+            
+            .founder-image {
+                max-width: 250px;
+                margin: 0 auto;
             }
-
-            h2 {
-                font-size: 1.8rem;
+            
+            .beliefs-grid {
+                grid-template-columns: 1fr;
             }
-
-            .cta-buttons {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-
-        /* Fade in animation */
-        .fade-in {
-            opacity: 0;
-            transform: translateY(30px);
-            transition: opacity 0.8s ease, transform 0.8s ease;
-        }
-
-        .fade-in.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        /* RTL Support */
-        [dir="rtl"] .nav-links {
-            flex-direction: row-reverse;
-        }
-
-        [dir="rtl"] .section-content.reverse {
-            direction: ltr;
-        }
-
-        [dir="rtl"] .section-content.reverse > * {
-            direction: rtl;
         }
     </style>
 </head>
 <body>
     <!-- Navigation -->
     <nav>
-        <a href="#" class="logo">
-            <span class="hebrew">בני נביאים</span> | Bnei Nevi'im Academy
-        </a>
-        <div class="nav-links">
-            <a href="#vision" data-en="Vision" data-he="חזון">Vision</a>
-            <a href="#mission" data-en="Mission" data-he="משימה">Mission</a>
-            <a href="#philosophy" data-en="Philosophy" data-he="פילוסופיה">Philosophy</a>
-            <a href="#contact" data-en="Contact" data-he="צור קשר">Contact</a>
-            <button class="lang-toggle" onclick="toggleLanguage()">EN | עב</button>
+        <div class="nav-container">
+            <img src="images/bna logo.png" alt="Bnei Nevi'im Academy" class="logo">
+            <a href="#contact" class="nav-cta">Book a Conversation</a>
         </div>
     </nav>
 
     <!-- Hero Section -->
     <section class="hero">
-        <div class="hero-image"></div>
         <div class="hero-content">
-            <h1 data-en="Raising Thinkers. Nurturing Souls." data-he="מגדלים חושבים. מטפחים נשמות.">
-                Raising Thinkers. Nurturing Souls.
-            </h1>
-            <p class="hero-subtitle" data-en="A micro-school for boys ages 7–13 in Beit Shemesh, built on Torah wisdom, intrinsic motivation, and the belief that every child is already a genius." 
-               data-he="בית ספר קטן לבנים בגילאי 7–13 בבית שמש, הבנוי על חכמת התורה, מוטיבציה פנימית, ואמונה שכל ילד הוא גאון.">
-                A micro-school for boys ages 7–13 in Beit Shemesh, built on Torah wisdom, intrinsic motivation, and the belief that every child is already a genius.
-            </p>
-            <p class="hero-location" data-en="Currently learning 10:00am–1:00pm at a private home. Expanding to a full school." 
-               data-he="לומדים כרגע בין 10:00 ל-13:00 בבית פרטי. מתרחבים לבית ספר מלא.">
-                Currently learning 10:00am–1:00pm at a private home. Expanding to a full school.
-            </p>
-            <div class="hero-buttons">
-                <a href="#reserve" class="btn btn-primary" data-en="Reserve Your Spot for Next Year" data-he="שמרו מקום לשנה הבאה">Reserve Your Spot for Next Year</a>
-                <a href="#zoom" class="btn btn-secondary" data-en="Book a Zoom Call" data-he="קבעו שיחת זום">Book a Zoom Call</a>
-            </div>
-        </div>
-    </section>
-
-    <!-- Vision Section -->
-    <section id="vision" class="vision-section fade-in">
-        <div class="section-content">
-            <div class="section-text">
-                <h2 data-en="Our Vision" data-he="החזון שלנו">Our Vision</h2>
-                <p data-en="Self-governing boys that are collaborating, playing their role in society, living life by the values of Torah—where spirituality is tangible, interacting with physicality, sanctifying God's name." 
-                   data-he="בנים המושלים בעצמם, משתפים פעולה, משחקים את תפקידם בחברה, חיים לפי ערכי התורה—שבה הרוחניות מוחשית, מתקשרת עם הגשמיות, מקדשת את שם השם.">
-                    Self-governing boys that are collaborating, playing their role in society, living life by the values of Torah—where spirituality is tangible, interacting with physicality, sanctifying God's name.
-                </p>
-                <p data-en="Boys who make logical and brave decisions, who set goals and achieve them. Who wake up excited to learn—not because they are told to, but because they have discovered that learning is one of the deepest pleasures of being alive." 
-                   data-he="בנים שמקבלים החלטות הגיוניות ואמיצות, שקובעים מטרות ומשיגים אותן. שקמים בבוקר נרגשים ללמוד—לא כי אמרו להם, אלא כי גילו שלימוד הוא מהעונגים העמוקים ביותר בחיים.">
-                    Boys who make logical and brave decisions, who set goals and achieve them. Who wake up excited to learn—not because they are told to, but because they have discovered that learning is one of the deepest pleasures of being alive.
-                </p>
-            </div>
-            <div class="image-placeholder">
-                [Image: A boy deep in thought, looking at a book or out a window. Warm light. Portrait ratio 3:4.]
-            </div>
+            <p class="hero-quote">"The earth will be filled with the knowledge of Hashem."</p>
+            <p class="hero-source">— Yeshayahu 11:9</p>
+            <h1>Home-Based Integrative Torah Learning for Boys Ages 7–13</h1>
+            <p class="hero-subtitle">A calm, relationship-based Torah learning environment for boys who don't fit the system.</p>
+            <a href="#contact" class="hero-cta">Book a Parent Conversation</a>
         </div>
     </section>
 
     <!-- Mission Section -->
-    <section id="mission" class="fade-in">
-        <div class="section-content reverse">
-            <div class="image-placeholder">
-                [Image: A teacher sitting on the floor with two children, all looking at something together, relaxed and collaborative. Landscape 16:9.]
-            </div>
-            <div class="section-text">
-                <h2 data-en="Our Mission" data-he="המשימה שלנו">Our Mission</h2>
-                <p data-en="To provide a safe place—a safe, calm, respectful environment with collaborative problem solving and coaching as opposed to bribery, coercion, and harsh disciplinary measures." 
-                   data-he="לספק מקום בטוח—סביבה בטוחה, שקטה, מכבדת עם פתרון בעיות שיתופי ואימון, בניגוד לשוחד, כפייה ואמצעי משמעה קשים.">
-                    To provide a safe place—a safe, calm, respectful environment with collaborative problem solving and coaching as opposed to bribery, coercion, and harsh disciplinary measures.
-                </p>
-                <p data-en="We work together with parents with transparency and view ourselves as partners in your child's growth." 
-                   data-he="אנחנו עובדים יחד עם ההורים בשקיפות ורואים את עצמנו כשותפים בצמיחת ילדכם.">
-                    We work together with parents with transparency and view ourselves as partners in your child's growth.
-                </p>
-                <ul class="commitments">
-                    <li>
-                        <strong data-en="Respect" data-he="כבוד">Respect</strong>
-                        <span data-en="Every child's dignity is non-negotiable." data-he="כבודו של כל ילד אינו מוסכם על תנאי.">Every child's dignity is non-negotiable.</span>
-                    </li>
-                    <li>
-                        <strong data-en="Safety" data-he="בטיחות">Safety</strong>
-                        <span data-en="A calm environment where emotional regulation can flourish." data-he="סביבה שקטה שבה ויסות רגשי יכול לשגשג.">A calm environment where emotional regulation can flourish.</span>
-                    </li>
-                    <li>
-                        <strong data-en="Collaboration" data-he="שיתוף פעולה">Collaboration</strong>
-                        <span data-en="Problem-solving together, not top-down instruction." data-he="פתרון בעיות יחד, לא הוראה מלמעלה למטה.">Problem-solving together, not top-down instruction.</span>
-                    </li>
-                    <li>
-                        <strong data-en="Coaching" data-he="אימון">Coaching</strong>
-                        <span data-en="Guiding self-discovery, not imposing solutions." data-he="הדרכת גילוי עצמי, לא כפיית פתרונות.">Guiding self-discovery, not imposing solutions.</span>
-                    </li>
-                </ul>
-            </div>
+    <section class="mission">
+        <div class="container">
+            <h2 class="section-title">Our Mission</h2>
+            <p class="mission-text">To raise future leaders of the Jewish people who understand their role in society, live with purpose, develop self-governance, and experience Torah and Hashem as a real and meaningful part of daily life.</p>
+            <p class="mission-text">We aim to help boys grow into grounded, responsible, spiritually-connected young men who are internally motivated to learn, think deeply, and contribute meaningfully to the world around them.</p>
         </div>
     </section>
 
-    <!-- Philosophy Section -->
-    <section id="philosophy" class="philosophy-section fade-in">
-        <div style="max-width: 900px; margin: 0 auto;">
-            <h2 style="text-align: center;" data-en="Our Philosophy" data-he="הפילוסופיה שלנו">Our Philosophy</h2>
-            <p style="text-align: center; font-size: 1.2rem; margin-bottom: 2rem;" 
-               data-en="We do not bribe children to learn. No sticker charts. No external reward systems. We believe that bribing a child to read is the fastest way to teach them to hate reading." 
-               data-he="אנחנו לא שוחדים ילדים ללמוד. אין מדבקות. אין מערכות תגמול חיצוניות. אנחנו מאמינים ששוחד לקרוא הוא הדרך המהירה ביותר ללמד ילד לשנוא קריאה.">
-                We do not bribe children to learn. No sticker charts. No external reward systems. We believe that bribing a child to read is the fastest way to teach them to hate reading.
-            </p>
-            <p style="text-align: center; font-size: 1.1rem; margin-bottom: 3rem;"
-               data-en="Instead, we build on proven modalities—Montessori, Waldorf, and Acton Academy—frameworks that trust children, protect their autonomy, and develop their inner drive."
-               data-he="במקום זאת, אנחנו בונים על מודליות מוכחות—מונטסורי, ולדורף, ואקטון אקדמי—גישות שסומכות על ילדים, שומרות על האוטונומיה שלהם, ומפתחות את המוטיבציה הפנימית שלהם.">
-                Instead, we build on proven modalities—Montessori, Waldorf, and Acton Academy—frameworks that trust children, protect their autonomy, and develop their inner drive.
-            </p>
+    <!-- What We Believe Section -->
+    <section class="beliefs">
+        <div class="container">
+            <h2 class="section-title">What We Believe</h2>
+            <p class="beliefs-intro">We believe children are heroes with unique strengths, purpose, and potential. We are a group of parents and educators who believe children flourish when they are respected, trusted, and guided — not forced to conform to systems that were never designed around their deepest needs.</p>
             
-            <div class="sodas-method">
-                <h3 data-en="The SODAS Method" data-he="שיטת SODAS">The SODAS Method</h3>
-                <p data-en="A structured thinking protocol we teach every student:" data-he="פרוטוקול חשיבה מובנה שאנחנו מלמדים כל תלמיד:">A structured thinking protocol we teach every student:</p>
-                <div class="sodas-steps">
-                    <div class="sodas-step">
-                        <span class="letter">S</span>
-                        <strong data-en="See" data-he="ראה">See</strong>
-                        <span data-en="the Situation" data-he="את המצב">the Situation</span>
-                    </div>
-                    <div class="sodas-step">
-                        <span class="letter">O</span>
-                        <strong data-en="Options" data-he="אפשרויות">Options</strong>
-                        <span data-en="What paths forward?" data-he="מהם הנתיבים?">What paths forward?</span>
-                    </div>
-                    <div class="sodas-step">
-                        <span class="letter">D</span>
-                        <strong data-en="Disadvantages" data-he="חסרונות">Disadvantages</strong>
-                        <span data-en="& Advantages" data-he="ויתרונות">& Advantages</span>
-                    </div>
-                    <div class="sodas-step">
-                        <span class="letter">A</span>
-                        <strong data-en="Act" data-he="פעל">Act</strong>
-                        <span data-en="Choose and own it" data-he="בחר ובעל">Choose and own it</span>
-                    </div>
+            <div class="beliefs-grid">
+                <div class="belief-card">
+                    <h3>School environments can negatively impact emotional well-being</h3>
+                    <p>Many boys struggle in environments built around compliance, pressure, and standardization.</p>
                 </div>
-                <p style="margin-top: 1.5rem; font-style: italic;"
-                   data-en="This is not just a problem-solving tool. It is a life skill. A child who can run SODAS on a conflict, a difficult problem, or a moral dilemma is a child who is becoming a thinker—and a mentsch."
-                   data-he="זה לא רק כלי לפתרון בעיות. זוהי מיומנות חיים. ילד שיכול להריץ SODAS על קונפליקט, בעיה קשה, או דילמה מוסרית—הוא ילד שהופך להיות חושב, ובן אדם.">
-                    This is not just a problem-solving tool. It is a life skill. A child who can run SODAS on a conflict, a difficult problem, or a moral dilemma is a child who is becoming a thinker—and a mentsch.
-                </p>
+                <div class="belief-card">
+                    <h3>Intelligence is not measured by grades</h3>
+                    <p>A child's strengths, curiosity, leadership, and character matter far more than performance metrics.</p>
+                </div>
+                <div class="belief-card">
+                    <h3>Intrinsic motivation matters most</h3>
+                    <p>Developing a genuine desire to learn Torah is more important than covering material through force or bribery.</p>
+                </div>
+                <div class="belief-card">
+                    <h3>Children develop in stages</h3>
+                    <p>We respect the natural developmental process of growth and avoid unrealistic expectations.</p>
+                </div>
+                <div class="belief-card">
+                    <h3>Torah learning should feel meaningful</h3>
+                    <p>Learning Torah is a natural process that grows through relationship, curiosity, and lived experience.</p>
+                </div>
+                <div class="belief-card">
+                    <h3>No bribery. No coercion. No shame.</h3>
+                    <p>Real growth cannot be forced.</p>
+                </div>
+                <div class="belief-card">
+                    <h3>We believe in autonomous Torah learning</h3>
+                    <p>Children should learn to take ownership of their learning, choices, time, and responsibilities.</p>
+                </div>
+                <div class="belief-card">
+                    <h3>We value critical thinking</h3>
+                    <p>We encourage boys to ask questions, analyze ideas, make mistakes, and think independently.</p>
+                </div>
+                <div class="belief-card">
+                    <h3>We coach instead of coerce</h3>
+                    <p>We believe in mentorship, relationship, emotional safety, and guidance — not fear or constant control.</p>
+                </div>
             </div>
         </div>
     </section>
 
-    <!-- Long-Term Goal Section -->
-    <section class="fade-in">
-        <div class="section-content">
-            <div class="section-text">
-                <h2 data-en="Our Long-Term Goal" data-he="המטרה לטווח ארוך">Our Long-Term Goal</h2>
-                <p data-en="To establish a legal, structured school in Beit Shemesh honoring the stages of development of our students and inspiring them to become the heroes that they're meant to be—with autonomous Torah learning and real-world responsibility." 
-                   data-he="להקים בית ספר חוקי ומובנה בבית שמש שמכבד את שלבי ההתפתחות של תלמידינו ומעורר בהם השראה להפוך לגיבורים שהם אמורים להיות—עם לימוד תורה אוטונומי ואחריות בעולם האמיתי.">
-                    To establish a legal, structured school in Beit Shemesh honoring the stages of development of our students and inspiring them to become the heroes that they're meant to be—with autonomous Torah learning and real-world responsibility.
-                </p>
-                <p data-en="This starts now, with a small group of families who believe it is possible." 
-                   data-he="זה מתחיל עכשיו, עם קבוצה קטנה של משפחות שמאמינות שזה אפשרי.">
-                    This starts now, with a small group of families who believe it is possible.
-                </p>
+    <!-- What We Learn Section -->
+    <section class="learning">
+        <div class="container">
+            <div class="learning-content">
+                <div class="learning-image">
+                    <img src="images/sitting on container.jpg" alt="Boy learning">
+                </div>
+                <div class="learning-text">
+                    <h2>Daily Morning Torah Learning</h2>
+                    <span class="learning-time">10:00 AM – 1:00 PM</span>
+                    <p>Areas of learning may include:</p>
+                    <ul class="learning-list">
+                        <li>Chumash</li>
+                        <li>Tanach</li>
+                        <li>Kitzur Shulchan Aruch</li>
+                        <li>Mussar</li>
+                        <li>Chassidus</li>
+                        <li>Torah-based character development</li>
+                        <li>Meaningful discussion</li>
+                        <li>Critical thinking skills</li>
+                        <li>Emotional awareness and self-governance</li>
+                    </ul>
+                    <p style="margin-top: 1.5rem; font-style: italic;">Learning is adapted to the child and designed to foster curiosity, responsibility, and independent thinking.</p>
+                </div>
             </div>
-            <div class="image-placeholder">
-                [Image: Boys under a tree with a Torah scroll, natural setting. Warm, inspiring.]
+        </div>
+    </section>
+
+    <!-- Who This Is For Section -->
+    <section class="for-who">
+        <div class="container">
+            <div class="for-who-content">
+                <h2 class="section-title">Who This Is For</h2>
+                <p style="font-size: 1.2rem; margin-bottom: 1rem;">Boys Ages 7–13</p>
+                <div class="age-badge">Ages 7 – 13</div>
+                <p>For boys currently not enrolled in traditional schools, who need a calm, relationship-based learning environment.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Founder Section -->
+    <section class="founder">
+        <div class="container">
+            <div class="founder-content">
+                <div class="founder-image">
+                    <img src="images/founder-720.jpg" alt="Shloimie Dratler">
+                </div>
+                <div class="founder-text">
+                    <h2>Shloimie Dratler</h2>
+                    <span class="subtitle">Founder</span>
+                    <p>Shloimie has over 15 years of experience working with teens and families. His work has focused on helping young people develop responsibility, confidence, emotional well-being, and intrinsic motivation.</p>
+                    <p>More recently, his work has focused on developmental psychology, experiential Torah learning, and intrinsic motivation to address the deeper root causes behind many of the emotional and educational struggles affecting today's youth.</p>
+                </div>
             </div>
         </div>
     </section>
 
     <!-- CTA Section -->
-    <section id="reserve" class="cta-section fade-in">
-        <h2 data-en="Ready to Join Us?" data-he="מוכנים להצטרף אלינו?">Ready to Join Us?</h2>
-        <p style="font-size: 1.2rem; max-width: 700px; margin: 0 auto 2rem;"
-           data-en="We are currently accepting a small number of families for our founding cohort. Founding families are partners in building this school and will have direct input into its growth."
-           data-he="אנחנו כרגע מקבלים מספר קטן של משפחות לקבוצת המייסדים שלנו. משפחות מייסדות הן שותפות בבניית בית הספר הזה ויהיה להן קלט ישיר בצמיחתו.">
-            We are currently accepting a small number of families for our founding cohort. Founding families are partners in building this school and will have direct input into its growth.
-        </p>
-        <div class="cta-buttons">
-            <a href="#contact" class="btn btn-primary btn-large" data-en="Reserve Your Spot for Next Year — 500₪" data-he="שמרו מקום לשנה הבאה — 500₪">Reserve Your Spot for Next Year — 500₪</a>
-            <a href="#zoom" class="btn btn-secondary btn-large" data-en="Book a Free Zoom Call" data-he="קבעו שיחת זום חינם">Book a Free Zoom Call</a>
+    <section class="cta-section" id="contact">
+        <div class="container">
+            <h2>Ready to Learn More?</h2>
+            <p>Schedule a conversation to see if this is the right fit for your son.</p>
+            <a href="https://calendly.com/shloimie-dratler" class="cta-button" target="_blank">Book a Parent Conversation</a>
         </div>
-    </section>
-
-    <!-- Contact Form Section -->
-    <section id="contact" class="form-section fade-in">
-        <div class="form-container">
-            <h2 style="text-align: center;" data-en="Get in Touch" data-he="צור קשר">Get in Touch</h2>
-            <p style="text-align: center; margin-bottom: 2rem;"
-               data-en="Fill in your details and we will be in touch within 24 hours."
-               data-he="מלאו את הפרטים ונחזור אליכם תוך 24 שעות.">
-                Fill in your details and we will be in touch within 24 hours.
-            </p>
-            
-            <form action="mailto:info@bneineviimacademy.org" method="post" enctype="text/plain">
-                <div class="form-group">
-                    <label data-en="Parent Name" data-he="שם הורה">Parent Name</label>
-                    <input type="text" name="parent_name" required>
-                </div>
-                <div class="form-group">
-                    <label data-en="Child's Name" data-he="שם הילד">Child's Name</label>
-                    <input type="text" name="child_name" required>
-                </div>
-                <div class="form-group">
-                    <label data-en="Child's Age" data-he="גיל הילד">Child's Age</label>
-                    <input type="number" name="child_age" min="5" max="18" required>
-                </div>
-                <div class="form-group">
-                    <label data-en="Email" data-he="אימייל">Email</label>
-                    <input type="email" name="email" required>
-                </div>
-                <div class="form-group">
-                    <label data-en="Phone (WhatsApp preferred)" data-he="טלפון (עדיפות לוואטסאפ)">Phone (WhatsApp preferred)</label>
-                    <input type="tel" name="phone" required>
-                </div>
-                <div class="form-group">
-                    <label data-en="I'm interested in:" data-he="אני מעוניין ב:">I'm interested in:</label>
-                    <select name="interest" required>
-                        <option value="" data-en="Select..." data-he="בחר...">Select...</option>
-                        <option value="reserve" data-en="Reserving a spot for next year" data-he="שמירת מקום לשנה הבאה">Reserving a spot for next year</option>
-                        <option value="zoom" data-en="Booking a Zoom call" data-he="קביעת שיחת זום">Booking a Zoom call</option>
-                        <option value="both" data-en="Both" data-he="שניהם">Both</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label data-en="Message / Questions (optional)" data-he="הודעה / שאלות (אופציונלי)">Message / Questions (optional)</label>
-                    <textarea name="message" rows="4"></textarea>
-                </div>
-                <button type="submit" class="btn btn-primary" style="width: 100%;" 
-                        data-en="Send Message" data-he="שלח הודעה">Send Message</button>
-            </form>
-        </div>
-    </section>
-
-    <!-- Zoom Section (hidden anchor target) -->
-    <section id="zoom" style="padding: 2rem; text-align: center; background: var(--cream);">
-        <p data-en="To book a Zoom call directly, please fill out the form above or email us at info@bneineviimacademy.org"
-           data-he="כדי לקבוע שיחת זום ישירות, אנא מלאו את הטופס למעלה או שלחו לנו אימייל ל-info@bneineviimacademy.org">
-            To book a Zoom call directly, please fill out the form above or email us at <a href="mailto:info@bneineviimacademy.org">info@bneineviimacademy.org</a>
-        </p>
     </section>
 
     <!-- Footer -->
     <footer>
-        <p>© 2025 Bnei Nevi'im Academy · <span class="hebrew">בני נביאים אקדמי</span></p>
-        <p style="margin-top: 0.5rem; font-size: 0.9rem; opacity: 0.8;">bneineviimacademy.org</p>
+        <p>&copy; 2025 Bnei Nevi'im Academy. All rights reserved.</p>
     </footer>
-
-    <script>
-        // Language toggle
-        let currentLang = 'en';
-        
-        function toggleLanguage() {
-            currentLang = currentLang === 'en' ? 'he' : 'en';
-            document.documentElement.dir = currentLang === 'he' ? 'rtl' : 'ltr';
-            document.documentElement.lang = currentLang;
-            
-            // Update all elements with data-en and data-he attributes
-            document.querySelectorAll('[data-en][data-he]').forEach(el => {
-                el.textContent = el.getAttribute('data-' + currentLang);
-            });
-            
-            // Update form options
-            document.querySelectorAll('option[data-en][data-he]').forEach(opt => {
-                opt.textContent = opt.getAttribute('data-' + currentLang);
-            });
-        }
-
-        // Fade in animation on scroll
-        const observerOptions = {
-            threshold: 0.1,
-            rootMargin: '0px 0px -50px 0px'
-        };
-
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                }
-            });
-        }, observerOptions);
-
-        document.querySelectorAll('.fade-in').forEach(el => {
-            observer.observe(el);
-        });
-
-        // Smooth scroll for nav links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-    </script>
 </body>
 </html>
