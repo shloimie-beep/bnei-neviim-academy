@@ -722,6 +722,76 @@
             transform: translateX(0);
         }
 
+        /* ===== HEBREW LANGUAGE STYLES ===== */
+        html[lang="he"] body {
+            direction: rtl;
+            text-align: right;
+        }
+
+        html[lang="he"] .nav-container {
+            direction: rtl;
+        }
+
+        html[lang="he"] .nav-brand {
+            flex-direction: row-reverse;
+        }
+
+        html[lang="he"] .nav-buttons {
+            flex-direction: row-reverse;
+        }
+
+        html[lang="he"] h1,
+        html[lang="he"] h2,
+        html[lang="he"] h3,
+        html[lang="he"] .section-title,
+        html[lang="he"] .nav-brand-name {
+            font-family: 'Noto Serif Hebrew', serif;
+        }
+
+        html[lang="he"] .hero,
+        html[lang="he"] .hero-verse,
+        html[lang="he"] .hero-headline,
+        html[lang="he"] .hero-cta-inner,
+        html[lang="he"] .cta-section,
+        html[lang="he"] footer {
+            text-align: center;
+        }
+
+        html[lang="he"] .mission-text,
+        html[lang="he"] .learning-text,
+        html[lang="he"] .founder-text,
+        html[lang="he"] .belief-card,
+        html[lang="he"] .martin-content {
+            text-align: right;
+        }
+
+        html[lang="he"] .mission-text .section-title {
+            text-align: right !important;
+        }
+
+        html[lang="he"] .learning-list li {
+            padding-left: 0;
+            padding-right: 1.5rem;
+        }
+
+        html[lang="he"] .learning-list li::before {
+            left: auto;
+            right: 0;
+        }
+
+        html[lang="he"] .slider-wrapper {
+            direction: ltr;
+        }
+
+        html[lang="he"] .belief-card {
+            direction: rtl;
+        }
+
+        html[lang="he"] .martin-stars {
+            direction: ltr;
+            text-align: right;
+        }
+
         /* ===== TABLET BREAKPOINT ===== */
         @media (max-width: 991px) {
             .mission-content,
@@ -1059,14 +1129,14 @@
             <div class="nav-brand">
                 <img src="images/bna-logo-nobg.png" alt="Bnei Nevi'im Academy" class="nav-logo">
                 <div class="nav-brand-text">
-                    <span class="nav-brand-name">Bnei Nevi'im Academy</span>
-                    <span class="nav-brand-location">Ramat Beit Shemesh <span class="hebrew-text" dir="rtl">רמת בית שמש</span></span>
+                    <span class="nav-brand-name" data-i18n="navBrand">Bnei Nevi'im Academy</span>
+                    <span class="nav-brand-location" data-i18n="navLocation">Ramat Beit Shemesh</span>
                 </div>
             </div>
             <div class="nav-buttons">
-                <button class="lang-toggle" onclick="toggleLanguage()">עברית</button>
-                <a href="https://wa.me/972534932631" class="nav-btn nav-btn-contact" target="_blank">Contact Us</a>
-                <a href="/signup.html" class="nav-btn nav-btn-signup">Sign Up</a>
+                <button class="lang-toggle" onclick="toggleLanguage()" data-i18n="langButton">עברית</button>
+                <a href="https://wa.me/972534932631" class="nav-btn nav-btn-contact" target="_blank" data-i18n="contact">Contact Us</a>
+                <a href="/signup.html" class="nav-btn nav-btn-signup" data-i18n="signup">Sign Up</a>
             </div>
         </div>
     </nav>
@@ -1075,22 +1145,22 @@
     <section class="hero">
         <div class="hero-image">
             <div class="hero-verse">
-                <div class="hero-verse-he" dir="rtl">כי מלאה הארץ דעה את ה׳ כמים לים מכסים</div>
-                <div class="hero-verse-en">"For the earth will be filled with the knowledge of Hashem as the waters cover the sea."</div>
-                <div class="hero-verse-source">Yeshayahu 11:9</div>
+                <div class="hero-verse-he" dir="rtl" data-i18n="heroVerseHe">כי מלאה הארץ דעה את ה׳ כמים לים מכסים</div>
+                <div class="hero-verse-en" data-i18n="heroVerseEn">"For the earth will be filled with the knowledge of Hashem as the waters cover the sea."</div>
+                <div class="hero-verse-source" data-i18n="heroVerseSource">Yeshayahu 11:9</div>
             </div>
             <div class="hero-headline">
-                <h1>Home-Based Integrative Torah Learning for Boys Ages 7–13</h1>
+                <h1 data-i18n="heroHeadline">Home-Based Integrative Torah Learning for Boys Ages 7–13</h1>
             </div>
         </div>
         <div class="hero-cta-strip">
             <div class="hero-cta-inner">
                 <div class="hero-subheadline">
-                    <p>A calm, relationship-based Torah learning environment for boys who don't fit the system.</p>
+                    <p data-i18n="heroSubheadline">A calm, relationship-based Torah learning environment for boys who don't fit the system.</p>
                 </div>
                 <div class="hero-buttons">
-                    <a href="https://wa.me/972534932631" class="hero-btn hero-btn-contact" target="_blank">Contact Us</a>
-                    <a href="/signup.html" class="hero-btn hero-btn-signup">Sign Up</a>
+                    <a href="https://wa.me/972534932631" class="hero-btn hero-btn-contact" target="_blank" data-i18n="contact">Contact Us</a>
+                    <a href="/signup.html" class="hero-btn hero-btn-signup" data-i18n="signup">Sign Up</a>
                 </div>
             </div>
         </div>
@@ -1104,8 +1174,8 @@
                     <img src="images/meir-bunny.png" alt="Boy learning Torah">
                 </div>
                 <div class="mission-text fade-in">
-                    <h2 class="section-title" style="text-align: left; margin-bottom: 1.5rem;">Our Mission</h2>
-                    <p>To raise future leaders of the Jewish people who understand their role in society, live with purpose, develop self-governance, and experience Torah and Hashem as a real and meaningful part of daily life.</p>
+                    <h2 class="section-title" style="text-align: left; margin-bottom: 1.5rem;" data-i18n="missionTitle">Our Mission</h2>
+                    <p data-i18n="missionText">To raise future leaders of the Jewish people who understand their role in society, live with purpose, develop self-governance, and experience Torah and Hashem as a real and meaningful part of daily life.</p>
                 </div>
             </div>
         </div>
@@ -1114,61 +1184,61 @@
     <!-- What We Believe Section -->
     <section class="beliefs">
         <div class="container">
-            <h2 class="section-title">What We Believe</h2>
+            <h2 class="section-title" data-i18n="beliefsTitle">What We Believe</h2>
             <div class="slider-container">
                 <div class="slider-wrapper" id="sliderWrapper">
                     <div class="belief-slide">
                         <div class="belief-card">
-                            <h3>Children are heroes</h3>
-                            <p>Children are heroes with unique strengths, purpose, and potential. When treated with respect, trusted, and guided — they naturally love to learn.</p>
+                            <h3 data-i18n="belief1Title">Children are heroes</h3>
+                            <p data-i18n="belief1Text">Children are heroes with unique strengths, purpose, and potential. When treated with respect, trusted, and guided — they naturally love to learn.</p>
                         </div>
                     </div>
                     <div class="belief-slide">
                         <div class="belief-card">
-                            <h3>School environments can negatively impact emotional well-being</h3>
-                            <p>Many boys struggle in environments built around compliance, pressure, and standardization.</p>
+                            <h3 data-i18n="belief2Title">School environments can negatively impact emotional well-being</h3>
+                            <p data-i18n="belief2Text">Many boys struggle in environments built around compliance, pressure, and standardization.</p>
                         </div>
                     </div>
                     <div class="belief-slide">
                         <div class="belief-card">
-                            <h3>Intelligence is not measured by grades</h3>
-                            <p>A child's strengths, curiosity, leadership, and character matter far more than performance metrics.</p>
+                            <h3 data-i18n="belief3Title">Intelligence is not measured by grades</h3>
+                            <p data-i18n="belief3Text">A child's strengths, curiosity, leadership, and character matter far more than performance metrics.</p>
                         </div>
                     </div>
                     <div class="belief-slide">
                         <div class="belief-card">
-                            <h3>Intrinsic motivation matters most</h3>
-                            <p>Developing a genuine desire to learn Torah is more important than covering material through force or bribery.</p>
+                            <h3 data-i18n="belief4Title">Intrinsic motivation matters most</h3>
+                            <p data-i18n="belief4Text">Developing a genuine desire to learn Torah is more important than covering material through force or bribery.</p>
                         </div>
                     </div>
                     <div class="belief-slide">
                         <div class="belief-card">
-                            <h3>Children develop in stages</h3>
-                            <p>We respect the natural developmental process of growth and avoid unrealistic expectations.</p>
+                            <h3 data-i18n="belief5Title">Children develop in stages</h3>
+                            <p data-i18n="belief5Text">We respect the natural developmental process of growth and avoid unrealistic expectations.</p>
                         </div>
                     </div>
                     <div class="belief-slide">
                         <div class="belief-card">
-                            <h3>Torah learning should feel meaningful</h3>
-                            <p>Learning Torah is a natural process that grows through relationship, curiosity, and lived experience.</p>
+                            <h3 data-i18n="belief6Title">Torah learning should feel meaningful</h3>
+                            <p data-i18n="belief6Text">Learning Torah is a natural process that grows through relationship, curiosity, and lived experience.</p>
                         </div>
                     </div>
                     <div class="belief-slide">
                         <div class="belief-card">
-                            <h3>No bribery. No coercion. No shame.</h3>
-                            <p>Real growth cannot be forced.</p>
+                            <h3 data-i18n="belief7Title">No bribery. No coercion. No shame.</h3>
+                            <p data-i18n="belief7Text">Real growth cannot be forced.</p>
                         </div>
                     </div>
                     <div class="belief-slide">
                         <div class="belief-card">
-                            <h3>We believe in autonomous Torah learning</h3>
-                            <p>Children should learn to take ownership of their learning, choices, time, and responsibilities.</p>
+                            <h3 data-i18n="belief8Title">We believe in autonomous Torah learning</h3>
+                            <p data-i18n="belief8Text">Children should learn to take ownership of their learning, choices, time, and responsibilities.</p>
                         </div>
                     </div>
                     <div class="belief-slide">
                         <div class="belief-card">
-                            <h3>We value critical thinking</h3>
-                            <p>We encourage boys to ask questions, analyze ideas, make mistakes, and think independently.</p>
+                            <h3 data-i18n="belief9Title">We value critical thinking</h3>
+                            <p data-i18n="belief9Text">We encourage boys to ask questions, analyze ideas, make mistakes, and think independently.</p>
                         </div>
                     </div>
                 </div>
@@ -1185,21 +1255,21 @@
                     <img src="images/sitting on container.jpg" alt="Boy learning">
                 </div>
                 <div class="learning-text slide-in-right">
-                    <h2>Daily Morning Torah Learning</h2>
-                    <span class="learning-time">10:00 AM – 1:00 PM</span>
-                    <p>Areas of learning may include:</p>
+                    <h2 data-i18n="learningTitle">Daily Morning Torah Learning</h2>
+                    <span class="learning-time" data-i18n="learningTime">10:00 AM – 1:00 PM</span>
+                    <p data-i18n="learningIntro">Areas of learning may include:</p>
                     <ul class="learning-list">
-                        <li>Chumash</li>
-                        <li>Tanach</li>
-                        <li>Kitzur Shulchan Aruch</li>
-                        <li>Mussar</li>
-                        <li>Chassidus</li>
-                        <li>Torah-based character development</li>
-                        <li>Meaningful discussion</li>
-                        <li>Critical thinking skills</li>
-                        <li>Emotional awareness and self-governance</li>
+                        <li data-i18n="chumash">Chumash</li>
+                        <li data-i18n="tanach">Tanach</li>
+                        <li data-i18n="kitzur">Kitzur Shulchan Aruch</li>
+                        <li data-i18n="mussar">Mussar</li>
+                        <li data-i18n="chassidus">Chassidus</li>
+                        <li data-i18n="character">Torah-based character development</li>
+                        <li data-i18n="discussion">Meaningful discussion</li>
+                        <li data-i18n="critical">Critical thinking skills</li>
+                        <li data-i18n="emotional">Emotional awareness and self-governance</li>
                     </ul>
-                    <p style="margin-top: 1.5rem; font-style: italic;">Learning is adapted to the child and designed to foster curiosity, responsibility, and independent thinking.</p>
+                    <p style="margin-top: 1.5rem; font-style: italic;" data-i18n="learningNote">Learning is adapted to the child and designed to foster curiosity, responsibility, and independent thinking.</p>
                 </div>
             </div>
         </div>
@@ -1212,19 +1282,19 @@
                 <img src="images/hillel.png" alt="Martin's son">
             </div>
             <div class="martin-content">
-                <div class="martin-name">Martin Braka</div>
+                <div class="martin-name" data-i18n="reviewerName">Martin Braka</div>
                 <div class="martin-stars">★★★★★</div>
-                <p class="martin-text">"Rav Dratler is a very dynamic and motivated individual who is passionate about making serious change within the education system. He is a very talented educator which I have experienced first hand through him teaching my son who was a non motivated student and he aided him to become a child who is enthusiastic and engaged with his learning."</p>
+                <p class="martin-text" data-i18n="reviewText">"Rav Dratler is a very dynamic and motivated individual who is passionate about making serious change within the education system. He is a very talented educator which I have experienced first hand through him teaching my son who was a non motivated student and he aided him to become a child who is enthusiastic and engaged with his learning."</p>
             </div>
         </div>
     </section>
 
     <!-- CTA Section -->
     <section class="cta-section" id="contact">
-        <h2 class="fade-in">Ready to Get Started?</h2>
+        <h2 class="fade-in" data-i18n="ctaTitle">Ready to Get Started?</h2>
         <div class="cta-buttons fade-in">
-            <a href="https://wa.me/972534932631" class="cta-button cta-whatsapp" target="_blank">Contact Us</a>
-            <a href="/signup.html" class="cta-button cta-signup">Sign Up</a>
+            <a href="https://wa.me/972534932631" class="cta-button cta-whatsapp" target="_blank" data-i18n="contact">Contact Us</a>
+            <a href="/signup.html" class="cta-button cta-signup" data-i18n="signup">Sign Up</a>
         </div>
     </section>
 
@@ -1236,9 +1306,9 @@
                     <img src="images/founder-720.jpg" alt="Shloimie Dratler">
                 </div>
                 <div class="founder-text slide-in-right">
-                    <h2>Shloimie Dratler</h2>
-                    <span class="subtitle">Founder</span>
-                    <p>Shloimie has over 15 years of experience working with teens and families, with a focus on developmental psychology, experiential Torah learning, and intrinsic motivation. His work addresses the deeper root causes behind many of the emotional and educational struggles affecting today's youth, helping young people develop responsibility, confidence, emotional well-being, and a genuine love for learning.</p>
+                    <h2 data-i18n="founderName">Shloimie Dratler</h2>
+                    <span class="subtitle" data-i18n="founderRole">Founder</span>
+                    <p data-i18n="founderText">Shloimie has over 15 years of experience working with teens and families, with a focus on developmental psychology, experiential Torah learning, and intrinsic motivation. His work addresses the deeper root causes behind many of the emotional and educational struggles affecting today's youth, helping young people develop responsibility, confidence, emotional well-being, and a genuine love for learning.</p>
                 </div>
             </div>
         </div>
@@ -1247,10 +1317,9 @@
     <!-- Footer -->
     <footer>
         <div class="footer-content">
-            <p class="footer-location">Ramat Beit Shemesh</p>
-            <p class="footer-location-hebrew" dir="rtl">רמת בית שמש</p>
-            <p class="footer-nonprofit">Registered nonprofit in the State of New Jersey</p>
-            <p class="footer-copyright">&copy; 2025 Bnei Nevi'im Academy. All rights reserved.</p>
+            <p class="footer-location" data-i18n="footerLocation">Ramat Beit Shemesh</p>
+            <p class="footer-nonprofit" data-i18n="footerNonprofit">Registered nonprofit in the State of New Jersey</p>
+            <p class="footer-copyright" data-i18n="footerCopyright">&copy; 2025 Bnei Nevi'im Academy. All rights reserved.</p>
         </div>
     </footer>
 
@@ -1311,24 +1380,169 @@
             observer.observe(el);
         });
 
-        // Language Toggle
+        // Translations
+        const translations = {
+            en: {
+                navBrand: "Bnei Nevi'im Academy",
+                navLocation: "Ramat Beit Shemesh",
+                contact: "Contact Us",
+                signup: "Sign Up",
+                langButton: "עברית",
+
+                heroVerseHe: "כי מלאה הארץ דעה את ה׳ כמים לים מכסים",
+                heroVerseEn: '"For the earth will be filled with the knowledge of Hashem as the waters cover the sea."',
+                heroVerseSource: "Yeshayahu 11:9",
+                heroHeadline: "Home-Based Integrative Torah Learning for Boys Ages 7–13",
+                heroSubheadline: "A calm, relationship-based Torah learning environment for boys who don't fit the system.",
+
+                missionTitle: "Our Mission",
+                missionText: "To raise future leaders of the Jewish people who understand their role in society, live with purpose, develop self-governance, and experience Torah and Hashem as a real and meaningful part of daily life.",
+
+                beliefsTitle: "What We Believe",
+                belief1Title: "Children are heroes",
+                belief1Text: "Children are heroes with unique strengths, purpose, and potential. When treated with respect, trusted, and guided — they naturally love to learn.",
+                belief2Title: "School environments can negatively impact emotional well-being",
+                belief2Text: "Many boys struggle in environments built around compliance, pressure, and standardization.",
+                belief3Title: "Intelligence is not measured by grades",
+                belief3Text: "A child's strengths, curiosity, leadership, and character matter far more than performance metrics.",
+                belief4Title: "Intrinsic motivation matters most",
+                belief4Text: "Developing a genuine desire to learn Torah is more important than covering material through force or bribery.",
+                belief5Title: "Children develop in stages",
+                belief5Text: "We respect the natural developmental process of growth and avoid unrealistic expectations.",
+                belief6Title: "Torah learning should feel meaningful",
+                belief6Text: "Learning Torah is a natural process that grows through relationship, curiosity, and lived experience.",
+                belief7Title: "No bribery. No coercion. No shame.",
+                belief7Text: "Real growth cannot be forced.",
+                belief8Title: "We believe in autonomous Torah learning",
+                belief8Text: "Children should learn to take ownership of their learning, choices, time, and responsibilities.",
+                belief9Title: "We value critical thinking",
+                belief9Text: "We encourage boys to ask questions, analyze ideas, make mistakes, and think independently.",
+
+                learningTitle: "Daily Morning Torah Learning",
+                learningTime: "10:00 AM – 1:00 PM",
+                learningIntro: "Areas of learning may include:",
+                chumash: "Chumash",
+                tanach: "Tanach",
+                kitzur: "Kitzur Shulchan Aruch",
+                mussar: "Mussar",
+                chassidus: "Chassidus",
+                character: "Torah-based character development",
+                discussion: "Meaningful discussion",
+                critical: "Critical thinking skills",
+                emotional: "Emotional awareness and self-governance",
+                learningNote: "Learning is adapted to the child and designed to foster curiosity, responsibility, and independent thinking.",
+
+                reviewerName: "Martin Braka",
+                reviewText: '"Rav Dratler is a very dynamic and motivated individual who is passionate about making serious change within the education system. He is a very talented educator which I have experienced first hand through him teaching my son who was a non motivated student and he aided him to become a child who is enthusiastic and engaged with his learning."',
+
+                ctaTitle: "Ready to Get Started?",
+
+                founderName: "Shloimie Dratler",
+                founderRole: "Founder",
+                founderText: "Shloimie has over 15 years of experience working with teens and families, with a focus on developmental psychology, experiential Torah learning, and intrinsic motivation. His work addresses the deeper root causes behind many of the emotional and educational struggles affecting today's youth, helping young people develop responsibility, confidence, emotional well-being, and a genuine love for learning.",
+
+                footerLocation: "Ramat Beit Shemesh",
+                footerNonprofit: "Registered nonprofit in the State of New Jersey",
+                footerCopyright: "© 2025 Bnei Nevi'im Academy. All rights reserved."
+            },
+
+            he: {
+                navBrand: "אקדמיית בני נביאים",
+                navLocation: "רמת בית שמש",
+                contact: "צור קשר",
+                signup: "הרשמה",
+                langButton: "English",
+
+                heroVerseHe: "כי מלאה הארץ דעה את ה׳ כמים לים מכסים",
+                heroVerseEn: "",
+                heroVerseSource: "ישעיהו י״א:ט׳",
+                heroHeadline: "לימוד תורה אינטגרטיבי באווירה ביתית לבנים בגילאי 7–13",
+                heroSubheadline: "סביבה רגועה ומבוססת קשר ללימוד תורה עבור בנים שלא מוצאים את מקומם במערכת.",
+
+                missionTitle: "השליחות שלנו",
+                missionText: "לגדל מנהיגים עתידיים בעם ישראל, שמבינים את תפקידם בעולם, חיים עם מטרה, מפתחים ניהול עצמי, וחווים את התורה ואת הקשר עם ה׳ כחלק אמיתי ומשמעותי מחיי היום־יום.",
+
+                beliefsTitle: "במה אנחנו מאמינים",
+                belief1Title: "ילדים הם גיבורים",
+                belief1Text: "לכל ילד יש כוחות ייחודיים, שליחות ופוטנציאל. כאשר מתייחסים אליו בכבוד, נותנים בו אמון ומלווים אותו נכון — האהבה ללמידה מתעוררת באופן טבעי.",
+                belief2Title: "מסגרות לימוד מסוימות עלולות לפגוע ברווחה הרגשית",
+                belief2Text: "הרבה בנים מתקשים במסגרות שבנויות סביב ציות, לחץ ואחידות במקום סביב קשר, אחריות וצמיחה.",
+                belief3Title: "חכמה לא נמדדת בציונים",
+                belief3Text: "הכוחות, הסקרנות, המנהיגות והמידות של הילד חשובים הרבה יותר ממדדים חיצוניים של ביצוע.",
+                belief4Title: "מוטיבציה פנימית היא העיקר",
+                belief4Text: "פיתוח רצון אמיתי ללמוד תורה חשוב יותר מהספק חומר שנעשה בכפייה, בלחץ או בפרסים.",
+                belief5Title: "ילדים מתפתחים בשלבים",
+                belief5Text: "אנחנו מכבדים את תהליך ההתפתחות הטבעי של הילד ונזהרים מציפיות שאינן מתאימות לשלב שבו הוא נמצא.",
+                belief6Title: "לימוד תורה צריך להיות משמעותי",
+                belief6Text: "לימוד תורה אמיתי צומח מתוך קשר, סקרנות וחוויה חיה — לא רק מתוך דרישה חיצונית.",
+                belief7Title: "בלי שוחד. בלי כפייה. בלי בושה.",
+                belief7Text: "צמיחה אמיתית אי אפשר לכפות.",
+                belief8Title: "אנחנו מאמינים בלימוד תורה מתוך אחריות ובחירה",
+                belief8Text: "ילדים צריכים ללמוד לקחת אחריות על הלמידה שלהם, על הבחירות שלהם, על הזמן שלהם ועל המחויבויות שלהם.",
+                belief9Title: "אנחנו מעריכים חשיבה ביקורתית",
+                belief9Text: "אנחנו מעודדים בנים לשאול שאלות, לנתח רעיונות, לטעות, ללמוד מהטעויות ולחשוב באופן עצמאי.",
+
+                learningTitle: "לימוד תורה יומי בבוקר",
+                learningTime: "10:00–13:00",
+                learningIntro: "תחומי הלימוד עשויים לכלול:",
+                chumash: "חומש",
+                tanach: "תנ״ך",
+                kitzur: "קיצור שולחן ערוך",
+                mussar: "מוסר",
+                chassidus: "חסידות",
+                character: "בניית המידות לאור התורה",
+                discussion: "שיח משמעותי",
+                critical: "מיומנויות חשיבה ביקורתית",
+                emotional: "מודעות רגשית וניהול עצמי",
+                learningNote: "הלימוד מותאם לילד ונועד לפתח סקרנות, אחריות וחשיבה עצמאית.",
+
+                reviewerName: "מרטין ברקה",
+                reviewText: '״הרב דרטלר הוא אדם דינמי ובעל מוטיבציה גדולה, עם תשוקה אמיתית לחולל שינוי משמעותי במערכת החינוך. הוא מחנך מוכשר מאוד, כפי שחוויתי באופן אישי דרך העבודה שלו עם הבן שלי, שלא היה מחובר ללמידה, ובעזרתו הפך לילד שמתלהב ומשתתף בלמידה שלו.״',
+
+                ctaTitle: "רוצים לבדוק התאמה?",
+
+                founderName: "שלוימי דרטלר",
+                founderRole: "מייסד",
+                founderText: "לשלוימי יש יותר מ־15 שנות ניסיון בעבודה עם בני נוער ומשפחות, עם דגש על פסיכולוגיה התפתחותית, לימוד תורה חווייתי ומוטיבציה פנימית. עבודתו נוגעת בשורשים העמוקים של האתגרים הרגשיים והחינוכיים שמעסיקים ילדים ובני נוער כיום, ומסייעת להם לפתח אחריות, ביטחון, רווחה רגשית ואהבה אמיתית ללמידה.",
+
+                footerLocation: "רמת בית שמש",
+                footerNonprofit: "עמותה רשומה במדינת ניו ג׳רזי",
+                footerCopyright: "© 2025 אקדמיית בני נביאים. כל הזכויות שמורות."
+            }
+        };
+
         let currentLang = 'en';
 
-        function toggleLanguage() {
-            currentLang = currentLang === 'en' ? 'he' : 'en';
-            const btn = document.querySelector('.lang-toggle');
+        function applyLanguage(lang) {
+            currentLang = lang;
+
             const html = document.documentElement;
+            html.setAttribute('lang', lang);
+            html.setAttribute('dir', lang === 'he' ? 'rtl' : 'ltr');
 
-            btn.textContent = currentLang === 'en' ? 'עברית' : 'English';
+            document.querySelectorAll('[data-i18n]').forEach((el) => {
+                const key = el.getAttribute('data-i18n');
+                if (translations[lang][key] !== undefined) {
+                    el.textContent = translations[lang][key];
+                }
+            });
 
-            if (currentLang === 'he') {
-                html.setAttribute('dir', 'rtl');
-                html.setAttribute('lang', 'he');
-            } else {
-                html.setAttribute('dir', 'ltr');
-                html.setAttribute('lang', 'en');
+            document.querySelectorAll('.lang-toggle').forEach((btn) => {
+                btn.textContent = translations[lang].langButton;
+            });
+
+            const heroEnglishVerse = document.querySelector('[data-i18n="heroVerseEn"]');
+            if (heroEnglishVerse) {
+                heroEnglishVerse.style.display = lang === 'he' ? 'none' : 'block';
             }
         }
+
+        function toggleLanguage() {
+            applyLanguage(currentLang === 'en' ? 'he' : 'en');
+        }
+
+        // Initialize
+        applyLanguage('en');
     </script>
 </body>
 </html>
