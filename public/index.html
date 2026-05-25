@@ -120,63 +120,67 @@
         /* Hero Section */
         .hero {
             min-height: 100vh;
-            background: linear-gradient(rgba(30, 58, 95, 0.4), rgba(30, 58, 95, 0.5)), 
-                        url('images/sitting on grass.jpg') center/cover;
+            background: linear-gradient(rgba(30, 58, 95, 0.75), rgba(30, 58, 95, 0.85)), 
+                        url('images/sitting on grass.jpg') center 30%/cover;
             display: flex;
-            align-items: flex-end;
-            justify-content: center;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
             text-align: center;
-            padding: 160px 2rem 4rem;
+            padding: 100px 2rem 2rem;
             position: relative;
         }
         
         .hero-content {
-            max-width: 800px;
+            max-width: 900px;
             color: var(--white);
-            margin-bottom: 2rem;
+            margin-top: auto;
+            margin-bottom: 15vh;
         }
         
         .hero-quote-top {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-style: italic;
-            margin-bottom: 0.5rem;
+            color: var(--white);
+            margin-bottom: 0.3rem;
             line-height: 1.3;
-            position: absolute;
-            top: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            padding: 0 2rem;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.5);
         }
         
         .hero-source-top {
-            font-size: 1rem;
-            opacity: 0.9;
-            margin-bottom: 0;
-            position: absolute;
-            top: 150px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
+            font-size: 0.95rem;
+            color: var(--accent-gold);
+            margin-bottom: 2rem;
+            font-weight: 500;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.5);
         }
         
         .hero h1 {
             font-family: 'Cormorant Garamond', serif;
-            font-size: 2.6rem;
-            font-weight: 600;
+            font-size: 3.2rem;
+            font-weight: 700;
             margin-bottom: 1.5rem;
-            line-height: 1.2;
-            margin-top: 3rem;
+            line-height: 1.15;
+            text-shadow: 0 3px 15px rgba(0,0,0,0.6);
+        }
+        
+        .hero-subtitle-card {
+            background: rgba(30, 58, 95, 0.7);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem 2.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.15);
+            margin-bottom: 2rem;
+            display: inline-block;
         }
         
         .hero-subtitle {
-            font-size: 1.25rem;
-            opacity: 0.95;
-            margin-bottom: 2rem;
-            max-width: 600px;
-            margin-left: auto;
-            margin-right: auto;
+            font-size: 1.4rem;
+            color: var(--white);
+            margin: 0;
+            font-weight: 500;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.4);
         }
         
         .hero-buttons {
@@ -271,7 +275,7 @@
         /* Beliefs Section with Slider */
         .beliefs {
             background: linear-gradient(rgba(30, 58, 95, 0.85), rgba(30, 58, 95, 0.9)),
-                        url('images/reuvane-jump-ball.png') center/cover fixed;
+                        url('images/reuvane-jump-ball.png') center 70%/cover fixed;
             color: var(--white);
             padding: 6rem 2rem;
             min-height: 80vh;
@@ -486,8 +490,8 @@
         
         /* CTA Section */
         .cta-section {
-            background: linear-gradient(rgba(30, 58, 95, 0.85), rgba(30, 58, 95, 0.9)),
-                        url('images/reuvane-jump-ball.png') center/cover fixed;
+            background: linear-gradient(rgba(30, 58, 95, 0.88), rgba(30, 58, 95, 0.92)),
+                        url('images/huddle.jpg') center/cover fixed;
             color: var(--white);
             text-align: center;
             padding: 6rem 2rem;
@@ -664,17 +668,33 @@
         
         /* Responsive */
         @media (max-width: 768px) {
+            .hero {
+                padding: 80px 1.5rem 2rem;
+            }
+            
             .hero h1 {
-                font-size: 1.8rem;
+                font-size: 2rem;
             }
             
             .hero-quote-top {
-                font-size: 1.3rem;
-                top: 80px;
+                font-size: 1.2rem;
             }
             
             .hero-source-top {
-                top: 120px;
+                font-size: 0.85rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .hero-subtitle-card {
+                padding: 1rem 1.5rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .hero-content {
+                margin-bottom: 10vh;
             }
             
             .nav-brand {
@@ -744,11 +764,13 @@
 
     <!-- Hero Section -->
     <section class="hero">
-        <p class="hero-quote-top">"The earth will be filled with the knowledge of Hashem."</p>
-        <p class="hero-source-top">— Yeshayahu 11:9</p>
+        <div class="hero-quote-top">"The earth will be filled with the knowledge of Hashem."</div>
+        <div class="hero-source-top">— Yeshayahu 11:9</div>
         <div class="hero-content">
             <h1>Home-Based Integrative Torah Learning for Boys Ages 7–13</h1>
-            <p class="hero-subtitle">A calm, relationship-based Torah learning environment for boys who don't fit the system.</p>
+            <div class="hero-subtitle-card">
+                <p class="hero-subtitle">A calm, relationship-based Torah learning environment for boys who don't fit the system.</p>
+            </div>
             <div class="hero-buttons">
                 <a href="https://wa.me/972534932631" class="hero-btn hero-btn-whatsapp" target="_blank">Contact Us</a>
                 <a href="/signup.html" class="hero-btn hero-btn-signup">Sign Up</a>
