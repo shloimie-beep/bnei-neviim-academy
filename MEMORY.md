@@ -196,8 +196,32 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 
 **Rule: No CSS changes without screenshot verification.**
 
+### Multi-Agent Memory Strategy
+
+**Current:** File-based (AGENTS.md, MEMORY.md, TASKS.md, memory/YYYY-MM-DD.md)
+
+**Future Options (ranked):**
+
+1. **Enhanced File-Based** (Now)
+   - Create CLAUDE.md that imports AGENTS.md
+   - Add shared-context.md for runtime state
+   - Works with both Kimi and Claude today
+
+2. **MCP Memory Server + Supabase** (When needed)
+   - Use `@modelcontextprotocol/server-memory`
+   - Knowledge graph with entities/relations/observations
+   - Requires Kimi CLI MCP support (not yet available)
+
+3. **Mem0 Self-Hosted** (Scale phase)
+   - Universal memory layer with semantic search
+   - Docker compose: Postgres + Qdrant
+   - Best for multiple operators
+
+**Recommendation:** Stick with file-based until MEMORY.md exceeds 200 lines or you need semantic search ("what did I say about marketing last month?").
+
 ### Pending
 - Telegram bot activation (needs chat ID, webhook setup)
 - Railway hosting setup
 - DNS configuration
 - Website polish (screenshots show current state)
+- Sawn integration (research in progress)
