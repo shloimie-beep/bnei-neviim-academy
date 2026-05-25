@@ -1,6 +1,7 @@
-FROM node:20-alpine
+FROM node:18-alpine
 WORKDIR /app
-COPY public/ ./public/
-RUN npm install -g serve
+COPY package*.json ./
+RUN npm install
+COPY . .
 EXPOSE 8080
-CMD ["serve", "public", "-l", "8080"]
+CMD ["node", "server.js"]

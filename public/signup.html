@@ -231,7 +231,7 @@
     <nav>
         <div class="nav-container">
             <a href="/">
-                <img src="images/bna logo.png" alt="Bnei Nevi'im Academy" class="logo">
+                <img src="images/bna-logo-nobg.png" alt="Bnei Nevi'im Academy" class="logo">
             </a>
             <a href="/" class="nav-btn">Back to Home</a>
         </div>
@@ -339,10 +339,6 @@
     </footer>
 
     <script>
-        // Supabase configuration - you'll need to update these with your actual values
-        const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-        
         document.getElementById('signupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -366,45 +362,40 @@
                 child_name: document.getElementById('child_name').value,
                 child_age: parseInt(document.getElementById('child_age').value),
                 current_school: document.getElementById('current_school').value,
-                hobbies: document.getElementById('hobbies').value,
-                submitted_at: new Date().toISOString()
+                hobbies: document.getElementById('hobbies').value
             };
             
             try {
-                // For now, we'll store in localStorage as a fallback
-                // In production, this should go to Supabase
+                // Submit to database API
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
                 
-                // Get existing submissions or initialize array
-                let submissions = JSON.parse(localStorage.getItem('bna_signups') || '[]');
-                submissions.push(formData);
-                localStorage.setItem('bna_signups', JSON.stringify(submissions));
+                const result = await response.json();
                 
-                // Try to send to Supabase if configured
-                if (SUPABASE_URL !== 'YOUR_SUPABASE_URL') {
-                    const response = await fetch(`${SUPABASE_URL}/rest/v1/signups`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'apikey': SUPABASE_ANON_KEY,
-                            'Authorization': `Bearer ${SUPABASE_ANON_KEY}`
-                        },
-                        body: JSON.stringify(formData)
-                    });
-                    
-                    if (!response.ok) {
-                        throw new Error('Failed to submit to Supabase');
-                    }
+                if (response.ok && result.success) {
+                    messageDiv.className = 'message success';
+                    messageDiv.textContent = 'Thank you! Your registration has been submitted successfully. We will contact you soon.';
+                    document.getElementById('signupForm').reset();
+                } else {
+                    throw new Error(result.error || 'Failed to submit');
                 }
-                
-                messageDiv.className = 'message success';
-                messageDiv.textContent = 'Thank you! Your registration has been submitted successfully. We will contact you soon.';
-                document.getElementById('signupForm').reset();
                 
             } catch (error) {
                 console.error('Error:', error);
+                // Fallback: save locally and open email
+                let submissions = JSON.parse(localStorage.getItem('bna_signups') || '[]');
+                submissions.push({...formData, submitted_at: new Date().toISOString()});
+                localStorage.setItem('bna_signups', JSON.stringify(submissions));
+                
+                const emailBody = `New BNA Registration:\n\nParent 1: ${formData.parent1_name}\nEmail: ${formData.parent1_email}\nPhone: ${formData.parent1_phone}\n\nParent 2: ${formData.parent2_name || 'N/A'}\nEmail: ${formData.parent2_email || 'N/A'}\nPhone: ${formData.parent2_phone || 'N/A'}\n\nAddress: ${formData.address}\n\nChild: ${formData.child_name}\nAge: ${formData.child_age}\nCurrent School: ${formData.current_school || 'N/A'}\n\nHobbies & Interests:\n${formData.hobbies}`;
+                
+                window.location.href = `mailto:shloimie@bneineviimacademy.org?subject=New BNA Registration - ${formData.child_name}&body=${encodeURIComponent(emailBody)}`;
+                
                 messageDiv.className = 'message success';
-                messageDiv.textContent = 'Thank you! Your registration has been saved. We will contact you soon.';
-                document.getElementById('signupForm').reset();
+                messageDiv.textContent = 'Registration saved! Please send the email that opened to complete your registration.';
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Submit Registration';
