@@ -5,6 +5,8 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "telegram:kimi": "node scripts/telegram-kimi-bridge.mjs",
+    "telegram:kimi:start": "powershell -ExecutionPolicy Bypass -File scripts/start-telegram-kimi-bridge.ps1",
     "screenshot": "node tools/screenshot-check.js",
     "format": "prettier --write public/index.html",
     "lighthouse": "lighthouse http://localhost:8080 --output=html --output-path=./lighthouse-report.html"

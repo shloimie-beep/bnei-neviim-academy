@@ -69,9 +69,76 @@ const GHL_LOCATION_ID =
   'IIofSrquLHvNxc8zrpka';
 const GHL_API_BASE = 'https://services.leadconnectorhq.com';
 const GHL_API_VERSION = '2021-07-28';
+const SESSION_COOKIE_NAME = 'bna_ops_session';
+const SESSION_TTL_MS = 1000 * 60 * 60 * 12;
+const sessions = new Map();
+
+function parseCookies(req) {
+  const rawCookie = req.headers.cookie || '';
+  if (!rawCookie) return {};
+
+  return rawCookie
+    .split(';')
+    .map((part) => part.trim())
+    .filter(Boolean)
+    .reduce((acc, part) => {
+      const separatorIndex = part.indexOf('=');
+      if (separatorIndex <= 0) return acc;
+      const key = part.slice(0, separatorIndex);
+      const value = decodeURIComponent(part.slice(separatorIndex + 1));
+      acc[key] = value;
+      return acc;
+    }, {});
+}
+
+function issueSession(username) {
+  const sessionId = Buffer.from(`${username}:${Date.now()}:${Math.random().toString(36).slice(2)}`).toString('base64url');
+  sessions.set(sessionId, {
+    username,
+    expiresAt: Date.now() + SESSION_TTL_MS,
+  });
+  return sessionId;
+}
+
+function getValidSession(sessionId) {
+  if (!sessionId) return null;
+  const session = sessions.get(sessionId);
+  if (!session) return null;
+  if (session.expiresAt <= Date.now()) {
+    sessions.delete(sessionId);
+    return null;
+  }
+  return session;
+}
+
+function clearSession(sessionId) {
+  if (sessionId) sessions.delete(sessionId);
+}
+
+function setSessionCookie(res, sessionId) {
+  const cookie = [
+    `${SESSION_COOKIE_NAME}=${encodeURIComponent(sessionId)}`,
+    'Path=/',
+    'HttpOnly',
+    'SameSite=Lax',
+    `Max-Age=${Math.floor(SESSION_TTL_MS / 1000)}`,
+  ];
+  res.setHeader('Set-Cookie', cookie.join('; '));
+}
+
+function clearSessionCookie(res) {
+  res.setHeader('Set-Cookie', `${SESSION_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`);
+}
 
 // Admin auth middleware - case insensitive
 function requireAdmin(req, res, next) {
+  const cookies = parseCookies(req);
+  const session = getValidSession(cookies[SESSION_COOKIE_NAME]);
+  if (session) {
+    req.opsUser = session.username;
+    return next();
+  }
+
   const authHeader = req.headers.authorization;
   
   // If no auth header, redirect to login page
@@ -96,6 +163,7 @@ function requireAdmin(req, res, next) {
     }
     return res.status(401).json({ error: 'Invalid credentials' });
   }
+  req.opsUser = user;
   next();
 }
 
@@ -676,33 +744,24 @@ app.post('/api/operations/login', async (req, res) => {
   
   if (username.toLowerCase() === OPS_USERNAME.toLowerCase() && 
       password.toLowerCase() === OPS_PASSWORD.toLowerCase()) {
-    // Generate simple session ID
-    const sessionId = Buffer.from(`${username}:${Date.now()}`).toString('base64');
+    const sessionId = issueSession(username);
+    setSessionCookie(res, sessionId);
     res.json({ success: true, sessionId });
   } else {
+    clearSessionCookie(res);
     res.status(401).json({ success: false, error: 'Invalid credentials' });
   }
 });
 
+app.post('/api/operations/logout', (req, res) => {
+  const cookies = parseCookies(req);
+  clearSession(cookies[SESSION_COOKIE_NAME]);
+  clearSessionCookie(res);
+  res.json({ success: true });
+});
+
 // Operations dashboard - with login redirect
-app.get('/operations', (req, res) => {
-  const authHeader = req.headers.authorization;
-  
-  // Check auth
-  let isAuthenticated = false;
-  if (authHeader && authHeader.startsWith('Basic ')) {
-    const creds = Buffer.from(authHeader.slice(6), 'base64').toString();
-    const [user, pass] = creds.split(':');
-    if (user.toLowerCase() === OPS_USERNAME.toLowerCase() && 
-        pass.toLowerCase() === OPS_PASSWORD.toLowerCase()) {
-      isAuthenticated = true;
-    }
-  }
-  
-  if (!isAuthenticated) {
-    return res.redirect('/operations-login.html');
-  }
-  
+app.get('/operations', requireAdmin, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'operations.html'));
 });
 

@@ -578,16 +578,11 @@
     <script>
         // API Client
         const api = {
-            authHeader() {
-                const creds = btoa(`${OPS_USERNAME}:${OPS_PASSWORD}`);
-                return 'Basic ' + creds;
-            },
-            
             async request(method, path, body) {
                 const options = {
                     method,
+                    credentials: 'same-origin',
                     headers: { 
-                        'Authorization': this.authHeader(), 
                         'Content-Type': 'application/json' 
                     }
                 };
@@ -595,7 +590,8 @@
                 
                 const response = await fetch('/api/bna' + path, options);
                 if (response.status === 401) {
-                    alert('Session expired');
+                    localStorage.removeItem('bna_ops_session');
+                    window.location.href = '/operations-login.html';
                     return null;
                 }
                 return response.json();
@@ -885,7 +881,7 @@
                     <div style="background: #1e293b; border-radius: 12px; padding: 20px;">
                         <h3 style="margin-bottom: 16px; font-size: 16px;">📱 Telegram Integration</h3>
                         <p style="font-size: 13px; color: #94a3b8; line-height: 1.6;">
-                            Send voice notes or text to <strong>@shlomofam_bot</strong> and they'll appear here.<br>
+                            Send text to <strong>@bneineviimacademy_bot</strong> and it will route into the local BNA Kimi bridge.<br>
                             Take photos of cash receipts and they'll be linked to signups automatically.
                         </p>
                     </div>
@@ -1118,9 +1114,6 @@
         }
 
         // Init
-        const OPS_USERNAME = 'shloimie';
-        const OPS_PASSWORD = 'bna613!';
-        
         loadData();
         setInterval(loadData, 30000); // Refresh every 30s
     </script>

@@ -35,7 +35,7 @@ export type ProviderResult = {
 };
 
 const DEFAULT_KIMI_BASE_URL = 'https://api.moonshot.ai/v1';
-const DEFAULT_KIMI_MODEL = 'kimi-k2.5';
+const DEFAULT_KIMI_MODEL = 'kimi-k2.6';
 const DEFAULT_OPENAI_BASE_URL = 'https://api.openai.com/v1';
 const DEFAULT_OPENAI_MODEL = 'gpt-4.1-mini';
 

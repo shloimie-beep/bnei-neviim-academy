@@ -27,6 +27,8 @@
 - **GHL (GoHighLevel)**: CRM/marketing automation (ALREADY SET UP)
 - **Supabase**: Database and backend
 - **Railway**: Hosting (pending setup)
+- Shared repo files should be the canonical brain for both terminal and future
+  Telegram bridge use
 
 ## Workflow Preferences
 
@@ -34,6 +36,7 @@
 - `AGENTS.md`: Durable instructions
 - `MEMORY.md`: Durable facts
 - `TASKS.md`: Active work
+- `tasks-pending/*.md`: current implementation briefs and handoffs
 - `memory/YYYY-MM-DD.md`: Daily captures
 
 ## My Role (AI Sidekick)
@@ -231,9 +234,16 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 - Natural language parsing for rambles
 
 ### GHL Integration (Blocked ⏳)
-- PIT token configured but 403 error
-- Token needs location access enabled in GHL dashboard
+- PIT token is valid against HighLevel's current API
+- The legacy code was using the wrong HighLevel API generation
+- Current fix path is `services.leadconnectorhq.com` with API version header
 - 4 existing signups pending sync
+
+### Kimi Runtime Note
+
+- Local Kimi Code CLI is configured to use `kimi-k2.6`
+- App-side AI config had been left on `kimi-k2.5`, which created confusing
+  behavior across tools; keep repo-side Kimi settings aligned where possible
 
 ### Domain
 - bneineviimacademy.org

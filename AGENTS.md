@@ -17,6 +17,7 @@ Use these files consistently:
 - `AGENTS.md`: operating rules, workflow, and channel behavior
 - `MEMORY.md`: durable facts, decisions, preferences, definitions
 - `TASKS.md`: active work queue, next actions, blockers
+- `tasks-pending/*.md`: concrete handoff briefs for the next coding session
 - `memory/YYYY-MM-DD.md`: daily rambles, notes, raw captures, summaries
 - `PROJECT-NOTES.md`: local project migration notes and technical caveats
 
@@ -30,6 +31,8 @@ When the operator rambles:
 2. Distill it into:
    - durable facts for `MEMORY.md`
    - concrete next actions for `TASKS.md`
+   - current-session implementation briefs for `tasks-pending/*.md` when a
+     future coding session should pick up the work without re-explaining
    - repo/process rules for `AGENTS.md` only if they are stable
 3. Keep the raw wording only when it helps preserve intent or phrasing.
 
@@ -73,3 +76,11 @@ Keep `MEMORY.md` compact and curated.
 - Set up a Telegram-to-local-agent bridge so Telegram talks to the same repo
   brain as the terminal.
 - Keep one canonical memory system across channels.
+
+## Pending Work Convention
+
+- `TASKS.md` should stay concise and show the overall queue.
+- `tasks-pending/*.md` should hold the latest actionable brief with context,
+  findings, and explicit next steps.
+- When resuming work, read the newest file in `tasks-pending/` before making
+  major changes.

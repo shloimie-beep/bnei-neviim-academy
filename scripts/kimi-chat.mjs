@@ -5,7 +5,7 @@ import readline from 'node:readline';
 const ROOT = process.cwd();
 const ENV_PATH = path.join(ROOT, '.env.local');
 const DEFAULT_BASE_URL = 'https://api.moonshot.ai/v1';
-const DEFAULT_MODEL = 'kimi-k2.5';
+const DEFAULT_MODEL = 'kimi-k2.6';
 const DEFAULT_SYSTEM_PROMPT =
   'You are Kimi in a local terminal session. Be practical, concise, and helpful, especially for coding and operations tasks.';
 

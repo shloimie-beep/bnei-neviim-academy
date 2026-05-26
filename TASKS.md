@@ -1,118 +1,36 @@
 # BNA Tasks
 
-## Completed Today ✅
+## Now
 
-- [x] Switch to Kimi 2.6 model
-- [x] Create desktop shortcut/button for Kimi CLI
-- [x] Check Downloads folder for reference materials
-- [x] Found and parsed CORRECT document: Whole Child Torah Learning Community Master Document
-- [x] Received website prompt for Bnei Nevi'im Academy
-- [x] Received and securely stored Telegram bot token
-- [x] Received domain: bneineviimacademy.org
-- [x] Received updated Vision & Mission from operator
-- [x] **BUILT WEBSITE** - Complete bilingual landing page at `public/index.html`
-- [x] **Operations UI** - Professional task manager with auth
-- [x] **Signup form** - Payment method selection (Cash/Green Invoice)
-- [x] **GHL client library** - Contact CRUD, custom fields, tags
-- [x] **Server.js** - Express with Railway Postgres, Telegram, GHL sync
-- [x] **Retroactive sync script** - `scripts/sync-signups-to-ghl.js`
-- [x] **Railway env vars** - All 9 variables pasted
-- [x] **Task Pipeline System** - Holy Flow-inspired (`src/lib/bna/task-pipeline.ts`)
-- [x] **Database Migration** - BNA tables with pipeline stages
-- [x] **Telegram Bot** - Buttons-based, no slash commands
+- [ ] Redeploy Railway so the fixed operations login/session flow goes live
+- [ ] Apply the signup schema migration so `/api/submit` and billing endpoints stop failing
+- [ ] Re-test end-to-end signup -> DB -> GHL sync after the schema fix
+- [x] Align app-side AI config to `kimi-k2.6`
+- [x] Set up the Telegram -> local Kimi CLI bridge into this repo brain
 
-## Now (Next Up)
+## Next
 
-- [ ] **Fix GHL API** - Token needs location access enabled in GHL dashboard
-- [ ] **Apply DB Migration** - Run `supabase-migration-003-bna-tasks.sql`
-- [ ] **Update Operations Dashboard** - Pipeline UI with stage columns
-- [ ] **Deploy Telegram Webhook** - Connect to Railway
-- [ ] **CLI Bridge** - Route Telegram messages to terminal
-- [ ] **Sync 4 Existing Signups** - Once GHL API works
-- [ ] **Green Invoice Webhook** - Configure in Green Invoice dashboard
+- [ ] Clean out stale family-accountability docs, prompts, and dead code paths
+- [ ] Decide whether the long-term runtime stays Express or moves fully to Next
+- [ ] Rebuild the operations dashboard against one canonical API surface
+- [ ] Add smoke tests for login, task APIs, signup submit, and GHL sync
+- [ ] Configure Green Invoice webhook verification and payment reconciliation
 
-## Blocked ⏳
+## Blockers
 
-### GHL API 403 Error
-**Problem:** Token works but "does not have access to this location"
-**Solution:** Operator needs to enable PIT token for location `IIofSrquLHvNxc8zrpka` in GHL
-**Steps:**
-1. Log into GHL
-2. Settings → API Credentials → Private Integration Token
-3. Make sure toggle is ON for the location
+- [ ] Railway has to be redeployed before the login fix is live on the hosted app
+- [ ] Signup flow still depends on a mismatched `signups` table schema
+- [ ] Voice/photo intake is still not wired in the local Telegram -> Kimi bridge
 
-## Holy Flow Task Pipeline
+## Recent Wins
 
-### Pipeline Stages
-1. **Inbox** - Raw captures from rambles/Telegram
-2. **Triage** - Classified, needs prioritization
-3. **Planned** - Steps defined
-4. **In Progress** - Active work
-5. **Waiting** - Blocked/external dependency
-6. **Review** - Done, needs verification
-7. **Done** - Complete
+- [x] Found and fixed the GHL auth issue in code by switching to the current HighLevel PIT API
+- [x] Found and fixed the broken operations login/session flow in local code
+- [x] Confirmed local Kimi CLI is configured for `kimi-k2.6`
+- [x] Created a repo-level pending-work convention using `tasks-pending/*.md`
+- [x] Local Telegram bot now routes directly to local Kimi CLI on `kimi-k2.6`
 
-### Task Categories
-- accounting, marketing, communications, operations
-- parent_onboarding, student_coaching
-- ghl_crm, billing, legal_compliance, facilities, staffing
+## Read Next
 
-### Ramble Protocol
-- Capture raw text/voice
-- Auto-parse for: urgency, category, steps, entities
-- Create task in Inbox
-- Present for operator confirmation
-
-## Railway Environment Variables (Pasted ✅)
-
-```
-DATABASE_URL=postgresql://...
-PAYMENT_LINK=https://mrng.to/r9DSZhhWE9
-APP_URL=https://bneineviimacademy.org
-GHL_PIT_TOKEN=pit-08830ae3-faed-432a-a02a-44c63b170a67
-GHL_LOCATION_ID=IIofSrquLHvNxc8zrpka
-TELEGRAM_BOT_TOKEN=8734047681:AAFzeQEYnPjKtnt6v5v3FDZld6IhVWWGkk4
-TELEGRAM_CHAT_ID_SHLOIMIE=8202155026
-OPS_USERNAME=SHLOIMIE
-OPS_PASSWORD=BNA613!
-```
-
-## Telegram Bot Features
-
-### Buttons (No Slash Commands)
-- 📥 Inbox - View inbox tasks
-- 🔴 Urgent - View urgent/today tasks
-- 📊 Pipeline - Stage-based view
-- ➕ Quick Add - Ramble input mode
-- 💰 Billing - Billing dashboard
-- 👨‍👩‍👧‍👦 Signups - Recent signups
-- 🌐 Open Dashboard - Link to Operations
-
-### Natural Language
-Just type or voice message:
-- "Need to call Cohen about payment"
-- "Urgent: Fix website contact form"
-- "Today: Send parent handbook to new family"
-
-## Next Actions
-
-**Operator needs to:**
-1. ✅ Create Railway account - DONE
-2. ✅ Paste env vars - DONE
-3. 🔄 Fix GHL token location access - IN PROGRESS
-4. ⏳ Configure Green Invoice webhook - PENDING
-
-**I'll handle:**
-1. Apply database migration
-2. Update Operations dashboard with pipeline UI
-3. Deploy Telegram webhook
-4. Set up CLI bridge
-5. Sync existing signups once GHL works
-
-## Brand Memory Kit (Pending)
-
-Create `BRAND.md` from Master Document with:
-- Quick-reference talking points
-- Key phrases for marketing
-- Non-negotiables checklist
-- Visual brand guidelines
+- `tasks-pending/2026-05-26-login-ghl-audit.md`
+- `memory/2026-05-26.md`

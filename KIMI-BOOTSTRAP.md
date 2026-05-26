@@ -9,7 +9,9 @@ First, read these files before taking action:
 - AGENTS.md
 - MEMORY.md
 - TASKS.md
+- tasks-pending/2026-05-26-login-ghl-audit.md
 - PROJECT-NOTES.md
+- memory/2026-05-26.md
 - memory/2026-05-24.md
 
 This repository is being repurposed from an older family-accountability app
@@ -26,12 +28,11 @@ Operating rules:
   future sessions.
 
 Current mission:
-1. Audit the repo and identify the family-specific assumptions that must be
-   replaced for BNA.
-2. Propose a minimal BNA memory and data architecture that fits this repo.
-3. Build the first pass of the Telegram-to-local-agent bridge plan so Telegram
-   can talk to the same repo brain as the terminal.
-4. Keep changes structured and incremental.
+1. Resume from the pending-work brief in `tasks-pending/2026-05-26-login-ghl-audit.md`.
+2. Finish the hosted login/session repair by validating and redeploying the fix.
+3. Fix the `signups` schema mismatch so signup and billing flows work again.
+4. Keep the repo memory clean by updating `TASKS.md` and today's memory file as
+   work progresses.
 
 Before making major edits, summarize:
 - what you found
