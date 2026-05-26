@@ -551,6 +551,98 @@ app.patch('/api/bna/tasks/:id', requireAdmin, async (req, res) => {
   }
 });
 
+// Database migration endpoint
+app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
+  const MIGRATION_SQL = `
+    DROP TABLE IF EXISTS bna_payment_log CASCADE;
+    DROP TABLE IF EXISTS bna_tasks CASCADE;
+    DROP TABLE IF EXISTS signups CASCADE;
+    
+    CREATE TABLE signups (
+      id SERIAL PRIMARY KEY,
+      parent_name TEXT NOT NULL,
+      parent_email TEXT NOT NULL,
+      parent_phone TEXT,
+      student_name TEXT NOT NULL,
+      student_age INTEGER,
+      student_grade TEXT,
+      previous_school TEXT,
+      reason_applying TEXT,
+      special_needs TEXT,
+      payment_method TEXT DEFAULT 'green_invoice',
+      payment_status TEXT DEFAULT 'pending',
+      payment_amount DECIMAL(10,2),
+      payment_currency TEXT DEFAULT 'ILS',
+      green_invoice_id TEXT,
+      cash_receipt_photo_url TEXT,
+      cash_received_at TIMESTAMP,
+      cash_notes TEXT,
+      ghl_parent_contact_id TEXT,
+      ghl_student_contact_id TEXT,
+      ghl_synced_at TIMESTAMP,
+      ghl_sync_error TEXT,
+      status TEXT DEFAULT 'new',
+      tags TEXT[] DEFAULT '{}',
+      notes TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    
+    CREATE TABLE bna_tasks (
+      id SERIAL PRIMARY KEY,
+      title TEXT NOT NULL,
+      notes TEXT,
+      stage TEXT DEFAULT 'inbox' CHECK (stage IN ('inbox', 'clarify', 'plan', 'execute', 'review', 'complete', 'archive')),
+      category TEXT DEFAULT 'operations' CHECK (category IN ('admin', 'marketing', 'parent_coaching', 'student_operations', 'finance', 'legal', 'communications', 'operations')),
+      urgency TEXT DEFAULT 'this_week' CHECK (urgency IN ('urgent', 'today', 'this_week', 'low')),
+      energy_required TEXT CHECK (energy_required IN ('high', 'medium', 'low')),
+      estimated_minutes INTEGER,
+      due_date DATE,
+      planned_at TIMESTAMP,
+      started_at TIMESTAMP,
+      completed_at TIMESTAMP,
+      archived_at TIMESTAMP,
+      source TEXT DEFAULT 'manual',
+      source_context TEXT,
+      ai_parsed JSONB,
+      parent_task_id INTEGER REFERENCES bna_tasks(id),
+      related_contact_email TEXT,
+      related_signup_id INTEGER,
+      created_by TEXT DEFAULT 'system',
+      assigned_to TEXT,
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    
+    CREATE TABLE bna_payment_log (
+      id SERIAL PRIMARY KEY,
+      signup_id INTEGER REFERENCES signups(id) ON DELETE CASCADE,
+      payment_type TEXT DEFAULT 'registration',
+      amount DECIMAL(10,2) NOT NULL,
+      currency TEXT DEFAULT 'ILS',
+      method TEXT,
+      green_invoice_id TEXT,
+      green_invoice_url TEXT,
+      receipt_photo_url TEXT,
+      received_by TEXT,
+      received_at TIMESTAMP,
+      notes TEXT,
+      status TEXT DEFAULT 'completed',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+    
+    INSERT INTO bna_tasks (title, stage, category, urgency, source) 
+    VALUES ('Welcome to BNA Holy Flow! Drag me to different stages.', 'inbox', 'operations', 'this_week', 'manual');
+  `;
+  
+  try {
+    await pool.query(MIGRATION_SQL);
+    res.json({ success: true, message: 'Database migrated to BNA schema!' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // Operations dashboard
 app.get('/operations', requireAdmin, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'operations.html'));
