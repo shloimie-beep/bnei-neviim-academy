@@ -4,10 +4,53 @@
  */
 
 import { Pool } from 'pg';
+import fs from 'fs';
 
-const GHL_PIT_TOKEN = process.env.GHL_PIT_TOKEN || 'pit-797bae84-ea3c-4c03-a326-304459713369';
-const GHL_LOCATION_ID = process.env.GHL_LOCATION_ID || 'IIofSrquLHvNxc8zrpka';
-const GHL_API_BASE = 'https://rest.gohighlevel.com/v1';
+function parseEnvBlock(rawValue) {
+  if (!rawValue) return {};
+
+  return rawValue
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .reduce((acc, line) => {
+      const separatorIndex = line.indexOf('=');
+      if (separatorIndex <= 0) return acc;
+      acc[line.slice(0, separatorIndex)] = line.slice(separatorIndex + 1).trim();
+      return acc;
+    }, {});
+}
+
+function loadEnvBlockFile(filePath) {
+  try {
+    return parseEnvBlock(fs.readFileSync(filePath, 'utf8'));
+  } catch {
+    return {};
+  }
+}
+
+const localGhlSecrets = loadEnvBlockFile(new URL('../.secrets/ghl-pit-token.txt', import.meta.url));
+const inlineGhlSecrets = parseEnvBlock(process.env.GHL_PIT_TOKEN || '');
+
+function pickRawValue(envValue, inlineValue, fileValue) {
+  if (envValue && !envValue.includes('\n') && !envValue.startsWith('GHL_PIT_TOKEN=')) {
+    return envValue.trim();
+  }
+  return inlineValue || fileValue || '';
+}
+
+const GHL_PIT_TOKEN = pickRawValue(
+  process.env.GHL_PIT_TOKEN,
+  inlineGhlSecrets.GHL_PIT_TOKEN,
+  localGhlSecrets.GHL_PIT_TOKEN
+);
+const GHL_LOCATION_ID =
+  process.env.GHL_LOCATION_ID ||
+  inlineGhlSecrets.GHL_LOCATION_ID ||
+  localGhlSecrets.GHL_LOCATION_ID ||
+  'IIofSrquLHvNxc8zrpka';
+const GHL_API_BASE = 'https://services.leadconnectorhq.com';
+const GHL_API_VERSION = '2021-07-28';
 const DATABASE_URL = process.env.DATABASE_URL;
 
 const pool = new Pool({
@@ -22,7 +65,9 @@ async function ghlRequest(endpoint, options = {}) {
     ...options,
     headers: {
       'Authorization': `Bearer ${GHL_PIT_TOKEN}`,
+      'Accept': 'application/json',
       'Content-Type': 'application/json',
+      'Version': GHL_API_VERSION,
       ...options.headers,
     },
   });
@@ -43,25 +88,43 @@ function splitName(fullName) {
 }
 
 async function searchGhlContact(email, phone) {
-  if (email) {
-    try {
-      const result = await ghlRequest(`/contacts/lookup?email=${encodeURIComponent(email)}`);
-      if (result?.contacts?.length > 0) return result.contacts[0];
-    } catch (err) {
-      console.log('Email lookup failed:', err.message);
-    }
-  }
-  
+  const searches = [];
+  if (email) searches.push({ query: email, type: 'email' });
   if (phone) {
+    searches.push({ query: phone, type: 'phone' });
+    searches.push({ query: phone.replace(/\D/g, ''), type: 'phone' });
+  }
+
+  for (const search of searches) {
+    if (!search.query) continue;
+
     try {
-      const cleanPhone = phone.replace(/\D/g, '');
-      const result = await ghlRequest(`/contacts/lookup?phone=${encodeURIComponent(cleanPhone)}`);
-      if (result?.contacts?.length > 0) return result.contacts[0];
+      const result = await ghlRequest(
+        `/contacts/?locationId=${encodeURIComponent(GHL_LOCATION_ID)}&query=${encodeURIComponent(search.query)}&limit=20`
+      );
+      const contacts = result?.contacts || [];
+
+      if (search.type === 'email') {
+        const exactEmail = contacts.find(
+          (contact) => (contact.email || '').toLowerCase() === email.toLowerCase()
+        );
+        if (exactEmail) return exactEmail;
+      }
+
+      if (search.type === 'phone') {
+        const exactPhone = contacts.find((contact) => {
+          const digits = (contact.phone || '').replace(/\D/g, '');
+          return digits && digits === phone.replace(/\D/g, '');
+        });
+        if (exactPhone) return exactPhone;
+      }
+
+      if (contacts.length > 0) return contacts[0];
     } catch (err) {
-      console.log('Phone lookup failed:', err.message);
+      console.log(`${search.type} lookup failed:`, err.message);
     }
   }
-  
+
   return null;
 }
 
@@ -93,7 +156,7 @@ async function addGhlTags(contactId, tags) {
 
 async function getCustomFields() {
   try {
-    const result = await ghlRequest('/custom-fields');
+    const result = await ghlRequest(`/locations/${GHL_LOCATION_ID}/customFields`);
     const fieldMap = {};
     for (const field of result.customFields || []) {
       fieldMap[field.fieldKey] = field.id;

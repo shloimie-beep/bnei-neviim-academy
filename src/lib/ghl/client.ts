@@ -3,15 +3,36 @@
  * Uses Private Integration Token (PIT) for authentication
  */
 
-const GHL_API_BASE = 'https://rest.gohighlevel.com/v1';
+const GHL_API_BASE = 'https://services.leadconnectorhq.com';
+const GHL_API_VERSION = '2021-07-28';
 const LOCATION_ID = process.env.GHL_LOCATION_ID || 'IIofSrquLHvNxc8zrpka';
 
-// Get token from environment or secrets file
+function parseEnvBlock(rawValue?: string): Record<string, string> {
+  if (!rawValue) return {};
+
+  return rawValue
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .reduce<Record<string, string>>((acc, line) => {
+      const separatorIndex = line.indexOf('=');
+      if (separatorIndex <= 0) return acc;
+      acc[line.slice(0, separatorIndex)] = line.slice(separatorIndex + 1).trim();
+      return acc;
+    }, {});
+}
+
+// Get token from environment
 function getGhlToken(): string {
-  const token = process.env.GHL_PIT_TOKEN;
+  const rawToken = process.env.GHL_PIT_TOKEN;
+  const parsed = parseEnvBlock(rawToken);
+  const token =
+    rawToken && !rawToken.includes('\n') && !rawToken.startsWith('GHL_PIT_TOKEN=')
+      ? rawToken.trim()
+      : parsed.GHL_PIT_TOKEN;
+
   if (token) return token;
-  
-  // Fallback - in production this should be set via env var
+
   throw new Error('GHL_PIT_TOKEN not configured');
 }
 
@@ -43,7 +64,9 @@ async function ghlRequest(endpoint: string, options: RequestInit = {}): Promise<
     ...options,
     headers: {
       'Authorization': `Bearer ${token}`,
+      'Accept': 'application/json',
       'Content-Type': 'application/json',
+      'Version': GHL_API_VERSION,
       ...options.headers,
     },
   });
@@ -66,7 +89,7 @@ export async function getCustomFieldId(fieldKey: string): Promise<string | null>
   if (!customFieldsCache) {
     customFieldsCache = new Map();
     try {
-      const fields = await ghlRequest('/custom-fields') as { customFields: GhlCustomField[] };
+      const fields = await ghlRequest(`/locations/${LOCATION_ID}/customFields`) as { customFields: GhlCustomField[] };
       for (const field of fields.customFields || []) {
         customFieldsCache.set(field.fieldKey, field.id);
         customFieldsCache.set(field.name.toLowerCase(), field.id);
@@ -87,7 +110,11 @@ export async function searchContact(email?: string, phone?: string): Promise<Ghl
   // Try email first
   if (email) {
     try {
-      const result = await ghlRequest(`/contacts/lookup?email=${encodeURIComponent(email)}`);
+      const result = await ghlRequest(`/contacts/?locationId=${encodeURIComponent(LOCATION_ID)}&query=${encodeURIComponent(email)}&limit=20`);
+      const exactEmail = (result?.contacts || []).find(
+        (contact: GhlContact) => (contact.email || '').toLowerCase() === email.toLowerCase()
+      );
+      if (exactEmail) return exactEmail;
       if (result?.contacts?.length > 0) return result.contacts[0];
     } catch (err) {
       console.log('GHL email lookup failed:', err);
@@ -98,7 +125,12 @@ export async function searchContact(email?: string, phone?: string): Promise<Ghl
   if (phone) {
     try {
       const cleanPhone = phone.replace(/\D/g, '');
-      const result = await ghlRequest(`/contacts/lookup?phone=${encodeURIComponent(cleanPhone)}`);
+      const result = await ghlRequest(`/contacts/?locationId=${encodeURIComponent(LOCATION_ID)}&query=${encodeURIComponent(cleanPhone)}&limit=20`);
+      const exactPhone = (result?.contacts || []).find((contact: GhlContact) => {
+        const digits = (contact.phone || '').replace(/\D/g, '');
+        return digits && digits === cleanPhone;
+      });
+      if (exactPhone) return exactPhone;
       if (result?.contacts?.length > 0) return result.contacts[0];
     } catch (err) {
       console.log('GHL phone lookup failed:', err);

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BNA Operations</title>
+    <title>BNA Operations - Holy Flow Task Manager</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -11,16 +11,16 @@
         
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #f1f5f9;
-            color: #1e293b;
+            background: #0f172a;
+            color: #e2e8f0;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
         }
         
         /* Header */
         .header {
-            background: #0f172a;
-            color: white;
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
             padding: 16px 24px;
             position: sticky;
             top: 0;
@@ -28,7 +28,7 @@
         }
         
         .header-content {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
@@ -38,6 +38,7 @@
         .header h1 {
             font-size: 20px;
             font-weight: 700;
+            color: #f8fafc;
         }
         
         .header p {
@@ -82,285 +83,306 @@
             background: #475569;
         }
         
-        .btn-danger {
-            background: #ef4444;
-            color: white;
-        }
-        
         .btn-sm {
             padding: 6px 12px;
             font-size: 12px;
         }
         
+        /* Navigation Tabs */
+        .nav-tabs {
+            background: #1e293b;
+            border-bottom: 1px solid #334155;
+            padding: 0 24px;
+        }
+        
+        .nav-tabs-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 4px;
+        }
+        
+        .nav-tab {
+            padding: 12px 20px;
+            font-size: 13px;
+            font-weight: 600;
+            color: #94a3b8;
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .nav-tab:hover {
+            color: #e2e8f0;
+        }
+        
+        .nav-tab.active {
+            color: #c9a227;
+            border-bottom-color: #c9a227;
+        }
+        
         /* Container */
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
             padding: 24px;
         }
         
-        /* Summary Cards */
-        .summary-cards {
+        /* Pipeline Board */
+        .pipeline-board {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(7, 1fr);
             gap: 16px;
-            margin-bottom: 24px;
+            overflow-x: auto;
+            padding-bottom: 20px;
         }
         
-        .summary-card {
-            background: white;
+        .pipeline-column {
+            background: #1e293b;
             border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        
-        .summary-card.urgent { border-top: 3px solid #ef4444; }
-        .summary-card.pending { border-top: 3px solid #f59e0b; }
-        .summary-card.today { border-top: 3px solid #3b82f6; }
-        .summary-card.done { border-top: 3px solid #10b981; }
-        
-        .summary-card .number {
-            font-size: 32px;
-            font-weight: 700;
-            color: #0f172a;
-        }
-        
-        .summary-card .label {
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #64748b;
-            margin-top: 4px;
-        }
-        
-        /* Filters */
-        .filters {
-            background: white;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 20px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-        }
-        
-        .filter-row {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 12px;
-        }
-        
-        .filter-row:last-child {
-            margin-bottom: 0;
-        }
-        
-        .search-box {
-            flex: 1;
-            position: relative;
-        }
-        
-        .search-box input {
-            width: 100%;
-            padding: 10px 14px 10px 40px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-        
-        .search-box svg {
-            position: absolute;
-            left: 12px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #94a3b8;
-        }
-        
-        select, input[type="text"], input[type="date"], textarea {
-            padding: 10px 14px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 14px;
-            font-family: inherit;
-        }
-        
-        select:focus, input:focus, textarea:focus {
-            outline: none;
-            border-color: #3b82f6;
-        }
-        
-        .category-pills {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-        
-        .pill {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            border: none;
-            background: #f1f5f9;
-            color: #64748b;
-        }
-        
-        .pill.active {
-            background: #0f172a;
-            color: white;
-        }
-        
-        /* Task List */
-        .task-list {
+            min-width: 200px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            max-height: calc(100vh - 200px);
         }
         
-        .task-card {
-            background: white;
-            border-radius: 12px;
+        .column-header {
             padding: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            border-bottom: 1px solid #334155;
             display: flex;
-            gap: 12px;
-            align-items: flex-start;
+            justify-content: space-between;
+            align-items: center;
         }
         
-        .task-card.done {
-            opacity: 0.7;
-        }
-        
-        .task-checkbox {
-            width: 24px;
-            height: 24px;
-            border: 2px solid #cbd5e1;
-            border-radius: 6px;
+        .column-title {
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            flex-shrink: 0;
-            margin-top: 2px;
+            gap: 8px;
         }
         
-        .task-checkbox.checked {
-            background: #10b981;
-            border-color: #10b981;
-            color: white;
+        .column-count {
+            background: #334155;
+            color: #94a3b8;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
         }
         
-        .task-content {
+        .column-content {
             flex: 1;
-            min-width: 0;
+            overflow-y: auto;
+            padding: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        /* Task Cards */
+        .task-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .task-card:hover {
+            border-color: #c9a227;
+            transform: translateY(-2px);
+        }
+        
+        .task-card.dragging {
+            opacity: 0.5;
         }
         
         .task-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #0f172a;
-            margin-bottom: 6px;
-        }
-        
-        .task-card.done .task-title {
-            text-decoration: line-through;
-        }
-        
-        .task-notes {
             font-size: 13px;
-            color: #64748b;
-            margin-bottom: 10px;
-            line-height: 1.5;
+            font-weight: 600;
+            color: #f8fafc;
+            margin-bottom: 8px;
+            line-height: 1.4;
         }
         
         .task-meta {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-wrap: wrap;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
         }
         
         .badge {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .badge-category-admin { background: #7c3aed; color: white; }
+        .badge-category-marketing { background: #2563eb; color: white; }
+        .badge-category-parent_coaching { background: #059669; color: white; }
+        .badge-category-student_operations { background: #d97706; color: white; }
+        .badge-category-finance { background: #dc2626; color: white; }
+        .badge-category-legal { background: #7c2d12; color: white; }
+        
+        .badge-urgency-urgent { background: #fef2f2; color: #dc2626; }
+        .badge-urgency-today { background: #fffbeb; color: #d97706; }
+        .badge-urgency-this_week { background: #eff6ff; color: #2563eb; }
+        .badge-urgency-low { background: #f1f5f9; color: #64748b; }
+        
+        .badge-energy-high { background: #fecaca; color: #991b1b; }
+        .badge-energy-medium { background: #fde68a; color: #92400e; }
+        .badge-energy-low { background: #bbf7d0; color: #166534; }
+        
+        .task-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 11px;
+            color: #64748b;
+        }
+        
+        .task-source {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        /* Signups & Billing Views */
+        .data-table {
+            background: #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .table-header {
+            display: grid;
+            grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 100px;
+            padding: 16px 20px;
+            background: #0f172a;
+            border-bottom: 1px solid #334155;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #94a3b8;
+        }
+        
+        .table-row {
+            display: grid;
+            grid-template-columns: 2fr 1.5fr 1fr 1fr 1fr 100px;
+            padding: 16px 20px;
+            border-bottom: 1px solid #334155;
+            align-items: center;
+            font-size: 13px;
+        }
+        
+        .table-row:hover {
+            background: #252f47;
+        }
+        
+        .table-row:last-child {
+            border-bottom: none;
+        }
+        
+        .parent-name {
+            font-weight: 600;
+            color: #f8fafc;
+        }
+        
+        .student-name {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        
+        .tag-list {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        
+        .tag {
+            padding: 2px 6px;
+            background: #334155;
+            border-radius: 4px;
+            font-size: 10px;
+            color: #cbd5e1;
+        }
+        
+        .tag.parent { background: #1e40af; }
+        .tag.student { background: #065f46; }
+        .tag.cash { background: #92400e; }
+        
+        /* Payment Status */
+        .payment-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             padding: 4px 10px;
             border-radius: 20px;
             font-size: 11px;
             font-weight: 600;
         }
         
-        .badge-category-accounting { background: #f3e8ff; color: #7c3aed; }
-        .badge-category-marketing { background: #dbeafe; color: #2563eb; }
-        .badge-category-communications { background: #ccfbf1; color: #0d9488; }
-        
-        .badge-urgency-urgent { background: #fef2f2; color: #dc2626; }
-        .badge-urgency-today { background: #fffbeb; color: #d97706; }
-        .badge-urgency-thisweek { background: #eff6ff; color: #2563eb; }
-        .badge-urgency-low { background: #f8fafc; color: #64748b; }
-        
-        .badge-status-pending { background: #fffbeb; color: #b45309; }
-        .badge-status-inprogress { background: #eff6ff; color: #1d4ed8; }
-        .badge-status-waiting { background: #f3e8ff; color: #7c3aed; }
-        .badge-status-done { background: #ecfdf5; color: #059669; }
-        
-        .task-footer {
-            display: flex;
-            gap: 16px;
-            font-size: 12px;
-            color: #94a3b8;
+        .payment-status.paid {
+            background: #065f46;
+            color: #86efac;
         }
         
-        .task-footer span {
-            display: flex;
-            align-items: center;
-            gap: 4px;
+        .payment-status.pending {
+            background: #92400e;
+            color: #fcd34d;
         }
         
-        .task-actions {
-            display: flex;
-            gap: 6px;
+        .payment-status.partial {
+            background: #1e40af;
+            color: #93c5fd;
         }
         
-        .icon-btn {
-            width: 36px;
-            height: 36px;
+        /* Quick Add Ramble */
+        .ramble-box {
+            background: #1e293b;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        
+        .ramble-input {
+            width: 100%;
+            background: #0f172a;
+            border: 1px solid #334155;
             border-radius: 8px;
-            border: none;
-            background: #f1f5f9;
-            color: #64748b;
-            cursor: pointer;
+            padding: 14px;
+            color: #e2e8f0;
+            font-size: 14px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .ramble-input:focus {
+            outline: none;
+            border-color: #c9a227;
+        }
+        
+        .ramble-actions {
             display: flex;
+            justify-content: space-between;
             align-items: center;
-            justify-content: center;
+            margin-top: 12px;
         }
         
-        .icon-btn:hover {
-            background: #e2e8f0;
-        }
-        
-        .icon-btn.danger {
-            background: #fef2f2;
-            color: #ef4444;
-        }
-        
-        .icon-btn.danger:hover {
-            background: #fee2e2;
-        }
-        
-        /* Empty State */
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #94a3b8;
-        }
-        
-        .empty-state svg {
-            margin-bottom: 16px;
-            opacity: 0.5;
-        }
-        
-        .empty-state h3 {
-            font-size: 16px;
+        .ramble-hint {
+            font-size: 12px;
             color: #64748b;
-            margin-bottom: 8px;
         }
         
         /* Modal */
@@ -368,7 +390,7 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.5);
+            background: rgba(0,0,0,0.8);
             z-index: 1000;
             align-items: center;
             justify-content: center;
@@ -380,7 +402,7 @@
         }
         
         .modal {
-            background: white;
+            background: #1e293b;
             border-radius: 16px;
             width: 100%;
             max-width: 500px;
@@ -390,7 +412,7 @@
         
         .modal-header {
             padding: 20px 24px;
-            border-bottom: 1px solid #e2e8f0;
+            border-bottom: 1px solid #334155;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -399,6 +421,7 @@
         .modal-header h2 {
             font-size: 18px;
             font-weight: 700;
+            color: #f8fafc;
         }
         
         .modal-close {
@@ -419,9 +442,11 @@
         
         .form-group label {
             display: block;
-            font-size: 13px;
+            font-size: 12px;
             font-weight: 600;
-            color: #374151;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
             margin-bottom: 6px;
         }
         
@@ -429,6 +454,20 @@
         .form-group select,
         .form-group textarea {
             width: 100%;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #e2e8f0;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #c9a227;
         }
         
         .form-group textarea {
@@ -452,30 +491,30 @@
             flex: 1;
             min-width: 80px;
             padding: 10px;
-            border: 1px solid #e2e8f0;
+            border: 1px solid #334155;
             border-radius: 8px;
-            background: white;
+            background: #0f172a;
             font-size: 13px;
             font-weight: 500;
-            color: #64748b;
+            color: #94a3b8;
             cursor: pointer;
             transition: all 0.2s;
         }
         
         .option-btn:hover {
-            border-color: #3b82f6;
+            border-color: #c9a227;
         }
         
         .option-btn.active {
-            border-color: #0f172a;
-            background: #f8fafc;
-            color: #0f172a;
+            border-color: #c9a227;
+            background: rgba(201, 162, 39, 0.1);
+            color: #c9a227;
             font-weight: 600;
         }
         
         .modal-footer {
             padding: 16px 24px;
-            border-top: 1px solid #e2e8f0;
+            border-top: 1px solid #334155;
             display: flex;
             gap: 12px;
         }
@@ -493,64 +532,136 @@
             color: #94a3b8;
         }
         
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #64748b;
+        }
+        
         /* Responsive */
+        @media (max-width: 1200px) {
+            .pipeline-board {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+        
         @media (max-width: 768px) {
-            .summary-cards {
+            .pipeline-board {
                 grid-template-columns: repeat(2, 1fr);
             }
             
-            .filter-row {
-                flex-direction: column;
-            }
-            
-            .task-card {
-                flex-direction: column;
-            }
-            
-            .task-actions {
-                width: 100%;
-                justify-content: flex-end;
-            }
-            
-            .form-row {
+            .table-header,
+            .table-row {
                 grid-template-columns: 1fr;
+                gap: 8px;
+            }
+            
+            .table-header {
+                display: none;
+            }
+            
+            .table-row {
+                padding: 16px;
+                border: 1px solid #334155;
+                border-radius: 8px;
+                margin-bottom: 8px;
             }
         }
     </style>
 </head>
 <body>
     <div id="app">
-        <div class="loading">Loading...</div>
+        <div class="loading">Loading Holy Flow...</div>
     </div>
 
     <script>
         // API Client
         const api = {
+            authHeader() {
+                const creds = btoa(`${OPS_USERNAME}:${OPS_PASSWORD}`);
+                return 'Basic ' + creds;
+            },
+            
             async request(method, path, body) {
-                const sessionId = localStorage.getItem('bna_ops_session');
                 const options = {
                     method,
-                    headers: { 'Authorization': 'Bearer ' + sessionId, 'Content-Type': 'application/json' }
+                    headers: { 
+                        'Authorization': this.authHeader(), 
+                        'Content-Type': 'application/json' 
+                    }
                 };
                 if (body) options.body = JSON.stringify(body);
-                const response = await fetch('/api/operations' + path, options);
+                
+                const response = await fetch('/api/bna' + path, options);
                 if (response.status === 401) {
-                    localStorage.removeItem('bna_ops_session');
-                    window.location.href = '/operations/login';
+                    alert('Session expired');
                     return null;
                 }
                 return response.json();
             },
-            getTasks() { return this.request('GET', '/tasks'); },
+            
+            getTasks(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.stage) params.set('stage', filters.stage);
+                if (filters.category) params.set('category', filters.category);
+                if (filters.urgency) params.set('urgency', filters.urgency);
+                return this.request('GET', '/tasks?' + params.toString());
+            },
+            
             createTask(task) { return this.request('POST', '/tasks', task); },
-            updateTask(id, task) { return this.request('PUT', '/tasks/' + id, task); },
-            deleteTask(id) { return this.request('DELETE', '/tasks/' + id); }
+            createFromRamble(ramble) { return this.request('POST', '/tasks', { ramble, source: 'web', created_by: 'operator' }); },
+            updateTask(id, task) { return this.request('PATCH', '/tasks/' + id, task); },
+            moveTask(id, stage) { return this.request('PATCH', '/tasks/' + id, { stage }); },
+            deleteTask(id) { return this.request('DELETE', '/tasks/' + id); },
+            
+            getSignups(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.status) params.set('status', filters.status);
+                if (filters.payment_status) params.set('payment_status', filters.payment_status);
+                return this.request('GET', '/signups?' + params.toString());
+            },
+            
+            createSignup(signup) { return this.request('POST', '/signups', signup); },
+            updateSignup(id, updates) { return this.request('PATCH', '/signups/' + id, updates); },
+            
+            getPayments(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.signup_id) params.set('signup_id', filters.signup_id);
+                return this.request('GET', '/payments?' + params.toString());
+            },
+            
+            createPayment(payment) { return this.request('POST', '/payments', payment); }
         };
 
         // State
         let tasks = [];
-        let filters = { category: 'All', urgency: 'All', status: 'All', search: '' };
+        let signups = [];
+        let payments = [];
+        let currentView = 'pipeline';
         let editingTask = null;
+        
+        // Config
+        const PIPELINE_STAGES = [
+            { id: 'inbox', label: 'Inbox', emoji: '📥' },
+            { id: 'clarify', label: 'Clarify', emoji: '❓' },
+            { id: 'plan', label: 'Plan', emoji: '📋' },
+            { id: 'execute', label: 'Execute', emoji: '⚡' },
+            { id: 'review', label: 'Review', emoji: '👀' },
+            { id: 'complete', label: 'Complete', emoji: '✅' },
+            { id: 'archive', label: 'Archive', emoji: '📦' }
+        ];
+        
+        const CATEGORIES = [
+            { id: 'admin', label: 'Admin', color: '#7c3aed' },
+            { id: 'marketing', label: 'Marketing', color: '#2563eb' },
+            { id: 'parent_coaching', label: 'Parent Coaching', color: '#059669' },
+            { id: 'student_operations', label: 'Student Ops', color: '#d97706' },
+            { id: 'finance', label: 'Finance', color: '#dc2626' },
+            { id: 'legal', label: 'Legal', color: '#7c2d12' },
+            { id: 'communications', label: 'Comms', color: '#0891b2' },
+            { id: 'operations', label: 'Operations', color: '#475569' }
+        ];
 
         // Render functions
         function renderHeader() {
@@ -558,176 +669,240 @@
                 <header class="header">
                     <div class="header-content">
                         <div>
-                            <h1>BNA Operations</h1>
-                            <p>Task management for the academy</p>
+                            <h1>⚡ BNA Holy Flow</h1>
+                            <p>Task Pipeline & Operations</p>
                         </div>
                         <div class="header-actions">
-                            <button class="btn btn-primary" onclick="openModal()">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
-                                New Task
+                            <button class="btn btn-primary" onclick="openTaskModal()">
+                                <span>+</span> New Task
                             </button>
-                            <button class="btn btn-secondary" onclick="logout()">
-                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                            <button class="btn btn-secondary" onclick="openSignupModal()">
+                                <span>+</span> New Signup
                             </button>
                         </div>
                     </div>
                 </header>
+                
+                <nav class="nav-tabs">
+                    <div class="nav-tabs-content">
+                        <button class="nav-tab ${currentView === 'pipeline' ? 'active' : ''}" onclick="switchView('pipeline')">
+                            📊 Pipeline
+                        </button>
+                        <button class="nav-tab ${currentView === 'signups' ? 'active' : ''}" onclick="switchView('signups')">
+                            👨‍👩‍👧‍👦 Signups
+                        </button>
+                        <button class="nav-tab ${currentView === 'billing' ? 'active' : ''}" onclick="switchView('billing')">
+                            💰 Billing
+                        </button>
+                        <button class="nav-tab ${currentView === 'ramble' ? 'active' : ''}" onclick="switchView('ramble')">
+                            🎤 Ramble
+                        </button>
+                    </div>
+                </nav>
             `;
         }
 
-        function renderSummaryCards() {
-            const counts = {
-                pending: tasks.filter(t => t.status === 'Pending').length,
-                urgent: tasks.filter(t => t.urgency === 'Urgent' && t.status !== 'Done').length,
-                today: tasks.filter(t => {
-                    if (t.status === 'Done') return false;
-                    const today = new Date().toISOString().split('T')[0];
-                    return t.dueDate === today || t.urgency === 'Today';
-                }).length,
-                done: tasks.filter(t => t.status === 'Done').length
-            };
-
-            return `
-                <div class="summary-cards">
-                    <div class="summary-card pending">
-                        <div class="number">${counts.pending}</div>
-                        <div class="label">Pending</div>
-                    </div>
-                    <div class="summary-card urgent">
-                        <div class="number">${counts.urgent}</div>
-                        <div class="label">Urgent</div>
-                    </div>
-                    <div class="summary-card today">
-                        <div class="number">${counts.today}</div>
-                        <div class="label">Due Today</div>
-                    </div>
-                    <div class="summary-card done">
-                        <div class="number">${counts.done}</div>
-                        <div class="label">Completed</div>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderFilters() {
-            const categories = ['All', 'Accounting', 'Marketing', 'Communications'];
-            return `
-                <div class="filters">
-                    <div class="filter-row">
-                        <div class="search-box">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-                            <input type="text" placeholder="Search tasks..." value="${filters.search}" oninput="updateFilter('search', this.value)">
-                        </div>
-                    </div>
-                    <div class="filter-row">
-                        <div class="category-pills">
-                            ${categories.map(cat => `
-                                <button class="pill ${filters.category === cat ? 'active' : ''}" onclick="updateFilter('category', '${cat}')">${cat}</button>
-                            `).join('')}
-                        </div>
-                    </div>
-                    <div class="filter-row">
-                        <select onchange="updateFilter('urgency', this.value)">
-                            <option value="All" ${filters.urgency === 'All' ? 'selected' : ''}>All urgency</option>
-                            <option value="Urgent" ${filters.urgency === 'Urgent' ? 'selected' : ''}>Urgent</option>
-                            <option value="Today" ${filters.urgency === 'Today' ? 'selected' : ''}>Today</option>
-                            <option value="This week" ${filters.urgency === 'This week' ? 'selected' : ''}>This week</option>
-                            <option value="Low priority" ${filters.urgency === 'Low priority' ? 'selected' : ''}>Low priority</option>
-                        </select>
-                        <select onchange="updateFilter('status', this.value)">
-                            <option value="All" ${filters.status === 'All' ? 'selected' : ''}>All statuses</option>
-                            <option value="Pending" ${filters.status === 'Pending' ? 'selected' : ''}>Pending</option>
-                            <option value="In progress" ${filters.status === 'In progress' ? 'selected' : ''}>In progress</option>
-                            <option value="Waiting on someone" ${filters.status === 'Waiting on someone' ? 'selected' : ''}>Waiting on someone</option>
-                            <option value="Done" ${filters.status === 'Done' ? 'selected' : ''}>Done</option>
-                        </select>
-                    </div>
-                </div>
-            `;
-        }
-
-        function renderTaskList() {
-            const filtered = tasks.filter(t => {
-                if (filters.category !== 'All' && t.category !== filters.category) return false;
-                if (filters.urgency !== 'All' && t.urgency !== filters.urgency) return false;
-                if (filters.status !== 'All' && t.status !== filters.status) return false;
-                if (filters.search) {
-                    const s = filters.search.toLowerCase();
-                    return t.title.toLowerCase().includes(s) || (t.notes || '').toLowerCase().includes(s);
-                }
-                return true;
-            }).sort((a, b) => {
-                if (a.status === 'Done' && b.status !== 'Done') return 1;
-                if (a.status !== 'Done' && b.status === 'Done') return -1;
-                const order = { 'Urgent': 0, 'Today': 1, 'This week': 2, 'Low priority': 3 };
-                return order[a.urgency] - order[b.urgency];
+        function renderPipeline() {
+            const tasksByStage = {};
+            PIPELINE_STAGES.forEach(s => tasksByStage[s.id] = []);
+            tasks.forEach(t => {
+                if (tasksByStage[t.stage]) tasksByStage[t.stage].push(t);
             });
-
-            if (filtered.length === 0) {
-                return `
-                    <div class="empty-state">
-                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-6l-2 3h-6l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
-                        <h3>No tasks found</h3>
-                        <p>Create your first task to get started</p>
-                    </div>
-                `;
-            }
-
+            
             return `
-                <div class="task-list">
-                    ${filtered.map(task => renderTaskCard(task)).join('')}
+                <div class="container">
+                    <div class="pipeline-board">
+                        ${PIPELINE_STAGES.map(stage => `
+                            <div class="pipeline-column" data-stage="${stage.id}">
+                                <div class="column-header">
+                                    <div class="column-title">
+                                        <span>${stage.emoji}</span>
+                                        ${stage.label}
+                                    </div>
+                                    <span class="column-count">${tasksByStage[stage.id].length}</span>
+                                </div>
+                                <div class="column-content" ondrop="dropTask(event, '${stage.id}')" ondragover="allowDrop(event)">
+                                    ${tasksByStage[stage.id].map(task => renderTaskCard(task)).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
                 </div>
             `;
         }
 
         function renderTaskCard(task) {
-            const isDone = task.status === 'Done';
-            const categoryClass = 'badge-category-' + task.category.toLowerCase().replace(' ', '');
-            const urgencyClass = 'badge-urgency-' + task.urgency.toLowerCase().replace(' ', '').replace('priority', '');
-            const statusClass = 'badge-status-' + task.status.toLowerCase().replace(' ', '').replace('on', '');
+            const category = CATEGORIES.find(c => c.id === task.category) || CATEGORIES[7];
             
-            const formatDate = d => d ? new Date(d).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' }) : '';
-
             return `
-                <div class="task-card ${isDone ? 'done' : ''}">
-                    <div class="task-checkbox ${isDone ? 'checked' : ''}" onclick="toggleTask(${task.id})">
-                        ${isDone ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+                <div class="task-card" draggable="true" ondragstart="dragTask(event, '${task.id}')" onclick="editTask('${task.id}')">
+                    <div class="task-title">${escapeHtml(task.title)}</div>
+                    <div class="task-meta">
+                        <span class="badge badge-category-${task.category}">${category.label}</span>
+                        <span class="badge badge-urgency-${task.urgency}">${task.urgency.replace('_', ' ')}</span>
+                        ${task.energy_required ? `<span class="badge badge-energy-${task.energy_required}">${task.energy_required}</span>` : ''}
                     </div>
-                    <div class="task-content">
-                        <div class="task-title">${escapeHtml(task.title)}</div>
-                        ${task.notes ? `<div class="task-notes">${escapeHtml(task.notes)}</div>` : ''}
-                        <div class="task-meta">
-                            <span class="badge ${categoryClass}">${task.category}</span>
-                            <span class="badge ${urgencyClass}">${task.urgency}</span>
-                            <span class="badge ${statusClass}">${task.status}</span>
-                        </div>
-                        <div class="task-footer">
-                            ${task.dueDate ? `<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${formatDate(task.dueDate)}</span>` : ''}
-                            ${task.owner ? `<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> ${escapeHtml(task.owner)}</span>` : ''}
-                        </div>
-                    </div>
-                    <div class="task-actions">
-                        <button class="icon-btn" onclick="editTask(${task.id})">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
-                        </button>
-                        <button class="icon-btn danger" onclick="deleteTask(${task.id})">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                        </button>
+                    <div class="task-footer">
+                        <span class="task-source">
+                            ${task.source === 'telegram' ? '📱' : task.source === 'ramble' ? '🎤' : '✏️'}
+                            ${task.estimated_minutes ? `· ${task.estimated_minutes}m` : ''}
+                        </span>
+                        <span>${formatDate(task.due_date)}</span>
                     </div>
                 </div>
             `;
         }
 
-        function renderModal() {
+        function renderSignups() {
+            return `
+                <div class="container">
+                    <div class="data-table">
+                        <div class="table-header">
+                            <div>Parent / Student</div>
+                            <div>Contact</div>
+                            <div>Tags</div>
+                            <div>Status</div>
+                            <div>Payment</div>
+                            <div>Actions</div>
+                        </div>
+                        ${signups.length === 0 ? `
+                            <div class="empty-state">
+                                <p>No signups yet. Create one with the "New Signup" button.</p>
+                            </div>
+                        ` : signups.map(s => `
+                            <div class="table-row">
+                                <div>
+                                    <div class="parent-name">${escapeHtml(s.parent_name)}</div>
+                                    <div class="student-name">${escapeHtml(s.student_name)}</div>
+                                </div>
+                                <div>
+                                    <div>${escapeHtml(s.parent_email)}</div>
+                                    <div class="student-name">${escapeHtml(s.parent_phone || '')}</div>
+                                </div>
+                                <div>
+                                    <div class="tag-list">
+                                        ${(s.tags || []).map(t => `<span class="tag ${t}">${t}</span>`).join('')}
+                                    </div>
+                                </div>
+                                <div>${s.status}</div>
+                                <div>
+                                    <span class="payment-status ${s.payment_status}">
+                                        ${s.payment_status === 'paid' ? '✓' : s.payment_status === 'partial' ? '◐' : '○'}
+                                        ${s.payment_status}
+                                    </span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-secondary" onclick="editSignup('${s.id}')">Edit</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderBilling() {
+            const pendingSignups = signups.filter(s => s.payment_status !== 'paid');
+            
+            return `
+                <div class="container">
+                    <h2 style="margin-bottom: 20px; font-size: 18px;">💰 Pending Payments (${pendingSignups.length})</h2>
+                    
+                    <div class="data-table">
+                        <div class="table-header">
+                            <div>Parent</div>
+                            <div>Amount Due</div>
+                            <div>Method</div>
+                            <div>Status</div>
+                            <div>Actions</div>
+                        </div>
+                        ${pendingSignups.map(s => `
+                            <div class="table-row">
+                                <div>
+                                    <div class="parent-name">${escapeHtml(s.parent_name)}</div>
+                                    <div class="student-name">${escapeHtml(s.student_name)}</div>
+                                </div>
+                                <div>₪${s.payment_amount || 500}</div>
+                                <div>${s.payment_method || 'Not set'}</div>
+                                <div>
+                                    <span class="payment-status ${s.payment_status}">
+                                        ${s.payment_status}
+                                    </span>
+                                </div>
+                                <div>
+                                    <button class="btn btn-sm btn-primary" onclick="logPayment('${s.id}')">Log Payment</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <h2 style="margin: 40px 0 20px; font-size: 18px;">🧾 Recent Payments</h2>
+                    <div class="data-table">
+                        <div class="table-header">
+                            <div>Parent</div>
+                            <div>Amount</div>
+                            <div>Method</div>
+                            <div>Date</div>
+                            <div>Notes</div>
+                        </div>
+                        ${payments.slice(0, 10).map(p => `
+                            <div class="table-row">
+                                <div class="parent-name">${escapeHtml(p.signup?.parent_name || 'Unknown')}</div>
+                                <div>₪${p.amount}</div>
+                                <div>${p.method}</div>
+                                <div>${formatDate(p.created_at)}</div>
+                                <div>${escapeHtml(p.notes || '')}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderRamble() {
+            return `
+                <div class="container">
+                    <div class="ramble-box">
+                        <h3 style="margin-bottom: 12px; font-size: 16px;">🎤 Ramble to Tasks</h3>
+                        <p style="margin-bottom: 16px; font-size: 13px; color: #94a3b8;">
+                            Just type or paste your ramble. I'll extract tasks and add them to your inbox.
+                        </p>
+                        <textarea 
+                            class="ramble-input" 
+                            id="rambleInput"
+                            placeholder="Example: Need to call Cohen about his son's application tomorrow. URGENT: Fix the website contact form. Send parent handbook to the new family that signed up yesterday..."
+                        ></textarea>
+                        <div class="ramble-actions">
+                            <span class="ramble-hint">
+                                Tips: Start with "URGENT:" for urgent tasks. Mention "tomorrow" or dates for scheduling.
+                            </span>
+                            <button class="btn btn-primary" onclick="processRamble()">
+                                Parse & Create Tasks
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div style="background: #1e293b; border-radius: 12px; padding: 20px;">
+                        <h3 style="margin-bottom: 16px; font-size: 16px;">📱 Telegram Integration</h3>
+                        <p style="font-size: 13px; color: #94a3b8; line-height: 1.6;">
+                            Send voice notes or text to <strong>@shlomofam_bot</strong> and they'll appear here.<br>
+                            Take photos of cash receipts and they'll be linked to signups automatically.
+                        </p>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTaskModal() {
             const isEditing = editingTask !== null;
             const task = isEditing ? editingTask : {};
             
             return `
-                <div class="modal-overlay ${isEditing ? 'show' : ''}" id="modal">
+                <div class="modal-overlay ${isEditing ? 'show' : ''}" id="taskModal">
                     <div class="modal">
                         <div class="modal-header">
                             <h2>${isEditing ? 'Edit Task' : 'New Task'}</h2>
-                            <button class="modal-close" onclick="closeModal()">&times;</button>
+                            <button class="modal-close" onclick="closeTaskModal()">&times;</button>
                         </div>
                         <div class="modal-body">
                             <div class="form-group">
@@ -738,44 +913,58 @@
                                 <label>Notes</label>
                                 <textarea id="taskNotes" placeholder="Add details...">${escapeHtml(task.notes || '')}</textarea>
                             </div>
-                            <div class="form-group">
-                                <label>Category</label>
-                                <div class="option-buttons">
-                                    ${['Accounting', 'Marketing', 'Communications'].map(cat => `
-                                        <button type="button" class="option-btn ${task.category === cat ? 'active' : ''}" onclick="selectOption('category', '${cat}')" data-category="${cat}">${cat}</button>
-                                    `).join('')}
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Stage</label>
+                                    <select id="taskStage">
+                                        ${PIPELINE_STAGES.map(s => `
+                                            <option value="${s.id}" ${task.stage === s.id ? 'selected' : ''}>${s.emoji} ${s.label}</option>
+                                        `).join('')}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Category</label>
+                                    <select id="taskCategory">
+                                        ${CATEGORIES.map(c => `
+                                            <option value="${c.id}" ${task.category === c.id ? 'selected' : ''}>${c.label}</option>
+                                        `).join('')}
+                                    </select>
                                 </div>
                             </div>
-                            <div class="form-group">
-                                <label>Urgency</label>
-                                <div class="option-buttons">
-                                    ${['Urgent', 'Today', 'This week', 'Low priority'].map(urg => `
-                                        <button type="button" class="option-btn ${task.urgency === urg ? 'active' : ''}" onclick="selectOption('urgency', '${urg}')" data-urgency="${urg}">${urg}</button>
-                                    `).join('')}
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Urgency</label>
+                                    <select id="taskUrgency">
+                                        <option value="urgent" ${task.urgency === 'urgent' ? 'selected' : ''}>🔴 Urgent</option>
+                                        <option value="today" ${task.urgency === 'today' ? 'selected' : ''}>🟡 Today</option>
+                                        <option value="this_week" ${task.urgency === 'this_week' ? 'selected' : ''}>🔵 This Week</option>
+                                        <option value="low" ${task.urgency === 'low' ? 'selected' : ''}>⚪ Low</option>
+                                    </select>
                                 </div>
-                            </div>
-                            <div class="form-group">
-                                <label>Status</label>
-                                <select id="taskStatus">
-                                    ${['Pending', 'In progress', 'Waiting on someone', 'Done'].map(s => `
-                                        <option value="${s}" ${task.status === s ? 'selected' : ''}>${s}</option>
-                                    `).join('')}
-                                </select>
+                                <div class="form-group">
+                                    <label>Energy Required</label>
+                                    <select id="taskEnergy">
+                                        <option value="">--</option>
+                                        <option value="high" ${task.energy_required === 'high' ? 'selected' : ''}>High</option>
+                                        <option value="medium" ${task.energy_required === 'medium' ? 'selected' : ''}>Medium</option>
+                                        <option value="low" ${task.energy_required === 'low' ? 'selected' : ''}>Low</option>
+                                    </select>
+                                </div>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Due Date</label>
-                                    <input type="date" id="taskDueDate" value="${task.dueDate || ''}">
+                                    <input type="date" id="taskDueDate" value="${task.due_date || ''}">
                                 </div>
                                 <div class="form-group">
-                                    <label>Owner</label>
-                                    <input type="text" id="taskOwner" value="${escapeHtml(task.owner || '')}" placeholder="Who's responsible?">
+                                    <label>Est. Minutes</label>
+                                    <input type="number" id="taskMinutes" value="${task.estimated_minutes || ''}" placeholder="e.g. 30">
                                 </div>
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
-                            <button class="btn btn-primary" onclick="saveTask()">${isEditing ? 'Save Changes' : 'Create Task'}</button>
+                            <button class="btn btn-secondary" onclick="closeTaskModal()">Cancel</button>
+                            <button class="btn btn-primary" onclick="saveTask()">${isEditing ? 'Save' : 'Create'}</button>
                         </div>
                     </div>
                 </div>
@@ -787,107 +976,153 @@
             if (!text) return '';
             return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
+        
+        function formatDate(date) {
+            if (!date) return '';
+            return new Date(date).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
+        }
 
         // Actions
-        async function loadTasks() {
-            const data = await api.getTasks();
-            if (data?.success) {
-                tasks = data.tasks;
-                render();
-            }
+        async function loadData() {
+            const [tasksRes, signupsRes, paymentsRes] = await Promise.all([
+                api.getTasks(),
+                api.getSignups(),
+                api.getPayments()
+            ]);
+            
+            if (tasksRes?.tasks) tasks = tasksRes.tasks;
+            if (signupsRes?.signups) signups = signupsRes.signups;
+            if (paymentsRes?.payments) payments = paymentsRes.payments;
+            
+            render();
         }
 
         function render() {
             const app = document.getElementById('app');
-            app.innerHTML = `
-                ${renderHeader()}
-                <div class="container">
-                    ${renderSummaryCards()}
-                    ${renderFilters()}
-                    ${renderTaskList()}
-                </div>
-                ${renderModal()}
-            `;
+            let content = '';
+            
+            switch (currentView) {
+                case 'pipeline': content = renderPipeline(); break;
+                case 'signups': content = renderSignups(); break;
+                case 'billing': content = renderBilling(); break;
+                case 'ramble': content = renderRamble(); break;
+            }
+            
+            app.innerHTML = renderHeader() + content + renderTaskModal();
         }
 
-        function updateFilter(key, value) {
-            filters[key] = value;
+        function switchView(view) {
+            currentView = view;
             render();
         }
 
-        function openModal() {
+        // Task Actions
+        function openTaskModal() {
             editingTask = null;
             render();
-            document.getElementById('modal').classList.add('show');
+            document.getElementById('taskModal').classList.add('show');
         }
 
-        function closeModal() {
-            document.getElementById('modal').classList.remove('show');
+        function closeTaskModal() {
+            document.getElementById('taskModal').classList.remove('show');
             editingTask = null;
         }
 
         function editTask(id) {
             editingTask = tasks.find(t => t.id === id);
             render();
-            document.getElementById('modal').classList.add('show');
-        }
-
-        async function deleteTask(id) {
-            if (!confirm('Delete this task?')) return;
-            await api.deleteTask(id);
-            loadTasks();
-        }
-
-        async function toggleTask(id) {
-            const task = tasks.find(t => t.id === id);
-            const newStatus = task.status === 'Done' ? 'Pending' : 'Done';
-            await api.updateTask(id, { ...task, status: newStatus });
-            loadTasks();
-        }
-
-        function selectOption(type, value) {
-            if (type === 'category') {
-                editingTask = editingTask || {};
-                editingTask.category = value;
-            } else if (type === 'urgency') {
-                editingTask = editingTask || {};
-                editingTask.urgency = value;
-            }
-            render();
-            document.getElementById('modal').classList.add('show');
+            document.getElementById('taskModal').classList.add('show');
         }
 
         async function saveTask() {
-            const title = document.getElementById('taskTitle').value;
-            if (!title) return alert('Title is required');
-            
-            const taskData = {
-                title,
+            const data = {
+                title: document.getElementById('taskTitle').value,
                 notes: document.getElementById('taskNotes').value,
-                category: document.querySelector('[data-category].active')?.dataset.category || 'Accounting',
-                urgency: document.querySelector('[data-urgency].active')?.dataset.urgency || 'This week',
-                status: document.getElementById('taskStatus').value,
-                dueDate: document.getElementById('taskDueDate').value,
-                owner: document.getElementById('taskOwner').value
+                stage: document.getElementById('taskStage').value,
+                category: document.getElementById('taskCategory').value,
+                urgency: document.getElementById('taskUrgency').value,
+                energy_required: document.getElementById('taskEnergy').value || null,
+                due_date: document.getElementById('taskDueDate').value || null,
+                estimated_minutes: parseInt(document.getElementById('taskMinutes').value) || null
             };
             
-            if (editingTask?.id) {
-                await api.updateTask(editingTask.id, taskData);
+            if (!data.title) return alert('Title required');
+            
+            if (editingTask) {
+                await api.updateTask(editingTask.id, data);
             } else {
-                await api.createTask(taskData);
+                await api.createTask(data);
             }
             
-            closeModal();
-            loadTasks();
+            closeTaskModal();
+            loadData();
         }
 
-        function logout() {
-            localStorage.removeItem('bna_ops_session');
-            window.location.href = '/operations/login';
+        // Drag & Drop
+        function dragTask(ev, taskId) {
+            ev.dataTransfer.setData('taskId', taskId);
+            ev.target.classList.add('dragging');
+        }
+
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        async function dropTask(ev, stage) {
+            ev.preventDefault();
+            const taskId = ev.dataTransfer.getData('taskId');
+            document.querySelector('.dragging')?.classList.remove('dragging');
+            
+            await api.moveTask(taskId, stage);
+            loadData();
+        }
+
+        // Ramble
+        async function processRamble() {
+            const text = document.getElementById('rambleInput').value;
+            if (!text.trim()) return;
+            
+            const res = await api.createFromRamble(text);
+            if (res?.success) {
+                alert(`Created ${res.tasks_created} task(s) from your ramble!`);
+                document.getElementById('rambleInput').value = '';
+                loadData();
+            }
+        }
+
+        // Signup Actions
+        function openSignupModal() {
+            alert('Signup form - implement as needed');
+        }
+
+        function editSignup(id) {
+            alert('Edit signup ' + id);
+        }
+
+        // Payment Actions
+        function logPayment(signupId) {
+            const amount = prompt('Payment amount (ILS):', '500');
+            if (!amount) return;
+            
+            const method = confirm('Is this cash? (OK = Cash, Cancel = Green Invoice)') ? 'cash' : 'green_invoice';
+            
+            api.createPayment({
+                signup_id: signupId,
+                amount: parseInt(amount),
+                method: method,
+                payment_type: 'registration',
+                status: 'completed',
+                received_by: 'operator',
+                notes: 'Logged via dashboard'
+            }).then(() => loadData());
         }
 
         // Init
-        loadTasks();
+        const OPS_USERNAME = 'SHLOIMIE';
+        const OPS_PASSWORD = 'BNA613!';
+        
+        loadData();
+        setInterval(loadData, 30000); // Refresh every 30s
     </script>
 </body>
 </html>

@@ -1,418 +1,635 @@
-/**
- * BNA Telegram Bot - Billing & Registration Management
- * 
- * This endpoint handles Telegram commands for BNA operations:
- * - /bna_parents - List all BNA parents
- * - /bna_students - List all BNA students  
- * - /bna_pending - List pending payments
- * - /bna_paid - List paid registrations
- * - /bna_cash - List cash payment selections
- * - /bna_greeninvoice - List Green Invoice selections
- * - /markpaid <name> [amount] [method] - Mark a registration as paid
- * - /find <query> - Find a parent/student
- * 
- * Webhook URL: /api/bna/telegram
- */
+import { NextRequest, NextResponse } from 'next/server';
+import { createClient } from '@supabase/supabase-js';
+import { parseRamble, createTaskFromRamble, type TaskInput } from '@/lib/bna/task-pipeline';
 
-import { NextResponse, type NextRequest } from 'next/server';
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE_KEY!
+);
 
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
+const OPS_USERNAME = process.env.OPS_USERNAME || 'admin';
+const OPS_PASSWORD = process.env.OPS_PASSWORD || 'admin';
 
-// Environment variables
-const TELEGRAM_BOT_TOKEN = process.env.BNA_TELEGRAM_BOT_TOKEN || process.env.TELEGRAM_BOT_TOKEN;
-const TELEGRAM_CHAT_ID_SHLOIMIE = process.env.TELEGRAM_CHAT_ID_SHLOIMIE;
-const TELEGRAM_CHAT_ID_AHUVA = process.env.TELEWAY_CHAT_ID_AHUVA;
-const APP_URL = process.env.APP_URL || process.env.NEXT_PUBLIC_APP_URL || 'https://bneineviimacademy.org';
+// Main menu keyboard
+const MAIN_KEYBOARD = {
+  inline_keyboard: [
+    [
+      { text: '📥 Inbox', callback_data: 'view_inbox' },
+      { text: '🔴 Urgent', callback_data: 'view_urgent' }
+    ],
+    [
+      { text: '📊 Pipeline', callback_data: 'view_pipeline' },
+      { text: '➕ Quick Add', callback_data: 'quick_add' }
+    ],
+    [
+      { text: '💰 Billing', callback_data: 'view_billing' },
+      { text: '👨‍👩‍👧‍👦 Signups', callback_data: 'view_signups' }
+    ],
+    [
+      { text: '🌐 Open Dashboard', url: `${process.env.APP_URL}/operations` }
+    ]
+  ]
+};
 
-// Authorized chat IDs
-const AUTHORIZED_CHAT_IDS = [
-  TELEGRAM_CHAT_ID_SHLOIMIE,
-  TELEGRAM_CHAT_ID_AHUVA,
-].filter(Boolean);
-
-interface TelegramUpdate {
-  message?: {
-    chat: { id: number };
-    text?: string;
-    from?: { username?: string; first_name?: string };
-  };
-  callback_query?: {
-    id: string;
-    from: { id: number; username?: string };
-    data?: string;
-    message?: { chat: { id: number }; message_id: number };
-  };
+export async function POST(req: NextRequest) {
+  try {
+    const update = await req.json();
+    
+    // Handle callback queries (button clicks)
+    if (update.callback_query) {
+      await handleCallback(update.callback_query);
+      return NextResponse.json({ ok: true });
+    }
+    
+    // Handle messages (text, voice, photo)
+    if (update.message) {
+      await handleMessage(update.message);
+      return NextResponse.json({ ok: true });
+    }
+    
+    return NextResponse.json({ ok: true });
+  } catch (err) {
+    console.error('Telegram webhook error:', err);
+    return NextResponse.json({ error: String(err) }, { status: 500 });
+  }
 }
 
-// Send message to Telegram
-async function sendTelegramMessage(chatId: number, text: string, parseMode: 'HTML' | 'Markdown' = 'HTML') {
-  if (!TELEGRAM_BOT_TOKEN) {
-    console.error('Telegram bot token not configured');
-    return { ok: false };
+async function handleCallback(query: any) {
+  const chatId = query.message?.chat?.id;
+  const data = query.callback_data;
+  
+  // Answer callback to remove loading state
+  await answerCallback(query.id);
+  
+  switch (data) {
+    case 'view_inbox':
+      await showInbox(chatId);
+      break;
+    case 'view_urgent':
+      await showUrgent(chatId);
+      break;
+    case 'view_pipeline':
+      await showPipeline(chatId);
+      break;
+    case 'quick_add':
+      await promptQuickAdd(chatId);
+      break;
+    case 'view_billing':
+      await showBilling(chatId);
+      break;
+    case 'view_signups':
+      await showSignups(chatId);
+      break;
+    default:
+      if (data.startsWith('task_')) {
+        const taskId = data.replace('task_', '');
+        await showTaskDetails(chatId, taskId);
+      } else if (data.startsWith('stage_')) {
+        const stage = data.replace('stage_', '');
+        await showTasksByStage(chatId, stage);
+      } else if (data.startsWith('payment_')) {
+        const signupId = data.replace('payment_', '');
+        await promptPaymentEntry(chatId, signupId);
+      }
   }
+}
 
-  try {
-    const response = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+async function handleMessage(msg: any) {
+  const chatId = msg.chat?.id;
+  const text = msg.text || msg.caption || '';
+  
+  // Check if it's a command or menu interaction
+  if (text === '/start') {
+    await sendMenu(chatId, 'Welcome to BNA Operations. What would you like to do?');
+    return;
+  }
+  
+  // Handle voice messages (rambles)
+  if (msg.voice) {
+    await handleVoiceMessage(chatId, msg.voice, msg);
+    return;
+  }
+  
+  // Handle photos (cash receipts)
+  if (msg.photo) {
+    await handlePhotoMessage(chatId, msg.photo, msg);
+    return;
+  }
+  
+  // Handle text as ramble/task input
+  if (text) {
+    // Check if it's a billing/payment command format
+    if (text.match(/^paid\s+/i) || text.match(/^payment\s+/i)) {
+      await handlePaymentCommand(chatId, text);
+      return;
+    }
+    
+    // Otherwise treat as task ramble
+    await handleTaskRamble(chatId, text);
+  }
+}
+
+async function handleVoiceMessage(chatId: string, voice: any, msg: any) {
+  // Store voice message for transcription
+  // In production, you'd download and transcribe here
+  
+  await sendMessage(chatId, 
+    '🎤 Voice note received. Processing...\n\n' +
+    '(Voice transcription would happen here - for now, please type your task or use the menu.)',
+    { replyToMessageId: msg.message_id }
+  );
+  
+  // Store in cli_bridge for processing
+  await supabase.from('cli_bridge_messages').insert({
+    source: 'telegram',
+    message_type: 'voice',
+    content: '[Voice message - needs transcription]',
+    metadata: {
+      chat_id: chatId,
+      message_id: msg.message_id,
+      file_id: voice.file_id
+    },
+    processed: false
+  });
+}
+
+async function handlePhotoMessage(chatId: string, photos: any[], msg: any) {
+  const caption = msg.caption || '';
+  const photo = photos[photos.length - 1]; // Get largest
+  
+  // Check if it's a cash receipt
+  if (caption.toLowerCase().includes('cash') || 
+      caption.toLowerCase().includes('payment') ||
+      caption.toLowerCase().includes('receipt')) {
+    
+    // Extract signup info from caption if provided
+    const signupMatch = caption.match(/signup[:\s]+(\S+)/i) || 
+                       caption.match(/parent[:\s]+(\S+)/i) ||
+                       caption.match(/email[:\s]+(\S+@\S+)/i);
+    
+    if (signupMatch) {
+      // Store receipt photo
+      await storeCashReceipt(chatId, photo.file_id, caption, signupMatch[1]);
+      await sendMessage(chatId, 
+        '✅ Cash receipt photo saved!\n' +
+        'I\'ll link it to the signup and update the payment status.',
+        { replyToMessageId: msg.message_id }
+      );
+    } else {
+      await sendMessage(chatId,
+        '📸 Receipt photo received.\n\n' +
+        'Please reply with signup details:\n' +
+        'Format: "Cash payment for [parent name] - [amount]"',
+        { replyToMessageId: msg.message_id }
+      );
+    }
+    return;
+  }
+  
+  // Store in bridge for general processing
+  await supabase.from('cli_bridge_messages').insert({
+    source: 'telegram',
+    message_type: 'photo',
+    content: caption || '[Photo received]',
+    metadata: {
+      chat_id: chatId,
+      message_id: msg.message_id,
+      photo_file_id: photo.file_id
+    },
+    processed: false
+  });
+  
+  await sendMessage(chatId, '📸 Photo received and logged.', { replyToMessageId: msg.message_id });
+}
+
+async function handleTaskRamble(chatId: string, text: string) {
+  // Parse the ramble
+  const parsed = parseRamble(text);
+  
+  if (parsed.length === 0) {
+    await sendMenu(chatId, 'I couldn\'t extract a clear task from that. Try being more specific, or use the menu:');
+    return;
+  }
+  
+  // Create tasks
+  const createdTasks = [];
+  for (const taskInput of parsed) {
+    const { data, error } = await supabase
+      .from('bna_tasks')
+      .insert({
+        ...taskInput,
+        source: 'telegram',
+        source_context: text,
+        created_by: 'telegram'
+      })
+      .select()
+      .single();
+    
+    if (!error && data) {
+      createdTasks.push(data);
+    }
+  }
+  
+  // Send confirmation
+  let response = `✅ Created ${createdTasks.length} task(s):\n\n`;
+  createdTasks.forEach((t, i) => {
+    response += `${i + 1}. ${t.title}\n`;
+    response += `   Stage: ${t.stage} | Category: ${t.category} | Urgency: ${t.urgency}\n\n`;
+  });
+  response += 'View in dashboard or use menu below:';
+  
+  await sendMenu(chatId, response);
+}
+
+async function handlePaymentCommand(chatId: string, text: string) {
+  // Parse: "paid Cohen 500 cash" or "payment for cohen@email.com 500"
+  const amountMatch = text.match(/(\d+)/);
+  const emailMatch = text.match(/(\S+@\S+)/);
+  const nameMatch = text.match(/(?:for|from)\s+(\w+)/i);
+  const methodMatch = text.match(/(cash|green\s*invoice|card)/i);
+  
+  const amount = amountMatch ? parseInt(amountMatch[1]) : null;
+  const method = methodMatch ? methodMatch[1].toLowerCase().replace(' ', '_') : 'cash';
+  
+  // Find signup
+  let signup = null;
+  if (emailMatch) {
+    const { data } = await supabase
+      .from('bna_signups')
+      .select('*')
+      .ilike('parent_email', emailMatch[1])
+      .single();
+    signup = data;
+  } else if (nameMatch) {
+    const { data } = await supabase
+      .from('bna_signups')
+      .select('*')
+      .ilike('parent_name', `%${nameMatch[1]}%`)
+      .single();
+    signup = data;
+  }
+  
+  if (!signup) {
+    await sendMessage(chatId, 
+      '❌ Could not find signup.\n' +
+      'Try: "paid [amount] for [parent@email.com]" or "payment [amount] from [parent name]"'
+    );
+    return;
+  }
+  
+  // Log payment
+  await supabase.from('bna_payment_log').insert({
+    signup_id: signup.id,
+    payment_type: 'registration',
+    amount: amount || 0,
+    method: method as any,
+    status: 'completed',
+    received_by: 'telegram',
+    received_at: new Date().toISOString(),
+    notes: `Logged via Telegram: ${text}`
+  });
+  
+  // Update signup
+  await supabase
+    .from('bna_signups')
+    .update({
+      payment_status: 'paid',
+      payment_amount: amount,
+      updated_at: new Date().toISOString()
+    })
+    .eq('id', signup.id);
+  
+  await sendMessage(chatId,
+    `✅ Payment logged!\n\n` +
+    `Parent: ${signup.parent_name}\n` +
+    `Amount: ₪${amount}\n` +
+    `Method: ${method}\n` +
+    `Status: Paid`
+  );
+}
+
+async function storeCashReceipt(chatId: string, fileId: string, caption: string, signupRef: string) {
+  // Get file URL from Telegram
+  const fileRes = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getFile?file_id=${fileId}`);
+  const fileData = await fileRes.json();
+  
+  if (fileData.ok) {
+    const fileUrl = `https://api.telegram.org/file/bot${BOT_TOKEN}/${fileData.result.file_path}`;
+    
+    // Store reference
+    await supabase.from('cli_bridge_messages').insert({
+      source: 'telegram',
+      message_type: 'photo',
+      content: `Cash receipt: ${caption}`,
+      metadata: {
+        chat_id: chatId,
+        photo_url: fileUrl,
+        signup_ref: signupRef
+      },
+      processed: false
+    });
+  }
+}
+
+// View functions
+async function showInbox(chatId: string) {
+  const { data: tasks } = await supabase
+    .from('bna_tasks')
+    .select('*')
+    .eq('stage', 'inbox')
+    .order('created_at', { ascending: false })
+    .limit(10);
+  
+  let text = '📥 **Inbox**\n\n';
+  if (!tasks?.length) {
+    text += 'Inbox is empty! Use "Quick Add" to create tasks.';
+  } else {
+    tasks.forEach((t, i) => {
+      text += `${i + 1}. ${t.title}\n`;
+      if (t.notes) text += `   _${t.notes.slice(0, 50)}..._\n`;
+    });
+  }
+  
+  await sendMenu(chatId, text);
+}
+
+async function showUrgent(chatId: string) {
+  const { data: tasks } = await supabase
+    .from('bna_tasks')
+    .select('*')
+    .in('urgency', ['urgent', 'today'])
+    .not('stage', 'in', ['complete', 'archive'])
+    .order('urgency', { ascending: true })
+    .limit(10);
+  
+  let text = '🔴 **Urgent & Today**\n\n';
+  if (!tasks?.length) {
+    text += 'No urgent tasks! 🎉';
+  } else {
+    tasks.forEach((t, i) => {
+      const emoji = t.urgency === 'urgent' ? '🔴' : '🟡';
+      text += `${emoji} ${t.title} (${t.stage})\n`;
+    });
+  }
+  
+  await sendMenu(chatId, text);
+}
+
+async function showPipeline(chatId: string) {
+  const stages = ['inbox', 'clarify', 'plan', 'execute', 'review', 'complete'];
+  
+  let text = '📊 **Pipeline**\n\n';
+  
+  for (const stage of stages) {
+    const { count } = await supabase
+      .from('bna_tasks')
+      .select('*', { count: 'exact', head: true })
+      .eq('stage', stage)
+      .is('archived_at', null);
+    
+    const emoji = {
+      inbox: '📥', clarify: '❓', plan: '📋', 
+      execute: '⚡', review: '👀', complete: '✅'
+    }[stage] || '📄';
+    
+    text += `${emoji} ${stage}: ${count || 0}\n`;
+  }
+  
+  const keyboard = {
+    inline_keyboard: [
+      ...stages.map(s => [{ 
+        text: `View ${s}`, 
+        callback_data: `stage_${s}` 
+      }]),
+      [{ text: '« Back to Menu', callback_data: 'menu_main' }]
+    ]
+  };
+  
+  await sendMessage(chatId, text, { replyMarkup: keyboard });
+}
+
+async function showTasksByStage(chatId: string, stage: string) {
+  const { data: tasks } = await supabase
+    .from('bna_tasks')
+    .select('*')
+    .eq('stage', stage)
+    .is('archived_at', null)
+    .order('created_at', { ascending: false })
+    .limit(10);
+  
+  let text = `${stage.toUpperCase()} (${tasks?.length || 0})\n\n`;
+  
+  if (!tasks?.length) {
+    text += 'No tasks in this stage.';
+  } else {
+    const keyboard: any[][] = [];
+    
+    tasks.forEach((t, i) => {
+      text += `${i + 1}. ${t.title}\n`;
+      keyboard.push([{
+        text: `View: ${t.title.slice(0, 30)}...`,
+        callback_data: `task_${t.id}`
+      }]);
+    });
+    
+    keyboard.push([{ text: '« Back', callback_data: 'view_pipeline' }]);
+    
+    await sendMessage(chatId, text, { replyMarkup: { inline_keyboard: keyboard } });
+    return;
+  }
+  
+  await sendMenu(chatId, text);
+}
+
+async function showBilling(chatId: string) {
+  const { data: signups } = await supabase
+    .from('bna_signups')
+    .select('*')
+    .in('payment_status', ['pending', 'partial'])
+    .order('created_at', { ascending: false })
+    .limit(10);
+  
+  let text = '💰 **Billing - Pending Payments**\n\n';
+  
+  if (!signups?.length) {
+    text += 'All caught up! No pending payments.';
+  } else {
+    const keyboard: any[][] = [];
+    
+    signups.forEach((s, i) => {
+      text += `${i + 1}. ${s.parent_name} - ₪${s.payment_amount || 0}\n`;
+      text += `   Status: ${s.payment_status} | Method: ${s.payment_method || 'N/A'}\n\n`;
+      
+      keyboard.push([{
+        text: `💰 Log Payment: ${s.parent_name}`,
+        callback_data: `payment_${s.id}`
+      }]);
+    });
+    
+    keyboard.push([{ text: '« Back to Menu', callback_data: 'menu_main' }]);
+    
+    await sendMessage(chatId, text, { replyMarkup: { inline_keyboard: keyboard } });
+    return;
+  }
+  
+  await sendMenu(chatId, text);
+}
+
+async function showSignups(chatId: string) {
+  const { data: signups } = await supabase
+    .from('bna_signups')
+    .select('*')
+    .order('created_at', { ascending: false })
+    .limit(10);
+  
+  let text = '👨‍👩‍👧‍👦 **Recent Signups**\n\n';
+  
+  if (!signups?.length) {
+    text += 'No signups yet.';
+  } else {
+    signups.forEach((s, i) => {
+      text += `${i + 1}. **${s.parent_name}**\n`;
+      text += `   Student: ${s.student_name}\n`;
+      text += `   Status: ${s.status} | Payment: ${s.payment_status}\n\n`;
+    });
+  }
+  
+  await sendMenu(chatId, text);
+}
+
+async function showTaskDetails(chatId: string, taskId: string) {
+  const { data: task } = await supabase
+    .from('bna_tasks')
+    .select('*')
+    .eq('id', taskId)
+    .single();
+  
+  if (!task) {
+    await sendMessage(chatId, 'Task not found.');
+    return;
+  }
+  
+  let text = `**${task.title}**\n\n`;
+  text += `Stage: ${task.stage}\n`;
+  text += `Category: ${task.category}\n`;
+  text += `Urgency: ${task.urgency}\n`;
+  if (task.notes) text += `\nNotes: ${task.notes}\n`;
+  
+  const keyboard = {
+    inline_keyboard: [
+      [
+        { text: '◀️ Prev Stage', callback_data: `move_prev_${taskId}` },
+        { text: 'Next Stage ▶️', callback_data: `move_next_${taskId}` }
+      ],
+      [{ text: '« Back to Pipeline', callback_data: 'view_pipeline' }]
+    ]
+  };
+  
+  await sendMessage(chatId, text, { replyMarkup: keyboard });
+}
+
+async function promptQuickAdd(chatId: string) {
+  await sendMessage(chatId,
+    '➕ **Quick Add Task**\n\n' +
+    'Just type your task naturally. Examples:\n' +
+    '• "Call Cohen about payment tomorrow"\n' +
+    '• "URGENT: Fix website contact form"\n' +
+    '• "Plan parent onboarding for new family"\n\n' +
+    'Or send a voice note to ramble!'
+  );
+}
+
+async function promptPaymentEntry(chatId: string, signupId: string) {
+  const { data: signup } = await supabase
+    .from('bna_signups')
+    .select('*')
+    .eq('id', signupId)
+    .single();
+  
+  if (!signup) {
+    await sendMessage(chatId, 'Signup not found.');
+    return;
+  }
+  
+  await sendMessage(chatId,
+    `💰 **Log Payment for ${signup.parent_name}**\n\n` +
+    `Reply with:\n` +
+    `paid [amount] [method]\n\n` +
+    `Example: "paid 500 cash" or "paid 1000 green_invoice"`
+  );
+}
+
+// Helper functions
+async function sendMenu(chatId: string, text: string) {
+  await sendMessage(chatId, text, { replyMarkup: MAIN_KEYBOARD });
+}
+
+async function sendMessage(
+  chatId: string, 
+  text: string, 
+  options?: { 
+    replyMarkup?: any; 
+    replyToMessageId?: number;
+    parseMode?: 'HTML' | 'Markdown';
+  }
+) {
+  const url = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+  
+  const body: any = {
+    chat_id: chatId,
+    text: text.slice(0, 4096),
+    parse_mode: options?.parseMode || 'Markdown'
+  };
+  
+  if (options?.replyMarkup) {
+    body.reply_markup = options.replyMarkup;
+  }
+  
+  if (options?.replyToMessageId) {
+    body.reply_to_message_id = options.replyToMessageId;
+  }
+  
+  await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+}
+
+async function answerCallback(callbackQueryId: string) {
+  await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/answerCallbackQuery`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ callback_query_id: callbackQueryId })
+  });
+}
+
+// Setup webhook
+export async function GET(req: NextRequest) {
+  const { searchParams } = new URL(req.url);
+  const action = searchParams.get('action');
+  
+  if (action === 'setup') {
+    const webhookUrl = `${process.env.APP_URL}/api/bna/telegram`;
+    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/setWebhook`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        chat_id: chatId,
-        text: text.slice(0, 4096), // Telegram message limit
-        parse_mode: parseMode,
-      }),
-    });
-    return { ok: response.ok };
-  } catch (err) {
-    console.error('Failed to send Telegram message:', err);
-    return { ok: false };
-  }
-}
-
-// Fetch signups from our API
-async function fetchSignups(params: Record<string, string> = {}) {
-  try {
-    const queryString = new URLSearchParams(params).toString();
-    const url = `${APP_URL}/api/signups${queryString ? `?${queryString}` : ''}`;
-    
-    const response = await fetch(url, {
-      headers: { 'Content-Type': 'application/json' },
+        url: webhookUrl,
+        allowed_updates: ['message', 'callback_query']
+      })
     });
     
-    if (!response.ok) throw new Error('API request failed');
-    const data = await response.json();
-    return data.signups || [];
-  } catch (err) {
-    console.error('Failed to fetch signups:', err);
-    return [];
+    const result = await res.json();
+    return NextResponse.json(result);
   }
-}
-
-// Update signup via API
-async function updateSignup(id: number, updates: Record<string, any>) {
-  try {
-    const response = await fetch(`${APP_URL}/api/signups/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updates),
-    });
-    
-    if (!response.ok) throw new Error('Update failed');
-    const data = await response.json();
-    return data.signup;
-  } catch (err) {
-    console.error('Failed to update signup:', err);
-    return null;
+  
+  if (action === 'info') {
+    const res = await fetch(`https://api.telegram.org/bot${BOT_TOKEN}/getWebhookInfo`);
+    const result = await res.json();
+    return NextResponse.json(result);
   }
-}
-
-// Command handlers
-const commands: Record<string, (args: string[], chatId: number) => Promise<string>> = {
-  // Help command
-  help: async () => {
-    return `<b>🎓 BNA Bot Commands</b>
-
-<b>Reporting:</b>
-/bna_signups - All signups
-/bna_pending - Pending payments
-/bna_paid - Paid registrations
-/bna_cash - Cash payment selections
-/bna_greeninvoice - Green Invoice selections
-/find &lt;name&gt; - Search for parent/student
-
-<b>Updates:</b>
-/markpaid &lt;name&gt; [₪amount] [cash|greeninvoice]
-
-<b>Examples:</b>
-/markpaid Cohen
-/markpaid "David Cohen" 1000 cash
-/find Cohen`;
-  },
-
-  // List all signups
-  bna_signups: async () => {
-    const signups = await fetchSignups();
-    if (signups.length === 0) return 'No signups found.';
-    
-    let text = `<b>📝 All BNA Signups (${signups.length})</b>\n\n`;
-    for (const s of signups.slice(0, 20)) {
-      const status = s.payment_status === 'paid' ? '✅' : '⏳';
-      const method = s.payment_method === 'Cash' ? '💵' : '💳';
-      text += `${status} ${method} <b>${s.child_name}</b> (${s.child_age})\n`;
-      text += `   Parent: ${s.parent1_name}\n`;
-      text += `   Status: ${s.payment_status}\n\n`;
-    }
-    if (signups.length > 20) text += `... and ${signups.length - 20} more`;
-    return text;
-  },
-
-  // List pending payments
-  bna_pending: async () => {
-    const signups = await fetchSignups({ status: 'pending' });
-    const cashPending = await fetchSignups({ status: 'pending_cash' });
-    const allPending = [...signups, ...cashPending];
-    
-    if (allPending.length === 0) return 'No pending payments.';
-    
-    let text = `<b>⏳ Pending Payments (${allPending.length})</b>\n\n`;
-    for (const s of allPending) {
-      const method = s.payment_method === 'Cash' ? '💵 Cash' : '💳 Green Invoice';
-      const date = new Date(s.submitted_at).toLocaleDateString('en-GB');
-      text += `<b>${s.child_name}</b> (${s.child_age})\n`;
-      text += `   Parent: ${s.parent1_name}\n`;
-      text += `   ${method} | ${date}\n`;
-      text += `   📞 ${s.parent1_phone}\n\n`;
-    }
-    return text;
-  },
-
-  // List paid registrations
-  bna_paid: async () => {
-    const signups = await fetchSignups({ status: 'paid' });
-    if (signups.length === 0) return 'No paid registrations yet.';
-    
-    let text = `<b>✅ Paid Registrations (${signups.length})</b>\n\n`;
-    for (const s of signups.slice(0, 20)) {
-      const date = s.paid_at ? new Date(s.paid_at).toLocaleDateString('en-GB') : 'Unknown';
-      text += `<b>${s.child_name}</b> (${s.child_age})\n`;
-      text += `   Parent: ${s.parent1_name}\n`;
-      text += `   Paid: ${date}\n\n`;
-    }
-    return text;
-  },
-
-  // List cash payments
-  bna_cash: async () => {
-    const pending = await fetchSignups({ payment_method: 'Cash', status: 'pending_cash' });
-    const paid = await fetchSignups({ payment_method: 'Cash', status: 'paid' });
-    
-    let text = `<b>💵 Cash Payments</b>\n\n`;
-    
-    if (pending.length > 0) {
-      text += `<b>Pending (${pending.length}):</b>\n`;
-      for (const s of pending) {
-        text += `• ${s.child_name} - ${s.parent1_name}\n`;
-      }
-      text += '\n';
-    }
-    
-    if (paid.length > 0) {
-      text += `<b>Paid (${paid.length}):</b>\n`;
-      for (const s of paid.slice(0, 10)) {
-        const date = s.paid_at ? new Date(s.paid_at).toLocaleDateString('en-GB') : '';
-        text += `• ${s.child_name} ${date ? '✓ ' + date : ''}\n`;
-      }
-    }
-    
-    if (pending.length === 0 && paid.length === 0) {
-      text += 'No cash payments recorded.';
-    }
-    
-    return text;
-  },
-
-  // List Green Invoice payments
-  bna_greeninvoice: async () => {
-    const pending = await fetchSignups({ payment_method: 'Green Invoice', status: 'pending' });
-    const paid = await fetchSignups({ payment_method: 'Green Invoice', status: 'paid' });
-    
-    let text = `<b>💳 Green Invoice Payments</b>\n\n`;
-    
-    if (pending.length > 0) {
-      text += `<b>Pending (${pending.length}):</b>\n`;
-      for (const s of pending) {
-        text += `• ${s.child_name} - ${s.parent1_name}\n`;
-      }
-      text += '\n';
-    }
-    
-    if (paid.length > 0) {
-      text += `<b>Paid (${paid.length}):</b>\n`;
-      for (const s of paid.slice(0, 10)) {
-        const date = s.paid_at ? new Date(s.paid_at).toLocaleDateString('en-GB') : '';
-        text += `• ${s.child_name} ${date ? '✓ ' + date : ''}\n`;
-      }
-    }
-    
-    if (pending.length === 0 && paid.length === 0) {
-      text += 'No Green Invoice payments recorded.';
-    }
-    
-    return text;
-  },
-
-  // Find parent/student
-  find: async (args) => {
-    if (args.length === 0) return 'Usage: /find &lt;name&gt;';
-    
-    const query = args.join(' ');
-    const signups = await fetchSignups({ search: query });
-    
-    if (signups.length === 0) return `No results found for "${query}"`;
-    
-    let text = `<b>🔍 Search Results for "${query}"</b>\n\n`;
-    for (const s of signups.slice(0, 10)) {
-      const status = s.payment_status === 'paid' ? '✅ Paid' : '⏳ Pending';
-      text += `<b>${s.child_name}</b> (${s.child_age})\n`;
-      text += `   Parent: ${s.parent1_name}\n`;
-      text += `   📞 ${s.parent1_phone}\n`;
-      text += `   ✉️ ${s.parent1_email}\n`;
-      text += `   ${status} | ${s.payment_method}\n`;
-      text += `   ID: ${s.id}\n\n`;
-    }
-    return text;
-  },
-
-  // Mark as paid
-  markpaid: async (args) => {
-    if (args.length === 0) {
-      return 'Usage: /markpaid &lt;name&gt; [₪amount] [cash|greeninvoice]\nExample: /markpaid "David Cohen" 1000 cash';
-    }
-    
-    // Parse arguments
-    let nameQuery = '';
-    let amount = 1000;
-    let method: string | null = null;
-    
-    // Check if first arg is quoted (full name)
-    if (args[0].startsWith('"')) {
-      // Find closing quote
-      const closingIndex = args.findIndex((a, i) => i > 0 && a.endsWith('"'));
-      if (closingIndex > 0) {
-        nameQuery = args.slice(0, closingIndex + 1).join(' ').replace(/"/g, '');
-        const remaining = args.slice(closingIndex + 1);
-        
-        for (const arg of remaining) {
-          if (/^\d+$/.test(arg)) amount = parseInt(arg);
-          if (['cash', 'greeninvoice', 'green invoice'].includes(arg.toLowerCase())) {
-            method = arg.toLowerCase() === 'cash' ? 'Cash' : 'Green Invoice';
-          }
-        }
-      } else {
-        nameQuery = args[0].replace(/"/g, '');
-        for (let i = 1; i < args.length; i++) {
-          if (/^\d+$/.test(args[i])) amount = parseInt(args[i]);
-          if (['cash', 'greeninvoice', 'green invoice'].includes(args[i].toLowerCase())) {
-            method = args[i].toLowerCase() === 'cash' ? 'Cash' : 'Green Invoice';
-          }
-        }
-      }
-    } else {
-      nameQuery = args[0];
-      for (let i = 1; i < args.length; i++) {
-        if (/^\d+$/.test(args[i])) amount = parseInt(args[i]);
-        if (['cash', 'greeninvoice', 'green invoice'].includes(args[i].toLowerCase())) {
-          method = args[i].toLowerCase() === 'cash' ? 'Cash' : 'Green Invoice';
-        }
-      }
-    }
-    
-    // Search for matching signups
-    const signups = await fetchSignups({ search: nameQuery });
-    
-    if (signups.length === 0) {
-      return `❌ No signup found for "${nameQuery}"`;
-    }
-    
-    if (signups.length > 1) {
-      let text = `⚠️ Found multiple matches for "${nameQuery}":\n\n`;
-      for (const s of signups) {
-        text += `ID ${s.id}: <b>${s.child_name}</b> - ${s.parent1_name}\n`;
-      }
-      text += '\nPlease be more specific or use /find first.';
-      return text;
-    }
-    
-    const signup = signups[0];
-    
-    // Check if already paid
-    if (signup.payment_status === 'paid') {
-      return `⚠️ ${signup.child_name} is already marked as paid.`;
-    }
-    
-    // Update the signup
-    const updates: Record<string, any> = {
-      payment_status: 'paid',
-      paid_at: new Date().toISOString(),
-    };
-    
-    if (method) {
-      updates.payment_method = method;
-    }
-    
-    const updated = await updateSignup(signup.id, updates);
-    
-    if (!updated) {
-      return `❌ Failed to update ${signup.child_name}. Please try again.`;
-    }
-    
-    // Calculate next billing date
-    const nextBillingDate = new Date();
-    nextBillingDate.setDate(nextBillingDate.getDate() + 30);
-    
-    return `✅ <b>Updated Successfully</b>
-
-<b>${signup.child_name}</b>
-Parent: ${signup.parent1_name}
-Amount: ₪${amount}
-Method: ${method || signup.payment_method}
-Status: Paid
-Next Billing: ${nextBillingDate.toLocaleDateString('en-GB')}`;
-  },
-};
-
-// Main webhook handler
-export async function POST(req: NextRequest): Promise<NextResponse> {
-  if (!TELEGRAM_BOT_TOKEN) {
-    console.error('BNA Telegram bot token not configured');
-    return NextResponse.json({ ok: true }, { status: 200 });
-  }
-
-  let update: TelegramUpdate;
-  try {
-    update = await req.json();
-  } catch {
-    return NextResponse.json({ ok: false }, { status: 400 });
-  }
-
-  const message = update.message;
-  if (!message?.text) {
-    return NextResponse.json({ ok: true }, { status: 200 });
-  }
-
-  const chatId = message.chat.id;
-  const text = message.text.trim();
-
-  // Check authorization
-  if (!AUTHORIZED_CHAT_IDS.includes(String(chatId))) {
-    await sendTelegramMessage(chatId, 'This bot is private.');
-    return NextResponse.json({ ok: true }, { status: 200 });
-  }
-
-  // Parse command
-  if (!text.startsWith('/')) {
-    return NextResponse.json({ ok: true }, { status: 200 });
-  }
-
-  const firstSpace = text.indexOf(' ');
-  const command = firstSpace === -1 ? text.slice(1) : text.slice(1, firstSpace);
-  const args = firstSpace === -1 ? '' : text.slice(firstSpace + 1).trim();
-  const argsArray = args ? args.split(/\s+/) : [];
-
-  // Handle command
-  const handler = commands[command.toLowerCase()];
-  if (!handler) {
-    await sendTelegramMessage(chatId, `Unknown command: /${command}\nSend /help for available commands.`);
-    return NextResponse.json({ ok: true }, { status: 200 });
-  }
-
-  try {
-    const response = await handler(argsArray, chatId);
-    await sendTelegramMessage(chatId, response);
-  } catch (err) {
-    console.error('Command handler error:', err);
-    await sendTelegramMessage(chatId, '❌ An error occurred. Please try again.');
-  }
-
-  return NextResponse.json({ ok: true }, { status: 200 });
+  
+  return NextResponse.json({ message: 'Telegram webhook endpoint' });
 }
