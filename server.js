@@ -558,3 +558,4 @@ app.get('/operations', requireAdmin, (req, res) => {
 app.listen(PORT, () => {
   console.log(`BNA Server running on port ${PORT}`);
 });
+// Deploy timestamp: 2026-05-26T17:02:05Z
