@@ -656,8 +656,25 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
   }
 });
 
-// Operations dashboard
-app.get('/operations', requireAdmin, (req, res) => {
+// Operations dashboard - with login redirect
+app.get('/operations', (req, res) => {
+  const authHeader = req.headers.authorization;
+  
+  // Check auth
+  let isAuthenticated = false;
+  if (authHeader && authHeader.startsWith('Basic ')) {
+    const creds = Buffer.from(authHeader.slice(6), 'base64').toString();
+    const [user, pass] = creds.split(':');
+    if (user.toLowerCase() === OPS_USERNAME.toLowerCase() && 
+        pass.toLowerCase() === OPS_PASSWORD.toLowerCase()) {
+      isAuthenticated = true;
+    }
+  }
+  
+  if (!isAuthenticated) {
+    return res.redirect('/operations-login.html');
+  }
+  
   res.sendFile(path.join(__dirname, 'public', 'operations.html'));
 });
 
