@@ -189,12 +189,26 @@ CREATE TABLE IF NOT EXISTS bna_payment_log (
 );
 `;
 
+const createCliBridgeSQL = `
+CREATE TABLE IF NOT EXISTS cli_bridge_messages (
+  id SERIAL PRIMARY KEY,
+  source TEXT NOT NULL,
+  message_type TEXT NOT NULL DEFAULT 'text',
+  content TEXT NOT NULL,
+  metadata JSONB,
+  processed BOOLEAN DEFAULT FALSE,
+  processed_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+`;
+
 // Initialize database
 async function initDb() {
   try {
     await pool.query(createSignupsTableSQL);
     await pool.query(createTasksTableSQL);
     await pool.query(createPaymentLogSQL);
+    await pool.query(createCliBridgeSQL);
     console.log('Database initialized - BNA tables created');
   } catch (err) {
     console.error('Database init error:', err);
@@ -691,6 +705,115 @@ app.get('/operations', (req, res) => {
   
   res.sendFile(path.join(__dirname, 'public', 'operations.html'));
 });
+
+// Telegram webhook handler
+app.post('/api/bna/telegram', async (req, res) => {
+  const update = req.body;
+  
+  // Handle callback queries (button clicks)
+  if (update.callback_query) {
+    await handleTelegramCallback(update.callback_query);
+    return res.json({ ok: true });
+  }
+  
+  // Handle messages
+  if (update.message) {
+    await handleTelegramMessage(update.message);
+    return res.json({ ok: true });
+  }
+  
+  res.json({ ok: true });
+});
+
+async function handleTelegramCallback(query) {
+  const chatId = query.message?.chat?.id;
+  const data = query.callback_data;
+  
+  // Answer callback
+  await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/answerCallbackQuery`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ callback_query_id: query.id })
+  });
+  
+  // Simple responses
+  if (data === 'view_inbox') {
+    await sendTelegramMessage(chatId, '📥 Inbox: Use the dashboard to view tasks\nhttps://bneineviimacademy.org/operations');
+  } else if (data === 'view_urgent') {
+    await sendTelegramMessage(chatId, '🔴 Urgent tasks: Check the dashboard\nhttps://bneineviimacademy.org/operations');
+  } else if (data === 'view_pipeline') {
+    await sendTelegramMessage(chatId, '📊 Pipeline stages:\n📥 Inbox → ❓ Clarify → 📋 Plan → ⚡ Execute → 👀 Review → ✅ Complete → 📦 Archive');
+  } else if (data === 'quick_add') {
+    await sendTelegramMessage(chatId, '➕ To add a task, just type it!\nExample: "Call Cohen about payment tomorrow"');
+  } else if (data === 'view_billing') {
+    await sendTelegramMessage(chatId, '💰 Billing dashboard:\nhttps://bneineviimacademy.org/operations');
+  } else if (data === 'view_signups') {
+    await sendTelegramMessage(chatId, '👨‍👩‍👧‍👦 Signups:\nhttps://bneineviimacademy.org/operations');
+  }
+}
+
+async function handleTelegramMessage(msg) {
+  const chatId = msg.chat?.id;
+  const text = msg.text || '';
+  
+  if (text === '/start') {
+    await sendTelegramMenu(chatId);
+    return;
+  }
+  
+  // Store message in CLI bridge
+  try {
+    await pool.query(
+      `INSERT INTO cli_bridge_messages (source, message_type, content, metadata)
+       VALUES ($1, $2, $3, $4)`,
+      ['telegram', 'text', text, JSON.stringify({ chat_id: chatId, message_id: msg.message_id })]
+    );
+  } catch (err) {
+    console.error('CLI bridge error:', err);
+  }
+  
+  // Simple task parsing
+  if (text.toLowerCase().includes('urgent') || text.toLowerCase().includes('asap')) {
+    await sendTelegramMessage(chatId, `🔴 Got it! Urgent task recorded: "${text}"\n\nView in dashboard: https://bneineviimacademy.org/operations`);
+  } else {
+    await sendTelegramMessage(chatId, `✅ Task recorded: "${text}"\n\nView in dashboard: https://bneineviimacademy.org/operations`);
+  }
+}
+
+async function sendTelegramMenu(chatId) {
+  const keyboard = {
+    inline_keyboard: [
+      [{ text: '📥 Inbox', callback_data: 'view_inbox' }, { text: '🔴 Urgent', callback_data: 'view_urgent' }],
+      [{ text: '📊 Pipeline', callback_data: 'view_pipeline' }, { text: '➕ Quick Add', callback_data: 'quick_add' }],
+      [{ text: '💰 Billing', callback_data: 'view_billing' }, { text: '👨‍👩‍👧‍👦 Signups', callback_data: 'view_signups' }],
+      [{ text: '🌐 Open Dashboard', url: 'https://bneineviimacademy.org/operations' }]
+    ]
+  };
+  
+  await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: '⚡ BNA Operations Bot\n\nWhat would you like to do?',
+      reply_markup: keyboard
+    })
+  });
+}
+
+async function sendTelegramMessage(chatId, text) {
+  if (!TELEGRAM_BOT_TOKEN || !chatId) return;
+  
+  await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      chat_id: chatId,
+      text: text,
+      parse_mode: 'HTML'
+    })
+  });
+}
 
 // Start server
 app.listen(PORT, () => {
