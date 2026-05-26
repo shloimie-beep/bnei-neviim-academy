@@ -70,7 +70,7 @@ const GHL_LOCATION_ID =
 const GHL_API_BASE = 'https://services.leadconnectorhq.com';
 const GHL_API_VERSION = '2021-07-28';
 
-// Admin auth middleware
+// Admin auth middleware - case insensitive
 function requireAdmin(req, res, next) {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith('Basic ')) {
@@ -78,7 +78,9 @@ function requireAdmin(req, res, next) {
   }
   const creds = Buffer.from(authHeader.slice(6), 'base64').toString();
   const [user, pass] = creds.split(':');
-  if (user !== OPS_USERNAME || pass !== OPS_PASSWORD) {
+  // Case insensitive comparison
+  if (user.toLowerCase() !== OPS_USERNAME.toLowerCase() || 
+      pass.toLowerCase() !== OPS_PASSWORD.toLowerCase()) {
     return res.status(401).json({ error: 'Invalid credentials' });
   }
   next();
