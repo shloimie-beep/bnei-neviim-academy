@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Login</title>
+</head>
+<body>
+    <h1>Test Login</h1>
+    <form id="loginForm">
+        <input type="text" id="username" placeholder="Username" value="shloimie"><br><br>
+        <input type="password" id="password" placeholder="Password" value="bna613!"><br><br>
+        <button type="submit">Login</button>
+    </form>
+    <div id="result"></div>
+    <div id="error" style="color:red;"></div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const resultEl = document.getElementById('result');
+            const errorEl = document.getElementById('error');
+            resultEl.textContent = 'Loading...';
+            errorEl.textContent = '';
+
+            try {
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+                
+                console.log('Sending request...', { username });
+                
+                const response = await fetch('/api/operations/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                console.log('Response status:', response.status);
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+
+                if (data.success) {
+                    resultEl.textContent = 'SUCCESS! Redirecting...';
+                    localStorage.setItem('bna_ops_session', data.sessionId);
+                    setTimeout(() => window.location.href = '/operations', 1000);
+                } else {
+                    errorEl.textContent = 'Error: ' + (data.error || 'Unknown error');
+                    resultEl.textContent = '';
+                }
+            } catch (err) {
+                console.error('Fetch error:', err);
+                errorEl.textContent = 'Network error: ' + err.message;
+                resultEl.textContent = '';
+            }
+        });
+    </script>
+</body>
+</html>
