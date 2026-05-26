@@ -656,6 +656,20 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
   }
 });
 
+// Login endpoint for operations
+app.post('/api/operations/login', async (req, res) => {
+  const { username, password } = req.body;
+  
+  if (username.toLowerCase() === OPS_USERNAME.toLowerCase() && 
+      password.toLowerCase() === OPS_PASSWORD.toLowerCase()) {
+    // Generate simple session ID
+    const sessionId = Buffer.from(`${username}:${Date.now()}`).toString('base64');
+    res.json({ success: true, sessionId });
+  } else {
+    res.status(401).json({ success: false, error: 'Invalid credentials' });
+  }
+});
+
 // Operations dashboard - with login redirect
 app.get('/operations', (req, res) => {
   const authHeader = req.headers.authorization;
