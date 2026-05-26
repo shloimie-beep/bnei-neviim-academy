@@ -73,14 +73,27 @@ const GHL_API_VERSION = '2021-07-28';
 // Admin auth middleware - case insensitive
 function requireAdmin(req, res, next) {
   const authHeader = req.headers.authorization;
+  
+  // If no auth header, redirect to login page
   if (!authHeader || !authHeader.startsWith('Basic ')) {
+    // Check if request wants HTML (browser) or JSON (API)
+    const acceptHeader = req.headers.accept || '';
+    if (acceptHeader.includes('text/html')) {
+      return res.redirect('/operations-login.html');
+    }
     return res.status(401).json({ error: 'Unauthorized' });
   }
+  
   const creds = Buffer.from(authHeader.slice(6), 'base64').toString();
   const [user, pass] = creds.split(':');
+  
   // Case insensitive comparison
   if (user.toLowerCase() !== OPS_USERNAME.toLowerCase() || 
       pass.toLowerCase() !== OPS_PASSWORD.toLowerCase()) {
+    const acceptHeader = req.headers.accept || '';
+    if (acceptHeader.includes('text/html')) {
+      return res.redirect('/operations-login.html');
+    }
     return res.status(401).json({ error: 'Invalid credentials' });
   }
   next();
