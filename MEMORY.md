@@ -219,9 +219,58 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 
 **Recommendation:** Stick with file-based until MEMORY.md exceeds 200 lines or you need semantic search ("what did I say about marketing last month?").
 
+### Railway Hosting (Completed ✅)
+- Railway account created
+- 9 environment variables configured
+- Auto-deploy from GitHub enabled
+
+### Telegram Bot (Configured ✅)
+- Bot token: `@shlomofam_bot`
+- Chat ID: 8202155026
+- Features: Buttons-based (no slash commands), links to Operations dashboard
+- Natural language parsing for rambles
+
+### GHL Integration (Blocked ⏳)
+- PIT token configured but 403 error
+- Token needs location access enabled in GHL dashboard
+- 4 existing signups pending sync
+
+### Domain
+- bneineviimacademy.org
+- DNS configuration pending
+
 ### Pending
-- Telegram bot activation (needs chat ID, webhook setup)
-- Railway hosting setup
-- DNS configuration
-- Website polish (screenshots show current state)
-- Voice/AI integration (clarify: "Sawn" not found - did you mean Bland AI, Retell, Vapi, or Twilio?)
+- Apply database migration for pipeline tables
+- Update Operations dashboard with pipeline UI
+- Deploy Telegram webhook
+- Set up CLI bridge (Telegram → terminal)
+- Green Invoice webhook configuration
+
+---
+
+## Holy Flow Task Pipeline System
+
+### Pipeline Stages
+1. **Inbox** - Raw captures from rambles/Telegram
+2. **Clarify** - Needs clarification/validation
+3. **Plan** - Steps defined
+4. **Execute** - Active work
+5. **Review** - Done, needs verification
+6. **Complete** - Verified complete
+7. **Archive** - Historical record
+
+### Task Categories
+- admin, marketing, parent_coaching, student_operations
+- finance, legal, communications, operations
+
+### Ramble Protocol
+- Capture raw text/voice in `bna_ramble_raw` table
+- Auto-parse for: urgency, category, steps, entities
+- Create task in Inbox with extracted metadata
+- Present for operator confirmation
+
+### Event-Driven Architecture
+- No cron jobs (avoid API usage burn)
+- Webhook-triggered actions only
+- Telegram bot: inline buttons link to Operations dashboard
+- GHL webhooks: real-time contact sync

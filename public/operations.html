@@ -2,88 +2,543 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BNA Operations</title>
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#1A1A1A">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        html, body {
-            width: 100%;
-            max-width: 100%;
-            overflow-x: hidden;
-        }
-
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
         body {
-            font-family: 'Inter', system-ui, sans-serif;
-            background: #FAF6EE;
-            color: #1A1A1A;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
         }
-
-        /* Scrollbar hide utility */
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
+        
+        /* Header */
+        .header {
+            background: #0f172a;
+            color: white;
+            padding: 16px 24px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
-        .scrollbar-hide::-webkit-scrollbar {
+        
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .header h1 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        
+        .header p {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .btn {
+            padding: 10px 18px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .btn-primary {
+            background: #c9a227;
+            color: #0f172a;
+        }
+        
+        .btn-primary:hover {
+            background: #d4b43a;
+        }
+        
+        .btn-secondary {
+            background: #334155;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #475569;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+        
+        /* Container */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+        
+        /* Summary Cards */
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+        
+        .summary-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .summary-card.urgent { border-top: 3px solid #ef4444; }
+        .summary-card.pending { border-top: 3px solid #f59e0b; }
+        .summary-card.today { border-top: 3px solid #3b82f6; }
+        .summary-card.done { border-top: 3px solid #10b981; }
+        
+        .summary-card .number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        
+        .summary-card .label {
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #64748b;
+            margin-top: 4px;
+        }
+        
+        /* Filters */
+        .filters {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .filter-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        
+        .filter-row:last-child {
+            margin-bottom: 0;
+        }
+        
+        .search-box {
+            flex: 1;
+            position: relative;
+        }
+        
+        .search-box input {
+            width: 100%;
+            padding: 10px 14px 10px 40px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .search-box svg {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+        
+        select, input[type="text"], input[type="date"], textarea {
+            padding: 10px 14px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        
+        .category-pills {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .pill {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            background: #f1f5f9;
+            color: #64748b;
+        }
+        
+        .pill.active {
+            background: #0f172a;
+            color: white;
+        }
+        
+        /* Task List */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        
+        .task-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+        }
+        
+        .task-card.done {
+            opacity: 0.7;
+        }
+        
+        .task-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #cbd5e1;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+        
+        .task-checkbox.checked {
+            background: #10b981;
+            border-color: #10b981;
+            color: white;
+        }
+        
+        .task-content {
+            flex: 1;
+            min-width: 0;
+        }
+        
+        .task-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #0f172a;
+            margin-bottom: 6px;
+        }
+        
+        .task-card.done .task-title {
+            text-decoration: line-through;
+        }
+        
+        .task-notes {
+            font-size: 13px;
+            color: #64748b;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .task-meta {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+        
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        
+        .badge-category-accounting { background: #f3e8ff; color: #7c3aed; }
+        .badge-category-marketing { background: #dbeafe; color: #2563eb; }
+        .badge-category-communications { background: #ccfbf1; color: #0d9488; }
+        
+        .badge-urgency-urgent { background: #fef2f2; color: #dc2626; }
+        .badge-urgency-today { background: #fffbeb; color: #d97706; }
+        .badge-urgency-thisweek { background: #eff6ff; color: #2563eb; }
+        .badge-urgency-low { background: #f8fafc; color: #64748b; }
+        
+        .badge-status-pending { background: #fffbeb; color: #b45309; }
+        .badge-status-inprogress { background: #eff6ff; color: #1d4ed8; }
+        .badge-status-waiting { background: #f3e8ff; color: #7c3aed; }
+        .badge-status-done { background: #ecfdf5; color: #059669; }
+        
+        .task-footer {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        
+        .task-footer span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        
+        .task-actions {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            border: none;
+            background: #f1f5f9;
+            color: #64748b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .icon-btn:hover {
+            background: #e2e8f0;
+        }
+        
+        .icon-btn.danger {
+            background: #fef2f2;
+            color: #ef4444;
+        }
+        
+        .icon-btn.danger:hover {
+            background: #fee2e2;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #94a3b8;
+        }
+        
+        .empty-state svg {
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        
+        .empty-state h3 {
+            font-size: 16px;
+            color: #64748b;
+            margin-bottom: 8px;
+        }
+        
+        /* Modal */
+        .modal-overlay {
             display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
-
-        /* Line clamp */
-        .line-clamp-2 {
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+        
+        .modal-overlay.show {
+            display: flex;
+        }
+        
+        .modal {
+            background: white;
+            border-radius: 16px;
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow: auto;
+        }
+        
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .modal-header h2 {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #94a3b8;
+            cursor: pointer;
+        }
+        
+        .modal-body {
+            padding: 24px;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 6px;
+        }
+        
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+        }
+        
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        
+        .option-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .option-btn {
+            flex: 1;
+            min-width: 80px;
+            padding: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .option-btn:hover {
+            border-color: #3b82f6;
+        }
+        
+        .option-btn.active {
+            border-color: #0f172a;
+            background: #f8fafc;
+            color: #0f172a;
+            font-weight: 600;
+        }
+        
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 12px;
+        }
+        
+        .modal-footer .btn {
+            flex: 1;
+        }
+        
+        /* Loading */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            color: #94a3b8;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .summary-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .filter-row {
+                flex-direction: column;
+            }
+            
+            .task-card {
+                flex-direction: column;
+            }
+            
+            .task-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <div id="root"></div>
+    <div id="app">
+        <div class="loading">Loading...</div>
+    </div>
 
-    <script type="text/babel">
-        const { useState, useEffect, useMemo } = React;
-
-        // Types
-        const CATEGORIES = ['Accounting', 'Marketing', 'Communications'];
-        const URGENCIES = ['Urgent', 'Today', 'This week', 'Low priority'];
-        const STATUSES = ['Pending', 'In progress', 'Waiting on someone', 'Done'];
-
-        // API helper
+    <script>
+        // API Client
         const api = {
             async request(method, path, body) {
                 const sessionId = localStorage.getItem('bna_ops_session');
                 const options = {
                     method,
-                    headers: {
-                        'Authorization': 'Bearer ' + sessionId,
-                        'Content-Type': 'application/json'
-                    }
+                    headers: { 'Authorization': 'Bearer ' + sessionId, 'Content-Type': 'application/json' }
                 };
                 if (body) options.body = JSON.stringify(body);
-                
                 const response = await fetch('/api/operations' + path, options);
-                
                 if (response.status === 401) {
                     localStorage.removeItem('bna_ops_session');
                     window.location.href = '/operations/login';
                     return null;
                 }
-                
                 return response.json();
             },
             getTasks() { return this.request('GET', '/tasks'); },
@@ -92,483 +547,347 @@
             deleteTask(id) { return this.request('DELETE', '/tasks/' + id); }
         };
 
-        // Summary Cards Component
-        function SummaryCards({ tasks }) {
-            const pendingCount = tasks.filter(t => t.status === 'Pending').length;
-            const urgentCount = tasks.filter(t => t.urgency === 'Urgent' && t.status !== 'Done').length;
-            const dueTodayCount = tasks.filter(t => {
-                if (t.status === 'Done') return false;
-                const today = new Date().toISOString().split('T')[0];
-                return t.dueDate === today || t.urgency === 'Today';
-            }).length;
-            const doneCount = tasks.filter(t => t.status === 'Done').length;
+        // State
+        let tasks = [];
+        let filters = { category: 'All', urgency: 'All', status: 'All', search: '' };
+        let editingTask = null;
 
-            const cards = [
-                { label: 'Pending', count: pendingCount, color: 'bg-amber-100 text-amber-800 border-amber-200' },
-                { label: 'Urgent', count: urgentCount, color: 'bg-rose-100 text-rose-800 border-rose-200' },
-                { label: 'Due Today', count: dueTodayCount, color: 'bg-blue-100 text-blue-800 border-blue-200' },
-                { label: 'Done', count: doneCount, color: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
-            ];
-
-            return (
-                <div className="grid grid-cols-4 gap-2 mb-4">
-                    {cards.map(card => (
-                        <div key={card.label} className={`rounded-xl border p-2 text-center ${card.color}`}>
-                            <div className="text-xl font-bold">{card.count}</div>
-                            <div className="text-[10px] font-medium uppercase tracking-wide mt-0.5">{card.label}</div>
+        // Render functions
+        function renderHeader() {
+            return `
+                <header class="header">
+                    <div class="header-content">
+                        <div>
+                            <h1>BNA Operations</h1>
+                            <p>Task management for the academy</p>
                         </div>
-                    ))}
-                </div>
-            );
+                        <div class="header-actions">
+                            <button class="btn btn-primary" onclick="openModal()">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                                New Task
+                            </button>
+                            <button class="btn btn-secondary" onclick="logout()">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                </header>
+            `;
         }
 
-        // Task Filters Component
-        function TaskFilters({ filters, onChange }) {
-            const updateFilter = (key, value) => onChange({ ...filters, [key]: value });
-            const categoryTabs = ['All', ...CATEGORIES];
+        function renderSummaryCards() {
+            const counts = {
+                pending: tasks.filter(t => t.status === 'Pending').length,
+                urgent: tasks.filter(t => t.urgency === 'Urgent' && t.status !== 'Done').length,
+                today: tasks.filter(t => {
+                    if (t.status === 'Done') return false;
+                    const today = new Date().toISOString().split('T')[0];
+                    return t.dueDate === today || t.urgency === 'Today';
+                }).length,
+                done: tasks.filter(t => t.status === 'Done').length
+            };
 
-            return (
-                <div className="space-y-3 mb-4">
-                    <div className="flex gap-1 overflow-x-auto pb-1 scrollbar-hide -mx-4 px-4">
-                        {categoryTabs.map(cat => (
-                            <button
-                                key={cat}
-                                onClick={() => updateFilter('category', cat)}
-                                className={`flex-shrink-0 px-3 py-2 rounded-lg text-sm font-medium transition-colors whitespace-nowrap ${
-                                    filters.category === cat ? 'bg-gray-900 text-white' : 'bg-white border border-gray-200 text-gray-600'
-                                }`}
-                            >
-                                {cat}
-                            </button>
-                        ))}
+            return `
+                <div class="summary-cards">
+                    <div class="summary-card pending">
+                        <div class="number">${counts.pending}</div>
+                        <div class="label">Pending</div>
                     </div>
-
-                    <div className="relative">
-                        <input
-                            type="text"
-                            placeholder="Search tasks..."
-                            value={filters.search}
-                            onChange={e => updateFilter('search', e.target.value)}
-                            className="w-full px-4 py-2.5 pl-10 bg-white border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                        />
-                        <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
+                    <div class="summary-card urgent">
+                        <div class="number">${counts.urgent}</div>
+                        <div class="label">Urgent</div>
                     </div>
+                    <div class="summary-card today">
+                        <div class="number">${counts.today}</div>
+                        <div class="label">Due Today</div>
+                    </div>
+                    <div class="summary-card done">
+                        <div class="number">${counts.done}</div>
+                        <div class="label">Completed</div>
+                    </div>
+                </div>
+            `;
+        }
 
-                    <div className="flex gap-2">
-                        <select
-                            value={filters.urgency}
-                            onChange={e => updateFilter('urgency', e.target.value)}
-                            className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
-                        >
-                            <option>All urgency</option>
-                            {URGENCIES.map(u => <option key={u}>{u}</option>)}
+        function renderFilters() {
+            const categories = ['All', 'Accounting', 'Marketing', 'Communications'];
+            return `
+                <div class="filters">
+                    <div class="filter-row">
+                        <div class="search-box">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+                            <input type="text" placeholder="Search tasks..." value="${filters.search}" oninput="updateFilter('search', this.value)">
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="category-pills">
+                            ${categories.map(cat => `
+                                <button class="pill ${filters.category === cat ? 'active' : ''}" onclick="updateFilter('category', '${cat}')">${cat}</button>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <select onchange="updateFilter('urgency', this.value)">
+                            <option value="All" ${filters.urgency === 'All' ? 'selected' : ''}>All urgency</option>
+                            <option value="Urgent" ${filters.urgency === 'Urgent' ? 'selected' : ''}>Urgent</option>
+                            <option value="Today" ${filters.urgency === 'Today' ? 'selected' : ''}>Today</option>
+                            <option value="This week" ${filters.urgency === 'This week' ? 'selected' : ''}>This week</option>
+                            <option value="Low priority" ${filters.urgency === 'Low priority' ? 'selected' : ''}>Low priority</option>
                         </select>
-                        <select
-                            value={filters.status}
-                            onChange={e => updateFilter('status', e.target.value)}
-                            className="flex-1 px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm"
-                        >
-                            <option>All statuses</option>
-                            {STATUSES.map(s => <option key={s}>{s}</option>)}
+                        <select onchange="updateFilter('status', this.value)">
+                            <option value="All" ${filters.status === 'All' ? 'selected' : ''}>All statuses</option>
+                            <option value="Pending" ${filters.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                            <option value="In progress" ${filters.status === 'In progress' ? 'selected' : ''}>In progress</option>
+                            <option value="Waiting on someone" ${filters.status === 'Waiting on someone' ? 'selected' : ''}>Waiting on someone</option>
+                            <option value="Done" ${filters.status === 'Done' ? 'selected' : ''}>Done</option>
                         </select>
                     </div>
                 </div>
-            );
+            `;
         }
 
-        // Task Card Component
-        function TaskCard({ task, onEdit, onDelete, onToggleDone }) {
-            const isDone = task.status === 'Done';
-
-            const categoryColors = {
-                Accounting: 'bg-purple-100 text-purple-800 border-purple-200',
-                Marketing: 'bg-blue-100 text-blue-800 border-blue-200',
-                Communications: 'bg-teal-100 text-teal-800 border-teal-200',
-            };
-
-            const urgencyColors = {
-                Urgent: 'bg-rose-100 text-rose-800 border-rose-200',
-                Today: 'bg-amber-100 text-amber-800 border-amber-200',
-                'This week': 'bg-blue-100 text-blue-800 border-blue-200',
-                'Low priority': 'bg-gray-100 text-gray-600 border-gray-200',
-            };
-
-            const statusColors = {
-                Pending: 'bg-amber-100 text-amber-800 border-amber-200',
-                'In progress': 'bg-blue-100 text-blue-800 border-blue-200',
-                'Waiting on someone': 'bg-purple-100 text-purple-800 border-purple-200',
-                Done: 'bg-emerald-100 text-emerald-800 border-emerald-200',
-            };
-
-            const formatDate = dateStr => {
-                if (!dateStr) return null;
-                return new Date(dateStr).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-            };
-
-            return (
-                <div className={`bg-white border border-gray-200 rounded-xl p-4 ${isDone ? 'opacity-60' : ''}`}>
-                    <div className="flex items-start justify-between gap-3">
-                        <div className="flex-1 min-w-0">
-                            <h3 className={`font-semibold text-gray-900 mb-1 ${isDone ? 'line-through' : ''}`}>{task.title}</h3>
-                            {task.notes && <p className="text-sm text-gray-500 line-clamp-2 mb-2">{task.notes}</p>}
-                            
-                            <div className="flex flex-wrap gap-1.5 mb-2">
-                                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${categoryColors[task.category]}`}>{task.category}</span>
-                                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${urgencyColors[task.urgency]}`}>{task.urgency}</span>
-                                <span className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium border ${statusColors[task.status]}`}>{task.status}</span>
-                            </div>
-
-                            <div className="flex flex-wrap items-center gap-3 text-xs text-gray-500">
-                                {task.dueDate && (
-                                    <span className="flex items-center gap-1">
-                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                                        </svg>
-                                        {formatDate(task.dueDate)}
-                                    </span>
-                                )}
-                                {task.owner && (
-                                    <span className="flex items-center gap-1">
-                                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                        </svg>
-                                        {task.owner}
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-
-                        <div className="flex items-center gap-1 flex-shrink-0">
-                            <button onClick={() => onToggleDone(task)} className={`p-2 rounded-lg ${isDone ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
-                                {isDone ? (
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                    </svg>
-                                ) : (
-                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                                    </svg>
-                                )}
-                            </button>
-                            <button onClick={() => onEdit(task)} className="p-2 rounded-lg bg-gray-100 text-gray-700">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                </svg>
-                            </button>
-                            <button onClick={() => onDelete(task.id)} className="p-2 rounded-lg bg-rose-100 text-rose-700">
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            );
-        }
-
-        // Task Form Modal
-        function TaskFormModal({ task, isOpen, onClose, onSave }) {
-            const [formData, setFormData] = useState({
-                title: '', notes: '', category: 'Accounting', urgency: 'This week', status: 'Pending', dueDate: '', owner: ''
+        function renderTaskList() {
+            const filtered = tasks.filter(t => {
+                if (filters.category !== 'All' && t.category !== filters.category) return false;
+                if (filters.urgency !== 'All' && t.urgency !== filters.urgency) return false;
+                if (filters.status !== 'All' && t.status !== filters.status) return false;
+                if (filters.search) {
+                    const s = filters.search.toLowerCase();
+                    return t.title.toLowerCase().includes(s) || (t.notes || '').toLowerCase().includes(s);
+                }
+                return true;
+            }).sort((a, b) => {
+                if (a.status === 'Done' && b.status !== 'Done') return 1;
+                if (a.status !== 'Done' && b.status === 'Done') return -1;
+                const order = { 'Urgent': 0, 'Today': 1, 'This week': 2, 'Low priority': 3 };
+                return order[a.urgency] - order[b.urgency];
             });
 
-            useEffect(() => {
-                if (task) {
-                    setFormData({
-                        title: task.title,
-                        notes: task.notes || '',
-                        category: task.category,
-                        urgency: task.urgency,
-                        status: task.status,
-                        dueDate: task.dueDate || '',
-                        owner: task.owner || ''
-                    });
-                } else {
-                    setFormData({ title: '', notes: '', category: 'Accounting', urgency: 'This week', status: 'Pending', dueDate: '', owner: '' });
-                }
-            }, [task, isOpen]);
-
-            const handleSubmit = e => {
-                e.preventDefault();
-                onSave({
-                    ...formData,
-                    dueDate: formData.dueDate || null,
-                    owner: formData.owner || null
-                });
-                onClose();
-            };
-
-            if (!isOpen) return null;
-
-            return (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
-                    <div className="bg-white rounded-2xl border border-gray-200 w-full max-w-md max-h-[90vh] overflow-y-auto">
-                        <div className="p-4 border-b border-gray-200">
-                            <h2 className="text-lg font-semibold">{task ? 'Edit Task' : 'Add New Task'}</h2>
-                        </div>
-                        <form onSubmit={handleSubmit} className="p-4 space-y-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Title *</label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={formData.title}
-                                    onChange={e => setFormData({...formData, title: e.target.value})}
-                                    className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
-                                <textarea
-                                    rows={3}
-                                    value={formData.notes}
-                                    onChange={e => setFormData({...formData, notes: e.target.value})}
-                                    className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 resize-none"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
-                                <div className="grid grid-cols-3 gap-2">
-                                    {CATEGORIES.map(cat => (
-                                        <button
-                                            key={cat}
-                                            type="button"
-                                            onClick={() => setFormData({...formData, category: cat})}
-                                            className={`px-3 py-2 rounded-lg text-sm font-medium ${formData.category === cat ? 'bg-gray-900 text-white' : 'bg-gray-50 border border-gray-200'}`}
-                                        >
-                                            {cat}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Urgency *</label>
-                                <div className="grid grid-cols-2 gap-2">
-                                    {URGENCIES.map(urg => (
-                                        <button
-                                            key={urg}
-                                            type="button"
-                                            onClick={() => setFormData({...formData, urgency: urg})}
-                                            className={`px-3 py-2 rounded-lg text-sm font-medium ${formData.urgency === urg ? 'bg-gray-900 text-white' : 'bg-gray-50 border border-gray-200'}`}
-                                        >
-                                            {urg}
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Status *</label>
-                                <select
-                                    value={formData.status}
-                                    onChange={e => setFormData({...formData, status: e.target.value})}
-                                    className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm"
-                                >
-                                    {STATUSES.map(s => <option key={s}>{s}</option>)}
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Due Date (optional)</label>
-                                <input
-                                    type="date"
-                                    value={formData.dueDate}
-                                    onChange={e => setFormData({...formData, dueDate: e.target.value})}
-                                    className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Owner (optional)</label>
-                                <input
-                                    type="text"
-                                    value={formData.owner}
-                                    onChange={e => setFormData({...formData, owner: e.target.value})}
-                                    className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm"
-                                    placeholder="Who is responsible?"
-                                />
-                            </div>
-                            <div className="flex gap-3 pt-2">
-                                <button type="button" onClick={onClose} className="flex-1 px-4 py-2.5 bg-gray-100 rounded-lg text-sm font-medium">Cancel</button>
-                                <button type="submit" className="flex-1 px-4 py-2.5 bg-gray-900 text-white rounded-lg text-sm font-medium">{task ? 'Save Changes' : 'Add Task'}</button>
-                            </div>
-                        </form>
+            if (filtered.length === 0) {
+                return `
+                    <div class="empty-state">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 12h-6l-2 3h-6l-2-3H2"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+                        <h3>No tasks found</h3>
+                        <p>Create your first task to get started</p>
                     </div>
-                </div>
-            );
-        }
-
-        // Main App
-        function TaskApp() {
-            const [tasks, setTasks] = useState([]);
-            const [isLoaded, setIsLoaded] = useState(false);
-            const [filters, setFilters] = useState({ category: 'All', urgency: 'All urgency', status: 'All statuses', search: '' });
-            const [isModalOpen, setIsModalOpen] = useState(false);
-            const [editingTask, setEditingTask] = useState(null);
-
-            useEffect(() => {
-                loadTasks();
-            }, []);
-
-            const loadTasks = async () => {
-                const data = await api.getTasks();
-                if (data && data.success) {
-                    setTasks(data.tasks);
-                }
-                setIsLoaded(true);
-            };
-
-            const filteredTasks = useMemo(() => {
-                return tasks.filter(task => {
-                    if (filters.category !== 'All' && task.category !== filters.category) return false;
-                    if (filters.urgency !== 'All urgency' && task.urgency !== filters.urgency) return false;
-                    if (filters.status !== 'All statuses' && task.status !== filters.status) return false;
-                    if (filters.search) {
-                        const search = filters.search.toLowerCase();
-                        return task.title.toLowerCase().includes(search) || (task.notes && task.notes.toLowerCase().includes(search));
-                    }
-                    return true;
-                });
-            }, [tasks, filters]);
-
-            const sortedTasks = useMemo(() => {
-                const urgencyOrder = { Urgent: 0, Today: 1, 'This week': 2, 'Low priority': 3 };
-                return [...filteredTasks].sort((a, b) => {
-                    if (a.status === 'Done' && b.status !== 'Done') return 1;
-                    if (a.status !== 'Done' && b.status === 'Done') return -1;
-                    const diff = urgencyOrder[a.urgency] - urgencyOrder[b.urgency];
-                    if (diff !== 0) return diff;
-                    if (a.dueDate && b.dueDate) return a.dueDate.localeCompare(b.dueDate);
-                    if (a.dueDate) return -1;
-                    if (b.dueDate) return 1;
-                    return 0;
-                });
-            }, [filteredTasks]);
-
-            const handleAddTask = async taskData => {
-                const data = await api.createTask(taskData);
-                if (data && data.success) {
-                    loadTasks();
-                }
-            };
-
-            const handleEditTask = async taskData => {
-                if (editingTask) {
-                    const data = await api.updateTask(editingTask.id, taskData);
-                    if (data && data.success) {
-                        loadTasks();
-                    }
-                }
-            };
-
-            const handleDeleteTask = async id => {
-                if (confirm('Are you sure you want to delete this task?')) {
-                    const data = await api.deleteTask(id);
-                    if (data && data.success) {
-                        loadTasks();
-                    }
-                }
-            };
-
-            const handleToggleDone = async task => {
-                const newStatus = task.status === 'Done' ? 'Pending' : 'Done';
-                const data = await api.updateTask(task.id, { ...task, status: newStatus });
-                if (data && data.success) {
-                    loadTasks();
-                }
-            };
-
-            const handleLogout = async () => {
-                const sessionId = localStorage.getItem('bna_ops_session');
-                await fetch('/api/operations/logout', {
-                    method: 'POST',
-                    headers: { 'Authorization': 'Bearer ' + sessionId }
-                });
-                localStorage.removeItem('bna_ops_session');
-                window.location.href = '/operations/login';
-            };
-
-            if (!isLoaded) {
-                return (
-                    <div className="min-h-screen flex items-center justify-center">
-                        <div className="text-gray-500">Loading...</div>
-                    </div>
-                );
+                `;
             }
 
-            return (
-                <div className="min-h-screen bg-[#FAF6EE]">
-                    <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-sm border-b border-gray-200">
-                        <div className="max-w-3xl mx-auto px-4 py-3">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <h1 className="text-xl font-bold text-gray-900">BNA Operations</h1>
-                                    <p className="text-xs text-gray-500">Simple task control for the academy</p>
+            return `
+                <div class="task-list">
+                    ${filtered.map(task => renderTaskCard(task)).join('')}
+                </div>
+            `;
+        }
+
+        function renderTaskCard(task) {
+            const isDone = task.status === 'Done';
+            const categoryClass = 'badge-category-' + task.category.toLowerCase().replace(' ', '');
+            const urgencyClass = 'badge-urgency-' + task.urgency.toLowerCase().replace(' ', '').replace('priority', '');
+            const statusClass = 'badge-status-' + task.status.toLowerCase().replace(' ', '').replace('on', '');
+            
+            const formatDate = d => d ? new Date(d).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' }) : '';
+
+            return `
+                <div class="task-card ${isDone ? 'done' : ''}">
+                    <div class="task-checkbox ${isDone ? 'checked' : ''}" onclick="toggleTask(${task.id})">
+                        ${isDone ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+                    </div>
+                    <div class="task-content">
+                        <div class="task-title">${escapeHtml(task.title)}</div>
+                        ${task.notes ? `<div class="task-notes">${escapeHtml(task.notes)}</div>` : ''}
+                        <div class="task-meta">
+                            <span class="badge ${categoryClass}">${task.category}</span>
+                            <span class="badge ${urgencyClass}">${task.urgency}</span>
+                            <span class="badge ${statusClass}">${task.status}</span>
+                        </div>
+                        <div class="task-footer">
+                            ${task.dueDate ? `<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ${formatDate(task.dueDate)}</span>` : ''}
+                            ${task.owner ? `<span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> ${escapeHtml(task.owner)}</span>` : ''}
+                        </div>
+                    </div>
+                    <div class="task-actions">
+                        <button class="icon-btn" onclick="editTask(${task.id})">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                        </button>
+                        <button class="icon-btn danger" onclick="deleteTask(${task.id})">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderModal() {
+            const isEditing = editingTask !== null;
+            const task = isEditing ? editingTask : {};
+            
+            return `
+                <div class="modal-overlay ${isEditing ? 'show' : ''}" id="modal">
+                    <div class="modal">
+                        <div class="modal-header">
+                            <h2>${isEditing ? 'Edit Task' : 'New Task'}</h2>
+                            <button class="modal-close" onclick="closeModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Title</label>
+                                <input type="text" id="taskTitle" value="${escapeHtml(task.title || '')}" placeholder="What needs to be done?">
+                            </div>
+                            <div class="form-group">
+                                <label>Notes</label>
+                                <textarea id="taskNotes" placeholder="Add details...">${escapeHtml(task.notes || '')}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Category</label>
+                                <div class="option-buttons">
+                                    ${['Accounting', 'Marketing', 'Communications'].map(cat => `
+                                        <button type="button" class="option-btn ${task.category === cat ? 'active' : ''}" onclick="selectOption('category', '${cat}')" data-category="${cat}">${cat}</button>
+                                    `).join('')}
                                 </div>
-                                <div className="flex items-center gap-2">
-                                    <button onClick={() => { setEditingTask(null); setIsModalOpen(true); }} className="flex items-center gap-1.5 px-4 py-2 bg-gray-900 text-white rounded-lg text-sm font-medium">
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                                        </svg>
-                                        Add Task
-                                    </button>
-                                    <button onClick={handleLogout} className="p-2 text-gray-500 hover:text-gray-700" title="Logout">
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                        </svg>
-                                    </button>
+                            </div>
+                            <div class="form-group">
+                                <label>Urgency</label>
+                                <div class="option-buttons">
+                                    ${['Urgent', 'Today', 'This week', 'Low priority'].map(urg => `
+                                        <button type="button" class="option-btn ${task.urgency === urg ? 'active' : ''}" onclick="selectOption('urgency', '${urg}')" data-urgency="${urg}">${urg}</button>
+                                    `).join('')}
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Status</label>
+                                <select id="taskStatus">
+                                    ${['Pending', 'In progress', 'Waiting on someone', 'Done'].map(s => `
+                                        <option value="${s}" ${task.status === s ? 'selected' : ''}>${s}</option>
+                                    `).join('')}
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Due Date</label>
+                                    <input type="date" id="taskDueDate" value="${task.dueDate || ''}">
+                                </div>
+                                <div class="form-group">
+                                    <label>Owner</label>
+                                    <input type="text" id="taskOwner" value="${escapeHtml(task.owner || '')}" placeholder="Who's responsible?">
                                 </div>
                             </div>
                         </div>
-                    </header>
-
-                    <main className="max-w-3xl mx-auto px-4 py-4">
-                        <SummaryCards tasks={tasks} />
-                        <TaskFilters filters={filters} onChange={setFilters} />
-
-                        <div className="flex items-center justify-between mb-3">
-                            <span className="text-sm text-gray-500">{sortedTasks.length} task{sortedTasks.length !== 1 ? 's' : ''}</span>
-                            {(filters.category !== 'All' || filters.urgency !== 'All urgency' || filters.status !== 'All statuses' || filters.search) && (
-                                <button onClick={() => setFilters({ category: 'All', urgency: 'All urgency', status: 'All statuses', search: '' })} className="text-sm text-yellow-600 hover:underline">Clear filters</button>
-                            )}
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                            <button class="btn btn-primary" onclick="saveTask()">${isEditing ? 'Save Changes' : 'Create Task'}</button>
                         </div>
-
-                        <div className="space-y-3">
-                            {sortedTasks.length === 0 ? (
-                                <div className="text-center py-12">
-                                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-yellow-100 flex items-center justify-center">
-                                        <svg className="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                                        </svg>
-                                    </div>
-                                    <p className="text-gray-500 mb-2">No tasks found</p>
-                                    <button onClick={() => { setEditingTask(null); setIsModalOpen(true); }} className="text-yellow-600 hover:underline text-sm">Add your first task</button>
-                                </div>
-                            ) : (
-                                sortedTasks.map(task => (
-                                    <TaskCard
-                                        key={task.id}
-                                        task={task}
-                                        onEdit={task => { setEditingTask(task); setIsModalOpen(true); }}
-                                        onDelete={handleDeleteTask}
-                                        onToggleDone={handleToggleDone}
-                                    />
-                                ))
-                            )}
-                        </div>
-                    </main>
-
-                    <TaskFormModal
-                        task={editingTask}
-                        isOpen={isModalOpen}
-                        onClose={() => { setIsModalOpen(false); setEditingTask(null); }}
-                        onSave={editingTask ? handleEditTask : handleAddTask}
-                    />
+                    </div>
                 </div>
-            );
+            `;
         }
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<TaskApp />);
+        // Helpers
+        function escapeHtml(text) {
+            if (!text) return '';
+            return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // Actions
+        async function loadTasks() {
+            const data = await api.getTasks();
+            if (data?.success) {
+                tasks = data.tasks;
+                render();
+            }
+        }
+
+        function render() {
+            const app = document.getElementById('app');
+            app.innerHTML = `
+                ${renderHeader()}
+                <div class="container">
+                    ${renderSummaryCards()}
+                    ${renderFilters()}
+                    ${renderTaskList()}
+                </div>
+                ${renderModal()}
+            `;
+        }
+
+        function updateFilter(key, value) {
+            filters[key] = value;
+            render();
+        }
+
+        function openModal() {
+            editingTask = null;
+            render();
+            document.getElementById('modal').classList.add('show');
+        }
+
+        function closeModal() {
+            document.getElementById('modal').classList.remove('show');
+            editingTask = null;
+        }
+
+        function editTask(id) {
+            editingTask = tasks.find(t => t.id === id);
+            render();
+            document.getElementById('modal').classList.add('show');
+        }
+
+        async function deleteTask(id) {
+            if (!confirm('Delete this task?')) return;
+            await api.deleteTask(id);
+            loadTasks();
+        }
+
+        async function toggleTask(id) {
+            const task = tasks.find(t => t.id === id);
+            const newStatus = task.status === 'Done' ? 'Pending' : 'Done';
+            await api.updateTask(id, { ...task, status: newStatus });
+            loadTasks();
+        }
+
+        function selectOption(type, value) {
+            if (type === 'category') {
+                editingTask = editingTask || {};
+                editingTask.category = value;
+            } else if (type === 'urgency') {
+                editingTask = editingTask || {};
+                editingTask.urgency = value;
+            }
+            render();
+            document.getElementById('modal').classList.add('show');
+        }
+
+        async function saveTask() {
+            const title = document.getElementById('taskTitle').value;
+            if (!title) return alert('Title is required');
+            
+            const taskData = {
+                title,
+                notes: document.getElementById('taskNotes').value,
+                category: document.querySelector('[data-category].active')?.dataset.category || 'Accounting',
+                urgency: document.querySelector('[data-urgency].active')?.dataset.urgency || 'This week',
+                status: document.getElementById('taskStatus').value,
+                dueDate: document.getElementById('taskDueDate').value,
+                owner: document.getElementById('taskOwner').value
+            };
+            
+            if (editingTask?.id) {
+                await api.updateTask(editingTask.id, taskData);
+            } else {
+                await api.createTask(taskData);
+            }
+            
+            closeModal();
+            loadTasks();
+        }
+
+        function logout() {
+            localStorage.removeItem('bna_ops_session');
+            window.location.href = '/operations/login';
+        }
+
+        // Init
+        loadTasks();
     </script>
 </body>
 </html>
