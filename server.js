@@ -755,78 +755,28 @@ async function handleTelegramCallback(query) {
 async function handleTelegramMessage(msg) {
   const chatId = msg.chat?.id;
   const text = msg.text || '';
-  const voice = msg.voice;
   
   if (text === '/start') {
     await sendTelegramMenu(chatId);
     return;
   }
   
-  // Handle voice messages (student meeting transcripts)
-  if (voice) {
-    await handleVoiceMessage(chatId, voice, msg);
-    return;
-  }
-  
-  // Store text message in CLI bridge
-  if (text) {
-    try {
-      await pool.query(
-        `INSERT INTO cli_bridge_messages (source, message_type, content, metadata)
-         VALUES ($1, $2, $3, $4)`,
-        ['telegram', 'text', text, JSON.stringify({ chat_id: chatId, message_id: msg.message_id })]
-      );
-    } catch (err) {
-      console.error('CLI bridge error:', err);
-    }
-    
-    // Simple task parsing
-    if (text.toLowerCase().includes('urgent') || text.toLowerCase().includes('asap')) {
-      await sendTelegramMessage(chatId, `🔴 Got it! Urgent task recorded: "${text}"\n\nView in dashboard: https://bneineviimacademy.org/operations`);
-    } else {
-      await sendTelegramMessage(chatId, `✅ Task recorded: "${text}"\n\nView in dashboard: https://bneineviimacademy.org/operations`);
-    }
-  }
-}
-
-async function handleVoiceMessage(chatId, voice, msg) {
-  // Download voice file from Telegram
+  // Store message in CLI bridge
   try {
-    // Get file path from Telegram
-    const fileRes = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/getFile?file_id=${voice.file_id}`);
-    const fileData = await fileRes.json();
-    
-    if (!fileData.ok) {
-      await sendTelegramMessage(chatId, '❌ Could not retrieve voice message');
-      return;
-    }
-    
-    const filePath = fileData.result.file_path;
-    const fileUrl = `https://api.telegram.org/file/bot${TELEGRAM_BOT_TOKEN}/${filePath}`;
-    
-    // Store voice message reference for Whisper processing
     await pool.query(
       `INSERT INTO cli_bridge_messages (source, message_type, content, metadata)
        VALUES ($1, $2, $3, $4)`,
-      ['telegram', 'voice', fileUrl, JSON.stringify({ 
-        chat_id: chatId, 
-        message_id: msg.message_id,
-        file_id: voice.file_id,
-        duration: voice.duration,
-        mime_type: voice.mime_type,
-        file_path: filePath,
-        status: 'pending_transcription'
-      })]
+      ['telegram', 'text', text, JSON.stringify({ chat_id: chatId, message_id: msg.message_id })]
     );
-    
-    await sendTelegramMessage(chatId, `🎤 Voice message received (${voice.duration}s)\n\n⏳ Transcribing with Whisper...\n\nThis will be added to the student's accountability record.`);
-    
-    // TODO: Trigger Whisper transcription (can be done via Kimi CLI or background job)
-    console.log(`Voice message received from ${chatId}: ${fileUrl}`);
-    
   } catch (err) {
-    console.error('Voice message error:', err);
-    await sendTelegramMessage(chatId, '❌ Error processing voice message');
+    console.error('CLI bridge error:', err);
+  }
+  
+  // Simple task parsing
+  if (text.toLowerCase().includes('urgent') || text.toLowerCase().includes('asap')) {
+    await sendTelegramMessage(chatId, `🔴 Got it! Urgent task recorded: "${text}"\n\nView in dashboard: https://bneineviimacademy.org/operations`);
+  } else {
+    await sendTelegramMessage(chatId, `✅ Task recorded: "${text}"\n\nView in dashboard: https://bneineviimacademy.org/operations`);
   }
 }
 
