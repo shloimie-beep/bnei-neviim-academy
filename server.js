@@ -8,8 +8,13 @@ const PORT = process.env.PORT || 8080;
 // Environment variables
 const TELEGRAM_BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 const TELEGRAM_CHAT_ID_SHLOIMIE = process.env.TELEGRAM_CHAT_ID_SHLOIMIE;
-const TELEGRAM_CHAT_ID_AHUVA = process.env.TELEGRAM_CHAT_ID_AHUVA;
+const TELEGRAM_CHAT_ID_AHUVA = process.env.TELEWAY_CHAT_ID_AHUVA;
 const PAYMENT_LINK = process.env.PAYMENT_LINK || 'https://mrng.to/r9DSZhhWE9';
+
+// Auth credentials (hashed password for SHLOIMIE / BNA613!)
+const AUTH_USERNAME = process.env.OPS_USERNAME || 'SHLOIMIE';
+const AUTH_PASSWORD_HASH = process.env.OPS_PASSWORD_HASH || '$2a$10$YourHashHere'; // We'll use simple comparison for now
+const AUTH_PASSWORD = process.env.OPS_PASSWORD || 'BNA613!';
 
 // Middleware
 app.use(express.json());
@@ -21,8 +26,8 @@ const pool = new Pool({
   ssl: { rejectUnauthorized: false }
 });
 
-// Create table if not exists
-const createTableSQL = `
+// Create tables if not exists
+const createSignupsTableSQL = `
 CREATE TABLE IF NOT EXISTS signups (
   id SERIAL PRIMARY KEY,
   parent1_name TEXT NOT NULL,
@@ -43,11 +48,27 @@ CREATE TABLE IF NOT EXISTS signups (
 );
 `;
 
+const createTasksTableSQL = `
+CREATE TABLE IF NOT EXISTS operations_tasks (
+  id SERIAL PRIMARY KEY,
+  title TEXT NOT NULL,
+  notes TEXT DEFAULT '',
+  category TEXT NOT NULL CHECK (category IN ('Accounting', 'Marketing', 'Communications')),
+  urgency TEXT NOT NULL CHECK (urgency IN ('Urgent', 'Today', 'This week', 'Low priority')),
+  status TEXT NOT NULL CHECK (status IN ('Pending', 'In progress', 'Waiting on someone', 'Done')),
+  due_date DATE,
+  owner TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+`;
+
 // Initialize database
 async function initDb() {
   try {
-    await pool.query(createTableSQL);
-    console.log('Database initialized - table created if not exists');
+    await pool.query(createSignupsTableSQL);
+    await pool.query(createTasksTableSQL);
+    console.log('Database initialized - tables created if not exists');
   } catch (err) {
     console.error('Database init error:', err);
   }
@@ -221,6 +242,154 @@ app.get('/api/health', async (req, res) => {
   } catch (err) {
     res.status(500).json({ status: 'error', database: 'disconnected' });
   }
+});
+
+// ===== OPERATIONS TASK MANAGER AUTH & API =====
+
+// Simple session storage (in-memory)
+const sessions = new Map();
+const SESSION_DURATION = 24 * 60 * 60 * 1000; // 24 hours
+
+function generateSessionId() {
+  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
+}
+
+function cleanupSessions() {
+  const now = Date.now();
+  for (const [id, session] of sessions.entries()) {
+    if (session.expires < now) {
+      sessions.delete(id);
+    }
+  }
+}
+
+// Login endpoint
+app.post('/api/operations/login', (req, res) => {
+  const { username, password } = req.body;
+  
+  if (username === AUTH_USERNAME && password === AUTH_PASSWORD) {
+    const sessionId = generateSessionId();
+    sessions.set(sessionId, {
+      username,
+      expires: Date.now() + SESSION_DURATION
+    });
+    
+    res.json({ success: true, sessionId });
+  } else {
+    res.status(401).json({ success: false, error: 'Invalid credentials' });
+  }
+});
+
+// Logout endpoint
+app.post('/api/operations/logout', (req, res) => {
+  const sessionId = req.headers.authorization?.replace('Bearer ', '');
+  if (sessionId) {
+    sessions.delete(sessionId);
+  }
+  res.json({ success: true });
+});
+
+// Auth middleware
+function requireAuth(req, res, next) {
+  const sessionId = req.headers.authorization?.replace('Bearer ', '');
+  
+  if (!sessionId || !sessions.has(sessionId)) {
+    return res.status(401).json({ success: false, error: 'Unauthorized' });
+  }
+  
+  const session = sessions.get(sessionId);
+  if (session.expires < Date.now()) {
+    sessions.delete(sessionId);
+    return res.status(401).json({ success: false, error: 'Session expired' });
+  }
+  
+  req.session = session;
+  next();
+}
+
+// Get all tasks
+app.get('/api/operations/tasks', requireAuth, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT id, title, notes, category, urgency, status, due_date as "dueDate", owner, created_at as "createdAt", updated_at as "updatedAt" FROM operations_tasks ORDER BY created_at DESC'
+    );
+    res.json({ success: true, tasks: result.rows });
+  } catch (error) {
+    console.error('Get tasks error:', error);
+    res.status(500).json({ success: false, error: 'Failed to fetch tasks' });
+  }
+});
+
+// Create task
+app.post('/api/operations/tasks', requireAuth, async (req, res) => {
+  try {
+    const { title, notes, category, urgency, status, dueDate, owner } = req.body;
+    
+    const result = await pool.query(
+      `INSERT INTO operations_tasks (title, notes, category, urgency, status, due_date, owner)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING id, title, notes, category, urgency, status, due_date as "dueDate", owner, created_at as "createdAt", updated_at as "updatedAt"`,
+      [title, notes || '', category, urgency, status, dueDate || null, owner || null]
+    );
+    
+    res.json({ success: true, task: result.rows[0] });
+  } catch (error) {
+    console.error('Create task error:', error);
+    res.status(500).json({ success: false, error: 'Failed to create task' });
+  }
+});
+
+// Update task
+app.put('/api/operations/tasks/:id', requireAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { title, notes, category, urgency, status, dueDate, owner } = req.body;
+    
+    const result = await pool.query(
+      `UPDATE operations_tasks 
+       SET title = $1, notes = $2, category = $3, urgency = $4, status = $5, due_date = $6, owner = $7, updated_at = CURRENT_TIMESTAMP
+       WHERE id = $8
+       RETURNING id, title, notes, category, urgency, status, due_date as "dueDate", owner, created_at as "createdAt", updated_at as "updatedAt"`,
+      [title, notes || '', category, urgency, status, dueDate || null, owner || null, id]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'Task not found' });
+    }
+    
+    res.json({ success: true, task: result.rows[0] });
+  } catch (error) {
+    console.error('Update task error:', error);
+    res.status(500).json({ success: false, error: 'Failed to update task' });
+  }
+});
+
+// Delete task
+app.delete('/api/operations/tasks/:id', requireAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    
+    const result = await pool.query('DELETE FROM operations_tasks WHERE id = $1 RETURNING id', [id]);
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ success: false, error: 'Task not found' });
+    }
+    
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Delete task error:', error);
+    res.status(500).json({ success: false, error: 'Failed to delete task' });
+  }
+});
+
+// Serve operations login page
+app.get('/operations/login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'operations-login.html'));
+});
+
+// Serve operations app (protected)
+app.get('/operations', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'operations.html'));
 });
 
 // Serve index.html for root
