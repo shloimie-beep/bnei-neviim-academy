@@ -85,7 +85,18 @@ const GHL_API_BASE = 'https://services.leadconnectorhq.com';
 const GHL_API_VERSION = '2021-07-28';
 const SESSION_COOKIE_NAME = 'bna_ops_session';
 const SESSION_TTL_MS = 1000 * 60 * 60 * 12;
-const sessions = new Map();
+
+// Sessions table SQL
+const createSessionsSQL = `
+CREATE TABLE IF NOT EXISTS bna_sessions (
+  session_id TEXT PRIMARY KEY,
+  username TEXT NOT NULL,
+  expires_at TIMESTAMP NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_bna_sessions_expires ON bna_sessions(expires_at);
+`;
 
 function loadGoogleOAuthClient() {
   const localClientPath = path.join(__dirname, '.secrets', 'google-oauth-client.json');
@@ -289,28 +300,37 @@ function parseCookies(req) {
     }, {});
 }
 
-function issueSession(username) {
+async function issueSession(username) {
   const sessionId = Buffer.from(`${username}:${Date.now()}:${Math.random().toString(36).slice(2)}`).toString('base64url');
-  sessions.set(sessionId, {
-    username,
-    expiresAt: Date.now() + SESSION_TTL_MS,
-  });
+  const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
+  await pool.query(
+    `INSERT INTO bna_sessions (session_id, username, expires_at) VALUES ($1, $2, $3)`,
+    [sessionId, username, expiresAt]
+  );
   return sessionId;
 }
 
-function getValidSession(sessionId) {
+async function getValidSession(sessionId) {
   if (!sessionId) return null;
-  const session = sessions.get(sessionId);
-  if (!session) return null;
-  if (session.expiresAt <= Date.now()) {
-    sessions.delete(sessionId);
-    return null;
-  }
-  return session;
+  const result = await pool.query(
+    `SELECT * FROM bna_sessions WHERE session_id = $1 AND expires_at > NOW()`,
+    [sessionId]
+  );
+  if (result.rows.length === 0) return null;
+  return {
+    username: result.rows[0].username,
+    expiresAt: new Date(result.rows[0].expires_at).getTime(),
+  };
 }
 
-function clearSession(sessionId) {
-  if (sessionId) sessions.delete(sessionId);
+async function clearSession(sessionId) {
+  if (sessionId) {
+    await pool.query(`DELETE FROM bna_sessions WHERE session_id = $1`, [sessionId]);
+  }
+}
+
+async function cleanupExpiredSessions() {
+  await pool.query(`DELETE FROM bna_sessions WHERE expires_at <= NOW()`);
 }
 
 function setSessionCookie(res, sessionId) {
@@ -329,9 +349,9 @@ function clearSessionCookie(res) {
 }
 
 // Admin auth middleware - case insensitive
-function requireAdmin(req, res, next) {
+async function requireAdmin(req, res, next) {
   const cookies = parseCookies(req);
-  const session = getValidSession(cookies[SESSION_COOKIE_NAME]);
+  const session = await getValidSession(cookies[SESSION_COOKIE_NAME]);
   if (session) {
     req.opsUser = session.username;
     return next();
@@ -736,7 +756,9 @@ async function initDb() {
     await pool.query(createContentOutputsSQL);
     await pool.query(createBnaIndexesSQL);
     await pool.query(createCliBridgeSQL);
+    await pool.query(createSessionsSQL);
     await ensureStudentsFromSignups();
+    await cleanupExpiredSessions();
     console.log('Database initialized - BNA tables created');
   } catch (err) {
     console.error('Database init error:', err);
@@ -2140,7 +2162,7 @@ app.post('/api/operations/login', async (req, res) => {
   
   if (username.toLowerCase() === OPS_USERNAME.toLowerCase() && 
       password.toLowerCase() === OPS_PASSWORD.toLowerCase()) {
-    const sessionId = issueSession(username);
+    const sessionId = await issueSession(username);
     setSessionCookie(res, sessionId);
     res.json({ success: true, sessionId });
   } else {
@@ -2160,9 +2182,9 @@ app.delete('/api/bna/tasks/:id', requireAdmin, async (req, res) => {
   }
 });
 
-app.post('/api/operations/logout', (req, res) => {
+app.post('/api/operations/logout', async (req, res) => {
   const cookies = parseCookies(req);
-  clearSession(cookies[SESSION_COOKIE_NAME]);
+  await clearSession(cookies[SESSION_COOKIE_NAME]);
   clearSessionCookie(res);
   res.json({ success: true });
 });
