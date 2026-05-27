@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BNA Operations - Holy Flow Task Manager</title>
+    <title>BNA Operations</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -231,6 +231,7 @@
         .badge-category-student_operations { background: #d97706; color: white; }
         .badge-category-finance { background: #dc2626; color: white; }
         .badge-category-legal { background: #7c2d12; color: white; }
+        .badge-category-accountability { background: #c9a227; color: #0f172a; }
         
         .badge-urgency-urgent { background: #fef2f2; color: #dc2626; }
         .badge-urgency-today { background: #fffbeb; color: #d97706; }
@@ -384,6 +385,48 @@
             font-size: 12px;
             color: #64748b;
         }
+
+        .accountability-grid {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 20px;
+        }
+
+        .accountability-card {
+            background: #1e293b;
+            border: 1px solid #334155;
+            border-radius: 12px;
+            padding: 18px;
+        }
+
+        .student-card,
+        .event-card {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 10px;
+        }
+
+        .event-type {
+            color: #c9a227;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .event-title {
+            margin-top: 4px;
+            color: #f8fafc;
+            font-weight: 600;
+        }
+
+        .event-meta {
+            margin-top: 6px;
+            color: #94a3b8;
+            font-size: 12px;
+        }
         
         /* Modal */
         .modal-overlay {
@@ -531,6 +574,16 @@
             min-height: 100vh;
             color: #94a3b8;
         }
+
+        .error-banner {
+            background: #451a1a;
+            border: 1px solid #7f1d1d;
+            color: #fecaca;
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 18px;
+            font-size: 13px;
+        }
         
         /* Empty State */
         .empty-state {
@@ -547,6 +600,10 @@
         }
         
         @media (max-width: 768px) {
+            .accountability-grid {
+                grid-template-columns: 1fr;
+            }
+
             .pipeline-board {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -572,10 +629,16 @@
 </head>
 <body>
     <div id="app">
-        <div class="loading">Loading Holy Flow...</div>
+        <div class="loading">Loading BNA Operations...</div>
     </div>
 
     <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations()
+                .then((registrations) => registrations.forEach((registration) => registration.unregister()))
+                .catch(() => {});
+        }
+
         // API Client
         const api = {
             async request(method, path, body) {
@@ -594,7 +657,11 @@
                     window.location.href = '/operations-login.html';
                     return null;
                 }
-                return response.json();
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || `Request failed: ${response.status}`);
+                }
+                return data;
             },
             
             getTasks(filters = {}) {
@@ -627,14 +694,46 @@
                 return this.request('GET', '/payments?' + params.toString());
             },
             
-            createPayment(payment) { return this.request('POST', '/payments', payment); }
+            createPayment(payment) { return this.request('POST', '/payments', payment); },
+
+            getPaymentIntake(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.status) params.set('status', filters.status);
+                return this.request('GET', '/payment-intake?' + params.toString());
+            },
+            createPaymentIntake(intake) { return this.request('POST', '/payment-intake', intake); },
+            updatePaymentIntake(id, intake) { return this.request('PATCH', '/payment-intake/' + id, intake); },
+
+            getContentJobs(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.status) params.set('status', filters.status);
+                return this.request('GET', '/content-jobs?' + params.toString());
+            },
+            createContentJob(job) { return this.request('POST', '/content-jobs', job); },
+            updateContentJob(id, job) { return this.request('PATCH', '/content-jobs/' + id, job); },
+            updateContentOutput(id, output) { return this.request('PATCH', '/content-outputs/' + id, output); },
+
+            getStudents() { return this.request('GET', '/students'); },
+            getAccountability(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.event_type) params.set('event_type', filters.event_type);
+                if (filters.student_id) params.set('student_id', filters.student_id);
+                return this.request('GET', '/accountability?' + params.toString());
+            },
+            createAccountability(event) { return this.request('POST', '/accountability', event); },
+            deleteAccountability(id) { return this.request('DELETE', '/accountability/' + id); }
         };
 
         // State
         let tasks = [];
         let signups = [];
         let payments = [];
-        let currentView = 'pipeline';
+        let paymentIntake = [];
+        let contentJobs = [];
+        let students = [];
+        let accountabilityEvents = [];
+        const initialView = new URLSearchParams(window.location.search).get('view');
+        let currentView = ['pipeline', 'signups', 'billing', 'content', 'accountability', 'ramble'].includes(initialView) ? initialView : 'pipeline';
         let editingTask = null;
         
         // Config
@@ -656,7 +755,8 @@
             { id: 'finance', label: 'Finance', color: '#dc2626' },
             { id: 'legal', label: 'Legal', color: '#7c2d12' },
             { id: 'communications', label: 'Comms', color: '#0891b2' },
-            { id: 'operations', label: 'Operations', color: '#475569' }
+            { id: 'operations', label: 'Operations', color: '#475569' },
+            { id: 'accountability', label: 'Accountability', color: '#c9a227' }
         ];
 
         // Render functions
@@ -665,8 +765,8 @@
                 <header class="header">
                     <div class="header-content">
                         <div>
-                            <h1>⚡ BNA Holy Flow</h1>
-                            <p>Task Pipeline & Operations</p>
+                            <h1>BNA Operations</h1>
+                            <p>Task pipeline, signups, billing, and rambles</p>
                         </div>
                         <div class="header-actions">
                             <button class="btn btn-primary" onclick="openTaskModal()">
@@ -689,6 +789,12 @@
                         </button>
                         <button class="nav-tab ${currentView === 'billing' ? 'active' : ''}" onclick="switchView('billing')">
                             💰 Billing
+                        </button>
+                        <button class="nav-tab ${currentView === 'content' ? 'active' : ''}" onclick="switchView('content')">
+                            Content
+                        </button>
+                        <button class="nav-tab ${currentView === 'accountability' ? 'active' : ''}" onclick="switchView('accountability')">
+                            Accountability
                         </button>
                         <button class="nav-tab ${currentView === 'ramble' ? 'active' : ''}" onclick="switchView('ramble')">
                             🎤 Ramble
@@ -799,9 +905,11 @@
 
         function renderBilling() {
             const pendingSignups = signups.filter(s => s.payment_status !== 'paid');
+            const openIntake = paymentIntake.filter(p => !['completed', 'ignored'].includes(p.status));
             
             return `
                 <div class="container">
+                    ${renderPaymentIntakeBlock(openIntake)}
                     <h2 style="margin-bottom: 20px; font-size: 18px;">💰 Pending Payments (${pendingSignups.length})</h2>
                     
                     <div class="data-table">
@@ -855,13 +963,170 @@
             `;
         }
 
+        function renderPaymentIntakeBlock(openIntake) {
+            return `
+                <div style="display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 20px;">
+                    <h2 style="font-size: 18px;">Pre-Signup / Unmatched Payments (${openIntake.length})</h2>
+                    <button class="btn btn-primary" onclick="logPaymentIntake()">Log Parent Paid Before Signup</button>
+                </div>
+
+                <div class="data-table" style="margin-bottom: 32px;">
+                    <div class="table-header">
+                        <div>Parent / Student</div>
+                        <div>Contact</div>
+                        <div>Amount</div>
+                        <div>Method</div>
+                        <div>Status</div>
+                        <div>Actions</div>
+                    </div>
+                    ${openIntake.length === 0 ? `
+                        <div class="empty-state">
+                            <p>No unmatched payments. Good. That means money is not floating around homeless.</p>
+                        </div>
+                    ` : openIntake.map(p => `
+                        <div class="table-row">
+                            <div>
+                                <div class="parent-name">${escapeHtml(p.parent_name || 'Unknown parent')}</div>
+                                <div class="student-name">${escapeHtml(p.student_name || 'Student not entered yet')}</div>
+                            </div>
+                            <div>
+                                <div>${escapeHtml(p.parent_email || '')}</div>
+                                <div class="student-name">${escapeHtml(p.parent_phone || '')}</div>
+                            </div>
+                            <div>${p.amount ? `₪${p.amount}` : 'Amount unknown'}</div>
+                            <div>${escapeHtml(p.method || 'unknown')}</div>
+                            <div><span class="payment-status pending">${escapeHtml(p.status)}</span></div>
+                            <div>
+                                <button class="btn btn-sm btn-secondary" onclick="markIntakeDone('${p.id}')">Done</button>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function renderContent() {
+            const openJobs = contentJobs.filter(job => !['published', 'archived'].includes(job.status));
+            return `
+                <div class="container">
+                    <div style="display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 20px;">
+                        <div>
+                            <h2 style="font-size: 18px;">Content Repurposing Pipeline (${openJobs.length})</h2>
+                            <p style="color: #94a3b8; font-size: 13px;">Raw Telegram videos, class recordings, transcripts, platform drafts, and approval status.</p>
+                        </div>
+                        <button class="btn btn-primary" onclick="createManualContentJob()">Add Content Job</button>
+                    </div>
+
+                    ${contentJobs.length === 0 ? `
+                        <div class="data-table">
+                            <div class="empty-state">
+                                <p>No content jobs yet. Upload a video/audio file to Telegram and it will appear here.</p>
+                            </div>
+                        </div>
+                    ` : contentJobs.map(job => `
+                        <div class="accountability-card" style="margin-bottom: 16px;">
+                            <div style="display: flex; justify-content: space-between; gap: 12px;">
+                                <div>
+                                    <div class="event-type">${escapeHtml(job.status)}</div>
+                                    <h3 style="font-size: 16px; margin-top: 4px;">${escapeHtml(job.title)}</h3>
+                                    <p style="color: #94a3b8; font-size: 13px; margin-top: 6px;">
+                                        ${escapeHtml(job.mime_type || job.source_type || '')}
+                                        ${job.caption ? ` · ${escapeHtml(job.caption.slice(0, 120))}` : ''}
+                                    </p>
+                                </div>
+                                <div style="display: flex; gap: 8px; align-items: start;">
+                                    <button class="btn btn-sm btn-secondary" onclick="markContentJob('${job.id}', 'needs_approval')">Needs Approval</button>
+                                    <button class="btn btn-sm btn-primary" onclick="markContentJob('${job.id}', 'approved')">Approve</button>
+                                </div>
+                            </div>
+
+                            <div style="margin-top: 14px;">
+                                ${(job.outputs || []).length === 0 ? `
+                                    <p style="color: #64748b; font-size: 13px;">No platform drafts yet. Next stage: transcribe, parse, then generate WhatsApp/Facebook/YouTube/Google/blog/newsletter outputs.</p>
+                                ` : (job.outputs || []).map(output => `
+                                    <div class="event-card">
+                                        <div class="event-type">${escapeHtml(output.output_type)} · ${escapeHtml(output.status)}</div>
+                                        <div class="event-title">${escapeHtml(output.title || 'Untitled draft')}</div>
+                                        ${output.body ? `<p style="margin-top: 8px; color: #cbd5e1; font-size: 13px;">${escapeHtml(output.body.slice(0, 240))}</p>` : ''}
+                                        <div style="display: flex; gap: 8px; margin-top: 10px;">
+                                            <button class="btn btn-sm btn-primary" onclick="markContentOutput('${output.id}', 'approved')">Approve</button>
+                                            <button class="btn btn-sm btn-secondary" onclick="markContentOutput('${output.id}', 'rejected')">Reject</button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        function renderAccountability() {
+            const recentEvents = accountabilityEvents.slice(0, 40);
+            const studentById = new Map(students.map(s => [String(s.id), s]));
+
+            return `
+                <div class="container">
+                    <div class="accountability-grid">
+                        <div class="accountability-card">
+                            <h3 style="margin-bottom: 12px; font-size: 16px;">Students</h3>
+                            <p style="margin-bottom: 16px; color: #94a3b8; font-size: 13px;">
+                                Synced from signups. Use this as the anchor for goals, questions, and private meetings.
+                            </p>
+                            ${students.length === 0 ? `
+                                <div class="empty-state"><p>No students yet.</p></div>
+                            ` : students.map(student => `
+                                <div class="student-card">
+                                    <div class="parent-name">${escapeHtml(student.name)}</div>
+                                    <div class="student-name">${escapeHtml(student.parent_name || '')}</div>
+                                    <div class="event-meta">
+                                        ${student.open_goals || 0} goals &middot; ${student.questions || 0} questions
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+
+                        <div class="accountability-card">
+                            <div style="display: flex; justify-content: space-between; gap: 12px; align-items: center; margin-bottom: 16px;">
+                                <div>
+                                    <h3 style="font-size: 16px;">Accountability Feed</h3>
+                                    <p style="color: #94a3b8; font-size: 13px;">Class notes, questions, decisions, student goals, and private meetings.</p>
+                                </div>
+                                <button class="btn btn-primary" onclick="openAccountabilityPrompt()">Add Entry</button>
+                            </div>
+                            ${recentEvents.length === 0 ? `
+                                <div class="empty-state">
+                                    <p>No accountability entries yet. Send a class ramble to Telegram or add one manually.</p>
+                                </div>
+                            ` : recentEvents.map(event => {
+                                const student = event.student || studentById.get(String(event.student_id));
+                                return `
+                                    <div class="event-card">
+                                        <div class="event-type">${escapeHtml(formatEventType(event.event_type))}</div>
+                                        <div class="event-title">${escapeHtml(event.title)}</div>
+                                        <div class="event-meta">
+                                            ${student?.name || event.student_name ? `Student: ${escapeHtml(student?.name || event.student_name)} &middot; ` : ''}
+                                            ${event.topic ? `Topic: ${escapeHtml(event.topic)} &middot; ` : ''}
+                                            ${formatDate(event.occurred_at)}
+                                        </div>
+                                        ${event.question_text ? `<p style="margin-top: 8px; font-size: 13px;">Question: ${escapeHtml(event.question_text)}</p>` : ''}
+                                        ${event.notes ? `<p style="margin-top: 8px; color: #cbd5e1; font-size: 13px;">${escapeHtml(event.notes)}</p>` : ''}
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
         function renderRamble() {
             return `
                 <div class="container">
                     <div class="ramble-box">
                         <h3 style="margin-bottom: 12px; font-size: 16px;">🎤 Ramble to Tasks</h3>
                         <p style="margin-bottom: 16px; font-size: 13px; color: #94a3b8;">
-                            Just type or paste your ramble. I'll extract tasks and add them to your inbox.
+                            Type or paste a ramble. Operational next steps become tasks. Student goals, class notes, questions, and private meetings belong in Accountability.
                         </p>
                         <textarea 
                             class="ramble-input" 
@@ -978,22 +1243,42 @@
             return new Date(date).toLocaleDateString('en-GB', { month: 'short', day: 'numeric' });
         }
 
-        // Actions
-        async function loadData() {
-            const [tasksRes, signupsRes, paymentsRes] = await Promise.all([
-                api.getTasks(),
-                api.getSignups(),
-                api.getPayments()
-            ]);
-            
-            if (tasksRes?.tasks) tasks = tasksRes.tasks;
-            if (signupsRes?.signups) signups = signupsRes.signups;
-            if (paymentsRes?.payments) payments = paymentsRes.payments;
-            
-            render();
+        function formatEventType(type) {
+            return String(type || '').replace(/_/g, ' ');
         }
 
-        function render() {
+        // Actions
+        async function loadData() {
+            try {
+                const [tasksRes, signupsRes, paymentsRes, paymentIntakeRes, contentJobsRes, studentsRes, accountabilityRes] = await Promise.allSettled([
+                    api.getTasks(),
+                    api.getSignups(),
+                    api.getPayments(),
+                    api.getPaymentIntake(),
+                    api.getContentJobs(),
+                    api.getStudents(),
+                    api.getAccountability()
+                ]);
+
+                if (tasksRes.status === 'fulfilled' && tasksRes.value?.tasks) tasks = tasksRes.value.tasks;
+                if (signupsRes.status === 'fulfilled' && signupsRes.value?.signups) signups = signupsRes.value.signups;
+                if (paymentsRes.status === 'fulfilled' && paymentsRes.value?.payments) payments = paymentsRes.value.payments;
+                if (paymentIntakeRes.status === 'fulfilled' && paymentIntakeRes.value?.intake) paymentIntake = paymentIntakeRes.value.intake;
+                if (contentJobsRes.status === 'fulfilled' && contentJobsRes.value?.jobs) contentJobs = contentJobsRes.value.jobs;
+                if (studentsRes.status === 'fulfilled' && studentsRes.value?.students) students = studentsRes.value.students;
+                if (accountabilityRes.status === 'fulfilled' && accountabilityRes.value?.events) accountabilityEvents = accountabilityRes.value.events;
+
+                const errors = [tasksRes, signupsRes, paymentsRes, paymentIntakeRes, contentJobsRes, studentsRes, accountabilityRes]
+                    .filter((result) => result.status === 'rejected')
+                    .map((result) => result.reason?.message || 'Unknown dashboard error');
+
+                render(errors);
+            } catch (error) {
+                render([error.message || 'Unable to load dashboard data']);
+            }
+        }
+
+        function render(errors = []) {
             const app = document.getElementById('app');
             let content = '';
             
@@ -1001,14 +1286,24 @@
                 case 'pipeline': content = renderPipeline(); break;
                 case 'signups': content = renderSignups(); break;
                 case 'billing': content = renderBilling(); break;
+                case 'content': content = renderContent(); break;
+                case 'accountability': content = renderAccountability(); break;
                 case 'ramble': content = renderRamble(); break;
+                default: content = renderPipeline(); break;
             }
             
-            app.innerHTML = renderHeader() + content + renderTaskModal();
+            const errorBanner = errors.length
+                ? `<div class="container"><div class="error-banner">Some dashboard data could not load: ${errors.map(escapeHtml).join('; ')}</div></div>`
+                : '';
+
+            app.innerHTML = renderHeader() + errorBanner + content + renderTaskModal();
         }
 
         function switchView(view) {
             currentView = view;
+            const url = new URL(window.location.href);
+            url.searchParams.set('view', view);
+            window.history.replaceState({}, '', url);
             render();
         }
 
@@ -1086,6 +1381,31 @@
             }
         }
 
+        async function openAccountabilityPrompt() {
+            const title = prompt('What should be tracked?');
+            if (!title) return;
+
+            const eventType = prompt('Type: class_session, learning_note, question, student_goal, private_meeting, or decision', 'learning_note') || 'learning_note';
+            const studentName = prompt('Student name, if this belongs to one student:', '') || '';
+            const topic = prompt('Topic, if any:', '') || '';
+            const notes = prompt('Notes:', '') || '';
+            const student = students.find(s => studentName && s.name.toLowerCase() === studentName.toLowerCase());
+
+            await api.createAccountability({
+                event_type: eventType,
+                student_id: student?.id || null,
+                student_name: studentName || null,
+                title,
+                topic: topic || null,
+                notes: notes || null,
+                question_text: eventType === 'question' ? title : null,
+                source: 'manual'
+            });
+
+            await loadData();
+            switchView('accountability');
+        }
+
         // Signup Actions
         function openSignupModal() {
             alert('Signup form - implement as needed');
@@ -1100,17 +1420,67 @@
             const amount = prompt('Payment amount (ILS):', '500');
             if (!amount) return;
             
-            const method = confirm('Is this cash? (OK = Cash, Cancel = Green Invoice)') ? 'cash' : 'green_invoice';
+            const method = confirm('Payment method: OK = Cash, Cancel = Credit') ? 'cash' : 'green_invoice';
             
             api.createPayment({
                 signup_id: signupId,
-                amount: parseInt(amount),
+                amount: parseFloat(amount),
                 method: method,
                 payment_type: 'registration',
                 status: 'completed',
                 received_by: 'operator',
                 notes: 'Logged via dashboard'
             }).then(() => loadData());
+        }
+
+        function logPaymentIntake() {
+            const parentName = prompt('Parent name:');
+            if (!parentName) return;
+
+            const amount = prompt('Amount paid (ILS):', '500');
+            const method = confirm('Payment method: OK = Cash, Cancel = Credit') ? 'cash' : 'green_invoice';
+            const studentName = prompt('Student name, if you know it:', '') || '';
+            const phone = prompt('Parent phone, if you know it:', '') || '';
+            const email = prompt('Parent email, if you know it:', '') || '';
+            const notes = prompt('Notes:', 'Paid before signup form was completed') || '';
+
+            api.createPaymentIntake({
+                parent_name: parentName,
+                parent_phone: phone || null,
+                parent_email: email || null,
+                student_name: studentName || null,
+                amount: amount ? parseFloat(amount) : null,
+                method,
+                status: 'needs_signup',
+                source: 'manual',
+                notes
+            }).then(() => loadData());
+        }
+
+        function markIntakeDone(id) {
+            api.updatePaymentIntake(id, { status: 'completed' }).then(() => loadData());
+        }
+
+        function createManualContentJob() {
+            const title = prompt('Content job title:', 'New parent update video');
+            if (!title) return;
+            const caption = prompt('Notes or intended outputs:', 'Repurpose for WhatsApp, Facebook, YouTube, Google Business Profile, blog/newsletter') || '';
+
+            api.createContentJob({
+                title,
+                source_type: 'manual',
+                caption,
+                status: 'ingested',
+                notes: caption
+            }).then(() => loadData());
+        }
+
+        function markContentJob(id, status) {
+            api.updateContentJob(id, { status }).then(() => loadData());
+        }
+
+        function markContentOutput(id, status) {
+            api.updateContentOutput(id, { status }).then(() => loadData());
         }
 
         // Init

@@ -72,7 +72,10 @@ export class BNATelegramBot {
           { text: '👨‍👩‍👧‍👦 Signups', callback_data: 'view_signups' },
         ],
         [
-          { text: '🌐 Open Dashboard', url: 'https://bneineviimacademy.org/operations.html' },
+          { text: 'Accountability', url: 'https://bneineviimacademy.org/operations?view=accountability' },
+        ],
+        [
+          { text: '🌐 Open Dashboard', url: 'https://bneineviimacademy.org/operations' },
         ],
       ],
     };
@@ -191,14 +194,14 @@ export class BNATelegramBot {
       case '/billing':
         await this.sendMessage(
           chatId,
-          '💰 *Billing Dashboard*\n\n[Open in browser](https://bneineviimacademy.org/operations.html)',
+          '💰 *Billing Dashboard*\n\n[Open in browser](https://bneineviimacademy.org/operations)',
           {
             inline_keyboard: [
               [
                 { text: '💳 View Pending Payments', callback_data: 'billing_pending' },
                 { text: '✅ Mark Paid', callback_data: 'billing_mark_paid' },
               ],
-              [{ text: '🌐 Open Full Dashboard', url: 'https://bneineviimacademy.org/operations.html' }],
+              [{ text: '🌐 Open Full Dashboard', url: 'https://bneineviimacademy.org/operations' }],
             ],
           }
         );
@@ -275,7 +278,7 @@ export class BNATelegramBot {
     } else if (data === 'view_billing') {
       await this.sendMessage(
         chatId,
-        '💰 *Billing*\n\n[Open Dashboard](https://bneineviimacademy.org/operations.html)',
+        '💰 *Billing*\n\n[Open Dashboard](https://bneineviimacademy.org/operations)',
         {
           inline_keyboard: [
             [{ text: '💳 Pending Payments', callback_data: 'billing_pending' }],
@@ -286,7 +289,7 @@ export class BNATelegramBot {
     } else if (data === 'view_signups') {
       await this.sendMessage(
         chatId,
-        '👨‍👩‍👧‍👦 *Recent Signups*\n\n[Open Dashboard](https://bneineviimacademy.org/operations.html)',
+        '👨‍👩‍👧‍👦 *Recent Signups*\n\n[Open Dashboard](https://bneineviimacademy.org/operations)',
         {
           inline_keyboard: [
             [{ text: '📋 All Signups', callback_data: 'signups_all' }],
@@ -367,7 +370,7 @@ export class BNATelegramBot {
       `⏳ Waiting: ${stats.waiting}\n` +
       `👀 Review: ${stats.review}\n` +
       `✅ Done (7d): ${stats.done}\n\n` +
-      `[View Dashboard](https://bneineviimacademy.org/operations.html)`;
+      `[View Dashboard](https://bneineviimacademy.org/operations)`;
 
     await this.sendMessage(this.chatId, text, this.getMainMenuKeyboard());
   }

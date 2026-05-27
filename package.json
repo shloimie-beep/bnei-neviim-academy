@@ -5,6 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
+    "railway:redeploy": "powershell -ExecutionPolicy Bypass -File scripts/railway-redeploy.ps1",
     "telegram:kimi": "node scripts/telegram-kimi-bridge.mjs",
     "telegram:kimi:start": "powershell -ExecutionPolicy Bypass -File scripts/start-telegram-kimi-bridge.ps1",
     "screenshot": "node tools/screenshot-check.js",
@@ -13,6 +14,8 @@
   },
   "dependencies": {
     "express": "^4.18.2",
+    "ffmpeg-static": "^5.3.0",
+    "googleapis": "^172.0.0",
     "pg": "^8.11.3"
   },
   "devDependencies": {

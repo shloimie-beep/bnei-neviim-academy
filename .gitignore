@@ -3,12 +3,14 @@ node_modules/
 out/
 build/
 dist/
+.deploy-railway/
 
 # env
 .env
 .env.local
 .env*.local
 !.env.example
+.secrets/
 
 # editor
 .vscode/
@@ -19,6 +21,10 @@ Thumbs.db
 # logs
 *.log
 npm-debug.log*
+
+# local media intake
+media-drop/
+media-inbox/
 
 # PWA build artifacts
 public/sw.js

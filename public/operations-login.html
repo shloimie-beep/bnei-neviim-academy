@@ -131,6 +131,12 @@
     </div>
 
     <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations()
+                .then((registrations) => registrations.forEach((registration) => registration.unregister()))
+                .catch(() => {});
+        }
+
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const errorEl = document.getElementById('error');

@@ -58,7 +58,7 @@ Keep `MEMORY.md` compact and curated.
 
 ## Current Project Reality
 
-- This repo started as a copy of `family-accountability`.
+- This repo started as a copy of an older legacy family app.
 - It is being repurposed into BNA's school project.
 - The current app and schema still contain family-oriented assumptions that
   need to be systematically replaced.
@@ -73,9 +73,23 @@ Keep `MEMORY.md` compact and curated.
 
 - Build a proper BNA memory structure.
 - Replace family-specific language, prompts, and schema assumptions.
-- Set up a Telegram-to-local-agent bridge so Telegram talks to the same repo
-  brain as the terminal.
+- Keep the Telegram bridge capable of both:
+  - Kimi coding/chat turns for repo work
+  - structured GHL ops commands for uploads, posting, and queue management
 - Keep one canonical memory system across channels.
+
+## Telegram Ops Reality
+
+- The academy Telegram bot is the active bot, not the old family bot.
+- The bridge now supports:
+  - plain-text Kimi chat for repo work
+  - `/accounts`, `/blogs`, `/queue`, `/help`, `/status`
+  - photo, video, voice, and document intake
+  - automatic local asset capture plus GHL media upload
+- Social posting is partially wired:
+  - draft/publish commands can create social posts for resolved targets
+  - Google targets need explicit alias selection when multiple Google accounts exist
+  - voice assets are saved, but not transcribed yet
 
 ## Pending Work Convention
 

@@ -156,16 +156,22 @@
         }
         
         /* Payment Method Selection */
+        .payment-legend {
+            margin-bottom: 0.75rem;
+            color: #475569;
+            font-size: 0.95rem;
+        }
+
         .payment-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-            margin-top: 0.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
         }
         
         .payment-option {
             position: relative;
             cursor: pointer;
+            flex: 0 0 auto;
         }
         
         .payment-option input {
@@ -175,41 +181,74 @@
             height: 0;
         }
         
+        .payment-option-pill {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
+            min-width: 132px;
+            padding: 0.75rem 1rem;
+            border: 2px solid #d7e1ec;
+            border-radius: 999px;
+            background: #f8fbff;
+            color: var(--primary-blue);
+            font-size: 0.98rem;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+        
+        .payment-option input:checked + .payment-option-pill {
+            border-color: var(--accent-gold);
+            background: rgba(201, 162, 39, 0.12);
+            box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.12);
+        }
+        
+        .payment-option:hover .payment-option-pill {
+            border-color: var(--secondary-blue);
+            background: #ffffff;
+        }
+
+        .payment-note {
+            margin-top: 0.75rem;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
         .payment-option-card {
             display: flex;
-            flex-direction: column;
             align-items: center;
-            padding: 1.5rem 1rem;
-            border: 2px solid #e2e8f0;
-            border-radius: 12px;
-            transition: all 0.3s ease;
+            justify-content: center;
+            min-height: 48px;
+            min-width: 132px;
+            padding: 0.75rem 1rem;
+            border: 2px solid #d7e1ec;
+            border-radius: 999px;
+            background: #f8fbff;
+            color: var(--primary-blue);
             text-align: center;
+            transition: all 0.2s ease;
         }
-        
+
         .payment-option input:checked + .payment-option-card {
             border-color: var(--accent-gold);
-            background: rgba(201, 162, 39, 0.05);
+            background: rgba(201, 162, 39, 0.12);
+            box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.12);
         }
-        
+
         .payment-option:hover .payment-option-card {
             border-color: var(--secondary-blue);
+            background: #ffffff;
         }
-        
-        .payment-icon {
-            font-size: 2rem;
-            margin-bottom: 0.5rem;
+
+        .payment-icon,
+        .payment-desc {
+            display: none;
         }
-        
+
         .payment-label {
             font-weight: 600;
             color: var(--primary-blue);
-            font-size: 0.95rem;
-        }
-        
-        .payment-desc {
-            font-size: 0.8rem;
-            color: #64748b;
-            margin-top: 0.25rem;
+            font-size: 0.98rem;
         }
         
         .submit-btn {
@@ -324,7 +363,7 @@
             }
             
             .payment-options {
-                grid-template-columns: 1fr;
+                flex-direction: column;
             }
             
             .form-header h1 {
@@ -344,7 +383,10 @@
             <a href="/">
                 <img src="images/bna-logo-nobg.png" alt="Bnei Nevi'im Academy" class="logo">
             </a>
-            <a href="/" class="nav-btn">Back to Home</a>
+            <div style="display:flex; gap:0.75rem; align-items:center;">
+                <a href="/signup-he.html" class="nav-btn">עברית</a>
+                <a href="/" class="nav-btn">Back to Home</a>
+            </div>
         </div>
     </nav>
 
@@ -360,6 +402,7 @@
                 <div id="message" class="message"></div>
                 
                 <form id="signupForm">
+                    <input type="hidden" id="form_language" name="form_language" value="en">
                     <!-- Parent 1 Information -->
                     <div class="section-divider" style="margin-top: 0; padding-top: 0; border-top: none;">
                         <h3>Parent 1 Information</h3>
@@ -446,20 +489,20 @@
                     <div class="form-group">
                         <label>Select how you'd like to pay the ₪1,000 registration fee</label>
                         <div class="payment-options">
-                            <label class="payment-option">
-                                <input type="radio" name="payment_method" value="Green Invoice" checked>
+                            <label class="payment-option" for="payment-credit">
+                                <input type="radio" id="payment-credit" name="payment_method" value="credit" checked>
                                 <div class="payment-option-card">
                                     <span class="payment-icon">💳</span>
-                                    <span class="payment-label">Green Invoice</span>
-                                    <span class="payment-desc">Pay securely online</span>
+                                    <span class="payment-label">Credit</span>
+                                    <span class="payment-desc">Secure online payment</span>
                                 </div>
                             </label>
-                            <label class="payment-option">
-                                <input type="radio" name="payment_method" value="Cash">
+                            <label class="payment-option" for="payment-cash">
+                                <input type="radio" id="payment-cash" name="payment_method" value="cash">
                                 <div class="payment-option-card">
                                     <span class="payment-icon">💵</span>
                                     <span class="payment-label">Cash</span>
-                                    <span class="payment-desc">Pay in person</span>
+                                    <span class="payment-desc">Recorded internally</span>
                                 </div>
                             </label>
                         </div>
@@ -475,7 +518,7 @@
     <div class="modal-overlay" id="cashModal">
         <div class="modal">
             <h3>Registration Received</h3>
-            <p>Your registration was received. Cash payment will be marked manually once received.</p>
+            <p>Your registration was received. We recorded this as a cash payment and will follow up internally.</p>
             <button class="modal-btn" onclick="window.location.href='/'">Return to Home</button>
         </div>
     </div>
@@ -486,6 +529,74 @@
     </footer>
 
     <script>
+        function getPaymentLabel(paymentMethod) {
+            return paymentMethod === 'cash' ? 'Cash' : 'Credit';
+        }
+
+        function buildThankYouUrl(paymentMethod, paymentLink) {
+            const params = new URLSearchParams({
+                payment: paymentMethod
+            });
+
+            if (paymentLink) {
+                params.set('paymentLink', paymentLink);
+            }
+
+            return `/signup-thank-you.html?${params.toString()}`;
+        }
+
+        function initializePaymentUi() {
+            const paymentGroup = document.querySelector('.payment-options');
+            const paymentLabel = paymentGroup ? paymentGroup.previousElementSibling : null;
+            const paymentInputs = document.querySelectorAll('input[name="payment_method"]');
+            const paymentNames = document.querySelectorAll('.payment-label');
+            const paymentDescriptions = document.querySelectorAll('.payment-desc');
+            const paymentIcons = document.querySelectorAll('.payment-icon');
+
+            if (paymentLabel) {
+                paymentLabel.textContent = 'Choose your payment method for the registration fee';
+            }
+
+            if (paymentInputs[0]) {
+                paymentInputs[0].value = 'credit';
+                paymentInputs[0].id = 'payment-credit';
+            }
+
+            if (paymentInputs[1]) {
+                paymentInputs[1].value = 'cash';
+                paymentInputs[1].id = 'payment-cash';
+            }
+
+            if (paymentNames[0]) {
+                paymentNames[0].textContent = 'Credit';
+            }
+
+            if (paymentNames[1]) {
+                paymentNames[1].textContent = 'Cash';
+            }
+
+            if (paymentDescriptions[0]) {
+                paymentDescriptions[0].textContent = 'Secure online payment';
+            }
+
+            if (paymentDescriptions[1]) {
+                paymentDescriptions[1].textContent = 'Recorded internally';
+            }
+
+            paymentIcons.forEach((icon) => {
+                icon.setAttribute('aria-hidden', 'true');
+            });
+
+            if (paymentGroup && !document.querySelector('.payment-note')) {
+                const note = document.createElement('p');
+                note.className = 'payment-note';
+                note.textContent = 'Credit takes you to the secure payment page after submission. Cash is recorded internally for follow-up.';
+                paymentGroup.insertAdjacentElement('afterend', note);
+            }
+        }
+
+        initializePaymentUi();
+
         document.getElementById('signupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -514,6 +625,7 @@
                 current_school: document.getElementById('current_school').value,
                 hobbies: document.getElementById('hobbies').value,
                 payment_method: paymentMethod
+                ,form_language: document.getElementById('form_language').value
             };
             
             try {
@@ -529,21 +641,14 @@
                 if (response.ok && result.success) {
                     messageDiv.className = 'message success';
                     
-                    if (result.paymentMethod === 'Cash') {
-                        // Show cash confirmation modal
-                        document.getElementById('cashModal').classList.add('show');
-                    } else {
-                        // Redirect to payment for Green Invoice
-                        messageDiv.textContent = 'Thank you! Your registration has been submitted. Redirecting to payment...';
+                    if (result.paymentMethod === 'cash') {
                         document.getElementById('signupForm').reset();
-                        
-                        setTimeout(() => {
-                            if (result.paymentLink) {
-                                window.location.href = result.paymentLink;
-                            } else {
-                                messageDiv.textContent = 'Registration complete! Our team will contact you about payment.';
-                            }
-                        }, 2000);
+                        window.location.href = buildThankYouUrl('cash');
+                    } else {
+                        // Redirect to thank-you page and then payment
+                        messageDiv.textContent = 'Thank you! Your registration has been submitted. Taking you to the next step...';
+                        document.getElementById('signupForm').reset();
+                        window.location.href = buildThankYouUrl('credit', result.paymentLink || '');
                     }
                 } else {
                     throw new Error(result.error || 'Failed to submit');
@@ -551,35 +656,13 @@
                 
             } catch (error) {
                 console.error('Error:', error);
-                // Fallback: save locally and open email
+                // Fallback: save locally and keep the user on the page
                 let submissions = JSON.parse(localStorage.getItem('bna_signups') || '[]');
                 submissions.push({...formData, submitted_at: new Date().toISOString()});
                 localStorage.setItem('bna_signups', JSON.stringify(submissions));
-                
-                const emailBody = `New BNA Registration:
 
-Parent 1: ${formData.parent1_name}
-Email: ${formData.parent1_email}
-Phone: ${formData.parent1_phone}
-
-Parent 2: ${formData.parent2_name || 'N/A'}
-Email: ${formData.parent2_email || 'N/A'}
-Phone: ${formData.parent2_phone || 'N/A'}
-
-Address: ${formData.address}
-
-Child: ${formData.child_name}
-Age: ${formData.child_age}
-Current School: ${formData.current_school || 'N/A'}
-Payment Method: ${formData.payment_method}
-
-Hobbies & Interests:
-${formData.hobbies}`;
-                
-                window.location.href = `mailto:shloimie@bneineviimacademy.org?subject=New BNA Registration - ${formData.child_name}&body=${encodeURIComponent(emailBody)}`;
-                
-                messageDiv.className = 'message success';
-                messageDiv.textContent = 'Registration saved! Please send the email that opened to complete your registration.';
+                messageDiv.className = 'message error';
+                messageDiv.textContent = 'We could not complete your registration just now. Your details were saved on this device as a backup, and you can try submitting again in a moment.';
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.textContent = 'Submit Registration';

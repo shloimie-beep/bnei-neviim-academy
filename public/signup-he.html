@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>הרשמה | Bnei Nevi'im Academy</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-blue: #1e3a5f;
+            --secondary-blue: #2c5282;
+            --light-blue: #e8f0f8;
+            --accent-gold: #c9a227;
+            --dark-text: #1a202c;
+            --white: #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Assistant', sans-serif;
+            background: var(--light-blue);
+            color: var(--dark-text);
+            line-height: 1.75;
+            min-height: 100vh;
+        }
+
+        nav {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            border-bottom: 1px solid rgba(30, 58, 95, 0.1);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo { height: 60px; }
+
+        .nav-actions { display: flex; gap: 0.75rem; align-items: center; }
+
+        .nav-btn {
+            padding: 0.75rem 1.25rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 600;
+            background: var(--primary-blue);
+            color: white;
+        }
+
+        .form-section { padding: 3rem 1.25rem 5rem; }
+        .container { max-width: 760px; margin: 0 auto; }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .form-header h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2.7rem;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-header p {
+            color: var(--secondary-blue);
+            font-size: 1.15rem;
+        }
+
+        .form-card {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: 18px;
+            box-shadow: 0 20px 40px rgba(30, 58, 95, 0.15);
+            border: 1px solid rgba(30, 58, 95, 0.1);
+        }
+
+        .section-divider {
+            margin: 2rem 0 1.25rem;
+            padding-top: 2rem;
+            border-top: 2px solid var(--light-blue);
+        }
+
+        .section-divider:first-child {
+            margin-top: 0;
+            padding-top: 0;
+            border-top: none;
+        }
+
+        .section-divider h3 {
+            font-size: 1.45rem;
+            color: var(--primary-blue);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .form-group { margin-bottom: 1.25rem; }
+
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 0.45rem;
+            color: var(--primary-blue);
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 0.9rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-family: 'Assistant', sans-serif;
+        }
+
+        textarea {
+            min-height: 110px;
+            resize: vertical;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--secondary-blue);
+        }
+
+        .payment-options {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .payment-option {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .payment-option input {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .payment-option-card {
+            min-width: 130px;
+            text-align: center;
+            padding: 0.8rem 1rem;
+            border: 2px solid #d7e1ec;
+            border-radius: 999px;
+            background: #f8fbff;
+            color: var(--primary-blue);
+            font-weight: 700;
+        }
+
+        .payment-option input:checked + .payment-option-card {
+            border-color: var(--accent-gold);
+            background: rgba(201, 162, 39, 0.12);
+            box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.12);
+        }
+
+        .payment-note {
+            margin-top: 0.75rem;
+            color: #64748b;
+            font-size: 0.95rem;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: var(--accent-gold);
+            color: var(--dark-text);
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            cursor: pointer;
+            margin-top: 1rem;
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            display: none;
+        }
+
+        .message.success {
+            display: block;
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            display: block;
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        footer {
+            background: var(--dark-text);
+            color: var(--white);
+            text-align: center;
+            padding: 2rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-row { grid-template-columns: 1fr; }
+            .form-card { padding: 1.5rem; }
+            .nav-container { align-items: flex-start; }
+            .nav-actions { flex-wrap: wrap; justify-content: flex-end; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="nav-container">
+            <a href="/">
+                <img src="images/bna-logo-nobg.png" alt="Bnei Nevi'im Academy" class="logo">
+            </a>
+            <div class="nav-actions">
+                <a href="/signup.html" class="nav-btn">English</a>
+                <a href="/" class="nav-btn">חזרה לדף הבית</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="form-section">
+        <div class="container">
+            <div class="form-header">
+                <h1>טופס הרשמה</h1>
+                <p>הרשמה ל-Bnei Nevi'im Academy</p>
+            </div>
+
+            <div class="form-card">
+                <div id="message" class="message"></div>
+
+                <form id="signupForm">
+                    <input type="hidden" id="form_language" name="form_language" value="he">
+
+                    <div class="section-divider">
+                        <h3>פרטי הורה 1</h3>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="parent1_name">שם מלא *</label>
+                            <input type="text" id="parent1_name" name="parent1_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="parent1_phone">מספר טלפון *</label>
+                            <input type="tel" id="parent1_phone" name="parent1_phone" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="parent1_email">כתובת אימייל *</label>
+                        <input type="email" id="parent1_email" name="parent1_email" required>
+                    </div>
+
+                    <div class="section-divider">
+                        <h3>פרטי הורה 2</h3>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="parent2_name">שם מלא</label>
+                            <input type="text" id="parent2_name" name="parent2_name">
+                        </div>
+                        <div class="form-group">
+                            <label for="parent2_phone">מספר טלפון</label>
+                            <input type="tel" id="parent2_phone" name="parent2_phone">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="parent2_email">כתובת אימייל</label>
+                        <input type="email" id="parent2_email" name="parent2_email">
+                    </div>
+
+                    <div class="section-divider">
+                        <h3>כתובת</h3>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="address">כתובת מגורים *</label>
+                        <input type="text" id="address" name="address" placeholder="רחוב, עיר" required>
+                    </div>
+
+                    <div class="section-divider">
+                        <h3>פרטי הילד</h3>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="child_name">שם הילד *</label>
+                            <input type="text" id="child_name" name="child_name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="child_age">גיל הילד *</label>
+                            <input type="number" id="child_age" name="child_age" min="7" max="13" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="current_school">בית ספר נוכחי, אם יש</label>
+                        <input type="text" id="current_school" name="current_school" placeholder="או כתבו שאינו רשום כרגע">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="hobbies">תחומי עניין, חוזקות, וכל מידע שיעזור לנו להכיר אותו *</label>
+                        <textarea id="hobbies" name="hobbies" required></textarea>
+                    </div>
+
+                    <div class="section-divider">
+                        <h3>אמצעי תשלום</h3>
+                    </div>
+
+                    <div class="form-group">
+                        <label>בחרו כיצד תרצו לשלם את דמי ההרשמה</label>
+                        <div class="payment-options">
+                            <label class="payment-option" for="payment-credit">
+                                <input type="radio" id="payment-credit" name="payment_method" value="credit" checked>
+                                <div class="payment-option-card">אשראי</div>
+                            </label>
+                            <label class="payment-option" for="payment-cash">
+                                <input type="radio" id="payment-cash" name="payment_method" value="cash">
+                                <div class="payment-option-card">מזומן</div>
+                            </label>
+                        </div>
+                        <p class="payment-note">אשראי יעביר לעמוד תשלום מאובטח לאחר השליחה. מזומן יירשם אצלנו להמשך מעקב.</p>
+                    </div>
+
+                    <button type="submit" class="submit-btn" id="submitBtn">שליחת הרשמה</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>&copy; 2026 Bnei Nevi'im Academy</p>
+    </footer>
+
+    <script>
+        function buildThankYouUrl(paymentMethod, paymentLink) {
+            const params = new URLSearchParams({ payment: paymentMethod, lang: 'he' });
+            if (paymentLink) params.set('paymentLink', paymentLink);
+            return `/signup-thank-you.html?${params.toString()}`;
+        }
+
+        document.getElementById('signupForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            const messageDiv = document.getElementById('message');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'שולח...';
+            messageDiv.className = 'message';
+            messageDiv.textContent = '';
+
+            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+            const formData = {
+                parent1_name: document.getElementById('parent1_name').value,
+                parent1_email: document.getElementById('parent1_email').value,
+                parent1_phone: document.getElementById('parent1_phone').value,
+                parent2_name: document.getElementById('parent2_name').value,
+                parent2_email: document.getElementById('parent2_email').value,
+                parent2_phone: document.getElementById('parent2_phone').value,
+                address: document.getElementById('address').value,
+                child_name: document.getElementById('child_name').value,
+                child_age: parseInt(document.getElementById('child_age').value, 10),
+                current_school: document.getElementById('current_school').value,
+                hobbies: document.getElementById('hobbies').value,
+                payment_method: paymentMethod,
+                form_language: 'he'
+            };
+
+            try {
+                const response = await fetch('/api/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    throw new Error(result.error || 'Failed to submit');
+                }
+
+                document.getElementById('signupForm').reset();
+                window.location.href = result.paymentMethod === 'cash'
+                    ? buildThankYouUrl('cash')
+                    : buildThankYouUrl('credit', result.paymentLink || '');
+            } catch (error) {
+                console.error(error);
+                messageDiv.className = 'message error';
+                messageDiv.textContent = 'לא הצלחנו לשלוח את הטופס כרגע. נסו שוב בעוד רגע או צרו איתנו קשר.';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'שליחת הרשמה';
+            }
+        });
+    </script>
+</body>
+</html>

@@ -228,10 +228,10 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 - Auto-deploy from GitHub enabled
 
 ### Telegram Bot (Configured ✅)
-- Bot token: `@shlomofam_bot`
+- Bot token: `@bneineviimacademy_bot`
 - Chat ID: 8202155026
-- Features: Buttons-based (no slash commands), links to Operations dashboard
-- Natural language parsing for rambles
+- Features: academy-sidekick chat, GHL account commands, media intake, social job queue
+- Natural language parsing for rambles plus structured Telegram ops commands
 
 ### GHL Integration (Blocked ⏳)
 - PIT token is valid against HighLevel's current API
