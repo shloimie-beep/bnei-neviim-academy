@@ -2,7 +2,9 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { spawn } from 'child_process';
+import { pipeline as streamPipeline } from 'stream/promises';
 import ffmpegPath from 'ffmpeg-static';
+import { google } from 'googleapis';
 import {
   listSocialAccounts,
   buildAccountAliases,
@@ -18,7 +20,11 @@ const runtimeDir = path.join(repoRoot, '.runtime');
 const logFile = path.join(runtimeDir, 'telegram-kimi-bridge.log');
 const envLocalPath = path.join(repoRoot, '.env.local');
 const academyTokenFile = path.join(repoRoot, '.secrets', 'telegram-bot-token.txt');
+const googleOAuthClientFile = path.join(repoRoot, '.secrets', 'google-oauth-client.json');
+const googleRefreshTokenFile = path.join(repoRoot, '.secrets', 'google-refresh-token.txt');
+const googleDrivePipelineFile = path.join(repoRoot, '.secrets', 'google-drive-pipeline.json');
 const lockFile = path.join(runtimeDir, 'telegram-kimi-bridge.lock');
+const pendingDecisionsFile = path.join(runtimeDir, 'telegram-pending-decisions.json');
 const mediaInboxDir = path.join(repoRoot, 'media-inbox');
 const mediaDropDir = path.join(repoRoot, 'media-drop');
 const mediaDropInboxDir = path.join(mediaDropDir, 'inbox');
@@ -138,6 +144,32 @@ function loadConfig() {
   };
 }
 
+function loadGoogleDriveAuth() {
+  if (!fs.existsSync(googleOAuthClientFile)) {
+    throw new Error('Missing .secrets/google-oauth-client.json');
+  }
+  if (!fs.existsSync(googleRefreshTokenFile)) {
+    throw new Error('Missing .secrets/google-refresh-token.txt. Send /drive_auth first.');
+  }
+
+  const parsed = JSON.parse(fs.readFileSync(googleOAuthClientFile, 'utf8'));
+  const client = parsed.web || parsed.installed;
+  const auth = new google.auth.OAuth2(
+    client.client_id,
+    client.client_secret,
+    client.redirect_uris?.[0]
+  );
+  auth.setCredentials({ refresh_token: fs.readFileSync(googleRefreshTokenFile, 'utf8').trim() });
+  return auth;
+}
+
+function loadGoogleDrivePipelineConfig() {
+  if (!fs.existsSync(googleDrivePipelineFile)) {
+    throw new Error('Missing .secrets/google-drive-pipeline.json. Run npm run drive:setup first.');
+  }
+  return JSON.parse(fs.readFileSync(googleDrivePipelineFile, 'utf8'));
+}
+
 function loadOffset() {
   const offsetFile = currentOffsetFilePath();
   try {
@@ -176,6 +208,33 @@ function readContextFile(relativePath, maxChars = 1800) {
   } catch {
     return '[missing]';
   }
+}
+
+function readContextFiles(relativePaths, maxCharsPerFile = 1800) {
+  return relativePaths
+    .map((relativePath) => {
+      const content = readContextFile(relativePath, maxCharsPerFile);
+      return content === '[missing]' ? '' : `## ${relativePath}\n${content}`;
+    })
+    .filter(Boolean)
+    .join('\n\n');
+}
+
+function buildPlatformMemoryContext(outputType) {
+  const sharedFiles = [
+    'brand-kit/README.md',
+    'brand-kit/01-core-beliefs.md',
+    'brand-kit/02-teaching-voice.md',
+    'brand-kit/03-parent-messaging.md',
+    'brand-kit/04-student-growth-principles.md',
+    'brand-kit/05-phrases-to-use.md',
+    'brand-kit/06-phrases-to-avoid.md',
+  ];
+  const platformFiles = outputType === 'facebook_post'
+    ? ['content-memory/platform-prompts/facebook.md', 'content-memory/facebook/examples.md']
+    : ['content-memory/platform-prompts/whatsapp.md', 'content-memory/whatsapp/examples.md'];
+
+  return readContextFiles([...sharedFiles, ...platformFiles], 1600);
 }
 
 function appendMemoryEntry(role, text, metadata = {}) {
@@ -309,6 +368,7 @@ function detectMediaDescriptor(msg) {
       fileId: photo.file_id,
       filename: `photo-${msg.message_id}.jpg`,
       mimeType: 'image/jpeg',
+      fileSize: photo.file_size,
     };
   }
 
@@ -318,6 +378,7 @@ function detectMediaDescriptor(msg) {
       fileId: msg.video.file_id,
       filename: msg.video.file_name || `video-${msg.message_id}.mp4`,
       mimeType: msg.video.mime_type || 'video/mp4',
+      fileSize: msg.video.file_size,
     };
   }
 
@@ -327,6 +388,7 @@ function detectMediaDescriptor(msg) {
       fileId: msg.document.file_id,
       filename: msg.document.file_name || `document-${msg.message_id}`,
       mimeType: msg.document.mime_type || 'application/octet-stream',
+      fileSize: msg.document.file_size,
     };
   }
 
@@ -336,6 +398,7 @@ function detectMediaDescriptor(msg) {
       fileId: msg.voice.file_id,
       filename: `voice-${msg.message_id}.ogg`,
       mimeType: msg.voice.mime_type || 'audio/ogg',
+      fileSize: msg.voice.file_size,
     };
   }
 
@@ -411,6 +474,75 @@ function copyDropFileToMediaInbox(sourcePath) {
   return targetPath;
 }
 
+async function listDriveRawIntakeFiles() {
+  const auth = loadGoogleDriveAuth();
+  const config = loadGoogleDrivePipelineConfig();
+  const rawFolderId = config.stages?.['01 Raw Intake'];
+  if (!rawFolderId) throw new Error('Drive pipeline config is missing 01 Raw Intake');
+
+  const drive = google.drive({ version: 'v3', auth });
+  const result = await drive.files.list({
+    q: [
+      `'${rawFolderId}' in parents`,
+      'trashed=false',
+      "mimeType!='application/vnd.google-apps.folder'",
+    ].join(' and '),
+    fields: 'files(id,name,mimeType,size,webViewLink,createdTime,parents)',
+    orderBy: 'createdTime asc',
+    pageSize: 10,
+    supportsAllDrives: true,
+    includeItemsFromAllDrives: true,
+  });
+
+  return {
+    drive,
+    config,
+    files: result.data.files || [],
+  };
+}
+
+async function moveDriveFile(drive, file, targetFolderId) {
+  if (!targetFolderId || !file?.id) return file;
+  const parents = Array.isArray(file.parents) ? file.parents.join(',') : '';
+  const result = await drive.files.update({
+    fileId: file.id,
+    addParents: targetFolderId,
+    removeParents: parents || undefined,
+    fields: 'id,name,mimeType,size,webViewLink,parents',
+    supportsAllDrives: true,
+  });
+  return result.data;
+}
+
+async function downloadDriveFileToMediaInbox(drive, file) {
+  const dateFolder = ensureDirectory(path.join(mediaInboxDir, todayFolderName()));
+  const extension = path.extname(file.name || '') || guessExtensionForMime(file.mimeType);
+  const baseName = sanitizeFileName(path.basename(file.name || `drive-${file.id}`, extension));
+  const localPath = path.join(
+    dateFolder,
+    `${new Date().toISOString().replace(/[:.]/g, '-')}-drive-${baseName}${extension}`
+  );
+
+  const response = await drive.files.get(
+    { fileId: file.id, alt: 'media', supportsAllDrives: true },
+    { responseType: 'stream' }
+  );
+  await streamPipeline(response.data, fs.createWriteStream(localPath));
+  return localPath;
+}
+
+function guessExtensionForMime(mimeType) {
+  const normalized = String(mimeType || '').toLowerCase();
+  if (normalized.includes('quicktime')) return '.mov';
+  if (normalized.includes('mp4')) return '.mp4';
+  if (normalized.includes('webm')) return '.webm';
+  if (normalized.includes('mpeg')) return '.mp3';
+  if (normalized.includes('wav')) return '.wav';
+  if (normalized.includes('jpeg')) return '.jpg';
+  if (normalized.includes('png')) return '.png';
+  return '';
+}
+
 function formatAccountsReply(accounts) {
   if (!accounts.length) {
     return 'No connected GHL social accounts were found for this location.';
@@ -447,6 +579,51 @@ function formatQueueReply(jobs) {
       return `- ${job.id}: ${job.kind} / ${job.status} / targets=${targets}`;
     }),
   ].join('\n');
+}
+
+function readPendingDecisions() {
+  if (!fs.existsSync(pendingDecisionsFile)) return {};
+  try {
+    return JSON.parse(fs.readFileSync(pendingDecisionsFile, 'utf8'));
+  } catch {
+    return {};
+  }
+}
+
+function writePendingDecisions(decisions) {
+  fs.writeFileSync(pendingDecisionsFile, JSON.stringify(decisions, null, 2));
+}
+
+function savePendingDecisionSet(messageId, options) {
+  const decisions = readPendingDecisions();
+  decisions[String(messageId)] = {
+    created_at: new Date().toISOString(),
+    options,
+  };
+  writePendingDecisions(decisions);
+}
+
+function extractDecisionOptions(text) {
+  const options = [];
+  const seen = new Set();
+  for (const rawLine of String(text || '').split(/\r?\n/)) {
+    const line = rawLine.trim();
+    const match = line.match(/^(?:[-*]\s*)?(?:Option\s*)?([A-D])[\):.-]\s*(.{3,80})$/i)
+      || line.match(/^(?:[-*]\s*)?(Recommended|Yes|No|Approve|Reject|Urgent|Today|This week|Low priority)[\):.-]\s*(.{0,80})$/i);
+    if (!match) continue;
+
+    const label = `${match[1]}${match[2] ? `: ${match[2]}` : ''}`
+      .replace(/\s+/g, ' ')
+      .replace(/[^\x20-\x7E]/g, '')
+      .slice(0, 48)
+      .trim();
+    const key = label.toLowerCase();
+    if (!label || seen.has(key)) continue;
+    seen.add(key);
+    options.push(label);
+    if (options.length >= 4) break;
+  }
+  return options.length >= 2 ? options : [];
 }
 
 function buildKimiPrompt(messageText, chatId, messageId) {
@@ -495,6 +672,13 @@ function buildKimiPrompt(messageText, chatId, messageId) {
     '- Return a concise Telegram-ready reply in plain text.',
     '- Use ASCII characters only in the final reply. Do not use emoji, arrows, curly quotes, or em dashes.',
     '- If the message includes a ramble, break it into the clearest next tasks in the reply.',
+    '- The BNA dashboard lanes are Tasks, Students, Content, Contacts, and Accounting. Do not use the old Pipeline, Signups, Billing, or Ramble tab language.',
+    '- Task stages are Raw Input, Needs Decision, Assigned, In Progress, Done, and Archive.',
+    '- The only active workers are Shloimie and Kimi. If assigning work, assign it to one of those two.',
+    '- When a decision is needed, give 2-3 crisp options formatted exactly like "Option A: label", "Option B: label", and "Option C: label" so Telegram can create buttons.',
+    '- If the request is clear, say what was captured or what you will do next instead of asking unnecessary questions.',
+    '- Student accountability means private meeting date, attendance, goals, struggles, interests, decisions, next check-in, and notes about how the discussion went.',
+    '- Content is WhatsApp and Facebook first, with YouTube, blog, newsletter, and Google Business Profile as later branches.',
     '- Avoid vague headings like "Next" by itself. Use "Captured", "Already filed", "Queued work", and "Blocked only if blocked".',
     '- Do not ask whether to file tasks if the intent is clear. The bridge already captures tasks, payment intake, accountability, and content jobs.',
     '',
@@ -512,6 +696,10 @@ function buildApiFallbackMessages(messageText, chatId, messageId) {
     'Keep the reply practical and concise.',
     'Use ASCII characters only in the final reply.',
     'If the message contains a ramble, break it into the clearest next tasks.',
+    'Use the BNA lanes Tasks, Students, Content, Contacts, and Accounting. Do not use the old Pipeline, Signups, Billing, or Ramble tab language.',
+    'Use task stages Raw Input, Needs Decision, Assigned, In Progress, Done, and Archive.',
+    'Only assign work to Shloimie or Kimi.',
+    'When a decision is needed, give 2-3 options formatted exactly like "Option A: label", "Option B: label", and "Option C: label" so Telegram can create buttons.',
     'Avoid vague headings like "Next" by itself. Use Captured, Already filed, Queued work, and Blocked only if blocked.',
   ].join('\n');
 
@@ -620,6 +808,42 @@ function runKimi(prompt, model, timeoutMs) {
   return invoke(args);
 }
 
+function runDriveMemorySync(command = 'sync-memory', timeoutMs = 120000) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, ['scripts/google-drive-setup.mjs', command], {
+      cwd: repoRoot,
+      shell: false,
+      env: process.env,
+    });
+
+    let stdout = '';
+    let stderr = '';
+    const timer = setTimeout(() => {
+      child.kill();
+      reject(new Error(`Drive memory sync timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+
+    child.stdout.on('data', (chunk) => {
+      stdout += chunk.toString();
+    });
+    child.stderr.on('data', (chunk) => {
+      stderr += chunk.toString();
+    });
+    child.on('error', (error) => {
+      clearTimeout(timer);
+      reject(error);
+    });
+    child.on('close', (code) => {
+      clearTimeout(timer);
+      if (code === 0) {
+        resolve(stdout.trim());
+        return;
+      }
+      reject(new Error((stderr || stdout || `Drive sync exited ${code}`).trim()));
+    });
+  });
+}
+
 async function runKimiApiFallback(config, messageText, chatId, messageId) {
   if (!config.kimiApiKey) {
     throw new Error('No KIMI_API_KEY configured for API fallback');
@@ -716,6 +940,62 @@ async function appRequest(config, method, endpoint, body = null) {
     throw new Error(`BNA app ${endpoint} failed: ${response.status} ${text.slice(0, 300)}`);
   }
   return data;
+}
+
+async function getApprovedOutputExamples(config, outputType, limit = 3) {
+  try {
+    const data = await appRequest(config, 'GET', '/api/bna/content-jobs');
+    const jobs = Array.isArray(data?.jobs) ? data.jobs : [];
+    return jobs
+      .flatMap((job) => (Array.isArray(job.outputs) ? job.outputs : [])
+        .filter((output) => output.output_type === outputType && ['approved', 'published'].includes(output.status))
+        .map((output) => ({
+          title: output.title || 'Approved draft',
+          body: output.body || '',
+          status: output.status,
+        })))
+      .filter((output) => output.body.trim())
+      .slice(0, limit);
+  } catch (error) {
+    log(`Approved ${outputType} examples unavailable: ${error instanceof Error ? error.message : String(error)}`);
+    return [];
+  }
+}
+
+function formatApprovedExamples(examples) {
+  if (!examples.length) return 'No approved examples captured yet.';
+  return examples
+    .map((example, index) => [
+      `Example ${index + 1}: ${example.title} (${example.status})`,
+      example.body.slice(0, 1200),
+    ].join('\n'))
+    .join('\n\n');
+}
+
+function appendApprovedOutputExample(output) {
+  const outputType = output?.output_type;
+  const body = String(output?.body || '').trim();
+  if (!body) return null;
+
+  const relativePath = outputType === 'facebook_post'
+    ? 'content-memory/facebook/examples.md'
+    : outputType === 'whatsapp_update'
+      ? 'content-memory/whatsapp/examples.md'
+      : '';
+  if (!relativePath) return null;
+
+  const absolutePath = path.join(repoRoot, relativePath);
+  fs.mkdirSync(path.dirname(absolutePath), { recursive: true });
+  const title = String(output.title || outputType).replace(/\r?\n/g, ' ').trim();
+  const entry = [
+    '',
+    `### ${new Date().toISOString().slice(0, 10)} - ${title}`,
+    '',
+    body,
+    '',
+  ].join('\n');
+  fs.appendFileSync(absolutePath, entry);
+  return relativePath;
 }
 
 function splitRambleIntoUnits(text) {
@@ -848,27 +1128,57 @@ function splitTelegramText(text, maxLength = 3500) {
 async function sendReply(botToken, chatId, text, replyToMessageId) {
   const chunks = splitTelegramText(text);
   for (let i = 0; i < chunks.length; i += 1) {
-    await telegramRequest(botToken, 'sendMessage', {
+    const params = {
       chat_id: chatId,
       text: chunks[i],
-      reply_to_message_id: i === 0 ? replyToMessageId : undefined,
-    });
+    };
+    // Only reply to message if it's recent (within last hour) to avoid errors
+    if (i === 0 && replyToMessageId) {
+      params.reply_to_message_id = replyToMessageId;
+    }
+    try {
+      await telegramRequest(botToken, 'sendMessage', params);
+    } catch (err) {
+      // If replying fails, try without reply_to_message_id
+      if (params.reply_to_message_id) {
+        delete params.reply_to_message_id;
+        await telegramRequest(botToken, 'sendMessage', params);
+      } else {
+        throw err;
+      }
+    }
   }
 }
 
 async function sendDashboardMenu(botToken, chatId, replyToMessageId) {
   await telegramRequest(botToken, 'sendMessage', {
     chat_id: chatId,
-    text: 'BNA Telegram bridge is live. Pick a lane or just ramble in plain English.',
+    text: 'BNA Telegram bridge is live. Ramble in plain English or open a lane.',
     reply_to_message_id: replyToMessageId,
     reply_markup: {
       inline_keyboard: [
         [{ text: 'Dashboard', url: 'https://bneineviimacademy.org/operations' }],
-        [{ text: 'Pipeline', url: 'https://bneineviimacademy.org/operations?view=pipeline' }],
+        [{ text: 'Tasks', url: 'https://bneineviimacademy.org/operations?view=tasks' }],
+        [{ text: 'Students', url: 'https://bneineviimacademy.org/operations?view=students' }],
         [{ text: 'Content', url: 'https://bneineviimacademy.org/operations?view=content' }],
-        [{ text: 'Accountability', url: 'https://bneineviimacademy.org/operations?view=accountability' }],
-        [{ text: 'Billing', url: 'https://bneineviimacademy.org/operations?view=billing' }],
+        [{ text: 'Contacts', url: 'https://bneineviimacademy.org/operations?view=contacts' }],
+        [{ text: 'Accounting', url: 'https://bneineviimacademy.org/operations?view=accounting' }],
       ],
+    },
+  });
+}
+
+async function sendDecisionButtons(botToken, chatId, replyToMessageId, sourceMessageId, options) {
+  if (!options.length) return;
+  savePendingDecisionSet(sourceMessageId, options);
+  await telegramRequest(botToken, 'sendMessage', {
+    chat_id: chatId,
+    text: 'Quick decision buttons:',
+    reply_to_message_id: replyToMessageId,
+    reply_markup: {
+      inline_keyboard: options.map((label, index) => ([
+        { text: label, callback_data: `decision:${sourceMessageId}:${index}` },
+      ])),
     },
   });
 }
@@ -1323,6 +1633,9 @@ async function generateWhatsAppDraft(config, transcriptText, caption) {
     throw new Error('OPENAI_API_KEY is not configured for WhatsApp summary generation');
   }
 
+  const platformMemory = buildPlatformMemoryContext('whatsapp_update');
+  const approvedExamples = await getApprovedOutputExamples(config, 'whatsapp_update', 3);
+
   const response = await fetch(`${config.openaiBaseUrl.replace(/\/+$/, '')}/chat/completions`, {
     method: 'POST',
     headers: {
@@ -1337,6 +1650,7 @@ async function generateWhatsAppDraft(config, transcriptText, caption) {
           role: 'system',
           content: [
             'You write short WhatsApp captions for Bnei Neviim Academy parents.',
+            'Before drafting, use the brand kit, platform prompt, and approved examples provided by the user message.',
             'Return only the message to copy and paste.',
             'Use warm, natural language.',
             'Use short emoji bullet points. Include simple emojis like 💪 🙂 🤘 👉 when they fit.',
@@ -1350,6 +1664,12 @@ async function generateWhatsAppDraft(config, transcriptText, caption) {
           content: [
             'Caption/instructions:',
             caption || '[none]',
+            '',
+            'Brand kit and platform memory:',
+            platformMemory || '[none]',
+            '',
+            'Recent approved WhatsApp examples:',
+            formatApprovedExamples(approvedExamples),
             '',
             'Transcript:',
             transcriptText.slice(0, 12000),
@@ -1430,9 +1750,14 @@ async function handleStructuredTextCommand(config, msg) {
         '- /accounts',
         '- /blogs',
         '- /queue',
+        '- /drive_auth',
+        '- /sync_drive_memory',
+        '- /pull_drive_memory',
+        '- /ingest_drive WhatsApp update',
         '- /status',
-        '- Send a ramble to capture tasks plus accountability items',
-        '- Upload audio/video/image to create a Content pipeline job',
+        '- Send a ramble to capture Tasks, Students, Contacts, or Accounting items',
+        '- Upload audio/video/image to create a Content job',
+        '- Decision points should come back with quick button-style options',
         '- publish draft <target ...> | your caption',
         '- publish now <target ...> | your caption',
         'Upload a photo, video, or document with a publish command in the caption and I will push the asset into GHL and queue or draft the post.',
@@ -1456,6 +1781,56 @@ async function handleStructuredTextCommand(config, msg) {
 
   if (text === '/queue') {
     await sendReply(config.botToken, chatId, formatQueueReply(listPendingJobs()), messageId);
+    return true;
+  }
+
+  if (text === '/drive_auth') {
+    await sendReply(
+      config.botToken,
+      chatId,
+      [
+        'Open this on the computer running the BNA bridge, approve Google, then come back here:',
+        'http://localhost:8080/api/google/oauth/start?redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fapi%2Fgoogle%2Foauth%2Fcallback',
+        '',
+        'After approval, send /sync_drive_memory.',
+      ].join('\n'),
+      messageId
+    );
+    return true;
+  }
+
+  if (text === '/sync_drive_memory') {
+    try {
+      const output = await runDriveMemorySync('sync-memory');
+      await sendReply(config.botToken, chatId, output || 'Drive memory sync complete.', messageId);
+    } catch (error) {
+      await sendReply(
+        config.botToken,
+        chatId,
+        `Drive memory sync failed: ${error instanceof Error ? error.message : String(error)}`,
+        messageId
+      );
+    }
+    return true;
+  }
+
+  if (text === '/pull_drive_memory') {
+    try {
+      const output = await runDriveMemorySync('pull-memory');
+      await sendReply(config.botToken, chatId, output || 'Pulled Drive memory into repo.', messageId);
+    } catch (error) {
+      await sendReply(
+        config.botToken,
+        chatId,
+        `Drive memory pull failed: ${error instanceof Error ? error.message : String(error)}`,
+        messageId
+      );
+    }
+    return true;
+  }
+
+  if (/^\/(?:ingest_drive|drive)\b/i.test(text)) {
+    await handleDriveIngestCommand(config, msg);
     return true;
   }
 
@@ -1536,7 +1911,43 @@ async function handleMediaMessage(config, msg) {
   }
 
   const caption = getTelegramMessageText(msg);
-  const download = await downloadTelegramFile(config.botToken, descriptor.fileId, descriptor.filename);
+  
+  // Check file size first (Telegram bot API limit is ~20MB for downloads)
+  const MAX_TELEGRAM_BOT_FILE_SIZE = 20 * 1024 * 1024; // 20MB
+  if (descriptor.fileSize && descriptor.fileSize > MAX_TELEGRAM_BOT_FILE_SIZE) {
+    await sendReply(
+      config.botToken,
+      chatId,
+      `File too large (${formatBytes(descriptor.fileSize)}). Telegram bot limit is 20MB.\n\n` +
+      `Options:\n` +
+      `1. Use Google Drive: Upload to "01 Raw Intake" folder\n` +
+      `2. Use /ingest_drop command with a file in media-drop/inbox\n` +
+      `3. Compress the video and try again`,
+      messageId
+    );
+    return true;
+  }
+  
+  let download;
+  try {
+    download = await downloadTelegramFile(config.botToken, descriptor.fileId, descriptor.filename);
+  } catch (error) {
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    if (errorMessage.includes('file is too big')) {
+      await sendReply(
+        config.botToken,
+        chatId,
+        `File too large for Telegram bot download.\n\n` +
+        `Options:\n` +
+        `1. Upload to Google Drive "01 Raw Intake" folder\n` +
+        `2. Use /ingest_drop command with a file in media-drop/inbox\n` +
+        `3. Compress the video and try again`,
+        messageId
+      );
+      return true;
+    }
+    throw error;
+  }
   const publishIntent = parsePublishIntent(caption);
   const job = buildJob({
     kind: `media-${descriptor.kind}`,
@@ -1983,6 +2394,234 @@ async function handleDropIngestCommand(config, msg) {
   return true;
 }
 
+async function handleDriveIngestCommand(config, msg) {
+  const chatId = String(msg.chat.id);
+  const messageId = msg.message_id;
+  const text = getTelegramMessageText(msg);
+  const caption = text.replace(/^\/(?:ingest_drive|drive)\b/i, '').trim()
+    || 'WhatsApp update: make this into a parent WhatsApp summary with bullet points and split the video if needed.';
+
+  let drive;
+  let pipelineConfig;
+  let driveFile;
+  let localPath = '';
+  let descriptor = null;
+  const replyLines = [];
+
+  try {
+    const listed = await listDriveRawIntakeFiles();
+    drive = listed.drive;
+    pipelineConfig = listed.config;
+    if (!listed.files.length) {
+      await sendReply(
+        config.botToken,
+        chatId,
+        [
+          'Drive Raw Intake is connected, but I do not see a file there yet.',
+          'Drop the video into BNA V2 / 01 Raw Intake, then send:',
+          '/ingest_drive WhatsApp update',
+        ].join('\n'),
+        messageId
+      );
+      return true;
+    }
+
+    driveFile = listed.files[0];
+    const ingestingFile = await moveDriveFile(drive, driveFile, pipelineConfig.stages?.['02 Ingesting']);
+    driveFile = { ...driveFile, ...ingestingFile };
+    localPath = await downloadDriveFileToMediaInbox(drive, driveFile);
+    descriptor = detectLocalFileDescriptor(localPath);
+
+    replyLines.push(`Picked up ${driveFile.name} from Drive Raw Intake.`);
+    replyLines.push(`Moved it to Drive stage: 02 Ingesting.`);
+    replyLines.push(`Downloaded to ${path.relative(repoRoot, localPath).replace(/\\/g, '/')}.`);
+    replyLines.push('Queued for transcription and WhatsApp processing. GHL upload is deferred.');
+    await sendReply(config.botToken, chatId, replyLines.join('\n'), messageId);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    await sendReply(config.botToken, chatId, `Drive ingest failed before processing: ${message}`, messageId);
+    return true;
+  }
+
+  const job = buildJob({
+    kind: `drive-${descriptor.kind}`,
+    chatId,
+    messageId,
+    caption,
+    localPath,
+    mediaUrl: driveFile.webViewLink || '',
+    mimeType: descriptor.mimeType,
+    status: 'queued',
+    notes: [`Google Drive file ${driveFile.id} downloaded from Raw Intake`],
+  });
+  saveJob(job);
+
+  let transcriptText = '';
+  let transcription = null;
+  let whatsAppDraft = '';
+  let whatsAppVideoParts = [];
+  let contentJobId = '';
+  let whatsAppOutputId = '';
+  let finalDriveStage = '02 Ingesting';
+
+  try {
+    if (descriptor.kind === 'video' && shouldGenerateWhatsAppDraft(caption)) {
+      try {
+        const videoParts = await createWhatsAppVideoParts(localPath);
+        whatsAppVideoParts = videoParts.parts;
+        replyLines.push(`Created ${whatsAppVideoParts.length} WhatsApp video part(s).`);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        log(`Drive WhatsApp video part creation failed: ${message}`);
+        replyLines.push(`WhatsApp video parts not created: ${message}`);
+      }
+    }
+
+    if (['video', 'voice', 'document'].includes(descriptor.kind)) {
+      try {
+        transcription = await transcribeMediaWithOpenAI(config, localPath, descriptor);
+        transcriptText = getTranscriptText(transcription);
+        finalDriveStage = '03 Transcribed';
+        if (transcription?.processing?.mode === 'ffmpeg-audio-chunks') {
+          replyLines.push(`Long media prepared as ${transcription.processing.chunk_count} compressed audio chunk(s) for transcription.`);
+        }
+        replyLines.push(`Transcript captured (${transcriptText.length} characters).`);
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        log(`Drive transcription failed: ${message}`);
+        replyLines.push(`Transcription not completed: ${message}`);
+      }
+    }
+
+    if (transcriptText && shouldGenerateWhatsAppDraft(caption)) {
+      try {
+        whatsAppDraft = await generateWhatsAppDraft(config, transcriptText, caption);
+        finalDriveStage = '05 WhatsApp Ready';
+        replyLines.push('WhatsApp draft generated.');
+      } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        log(`Drive WhatsApp draft failed: ${message}`);
+        replyLines.push(`WhatsApp draft not generated: ${message}`);
+      }
+    }
+
+    const outputs = defaultContentOutputsForMedia(descriptor.kind, caption);
+    if (whatsAppDraft) {
+      const whatsAppOutput = outputs.find((output) => output.output_type === 'whatsapp_update');
+      if (whatsAppOutput) {
+        whatsAppOutput.body = whatsAppDraft;
+        whatsAppOutput.status = 'needs_approval';
+      }
+    }
+
+    const contentJob = await appRequest(config, 'POST', '/api/bna/content-jobs', {
+      title: `${descriptor.kind} from Drive ${driveFile.name}`,
+      source_type: 'google_drive',
+      source_message_id: String(messageId),
+      source_chat_id: chatId,
+      local_path: path.relative(repoRoot, localPath).replace(/\\/g, '/'),
+      media_url: driveFile.webViewLink || null,
+      drive_file_id: driveFile.id,
+      drive_folder_id: pipelineConfig.stages?.[finalDriveStage] || null,
+      drive_stage: finalDriveStage,
+      mime_type: descriptor.mimeType,
+      caption,
+      status: whatsAppDraft ? 'needs_approval' : transcriptText ? 'transcribed' : 'ingested',
+      transcript_text: transcriptText || null,
+      transcript_json: transcription || null,
+      notes: [
+        'Content pipeline job created from Google Drive Raw Intake.',
+        `Drive stage: ${finalDriveStage}.`,
+        whatsAppVideoParts.length
+          ? `WhatsApp video parts: ${whatsAppVideoParts.map((part) => path.relative(repoRoot, part.localPath).replace(/\\/g, '/')).join(', ')}`
+          : '',
+      ].filter(Boolean).join('\n'),
+      outputs,
+    });
+
+    contentJobId = contentJob?.job?.id || '';
+    const whatsAppOutput = Array.isArray(contentJob?.outputs)
+      ? contentJob.outputs.find((output) => output.output_type === 'whatsapp_update')
+      : null;
+    whatsAppOutputId = whatsAppOutput?.id || '';
+    replyLines.push(`Content job: ${contentJobId || 'created'}.`);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    log(`Drive content job capture failed: ${message}`);
+    replyLines.push(`Content job was not created: ${message}`);
+  }
+
+  try {
+    const targetFolderId = pipelineConfig.stages?.[finalDriveStage] || pipelineConfig.stages?.['99 Failed'];
+    if (targetFolderId) {
+      driveFile = await moveDriveFile(drive, driveFile, targetFolderId);
+      replyLines.push(`Moved Drive file to stage: ${finalDriveStage}.`);
+    }
+  } catch (error) {
+    log(`Could not move Drive file after processing: ${error instanceof Error ? error.message : String(error)}`);
+  }
+
+  appendMemoryEntry('Drive Asset', replyLines.join('\n'), {
+    chat_id: chatId,
+    message_id: messageId,
+    job_id: job.id,
+    drive_file_id: driveFile.id,
+  });
+
+  await sendReply(config.botToken, chatId, [`Saved Drive job ${job.id}.`, ...replyLines].join('\n'), messageId);
+
+  for (let index = 0; index < whatsAppVideoParts.length; index += 1) {
+    const part = whatsAppVideoParts[index];
+    if (part.size > config.telegramUploadMaxBytes) {
+      await sendReply(
+        config.botToken,
+        chatId,
+        `WhatsApp video part ${index + 1}/${whatsAppVideoParts.length} is ${formatBytes(part.size)}, so I left it saved locally: ${path.relative(repoRoot, part.localPath).replace(/\\/g, '/')}`,
+        messageId
+      );
+      continue;
+    }
+
+    try {
+      await telegramUploadFile(
+        config.botToken,
+        'sendDocument',
+        {
+          chat_id: chatId,
+          reply_to_message_id: messageId,
+          caption: `WhatsApp video part ${index + 1}/${whatsAppVideoParts.length}`,
+        },
+        'document',
+        part.localPath,
+        part.filename
+      );
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      log(`Telegram upload of Drive WhatsApp part failed: ${message}`);
+      await sendReply(
+        config.botToken,
+        chatId,
+        `WhatsApp video part ${index + 1}/${whatsAppVideoParts.length} was saved locally but could not be uploaded back to Telegram: ${message}`,
+        messageId
+      );
+    }
+  }
+
+  if (whatsAppDraft) {
+    if (whatsAppOutputId) {
+      await sendContentApproval(config.botToken, chatId, messageId, {
+        outputId: whatsAppOutputId,
+        jobId: contentJobId,
+        body: whatsAppDraft,
+      });
+    } else {
+      await sendReply(config.botToken, chatId, ['WhatsApp copy draft:', '', whatsAppDraft].join('\n'), messageId);
+    }
+  }
+
+  return true;
+}
+
 async function handleTextMessage(config, msg) {
   const chatId = String(msg.chat.id);
   const text = msg.text?.trim() || '';
@@ -2073,6 +2712,10 @@ async function handleTextMessage(config, msg) {
   }
 
   await sendReply(config.botToken, chatId, reply, messageId);
+  const decisionOptions = extractDecisionOptions(reply);
+  if (decisionOptions.length) {
+    await sendDecisionButtons(config.botToken, chatId, messageId, messageId, decisionOptions);
+  }
 }
 
 async function handleCallbackQuery(config, query) {
@@ -2087,6 +2730,33 @@ async function handleCallbackQuery(config, query) {
       text: 'This bot is private.',
       show_alert: true,
     });
+    return;
+  }
+
+  const decisionMatch = data.match(/^decision:(\d+):(\d+)$/);
+  if (decisionMatch) {
+    const sourceMessageId = decisionMatch[1];
+    const optionIndex = Number(decisionMatch[2]);
+    const decisions = readPendingDecisions();
+    const option = decisions[sourceMessageId]?.options?.[optionIndex];
+
+    await telegramRequest(config.botToken, 'answerCallbackQuery', {
+      callback_query_id: callbackId,
+      text: option ? `Captured: ${option}` : 'Decision captured.',
+    });
+
+    appendMemoryEntry('Telegram Decision', option || data, {
+      chat_id: chatId,
+      source_message_id: sourceMessageId,
+      callback_message_id: messageId,
+    });
+
+    await sendReply(
+      config.botToken,
+      chatId,
+      option ? `Decision captured: ${option}` : 'Decision captured.',
+      messageId
+    );
     return;
   }
 
@@ -2112,6 +2782,15 @@ async function handleCallbackQuery(config, query) {
   });
 
   const output = result?.output;
+  let promotedPath = null;
+  if (status === 'approved') {
+    promotedPath = appendApprovedOutputExample(output);
+    if (promotedPath) {
+      runDriveMemorySync('push-memory').catch((error) => {
+        log(`Approved example Drive push failed: ${error instanceof Error ? error.message : String(error)}`);
+      });
+    }
+  }
   const label = status === 'approved' ? 'Approved WhatsApp draft' : 'Rejected WhatsApp draft';
   await sendReply(
     config.botToken,
@@ -2119,7 +2798,7 @@ async function handleCallbackQuery(config, query) {
     [
       `${label} #${outputId}.`,
       status === 'approved'
-        ? 'Already filed: the Content output is marked approved. You can paste/send the WhatsApp text now.'
+        ? `Already filed: the Content output is marked approved.${promotedPath ? ` Saved as future example: ${promotedPath}.` : ''} You can paste/send the WhatsApp text now.`
         : 'Already filed: the Content output is marked rejected. Send the correction as a reply or regenerate from the Content queue.',
       output?.body ? `\nText:\n${output.body}` : '',
     ].filter(Boolean).join('\n'),
@@ -2151,6 +2830,18 @@ async function getBotIdentity(botToken) {
 }
 
 async function main() {
+  if (process.argv[2] === 'ingest-drive-once') {
+    const config = loadConfig();
+    const chatId = config.allowedChatIds[0];
+    if (!chatId) throw new Error('No allowed Telegram chat id is configured for one-off Drive ingest.');
+    await handleDriveIngestCommand(config, {
+      chat: { id: chatId },
+      message_id: Math.floor(Date.now() / 1000),
+      text: `/ingest_drive ${process.argv.slice(3).join(' ')}`.trim(),
+    });
+    return;
+  }
+
   acquireLock();
   process.on('exit', releaseLock);
   process.on('SIGINT', () => {
