@@ -903,7 +903,7 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
-app.get('/api/google/oauth/start', requireAdmin, (req, res) => {
+app.get('/api/google/oauth/start', (req, res) => {
   try {
     const redirectUri = req.query.redirect_uri || GOOGLE_REDIRECT_URI;
     const oauth2Client = createGoogleOAuthClient(redirectUri);
