@@ -8587,6 +8587,7 @@ export async function registerRoutes(
         FROM video_progress vp
         JOIN videos v ON v.id = vp.video_id
         WHERE vp.user_id = ${userId} AND vp.completed = false AND vp.position_seconds > 10
+          AND vp.updated_at >= NOW() - INTERVAL '3 days'
         ORDER BY vp.updated_at DESC
         LIMIT 12
       `);
