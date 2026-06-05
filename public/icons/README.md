@@ -1,12 +1,15 @@
 # Icons
 
-SVG placeholders are in place so the PWA installs cleanly. They use the
-project palette (parchment bg, burgundy circle, gold check).
+The active browser and PWA icons are PNG exports generated from
+`public/images/bna-logo-nobg.png`.
 
-If you want PNG icons (better Android/iOS coverage):
+Current files:
 
-1. Generate them from `icon.svg` with any SVG-to-PNG converter
-   (Inkscape, `librsvg`, online tools, Figma export).
-2. Drop in `icon-192.png` and `icon-512.png`.
-3. Update `public/manifest.json` to point at the PNGs instead.
-4. Add `apple-touch-icon.png` (180x180) for iOS home-screen.
+- `favicon-16.png`
+- `favicon-32.png`
+- `apple-touch-icon.png`
+- `icon-192.png`
+- `icon-512.png`
+
+The root `public/favicon.ico` includes the 16px and 32px favicon sizes for
+older browser and preview-client fallback.

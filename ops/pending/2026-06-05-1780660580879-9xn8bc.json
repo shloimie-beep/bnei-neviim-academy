@@ -1,0 +1,18 @@
+{
+  "id": "2026-06-05-1780660580879-9xn8bc",
+  "kind": "media-voice",
+  "createdAt": "2026-06-05T11:56:20.879Z",
+  "chatId": "8202155026",
+  "messageId": 319,
+  "caption": "",
+  "localPath": "C:\\Users\\User\\BNA v2.0\\media-inbox\\2026-06-05\\2026-06-05T11-56-20-878Z-voice-319.ogg",
+  "mediaUrl": "",
+  "mimeType": "audio/ogg",
+  "targets": [],
+  "publishNow": false,
+  "summary": "",
+  "status": "queued",
+  "notes": [
+    "Asset saved locally and queued; GHL upload is deferred until publish approval"
+  ]
+}

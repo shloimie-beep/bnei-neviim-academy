@@ -4,8 +4,68 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bnei Nevi'im Academy | Torah Learning for Boys</title>
+    <meta name="description" content="Bnei Neviim Academy is an alternative Torah learning environment and school-style morning program for boys in Beit Shemesh, focused on Limudei Kodesh, mentorship, movement, self-governance, and personal responsibility.">
+    <meta name="keywords" content="alternative school Beit Shemesh, yeshiva alternative Beit Shemesh, Torah learning program Beit Shemesh, Limudei Kodesh program Beit Shemesh, ADHD-friendly learning environment, homeschool support Beit Shemesh">
+    <meta name="theme-color" content="#1e3a5f">
+    <meta property="og:site_name" content="Bnei Neviim Academy">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Bnei Neviim Academy | Torah Learning for Boys">
+    <meta property="og:description" content="A calm, relationship-based Torah learning environment for boys in Beit Shemesh.">
+    <meta property="og:url" content="https://bneineviimacademy.org/">
+    <meta property="og:image" content="https://bneineviimacademy.org/images/bna-social-preview.png">
+    <meta property="og:image:secure_url" content="https://bneineviimacademy.org/images/bna-social-preview.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Bnei Neviim Academy logo">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Bnei Neviim Academy | Torah Learning for Boys">
+    <meta name="twitter:description" content="A calm, relationship-based Torah learning environment for boys in Beit Shemesh.">
+    <meta name="twitter:image" content="https://bneineviimacademy.org/images/bna-social-preview.png">
+    <link rel="canonical" href="https://bneineviimacademy.org/">
+    <script>
+        (function () {
+            var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+            var homePath = window.location.pathname === '/' || window.location.pathname === '/he' || window.location.pathname === '/index.html';
+            var publicBypass = new URLSearchParams(window.location.search).has('public');
+            if (standalone && homePath && !publicBypass) {
+                window.location.replace('/operations');
+            }
+        })();
+    </script>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="icon" href="/icons/favicon-16.png" sizes="16x16" type="image/png">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=Noto+Serif+Hebrew:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": ["EducationalOrganization", "LocalBusiness"],
+      "name": "Bnei Neviim Academy",
+      "description": "Alternative Torah learning program and school-style environment for boys in Beit Shemesh, focused on Limudei Kodesh, relationship-based mentorship, movement, self-governance, and personal responsibility.",
+      "areaServed": ["Beit Shemesh", "Ramat Beit Shemesh", "Israel"],
+      "url": "https://bneineviimacademy.org/",
+      "sameAs": [
+        "https://www.youtube.com/channel/UCKnmIcZqhzNCdAbE6RK-U-g",
+        "https://www.linkedin.com/company/108630189/",
+        "https://www.facebook.com/profile.php?id=61590512065756"
+      ],
+      "keywords": [
+        "alternative school Beit Shemesh",
+        "yeshiva alternative Beit Shemesh",
+        "Torah learning program Beit Shemesh",
+        "Limudei Kodesh program Beit Shemesh",
+        "ADHD-friendly learning environment",
+        "homeschool support Beit Shemesh",
+        "מסגרת אלטרנטיבית לבנים בבית שמש",
+        "תוכנית לימודי קודש בבית שמש",
+        "אלטרנטיבה לישיבה בבית שמש",
+        "מסגרת לילדים עם קשב וריכוז"
+      ]
+    }
+    </script>
     <style>
         /* ===== GLOBAL RESET & FOUNDATION ===== */
         *,
@@ -21,6 +81,10 @@
             overflow-x: hidden;
             margin: 0;
             padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
         }
 
         img,
@@ -513,6 +577,351 @@
             left: 0;
         }
 
+        /* ===== SCHEDULE, GOAL & FIELD NOTES ===== */
+        .program-pulse {
+            background:
+                radial-gradient(circle at 18% 10%, rgba(201, 162, 39, 0.22), transparent 28%),
+                linear-gradient(135deg, #f8fbff 0%, #e8f0f8 48%, #ffffff 100%);
+            padding: 5.5rem 2rem;
+        }
+
+        .program-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
+            gap: 2rem;
+            align-items: stretch;
+        }
+
+        .torah-goal-stack {
+            display: grid;
+            gap: 1.2rem;
+            max-width: 1152px;
+            margin: 0 auto;
+        }
+
+        .program-card {
+            background: rgba(255, 255, 255, 0.92);
+            border: 1px solid rgba(30, 58, 95, 0.12);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 18px 45px rgba(30, 58, 95, 0.12);
+        }
+
+        .program-eyebrow {
+            color: var(--accent-gold);
+            font-size: 0.78rem;
+            font-weight: 800;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            margin-bottom: 0.55rem;
+        }
+
+        .program-card h2,
+        .program-card h3 {
+            font-family: 'Cormorant Garamond', serif;
+            color: var(--primary-blue);
+            line-height: 1.1;
+            margin: 0;
+        }
+
+        .program-card h2 {
+            font-size: clamp(2rem, 4vw, 3.15rem);
+        }
+
+        .program-card h3 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .program-lead {
+            color: #334155;
+            font-size: 1.05rem;
+            margin: 1rem 0 1.5rem;
+        }
+
+        .schedule-list {
+            display: grid;
+            gap: 0.85rem;
+            margin-top: 1.4rem;
+        }
+
+        .schedule-row {
+            display: grid;
+            grid-template-columns: 96px 1fr;
+            gap: 1rem;
+            align-items: center;
+            background: #f8fafc;
+            border: 1px solid rgba(30, 58, 95, 0.1);
+            border-radius: 16px;
+            padding: 0.9rem 1rem;
+        }
+
+        .schedule-days {
+            color: var(--primary-blue);
+            font-weight: 800;
+            font-size: 0.95rem;
+        }
+
+        .schedule-place {
+            color: #334155;
+            font-size: 0.98rem;
+        }
+
+        .goal-card {
+            background: linear-gradient(145deg, #10233f, #1e3a5f);
+            color: var(--white);
+            border-radius: 24px;
+            padding: 2rem;
+            box-shadow: 0 20px 50px rgba(30, 58, 95, 0.28);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .goal-card::after {
+            content: "";
+            position: absolute;
+            width: 220px;
+            height: 220px;
+            border-radius: 999px;
+            background: rgba(201, 162, 39, 0.18);
+            right: -80px;
+            top: -70px;
+        }
+
+        .goal-card > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .goal-card--full {
+            width: 100%;
+        }
+
+        .goal-card h3 {
+            color: var(--white);
+        }
+
+        .goal-card p {
+            color: rgba(255, 255, 255, 0.86);
+        }
+
+        .goal-meter-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: baseline;
+            margin: 1.4rem 0 0.7rem;
+        }
+
+        .goal-count {
+            font-size: clamp(2.1rem, 5vw, 3.4rem);
+            line-height: 1;
+            font-weight: 800;
+            color: var(--accent-gold);
+        }
+
+        .goal-label {
+            color: rgba(255, 255, 255, 0.78);
+            font-size: 0.95rem;
+        }
+
+        .goal-status-pill {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 110px;
+            padding: 0.45rem 0.9rem;
+            border-radius: 999px;
+            background: rgba(217, 170, 24, 0.16);
+            border: 1px solid rgba(246, 211, 101, 0.35);
+            color: #f6d365;
+            font-size: 0.92rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+        }
+
+        .progress-track {
+            width: 100%;
+            height: 16px;
+            background: rgba(255, 255, 255, 0.16);
+            border-radius: 999px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.16);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: var(--progress, 0%);
+            background: linear-gradient(90deg, #d9aa18, #f6d365);
+            border-radius: inherit;
+            transition: width 0.8s ease;
+        }
+
+        .goal-note {
+            color: rgba(255, 255, 255, 0.84);
+            margin-top: 1rem;
+        }
+
+        .torah-student-grid {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 1rem;
+            align-items: stretch;
+            justify-content: center;
+        }
+
+        .torah-student-card {
+            background: rgba(255, 255, 255, 0.96);
+            border: 1px solid rgba(30, 58, 95, 0.12);
+            border-radius: 20px;
+            padding: 1.15rem 1rem 1rem;
+            box-shadow: 0 14px 32px rgba(30, 58, 95, 0.1);
+            min-height: 166px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 0.85rem;
+            text-align: center;
+        }
+
+        .torah-student-card .progress-track {
+            background: rgba(30, 58, 95, 0.12);
+            border-color: rgba(30, 58, 95, 0.08);
+            height: 14px;
+            margin: 0;
+        }
+
+        .torah-student-main {
+            display: grid;
+            grid-template-rows: auto auto auto;
+            align-content: start;
+            justify-items: center;
+            gap: 0.48rem;
+            min-height: 112px;
+        }
+
+        .torah-student-name {
+            color: var(--primary-blue);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(1.28rem, 1.45vw, 1.5rem);
+            line-height: 1.02;
+            min-height: 3.1rem;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-wrap: balance;
+        }
+
+        .torah-student-meta {
+            color: #475569;
+            font-size: 0.82rem;
+            line-height: 1.35;
+            max-width: 11rem;
+            min-height: 2.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .torah-student-percent {
+            color: var(--accent-gold);
+            font-weight: 800;
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+        .torah-empty {
+            color: rgba(255, 255, 255, 0.74);
+            font-size: 0.96rem;
+        }
+
+        .field-notes {
+            margin-top: 2rem;
+        }
+
+        .media-carousel {
+            position: relative;
+            overflow: hidden;
+            border-radius: 24px;
+            background: #0f172a;
+            box-shadow: 0 20px 50px rgba(30, 58, 95, 0.2);
+        }
+
+        .media-track {
+            display: flex;
+            transition: transform 0.45s ease;
+        }
+
+        .media-slide {
+            min-width: 100%;
+            background: #0f172a;
+        }
+
+        .media-visual {
+            min-height: 520px;
+            background: #1e293b;
+        }
+
+        .media-visual img,
+        .media-visual video,
+        .media-visual iframe {
+            width: 100%;
+            height: 100%;
+            min-height: 520px;
+            object-fit: cover;
+            border: 0;
+        }
+
+        .media-controls {
+            position: absolute;
+            left: 1rem;
+            bottom: 1rem;
+            display: flex;
+            gap: 0.5rem;
+            z-index: 2;
+        }
+
+        .media-btn {
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            background: rgba(15, 23, 42, 0.78);
+            color: var(--white);
+            width: 42px;
+            height: 42px;
+            border-radius: 999px;
+            cursor: pointer;
+            font-size: 1.15rem;
+            transition: all 0.2s ease;
+        }
+
+        .media-btn:hover {
+            background: var(--accent-gold);
+            color: #10233f;
+        }
+
+        .media-dots {
+            display: flex;
+            justify-content: center;
+            gap: 0.6rem;
+            margin-top: 1rem;
+        }
+
+        .media-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            border: 0;
+            background: rgba(30, 58, 95, 0.24);
+            cursor: pointer;
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .media-dot.active {
+            background: var(--accent-gold);
+            transform: scale(1.2);
+        }
+
         /* ===== REVIEWS SECTION ===== */
         .reviews {
             background: var(--light-blue);
@@ -680,6 +1089,42 @@
             margin-bottom: 1rem;
         }
 
+        .footer-socials {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.85rem;
+            margin: 1.2rem 0 0;
+        }
+
+        .footer-social-link {
+            width: 42px;
+            height: 42px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 999px;
+            color: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.06);
+            transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .footer-social-link:hover,
+        .footer-social-link:focus-visible {
+            color: var(--dark-text);
+            background: var(--accent-gold);
+            border-color: var(--accent-gold);
+            transform: translateY(-2px);
+            outline: none;
+        }
+
+        .footer-social-link svg {
+            width: 20px;
+            height: 20px;
+            fill: currentColor;
+        }
+
         .footer-nonprofit {
             font-size: 0.9rem;
             opacity: 0.8;
@@ -795,9 +1240,18 @@
         /* ===== TABLET BREAKPOINT ===== */
         @media (max-width: 991px) {
             .mission-content,
-            .learning-content {
+            .learning-content,
+            .program-grid,
+            .media-slide {
                 grid-template-columns: 1fr;
                 gap: 2rem;
+            }
+
+            .media-visual,
+            .media-visual img,
+            .media-visual video,
+            .media-visual iframe {
+                min-height: 320px;
             }
 
             .martin-card {
@@ -815,6 +1269,12 @@
 
             .founder-image {
                 max-width: 250px;
+                margin: 0 auto;
+            }
+
+            .torah-student-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                max-width: 640px;
                 margin: 0 auto;
             }
         }
@@ -1015,6 +1475,8 @@
 
             .mission-content,
             .learning-content,
+            .program-grid,
+            .media-slide,
             .martin-card,
             .founder-content {
                 display: grid !important;
@@ -1062,6 +1524,102 @@
 
             .learning-text {
                 padding: 24px 20px;
+            }
+
+            .program-pulse {
+                padding: 46px 0;
+            }
+
+            .program-card,
+            .goal-card {
+                padding: 22px 18px;
+                border-radius: 20px;
+            }
+
+            .schedule-row {
+                grid-template-columns: 1fr;
+                gap: 0.25rem;
+            }
+
+            .goal-meter-header {
+                flex-direction: column;
+                gap: 0.25rem;
+            }
+
+            .goal-status-pill {
+                align-self: flex-start;
+            }
+
+            .torah-student-grid {
+                display: flex;
+                flex-direction: column;
+                gap: 0.55rem;
+                max-width: none;
+                margin: 0;
+            }
+
+            .torah-student-card {
+                min-height: 0;
+                padding: 0.7rem 0.75rem;
+                border-radius: 8px;
+                box-shadow: none;
+                gap: 0.45rem;
+                text-align: left;
+            }
+
+            .torah-student-main {
+                grid-template-columns: minmax(0, 1fr) auto;
+                grid-template-rows: auto auto;
+                align-items: center;
+                justify-items: stretch;
+                gap: 0.16rem 0.65rem;
+                min-height: 0;
+            }
+
+            .torah-student-name {
+                justify-content: flex-start;
+                min-height: auto;
+                font-family: 'Inter', sans-serif;
+                font-size: 0.96rem;
+                font-weight: 800;
+                line-height: 1.16;
+                text-align: left;
+            }
+
+            .torah-student-meta {
+                justify-content: flex-start;
+                min-height: 0;
+                max-width: none;
+                font-size: 0.72rem;
+                line-height: 1.2;
+                text-align: left;
+            }
+
+            .torah-student-percent {
+                grid-column: 2;
+                grid-row: 1 / 3;
+                align-self: center;
+                font-size: 1.12rem;
+                white-space: nowrap;
+            }
+
+            .torah-student-card .progress-track {
+                height: 8px;
+            }
+
+            .field-notes {
+                margin-top: 24px;
+            }
+
+            .media-carousel {
+                border-radius: 20px;
+            }
+
+            .media-visual,
+            .media-visual img,
+            .media-visual video,
+            .media-visual iframe {
+                min-height: 260px;
             }
 
             .martin-card {
@@ -1125,6 +1683,543 @@
                 line-height: 1.6;
             }
         }
+
+        /* ===== PUBLIC CONTENT NAV + PHILOSOPHY LINKS ===== */
+        .nav-actions {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .nav-menu {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        .nav-link,
+        .nav-dropdown > summary {
+            min-height: 38px;
+            display: inline-flex;
+            align-items: center;
+            padding: 0 0.85rem;
+            border-radius: 999px;
+            color: var(--primary-blue);
+            font-size: 0.92rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease;
+        }
+
+        .nav-link:hover,
+        .nav-link:focus-visible,
+        .nav-dropdown > summary:hover,
+        .nav-dropdown > summary:focus-visible {
+            background: var(--light-blue);
+            outline: none;
+        }
+
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .nav-dropdown > summary {
+            list-style: none;
+        }
+
+        .nav-dropdown > summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .nav-link--mobile-only {
+            display: none;
+        }
+
+        .nav-dropdown-panel {
+            position: absolute;
+            top: calc(100% + 0.6rem);
+            right: 0;
+            width: min(320px, calc(100vw - 32px));
+            padding: 0.7rem;
+            border: 1px solid rgba(30, 58, 95, 0.12);
+            border-radius: 20px;
+            background: #ffffff;
+            box-shadow: 0 20px 60px rgba(17, 35, 63, 0.16);
+        }
+
+        .nav-dropdown-panel a {
+            display: block;
+            padding: 0.52rem 0.65rem;
+            border-radius: 12px;
+            color: var(--primary-blue);
+            font-size: 0.9rem;
+            text-decoration: none;
+        }
+
+        .nav-dropdown-panel a:hover,
+        .nav-dropdown-panel a:focus-visible {
+            background: var(--light-blue);
+            outline: none;
+        }
+
+        .nav-menu-toggle {
+            display: none;
+            width: 40px;
+            height: 40px;
+            border: 1px solid rgba(30, 58, 95, 0.16);
+            border-radius: 999px;
+            color: var(--primary-blue);
+            background: #ffffff;
+            font-size: 1.15rem;
+            cursor: pointer;
+        }
+
+        .philosophy-preview {
+            padding: 5rem 2rem;
+            background:
+                radial-gradient(circle at 12% 12%, rgba(201, 162, 39, 0.16), transparent 24rem),
+                linear-gradient(135deg, #fffaf0 0%, #eef6fb 56%, #ffffff 100%);
+        }
+
+        .philosophy-heading {
+            max-width: 720px;
+            margin: 0 auto 2rem;
+            text-align: center;
+        }
+
+        .philosophy-heading h2 {
+            margin: 0 0 0.75rem;
+            color: var(--primary-blue);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.4rem, 5vw, 4rem);
+            line-height: 1;
+        }
+
+        .philosophy-heading p {
+            margin: 0;
+            color: #37506c;
+            font-size: 1.05rem;
+        }
+
+        .philosophy-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1.15rem;
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .philosophy-card {
+            overflow: hidden;
+            min-height: 100%;
+            border: 1px solid rgba(30, 58, 95, 0.12);
+            border-radius: 28px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 14px 45px rgba(17, 35, 63, 0.09);
+        }
+
+        .philosophy-card img {
+            width: 100%;
+            height: 170px;
+            object-fit: cover;
+        }
+
+        .philosophy-card-body {
+            padding: 1.25rem;
+        }
+
+        .philosophy-card h3 {
+            margin: 0 0 0.55rem;
+            color: var(--primary-blue);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.55rem;
+            line-height: 1.08;
+        }
+
+        .philosophy-card p {
+            margin: 0 0 1rem;
+            color: #243953;
+        }
+
+        .philosophy-card a {
+            color: var(--primary-blue);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .homepage-content-section {
+            padding: 5rem 2rem;
+            background:
+                radial-gradient(circle at 88% 8%, rgba(201, 162, 39, 0.16), transparent 22rem),
+                linear-gradient(180deg, #ffffff 0%, #eef6fb 100%);
+            scroll-margin-top: 96px;
+        }
+
+        .homepage-content-section + .homepage-content-section {
+            padding-top: 0;
+        }
+
+        .home-section-shell {
+            max-width: 1180px;
+            margin: 0 auto;
+        }
+
+        .home-section-heading {
+            max-width: 760px;
+            margin: 0 auto 1.75rem;
+            text-align: center;
+        }
+
+        .home-section-eyebrow {
+            margin: 0 0 0.6rem;
+            color: var(--accent-gold);
+            font-size: 0.76rem;
+            font-weight: 800;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+        }
+
+        .home-section-heading h2 {
+            margin: 0 0 0.75rem;
+            color: var(--primary-blue);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2.35rem, 5vw, 4rem);
+            line-height: 1;
+        }
+
+        .home-section-heading p {
+            margin: 0;
+            color: #37506c;
+            font-size: 1.05rem;
+        }
+
+        .home-filter-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.65rem;
+            margin: 0 auto 1.75rem;
+        }
+
+        .home-filter-chip {
+            border: 1px solid rgba(30, 58, 95, 0.16);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.86);
+            color: var(--primary-blue);
+            cursor: pointer;
+            font: inherit;
+            font-size: 0.9rem;
+            font-weight: 800;
+            line-height: 1;
+            padding: 0.75rem 1rem;
+            box-shadow: 0 10px 24px rgba(17, 35, 63, 0.08);
+            transition: transform 0.2s ease, background 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+
+        .home-filter-chip:hover,
+        .home-filter-chip:focus-visible,
+        .home-filter-chip.is-active {
+            background: var(--primary-blue);
+            border-color: var(--primary-blue);
+            color: #ffffff;
+            outline: none;
+            transform: translateY(-2px);
+        }
+
+        .home-blog-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1.15rem;
+            align-items: stretch;
+        }
+
+        .home-blog-card {
+            display: flex;
+            min-height: 100%;
+            overflow: hidden;
+            border: 1px solid rgba(30, 58, 95, 0.12);
+            border-radius: 28px;
+            background: rgba(255, 255, 255, 0.94);
+            box-shadow: 0 14px 45px rgba(17, 35, 63, 0.09);
+            flex-direction: column;
+        }
+
+        .home-blog-card img {
+            width: 100%;
+            height: 176px;
+            object-fit: cover;
+            background: #dfe8ef;
+        }
+
+        .home-blog-card-body {
+            display: flex;
+            flex: 1;
+            flex-direction: column;
+            padding: 1.25rem;
+        }
+
+        .home-blog-category {
+            margin: 0 0 0.55rem;
+            color: #b1840e;
+            font-size: 0.72rem;
+            font-weight: 900;
+            letter-spacing: 0.13em;
+            text-transform: uppercase;
+        }
+
+        .home-blog-card h3 {
+            margin: 0 0 0.7rem;
+            color: var(--primary-blue);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.55rem;
+            line-height: 1.08;
+        }
+
+        .home-blog-card p {
+            margin: 0 0 1rem;
+            color: #243953;
+        }
+
+        .home-blog-card a {
+            margin-top: auto;
+            color: var(--primary-blue);
+            font-weight: 800;
+            text-decoration: none;
+        }
+
+        .home-faq-list {
+            display: grid;
+            gap: 0.9rem;
+            max-width: 940px;
+            margin: 0 auto;
+        }
+
+        .home-faq-card {
+            border: 1px solid rgba(30, 58, 95, 0.12);
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.94);
+            box-shadow: 0 14px 38px rgba(17, 35, 63, 0.08);
+            overflow: hidden;
+        }
+
+        .home-faq-card summary {
+            cursor: pointer;
+            list-style: none;
+            padding: 1rem 1.2rem;
+            color: var(--primary-blue);
+            font-weight: 900;
+        }
+
+        .home-faq-card summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .home-faq-card summary::after {
+            content: "+";
+            float: right;
+            color: var(--accent-gold);
+            font-size: 1.25rem;
+            line-height: 1;
+        }
+
+        .home-faq-card[open] summary::after {
+            content: "-";
+        }
+
+        html[dir="rtl"] .home-faq-card summary::after {
+            float: left;
+        }
+
+        .home-faq-card p {
+            margin: 0;
+            padding: 0 1.2rem 1.15rem;
+            color: #243953;
+        }
+
+        @media (max-width: 1080px) {
+            .nav-actions {
+                gap: 0.45rem;
+            }
+
+            .nav-link,
+            .nav-dropdown > summary {
+                padding: 0 0.65rem;
+                font-size: 0.86rem;
+            }
+
+            .nav-btn {
+                padding-left: 1rem;
+                padding-right: 1rem;
+            }
+        }
+
+        @media (max-width: 900px) {
+            .nav-menu-toggle {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .nav-actions {
+                position: absolute;
+                top: calc(100% + 0.25rem);
+                right: 8px;
+                left: auto;
+                width: min(236px, calc(100vw - 16px));
+                max-height: min(360px, calc(100vh - 72px));
+                display: none;
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.3rem;
+                overflow-y: auto;
+                padding: 0.45rem;
+                border: 1px solid rgba(30, 58, 95, 0.12);
+                border-radius: 12px;
+                background: #ffffff;
+                box-shadow: 0 12px 30px rgba(17, 35, 63, 0.14);
+            }
+
+            .nav-actions.is-open {
+                display: flex;
+            }
+
+            .nav-menu,
+            .nav-buttons {
+                flex-direction: column !important;
+                align-items: stretch !important;
+                width: 100%;
+                gap: 0.25rem;
+            }
+
+            .nav-link,
+            .nav-dropdown > summary,
+            .nav-btn,
+            .lang-toggle {
+                width: 100%;
+                justify-content: flex-start;
+                min-height: 31px;
+                height: auto;
+                padding: 0.32rem 0.5rem;
+                border-radius: 8px;
+                font-size: 0.8rem;
+                line-height: 1.2;
+                text-align: left;
+            }
+
+            html[dir="rtl"] .nav-link,
+            html[dir="rtl"] .nav-dropdown > summary,
+            html[dir="rtl"] .nav-btn,
+            html[dir="rtl"] .lang-toggle {
+                text-align: right;
+            }
+
+            .nav-dropdown--desktop {
+                display: none;
+            }
+
+            .nav-link--mobile-only {
+                display: inline-flex;
+            }
+
+            .nav-dropdown-panel {
+                display: none;
+            }
+
+            .philosophy-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 640px) {
+            .philosophy-preview {
+                padding: 3.2rem 1.25rem;
+            }
+
+            .philosophy-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .homepage-content-section {
+                padding: 3.2rem 1.25rem;
+            }
+
+            .home-section-heading {
+                margin-bottom: 1.1rem;
+                text-align: left;
+            }
+
+            .home-section-heading h2 {
+                font-size: 2.25rem;
+            }
+
+            .home-section-heading p {
+                font-size: 0.96rem;
+                line-height: 1.45;
+            }
+
+            .home-blog-grid {
+                display: grid;
+                grid-auto-flow: column;
+                grid-auto-columns: minmax(248px, 84vw);
+                grid-template-columns: none;
+                gap: 0.85rem;
+                overflow-x: auto;
+                padding: 0.05rem 0 0.85rem;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .home-filter-row {
+                justify-content: flex-start;
+                overflow-x: auto;
+                flex-wrap: nowrap;
+                gap: 0.5rem;
+                margin-bottom: 0.9rem;
+                padding: 0.05rem 0 0.5rem;
+                scroll-snap-type: x proximity;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .home-filter-chip {
+                flex: 0 0 auto;
+                white-space: nowrap;
+                padding: 0.66rem 0.82rem;
+            }
+
+            .home-blog-card {
+                border-radius: 8px;
+                box-shadow: 0 8px 22px rgba(17, 35, 63, 0.08);
+                scroll-snap-align: start;
+            }
+
+            .home-blog-card img {
+                height: 128px;
+            }
+
+            .home-blog-card-body {
+                padding: 0.95rem;
+            }
+
+            .home-blog-category {
+                margin-bottom: 0.45rem;
+                font-size: 0.68rem;
+            }
+
+            .home-blog-card h3 {
+                font-size: 1.2rem;
+                line-height: 1.12;
+            }
+
+            .home-blog-card p {
+                display: -webkit-box;
+                overflow: hidden;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 3;
+                font-size: 0.92rem;
+                line-height: 1.42;
+            }
+        }
     </style>
 </head>
 <body>
@@ -1138,10 +2233,33 @@
                     <span class="nav-brand-location" data-i18n="navLocation">Ramat Beit Shemesh</span>
                 </div>
             </div>
-            <div class="nav-buttons">
-                <button class="lang-toggle" onclick="toggleLanguage()" data-i18n="langButton">עברית</button>
-                <a href="https://wa.me/972534932631" class="nav-btn nav-btn-contact" target="_blank" data-i18n="contact">Contact Us</a>
-                <a href="/signup.html" class="nav-btn nav-btn-signup" data-i18n="signup">Sign Up</a>
+            <button class="nav-menu-toggle" type="button" onclick="toggleMainMenu()" aria-label="Open navigation menu" aria-expanded="false">☰</button>
+            <div class="nav-actions" id="mainNavActions">
+                <div class="nav-menu" aria-label="Primary links">
+                    <a href="/" class="nav-link" data-i18n="navHome" data-en-href="/" data-he-href="/he">Home</a>
+                    <details class="nav-dropdown nav-dropdown--desktop">
+                        <summary data-i18n="navBlog">Blog</summary>
+                        <div class="nav-dropdown-panel">
+                            <a href="#blog" data-i18n="navBlogAll" data-en-href="#blog" data-he-href="#blog" onclick="selectHomepageBlogCategory(event, 'All')">All Articles</a>
+                            <a href="#blog" data-i18n="navBlogAlternative" data-en-href="#blog" data-he-href="#blog" onclick="selectHomepageBlogCategory(event, 'Alternative School')">Alternative School</a>
+                            <a href="#blog" data-i18n="navBlogTorah" data-en-href="#blog" data-he-href="#blog" onclick="selectHomepageBlogCategory(event, 'Torah Learning')">Torah Learning</a>
+                            <a href="#blog" data-i18n="navBlogUnschooling" data-en-href="#blog" data-he-href="#blog" onclick="selectHomepageBlogCategory(event, 'Jewish Unschooling')">Jewish Unschooling</a>
+                            <a href="#blog" data-i18n="navBlogAdhd" data-en-href="#blog" data-he-href="#blog" onclick="selectHomepageBlogCategory(event, 'ADHD / Learning Differences')">ADHD / Learning Differences</a>
+                            <a href="#blog" data-i18n="navBlogHomeschool" data-en-href="#blog" data-he-href="#blog" onclick="selectHomepageBlogCategory(event, 'Homeschooling')">Homeschooling</a>
+                            <a href="#blog" data-i18n="navBlogParenting" data-en-href="#blog" data-he-href="#blog" onclick="selectHomepageBlogCategory(event, 'Parenting')">Parenting</a>
+                            <a href="#blog" data-i18n="navBlogSelfGovernance" data-en-href="#blog" data-he-href="#blog" onclick="selectHomepageBlogCategory(event, 'Self-Governance')">Self-Governance</a>
+                            <a href="#blog" data-i18n="navBlogTechnology" data-en-href="#blog" data-he-href="#blog" onclick="selectHomepageBlogCategory(event, 'Technology')">Technology</a>
+                            <a href="#blog" data-i18n="navBlogFuture" data-en-href="#blog" data-he-href="#blog" onclick="selectHomepageBlogCategory(event, 'Future Vision')">Future Vision</a>
+                        </div>
+                    </details>
+                    <a href="#blog" class="nav-link nav-link--mobile-only" data-i18n="navBlog" data-en-href="#blog" data-he-href="#blog">Blog</a>
+                    <a href="#faq" class="nav-link" data-i18n="navFaq" data-en-href="#faq" data-he-href="#faq">FAQ</a>
+                </div>
+                <div class="nav-buttons">
+                    <button class="lang-toggle" onclick="toggleLanguage()" data-i18n="langButton">עברית</button>
+                    <a href="https://wa.me/972534932631" class="nav-btn nav-btn-contact" target="_blank" data-i18n="contact">Contact Us</a>
+                    <a href="/signup.html" class="nav-btn nav-btn-signup" data-i18n="signup">Sign Up</a>
+                </div>
             </div>
         </div>
     </nav>
@@ -1280,6 +2398,116 @@
         </div>
     </section>
 
+    <!-- Torah Goal, Schedule, and Learning Moments Section -->
+    <section class="program-pulse">
+        <div class="container">
+            <div class="torah-goal-stack">
+                <div class="goal-card goal-card--full">
+                    <div class="program-eyebrow" data-i18n="torahGoalEyebrow">Group Torah Goal</div>
+                    <h3 id="groupGoalTitle">Group Torah Goal: 100%</h3>
+                    <p id="groupGoalLead">The trip is unlocked only when every boy reaches 100% of his own personal goal.</p>
+                    <div class="goal-meter-header">
+                        <div>
+                            <div class="goal-count"><span id="groupGoalPercent">100</span>%</div>
+                            <div class="goal-label" data-i18n="torahGoalLabel">average cumulative trip progress across the group</div>
+                        </div>
+                        <div class="goal-status-pill" id="groupGoalPill">Unlocked</div>
+                    </div>
+                    <div class="progress-track" aria-label="Group Torah learning progress">
+                        <div class="progress-fill" id="groupGoalProgressFill" style="--progress: 100%;"></div>
+                    </div>
+                    <p class="goal-note" id="groupGoalStatus">Trip locked — the group goal is not complete yet.</p>
+                </div>
+
+                <div class="torah-student-grid" id="torahStudentList" aria-live="polite">
+                    <article class="torah-student-card">
+                        <div class="torah-student-name">Loading students...</div>
+                        <div class="torah-student-meta">Preparing today&apos;s cumulative Torah trip progress.</div>
+                        <div class="progress-track" aria-hidden="true">
+                            <div class="progress-fill" style="--progress: 0%;"></div>
+                        </div>
+                    </article>
+                </div>
+            </div>
+
+            <div class="program-grid" style="margin-top: 2rem;">
+                <div class="program-card">
+                    <div class="program-eyebrow" data-i18n="scheduleEyebrow">Weekly rhythm</div>
+                    <h2 data-i18n="scheduleTitle">Where We Learn</h2>
+                    <p class="program-lead" data-i18n="scheduleLead">Most mornings follow the same calm structure, with forest learning built into the week so the boys can experience Torah with movement, fresh air, and real life.</p>
+                    <div class="schedule-list">
+                        <div class="schedule-row">
+                            <div class="schedule-days" data-i18n="scheduleForestDays">Monday and Wednesday</div>
+                            <div class="schedule-place" data-i18n="scheduleForestPlace">Learning in the forest</div>
+                        </div>
+                        <div class="schedule-row">
+                            <div class="schedule-days" data-i18n="scheduleHomeDays">Other learning days</div>
+                            <div class="schedule-place" data-i18n="scheduleHomePlace">Meeting at HaChozeh MiLublin 7</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="program-card">
+                    <div class="program-eyebrow" data-i18n="torahHowEyebrow">How it works</div>
+                    <h2 data-i18n="torahHowTitle">One trip, shared accountability</h2>
+                    <p class="program-lead" data-i18n="torahHowLead">Each boy chooses his own daily Torah learning goal. Daily tracking stays admin-only, and the public website shows only each boy's cumulative progress toward the shared 30-day trip goal.</p>
+                    <div class="schedule-list">
+                        <div class="schedule-row">
+                            <div class="schedule-days" data-i18n="torahHowPointOneLabel">Personal goal</div>
+                            <div class="schedule-place" data-i18n="torahHowPointOne">Each fully completed day adds one unit toward the shared trip.</div>
+                        </div>
+                        <div class="schedule-row">
+                            <div class="schedule-days" data-i18n="torahHowPointTwoLabel">Focused time</div>
+                            <div class="schedule-place" data-i18n="torahHowPointTwo">Only attentive, engaged learning counts toward the goal.</div>
+                        </div>
+                        <div class="schedule-row">
+                            <div class="schedule-days" data-i18n="torahHowPointThreeLabel">Group win</div>
+                            <div class="schedule-place" data-i18n="torahHowPointThree">The trip unlocks only when everyone reaches 100% of the full 30-unit trip goal.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="field-notes">
+                <h2 class="section-title" data-i18n="momentsTitle">Learning Moments</h2>
+                <div class="media-carousel" aria-label="Learning photos and videos">
+                    <div class="media-track" id="mediaTrack"></div>
+                    <div class="media-controls">
+                        <button class="media-btn" type="button" onclick="moveMediaSlide(-1)" aria-label="Previous learning moment">&lt;</button>
+                        <button class="media-btn" type="button" onclick="moveMediaSlide(1)" aria-label="Next learning moment">&gt;</button>
+                    </div>
+                </div>
+                <div class="media-dots" id="mediaDots"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Philosophy Topics Section -->
+    <section class="homepage-content-section homepage-philosophy-section" id="blog" aria-labelledby="homeBlogTitle">
+        <div class="home-section-shell">
+            <div class="home-section-heading">
+                <p class="home-section-eyebrow" data-i18n="homeBlogEyebrow">Guides and Topics</p>
+                <h2 id="homeBlogTitle" data-i18n="homeBlogTitle">Our Philosophy</h2>
+                <p data-i18n="homeBlogSubtitle">Ideas that shape how we teach, mentor, and help boys grow.</p>
+            </div>
+            <div class="home-filter-row" id="homeBlogFilters" aria-label="Blog topic filters"></div>
+            <div class="home-blog-grid" id="homeBlogGrid"></div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="homepage-content-section" id="faq" aria-labelledby="homeFaqTitle">
+        <div class="home-section-shell">
+            <div class="home-section-heading">
+                <p class="home-section-eyebrow" data-i18n="homeFaqEyebrow">Quick Answers</p>
+                <h2 id="homeFaqTitle" data-i18n="homeFaqTitle">Frequently Asked Questions</h2>
+                <p data-i18n="homeFaqSubtitle">Filter the questions by topic, then open the answers that matter for your family.</p>
+            </div>
+            <div class="home-filter-row" id="homeFaqFilters" aria-label="FAQ topic filters"></div>
+            <div class="home-faq-list" id="homeFaqList"></div>
+        </div>
+    </section>
+
     <!-- Reviews Section -->
     <section class="reviews">
         <div class="martin-card fade-in">
@@ -1323,11 +2551,29 @@
     <footer>
         <div class="footer-content">
             <p class="footer-location" data-i18n="footerLocation">Ramat Beit Shemesh</p>
+            <div class="footer-socials" aria-label="Social profiles">
+                <a class="footer-social-link" href="https://www.youtube.com/channel/UCKnmIcZqhzNCdAbE6RK-U-g" target="_blank" rel="noopener noreferrer" aria-label="Bnei Nevi'im Academy on YouTube">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8ZM9.6 15.6V8.4L15.8 12l-6.2 3.6Z"/>
+                    </svg>
+                </a>
+                <a class="footer-social-link" href="https://www.linkedin.com/company/108630189/" target="_blank" rel="noopener noreferrer" aria-label="Bnei Nevi'im Academy on LinkedIn">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.91 1.64-1.86 3.37-1.86 3.61 0 4.28 2.38 4.28 5.47v6.28ZM5.32 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12Zm1.78 13.02H3.54V9H7.1v11.45ZM22.23 0H1.76C.79 0 0 .77 0 1.72v20.55C0 23.22.79 24 1.76 24h20.47c.97 0 1.77-.78 1.77-1.73V1.72C24 .77 23.2 0 22.23 0Z"/>
+                    </svg>
+                </a>
+                <a class="footer-social-link" href="https://www.facebook.com/profile.php?id=61590512065756" target="_blank" rel="noopener noreferrer" aria-label="Bnei Nevi'im Academy on Facebook">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M24 12a12 12 0 1 0-13.88 11.86v-8.39H7.08V12h3.04V9.36c0-3 1.79-4.66 4.52-4.66 1.31 0 2.68.23 2.68.23v2.95h-1.51c-1.49 0-1.96.93-1.96 1.88V12h3.33l-.53 3.47h-2.8v8.39A12 12 0 0 0 24 12Z"/>
+                    </svg>
+                </a>
+            </div>
             <p class="footer-nonprofit" data-i18n="footerNonprofit">Registered nonprofit in the State of New Jersey</p>
             <p class="footer-copyright" data-i18n="footerCopyright">&copy; 2025 Bnei Nevi'im Academy. All rights reserved.</p>
         </div>
     </footer>
 
+    <script src="/js/bna-content.js"></script>
     <script>
         // Slider functionality
         let currentSlide = 0;
@@ -1365,6 +2611,213 @@
             updateSlider();
         }, 5000);
 
+        const torahGoalState = {
+            date: null,
+            group: {
+                groupPercentage: 0,
+                tripUnlocked: false
+            },
+            students: []
+        };
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        const learningMoments = [
+            {
+                type: 'image',
+                src: 'images/learning-moments/forest-learning-01-web.jpg',
+                title: 'Forest learning with the boys',
+                description: 'A day of Torah learning and shared goals in the hills around Ramat Beit Shemesh.',
+                timestamp: '28 May 2026'
+            },
+            {
+                type: 'image',
+                src: 'images/learning-moments/forest-learning-02-web.jpg',
+                title: 'Real life learning',
+                description: 'The forest gives the boys room to move, notice, ask questions, and connect the learning to the world around them.',
+                timestamp: '28 May 2026'
+            },
+            {
+                type: 'image',
+                src: 'images/learning-moments/forest-learning-03-web.jpg',
+                title: 'Conversation, movement, and Torah',
+                description: 'Learning stays alive when the boys can think together, challenge ideas, and take ownership of the day.',
+                timestamp: '28 May 2026'
+            }
+        ];
+
+        let extraLearningMoments = [];
+        let currentMediaSlide = 0;
+
+        async function loadLearningMomentFeed() {
+            try {
+                const response = await fetch('/data/learning-moments.json', {
+                    cache: 'no-store'
+                });
+                if (!response.ok) return;
+                const data = await response.json();
+                extraLearningMoments = Array.isArray(data.items) ? data.items.filter((item) => item && item.src) : [];
+            } catch (error) {
+                console.error('[learning-moments]', error);
+                extraLearningMoments = [];
+            }
+        }
+
+        function getLearningMoments() {
+            return [...extraLearningMoments, ...learningMoments];
+        }
+
+        function torahGoalCopy() {
+            if (currentLang === 'he') {
+                return {
+                    title: (percent) => `יעד התורה הקבוצתי: ${percent}%`,
+                    lead: 'הטיול נפתח רק כאשר כל בן מגיע ל־100% מהיעד האישי שלו.',
+                    unlocked: 'הטיול נפתח — כולם הגיעו ליעד שלהם.',
+                    locked: 'הטיול נעול — היעד הקבוצתי עדיין לא הושלם.',
+                    label: 'התקדמות ממוצעת של הקבוצה',
+                    studentLabel: 'התקדמות אישית',
+                    pillUnlocked: 'פתוח',
+                    pillLocked: 'נעול',
+                    empty: 'עדיין אין תלמידים מוצגים ליעד התורה.',
+                    loading: 'טוען את תמונת היעד היומית...'
+                };
+            }
+
+            return {
+                title: (percent) => `Group Torah Goal: ${percent}%`,
+                lead: 'Each fully completed day adds one unit toward the shared 30-day trip goal.',
+                unlocked: 'Trip unlocked — everyone reached the full trip goal.',
+                locked: 'Trip locked — the group goal is not complete yet.',
+                label: 'average cumulative trip progress across the group',
+                studentLabel: 'of the 30-day trip goal',
+                pillUnlocked: 'Unlocked',
+                pillLocked: 'Locked',
+                empty: 'No students are being shown for the Torah goal yet.',
+                loading: "Loading today's cumulative Torah trip progress..."
+            };
+        }
+
+        function renderTorahGoalSummary() {
+            const copy = torahGoalCopy();
+            const percent = Math.max(0, Math.min(100, Math.round(Number(torahGoalState.group?.groupPercentage || 0))));
+            const titleEl = document.getElementById('groupGoalTitle');
+            const leadEl = document.getElementById('groupGoalLead');
+            const percentEl = document.getElementById('groupGoalPercent');
+            const fillEl = document.getElementById('groupGoalProgressFill');
+            const pillEl = document.getElementById('groupGoalPill');
+            const statusEl = document.getElementById('groupGoalStatus');
+            const labelEl = document.querySelector('[data-i18n="torahGoalLabel"]');
+            const listEl = document.getElementById('torahStudentList');
+
+            if (titleEl) titleEl.textContent = copy.title(percent);
+            if (leadEl) leadEl.textContent = copy.lead;
+            if (percentEl) percentEl.textContent = String(percent);
+            if (fillEl) fillEl.style.setProperty('--progress', `${percent}%`);
+            if (pillEl) pillEl.textContent = torahGoalState.group?.tripUnlocked ? copy.pillUnlocked : copy.pillLocked;
+            if (statusEl) statusEl.textContent = torahGoalState.group?.tripUnlocked ? copy.unlocked : copy.locked;
+            if (labelEl) labelEl.textContent = copy.label;
+
+            if (!listEl) return;
+            if (!torahGoalState.students.length) {
+                listEl.innerHTML = `<div class="goal-card torah-empty">${torahGoalState.date ? copy.empty : copy.loading}</div>`;
+                return;
+            }
+
+            listEl.innerHTML = torahGoalState.students.map((student) => {
+                const studentPercent = Math.max(0, Math.min(100, Number(student.percentage || 0)));
+                const studentName = escapeHtml(student.name || '');
+                return `
+                    <article class="torah-student-card">
+                        <div class="torah-student-main">
+                            <div class="torah-student-name">${studentName}</div>
+                            <div class="torah-student-percent">${studentPercent}%</div>
+                            <div class="torah-student-meta">${copy.studentLabel}</div>
+                        </div>
+                        <div class="progress-track" aria-label="${studentName} Torah goal progress">
+                            <div class="progress-fill" style="--progress: ${studentPercent}%;"></div>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        async function loadTorahGoalSummary() {
+            try {
+                const response = await fetch('/api/torah-learning/public-summary', {
+                    cache: 'no-store'
+                });
+                if (!response.ok) throw new Error(`Torah goal request failed: ${response.status}`);
+                const data = await response.json();
+                torahGoalState.date = data.date || null;
+                torahGoalState.group = data.group || torahGoalState.group;
+                torahGoalState.students = Array.isArray(data.students) ? data.students : [];
+            } catch (error) {
+                console.error('[torah-goal]', error);
+                torahGoalState.group = {
+                    groupPercentage: 0,
+                    tripUnlocked: false
+                };
+                torahGoalState.students = [];
+            }
+
+            renderTorahGoalSummary();
+        }
+
+        function renderLearningMoments() {
+            const track = document.getElementById('mediaTrack');
+            const dots = document.getElementById('mediaDots');
+            if (!track || !dots) return;
+            const moments = getLearningMoments();
+
+            track.innerHTML = moments.map((item) => {
+                const media = item.type === 'video'
+                    ? `<video src="${item.src}" controls playsinline preload="metadata"></video>`
+                    : item.type === 'youtube'
+                        ? `<iframe src="${item.src}" title="${item.title}" loading="lazy" allowfullscreen></iframe>`
+                        : `<img src="${item.src}" alt="${item.title}">`;
+
+                return `
+                    <article class="media-slide" aria-label="${item.timestamp}: ${item.title}" data-description="${item.description}" data-timestamp="${item.timestamp}">
+                        <div class="media-visual">${media}</div>
+                    </article>
+                `;
+            }).join('');
+
+            dots.innerHTML = moments.map((_, index) => `
+                <button class="media-dot ${index === currentMediaSlide ? 'active' : ''}" type="button" onclick="goToMediaSlide(${index})" aria-label="Go to learning moment ${index + 1}"></button>
+            `).join('');
+
+            updateMediaSlider();
+        }
+
+        function updateMediaSlider() {
+            const track = document.getElementById('mediaTrack');
+            if (!track) return;
+            track.style.transform = `translateX(-${currentMediaSlide * 100}%)`;
+            document.querySelectorAll('.media-dot').forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentMediaSlide);
+            });
+        }
+
+        function goToMediaSlide(index) {
+            currentMediaSlide = index;
+            updateMediaSlider();
+        }
+
+        function moveMediaSlide(direction) {
+            const moments = getLearningMoments();
+            currentMediaSlide += direction;
+            if (currentMediaSlide < 0) currentMediaSlide = moments.length - 1;
+            if (currentMediaSlide >= moments.length) currentMediaSlide = 0;
+            updateMediaSlider();
+        }
+
         // Scroll Animation Observer
         const observerOptions = {
             root: null,
@@ -1393,6 +2846,25 @@
                 contact: "Contact Us",
                 signup: "Sign Up",
                 langButton: "עברית",
+                navHome: "Home",
+                navBlog: "Blog",
+                navBlogAll: "All Articles",
+                navBlogAlternative: "Alternative School",
+                navBlogTorah: "Torah Learning",
+                navBlogUnschooling: "Jewish Unschooling",
+                navBlogAdhd: "ADHD / Learning Differences",
+                navBlogHomeschool: "Homeschooling",
+                navBlogParenting: "Parenting",
+                navBlogSelfGovernance: "Self-Governance",
+                navBlogTechnology: "Technology",
+                navBlogFuture: "Future Vision",
+                navFaq: "FAQ",
+                homeBlogEyebrow: "Guides and Topics",
+                homeBlogTitle: "Our Philosophy",
+                homeBlogSubtitle: "Ideas that shape how we teach, mentor, and help boys grow.",
+                homeFaqEyebrow: "Quick Answers",
+                homeFaqTitle: "Frequently Asked Questions",
+                homeFaqSubtitle: "Filter the questions by topic, then open the answers that matter for your family.",
 
                 heroVerseHe: "כי מלאה הארץ דעה את ה׳ כמים לים מכסים",
                 heroVerseEn: '"For the earth will be filled with the knowledge of Hashem as the waters cover the sea."',
@@ -1437,10 +2909,45 @@
                 emotional: "Emotional awareness and self-governance",
                 learningNote: "Learning is adapted to the child and designed to foster curiosity, responsibility, and independent thinking.",
 
+                scheduleEyebrow: "Weekly rhythm",
+                scheduleTitle: "Where We Learn",
+                scheduleLead: "Most mornings follow the same calm structure, with forest learning built into the week so the boys can experience Torah with movement, fresh air, and real life.",
+                scheduleForestDays: "Monday and Wednesday",
+                scheduleForestPlace: "Learning in the forest",
+                scheduleHomeDays: "Other learning days",
+                scheduleHomePlace: "Meeting at HaChozeh MiLublin 7",
+                torahGoalEyebrow: "Group Torah Goal",
+                torahGoalLabel: "average cumulative trip progress across the group",
+                torahHowEyebrow: "How it works",
+                torahHowTitle: "One trip, shared accountability",
+                torahHowLead: "Each boy chooses his own daily Torah learning goal. Daily tracking stays admin-only, and the public website shows only each boy's cumulative progress toward the shared 30-day trip goal.",
+                torahHowPointOneLabel: "Personal goal",
+                torahHowPointOne: "Each fully completed day adds one unit toward the shared trip.",
+                torahHowPointTwoLabel: "Focused time",
+                torahHowPointTwo: "Only attentive, engaged learning counts toward the goal.",
+                torahHowPointThreeLabel: "Group win",
+                torahHowPointThree: "The trip unlocks only when everyone reaches 100% of the full 30-unit trip goal.",
+                momentsTitle: "Learning Moments",
+
                 reviewerName: "Martin Braka",
                 reviewText: '"Rav Dratler is a very dynamic and motivated individual who is passionate about making serious change within the education system. He is a very talented educator which I have experienced first hand through him teaching my son who was a non motivated student and he aided him to become a child who is enthusiastic and engaged with his learning."',
 
                 ctaTitle: "Ready to Get Started?",
+                philosophyTitle: "Explore the Philosophy",
+                philosophySubtitle: "The homepage is short on purpose. The deeper ideas behind Bnei Neviim are explained in the blog.",
+                philosophySelfTitle: "Self-Governance",
+                philosophySelfText: "Boys are not managed into looking successful. They are coached to think, choose, and take responsibility for their own commitments.",
+                philosophyUnschoolTitle: "Jewish Unschooling",
+                philosophyUnschoolText: "Some boys need time to decompress from pressure-based schooling and rebuild real curiosity, responsibility, and connection to Torah.",
+                philosophyParentsTitle: "Parents as Partners",
+                philosophyParentsText: "This model works best when parents stop outsourcing responsibility and begin coaching their son toward ownership.",
+                philosophyTechTitle: "Technology With Boundaries",
+                philosophyTechText: "Technology is not automatically evil and not automatically good. It must be used with honesty, maturity, and clear boundaries.",
+                philosophyAdhdTitle: "ADHD / Learning Differences",
+                philosophyAdhdText: "Some boys need movement, relationship, and smaller settings before they can access the part of themselves that wants to learn.",
+                philosophyAlternativeTitle: "Alternative School in Beit Shemesh",
+                philosophyAlternativeText: "For parents searching for a yeshiva alternative or school alternative, Bnei Neviim offers a calm Torah learning environment.",
+                philosophyReadMore: "Read more",
 
                 founderName: "Shloimie Dratler",
                 founderRole: "Founder",
@@ -1457,6 +2964,25 @@
                 contact: "צור קשר",
                 signup: "הרשמה",
                 langButton: "English",
+                navHome: "בית",
+                navBlog: "מאמרים",
+                navBlogAll: "כל המאמרים",
+                navBlogAlternative: "מסגרת אלטרנטיבית",
+                navBlogTorah: "לימוד תורה",
+                navBlogUnschooling: "חינוך יהודי עצמי",
+                navBlogAdhd: "קשב וריכוז",
+                navBlogHomeschool: "חינוך ביתי",
+                navBlogParenting: "הורות",
+                navBlogSelfGovernance: "אחריות אישית",
+                navBlogTechnology: "טכנולוגיה",
+                navBlogFuture: "חזון עתידי",
+                navFaq: "שאלות",
+                homeBlogEyebrow: "\u05de\u05d3\u05e8\u05d9\u05db\u05d9\u05dd \u05d5\u05e0\u05d5\u05e9\u05d0\u05d9\u05dd",
+                homeBlogTitle: "\u05de\u05d0\u05de\u05e8\u05d9\u05dd",
+                homeBlogSubtitle: "\u05e2\u05d9\u05d5\u05df \u05d1\u05e0\u05d5\u05e9\u05d0\u05d9\u05dd \u05e9\u05d4\u05d5\u05e8\u05d9\u05dd \u05e9\u05d5\u05d0\u05dc\u05d9\u05dd \u05e2\u05dc\u05d9\u05d4\u05dd: \u05de\u05e1\u05d2\u05e8\u05ea \u05d7\u05dc\u05d5\u05e4\u05d9\u05ea, \u05dc\u05d9\u05de\u05d5\u05d3 \u05ea\u05d5\u05e8\u05d4, \u05e7\u05e9\u05d1 \u05d5\u05e8\u05d9\u05db\u05d5\u05d6, \u05d7\u05d9\u05e0\u05d5\u05da \u05d1\u05d9\u05ea\u05d9, \u05d4\u05d5\u05e8\u05d5\u05ea, \u05d5\u05d0\u05d7\u05e8\u05d9\u05d5\u05ea \u05d0\u05d9\u05e9\u05d9\u05ea.",
+                homeFaqEyebrow: "\u05ea\u05e9\u05d5\u05d1\u05d5\u05ea \u05de\u05d4\u05d9\u05e8\u05d5\u05ea",
+                homeFaqTitle: "\u05e9\u05d0\u05dc\u05d5\u05ea \u05e0\u05e4\u05d5\u05e6\u05d5\u05ea",
+                homeFaqSubtitle: "\u05e1\u05e0\u05e0\u05d5 \u05dc\u05e4\u05d9 \u05e0\u05d5\u05e9\u05d0, \u05d5\u05e4\u05ea\u05d7\u05d5 \u05d0\u05ea \u05d4\u05ea\u05e9\u05d5\u05d1\u05d5\u05ea \u05e9\u05d7\u05e9\u05d5\u05d1\u05d5\u05ea \u05dc\u05de\u05e9\u05e4\u05d7\u05d4 \u05e9\u05dc\u05db\u05dd.",
 
                 heroVerseHe: "כי מלאה הארץ דעה את ה׳ כמים לים מכסים",
                 heroVerseEn: "",
@@ -1505,6 +3031,21 @@
                 reviewText: '״הרב דרטלר הוא אדם דינמי ובעל מוטיבציה גדולה, עם תשוקה אמיתית לחולל שינוי משמעותי במערכת החינוך. הוא מחנך מוכשר מאוד, כפי שחוויתי באופן אישי דרך העבודה שלו עם הבן שלי, שלא היה מחובר ללמידה, ובעזרתו הפך לילד שמתלהב ומשתתף בלמידה שלו.״',
 
                 ctaTitle: "רוצים לבדוק התאמה?",
+                philosophyTitle: "להעמיק בפילוסופיה",
+                philosophySubtitle: "העמוד הראשי קצר בכוונה. הרעיונות העמוקים שמאחורי בני נביאים מוסברים במאמרים.",
+                philosophySelfTitle: "אחריות אישית",
+                philosophySelfText: "הבנים אינם מנוהלים כדי להיראות מוצלחים. הם מקבלים ליווי לחשוב, לבחור ולקחת אחריות על ההתחייבויות שלהם.",
+                philosophyUnschoolTitle: "חינוך יהודי עצמי",
+                philosophyUnschoolText: "יש בנים שצריכים זמן לפרק לחץ של מסגרות מבוססות לחץ ולבנות מחדש סקרנות, אחריות וקשר לתורה.",
+                philosophyParentsTitle: "הורים כשותפים",
+                philosophyParentsText: "המודל עובד הכי טוב כאשר הורים מפסיקים להוציא אחריות החוצה ומתחילים ללוות את הבן שלהם לבעלות.",
+                philosophyTechTitle: "טכנולוגיה עם גבולות",
+                philosophyTechText: "טכנולוגיה אינה רעה באופן אוטומטי ואינה טובה באופן אוטומטי. צריך להשתמש בה בכנות, בגרות וגבולות ברורים.",
+                philosophyAdhdTitle: "קשב וריכוז",
+                philosophyAdhdText: "יש בנים שצריכים תנועה, קשר וסביבה קטנה יותר לפני שהם יכולים לגשת לחלק שבתוכם שרוצה ללמוד.",
+                philosophyAlternativeTitle: "מסגרת אלטרנטיבית בבית שמש",
+                philosophyAlternativeText: "להורים שמחפשים אלטרנטיבה לישיבה או מסגרת חלופית, בני נביאים מציעה סביבת לימוד תורה רגועה.",
+                philosophyReadMore: "קרא עוד",
 
                 founderName: "שלוימי דרטלר",
                 founderRole: "מייסד",
@@ -1517,6 +3058,305 @@
         };
 
         let currentLang = 'en';
+
+        Object.assign(translations.he, {
+            scheduleEyebrow: "סדר שבועי",
+            scheduleTitle: "איפה לומדים",
+            scheduleLead: "רוב הבקרים בנויים בצורה רגועה וקבועה, ובמהלך השבוע משולב לימוד ביער כדי לחבר את התורה לתנועה, אוויר פתוח וחיים אמיתיים.",
+            scheduleForestDays: "שני ורביעי",
+            scheduleForestPlace: "לימוד ביער",
+            scheduleHomeDays: "שאר ימי הלימוד",
+            scheduleHomePlace: "נפגשים ברחוב החוזה מלובלין 7",
+            goalEyebrow: "היעד הנוכחי",
+            goalTitle: "30 עמודים ואז טיול",
+            goalLead: "הבנים עובדים יחד לקראת יעד ברור: לסיים 30 עמודים, ואז לחגוג את ההישג בטיול.",
+            goalProgressLabel: "עמודים שהושלמו",
+            goalNote: "הדיווח האחרון: למדנו 3.5 עמודים. בכל יום אפשר לעדכן את ההתקדמות עד שמגיעים לטיול.",
+            momentsTitle: "רגעים מהלימוד"
+        });
+
+        Object.assign(translations.he, {
+            torahGoalEyebrow: "יעד תורה קבוצתי",
+            torahGoalLabel: "התקדמות ממוצעת של הקבוצה",
+            torahHowEyebrow: "איך זה עובד",
+            torahHowTitle: "טיול אחד, אחריות קבוצתית",
+            torahHowLead: "כל בן בוחר יעד תורה יומי אישי. האתר הציבורי מציג רק את אחוז ההתקדמות ליעד שלו, בלי לחשוף את דקות היעד הפרטיות.",
+            torahHowPointOneLabel: "יעד אישי",
+            torahHowPointOne: "כל בן עובד לקראת ההתחייבות היומית שלו.",
+            torahHowPointTwoLabel: "זמן מרוכז",
+            torahHowPointTwo: "רק לימוד קשוב ומעורב נחשב ליעד.",
+            torahHowPointThreeLabel: "ניצחון קבוצתי",
+            torahHowPointThree: "הטיול נפתח רק כשכולם מגיעים ל־100% של היעד שלהם."
+        });
+
+        let activeHomeBlogCategory = 'All';
+        let activeHomeFaqTopic = 'All';
+
+        const homeFaqTopics = ['All', 'Fit', 'Program', 'Learning', 'Parents', 'Practical'];
+        const homeFaqTopicLabels = {
+            en: {
+                All: 'All questions',
+                Fit: 'Fit',
+                Program: 'Program',
+                Learning: 'Learning',
+                Parents: 'Parents',
+                Practical: 'Practical'
+            },
+            he: {
+                All: '\u05d4\u05db\u05dc',
+                Fit: '\u05d4\u05ea\u05d0\u05de\u05d4',
+                Program: '\u05ea\u05d5\u05db\u05e0\u05d9\u05ea',
+                Learning: '\u05dc\u05de\u05d9\u05d3\u05d4',
+                Parents: '\u05d4\u05d5\u05e8\u05d9\u05dd',
+                Practical: '\u05de\u05e2\u05e9\u05d9'
+            }
+        };
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#39;');
+        }
+
+        function closeNavigationOverlays() {
+            document.querySelectorAll('.nav-dropdown[open]').forEach((dropdown) => {
+                dropdown.removeAttribute('open');
+            });
+
+            const actions = document.getElementById('mainNavActions');
+            const toggle = document.querySelector('.nav-menu-toggle');
+            if (actions) actions.classList.remove('is-open');
+            if (toggle) toggle.setAttribute('aria-expanded', 'false');
+        }
+
+        function scrollToHomepageSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (!section) return;
+            section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (window.history && window.history.replaceState) {
+                window.history.replaceState({}, '', `#${sectionId}`);
+            }
+        }
+
+        function getContentLanguage() {
+            return currentLang === 'he' ? 'he' : 'en';
+        }
+
+        function canonicalCategoryName(category) {
+            const content = window.BNAContent;
+            if (!content || !category) return category || 'All';
+            const englishCategories = content.categories?.en || [];
+            const currentCategories = content.categories?.[getContentLanguage()] || [];
+            const currentIndex = currentCategories.indexOf(category);
+            if (currentIndex >= 0) return englishCategories[currentIndex] || category;
+            return category;
+        }
+
+        function localizedCategoryName(category) {
+            const content = window.BNAContent;
+            if (category === 'All') return getContentLanguage() === 'he' ? '\u05db\u05dc \u05d4\u05e0\u05d5\u05e9\u05d0\u05d9\u05dd' : 'All topics';
+            if (!content) return category;
+
+            const englishCategories = content.categories?.en || [];
+            const currentCategories = content.categories?.[getContentLanguage()] || [];
+            const categoryIndex = englishCategories.indexOf(category);
+            return currentCategories[categoryIndex] || category;
+        }
+
+        function getHomepagePostUrl(post) {
+            const prefix = getContentLanguage() === 'he' ? '/he/blog' : '/blog';
+            return `${prefix}/${post.slug}`;
+        }
+
+        function readArticleLabel() {
+            return getContentLanguage() === 'he' ? '\u05e7\u05e8\u05d0 \u05de\u05d0\u05de\u05e8' : 'Read article';
+        }
+
+        function renderHomepageBlog() {
+            const content = window.BNAContent;
+            const filters = document.getElementById('homeBlogFilters');
+            const grid = document.getElementById('homeBlogGrid');
+            if (!content || !filters || !grid) return;
+
+            const posts = content.getPosts(getContentLanguage());
+            const categories = ['All', ...new Set(posts.map((post) => canonicalCategoryName(post.category)))];
+            if (!categories.includes(activeHomeBlogCategory)) activeHomeBlogCategory = 'All';
+
+            let visiblePosts = activeHomeBlogCategory === 'All'
+                ? posts
+                : posts.filter((post) => canonicalCategoryName(post.category) === activeHomeBlogCategory);
+
+            if (!visiblePosts.length && activeHomeBlogCategory !== 'All') {
+                activeHomeBlogCategory = 'All';
+                visiblePosts = posts;
+            }
+
+            filters.innerHTML = categories.map((category) => `
+                <button
+                    class="home-filter-chip${category === activeHomeBlogCategory ? ' is-active' : ''}"
+                    type="button"
+                    data-category="${escapeHtml(category)}"
+                >${escapeHtml(localizedCategoryName(category))}</button>
+            `).join('');
+
+            filters.querySelectorAll('[data-category]').forEach((button) => {
+                button.addEventListener('click', (event) => {
+                    selectHomepageBlogCategory(event, button.getAttribute('data-category') || 'All');
+                });
+            });
+
+            grid.innerHTML = visiblePosts.map((post) => {
+                const image = post.image || '/images/learning-moments/forest-learning-01-web.jpg';
+                return `
+                    <article class="home-blog-card">
+                        <img src="${escapeHtml(image)}" alt="${escapeHtml(post.title)}" loading="lazy">
+                        <div class="home-blog-card-body">
+                            <p class="home-blog-category">${escapeHtml(post.category)}</p>
+                            <h3>${escapeHtml(post.title)}</h3>
+                            <p>${escapeHtml(post.excerpt || post.metaDescription || '')}</p>
+                            <a href="${escapeHtml(getHomepagePostUrl(post))}">${escapeHtml(readArticleLabel())}</a>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        function selectHomepageBlogCategory(event, category) {
+            if (event) event.preventDefault();
+            activeHomeBlogCategory = category || 'All';
+            renderHomepageBlog();
+            closeNavigationOverlays();
+            scrollToHomepageSection('blog');
+        }
+
+        function getFaqTopic(faq) {
+            const text = `${faq.question || ''} ${faq.answer || ''}`.toLowerCase();
+            if (/(time|schedule|morning|forest|program runs|10:00|1:00|chumash|tanach|limudei|kodesh|learn|meeting|lublin|לומדים|תוכנית|זמן|בוקר|תורה)/.test(text)) return 'Program';
+            if (/(adhd|add|attention|movement|special education|learn differently|burned out|clinical|קשב|ריכוז|תנועה)/.test(text)) return 'Learning';
+            if (/(parent|motivate|discipline|shame|responsibility|home|family|הורים|אחריות|משפחה)/.test(text)) return 'Parents';
+            if (/(homeschool|legal|government|accredited|recognized|cost|fee|location|beit shemesh|signup|register|חינוך ביתי|חוקי|מחיר|רישום|בית שמש)/.test(text)) return 'Practical';
+            return 'Fit';
+        }
+
+        function renderHomepageFaq() {
+            const content = window.BNAContent;
+            const filters = document.getElementById('homeFaqFilters');
+            const list = document.getElementById('homeFaqList');
+            if (!content || !filters || !list) return;
+
+            const faqs = content.faqs?.[getContentLanguage()] || [];
+            const availableTopics = homeFaqTopics.filter((topic) => topic === 'All' || faqs.some((faq) => getFaqTopic(faq) === topic));
+            if (!availableTopics.includes(activeHomeFaqTopic)) activeHomeFaqTopic = 'All';
+
+            const visibleFaqs = activeHomeFaqTopic === 'All'
+                ? faqs
+                : faqs.filter((faq) => getFaqTopic(faq) === activeHomeFaqTopic);
+
+            const labels = homeFaqTopicLabels[getContentLanguage()] || homeFaqTopicLabels.en;
+            filters.innerHTML = availableTopics.map((topic) => `
+                <button
+                    class="home-filter-chip${topic === activeHomeFaqTopic ? ' is-active' : ''}"
+                    type="button"
+                    data-topic="${escapeHtml(topic)}"
+                >${escapeHtml(labels[topic] || topic)}</button>
+            `).join('');
+
+            filters.querySelectorAll('[data-topic]').forEach((button) => {
+                button.addEventListener('click', (event) => {
+                    selectHomepageFaqTopic(event, button.getAttribute('data-topic') || 'All');
+                });
+            });
+
+            list.innerHTML = visibleFaqs.map((faq, index) => `
+                <details class="home-faq-card"${index === 0 ? ' open' : ''}>
+                    <summary>${escapeHtml(faq.question)}</summary>
+                    <p>${escapeHtml(faq.answer)}</p>
+                </details>
+            `).join('');
+        }
+
+        function selectHomepageFaqTopic(event, topic) {
+            if (event) event.preventDefault();
+            activeHomeFaqTopic = topic || 'All';
+            renderHomepageFaq();
+            closeNavigationOverlays();
+            scrollToHomepageSection('faq');
+        }
+
+        function upsertJsonLd(id, data) {
+            let script = document.getElementById(id);
+            if (!script) {
+                script = document.createElement('script');
+                script.type = 'application/ld+json';
+                script.id = id;
+                document.head.appendChild(script);
+            }
+            script.textContent = JSON.stringify(data);
+        }
+
+        function injectHomepageStructuredData() {
+            const content = window.BNAContent;
+            if (!content) return;
+
+            const baseUrl = 'https://bneineviimacademy.org';
+            const posts = content.getPosts(getContentLanguage());
+            const faqs = content.faqs?.[getContentLanguage()] || [];
+
+            upsertJsonLd('homepage-blog-jsonld', {
+                '@context': 'https://schema.org',
+                '@type': 'ItemList',
+                name: getContentLanguage() === 'he' ? '\u05de\u05d0\u05de\u05e8\u05d9 \u05d1\u05e0\u05d9 \u05e0\u05d1\u05d9\u05d0\u05d9\u05dd' : 'Bnei Neviim Academy articles',
+                itemListElement: posts.map((post, index) => ({
+                    '@type': 'ListItem',
+                    position: index + 1,
+                    name: post.title,
+                    description: post.metaDescription || post.excerpt,
+                    url: `${baseUrl}${getHomepagePostUrl(post)}`
+                }))
+            });
+
+            upsertJsonLd('homepage-faq-jsonld', {
+                '@context': 'https://schema.org',
+                '@type': 'FAQPage',
+                mainEntity: faqs.map((faq) => ({
+                    '@type': 'Question',
+                    name: faq.question,
+                    acceptedAnswer: {
+                        '@type': 'Answer',
+                        text: faq.answer
+                    }
+                }))
+            });
+        }
+
+        function renderHomepageContentSections() {
+            renderHomepageBlog();
+            renderHomepageFaq();
+            injectHomepageStructuredData();
+        }
+
+        function syncLocalizedLinks(lang) {
+            document.querySelectorAll('[data-en-href][data-he-href]').forEach((link) => {
+                const nextHref = link.getAttribute(lang === 'he' ? 'data-he-href' : 'data-en-href');
+                if (nextHref) link.setAttribute('href', nextHref);
+            });
+        }
+
+        function toggleMainMenu() {
+            const actions = document.getElementById('mainNavActions');
+            const toggle = document.querySelector('.nav-menu-toggle');
+            if (!actions || !toggle) return;
+            const isOpen = actions.classList.toggle('is-open');
+            toggle.setAttribute('aria-expanded', String(isOpen));
+            if (isOpen) {
+                document.querySelectorAll('.nav-dropdown[open]').forEach((dropdown) => {
+                    dropdown.removeAttribute('open');
+                });
+            }
+        }
 
         function applyLanguage(lang) {
             currentLang = lang;
@@ -1536,18 +3376,60 @@
                 btn.textContent = translations[lang].langButton;
             });
 
+            syncLocalizedLinks(lang);
+            renderHomepageContentSections();
+
             const heroEnglishVerse = document.querySelector('[data-i18n="heroVerseEn"]');
             if (heroEnglishVerse) {
                 heroEnglishVerse.style.display = lang === 'he' ? 'none' : 'block';
             }
+
+            renderTorahGoalSummary();
         }
 
         function toggleLanguage() {
-            applyLanguage(currentLang === 'en' ? 'he' : 'en');
+            const nextLang = currentLang === 'en' ? 'he' : 'en';
+            if (window.location.pathname === '/' || window.location.pathname === '/he') {
+                window.history.replaceState({}, '', nextLang === 'he' ? '/he' : '/');
+            }
+            applyLanguage(nextLang);
+            closeNavigationOverlays();
         }
 
+        document.addEventListener('click', (event) => {
+            const target = event.target;
+            if (!(target instanceof Element)) return;
+            if (target.closest('#mainNavActions a')) {
+                closeNavigationOverlays();
+                return;
+            }
+            if (!target.closest('nav')) {
+                closeNavigationOverlays();
+            }
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'Escape') {
+                closeNavigationOverlays();
+            }
+        });
+
         // Initialize
-        applyLanguage('en');
+        async function initializeHomepage() {
+            if (window.BNAContent?.loadPublishedPosts) {
+                await window.BNAContent.loadPublishedPosts();
+            }
+            await loadLearningMomentFeed();
+            applyLanguage(window.location.pathname === '/he' ? 'he' : 'en');
+            loadTorahGoalSummary();
+            renderLearningMoments();
+        }
+
+        initializeHomepage();
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
+        }
     </script>
 </body>
 </html>

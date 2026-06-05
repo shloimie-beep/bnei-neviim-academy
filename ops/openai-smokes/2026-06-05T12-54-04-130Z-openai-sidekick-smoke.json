@@ -1,0 +1,104 @@
+{
+  "generated_at": "2026-06-05T12:54:04.130Z",
+  "ok": true,
+  "checks": [
+    {
+      "name": "repo context files readable",
+      "ok": true,
+      "detail": "8 files found"
+    },
+    {
+      "name": "transcript exports readable",
+      "ok": true,
+      "detail": "18 transcript files"
+    },
+    {
+      "name": "protected app APIs readable",
+      "ok": true,
+      "detail": "10 endpoints returned"
+    },
+    {
+      "name": "Drive folders readable",
+      "ok": true,
+      "detail": "7 folders read as office@bneineviimacademy.org"
+    },
+    {
+      "name": "OpenAI returned expected active Codex task count",
+      "ok": true,
+      "detail": "expected 3, got 3"
+    },
+    {
+      "name": "OpenAI returned expected student names",
+      "ok": true,
+      "detail": "5 expected student(s)"
+    },
+    {
+      "name": "OpenAI returned expected transcript job count",
+      "ok": true,
+      "detail": "expected 19, got 19"
+    },
+    {
+      "name": "OpenAI returned Drive raw folder name",
+      "ok": true,
+      "detail": "00 Upload Here - Raw Media Intake"
+    }
+  ],
+  "errors": [],
+  "expected": {
+    "active_codex_count": 3,
+    "active_codex_ids": [
+      101,
+      100,
+      72
+    ],
+    "student_names": [
+      "Amitai Kosofsky",
+      "Eitan Chaim Golombo",
+      "Hillel Baraka",
+      "Huda Weber",
+      "Menachem Mendel Dratler"
+    ],
+    "torah_group_percentage": 16,
+    "transcript_job_count": 19,
+    "pending_payment_students": [
+      "Hillel Baraka"
+    ],
+    "drive_raw_folder_name": "00 Upload Here - Raw Media Intake",
+    "repo_transcript_export_count": 18
+  },
+  "openai_answer": {
+    "active_codex_count": 3,
+    "active_codex_ids": [
+      101,
+      100,
+      72
+    ],
+    "student_names": [
+      "Amitai Kosofsky",
+      "Eitan Chaim Golombo",
+      "Hillel Baraka",
+      "Huda Weber",
+      "Menachem Mendel Dratler"
+    ],
+    "torah_group_percentage": 16,
+    "transcript_job_count": 19,
+    "pending_payment_students": [
+      "Hillel Baraka"
+    ],
+    "drive_raw_folder_name": "00 Upload Here - Raw Media Intake",
+    "repo_transcript_export_count": 18
+  },
+  "live_counts": {
+    "tasks_total": 89,
+    "active_tasks": 4,
+    "active_codex_tasks": 3,
+    "students": 5,
+    "transcript_jobs": 19,
+    "pending_payment_students": 1,
+    "drive_folders": 7
+  },
+  "report_paths": {
+    "json": "ops/openai-smokes/2026-06-05T12-54-04-130Z-openai-sidekick-smoke.json",
+    "markdown": "ops/openai-smokes/2026-06-05T12-54-04-130Z-openai-sidekick-smoke.md"
+  }
+}

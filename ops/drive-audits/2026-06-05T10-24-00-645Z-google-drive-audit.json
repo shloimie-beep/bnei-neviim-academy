@@ -1,0 +1,3321 @@
+{
+  "generatedAt": "2026-06-05T10:24:00.645Z",
+  "account": {
+    "displayName": "office p",
+    "emailAddress": "office@bneineviimacademy.org",
+    "storageQuota": {
+      "limit": "32212254720",
+      "usage": "4122824048",
+      "usageInDrive": "4058506907"
+    }
+  },
+  "root": {
+    "id": "0ALM4jp4XIf7AUk9PVA",
+    "name": "My Drive",
+    "size": null,
+    "sizeLabel": "",
+    "createdTime": null,
+    "modifiedTime": null,
+    "webViewLink": "https://drive.google.com/drive/folders/0ALM4jp4XIf7AUk9PVA",
+    "parents": [],
+    "driveId": null,
+    "owners": [
+      {
+        "displayName": "office p",
+        "emailAddress": "office@bneineviimacademy.org"
+      }
+    ],
+    "shortcutDetails": null
+  },
+  "sharedDrives": [],
+  "pipeline": {
+    "configPath": ".secrets/google-drive-pipeline.json",
+    "root": {
+      "id": "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC",
+      "name": "BNA V2",
+      "mimeType": "application/vnd.google-apps.folder",
+      "size": null,
+      "sizeLabel": "",
+      "createdTime": "2026-05-27T15:44:40.658Z",
+      "modifiedTime": "2026-05-27T15:44:40.658Z",
+      "webViewLink": "https://drive.google.com/drive/folders/14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC",
+      "parents": [
+        "0ALM4jp4XIf7AUk9PVA"
+      ],
+      "driveId": null,
+      "owners": [
+        {
+          "displayName": "office p",
+          "emailAddress": "office@bneineviimacademy.org"
+        }
+      ],
+      "shortcutDetails": null
+    },
+    "websiteMomentsIntake": {
+      "id": "1aiCzZ-lKEKSWTYfOMvXoO4YE56cVaK23",
+      "name": "00 Upload Here - Website Images",
+      "mimeType": "application/vnd.google-apps.folder",
+      "size": null,
+      "sizeLabel": "",
+      "createdTime": "2026-06-03T11:16:27.198Z",
+      "modifiedTime": "2026-06-05T10:23:07.873Z",
+      "webViewLink": "https://drive.google.com/drive/folders/1aiCzZ-lKEKSWTYfOMvXoO4YE56cVaK23",
+      "parents": [
+        "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC"
+      ],
+      "driveId": null,
+      "owners": [
+        {
+          "displayName": "office p",
+          "emailAddress": "office@bneineviimacademy.org"
+        }
+      ],
+      "shortcutDetails": null
+    },
+    "stages": {
+      "01 Raw Intake": {
+        "folder": {
+          "id": "1dqOpnE6RH7u3DMgze3M2srnFEohNR6Tg",
+          "name": "00 Upload Here - Raw Media Intake",
+          "mimeType": "application/vnd.google-apps.folder",
+          "size": null,
+          "sizeLabel": "",
+          "createdTime": "2026-05-27T15:44:41.262Z",
+          "modifiedTime": "2026-06-05T10:23:09.127Z",
+          "webViewLink": "https://drive.google.com/drive/folders/1dqOpnE6RH7u3DMgze3M2srnFEohNR6Tg",
+          "parents": [
+            "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC"
+          ],
+          "driveId": null,
+          "owners": [
+            {
+              "displayName": "office p",
+              "emailAddress": "office@bneineviimacademy.org"
+            }
+          ],
+          "shortcutDetails": null
+        },
+        "recentItems": [],
+        "recentItemCount": 0
+      },
+      "02 Ingesting": {
+        "folder": {
+          "id": "1mUJwuPNEpdGZMFPznky6y874WTb3E_Dt",
+          "name": "10 Processing - Temporary",
+          "mimeType": "application/vnd.google-apps.folder",
+          "size": null,
+          "sizeLabel": "",
+          "createdTime": "2026-05-27T15:44:42.055Z",
+          "modifiedTime": "2026-06-05T10:23:10.295Z",
+          "webViewLink": "https://drive.google.com/drive/folders/1mUJwuPNEpdGZMFPznky6y874WTb3E_Dt",
+          "parents": [
+            "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC"
+          ],
+          "driveId": null,
+          "owners": [
+            {
+              "displayName": "office p",
+              "emailAddress": "office@bneineviimacademy.org"
+            }
+          ],
+          "shortcutDetails": null
+        },
+        "recentItems": [],
+        "recentItemCount": 0
+      },
+      "03 Transcribed": {
+        "folder": {
+          "id": "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE",
+          "name": "20 Processed Recordings - Source Media",
+          "mimeType": "application/vnd.google-apps.folder",
+          "size": null,
+          "sizeLabel": "",
+          "createdTime": "2026-05-27T15:44:43.326Z",
+          "modifiedTime": "2026-06-05T10:23:11.481Z",
+          "webViewLink": "https://drive.google.com/drive/folders/1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE",
+          "parents": [
+            "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC"
+          ],
+          "driveId": null,
+          "owners": [
+            {
+              "displayName": "office p",
+              "emailAddress": "office@bneineviimacademy.org"
+            }
+          ],
+          "shortcutDetails": null
+        },
+        "recentItems": [
+          {
+            "id": "1KzRBWxL9Vs2xPuZ_E9bJcemou_fbQyct",
+            "name": "20260604_191840.mp4",
+            "mimeType": "video/mp4",
+            "size": "970142294",
+            "sizeLabel": "925 MB",
+            "createdTime": "2026-06-04T16:37:29.028Z",
+            "modifiedTime": "2026-06-04T16:37:33.895Z",
+            "webViewLink": "https://drive.google.com/file/d/1KzRBWxL9Vs2xPuZ_E9bJcemou_fbQyct/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1TOljauTdO8xIZXS9xbRrbjIgDouNdeIa",
+            "name": "Voice 260604_095939.m4a",
+            "mimeType": "audio/mp4",
+            "size": "179321039",
+            "sizeLabel": "171 MB",
+            "createdTime": "2026-06-04T10:07:48.068Z",
+            "modifiedTime": "2026-06-04T10:07:49.075Z",
+            "webViewLink": "https://drive.google.com/file/d/1TOljauTdO8xIZXS9xbRrbjIgDouNdeIa/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1_b1KIucxXMUCFvaMjJMjzeIQAPg1J5Y-",
+            "name": "Learning pool.m4a",
+            "mimeType": "audio/mp4",
+            "size": "136912350",
+            "sizeLabel": "131 MB",
+            "createdTime": "2026-06-03T10:04:13.630Z",
+            "modifiedTime": "2026-06-03T10:04:13.962Z",
+            "webViewLink": "https://drive.google.com/file/d/1_b1KIucxXMUCFvaMjJMjzeIQAPg1J5Y-/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1JvnCjN-gISK_27O1qVJ6iRZU-POi5u5J",
+            "name": "Learning pool.m4a",
+            "mimeType": "audio/mp4",
+            "size": "136912350",
+            "sizeLabel": "131 MB",
+            "createdTime": "2026-06-03T10:04:02.482Z",
+            "modifiedTime": "2026-06-03T10:04:03.123Z",
+            "webViewLink": "https://drive.google.com/file/d/1JvnCjN-gISK_27O1qVJ6iRZU-POi5u5J/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1WJHlFM8LzxlgPvvQJxDo45UBDWl474nG",
+            "name": "Voice 260601_121819.m4a",
+            "mimeType": "audio/mp4",
+            "size": "37679226",
+            "sizeLabel": "36 MB",
+            "createdTime": "2026-06-01T12:30:44.807Z",
+            "modifiedTime": "2026-06-01T12:30:45.069Z",
+            "webViewLink": "https://drive.google.com/file/d/1WJHlFM8LzxlgPvvQJxDo45UBDWl474nG/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "18itNzABgIdqFFW8sreIwqwtS2eM0Og4o",
+            "name": "Voice 260601_101009.m4a",
+            "mimeType": "audio/mp4",
+            "size": "61903429",
+            "sizeLabel": "59 MB",
+            "createdTime": "2026-06-01T12:30:44.305Z",
+            "modifiedTime": "2026-06-01T12:30:44.682Z",
+            "webViewLink": "https://drive.google.com/file/d/18itNzABgIdqFFW8sreIwqwtS2eM0Og4o/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1gD9dDBwTOuTITT6q9Hq7Oj8J0aVs-Fed",
+            "name": "Meeting rabbi sheller.m4a",
+            "mimeType": "audio/mp4",
+            "size": "57598116",
+            "sizeLabel": "55 MB",
+            "createdTime": "2026-05-31T18:26:28.087Z",
+            "modifiedTime": "2026-05-31T18:26:28.521Z",
+            "webViewLink": "https://drive.google.com/file/d/1gD9dDBwTOuTITT6q9Hq7Oj8J0aVs-Fed/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1SpRcKcN0EaFuliaWz4dGMR-Nw4u1S23n",
+            "name": "20260531_185700.mp4",
+            "mimeType": "video/mp4",
+            "size": "281411798",
+            "sizeLabel": "268 MB",
+            "createdTime": "2026-05-31T16:03:44.006Z",
+            "modifiedTime": "2026-05-31T16:03:44.907Z",
+            "webViewLink": "https://drive.google.com/file/d/1SpRcKcN0EaFuliaWz4dGMR-Nw4u1S23n/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1OJxX8nUmerPJ6YoCTNs1OaP6Dzydp_Dx",
+            "name": "20260531_185700.mp4",
+            "mimeType": "video/mp4",
+            "size": "281411798",
+            "sizeLabel": "268 MB",
+            "createdTime": "2026-05-31T16:03:37.740Z",
+            "modifiedTime": "2026-05-31T16:03:38.939Z",
+            "webViewLink": "https://drive.google.com/file/d/1OJxX8nUmerPJ6YoCTNs1OaP6Dzydp_Dx/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1NiAOXkTZlWFMuT1pUazCFz2Hk2-6hHRK",
+            "name": "Weber torah.m4a",
+            "mimeType": "audio/mp4",
+            "size": "98978262",
+            "sizeLabel": "94 MB",
+            "createdTime": "2026-05-28T15:10:23.403Z",
+            "modifiedTime": "2026-05-28T15:10:23.794Z",
+            "webViewLink": "https://drive.google.com/file/d/1NiAOXkTZlWFMuT1pUazCFz2Hk2-6hHRK/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1uYmN8EUiiApnJOiwc2fYqUCs_nu-XrYt",
+            "name": "20260527_140157.mp4",
+            "mimeType": "video/mp4",
+            "size": "1801061943",
+            "sizeLabel": "2 GB",
+            "createdTime": "2026-05-27T15:51:34.094Z",
+            "modifiedTime": "2026-05-27T15:51:43.893Z",
+            "webViewLink": "https://drive.google.com/file/d/1uYmN8EUiiApnJOiwc2fYqUCs_nu-XrYt/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          }
+        ],
+        "recentItemCount": 11
+      },
+      "04 Parsed": {
+        "folder": {
+          "id": "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE",
+          "name": "20 Processed Recordings - Source Media",
+          "mimeType": "application/vnd.google-apps.folder",
+          "size": null,
+          "sizeLabel": "",
+          "createdTime": "2026-05-27T15:44:43.326Z",
+          "modifiedTime": "2026-06-05T10:23:11.481Z",
+          "webViewLink": "https://drive.google.com/drive/folders/1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE",
+          "parents": [
+            "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC"
+          ],
+          "driveId": null,
+          "owners": [
+            {
+              "displayName": "office p",
+              "emailAddress": "office@bneineviimacademy.org"
+            }
+          ],
+          "shortcutDetails": null
+        },
+        "recentItems": [
+          {
+            "id": "1KzRBWxL9Vs2xPuZ_E9bJcemou_fbQyct",
+            "name": "20260604_191840.mp4",
+            "mimeType": "video/mp4",
+            "size": "970142294",
+            "sizeLabel": "925 MB",
+            "createdTime": "2026-06-04T16:37:29.028Z",
+            "modifiedTime": "2026-06-04T16:37:33.895Z",
+            "webViewLink": "https://drive.google.com/file/d/1KzRBWxL9Vs2xPuZ_E9bJcemou_fbQyct/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1TOljauTdO8xIZXS9xbRrbjIgDouNdeIa",
+            "name": "Voice 260604_095939.m4a",
+            "mimeType": "audio/mp4",
+            "size": "179321039",
+            "sizeLabel": "171 MB",
+            "createdTime": "2026-06-04T10:07:48.068Z",
+            "modifiedTime": "2026-06-04T10:07:49.075Z",
+            "webViewLink": "https://drive.google.com/file/d/1TOljauTdO8xIZXS9xbRrbjIgDouNdeIa/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1_b1KIucxXMUCFvaMjJMjzeIQAPg1J5Y-",
+            "name": "Learning pool.m4a",
+            "mimeType": "audio/mp4",
+            "size": "136912350",
+            "sizeLabel": "131 MB",
+            "createdTime": "2026-06-03T10:04:13.630Z",
+            "modifiedTime": "2026-06-03T10:04:13.962Z",
+            "webViewLink": "https://drive.google.com/file/d/1_b1KIucxXMUCFvaMjJMjzeIQAPg1J5Y-/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1JvnCjN-gISK_27O1qVJ6iRZU-POi5u5J",
+            "name": "Learning pool.m4a",
+            "mimeType": "audio/mp4",
+            "size": "136912350",
+            "sizeLabel": "131 MB",
+            "createdTime": "2026-06-03T10:04:02.482Z",
+            "modifiedTime": "2026-06-03T10:04:03.123Z",
+            "webViewLink": "https://drive.google.com/file/d/1JvnCjN-gISK_27O1qVJ6iRZU-POi5u5J/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1WJHlFM8LzxlgPvvQJxDo45UBDWl474nG",
+            "name": "Voice 260601_121819.m4a",
+            "mimeType": "audio/mp4",
+            "size": "37679226",
+            "sizeLabel": "36 MB",
+            "createdTime": "2026-06-01T12:30:44.807Z",
+            "modifiedTime": "2026-06-01T12:30:45.069Z",
+            "webViewLink": "https://drive.google.com/file/d/1WJHlFM8LzxlgPvvQJxDo45UBDWl474nG/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "18itNzABgIdqFFW8sreIwqwtS2eM0Og4o",
+            "name": "Voice 260601_101009.m4a",
+            "mimeType": "audio/mp4",
+            "size": "61903429",
+            "sizeLabel": "59 MB",
+            "createdTime": "2026-06-01T12:30:44.305Z",
+            "modifiedTime": "2026-06-01T12:30:44.682Z",
+            "webViewLink": "https://drive.google.com/file/d/18itNzABgIdqFFW8sreIwqwtS2eM0Og4o/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1gD9dDBwTOuTITT6q9Hq7Oj8J0aVs-Fed",
+            "name": "Meeting rabbi sheller.m4a",
+            "mimeType": "audio/mp4",
+            "size": "57598116",
+            "sizeLabel": "55 MB",
+            "createdTime": "2026-05-31T18:26:28.087Z",
+            "modifiedTime": "2026-05-31T18:26:28.521Z",
+            "webViewLink": "https://drive.google.com/file/d/1gD9dDBwTOuTITT6q9Hq7Oj8J0aVs-Fed/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1SpRcKcN0EaFuliaWz4dGMR-Nw4u1S23n",
+            "name": "20260531_185700.mp4",
+            "mimeType": "video/mp4",
+            "size": "281411798",
+            "sizeLabel": "268 MB",
+            "createdTime": "2026-05-31T16:03:44.006Z",
+            "modifiedTime": "2026-05-31T16:03:44.907Z",
+            "webViewLink": "https://drive.google.com/file/d/1SpRcKcN0EaFuliaWz4dGMR-Nw4u1S23n/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1OJxX8nUmerPJ6YoCTNs1OaP6Dzydp_Dx",
+            "name": "20260531_185700.mp4",
+            "mimeType": "video/mp4",
+            "size": "281411798",
+            "sizeLabel": "268 MB",
+            "createdTime": "2026-05-31T16:03:37.740Z",
+            "modifiedTime": "2026-05-31T16:03:38.939Z",
+            "webViewLink": "https://drive.google.com/file/d/1OJxX8nUmerPJ6YoCTNs1OaP6Dzydp_Dx/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1NiAOXkTZlWFMuT1pUazCFz2Hk2-6hHRK",
+            "name": "Weber torah.m4a",
+            "mimeType": "audio/mp4",
+            "size": "98978262",
+            "sizeLabel": "94 MB",
+            "createdTime": "2026-05-28T15:10:23.403Z",
+            "modifiedTime": "2026-05-28T15:10:23.794Z",
+            "webViewLink": "https://drive.google.com/file/d/1NiAOXkTZlWFMuT1pUazCFz2Hk2-6hHRK/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1uYmN8EUiiApnJOiwc2fYqUCs_nu-XrYt",
+            "name": "20260527_140157.mp4",
+            "mimeType": "video/mp4",
+            "size": "1801061943",
+            "sizeLabel": "2 GB",
+            "createdTime": "2026-05-27T15:51:34.094Z",
+            "modifiedTime": "2026-05-27T15:51:43.893Z",
+            "webViewLink": "https://drive.google.com/file/d/1uYmN8EUiiApnJOiwc2fYqUCs_nu-XrYt/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          }
+        ],
+        "recentItemCount": 11
+      },
+      "05 WhatsApp Ready": {
+        "folder": {
+          "id": "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE",
+          "name": "20 Processed Recordings - Source Media",
+          "mimeType": "application/vnd.google-apps.folder",
+          "size": null,
+          "sizeLabel": "",
+          "createdTime": "2026-05-27T15:44:43.326Z",
+          "modifiedTime": "2026-06-05T10:23:11.481Z",
+          "webViewLink": "https://drive.google.com/drive/folders/1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE",
+          "parents": [
+            "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC"
+          ],
+          "driveId": null,
+          "owners": [
+            {
+              "displayName": "office p",
+              "emailAddress": "office@bneineviimacademy.org"
+            }
+          ],
+          "shortcutDetails": null
+        },
+        "recentItems": [
+          {
+            "id": "1KzRBWxL9Vs2xPuZ_E9bJcemou_fbQyct",
+            "name": "20260604_191840.mp4",
+            "mimeType": "video/mp4",
+            "size": "970142294",
+            "sizeLabel": "925 MB",
+            "createdTime": "2026-06-04T16:37:29.028Z",
+            "modifiedTime": "2026-06-04T16:37:33.895Z",
+            "webViewLink": "https://drive.google.com/file/d/1KzRBWxL9Vs2xPuZ_E9bJcemou_fbQyct/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1TOljauTdO8xIZXS9xbRrbjIgDouNdeIa",
+            "name": "Voice 260604_095939.m4a",
+            "mimeType": "audio/mp4",
+            "size": "179321039",
+            "sizeLabel": "171 MB",
+            "createdTime": "2026-06-04T10:07:48.068Z",
+            "modifiedTime": "2026-06-04T10:07:49.075Z",
+            "webViewLink": "https://drive.google.com/file/d/1TOljauTdO8xIZXS9xbRrbjIgDouNdeIa/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1_b1KIucxXMUCFvaMjJMjzeIQAPg1J5Y-",
+            "name": "Learning pool.m4a",
+            "mimeType": "audio/mp4",
+            "size": "136912350",
+            "sizeLabel": "131 MB",
+            "createdTime": "2026-06-03T10:04:13.630Z",
+            "modifiedTime": "2026-06-03T10:04:13.962Z",
+            "webViewLink": "https://drive.google.com/file/d/1_b1KIucxXMUCFvaMjJMjzeIQAPg1J5Y-/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1JvnCjN-gISK_27O1qVJ6iRZU-POi5u5J",
+            "name": "Learning pool.m4a",
+            "mimeType": "audio/mp4",
+            "size": "136912350",
+            "sizeLabel": "131 MB",
+            "createdTime": "2026-06-03T10:04:02.482Z",
+            "modifiedTime": "2026-06-03T10:04:03.123Z",
+            "webViewLink": "https://drive.google.com/file/d/1JvnCjN-gISK_27O1qVJ6iRZU-POi5u5J/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1WJHlFM8LzxlgPvvQJxDo45UBDWl474nG",
+            "name": "Voice 260601_121819.m4a",
+            "mimeType": "audio/mp4",
+            "size": "37679226",
+            "sizeLabel": "36 MB",
+            "createdTime": "2026-06-01T12:30:44.807Z",
+            "modifiedTime": "2026-06-01T12:30:45.069Z",
+            "webViewLink": "https://drive.google.com/file/d/1WJHlFM8LzxlgPvvQJxDo45UBDWl474nG/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "18itNzABgIdqFFW8sreIwqwtS2eM0Og4o",
+            "name": "Voice 260601_101009.m4a",
+            "mimeType": "audio/mp4",
+            "size": "61903429",
+            "sizeLabel": "59 MB",
+            "createdTime": "2026-06-01T12:30:44.305Z",
+            "modifiedTime": "2026-06-01T12:30:44.682Z",
+            "webViewLink": "https://drive.google.com/file/d/18itNzABgIdqFFW8sreIwqwtS2eM0Og4o/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1gD9dDBwTOuTITT6q9Hq7Oj8J0aVs-Fed",
+            "name": "Meeting rabbi sheller.m4a",
+            "mimeType": "audio/mp4",
+            "size": "57598116",
+            "sizeLabel": "55 MB",
+            "createdTime": "2026-05-31T18:26:28.087Z",
+            "modifiedTime": "2026-05-31T18:26:28.521Z",
+            "webViewLink": "https://drive.google.com/file/d/1gD9dDBwTOuTITT6q9Hq7Oj8J0aVs-Fed/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1SpRcKcN0EaFuliaWz4dGMR-Nw4u1S23n",
+            "name": "20260531_185700.mp4",
+            "mimeType": "video/mp4",
+            "size": "281411798",
+            "sizeLabel": "268 MB",
+            "createdTime": "2026-05-31T16:03:44.006Z",
+            "modifiedTime": "2026-05-31T16:03:44.907Z",
+            "webViewLink": "https://drive.google.com/file/d/1SpRcKcN0EaFuliaWz4dGMR-Nw4u1S23n/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1OJxX8nUmerPJ6YoCTNs1OaP6Dzydp_Dx",
+            "name": "20260531_185700.mp4",
+            "mimeType": "video/mp4",
+            "size": "281411798",
+            "sizeLabel": "268 MB",
+            "createdTime": "2026-05-31T16:03:37.740Z",
+            "modifiedTime": "2026-05-31T16:03:38.939Z",
+            "webViewLink": "https://drive.google.com/file/d/1OJxX8nUmerPJ6YoCTNs1OaP6Dzydp_Dx/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1NiAOXkTZlWFMuT1pUazCFz2Hk2-6hHRK",
+            "name": "Weber torah.m4a",
+            "mimeType": "audio/mp4",
+            "size": "98978262",
+            "sizeLabel": "94 MB",
+            "createdTime": "2026-05-28T15:10:23.403Z",
+            "modifiedTime": "2026-05-28T15:10:23.794Z",
+            "webViewLink": "https://drive.google.com/file/d/1NiAOXkTZlWFMuT1pUazCFz2Hk2-6hHRK/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1uYmN8EUiiApnJOiwc2fYqUCs_nu-XrYt",
+            "name": "20260527_140157.mp4",
+            "mimeType": "video/mp4",
+            "size": "1801061943",
+            "sizeLabel": "2 GB",
+            "createdTime": "2026-05-27T15:51:34.094Z",
+            "modifiedTime": "2026-05-27T15:51:43.893Z",
+            "webViewLink": "https://drive.google.com/file/d/1uYmN8EUiiApnJOiwc2fYqUCs_nu-XrYt/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          }
+        ],
+        "recentItemCount": 11
+      },
+      "06 Newsletter Candidates": {
+        "folder": {
+          "id": "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE",
+          "name": "20 Processed Recordings - Source Media",
+          "mimeType": "application/vnd.google-apps.folder",
+          "size": null,
+          "sizeLabel": "",
+          "createdTime": "2026-05-27T15:44:43.326Z",
+          "modifiedTime": "2026-06-05T10:23:11.481Z",
+          "webViewLink": "https://drive.google.com/drive/folders/1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE",
+          "parents": [
+            "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC"
+          ],
+          "driveId": null,
+          "owners": [
+            {
+              "displayName": "office p",
+              "emailAddress": "office@bneineviimacademy.org"
+            }
+          ],
+          "shortcutDetails": null
+        },
+        "recentItems": [
+          {
+            "id": "1KzRBWxL9Vs2xPuZ_E9bJcemou_fbQyct",
+            "name": "20260604_191840.mp4",
+            "mimeType": "video/mp4",
+            "size": "970142294",
+            "sizeLabel": "925 MB",
+            "createdTime": "2026-06-04T16:37:29.028Z",
+            "modifiedTime": "2026-06-04T16:37:33.895Z",
+            "webViewLink": "https://drive.google.com/file/d/1KzRBWxL9Vs2xPuZ_E9bJcemou_fbQyct/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1TOljauTdO8xIZXS9xbRrbjIgDouNdeIa",
+            "name": "Voice 260604_095939.m4a",
+            "mimeType": "audio/mp4",
+            "size": "179321039",
+            "sizeLabel": "171 MB",
+            "createdTime": "2026-06-04T10:07:48.068Z",
+            "modifiedTime": "2026-06-04T10:07:49.075Z",
+            "webViewLink": "https://drive.google.com/file/d/1TOljauTdO8xIZXS9xbRrbjIgDouNdeIa/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1_b1KIucxXMUCFvaMjJMjzeIQAPg1J5Y-",
+            "name": "Learning pool.m4a",
+            "mimeType": "audio/mp4",
+            "size": "136912350",
+            "sizeLabel": "131 MB",
+            "createdTime": "2026-06-03T10:04:13.630Z",
+            "modifiedTime": "2026-06-03T10:04:13.962Z",
+            "webViewLink": "https://drive.google.com/file/d/1_b1KIucxXMUCFvaMjJMjzeIQAPg1J5Y-/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1JvnCjN-gISK_27O1qVJ6iRZU-POi5u5J",
+            "name": "Learning pool.m4a",
+            "mimeType": "audio/mp4",
+            "size": "136912350",
+            "sizeLabel": "131 MB",
+            "createdTime": "2026-06-03T10:04:02.482Z",
+            "modifiedTime": "2026-06-03T10:04:03.123Z",
+            "webViewLink": "https://drive.google.com/file/d/1JvnCjN-gISK_27O1qVJ6iRZU-POi5u5J/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1WJHlFM8LzxlgPvvQJxDo45UBDWl474nG",
+            "name": "Voice 260601_121819.m4a",
+            "mimeType": "audio/mp4",
+            "size": "37679226",
+            "sizeLabel": "36 MB",
+            "createdTime": "2026-06-01T12:30:44.807Z",
+            "modifiedTime": "2026-06-01T12:30:45.069Z",
+            "webViewLink": "https://drive.google.com/file/d/1WJHlFM8LzxlgPvvQJxDo45UBDWl474nG/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "18itNzABgIdqFFW8sreIwqwtS2eM0Og4o",
+            "name": "Voice 260601_101009.m4a",
+            "mimeType": "audio/mp4",
+            "size": "61903429",
+            "sizeLabel": "59 MB",
+            "createdTime": "2026-06-01T12:30:44.305Z",
+            "modifiedTime": "2026-06-01T12:30:44.682Z",
+            "webViewLink": "https://drive.google.com/file/d/18itNzABgIdqFFW8sreIwqwtS2eM0Og4o/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1gD9dDBwTOuTITT6q9Hq7Oj8J0aVs-Fed",
+            "name": "Meeting rabbi sheller.m4a",
+            "mimeType": "audio/mp4",
+            "size": "57598116",
+            "sizeLabel": "55 MB",
+            "createdTime": "2026-05-31T18:26:28.087Z",
+            "modifiedTime": "2026-05-31T18:26:28.521Z",
+            "webViewLink": "https://drive.google.com/file/d/1gD9dDBwTOuTITT6q9Hq7Oj8J0aVs-Fed/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1SpRcKcN0EaFuliaWz4dGMR-Nw4u1S23n",
+            "name": "20260531_185700.mp4",
+            "mimeType": "video/mp4",
+            "size": "281411798",
+            "sizeLabel": "268 MB",
+            "createdTime": "2026-05-31T16:03:44.006Z",
+            "modifiedTime": "2026-05-31T16:03:44.907Z",
+            "webViewLink": "https://drive.google.com/file/d/1SpRcKcN0EaFuliaWz4dGMR-Nw4u1S23n/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1OJxX8nUmerPJ6YoCTNs1OaP6Dzydp_Dx",
+            "name": "20260531_185700.mp4",
+            "mimeType": "video/mp4",
+            "size": "281411798",
+            "sizeLabel": "268 MB",
+            "createdTime": "2026-05-31T16:03:37.740Z",
+            "modifiedTime": "2026-05-31T16:03:38.939Z",
+            "webViewLink": "https://drive.google.com/file/d/1OJxX8nUmerPJ6YoCTNs1OaP6Dzydp_Dx/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1NiAOXkTZlWFMuT1pUazCFz2Hk2-6hHRK",
+            "name": "Weber torah.m4a",
+            "mimeType": "audio/mp4",
+            "size": "98978262",
+            "sizeLabel": "94 MB",
+            "createdTime": "2026-05-28T15:10:23.403Z",
+            "modifiedTime": "2026-05-28T15:10:23.794Z",
+            "webViewLink": "https://drive.google.com/file/d/1NiAOXkTZlWFMuT1pUazCFz2Hk2-6hHRK/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1uYmN8EUiiApnJOiwc2fYqUCs_nu-XrYt",
+            "name": "20260527_140157.mp4",
+            "mimeType": "video/mp4",
+            "size": "1801061943",
+            "sizeLabel": "2 GB",
+            "createdTime": "2026-05-27T15:51:34.094Z",
+            "modifiedTime": "2026-05-27T15:51:43.893Z",
+            "webViewLink": "https://drive.google.com/file/d/1uYmN8EUiiApnJOiwc2fYqUCs_nu-XrYt/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          }
+        ],
+        "recentItemCount": 11
+      },
+      "07 Social Candidates": {
+        "folder": {
+          "id": "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE",
+          "name": "20 Processed Recordings - Source Media",
+          "mimeType": "application/vnd.google-apps.folder",
+          "size": null,
+          "sizeLabel": "",
+          "createdTime": "2026-05-27T15:44:43.326Z",
+          "modifiedTime": "2026-06-05T10:23:11.481Z",
+          "webViewLink": "https://drive.google.com/drive/folders/1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE",
+          "parents": [
+            "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC"
+          ],
+          "driveId": null,
+          "owners": [
+            {
+              "displayName": "office p",
+              "emailAddress": "office@bneineviimacademy.org"
+            }
+          ],
+          "shortcutDetails": null
+        },
+        "recentItems": [
+          {
+            "id": "1KzRBWxL9Vs2xPuZ_E9bJcemou_fbQyct",
+            "name": "20260604_191840.mp4",
+            "mimeType": "video/mp4",
+            "size": "970142294",
+            "sizeLabel": "925 MB",
+            "createdTime": "2026-06-04T16:37:29.028Z",
+            "modifiedTime": "2026-06-04T16:37:33.895Z",
+            "webViewLink": "https://drive.google.com/file/d/1KzRBWxL9Vs2xPuZ_E9bJcemou_fbQyct/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1TOljauTdO8xIZXS9xbRrbjIgDouNdeIa",
+            "name": "Voice 260604_095939.m4a",
+            "mimeType": "audio/mp4",
+            "size": "179321039",
+            "sizeLabel": "171 MB",
+            "createdTime": "2026-06-04T10:07:48.068Z",
+            "modifiedTime": "2026-06-04T10:07:49.075Z",
+            "webViewLink": "https://drive.google.com/file/d/1TOljauTdO8xIZXS9xbRrbjIgDouNdeIa/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1_b1KIucxXMUCFvaMjJMjzeIQAPg1J5Y-",
+            "name": "Learning pool.m4a",
+            "mimeType": "audio/mp4",
+            "size": "136912350",
+            "sizeLabel": "131 MB",
+            "createdTime": "2026-06-03T10:04:13.630Z",
+            "modifiedTime": "2026-06-03T10:04:13.962Z",
+            "webViewLink": "https://drive.google.com/file/d/1_b1KIucxXMUCFvaMjJMjzeIQAPg1J5Y-/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1JvnCjN-gISK_27O1qVJ6iRZU-POi5u5J",
+            "name": "Learning pool.m4a",
+            "mimeType": "audio/mp4",
+            "size": "136912350",
+            "sizeLabel": "131 MB",
+            "createdTime": "2026-06-03T10:04:02.482Z",
+            "modifiedTime": "2026-06-03T10:04:03.123Z",
+            "webViewLink": "https://drive.google.com/file/d/1JvnCjN-gISK_27O1qVJ6iRZU-POi5u5J/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1WJHlFM8LzxlgPvvQJxDo45UBDWl474nG",
+            "name": "Voice 260601_121819.m4a",
+            "mimeType": "audio/mp4",
+            "size": "37679226",
+            "sizeLabel": "36 MB",
+            "createdTime": "2026-06-01T12:30:44.807Z",
+            "modifiedTime": "2026-06-01T12:30:45.069Z",
+            "webViewLink": "https://drive.google.com/file/d/1WJHlFM8LzxlgPvvQJxDo45UBDWl474nG/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "18itNzABgIdqFFW8sreIwqwtS2eM0Og4o",
+            "name": "Voice 260601_101009.m4a",
+            "mimeType": "audio/mp4",
+            "size": "61903429",
+            "sizeLabel": "59 MB",
+            "createdTime": "2026-06-01T12:30:44.305Z",
+            "modifiedTime": "2026-06-01T12:30:44.682Z",
+            "webViewLink": "https://drive.google.com/file/d/18itNzABgIdqFFW8sreIwqwtS2eM0Og4o/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1gD9dDBwTOuTITT6q9Hq7Oj8J0aVs-Fed",
+            "name": "Meeting rabbi sheller.m4a",
+            "mimeType": "audio/mp4",
+            "size": "57598116",
+            "sizeLabel": "55 MB",
+            "createdTime": "2026-05-31T18:26:28.087Z",
+            "modifiedTime": "2026-05-31T18:26:28.521Z",
+            "webViewLink": "https://drive.google.com/file/d/1gD9dDBwTOuTITT6q9Hq7Oj8J0aVs-Fed/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1SpRcKcN0EaFuliaWz4dGMR-Nw4u1S23n",
+            "name": "20260531_185700.mp4",
+            "mimeType": "video/mp4",
+            "size": "281411798",
+            "sizeLabel": "268 MB",
+            "createdTime": "2026-05-31T16:03:44.006Z",
+            "modifiedTime": "2026-05-31T16:03:44.907Z",
+            "webViewLink": "https://drive.google.com/file/d/1SpRcKcN0EaFuliaWz4dGMR-Nw4u1S23n/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1OJxX8nUmerPJ6YoCTNs1OaP6Dzydp_Dx",
+            "name": "20260531_185700.mp4",
+            "mimeType": "video/mp4",
+            "size": "281411798",
+            "sizeLabel": "268 MB",
+            "createdTime": "2026-05-31T16:03:37.740Z",
+            "modifiedTime": "2026-05-31T16:03:38.939Z",
+            "webViewLink": "https://drive.google.com/file/d/1OJxX8nUmerPJ6YoCTNs1OaP6Dzydp_Dx/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1NiAOXkTZlWFMuT1pUazCFz2Hk2-6hHRK",
+            "name": "Weber torah.m4a",
+            "mimeType": "audio/mp4",
+            "size": "98978262",
+            "sizeLabel": "94 MB",
+            "createdTime": "2026-05-28T15:10:23.403Z",
+            "modifiedTime": "2026-05-28T15:10:23.794Z",
+            "webViewLink": "https://drive.google.com/file/d/1NiAOXkTZlWFMuT1pUazCFz2Hk2-6hHRK/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1uYmN8EUiiApnJOiwc2fYqUCs_nu-XrYt",
+            "name": "20260527_140157.mp4",
+            "mimeType": "video/mp4",
+            "size": "1801061943",
+            "sizeLabel": "2 GB",
+            "createdTime": "2026-05-27T15:51:34.094Z",
+            "modifiedTime": "2026-05-27T15:51:43.893Z",
+            "webViewLink": "https://drive.google.com/file/d/1uYmN8EUiiApnJOiwc2fYqUCs_nu-XrYt/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          }
+        ],
+        "recentItemCount": 11
+      },
+      "08 Blog Candidates": {
+        "folder": {
+          "id": "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE",
+          "name": "20 Processed Recordings - Source Media",
+          "mimeType": "application/vnd.google-apps.folder",
+          "size": null,
+          "sizeLabel": "",
+          "createdTime": "2026-05-27T15:44:43.326Z",
+          "modifiedTime": "2026-06-05T10:23:11.481Z",
+          "webViewLink": "https://drive.google.com/drive/folders/1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE",
+          "parents": [
+            "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC"
+          ],
+          "driveId": null,
+          "owners": [
+            {
+              "displayName": "office p",
+              "emailAddress": "office@bneineviimacademy.org"
+            }
+          ],
+          "shortcutDetails": null
+        },
+        "recentItems": [
+          {
+            "id": "1KzRBWxL9Vs2xPuZ_E9bJcemou_fbQyct",
+            "name": "20260604_191840.mp4",
+            "mimeType": "video/mp4",
+            "size": "970142294",
+            "sizeLabel": "925 MB",
+            "createdTime": "2026-06-04T16:37:29.028Z",
+            "modifiedTime": "2026-06-04T16:37:33.895Z",
+            "webViewLink": "https://drive.google.com/file/d/1KzRBWxL9Vs2xPuZ_E9bJcemou_fbQyct/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1TOljauTdO8xIZXS9xbRrbjIgDouNdeIa",
+            "name": "Voice 260604_095939.m4a",
+            "mimeType": "audio/mp4",
+            "size": "179321039",
+            "sizeLabel": "171 MB",
+            "createdTime": "2026-06-04T10:07:48.068Z",
+            "modifiedTime": "2026-06-04T10:07:49.075Z",
+            "webViewLink": "https://drive.google.com/file/d/1TOljauTdO8xIZXS9xbRrbjIgDouNdeIa/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1_b1KIucxXMUCFvaMjJMjzeIQAPg1J5Y-",
+            "name": "Learning pool.m4a",
+            "mimeType": "audio/mp4",
+            "size": "136912350",
+            "sizeLabel": "131 MB",
+            "createdTime": "2026-06-03T10:04:13.630Z",
+            "modifiedTime": "2026-06-03T10:04:13.962Z",
+            "webViewLink": "https://drive.google.com/file/d/1_b1KIucxXMUCFvaMjJMjzeIQAPg1J5Y-/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1JvnCjN-gISK_27O1qVJ6iRZU-POi5u5J",
+            "name": "Learning pool.m4a",
+            "mimeType": "audio/mp4",
+            "size": "136912350",
+            "sizeLabel": "131 MB",
+            "createdTime": "2026-06-03T10:04:02.482Z",
+            "modifiedTime": "2026-06-03T10:04:03.123Z",
+            "webViewLink": "https://drive.google.com/file/d/1JvnCjN-gISK_27O1qVJ6iRZU-POi5u5J/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1WJHlFM8LzxlgPvvQJxDo45UBDWl474nG",
+            "name": "Voice 260601_121819.m4a",
+            "mimeType": "audio/mp4",
+            "size": "37679226",
+            "sizeLabel": "36 MB",
+            "createdTime": "2026-06-01T12:30:44.807Z",
+            "modifiedTime": "2026-06-01T12:30:45.069Z",
+            "webViewLink": "https://drive.google.com/file/d/1WJHlFM8LzxlgPvvQJxDo45UBDWl474nG/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "18itNzABgIdqFFW8sreIwqwtS2eM0Og4o",
+            "name": "Voice 260601_101009.m4a",
+            "mimeType": "audio/mp4",
+            "size": "61903429",
+            "sizeLabel": "59 MB",
+            "createdTime": "2026-06-01T12:30:44.305Z",
+            "modifiedTime": "2026-06-01T12:30:44.682Z",
+            "webViewLink": "https://drive.google.com/file/d/18itNzABgIdqFFW8sreIwqwtS2eM0Og4o/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1gD9dDBwTOuTITT6q9Hq7Oj8J0aVs-Fed",
+            "name": "Meeting rabbi sheller.m4a",
+            "mimeType": "audio/mp4",
+            "size": "57598116",
+            "sizeLabel": "55 MB",
+            "createdTime": "2026-05-31T18:26:28.087Z",
+            "modifiedTime": "2026-05-31T18:26:28.521Z",
+            "webViewLink": "https://drive.google.com/file/d/1gD9dDBwTOuTITT6q9Hq7Oj8J0aVs-Fed/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1SpRcKcN0EaFuliaWz4dGMR-Nw4u1S23n",
+            "name": "20260531_185700.mp4",
+            "mimeType": "video/mp4",
+            "size": "281411798",
+            "sizeLabel": "268 MB",
+            "createdTime": "2026-05-31T16:03:44.006Z",
+            "modifiedTime": "2026-05-31T16:03:44.907Z",
+            "webViewLink": "https://drive.google.com/file/d/1SpRcKcN0EaFuliaWz4dGMR-Nw4u1S23n/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1OJxX8nUmerPJ6YoCTNs1OaP6Dzydp_Dx",
+            "name": "20260531_185700.mp4",
+            "mimeType": "video/mp4",
+            "size": "281411798",
+            "sizeLabel": "268 MB",
+            "createdTime": "2026-05-31T16:03:37.740Z",
+            "modifiedTime": "2026-05-31T16:03:38.939Z",
+            "webViewLink": "https://drive.google.com/file/d/1OJxX8nUmerPJ6YoCTNs1OaP6Dzydp_Dx/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1NiAOXkTZlWFMuT1pUazCFz2Hk2-6hHRK",
+            "name": "Weber torah.m4a",
+            "mimeType": "audio/mp4",
+            "size": "98978262",
+            "sizeLabel": "94 MB",
+            "createdTime": "2026-05-28T15:10:23.403Z",
+            "modifiedTime": "2026-05-28T15:10:23.794Z",
+            "webViewLink": "https://drive.google.com/file/d/1NiAOXkTZlWFMuT1pUazCFz2Hk2-6hHRK/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1uYmN8EUiiApnJOiwc2fYqUCs_nu-XrYt",
+            "name": "20260527_140157.mp4",
+            "mimeType": "video/mp4",
+            "size": "1801061943",
+            "sizeLabel": "2 GB",
+            "createdTime": "2026-05-27T15:51:34.094Z",
+            "modifiedTime": "2026-05-27T15:51:43.893Z",
+            "webViewLink": "https://drive.google.com/file/d/1uYmN8EUiiApnJOiwc2fYqUCs_nu-XrYt/view?usp=drivesdk",
+            "parents": [
+              "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          }
+        ],
+        "recentItemCount": 11
+      },
+      "09 Brand Kit Suggestions": {
+        "folder": {
+          "id": "1CcQkSER1mFLhJ7FKrbnGCF_iFovyOHvR",
+          "name": "_Archive - Legacy Pipeline Folders",
+          "mimeType": "application/vnd.google-apps.folder",
+          "size": null,
+          "sizeLabel": "",
+          "createdTime": "2026-06-05T10:23:15.223Z",
+          "modifiedTime": "2026-06-05T10:23:15.223Z",
+          "webViewLink": "https://drive.google.com/drive/folders/1CcQkSER1mFLhJ7FKrbnGCF_iFovyOHvR",
+          "parents": [
+            "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC"
+          ],
+          "driveId": null,
+          "owners": [
+            {
+              "displayName": "office p",
+              "emailAddress": "office@bneineviimacademy.org"
+            }
+          ],
+          "shortcutDetails": null
+        },
+        "recentItems": [
+          {
+            "id": "1ZzyZ90rcxkAsGXRFrRm7PeQSfFoDwKIt",
+            "name": "GitHub Canonical - Drive Brand Mirror (Deprecated)",
+            "mimeType": "application/vnd.google-apps.folder",
+            "size": null,
+            "sizeLabel": "",
+            "createdTime": "2026-05-27T15:44:48.680Z",
+            "modifiedTime": "2026-06-05T10:23:40.748Z",
+            "webViewLink": "https://drive.google.com/drive/folders/1ZzyZ90rcxkAsGXRFrRm7PeQSfFoDwKIt",
+            "parents": [
+              "1CcQkSER1mFLhJ7FKrbnGCF_iFovyOHvR"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1fA3j3bWctqHPAxfCvM3t3dNLJxuujCFB",
+            "name": "11 Published",
+            "mimeType": "application/vnd.google-apps.folder",
+            "size": null,
+            "sizeLabel": "",
+            "createdTime": "2026-05-27T15:44:47.473Z",
+            "modifiedTime": "2026-05-27T15:44:47.473Z",
+            "webViewLink": "https://drive.google.com/drive/folders/1fA3j3bWctqHPAxfCvM3t3dNLJxuujCFB",
+            "parents": [
+              "1CcQkSER1mFLhJ7FKrbnGCF_iFovyOHvR"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1xf628JPnODubr5cBh-G5up9LW5tgm3-Y",
+            "name": "09 Brand Kit Suggestions",
+            "mimeType": "application/vnd.google-apps.folder",
+            "size": null,
+            "sizeLabel": "",
+            "createdTime": "2026-05-27T15:44:46.222Z",
+            "modifiedTime": "2026-05-27T15:44:46.222Z",
+            "webViewLink": "https://drive.google.com/drive/folders/1xf628JPnODubr5cBh-G5up9LW5tgm3-Y",
+            "parents": [
+              "1CcQkSER1mFLhJ7FKrbnGCF_iFovyOHvR"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1cMd9gyeyGGa3U7sxvcFm9wszH2_yrHP4",
+            "name": "08 Blog Candidates",
+            "mimeType": "application/vnd.google-apps.folder",
+            "size": null,
+            "sizeLabel": "",
+            "createdTime": "2026-05-27T15:44:45.641Z",
+            "modifiedTime": "2026-05-27T15:44:45.641Z",
+            "webViewLink": "https://drive.google.com/drive/folders/1cMd9gyeyGGa3U7sxvcFm9wszH2_yrHP4",
+            "parents": [
+              "1CcQkSER1mFLhJ7FKrbnGCF_iFovyOHvR"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1AEkW8aacuBEAw6Y0F3fSaG8kAW2imbMS",
+            "name": "07 Social Candidates",
+            "mimeType": "application/vnd.google-apps.folder",
+            "size": null,
+            "sizeLabel": "",
+            "createdTime": "2026-05-27T15:44:45.052Z",
+            "modifiedTime": "2026-05-27T15:44:45.052Z",
+            "webViewLink": "https://drive.google.com/drive/folders/1AEkW8aacuBEAw6Y0F3fSaG8kAW2imbMS",
+            "parents": [
+              "1CcQkSER1mFLhJ7FKrbnGCF_iFovyOHvR"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1ed3iGjNGWRB_JC2PGvJNnkpciVSDBEgn",
+            "name": "06 Newsletter Candidates",
+            "mimeType": "application/vnd.google-apps.folder",
+            "size": null,
+            "sizeLabel": "",
+            "createdTime": "2026-05-27T15:44:44.474Z",
+            "modifiedTime": "2026-05-27T15:44:44.474Z",
+            "webViewLink": "https://drive.google.com/drive/folders/1ed3iGjNGWRB_JC2PGvJNnkpciVSDBEgn",
+            "parents": [
+              "1CcQkSER1mFLhJ7FKrbnGCF_iFovyOHvR"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1qkryUkLHuXUVyLLzzIV5wW3Wqv7G1gLA",
+            "name": "05 WhatsApp Ready",
+            "mimeType": "application/vnd.google-apps.folder",
+            "size": null,
+            "sizeLabel": "",
+            "createdTime": "2026-05-27T15:44:43.895Z",
+            "modifiedTime": "2026-05-27T15:44:43.895Z",
+            "webViewLink": "https://drive.google.com/drive/folders/1qkryUkLHuXUVyLLzzIV5wW3Wqv7G1gLA",
+            "parents": [
+              "1CcQkSER1mFLhJ7FKrbnGCF_iFovyOHvR"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1QvbWw4ULndGjPBVMMqQKTdUmWKdyhPh-",
+            "name": "03 Transcribed",
+            "mimeType": "application/vnd.google-apps.folder",
+            "size": null,
+            "sizeLabel": "",
+            "createdTime": "2026-05-27T15:44:42.743Z",
+            "modifiedTime": "2026-05-27T15:44:42.743Z",
+            "webViewLink": "https://drive.google.com/drive/folders/1QvbWw4ULndGjPBVMMqQKTdUmWKdyhPh-",
+            "parents": [
+              "1CcQkSER1mFLhJ7FKrbnGCF_iFovyOHvR"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          }
+        ],
+        "recentItemCount": 8
+      },
+      "10 Approved": {
+        "folder": {
+          "id": "1oSQOfr1Yjo3_BbCoEozyLsamzSz1rh_2",
+          "name": "30 Approved Website Assets",
+          "mimeType": "application/vnd.google-apps.folder",
+          "size": null,
+          "sizeLabel": "",
+          "createdTime": "2026-05-27T15:44:46.778Z",
+          "modifiedTime": "2026-06-05T10:23:12.706Z",
+          "webViewLink": "https://drive.google.com/drive/folders/1oSQOfr1Yjo3_BbCoEozyLsamzSz1rh_2",
+          "parents": [
+            "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC"
+          ],
+          "driveId": null,
+          "owners": [
+            {
+              "displayName": "office p",
+              "emailAddress": "office@bneineviimacademy.org"
+            }
+          ],
+          "shortcutDetails": null
+        },
+        "recentItems": [
+          {
+            "id": "1XitQ9aabxRSVI0FHW0VAAbv_Xamy_ACu",
+            "name": "20260528_122314.jpg",
+            "mimeType": "image/jpeg",
+            "size": "5439439",
+            "sizeLabel": "5 MB",
+            "createdTime": "2026-05-31T10:40:42.606Z",
+            "modifiedTime": "2026-05-31T10:40:42.645Z",
+            "webViewLink": "https://drive.google.com/file/d/1XitQ9aabxRSVI0FHW0VAAbv_Xamy_ACu/view?usp=drivesdk",
+            "parents": [
+              "1oSQOfr1Yjo3_BbCoEozyLsamzSz1rh_2"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1_Actrq8LeR6zX40Ax1yFKYWLw6fCSNZP",
+            "name": "20260528_123610.jpg",
+            "mimeType": "image/jpeg",
+            "size": "4720946",
+            "sizeLabel": "5 MB",
+            "createdTime": "2026-05-31T10:40:19.853Z",
+            "modifiedTime": "2026-05-31T10:40:19.887Z",
+            "webViewLink": "https://drive.google.com/file/d/1_Actrq8LeR6zX40Ax1yFKYWLw6fCSNZP/view?usp=drivesdk",
+            "parents": [
+              "1oSQOfr1Yjo3_BbCoEozyLsamzSz1rh_2"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1OMN6yCCqOSMmhzITgWlzqbEdjSr2QVt2",
+            "name": "20260528_124630.jpg",
+            "mimeType": "image/jpeg",
+            "size": "4979980",
+            "sizeLabel": "5 MB",
+            "createdTime": "2026-05-31T10:40:05.466Z",
+            "modifiedTime": "2026-05-31T10:40:05.705Z",
+            "webViewLink": "https://drive.google.com/file/d/1OMN6yCCqOSMmhzITgWlzqbEdjSr2QVt2/view?usp=drivesdk",
+            "parents": [
+              "1oSQOfr1Yjo3_BbCoEozyLsamzSz1rh_2"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          }
+        ],
+        "recentItemCount": 3
+      },
+      "11 Published": {
+        "folder": {
+          "id": "1oSQOfr1Yjo3_BbCoEozyLsamzSz1rh_2",
+          "name": "30 Approved Website Assets",
+          "mimeType": "application/vnd.google-apps.folder",
+          "size": null,
+          "sizeLabel": "",
+          "createdTime": "2026-05-27T15:44:46.778Z",
+          "modifiedTime": "2026-06-05T10:23:12.706Z",
+          "webViewLink": "https://drive.google.com/drive/folders/1oSQOfr1Yjo3_BbCoEozyLsamzSz1rh_2",
+          "parents": [
+            "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC"
+          ],
+          "driveId": null,
+          "owners": [
+            {
+              "displayName": "office p",
+              "emailAddress": "office@bneineviimacademy.org"
+            }
+          ],
+          "shortcutDetails": null
+        },
+        "recentItems": [
+          {
+            "id": "1XitQ9aabxRSVI0FHW0VAAbv_Xamy_ACu",
+            "name": "20260528_122314.jpg",
+            "mimeType": "image/jpeg",
+            "size": "5439439",
+            "sizeLabel": "5 MB",
+            "createdTime": "2026-05-31T10:40:42.606Z",
+            "modifiedTime": "2026-05-31T10:40:42.645Z",
+            "webViewLink": "https://drive.google.com/file/d/1XitQ9aabxRSVI0FHW0VAAbv_Xamy_ACu/view?usp=drivesdk",
+            "parents": [
+              "1oSQOfr1Yjo3_BbCoEozyLsamzSz1rh_2"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1_Actrq8LeR6zX40Ax1yFKYWLw6fCSNZP",
+            "name": "20260528_123610.jpg",
+            "mimeType": "image/jpeg",
+            "size": "4720946",
+            "sizeLabel": "5 MB",
+            "createdTime": "2026-05-31T10:40:19.853Z",
+            "modifiedTime": "2026-05-31T10:40:19.887Z",
+            "webViewLink": "https://drive.google.com/file/d/1_Actrq8LeR6zX40Ax1yFKYWLw6fCSNZP/view?usp=drivesdk",
+            "parents": [
+              "1oSQOfr1Yjo3_BbCoEozyLsamzSz1rh_2"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          },
+          {
+            "id": "1OMN6yCCqOSMmhzITgWlzqbEdjSr2QVt2",
+            "name": "20260528_124630.jpg",
+            "mimeType": "image/jpeg",
+            "size": "4979980",
+            "sizeLabel": "5 MB",
+            "createdTime": "2026-05-31T10:40:05.466Z",
+            "modifiedTime": "2026-05-31T10:40:05.705Z",
+            "webViewLink": "https://drive.google.com/file/d/1OMN6yCCqOSMmhzITgWlzqbEdjSr2QVt2/view?usp=drivesdk",
+            "parents": [
+              "1oSQOfr1Yjo3_BbCoEozyLsamzSz1rh_2"
+            ],
+            "driveId": null,
+            "owners": [
+              {
+                "displayName": "office p",
+                "emailAddress": "office@bneineviimacademy.org"
+              }
+            ],
+            "shortcutDetails": null
+          }
+        ],
+        "recentItemCount": 3
+      },
+      "99 Failed": {
+        "folder": {
+          "id": "18eG-JOfyrCJmNOPFiFVED3WTwrveJfSS",
+          "name": "90 Failed - Needs Review",
+          "mimeType": "application/vnd.google-apps.folder",
+          "size": null,
+          "sizeLabel": "",
+          "createdTime": "2026-05-27T15:44:48.069Z",
+          "modifiedTime": "2026-06-05T10:23:14.042Z",
+          "webViewLink": "https://drive.google.com/drive/folders/18eG-JOfyrCJmNOPFiFVED3WTwrveJfSS",
+          "parents": [
+            "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC"
+          ],
+          "driveId": null,
+          "owners": [
+            {
+              "displayName": "office p",
+              "emailAddress": "office@bneineviimacademy.org"
+            }
+          ],
+          "shortcutDetails": null
+        },
+        "recentItems": [],
+        "recentItemCount": 0
+      }
+    }
+  },
+  "inventory": {
+    "topLevelItems": [
+      {
+        "id": "1t_HvW4CV_mtiZs2YokvcnxqZvVkN3ezv",
+        "name": "01 Raw Intake",
+        "mimeType": "application/vnd.google-apps.shortcut",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2026-05-27T15:49:58.994Z",
+        "modifiedTime": "2026-05-27T15:49:58.994Z",
+        "webViewLink": "https://drive.google.com/file/d/1t_HvW4CV_mtiZs2YokvcnxqZvVkN3ezv/view?usp=drivesdk",
+        "parents": [
+          "0ALM4jp4XIf7AUk9PVA"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": {
+          "targetId": "1dqOpnE6RH7u3DMgze3M2srnFEohNR6Tg",
+          "targetMimeType": "application/vnd.google-apps.folder"
+        }
+      },
+      {
+        "id": "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC",
+        "name": "BNA V2",
+        "mimeType": "application/vnd.google-apps.folder",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2026-05-27T15:44:40.658Z",
+        "modifiedTime": "2026-05-27T15:44:40.658Z",
+        "webViewLink": "https://drive.google.com/drive/folders/14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC",
+        "parents": [
+          "0ALM4jp4XIf7AUk9PVA"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1_oYr4b1rwM2k5LhQkK7YeBgj2NwW8xBYWq09Yl0_0UNdEKLrivaqr_N0yPMZO5uY2LXFHgNu",
+        "name": "Classroom",
+        "mimeType": "application/vnd.google-apps.folder",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2025-10-26T12:16:52.140Z",
+        "modifiedTime": "2025-10-26T12:16:52.140Z",
+        "webViewLink": "https://drive.google.com/drive/folders/1_oYr4b1rwM2k5LhQkK7YeBgj2NwW8xBYWq09Yl0_0UNdEKLrivaqr_N0yPMZO5uY2LXFHgNu",
+        "parents": [
+          "0ALM4jp4XIf7AUk9PVA"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1X35Y3d8OCj22bejNsbd6gzI4ASXdy_dgUS0P91Pw_MM",
+        "name": "marketing yamm wattap spread sheat",
+        "mimeType": "application/vnd.google-apps.spreadsheet",
+        "size": "1024",
+        "sizeLabel": "1 KB",
+        "createdTime": "2025-07-20T14:42:54.429Z",
+        "modifiedTime": "2025-08-14T13:34:29.800Z",
+        "webViewLink": "https://docs.google.com/spreadsheets/d/1X35Y3d8OCj22bejNsbd6gzI4ASXdy_dgUS0P91Pw_MM/edit?usp=drivesdk",
+        "parents": [
+          "0ALM4jp4XIf7AUk9PVA"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1myzGNKSaezsrwanj5hkRsWjQcvVkwe3_JJ2qhLpi4SU",
+        "name": "Project Facilitator Role",
+        "mimeType": "application/vnd.google-apps.document",
+        "size": "12143",
+        "sizeLabel": "12 KB",
+        "createdTime": "2025-08-11T13:14:09.055Z",
+        "modifiedTime": "2025-08-11T13:14:09.055Z",
+        "webViewLink": "https://docs.google.com/document/d/1myzGNKSaezsrwanj5hkRsWjQcvVkwe3_JJ2qhLpi4SU/edit?usp=drivesdk",
+        "parents": [
+          "0ALM4jp4XIf7AUk9PVA"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "131RcEEye2qhrumhCfV8P2k0ma_1c7XQvAO-rn24Zt9U",
+        "name": "Secular studies blog",
+        "mimeType": "application/vnd.google-apps.document",
+        "size": "6434",
+        "sizeLabel": "6 KB",
+        "createdTime": "2025-08-12T12:52:14.376Z",
+        "modifiedTime": "2025-08-12T13:02:00.059Z",
+        "webViewLink": "https://docs.google.com/document/d/131RcEEye2qhrumhCfV8P2k0ma_1c7XQvAO-rn24Zt9U/edit?usp=drivesdk",
+        "parents": [
+          "0ALM4jp4XIf7AUk9PVA"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      }
+    ],
+    "visibleFolderCount": 19,
+    "visibleFolders": [
+      {
+        "id": "1ZzyZ90rcxkAsGXRFrRm7PeQSfFoDwKIt",
+        "name": "GitHub Canonical - Drive Brand Mirror (Deprecated)",
+        "mimeType": "application/vnd.google-apps.folder",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2026-05-27T15:44:48.680Z",
+        "modifiedTime": "2026-06-05T10:23:40.748Z",
+        "webViewLink": "https://drive.google.com/drive/folders/1ZzyZ90rcxkAsGXRFrRm7PeQSfFoDwKIt",
+        "parents": [
+          "1CcQkSER1mFLhJ7FKrbnGCF_iFovyOHvR"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1CcQkSER1mFLhJ7FKrbnGCF_iFovyOHvR",
+        "name": "_Archive - Legacy Pipeline Folders",
+        "mimeType": "application/vnd.google-apps.folder",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2026-06-05T10:23:15.223Z",
+        "modifiedTime": "2026-06-05T10:23:15.223Z",
+        "webViewLink": "https://drive.google.com/drive/folders/1CcQkSER1mFLhJ7FKrbnGCF_iFovyOHvR",
+        "parents": [
+          "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "18eG-JOfyrCJmNOPFiFVED3WTwrveJfSS",
+        "name": "90 Failed - Needs Review",
+        "mimeType": "application/vnd.google-apps.folder",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2026-05-27T15:44:48.069Z",
+        "modifiedTime": "2026-06-05T10:23:14.042Z",
+        "webViewLink": "https://drive.google.com/drive/folders/18eG-JOfyrCJmNOPFiFVED3WTwrveJfSS",
+        "parents": [
+          "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1oSQOfr1Yjo3_BbCoEozyLsamzSz1rh_2",
+        "name": "30 Approved Website Assets",
+        "mimeType": "application/vnd.google-apps.folder",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2026-05-27T15:44:46.778Z",
+        "modifiedTime": "2026-06-05T10:23:12.706Z",
+        "webViewLink": "https://drive.google.com/drive/folders/1oSQOfr1Yjo3_BbCoEozyLsamzSz1rh_2",
+        "parents": [
+          "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE",
+        "name": "20 Processed Recordings - Source Media",
+        "mimeType": "application/vnd.google-apps.folder",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2026-05-27T15:44:43.326Z",
+        "modifiedTime": "2026-06-05T10:23:11.481Z",
+        "webViewLink": "https://drive.google.com/drive/folders/1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE",
+        "parents": [
+          "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1mUJwuPNEpdGZMFPznky6y874WTb3E_Dt",
+        "name": "10 Processing - Temporary",
+        "mimeType": "application/vnd.google-apps.folder",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2026-05-27T15:44:42.055Z",
+        "modifiedTime": "2026-06-05T10:23:10.295Z",
+        "webViewLink": "https://drive.google.com/drive/folders/1mUJwuPNEpdGZMFPznky6y874WTb3E_Dt",
+        "parents": [
+          "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1dqOpnE6RH7u3DMgze3M2srnFEohNR6Tg",
+        "name": "00 Upload Here - Raw Media Intake",
+        "mimeType": "application/vnd.google-apps.folder",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2026-05-27T15:44:41.262Z",
+        "modifiedTime": "2026-06-05T10:23:09.127Z",
+        "webViewLink": "https://drive.google.com/drive/folders/1dqOpnE6RH7u3DMgze3M2srnFEohNR6Tg",
+        "parents": [
+          "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1aiCzZ-lKEKSWTYfOMvXoO4YE56cVaK23",
+        "name": "00 Upload Here - Website Images",
+        "mimeType": "application/vnd.google-apps.folder",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2026-06-03T11:16:27.198Z",
+        "modifiedTime": "2026-06-05T10:23:07.873Z",
+        "webViewLink": "https://drive.google.com/drive/folders/1aiCzZ-lKEKSWTYfOMvXoO4YE56cVaK23",
+        "parents": [
+          "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1N9qpyRY13Jq7sfJFtzUzdvHBHFFaDJ-7",
+        "name": "Platform Memory",
+        "mimeType": "application/vnd.google-apps.folder",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2026-05-27T17:10:32.541Z",
+        "modifiedTime": "2026-05-27T17:10:32.541Z",
+        "webViewLink": "https://drive.google.com/drive/folders/1N9qpyRY13Jq7sfJFtzUzdvHBHFFaDJ-7",
+        "parents": [
+          "1ZzyZ90rcxkAsGXRFrRm7PeQSfFoDwKIt"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1fA3j3bWctqHPAxfCvM3t3dNLJxuujCFB",
+        "name": "11 Published",
+        "mimeType": "application/vnd.google-apps.folder",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2026-05-27T15:44:47.473Z",
+        "modifiedTime": "2026-05-27T15:44:47.473Z",
+        "webViewLink": "https://drive.google.com/drive/folders/1fA3j3bWctqHPAxfCvM3t3dNLJxuujCFB",
+        "parents": [
+          "1CcQkSER1mFLhJ7FKrbnGCF_iFovyOHvR"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1xf628JPnODubr5cBh-G5up9LW5tgm3-Y",
+        "name": "09 Brand Kit Suggestions",
+        "mimeType": "application/vnd.google-apps.folder",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2026-05-27T15:44:46.222Z",
+        "modifiedTime": "2026-05-27T15:44:46.222Z",
+        "webViewLink": "https://drive.google.com/drive/folders/1xf628JPnODubr5cBh-G5up9LW5tgm3-Y",
+        "parents": [
+          "1CcQkSER1mFLhJ7FKrbnGCF_iFovyOHvR"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1cMd9gyeyGGa3U7sxvcFm9wszH2_yrHP4",
+        "name": "08 Blog Candidates",
+        "mimeType": "application/vnd.google-apps.folder",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2026-05-27T15:44:45.641Z",
+        "modifiedTime": "2026-05-27T15:44:45.641Z",
+        "webViewLink": "https://drive.google.com/drive/folders/1cMd9gyeyGGa3U7sxvcFm9wszH2_yrHP4",
+        "parents": [
+          "1CcQkSER1mFLhJ7FKrbnGCF_iFovyOHvR"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1AEkW8aacuBEAw6Y0F3fSaG8kAW2imbMS",
+        "name": "07 Social Candidates",
+        "mimeType": "application/vnd.google-apps.folder",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2026-05-27T15:44:45.052Z",
+        "modifiedTime": "2026-05-27T15:44:45.052Z",
+        "webViewLink": "https://drive.google.com/drive/folders/1AEkW8aacuBEAw6Y0F3fSaG8kAW2imbMS",
+        "parents": [
+          "1CcQkSER1mFLhJ7FKrbnGCF_iFovyOHvR"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1ed3iGjNGWRB_JC2PGvJNnkpciVSDBEgn",
+        "name": "06 Newsletter Candidates",
+        "mimeType": "application/vnd.google-apps.folder",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2026-05-27T15:44:44.474Z",
+        "modifiedTime": "2026-05-27T15:44:44.474Z",
+        "webViewLink": "https://drive.google.com/drive/folders/1ed3iGjNGWRB_JC2PGvJNnkpciVSDBEgn",
+        "parents": [
+          "1CcQkSER1mFLhJ7FKrbnGCF_iFovyOHvR"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1qkryUkLHuXUVyLLzzIV5wW3Wqv7G1gLA",
+        "name": "05 WhatsApp Ready",
+        "mimeType": "application/vnd.google-apps.folder",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2026-05-27T15:44:43.895Z",
+        "modifiedTime": "2026-05-27T15:44:43.895Z",
+        "webViewLink": "https://drive.google.com/drive/folders/1qkryUkLHuXUVyLLzzIV5wW3Wqv7G1gLA",
+        "parents": [
+          "1CcQkSER1mFLhJ7FKrbnGCF_iFovyOHvR"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1QvbWw4ULndGjPBVMMqQKTdUmWKdyhPh-",
+        "name": "03 Transcribed",
+        "mimeType": "application/vnd.google-apps.folder",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2026-05-27T15:44:42.743Z",
+        "modifiedTime": "2026-05-27T15:44:42.743Z",
+        "webViewLink": "https://drive.google.com/drive/folders/1QvbWw4ULndGjPBVMMqQKTdUmWKdyhPh-",
+        "parents": [
+          "1CcQkSER1mFLhJ7FKrbnGCF_iFovyOHvR"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC",
+        "name": "BNA V2",
+        "mimeType": "application/vnd.google-apps.folder",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2026-05-27T15:44:40.658Z",
+        "modifiedTime": "2026-05-27T15:44:40.658Z",
+        "webViewLink": "https://drive.google.com/drive/folders/14tkntIFhvyKn0ryVa1GgK4GyAB1sxUNC",
+        "parents": [
+          "0ALM4jp4XIf7AUk9PVA"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1vuysvBAjrT-3L9hWSTN9C4BnenNhK-otrLjYkMy1b5F792u-4Ro7SYRf5ioT4R5TxtFWI5lv",
+        "name": "chumash hybrid",
+        "mimeType": "application/vnd.google-apps.folder",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2025-10-26T12:16:52.160Z",
+        "modifiedTime": "2025-10-26T12:16:52.160Z",
+        "webViewLink": "https://drive.google.com/drive/folders/1vuysvBAjrT-3L9hWSTN9C4BnenNhK-otrLjYkMy1b5F792u-4Ro7SYRf5ioT4R5TxtFWI5lv",
+        "parents": [
+          "1_oYr4b1rwM2k5LhQkK7YeBgj2NwW8xBYWq09Yl0_0UNdEKLrivaqr_N0yPMZO5uY2LXFHgNu"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1_oYr4b1rwM2k5LhQkK7YeBgj2NwW8xBYWq09Yl0_0UNdEKLrivaqr_N0yPMZO5uY2LXFHgNu",
+        "name": "Classroom",
+        "mimeType": "application/vnd.google-apps.folder",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2025-10-26T12:16:52.140Z",
+        "modifiedTime": "2025-10-26T12:16:52.140Z",
+        "webViewLink": "https://drive.google.com/drive/folders/1_oYr4b1rwM2k5LhQkK7YeBgj2NwW8xBYWq09Yl0_0UNdEKLrivaqr_N0yPMZO5uY2LXFHgNu",
+        "parents": [
+          "0ALM4jp4XIf7AUk9PVA"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      }
+    ],
+    "recentFiles": [
+      {
+        "id": "1KzRBWxL9Vs2xPuZ_E9bJcemou_fbQyct",
+        "name": "20260604_191840.mp4",
+        "mimeType": "video/mp4",
+        "size": "970142294",
+        "sizeLabel": "925 MB",
+        "createdTime": "2026-06-04T16:37:29.028Z",
+        "modifiedTime": "2026-06-04T16:37:33.895Z",
+        "webViewLink": "https://drive.google.com/file/d/1KzRBWxL9Vs2xPuZ_E9bJcemou_fbQyct/view?usp=drivesdk",
+        "parents": [
+          "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1TOljauTdO8xIZXS9xbRrbjIgDouNdeIa",
+        "name": "Voice 260604_095939.m4a",
+        "mimeType": "audio/mp4",
+        "size": "179321039",
+        "sizeLabel": "171 MB",
+        "createdTime": "2026-06-04T10:07:48.068Z",
+        "modifiedTime": "2026-06-04T10:07:49.075Z",
+        "webViewLink": "https://drive.google.com/file/d/1TOljauTdO8xIZXS9xbRrbjIgDouNdeIa/view?usp=drivesdk",
+        "parents": [
+          "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1_b1KIucxXMUCFvaMjJMjzeIQAPg1J5Y-",
+        "name": "Learning pool.m4a",
+        "mimeType": "audio/mp4",
+        "size": "136912350",
+        "sizeLabel": "131 MB",
+        "createdTime": "2026-06-03T10:04:13.630Z",
+        "modifiedTime": "2026-06-03T10:04:13.962Z",
+        "webViewLink": "https://drive.google.com/file/d/1_b1KIucxXMUCFvaMjJMjzeIQAPg1J5Y-/view?usp=drivesdk",
+        "parents": [
+          "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1JvnCjN-gISK_27O1qVJ6iRZU-POi5u5J",
+        "name": "Learning pool.m4a",
+        "mimeType": "audio/mp4",
+        "size": "136912350",
+        "sizeLabel": "131 MB",
+        "createdTime": "2026-06-03T10:04:02.482Z",
+        "modifiedTime": "2026-06-03T10:04:03.123Z",
+        "webViewLink": "https://drive.google.com/file/d/1JvnCjN-gISK_27O1qVJ6iRZU-POi5u5J/view?usp=drivesdk",
+        "parents": [
+          "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1WJHlFM8LzxlgPvvQJxDo45UBDWl474nG",
+        "name": "Voice 260601_121819.m4a",
+        "mimeType": "audio/mp4",
+        "size": "37679226",
+        "sizeLabel": "36 MB",
+        "createdTime": "2026-06-01T12:30:44.807Z",
+        "modifiedTime": "2026-06-01T12:30:45.069Z",
+        "webViewLink": "https://drive.google.com/file/d/1WJHlFM8LzxlgPvvQJxDo45UBDWl474nG/view?usp=drivesdk",
+        "parents": [
+          "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "18itNzABgIdqFFW8sreIwqwtS2eM0Og4o",
+        "name": "Voice 260601_101009.m4a",
+        "mimeType": "audio/mp4",
+        "size": "61903429",
+        "sizeLabel": "59 MB",
+        "createdTime": "2026-06-01T12:30:44.305Z",
+        "modifiedTime": "2026-06-01T12:30:44.682Z",
+        "webViewLink": "https://drive.google.com/file/d/18itNzABgIdqFFW8sreIwqwtS2eM0Og4o/view?usp=drivesdk",
+        "parents": [
+          "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1gD9dDBwTOuTITT6q9Hq7Oj8J0aVs-Fed",
+        "name": "Meeting rabbi sheller.m4a",
+        "mimeType": "audio/mp4",
+        "size": "57598116",
+        "sizeLabel": "55 MB",
+        "createdTime": "2026-05-31T18:26:28.087Z",
+        "modifiedTime": "2026-05-31T18:26:28.521Z",
+        "webViewLink": "https://drive.google.com/file/d/1gD9dDBwTOuTITT6q9Hq7Oj8J0aVs-Fed/view?usp=drivesdk",
+        "parents": [
+          "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1SpRcKcN0EaFuliaWz4dGMR-Nw4u1S23n",
+        "name": "20260531_185700.mp4",
+        "mimeType": "video/mp4",
+        "size": "281411798",
+        "sizeLabel": "268 MB",
+        "createdTime": "2026-05-31T16:03:44.006Z",
+        "modifiedTime": "2026-05-31T16:03:44.907Z",
+        "webViewLink": "https://drive.google.com/file/d/1SpRcKcN0EaFuliaWz4dGMR-Nw4u1S23n/view?usp=drivesdk",
+        "parents": [
+          "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1OJxX8nUmerPJ6YoCTNs1OaP6Dzydp_Dx",
+        "name": "20260531_185700.mp4",
+        "mimeType": "video/mp4",
+        "size": "281411798",
+        "sizeLabel": "268 MB",
+        "createdTime": "2026-05-31T16:03:37.740Z",
+        "modifiedTime": "2026-05-31T16:03:38.939Z",
+        "webViewLink": "https://drive.google.com/file/d/1OJxX8nUmerPJ6YoCTNs1OaP6Dzydp_Dx/view?usp=drivesdk",
+        "parents": [
+          "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1XitQ9aabxRSVI0FHW0VAAbv_Xamy_ACu",
+        "name": "20260528_122314.jpg",
+        "mimeType": "image/jpeg",
+        "size": "5439439",
+        "sizeLabel": "5 MB",
+        "createdTime": "2026-05-31T10:40:42.606Z",
+        "modifiedTime": "2026-05-31T10:40:42.645Z",
+        "webViewLink": "https://drive.google.com/file/d/1XitQ9aabxRSVI0FHW0VAAbv_Xamy_ACu/view?usp=drivesdk",
+        "parents": [
+          "1oSQOfr1Yjo3_BbCoEozyLsamzSz1rh_2"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1_Actrq8LeR6zX40Ax1yFKYWLw6fCSNZP",
+        "name": "20260528_123610.jpg",
+        "mimeType": "image/jpeg",
+        "size": "4720946",
+        "sizeLabel": "5 MB",
+        "createdTime": "2026-05-31T10:40:19.853Z",
+        "modifiedTime": "2026-05-31T10:40:19.887Z",
+        "webViewLink": "https://drive.google.com/file/d/1_Actrq8LeR6zX40Ax1yFKYWLw6fCSNZP/view?usp=drivesdk",
+        "parents": [
+          "1oSQOfr1Yjo3_BbCoEozyLsamzSz1rh_2"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1OMN6yCCqOSMmhzITgWlzqbEdjSr2QVt2",
+        "name": "20260528_124630.jpg",
+        "mimeType": "image/jpeg",
+        "size": "4979980",
+        "sizeLabel": "5 MB",
+        "createdTime": "2026-05-31T10:40:05.466Z",
+        "modifiedTime": "2026-05-31T10:40:05.705Z",
+        "webViewLink": "https://drive.google.com/file/d/1OMN6yCCqOSMmhzITgWlzqbEdjSr2QVt2/view?usp=drivesdk",
+        "parents": [
+          "1oSQOfr1Yjo3_BbCoEozyLsamzSz1rh_2"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1NiAOXkTZlWFMuT1pUazCFz2Hk2-6hHRK",
+        "name": "Weber torah.m4a",
+        "mimeType": "audio/mp4",
+        "size": "98978262",
+        "sizeLabel": "94 MB",
+        "createdTime": "2026-05-28T15:10:23.403Z",
+        "modifiedTime": "2026-05-28T15:10:23.794Z",
+        "webViewLink": "https://drive.google.com/file/d/1NiAOXkTZlWFMuT1pUazCFz2Hk2-6hHRK/view?usp=drivesdk",
+        "parents": [
+          "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1VxVqxphPEeF8LSyT1HIpyxCSAQ0Sc8m2j6zVtUhMOWs",
+        "name": "Facebook Approved Examples",
+        "mimeType": "application/vnd.google-apps.document",
+        "size": "1024",
+        "sizeLabel": "1 KB",
+        "createdTime": "2026-05-27T17:10:40.014Z",
+        "modifiedTime": "2026-05-27T17:13:29.699Z",
+        "webViewLink": "https://docs.google.com/document/d/1VxVqxphPEeF8LSyT1HIpyxCSAQ0Sc8m2j6zVtUhMOWs/edit?usp=drivesdk",
+        "parents": [
+          "1N9qpyRY13Jq7sfJFtzUzdvHBHFFaDJ-7"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1DxbNMD4WZ2sDxWjXrwxqBZKfX3cpv_29pnXmZJJCUH0",
+        "name": "Facebook Prompt",
+        "mimeType": "application/vnd.google-apps.document",
+        "size": "1024",
+        "sizeLabel": "1 KB",
+        "createdTime": "2026-05-27T17:10:37.873Z",
+        "modifiedTime": "2026-05-27T17:13:26.711Z",
+        "webViewLink": "https://docs.google.com/document/d/1DxbNMD4WZ2sDxWjXrwxqBZKfX3cpv_29pnXmZJJCUH0/edit?usp=drivesdk",
+        "parents": [
+          "1N9qpyRY13Jq7sfJFtzUzdvHBHFFaDJ-7"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1ulgVXY0SOz90pFaJZ7cfR3v30O5BioWroJN1216-iNE",
+        "name": "WhatsApp Approved Examples",
+        "mimeType": "application/vnd.google-apps.document",
+        "size": "1024",
+        "sizeLabel": "1 KB",
+        "createdTime": "2026-05-27T17:10:35.754Z",
+        "modifiedTime": "2026-05-27T17:13:23.916Z",
+        "webViewLink": "https://docs.google.com/document/d/1ulgVXY0SOz90pFaJZ7cfR3v30O5BioWroJN1216-iNE/edit?usp=drivesdk",
+        "parents": [
+          "1N9qpyRY13Jq7sfJFtzUzdvHBHFFaDJ-7"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1y0lJhMljMpAXdtLyVU3BaVBcJ1wWQ0ACj7ovbrF2GfY",
+        "name": "WhatsApp Prompt",
+        "mimeType": "application/vnd.google-apps.document",
+        "size": "1024",
+        "sizeLabel": "1 KB",
+        "createdTime": "2026-05-27T17:10:33.916Z",
+        "modifiedTime": "2026-05-27T17:13:21.802Z",
+        "webViewLink": "https://docs.google.com/document/d/1y0lJhMljMpAXdtLyVU3BaVBcJ1wWQ0ACj7ovbrF2GfY/edit?usp=drivesdk",
+        "parents": [
+          "1N9qpyRY13Jq7sfJFtzUzdvHBHFFaDJ-7"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1cKOCzys1rwOjvzzveqlRgVoun_3ZTbBDqghV8b41MAY",
+        "name": "07 Brand Kit Suggestions Inbox",
+        "mimeType": "application/vnd.google-apps.document",
+        "size": "1024",
+        "sizeLabel": "1 KB",
+        "createdTime": "2026-05-27T15:44:56.551Z",
+        "modifiedTime": "2026-05-27T17:13:18.896Z",
+        "webViewLink": "https://docs.google.com/document/d/1cKOCzys1rwOjvzzveqlRgVoun_3ZTbBDqghV8b41MAY/edit?usp=drivesdk",
+        "parents": [
+          "1ZzyZ90rcxkAsGXRFrRm7PeQSfFoDwKIt"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1VeIg-Lbqxh_LHN1TuPT_AISaVufj5q_5krwNIvAmPzI",
+        "name": "06 Phrases To Avoid",
+        "mimeType": "application/vnd.google-apps.document",
+        "size": "1024",
+        "sizeLabel": "1 KB",
+        "createdTime": "2026-05-27T15:44:55.353Z",
+        "modifiedTime": "2026-05-27T17:13:15.181Z",
+        "webViewLink": "https://docs.google.com/document/d/1VeIg-Lbqxh_LHN1TuPT_AISaVufj5q_5krwNIvAmPzI/edit?usp=drivesdk",
+        "parents": [
+          "1ZzyZ90rcxkAsGXRFrRm7PeQSfFoDwKIt"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1EEzQ6RFbGnn5f1-Gb3nQPM_IV24TLsm2QhgT1Tw2J74",
+        "name": "05 Phrases To Use",
+        "mimeType": "application/vnd.google-apps.document",
+        "size": "1024",
+        "sizeLabel": "1 KB",
+        "createdTime": "2026-05-27T15:44:54.241Z",
+        "modifiedTime": "2026-05-27T17:13:12.514Z",
+        "webViewLink": "https://docs.google.com/document/d/1EEzQ6RFbGnn5f1-Gb3nQPM_IV24TLsm2QhgT1Tw2J74/edit?usp=drivesdk",
+        "parents": [
+          "1ZzyZ90rcxkAsGXRFrRm7PeQSfFoDwKIt"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "15LtZ3IsEWkFcaWyeet7fbYRo76z4CZ6Rs3tlGOzoic4",
+        "name": "04 Student Growth Principles",
+        "mimeType": "application/vnd.google-apps.document",
+        "size": "1024",
+        "sizeLabel": "1 KB",
+        "createdTime": "2026-05-27T15:44:53.074Z",
+        "modifiedTime": "2026-05-27T17:13:09.456Z",
+        "webViewLink": "https://docs.google.com/document/d/15LtZ3IsEWkFcaWyeet7fbYRo76z4CZ6Rs3tlGOzoic4/edit?usp=drivesdk",
+        "parents": [
+          "1ZzyZ90rcxkAsGXRFrRm7PeQSfFoDwKIt"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1cUi6l73KKeVzXaGp9cm6m_PJHKhKdlfp8QsKadpli3w",
+        "name": "03 Parent Messaging",
+        "mimeType": "application/vnd.google-apps.document",
+        "size": "1024",
+        "sizeLabel": "1 KB",
+        "createdTime": "2026-05-27T15:44:51.879Z",
+        "modifiedTime": "2026-05-27T17:13:06.269Z",
+        "webViewLink": "https://docs.google.com/document/d/1cUi6l73KKeVzXaGp9cm6m_PJHKhKdlfp8QsKadpli3w/edit?usp=drivesdk",
+        "parents": [
+          "1ZzyZ90rcxkAsGXRFrRm7PeQSfFoDwKIt"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1KPN-Jsz2AoAQbJgm4R2IVRFvCI_O-HkZ7FLl_r-HszE",
+        "name": "02 Teaching Voice",
+        "mimeType": "application/vnd.google-apps.document",
+        "size": "1024",
+        "sizeLabel": "1 KB",
+        "createdTime": "2026-05-27T15:44:50.532Z",
+        "modifiedTime": "2026-05-27T17:13:02.366Z",
+        "webViewLink": "https://docs.google.com/document/d/1KPN-Jsz2AoAQbJgm4R2IVRFvCI_O-HkZ7FLl_r-HszE/edit?usp=drivesdk",
+        "parents": [
+          "1ZzyZ90rcxkAsGXRFrRm7PeQSfFoDwKIt"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1bjw6MfiKK6dZ3xuuLOIsvGx76PjADNarL-tl0kVCSJQ",
+        "name": "01 Core Beliefs",
+        "mimeType": "application/vnd.google-apps.document",
+        "size": "1024",
+        "sizeLabel": "1 KB",
+        "createdTime": "2026-05-27T15:44:49.306Z",
+        "modifiedTime": "2026-05-27T17:12:59.006Z",
+        "webViewLink": "https://docs.google.com/document/d/1bjw6MfiKK6dZ3xuuLOIsvGx76PjADNarL-tl0kVCSJQ/edit?usp=drivesdk",
+        "parents": [
+          "1ZzyZ90rcxkAsGXRFrRm7PeQSfFoDwKIt"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1AyobUeMFvtiLsBkELklYC5XxLTgJY9a__rREULGYyfA",
+        "name": "Newsletter Prompt",
+        "mimeType": "application/vnd.google-apps.document",
+        "size": "1024",
+        "sizeLabel": "1 KB",
+        "createdTime": "2026-05-27T17:10:46.736Z",
+        "modifiedTime": "2026-05-27T17:10:47.702Z",
+        "webViewLink": "https://docs.google.com/document/d/1AyobUeMFvtiLsBkELklYC5XxLTgJY9a__rREULGYyfA/edit?usp=drivesdk",
+        "parents": [
+          "1N9qpyRY13Jq7sfJFtzUzdvHBHFFaDJ-7"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1PmUSLKjBOGgE3BxluF5uanhJhQxRcS_2T9fnkMm7y-I",
+        "name": "Blog Prompt",
+        "mimeType": "application/vnd.google-apps.document",
+        "size": "1024",
+        "sizeLabel": "1 KB",
+        "createdTime": "2026-05-27T17:10:44.814Z",
+        "modifiedTime": "2026-05-27T17:10:45.650Z",
+        "webViewLink": "https://docs.google.com/document/d/1PmUSLKjBOGgE3BxluF5uanhJhQxRcS_2T9fnkMm7y-I/edit?usp=drivesdk",
+        "parents": [
+          "1N9qpyRY13Jq7sfJFtzUzdvHBHFFaDJ-7"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1asOjATEHimHjKQYg0CnW_aGd7IbOwRZ-fo2GAvyT2xY",
+        "name": "YouTube Prompt",
+        "mimeType": "application/vnd.google-apps.document",
+        "size": "1024",
+        "sizeLabel": "1 KB",
+        "createdTime": "2026-05-27T17:10:42.311Z",
+        "modifiedTime": "2026-05-27T17:10:43.251Z",
+        "webViewLink": "https://docs.google.com/document/d/1asOjATEHimHjKQYg0CnW_aGd7IbOwRZ-fo2GAvyT2xY/edit?usp=drivesdk",
+        "parents": [
+          "1N9qpyRY13Jq7sfJFtzUzdvHBHFFaDJ-7"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1uYmN8EUiiApnJOiwc2fYqUCs_nu-XrYt",
+        "name": "20260527_140157.mp4",
+        "mimeType": "video/mp4",
+        "size": "1801061943",
+        "sizeLabel": "2 GB",
+        "createdTime": "2026-05-27T15:51:34.094Z",
+        "modifiedTime": "2026-05-27T15:51:43.893Z",
+        "webViewLink": "https://drive.google.com/file/d/1uYmN8EUiiApnJOiwc2fYqUCs_nu-XrYt/view?usp=drivesdk",
+        "parents": [
+          "1FKHFLCiet_1p_uCyBH2ctDin8AcjInRE"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1t_HvW4CV_mtiZs2YokvcnxqZvVkN3ezv",
+        "name": "01 Raw Intake",
+        "mimeType": "application/vnd.google-apps.shortcut",
+        "size": null,
+        "sizeLabel": "",
+        "createdTime": "2026-05-27T15:49:58.994Z",
+        "modifiedTime": "2026-05-27T15:49:58.994Z",
+        "webViewLink": "https://drive.google.com/file/d/1t_HvW4CV_mtiZs2YokvcnxqZvVkN3ezv/view?usp=drivesdk",
+        "parents": [
+          "0ALM4jp4XIf7AUk9PVA"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": {
+          "targetId": "1dqOpnE6RH7u3DMgze3M2srnFEohNR6Tg",
+          "targetMimeType": "application/vnd.google-apps.folder"
+        }
+      },
+      {
+        "id": "1X35Y3d8OCj22bejNsbd6gzI4ASXdy_dgUS0P91Pw_MM",
+        "name": "marketing yamm wattap spread sheat",
+        "mimeType": "application/vnd.google-apps.spreadsheet",
+        "size": "1024",
+        "sizeLabel": "1 KB",
+        "createdTime": "2025-07-20T14:42:54.429Z",
+        "modifiedTime": "2025-08-14T13:34:29.800Z",
+        "webViewLink": "https://docs.google.com/spreadsheets/d/1X35Y3d8OCj22bejNsbd6gzI4ASXdy_dgUS0P91Pw_MM/edit?usp=drivesdk",
+        "parents": [
+          "0ALM4jp4XIf7AUk9PVA"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "131RcEEye2qhrumhCfV8P2k0ma_1c7XQvAO-rn24Zt9U",
+        "name": "Secular studies blog",
+        "mimeType": "application/vnd.google-apps.document",
+        "size": "6434",
+        "sizeLabel": "6 KB",
+        "createdTime": "2025-08-12T12:52:14.376Z",
+        "modifiedTime": "2025-08-12T13:02:00.059Z",
+        "webViewLink": "https://docs.google.com/document/d/131RcEEye2qhrumhCfV8P2k0ma_1c7XQvAO-rn24Zt9U/edit?usp=drivesdk",
+        "parents": [
+          "0ALM4jp4XIf7AUk9PVA"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "1myzGNKSaezsrwanj5hkRsWjQcvVkwe3_JJ2qhLpi4SU",
+        "name": "Project Facilitator Role",
+        "mimeType": "application/vnd.google-apps.document",
+        "size": "12143",
+        "sizeLabel": "12 KB",
+        "createdTime": "2025-08-11T13:14:09.055Z",
+        "modifiedTime": "2025-08-11T13:14:09.055Z",
+        "webViewLink": "https://docs.google.com/document/d/1myzGNKSaezsrwanj5hkRsWjQcvVkwe3_JJ2qhLpi4SU/edit?usp=drivesdk",
+        "parents": [
+          "0ALM4jp4XIf7AUk9PVA"
+        ],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "office p",
+            "emailAddress": "office@bneineviimacademy.org"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "19A8w4jNxLzwg4O_u439QmSvyB6qxAy9_IX1gvKt7Tm8",
+        "name": "Student Registration Form (Responses)",
+        "mimeType": "application/vnd.google-apps.spreadsheet",
+        "size": "2528",
+        "sizeLabel": "2 KB",
+        "createdTime": "2025-07-20T14:46:39.362Z",
+        "modifiedTime": "2025-08-07T15:17:22.650Z",
+        "webViewLink": "https://docs.google.com/spreadsheets/d/19A8w4jNxLzwg4O_u439QmSvyB6qxAy9_IX1gvKt7Tm8/edit?usp=drivesdk",
+        "parents": [],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "sdratler",
+            "emailAddress": "sdratler@gmail.com"
+          }
+        ],
+        "shortcutDetails": null
+      },
+      {
+        "id": "13KipfurrjmX8n8567_x7JSDM2x-kt06DQT5YJZXWW0Q",
+        "name": "Project Facilitator Role",
+        "mimeType": "application/vnd.google-apps.document",
+        "size": "12143",
+        "sizeLabel": "12 KB",
+        "createdTime": "2025-07-14T18:16:47.859Z",
+        "modifiedTime": "2025-07-14T19:04:27.615Z",
+        "webViewLink": "https://docs.google.com/document/d/13KipfurrjmX8n8567_x7JSDM2x-kt06DQT5YJZXWW0Q/edit?usp=drivesdk",
+        "parents": [],
+        "driveId": null,
+        "owners": [
+          {
+            "displayName": "sdratler",
+            "emailAddress": "sdratler@gmail.com"
+          }
+        ],
+        "shortcutDetails": null
+      }
+    ],
+    "ownerCounts": {
+      "office@bneineviimacademy.org": 51,
+      "sdratler@gmail.com": 2
+    }
+  }
+}

@@ -192,7 +192,7 @@ export function buildHelp(): BuiltMessage {
     '/dashboard — open the parent web app',
     '/help — this message',
     '',
-    'Anything you send that is not a slash command goes to Kimi first, with OpenAI as fallback. Ask things like "How did Menachem do this week?" or "What goals were rejected and why?"',
+    'Anything you send that is not a slash command uses OpenAI API by default, with development work routed to Codex and Kimi reserved as fallback. Ask things like "How did Menachem do this week?" or "What goals were rejected and why?"',
   ].join('\n');
   return { text };
 }

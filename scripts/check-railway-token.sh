@@ -1,45 +1,33 @@
 #!/bin/bash
-# Railway Token Health Check
+# Railway project-token health check.
+
+set -euo pipefail
 
 echo "=== Railway Token Audit ==="
 
 TOKEN_FILE=".secrets/railway-token.txt"
-CONFIG_FILE="$HOME/.railway/config.json"
+SERVICE="${RAILWAY_SERVICE_NAME:-skillful-motivation}"
+ENVIRONMENT="${RAILWAY_ENVIRONMENT:-production}"
 
-# Check if token file exists
 if [ -f "$TOKEN_FILE" ]; then
-    echo "✓ Token file exists"
-    TOKEN=$(cat "$TOKEN_FILE")
-    echo "Token: ${TOKEN:0:8}...${TOKEN: -4}"
+  echo "OK token file exists"
+  export RAILWAY_TOKEN="$(tr -d '\r\n' < "$TOKEN_FILE")"
 else
-    echo "✗ Token file missing at $TOKEN_FILE"
+  echo "ERROR token file missing at $TOKEN_FILE"
+  echo "Add a Railway project token there, or run railway login for account auth."
+  exit 1
 fi
 
-# Check if project is linked
 if [ -d ".railway" ]; then
-    echo "✓ Project has .railway directory"
+  echo "OK repo has .railway directory"
 else
-    echo "✗ Project not linked to Railway"
+  echo "NOTE no .railway directory found; project token mode can still work, but commands must specify service/environment."
 fi
 
-# Check if BNA is in global config
-if grep -q "BNA v2.0" "$CONFIG_FILE" 2>/dev/null; then
-    echo "✓ BNA project found in Railway config"
-else
-    echo "✗ BNA project NOT in Railway config"
-fi
-
-# Test token validity
 echo ""
-echo "Testing token validity..."
-export RAILWAY_TOKEN=$(cat "$TOKEN_FILE" 2>/dev/null)
-if railway status 2>&1 | grep -q "Project"; then
-    echo "✓ Token is VALID"
-else
-    echo "✗ Token is INVALID or EXPIRED"
-    echo ""
-    echo "To fix:"
-    echo "1. Run: railway login"
-    echo "2. Then: cat ~/.railway/config.json | grep token"
-    echo "3. Save token to: $TOKEN_FILE"
-fi
+echo "Testing project token against Railway..."
+railway status >/dev/null
+echo "OK token can read the Railway project"
+
+railway service status --service "$SERVICE" --environment "$ENVIRONMENT" >/dev/null
+echo "OK service target works: $SERVICE / $ENVIRONMENT"

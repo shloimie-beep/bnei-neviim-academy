@@ -9,8 +9,9 @@
  * X-Telegram-Bot-Api-Secret-Token against THAT parent's
  * TELEGRAM_WEBHOOK_SECRET_<PARENT>.
  *
- * Free-text (non slash-command) messages are routed to Kimi first and
- * OpenAI second, with the family Supabase as the only data source.
+ * Free-text (non slash-command) messages use the current BNA AI routing rule:
+ * OpenAI API for ordinary conversation, Codex for development work, and Kimi
+ * only as fallback/legacy behavior.
  *
  * Always returns 200 — Telegram retries non-2xx forever.
  */

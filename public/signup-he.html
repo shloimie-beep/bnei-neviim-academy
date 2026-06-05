@@ -4,6 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>הרשמה | Bnei Nevi'im Academy</title>
+    <meta name="theme-color" content="#1e3a5f">
+    <meta name="description" content="Sign up for Bnei Neviim Academy in Ramat Beit Shemesh.">
+    <meta property="og:site_name" content="Bnei Neviim Academy">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Sign Up | Bnei Neviim Academy">
+    <meta property="og:description" content="Sign up for Bnei Neviim Academy in Ramat Beit Shemesh.">
+    <meta property="og:url" content="https://bneineviimacademy.org/signup-he.html">
+    <meta property="og:image" content="https://bneineviimacademy.org/images/bna-social-preview.png">
+    <meta property="og:image:secure_url" content="https://bneineviimacademy.org/images/bna-social-preview.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Bnei Neviim Academy logo">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Sign Up | Bnei Neviim Academy">
+    <meta name="twitter:description" content="Sign up for Bnei Neviim Academy in Ramat Beit Shemesh.">
+    <meta name="twitter:image" content="https://bneineviimacademy.org/images/bna-social-preview.png">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="icon" href="/icons/favicon-16.png" sizes="16x16" type="image/png">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700&family=Cormorant+Garamond:wght@600;700&display=swap" rel="stylesheet">
     <style>
@@ -214,6 +235,46 @@
             border: 1px solid #f5c6cb;
         }
 
+        .waiver-box {
+            background: #f8fafc;
+            border: 1px solid #dbe3ef;
+            border-radius: 14px;
+            padding: 1.25rem;
+            margin-top: 1rem;
+        }
+
+        .waiver-box h4 {
+            color: var(--primary-blue);
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .waiver-text {
+            max-height: 230px;
+            overflow-y: auto;
+            background: #fff;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 1rem;
+            color: #475569;
+            font-size: 0.95rem;
+            line-height: 1.65;
+        }
+
+        .waiver-check {
+            display: flex;
+            gap: 0.6rem;
+            align-items: flex-start;
+            margin-top: 1rem;
+            color: #334155;
+            font-weight: 700;
+        }
+
+        .waiver-check input {
+            margin-top: 0.2rem;
+            width: auto;
+        }
+
         footer {
             background: var(--dark-text);
             color: var(--white);
@@ -281,12 +342,12 @@
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="parent2_name">שם מלא</label>
-                            <input type="text" id="parent2_name" name="parent2_name">
+                            <label for="parent2_name">שם מלא *</label>
+                            <input type="text" id="parent2_name" name="parent2_name" required>
                         </div>
                         <div class="form-group">
-                            <label for="parent2_phone">מספר טלפון</label>
-                            <input type="tel" id="parent2_phone" name="parent2_phone">
+                            <label for="parent2_phone">מספר טלפון *</label>
+                            <input type="tel" id="parent2_phone" name="parent2_phone" required>
                         </div>
                     </div>
 
@@ -325,8 +386,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="hobbies">תחומי עניין, חוזקות, וכל מידע שיעזור לנו להכיר אותו *</label>
-                        <textarea id="hobbies" name="hobbies" required></textarea>
+                        <label for="hobbies">מידע נוסף</label>
+                        <textarea id="hobbies" name="hobbies" placeholder="רשות: תחומי עניין, חוזקות, צרכים, או כל מידע נוסף שיעזור לנו להכיר אותו."></textarea>
                     </div>
 
                     <div class="section-divider">
@@ -346,6 +407,23 @@
                             </label>
                         </div>
                         <p class="payment-note">אשראי יעביר לעמוד תשלום מאובטח לאחר השליחה. מזומן יירשם אצלנו להמשך מעקב.</p>
+                    </div>
+
+                    <div class="section-divider">
+                        <h3>אישור והצהרת הורים</h3>
+                    </div>
+
+                    <div class="waiver-box">
+                        <h4>אישור הורים - Bnei Neviim Academy</h4>
+                        <div class="waiver-text">
+                            <p>אני מבין/ה כי Bnei Neviim Academy היא מסגרת לימודית/חינוכית וליווי, וכי בני עשוי להיפגש עם המדריך ועם תלמידים נוספים בבית, במקום פתוח, או במקום אחר שסוכם. אני מבין/ה כי המדריך ישתדל באופן סביר להשגיח על הבחורים ולקיים סביבה בטוחה ומכבדת.</p>
+                            <p>אני מאשר/ת כי האחריות לתת לבני הוראות ברורות לגבי הגעה, חציית כבישים, יציאה או הישארות במקום, השתתפות ביציאות, וכל גבול או הנחיית בטיחות אישית, נשארת בידי ההורה/אפוטרופוס. אם ההורה אינו רוצה שבנו יצא ממקום מסוים, יחצה כביש, יצטרף ליציאה, או ישתתף בפעילות מסוימת, על ההורה להודיע זאת בבירור לילד ולמדריך מראש.</p>
+                            <p>אני מבין/ה כי ההשתתפות היא מרצון וכי הורה רשאי להוציא את בנו מהמסגרת בכל עת. במידה המרבית המותרת על פי דין, אני משחרר/ת את המדריך ואת Bnei Neviim Academy מאחריות לפציעות, הפסדים, נזקים או אירועים העלולים להתרחש בקשר להשתתפות, למעט מקרים שנגרמו בזדון או ברשלנות חמורה. אני מאשר/ת שקראתי והסכמתי לאישור ולהצהרה זו.</p>
+                        </div>
+                        <label class="waiver-check" for="waiver_accepted">
+                            <input type="checkbox" id="waiver_accepted" name="waiver_accepted" required>
+                            <span>קראתי ואני מסכים/ה לאישור ולהצהרת ההורים. סימון תיבה זו מהווה חתימה אלקטרונית שלי.</span>
+                        </label>
                     </div>
 
                     <button type="submit" class="submit-btn" id="submitBtn">שליחת הרשמה</button>
@@ -388,7 +466,9 @@
                 current_school: document.getElementById('current_school').value,
                 hobbies: document.getElementById('hobbies').value,
                 payment_method: paymentMethod,
-                form_language: 'he'
+                form_language: 'he',
+                waiver_accepted: document.getElementById('waiver_accepted').checked,
+                waiver_version: '2026-05-28-v1'
             };
 
             try {
@@ -415,6 +495,10 @@
                 submitBtn.textContent = 'שליחת הרשמה';
             }
         });
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(() => {});
+        }
     </script>
 </body>
 </html>

@@ -4,6 +4,7 @@ out/
 build/
 dist/
 .deploy-railway/
+.runtime/
 
 # env
 .env
@@ -25,6 +26,12 @@ npm-debug.log*
 # local media intake
 media-drop/
 media-inbox/
+
+# generated video outputs
+renders/*
+!renders/.gitkeep
+src/remotion/generated/*.json
+!src/remotion/generated/.gitkeep
 
 # PWA build artifacts
 public/sw.js

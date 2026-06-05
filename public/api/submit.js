@@ -2,7 +2,7 @@
 const { Pool } = require('pg');
 
 const pool = new Pool({
-  connectionString: 'postgresql://postgres:hwbFDMCjLzifamfGHgSKvhJUoCuXOHBb@yamanote.proxy.rlwy.net:30613/railway',
+  connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
 });
 
@@ -13,14 +13,14 @@ CREATE TABLE IF NOT EXISTS signups (
   parent1_name TEXT NOT NULL,
   parent1_email TEXT NOT NULL,
   parent1_phone TEXT NOT NULL,
-  parent2_name TEXT,
+  parent2_name TEXT NOT NULL,
   parent2_email TEXT,
-  parent2_phone TEXT,
+  parent2_phone TEXT NOT NULL,
   address TEXT NOT NULL,
   child_name TEXT NOT NULL,
   child_age INTEGER NOT NULL,
   current_school TEXT,
-  hobbies TEXT NOT NULL,
+  hobbies TEXT,
   submitted_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 `;
@@ -56,6 +56,13 @@ module.exports = async (req, res) => {
       current_school,
       hobbies
     } = req.body;
+
+    if (!parent1_name || !parent1_email || !parent1_phone || !parent2_name || !parent2_phone || !child_name) {
+      return res.status(400).json({
+        success: false,
+        error: 'Student name, both parent names, both parent phone numbers, and one parent email are required'
+      });
+    }
     
     const query = `
       INSERT INTO signups (

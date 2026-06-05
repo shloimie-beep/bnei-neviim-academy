@@ -1,45 +1,78 @@
 #!/usr/bin/env node
-// Push every variable from .env.local to the linked Railway project.
-// Run AFTER `railway init` has linked this folder to a Railway project.
-//
-// Usage: node scripts/push-env-to-railway.mjs
+// Push selected variables from .env.local to the Railway app service.
+// Uses .secrets/railway-token.txt when RAILWAY_TOKEN is not already set.
 
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { execSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const envPath = path.join(__dirname, '..', '.env.local');
-const envText = fs.readFileSync(envPath, 'utf8');
+const repoRoot = path.resolve(__dirname, '..');
+const envPath = path.join(repoRoot, '.env.local');
+const tokenPath = path.join(repoRoot, '.secrets', 'railway-token.txt');
+const service = process.env.RAILWAY_SERVICE_NAME || 'skillful-motivation';
+const environment = process.env.RAILWAY_ENVIRONMENT || 'production';
+
+if (!process.env.RAILWAY_TOKEN && !process.env.RAILWAY_API_TOKEN && fs.existsSync(tokenPath)) {
+  process.env.RAILWAY_TOKEN = fs.readFileSync(tokenPath, 'utf8').trim();
+}
+
+if (process.env.RAILWAY_TOKEN && process.env.RAILWAY_API_TOKEN) {
+  console.error('Both RAILWAY_TOKEN and RAILWAY_API_TOKEN are set. Railway only allows one auth mode at a time.');
+  process.exit(1);
+}
+
+if (!fs.existsSync(envPath)) {
+  console.error(`Missing ${envPath}`);
+  process.exit(1);
+}
+
+const skipKeys = new Set([
+  'DATABASE_URL',
+  'RAILWAY_TOKEN',
+  'RAILWAY_API_TOKEN',
+  'RAILWAY_PROJECT_ID',
+  'RAILWAY_PROJECT_NAME',
+  'RAILWAY_ENVIRONMENT',
+  'RAILWAY_ENVIRONMENT_ID',
+  'RAILWAY_SERVICE_ID',
+  'RAILWAY_SERVICE_NAME',
+]);
 
 const vars = [];
-for (const line of envText.split('\n')) {
+for (const line of fs.readFileSync(envPath, 'utf8').split('\n')) {
   const trimmed = line.trim();
   if (!trimmed || trimmed.startsWith('#')) continue;
-  const m = trimmed.match(/^([A-Z_][A-Z0-9_]*)=(.*)$/);
-  if (!m) continue;
-  const [, key, rawValue] = m;
+  const match = trimmed.match(/^([A-Z_][A-Z0-9_]*)=(.*)$/);
+  if (!match) continue;
+
+  const [, key, rawValue] = match;
   const value = rawValue.replace(/^["']|["']$/g, '');
-  if (!value) continue; // skip empties
+  if (!value || skipKeys.has(key)) continue;
   vars.push({ key, value });
 }
 
-console.log(`→ Pushing ${vars.length} variables to Railway...`);
-console.log(`  (DATABASE_URL skipped — Railway auto-injects it if you add Postgres plugin; otherwise it stays Supabase's)\n`);
+console.log(`Pushing ${vars.length} variables to Railway service ${service} / ${environment}.`);
+console.log('Skipping DATABASE_URL and Railway-managed variables.');
 
 let pushed = 0;
-let skipped = 0;
+let failed = 0;
 for (const { key, value } of vars) {
-  try {
-    execSync(`railway variables --set "${key}=${value}"`, { stdio: 'pipe' });
-    console.log(`  ✓ ${key}`);
-    pushed++;
-  } catch (err) {
-    console.error(`  ✗ ${key}: ${err.message.split('\n')[0]}`);
-    skipped++;
+  const result = spawnSync(
+    'railway',
+    ['variable', 'set', `${key}=${value}`, '--service', service, '--environment', environment, '--skip-deploys'],
+    { encoding: 'utf8', stdio: 'pipe', env: process.env }
+  );
+
+  if (result.status === 0) {
+    console.log(`OK ${key}`);
+    pushed += 1;
+  } else {
+    console.error(`ERROR ${key}: ${(result.stderr || result.stdout || '').split('\n')[0]}`);
+    failed += 1;
   }
 }
 
-console.log(`\n✓ Pushed ${pushed} vars, ${skipped} failed.`);
-console.log('  Next: railway up');
+console.log(`Finished: ${pushed} pushed, ${failed} failed.`);
+if (failed) process.exit(1);

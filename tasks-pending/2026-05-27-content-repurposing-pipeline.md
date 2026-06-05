@@ -32,6 +32,9 @@ One raw Telegram upload should become a structured content job:
 - `bna_content_outputs` stores platform drafts attached to a content job.
 - Operations dashboard has a `Content` tab.
 - Google OAuth setup now creates a `BNA V2` Drive root with matching stage folders and a `BNA Brand Kit`.
+- Content generation now reads the repo-side `brand-kit/` and `content-memory/` before drafting.
+- WhatsApp drafts also read recent approved/published WhatsApp outputs from the app database as examples.
+- Drive mirrors the content memory for phone/browser use, and `scripts/google-drive-setup.mjs sync-memory` syncs Drive docs with repo files after Google OAuth is approved.
 - Telegram media uploads now create a content job with placeholder output drafts.
 - GHL media upload is deferred until an explicit publish/approval command.
 - Long videos are prepared for transcription by extracting compressed audio chunks before calling OpenAI.
@@ -71,8 +74,34 @@ Top-level folder: `BNA V2`
 - `11 Published`
 - `99 Failed`
 - `BNA Brand Kit`
+  - `Platform Memory`
+  - `WhatsApp Prompt`
+  - `WhatsApp Approved Examples`
+  - `Facebook Prompt`
+  - `Facebook Approved Examples`
+  - future YouTube/blog/newsletter prompt docs
 
 The BNA database remains the source of truth. Drive folders make file stage movement visible from phone/browser.
+
+## Active Memory Rule
+
+Folders are not just storage. Every content draft should read:
+
+- stable brand docs from `brand-kit/`
+- platform-specific prompt docs from `content-memory/platform-prompts/`
+- approved examples from `content-memory/<platform>/examples.md`
+- recent approved/published outputs from `bna_content_outputs`
+
+Approved drafts should be promoted back into examples so the system improves with use.
+
+## Sync Commands
+
+- `npm run drive:auth-url`: print the Google approval URL.
+- `node scripts/google-drive-setup.mjs exchange <code>`: save a refresh token after OAuth if using manual code exchange.
+- `npm run drive:setup`: create/confirm the Drive folder/doc structure.
+- `npm run drive:sync-memory`: auto-sync repo memory with Drive docs.
+- Telegram `/drive_auth`: send the local approval URL.
+- Telegram `/sync_drive_memory`: run the sync from the Academy bot.
 
 ## Transcription Research
 

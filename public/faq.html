@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FAQ | Alternative Torah Learning Program in Beit Shemesh</title>
+  <meta name="description" content="Questions about Bnei Neviim Academy, an alternative Torah learning environment in Beit Shemesh for boys who need a smaller, calmer, relationship-based program.">
+  <meta name="theme-color" content="#1e3a5f">
+  <meta property="og:site_name" content="Bnei Neviim Academy">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="FAQ | Bnei Neviim Academy">
+  <meta property="og:description" content="Questions about Bnei Neviim Academy, an alternative Torah learning environment in Beit Shemesh.">
+  <meta property="og:url" content="https://bneineviimacademy.org/faq">
+  <meta property="og:image" content="https://bneineviimacademy.org/images/bna-social-preview.png">
+  <meta property="og:image:secure_url" content="https://bneineviimacademy.org/images/bna-social-preview.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Bnei Neviim Academy logo">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="FAQ | Bnei Neviim Academy">
+  <meta name="twitter:description" content="Questions about Bnei Neviim Academy, an alternative Torah learning environment in Beit Shemesh.">
+  <meta name="twitter:image" content="https://bneineviimacademy.org/images/bna-social-preview.png">
+  <link rel="canonical" href="https://bneineviimacademy.org/faq">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="/icons/favicon-16.png" sizes="16x16" type="image/png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=Noto+Serif+Hebrew:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/bna-pages.css">
+</head>
+<body>
+  <div id="navMount"></div>
+
+  <header class="page-hero">
+    <div class="page-hero__content">
+      <p class="eyebrow">Bnei Neviim Academy</p>
+      <h1 id="faqTitle">Frequently Asked Questions</h1>
+      <p id="faqIntro">Here are common questions parents ask about Bnei Neviim Academy, our morning Torah learning program, and whether this alternative school-style environment is right for their son.</p>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <p class="notice" id="faqNotice">Bnei Neviim is not a clinical program or formal special education provider. It is an alternative Torah learning environment that may be a better fit for some boys who need a smaller, calmer, more movement-friendly and relationship-based structure.</p>
+    <section class="faq-list" id="faqList"></section>
+  </main>
+
+  <div id="footerMount"></div>
+
+  <script src="/js/bna-content.js"></script>
+  <script src="/js/bna-pages.js"></script>
+  <script>
+    const lang = BNAPages.language();
+    const items = BNAContent.faqs[lang];
+    const copy = lang === "he"
+      ? {
+          title: "שאלות נפוצות",
+          intro: "שאלות נפוצות של הורים על בני נביאים, תוכנית הבוקר ללימודי קודש, והאם הסביבה האלטרנטיבית הזאת מתאימה לבן שלהם.",
+          notice: "בני נביאים אינה תוכנית טיפולית, קלינית או מסגרת חינוך מיוחד פורמלית. זו סביבת לימוד תורה אלטרנטיבית שיכולה להתאים לחלק מהבנים שצריכים מבנה קטן יותר, רגוע יותר, עם יותר תנועה וקשר אישי.",
+          metaTitle: "שאלות נפוצות | מסגרת תורנית אלטרנטיבית בבית שמש",
+          metaDescription: "שאלות על בני נביאים, מסגרת לימוד תורה אלטרנטיבית בבית שמש לבנים שצריכים סביבה קטנה, רגועה ומבוססת קשר.",
+          home: "בית",
+          faq: "שאלות נפוצות",
+        }
+      : {
+          title: "Frequently Asked Questions",
+          intro: "Here are common questions parents ask about Bnei Neviim Academy, our morning Torah learning program, and whether this alternative school-style environment is right for their son.",
+          notice: "Bnei Neviim is not a clinical program or formal special education provider. It is an alternative Torah learning environment that may be a better fit for some boys who need a smaller, calmer, more movement-friendly and relationship-based structure.",
+          metaTitle: "FAQ | Alternative Torah Learning Program in Beit Shemesh",
+          metaDescription: "Questions about Bnei Neviim Academy, an alternative Torah learning environment in Beit Shemesh for boys who need a smaller, calmer, relationship-based program.",
+          home: "Home",
+          faq: "FAQ",
+        };
+
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
+    document.getElementById("faqTitle").textContent = copy.title;
+    document.getElementById("faqIntro").textContent = copy.intro;
+    document.getElementById("faqNotice").textContent = copy.notice;
+    BNAPages.setTitle(copy.metaTitle);
+    BNAPages.setMeta("description", copy.metaDescription);
+    BNAPages.setMeta("keywords", BNAContent.keywords[lang].join(", "));
+    BNAPages.setCanonical(BNAPages.faqUrl(lang));
+    BNAPages.setSocialMeta({
+      title: copy.metaTitle,
+      description: copy.metaDescription,
+      path: BNAPages.faqUrl(lang),
+    });
+    BNAPages.renderNav();
+    BNAPages.renderFooter();
+
+    document.getElementById("faqList").innerHTML = items.map((item, index) => `
+      <details class="faq-card" ${index === 0 ? "open" : ""}>
+        <summary>${BNAPages.escapeHtml(item.question)}</summary>
+        <p>${BNAPages.escapeHtml(item.answer)}</p>
+      </details>
+    `).join("");
+
+    BNAPages.setJsonLd("faq-jsonld", {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "inLanguage": lang,
+      "mainEntity": items.map((item) => ({
+        "@type": "Question",
+        "name": item.question,
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": item.answer,
+        },
+      })),
+    });
+
+    BNAPages.setJsonLd("breadcrumb-jsonld", {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": copy.home,
+          "item": `${window.location.origin}${BNAPages.homeUrl(lang)}`,
+        },
+        {
+          "@type": "ListItem",
+          "position": 2,
+          "name": copy.faq,
+          "item": `${window.location.origin}${BNAPages.faqUrl(lang)}`,
+        },
+      ],
+    });
+  </script>
+</body>
+</html>

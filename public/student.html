@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BNA Student Checkoff</title>
+    <style>
+        :root {
+            --ink: #182018;
+            --muted: #60705f;
+            --paper: #fffaf0;
+            --panel: rgba(255, 255, 255, 0.88);
+            --line: rgba(24, 32, 24, 0.12);
+            --forest: #1e5f3d;
+            --forest-2: #2f7d4f;
+            --gold: #e3b848;
+            --blue: #2f648d;
+            --danger: #9b3d33;
+            --shadow: 0 22px 70px rgba(27, 49, 32, 0.16);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--ink);
+            font-family: Georgia, "Times New Roman", serif;
+            background:
+                radial-gradient(circle at 14% 10%, rgba(227, 184, 72, 0.22), transparent 34rem),
+                radial-gradient(circle at 90% 14%, rgba(47, 100, 141, 0.16), transparent 30rem),
+                linear-gradient(135deg, #f5eddc 0%, #fffaf0 54%, #e8f0df 100%);
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            background-image:
+                linear-gradient(rgba(24, 32, 24, 0.035) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(24, 32, 24, 0.035) 1px, transparent 1px);
+            background-size: 42px 42px;
+            mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.68), transparent 78%);
+        }
+
+        .shell {
+            position: relative;
+            width: min(980px, calc(100% - 28px));
+            margin: 0 auto;
+            padding: 28px 0 44px;
+        }
+
+        .hero {
+            display: grid;
+            gap: 18px;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: end;
+            margin-bottom: 18px;
+        }
+
+        .eyebrow {
+            margin: 0 0 8px;
+            color: var(--forest);
+            font-family: "Trebuchet MS", Verdana, sans-serif;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.14em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: clamp(34px, 8vw, 74px);
+            line-height: 0.92;
+            letter-spacing: -0.06em;
+        }
+
+        .hero-text {
+            margin: 12px 0 0;
+            max-width: 560px;
+            color: var(--muted);
+            font-family: "Trebuchet MS", Verdana, sans-serif;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .panel {
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            background: var(--panel);
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(10px);
+        }
+
+        .login-panel {
+            max-width: 540px;
+            margin-top: 24px;
+            padding: 24px;
+        }
+
+        .field {
+            display: grid;
+            gap: 8px;
+            margin: 18px 0;
+            font-family: "Trebuchet MS", Verdana, sans-serif;
+        }
+
+        label {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        input {
+            width: 100%;
+            border: 1px solid rgba(30, 95, 61, 0.18);
+            border-radius: 16px;
+            padding: 14px 16px;
+            color: var(--ink);
+            background: #fffef9;
+            font: 700 16px "Trebuchet MS", Verdana, sans-serif;
+            outline: none;
+        }
+
+        input:focus {
+            border-color: rgba(30, 95, 61, 0.5);
+            box-shadow: 0 0 0 4px rgba(30, 95, 61, 0.12);
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        button,
+        .button-link {
+            border: 0;
+            border-radius: 999px;
+            padding: 12px 17px;
+            cursor: pointer;
+            color: #fff;
+            background: var(--forest);
+            font: 800 13px "Trebuchet MS", Verdana, sans-serif;
+            letter-spacing: 0.03em;
+            text-decoration: none;
+            transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+        }
+
+        button:hover,
+        .button-link:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 10px 24px rgba(30, 95, 61, 0.2);
+        }
+
+        button:disabled {
+            cursor: wait;
+            opacity: 0.58;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .secondary {
+            color: var(--ink);
+            background: rgba(24, 32, 24, 0.08);
+        }
+
+        .blue {
+            background: var(--blue);
+        }
+
+        .gold {
+            color: #2b230b;
+            background: var(--gold);
+        }
+
+        .top-card {
+            display: grid;
+            gap: 16px;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: center;
+            padding: 22px;
+            margin: 18px 0;
+        }
+
+        .metric {
+            width: 138px;
+            height: 138px;
+            display: grid;
+            place-items: center;
+            border-radius: 50%;
+            background:
+                radial-gradient(circle at center, #fffaf0 0 54%, transparent 55%),
+                conic-gradient(var(--forest) var(--progress, 0%), rgba(30, 95, 61, 0.12) 0);
+        }
+
+        .metric strong {
+            font-size: 34px;
+            letter-spacing: -0.04em;
+        }
+
+        .progress-track {
+            overflow: hidden;
+            height: 12px;
+            border-radius: 999px;
+            background: rgba(30, 95, 61, 0.12);
+        }
+
+        .progress-fill {
+            width: var(--progress, 0%);
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, var(--forest), var(--gold));
+        }
+
+        .section-title {
+            display: flex;
+            gap: 12px;
+            align-items: baseline;
+            justify-content: space-between;
+            margin: 24px 0 12px;
+        }
+
+        .section-title h2 {
+            margin: 0;
+            font-size: 28px;
+            letter-spacing: -0.04em;
+        }
+
+        .section-title span,
+        .small {
+            color: var(--muted);
+            font-family: "Trebuchet MS", Verdana, sans-serif;
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .goal-grid {
+            display: grid;
+            gap: 14px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+
+        .goal-card {
+            display: grid;
+            gap: 14px;
+            padding: 18px;
+            border: 1px solid var(--line);
+            border-radius: 24px;
+            background: rgba(255, 255, 255, 0.82);
+        }
+
+        .goal-heading {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .goal-heading h3 {
+            margin: 0;
+            font-size: 21px;
+            line-height: 1.12;
+            letter-spacing: -0.03em;
+        }
+
+        .badge {
+            flex: 0 0 auto;
+            border-radius: 999px;
+            padding: 6px 10px;
+            color: var(--forest);
+            background: rgba(30, 95, 61, 0.12);
+            font: 800 12px "Trebuchet MS", Verdana, sans-serif;
+        }
+
+        .goal-meta {
+            color: var(--muted);
+            font-family: "Trebuchet MS", Verdana, sans-serif;
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .empty {
+            padding: 26px;
+            color: var(--muted);
+            font-family: "Trebuchet MS", Verdana, sans-serif;
+            line-height: 1.5;
+        }
+
+        .status {
+            min-height: 22px;
+            margin-top: 12px;
+            color: var(--muted);
+            font-family: "Trebuchet MS", Verdana, sans-serif;
+            font-size: 14px;
+        }
+
+        .status.error {
+            color: var(--danger);
+            font-weight: 800;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 720px) {
+            .shell {
+                width: min(100% - 18px, 980px);
+                padding-top: 18px;
+            }
+
+            .hero,
+            .top-card {
+                grid-template-columns: 1fr;
+            }
+
+            .metric {
+                width: 118px;
+                height: 118px;
+            }
+
+            .top-card {
+                padding: 18px;
+            }
+
+            .button-row,
+            .actions {
+                display: grid;
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <header class="hero">
+            <div>
+                <p class="eyebrow">Bnei Neviim Academy</p>
+                <h1 id="pageTitle">Student Checkoff</h1>
+                <p class="hero-text" id="pageIntro">Open your private link, review your goals, and mark what you completed honestly.</p>
+            </div>
+            <button class="secondary hidden" id="clearCodeButton" type="button">Use a different link</button>
+        </header>
+
+        <section class="panel login-panel hidden" id="loginPanel">
+            <p class="eyebrow">Private Access</p>
+            <h2>Enter your checkoff code</h2>
+            <p class="small">Use the private link your rebbi gave you. This page only opens your own goal checkoff.</p>
+            <form id="codeForm">
+                <div class="field">
+                    <label for="accessCode">Access code</label>
+                    <input id="accessCode" autocomplete="off" placeholder="Paste code here">
+                </div>
+                <div class="button-row">
+                    <button type="submit">Open My Goals</button>
+                </div>
+            </form>
+            <div class="status" id="loginStatus"></div>
+        </section>
+
+        <section class="panel top-card hidden" id="studentPanel">
+            <div>
+                <p class="eyebrow">Torah Trip Progress</p>
+                <h2 id="studentName">Student</h2>
+                <p class="small">This is your cumulative progress toward the full 30-unit trip goal. Daily completion helps move this number up one unit at a time.</p>
+                <div class="progress-track" aria-label="Torah trip progress">
+                    <div class="progress-fill" id="torahProgressFill"></div>
+                </div>
+            </div>
+            <div class="metric" id="torahMetric">
+                <strong id="torahProgressText">0%</strong>
+            </div>
+        </section>
+
+        <section class="hidden" id="goalsSection">
+            <div class="section-title">
+                <h2>My Goal Checkoff</h2>
+                <span id="goalCount">0 goals</span>
+            </div>
+            <div class="goal-grid" id="goalGrid"></div>
+            <div class="status" id="saveStatus"></div>
+        </section>
+    </main>
+
+    <script>
+        const STORAGE_KEY = 'bnaStudentAccessCode';
+        let accessCode = new URLSearchParams(window.location.search).get('code') || localStorage.getItem(STORAGE_KEY) || '';
+        let portalData = null;
+        let saving = false;
+
+        const els = {
+            pageTitle: document.getElementById('pageTitle'),
+            pageIntro: document.getElementById('pageIntro'),
+            clearCodeButton: document.getElementById('clearCodeButton'),
+            loginPanel: document.getElementById('loginPanel'),
+            codeForm: document.getElementById('codeForm'),
+            accessCode: document.getElementById('accessCode'),
+            loginStatus: document.getElementById('loginStatus'),
+            studentPanel: document.getElementById('studentPanel'),
+            studentName: document.getElementById('studentName'),
+            torahProgressFill: document.getElementById('torahProgressFill'),
+            torahMetric: document.getElementById('torahMetric'),
+            torahProgressText: document.getElementById('torahProgressText'),
+            goalsSection: document.getElementById('goalsSection'),
+            goalCount: document.getElementById('goalCount'),
+            goalGrid: document.getElementById('goalGrid'),
+            saveStatus: document.getElementById('saveStatus'),
+        };
+
+        function escapeHtml(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function asNumber(value, fallback = 0) {
+            const number = Number(value);
+            return Number.isFinite(number) ? number : fallback;
+        }
+
+        function roundedPercent(value) {
+            return Math.max(0, Math.min(100, Math.round(asNumber(value, 0))));
+        }
+
+        async function apiRequest(path, options = {}) {
+            const response = await fetch(path, {
+                ...options,
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(options.headers || {}),
+                },
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) {
+                throw new Error(data.error || 'Request failed');
+            }
+            return data;
+        }
+
+        function setLoginState(message = '', isError = false) {
+            els.loginStatus.textContent = message;
+            els.loginStatus.classList.toggle('error', Boolean(isError));
+        }
+
+        function setSaveState(message = '', isError = false) {
+            els.saveStatus.textContent = message;
+            els.saveStatus.classList.toggle('error', Boolean(isError));
+        }
+
+        function showLogin(message = '', isError = false) {
+            els.pageTitle.textContent = 'Student Checkoff';
+            els.pageIntro.textContent = 'Open your private link, review your goals, and mark what you completed honestly.';
+            els.loginPanel.classList.remove('hidden');
+            els.studentPanel.classList.add('hidden');
+            els.goalsSection.classList.add('hidden');
+            els.clearCodeButton.classList.add('hidden');
+            els.accessCode.value = accessCode || '';
+            setLoginState(message, isError);
+        }
+
+        function setProgressStyle(element, percent) {
+            element.style.setProperty('--progress', `${percent}%`);
+        }
+
+        function renderGoal(goal) {
+            const progress = roundedPercent(goal.progress_percent);
+            const target = goal.goal_target_value !== null && goal.goal_target_value !== undefined
+                ? asNumber(goal.goal_target_value)
+                : null;
+            const actual = goal.goal_actual_value !== null && goal.goal_actual_value !== undefined
+                ? asNumber(goal.goal_actual_value)
+                : null;
+            const unit = goal.goal_unit ? ` ${escapeHtml(goal.goal_unit)}` : '';
+            const targetText = target !== null
+                ? `${actual !== null ? actual : Math.round((target * progress) / 100)}/${target}${unit}`
+                : `${progress}%`;
+            const status = progress >= 100 ? 'Done' : progress > 0 ? 'In progress' : 'Not yet';
+
+            return `
+                <article class="goal-card">
+                    <div class="goal-heading">
+                        <h3>${escapeHtml(goal.title || 'Personal goal')}</h3>
+                        <span class="badge">${status}</span>
+                    </div>
+                    ${goal.topic ? `<div class="goal-meta">${escapeHtml(goal.topic)}</div>` : ''}
+                    <div class="progress-track">
+                        <div class="progress-fill" style="--progress:${progress}%"></div>
+                    </div>
+                    <div class="goal-meta"><strong>${progress}%</strong> complete${targetText ? ` - ${targetText}` : ''}</div>
+                    <div class="actions">
+                        <button class="secondary" type="button" data-goal-id="${Number(goal.id)}" data-progress="0">Not Yet</button>
+                        <button class="blue" type="button" data-goal-id="${Number(goal.id)}" data-progress="50">Half</button>
+                        <button class="gold" type="button" data-goal-id="${Number(goal.id)}" data-progress="100">Done</button>
+                    </div>
+                </article>
+            `;
+        }
+
+        function renderPortal(data) {
+            portalData = data;
+            const studentName = data?.student?.name || 'Student';
+            const torahPercent = roundedPercent(data?.torah?.public_trip_percentage);
+            const goals = Array.isArray(data?.goals) ? data.goals : [];
+
+            els.loginPanel.classList.add('hidden');
+            els.studentPanel.classList.remove('hidden');
+            els.goalsSection.classList.remove('hidden');
+            els.clearCodeButton.classList.remove('hidden');
+            els.pageTitle.textContent = studentName;
+            els.pageIntro.textContent = 'Mark your personal goals honestly. Progress is for accountability, not pressure.';
+            els.studentName.textContent = studentName;
+            els.torahProgressText.textContent = `${torahPercent}%`;
+            setProgressStyle(els.torahMetric, torahPercent);
+            setProgressStyle(els.torahProgressFill, torahPercent);
+            els.goalCount.textContent = `${goals.length} ${goals.length === 1 ? 'goal' : 'goals'}`;
+
+            els.goalGrid.innerHTML = goals.length
+                ? goals.map(renderGoal).join('')
+                : '<div class="panel empty">No personal goals are ready for checkoff yet.</div>';
+        }
+
+        async function loadPortal(code = accessCode) {
+            const trimmedCode = String(code || '').trim();
+            if (!trimmedCode) {
+                showLogin();
+                return;
+            }
+
+            accessCode = trimmedCode;
+            localStorage.setItem(STORAGE_KEY, accessCode);
+            setLoginState('Opening your goals...');
+
+            try {
+                const data = await apiRequest(`/api/student-portal?code=${encodeURIComponent(accessCode)}`);
+                renderPortal(data);
+            } catch (error) {
+                localStorage.removeItem(STORAGE_KEY);
+                showLogin(error.message || 'Could not open this student link.', true);
+            }
+        }
+
+        async function updateGoal(goalId, progressPercent) {
+            if (saving) return;
+            saving = true;
+            setSaveState('Saving...');
+            document.querySelectorAll('[data-goal-id]').forEach(button => {
+                button.disabled = true;
+            });
+
+            try {
+                await apiRequest(`/api/student-portal/goals/${encodeURIComponent(goalId)}/checkoff`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        access_code: accessCode,
+                        progress_percent: progressPercent,
+                    }),
+                });
+                const data = await apiRequest(`/api/student-portal?code=${encodeURIComponent(accessCode)}`);
+                renderPortal(data);
+                setSaveState('Saved.');
+            } catch (error) {
+                setSaveState(error.message || 'Could not save this checkoff.', true);
+            } finally {
+                saving = false;
+                document.querySelectorAll('[data-goal-id]').forEach(button => {
+                    button.disabled = false;
+                });
+            }
+        }
+
+        els.codeForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            loadPortal(els.accessCode.value);
+        });
+
+        els.clearCodeButton.addEventListener('click', () => {
+            accessCode = '';
+            portalData = null;
+            localStorage.removeItem(STORAGE_KEY);
+            const url = new URL(window.location.href);
+            url.searchParams.delete('code');
+            window.history.replaceState({}, '', url.toString());
+            showLogin();
+        });
+
+        document.addEventListener('click', (event) => {
+            const button = event.target.closest('[data-goal-id]');
+            if (!button) return;
+            updateGoal(button.dataset.goalId, Number(button.dataset.progress));
+        });
+
+        loadPortal();
+    </script>
+</body>
+</html>

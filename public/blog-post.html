@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bnei Neviim Academy Blog</title>
+  <meta name="description" content="Bnei Neviim Academy article.">
+  <meta name="theme-color" content="#1e3a5f">
+  <meta property="og:site_name" content="Bnei Neviim Academy">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Bnei Neviim Academy Blog">
+  <meta property="og:description" content="Articles from Bnei Neviim Academy in Beit Shemesh.">
+  <meta property="og:image" content="https://bneineviimacademy.org/images/bna-social-preview.png">
+  <meta property="og:image:secure_url" content="https://bneineviimacademy.org/images/bna-social-preview.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Bnei Neviim Academy logo">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Bnei Neviim Academy Blog">
+  <meta name="twitter:description" content="Articles from Bnei Neviim Academy in Beit Shemesh.">
+  <meta name="twitter:image" content="https://bneineviimacademy.org/images/bna-social-preview.png">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="/icons/favicon-16.png" sizes="16x16" type="image/png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=Noto+Serif+Hebrew:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/bna-pages.css">
+</head>
+<body>
+  <div id="navMount"></div>
+
+  <main class="page-main" id="articleMain">
+    <div class="article-shell">
+      <article class="article-card" id="articleCard"></article>
+      <aside class="side-card" id="relatedPosts" aria-label="Related posts"></aside>
+    </div>
+  </main>
+
+  <div id="footerMount"></div>
+
+  <script src="/js/bna-content.js"></script>
+  <script src="/js/bna-pages.js"></script>
+  <script>
+    const lang = BNAPages.language();
+    const slug = window.location.pathname.split("/").filter(Boolean).pop();
+
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
+    BNAPages.renderNav();
+    BNAPages.renderFooter();
+
+    const labels = {
+      home: "Home",
+      blog: "Blog",
+      related: "Related Posts",
+      contact: "Contact Us",
+      signup: "Sign Up",
+      faq: "FAQ",
+      notFoundTitle: "Article not found",
+      notFoundDescription: "The requested article is not available.",
+      backToBlog: "Back to blog",
+    };
+
+    function renderMissingArticle() {
+      BNAPages.setTitle("Article Not Found | Bnei Neviim");
+      BNAPages.setMeta("description", labels.notFoundDescription);
+      BNAPages.setSocialMeta({
+        title: "Article Not Found | Bnei Neviim",
+        description: labels.notFoundDescription,
+        path: BNAPages.blogUrl(lang),
+      });
+      document.getElementById("articleMain").innerHTML = `
+        <section class="article-card article-body">
+          <h1>${labels.notFoundTitle}</h1>
+          <p>${labels.notFoundDescription}</p>
+          <p><a class="read-link" href="${BNAPages.blogUrl(lang)}">${labels.backToBlog}</a></p>
+        </section>`;
+    }
+
+    function renderArticle(post) {
+      BNAPages.setTitle(post.metaTitle || post.title);
+      BNAPages.setMeta("description", post.metaDescription || post.excerpt || "");
+      BNAPages.setMeta("keywords", (post.keywords || []).join(", "));
+      BNAPages.setCanonical(BNAPages.postUrl(post));
+      BNAPages.setSocialMeta({
+        title: post.metaTitle || post.title,
+        description: post.metaDescription || post.excerpt || "",
+        path: BNAPages.postUrl(post),
+        type: "article",
+      });
+
+      document.getElementById("articleMain").innerHTML = `
+        <div class="article-shell">
+          <article class="article-card" id="articleCard"></article>
+          <aside class="side-card" id="relatedPosts" aria-label="Related posts"></aside>
+        </div>`;
+
+      document.getElementById("articleCard").innerHTML = `
+        <div class="article-image"><img src="${BNAPages.escapeHtml(post.image)}" alt=""></div>
+        <div class="article-body">
+          <nav class="breadcrumb" aria-label="Breadcrumb">
+            <a href="${BNAPages.homeUrl(lang)}">${BNAPages.escapeHtml(labels.home)}</a>
+            <span>/</span>
+            <a href="${BNAPages.blogUrl(lang)}">${BNAPages.escapeHtml(labels.blog)}</a>
+            <span>/</span>
+            <span>${BNAPages.escapeHtml(post.title)}</span>
+          </nav>
+          <p class="article-meta">${BNAPages.escapeHtml(post.category)}</p>
+          <h1>${BNAPages.escapeHtml(post.title)}</h1>
+          ${(post.body || []).map((paragraph) => `<p>${BNAPages.escapeHtml(paragraph)}</p>`).join("")}
+          <div class="article-cta">
+            <p>${BNAPages.escapeHtml(post.cta || "")}</p>
+            <div class="cta-row">
+              <a class="cta-button" href="${BNAContent.site.whatsapp}" target="_blank" rel="noopener noreferrer">${BNAPages.escapeHtml(labels.contact)}</a>
+              <a class="cta-button" href="${BNAContent.site.signup}">${BNAPages.escapeHtml(labels.signup)}</a>
+              <a class="cta-button" href="${BNAPages.faqUrl(lang)}">${BNAPages.escapeHtml(labels.faq)}</a>
+            </div>
+          </div>
+        </div>`;
+
+      const related = BNAContent.relatedPosts(post);
+      document.getElementById("relatedPosts").innerHTML = `
+        <h2>${BNAPages.escapeHtml(labels.related)}</h2>
+        ${related.map((candidate) => `<a href="${BNAPages.postUrl(candidate)}">${BNAPages.escapeHtml(candidate.title)}</a>`).join("")}`;
+
+      BNAPages.setJsonLd("article-jsonld", {
+        "@context": "https://schema.org",
+        "@type": "BlogPosting",
+        "headline": post.title,
+        "description": post.metaDescription || post.excerpt,
+        "author": {
+          "@type": "Person",
+          "name": BNAContent.site.author,
+        },
+        "publisher": {
+          "@type": "Organization",
+          "name": BNAContent.site.publisher,
+        },
+        "articleSection": post.category,
+        "keywords": post.keywords || [],
+        "inLanguage": post.lang,
+        "mainEntityOfPage": `${window.location.origin}${BNAPages.postUrl(post)}`,
+      });
+
+      BNAPages.setJsonLd("breadcrumb-jsonld", {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": labels.home,
+            "item": `${window.location.origin}${BNAPages.homeUrl(lang)}`,
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": labels.blog,
+            "item": `${window.location.origin}${BNAPages.blogUrl(lang)}`,
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": post.title,
+            "item": `${window.location.origin}${BNAPages.postUrl(post)}`,
+          },
+        ],
+      });
+    }
+
+    function renderArticlePage() {
+      const post = BNAContent.getPost(lang, slug);
+      if (post) renderArticle(post);
+      else renderMissingArticle();
+    }
+
+    renderArticlePage();
+
+    if (BNAContent.loadPublishedPosts) {
+      BNAContent.loadPublishedPosts().then(renderArticlePage);
+    }
+  </script>
+</body>
+</html>

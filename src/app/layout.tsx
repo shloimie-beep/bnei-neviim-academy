@@ -10,8 +10,8 @@ export const metadata: Metadata = {
   description: 'Simple task control for the academy',
   manifest: '/manifest.json',
   icons: {
-    icon: '/icons/icon.svg',
-    apple: '/icons/icon-192.svg',
+    icon: '/icons/favicon-32.png',
+    apple: '/icons/apple-touch-icon.png',
   },
 };
 

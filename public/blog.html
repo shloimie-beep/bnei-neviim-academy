@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bnei Neviim Blog | Alternative Torah Learning in Beit Shemesh</title>
+  <meta name="description" content="Articles on alternative Torah learning, Jewish unschooling, ADHD-friendly environments, homeschooling support, self-governance, parenting, and the future of Jewish education.">
+  <meta name="theme-color" content="#1e3a5f">
+  <meta property="og:site_name" content="Bnei Neviim Academy">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Bnei Neviim Blog | Alternative Torah Learning in Beit Shemesh">
+  <meta property="og:description" content="Articles on alternative Torah learning, parenting, self-governance, and the future of Jewish education.">
+  <meta property="og:url" content="https://bneineviimacademy.org/blog">
+  <meta property="og:image" content="https://bneineviimacademy.org/images/bna-social-preview.png">
+  <meta property="og:image:secure_url" content="https://bneineviimacademy.org/images/bna-social-preview.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Bnei Neviim Academy logo">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Bnei Neviim Blog | Alternative Torah Learning in Beit Shemesh">
+  <meta name="twitter:description" content="Articles on alternative Torah learning, parenting, self-governance, and the future of Jewish education.">
+  <meta name="twitter:image" content="https://bneineviimacademy.org/images/bna-social-preview.png">
+  <link rel="canonical" href="https://bneineviimacademy.org/blog">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png">
+  <link rel="icon" href="/icons/favicon-16.png" sizes="16x16" type="image/png">
+  <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=Noto+Serif+Hebrew:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/bna-pages.css">
+</head>
+<body>
+  <div id="navMount"></div>
+
+  <header class="page-hero">
+    <div class="page-hero__content">
+      <p class="eyebrow" id="blogEyebrow">Bnei Neviim Academy</p>
+      <h1 id="blogTitle">Bnei Neviim Blog</h1>
+      <p id="blogSubtitle">Torah learning, alternative school options, Jewish unschooling, ADHD-friendly learning environments, homeschooling, parenting, self-governance, technology, and the future of Jewish education in Beit Shemesh.</p>
+    </div>
+  </header>
+
+  <main class="page-main">
+    <p class="notice" id="blogNotice">Bnei Neviim is not a clinical program or formal special education provider. It is an alternative Torah learning environment that may be a better fit for some boys who need a smaller, calmer, more movement-friendly and relationship-based structure.</p>
+    <div class="filter-row" id="categoryFilters" aria-label="Blog categories"></div>
+    <section class="blog-grid" id="blogGrid" aria-live="polite"></section>
+  </main>
+
+  <div id="footerMount"></div>
+
+  <script src="/js/bna-content.js"></script>
+  <script src="/js/bna-pages.js"></script>
+  <script>
+    const lang = BNAPages.language();
+    let posts = BNAContent.getPosts(lang);
+    const params = new URLSearchParams(window.location.search);
+    let activeCategory = params.get("category") || "All";
+
+    const copy = lang === "he"
+      ? {
+          title: "מאמרי בני נביאים",
+          subtitle: "לימוד תורה, מסגרות אלטרנטיביות, חינוך ביתי, קשב וריכוז, אחריות אישית, הורות, טכנולוגיה ועתיד החינוך היהודי בבית שמש.",
+          notice: "בני נביאים אינה תוכנית טיפולית, קלינית או מסגרת חינוך מיוחד פורמלית. זו סביבת לימוד תורה אלטרנטיבית שיכולה להתאים לחלק מהבנים שצריכים מבנה קטן יותר, רגוע יותר, עם יותר תנועה וקשר אישי.",
+          all: "הכל",
+          metaTitle: "מאמרי בני נביאים | מסגרת תורנית אלטרנטיבית בבית שמש",
+          metaDescription: "מאמרים על לימוד תורה, מסגרות אלטרנטיביות, חינוך ביתי, קשב וריכוז, אחריות אישית, הורות, טכנולוגיה ועתיד החינוך היהודי.",
+        }
+      : {
+          title: "Bnei Neviim Blog",
+          subtitle: "Torah learning, alternative school options, Jewish unschooling, ADHD-friendly learning environments, homeschooling, parenting, self-governance, technology, and the future of Jewish education in Beit Shemesh.",
+          notice: "Bnei Neviim is not a clinical program or formal special education provider. It is an alternative Torah learning environment that may be a better fit for some boys who need a smaller, calmer, more movement-friendly and relationship-based structure.",
+          all: "All",
+          metaTitle: "Bnei Neviim Blog | Alternative Torah Learning in Beit Shemesh",
+          metaDescription: "Articles on alternative Torah learning, Jewish unschooling, ADHD-friendly environments, homeschooling support, self-governance, parenting, and the future of Jewish education.",
+        };
+
+    document.documentElement.lang = lang;
+    document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
+    document.getElementById("blogTitle").textContent = copy.title;
+    document.getElementById("blogSubtitle").textContent = copy.subtitle;
+    document.getElementById("blogNotice").textContent = copy.notice;
+    BNAPages.setTitle(copy.metaTitle);
+    BNAPages.setMeta("description", copy.metaDescription);
+    BNAPages.setMeta("keywords", BNAContent.keywords[lang].join(", "));
+    BNAPages.setCanonical(BNAPages.blogUrl(lang));
+    BNAPages.setSocialMeta({
+      title: copy.metaTitle,
+      description: copy.metaDescription,
+      path: BNAPages.blogUrl(lang),
+    });
+    BNAPages.renderNav();
+    BNAPages.renderFooter();
+
+    function renderFilters() {
+      const categories = [copy.all, ...new Set(posts.map((post) => post.category))];
+      if (activeCategory !== "All" && activeCategory !== copy.all && !categories.includes(activeCategory)) {
+        activeCategory = "All";
+      }
+      document.getElementById("categoryFilters").innerHTML = categories.map((category) => {
+        const isAll = category === copy.all;
+        const normalizedActive = activeCategory === "All" ? copy.all : activeCategory;
+        return `<button class="filter-btn ${category === normalizedActive ? "is-active" : ""}" type="button" data-category="${BNAPages.escapeHtml(isAll ? "All" : category)}">${BNAPages.escapeHtml(category)}</button>`;
+      }).join("");
+      document.querySelectorAll(".filter-btn").forEach((button) => {
+        button.addEventListener("click", () => {
+          activeCategory = button.dataset.category;
+          const nextUrl = activeCategory === "All"
+            ? BNAPages.blogUrl(lang)
+            : `${BNAPages.blogUrl(lang)}?category=${encodeURIComponent(activeCategory)}`;
+          window.history.replaceState({}, "", nextUrl);
+          renderFilters();
+          renderPosts();
+        });
+      });
+    }
+
+    function renderPosts() {
+      const visible = activeCategory === "All" || activeCategory === copy.all
+        ? posts
+        : posts.filter((post) => post.category === activeCategory);
+      document.getElementById("blogGrid").innerHTML = visible.map((post) => BNAPages.renderBlogCard(post)).join("");
+    }
+
+    function renderBlogJsonLd() {
+      BNAPages.setJsonLd("blog-jsonld", {
+        "@context": "https://schema.org",
+        "@type": "Blog",
+        "name": copy.title,
+        "description": copy.metaDescription,
+        "inLanguage": lang,
+        "url": `${window.location.origin}${BNAPages.blogUrl(lang)}`,
+        "publisher": {
+          "@type": "Organization",
+          "name": BNAContent.site.publisher,
+        },
+        "blogPost": posts.map((post) => ({
+          "@type": "BlogPosting",
+          "headline": post.title,
+          "description": post.metaDescription,
+          "url": `${window.location.origin}${BNAPages.postUrl(post)}`,
+          "articleSection": post.category,
+          "inLanguage": post.lang,
+        })),
+      });
+    }
+
+    function renderBlogPage() {
+      renderFilters();
+      renderPosts();
+      renderBlogJsonLd();
+    }
+
+    renderBlogPage();
+
+    if (BNAContent.loadPublishedPosts) {
+      BNAContent.loadPublishedPosts().then(() => {
+        posts = BNAContent.getPosts(lang);
+        renderBlogPage();
+      });
+    }
+  </script>
+</body>
+</html>

@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thank You | Bnei Nevi'im Academy</title>
+    <meta name="theme-color" content="#1e3a5f">
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/favicon.ico" sizes="any">
+    <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png">
+    <link rel="icon" href="/icons/favicon-16.png" sizes="16x16" type="image/png">
+    <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
     <style>
@@ -159,13 +165,13 @@
             <div class="eyebrow">Bnei Nevi'im Academy</div>
             <h1 id="headline">Thank you for signing up.</h1>
             <p class="lead" id="lead">
-                It is an honor to have the opportunity to teach your child Torah and to welcome your family into the Bnei Nevi'im Academy process.
+                Your registration has been received.
             </p>
         </section>
 
         <section class="content">
             <p class="message" id="message">
-                Thank you for your submission. Please let us know if you have any questions and our team will be happy to help.
+                Thank you for your submission.
             </p>
 
             <div class="note" id="note">
@@ -176,9 +182,7 @@
                 <a class="btn btn-secondary" href="/">Return Home</a>
             </div>
 
-            <p class="small" id="small">
-                Questions? Reach out and we will be glad to help.
-            </p>
+            <p class="small" id="small"></p>
         </section>
     </main>
 
@@ -201,10 +205,10 @@
             document.documentElement.dir = 'rtl';
             document.body.style.fontFamily = 'Inter, sans-serif';
             headlineEl.textContent = 'תודה על ההרשמה.';
-            leadEl.textContent = 'זו זכות עבורנו לקבל את ההזדמנות ללמד את בנכם תורה ולהכיר את משפחתכם.';
-            messageEl.textContent = 'תודה על שליחת הטופס. אם יש לכם שאלות, נשמח לעזור.';
+            leadEl.textContent = 'ההרשמה התקבלה.';
+            messageEl.textContent = 'תודה על שליחת הטופס.';
             homeButton.textContent = 'חזרה לדף הבית';
-            smallEl.textContent = 'שאלות? כתבו לנו ונשמח לעזור.';
+            smallEl.textContent = '';
         }
 
         if (payment === 'credit') {
@@ -230,6 +234,7 @@
             noteEl.textContent = lang === 'he'
                 ? 'ההרשמה התקבלה ונרשמה אצלנו להמשך מעקב על תשלום במזומן.'
                 : 'Your registration has been received and marked for cash follow-up internally.';
+            smallEl.textContent = '';
         }
     </script>
 </body>
