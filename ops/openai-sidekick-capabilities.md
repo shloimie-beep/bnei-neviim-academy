@@ -22,7 +22,7 @@ OpenAI receives summarized context from:
 - `MEMORY.md`
 - `TASKS.md`
 - `SYSTEM-STATE.md`
-- newest `tasks-pending/*.md` briefs
+- internal Codex handoff notes from `tasks-pending/*.md`
 - today's `memory/YYYY-MM-DD.md`
 - `ops/agent-task-ledger.jsonl` tail
 - `ops/agent-changelog.md` tail

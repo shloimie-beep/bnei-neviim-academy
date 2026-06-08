@@ -6,6 +6,416 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-06-07T16:09:29+03:00 - Add signup Tuition Agreement signature flow
+
+Codex added the first required parent document signature flow to the public
+signup process.
+
+Changes:
+- Added `Bnei Neviim Academy Tuition Agreement` version `2026-06-07-v1`.
+- Public English and Hebrew signup pages now include a Tuition Agreement card
+  before the waiver. Parents must open a large readable modal and click the
+  signature button at the bottom.
+- The UI states that clicking the button is the parent electronic signature.
+- The signature is tied to Parent 1 name and Parent 1 email. Changing either
+  after signing resets the signature.
+- `/api/submit` now requires the tuition agreement signature and rejects
+  unsigned or signer-mismatched submissions.
+- Signup rows store tuition agreement summary fields.
+- New table `bna_signup_agreement_signatures` stores detailed document
+  signatures with signup id, agreement type/title/version, text snapshot,
+  signer name/email, server timestamp, client click timestamp, IP, user agent,
+  and metadata for this and future required documents.
+- Updated live app smoke signup dry-run payload to include tuition signature
+  data.
+
+Verification:
+- PASS `node --check server.js`
+- PASS signup inline scripts parse for `public/signup.html` and
+  `public/signup-he.html`
+- PASS `npm test` 33/33
+- PASS Railway deployment `591f5ddc-fc87-4c34-a47f-a30d4e0d6932`
+- PASS Railway doctor
+- PASS `npm run app:smoke -- --require-drive`:
+  `ops/live-smokes/2026-06-07T13-07-54-405Z-live-app-smoke.md`
+- PASS targeted live browser check: modal opens, tuition text appears, signing
+  marks the agreement signed, and changing Parent 1 resets it
+- PASS targeted API checks: unsigned and signer-mismatched dry-run submissions
+  are rejected
+- PASS `npm run openai:smoke`:
+  `ops/openai-smokes/2026-06-07T13-09-23-353Z-openai-sidekick-smoke.md`
+
+- source: codex
+- worker: Codex
+
+## 2026-06-07T15:39:21+03:00 - Merge duplicate Accounting roster rows
+
+Codex fixed the duplicate rows that appeared in the Operations Accounting
+section after paid intake records were reconciled into signup rows.
+
+Root cause:
+- The Accounting roster included active signups plus any intake row not marked
+  `completed` or `ignored`.
+- Reconciled intake rows were marked `matched`, so they still displayed beside
+  their new signup rows.
+
+Change:
+- Added a shared unresolved-intake filter in `public/operations.html`.
+- Accounting now displays payment-intake rows only when they are genuinely
+  unresolved. `matched`, `completed`, and `ignored` intake rows remain in the
+  database/history but do not duplicate the family roster card.
+
+Live verification:
+- Accounting Payments view now shows 5 rows exactly: Hillel Baraka, Huda
+  Weber, Amitai Kosofsky, Eitan Chaim Golombo, and Menachem Mendel Dratler.
+- Summary shows `Total records=5`, `Paid=4`, `Open=1`, `Needs signup=0`,
+  `Partial=1`, and no duplicate student names.
+
+Verification:
+- PASS Operations inline scripts parse
+- PASS `npm test` 33/33
+- PASS Railway deployment `85378409-0914-434f-bb66-d82951de65e5`
+- PASS targeted live Playwright Accounting roster check
+- PASS Railway doctor
+- PASS `npm run app:smoke -- --require-drive`:
+  `ops/live-smokes/2026-06-07T12-38-57-821Z-live-app-smoke.md`
+
+- source: codex
+- worker: Codex
+
+## 2026-06-07T15:28:17+03:00 - Fix homepage Blog carousel and reconcile paid intake records
+
+Codex completed the operator's follow-up audit that some visible and hidden
+work might still be sitting unfinished.
+
+Changes:
+- Public homepage Blog now uses a one-row horizontal carousel instead of
+  stacking all blog cards down the page. Desktop shows three cards at a time,
+  tablet narrows card width, mobile remains a one-card carousel, and category
+  filters reset the row to the first card.
+- Added admin-only `POST /api/bna/payment-intake/reconcile-paid` for safe,
+  repeatable reconciliation of paid intake records that do not yet have
+  official signup forms.
+- Reconciled Nikki Weber / Huda Weber into signup #9 and payment log #5:
+  ILS 1000 paid by Green Invoice on 2026-05-25, next due 2026-06-25.
+- Reconciled Shalom Galambo / Eitan Chaim Golombo into signup #10 and payment
+  log #6: ILS 1000 paid cash on 2026-05-25, next due 2026-06-25.
+- Production now reports zero `needs_signup` payment-intake records. Braka /
+  Hillel Baraka remains partial with ILS 800 paid and ILS 200 remaining.
+- Created hidden-work audit report:
+  `ops/system-audits/2026-06-07-forgotten-work-and-accounting-audit.md`.
+
+Verification:
+- PASS `node --check server.js`
+- PASS `npm test` 33/33
+- PASS Railway deployment `d012de8b-aea5-43ce-a9af-1ea1ec572eba`
+- PASS protected Accounting readback
+- PASS homepage Blog Playwright desktop/mobile carousel check
+- PASS `npm run openai:smoke`:
+  `ops/openai-smokes/2026-06-07T12-30-22-849Z-openai-sidekick-smoke.md`
+- PASS `npm run app:smoke -- --require-drive`:
+  `ops/live-smokes/2026-06-07T12-30-09-485Z-live-app-smoke.md`
+
+- source: codex
+- worker: Codex
+
+## 2026-06-07T15:01:15+03:00 - Reconcile Braka partial Green Invoice payment
+
+Codex reconciled the operator-provided Green Invoice details for the Braka /
+Baraka family.
+
+Live data now shows:
+- Signup #7 Naomi Braka / Hillel Baraka: `payment_status=partial`,
+  `payment_method=green_invoice`, `payment_amount=800.00`, transaction
+  `DP488806585`, received 2026-06-01 09:16, with ILS 200.00 remaining.
+- Payment intake #7: linked to signup #7, payer Mordechai Braka, student
+  Hillel Baraka, amount ILS 800.00, method green_invoice, status `matched`.
+- Payment log #4: completed ILS 800.00 Green Invoice payment with card-ending
+  note `6609`.
+- Braka no longer appears in the `needs_signup` payment-intake list.
+
+Audit result:
+- Live app tasks: 102 total, 1 active.
+- Only active task: #147 `Complete Google Business Profile Task`, assigned to
+  Shloimie from content job #24.
+- Agent fleet is running with pending 0 and in_progress 0.
+- Remaining paid-intake records needing signup/matching are Nikki Weber / Huda
+  Weber and Shalom Galambo / Eitan Chaim.
+
+Verification:
+- PASS live protected API check for signups, payment intake, payment log,
+  tasks, and agent fleet status.
+
+- source: codex
+- worker: Codex
+
+## 2026-06-07T12:58:23+03:00 - Fix Telegram OpenAI Operations visibility
+
+Codex fixed the Telegram OpenAI sidekick gap where broad operations questions
+could be answered from transcript/topic context instead of the live dashboard.
+
+Changes:
+- Expanded the BNA app snapshot passed to OpenAI/Kimi API fallback with
+  Operations UI sections, subtabs, visible actions/buttons, task lane counts,
+  active task details/comments, implementation briefs, agent fleet status,
+  students/accountability/Torah, devices/rules, content jobs/prompts/bundles,
+  contacts/accounting, reminders, and recent webhook summaries.
+- Tightened transcript-topic intent detection so logistics, scheduling,
+  dashboard sections, pending/queued work, ordering, audits, accountability,
+  payments, contacts, devices, and agent questions use the live app snapshot
+  unless the operator explicitly asks for transcript/class-content topics.
+- Updated the OpenAI sidekick smoke to verify Operations sections, pending
+  briefs, content prompts, devices, protected app endpoints, Drive folders,
+  students, payments, and transcripts.
+- Restarted the local Telegram bridge; current PID is `13056`.
+
+Verification:
+- PASS `node --check scripts/telegram-kimi-bridge.mjs`
+- PASS `node --check scripts/smoke-openai-sidekick.mjs`
+- PASS `npm test` 33/33
+- PASS `npm run openai:smoke`:
+  `ops/openai-smokes/2026-06-07T09-57-22-678Z-openai-sidekick-smoke.md`
+
+- source: codex
+- worker: Codex
+
+## 2026-06-07T11:45:22+03:00 - Deploy Operations app shell
+
+Built the Operations app shell for Telegram task #130. The old top horizontal
+category nav is no longer the dashboard frame; Operations now renders inside a
+left sidebar on desktop and a hamburger-driven left drawer on mobile. Tasks,
+Students, Content, Contacts, and Accounting each have section subtabs with
+route `section` state, and the previous always-on command-center strip no
+longer crowds every screen.
+
+Tasks now opens into an Overview plus focused lanes for Decisions, My Tasks,
+Rabbi Tasks, Codex Queue, Pending Briefs, Changelog, and Done. Students uses
+focused views for Overview, Group Goal, Student List, Student Profile, Goal
+Board, Tablet Access, Questions, and Portal Links. Content, Contacts, and
+Accounting gained functional subtabs/filters without backend schema changes.
+
+Verification passed: `node --check server.js`, inline `public/operations.html`
+scripts parse, `npm test` passed 30/30, local Playwright screenshots confirmed
+desktop sidebar, mobile hamburger drawer, and no 390px horizontal overflow,
+`npm run openai:smoke` passed, Railway deployment
+`542e288f-51f1-4ee6-a905-81010e65eb0a` succeeded, and live smoke passed:
+`ops/live-smokes/2026-06-07T08-44-52-619Z-live-app-smoke.md`.
+
+- source: codex
+- worker: Codex
+
+## 2026-06-07T11:56:10+03:00 - Patch task #130 acceptance misses
+
+Audited the completed task #130 app-shell work against the original Telegram
+spec and patched the missed student-portal/admin-form requirements. The student
+portal no longer renders or binds the Add Goal form, goal title/urgency/category
+inputs, bedtime/wake/access-minute fields, missed-state configuration, or Add
+Goal submit handler. It now shows a read-only notice explaining that goals,
+consequences, bedtime rules, and tablet rules are assigned by the rebbi/admin.
+
+Operations admin Goal Board still preserves all backend fields/actions, but the
+long creation form is now collapsed behind an Add Goal details control instead
+of being permanently visible above the goal list.
+
+Verification passed: inline Operations/Student scripts parse, `npm test` passed
+30/30, `npm run openai:smoke` passed, Railway deployment
+`54a5e5f4-078a-4ce6-b76d-2f60d022e9f1` succeeded, live smoke passed at
+`ops/live-smokes/2026-06-07T08-55-35-102Z-live-app-smoke.md`, and targeted live
+student-portal mobile validation confirmed no Add Goal/configuration text, the
+read-only notice is present, and there is no 390px horizontal overflow.
+
+- source: codex
+- worker: Codex
+
+## 2026-06-06T23:05:28+03:00 - Deploy automatic accountability tablet-access MVP
+
+Implemented the first automatic student accountability access loop. Goal Board
+metadata now separates the student agreement, success access rule, and missed
+goal recovery/consequence. Student-created bedtime/wake-up goals can store
+in-bed/out-of-bed times, the student's chosen rule, a success access duration,
+and the missed-goal locked/accountability-only state.
+
+Student portal checkoff now applies the configured approved-access session
+automatically when a goal first reaches 100 percent. Partial checkoffs do not
+open access, and already-completed goals do not repeatedly reopen access.
+If no tablet record exists, the checkoff still saves and returns a clear
+`no_device_configured` result. Q Studio/Qustodio remains the content filter;
+real Android calls remain disabled until Headwind/FreeKiosk is verified.
+
+Operations Students now has clearer Student Accountability filters for Needs
+Setup, Due Today, Checked Off, Missed, Access Open, Locked, and Needs Review,
+with student cards showing the agreement, deadline, device state, access
+window, and recovery rule.
+
+Verification passed: `node --check server.js`, inline Operations/Student script
+compile, `npm test` 30/30, `npm run openai:smoke`, Railway doctor, and
+`npm run app:smoke -- --require-drive`. Final Railway deployment:
+`ed79c92e-605e-4732-9bec-bf67a71e506e`. Final live smoke:
+`ops/live-smokes/2026-06-06T20-07-35-433Z-live-app-smoke.md`.
+
+- source: codex
+- worker: Codex
+
+## 2026-06-07T06:00:44+03:00 - Deploy BNA Command Center UI cleanup
+
+Implemented the first-pass UI redesign across the Operations app and student
+portal without schema changes. Operations now has a top Daily Command Center
+for decisions, Codex queue, student accountability, tablet/device issues,
+content review, and payment exceptions. Task rows are easier to scan, student
+accountability cards show agreement/device/checkoff signals first, Content
+cards show compact next actions with details collapsed, and Accounting is back
+to one roster-style payment table without reminder/audit clutter. The student
+portal now starts with boy-facing My Agreement, Check Off, Tablet Access, and
+Torah/Trip status cards. Shared public CSS also keeps blog cards equal-height
+and normalizes spacing/motion.
+
+Verification passed: inline Operations/Student scripts compile, `npm test`
+passed 30/30, `npm run openai:smoke` passed, Railway deployment
+`683dc322-538e-4ca0-bdb5-272c194d9861` succeeded, and live app smoke passed at
+`ops/live-smokes/2026-06-07T03-00-07-526Z-live-app-smoke.md`.
+
+- source: codex
+- worker: Codex
+
+## 2026-06-05T20:27:48+03:00 - Make pending briefs visible in Operations task manager
+
+Added a protected Operations pending-briefs API that reads `tasks-pending/*.md`,
+classifies each handoff as Planned, Implementing, Verified, or Deployed, and
+applies work-lane badges for Goal Board, device control, Rabbi bot, UI,
+Drive/content, and parsing work.
+
+Operations Tasks now has a Pending Briefs focus with lifecycle counts, lifecycle
+filters, project/date filtering, read-only brief cards, source status notes, and
+copyable file paths. Markdown planning handoffs remain visible as planning or
+implementation records instead of being implied done by the existence of a plan.
+
+Verification passed: `node --check server.js`, inline `public/operations.html`
+script compilation with Node `vm.Script`, `npm test` (27/27), a local
+tasks-pending classifier smoke, a mocked Playwright Operations UI smoke, and
+`node --check scripts/telegram-kimi-bridge.mjs`.
+
+- source: codex
+- worker: Codex
+
+## 2026-06-06T22:06:21+03:00 - Fix Operations dashboard load and task lane readability
+
+Fixed the live Operations dashboard failure caused by the content-bundles API
+querying a non-existent `bna_content_jobs.summary` column. The API now derives
+bundle source summaries from parsed JSON, caption, or notes. Added
+`/api/bna/content-bundles` to the live app smoke so this class of dashboard
+load failure is caught before a deploy is considered verified.
+
+Cleaned the Task Manager UI with a visible current-view/filter strip, one-click
+jumps for Decisions, My Work, Rabbi, and Codex, active-filter pills, and a clear
+filters button. Added a separate Rabbi task lane so Rabbi Elie work no longer
+gets hidden inside My Tasks.
+
+Verification passed: Operations inline JS compile, `node --check server.js`,
+`node --check scripts/smoke-live-app.mjs`, `npm test` 27/27,
+`npm run openai:smoke`, Railway doctor, and live app smoke with Drive required.
+Final Railway deployment: `f9579ea6-3623-4af6-810c-4fb2e0b1515e`. Live smoke
+report: `ops/live-smokes/2026-06-06T19-08-26-630Z-live-app-smoke.md`.
+
+- source: codex
+- worker: Codex
+
+## 2026-06-06T21:44:00+03:00 - Complete first plain-English Remotion render smoke
+
+Sub-agent Bohr ran the first operator-directed plain-English Remotion edit using
+the available fallback source `renders/remotion-source-smoke-input.mp4` because
+no fresh non-generated video was present in `media-drop/` or `uploads/`.
+
+Output MP4:
+`renders/20260606-operator-plain-english-remotion-edit.mp4`.
+Report:
+`ops/remotion-smokes/2026-06-06-operator-plain-english-edit.md`.
+
+Verified result: MP4 rendered successfully at `1920x1080`, `30 fps`, `2.56s`,
+`361269` bytes. No app/server/package files were edited by the sub-agent.
+
+- source: subagent
+- worker: Bohr
+
+## 2026-06-06T21:52:29+03:00 - Deploy newsletter review bundles and sub-agent closeout
+
+Spawned parallel agents for backlog audit, Remotion render verification,
+stale-family cleanup audit, newsletter workflow scoping, payment/signup
+reconciliation, and Telegram/GHL publish verification.
+
+Implemented the first richer weekly newsletter review flow in Operations
+Content. The dashboard now exposes weekly newsletter review bundles with source
+lists, generate/regenerate, editable draft textarea, save edits, approve/save
+example, and archive. Actual parent email sending remains intentionally out of
+scope until recipient preview, test-send, and typed-confirmation live-send rules
+are built.
+
+Fixed approval semantics so newsletter/WhatsApp-style outputs are marked
+`approved` when approved, not `published`, unless the output actually publishes
+externally such as a website blog or GHL Facebook draft.
+
+Sub-agent reports created:
+- `ops/remotion-smokes/2026-06-06-operator-plain-english-edit.md`
+- `ops/system-audits/2026-06-06-stale-family-cleanup-audit.md`
+- `ops/system-audits/2026-06-06-payment-signup-reconciliation-agent-e.md`
+- `ops/system-audits/2026-06-06-agent-f-telegram-ghl-publish-workflow-verification.md`
+- `tasks-pending/2026-06-06-newsletter-review-send-workflow.md`
+
+Verification passed: `node --check server.js`, Operations inline script compile,
+`npm test`, `npm run openai:smoke`, Railway doctor, and `npm run app:smoke --
+--require-drive`. Railway deployment:
+`49be9d9b-c83e-4b1b-9361-b026b0917ed0`. Latest live smoke:
+`ops/live-smokes/2026-06-06T18-52-29-196Z-live-app-smoke.md`.
+
+- source: codex
+- worker: Codex + subagents
+
+## 2026-06-06T21:38:20+03:00 - Add safe Facebook account selection for GHL drafts
+
+Hardened server-side Facebook draft creation so Content approval no longer
+silently chooses the first connected Facebook account. The app now uses the
+single active Facebook account, or the configured
+`GHL_DEFAULT_FACEBOOK_ACCOUNT_ID`; if multiple active Facebook accounts exist
+without a default, it refuses to create the draft and returns a clear setup
+hint. Added the variable to `.env.example` and exposed default-account status
+in GHL diagnostics.
+
+Verification passed: `node --check server.js`, `npm test`, `npm run
+openai:smoke`, Railway doctor, and `npm run app:smoke -- --require-drive`.
+Railway deployment: `38253aaf-4c05-4bb8-9e6b-5727dc856a19`. Latest live smoke:
+`ops/live-smokes/2026-06-06T18-39-30-826Z-live-app-smoke.md`. That final
+smoke reports GHL diagnostics green: configured, 1 Facebook account, 3 other
+social accounts, and posts read OK.
+
+- source: codex
+- worker: Codex
+
+## 2026-06-06T21:33:33+03:00 - Add live app smoke and close verified image-lane tasks
+
+Added `npm run app:smoke` with live checks for public health, Operations login
+session, protected dashboard APIs, public/admin Torah cumulative progress, task
+create/comment/delete cleanup, protected signup submit dry-run validation, GHL
+diagnostics, and Drive Website Images lane visibility.
+
+Added an admin-only `dry_run` path to `/api/submit` so production signup
+validation can be smoke-tested without writing signup/student/payment records
+or sending Telegram/Gmail/GHL side effects. Also sanitized task sources in
+`createTaskFromText` so unsupported source strings fall back to `manual`
+instead of producing a database constraint 500.
+
+Verified the existing Drive Website Images automation: `/website_images`,
+`npm run website:ingest-image`, and the idle bridge watcher are wired to the
+dedicated `BNA V2 / 00 Upload Here - Website Images` folder. Marked the related
+TASKS entries and pending brief as implemented. Railway deployment:
+`39b175a8-da2e-4bb4-9160-42c6ee6cb082`. Latest live smoke report:
+`ops/live-smokes/2026-06-06T18-32-32-620Z-live-app-smoke.md`.
+
+GHL diagnostics are reachable but currently report an account-side PIT/scope
+401, so full GHL publish smoke remains blocked until HighLevel token scopes are
+updated.
+
+- source: codex
+- worker: Codex
+
 ## 2026-06-05T15:51:28+03:00 - Build One Time Mishnah Class project workspace model
 
 Implemented the One Time Mishnah Class workspace model on the existing
@@ -1385,6 +1795,40 @@ agent-fleet dry run, `npm test`, and `npm run openai:smoke`.
 - source: codex_cli
 - worker: Codex
 
+## 2026-06-05T17:12:39+03:00 - Clean agent output and add OpenAI research mode
+
+Audited the operator report that Telegram produced a crazy-long output. Root
+cause was task #100: the agent fleet wrote raw Codex CLI failure output and the
+full worker prompt into visible `verification_notes`. That text then surfaced in
+the Operations/Telegram trail.
+
+Updated `scripts/agent-fleet-supervisor.mjs` so future failures use concise
+summaries in Telegram and task notes, while raw output remains in
+`ops/agent-fleet-runs/` reports. Cleaned task #100's visible note.
+
+Added an OpenAI Responses `web_search` path to the Telegram OpenAI mode for
+research/current/API/framework/YouTube/SEO/AEO/GEO-style questions. Normal
+content edits and ordinary chat remain on the faster existing provider path.
+
+Updated Telegram prompts so product/strategy/system questions are answered
+directly first with recommendations/tradeoffs, and useful proactive
+recommendations are labeled as suggestions instead of surprise questions.
+
+Marked live tasks #100 and #101 done/verified. Latest verification passed:
+`node --check scripts/telegram-kimi-bridge.mjs`,
+`node --check scripts/agent-fleet-supervisor.mjs`, live OpenAI Responses
+web-search smoke, `npm test` with 20 passing tests, and `npm run openai:smoke`
+showing active Codex tasks `0`.
+
+Telegram bridge caveat: an access-denied stale poller PID `178552` remains
+connected and could not be killed from the current shell. The duplicate new
+bridge was stopped to end `409 Conflict` errors; newest bridge code will become
+live after PID `178552` is killed from an elevated process manager and the bridge
+is restarted.
+
+- source: codex_cli
+- worker: Codex
+
 ## 2026-06-05T12:02:29+03:00 - Complete agent task #43: Finish website image intake and non-redundant blog publishing workflow
 
 The agent fleet claimed this Codex-owned task, ran Codex CLI, then ran the verifier phase before marking the task done.
@@ -1408,6 +1852,112 @@ Verification:
 Report: ops/agent-fleet-runs/2026-06-05T12-02-29-545Z-task-43.md
 
 - source: agent_fleet
+- worker: Codex
+
+## 2026-06-07T12:46:50+03:00 - Final acceptance for split Telegram UI redesign
+
+Codex completed the final acceptance pass for the broken-up Telegram UI
+redesign prompt across messages 425-428/task #130 after the later Railway
+deployment `a8fa5789-224c-4b2a-b4f9-9dbe21e15f41`.
+
+Verified live Operations behavior:
+- Student Profile shows collapsed sections for Torah admin, Goal Board items,
+  questions, notes, tablet access, portal link, and private notes.
+- Content Library keeps filters/details collapsed; Prompts show View/Edit Prompt,
+  Make output, and draft status controls.
+- Contacts shows compact roster cards with selected parent/student detail,
+  WhatsApp/follow-up/student actions, source/language fields, tags, and timeline.
+- Accounting Overview shows summary cards without dumping the full roster table.
+- Mobile checks showed no 390px horizontal overflow.
+
+Verification:
+- PASS final live UI acceptance:
+  `ops/system-audits/2026-06-07-ui-redesign-final-acceptance-1780825809195.json`
+- PASS latest live app smoke:
+  `ops/live-smokes/2026-06-07T09-38-15-451Z-live-app-smoke.md`
+- PASS Telegram bridge remains live on PID `211292`
+
+- source: codex
+- worker: Codex
+
+## 2026-06-07T12:40:01+03:00 - Remove generic pending task lane wording
+
+Audited the live Operations task queue for Telegram task #140. The only active
+records were the clarified Codex task #140 and its superseded decision record
+#139; both are now closed in the live app. Operations Tasks no longer presents
+generic pending work as its own lane; work belongs in Decisions, My Tasks, Rabbi
+Tasks, Codex Queue, Implementation Briefs, Changelog, Done, or Archive.
+
+Follow-up cleanup renamed the remaining Accounting `Open/Pending` tab to
+`Needs Attention` while preserving the unpaid/partial/review data underneath.
+The durable rule is now recorded in `MEMORY.md` and `AGENTS.md`.
+
+Verification passed: live task audit showed 0 active ambiguous tasks after
+closure, `node --check server.js`, `node --check scripts/telegram-kimi-bridge.mjs`,
+`node --check scripts/agent-fleet-supervisor.mjs`, inline Operations scripts
+parsed, JSONL ledger parsed, `npm test` passed 33/33, `npm run openai:smoke`
+passed, Railway deployment `e7f9b74b-db3f-43cf-85eb-a35aff61b21e` succeeded,
+Railway doctor passed, live smoke passed at
+`ops/live-smokes/2026-06-07T09-43-40-789Z-live-app-smoke.md`, and authenticated
+live HTML verification confirmed `Needs Attention` is present with no
+`Open/Pending` or `Open / Pending` label. Live closed task titles #139 and
+#140 were also cleaned into concise titles while keeping raw Telegram wording
+only in provenance fields.
+
+- source: codex
+- worker: Codex
+
+## 2026-06-07T12:38:59+03:00 - Remove generic Tasks pending state for task #140
+
+Codex audited the live task queue and updated the Tasks dashboard so "pending"
+is no longer a generic visible task state.
+
+Changes:
+- Renamed the visible Tasks "Pending Briefs" subtab/card to "Implementation
+  Briefs".
+- Changed Codex status wording from pending to queued.
+- Changed assigned task badges from Pending to Ready.
+- Preserved accounting/payment pending language, because that is a real payment
+  status rather than a task-management lane.
+- Marked stale/superseded app records #134, #139, and #140 done/verified; the
+  live app now reports 0 active tasks.
+
+Verification:
+- PASS `node --check server.js`
+- PASS inline `public/operations.html` and `public/student.html` scripts parse
+- PASS `npm test` 33/33
+- PASS `npm run openai:smoke`
+- PASS Railway deployment `a8fa5789-224c-4b2a-b4f9-9dbe21e15f41`
+- PASS `npm run railway:doctor`
+- PASS `npm run app:smoke -- --require-drive`:
+  `ops/live-smokes/2026-06-07T09-37-45-977Z-live-app-smoke.md`
+- PASS targeted live Operations mobile check: Implementation Briefs and queued
+  Codex wording are visible, old task pending wording is absent, and 390px
+  horizontal overflow is 0
+
+- source: codex
+- worker: Codex
+
+## 2026-06-05T19:13:10+03:00 - Completed UI visibility fix after app appeared unchanged
+
+Stopped the stuck child Codex worker for task #103, completed the visible UI/status work manually, deployed it to Railway, and marked live task #103 done/verified.
+
+Changes:
+- Public homepage Torah trip fallback now shows the cumulative 15% migration state for all five boys instead of a misleading 100% loading shell.
+- Torah student progress cards now use equal centered layout with the progress bar anchored consistently.
+- Operations Tasks now includes a Codex Queue Visibility panel with pending, in-progress, and urgent/today counts.
+- Added `/api/bna/agent-fleet/status` GET/POST, a `bna_agent_runtime_status` heartbeat table, and supervisor heartbeat writes.
+- Restarted the agent fleet watcher; live status now reports running with pending 0 and in_progress 0.
+
+Verification:
+- PASS `node --check server.js`
+- PASS `node --check scripts/agent-fleet-supervisor.mjs`
+- PASS `node --check scripts/telegram-kimi-bridge.mjs`
+- PASS `npm test` with 20 tests
+- PASS Railway deploy `a8cd4701-626d-4687-ae76-4473fde571ab`
+- PASS live smoke for homepage 15%, service worker `bna-public-v5`, Operations agent panel, and agent status API
+
+- source: codex_cli
 - worker: Codex
 
 ## 2026-06-05T15:16:20+03:00 - Complete task #98: Fix Telegram replies that appear cut off after capture summaries
@@ -1667,3 +2217,605 @@ Report: ops/agent-fleet-runs/2026-06-05T12-56-48-445Z-task-100.md
 
 - source: agent_fleet
 - worker: Codex
+
+## 2026-06-05T16:01:41+03:00 - Agent task #103 blocked: Handle UI updates after killing a process
+
+The agent fleet claimed this Codex-owned task but did not mark it complete because the Codex run or verifier phase failed.
+
+Codex result:
+2026-06-05T15:56:39.320466Z  WARN codex_core::shell_snapshot: Failed to create shell snapshot for powershell: Shell snapshot not supported yet for PowerShell
+
+Verification:
+
+
+Report: ops/agent-fleet-runs/2026-06-05T16-01-41-916Z-task-103.md
+
+- source: agent_fleet
+- worker: Codex
+
+## 2026-06-05T19:34:45+03:00 - Implement Student Goal Board MVP in app UI
+
+Built the first app-side Student Goal Board MVP on the existing private student
+portal and Operations Students surfaces.
+
+The student portal now shows read-only Torah trip/today/morning status rings,
+EN/HE switching, Today/Upcoming/Waiting/Done filters, student-created goals,
+goal cards with source/urgency/due/progress/check-in notes, Classroom links,
+and recovery paths. The portal response is student-safe and does not expose raw
+private meeting/admin notes or private Torah minutes/types.
+
+Operations Students now has a Goal Board admin panel for admin/self/Classroom/
+private-meeting items, local Classroom draft links, private admin notes,
+recovery paths, approval-required waiting states, progress controls, archive
+controls, and consequence review actions. Missed overdue device-linked goals
+create pending review metadata instead of applying any device action.
+
+Added `src/lib/bna/goal-board.js` plus focused tests for bucket behavior,
+student-safe privacy, and pending-review consequence behavior.
+
+Verification passed: `node --check server.js`, `node --check
+src/lib/bna/goal-board.js`, `node --check tests/goal-board.test.js`, inline
+script VM compile for `public/operations.html` and `public/student.html`,
+`npm test` (23/23), `node --check scripts/telegram-kimi-bridge.mjs`, `node
+--check scripts/agent-fleet-supervisor.mjs`, `git diff --check`, and a
+short-lived mocked Playwright UI smoke with screenshots under `screenshots/`.
+
+- source: codex_cli
+- worker: Codex
+
+## 2026-06-05T16:37:10+03:00 - Complete agent task #108: Implement Student Goal Board MVP in app UI
+
+The agent fleet claimed this Codex-owned task, ran Codex CLI, then ran the verifier phase before marking the task done.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Implemented the Student Goal Board MVP in the app UI: private student portal now has read-only Torah rings, EN/HE toggle, Today/Upcoming/Waiting/Done filters, student-created goals, safe cards, Classroom links, check-in notes, and recovery paths. Operations Students now has admin Goal Board controls for admin/self/Classroom/private-meeting items, private admin notes, approval-required waiting states, progress/archive/review actions, and missed overdue device-linked goals create pending review only.
+
+VERIFICATION: `node --check server.js`; `node --check src/lib/bna/goal-board.js`; `node --check tests/goal-board.test.js`; inline VM compile for `public/operations.html` and `public/student.html`; `npm test` passed 23/23; `node --check scripts/telegram-kimi-bridge.mjs`; `node --check scripts/agent-fleet-supervisor.mjs`; `git diff --check` had only existing LF/CRLF warnings; mocked Playwright UI smoke passed with screenshots.
+
+FILES: [server.js](</C:/Users/User/BNA v2.0/server.js>), [public/student.html](</C:/Users/User/BNA v2.0/public/student.html>), [public/operations.html](</C:/Users/User/BNA v2.0/public/operations.html>), [src/lib/bna/goal-board.js](</C:/Users/User/BNA v2.0/src/lib/bna/goal-board.js>), [tests/goal-board.test.js](</C:/Users/User/BNA v2.0/tests/goal-board.test.js>), [ops/agent-changelog.md](</C:/Users/User/BNA v2.0/ops/agent-changelog.md>), [
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- PASS npm test
+- PASS npm run openai:smoke
+
+Report: ops/agent-fleet-runs/2026-06-05T16-37-10-804Z-task-108.md
+
+- source: agent_fleet
+- worker: Codex
+
+## 2026-06-05T19:56:19+03:00 - Build tablet access accountability mock provider and approval UI
+
+Built the safe app-side tablet access MVP without enabling any real device,
+MDM, kiosk, QStudio, or Qustodio calls.
+
+Added `bna_devices`, `bna_device_access_rules`, and
+`bna_device_access_sessions` to app bootstrap plus a repeatable
+`railway-migration-2026-06-05-device-control-mock.sql` migration. Added a
+server-side mock `DeviceControlProvider` that supports lock, accountability
+only, approved timed access, expired, and manual override states while writing
+explicit `real_device_call: false` provider results.
+
+Operations Students now shows tablet access status per student, mock tablet
+creation, state/session controls, pending device-linked Goal Board reviews, and
+approve/deny/manual override actions that record mock sessions. The student
+portal now shows a read-only access-state strip when a device is configured.
+Real shutoff remains blocked until the exact hardware/provider/admin path is
+confirmed.
+
+Verification passed: `node --check server.js`, `node --check
+src/lib/bna/device-control.js`, inline script VM compile for
+`public/operations.html` and `public/student.html`, `npm test` (27/27), `node
+--check scripts/telegram-kimi-bridge.mjs`, `node --check
+scripts/agent-fleet-supervisor.mjs`, and mocked Playwright UI smokes for
+Operations desktop/mobile and student mobile with screenshots under
+`screenshots/`.
+
+- source: codex_cli
+- worker: Codex
+
+## 2026-06-05T16:59:08+03:00 - Complete agent task #109: Build tablet access accountability mock provider and approval UI
+
+The agent fleet claimed this Codex-owned task, ran Codex CLI, then ran the verifier phase before marking the task done.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Built the mock-only tablet access accountability MVP: device/rule/session tables and migration, server-side mock `DeviceControlProvider`, protected device/session/review APIs, Operations approval UI, student/device status display, and student portal read-only access state. No real MDM, kiosk, QStudio, Qustodio, or tablet calls are enabled. Live task status was not patched.
+
+VERIFICATION: `node --check server.js`; `node --check src/lib/bna/device-control.js`; inline VM compile for `public/operations.html` and `public/student.html`; `npm test` passed 27/27; `node --check scripts/telegram-kimi-bridge.mjs`; `node --check scripts/agent-fleet-supervisor.mjs`; mocked Playwright UI smoke passed for Operations desktop/mobile and student mobile. `git diff --check` had only LF/CRLF warnings.
+
+FILES: [server.js](</C:/Users/User/BNA v2.0/server.js>), [public/operations.html](</C:/Users/User/BNA v2.0/public/operations.html>), [public/student.html](</C:/Users/User/BNA v2.0/public/student.html>), [src/lib/bna/device-control.js](</C:/Users/User/BNA v2.0/src/lib/bna/device-control.js>), [tests/device-control.test.js](</C:/Users/User/BNA v2.0/tests/device-control.test.js>), [railway-migration-2026-06-05-device-control-mock.sql](</C:/Users/User/BNA v2.0/railway-migration-2026-06-05-device-control-mock.sql>), [ops/agent-changelog.md](</C:/Users/User/BNA v2.0/ops/agent-changel
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- PASS npm test
+- PASS npm run openai:smoke
+
+Report: ops/agent-fleet-runs/2026-06-05T16-59-08-906Z-task-109.md
+
+- source: agent_fleet
+- worker: Codex
+
+## 2026-06-05T20:14:12+03:00 - Finish Rabbi Elie One Time scoped task access
+
+Implemented the Rabbi Elie Scheller scoped One Time Telegram/agent profile on
+the existing bridge instead of creating a separate framework. The new
+`rabbi-elie-scheller` profile uses separate runtime lock/log/mode files, loads
+`agents/rabbi-elie-scheller/` context, uses only scoped One Time Operations
+credentials, disables Codex execution by default, and limits app snapshots and
+commands to One Time task/comment collaboration.
+
+Added `npm run telegram:rabbi` and `npm run telegram:rabbi:start`, documented
+the required live token/chat/login values in
+`agents/rabbi-elie-scheller/SETUP.md`, and updated the One Time handoff with the
+remaining live secret values.
+
+Verification passed: `node --check scripts/telegram-kimi-bridge.mjs`, `node
+--check server.js`, `node --check scripts/agent-fleet-supervisor.mjs`, `npm
+test` (27/27), `package.json` parse, PowerShell launcher parse, Operations
+inline script compile, and a short-lived API smoke proving One Time project
+filtering, comments, Rabbi/Shloimie assignment, Decision Required, and scoped
+login restrictions.
+
+- task_id: 110
+- source: codex
+- worker: Codex
+
+## 2026-06-05T17:16:16+03:00 - Complete agent task #110: Finish Rabbi Elie One Time task manager and scoped bot access
+
+The agent fleet claimed this Codex-owned task, ran Codex CLI, then ran the verifier phase before marking the task done.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Finished the Rabbi Elie scoped One Time path in the repo. Added the `rabbi-elie-scheller` Telegram bridge profile, separate runtime files, scoped One Time task/comment capture, scoped prompt context from `agents/rabbi-elie-scheller/`, Codex disabled by default, npm start scripts, and exact setup docs. Live use still needs `TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER`, `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER`, `ONE_TIME_OPS_USERNAME`, and `ONE_TIME_OPS_PASSWORD`.
+
+VERIFICATION: Passed `node --check scripts/telegram-kimi-bridge.mjs`, `node --check server.js`, `node --check scripts/agent-fleet-supervisor.mjs`, `npm test` 27/27, package JSON parse, PowerShell launcher parse, Operations inline script compile, and `git diff --check` with only existing LF/CRLF warnings. Also ran a short-lived API smoke verifying One Time project filters, comments, Rabbi/Shloimie assignee patching, Decision Required, and scoped login blocking Students API.
+
+FILES: `scripts/telegram-kimi-bridge.mjs`, `scripts/start-telegram-kimi-bridge.ps1`, `package.json`, `.env.example`, `agents/README.md`, `agents/rabbi-elie-scheller/SETUP.md`, `tasks-pending/2026-06-05-telegram-ai-mode-and-one-time-rabbi-setup.md`, `MEMORY.md`, `ops/agent-changelog.md`, `ops/agent-task-ledger.jsonl`, inspected `server.js` and `public/operations.html`.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- PASS npm test
+- PASS npm run openai:smoke
+
+Report: ops/agent-fleet-runs/2026-06-05T17-16-16-528Z-task-110.md
+
+- source: agent_fleet
+- worker: Codex
+
+## 2026-06-05T17:28:45+03:00 - Complete agent task #111: Make pending briefs visible in Operations task manager
+
+The agent fleet claimed this Codex-owned task, ran Codex CLI, then ran the verifier phase before marking the task done.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Added a read-only `Pending Briefs` focus in Operations Tasks backed by `/api/bna/pending-briefs`. It reads `tasks-pending/*.md`, labels briefs as Planned, Implementing, Verified, or Deployed, and shows Goal Board, device control, Rabbi bot, UI, Drive/content, and parsing badges without treating markdown plans as completed work.
+
+VERIFICATION: `node --check server.js` passed; inline `public/operations.html` scripts compiled with Node `vm.Script`; `npm test` passed 27/27; local pending-brief classifier smoke passed; mocked Playwright Operations UI smoke passed; `node --check scripts/telegram-kimi-bridge.mjs` passed.
+
+FILES: `server.js`, `public/operations.html`, `ops/agent-changelog.md`; inspected `tasks-pending/*.md`, `AGENTS.md`, `MEMORY.md`, `TASKS.md`.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- PASS npm test
+- PASS npm run openai:smoke
+
+Report: ops/agent-fleet-runs/2026-06-05T17-28-45-988Z-task-111.md
+
+- source: agent_fleet
+- worker: Codex
+
+## 2026-06-06T20:44:49+03:00 - Fix agent fleet completion gate and clean stuck raw task
+
+Audited why completed dashboard/UI work did not appear live: the agent fleet
+marked Codex-owned tasks done after local verification only, without requiring a
+Railway deploy or live smoke. Added a deployment gate to the supervisor so
+deployable app changes must run `npm run railway:redeploy` and
+`npm run railway:doctor` before the live task can be marked done.
+
+Also cleaned live task #99 from raw spoken wording into `Evaluate speaker
+diarization for class recordings`, created
+`tasks-pending/2026-06-06-speaker-diarization-recording-parser.md`, and marked
+the live task done with a clear implementation handoff.
+
+- source: codex
+- worker: Codex
+
+## 2026-06-06T20:59:00+03:00 - Clean historical raw task titles
+
+Cleaned old done/archive task titles #6, #7, #8, #9, #19, #23, #24, #25,
+#26, #28, #29, #62, #63, and #93 so dashboard history no longer displays raw
+spoken fragments. Preserved their closed stages. Live audit afterward returned
+`active_count: 0` and `natural_looking_titles_count: 0`.
+
+- source: codex
+- worker: Codex
+
+## 2026-06-06T21:16:16+03:00 - Complete full task-system closeout audit
+
+Completed the follow-up audit across live tasks, pending briefs, TASKS,
+SYSTEM-STATE, Drive config, Telegram/fleet status, payment reminders, and Torah
+public progress. Fixed the durable Torah drift root cause by making migration
+seeding idempotent and reconciling canonical completed dates so all five
+students show 15 percent and the trip remains locked. Pushed the updated Drive
+pipeline config to Railway, added Telegram `/railway_deploy`, reconciled stale
+TASKS/pending-brief status labels, and wrote
+`ops/system-audits/2026-06-06-closeout-task-system.md`.
+
+Verification passed: `node --check server.js`, `node --check
+scripts/telegram-kimi-bridge.mjs`, `node --check
+scripts/agent-fleet-supervisor.mjs`, `npm test` 27/27, `npm run openai:smoke`,
+Railway doctor, and live API smoke. Final Railway deployment:
+`b3c6d076-8a75-4190-9c3b-26a58ef098b4`.
+
+- source: codex
+- worker: Codex
+
+## 2026-06-07T06:25:30+03:00 - Deploy page-top polish for task #126
+
+Compacted the mobile Operations Daily Command Center into a horizontal summary
+strip so the actual Tasks, Students, Content, Contacts, and Accounting work
+starts much higher on phones. The measured mobile command-center height dropped
+from 1069px to 218px, with the main workspace starting around y=373 instead of
+y=1224.
+
+Also tightened the Student portal landing top alignment on desktop while
+leaving the desktop Operations command center unchanged.
+
+Verification passed: `node --check server.js`, inline
+`public/operations.html` and `public/student.html` scripts parsed with
+`vm.Script`, `npm test` 30/30, `npm run openai:smoke`, Railway deployment
+`389ffda4-febb-4414-b3c4-efd08e7ae99e`, and live smoke
+`ops/live-smokes/2026-06-07T03-24-22-716Z-live-app-smoke.md`.
+
+- source: codex
+- worker: Codex
+
+## 2026-06-07T06:27:01+03:00 - Fix mobile top-of-page layout across BNA pages
+
+Completed agent task #126 follow-up verification. The Operations Daily Command
+Center stays compact across dashboard views on mobile, with horizontally
+scrollable attention cards instead of pushing the actual lane content below the
+first screen. The public homepage mobile entrance animations no longer create
+hidden horizontal page overflow, and live checks confirmed Home, Blog, FAQ,
+Student, and Operations render at 390px width without sideways overflow.
+
+Verification passed: `node --check server.js`, inline public-page script compile,
+`npm test` 30/30, `npm run openai:smoke`, local Playwright visual metrics,
+Railway deploy `85cfdcab-131d-4510-8520-b25e413ee052`, Railway doctor, live app
+smoke `ops/live-smokes/2026-06-07T03-25-17-982Z-live-app-smoke.md`, and live
+mobile visual metrics.
+
+- source: codex
+- worker: Codex
+
+## 2026-06-07T03:31:02+03:00 - Complete agent task #126: Fix the up of all the pages
+
+The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Fixed and deployed the page-top/mobile layout follow-up for task #126. Operations now keeps the shared top Command Center compact on mobile, and the public homepage no longer creates hidden horizontal overflow from mobile entrance animations.
+
+VERIFICATION: `node --check server.js` passed; inline public-page scripts compiled; `npm test` passed 30/30; `npm run openai:smoke` passed; Railway deploy `85cfdcab-131d-4510-8520-b25e413ee052` succeeded; Railway doctor passed; live smoke passed at `ops/live-smokes/2026-06-07T03-25-17-982Z-live-app-smoke.md`; live mobile metrics confirmed no horizontal overflow on Home, Blog, FAQ, Student, and Operations.
+
+FILES: `public/index.html`, `SYSTEM-STATE.md`, `ops/agent-changelog.md`, `ops/agent-task-ledger.jsonl`; inspected/deployed current `public/operations.html` and `public/student.html`.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- PASS npm test
+- PASS npm run openai:smoke
+
+Deployment gate:
+- PASS Deployment gate for app-visible changes.
+- Deployable files: agents/README.md, package.json, public/css/bna-pages.css, public/index.html, public/operations.html, public/student.html, scripts/railway-redeploy.ps1, server.js, src/lib/bna/device-control.js, src/lib/bna/goal-board.js, tasks-pending/2026-06-03-website-moments-and-parser-routing.md, tasks-pending/2026-06-05-qstudio-device-control-checklist.md, and 4 more
+- PASS npm run railway:redeploy
+- PASS npm run railway:doctor
+
+Report: ops/agent-fleet-runs/2026-06-07T03-31-02-579Z-task-126.md
+
+- source: agent_fleet
+- worker: Codex
+
+## 2026-06-07T08:47:21+03:00 - Complete agent task #130: Build an app shell:
+
+The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Built and deployed the Operations app shell for task #130. Operations now uses a desktop left sidebar, mobile hamburger drawer, and section subtabs for Tasks, Students, Content, Contacts, and Accounting. Deployment `542e288f-51f1-4ee6-a905-81010e65eb0a` is live and passed smoke.
+
+VERIFICATION:
+- `node --check server.js` passed
+- Inline `public/operations.html` scripts parsed
+- `npm test` passed 30/30
+- Local Playwright screenshots passed: desktop sidebar, mobile drawer, 390px no overflow
+- `npm run openai:smoke` passed
+- `npm run railway:doctor` passed
+- `npm run railway:redeploy` succeeded
+- `npm run app:smoke -- --require-drive` passed: `ops/live-smokes/2026-06-07T08-44-52-619Z-live-app-smoke.md`
+
+FILES:
+- `public/operations.html`
+- `SYSTEM-STATE.md`
+- `ops/agent-changelog.md`
+- `ops/agent-task-ledger.jsonl`
+- `screenshots/task130-app-shell/`
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- PASS npm test
+- PASS npm run openai:smoke
+
+Deployment gate:
+- PASS Deployment gate for app-visible changes.
+- Deployable files: agents/README.md, package.json, public/css/bna-pages.css, public/index.html, public/operations.html, public/student.html, scripts/railway-redeploy.ps1, server.js, src/lib/bna/device-control.js, src/lib/bna/goal-board.js, tasks-pending/2026-06-03-website-moments-and-parser-routing.md, tasks-pending/2026-06-05-qstudio-device-control-checklist.md, and 4 more
+- PASS npm run railway:redeploy
+- PASS npm run railway:doctor
+
+Report: ops/agent-fleet-runs/2026-06-07T08-47-21-783Z-task-130.md
+
+- source: agent_fleet
+- worker: Codex
+
+## 2026-06-07T12:09:01+03:00 - Patch task #130 Contacts acceptance miss
+
+Codex finished the remaining UI redesign acceptance gap from Telegram task #130: Contacts now renders as compact clickable roster cards with a selected detail panel instead of the legacy dense contacts table.
+
+Verification:
+- PASS inline `public/operations.html` and `public/student.html` scripts compile
+- PASS `npm test` 30/30
+- PASS `npm run openai:smoke`
+- PASS Railway deployment `07feaf4c-960a-4f9f-8be0-153702f31429`
+- PASS `npm run app:smoke -- --require-drive`: `ops/live-smokes/2026-06-07T09-05-39-414Z-live-app-smoke.md`
+- PASS targeted live Operations Contacts check: 4 contact cards, detail panel present, no legacy contacts table, no desktop horizontal overflow
+
+- source: codex
+- worker: Codex
+
+## 2026-06-07T12:22:49+03:00 - Reconcile split Telegram UI redesign spec
+
+Codex audited Telegram messages 425-428 as one broken-up UI redesign spec instead of treating only message 428/task #130 as the source of truth.
+
+Changes:
+- Content now uses focused subtabs: Library, Selected, Repurpose, Newsletter, Prompts, Bundles.
+- Contacts now uses focused subtabs: Parents, Students, Intake, Needs Follow-up, Tags.
+- Accounting now uses focused subtabs: Overview, Payments, Open/Pending, Paid, Needs Signup, Exceptions.
+- Accounting Overview now shows compact totals/attention lists instead of dumping the full payment roster inline.
+- The Telegram bridge now buffers split spec chunks and attaches them to the Codex implementation task as an internal task comment, preventing continuation messages from being orphaned in memory only.
+
+Verification:
+- PASS `node --check scripts/telegram-kimi-bridge.mjs`
+- PASS inline `public/operations.html` and `public/student.html` scripts compile
+- PASS `npm test` 30/30
+- PASS `npm run openai:smoke`
+- PASS Railway deployment `c50bb6a5-5adb-4edb-ba3d-7c34b07b2684`
+- PASS `npm run app:smoke -- --require-drive`: `ops/live-smokes/2026-06-07T09-22-06-026Z-live-app-smoke.md`
+- PASS targeted live mobile Operations check: new Content/Contacts/Accounting subtabs present, Contacts card/detail present, Accounting Overview present, no 390px horizontal overflow
+
+- source: codex
+- worker: Codex
+
+## 2026-06-07T12:31:26+03:00 - Correct Torah trip progress fractions for task #134
+
+Corrected the live Torah progress data flagged from Telegram task #134. The
+stored 2026-06-04 recording rows now preserve the operator's clarified daily
+fractions: Eitan Chaim Golombo 100%, Amitai Kosofsky 100%, Menachem Mendel
+Dratler 50%, Huda Weber 50%, and Hillel Baraka 66.67%.
+
+Cumulative 30-unit trip progress now reflects those actual fractions instead
+of a flat 15% for every student: Amitai and Eitan are 18%, Huda, Hillel, and
+Menachem are 17%, group progress is 17%, and the trip remains locked. Added
+`scripts/fix-torah-progress-task-134.mjs` as a repeatable dry-run/apply repair
+script, made summaries prefer recomputed daily-percentage totals over stale
+uniform snapshots, and hardened the trip reconciliation endpoint so multi-student
+uniform overrides require `apply_uniform_to_all_students: true`.
+
+Verification passed: `node --check server.js`,
+`node --check scripts/fix-torah-progress-task-134.mjs`, `npm test` 33/33,
+`npm run openai:smoke`, Railway deployment
+`8b0152d8-12e3-4d40-b9c7-11ba393eea53`, Railway doctor success, live smoke
+`ops/live-smokes/2026-06-07T09-30-31-386Z-live-app-smoke.md`, targeted public
+Torah summary check, and an unsafe multi-student uniform reconcile negative
+test returning HTTP 400.
+
+- source: codex
+- worker: Codex
+
+## 2026-06-07T09:36:10+03:00 - Complete agent task #134: One more thing to send to I know he changed everything back the 15% for each student but that's not what the actual numbers were so before he changed it back to 15 for everyone there were two students that on Friday t...
+
+The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Corrected task #134 live Torah progress. The 2026-06-04 rows now show Eitan 100%, Amitai 100%, Menachem 50%, Huda 50%, Hillel 66.67%; public cumulative trip progress is now Amitai/Eitan 18%, Huda/Hillel/Menachem 17%, group 17%, trip locked. Deployed a guard so multi-student uniform resets require explicit `apply_uniform_to_all_students: true`, and closed live task #134 with a clean title.
+
+VERIFICATION: `node --check server.js` passed; `node --check scripts/fix-torah-progress-task-134.mjs` passed; `npm test` passed 33/33; correction script dry-run and `--apply` succeeded; live DB/API summary verified; unsafe reset negative test returned HTTP 400; Railway deployment `8b0152d8-12e3-4d40-b9c7-11ba393eea53` succeeded; `npm run railway:doctor`, `npm run openai:smoke`, and `npm run app:smoke` passed.
+
+FILES: `server.js`, `src/lib/bna/torah-learning.js`, `tests/torah-learning.test.js`, `scripts/fix-torah-progress-task-134.mjs`, `MEMORY.md`, `SYSTEM-STATE.md`, `ops/agent-changelog.md`, `ops/agent-task-ledger.jsonl`.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- PASS npm test
+- PASS npm run openai:smoke
+
+Deployment gate:
+- PASS Deployment gate for app-visible changes.
+- Deployable files: agents/README.md, package.json, public/css/bna-pages.css, public/index.html, public/operations.html, public/student.html, scripts/railway-redeploy.ps1, server.js, src/lib/bna/device-control.js, src/lib/bna/goal-board.js, src/lib/bna/torah-learning.js, tasks-pending/2026-06-03-website-moments-and-parser-routing.md, and 5 more
+- PASS npm run railway:redeploy
+- PASS npm run railway:doctor
+
+Report: ops/agent-fleet-runs/2026-06-07T09-36-10-385Z-task-134.md
+
+- source: agent_fleet
+- worker: Codex
+
+## 2026-06-07T09:46:49+03:00 - Complete agent task #140: Yes absolutely if there's nothing that needs my decision or approval they should be moved along the pipeline I don't want that section to exist either there should be no pending is something that there's some sort of...
+
+The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.
+
+Codex result:
+STATUS: done
+
+SUMMARY: Audited the live task queue and closed the loop on task #140. Live active tasks are now `0`; task #139 was superseded and task #140 is done. Removed the remaining visible `Open/Pending` dashboard label by renaming Accounting’s tab to `Needs Attention`, added the durable no-generic-pending rule to repo memory/agent rules, cleaned live task titles #139/#140, deployed, and verified live.
+
+VERIFICATION: `node --check server.js`, `node --check scripts/telegram-kimi-bridge.mjs`, `node --check scripts/agent-fleet-supervisor.mjs`, Operations inline scripts parsed, `npm test` passed 33/33, `npm run openai:smoke` passed, Railway deploy `e7f9b74b-db3f-43cf-85eb-a35aff61b21e` succeeded, Railway doctor passed, `npm run app:smoke -- --require-drive` passed at `ops/live-smokes/2026-06-07T09-43-40-789Z-live-app-smoke.md`, and authenticated live label check confirmed `Needs Attention` present with no `Open/Pending`.
+
+FILES: `public/operations.html`, `MEMORY.md`, `AGENTS.md`, `ops/agent-changelog.md`, `ops/agent-task-ledger.jsonl`; inspected live tasks API, `server.js`, Telegram bridge, fleet supervisor.
+
+Verification:
+- PASS node --check server.js
+- PASS node --check scripts/telegram-kimi-bridge.mjs
+- PASS node --check scripts/agent-fleet-supervisor.mjs
+- PASS npm test
+- PASS npm run openai:smoke
+
+Deployment gate:
+- PASS Deployment gate for app-visible changes.
+- Deployable files: agents/README.md, package.json, public/css/bna-pages.css, public/index.html, public/operations.html, public/student.html, scripts/railway-redeploy.ps1, server.js, src/lib/bna/device-control.js, src/lib/bna/goal-board.js, src/lib/bna/torah-learning.js, tasks-pending/2026-06-03-website-moments-and-parser-routing.md, and 5 more
+- PASS npm run railway:redeploy
+- PASS npm run railway:doctor
+
+Report: ops/agent-fleet-runs/2026-06-07T09-46-49-191Z-task-140.md
+
+- source: agent_fleet
+- worker: Codex
+
+## 2026-06-07T13:37:01+03:00 - Remove planned briefs from operator-facing Tasks
+
+Completed Telegram task #145 from chat `8202155026`, message `475`.
+
+Operations Tasks no longer exposes Planned Briefs, Pending Briefs, or
+Implementation Briefs as a visible subtab, overview card, status strip, or
+workload count. `tasks-pending/*.md` remains available only as internal Codex
+handoff material. The operator-facing task sections are now Overview,
+Decisions, My Tasks, Rabbi Tasks, Codex Queue, Changelog, and Done.
+
+Telegram/OpenAI system snapshots no longer fetch or report pending-brief counts,
+and the parser now routes "remove planned briefs" style dashboard requests to
+Codex, including common speech-to-text `Kodak` wording.
+
+Verification:
+- PASS `node --check server.js`
+- PASS `node --check scripts/telegram-kimi-bridge.mjs`
+- PASS `node --check scripts/agent-fleet-supervisor.mjs`
+- PASS `node --check scripts/smoke-openai-sidekick.mjs`
+- PASS `node --check scripts/smoke-live-app.mjs`
+- PASS Operations inline scripts parsed
+- PASS `npm test` 33/33
+- PASS `npm run openai:smoke`
+- PASS `npm run railway:redeploy`
+- PASS `npm run railway:doctor` after deployment `8da4a8a1-7cf2-424b-9a5d-f4188a116b73` reached SUCCESS
+- PASS `npm run app:smoke -- --require-drive`
+- PASS targeted live mobile Tasks check for `section=overview` and stale
+  `section=briefs`: no visible brief lane and no horizontal overflow
+
+Reports:
+- `ops/openai-smokes/2026-06-07T10-33-12-340Z-openai-sidekick-smoke.md`
+- `ops/live-smokes/2026-06-07T10-33-48-070Z-live-app-smoke.md`
+
+## 2026-06-07T16:53:00+03:00 - Signup package, payment options, and Changelog queue cleanup
+
+Completed the operator's clarification to use the downloaded registration
+documents package and not the old Student Contract file, while also simplifying
+the visible Tasks structure.
+
+Implemented:
+- Operations Tasks now shows Overview, Decisions, My Tasks, and Changelog.
+  Machine-owned work is routed into Changelog from queue through verification;
+  old `codex`, `done`, `rabbi`, `pending`, and `queue` section URLs normalize
+  into the simplified structure.
+- Telegram/OpenAI Operations UI inventory now describes Changelog Queue instead
+  of a separate Codex Queue.
+- Imported the current registration package into
+  `public/documents/bnei_neviim_registration_documents_bilingual_codex.md`,
+  cleaned parent-facing content so implementation notes are not displayed, and
+  removed visible registration-fee wording.
+- Signup now requires a Registration Documents Package signature in addition to
+  the Tuition Agreement signature. Both are tied to Parent 1 name/email and
+  stored in `bna_signup_agreement_signatures`.
+- Signup payment options now support credit, cash, and bank transfer. The
+  default Morning payment link in code is `https://mrng.to/rCH4DWiR5t`.
+- `/api/submit` now accepts `bank_transfer`, rejects unsigned package
+  submissions, and refreshes a matching existing signup instead of blindly
+  creating a duplicate.
+
+Verification:
+- PASS `node --check server.js`
+- PASS inline script parse for Operations, English signup, Hebrew signup, and
+  thank-you pages
+- PASS `npm test` 33/33
+- PASS `npm run openai:smoke`
+- PASS local `/api/submit?dry_run=true` with bank transfer and package
+  signature
+- PASS missing-package dry-run rejected with HTTP 400
+
+Deployment:
+- PASS Railway production `PAYMENT_LINK` updated to
+  `https://mrng.to/rCH4DWiR5t`.
+- PASS Railway deployment `13fbb336-0e5a-4a9d-869e-3cd890d2d57b` reached
+  SUCCESS.
+- PASS Railway doctor.
+- PASS `npm run app:smoke -- --require-drive`
+  (`ops/live-smokes/2026-06-07T14-10-31-637Z-live-app-smoke.md`).
+- PASS targeted live signup readback confirmed Registration Documents Package,
+  bank transfer, and no old parent-facing wording.
+
+## 2026-06-07T21:39:00+03:00 - Signup six-document full-screen signature flow
+
+Completed the follow-up signup redesign so parents sign six separate documents
+instead of one raw package modal or a small waiver box.
+
+Implemented:
+- Added shared `/js/signup-documents.js` document flow for English/Hebrew
+  signup pages.
+- Signup now shows six document cards: Tuition Agreement, Parent Handbook,
+  Student Handbook / Code of Conduct, Safety Acknowledgment and Liability
+  Waiver, Registration / Intake Form, and Parent Agreement / Signature Page.
+- Each document opens in a large modal, full-screen on mobile, and the sign
+  button stays disabled until the parent scrolls to the bottom.
+- `/api/submit` now requires all six `agreement_signatures[]`, validates each
+  signer against Parent 1 name/email, and stores one
+  `bna_signup_agreement_signatures` row per document with server-side text
+  snapshots.
+- Safety waiver signature now preserves the legacy `waiver_accepted=true`
+  compatibility behavior.
+- Live app smoke now covers six signatures, bank transfer, missing document
+  rejection, and mismatched signer rejection.
+
+Verification:
+- PASS `node --check server.js`
+- PASS `node --check public/js/signup-documents.js`
+- PASS English/Hebrew signup inline scripts parsed
+- PASS local signup dry-run valid, missing-signature, and mismatched-signer
+  checks
+- PASS local mobile Playwright signup UI check
+- PASS `npm test` 33/33
+- PASS `npm run openai:smoke`
+- PASS Railway deployment `b01730b7-3736-43eb-90ce-e3354222ed6b`
+- PASS Railway doctor
+- PASS `npm run app:smoke -- --require-drive`
+  (`ops/live-smokes/2026-06-07T18-38-49-806Z-live-app-smoke.md`)
+- PASS live mobile Playwright signup readback for English and Hebrew

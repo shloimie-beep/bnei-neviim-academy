@@ -40,12 +40,18 @@
 - `AGENTS.md`: Durable instructions
 - `MEMORY.md`: Durable facts
 - `TASKS.md`: Active work
-- `tasks-pending/*.md`: current implementation briefs and handoffs
+- `tasks-pending/*.md`: internal Codex implementation handoffs
 - `memory/YYYY-MM-DD.md`: Daily captures
 - BNA app sections are Tasks, Students, Content, Contacts, and Accounting.
+- UI redesign work must preserve existing data, backend fields, business logic,
+  and functionality unless Shloimie explicitly says to remove/change them.
 - Student checkoff links are private access-code portals at `/student.html`;
   public Torah displays must show cumulative 30-unit trip progress, not daily
   completion or private goal minutes/types.
+- Cumulative Torah trip progress counts actual daily completion fractions:
+  full daily goal = 1 unit, half = 0.5, two-thirds = about 0.6667. Do not flatten
+  multiple students to one uniform completed-unit value unless Shloimie
+  explicitly asks for a uniform reset.
 - The selected future student accountability base is a mobile student Goal
   Board: school-tracked Torah/morning progress at the top, read-only for the
   student, with student-owned goals below. Google Classroom YouTube assignments
@@ -56,12 +62,36 @@
   `/blog`, `/blog/:slug`, `/faq`, `/he`, `/he/blog`, `/he/blog/:slug`, and
   `/he/faq`. Future dynamic blog automation should extend this layer rather
   than recreating a separate blog surface.
+- Homepage Blog cards should stay compact: the public homepage Blog section is
+  a horizontal carousel, showing three cards at a time on desktop and scrolling
+  for the rest instead of stacking every blog card down the page.
+- Accounting can contain admin-created signup placeholders for paid families
+  who have not filled out the official signup form. Known information should be
+  filled in, unknown parent contact fields may stay blank, and the record should
+  not remain in `needs_signup` once the payment/student match is clear.
+- Current payment facts after the 2026-06-07 reconciliation: Nikki Weber / Huda
+  Weber paid ILS 1000 by Green Invoice on 2026-05-25 and is signup #9; Shalom
+  Galambo / Eitan Chaim Golombo paid ILS 1000 cash on 2026-05-25 and is signup
+  #10; Braka / Hillel Baraka paid ILS 800 by Green Invoice on 2026-06-01 and
+  still owes ILS 200.
+- Signup required documents should be signed deliberately, not buried as tiny
+  unread checkboxes. The signup flow uses the downloaded 2026-2027 registration
+  document package `bnei_neviim_registration_documents_bilingual_codex.md`; do
+  not use the old Student Contract file. Parents must open large readable
+  document modals, click signature buttons, and the system stores signer
+  name/email, server timestamp, client click timestamp, agreement version, and
+  a text snapshot in `bna_signup_agreement_signatures`.
 - Telegram is the input surface for rambles, decisions, payment notes, and task commands.
 - Google Drive is the operator-facing input surface for raw media and website images; the dashboard monitors status rather than acting as a manual entry screen.
 - Drive should not be the canonical source for brand kit, agent memory, or transcript text. Those live in GitHub under `brand-kit/`, `content-memory/`, and `content-memory/transcripts/`, with the live app database as the working transcript source.
 - Current Drive pipeline under `BNA V2`: upload recordings/videos/audio to `00 Upload Here - Raw Media Intake`; upload website/blog images to `00 Upload Here - Website Images`; processed source media lives in `20 Processed Recordings - Source Media`; approved website assets live in `30 Approved Website Assets`; old redundant workflow folders and the Drive brand mirror live in `_Archive - Legacy Pipeline Folders`.
 - Google Drive Raw Media Intake is also allowed to feed website updates: single dropped images should be candidates for the public website image/learning-moments lane, and uploaded recordings/videos can be candidates for website blog generation after approval.
 - Task stages are Raw Input, Needs Decision, Assigned, In Progress, Done, and Archive.
+- Do not use a generic Pending task lane or visible task bucket. Ambiguous work
+  should be audited into Needs Decision, My Tasks, Changelog Queue/In Progress,
+  Done, or Archive. Machine-owned implementation work belongs in Changelog from
+  queued through verified; there should not be a separate visible Codex Queue
+  lane.
 - Active task owners are Shloimie and Codex.
 - Visible task titles must be refined into normal actionable language; raw Telegram wording belongs only in provenance fields such as `ai_parsed.original_text` or daily memory captures.
 - Telegram task captures should not show per-task owner/status buttons. The parser should infer owner and lane automatically, then summarize the routing in plain text.
@@ -80,13 +110,21 @@
   exports, protected BNA app APIs, Drive folder metadata, live task/student/
   payment/Torah data, and send a Telegram summary. The smoke report writes to
   `ops/openai-smokes/`.
+- Telegram OpenAI mode should use OpenAI Responses `web_search` for research,
+  current-information, API/framework, YouTube/research-tooling, SEO/AEO/GEO, and
+  similar questions where live outside information matters. It should combine
+  web results with BNA repo/app/Drive context, not replace local context.
+- Agent outputs sent to Telegram or visible task notes must be concise
+  summaries. Raw Codex CLI prompts, stack traces, and long logs belong in report
+  files under `ops/agent-fleet-runs/`, not in `verification_notes` or Telegram
+  messages.
 - Telegram completion replies must explicitly say when a requested test, fix, deploy, or verification was accomplished, with the concrete verification result.
 - When Shloimie says `build everything`, he means Codex should choose the order,
   start working through the queued tasks without asking for ordering
   confirmation, and report back as tasks are completed or verified.
 - Codex-owned queued work should be handled by the autonomous agent fleet when
-  possible. The fleet claims live Operations Codex Queue tasks, uses a lock so
-  only one worker edits the repo at a time, runs Codex CLI, runs verifier smokes
+  possible. The fleet claims live Operations Changelog Queue tasks, uses a lock
+  so only one worker edits the repo at a time, runs Codex CLI, runs verifier smokes
   such as `npm test` and `npm run openai:smoke`, writes
   `ops/agent-fleet-runs/`, appends `ops/agent-changelog.md` and
   `ops/agent-task-ledger.jsonl`, updates the live task, and notifies Telegram.
@@ -374,6 +412,12 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   - Shloimie's personal/operator tasks go to My Tasks.
   - Codex/app/code/dashboard/parser/Railway/GHL/Remotion work goes to the machine/Changelog lane.
   - Named student accountability, goal updates, and Torah progress go to Students/accountability records, not general tasks.
+- The Tasks dashboard should not have a generic visible Pending lane or a
+  visible Planned/Implementation Briefs lane. Open work belongs only in
+  Decisions, My Tasks, Changelog Queue/In Progress, Done, or Archive. Machine
+  work should be visible in Changelog from queue to verification.
+  `tasks-pending/*.md` files are internal Codex handoffs, not an operator-facing
+  workload section.
 
 ## Remotion Video Editing Workflow
 
@@ -388,10 +432,26 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 
 - Plain Telegram messages to the academy bot should use OpenAI API first for
   ordinary conversation, tone/content refinement, and brainstorming.
+- For dashboard/system questions, OpenAI must receive and use the live Operations
+  snapshot first: sections, subtabs, visible actions/buttons, task lanes,
+  task records/comments, students/accountability, content/prompts/bundles,
+  contacts/accounting, devices, agent fleet status, and recent updates.
+- Transcript/topic inventory should only answer explicit transcript/class-content
+  requests. Logistics, scheduling, pending/queued work, section ordering, task
+  audits, and dashboard questions should use live app/system data instead of
+  transcript summaries.
 - Development conversations should still feel like talking to Codex in the repo:
   Codex may inspect, edit, test, and summarize work when the operator asks for
   repo, code, database, bridge, deploy, or dashboard changes.
 - Kimi remains fallback only for API/model-provider failures or legacy records.
+
+## Current Accounting Facts
+
+- As of 2026-06-07, Naomi/Mordechai Braka for Hillel Baraka is partially paid:
+  ILS 800.00 via Green Invoice transaction `DP488806585` on 2026-06-01 09:16,
+  with ILS 200.00 still due against the ILS 1000.00 registration balance.
+- Nikki Weber / Huda Weber and Shalom Galambo / Eitan Chaim remain paid intake
+  records needing signup/matching records, not unpaid balances.
 
 ## One Time Mishnah Class And Rabbi Elie Scheller
 
@@ -411,3 +471,8 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 - Rabbi Elie Scheller's bot should be scoped to One Time Mishnah Class and
   should not expose BNA private Students, Accounting, Devices, or student
   accountability areas unless explicitly granted later.
+- The Rabbi Elie Scheller scoped Telegram profile is wired as
+  `npm run telegram:rabbi` / `npm run telegram:rabbi:start`. It uses
+  `agents/rabbi-elie-scheller/` context, scoped One Time Operations credentials,
+  and separate runtime lock/mode files. Live use still needs the Rabbi bot token,
+  Rabbi chat ID, and One Time scoped login/password.

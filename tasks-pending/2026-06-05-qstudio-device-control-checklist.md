@@ -1,8 +1,8 @@
 # QStudio Allowlist And Device-Control Checklist
 
 Date: 2026-06-05
-Task: #81 Document QStudio allowlist and device-control setup checklist
-Status: Documentation-only handoff
+Task: #81 documentation, app-side mock implemented by agent-fleet task #109
+Status: App-side device/access UI and mock provider implemented and deployed; real QStudio/Qustodio/Headwind/FreeKiosk control remains blocked on hardware and credentials
 
 ## Goal
 
@@ -94,9 +94,9 @@ Do not replace QStudio in this pass.
 - Verify that exiting the kiosk, opening settings, opening other browsers, and
   using recents/home are blocked.
 
-## BNA App-Side Requirements For The Later Build
+## BNA App-Side Requirements
 
-- Add a device/access model before real integration:
+- Implemented in the mock MVP:
   - `devices`: student, device name, platform, provider, status, last seen,
     notes.
   - `device_access_rules`: student/device, rule type, required goal, duration,
@@ -105,13 +105,13 @@ Do not replace QStudio in this pass.
     reason, provider result.
 - Use these statuses in UI and provider calls: Locked, Accountability Only,
   Approved Access, Expired, Manual Override.
-- Add a `DeviceControlProvider` adapter with:
+- Added a mock `DeviceControlProvider` adapter shape for:
   - `lockDevice(deviceId, reason)`
   - `unlockDevice(deviceId, durationMinutes, reason)`
   - `setAccountabilityOnly(deviceId)`
   - `getDeviceStatus(deviceId)`
-- Start with a mock provider for dashboard/UI testing until the Headwind or
-  FreeKiosk command path is proven on a real tablet.
+- Current production mode is mock-only for dashboard/UI testing until the
+  Headwind or FreeKiosk command path is proven on a real tablet.
 - Keep provider credentials server-side only. Do not put MDM, kiosk, or filter
   admin keys in browser JavaScript, Telegram messages, screenshots, or repo docs.
 

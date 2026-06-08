@@ -2,7 +2,19 @@
 
 ## Status
 
-Pending implementation after the homepage cleanup deployed.
+Implemented and live as of 2026-06-06.
+
+Verified pieces:
+
+- Dedicated Drive folder: `BNA V2 / 00 Upload Here - Website Images`.
+- Telegram command: `/website_images` publishes the newest intake image to the public Learning Moments feed.
+- Idle bridge watcher checks Website Images before Raw Media Intake and can auto-publish the newest image.
+- One-off command: `npm run website:ingest-image`.
+- Live smoke: `npm run app:smoke -- --require-drive` verifies the Website Images folder, Drive account, and live public/app APIs.
+
+Remaining caution:
+
+- Public website image publishing is intentionally scoped to the Website Images lane, not the main Raw Media Intake. Do not route these images through GHL.
 
 ## Operator Intent
 

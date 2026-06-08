@@ -7,9 +7,12 @@ const vm = require('vm');
 const { google } = require('googleapis');
 const {
   GOAL_TYPES,
+  calculateDailyCompletedUnits,
   calculateGroupTorahProgress,
   calculateStudentTorahProgress,
   calculateStudentTripProgress,
+  dailyCompletionPercentageFromEntry,
+  dailyTripUnitFromEntry,
   normalizeParsedTorahEngagement,
   normalizeGoalType,
   validateGoalMinutes,
@@ -20,6 +23,23 @@ const {
   normalizeDigits,
   normalizeGreenInvoiceWebhookPayload,
 } = require('./src/lib/bna/green-invoice');
+const {
+  goalBoardBucket,
+  goalBoardStatus,
+  metadataAfterProgressUpdate,
+  metadataWithGoalBoard,
+  normalizeGoalBoardMetadata,
+  rawGoalBoardMetadata,
+  safeGoalBoardStudentView,
+  automaticDeviceAccessForCompletion,
+} = require('./src/lib/bna/goal-board');
+const {
+  DEVICE_ACCESS_STATES,
+  createDeviceControlProvider,
+  deviceAccessStateLabel,
+  normalizeDeviceAccessState,
+  normalizeDurationMinutes,
+} = require('./src/lib/bna/device-control');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -83,11 +103,118 @@ const TELEGRAM_CHAT_ID_BNA =
 const DATABASE_URL =
   usableSecretValue(process.env.DATABASE_URL) ||
   usableSecretValue(readLocalSecretFile('railway-database-url.txt'));
-const PAYMENT_LINK = process.env.PAYMENT_LINK || 'https://mrng.to/r9DSZhhWE9';
+const PAYMENT_LINK = process.env.PAYMENT_LINK || 'https://mrng.to/rCH4DWiR5t';
 const DEFAULT_TUITION_AMOUNT = Number(process.env.BNA_TUITION_AMOUNT || 1000);
 const DEFAULT_PAYMENT_INTERVAL_DAYS = Number(process.env.BNA_PAYMENT_INTERVAL_DAYS || 30);
 const PAYMENT_REMINDER_DAYS_BEFORE = Number(process.env.BNA_PAYMENT_REMINDER_DAYS_BEFORE || 5);
 const WAIVER_VERSION = process.env.BNA_WAIVER_VERSION || '2026-05-28-v1';
+const TUITION_AGREEMENT_VERSION = process.env.BNA_TUITION_AGREEMENT_VERSION || '2026-06-07-v1';
+const TUITION_AGREEMENT_TITLE = 'Bnei Neviim Academy Tuition Agreement';
+const TUITION_AGREEMENT_TEXT = `Bnei Neviim Academy is a private Torah learning and mentoring program. It is not a Ministry of Education-recognized school. Parents are responsible for arranging any legal homeschooling registration or other educational status required for their child.
+
+The standard tuition rate is ₪1,000 per month, or ₪12,000 for a full tuition year.
+
+The tuition year runs from July 1 through June 30. Tuition is billed according to the civil calendar and is due at the beginning of each civil month. The program schedule itself follows the Jewish calendar.
+
+There is no separate signup fee. A place in the program is reserved only once the first tuition payment has been made and the required registration forms have been signed.
+
+For students who join after the beginning of a month, tuition may be prorated based on the student’s start date, calculated according to the number of calendar days in that month.
+
+For students who paid at the end of May 2026, that payment will be applied to June 2026 tuition. The next regular tuition payment is due July 1, 2026.
+
+Once a month has begun, the full tuition for that month is due and non-refundable. This applies even if the child attends for only part of the month, only one week, or only a few days.
+
+If a parent wishes to withdraw a child from the program, 30 days’ notice is required. Tuition remains due during the 30-day notice period. If the notice period continues into a new month, tuition for that month is also due.
+
+Scheduled breaks, Jewish holidays, Chol HaMoed, fast days, summer breaks, and other calendar adjustments do not reduce the monthly tuition amount. Tuition reserves the child’s place in the program and supports the continuity of the program as a whole.
+
+Payment may be made by cash, bank transfer, credit card, or another method approved by the program director.`;
+const TUITION_AGREEMENT_TEXT_HE = `Bnei Neviim Academy היא תכנית פרטית ללימוד תורה וליווי אישי. היא אינה בית ספר המוכר על ידי משרד החינוך. ההורים אחראים להסדיר כל רישום לחינוך ביתי או כל מעמד חינוכי אחר הנדרש על פי דין עבור ילדם.
+
+שכר הלימוד הרגיל הוא 1,000 ש"ח לחודש, או 12,000 ש"ח לשנת לימוד מלאה.
+
+שנת שכר הלימוד נמשכת מ-1 ביולי עד 30 ביוני. שכר הלימוד מחויב לפי הלוח האזרחי והוא לתשלום בתחילת כל חודש אזרחי. סדר התכנית עצמה פועל לפי הלוח היהודי.
+
+אין תשלום הרשמה נפרד. מקום בתכנית נשמר רק לאחר שהתשלום הראשון של שכר הלימוד שולם והטפסים הנדרשים נחתמו.
+
+לתלמידים המצטרפים לאחר תחילת חודש, שכר הלימוד עשוי להיות מחושב באופן יחסי לפי תאריך תחילת ההשתתפות, בהתאם למספר הימים הקלנדריים באותו חודש.
+
+לתלמידים ששילמו בסוף מאי 2026, התשלום יחול על שכר הלימוד של יוני 2026. התשלום הרגיל הבא לתשלום הוא ב-1 ביולי 2026.
+
+לאחר שהחודש התחיל, שכר הלימוד המלא עבור אותו חודש חל ואינו ניתן להחזר. הדבר נכון גם אם הילד השתתף רק בחלק מהחודש, שבוע אחד, או מספר ימים.
+
+אם הורה מבקש להוציא את הילד מהתכנית, נדרשת הודעה מוקדמת של 30 יום. שכר הלימוד ממשיך לחול במהלך תקופת ההודעה. אם תקופת ההודעה נמשכת לתוך חודש חדש, שכר הלימוד עבור אותו חודש חל גם כן.
+
+חופשות מתוכננות, חגים, חול המועד, תעניות, חופשות קיץ ושינויים בלוח השנה אינם מפחיתים את שכר הלימוד החודשי. שכר הלימוד שומר את מקומו של הילד בתכנית ותומך ברציפות התכנית כולה.
+
+ניתן לשלם במזומן, העברה בנקאית, כרטיס אשראי, או דרך אחרת שאושרה על ידי מנהל התכנית.`;
+const REGISTRATION_PACKAGE_VERSION = process.env.BNA_REGISTRATION_PACKAGE_VERSION || '2026-2027-v1';
+const REGISTRATION_PACKAGE_TITLE = 'Bnei Neviim Academy Registration Documents Package';
+const REGISTRATION_PACKAGE_PATH = path.join(__dirname, 'public', 'documents', 'bnei_neviim_registration_documents_bilingual_codex.md');
+const REGISTRATION_PACKAGE_TEXT = (() => {
+  try {
+    return fs.readFileSync(REGISTRATION_PACKAGE_PATH, 'utf8');
+  } catch (error) {
+    console.warn('Registration document package could not be loaded:', error.message);
+    return 'Bnei Neviim Academy Registration Documents Package';
+  }
+})();
+const REQUIRED_SIGNUP_AGREEMENT_DEFINITIONS = [
+  {
+    agreement_type: 'tuition_agreement',
+    package_index: null,
+    version: TUITION_AGREEMENT_VERSION,
+    title: {
+      en: TUITION_AGREEMENT_TITLE,
+      he: 'הסכם שכר לימוד - Bnei Neviim Academy',
+    },
+  },
+  {
+    agreement_type: 'parent_handbook',
+    package_index: 1,
+    version: REGISTRATION_PACKAGE_VERSION,
+    title: {
+      en: 'Bnei Neviim Academy Parent Handbook',
+      he: 'מדריך הורים - Bnei Neviim Academy',
+    },
+  },
+  {
+    agreement_type: 'student_code_of_conduct',
+    package_index: 2,
+    version: REGISTRATION_PACKAGE_VERSION,
+    title: {
+      en: 'Bnei Neviim Academy Student Handbook / Code of Conduct',
+      he: 'מדריך תלמידים / קוד התנהגות - Bnei Neviim Academy',
+    },
+  },
+  {
+    agreement_type: 'safety_acknowledgment_waiver',
+    package_index: 3,
+    version: REGISTRATION_PACKAGE_VERSION,
+    title: {
+      en: 'Bnei Neviim Academy Safety Acknowledgment and Waiver',
+      he: 'אישור בטיחות, הצהרה וויתור - Bnei Neviim Academy',
+    },
+  },
+  {
+    agreement_type: 'registration_intake_form',
+    package_index: 4,
+    version: REGISTRATION_PACKAGE_VERSION,
+    title: {
+      en: 'Registration / Intake Form',
+      he: 'טופס הרשמה / שאלון קליטה',
+    },
+  },
+  {
+    agreement_type: 'parent_agreement_signature_page',
+    package_index: 5,
+    version: REGISTRATION_PACKAGE_VERSION,
+    title: {
+      en: 'Parent Agreement / Checkbox and Signature Page',
+      he: 'הסכמת הורים / עמוד תיבות סימון וחתימה',
+    },
+  },
+];
 const BNA_TIME_ZONE = process.env.BNA_TIME_ZONE || 'Asia/Jerusalem';
 const DEFAULT_TORAH_GOAL_MINUTES = Number(process.env.BNA_DEFAULT_TORAH_GOAL_MINUTES || 10);
 const DEFAULT_TORAH_TRIP_REQUIRED_UNITS = Number(process.env.BNA_TORAH_TRIP_REQUIRED_UNITS || 30);
@@ -195,6 +322,14 @@ const GHL_LOCATION_ID =
 const GHL_API_BASE = 'https://services.leadconnectorhq.com';
 const GHL_API_VERSION = '2021-07-28';
 const GHL_SOCIAL_API_VERSION = '2023-02-21';
+const GHL_DEFAULT_FACEBOOK_ACCOUNT_ID =
+  process.env.GHL_DEFAULT_FACEBOOK_ACCOUNT_ID ||
+  inlineGhlSecrets.GHL_DEFAULT_FACEBOOK_ACCOUNT_ID ||
+  localGhlSecrets.GHL_DEFAULT_FACEBOOK_ACCOUNT_ID ||
+  process.env.GHL_FACEBOOK_ACCOUNT_ID ||
+  inlineGhlSecrets.GHL_FACEBOOK_ACCOUNT_ID ||
+  localGhlSecrets.GHL_FACEBOOK_ACCOUNT_ID ||
+  '';
 const SESSION_COOKIE_NAME = 'bna_ops_session';
 const SESSION_TTL_MS = 1000 * 60 * 60 * 12;
 
@@ -362,6 +497,48 @@ function normalizeLanguage(value) {
   return String(value || '').toLowerCase().startsWith('he') ? 'he' : 'en';
 }
 
+function normalizePhoneDigits(value) {
+  return String(value || '').replace(/\D/g, '');
+}
+
+async function findExistingSignupForRegistration({ parentEmail, parentPhone, parentName, studentName }) {
+  const studentKey = normalizeLooseText(studentName);
+  if (!studentKey) return null;
+
+  const parentEmailKey = String(parentEmail || '').trim().toLowerCase();
+  const parentPhoneKey = normalizePhoneDigits(parentPhone);
+  const parentNameKey = normalizeLooseText(parentName);
+
+  const result = await pool.query(
+    `SELECT *
+     FROM signups
+     WHERE COALESCE(status, 'new') <> 'archived'
+       AND (
+         ($1 <> '' AND lower(parent_email) = $1)
+         OR ($2 <> '' AND regexp_replace(COALESCE(parent_phone, ''), '\\D', '', 'g') = $2)
+         OR ($3 <> '' AND lower(student_name) = $3)
+         OR ($4 <> '' AND lower(parent_name) = $4)
+       )
+     ORDER BY updated_at DESC NULLS LAST, created_at DESC
+     LIMIT 50`,
+    [
+      parentEmailKey,
+      parentPhoneKey,
+      String(studentName || '').trim().toLowerCase(),
+      String(parentName || '').trim().toLowerCase(),
+    ]
+  );
+
+  return result.rows.find((signup) => {
+    if (normalizeLooseText(signup.student_name) !== studentKey) return false;
+    return (
+      (parentEmailKey && String(signup.parent_email || '').trim().toLowerCase() === parentEmailKey)
+      || (parentPhoneKey && normalizePhoneDigits(signup.parent_phone) === parentPhoneKey)
+      || (parentNameKey && normalizeLooseText(signup.parent_name) === parentNameKey)
+    );
+  }) || null;
+}
+
 async function sendGmailMessage({ to, subject, text, html }) {
   const auth = createGoogleClientFromRefreshToken();
   const gmail = google.gmail({ version: 'v1', auth });
@@ -410,7 +587,11 @@ function signupConfirmationEmail(signup, { matchedPayment = null } = {}) {
   const dueDate = signup.payment_due_date ? toDateOnly(signup.payment_due_date) : toDateOnly(addDays(signup.created_at || new Date(), DEFAULT_PAYMENT_INTERVAL_DAYS));
   const amount = Number(signup.payment_amount || DEFAULT_TUITION_AMOUNT);
   const isPaid = signup.payment_status === 'paid' || Boolean(matchedPayment);
-  const paymentMethod = signup.payment_method === 'cash' ? 'cash' : 'credit';
+  const paymentMethod = signup.payment_method === 'cash'
+    ? 'cash'
+    : signup.payment_method === 'bank_transfer'
+      ? 'bank_transfer'
+      : 'credit';
 
   if (lang === 'he') {
     const subject = 'ברוכים הבאים ל-Bnei Neviim Academy';
@@ -422,7 +603,9 @@ function signupConfirmationEmail(signup, { matchedPayment = null } = {}) {
         ? `התשלום בסך ${amount} ש"ח נרשם אצלנו.`
         : paymentMethod === 'cash'
           ? `בחרתם תשלום במזומן. התשלום בסך ${amount} ש"ח עדיין מסומן כפתוח במערכת.`
-          : `בחרתם תשלום באשראי. אם עדיין לא השלמתם את התשלום, אנא השתמשו בקישור התשלום שקיבלתם לאחר השליחה.`,
+          : paymentMethod === 'bank_transfer'
+            ? `בחרתם תשלום בהעברה בנקאית. התשלום הראשון של שכר הלימוד בסך ${amount} ש"ח עדיין מסומן כפתוח במערכת עד שנאשר את קבלתו.`
+            : `בחרתם תשלום באשראי. אם עדיין לא השלמתם את התשלום, אנא השתמשו בקישור התשלום שקיבלתם לאחר השליחה.`,
       `החיוב הבא/תזכורת התשלום הבאה נקבעת כל ${signup.payment_interval_days || DEFAULT_PAYMENT_INTERVAL_DAYS} יום. התאריך הבא במערכת: ${dueDate}.`,
       '',
       'שמחים להתחיל את התהליך יחד.',
@@ -442,6 +625,8 @@ function signupConfirmationEmail(signup, { matchedPayment = null } = {}) {
       ? `Your payment of ILS ${amount} has been recorded in our system.`
       : paymentMethod === 'cash'
         ? `You selected cash. The ILS ${amount} payment is still marked as due in our system.`
+        : paymentMethod === 'bank_transfer'
+          ? `You selected bank transfer. The ILS ${amount} first tuition payment is still marked as due until we confirm receipt.`
         : 'You selected credit. If you have not completed payment yet, please use the payment link from the confirmation page.',
     `Payments are tracked every ${signup.payment_interval_days || DEFAULT_PAYMENT_INTERVAL_DAYS} days. The next due date in our system is ${dueDate}.`,
     '',
@@ -835,6 +1020,336 @@ async function ensureStudentAccessCode(studentId, { regenerate = false } = {}, d
   throw new Error('Could not generate a unique student access code');
 }
 
+async function findStudentByAccessCode(code, db = pool) {
+  return (await db.query(
+    `SELECT id, name
+     FROM bna_students
+     WHERE student_access_code = $1
+       AND COALESCE(student_access_enabled, TRUE) = TRUE
+       AND COALESCE(status, 'active') NOT IN ('inactive', 'archived')
+     LIMIT 1`,
+    [String(code || '').trim()]
+  )).rows[0] || null;
+}
+
+function goalBoardAdminView(row) {
+  const goalBoard = normalizeGoalBoardMetadata(rawGoalBoardMetadata(row?.metadata), {
+    category: row?.topic || '',
+  });
+  return {
+    ...row,
+    metadata: row?.metadata || {},
+    goal_board: goalBoard,
+    goal_board_status: goalBoardStatus(row),
+    goal_board_bucket: goalBoardBucket(row),
+    student_view: safeGoalBoardStudentView(row),
+  };
+}
+
+function goalBoardMetadataFromPayload(payload = {}, previousMetadata = {}) {
+  const existingGoalBoard = normalizeGoalBoardMetadata(rawGoalBoardMetadata(previousMetadata));
+  const explicitGoalBoard = payload.goal_board && typeof payload.goal_board === 'object' ? payload.goal_board : {};
+  const explicitAgreement = explicitGoalBoard.agreement && typeof explicitGoalBoard.agreement === 'object' ? explicitGoalBoard.agreement : {};
+  const explicitConsequence = explicitGoalBoard.consequence && typeof explicitGoalBoard.consequence === 'object' ? explicitGoalBoard.consequence : {};
+  const source = payload.source || explicitGoalBoard.source || existingGoalBoard.source || 'admin';
+  const merged = {
+    ...existingGoalBoard,
+    ...explicitGoalBoard,
+    source,
+    category: payload.category ?? payload.topic ?? explicitGoalBoard.category ?? existingGoalBoard.category,
+    urgency: payload.urgency ?? explicitGoalBoard.urgency ?? existingGoalBoard.urgency,
+    status: payload.status ?? explicitGoalBoard.status ?? existingGoalBoard.status,
+    due_at: payload.due_at ?? explicitGoalBoard.due_at ?? existingGoalBoard.due_at,
+    optional_scheduled_at: payload.optional_scheduled_at ?? explicitGoalBoard.optional_scheduled_at ?? existingGoalBoard.optional_scheduled_at,
+    student_owned: payload.student_owned ?? explicitGoalBoard.student_owned ?? source === 'self',
+    approval_required: payload.approval_required ?? explicitGoalBoard.approval_required ?? existingGoalBoard.approval_required,
+    approval_status: payload.approval_status ?? explicitGoalBoard.approval_status ?? existingGoalBoard.approval_status,
+    student_summary: payload.student_summary ?? explicitGoalBoard.student_summary ?? existingGoalBoard.student_summary,
+    private_note: payload.private_note ?? explicitGoalBoard.private_note ?? existingGoalBoard.private_note,
+    reflection_note: payload.reflection_note ?? explicitGoalBoard.reflection_note ?? existingGoalBoard.reflection_note,
+    youtube_url: payload.youtube_url ?? explicitGoalBoard.youtube_url ?? existingGoalBoard.classroom?.youtube_url,
+    classroom_link: payload.classroom_link ?? explicitGoalBoard.classroom_link ?? existingGoalBoard.classroom?.alternate_link,
+    classroom_state: payload.classroom_state ?? explicitGoalBoard.classroom_state ?? existingGoalBoard.classroom?.state,
+    work_type: payload.work_type ?? explicitGoalBoard.work_type ?? existingGoalBoard.classroom?.work_type,
+    agreement_type: payload.agreement_type ?? explicitGoalBoard.agreement_type ?? explicitAgreement.type ?? existingGoalBoard.agreement?.type,
+    bedtime_time: payload.bedtime_time ?? explicitGoalBoard.bedtime_time ?? explicitAgreement.bedtime_time ?? existingGoalBoard.agreement?.bedtime_time,
+    wake_time: payload.wake_time ?? explicitGoalBoard.wake_time ?? explicitAgreement.wake_time ?? existingGoalBoard.agreement?.wake_time,
+    student_commitment: payload.student_commitment ?? explicitGoalBoard.student_commitment ?? explicitAgreement.student_commitment ?? existingGoalBoard.agreement?.student_commitment,
+    chosen_consequence: payload.chosen_consequence ?? explicitGoalBoard.chosen_consequence ?? explicitAgreement.chosen_consequence ?? existingGoalBoard.agreement?.chosen_consequence,
+    recovery_path: payload.recovery_path ?? explicitGoalBoard.recovery_path ?? explicitConsequence.recovery_path ?? existingGoalBoard.consequence?.recovery_path,
+    device_access_state: payload.device_access_state ?? explicitGoalBoard.device_access_state ?? explicitConsequence.device_access_state ?? existingGoalBoard.consequence?.device_access_state,
+    duration_minutes: payload.duration_minutes ?? explicitGoalBoard.duration_minutes ?? explicitConsequence.duration_minutes ?? existingGoalBoard.consequence?.duration_minutes,
+    auto_apply_on_completion: payload.auto_apply_on_completion ?? explicitGoalBoard.auto_apply_on_completion ?? explicitConsequence.auto_apply_on_completion ?? existingGoalBoard.consequence?.auto_apply_on_completion,
+    success_device_access_state: payload.success_device_access_state ?? explicitGoalBoard.success_device_access_state ?? explicitConsequence.success_device_access_state ?? existingGoalBoard.consequence?.success_device_access_state,
+    success_duration_minutes: payload.success_duration_minutes ?? explicitGoalBoard.success_duration_minutes ?? explicitConsequence.success_duration_minutes ?? existingGoalBoard.consequence?.success_duration_minutes,
+    success_applied_at: payload.success_applied_at ?? explicitGoalBoard.success_applied_at ?? explicitConsequence.success_applied_at ?? existingGoalBoard.consequence?.success_applied_at,
+    success_applied_by: payload.success_applied_by ?? explicitGoalBoard.success_applied_by ?? explicitConsequence.success_applied_by ?? existingGoalBoard.consequence?.success_applied_by,
+    consequence_status: payload.consequence_status ?? explicitGoalBoard.consequence_status ?? explicitConsequence.status ?? existingGoalBoard.consequence?.status,
+    review_reason: payload.review_reason ?? explicitGoalBoard.review_reason ?? explicitConsequence.review_reason ?? existingGoalBoard.consequence?.review_reason,
+  };
+
+  if (merged.approval_required && !payload.approval_status && !explicitGoalBoard.approval_status) {
+    merged.approval_status = 'pending_review';
+    merged.status = 'waiting';
+  }
+
+  return metadataWithGoalBoard(previousMetadata, merged);
+}
+
+async function getGoalBoardEvent(id, db = pool) {
+  return (await db.query(
+    `SELECT a.*, row_to_json(s.*) AS student
+     FROM bna_accountability_events a
+     LEFT JOIN bna_students s ON s.id = a.student_id
+     WHERE a.id = $1
+       AND a.event_type = 'student_goal'
+     LIMIT 1`,
+    [id]
+  )).rows[0] || null;
+}
+
+function safeDevicePlatform(value) {
+  const normalized = String(value || '').trim().toLowerCase();
+  return ['android', 'ios', 'web', 'unknown'].includes(normalized) ? normalized : 'android';
+}
+
+function deviceSessionView(session) {
+  if (!session || typeof session !== 'object' || !session.id) return null;
+  return {
+    ...session,
+    status: normalizeDeviceAccessState(session.status),
+    status_label: deviceAccessStateLabel(session.status),
+    provider_result: parseJsonMaybe(session.provider_result),
+  };
+}
+
+function deviceRecordView(row = {}) {
+  return {
+    ...row,
+    status: normalizeDeviceAccessState(row.status),
+    status_label: deviceAccessStateLabel(row.status),
+    metadata: parseJsonMaybe(row.metadata),
+    active_session: deviceSessionView(parseJsonMaybe(row.active_session)),
+    latest_session: deviceSessionView(parseJsonMaybe(row.latest_session)),
+  };
+}
+
+async function expireDeviceAccessSessions(db = pool) {
+  const providerResult = {
+    ok: true,
+    provider: 'mock',
+    action: 'expireApprovedAccess',
+    resulting_status: DEVICE_ACCESS_STATES.EXPIRED,
+    real_device_call: false,
+    message: 'Mock access session expired. No real device call was made.',
+    recorded_at: new Date().toISOString(),
+  };
+  const expired = await db.query(
+    `UPDATE bna_device_access_sessions
+     SET status = 'expired',
+         ended_at = COALESCE(ended_at, NOW()),
+         provider_result = COALESCE(provider_result, '{}'::jsonb) || $1::jsonb,
+         updated_at = NOW()
+     WHERE status IN ('approved_access', 'manual_override')
+       AND expires_at IS NOT NULL
+       AND expires_at <= NOW()
+       AND ended_at IS NULL
+     RETURNING device_id`,
+    [JSON.stringify(providerResult)]
+  );
+  const deviceIds = [...new Set(expired.rows.map((row) => Number(row.device_id)).filter(Boolean))];
+  if (deviceIds.length) {
+    await db.query(
+      `UPDATE bna_devices
+       SET status = 'expired',
+           updated_at = NOW()
+       WHERE id = ANY($1::int[])`,
+      [deviceIds]
+    );
+  }
+  return deviceIds;
+}
+
+async function getDeviceRecord(deviceId, db = pool) {
+  const result = await db.query(
+    `SELECT d.*,
+            row_to_json(s.*) AS student,
+            row_to_json(active_session.*) AS active_session,
+            row_to_json(latest_session.*) AS latest_session
+     FROM bna_devices d
+     LEFT JOIN bna_students s ON s.id = d.student_id
+     LEFT JOIN LATERAL (
+       SELECT *
+       FROM bna_device_access_sessions das
+       WHERE das.device_id = d.id
+         AND das.ended_at IS NULL
+       ORDER BY das.created_at DESC, das.id DESC
+       LIMIT 1
+     ) active_session ON TRUE
+     LEFT JOIN LATERAL (
+       SELECT *
+       FROM bna_device_access_sessions das
+       WHERE das.device_id = d.id
+       ORDER BY das.created_at DESC, das.id DESC
+       LIMIT 1
+     ) latest_session ON TRUE
+     WHERE d.id = $1
+     LIMIT 1`,
+    [deviceId]
+  );
+  return result.rows[0] ? deviceRecordView(result.rows[0]) : null;
+}
+
+async function getStudentDeviceAccessSummary(studentId, db = pool) {
+  await expireDeviceAccessSessions(db);
+  const result = await db.query(
+    `SELECT d.*,
+            row_to_json(active_session.*) AS active_session,
+            row_to_json(latest_session.*) AS latest_session,
+            COUNT(*) OVER () AS device_count
+     FROM bna_devices d
+     LEFT JOIN LATERAL (
+       SELECT *
+       FROM bna_device_access_sessions das
+       WHERE das.device_id = d.id
+         AND das.ended_at IS NULL
+       ORDER BY das.created_at DESC, das.id DESC
+       LIMIT 1
+     ) active_session ON TRUE
+     LEFT JOIN LATERAL (
+       SELECT *
+       FROM bna_device_access_sessions das
+       WHERE das.device_id = d.id
+       ORDER BY das.created_at DESC, das.id DESC
+       LIMIT 1
+     ) latest_session ON TRUE
+     WHERE d.student_id = $1
+     ORDER BY d.updated_at DESC, d.id DESC
+     LIMIT 1`,
+    [studentId]
+  );
+  const row = result.rows[0];
+  if (!row) {
+    return {
+      provider_mode: 'mock',
+      real_device_calls_enabled: false,
+      device_count: 0,
+      status: 'not_configured',
+      status_label: 'Not Configured',
+    };
+  }
+  const device = deviceRecordView(row);
+  return {
+    provider_mode: 'mock',
+    real_device_calls_enabled: false,
+    device_count: Number(row.device_count || 0),
+    device_id: device.id,
+    device_name: device.device_name,
+    status: device.status,
+    status_label: device.status_label,
+    expires_at: device.active_session?.expires_at || null,
+    latest_session: device.latest_session,
+  };
+}
+
+async function getPreferredDeviceForStudent(studentId, db = pool) {
+  await expireDeviceAccessSessions(db);
+  const result = await db.query(
+    `SELECT id
+     FROM bna_devices
+     WHERE student_id = $1
+     ORDER BY updated_at DESC, id DESC
+     LIMIT 1`,
+    [studentId]
+  );
+  return result.rows[0]?.id || null;
+}
+
+async function applyDeviceAccessAction({
+  deviceId,
+  status,
+  durationMinutes = 60,
+  reason = '',
+  goalId = null,
+  ruleId = null,
+  approvedBy = 'admin',
+}, db = pool) {
+  await expireDeviceAccessSessions(db);
+  const device = (await db.query('SELECT * FROM bna_devices WHERE id = $1 LIMIT 1', [deviceId])).rows[0];
+  if (!device) {
+    const error = new Error('Device not found');
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const normalizedStatus = normalizeDeviceAccessState(status);
+  const duration = normalizeDurationMinutes(durationMinutes);
+  const provider = createDeviceControlProvider(device.provider || 'mock');
+  let providerResult;
+  const expiresAtSql = 'CASE WHEN $7::int IS NULL THEN NULL ELSE NOW() + ($7::int * INTERVAL \'1 minute\') END';
+  let expiresAtValue = null;
+
+  if (normalizedStatus === DEVICE_ACCESS_STATES.LOCKED) {
+    providerResult = await provider.lockDevice(device.id, reason);
+  } else if (normalizedStatus === DEVICE_ACCESS_STATES.ACCOUNTABILITY_ONLY) {
+    providerResult = await provider.setAccountabilityOnly(device.id, reason);
+  } else if (normalizedStatus === DEVICE_ACCESS_STATES.MANUAL_OVERRIDE) {
+    providerResult = await provider.setManualOverride(device.id, duration, reason);
+    expiresAtValue = duration;
+  } else if (normalizedStatus === DEVICE_ACCESS_STATES.EXPIRED) {
+    providerResult = await provider.markExpired(device.id, reason);
+  } else {
+    providerResult = await provider.unlockDevice(device.id, duration, reason);
+    expiresAtValue = duration;
+  }
+
+  await db.query(
+    `UPDATE bna_device_access_sessions
+     SET ended_at = COALESCE(ended_at, NOW()),
+         updated_at = NOW()
+     WHERE device_id = $1
+       AND ended_at IS NULL`,
+    [device.id]
+  );
+
+  const sessionResult = await db.query(
+    `INSERT INTO bna_device_access_sessions (
+       device_id, student_id, goal_id, rule_id, status, started_at, expires_at,
+       approved_by, reason, provider, provider_result
+     ) VALUES (
+       $1, $2, $3, $4, $5, NOW(), ${expiresAtSql},
+       $6, $8, 'mock', $9
+     )
+     RETURNING *`,
+    [
+      device.id,
+      device.student_id || null,
+      goalId || null,
+      ruleId || null,
+      normalizedStatus,
+      approvedBy || 'admin',
+      expiresAtValue,
+      reason || null,
+      JSON.stringify(providerResult),
+    ]
+  );
+
+  await db.query(
+    `UPDATE bna_devices
+     SET status = $2,
+         last_seen_at = NOW(),
+         updated_at = NOW()
+     WHERE id = $1`,
+    [device.id, normalizedStatus]
+  );
+
+  return {
+    session: deviceSessionView(sessionResult.rows[0]),
+    device: await getDeviceRecord(device.id, db),
+    provider_result: providerResult,
+  };
+}
+
 function identifyOpsUser(username, password = null) {
   const user = String(username || '').trim();
   const pass = password === null || password === undefined ? null : String(password || '');
@@ -872,7 +1387,9 @@ function isScopedOpsPathAllowed(req) {
   const method = String(req.method || '').toUpperCase();
   if (routePath === '/operations' && method === 'GET') return true;
   if (routePath === '/api/bna/auth/me' && method === 'GET') return true;
+  if (routePath === '/api/bna/agent-fleet/status' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/projects' && method === 'GET') return true;
+  if (routePath === '/api/bna/pending-briefs' && method === 'GET') return true;
   if (routePath === '/api/bna/tasks' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/tasks/create-from-text' && method === 'POST') return true;
   if (routePath === '/api/bna/create_task_from_text' && method === 'POST') return true;
@@ -979,6 +1496,23 @@ async function requireAdmin(req, res, next) {
   next();
 }
 
+async function identifyAdminRequest(req) {
+  const cookies = parseCookies(req);
+  const session = await getValidSession(cookies[SESSION_COOKIE_NAME]);
+  if (session) {
+    const identity = identifyOpsUser(session.username);
+    return identity?.scope?.type === 'all' ? identity : null;
+  }
+
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith('Basic ')) return null;
+
+  const creds = Buffer.from(authHeader.slice(6), 'base64').toString();
+  const [user, pass] = creds.split(':');
+  const identity = identifyOpsUser(user, pass);
+  return identity?.scope?.type === 'all' ? identity : null;
+}
+
 // Middleware
 app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
@@ -1001,7 +1535,7 @@ const createSignupsTableSQL = `
 CREATE TABLE IF NOT EXISTS signups (
   id SERIAL PRIMARY KEY,
   parent_name TEXT NOT NULL,
-  parent_email TEXT NOT NULL,
+  parent_email TEXT,
   parent_phone TEXT,
   student_name TEXT NOT NULL,
   student_age INTEGER,
@@ -1025,6 +1559,12 @@ CREATE TABLE IF NOT EXISTS signups (
   waiver_accepted BOOLEAN DEFAULT FALSE,
   waiver_accepted_at TIMESTAMP,
   waiver_version TEXT,
+  tuition_agreement_accepted BOOLEAN DEFAULT FALSE,
+  tuition_agreement_accepted_at TIMESTAMP,
+  tuition_agreement_version TEXT,
+  tuition_agreement_signer_name TEXT,
+  tuition_agreement_signer_email TEXT,
+  tuition_agreement_client_signed_at TIMESTAMP,
   confirmation_email_sent_at TIMESTAMP,
   confirmation_email_error TEXT,
   ghl_parent_contact_id TEXT,
@@ -1036,6 +1576,26 @@ CREATE TABLE IF NOT EXISTS signups (
   notes TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+`;
+
+const createSignupAgreementSignaturesSQL = `
+CREATE TABLE IF NOT EXISTS bna_signup_agreement_signatures (
+  id SERIAL PRIMARY KEY,
+  signup_id INTEGER NOT NULL REFERENCES signups(id) ON DELETE CASCADE,
+  agreement_type TEXT NOT NULL,
+  agreement_title TEXT NOT NULL,
+  agreement_version TEXT NOT NULL,
+  agreement_text TEXT,
+  signer_name TEXT NOT NULL,
+  signer_email TEXT,
+  signed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  client_signed_at TIMESTAMP,
+  ip_address TEXT,
+  user_agent TEXT,
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (signup_id, agreement_type, agreement_version)
 );
 `;
 
@@ -1110,6 +1670,24 @@ CREATE TABLE IF NOT EXISTS bna_task_comments (
   source TEXT NOT NULL DEFAULT 'dashboard' CHECK (source IN ('dashboard', 'telegram', 'api', 'system')),
   source_context JSONB DEFAULT '{}',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+`;
+
+const createAgentRuntimeStatusSQL = `
+CREATE TABLE IF NOT EXISTS bna_agent_runtime_status (
+  agent_key TEXT PRIMARY KEY,
+  status TEXT NOT NULL DEFAULT 'unknown' CHECK (status IN ('unknown', 'running', 'stopped', 'error')),
+  pid INTEGER,
+  mode TEXT,
+  host TEXT,
+  started_at TIMESTAMP,
+  last_seen_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  stale_after_ms INTEGER DEFAULT 180000,
+  current_task_id INTEGER,
+  queue_size INTEGER,
+  ready_count INTEGER,
+  details JSONB DEFAULT '{}',
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 `;
 
@@ -1193,6 +1771,23 @@ CREATE TABLE IF NOT EXISTS bna_students (
   status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'pending', 'paused', 'graduated', 'inactive')),
   tags TEXT[] DEFAULT '{}',
   notes TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+`;
+
+const createDevicesSQL = `
+CREATE TABLE IF NOT EXISTS bna_devices (
+  id SERIAL PRIMARY KEY,
+  student_id INTEGER REFERENCES bna_students(id) ON DELETE SET NULL,
+  device_name TEXT NOT NULL,
+  platform TEXT NOT NULL DEFAULT 'android' CHECK (platform IN ('android', 'ios', 'web', 'unknown')),
+  provider TEXT NOT NULL DEFAULT 'mock',
+  provider_device_id TEXT,
+  status TEXT NOT NULL DEFAULT 'accountability_only' CHECK (status IN ('locked', 'accountability_only', 'approved_access', 'expired', 'manual_override')),
+  last_seen_at TIMESTAMP,
+  notes TEXT,
+  metadata JSONB DEFAULT '{}',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -1294,6 +1889,42 @@ CREATE TABLE IF NOT EXISTS bna_accountability_events (
   source_message_id TEXT,
   source_media_url TEXT,
   occurred_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+`;
+
+const createDeviceAccessRulesSQL = `
+CREATE TABLE IF NOT EXISTS bna_device_access_rules (
+  id SERIAL PRIMARY KEY,
+  student_id INTEGER REFERENCES bna_students(id) ON DELETE CASCADE,
+  device_id INTEGER REFERENCES bna_devices(id) ON DELETE CASCADE,
+  rule_type TEXT NOT NULL DEFAULT 'goal_approval' CHECK (rule_type IN ('goal_approval', 'schedule', 'manual')),
+  required_goal_id INTEGER REFERENCES bna_accountability_events(id) ON DELETE SET NULL,
+  duration_minutes INTEGER NOT NULL DEFAULT 60 CHECK (duration_minutes > 0 AND duration_minutes <= 1440),
+  schedule JSONB DEFAULT '{}',
+  enabled BOOLEAN DEFAULT TRUE,
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+`;
+
+const createDeviceAccessSessionsSQL = `
+CREATE TABLE IF NOT EXISTS bna_device_access_sessions (
+  id SERIAL PRIMARY KEY,
+  device_id INTEGER NOT NULL REFERENCES bna_devices(id) ON DELETE CASCADE,
+  student_id INTEGER REFERENCES bna_students(id) ON DELETE SET NULL,
+  goal_id INTEGER REFERENCES bna_accountability_events(id) ON DELETE SET NULL,
+  rule_id INTEGER REFERENCES bna_device_access_rules(id) ON DELETE SET NULL,
+  status TEXT NOT NULL DEFAULT 'accountability_only' CHECK (status IN ('locked', 'accountability_only', 'approved_access', 'expired', 'manual_override')),
+  started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  expires_at TIMESTAMP,
+  ended_at TIMESTAMP,
+  approved_by TEXT,
+  reason TEXT,
+  provider TEXT NOT NULL DEFAULT 'mock',
+  provider_result JSONB DEFAULT '{}',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -1470,8 +2101,15 @@ ALTER TABLE signups ADD COLUMN IF NOT EXISTS form_language TEXT DEFAULT 'en';
 ALTER TABLE signups ADD COLUMN IF NOT EXISTS waiver_accepted BOOLEAN DEFAULT FALSE;
 ALTER TABLE signups ADD COLUMN IF NOT EXISTS waiver_accepted_at TIMESTAMP;
 ALTER TABLE signups ADD COLUMN IF NOT EXISTS waiver_version TEXT;
+ALTER TABLE signups ADD COLUMN IF NOT EXISTS tuition_agreement_accepted BOOLEAN DEFAULT FALSE;
+ALTER TABLE signups ADD COLUMN IF NOT EXISTS tuition_agreement_accepted_at TIMESTAMP;
+ALTER TABLE signups ADD COLUMN IF NOT EXISTS tuition_agreement_version TEXT;
+ALTER TABLE signups ADD COLUMN IF NOT EXISTS tuition_agreement_signer_name TEXT;
+ALTER TABLE signups ADD COLUMN IF NOT EXISTS tuition_agreement_signer_email TEXT;
+ALTER TABLE signups ADD COLUMN IF NOT EXISTS tuition_agreement_client_signed_at TIMESTAMP;
 ALTER TABLE signups ADD COLUMN IF NOT EXISTS confirmation_email_sent_at TIMESTAMP;
 ALTER TABLE signups ADD COLUMN IF NOT EXISTS confirmation_email_error TEXT;
+ALTER TABLE signups ALTER COLUMN parent_email DROP NOT NULL;
 ALTER TABLE bna_payment_intake ADD COLUMN IF NOT EXISTS matched_at TIMESTAMP;
 ALTER TABLE bna_accountability_events ADD COLUMN IF NOT EXISTS goal_target_value DECIMAL(10,2);
 ALTER TABLE bna_accountability_events ADD COLUMN IF NOT EXISTS goal_actual_value DECIMAL(10,2);
@@ -1485,6 +2123,42 @@ ALTER TABLE bna_accountability_events ADD COLUMN IF NOT EXISTS metadata JSONB DE
 ALTER TABLE bna_students ADD COLUMN IF NOT EXISTS student_access_code TEXT UNIQUE;
 ALTER TABLE bna_students ADD COLUMN IF NOT EXISTS student_access_enabled BOOLEAN DEFAULT TRUE;
 ALTER TABLE bna_students ADD COLUMN IF NOT EXISTS student_access_created_at TIMESTAMP;
+ALTER TABLE bna_devices ADD COLUMN IF NOT EXISTS student_id INTEGER REFERENCES bna_students(id) ON DELETE SET NULL;
+ALTER TABLE bna_devices ADD COLUMN IF NOT EXISTS provider TEXT NOT NULL DEFAULT 'mock';
+ALTER TABLE bna_devices ADD COLUMN IF NOT EXISTS provider_device_id TEXT;
+ALTER TABLE bna_devices ADD COLUMN IF NOT EXISTS status TEXT NOT NULL DEFAULT 'accountability_only';
+ALTER TABLE bna_devices ADD COLUMN IF NOT EXISTS last_seen_at TIMESTAMP;
+ALTER TABLE bna_devices ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}';
+ALTER TABLE bna_device_access_rules ADD COLUMN IF NOT EXISTS required_goal_id INTEGER REFERENCES bna_accountability_events(id) ON DELETE SET NULL;
+ALTER TABLE bna_device_access_rules ADD COLUMN IF NOT EXISTS schedule JSONB DEFAULT '{}';
+ALTER TABLE bna_device_access_rules ADD COLUMN IF NOT EXISTS enabled BOOLEAN DEFAULT TRUE;
+ALTER TABLE bna_device_access_sessions ADD COLUMN IF NOT EXISTS goal_id INTEGER REFERENCES bna_accountability_events(id) ON DELETE SET NULL;
+ALTER TABLE bna_device_access_sessions ADD COLUMN IF NOT EXISTS rule_id INTEGER REFERENCES bna_device_access_rules(id) ON DELETE SET NULL;
+ALTER TABLE bna_device_access_sessions ADD COLUMN IF NOT EXISTS expires_at TIMESTAMP;
+ALTER TABLE bna_device_access_sessions ADD COLUMN IF NOT EXISTS ended_at TIMESTAMP;
+ALTER TABLE bna_device_access_sessions ADD COLUMN IF NOT EXISTS approved_by TEXT;
+ALTER TABLE bna_device_access_sessions ADD COLUMN IF NOT EXISTS provider TEXT NOT NULL DEFAULT 'mock';
+ALTER TABLE bna_device_access_sessions ADD COLUMN IF NOT EXISTS provider_result JSONB DEFAULT '{}';
+ALTER TABLE bna_devices DROP CONSTRAINT IF EXISTS bna_devices_status_check;
+ALTER TABLE bna_devices
+  ADD CONSTRAINT bna_devices_status_check
+  CHECK (status IN ('locked', 'accountability_only', 'approved_access', 'expired', 'manual_override'));
+ALTER TABLE bna_devices DROP CONSTRAINT IF EXISTS bna_devices_platform_check;
+ALTER TABLE bna_devices
+  ADD CONSTRAINT bna_devices_platform_check
+  CHECK (platform IN ('android', 'ios', 'web', 'unknown'));
+ALTER TABLE bna_device_access_rules DROP CONSTRAINT IF EXISTS bna_device_access_rules_rule_type_check;
+ALTER TABLE bna_device_access_rules
+  ADD CONSTRAINT bna_device_access_rules_rule_type_check
+  CHECK (rule_type IN ('goal_approval', 'schedule', 'manual'));
+ALTER TABLE bna_device_access_rules DROP CONSTRAINT IF EXISTS bna_device_access_rules_duration_minutes_check;
+ALTER TABLE bna_device_access_rules
+  ADD CONSTRAINT bna_device_access_rules_duration_minutes_check
+  CHECK (duration_minutes > 0 AND duration_minutes <= 1440);
+ALTER TABLE bna_device_access_sessions DROP CONSTRAINT IF EXISTS bna_device_access_sessions_status_check;
+ALTER TABLE bna_device_access_sessions
+  ADD CONSTRAINT bna_device_access_sessions_status_check
+  CHECK (status IN ('locked', 'accountability_only', 'approved_access', 'expired', 'manual_override'));
 ALTER TABLE bna_torah_learning_entries ADD COLUMN IF NOT EXISTS daily_completion_percentage DECIMAL(10,2) NOT NULL DEFAULT 0;
 ALTER TABLE bna_torah_learning_entries ADD COLUMN IF NOT EXISTS daily_completed_boolean BOOLEAN DEFAULT FALSE;
 ALTER TABLE bna_torah_learning_entries ADD COLUMN IF NOT EXISTS completed_daily_units DECIMAL(10,2) NOT NULL DEFAULT 0;
@@ -1496,6 +2170,16 @@ ALTER TABLE bna_group_goal_entries ADD COLUMN IF NOT EXISTS distracted_minutes D
 
 CREATE INDEX IF NOT EXISTS idx_bna_students_name ON bna_students (name);
 CREATE INDEX IF NOT EXISTS idx_bna_students_access_code ON bna_students (student_access_code);
+CREATE INDEX IF NOT EXISTS idx_bna_devices_student_id ON bna_devices (student_id);
+CREATE INDEX IF NOT EXISTS idx_bna_devices_status ON bna_devices (status);
+CREATE INDEX IF NOT EXISTS idx_bna_device_access_rules_student_id ON bna_device_access_rules (student_id);
+CREATE INDEX IF NOT EXISTS idx_bna_device_access_rules_device_id ON bna_device_access_rules (device_id);
+CREATE INDEX IF NOT EXISTS idx_bna_device_access_rules_goal_id ON bna_device_access_rules (required_goal_id);
+CREATE INDEX IF NOT EXISTS idx_bna_device_access_sessions_device_id ON bna_device_access_sessions (device_id);
+CREATE INDEX IF NOT EXISTS idx_bna_device_access_sessions_student_id ON bna_device_access_sessions (student_id);
+CREATE INDEX IF NOT EXISTS idx_bna_device_access_sessions_goal_id ON bna_device_access_sessions (goal_id);
+CREATE INDEX IF NOT EXISTS idx_bna_device_access_sessions_status ON bna_device_access_sessions (status);
+CREATE INDEX IF NOT EXISTS idx_bna_device_access_sessions_expires_at ON bna_device_access_sessions (expires_at);
 CREATE INDEX IF NOT EXISTS idx_bna_torah_learning_goals_student_id ON bna_torah_learning_goals (student_id);
 CREATE INDEX IF NOT EXISTS idx_bna_torah_learning_goals_start_date ON bna_torah_learning_goals (start_date DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_torah_learning_entries_student_id ON bna_torah_learning_entries (student_id);
@@ -1515,6 +2199,8 @@ CREATE INDEX IF NOT EXISTS idx_bna_payment_intake_status ON bna_payment_intake (
 CREATE INDEX IF NOT EXISTS idx_bna_payment_intake_received_at ON bna_payment_intake (received_at DESC);
 CREATE INDEX IF NOT EXISTS idx_signups_payment_due_date ON signups (payment_due_date);
 CREATE INDEX IF NOT EXISTS idx_signups_payment_status ON signups (payment_status);
+CREATE INDEX IF NOT EXISTS idx_bna_signup_agreement_signatures_signup_id ON bna_signup_agreement_signatures (signup_id);
+CREATE INDEX IF NOT EXISTS idx_bna_signup_agreement_signatures_type ON bna_signup_agreement_signatures (agreement_type);
 CREATE INDEX IF NOT EXISTS idx_bna_email_log_signup_id ON bna_email_log (signup_id);
 CREATE INDEX IF NOT EXISTS idx_bna_email_log_email_type ON bna_email_log (email_type);
 CREATE INDEX IF NOT EXISTS idx_bna_content_jobs_status ON bna_content_jobs (status);
@@ -1530,6 +2216,7 @@ CREATE INDEX IF NOT EXISTS idx_bna_project_members_project_id ON bna_project_mem
 CREATE INDEX IF NOT EXISTS idx_bna_project_members_login_username ON bna_project_members (login_username);
 CREATE INDEX IF NOT EXISTS idx_bna_task_comments_task_id ON bna_task_comments (task_id);
 CREATE INDEX IF NOT EXISTS idx_bna_task_comments_created_at ON bna_task_comments (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_agent_runtime_last_seen ON bna_agent_runtime_status (last_seen_at DESC);
 
 ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS drive_file_id TEXT;
 ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS drive_folder_id TEXT;
@@ -1564,8 +2251,15 @@ ALTER TABLE signups ADD COLUMN IF NOT EXISTS form_language TEXT DEFAULT 'en';
 ALTER TABLE signups ADD COLUMN IF NOT EXISTS waiver_accepted BOOLEAN DEFAULT FALSE;
 ALTER TABLE signups ADD COLUMN IF NOT EXISTS waiver_accepted_at TIMESTAMP;
 ALTER TABLE signups ADD COLUMN IF NOT EXISTS waiver_version TEXT;
+ALTER TABLE signups ADD COLUMN IF NOT EXISTS tuition_agreement_accepted BOOLEAN DEFAULT FALSE;
+ALTER TABLE signups ADD COLUMN IF NOT EXISTS tuition_agreement_accepted_at TIMESTAMP;
+ALTER TABLE signups ADD COLUMN IF NOT EXISTS tuition_agreement_version TEXT;
+ALTER TABLE signups ADD COLUMN IF NOT EXISTS tuition_agreement_signer_name TEXT;
+ALTER TABLE signups ADD COLUMN IF NOT EXISTS tuition_agreement_signer_email TEXT;
+ALTER TABLE signups ADD COLUMN IF NOT EXISTS tuition_agreement_client_signed_at TIMESTAMP;
 ALTER TABLE signups ADD COLUMN IF NOT EXISTS confirmation_email_sent_at TIMESTAMP;
 ALTER TABLE signups ADD COLUMN IF NOT EXISTS confirmation_email_error TEXT;
+ALTER TABLE signups ALTER COLUMN parent_email DROP NOT NULL;
 `;
 
 const normalizeTasksCategoryCheckSQL = `
@@ -1809,7 +2503,7 @@ function isPureCapabilityQuestion(text) {
   const normalized = String(text || '').trim().toLowerCase().replace(/\s+/g, ' ');
   if (!normalized) return false;
 
-  const questionLead = /^(are there|is there|do we|does |can we|could we|would it be possible|is it possible|how can|how do|what about|why did|why is|what happened)\b/.test(normalized);
+  const questionLead = /^(are there|is there|is this|do we|does |can i|can we|can you|can the|could i|could we|could this|would i|would we|would it be possible|is it possible|will i|will we|will it|will this|how can|how do|what about|why did|why is|what happened)\b/.test(normalized);
   const questionInside = /\b(is there (?:some sort of )?way|are there ways|does .+ support|can .+ label|can .+ record|why did .+ happen)\b/.test(normalized);
   const explicitWork = /\b(i need you|i want you|you need to|you have to|please|check|fix|build|wire|set up|setup|configure|deploy|update|change|remove|add|create|make|run|sync|implement|queue|file|capture|task|todo|mark|send|call|email|pay|paid)\b/.test(normalized);
 
@@ -1847,9 +2541,10 @@ function inferTaskStage(text) {
 function inferTaskOwner(text) {
   const normalized = String(text || '').toLowerCase();
   if (/\b(i need you to|i want you|you need to|you have to|you should|can you|please)\b/.test(normalized)) return 'Codex';
+  if (/(planned briefs?|plan briefs?|implementation briefs?|briefs section|section planned? briefs?)/.test(normalized) && /\b(can we|get rid|remove|hide|stop showing|should never|codex|kodak)\b/.test(normalized)) return 'Codex';
   if (/\b(i need to|i should|remind me|my task|for me to)\b/.test(normalized)) return 'Shloimie';
   if (isSpeakerDiarizationText(normalized) && /\b(add|fix|implement|verify|improve|support|label|transcribe|record|recording)\b/.test(normalized)) return 'Codex';
-  if (/\b(kimi|kimmy|codex|bot|agent|system|machine task|programming|fix|build|wire|configure|process|transcribe|deploy|verify|parse|parser|routing|dashboard|content section|telegram buttons?)\b/.test(normalized)) return 'Codex';
+  if (/\b(kimi|kimmy|codex|kodak|codak|bot|agent|system|machine task|programming|fix|build|wire|configure|process|transcribe|deploy|verify|parse|parser|routing|dashboard|task manager|content section|telegram buttons?)\b/.test(normalized)) return 'Codex';
   return null;
 }
 
@@ -1909,12 +2604,32 @@ function polishTaskCandidateText(text) {
   if (/(carousel|image slider|slider|learning moments)/.test(lower) && /(image|drive|intake)/.test(lower)) {
     return 'Use the newest Drive intake images for the homepage Learning Moments carousel';
   }
+  if (/(planned briefs?|plan briefs?|implementation briefs?|briefs section|section planned? briefs?)/.test(lower) && /(get rid|remove|don't want|do not want|should never|codex|kodak)/.test(lower)) {
+    return 'Remove planned briefs from the operator-facing Tasks dashboard';
+  }
   if (/(railway)/.test(lower) && /(token|deploy|login|logged|problem)/.test(lower)) {
     return 'Stabilize Railway token, deploy, and smoke-test workflow';
   }
   value = value.charAt(0).toUpperCase() + value.slice(1);
   if (value.length > 220) value = `${value.slice(0, 217).trim()}...`;
   return value;
+}
+
+function taskTitleLooksRawForServer(value) {
+  const text = String(value || '').replace(/\s+/g, ' ').trim();
+  if (!text) return false;
+  const lower = text.toLowerCase();
+  if (text.length > 150) return true;
+  if (/\b(umm+|uh+|you know|i want you to|i need you to|what i want you to do|can you|could you|i don't know)\b/i.test(text)) return true;
+  if (text.length > 95 && (lower.match(/\b(and|also|then|so)\b/g) || []).length >= 4) return true;
+  return false;
+}
+
+function cleanTaskTitleForStorage(title, rawText = '') {
+  const candidate = String(title || '').replace(/\s+/g, ' ').trim();
+  if (!candidate) return '';
+  if (!taskTitleLooksRawForServer(candidate)) return candidate.slice(0, 240);
+  return polishTaskCandidateText([rawText, candidate].filter(Boolean).join(' ')).slice(0, 240);
 }
 
 function explainTaskCandidate(line) {
@@ -1986,7 +2701,7 @@ function titleFromRawTaskText(rawText) {
 
 async function createTaskFromText(input = {}, options = {}, db = pool) {
   const rawText = String(input.raw_text || input.rawText || input.ramble || input.text || input.title || '').trim();
-  const title = String(input.title || titleFromRawTaskText(rawText)).trim();
+  const title = cleanTaskTitleForStorage(input.title || titleFromRawTaskText(rawText), rawText);
   if (!title) {
     const error = new Error('Task title or raw text is required');
     error.statusCode = 400;
@@ -2009,7 +2724,7 @@ async function createTaskFromText(input = {}, options = {}, db = pool) {
   const category = safeTaskCategory(input.category || inferTaskCategory(`${title}\n${rawText}`));
   const stage = String(input.stage || (decisionRequired ? 'needs_decision' : (inferredStage === 'raw_input' ? 'assigned' : inferredStage || 'assigned'))).trim();
   const urgency = safeTaskUrgency(input.urgency);
-  const source = String(input.source || 'telegram').trim();
+  const source = safeTaskSource(input.source || 'telegram');
   const aiParsed = input.ai_parsed || {
     parser: 'create_task_from_text-v1',
     kind: decisionRequired ? 'decision' : 'task',
@@ -2383,6 +3098,8 @@ async function refreshTorahTripProgressSnapshots(studentId, options = {}, db = p
   const entriesResult = await db.query(
     `SELECT
         id,
+        individual_percentage,
+        individual_complete,
         COALESCE(daily_completion_percentage, individual_percentage, 0) AS daily_completion_percentage,
         COALESCE(daily_completed_boolean, individual_complete, FALSE) AS daily_completed_boolean
      FROM bna_torah_learning_entries
@@ -2393,10 +3110,10 @@ async function refreshTorahTripProgressSnapshots(studentId, options = {}, db = p
 
   let completedDailyUnits = 0;
   for (const row of entriesResult.rows) {
-    const dailyCompletedBoolean = Boolean(row.daily_completed_boolean);
-    if (dailyCompletedBoolean) {
-      completedDailyUnits += 1;
-    }
+    const dailyCompletionPercentage = dailyCompletionPercentageFromEntry(row);
+    const dailyCompletedUnits = calculateDailyCompletedUnits(dailyCompletionPercentage);
+    const dailyCompletedBoolean = dailyCompletedUnits >= 1;
+    completedDailyUnits += dailyCompletedUnits;
 
     const tripProgress = calculateStudentTripProgress({
       carriedOverCompletedUnits,
@@ -2408,6 +3125,7 @@ async function refreshTorahTripProgressSnapshots(studentId, options = {}, db = p
       `UPDATE bna_torah_learning_entries
        SET daily_completion_percentage = $2,
            daily_completed_boolean = $3,
+           individual_complete = $3,
            completed_daily_units = $4,
            carried_over_completed_units = $5,
            total_completed_units = $6,
@@ -2417,7 +3135,7 @@ async function refreshTorahTripProgressSnapshots(studentId, options = {}, db = p
        WHERE id = $1`,
       [
         row.id,
-        Number(row.daily_completion_percentage || 0),
+        dailyCompletionPercentage,
         dailyCompletedBoolean,
         tripProgress.completedDailyUnits,
         tripProgress.carriedOverCompletedUnits,
@@ -2530,10 +3248,11 @@ async function upsertTorahLearningEntry(input = {}, db = pool) {
     'total_required_units'
   );
   const dailyCompletionPercentage = progress.individualPercentageRaw;
-  const dailyCompletedBoolean = progress.individualComplete;
+  const completedDailyUnit = calculateDailyCompletedUnits(dailyCompletionPercentage);
+  const dailyCompletedBoolean = completedDailyUnit >= 1;
   const initialTripProgress = calculateStudentTripProgress({
     carriedOverCompletedUnits,
-    completedDailyUnits: dailyCompletedBoolean ? 1 : 0,
+    completedDailyUnits: completedDailyUnit,
     totalRequiredUnits,
   });
 
@@ -2577,7 +3296,7 @@ async function upsertTorahLearningEntry(input = {}, db = pool) {
       progress.individualComplete,
       dailyCompletionPercentage,
       dailyCompletedBoolean,
-      dailyCompletedBoolean ? 1 : 0,
+      completedDailyUnit,
       carriedOverCompletedUnits,
       initialTripProgress.totalCompletedUnits,
       totalRequiredUnits,
@@ -2675,6 +3394,16 @@ async function seedTodayTorahLearningSnapshot(db = pool) {
     const goal = await getTorahGoalForDate(student.id, TORAH_TEMP_SEED_DATE, db);
     if (!goal) continue;
 
+    const existingSeedEntry = await db.query(
+      `SELECT id
+       FROM bna_torah_learning_entries
+       WHERE student_id = $1
+         AND date = $2::date
+       LIMIT 1`,
+      [student.id, TORAH_TEMP_SEED_DATE]
+    );
+    if (existingSeedEntry.rows[0]) continue;
+
     const tripDefaults = getTorahTripDefaultsForStudent(student);
     const goalMinutes = Number(goal.goal_minutes);
     await upsertTorahLearningEntry(
@@ -2761,7 +3490,19 @@ async function getTorahLearningSummary(dateInput, db = pool) {
      ) e_progress ON TRUE
      LEFT JOIN LATERAL (
        SELECT COALESCE(
-         SUM(CASE WHEN COALESCE(e.daily_completed_boolean, e.individual_complete, FALSE) THEN 1 ELSE 0 END),
+         SUM(
+           LEAST(
+             1::numeric,
+             GREATEST(
+               0::numeric,
+               COALESCE(
+                 e.daily_completion_percentage,
+                 e.individual_percentage,
+                 CASE WHEN COALESCE(e.daily_completed_boolean, e.individual_complete, FALSE) THEN 100 ELSE 0 END
+               )::numeric / 100
+             )
+           )
+         ),
          0
        )::DECIMAL(10,2) AS completed_daily_units_count
        FROM bna_torah_learning_entries e
@@ -2817,15 +3558,8 @@ async function getTorahLearningSummary(dateInput, db = pool) {
       totalRequiredUnits,
     });
     const dailyCompletionPercentage =
-      row.daily_completion_percentage !== null && row.daily_completion_percentage !== undefined
-        ? Number(row.daily_completion_percentage)
-        : row.individual_percentage !== null && row.individual_percentage !== undefined
-          ? Number(row.individual_percentage)
-          : 0;
-    const dailyCompletedBoolean =
-      row.daily_completed_boolean !== null && row.daily_completed_boolean !== undefined
-        ? Boolean(row.daily_completed_boolean)
-        : Boolean(row.individual_complete);
+      dailyCompletionPercentageFromEntry(row);
+    const dailyCompletedBoolean = dailyCompletionPercentage >= 100;
 
     return {
       id: row.student_id,
@@ -2847,14 +3581,14 @@ async function getTorahLearningSummary(dateInput, db = pool) {
             listening_without_following_minutes: Number(row.listening_without_following_minutes || 0),
             counted_minutes: Number(row.counted_minutes || 0),
             individual_percentage: Number(row.individual_percentage || 0),
-            individual_complete: Boolean(row.individual_complete),
+            individual_complete: dailyCompletedBoolean,
             daily_completion_percentage: dailyCompletionPercentage,
             daily_completed_boolean: dailyCompletedBoolean,
-            completed_daily_units: Number(row.completed_daily_units ?? completedDailyUnits),
-            carried_over_completed_units: Number(row.carried_over_completed_units ?? carriedOverCompletedUnits),
-            total_completed_units: Number(row.total_completed_units ?? trip.totalCompletedUnits),
-            total_required_units: Number(row.total_required_units ?? totalRequiredUnits),
-            total_trip_progress_percentage: Number(row.total_trip_progress_percentage ?? trip.totalTripProgressPercentageRaw),
+            completed_daily_units: trip.completedDailyUnits,
+            carried_over_completed_units: trip.carriedOverCompletedUnits,
+            total_completed_units: trip.totalCompletedUnits,
+            total_required_units: trip.totalRequiredUnits,
+            total_trip_progress_percentage: trip.totalTripProgressPercentageRaw,
             note: row.note || '',
           }
         : null,
@@ -3421,10 +4155,12 @@ async function ensureDefaultContentPrompts() {
 async function initDb() {
   try {
     await pool.query(createSignupsTableSQL);
+    await pool.query(createSignupAgreementSignaturesSQL);
     await pool.query(createProjectsSQL);
     await pool.query(createTasksTableSQL);
     await pool.query(createProjectMembersSQL);
     await pool.query(createTaskCommentsSQL);
+    await pool.query(createAgentRuntimeStatusSQL);
     await pool.query(normalizeTasksCategoryCheckSQL);
     await pool.query(normalizeTasksStageCheckSQL);
     await pool.query(normalizeTasksSourceCheckSQL);
@@ -3432,10 +4168,13 @@ async function initDb() {
     await pool.query(createEmailLogSQL);
     await pool.query(createPaymentIntakeSQL);
     await pool.query(createStudentsSQL);
+    await pool.query(createDevicesSQL);
     await pool.query(createTorahLearningGoalsSQL);
     await pool.query(createTorahLearningEntriesSQL);
     await pool.query(createGreenInvoiceWebhookLogSQL);
     await pool.query(createAccountabilityEventsSQL);
+    await pool.query(createDeviceAccessRulesSQL);
+    await pool.query(createDeviceAccessSessionsSQL);
     await pool.query(createGroupGoalsSQL);
     await pool.query(createGroupGoalEntriesSQL);
     await pool.query(createContentJobsSQL);
@@ -3531,6 +4270,42 @@ async function listGhlSocialAccounts() {
   return data?.results?.accounts || [];
 }
 
+function usableSocialAccountsForPlatform(accounts, platform) {
+  const requestedPlatform = String(platform || '').toLowerCase();
+  return (accounts || []).filter((account) =>
+    String(account.platform || '').toLowerCase() === requestedPlatform
+    && !account.isExpired
+    && !account.deleted
+    && account.id
+  );
+}
+
+function resolveGhlFacebookAccount(accounts) {
+  const facebookAccounts = usableSocialAccountsForPlatform(accounts, 'facebook');
+  if (!facebookAccounts.length) {
+    const error = new Error('No active connected Facebook account found in GHL');
+    error.status = 409;
+    error.hint = 'Connect or refresh the BNA Facebook account in GHL Social Planner.';
+    throw error;
+  }
+
+  if (GHL_DEFAULT_FACEBOOK_ACCOUNT_ID) {
+    const configured = facebookAccounts.find((account) => String(account.id) === String(GHL_DEFAULT_FACEBOOK_ACCOUNT_ID));
+    if (configured) return configured;
+    const error = new Error('Configured GHL_DEFAULT_FACEBOOK_ACCOUNT_ID does not match an active Facebook account');
+    error.status = 409;
+    error.hint = 'Run /accounts, copy the intended Facebook account id, and update GHL_DEFAULT_FACEBOOK_ACCOUNT_ID.';
+    throw error;
+  }
+
+  if (facebookAccounts.length === 1) return facebookAccounts[0];
+
+  const error = new Error('Multiple active Facebook accounts are connected; refusing to pick one automatically');
+  error.status = 409;
+  error.hint = 'Set GHL_DEFAULT_FACEBOOK_ACCOUNT_ID to the approved BNA Facebook account before creating GHL drafts from Content.';
+  throw error;
+}
+
 async function getDefaultGhlUserId() {
   const data = await ghlSocialRequest(`/users/?locationId=${encodeURIComponent(GHL_LOCATION_ID)}`);
   const userId = data?.users?.[0]?.id;
@@ -3572,8 +4347,7 @@ function socialPostTypeForMedia(mediaItems) {
 
 async function createFacebookDraftFromContent(job, output) {
   const accounts = await listGhlSocialAccounts();
-  const facebook = accounts.find((account) => String(account.platform || '').toLowerCase() === 'facebook');
-  if (!facebook?.id) throw new Error('No connected Facebook account found in GHL');
+  const facebook = resolveGhlFacebookAccount(accounts);
 
   const media = [];
   const localPath = job.local_path ? path.resolve(__dirname, job.local_path) : '';
@@ -3934,6 +4708,232 @@ async function assertTaskAccess(req, taskId, db = pool) {
     throw error;
   }
   return task;
+}
+
+const PENDING_BRIEFS_DIR = path.join(__dirname, 'tasks-pending');
+const PENDING_BRIEF_WORK_BADGES = [
+  {
+    id: 'goal_board',
+    label: 'Goal Board',
+    pattern: /\b(goal board|student-owned goal|student owned goal|classroom assignment|morning learning|private meeting|natural consequence)\b/i,
+  },
+  {
+    id: 'device_control',
+    label: 'Device Control',
+    pattern: /\b(device control|device-control|qstudio|qustodio|headwind|freekiosk|mdm|tablet|allowlist|kiosk|lock task|lock-task)\b/i,
+  },
+  {
+    id: 'rabbi_bot',
+    label: 'Rabbi Bot',
+    pattern: /\b(rabbi elie|rabbi bot|one time mishnah|one time mishna|mishnah class|mishna class|scoped bot|bot profile)\b/i,
+  },
+  {
+    id: 'ui',
+    label: 'UI',
+    pattern: /\b(ui|dashboard|operations|task manager|student page|homepage|carousel|card|cards|modal|filter chip|operations content)\b/i,
+  },
+  {
+    id: 'drive_content',
+    label: 'Drive/Content',
+    pattern: /\b(drive|content|blog|website moment|raw intake|newsletter|prompt studio|prompt|transcript|image lane|learning moments|ghl|social post|facebook|whatsapp)\b/i,
+  },
+  {
+    id: 'parsing',
+    label: 'Parsing',
+    pattern: /\b(parser|parsing|parse|routing|recording|audio|video upload|voice|ramble|intake lane|mixed recording|transcribe)\b/i,
+  },
+];
+
+function limitText(value, max = 320) {
+  const text = String(value || '').replace(/\s+/g, ' ').trim();
+  if (text.length <= max) return text;
+  return text.slice(0, Math.max(0, max - 3)).trim() + '...';
+}
+
+function markdownField(content, field) {
+  const match = String(content || '').match(new RegExp(`^${field}\\s*:\\s*(.+)$`, 'im'));
+  return match ? match[1].trim() : '';
+}
+
+function normalizeBriefHeading(value) {
+  return String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, ' ')
+    .trim();
+}
+
+function markdownSection(content, headings = []) {
+  const wanted = new Set(headings.map(normalizeBriefHeading));
+  const lines = String(content || '').split(/\r?\n/);
+  let start = -1;
+  let level = 0;
+
+  for (let i = 0; i < lines.length; i += 1) {
+    const match = lines[i].match(/^(#{2,6})\s+(.+?)\s*$/);
+    if (!match) continue;
+    if (wanted.has(normalizeBriefHeading(match[2]))) {
+      start = i + 1;
+      level = match[1].length;
+      break;
+    }
+  }
+
+  if (start === -1) return '';
+
+  const collected = [];
+  for (let i = start; i < lines.length; i += 1) {
+    const match = lines[i].match(/^(#{2,6})\s+/);
+    if (match && match[1].length <= level) break;
+    collected.push(lines[i]);
+  }
+  return collected.join('\n').trim();
+}
+
+function firstMarkdownParagraph(markdown) {
+  const chunks = String(markdown || '')
+    .replace(/```[\s\S]*?```/g, ' ')
+    .split(/\n\s*\n+/);
+
+  for (const chunk of chunks) {
+    const text = chunk
+      .split(/\r?\n/)
+      .map((line) => line.trim())
+      .filter((line) => line && !/^#{1,6}\s/.test(line))
+      .filter((line) => !/^(date|task|status|source)\s*:/i.test(line))
+      .map((line) => line.replace(/^[-*]\s+/, '').replace(/^\d+\.\s+/, '').trim())
+      .filter(Boolean)
+      .join(' ')
+      .replace(/`([^`]+)`/g, '$1')
+      .trim();
+
+    if (text) return limitText(text);
+  }
+
+  return '';
+}
+
+function pendingBriefSummary(content) {
+  const preferredSections = [
+    'Goal',
+    'Product Goal',
+    'Operator Intent',
+    'Boundary',
+    'Recommendation',
+    'Requirements',
+    'Suggested Implementation Shape',
+    'Status',
+  ];
+
+  for (const section of preferredSections) {
+    const summary = firstMarkdownParagraph(markdownSection(content, [section]));
+    if (summary) return summary;
+  }
+
+  return firstMarkdownParagraph(content);
+}
+
+function pendingBriefLifecycle(content, statusLine) {
+  const status = String(statusLine || '').toLowerCase();
+  const leadingText = `${statusLine || ''}\n${String(content || '').slice(0, 5000)}`.toLowerCase();
+  const statusOrLeading = status || leadingText;
+
+  if (/\b(planning-only|planning only|documentation-only|documentation only|design handoff|pending implementation|do not build)\b/.test(statusOrLeading)) {
+    return {
+      stage: 'planned',
+      label: 'Planned',
+      reason: statusLine || 'Markdown brief exists, but implementation is still pending.',
+    };
+  }
+
+  if (/\bdeploy(?:ment)?\/restart is needed\b|\bdeploy(?:ment)? needed\b|\brestart needed\b|\blive values still needed\b|\bimplemented locally\b|\blocal implementation\b/.test(statusOrLeading)) {
+    return {
+      stage: 'implementing',
+      label: 'Implementing',
+      reason: statusLine || 'Implementation exists locally or needs live setup before it is finished.',
+    };
+  }
+
+  if (/\b(deployed|deployed\/restarted|running in production|live in production)\b/.test(status) && !/\b(needed|pending|not yet|still needed)\b/.test(status)) {
+    return {
+      stage: 'deployed',
+      label: 'Deployed',
+      reason: statusLine || 'Brief says the work is deployed.',
+    };
+  }
+
+  if (/\b(verified|verification passed|tests? passed|smoke passed|completed locally)\b/.test(statusOrLeading)) {
+    return {
+      stage: 'verified',
+      label: 'Verified',
+      reason: statusLine || 'Brief includes verification evidence.',
+    };
+  }
+
+  return {
+    stage: 'planned',
+    label: 'Planned',
+    reason: statusLine || 'Markdown brief exists, but no implementation status was found.',
+  };
+}
+
+function pendingBriefBadges(content, title) {
+  const text = `${title || ''}\n${content || ''}`;
+  const badges = PENDING_BRIEF_WORK_BADGES
+    .filter((badge) => badge.pattern.test(text))
+    .map(({ id, label }) => ({ id, label }));
+
+  if (!badges.length) return [{ id: 'ui', label: 'UI' }];
+  return badges;
+}
+
+function pendingBriefFromFile(fileName) {
+  const fullPath = path.join(PENDING_BRIEFS_DIR, fileName);
+  const stat = fs.statSync(fullPath);
+  const content = fs.readFileSync(fullPath, 'utf8');
+  const titleMatch = content.match(/^#\s+(.+)$/m);
+  const title = titleMatch ? titleMatch[1].trim() : fileName.replace(/\.md$/i, '').replace(/-/g, ' ');
+  const statusLine = markdownField(content, 'Status');
+  const lifecycle = pendingBriefLifecycle(content, statusLine);
+  const taskMatch = markdownField(content, 'Task').match(/#?(\d+)/);
+  const date = markdownField(content, 'Date') || (fileName.match(/^(\d{4}-\d{2}-\d{2})/) || [])[1] || '';
+  const projectKey = inferProjectKeyFromText(`${title}\n${content}`, DEFAULT_PROJECT_KEY);
+
+  return {
+    id: `brief:${fileName}`,
+    title,
+    file_name: fileName,
+    file_path: `tasks-pending/${fileName}`,
+    date,
+    task_id: taskMatch ? Number(taskMatch[1]) : null,
+    status_text: statusLine,
+    lifecycle_stage: lifecycle.stage,
+    lifecycle_label: lifecycle.label,
+    lifecycle_reason: lifecycle.reason,
+    project_key: projectKey,
+    project_name: projectKey === ONE_TIME_PROJECT_KEY ? 'One Time Mishnah Class' : 'BNA',
+    project_short_name: projectKey === ONE_TIME_PROJECT_KEY ? 'One Time' : 'BNA',
+    badges: pendingBriefBadges(content, title),
+    summary: pendingBriefSummary(content),
+    created_at: date || stat.birthtime.toISOString(),
+    updated_at: stat.mtime.toISOString(),
+    file_mtime: stat.mtime.toISOString(),
+  };
+}
+
+function listPendingBriefs(req) {
+  if (!fs.existsSync(PENDING_BRIEFS_DIR)) return [];
+  const scopedProjectKey = opsScopeProjectKey(req);
+  const briefs = fs.readdirSync(PENDING_BRIEFS_DIR, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && entry.name.toLowerCase().endsWith('.md'))
+    .map((entry) => pendingBriefFromFile(entry.name))
+    .filter((brief) => !scopedProjectKey || normalizeProjectKey(brief.project_key) === scopedProjectKey);
+
+  const lifecycleRank = { planned: 0, implementing: 1, verified: 2, deployed: 3 };
+  return briefs.sort((a, b) => {
+    const rank = (lifecycleRank[a.lifecycle_stage] ?? 4) - (lifecycleRank[b.lifecycle_stage] ?? 4);
+    if (rank !== 0) return rank;
+    return Date.parse(b.updated_at || 0) - Date.parse(a.updated_at || 0);
+  });
 }
 
 function readWebsiteBlogStore() {
@@ -4403,6 +5403,12 @@ function safeTaskCategory(value) {
 function safeTaskUrgency(value) {
   const allowed = new Set(['urgent', 'today', 'this_week', 'low']);
   return allowed.has(value) ? value : 'this_week';
+}
+
+function safeTaskSource(value) {
+  const normalized = String(value || '').trim().toLowerCase();
+  const allowed = new Set(['manual', 'ramble', 'telegram', 'web', 'google_drive', 'content_job', 'import', 'ghl_webhook', 'green_invoice']);
+  return allowed.has(normalized) ? normalized : 'manual';
 }
 
 function safeTaskOwner(value, task = {}) {
@@ -5245,6 +6251,112 @@ app.post('/api/bna/signups/:id/send-confirmation', requireAdmin, async (req, res
   }
 });
 
+function getRequestIp(req) {
+  const forwarded = String(req.headers['x-forwarded-for'] || '').split(',')[0].trim();
+  return forwarded || req.ip || req.socket?.remoteAddress || null;
+}
+
+function escapeRegExp(value) {
+  return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function getRegistrationPackageLanguageBlock(language) {
+  const markdown = String(REGISTRATION_PACKAGE_TEXT || '');
+  const split = markdown.split(/^#\s+(?:HEBREW VERSION|גרסה עברית)\s*$/m);
+  return language === 'he' ? (split[1] || markdown) : (split[0] || markdown);
+}
+
+function extractRegistrationPackageDocumentText(language, index) {
+  const block = getRegistrationPackageLanguageBlock(language);
+  const label = language === 'he' ? `מסמך ${index}:` : `Document ${index}:`;
+  const nextLabel = language === 'he' ? `מסמך ${index + 1}:` : `Document ${index + 1}:`;
+  const startRegex = new RegExp(`^## ${escapeRegExp(label)}`, 'm');
+  const nextRegex = new RegExp(`^## ${escapeRegExp(nextLabel)}`, 'm');
+  const startMatch = block.match(startRegex);
+  if (!startMatch || typeof startMatch.index !== 'number') {
+    return REGISTRATION_PACKAGE_TEXT;
+  }
+  const start = startMatch.index;
+  const rest = block.slice(start + startMatch[0].length);
+  const endMatch = rest.match(nextRegex);
+  if (!endMatch || typeof endMatch.index !== 'number') return block.slice(start).trim();
+  return block.slice(start, start + startMatch[0].length + endMatch.index).trim();
+}
+
+function getSignupAgreementSnapshot(definition, language) {
+  const normalizedLanguage = normalizeLanguage(language);
+  if (definition.agreement_type === 'tuition_agreement') {
+    return normalizedLanguage === 'he' ? TUITION_AGREEMENT_TEXT_HE : TUITION_AGREEMENT_TEXT;
+  }
+  return extractRegistrationPackageDocumentText(normalizedLanguage, definition.package_index);
+}
+
+function getSignatureValue(signature, snakeKey, camelKey) {
+  if (!signature || typeof signature !== 'object') return undefined;
+  return signature[snakeKey] !== undefined ? signature[snakeKey] : signature[camelKey];
+}
+
+function buildRequiredSignupAgreementRecords({
+  signatures,
+  language,
+  parentName,
+  parentEmail,
+}) {
+  const normalizedLanguage = normalizeLanguage(language);
+  const provided = Array.isArray(signatures) ? signatures : [];
+  const byType = new Map();
+  for (const signature of provided) {
+    const type = String(getSignatureValue(signature, 'agreement_type', 'agreementType') || '').trim();
+    if (type && !byType.has(type)) byType.set(type, signature);
+  }
+
+  const parentNameTrim = String(parentName || '').trim();
+  const parentEmailTrim = String(parentEmail || '').trim();
+  const records = [];
+
+  for (const definition of REQUIRED_SIGNUP_AGREEMENT_DEFINITIONS) {
+    const signature = byType.get(definition.agreement_type);
+    if (!signature || signature.accepted === false || signature.accepted === 'false') {
+      return { ok: false, error: `Missing required signature for ${definition.agreement_type}` };
+    }
+
+    const signerName = String(getSignatureValue(signature, 'signer_name', 'signerName') || '').trim();
+    const signerEmail = String(getSignatureValue(signature, 'signer_email', 'signerEmail') || '').trim();
+    const clientSignedAt = getSignatureValue(signature, 'client_signed_at', 'clientSignedAt') || null;
+    const agreementVersion = String(getSignatureValue(signature, 'agreement_version', 'agreementVersion') || definition.version).trim() || definition.version;
+    const languageViewed = normalizeLanguage(getSignatureValue(signature, 'language_viewed', 'languageViewed') || normalizedLanguage);
+
+    if (!signerName) {
+      return { ok: false, error: `Signature for ${definition.agreement_type} requires a parent name` };
+    }
+    if (!signerEmail) {
+      return { ok: false, error: `Signature for ${definition.agreement_type} requires a parent email` };
+    }
+    if (parentNameTrim && signerName !== parentNameTrim) {
+      return { ok: false, error: `Signature for ${definition.agreement_type} must match Parent 1 name on the form` };
+    }
+    if (parentEmailTrim && signerEmail !== parentEmailTrim) {
+      return { ok: false, error: `Signature for ${definition.agreement_type} must match Parent 1 email on the form` };
+    }
+    if (!clientSignedAt) {
+      return { ok: false, error: `Signature for ${definition.agreement_type} requires a client signed timestamp` };
+    }
+
+    records.push({
+      agreement_type: definition.agreement_type,
+      agreement_title: definition.title[languageViewed] || definition.title[normalizedLanguage] || definition.title.en,
+      agreement_version: agreementVersion,
+      agreement_text: getSignupAgreementSnapshot(definition, languageViewed),
+      signer_name: signerName,
+      signer_email: signerEmail,
+      client_signed_at: clientSignedAt,
+      language_viewed: languageViewed,
+    });
+  }
+
+  return { ok: true, records };
+}
+
 // Submit signup
 app.post('/api/submit', async (req, res) => {
   const {
@@ -5257,7 +6369,18 @@ app.post('/api/submit', async (req, res) => {
     address, child_name, child_age, current_school, hobbies,
     form_language,
     waiver_accepted,
-    waiver_version
+    waiver_version,
+    tuition_agreement_accepted,
+    tuition_agreement_version,
+    tuition_agreement_signer_name,
+    tuition_agreement_signer_email,
+    tuition_agreement_client_signed_at,
+    registration_package_accepted,
+    registration_package_version,
+    registration_package_signer_name,
+    registration_package_signer_email,
+    registration_package_client_signed_at,
+    agreement_signatures = []
   } = req.body;
 
   const normalizedParentName = parent_name || parent1_name;
@@ -5270,14 +6393,39 @@ app.post('/api/submit', async (req, res) => {
   const normalizedReasonApplying = reason_applying || hobbies || '';
   const normalizedSpecialNeeds = special_needs || '';
   const normalizedLanguage = normalizeLanguage(form_language);
-  const normalizedPaymentMethod = String(payment_method || '').trim().toLowerCase() === 'cash'
+  const agreementValidation = buildRequiredSignupAgreementRecords({
+    signatures: agreement_signatures,
+    language: normalizedLanguage,
+    parentName: normalizedParentName,
+    parentEmail: normalizedParentEmail,
+  });
+  const requiredAgreementRecords = agreementValidation.records || [];
+  const tuitionAgreementRecord = requiredAgreementRecords.find((record) => record.agreement_type === 'tuition_agreement') || {};
+  const safetyAgreementRecord = requiredAgreementRecords.find((record) => record.agreement_type === 'safety_acknowledgment_waiver') || {};
+  const normalizedTuitionAgreementVersion = tuitionAgreementRecord.agreement_version || tuition_agreement_version || TUITION_AGREEMENT_VERSION;
+  const normalizedTuitionSignerName = String(tuitionAgreementRecord.signer_name || tuition_agreement_signer_name || '').trim();
+  const normalizedTuitionSignerEmail = String(tuitionAgreementRecord.signer_email || tuition_agreement_signer_email || '').trim();
+  const normalizedTuitionClientSignedAt = tuitionAgreementRecord.client_signed_at || tuition_agreement_client_signed_at || null;
+  const normalizedWaiverAccepted = requiredAgreementRecords.some((record) => record.agreement_type === 'safety_acknowledgment_waiver');
+  const normalizedWaiverVersion = safetyAgreementRecord.agreement_version || waiver_version || REGISTRATION_PACKAGE_VERSION;
+  const rawPaymentMethod = String(payment_method || '').trim().toLowerCase();
+  const normalizedPaymentMethod = rawPaymentMethod === 'cash'
     ? 'cash'
-    : 'green_invoice';
+    : rawPaymentMethod === 'bank_transfer'
+      ? 'bank_transfer'
+      : 'green_invoice';
   const paymentDueDate = toDateOnly(addDays(new Date(), DEFAULT_PAYMENT_INTERVAL_DAYS));
-  const paymentDisplayLabel = normalizedPaymentMethod === 'cash' ? 'Cash' : 'Credit';
+  const paymentDisplayLabel = normalizedPaymentMethod === 'cash'
+    ? 'Cash'
+    : normalizedPaymentMethod === 'bank_transfer'
+      ? 'Bank transfer'
+      : 'Credit';
   const notes = [
     normalizedLanguage ? `Form Language: ${normalizedLanguage}` : null,
-    waiver_accepted ? `Waiver accepted: ${waiver_version || WAIVER_VERSION}` : null,
+    normalizedWaiverAccepted ? `Safety waiver accepted: ${normalizedWaiverVersion}` : null,
+    requiredAgreementRecords.length ? `Signed documents: ${requiredAgreementRecords.map((record) => record.agreement_type).join(', ')}` : null,
+    tuitionAgreementRecord.agreement_type ? `Tuition agreement accepted: ${normalizedTuitionAgreementVersion}` : null,
+    normalizedTuitionSignerName ? `Tuition agreement signer: ${normalizedTuitionSignerName}` : null,
     address ? `Address: ${address}` : null,
     parent2_name ? `Parent 2 Name: ${parent2_name}` : null,
     parent2_email ? `Parent 2 Email: ${parent2_email}` : null,
@@ -5288,41 +6436,171 @@ app.post('/api/submit', async (req, res) => {
     return res.status(400).json({ error: 'Missing required signup details: student name, both parent names, both parent phone numbers, and one parent email are required' });
   }
 
-  if (!waiver_accepted) {
-    return res.status(400).json({ error: 'Parent waiver must be accepted before signup' });
+  if (!agreementValidation.ok) {
+    return res.status(400).json({ error: agreementValidation.error || 'All required registration documents must be opened and signed before signup' });
+  }
+
+  const dryRunSignup = ['true', '1', 'yes'].includes(String(req.query.dry_run || req.query.dryRun || req.body?.dry_run || req.body?.dryRun || '').toLowerCase());
+  if (dryRunSignup) {
+    const identity = await identifyAdminRequest(req);
+    if (!identity) {
+      return res.status(401).json({ error: 'Signup dry run requires an admin session or Basic auth' });
+    }
+    return res.json({
+      success: true,
+      dry_run: true,
+      validation: 'passed',
+      paymentMethod: normalizedPaymentMethod === 'green_invoice' ? 'credit' : normalizedPaymentMethod,
+      payment_due_date: paymentDueDate,
+      normalized: {
+        parent_name: normalizedParentName,
+        parent_email: normalizedParentEmail,
+        parent_phone_present: Boolean(normalizedParentPhone),
+        parent2_name,
+        parent2_phone_present: Boolean(parent2_phone),
+        student_name: normalizedStudentName,
+        form_language: normalizedLanguage,
+        waiver_version: normalizedWaiverVersion,
+        tuition_agreement_version: normalizedTuitionAgreementVersion,
+        tuition_agreement_signer_name: normalizedTuitionSignerName,
+        tuition_agreement_signer_email: normalizedTuitionSignerEmail || null,
+        agreement_signatures: requiredAgreementRecords.map((record) => ({
+          agreement_type: record.agreement_type,
+          agreement_version: record.agreement_version,
+          language_viewed: record.language_viewed,
+        })),
+      },
+      note: 'Dry run validated the signup payload without writing signup, student, email, Telegram, payment, or GHL records.',
+    });
   }
 
   try {
-    // Insert signup
-    const result = await pool.query(
-      `INSERT INTO signups (
-        parent_name, parent_email, parent_phone,
-        student_name, student_age, student_grade,
-        previous_school, reason_applying, special_needs,
-        payment_method, payment_amount, payment_interval_days, payment_due_date,
-        form_language, waiver_accepted, waiver_accepted_at, waiver_version,
-        tags, notes
-      ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7, $8, $9,
-        $10, $11, $12, $13, $14, $15, NOW(), $16, $17, $18
-      ) RETURNING *`,
-      [
-        normalizedParentName, normalizedParentEmail, normalizedParentPhone,
-        normalizedStudentName, normalizedStudentAge, normalizedStudentGrade,
-        normalizedPreviousSchool, normalizedReasonApplying, normalizedSpecialNeeds,
-        normalizedPaymentMethod,
-        DEFAULT_TUITION_AMOUNT,
-        DEFAULT_PAYMENT_INTERVAL_DAYS,
-        paymentDueDate,
-        normalizedLanguage,
-        true,
-        waiver_version || WAIVER_VERSION,
-        ['parent', 'bna', normalizedLanguage === 'he' ? 'hebrew_form' : 'english_form'],
-        notes || null
-      ]
-    );
-    
+    const registrationTags = ['parent', 'bna', normalizedLanguage === 'he' ? 'hebrew_form' : 'english_form', 'registration_2026_2027'];
+    const existingSignup = await findExistingSignupForRegistration({
+      parentEmail: normalizedParentEmail,
+      parentPhone: normalizedParentPhone,
+      parentName: normalizedParentName,
+      studentName: normalizedStudentName,
+    });
+
+    const signupValues = [
+      normalizedParentName, normalizedParentEmail, normalizedParentPhone,
+      normalizedStudentName, normalizedStudentAge, normalizedStudentGrade,
+      normalizedPreviousSchool, normalizedReasonApplying, normalizedSpecialNeeds,
+      normalizedPaymentMethod,
+      DEFAULT_TUITION_AMOUNT,
+      DEFAULT_PAYMENT_INTERVAL_DAYS,
+      paymentDueDate,
+      normalizedLanguage,
+      normalizedWaiverAccepted,
+      normalizedWaiverVersion,
+      true,
+      normalizedTuitionAgreementVersion,
+      normalizedTuitionSignerName,
+      normalizedTuitionSignerEmail || null,
+      normalizedTuitionClientSignedAt,
+      registrationTags,
+      notes || null,
+    ];
+
+    let result;
+    if (existingSignup) {
+      result = await pool.query(
+        `UPDATE signups
+         SET parent_name = $1,
+             parent_email = $2,
+             parent_phone = $3,
+             student_name = $4,
+             student_age = $5,
+             student_grade = $6,
+             previous_school = $7,
+             reason_applying = $8,
+             special_needs = $9,
+             payment_method = $10,
+             payment_amount = COALESCE(payment_amount, $11),
+             payment_interval_days = COALESCE(payment_interval_days, $12),
+             payment_due_date = COALESCE(payment_due_date, $13),
+             form_language = $14,
+             waiver_accepted = $15,
+             waiver_accepted_at = NOW(),
+             waiver_version = $16,
+             tuition_agreement_accepted = $17,
+             tuition_agreement_accepted_at = NOW(),
+             tuition_agreement_version = $18,
+             tuition_agreement_signer_name = $19,
+             tuition_agreement_signer_email = $20,
+             tuition_agreement_client_signed_at = $21,
+             tags = (
+               SELECT ARRAY(
+                 SELECT DISTINCT unnest(COALESCE(tags, ARRAY[]::text[]) || $22::text[])
+               )
+             ),
+             notes = trim(BOTH FROM concat_ws(E'\n\n', notes, $23)),
+             updated_at = NOW()
+         WHERE id = $24
+         RETURNING *`,
+        [...signupValues, existingSignup.id]
+      );
+    } else {
+      result = await pool.query(
+        `INSERT INTO signups (
+          parent_name, parent_email, parent_phone,
+          student_name, student_age, student_grade,
+          previous_school, reason_applying, special_needs,
+          payment_method, payment_amount, payment_interval_days, payment_due_date,
+          form_language, waiver_accepted, waiver_accepted_at, waiver_version,
+          tuition_agreement_accepted, tuition_agreement_accepted_at, tuition_agreement_version,
+          tuition_agreement_signer_name, tuition_agreement_signer_email, tuition_agreement_client_signed_at,
+          tags, notes
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6, $7, $8, $9,
+          $10, $11, $12, $13, $14, $15, NOW(), $16,
+          $17, NOW(), $18, $19, $20, $21, $22, $23
+        ) RETURNING *`,
+        signupValues
+      );
+    }
+
     let signup = result.rows[0];
+    for (const agreement of requiredAgreementRecords) {
+      await pool.query(
+        `INSERT INTO bna_signup_agreement_signatures (
+           signup_id, agreement_type, agreement_title, agreement_version,
+           agreement_text, signer_name, signer_email, client_signed_at,
+           ip_address, user_agent, metadata
+         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11::jsonb)
+         ON CONFLICT (signup_id, agreement_type, agreement_version) DO UPDATE SET
+           agreement_title = EXCLUDED.agreement_title,
+           agreement_text = EXCLUDED.agreement_text,
+           signer_name = EXCLUDED.signer_name,
+           signer_email = EXCLUDED.signer_email,
+           client_signed_at = EXCLUDED.client_signed_at,
+           ip_address = EXCLUDED.ip_address,
+           user_agent = EXCLUDED.user_agent,
+           metadata = EXCLUDED.metadata`,
+        [
+          signup.id,
+          agreement.agreement_type,
+          agreement.agreement_title,
+          agreement.agreement_version,
+          agreement.agreement_text,
+          agreement.signer_name,
+          agreement.signer_email || null,
+          agreement.client_signed_at,
+          getRequestIp(req),
+          req.get('user-agent') || null,
+          JSON.stringify({
+            form_language: normalizedLanguage,
+            language_viewed: agreement.language_viewed,
+            source: 'public_signup',
+            document_source_file: agreement.agreement_type === 'tuition_agreement'
+              ? null
+              : '/documents/bnei_neviim_registration_documents_bilingual_codex.md',
+            electronic_signature_notice: 'Clicking the signature button is the parent electronic signature for this document.',
+          }),
+        ]
+      );
+    }
     await upsertStudentFromSignup(signup);
     const matchedPaymentIntake = await reconcilePaymentIntakeForSignup(signup);
     if (matchedPaymentIntake) {
@@ -5385,7 +6663,7 @@ app.post('/api/submit', async (req, res) => {
     
     // Return payment link for credit payments unless we matched a prior payment intake record.
     if (matchedPaymentIntake) {
-      res.json({ success: true, signupId: signup.id, paymentMethod: normalizedPaymentMethod === 'green_invoice' ? 'credit' : 'cash', matchedPaymentIntakeId: matchedPaymentIntake.id, confirmationEmailSent: emailResult.ok });
+      res.json({ success: true, signupId: signup.id, paymentMethod: normalizedPaymentMethod === 'green_invoice' ? 'credit' : normalizedPaymentMethod, matchedPaymentIntakeId: matchedPaymentIntake.id, confirmationEmailSent: emailResult.ok });
     } else if (normalizedPaymentMethod === 'green_invoice') {
       res.json({ 
         success: true, 
@@ -5394,6 +6672,8 @@ app.post('/api/submit', async (req, res) => {
         paymentLink: PAYMENT_LINK,
         confirmationEmailSent: emailResult.ok
       });
+    } else if (normalizedPaymentMethod === 'bank_transfer') {
+      res.json({ success: true, signupId: signup.id, paymentMethod: 'bank_transfer', confirmationEmailSent: emailResult.ok });
     } else {
       res.json({ success: true, signupId: signup.id, paymentMethod: 'cash', confirmationEmailSent: emailResult.ok });
     }
@@ -5541,6 +6821,9 @@ app.get('/api/bna/students', requireAdmin, async (req, res) => {
         COALESCE(goal_counts.open_goals, 0) AS open_goals,
         COALESCE(question_counts.questions, 0) AS questions,
         COALESCE(progress_counts.avg_progress, 0) AS avg_goal_progress,
+        COALESCE(device_counts.device_count, 0) AS device_count,
+        latest_device.status AS device_status,
+        latest_device.device_name AS latest_device_name,
         next_check.next_check_in_date
        FROM bna_students s
        LEFT JOIN (
@@ -5567,6 +6850,18 @@ app.get('/api/bna/students', requireAdmin, async (req, res) => {
          WHERE event_type = 'question'
          GROUP BY student_id
        ) question_counts ON question_counts.student_id = s.id
+       LEFT JOIN (
+         SELECT student_id, COUNT(*) AS device_count
+         FROM bna_devices
+         GROUP BY student_id
+       ) device_counts ON device_counts.student_id = s.id
+       LEFT JOIN LATERAL (
+         SELECT device_name, status
+         FROM bna_devices d
+         WHERE d.student_id = s.id
+         ORDER BY d.updated_at DESC, d.id DESC
+         LIMIT 1
+       ) latest_device ON TRUE
        WHERE COALESCE(s.status, 'active') NOT IN ('archived', 'inactive')
        ORDER BY s.name ASC`
     );
@@ -5676,6 +6971,521 @@ app.post('/api/bna/students/:id/access-code', requireAdmin, async (req, res) => 
     });
   } catch (err) {
     res.status(/not found/i.test(err.message) ? 404 : 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/devices', requireAdmin, async (req, res) => {
+  const conditions = [];
+  const params = [];
+  if (req.query.student_id) {
+    params.push(req.query.student_id);
+    conditions.push(`d.student_id = $${params.length}`);
+  }
+  if (req.query.status) {
+    params.push(normalizeDeviceAccessState(req.query.status));
+    conditions.push(`d.status = $${params.length}`);
+  }
+  const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+
+  try {
+    await expireDeviceAccessSessions();
+    const result = await pool.query(
+      `SELECT d.*,
+              row_to_json(s.*) AS student,
+              row_to_json(active_session.*) AS active_session,
+              row_to_json(latest_session.*) AS latest_session
+       FROM bna_devices d
+       LEFT JOIN bna_students s ON s.id = d.student_id
+       LEFT JOIN LATERAL (
+         SELECT *
+         FROM bna_device_access_sessions das
+         WHERE das.device_id = d.id
+           AND das.ended_at IS NULL
+         ORDER BY das.created_at DESC, das.id DESC
+         LIMIT 1
+       ) active_session ON TRUE
+       LEFT JOIN LATERAL (
+         SELECT *
+         FROM bna_device_access_sessions das
+         WHERE das.device_id = d.id
+         ORDER BY das.created_at DESC, das.id DESC
+         LIMIT 1
+       ) latest_session ON TRUE
+       ${whereClause}
+       ORDER BY s.name ASC NULLS LAST, d.device_name ASC, d.id ASC`,
+      params
+    );
+    res.json({
+      provider_mode: 'mock',
+      real_device_calls_enabled: false,
+      devices: result.rows.map(deviceRecordView),
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/students/:id/devices', requireAdmin, async (req, res) => {
+  const deviceName = String((req.body || {}).device_name || (req.body || {}).name || '').trim();
+  const provider = String((req.body || {}).provider || 'mock').trim().toLowerCase();
+  if (!deviceName) return res.status(400).json({ error: 'device_name is required' });
+  if (provider !== 'mock') {
+    return res.status(400).json({ error: 'Only the mock device provider is enabled until real hardware/admin credentials are confirmed.' });
+  }
+
+  try {
+    const student = (await pool.query(
+      `SELECT id, name
+       FROM bna_students
+       WHERE id = $1
+         AND COALESCE(status, 'active') NOT IN ('inactive', 'archived')
+       LIMIT 1`,
+      [req.params.id]
+    )).rows[0];
+    if (!student) return res.status(404).json({ error: 'Student not found' });
+
+    const status = normalizeDeviceAccessState((req.body || {}).status || DEVICE_ACCESS_STATES.ACCOUNTABILITY_ONLY);
+    const result = await pool.query(
+      `INSERT INTO bna_devices (
+         student_id, device_name, platform, provider, provider_device_id, status, notes, metadata
+       ) VALUES (
+         $1, $2, $3, 'mock', $4, $5, $6, $7
+       )
+       RETURNING *`,
+      [
+        student.id,
+        deviceName,
+        safeDevicePlatform((req.body || {}).platform),
+        (req.body || {}).provider_device_id || null,
+        status,
+        (req.body || {}).notes || null,
+        JSON.stringify((req.body || {}).metadata || {}),
+      ]
+    );
+    const actionResult = await applyDeviceAccessAction({
+      deviceId: result.rows[0].id,
+      status,
+      reason: 'Initial mock device registration',
+      approvedBy: req.opsUser || 'admin',
+    });
+    res.json({ success: true, device: actionResult.device, session: actionResult.session });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/bna/devices/:id', requireAdmin, async (req, res) => {
+  const allowedFields = new Set(['device_name', 'platform', 'provider_device_id', 'notes', 'metadata']);
+  const fields = [];
+  const values = [];
+
+  for (const [key, value] of Object.entries(req.body || {})) {
+    if (!allowedFields.has(key)) continue;
+    values.push(key === 'platform' ? safeDevicePlatform(value) : key === 'metadata' ? JSON.stringify(value || {}) : value);
+    fields.push(`${key} = $${values.length}`);
+  }
+
+  if (!fields.length) return res.status(400).json({ error: 'No supported device fields supplied' });
+  values.push(req.params.id);
+
+  try {
+    const result = await pool.query(
+      `UPDATE bna_devices
+       SET ${fields.join(', ')},
+           updated_at = NOW()
+       WHERE id = $${values.length}
+       RETURNING *`,
+      values
+    );
+    if (!result.rows[0]) return res.status(404).json({ error: 'Device not found' });
+    res.json({ success: true, device: await getDeviceRecord(result.rows[0].id) });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/devices/:id/actions', requireAdmin, async (req, res) => {
+  const action = String((req.body || {}).action || '').trim().toLowerCase();
+  const requestedStatus = (req.body || {}).status;
+  const status = requestedStatus
+    ? normalizeDeviceAccessState(requestedStatus)
+    : ({
+        lock: DEVICE_ACCESS_STATES.LOCKED,
+        locked: DEVICE_ACCESS_STATES.LOCKED,
+        accountability_only: DEVICE_ACCESS_STATES.ACCOUNTABILITY_ONLY,
+        set_accountability_only: DEVICE_ACCESS_STATES.ACCOUNTABILITY_ONLY,
+        approve_access: DEVICE_ACCESS_STATES.APPROVED_ACCESS,
+        approved_access: DEVICE_ACCESS_STATES.APPROVED_ACCESS,
+        unlock: DEVICE_ACCESS_STATES.APPROVED_ACCESS,
+        expire: DEVICE_ACCESS_STATES.EXPIRED,
+        expired: DEVICE_ACCESS_STATES.EXPIRED,
+        manual_override: DEVICE_ACCESS_STATES.MANUAL_OVERRIDE,
+      })[action || ''];
+  if (!status) return res.status(400).json({ error: 'Unsupported device action' });
+
+  try {
+    const result = await applyDeviceAccessAction({
+      deviceId: req.params.id,
+      status,
+      durationMinutes: (req.body || {}).duration_minutes,
+      reason: (req.body || {}).reason || action || status,
+      goalId: (req.body || {}).goal_id || null,
+      ruleId: (req.body || {}).rule_id || null,
+      approvedBy: req.opsUser || 'admin',
+    });
+    res.json({ success: true, ...result });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/device-access-rules', requireAdmin, async (req, res) => {
+  const conditions = [];
+  const params = [];
+  if (req.query.student_id) {
+    params.push(req.query.student_id);
+    conditions.push(`r.student_id = $${params.length}`);
+  }
+  if (req.query.device_id) {
+    params.push(req.query.device_id);
+    conditions.push(`r.device_id = $${params.length}`);
+  }
+  const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+
+  try {
+    const result = await pool.query(
+      `SELECT r.*, row_to_json(s.*) AS student, row_to_json(d.*) AS device
+       FROM bna_device_access_rules r
+       LEFT JOIN bna_students s ON s.id = r.student_id
+       LEFT JOIN bna_devices d ON d.id = r.device_id
+       ${whereClause}
+       ORDER BY r.enabled DESC, r.created_at DESC`,
+      params
+    );
+    res.json({ rules: result.rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/device-access-rules', requireAdmin, async (req, res) => {
+  const duration = normalizeDurationMinutes((req.body || {}).duration_minutes);
+  const ruleType = ['goal_approval', 'schedule', 'manual'].includes((req.body || {}).rule_type)
+    ? (req.body || {}).rule_type
+    : 'goal_approval';
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO bna_device_access_rules (
+         student_id, device_id, rule_type, required_goal_id, duration_minutes, schedule, enabled, notes
+       ) VALUES (
+         $1, $2, $3, $4, $5, $6, COALESCE($7::boolean, TRUE), $8
+       )
+       RETURNING *`,
+      [
+        (req.body || {}).student_id || null,
+        (req.body || {}).device_id || null,
+        ruleType,
+        (req.body || {}).required_goal_id || null,
+        duration,
+        JSON.stringify((req.body || {}).schedule || {}),
+        Object.prototype.hasOwnProperty.call(req.body || {}, 'enabled') ? Boolean((req.body || {}).enabled) : null,
+        (req.body || {}).notes || null,
+      ]
+    );
+    res.json({ success: true, rule: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/bna/device-access-rules/:id', requireAdmin, async (req, res) => {
+  const allowedFields = new Set(['student_id', 'device_id', 'rule_type', 'required_goal_id', 'duration_minutes', 'schedule', 'enabled', 'notes']);
+  const fields = [];
+  const values = [];
+  for (const [key, value] of Object.entries(req.body || {})) {
+    if (!allowedFields.has(key)) continue;
+    const nextValue = key === 'duration_minutes'
+      ? normalizeDurationMinutes(value)
+      : key === 'schedule' ? JSON.stringify(value || {}) : value;
+    values.push(nextValue);
+    fields.push(`${key} = $${values.length}`);
+  }
+  if (!fields.length) return res.status(400).json({ error: 'No supported rule fields supplied' });
+  values.push(req.params.id);
+
+  try {
+    const result = await pool.query(
+      `UPDATE bna_device_access_rules
+       SET ${fields.join(', ')},
+           updated_at = NOW()
+       WHERE id = $${values.length}
+       RETURNING *`,
+      values
+    );
+    if (!result.rows[0]) return res.status(404).json({ error: 'Device access rule not found' });
+    res.json({ success: true, rule: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/device-access/reviews/:goalId/actions', requireAdmin, async (req, res) => {
+  const action = String((req.body || {}).action || '').trim().toLowerCase();
+  if (!['approve', 'deny', 'manual_override'].includes(action)) {
+    return res.status(400).json({ error: 'Unsupported review action' });
+  }
+
+  try {
+    const current = await getGoalBoardEvent(req.params.goalId);
+    if (!current) return res.status(404).json({ error: 'Goal Board review item not found' });
+    const goalBoard = normalizeGoalBoardMetadata(rawGoalBoardMetadata(current.metadata), {
+      category: current.topic || '',
+    });
+    const requestedStateRaw = goalBoard.consequence.device_access_state;
+    const requestedState = requestedStateRaw ? normalizeDeviceAccessState(requestedStateRaw) : '';
+    const approvedAt = new Date().toISOString();
+    let metadata = current.metadata;
+    let deviceResult = null;
+
+    if (action === 'deny') {
+      metadata = goalBoardMetadataFromPayload({
+        consequence_status: 'denied',
+        approval_status: 'denied',
+        status: 'active',
+        goal_board: {
+          consequence: {
+            approved_by: req.opsUser || 'admin',
+            approved_at: approvedAt,
+          },
+        },
+      }, metadata);
+    } else {
+      metadata = goalBoardMetadataFromPayload({
+        consequence_status: action === 'manual_override' ? 'overridden' : 'approved',
+        approval_status: 'approved',
+        status: 'active',
+        goal_board: {
+          consequence: {
+            approved_by: req.opsUser || 'admin',
+            approved_at: approvedAt,
+          },
+        },
+      }, metadata);
+
+      const deviceId = (req.body || {}).device_id;
+      if (!deviceId) return res.status(400).json({ error: 'device_id is required before applying a mock device action' });
+      const status = action === 'manual_override'
+        ? DEVICE_ACCESS_STATES.MANUAL_OVERRIDE
+        : (requestedState || DEVICE_ACCESS_STATES.APPROVED_ACCESS);
+      deviceResult = await applyDeviceAccessAction({
+        deviceId,
+        status,
+        durationMinutes: (req.body || {}).duration_minutes || goalBoard.consequence.duration_minutes || 60,
+        reason: (req.body || {}).reason || goalBoard.consequence.review_reason || current.title,
+        goalId: current.id,
+        approvedBy: req.opsUser || 'admin',
+      });
+    }
+
+    const updated = await pool.query(
+      `UPDATE bna_accountability_events
+       SET metadata = $2,
+           updated_at = NOW()
+       WHERE id = $1
+         AND event_type = 'student_goal'
+       RETURNING *`,
+      [current.id, JSON.stringify(metadata)]
+    );
+
+    res.json({
+      success: true,
+      item: goalBoardAdminView(updated.rows[0]),
+      device: deviceResult?.device || null,
+      session: deviceResult?.session || null,
+      provider_result: deviceResult?.provider_result || null,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/students/:id/goal-board', requireAdmin, async (req, res) => {
+  try {
+    const student = (await pool.query(
+      `SELECT *
+       FROM bna_students
+       WHERE id = $1
+         AND COALESCE(status, 'active') NOT IN ('inactive', 'archived')
+       LIMIT 1`,
+      [req.params.id]
+    )).rows[0];
+    if (!student) return res.status(404).json({ error: 'Student not found' });
+
+    const result = await pool.query(
+      `SELECT a.*, row_to_json(s.*) AS student
+       FROM bna_accountability_events a
+       LEFT JOIN bna_students s ON s.id = a.student_id
+       WHERE a.student_id = $1
+         AND a.event_type = 'student_goal'
+       ORDER BY COALESCE(NULLIF(a.metadata->'goal_board'->>'due_at', '')::timestamp, a.occurred_at) ASC,
+                a.id DESC`,
+      [req.params.id]
+    );
+    res.json({ student, items: result.rows.map(goalBoardAdminView) });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/students/:id/goal-board', requireAdmin, async (req, res) => {
+  const title = String((req.body || {}).title || '').trim();
+  if (!title) return res.status(400).json({ error: 'Goal title is required' });
+
+  try {
+    const student = (await pool.query(
+      `SELECT id, name
+       FROM bna_students
+       WHERE id = $1
+         AND COALESCE(status, 'active') NOT IN ('inactive', 'archived')
+       LIMIT 1`,
+      [req.params.id]
+    )).rows[0];
+    if (!student) return res.status(404).json({ error: 'Student not found' });
+
+    const metadata = goalBoardMetadataFromPayload({
+      ...(req.body || {}),
+      source: (req.body || {}).source || 'admin',
+      student_owned: (req.body || {}).source === 'self',
+      approval_status: (req.body || {}).approval_required ? 'pending_review' : 'approved',
+      status: (req.body || {}).approval_required ? 'waiting' : ((req.body || {}).status || 'active'),
+    });
+    const goalBoard = normalizeGoalBoardMetadata(rawGoalBoardMetadata(metadata));
+    const targetValue = (req.body || {}).target_value || (req.body || {}).goal_target_value || null;
+    const targetUnit = (req.body || {}).target_unit || (req.body || {}).goal_unit || null;
+    const requestedProgress = (req.body || {}).progress_percent !== undefined && (req.body || {}).progress_percent !== null && (req.body || {}).progress_percent !== ''
+      ? Number((req.body || {}).progress_percent)
+      : 0;
+    if (!Number.isFinite(requestedProgress)) return res.status(400).json({ error: 'progress_percent must be a number' });
+    const progressPercent = Math.max(0, Math.min(100, requestedProgress));
+
+    const result = await pool.query(
+      `INSERT INTO bna_accountability_events (
+        event_type, student_id, student_name, title, notes, topic,
+        goal_target_value, goal_actual_value, goal_unit, progress_percent,
+        follow_up_required, metadata, source, occurred_at
+      ) VALUES (
+        'student_goal', $1, $2, $3, $4, $5,
+        $6, NULL, $7, $8,
+        $9, $10, 'manual', NOW()
+      )
+      RETURNING *`,
+      [
+        student.id,
+        student.name,
+        title,
+        (req.body || {}).private_note || (req.body || {}).notes || null,
+        goalBoard.category || null,
+        targetValue,
+        targetUnit,
+        progressPercent,
+        progressPercent < 100,
+        JSON.stringify(metadata),
+      ]
+    );
+    res.json({ success: true, item: goalBoardAdminView(result.rows[0]) });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/bna/goal-board/:id', requireAdmin, async (req, res) => {
+  try {
+    const current = await getGoalBoardEvent(req.params.id);
+    if (!current) return res.status(404).json({ error: 'Goal Board item not found' });
+
+    let metadata = goalBoardMetadataFromPayload(req.body || {}, current.metadata);
+    if ((req.body || {}).action === 'approve_consequence') {
+      metadata = goalBoardMetadataFromPayload({
+        consequence_status: 'approved',
+        approval_status: 'approved',
+        status: 'active',
+        goal_board: {
+          consequence: {
+            approved_by: req.opsUser || 'admin',
+            approved_at: new Date().toISOString(),
+          },
+        },
+      }, metadata);
+    } else if ((req.body || {}).action === 'deny_consequence') {
+      metadata = goalBoardMetadataFromPayload({
+        consequence_status: 'denied',
+        approval_status: 'denied',
+        status: 'active',
+      }, metadata);
+    } else if ((req.body || {}).action === 'override_consequence') {
+      metadata = goalBoardMetadataFromPayload({
+        consequence_status: 'overridden',
+        status: 'active',
+      }, metadata);
+    }
+
+    const goalBoard = normalizeGoalBoardMetadata(rawGoalBoardMetadata(metadata));
+    const hasProgressUpdate = Object.prototype.hasOwnProperty.call(req.body || {}, 'progress_percent');
+    const requestedProgress = Number((req.body || {}).progress_percent);
+    if (hasProgressUpdate && !Number.isFinite(requestedProgress)) {
+      return res.status(400).json({ error: 'progress_percent must be a number' });
+    }
+    const progressPercent = hasProgressUpdate
+      ? Math.max(0, Math.min(100, requestedProgress))
+      : current.progress_percent;
+    if (hasProgressUpdate) {
+      metadata = metadataAfterProgressUpdate({ ...current, metadata }, progressPercent);
+    }
+    const title = Object.prototype.hasOwnProperty.call(req.body || {}, 'title') ? (req.body || {}).title : current.title;
+    const notes = Object.prototype.hasOwnProperty.call(req.body || {}, 'private_note')
+      ? (req.body || {}).private_note
+      : Object.prototype.hasOwnProperty.call(req.body || {}, 'notes') ? (req.body || {}).notes : current.notes;
+    const targetValue = Object.prototype.hasOwnProperty.call(req.body || {}, 'target_value')
+      ? (req.body || {}).target_value
+      : Object.prototype.hasOwnProperty.call(req.body || {}, 'goal_target_value') ? (req.body || {}).goal_target_value : current.goal_target_value;
+    const targetUnit = Object.prototype.hasOwnProperty.call(req.body || {}, 'target_unit')
+      ? (req.body || {}).target_unit
+      : Object.prototype.hasOwnProperty.call(req.body || {}, 'goal_unit') ? (req.body || {}).goal_unit : current.goal_unit;
+
+    const result = await pool.query(
+      `UPDATE bna_accountability_events
+       SET title = $2,
+           notes = $3,
+           topic = $4,
+           goal_target_value = $5,
+           goal_actual_value = CASE
+             WHEN $5::numeric IS NULL THEN goal_actual_value
+             WHEN $6::numeric IS NULL THEN goal_actual_value
+             ELSE ROUND(($5::numeric * $6::numeric / 100), 2)
+           END,
+           goal_unit = $7,
+           progress_percent = $6,
+           follow_up_required = COALESCE($6, 0) < 100,
+           metadata = $8,
+           updated_at = NOW()
+       WHERE id = $1
+         AND event_type = 'student_goal'
+       RETURNING *`,
+      [
+        req.params.id,
+        title,
+        notes || null,
+        goalBoard.category || null,
+        targetValue || null,
+        progressPercent !== undefined && progressPercent !== null ? progressPercent : null,
+        targetUnit || null,
+        JSON.stringify(metadata),
+      ]
+    );
+    res.json({ success: true, item: goalBoardAdminView(result.rows[0]) });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -5826,15 +7636,7 @@ app.get('/api/student-portal', async (req, res) => {
   if (!code) return res.status(400).json({ error: 'Student access code is required' });
 
   try {
-    const student = (await pool.query(
-      `SELECT id, name
-       FROM bna_students
-       WHERE student_access_code = $1
-         AND COALESCE(student_access_enabled, TRUE) = TRUE
-         AND COALESCE(status, 'active') NOT IN ('inactive', 'archived')
-       LIMIT 1`,
-      [code]
-    )).rows[0];
+    const student = await findStudentByAccessCode(code);
     if (!student) return res.status(404).json({ error: 'Student access code was not found' });
 
     const goals = (await pool.query(
@@ -5842,50 +7644,91 @@ app.get('/api/student-portal', async (req, res) => {
           id,
           title,
           topic,
+          notes,
           goal_target_value,
           goal_actual_value,
           goal_unit,
           progress_percent,
           follow_up_required,
+          metadata,
           occurred_at,
           updated_at
        FROM bna_accountability_events
        WHERE student_id = $1
          AND event_type = 'student_goal'
+         AND COALESCE((metadata->'goal_board'->>'status'), '') <> 'archived'
        ORDER BY COALESCE(follow_up_required, FALSE) DESC,
                 COALESCE(progress_percent, -1) ASC,
                 occurred_at DESC,
                 id DESC`,
       [student.id]
-    )).rows.map((goal) => ({
-      id: goal.id,
-      title: goal.title,
-      topic: goal.topic || '',
-      goal_target_value: goal.goal_target_value !== null ? Number(goal.goal_target_value) : null,
-      goal_actual_value: goal.goal_actual_value !== null ? Number(goal.goal_actual_value) : null,
-      goal_unit: goal.goal_unit || '',
-      progress_percent: goal.progress_percent !== null && goal.progress_percent !== undefined
-        ? Number(goal.progress_percent)
-        : null,
-      follow_up_required: Boolean(goal.follow_up_required),
-      occurred_at: goal.occurred_at,
-      updated_at: goal.updated_at,
-    }));
+    )).rows
+      .map((goal) => safeGoalBoardStudentView(goal))
+      .filter((goal) => goal.status !== 'archived');
 
     const torahSummary = await getTorahLearningSummary(getTodayDateInTimeZone());
     const torahRecord = (torahSummary.students || []).find((item) => Number(item.id) === Number(student.id));
+    const dailyCompletion = Number(torahRecord?.entry?.daily_completion_percentage || 0);
+    const deviceAccess = await getStudentDeviceAccessSummary(student.id);
 
     res.json({
       student,
       goals,
+      device_access: deviceAccess,
       torah: torahRecord
         ? {
             date: torahSummary.date,
             public_trip_percentage: torahRecord.percentage,
-            daily_completion_percentage: Number(torahRecord.entry?.daily_completion_percentage || 0),
+            daily_completion_percentage: dailyCompletion,
+            morning_goal_status: dailyCompletion >= 100 ? 'done' : dailyCompletion > 0 ? 'in_progress' : 'not_yet',
           }
         : null,
     });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/student-portal/goals', async (req, res) => {
+  const code = String((req.body || {}).access_code || '').trim();
+  const title = String((req.body || {}).title || '').trim();
+  if (!code) return res.status(400).json({ error: 'Student access code is required' });
+  if (!title) return res.status(400).json({ error: 'Goal title is required' });
+
+  try {
+    const student = await findStudentByAccessCode(code);
+    if (!student) return res.status(404).json({ error: 'Student access code was not found' });
+
+    const metadata = goalBoardMetadataFromPayload({
+      ...(req.body || {}),
+      source: 'self',
+      student_owned: true,
+      status: (req.body || {}).approval_required ? 'waiting' : 'active',
+      approval_status: (req.body || {}).approval_required ? 'pending_review' : 'approved',
+    });
+    const goalBoard = normalizeGoalBoardMetadata(rawGoalBoardMetadata(metadata));
+    const result = await pool.query(
+      `INSERT INTO bna_accountability_events (
+        event_type, student_id, student_name, title, notes, topic,
+        goal_target_value, goal_actual_value, goal_unit, progress_percent,
+        follow_up_required, metadata, source, occurred_at
+      ) VALUES (
+        'student_goal', $1, $2, $3, NULL, $4,
+        $5, NULL, $6, 0,
+        TRUE, $7, 'manual', NOW()
+      )
+      RETURNING *`,
+      [
+        student.id,
+        student.name,
+        title,
+        goalBoard.category || null,
+        (req.body || {}).target_value || (req.body || {}).goal_target_value || null,
+        (req.body || {}).target_unit || (req.body || {}).goal_unit || null,
+        JSON.stringify(metadata),
+      ]
+    );
+    res.json({ success: true, goal: safeGoalBoardStudentView(result.rows[0]) });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -5897,19 +7740,30 @@ app.post('/api/student-portal/goals/:id/checkoff', async (req, res) => {
   if (!code) return res.status(400).json({ error: 'Student access code is required' });
   if (!Number.isFinite(progressPercent)) return res.status(400).json({ error: 'progress_percent must be a number' });
 
+  const client = await pool.connect();
   try {
-    const student = (await pool.query(
-      `SELECT id, name
-       FROM bna_students
-       WHERE student_access_code = $1
-         AND COALESCE(student_access_enabled, TRUE) = TRUE
-         AND COALESCE(status, 'active') NOT IN ('inactive', 'archived')
-       LIMIT 1`,
-      [code]
-    )).rows[0];
-    if (!student) return res.status(404).json({ error: 'Student access code was not found' });
+    await client.query('BEGIN');
+    const student = await findStudentByAccessCode(code, client);
+    if (!student) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Student access code was not found' });
+    }
 
-    const result = await pool.query(
+    const current = await getGoalBoardEvent(req.params.id, client);
+    if (!current || Number(current.student_id) !== Number(student.id)) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Goal was not found for this student' });
+    }
+    let metadata = metadataAfterProgressUpdate(current, progressPercent);
+    if (Object.prototype.hasOwnProperty.call(req.body || {}, 'reflection_note')) {
+      metadata = goalBoardMetadataFromPayload({ reflection_note: (req.body || {}).reflection_note }, metadata);
+    }
+
+    const autoAccess = automaticDeviceAccessForCompletion({ ...current, metadata }, progressPercent);
+    let deviceAccessResult = null;
+    let deviceAccessStatus = null;
+
+    const result = await client.query(
       `UPDATE bna_accountability_events
        SET progress_percent = $3::numeric,
            goal_actual_value = CASE
@@ -5917,17 +7771,77 @@ app.post('/api/student-portal/goals/:id/checkoff', async (req, res) => {
              ELSE ROUND((goal_target_value * $3::numeric / 100), 2)
            END,
            follow_up_required = $3::numeric < 100,
+           metadata = $4,
            updated_at = NOW()
        WHERE id = $1
          AND student_id = $2
          AND event_type = 'student_goal'
-       RETURNING id, title, progress_percent, goal_actual_value, goal_target_value, goal_unit, follow_up_required`,
-      [req.params.id, student.id, progressPercent]
+       RETURNING *`,
+      [req.params.id, student.id, progressPercent, JSON.stringify(metadata)]
     );
-    if (!result.rows[0]) return res.status(404).json({ error: 'Goal was not found for this student' });
-    res.json({ success: true, goal: result.rows[0] });
+    if (!result.rows[0]) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Goal was not found for this student' });
+    }
+
+    if (autoAccess) {
+      const deviceId = await getPreferredDeviceForStudent(student.id, client);
+      if (deviceId) {
+        deviceAccessResult = await applyDeviceAccessAction({
+          deviceId,
+          status: autoAccess.status,
+          durationMinutes: autoAccess.durationMinutes,
+          reason: autoAccess.reason,
+          goalId: result.rows[0].id,
+          approvedBy: 'student_checkoff',
+        }, client);
+        metadata = goalBoardMetadataFromPayload({
+          goal_board: {
+            consequence: {
+              success_applied_at: autoAccess.appliedAt,
+              success_applied_by: 'student_checkoff',
+            },
+          },
+        }, metadata);
+        const stamped = await client.query(
+          `UPDATE bna_accountability_events
+           SET metadata = $2,
+               updated_at = NOW()
+           WHERE id = $1
+             AND event_type = 'student_goal'
+           RETURNING *`,
+          [result.rows[0].id, JSON.stringify(metadata)]
+        );
+        result.rows[0] = stamped.rows[0] || result.rows[0];
+        deviceAccessStatus = 'applied';
+      } else {
+        deviceAccessStatus = 'no_device_configured';
+      }
+    }
+
+    await client.query('COMMIT');
+    res.json({
+      success: true,
+      goal: safeGoalBoardStudentView(result.rows[0]),
+      automatic_device_access: autoAccess
+        ? {
+            status: deviceAccessStatus,
+            requested_state: autoAccess.status,
+            duration_minutes: autoAccess.durationMinutes,
+            device: deviceAccessResult?.device || null,
+            session: deviceAccessResult?.session || null,
+          }
+        : null,
+    });
   } catch (err) {
+    try {
+      await client.query('ROLLBACK');
+    } catch {
+      // Ignore rollback failures; the original error is more useful.
+    }
     res.status(500).json({ error: err.message });
+  } finally {
+    client.release();
   }
 });
 
@@ -5951,6 +7865,164 @@ app.post('/api/bna/torah-learning/entries', requireAdmin, async (req, res) => {
     });
   } catch (err) {
     res.status(400).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/torah-learning/reconcile-trip-progress', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  if (body.confirm !== 'RECONCILE_TORAH_TRIP_PROGRESS') {
+    return res.status(400).json({
+      error: 'Trip progress reconciliation requires confirm: RECONCILE_TORAH_TRIP_PROGRESS',
+    });
+  }
+
+  const carriedOverCompletedUnits = validateNonNegativeMinutes(
+    body.carried_over_completed_units ?? 3.5,
+    'carried_over_completed_units'
+  );
+  const totalRequiredUnits = validatePositiveNumber(
+    body.total_required_units ?? 30,
+    'total_required_units'
+  );
+  const recalculateFromDailyPercentages = body.recalculate_from_daily_percentages !== false;
+  const completedDailyUnits = recalculateFromDailyPercentages
+    ? null
+    : validateNonNegativeMinutes(
+      body.completed_daily_units ?? 1,
+      'completed_daily_units'
+    );
+  const flatTrip = recalculateFromDailyPercentages
+    ? null
+    : calculateStudentTripProgress({
+      carriedOverCompletedUnits,
+      completedDailyUnits,
+      totalRequiredUnits,
+    });
+  const studentNames = Array.isArray(body.student_names) && body.student_names.length
+    ? body.student_names.map((name) => String(name || '').trim()).filter(Boolean)
+    : TORAH_STUDENT_SEEDS.map((seed) => seed.name);
+  if (
+    !recalculateFromDailyPercentages
+    && studentNames.length > 1
+    && body.apply_uniform_to_all_students !== true
+  ) {
+    return res.status(400).json({
+      error: 'Refusing uniform Torah trip reconciliation for multiple students. Keep recalculate_from_daily_percentages enabled, provide one student_name, or explicitly set apply_uniform_to_all_students: true.',
+    });
+  }
+  const canonicalCompletedDates = Array.isArray(body.canonical_completed_dates)
+    ? body.canonical_completed_dates.map((date) => toIsoDateValue(date)).filter(Boolean)
+    : null;
+  const note = String(body.note || '').trim()
+    || 'Admin reconciliation: reset cumulative trip snapshot to migration target; canonical completed dates may normalize which daily rows count as completed units.';
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const students = (await client.query(
+      `SELECT id, name
+       FROM bna_students
+       WHERE COALESCE(status, 'active') NOT IN ('inactive', 'archived')
+         AND lower(name) = ANY($1::text[])
+       ORDER BY name ASC`,
+      [studentNames.map((name) => name.toLowerCase())]
+    )).rows;
+
+    const updatedRows = [];
+    for (const student of students) {
+      let result;
+      if (recalculateFromDailyPercentages) {
+        // eslint-disable-next-line no-await-in-loop
+        await client.query(
+          `UPDATE bna_torah_learning_entries
+           SET note = CONCAT(
+                 COALESCE(NULLIF(note, ''), ''),
+                 CASE WHEN COALESCE(NULLIF(note, ''), '') = '' THEN '' ELSE E'\n' END,
+                 $2::text
+               ),
+               updated_at = NOW()
+           WHERE student_id = $1`,
+          [student.id, note]
+        );
+        // eslint-disable-next-line no-await-in-loop
+        await refreshTorahTripProgressSnapshots(
+          student.id,
+          { carriedOverCompletedUnits, totalRequiredUnits },
+          client
+        );
+        // eslint-disable-next-line no-await-in-loop
+        result = await client.query(
+          `SELECT id, student_id, date, daily_completed_boolean,
+                  individual_complete, completed_daily_units,
+                  carried_over_completed_units, total_completed_units,
+                  total_required_units, total_trip_progress_percentage
+           FROM bna_torah_learning_entries
+           WHERE student_id = $1
+           ORDER BY date ASC, id ASC`,
+          [student.id]
+        );
+      } else {
+        // eslint-disable-next-line no-await-in-loop
+        result = await client.query(
+          `UPDATE bna_torah_learning_entries
+           SET completed_daily_units = $2,
+               carried_over_completed_units = $3,
+               total_completed_units = $4,
+               total_required_units = $5,
+               total_trip_progress_percentage = $6,
+               daily_completed_boolean = CASE
+                 WHEN $8::date[] IS NULL THEN daily_completed_boolean
+                 ELSE date = ANY($8::date[])
+               END,
+               individual_complete = CASE
+                 WHEN $8::date[] IS NULL THEN individual_complete
+                 ELSE date = ANY($8::date[])
+               END,
+               note = CONCAT(
+                 COALESCE(NULLIF(note, ''), ''),
+                 CASE WHEN COALESCE(NULLIF(note, ''), '') = '' THEN '' ELSE E'\n' END,
+                 $7::text
+               ),
+               updated_at = NOW()
+           WHERE student_id = $1
+           RETURNING id, student_id, date, daily_completed_boolean,
+                     individual_complete, completed_daily_units,
+                     carried_over_completed_units, total_completed_units,
+                     total_required_units, total_trip_progress_percentage`,
+          [
+            student.id,
+            flatTrip.completedDailyUnits,
+            flatTrip.carriedOverCompletedUnits,
+            flatTrip.totalCompletedUnits,
+            flatTrip.totalRequiredUnits,
+            flatTrip.totalTripProgressPercentageRaw,
+            note,
+            canonicalCompletedDates,
+          ]
+        );
+      }
+      updatedRows.push({
+        student_id: student.id,
+        student_name: student.name,
+        updated_entries: result.rows,
+      });
+    }
+
+    await client.query('COMMIT');
+    const summary = await getTorahLearningSummary(body.date || getTodayDateInTimeZone());
+    res.json({
+      success: true,
+      mode: recalculateFromDailyPercentages ? 'recalculate_from_daily_percentages' : 'flat_override',
+      trip: flatTrip,
+      canonical_completed_dates: canonicalCompletedDates,
+      updated: updatedRows,
+      summary,
+    });
+  } catch (err) {
+    try { await client.query('ROLLBACK'); } catch {}
+    res.status(500).json({ error: err.message });
+  } finally {
+    client.release();
   }
 });
 
@@ -6322,6 +8394,229 @@ app.get('/api/bna/payment-intake', requireAdmin, async (req, res) => {
   }
 });
 
+app.post('/api/bna/payment-intake/reconcile-paid', requireAdmin, async (req, res) => {
+  const records = Array.isArray(req.body?.records) ? req.body.records : [];
+  if (!records.length) {
+    return res.status(400).json({ error: 'records array is required' });
+  }
+
+  const client = await pool.connect();
+  const results = [];
+
+  try {
+    await client.query('BEGIN');
+    await client.query('ALTER TABLE signups ALTER COLUMN parent_email DROP NOT NULL');
+
+    for (const input of records) {
+      const intakeId = Number(input.intake_id || input.intakeId || 0);
+      const studentName = String(input.student_name || input.studentName || '').trim();
+      const parentName = String(input.parent_name || input.parentName || '').trim();
+      const parentEmail = String(input.parent_email || input.parentEmail || '').trim() || null;
+      const parentPhone = String(input.parent_phone || input.parentPhone || '').trim() || null;
+      const method = String(input.method || '').trim();
+      const amount = Number(input.amount || 0);
+      const paidAt = input.paid_at || input.paidAt || null;
+      const dueDate = input.due_date || input.dueDate || null;
+      const note = String(input.note || input.notes || '').trim()
+        || 'Admin-created from paid intake; missing official signup fields intentionally left blank.';
+
+      if (!intakeId || !studentName || !parentName || !amount || !method || !paidAt || !dueDate) {
+        throw new Error('Each record requires intake_id, student_name, parent_name, amount, method, paid_at, and due_date');
+      }
+
+      const student = (await client.query(
+        `SELECT *
+         FROM bna_students
+         WHERE lower(name) = lower($1)
+           AND status <> 'inactive'
+         ORDER BY id DESC
+         LIMIT 1`,
+        [studentName]
+      )).rows[0];
+
+      if (!student) {
+        throw new Error(`No active student found for ${studentName}`);
+      }
+
+      const existingSignup = student.signup_id
+        ? (await client.query('SELECT * FROM signups WHERE id = $1', [student.signup_id])).rows[0]
+        : (await client.query(
+            'SELECT * FROM signups WHERE lower(student_name) = lower($1) ORDER BY id DESC LIMIT 1',
+            [studentName]
+          )).rows[0];
+
+      const adminTags = ['parent', 'bna', 'admin_intake'];
+      let signup;
+      let signupCreated = false;
+
+      if (existingSignup) {
+        signup = (await client.query(
+          `UPDATE signups
+           SET parent_name = COALESCE(NULLIF($2, ''), parent_name),
+               parent_email = COALESCE($3, parent_email),
+               parent_phone = COALESCE($4, parent_phone),
+               student_name = $5,
+               payment_method = $6,
+               payment_status = 'paid',
+               payment_amount = $7,
+               payment_currency = 'ILS',
+               payment_interval_days = COALESCE(payment_interval_days, $8),
+               payment_due_date = $9,
+               last_payment_at = $10,
+               status = COALESCE(NULLIF(status, ''), 'new'),
+               tags = (SELECT ARRAY(SELECT DISTINCT unnest(COALESCE(tags, '{}') || $11::text[]))),
+               notes = CASE
+                 WHEN notes IS NULL OR notes = '' THEN $12
+                 WHEN notes LIKE '%' || $12 || '%' THEN notes
+                 ELSE notes || E'\n' || $12
+               END,
+               updated_at = NOW()
+           WHERE id = $1
+           RETURNING *`,
+          [
+            existingSignup.id,
+            parentName,
+            parentEmail,
+            parentPhone,
+            studentName,
+            method,
+            amount,
+            DEFAULT_PAYMENT_INTERVAL_DAYS,
+            dueDate,
+            paidAt,
+            adminTags,
+            note,
+          ]
+        )).rows[0];
+      } else {
+        signup = (await client.query(
+          `INSERT INTO signups (
+             parent_name, parent_email, parent_phone, student_name,
+             payment_method, payment_status, payment_amount, payment_currency,
+             payment_interval_days, payment_due_date, last_payment_at,
+             status, tags, notes, created_at, updated_at
+           ) VALUES ($1,$2,$3,$4,$5,'paid',$6,'ILS',$7,$8,$9,'new',$10::text[],$11,NOW(),NOW())
+           RETURNING *`,
+          [
+            parentName,
+            parentEmail,
+            parentPhone,
+            studentName,
+            method,
+            amount,
+            DEFAULT_PAYMENT_INTERVAL_DAYS,
+            dueDate,
+            paidAt,
+            adminTags,
+            note,
+          ]
+        )).rows[0];
+        signupCreated = true;
+      }
+
+      await client.query(
+        `UPDATE bna_students
+         SET signup_id = $1,
+             parent_name = COALESCE(NULLIF($2, ''), parent_name),
+             parent_email = COALESCE($3, parent_email),
+             parent_phone = COALESCE($4, parent_phone),
+             updated_at = NOW()
+         WHERE id = $5`,
+        [signup.id, parentName, parentEmail, parentPhone, student.id]
+      );
+
+      const existingPayment = (await client.query(
+        `SELECT id
+         FROM bna_payment_log
+         WHERE signup_id = $1
+           AND payment_type = 'registration'
+           AND amount = $2
+           AND method = $3
+           AND status = 'completed'
+           AND received_at::date = $4::date
+         ORDER BY id DESC
+         LIMIT 1`,
+        [signup.id, amount, method, paidAt]
+      )).rows[0];
+
+      let paymentLogId = existingPayment?.id || null;
+      if (!paymentLogId) {
+        paymentLogId = (await client.query(
+          `INSERT INTO bna_payment_log (
+             signup_id, payment_type, amount, currency, method,
+             received_by, received_at, notes, status
+           ) VALUES ($1,'registration',$2,'ILS',$3,'admin_paid_intake_reconcile',$4,$5,'completed')
+           RETURNING id`,
+          [signup.id, amount, method, paidAt, note]
+        )).rows[0].id;
+      }
+
+      const intake = (await client.query(
+        `UPDATE bna_payment_intake
+         SET signup_id = $1,
+             parent_name = COALESCE(NULLIF($2, ''), parent_name),
+             parent_email = COALESCE($3, parent_email),
+             parent_phone = COALESCE($4, parent_phone),
+             student_name = $5,
+             amount = $6,
+             method = $7,
+             status = 'matched',
+             received_at = COALESCE(received_at, $8),
+             matched_at = COALESCE(matched_at, NOW()),
+             notes = CASE
+               WHEN notes IS NULL OR notes = '' THEN $9
+               WHEN notes LIKE '%' || $9 || '%' THEN notes
+               ELSE notes || E'\n' || $9
+             END,
+             updated_at = NOW()
+         WHERE id = $10
+         RETURNING id, status, signup_id`,
+        [
+          signup.id,
+          parentName,
+          parentEmail,
+          parentPhone,
+          studentName,
+          amount,
+          method,
+          paidAt,
+          note,
+          intakeId,
+        ]
+      )).rows[0];
+
+      if (!intake) {
+        throw new Error(`No payment intake record found for id ${intakeId}`);
+      }
+
+      results.push({
+        intake_id: intake.id,
+        intake_status: intake.status,
+        student_id: student.id,
+        student_name: studentName,
+        signup_id: signup.id,
+        signup_created: signupCreated,
+        payment_log_id: paymentLogId,
+      });
+    }
+
+    const remainingNeedsSignup = (await client.query(
+      `SELECT id, parent_name, student_name, amount, method
+       FROM bna_payment_intake
+       WHERE status = 'needs_signup'
+       ORDER BY id`
+    )).rows;
+
+    await client.query('COMMIT');
+    res.json({ success: true, results, remaining_needs_signup: remainingNeedsSignup });
+  } catch (err) {
+    await client.query('ROLLBACK');
+    res.status(500).json({ error: err.message, stack: err.stack });
+  } finally {
+    client.release();
+  }
+});
+
 app.post('/api/bna/payment-intake', requireAdmin, async (req, res) => {
   const {
     signup_id,
@@ -6578,22 +8873,71 @@ app.get('/api/bna/content-bundles', requireAdmin, async (req, res) => {
   try {
     const result = await pool.query(
       `SELECT b.*,
-        COALESCE(
-          json_agg(
-            json_build_object('id', j.id, 'title', j.title, 'mime_type', j.mime_type, 'created_at', j.created_at)
+        COALESCE((
+          SELECT json_agg(
+            json_build_object(
+              'id', j.id,
+              'title', j.title,
+              'mime_type', j.mime_type,
+              'created_at', j.created_at,
+              'status', j.status,
+              'summary', COALESCE(
+                j.parse_json->>'summary',
+                j.parse_json->'mixed_recording_parse'->'report'->>'summary',
+                NULLIF(j.caption, ''),
+                NULLIF(j.notes, '')
+              ),
+              'drive_stage', j.drive_stage
+            )
             ORDER BY j.created_at DESC
-          ) FILTER (WHERE j.id IS NOT NULL),
-          '[]'
-        ) AS jobs
+          )
+          FROM bna_content_bundle_items i
+          JOIN bna_content_jobs j ON j.id = i.content_job_id
+          WHERE i.bundle_id = b.id
+        ), '[]'::json) AS jobs,
+        COALESCE((
+          SELECT json_agg(o.* ORDER BY o.created_at DESC)
+          FROM bna_content_outputs o
+          WHERE o.bundle_id = b.id
+            AND o.status <> 'archived'
+        ), '[]'::json) AS outputs
        FROM bna_content_bundles b
-       LEFT JOIN bna_content_bundle_items i ON i.bundle_id = b.id
-       LEFT JOIN bna_content_jobs j ON j.id = i.content_job_id
        WHERE b.status <> 'archived'
-       GROUP BY b.id
        ORDER BY b.created_at DESC
        LIMIT 20`
     );
     res.json({ bundles: result.rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/bna/content-bundles/:id', requireAdmin, async (req, res) => {
+  const { id } = req.params;
+  const allowedFields = ['title', 'notes', 'status', 'start_date', 'end_date'];
+  const fields = [];
+  const values = [];
+
+  for (const [key, value] of Object.entries(req.body || {})) {
+    if (!allowedFields.includes(key)) continue;
+    if (key === 'status' && !['draft', 'generated', 'approved', 'sent', 'archived'].includes(String(value || ''))) continue;
+    values.push(value || null);
+    fields.push(`${key} = $${values.length}`);
+  }
+
+  if (!fields.length) return res.status(400).json({ error: 'No valid bundle fields provided' });
+  values.push(id);
+
+  try {
+    const result = await pool.query(
+      `UPDATE bna_content_bundles
+       SET ${fields.join(', ')}, updated_at = NOW()
+       WHERE id = $${values.length}
+       RETURNING *`,
+      values
+    );
+    if (!result.rows[0]) return res.status(404).json({ error: 'Bundle not found' });
+    res.json({ success: true, bundle: result.rows[0] });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -7307,16 +9651,18 @@ app.post('/api/bna/content-outputs/:id/actions', requireAdmin, async (req, res) 
         };
       }
 
+      const marksExternalPublish = ['facebook_post', 'blog_draft'].includes(output.output_type);
+      const nextStatus = marksExternalPublish ? 'published' : 'approved';
       const updated = (await pool.query(
         `UPDATE bna_content_outputs
-         SET status = 'published',
+         SET status = $3,
              metadata = $1,
              approved_at = COALESCE(approved_at, NOW()),
-             published_at = NOW(),
+             published_at = CASE WHEN $3 = 'published' THEN NOW() ELSE published_at END,
              updated_at = NOW()
          WHERE id = $2
          RETURNING *`,
-        [JSON.stringify(metadata), id]
+        [JSON.stringify(metadata), id, nextStatus]
       )).rows[0];
       await saveApprovedOutputAsExample(updated);
       return res.json({
@@ -7368,6 +9714,8 @@ app.get('/api/bna/ghl-social/diagnostics', requireAdmin, async (req, res) => {
     res.json({
       configured: true,
       location_id: GHL_LOCATION_ID,
+      default_facebook_account_id: GHL_DEFAULT_FACEBOOK_ACCOUNT_ID || null,
+      default_facebook_account_configured: Boolean(GHL_DEFAULT_FACEBOOK_ACCOUNT_ID),
       facebook_accounts: accounts
         .filter((account) => String(account.platform || '').toLowerCase() === 'facebook')
         .map((account) => ({
@@ -8008,6 +10356,163 @@ app.get('/api/bna/auth/me', requireAdmin, (req, res) => {
   });
 });
 
+app.get('/api/bna/agent-fleet/status', requireAdmin, async (req, res) => {
+  try {
+    const runtime = (await pool.query(
+      `SELECT *,
+              CASE
+                WHEN last_seen_at IS NULL THEN true
+                ELSE last_seen_at < NOW() - (COALESCE(stale_after_ms, 180000) * INTERVAL '1 millisecond')
+              END AS stale
+       FROM bna_agent_runtime_status
+       WHERE agent_key = 'codex-fleet'
+       ORDER BY last_seen_at DESC
+       LIMIT 1`
+    )).rows[0] || null;
+
+    const queue = (await pool.query(
+      `WITH machine_tasks AS (
+         SELECT *,
+                (
+                  LOWER(COALESCE(assigned_to, '')) LIKE '%codex%'
+                  OR LOWER(COALESCE(assigned_to, '')) LIKE '%kimi%'
+                  OR LOWER(COALESCE(assigned_to, '')) LIKE '%system%'
+                ) AS is_machine
+         FROM bna_tasks
+       )
+       SELECT
+         COUNT(*) FILTER (
+           WHERE is_machine
+             AND COALESCE(stage, '') NOT IN ('done', 'archive')
+             AND completed_at IS NULL
+             AND verified_at IS NULL
+         )::int AS pending,
+         COUNT(*) FILTER (
+           WHERE is_machine
+             AND stage = 'in_progress'
+             AND completed_at IS NULL
+             AND verified_at IS NULL
+         )::int AS in_progress,
+         COUNT(*) FILTER (
+           WHERE is_machine
+             AND urgency IN ('urgent', 'today')
+             AND COALESCE(stage, '') NOT IN ('done', 'archive')
+             AND completed_at IS NULL
+             AND verified_at IS NULL
+         )::int AS urgent_today,
+         COUNT(*) FILTER (
+           WHERE is_machine
+             AND (completed_at IS NOT NULL OR verified_at IS NOT NULL OR stage = 'done')
+         )::int AS completed
+       FROM machine_tasks`
+    )).rows[0] || {};
+
+    const latestTask = (await pool.query(
+      `SELECT id, title, stage, urgency, assigned_to, created_at, started_at
+       FROM bna_tasks
+       WHERE (
+         LOWER(COALESCE(assigned_to, '')) LIKE '%codex%'
+         OR LOWER(COALESCE(assigned_to, '')) LIKE '%kimi%'
+         OR LOWER(COALESCE(assigned_to, '')) LIKE '%system%'
+       )
+       AND COALESCE(stage, '') NOT IN ('done', 'archive')
+       AND completed_at IS NULL
+       AND verified_at IS NULL
+       ORDER BY
+         CASE urgency WHEN 'urgent' THEN 1 WHEN 'today' THEN 2 WHEN 'this_week' THEN 3 ELSE 4 END,
+         created_at DESC
+       LIMIT 1`
+    )).rows[0] || null;
+
+    res.json({
+      success: true,
+      fleet: runtime ? {
+        status: runtime.status,
+        pid: runtime.pid,
+        mode: runtime.mode,
+        host: runtime.host,
+        started_at: runtime.started_at,
+        last_seen_at: runtime.last_seen_at,
+        stale: Boolean(runtime.stale),
+        current_task_id: runtime.current_task_id,
+        queue_size: runtime.queue_size,
+        ready_count: runtime.ready_count,
+      } : {
+        status: 'unknown',
+        stale: true,
+      },
+      queue: {
+        pending: Number(queue.pending || 0),
+        in_progress: Number(queue.in_progress || 0),
+        urgent_today: Number(queue.urgent_today || 0),
+        completed: Number(queue.completed || 0),
+        latest_task: latestTask,
+      },
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/agent-fleet/status', requireAdmin, async (req, res) => {
+  const {
+    agent_key = 'codex-fleet',
+    status = 'running',
+    pid = null,
+    mode = null,
+    host = null,
+    started_at = null,
+    stale_after_ms = 180000,
+    current_task_id = null,
+    queue_size = null,
+    ready_count = null,
+    details = {},
+  } = req.body || {};
+  const allowedStatus = ['unknown', 'running', 'stopped', 'error'].includes(String(status))
+    ? String(status)
+    : 'unknown';
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO bna_agent_runtime_status (
+         agent_key, status, pid, mode, host, started_at, last_seen_at,
+         stale_after_ms, current_task_id, queue_size, ready_count, details, updated_at
+       )
+       VALUES ($1, $2, $3, $4, $5, $6, NOW(), $7, $8, $9, $10, $11::jsonb, NOW())
+       ON CONFLICT (agent_key) DO UPDATE SET
+         status = EXCLUDED.status,
+         pid = EXCLUDED.pid,
+         mode = EXCLUDED.mode,
+         host = EXCLUDED.host,
+         started_at = COALESCE(EXCLUDED.started_at, bna_agent_runtime_status.started_at),
+         last_seen_at = NOW(),
+         stale_after_ms = EXCLUDED.stale_after_ms,
+         current_task_id = EXCLUDED.current_task_id,
+         queue_size = EXCLUDED.queue_size,
+         ready_count = EXCLUDED.ready_count,
+         details = EXCLUDED.details,
+         updated_at = NOW()
+       RETURNING *`,
+      [
+        String(agent_key || 'codex-fleet').slice(0, 120),
+        allowedStatus,
+        pid === null || pid === undefined ? null : Number(pid),
+        mode ? String(mode).slice(0, 80) : null,
+        host ? String(host).slice(0, 160) : null,
+        started_at || null,
+        Number(stale_after_ms || 180000),
+        current_task_id === null || current_task_id === undefined ? null : Number(current_task_id),
+        queue_size === null || queue_size === undefined ? null : Number(queue_size),
+        ready_count === null || ready_count === undefined ? null : Number(ready_count),
+        JSON.stringify(details || {}),
+      ]
+    );
+    res.json({ success: true, status: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get('/api/bna/projects', requireAdmin, async (req, res) => {
   try {
     await ensureDefaultProjects();
@@ -8023,6 +10528,26 @@ app.get('/api/bna/projects', requireAdmin, async (req, res) => {
     res.json({ projects: result.rows });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/pending-briefs', requireAdmin, (req, res) => {
+  try {
+    const briefs = listPendingBriefs(req);
+    const lifecycle_counts = briefs.reduce((counts, brief) => {
+      const key = brief.lifecycle_stage || 'planned';
+      counts[key] = (counts[key] || 0) + 1;
+      return counts;
+    }, { planned: 0, implementing: 0, verified: 0, deployed: 0 });
+
+    res.json({
+      success: true,
+      briefs,
+      lifecycle_counts,
+      source_dir: 'tasks-pending',
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -8262,7 +10787,7 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
     CREATE TABLE signups (
       id SERIAL PRIMARY KEY,
       parent_name TEXT NOT NULL,
-      parent_email TEXT NOT NULL,
+      parent_email TEXT,
       parent_phone TEXT,
       student_name TEXT NOT NULL,
       student_age INTEGER,
@@ -8278,6 +10803,16 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
       cash_receipt_photo_url TEXT,
       cash_received_at TIMESTAMP,
       cash_notes TEXT,
+      form_language TEXT DEFAULT 'en',
+      waiver_accepted BOOLEAN DEFAULT FALSE,
+      waiver_accepted_at TIMESTAMP,
+      waiver_version TEXT,
+      tuition_agreement_accepted BOOLEAN DEFAULT FALSE,
+      tuition_agreement_accepted_at TIMESTAMP,
+      tuition_agreement_version TEXT,
+      tuition_agreement_signer_name TEXT,
+      tuition_agreement_signer_email TEXT,
+      tuition_agreement_client_signed_at TIMESTAMP,
       ghl_parent_contact_id TEXT,
       ghl_student_contact_id TEXT,
       ghl_synced_at TIMESTAMP,
@@ -8287,6 +10822,24 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
       notes TEXT,
       created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
       updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+    CREATE TABLE bna_signup_agreement_signatures (
+      id SERIAL PRIMARY KEY,
+      signup_id INTEGER NOT NULL REFERENCES signups(id) ON DELETE CASCADE,
+      agreement_type TEXT NOT NULL,
+      agreement_title TEXT NOT NULL,
+      agreement_version TEXT NOT NULL,
+      agreement_text TEXT,
+      signer_name TEXT NOT NULL,
+      signer_email TEXT,
+      signed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      client_signed_at TIMESTAMP,
+      ip_address TEXT,
+      user_agent TEXT,
+      metadata JSONB DEFAULT '{}',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      UNIQUE (signup_id, agreement_type, agreement_version)
     );
     
     CREATE TABLE bna_tasks (

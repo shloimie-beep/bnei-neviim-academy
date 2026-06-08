@@ -45,3 +45,12 @@ public/fallback-*.js
 # misc
 *.tsbuildinfo
 next-env.d.ts
+
+# generated operation receipts
+ops/agent-fleet-runs/
+ops/live-smokes/
+ops/openai-smokes/
+ops/remotion-smokes/
+ops/pending/
+ops/system-audits/*.json
+screenshots/

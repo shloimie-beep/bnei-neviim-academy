@@ -230,11 +230,20 @@
                     window.location.href = paymentLink;
                 }, 1800);
             }
+        } else if (payment === 'bank_transfer') {
+            noteEl.textContent = lang === 'he'
+                ? 'ההרשמה התקבלה. אנא השלימו את התשלום הראשון של שכר הלימוד בהעברה בנקאית לפי הפרטים שנמסרו לכם על ידי הנהלת התוכנית.'
+                : 'Your registration has been received. Please complete the first tuition payment by bank transfer using the details provided by the program director.';
+            smallEl.textContent = lang === 'he'
+                ? 'אם אתם צריכים את פרטי ההעברה, צרו איתנו קשר ונשלח אותם שוב. מצפים לשנה נפלאה ביחד.'
+                : 'If you need the transfer details, please be in touch and we will send them again. We are looking forward to an awesome year together.';
         } else {
             noteEl.textContent = lang === 'he'
-                ? 'ההרשמה התקבלה ונרשמה אצלנו להמשך מעקב על תשלום במזומן.'
-                : 'Your registration has been received and marked for cash follow-up internally.';
-            smallEl.textContent = '';
+                ? 'ההרשמה התקבלה ונרשמה אצלנו להמשך מעקב על תשלום במזומן. מצפים לשנה נפלאה ביחד.'
+                : 'Your registration has been received. We recorded cash as the selected payment method and are looking forward to an awesome year together.';
+            smallEl.textContent = lang === 'he'
+                ? 'אם יש לכם שאלות, נשמח שתהיו בקשר.'
+                : 'If you have any questions, please be in touch.';
         }
     </script>
 </body>

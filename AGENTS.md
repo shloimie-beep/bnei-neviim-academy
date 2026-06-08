@@ -19,7 +19,7 @@ Use these files consistently:
 - `TASKS.md`: active work queue, next actions, blockers
 - `ops/agent-task-ledger.jsonl`: append-only task trail shared by Telegram and Codex
 - `ops/agent-changelog.md`: completed agent work and verified changes
-- `tasks-pending/*.md`: concrete handoff briefs for the next coding session
+- `tasks-pending/*.md`: internal Codex handoff briefs for the next coding session
 - `memory/YYYY-MM-DD.md`: daily rambles, notes, raw captures, summaries
 - `PROJECT-NOTES.md`: local project migration notes and technical caveats
 
@@ -33,7 +33,7 @@ When the operator rambles:
 2. Distill it into:
    - durable facts for `MEMORY.md`
    - concrete next actions for `TASKS.md`
-   - current-session implementation briefs for `tasks-pending/*.md` when a
+   - current-session internal implementation briefs for `tasks-pending/*.md` when a
      future coding session should pick up the work without re-explaining
    - repo/process rules for `AGENTS.md` only if they are stable
 3. Keep the raw wording only when it helps preserve intent or phrasing.
@@ -67,6 +67,14 @@ Keep `MEMORY.md` compact and curated.
 - When uncertain, propose 2-3 concrete options and recommend one.
 - Preserve operator language and intent while turning it into usable plans.
 - Avoid creating sprawling prompt junk drawers or giant rejected-memory files.
+- Do not create a generic Pending task stage, lane, or dashboard section.
+  Ambiguous work should be audited into Needs Decision, an owner lane, Codex
+  Queue/In Progress, Done, or Archive; use pending-style wording only for a real
+  blocker, dependency, approval, review, or error.
+- Do not show `tasks-pending/*.md` as a visible Planned Briefs, Pending Briefs,
+  or Implementation Briefs section. Those files are internal Codex handoffs. If
+  no Shloimie decision is needed, the work belongs in Codex Queue/In Progress
+  and then Changelog.
 
 ## Current Project Reality
 
@@ -116,6 +124,11 @@ Keep `MEMORY.md` compact and curated.
 - After Codex completes a Telegram-requested test, fix, deploy, or verification,
   it must report back in Telegram with a concise accomplished/verified summary.
   The operator should not have to infer completion from logs or dashboard state.
+- App-visible, server-visible, or dashboard-visible Codex tasks are not
+  complete after local verification alone. The agent fleet must deploy the
+  changed app bundle, run the live Railway doctor/smoke check, and only then
+  mark the task done. If deployment is unavailable or fails, keep the task open
+  and notify Telegram with the blocker.
 - Social posting is partially wired:
   - draft/publish commands can create social posts for resolved targets
   - Google targets need explicit alias selection when multiple Google accounts exist

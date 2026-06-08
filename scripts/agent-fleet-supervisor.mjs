@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
+import crypto from 'crypto';
 import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
 
@@ -15,6 +17,7 @@ const envLocalPath = path.join(repoRoot, '.env.local');
 const secretsDir = path.join(repoRoot, '.secrets');
 const supervisorLockPath = path.join(runtimeDir, 'supervisor.lock.json');
 const statePath = path.join(runtimeDir, 'state.json');
+const deployStatePath = path.join(runtimeDir, 'deploy-state.json');
 
 function nowIso() {
   return new Date().toISOString();
@@ -91,6 +94,7 @@ function parseArgs(argv) {
     dryRun: false,
     maxTasks: null,
     noSmoke: false,
+    noDeploy: false,
     noTelegram: false,
   };
   for (let index = 0; index < argv.length; index += 1) {
@@ -100,6 +104,7 @@ function parseArgs(argv) {
     else if (arg === '--status') args.status = true;
     else if (arg === '--dry-run') args.dryRun = true;
     else if (arg === '--no-smoke') args.noSmoke = true;
+    else if (arg === '--no-deploy') args.noDeploy = true;
     else if (arg === '--no-telegram') args.noTelegram = true;
     else if (arg === '--max-tasks') args.maxTasks = Number(argv[++index] || 0);
     else if (arg.startsWith('--max-tasks=')) args.maxTasks = Number(arg.split('=').slice(1).join('=') || 0);
@@ -122,6 +127,10 @@ function loadConfig() {
     maxRetries: Number(env.AGENT_FLEET_MAX_RETRIES || 2),
     openAiSmoke: String(env.AGENT_FLEET_OPENAI_SMOKE || '1') !== '0',
     verifyCommandsRaw: env.AGENT_FLEET_VERIFY_COMMANDS || '',
+    autoDeploy: String(env.AGENT_FLEET_AUTO_DEPLOY || '1') !== '0',
+    deployCommand: env.AGENT_FLEET_DEPLOY_COMMAND || 'npm run railway:redeploy',
+    deployDoctorCommand: env.AGENT_FLEET_DEPLOY_DOCTOR_COMMAND || 'npm run railway:doctor',
+    deployTimeoutMs: Number(env.AGENT_FLEET_DEPLOY_TIMEOUT_MS || 15 * 60 * 1000),
     telegramToken: readSecret('telegram-bot-token.txt') || env.TELEGRAM_BOT_TOKEN_BNA || env.TELEGRAM_BOT_TOKEN || '',
     telegramChatId: env.TELEGRAM_CHAT_ID_BNA || env.TELEGRAM_CHAT_ID || '',
   };
@@ -256,6 +265,41 @@ async function loadTasks(config) {
   return Array.isArray(data.tasks) ? data.tasks : [];
 }
 
+async function reportRuntimeStatus(config, {
+  status = 'running',
+  mode = 'once',
+  tasks = [],
+  selected = [],
+  currentTaskId = null,
+  details = {},
+} = {}) {
+  try {
+    const activeCodexTasks = tasks
+      .filter((task) => isActiveStage(task.stage))
+      .filter(isAgentOwnedTask);
+    const lock = readJson(supervisorLockPath, null);
+    await appRequest(config, 'POST', '/api/bna/agent-fleet/status', {
+      agent_key: 'codex-fleet',
+      status,
+      pid: process.pid,
+      mode,
+      host: os.hostname(),
+      started_at: lock?.started_at || null,
+      stale_after_ms: Math.max(config.pollMs * 3, 180000),
+      current_task_id: currentTaskId,
+      queue_size: activeCodexTasks.length,
+      ready_count: selected.length,
+      details: {
+        script: 'scripts/agent-fleet-supervisor.mjs',
+        updated_at: nowIso(),
+        ...details,
+      },
+    });
+  } catch (error) {
+    console.error(`Could not report agent runtime status: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
 function taskLockPath(taskId) {
   return path.join(runtimeDir, `task-${taskId}.lock.json`);
 }
@@ -388,7 +432,7 @@ function buildTaskPrompt(task, attempt) {
     '## ops/agent-changelog.md tail',
     readContextFile('ops/agent-changelog.md', 2800).slice(-2800),
     '',
-    'Newest pending briefs:',
+    'Newest internal Codex handoff files:',
     newestPendingBriefs().join('\n\n') || '[none]',
     '',
     'Required final format:',
@@ -404,6 +448,23 @@ function cleanProcessText(text) {
     .replace(/\r/g, '')
     .replace(/\n*To resume this session:[^\n]*/g, '')
     .trim();
+}
+
+function summarizeAgentError(error, maxChars = 900) {
+  const text = cleanProcessText(error instanceof Error ? error.message : String(error || ''));
+  if (!text) return 'Unknown agent error';
+  const usefulLines = text
+    .split('\n')
+    .map((line) => line.trim())
+    .filter(Boolean)
+    .filter((line) => !/^workdir:|^model:|^provider:|^approval:|^sandbox:|^session id:/i.test(line))
+    .filter((line) => !/^[-]{4,}$/.test(line))
+    .filter((line) => !/^user$/i.test(line))
+    .filter((line) => !/^You are Codex running as an autonomous/i.test(line));
+  const preferred = usefulLines.find((line) => /error|failed|timed out|blocked|cannot|missing|fatal/i.test(line))
+    || usefulLines[0]
+    || text;
+  return preferred.length > maxChars ? `${preferred.slice(0, maxChars - 3).trim()}...` : preferred;
 }
 
 function runCodex(prompt, config, taskId) {
@@ -579,6 +640,154 @@ function summarizeVerification(results) {
   }).join('\n');
 }
 
+function normalizeRepoFile(file) {
+  return String(file || '')
+    .trim()
+    .replace(/\\/g, '/')
+    .replace(/^\.\//, '');
+}
+
+function parseFileList(output) {
+  return String(output || '')
+    .split(/\r?\n/)
+    .map(normalizeRepoFile)
+    .filter(Boolean);
+}
+
+function isDeployableFile(file) {
+  const normalized = normalizeRepoFile(file);
+  return [
+    /^server\.js$/,
+    /^package\.json$/,
+    /^railway\.json$/,
+    /^public\//,
+    /^src\//,
+    /^tasks-pending\//,
+    /^agents\//,
+    /^scripts\/railway-redeploy\.ps1$/,
+  ].some((pattern) => pattern.test(normalized));
+}
+
+async function collectChangedFiles(timeoutMs) {
+  const diffResult = await runShellCommand('git diff --name-only', timeoutMs);
+  const untrackedResult = await runShellCommand('git ls-files --others --exclude-standard', timeoutMs);
+  const files = new Set([
+    ...parseFileList(diffResult.stdout),
+    ...parseFileList(untrackedResult.stdout),
+  ]);
+  return {
+    ok: diffResult.ok && untrackedResult.ok,
+    files: [...files].sort(),
+    inspection_results: [diffResult, untrackedResult],
+  };
+}
+
+function deploymentFingerprint(files) {
+  const hash = crypto.createHash('sha256');
+  for (const file of files.map(normalizeRepoFile).sort()) {
+    const absolute = path.join(repoRoot, file);
+    hash.update(file);
+    hash.update('\0');
+    if (!fs.existsSync(absolute)) {
+      hash.update('[missing]');
+      hash.update('\0');
+      continue;
+    }
+    const stat = fs.statSync(absolute);
+    hash.update(stat.isFile() ? '[file]' : '[other]');
+    hash.update('\0');
+    if (stat.isFile()) hash.update(fs.readFileSync(absolute));
+    hash.update('\0');
+  }
+  return hash.digest('hex');
+}
+
+async function runDeploymentIfNeeded(config, options) {
+  const inspectionTimeoutMs = Math.min(config.verifyTimeoutMs, 60 * 1000);
+  const changed = await collectChangedFiles(inspectionTimeoutMs);
+  const deployableFiles = changed.files.filter(isDeployableFile);
+  const result = {
+    checked_at: nowIso(),
+    ok: true,
+    needed: deployableFiles.length > 0,
+    skipped_reason: '',
+    changed_files_count: changed.files.length,
+    deployable_files: deployableFiles,
+    inspection_results: changed.inspection_results,
+    deployment_results: [],
+  };
+
+  if (!changed.ok) {
+    result.ok = false;
+    result.skipped_reason = 'could_not_inspect_git_changes';
+    return result;
+  }
+
+  if (!deployableFiles.length) return result;
+
+  const fingerprint = deploymentFingerprint(deployableFiles);
+  result.fingerprint = fingerprint;
+  const deployState = readJson(deployStatePath, {}) || {};
+  if (deployState.last_success_fingerprint === fingerprint) {
+    result.needed = false;
+    result.skipped_reason = 'already_deployed';
+    return result;
+  }
+
+  if (!config.autoDeploy || options.noDeploy) {
+    result.ok = false;
+    result.skipped_reason = 'auto_deploy_disabled';
+    return result;
+  }
+
+  const deployResult = await runShellCommand(config.deployCommand, config.deployTimeoutMs);
+  result.deployment_results.push(deployResult);
+  if (!deployResult.ok) {
+    result.ok = false;
+    return result;
+  }
+
+  const doctorResult = await runShellCommand(config.deployDoctorCommand, config.verifyTimeoutMs);
+  result.deployment_results.push(doctorResult);
+  result.ok = doctorResult.ok;
+
+  if (result.ok) {
+    writeJson(deployStatePath, {
+      last_success_fingerprint: fingerprint,
+      deployed_at: nowIso(),
+      deployable_files: deployableFiles,
+      deploy_command: config.deployCommand,
+      doctor_command: config.deployDoctorCommand,
+    });
+  }
+
+  return result;
+}
+
+function summarizeDeployment(deployment) {
+  if (!deployment) return '- NOT RUN Deployment gate was not reached.';
+  const files = deployment.deployable_files || [];
+  const fileSummary = files.length
+    ? files.slice(0, 12).join(', ') + (files.length > 12 ? `, and ${files.length - 12} more` : '')
+    : 'none';
+  const lines = [];
+  if (!deployment.needed && deployment.skipped_reason === 'already_deployed') {
+    lines.push('- PASS Deployable changes already match the last successful deployment.');
+  } else if (!deployment.needed) {
+    lines.push('- PASS No deployable app changes detected.');
+  } else {
+    lines.push(`- ${deployment.ok ? 'PASS' : 'FAIL'} Deployment gate for app-visible changes.`);
+  }
+  lines.push(`- Deployable files: ${fileSummary}`);
+  if (deployment.skipped_reason) lines.push(`- Note: ${deployment.skipped_reason}`);
+  for (const commandResult of deployment.deployment_results || []) {
+    const status = commandResult.ok ? 'PASS' : 'FAIL';
+    const detail = commandResult.timedOut ? ' timed out' : commandResult.code !== 0 ? ` exit ${commandResult.code}` : '';
+    lines.push(`- ${status} ${commandResult.command}${detail}`);
+  }
+  return lines.join('\n');
+}
+
 function reportMarkdown(task, outcome) {
   return [
     `# Agent Fleet Run - Task #${task.id}`,
@@ -596,6 +805,10 @@ function reportMarkdown(task, outcome) {
     '## Verification',
     '',
     summarizeVerification(outcome.verification_results || []),
+    '',
+    '## Deployment Gate',
+    '',
+    summarizeDeployment(outcome.deployment_result),
     '',
     '## Files',
     '',
@@ -625,14 +838,17 @@ function appendChangelog(task, outcome, reportPaths) {
     `## ${localStamp()} - ${title}`,
     '',
     outcome.ok
-      ? 'The agent fleet claimed this Codex-owned task, ran Codex CLI, then ran the verifier phase before marking the task done.'
-      : 'The agent fleet claimed this Codex-owned task but did not mark it complete because the Codex run or verifier phase failed.',
+      ? 'The agent fleet claimed this Codex-owned task, ran Codex CLI, ran verification, then passed the deployment gate before marking the task done.'
+      : 'The agent fleet claimed this Codex-owned task but did not mark it complete because Codex, verification, or the deployment gate failed.',
     '',
     'Codex result:',
     String(outcome.codex_final || outcome.codex_error || '[none]').slice(0, 1400),
     '',
     'Verification:',
     summarizeVerification(outcome.verification_results || []),
+    '',
+    'Deployment gate:',
+    summarizeDeployment(outcome.deployment_result),
     '',
     `Report: ${relative(reportPaths.mdPath)}`,
     '',
@@ -688,6 +904,7 @@ async function processTask(config, task, state, options) {
   let codexResult = null;
   let codexError = null;
   let verificationResults = [];
+  let deploymentResult = null;
   try {
     codexResult = await runCodex(buildTaskPrompt(task, record.attempts), config, task.id);
     verificationResults = await runVerification(config, options);
@@ -697,17 +914,35 @@ async function processTask(config, task, state, options) {
   }
 
   const verificationOk = verificationResults.length > 0 && verificationResults.every((result) => result.ok);
-  const ok = !codexError && verificationOk;
+  if (!codexError && verificationOk) {
+    try {
+      deploymentResult = await runDeploymentIfNeeded(config, options);
+    } catch (error) {
+      deploymentResult = {
+        checked_at: nowIso(),
+        ok: false,
+        needed: true,
+        skipped_reason: `deployment_gate_exception: ${summarizeAgentError(error, 500)}`,
+        changed_files_count: null,
+        deployable_files: [],
+        inspection_results: [],
+        deployment_results: [],
+      };
+    }
+  }
+  const deploymentOk = deploymentResult ? deploymentResult.ok : true;
+  const ok = !codexError && verificationOk && deploymentOk;
   const outcome = {
     generated_at: nowIso(),
     task_id: task.id,
     ok,
     codex_exit_code: codexResult?.code ?? null,
     codex_final: codexResult?.lastMessage || codexResult?.stdout || '',
-    codex_error: codexError ? (codexError instanceof Error ? codexError.message : String(codexError)) : '',
+    codex_error: codexError ? summarizeAgentError(codexError, 1500) : '',
     codex_log: codexResult?.logPath ? relative(codexResult.logPath) : '',
     codex_last_message: codexResult?.lastMessagePath ? relative(codexResult.lastMessagePath) : '',
     verification_results: verificationResults,
+    deployment_result: deploymentResult,
   };
   const reportPaths = writeRunReport(task, outcome);
   appendChangelog(task, outcome, reportPaths);
@@ -721,8 +956,9 @@ async function processTask(config, task, state, options) {
 
   if (ok) {
     const verificationNotes = [
-      'Agent fleet completed and verified this task.',
+      'Agent fleet completed, verified, and passed the deployment gate for this task.',
       summarizeVerification(verificationResults),
+      summarizeDeployment(deploymentResult),
       `Report: ${relative(reportPaths.mdPath)}`,
     ].join('\n');
     await patchTask(config, task.id, {
@@ -741,6 +977,8 @@ async function processTask(config, task, state, options) {
           '',
           summarizeVerification(verificationResults),
           '',
+          summarizeDeployment(deploymentResult),
+          '',
           `Report: ${relative(reportPaths.mdPath)}`,
         ].join('\n')
       );
@@ -750,8 +988,9 @@ async function processTask(config, task, state, options) {
     const blockerNote = [
       `Agent fleet could not verify task #${task.id}.`,
       `Attempt ${record.attempts} of ${config.maxRetries}.`,
-      codexError ? `Codex error: ${codexError instanceof Error ? codexError.message : String(codexError)}` : '',
+      codexError ? `Codex error: ${summarizeAgentError(codexError)}` : '',
       verificationResults.length ? summarizeVerification(verificationResults) : 'Verifier did not complete.',
+      deploymentResult ? summarizeDeployment(deploymentResult) : '',
       `Report: ${relative(reportPaths.mdPath)}`,
       exhausted ? 'Marked as Needs Decision so it does not loop forever on the same failure.' : 'It will be retried by the fleet.',
     ].filter(Boolean).join('\n');
@@ -789,6 +1028,7 @@ async function status(config) {
     `- Ready to claim: ${queue.length}`,
     `- Max retries: ${config.maxRetries}`,
     `- Baseline smoke: ${config.openAiSmoke ? 'enabled' : 'disabled'}`,
+    `- Auto deploy gate: ${config.autoDeploy ? 'enabled' : 'disabled'}`,
   ];
   if (queue.length) {
     lines.push('', 'Next tasks:');
@@ -802,6 +1042,18 @@ async function runOnce(config, args) {
   const tasks = await loadTasks(config);
   const maxTasks = args.maxTasks && args.maxTasks > 0 ? args.maxTasks : 1;
   const selected = selectNextTasks(tasks, state, config, maxTasks);
+  await reportRuntimeStatus(config, {
+    status: 'running',
+    mode: args.watch ? 'watch' : 'once',
+    tasks,
+    selected,
+    currentTaskId: selected[0]?.id || null,
+    details: {
+      dry_run: Boolean(args.dryRun),
+      no_smoke: Boolean(args.noSmoke),
+      no_deploy: Boolean(args.noDeploy),
+    },
+  });
   if (!selected.length) {
     console.log('Agent fleet: no Codex-owned tasks ready to claim.');
     return [];
@@ -810,8 +1062,25 @@ async function runOnce(config, args) {
   for (const task of selected) {
     // Tasks are intentionally serial to avoid competing edits in the same repo.
     // eslint-disable-next-line no-await-in-loop
+    await reportRuntimeStatus(config, {
+      status: 'running',
+      mode: args.watch ? 'watch' : 'once',
+      tasks,
+      selected,
+      currentTaskId: task.id,
+      details: { phase: 'processing' },
+    });
+    // eslint-disable-next-line no-await-in-loop
     outcomes.push(await processTask(config, task, state, args));
   }
+  await reportRuntimeStatus(config, {
+    status: 'running',
+    mode: args.watch ? 'watch' : 'once',
+    tasks,
+    selected: [],
+    currentTaskId: null,
+    details: { phase: 'idle_after_run', processed: outcomes.length },
+  });
   return outcomes;
 }
 
@@ -827,6 +1096,13 @@ async function watchLoop(config, args) {
     } catch (error) {
       const message = `Agent fleet loop error: ${error instanceof Error ? error.message : String(error)}`;
       console.error(message);
+      await reportRuntimeStatus(config, {
+        status: 'error',
+        mode: 'watch',
+        tasks: [],
+        selected: [],
+        details: { error: message },
+      });
       if (!args.noTelegram) {
         try {
           await sendTelegram(config, message);
@@ -876,6 +1152,13 @@ async function main() {
       ok: outcome.ok,
       dry_run: outcome.dry_run || false,
       message: outcome.message || '',
+      deployment_gate: outcome.deployment_result
+        ? {
+          ok: outcome.deployment_result.ok,
+          needed: outcome.deployment_result.needed,
+          skipped_reason: outcome.deployment_result.skipped_reason || '',
+        }
+        : null,
     })),
   }, null, 2));
 }

@@ -9,4 +9,5 @@ folders should only add scoped preferences, access rules, and project context.
 ## Current Agents
 
 - `rabbi-elie-scheller/`: One Time Mishnah Class collaborator agent scaffold.
-
+  See `rabbi-elie-scheller/SETUP.md` for the scoped Telegram bot env/token
+  values and runtime commands.

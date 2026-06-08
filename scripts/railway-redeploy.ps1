@@ -81,6 +81,12 @@ Copy-Item -LiteralPath (Join-Path $repoRoot "public") -Destination $deployRoot -
 if (Test-Path (Join-Path $repoRoot "src")) {
   Copy-Item -LiteralPath (Join-Path $repoRoot "src") -Destination $deployRoot -Recurse
 }
+if (Test-Path (Join-Path $repoRoot "tasks-pending")) {
+  Copy-Item -LiteralPath (Join-Path $repoRoot "tasks-pending") -Destination $deployRoot -Recurse
+}
+if (Test-Path (Join-Path $repoRoot "agents")) {
+  Copy-Item -LiteralPath (Join-Path $repoRoot "agents") -Destination $deployRoot -Recurse
+}
 
 Write-Host ""
 Write-Host "Uploading current local code to Railway..." -ForegroundColor Cyan

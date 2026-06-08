@@ -1,13 +1,14 @@
 # Student Goal Board, Classroom Assignments, And Consequence Rules
 
 Date: 2026-06-05
-Task: #65
-Status: Planning-only design handoff
+Task: #65, implemented by agent-fleet task #108
+Status: Student Goal Board MVP implemented and deployed; Google Classroom API posting and real consequence/device enforcement remain future blocked layers
 
 ## Boundary
 
-Do not build this until the operator explicitly asks for implementation. This
-brief turns the selected direction into a build-ready plan.
+The Student Goal Board MVP has been built. Keep this brief as the future design
+map for Google Classroom assignment posting and parent/admin-approved
+consequence/device rules.
 
 The operator chose the student Goal Board as the base. Google Classroom
 assignments and natural consequence/device rules should still be designed as
@@ -322,4 +323,3 @@ Suggested future tables:
 - Can students create any goal immediately, or should only consequence/device
   connected goals require approval?
 - What is the exact Hebrew wording for the student-facing Goal Board states?
-

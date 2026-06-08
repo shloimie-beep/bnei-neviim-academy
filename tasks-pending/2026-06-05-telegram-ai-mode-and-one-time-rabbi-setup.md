@@ -4,8 +4,54 @@ Date: 2026-06-05
 
 ## Status
 
-Project/workspace model implemented locally for task #72. Deploy/restart is
-needed for the long-running server process to serve the new routes/UI.
+Project/workspace model implemented by task #72 and deployed. Rabbi scoped
+Telegram/agent profile implemented by task #110 and included in the deployed
+bundle. Live Rabbi bot startup is blocked only on the Rabbi-specific bot token,
+chat id, and scoped One Time login credentials.
+
+## Implemented In Task #110 Pass
+
+- Added a bridge profile for Rabbi Elie Scheller:
+  `node scripts/telegram-kimi-bridge.mjs --profile rabbi-elie-scheller`.
+- Added npm scripts:
+  - `npm run telegram:rabbi`
+  - `npm run telegram:rabbi:start`
+- Rabbi profile uses separate runtime lock/log/mode/decision files from the
+  academy bot.
+- Rabbi profile reads scoped context from:
+  - `agents/rabbi-elie-scheller/AGENTS.md`
+  - `agents/rabbi-elie-scheller/MEMORY.md`
+  - `agents/rabbi-elie-scheller/SETUP.md`
+- Rabbi profile uses only scoped Operations credentials:
+  - `ONE_TIME_OPS_USERNAME`
+  - `ONE_TIME_OPS_PASSWORD`
+  - or the `RABBI_ELIE_SCHELLER_OPS_USERNAME/PASSWORD` aliases
+- Rabbi profile does not fall back to Shloimie's admin Operations credentials.
+- Rabbi profile is OpenAI/Kimi chat plus One Time task/comment API access by
+  default. Codex execution is disabled unless
+  `RABBI_ELIE_SCHELLER_CODEX_ENABLED=true`.
+- Rabbi profile only requests One Time task/project snapshots. It does not
+  request Students, Accounting, Devices, broad Content, Drive, GHL posting,
+  OpenAI smoke, or agent fleet commands.
+- Explicit scoped task commands create One Time tasks. Non-explicit brainstorms
+  are summarized by the model and should ask before task creation.
+- Scoped comment commands post project-visible comments, for example:
+  `comment task #123: add this context`.
+- Added exact setup/env documentation in
+  `agents/rabbi-elie-scheller/SETUP.md`.
+
+## Live Values Still Needed
+
+- `TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER` or
+  `.secrets/telegram-rabbi-elie-scheller-bot-token.txt`
+- `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER`
+- `ONE_TIME_OPS_USERNAME`
+- `ONE_TIME_OPS_PASSWORD`
+
+Optional/advanced:
+
+- `RABBI_ELIE_SCHELLER_CODEX_ENABLED=false` should stay false unless Shloimie
+  explicitly wants the Rabbi bot to execute Codex repo work.
 
 ## Implemented In This Pass
 
@@ -88,7 +134,7 @@ implementation.
 Rabbi Elie Scheller should eventually have his own Telegram bot/agent using the
 same agentic framework as Shloimie, scoped to One Time Mishnah Class.
 
-## Current Repo Reality
+## Historical Repo Reality
 
 - `bna_tasks` currently has `category`, `assigned_to`, and status fields, but no
   first-class project table, project membership table, task comment table, or
@@ -96,8 +142,8 @@ same agentic framework as Shloimie, scoped to One Time Mishnah Class.
 - Operations Content has a heuristic project filter with an internal `mishna`
   key. That is the existing Mishnah/One Time concept and should be reused rather
   than duplicated.
-- The current login/session system is Operations-wide. Rabbi Elie Scheller
-  scoped access needs a real project/user access layer before going live.
+- Superseded by task #72/#110: the project/comment/decision fields and scoped
+  One Time access layer now exist in the app code.
 
 ## Backend Work Needed
 

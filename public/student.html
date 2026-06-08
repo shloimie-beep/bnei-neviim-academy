@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BNA Student Checkoff</title>
+    <title>BNA Student Goal Board</title>
     <style>
         :root {
             --ink: #182018;
@@ -48,7 +48,7 @@
 
         .shell {
             position: relative;
-            width: min(980px, calc(100% - 28px));
+            width: min(1040px, calc(100% - 28px));
             margin: 0 auto;
             padding: 28px 0 44px;
         }
@@ -56,8 +56,9 @@
         .hero {
             display: grid;
             gap: 18px;
-            grid-template-columns: minmax(0, 1fr) auto;
-            align-items: end;
+            grid-template-columns: minmax(0, 640px) auto;
+            align-items: start;
+            justify-content: space-between;
             margin-bottom: 18px;
         }
 
@@ -73,14 +74,14 @@
 
         h1 {
             margin: 0;
-            font-size: clamp(34px, 8vw, 74px);
+            font-size: 54px;
             line-height: 0.92;
-            letter-spacing: -0.06em;
+            letter-spacing: 0;
         }
 
         .hero-text {
             margin: 12px 0 0;
-            max-width: 560px;
+            max-width: 620px;
             color: var(--muted);
             font-family: "Trebuchet MS", Verdana, sans-serif;
             font-size: 16px;
@@ -96,9 +97,9 @@
         }
 
         .login-panel {
-            max-width: 540px;
-            margin-top: 24px;
-            padding: 24px;
+            width: min(620px, 100%);
+            margin-top: 20px;
+            padding: clamp(22px, 3vw, 30px);
         }
 
         .field {
@@ -170,6 +171,12 @@
             background: rgba(24, 32, 24, 0.08);
         }
 
+        .ghost {
+            color: var(--ink);
+            background: transparent;
+            border: 1px solid rgba(24, 32, 24, 0.12);
+        }
+
         .blue {
             background: var(--blue);
         }
@@ -182,10 +189,116 @@
         .top-card {
             display: grid;
             gap: 16px;
-            grid-template-columns: minmax(0, 1fr) auto;
-            align-items: center;
+            grid-template-columns: minmax(0, 1fr);
+            align-items: start;
             padding: 22px;
             margin: 18px 0;
+        }
+
+        .access-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            margin-top: 14px;
+            padding: 12px;
+            border: 1px solid rgba(47, 100, 141, 0.18);
+            border-radius: 16px;
+            color: var(--muted);
+            background: rgba(47, 100, 141, 0.08);
+            font-family: "Trebuchet MS", Verdana, sans-serif;
+            font-size: 13px;
+            line-height: 1.35;
+        }
+
+        .access-pill {
+            flex: 0 0 auto;
+            border-radius: 999px;
+            padding: 6px 10px;
+            color: #fff;
+            background: var(--blue);
+            font: 800 12px "Trebuchet MS", Verdana, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        .portal-command-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        .portal-command-card {
+            min-height: 126px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            gap: 10px;
+            border: 1px solid rgba(24, 32, 24, 0.12);
+            border-radius: 18px;
+            background:
+                radial-gradient(circle at top left, rgba(227, 184, 72, 0.18), transparent 48%),
+                rgba(255, 255, 255, 0.72);
+            padding: 14px;
+            font-family: "Trebuchet MS", Verdana, sans-serif;
+        }
+
+        .portal-command-card strong {
+            display: block;
+            color: var(--ink);
+            font-size: 15px;
+            line-height: 1.2;
+        }
+
+        .portal-command-card span {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.35;
+        }
+
+        .portal-command-label {
+            color: var(--forest);
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .language-toggle {
+            display: flex;
+            gap: 4px;
+            padding: 4px;
+            border: 1px solid rgba(24, 32, 24, 0.1);
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.58);
+        }
+
+        .language-toggle button {
+            min-width: 42px;
+            padding: 8px 10px;
+            color: var(--ink);
+            background: transparent;
+        }
+
+        .language-toggle button.active {
+            color: #fff;
+            background: var(--forest);
+        }
+
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 16px;
         }
 
         .metric {
@@ -199,9 +312,30 @@
                 conic-gradient(var(--forest) var(--progress, 0%), rgba(30, 95, 61, 0.12) 0);
         }
 
+        .metric.compact {
+            width: 100%;
+            height: auto;
+            min-height: 118px;
+            padding: 20px 10px;
+            text-align: center;
+            border-radius: 18px;
+            background:
+                radial-gradient(circle at center, #fffaf0 0 56%, transparent 57%),
+                conic-gradient(var(--forest) var(--progress, 0%), rgba(30, 95, 61, 0.12) 0);
+        }
+
         .metric strong {
             font-size: 34px;
-            letter-spacing: -0.04em;
+            letter-spacing: 0;
+        }
+
+        .metric small {
+            display: block;
+            margin-top: 4px;
+            color: var(--muted);
+            font: 800 11px "Trebuchet MS", Verdana, sans-serif;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
         }
 
         .progress-track {
@@ -240,10 +374,79 @@
             line-height: 1.45;
         }
 
-        .goal-grid {
+        .board-toolbar {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .student-readonly-note {
+            padding: 12px 14px;
+            border: 1px solid rgba(30, 95, 61, 0.14);
+            border-radius: 16px;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.64);
+            font: 700 13px/1.45 "Trebuchet MS", Verdana, sans-serif;
+        }
+
+        .filter-tabs {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .filter-tab {
+            min-height: 44px;
+            padding: 9px 8px;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.62);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+        }
+
+        .filter-tab.active {
+            color: #fff;
+            background: var(--forest);
+        }
+
+        .goal-form {
+            display: grid;
+            gap: 10px;
+            padding: 14px;
+            margin-bottom: 14px;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.72);
+        }
+
+        .goal-form-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 140px;
+            gap: 10px;
+        }
+
+        select,
+        textarea {
+            width: 100%;
+            border: 1px solid rgba(30, 95, 61, 0.18);
+            border-radius: 16px;
+            padding: 13px 14px;
+            color: var(--ink);
+            background: #fffef9;
+            font: 700 14px "Trebuchet MS", Verdana, sans-serif;
+            outline: none;
+        }
+
+        textarea {
+            min-height: 76px;
+            resize: vertical;
+        }
+
+        .goal-grid,
+        .goal-list {
             display: grid;
             gap: 14px;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: 1fr;
         }
 
         .goal-card {
@@ -253,6 +456,14 @@
             border: 1px solid var(--line);
             border-radius: 24px;
             background: rgba(255, 255, 255, 0.82);
+        }
+
+        .goal-card.waiting {
+            border-color: rgba(155, 61, 51, 0.32);
+        }
+
+        .goal-card.done {
+            opacity: 0.76;
         }
 
         .goal-heading {
@@ -283,6 +494,30 @@
             font-family: "Trebuchet MS", Verdana, sans-serif;
             font-size: 13px;
             line-height: 1.45;
+        }
+
+        .goal-badges {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .goal-details {
+            border-top: 1px solid var(--line);
+            padding-top: 10px;
+        }
+
+        .goal-details summary {
+            cursor: pointer;
+            color: var(--forest);
+            font: 800 12px "Trebuchet MS", Verdana, sans-serif;
+            text-transform: uppercase;
+        }
+
+        .reflection-box {
+            display: grid;
+            gap: 8px;
+            margin-top: 10px;
         }
 
         .actions {
@@ -326,9 +561,34 @@
                 grid-template-columns: 1fr;
             }
 
+            h1 {
+                font-size: 38px;
+                line-height: 1;
+            }
+
+            .hero-actions {
+                justify-content: flex-start;
+            }
+
+            .metric-grid,
+            .portal-command-grid,
+            .goal-form-row {
+                grid-template-columns: 1fr;
+            }
+
             .metric {
                 width: 118px;
                 height: 118px;
+            }
+
+            .metric.compact {
+                width: 100%;
+                height: auto;
+                min-height: 96px;
+            }
+
+            .filter-tabs {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
             .top-card {
@@ -348,10 +608,16 @@
         <header class="hero">
             <div>
                 <p class="eyebrow">Bnei Neviim Academy</p>
-                <h1 id="pageTitle">Student Checkoff</h1>
-                <p class="hero-text" id="pageIntro">Open your private link, review your goals, and mark what you completed honestly.</p>
+                <h1 id="pageTitle">Student Goal Board</h1>
+                <p class="hero-text" id="pageIntro">Open your private link, review your Torah progress, and work through your goals honestly.</p>
             </div>
-            <button class="secondary hidden" id="clearCodeButton" type="button">Use a different link</button>
+            <div class="hero-actions">
+                <div class="language-toggle" aria-label="Language">
+                    <button id="langEnButton" type="button" data-lang="en">EN</button>
+                    <button id="langHeButton" type="button" data-lang="he">HE</button>
+                </div>
+                <button class="secondary hidden" id="clearCodeButton" type="button">Use a different link</button>
+            </div>
         </header>
 
         <section class="panel login-panel hidden" id="loginPanel">
@@ -364,7 +630,7 @@
                     <input id="accessCode" autocomplete="off" placeholder="Paste code here">
                 </div>
                 <div class="button-row">
-                    <button type="submit">Open My Goals</button>
+                    <button id="openGoalsButton" type="submit">Open My Goals</button>
                 </div>
             </form>
             <div class="status" id="loginStatus"></div>
@@ -378,9 +644,31 @@
                 <div class="progress-track" aria-label="Torah trip progress">
                     <div class="progress-fill" id="torahProgressFill"></div>
                 </div>
-            </div>
-            <div class="metric" id="torahMetric">
-                <strong id="torahProgressText">0%</strong>
+                <div class="metric-grid">
+                    <div class="metric compact" id="torahTripMetric">
+                        <div>
+                            <strong id="torahProgressText">0%</strong>
+                            <small id="tripMetricLabel">Trip</small>
+                        </div>
+                    </div>
+                    <div class="metric compact" id="torahTodayMetric">
+                        <div>
+                            <strong id="torahTodayText">0%</strong>
+                            <small id="todayMetricLabel">Today</small>
+                        </div>
+                    </div>
+                    <div class="metric compact" id="torahMorningMetric">
+                        <div>
+                            <strong id="torahMorningText">--</strong>
+                            <small id="morningMetricLabel">Morning</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="access-strip hidden" id="deviceAccessStrip">
+                    <span class="access-pill" id="deviceAccessState">Accountability Only</span>
+                    <span id="deviceAccessText">Tablet access is accountability-only.</span>
+                </div>
+                <div class="portal-command-grid" id="portalCommandGrid"></div>
             </div>
         </section>
 
@@ -389,35 +677,171 @@
                 <h2>My Goal Checkoff</h2>
                 <span id="goalCount">0 goals</span>
             </div>
-            <div class="goal-grid" id="goalGrid"></div>
+            <div class="board-toolbar">
+                <div class="filter-tabs" id="goalFilters"></div>
+                <div class="student-readonly-note" id="studentReadonlyNote">
+                    Goals, consequences, bedtime rules, and tablet rules are assigned by the rebbi/admin. This page is only for honest checkoff, a short note, and read-only progress/status.
+                </div>
+            </div>
+            <div class="goal-list" id="goalGrid"></div>
             <div class="status" id="saveStatus"></div>
         </section>
     </main>
 
     <script>
         const STORAGE_KEY = 'bnaStudentAccessCode';
+        const LANGUAGE_KEY = 'bnaStudentGoalBoardLanguage';
+        const FILTERS = ['today', 'upcoming', 'waiting', 'done'];
         let accessCode = new URLSearchParams(window.location.search).get('code') || localStorage.getItem(STORAGE_KEY) || '';
+        let language = localStorage.getItem(LANGUAGE_KEY) || 'en';
+        let currentFilter = 'today';
         let portalData = null;
         let saving = false;
+
+        const labels = {
+            en: {
+                title: 'Student Goal Board',
+                intro: 'Open your private link, review your Torah progress, and work through your goals honestly.',
+                portalIntro: 'Your Torah progress is read-only. Your own goals are below it.',
+                privateAccess: 'Private Access',
+                enterCode: 'Enter your Goal Board code',
+                accessHelp: 'Use the private link your rebbi gave you. This page only opens your own board.',
+                accessCode: 'Access code',
+                codePlaceholder: 'Paste code here',
+                openGoals: 'Open My Board',
+                clearCode: 'Use a different link',
+                opening: 'Opening your board...',
+                torahTitle: 'Torah Trip Progress',
+                torahText: 'This shows only the progress you are allowed to see: trip progress, today, and morning status.',
+                trip: 'Trip',
+                today: 'Today',
+                morning: 'Morning',
+                morningDone: 'Done',
+                morningHalf: 'Half',
+                morningNotYet: 'Not Yet',
+                boardTitle: 'My Goal Board',
+                goal: 'Goal',
+                urgency: 'Urgency',
+                category: 'Category',
+                due: 'Due',
+                bedtime: 'In bed by',
+                wakeTime: 'Out of bed by',
+                chosenRule: 'My chosen consequence / rule',
+                accessMinutes: 'Access minutes after checkoff',
+                missedState: 'If I miss it',
+                goalPlaceholder: 'Add a goal',
+                categoryPlaceholder: 'Routine, learning, project',
+                chosenRulePlaceholder: 'Example: tablet opens after honest checkoff; if I miss it, I stay accountability-only and reset my plan.',
+                noGoals: 'No goals in this lane.',
+                details: 'Details',
+                checkIn: 'Check-in note',
+                saveNote: 'Save Note',
+                notYet: 'Not Yet',
+                half: 'Half',
+                done: 'Done',
+                saved: 'Saved.',
+                saving: 'Saving...',
+                waiting: 'Waiting',
+                upcoming: 'Upcoming',
+                source: 'Source',
+                recovery: 'Recovery',
+                classroom: 'Classroom',
+                reflection: 'Reflection',
+                progress: 'progress',
+                required: 'Review required',
+                goals: 'goals',
+                goalSingular: 'goal',
+                tabletAccess: 'Tablet access',
+                accessUntil: 'until',
+                assignedOnly: 'Goals, consequences, bedtime rules, and tablet rules are assigned by the rebbi/admin. This page is only for honest checkoff, a short note, and read-only progress/status.',
+            },
+            he: {
+                title: 'לוח מטרות תלמיד',
+                intro: 'פתח את הקישור הפרטי שלך, בדוק את התקדמות התורה, ועבוד על המטרות שלך ביושר.',
+                portalIntro: 'התקדמות התורה לקריאה בלבד. המטרות שלך נמצאות למטה.',
+                privateAccess: 'גישה פרטית',
+                enterCode: 'הכנס קוד ללוח המטרות',
+                accessHelp: 'השתמש בקישור הפרטי שקיבלת מהרב. הדף פותח רק את הלוח שלך.',
+                accessCode: 'קוד גישה',
+                codePlaceholder: 'הדבק קוד כאן',
+                openGoals: 'פתח את הלוח שלי',
+                clearCode: 'השתמש בקישור אחר',
+                opening: 'פותח את הלוח...',
+                torahTitle: 'התקדמות מסע התורה',
+                torahText: 'מוצגת רק ההתקדמות שמותר לך לראות: מסע, היום, ומצב בוקר.',
+                trip: 'מסע',
+                today: 'היום',
+                morning: 'בוקר',
+                morningDone: 'בוצע',
+                morningHalf: 'חצי',
+                morningNotYet: 'עוד לא',
+                boardTitle: 'לוח המטרות שלי',
+                goal: 'מטרה',
+                urgency: 'דחיפות',
+                category: 'קטגוריה',
+                due: 'זמן יעד',
+                goalPlaceholder: 'הוסף מטרה',
+                categoryPlaceholder: 'שגרה, לימוד, פרויקט',
+                noGoals: 'אין מטרות במסלול הזה.',
+                details: 'פרטים',
+                checkIn: 'פתק בדיקה',
+                saveNote: 'שמור פתק',
+                notYet: 'עוד לא',
+                half: 'חצי',
+                done: 'בוצע',
+                saved: 'נשמר.',
+                saving: 'שומר...',
+                waiting: 'בהמתנה',
+                upcoming: 'עתידי',
+                source: 'מקור',
+                recovery: 'דרך חזרה',
+                classroom: 'כיתה',
+                reflection: 'מחשבה',
+                progress: 'התקדמות',
+                required: 'נדרש אישור',
+                goals: 'מטרות',
+                goalSingular: 'מטרה',
+            },
+        };
 
         const els = {
             pageTitle: document.getElementById('pageTitle'),
             pageIntro: document.getElementById('pageIntro'),
             clearCodeButton: document.getElementById('clearCodeButton'),
+            langEnButton: document.getElementById('langEnButton'),
+            langHeButton: document.getElementById('langHeButton'),
             loginPanel: document.getElementById('loginPanel'),
             codeForm: document.getElementById('codeForm'),
             accessCode: document.getElementById('accessCode'),
+            openGoalsButton: document.getElementById('openGoalsButton'),
             loginStatus: document.getElementById('loginStatus'),
             studentPanel: document.getElementById('studentPanel'),
             studentName: document.getElementById('studentName'),
             torahProgressFill: document.getElementById('torahProgressFill'),
-            torahMetric: document.getElementById('torahMetric'),
+            torahTripMetric: document.getElementById('torahTripMetric'),
+            torahTodayMetric: document.getElementById('torahTodayMetric'),
+            torahMorningMetric: document.getElementById('torahMorningMetric'),
             torahProgressText: document.getElementById('torahProgressText'),
+            torahTodayText: document.getElementById('torahTodayText'),
+            torahMorningText: document.getElementById('torahMorningText'),
+            deviceAccessStrip: document.getElementById('deviceAccessStrip'),
+            deviceAccessState: document.getElementById('deviceAccessState'),
+            deviceAccessText: document.getElementById('deviceAccessText'),
+            portalCommandGrid: document.getElementById('portalCommandGrid'),
+            studentReadonlyNote: document.getElementById('studentReadonlyNote'),
+            tripMetricLabel: document.getElementById('tripMetricLabel'),
+            todayMetricLabel: document.getElementById('todayMetricLabel'),
+            morningMetricLabel: document.getElementById('morningMetricLabel'),
             goalsSection: document.getElementById('goalsSection'),
             goalCount: document.getElementById('goalCount'),
+            goalFilters: document.getElementById('goalFilters'),
             goalGrid: document.getElementById('goalGrid'),
             saveStatus: document.getElementById('saveStatus'),
         };
+
+        function t(key) {
+            return labels[language]?.[key] || labels.en[key] || key;
+        }
 
         function escapeHtml(value) {
             return String(value ?? '')
@@ -434,6 +858,35 @@
 
         function roundedPercent(value) {
             return Math.max(0, Math.min(100, Math.round(asNumber(value, 0))));
+        }
+
+        function setProgressStyle(element, percent) {
+            element.style.setProperty('--progress', `${roundedPercent(percent)}%`);
+        }
+
+        function applyLanguage() {
+            language = language === 'he' ? 'he' : 'en';
+            localStorage.setItem(LANGUAGE_KEY, language);
+            document.documentElement.lang = language;
+            document.documentElement.dir = language === 'he' ? 'rtl' : 'ltr';
+            els.langEnButton.classList.toggle('active', language === 'en');
+            els.langHeButton.classList.toggle('active', language === 'he');
+            els.clearCodeButton.textContent = t('clearCode');
+            document.querySelector('#loginPanel .eyebrow').textContent = t('privateAccess');
+            document.querySelector('#loginPanel h2').textContent = t('enterCode');
+            document.querySelector('#loginPanel .small').textContent = t('accessHelp');
+            document.querySelector('label[for="accessCode"]').textContent = t('accessCode');
+            els.accessCode.placeholder = t('codePlaceholder');
+            els.openGoalsButton.textContent = t('openGoals');
+            document.querySelector('#studentPanel .eyebrow').textContent = t('torahTitle');
+            document.querySelector('#studentPanel .small').textContent = t('torahText');
+            els.tripMetricLabel.textContent = t('trip');
+            els.todayMetricLabel.textContent = t('today');
+            els.morningMetricLabel.textContent = t('morning');
+            document.querySelector('#goalsSection .section-title h2').textContent = t('boardTitle');
+            if (els.studentReadonlyNote) {
+                els.studentReadonlyNote.textContent = t('assignedOnly');
+            }
         }
 
         async function apiRequest(path, options = {}) {
@@ -462,18 +915,69 @@
         }
 
         function showLogin(message = '', isError = false) {
-            els.pageTitle.textContent = 'Student Checkoff';
-            els.pageIntro.textContent = 'Open your private link, review your goals, and mark what you completed honestly.';
+            applyLanguage();
+            els.pageTitle.textContent = t('title');
+            els.pageIntro.textContent = t('intro');
             els.loginPanel.classList.remove('hidden');
             els.studentPanel.classList.add('hidden');
             els.goalsSection.classList.add('hidden');
+            els.deviceAccessStrip.classList.add('hidden');
             els.clearCodeButton.classList.add('hidden');
             els.accessCode.value = accessCode || '';
             setLoginState(message, isError);
         }
 
-        function setProgressStyle(element, percent) {
-            element.style.setProperty('--progress', `${percent}%`);
+        function filterLabel(filter) {
+            return ({
+                today: t('today'),
+                upcoming: t('upcoming'),
+                waiting: t('waiting'),
+                done: t('done'),
+            })[filter] || filter;
+        }
+
+        function statusLabel(goal) {
+            if (goal.status === 'waiting') return t('waiting');
+            if (goal.status === 'done' || roundedPercent(goal.progress_percent) >= 100) return t('done');
+            if (goal.bucket === 'upcoming') return t('upcoming');
+            return t('today');
+        }
+
+        function urgencyLabel(urgency) {
+            return ({
+                urgent: language === 'he' ? 'דחוף' : 'Urgent',
+                today: t('today'),
+                this_week: language === 'he' ? 'השבוע' : 'This week',
+                low: language === 'he' ? 'נמוך' : 'Low',
+            })[urgency] || (language === 'he' ? 'השבוע' : 'This week');
+        }
+
+        function formatDue(value) {
+            if (!value) return '';
+            const date = new Date(value);
+            if (!Number.isFinite(date.getTime())) return '';
+            return date.toLocaleString(language === 'he' ? 'he-IL' : 'en-GB', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+            });
+        }
+
+        function goalCounts(goals) {
+            return FILTERS.reduce((counts, filter) => {
+                counts[filter] = goals.filter(goal => goal.bucket === filter).length;
+                return counts;
+            }, {});
+        }
+
+        function renderFilters(goals) {
+            const counts = goalCounts(goals);
+            els.goalFilters.innerHTML = FILTERS.map(filter => `
+                <button class="filter-tab ${currentFilter === filter ? 'active' : ''}" type="button" data-filter="${filter}">
+                    ${escapeHtml(filterLabel(filter))}${counts[filter] ? ` ${counts[filter]}` : ''}
+                </button>
+            `).join('');
         }
 
         function renderGoal(goal) {
@@ -487,50 +991,177 @@
             const unit = goal.goal_unit ? ` ${escapeHtml(goal.goal_unit)}` : '';
             const targetText = target !== null
                 ? `${actual !== null ? actual : Math.round((target * progress) / 100)}/${target}${unit}`
-                : `${progress}%`;
-            const status = progress >= 100 ? 'Done' : progress > 0 ? 'In progress' : 'Not yet';
+                : '';
+            const waiting = goal.status === 'waiting' || goal.approval_status === 'pending_review';
+            const due = formatDue(goal.due_at);
+            const classroom = goal.classroom?.youtube_url || goal.classroom?.alternate_link || '';
+            const recovery = goal.consequence?.recovery_path || '';
+            const agreement = goal.agreement || {};
+            const successAccess = goal.consequence?.success_device_access_state || '';
+            const successMinutes = goal.consequence?.success_duration_minutes || '';
+            const chosenConsequence = agreement.chosen_consequence || recovery || '';
 
             return `
-                <article class="goal-card">
+                <article class="goal-card ${escapeHtml(goal.bucket || '')}">
                     <div class="goal-heading">
-                        <h3>${escapeHtml(goal.title || 'Personal goal')}</h3>
-                        <span class="badge">${status}</span>
+                        <h3>${escapeHtml(goal.title || t('goal'))}</h3>
+                        <span class="badge">${escapeHtml(statusLabel(goal))}</span>
                     </div>
-                    ${goal.topic ? `<div class="goal-meta">${escapeHtml(goal.topic)}</div>` : ''}
+                    <div class="goal-badges">
+                        <span class="badge">${escapeHtml(goal.source_label || goal.source || 'Admin')}</span>
+                        <span class="badge">${escapeHtml(urgencyLabel(goal.urgency))}</span>
+                        ${goal.category ? `<span class="badge">${escapeHtml(goal.category)}</span>` : ''}
+                        ${waiting ? `<span class="badge">${escapeHtml(t('required'))}</span>` : ''}
+                    </div>
+                    ${due ? `<div class="goal-meta">${escapeHtml(t('due'))}: ${escapeHtml(due)}</div>` : ''}
+                    ${agreement.bedtime_time || agreement.wake_time ? `<div class="goal-meta"><strong>Agreement:</strong> in bed by ${escapeHtml(agreement.bedtime_time || '--')}; out of bed by ${escapeHtml(agreement.wake_time || '--')}.</div>` : ''}
+                    ${agreement.student_commitment ? `<div class="goal-meta">${escapeHtml(agreement.student_commitment)}</div>` : ''}
                     <div class="progress-track">
                         <div class="progress-fill" style="--progress:${progress}%"></div>
                     </div>
-                    <div class="goal-meta"><strong>${progress}%</strong> complete${targetText ? ` - ${targetText}` : ''}</div>
+                    <div class="goal-meta"><strong>${progress}%</strong> ${escapeHtml(t('progress'))}${targetText ? ` - ${targetText}` : ''}</div>
+                    ${successAccess ? `<div class="goal-meta"><strong>After honest checkoff:</strong> tablet access opens${successMinutes ? ` for ${Number(successMinutes)} minutes` : ''}.</div>` : ''}
+                    ${chosenConsequence ? `<div class="goal-meta"><strong>Chosen rule:</strong> ${escapeHtml(chosenConsequence)}</div>` : ''}
+                    ${goal.student_summary ? `<div class="goal-meta">${escapeHtml(goal.student_summary)}</div>` : ''}
+                    <details class="goal-details">
+                        <summary>${escapeHtml(t('details'))}</summary>
+                        ${Array.isArray(goal.checklist) && goal.checklist.length ? `<ul class="goal-meta">${goal.checklist.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>` : ''}
+                        ${classroom ? `<div class="goal-meta">${escapeHtml(t('classroom'))}: <span style="word-break:break-all;">${escapeHtml(classroom)}</span></div>` : ''}
+                        ${recovery ? `<div class="goal-meta">${escapeHtml(t('recovery'))}: ${escapeHtml(recovery)}</div>` : ''}
+                        ${goal.reflection_note ? `<div class="goal-meta">${escapeHtml(t('reflection'))}: ${escapeHtml(goal.reflection_note)}</div>` : ''}
+                        <div class="reflection-box">
+                            <label for="reflection-${Number(goal.id)}">${escapeHtml(t('checkIn'))}</label>
+                            <textarea id="reflection-${Number(goal.id)}" data-reflection-input="${Number(goal.id)}">${escapeHtml(goal.reflection_note || '')}</textarea>
+                            <button class="ghost" type="button" data-reflection-id="${Number(goal.id)}">${escapeHtml(t('saveNote'))}</button>
+                        </div>
+                    </details>
                     <div class="actions">
-                        <button class="secondary" type="button" data-goal-id="${Number(goal.id)}" data-progress="0">Not Yet</button>
-                        <button class="blue" type="button" data-goal-id="${Number(goal.id)}" data-progress="50">Half</button>
-                        <button class="gold" type="button" data-goal-id="${Number(goal.id)}" data-progress="100">Done</button>
+                        <button class="secondary" type="button" data-goal-id="${Number(goal.id)}" data-progress="0" ${waiting ? 'disabled' : ''}>${escapeHtml(t('notYet'))}</button>
+                        <button class="blue" type="button" data-goal-id="${Number(goal.id)}" data-progress="50" ${waiting ? 'disabled' : ''}>${escapeHtml(t('half'))}</button>
+                        <button class="gold" type="button" data-goal-id="${Number(goal.id)}" data-progress="100">${escapeHtml(t('done'))}</button>
                     </div>
+                </article>
+            `;
+        }
+
+        function formatAccessTime(value) {
+            if (!value) return '';
+            const date = new Date(value);
+            if (!Number.isFinite(date.getTime())) return '';
+            return date.toLocaleString('en-GB', {
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+            });
+        }
+
+        function renderDeviceAccessSummary(access) {
+            const count = Number(access?.device_count || 0);
+            if (!access || count <= 0 || access.status === 'not_configured') {
+                els.deviceAccessStrip.classList.add('hidden');
+                return;
+            }
+            const statusLabel = access.status_label || String(access.status || '').replace(/_/g, ' ');
+            const expires = formatAccessTime(access.expires_at);
+            els.deviceAccessState.textContent = statusLabel;
+            els.deviceAccessText.textContent = `${t('tabletAccess')}: ${statusLabel}${expires ? ` ${t('accessUntil')} ${expires}` : ''}.`;
+            els.deviceAccessStrip.classList.remove('hidden');
+        }
+
+        function activePortalGoal(goals) {
+            return goals.find(goal => goal.bucket === 'today')
+                || goals.find(goal => goal.bucket === 'waiting')
+                || goals.find(goal => goal.bucket === 'upcoming')
+                || goals[0]
+                || null;
+        }
+
+        function renderPortalCommandGrid(data, goals) {
+            const activeGoal = activePortalGoal(goals);
+            const agreement = activeGoal?.agreement || {};
+            const consequence = activeGoal?.consequence || {};
+            const access = data?.device_access || {};
+            const torahPercent = roundedPercent(data?.torah?.public_trip_percentage);
+            const todayPercent = roundedPercent(data?.torah?.daily_completion_percentage);
+            const due = formatDue(activeGoal?.due_at);
+            const status = activeGoal ? statusLabel(activeGoal) : 'No goal yet';
+            const accessLabel = access?.status_label || String(access?.status || 'Accountability only').replace(/_/g, ' ');
+            const accessMinutes = consequence?.success_duration_minutes ? `${Number(consequence.success_duration_minutes)} minutes` : 'Set by your rule';
+            const agreementText = agreement.bedtime_time || agreement.wake_time
+                ? `Bed ${agreement.bedtime_time || '--'} / up ${agreement.wake_time || '--'}`
+                : (activeGoal?.title || 'Choose or review your agreement');
+            const checkoffText = activeGoal
+                ? `${status}${due ? ` by ${due}` : ''}`
+                : 'Ask your rebbi to add today\'s agreement.';
+
+            return `
+                <article class="portal-command-card">
+                    <div>
+                        <div class="portal-command-label">My Agreement</div>
+                        <strong>${escapeHtml(agreementText)}</strong>
+                    </div>
+                    <span>${escapeHtml(agreement.student_commitment || agreement.chosen_consequence || 'This is the promise you are checking off honestly.')}</span>
+                </article>
+                <article class="portal-command-card">
+                    <div>
+                        <div class="portal-command-label">Check Off</div>
+                        <strong>${escapeHtml(checkoffText)}</strong>
+                    </div>
+                    <span>Use the buttons below when you are ready.</span>
+                </article>
+                <article class="portal-command-card">
+                    <div>
+                        <div class="portal-command-label">Tablet Access</div>
+                        <strong>${escapeHtml(accessLabel)}</strong>
+                    </div>
+                    <span>After a successful checkoff, access opens for ${escapeHtml(accessMinutes)} when a tablet is configured.</span>
+                </article>
+                <article class="portal-command-card">
+                    <div>
+                        <div class="portal-command-label">Torah / Trip</div>
+                        <strong>${torahPercent}% trip</strong>
+                    </div>
+                    <span>Today is ${todayPercent}%. Daily success adds one unit toward the full trip goal.</span>
                 </article>
             `;
         }
 
         function renderPortal(data) {
             portalData = data;
+            applyLanguage();
             const studentName = data?.student?.name || 'Student';
             const torahPercent = roundedPercent(data?.torah?.public_trip_percentage);
+            const todayPercent = roundedPercent(data?.torah?.daily_completion_percentage);
+            const morningStatus = data?.torah?.morning_goal_status || 'not_yet';
+            const morningPercent = morningStatus === 'done' ? 100 : morningStatus === 'in_progress' ? 50 : 0;
             const goals = Array.isArray(data?.goals) ? data.goals : [];
+            const visibleGoals = goals.filter(goal => goal.bucket === currentFilter);
 
             els.loginPanel.classList.add('hidden');
             els.studentPanel.classList.remove('hidden');
             els.goalsSection.classList.remove('hidden');
             els.clearCodeButton.classList.remove('hidden');
             els.pageTitle.textContent = studentName;
-            els.pageIntro.textContent = 'Mark your personal goals honestly. Progress is for accountability, not pressure.';
+            els.pageIntro.textContent = t('portalIntro');
             els.studentName.textContent = studentName;
             els.torahProgressText.textContent = `${torahPercent}%`;
-            setProgressStyle(els.torahMetric, torahPercent);
+            els.torahTodayText.textContent = `${todayPercent}%`;
+            els.torahMorningText.textContent = morningStatus === 'done'
+                ? t('morningDone')
+                : morningStatus === 'in_progress' ? t('morningHalf') : t('morningNotYet');
+            setProgressStyle(els.torahTripMetric, torahPercent);
+            setProgressStyle(els.torahTodayMetric, todayPercent);
+            setProgressStyle(els.torahMorningMetric, morningPercent);
             setProgressStyle(els.torahProgressFill, torahPercent);
-            els.goalCount.textContent = `${goals.length} ${goals.length === 1 ? 'goal' : 'goals'}`;
+            renderDeviceAccessSummary(data?.device_access);
+            els.portalCommandGrid.innerHTML = renderPortalCommandGrid(data, goals);
+            els.goalCount.textContent = `${goals.length} ${goals.length === 1 ? t('goalSingular') : t('goals')}`;
+            renderFilters(goals);
 
-            els.goalGrid.innerHTML = goals.length
-                ? goals.map(renderGoal).join('')
-                : '<div class="panel empty">No personal goals are ready for checkoff yet.</div>';
+            els.goalGrid.innerHTML = visibleGoals.length
+                ? visibleGoals.map(renderGoal).join('')
+                : `<div class="panel empty">${escapeHtml(t('noGoals'))}</div>`;
         }
 
         async function loadPortal(code = accessCode) {
@@ -542,7 +1173,7 @@
 
             accessCode = trimmedCode;
             localStorage.setItem(STORAGE_KEY, accessCode);
-            setLoginState('Opening your goals...');
+            setLoginState(t('opening'));
 
             try {
                 const data = await apiRequest(`/api/student-portal?code=${encodeURIComponent(accessCode)}`);
@@ -553,30 +1184,42 @@
             }
         }
 
-        async function updateGoal(goalId, progressPercent) {
+        async function refreshPortal() {
+            const data = await apiRequest(`/api/student-portal?code=${encodeURIComponent(accessCode)}`);
+            renderPortal(data);
+        }
+
+        async function updateGoal(goalId, progressPercent, reflectionNote = null) {
             if (saving) return;
             saving = true;
-            setSaveState('Saving...');
-            document.querySelectorAll('[data-goal-id]').forEach(button => {
+            setSaveState(t('saving'));
+            document.querySelectorAll('[data-goal-id], [data-reflection-id]').forEach(button => {
                 button.disabled = true;
             });
 
             try {
-                await apiRequest(`/api/student-portal/goals/${encodeURIComponent(goalId)}/checkoff`, {
+                const result = await apiRequest(`/api/student-portal/goals/${encodeURIComponent(goalId)}/checkoff`, {
                     method: 'POST',
                     body: JSON.stringify({
                         access_code: accessCode,
                         progress_percent: progressPercent,
+                        ...(reflectionNote !== null ? { reflection_note: reflectionNote } : {}),
                     }),
                 });
-                const data = await apiRequest(`/api/student-portal?code=${encodeURIComponent(accessCode)}`);
-                renderPortal(data);
-                setSaveState('Saved.');
+                await refreshPortal();
+                const autoAccess = result?.automatic_device_access;
+                if (autoAccess?.status === 'applied') {
+                    setSaveState(`Saved. Tablet access opened for ${Number(autoAccess.duration_minutes || 0) || 60} minutes.`);
+                } else if (autoAccess?.status === 'no_device_configured') {
+                    setSaveState('Saved. No tablet is configured yet, so access could not open automatically.', true);
+                } else {
+                    setSaveState(t('saved'));
+                }
             } catch (error) {
                 setSaveState(error.message || 'Could not save this checkoff.', true);
             } finally {
                 saving = false;
-                document.querySelectorAll('[data-goal-id]').forEach(button => {
+                document.querySelectorAll('[data-goal-id], [data-reflection-id]').forEach(button => {
                     button.disabled = false;
                 });
             }
@@ -597,12 +1240,37 @@
             showLogin();
         });
 
-        document.addEventListener('click', (event) => {
-            const button = event.target.closest('[data-goal-id]');
-            if (!button) return;
-            updateGoal(button.dataset.goalId, Number(button.dataset.progress));
+        [els.langEnButton, els.langHeButton].forEach(button => {
+            button.addEventListener('click', () => {
+                language = button.dataset.lang;
+                if (portalData) renderPortal(portalData);
+                else showLogin();
+            });
         });
 
+        els.goalFilters.addEventListener('click', (event) => {
+            const button = event.target.closest('[data-filter]');
+            if (!button) return;
+            currentFilter = FILTERS.includes(button.dataset.filter) ? button.dataset.filter : 'today';
+            if (portalData) renderPortal(portalData);
+        });
+
+        document.addEventListener('click', (event) => {
+            const progressButton = event.target.closest('[data-goal-id]');
+            if (progressButton) {
+                updateGoal(progressButton.dataset.goalId, Number(progressButton.dataset.progress));
+                return;
+            }
+            const reflectionButton = event.target.closest('[data-reflection-id]');
+            if (reflectionButton) {
+                const goalId = reflectionButton.dataset.reflectionId;
+                const goal = (portalData?.goals || []).find(item => String(item.id) === String(goalId));
+                const note = document.querySelector(`[data-reflection-input="${goalId}"]`)?.value || '';
+                updateGoal(goalId, roundedPercent(goal?.progress_percent), note);
+            }
+        });
+
+        applyLanguage();
         loadPortal();
     </script>
 </body>

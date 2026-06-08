@@ -17,16 +17,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '..');
 const runtimeDir = path.join(repoRoot, '.runtime');
-const logFile = path.join(runtimeDir, 'telegram-kimi-bridge.log');
 const envLocalPath = path.join(repoRoot, '.env.local');
 const academyTokenFile = path.join(repoRoot, '.secrets', 'telegram-bot-token.txt');
+const rabbiElieTokenFile = path.join(repoRoot, '.secrets', 'telegram-rabbi-elie-scheller-bot-token.txt');
 const googleOAuthClientFile = path.join(repoRoot, '.secrets', 'google-oauth-client.json');
 const googleRefreshTokenFile = path.join(repoRoot, '.secrets', 'google-refresh-token.txt');
 const googleDrivePipelineFile = path.join(repoRoot, '.secrets', 'google-drive-pipeline.json');
-const lockFile = path.join(runtimeDir, 'telegram-kimi-bridge.lock');
-const pendingDecisionsFile = path.join(runtimeDir, 'telegram-pending-decisions.json');
-const telegramChatModesFile = path.join(runtimeDir, 'telegram-chat-modes.json');
-const telegramTaskWatchStateFile = path.join(runtimeDir, 'telegram-task-watch-state.json');
 const mediaInboxDir = path.join(repoRoot, 'media-inbox');
 const mediaDropDir = path.join(repoRoot, 'media-drop');
 const mediaDropInboxDir = path.join(mediaDropDir, 'inbox');
@@ -36,6 +32,65 @@ const opsPendingDir = path.join(repoRoot, 'ops', 'pending');
 const opsCompletedDir = path.join(repoRoot, 'ops', 'completed');
 const agentTaskLedgerFile = path.join(repoRoot, 'ops', 'agent-task-ledger.jsonl');
 const agentChangelogFile = path.join(repoRoot, 'ops', 'agent-changelog.md');
+const BNA_BRIDGE_PROFILE = 'bna';
+const RABBI_ELIE_BRIDGE_PROFILE = 'rabbi-elie-scheller';
+const ONE_TIME_PROJECT_KEY = 'one_time_mishnah_class';
+const RABBI_ELIE_AGENT_FILES = [
+  'agents/rabbi-elie-scheller/AGENTS.md',
+  'agents/rabbi-elie-scheller/MEMORY.md',
+  'agents/rabbi-elie-scheller/SETUP.md',
+];
+
+function normalizeBridgeProfile(value) {
+  const normalized = String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/_/g, '-');
+  if (['rabbi-elie', 'rabbi-elie-scheller', 'elie-scheller', 'one-time-rabbi'].includes(normalized)) {
+    return RABBI_ELIE_BRIDGE_PROFILE;
+  }
+  return BNA_BRIDGE_PROFILE;
+}
+
+function cliOptionValue(name) {
+  const args = process.argv.slice(2);
+  const index = args.findIndex((arg) => arg === name || arg.startsWith(`${name}=`));
+  if (index < 0) return '';
+  const current = args[index];
+  if (current.includes('=')) return current.split('=').slice(1).join('=');
+  return args[index + 1] || '';
+}
+
+function commandArgs() {
+  const args = process.argv.slice(2);
+  const result = [];
+  for (let index = 0; index < args.length; index += 1) {
+    const arg = args[index];
+    if (arg === '--profile') {
+      index += 1;
+      continue;
+    }
+    if (arg.startsWith('--profile=')) continue;
+    result.push(arg);
+  }
+  return result;
+}
+
+const bridgeProfile = normalizeBridgeProfile(
+  cliOptionValue('--profile') || process.env.TELEGRAM_BRIDGE_PROFILE || BNA_BRIDGE_PROFILE
+);
+
+function runtimeFileForProfile(baseName, extension) {
+  const suffix = bridgeProfile === BNA_BRIDGE_PROFILE ? '' : `-${bridgeProfile}`;
+  return path.join(runtimeDir, `${baseName}${suffix}.${extension}`);
+}
+
+const logFile = runtimeFileForProfile('telegram-kimi-bridge', 'log');
+const lockFile = runtimeFileForProfile('telegram-kimi-bridge', 'lock');
+const pendingDecisionsFile = runtimeFileForProfile('telegram-pending-decisions', 'json');
+const telegramChatModesFile = runtimeFileForProfile('telegram-chat-modes', 'json');
+const telegramTaskWatchStateFile = runtimeFileForProfile('telegram-task-watch-state', 'json');
+const telegramMultipartSpecFile = runtimeFileForProfile('telegram-multipart-specs', 'json');
 
 fs.mkdirSync(runtimeDir, { recursive: true });
 fs.mkdirSync(mediaInboxDir, { recursive: true });
@@ -47,6 +102,7 @@ fs.mkdirSync(opsCompletedDir, { recursive: true });
 const agentReplyQueue = [];
 let agentReplyRunning = false;
 let agentReplySequence = 0;
+let activeTelegramCodexEnabled = true;
 
 function appendAgentTaskLedger(entry) {
   const payload = {
@@ -162,30 +218,59 @@ function loadConfig() {
     : '';
 
   const env = { ...fromFile, ...process.env };
-  const botToken =
-    academyToken ||
-    env.TELEGRAM_BOT_TOKEN ||
-    env.TELEGRAM_BOT_TOKEN_SHLOIMIE ||
-    env.TELEGRAM_BOT_TOKEN_AHUVA ||
-    '';
-  const allowedChatIds = [
-    env.TELEGRAM_CHAT_ID_BNA,
-    env.TELEGRAM_CHAT_ID,
-    env.TELEGRAM_CHAT_ID_SHLOIMIE,
-    env.TELEGRAM_CHAT_ID_AHUVA,
-  ]
+  const rabbiElieToken = fs.existsSync(rabbiElieTokenFile)
+    ? fs.readFileSync(rabbiElieTokenFile, 'utf8').trim()
+    : '';
+  const isRabbiElieProfile = bridgeProfile === RABBI_ELIE_BRIDGE_PROFILE;
+  const botToken = isRabbiElieProfile
+    ? (
+        rabbiElieToken ||
+        env.TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER ||
+        env.RABBI_ELIE_SCHELLER_TELEGRAM_BOT_TOKEN ||
+        ''
+      )
+    : (
+        academyToken ||
+        env.TELEGRAM_BOT_TOKEN ||
+        env.TELEGRAM_BOT_TOKEN_SHLOIMIE ||
+        env.TELEGRAM_BOT_TOKEN_AHUVA ||
+        ''
+      );
+  const allowedChatIds = (isRabbiElieProfile
+    ? [
+        env.TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER,
+        env.RABBI_ELIE_SCHELLER_TELEGRAM_CHAT_ID,
+        env.ONE_TIME_TELEGRAM_CHAT_ID,
+      ]
+    : [
+        env.TELEGRAM_CHAT_ID_BNA,
+        env.TELEGRAM_CHAT_ID,
+        env.TELEGRAM_CHAT_ID_SHLOIMIE,
+        env.TELEGRAM_CHAT_ID_AHUVA,
+      ])
     .filter(Boolean)
     .map((value) => String(value).trim());
   const requestedPrimaryAgent = String(env.TELEGRAM_PRIMARY_AGENT || 'codex').trim().toLowerCase();
   const primaryAgent = requestedPrimaryAgent === 'kimi' ? 'codex' : (requestedPrimaryAgent || 'codex');
+  const scopedOpsUsername = env.ONE_TIME_OPS_USERNAME || env.RABBI_ELIE_SCHELLER_OPS_USERNAME || '';
+  const scopedOpsPassword = env.ONE_TIME_OPS_PASSWORD || env.RABBI_ELIE_SCHELLER_OPS_PASSWORD || '';
+  const codexEnabled = isRabbiElieProfile
+    ? String(env.RABBI_ELIE_SCHELLER_CODEX_ENABLED || 'false').toLowerCase() === 'true'
+    : true;
 
   return {
+    bridgeProfile,
+    bridgeProfileLabel: isRabbiElieProfile ? 'Rabbi Elie Scheller / One Time' : 'BNA academy',
+    scopedProjectKey: isRabbiElieProfile ? ONE_TIME_PROJECT_KEY : '',
+    agentDisplayName: isRabbiElieProfile ? 'Rabbi Elie Scheller' : 'Shloimie',
+    agentContextFiles: isRabbiElieProfile ? RABBI_ELIE_AGENT_FILES : [],
+    codexEnabled,
     botToken,
     academyToken,
     allowedChatIds,
     appUrl: env.BNA_APP_URL || env.NEXT_PUBLIC_APP_URL || 'https://bneineviimacademy.org',
-    opsUsername: env.OPS_USERNAME || '',
-    opsPassword: env.OPS_PASSWORD || '',
+    opsUsername: isRabbiElieProfile ? scopedOpsUsername : env.OPS_USERNAME || '',
+    opsPassword: isRabbiElieProfile ? scopedOpsPassword : env.OPS_PASSWORD || '',
     primaryAgent,
     codexCommand: env.CODEX_CLI_COMMAND || 'codex',
     codexModel: env.CODEX_CLI_MODEL || '',
@@ -199,6 +284,7 @@ function loadConfig() {
     openaiApiKey: openaiSecret || env.OPENAI_API_KEY || '',
     openaiBaseUrl: env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
     openaiSummaryModel: env.OPENAI_MODEL || 'gpt-4.1-mini',
+    openaiResearchModel: env.OPENAI_RESEARCH_MODEL || env.OPENAI_MODEL || 'gpt-4.1-mini',
     openaiTranscriptionModel: env.OPENAI_TRANSCRIPTION_MODEL || 'gpt-4o-mini-transcribe',
     openaiRequestTimeoutMs: Number(env.OPENAI_REQUEST_TIMEOUT_MS || 10 * 60 * 1000),
     telegramDefaultReplyMode: normalizeTelegramReplyMode(
@@ -340,14 +426,76 @@ function buildOpenAiCapabilityContext() {
   return [
     'OpenAI Telegram sidekick capability contract:',
     '- OpenAI is the fast conversational/operator sidekick for brainstorming, planning, tone/content drafting, system navigation, and reading summarized live context.',
-    '- OpenAI receives repo context from AGENTS.md, MEMORY.md, TASKS.md, SYSTEM-STATE.md, newest tasks-pending briefs, today memory, shared task ledger, and agent changelog.',
+    '- OpenAI receives repo context from AGENTS.md, MEMORY.md, TASKS.md, SYSTEM-STATE.md, internal Codex handoff notes, today memory, shared task ledger, and agent changelog.',
     '- OpenAI receives live app snapshots for system/navigation/task/student/content/accounting questions and Drive snapshots for Drive/upload/intake questions.',
+    '- For Operations/dashboard questions, the live app snapshot is the primary source of truth: sections, subtabs, visible buttons/actions, task lanes, task records/comments, students, content, contacts, accounting, devices, agent fleet status, and recent updates.',
+    '- If the operator asks to order, sort, audit, or brainstorm items in a section, answer from the live app snapshot first. Do not answer from transcripts unless the operator explicitly asks for transcript/class-content topics.',
     '- Safe writes already happen before the model reply through bridge capture: Tasks, Student accountability, Accounting/payment intake, Content/media jobs, Decisions, saved Content draft edits, and Codex work queue records.',
     '- Content edits such as revising a newsletter, Facebook post, WhatsApp update, or blog draft should edit the saved Content output directly through OpenAI API first, not be routed as coding work.',
     '- Code edits, filesystem edits, database migrations, deployments, tests, and destructive/high-risk operations must route to Codex as a tracked task/job, not be claimed as completed by OpenAI.',
     '- When OpenAI identifies implementation work, it should say it is queued/assigned to Codex and rely on the bridge task queue/ledger/changelog for synchronization.',
     '- Every meaningful action should be synchronized through durable shared files or app records: memory/YYYY-MM-DD.md, TASKS.md, ops/agent-task-ledger.jsonl, ops/agent-changelog.md, tasks-pending/*.md, and app task records.',
     '- Do not expose secrets, API keys, raw credentials, private access codes, or full raw transcripts unless the operator explicitly asks and the bridge provided them.',
+  ].join('\n');
+}
+
+function isScopedProjectBot(config = {}) {
+  return Boolean(config.scopedProjectKey);
+}
+
+function buildScopedAgentContext(config = {}, maxCharsPerFile = 2400) {
+  const files = Array.isArray(config.agentContextFiles) ? config.agentContextFiles : [];
+  if (!files.length) return '';
+  return [
+    `Scoped agent profile: ${config.bridgeProfileLabel || config.bridgeProfile || 'project bot'}`,
+    `Scoped project key: ${config.scopedProjectKey || 'none'}`,
+    '',
+    readContextFiles(files, maxCharsPerFile),
+  ].filter(Boolean).join('\n');
+}
+
+function buildApiSystemInstructions(config = {}) {
+  if (isScopedProjectBot(config)) {
+    return [
+      'You are Rabbi Elie Scheller\'s scoped One Time Mishnah Class Telegram sidekick.',
+      'Answer using ONLY the repo/app context provided by the user message.',
+      'Keep the reply practical, organized, and concise.',
+      'Use ASCII characters only in the final reply.',
+      'Your scope is One Time Mishnah Class tasks, comments, brainstorming, shiur ideas, source-sheet work, Torah class prep, marketing/community/GHL setup planning, and decisions inside that project.',
+      'Do not expose or discuss BNA private Students, Accounting, Devices, student accountability, broad content pipelines, credentials, private access codes, or operator-only Changelog details.',
+      'If asked for out-of-scope BNA private data, say this bot is scoped to One Time Mishnah Class and suggest asking Shloimie through the academy bot.',
+      'Usually summarize and ask before creating tasks unless the message explicitly says to create, add, file, assign, or comment on a task.',
+      'When a task should be created, ask for or infer the useful fields: category, assignee, urgency, decision required, and any context.',
+      'Allowed assignees are Rabbi Elie Scheller, Shloimie, and Unassigned.',
+      'Allowed One Time categories are Marketing, Content, Technology, Admin, Accounting, GHL Setup, Community, General, Torah Class Prep, Source Sheets, and Shiur Ideas.',
+      'Codex/repo editing is disabled for this scoped bot unless Shloimie explicitly enables it later.',
+      'When a decision is needed, give 2-3 options formatted exactly like "Option A: label", "Option B: label", and "Option C: label" so Telegram can create buttons.',
+      'Do not ask unnecessary questions when a concise answer or next step is clear.',
+    ].join('\n');
+  }
+
+  return [
+    'You are the active BNA Telegram sidekick for this repository.',
+    'Answer using ONLY the repo context provided by the user message.',
+    'Keep the reply practical and concise.',
+    'Use ASCII characters only in the final reply.',
+    'If the message contains a ramble, break it into the clearest next tasks.',
+    'If the operator says "build everything", choose the order from TASKS.md and the newest tasks-pending handoffs, start executing, and do not ask for ordering confirmation unless there is a real blocker or product decision.',
+    'Use the BNA lanes Tasks, Students, Content, Contacts, and Accounting. Do not use the old Pipeline, Signups, Billing, or Ramble tab language.',
+    'Use task language like Decisions, My Tasks, Changelog, and Done. Codex work belongs in Changelog, not in Shloimie personal tasks.',
+    'When a live Operations snapshot is included, treat it as the primary source for questions about sections, buttons, tasks, ordering, status, pending/queued work, accountability, payments, contacts, content jobs, and system updates.',
+    'If the operator asks about logistics, scheduling, tasks, dashboard sections, or what is waiting, answer from the live app/system snapshot. Do not switch to transcript/class-topic inventory unless the operator explicitly asks for transcript topics, class content, or what was learned.',
+    'If asked to order or audit a dashboard section, list the relevant live items with IDs/statuses and recommend an order. If the snapshot is incomplete, say exactly which endpoint or section is missing instead of guessing.',
+    'Only assign work to Shloimie or Codex. Treat Kimi as a fallback provider or legacy alias, not the active worker.',
+    'Telegram should feel like natural conversation first. Do not announce background queues or Codex job mechanics; mention capture only when a real task, student note, payment item, content item, or decision was created or needs action.',
+    'Strategy, product, research, and "why is the system behaving this way" questions should be answered directly first, with recommendations and tradeoffs. Do not turn them into Codex tasks unless the operator asks to build the fix or the needed implementation is obvious.',
+    'Do not surprise the operator with random questions. If you see a useful recommendation from the current system state, label it as a suggestion and explain why it matters.',
+    'When a decision is needed, give 2-3 options formatted exactly like "Option A: label", "Option B: label", and "Option C: label" so Telegram can create buttons.',
+    'Do not ask format-option questions for transcript/topic/content drafting requests. If the operator asks for topics, a transcript summary, a newsletter, or a revised post, choose the most useful default and return the actual text in chat.',
+    'Avoid vague headings like "Next" by itself. Use Captured, Already filed, Queued work, and Blocked only if blocked.',
+    'If the operator references recent work by phrase, such as "the image slider", first use SYSTEM-STATE.md and the newest tasks-pending handoff before asking what they mean.',
+    'If the live snapshot contains a task that was just auto-captured from the same operator message, do not make that capture the main answer unless the operator asked to create or file a task. Answer the actual question first.',
+    'If the operator asks why a Telegram reply was cut off, malformed, or missing, use only the recent Telegram memory included below. Say clearly when OpenAI cannot inspect delivery logs and that Codex must inspect the bridge/logs for a real diagnosis.',
   ].join('\n');
 }
 
@@ -386,6 +534,139 @@ function appendMemoryEntry(role, text, metadata = {}) {
 
   fs.mkdirSync(path.dirname(memoryPath), { recursive: true });
   fs.appendFileSync(memoryPath, `${lines.join('\n')}\n`);
+}
+
+function readMultipartSpecState() {
+  try {
+    if (!fs.existsSync(telegramMultipartSpecFile)) return {};
+    const raw = fs.readFileSync(telegramMultipartSpecFile, 'utf8').trim();
+    return raw ? JSON.parse(raw) : {};
+  } catch {
+    return {};
+  }
+}
+
+function writeMultipartSpecState(state) {
+  fs.mkdirSync(path.dirname(telegramMultipartSpecFile), { recursive: true });
+  fs.writeFileSync(telegramMultipartSpecFile, JSON.stringify(state || {}, null, 2));
+}
+
+function looksLikeMultipartSpecChunk(text) {
+  const raw = String(text || '').trim();
+  if (!raw) return false;
+  const normalized = raw.toLowerCase();
+  const bulletCount = (raw.match(/(?:^|\n)\s*[-*]\s+/g) || []).length;
+  const numberedCount = (raw.match(/(?:^|\n)\s*\d+\.\s+/g) || []).length;
+  const sectionHeadingCount = (raw.match(/(?:^|\n)\s*[A-Z][A-Za-z /&-]{2,40}:\s*(?:\n|$)/g) || []).length;
+  return (
+    raw.length > 500 && (bulletCount >= 4 || numberedCount >= 3 || sectionHeadingCount >= 2) ||
+    /\b(content|contacts|accounting|students|tasks)\s*>\s*[a-z]/i.test(raw) ||
+    /\b(subtabs|acceptance checklist|visual direction|specific layout changes|student portal redesign|global ui rules|primary sidebar item)\b/i.test(raw) ||
+    /\b(left drawer|desktop sidebar|hamburger|compact cards|detail screen|detail drawer)\b/i.test(normalized)
+  );
+}
+
+function hasCodexImplementationTask(captureSummary = {}) {
+  return (captureSummary.tasks || [])
+    .filter((task) => task?.id)
+    .filter((task) => /codex|kimi|agent|system/i.test(String(task.assigned_to || '')));
+}
+
+function cleanupMultipartSpecState(state) {
+  const cutoff = Date.now() - 60 * 60 * 1000;
+  for (const [chatId, entry] of Object.entries(state || {})) {
+    const updatedAt = Date.parse(entry?.updated_at || '');
+    if (!updatedAt || updatedAt < cutoff || !Array.isArray(entry?.chunks) || !entry.chunks.length) {
+      delete state[chatId];
+    }
+  }
+  return state;
+}
+
+async function handleMultipartSpecContext(config, text, chatId, messageId, captureSummary = {}) {
+  if (isScopedProjectBot(config) || !config.opsUsername || !config.opsPassword) return captureSummary;
+
+  const isSpecChunk = looksLikeMultipartSpecChunk(text);
+  const codexTasks = hasCodexImplementationTask(captureSummary);
+  if (!isSpecChunk && !codexTasks.length) return captureSummary;
+
+  const state = cleanupMultipartSpecState(readMultipartSpecState());
+  const existing = state[chatId]?.chunks || [];
+  const currentChunk = isSpecChunk
+    ? [{
+        message_id: messageId,
+        recorded_at: new Date().toISOString(),
+        text: String(text || '').trim().slice(0, 8000),
+      }]
+    : [];
+
+  if (!codexTasks.length) {
+    const chunks = [...existing, ...currentChunk]
+      .filter((chunk) => chunk.text)
+      .slice(-8);
+    state[chatId] = {
+      updated_at: new Date().toISOString(),
+      chunks,
+    };
+    writeMultipartSpecState(state);
+    return captureSummary;
+  }
+
+  const chunks = [...existing, ...currentChunk]
+    .filter((chunk) => chunk.text)
+    .slice(-10);
+  delete state[chatId];
+  writeMultipartSpecState(state);
+  if (!chunks.length) return captureSummary;
+
+  const body = [
+    'Split Telegram spec context attached automatically.',
+    '',
+    'These were consecutive Telegram messages that looked like one implementation brief. Use them as acceptance criteria for this task.',
+    '',
+    ...chunks.map((chunk, index) => [
+      `Part ${index + 1} - Telegram message ${chunk.message_id}:`,
+      chunk.text,
+    ].join('\n')),
+  ].join('\n\n').slice(0, 30000);
+
+  for (const task of codexTasks) {
+    try {
+      await appRequest(config, 'POST', `/api/bna/tasks/${task.id}/comments`, {
+        body,
+        author: 'Telegram bridge',
+        visibility: 'internal',
+        source: 'telegram',
+        source_context: {
+          chat_id: chatId,
+          message_id: messageId,
+          grouped_message_ids: chunks.map((chunk) => chunk.message_id),
+          bridge_profile: config.bridgeProfile,
+          reason: 'multipart_spec_context',
+        },
+      });
+      appendAgentTaskLedger({
+        event: 'multipart_spec_context_attached',
+        source: 'telegram_bridge',
+        chat_id: chatId,
+        message_id: messageId,
+        task_id: task.id,
+        title: task.title,
+        notes: `Attached ${chunks.length} split Telegram spec chunk(s) to task #${task.id}.`,
+        stage: task.stage,
+        category: task.category,
+        assigned_to: task.assigned_to || null,
+      });
+    } catch (error) {
+      log(`Could not attach multipart spec context to task #${task.id}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  return {
+    ...captureSummary,
+    multipartSpecAttached: true,
+    multipartSpecChunks: chunks.length,
+  };
 }
 
 function sanitizeFileName(value) {
@@ -804,19 +1085,116 @@ async function buildDriveContextForMessage(text) {
 
 function shouldAttachAppContext(text) {
   const normalized = String(text || '').toLowerCase();
-  return /\b(system|dashboard|operations|task|tasks|queue|queued|in progress|done|changelog|students?|accountability|torah|learning progress|content|recording|transcript|blog|whatsapp|facebook|newsletter|payments?|accounting|signup|signups|green invoice|projects?|one time|rabbi|what'?s left|what is left|status|capabilities|capability|can you see|what do you see)\b/.test(normalized);
+  return /\b(system|dashboard|operations|section|sections|buttons?|actions?|task|tasks|queue|queued|pending|waiting|in progress|done|changelog|students?|accountability|torah|learning progress|content|recording|transcript|blog|whatsapp|facebook|newsletter|payments?|accounting|signup|signups|contacts?|parents?|devices?|tablet|green invoice|projects?|one time|rabbi|what'?s left|what is left|status|updates?|capabilities|capability|can you see|what do you see|order|sort|audit|brainstorm|logistics|scheduling)\b/.test(normalized);
+}
+
+function wantsWholeSystemSnapshot(text) {
+  return /\b(system|dashboard|operations|sections?|buttons?|actions?|everything|all the things|all sections|whole system|what do you see|can you see|status|updates?|what'?s left|what is left|order|sort|audit|brainstorm|pending|waiting|queue|queued|logistics|scheduling)\b/i.test(String(text || ''));
 }
 
 function wantsAccountingSnapshot(text) {
-  return /\b(payments?|accounting|signup|signups|tuition|cash|credit|green invoice|invoice|paid|unpaid|reminder|due)\b/i.test(String(text || ''));
+  return /\b(payments?|accounting|signup|signups|tuition|cash|credit|green invoice|invoice|paid|unpaid|reminder|due|parents?|contacts?)\b/i.test(String(text || ''));
 }
 
 function wantsStudentSnapshot(text) {
-  return /\b(students?|accountability|torah|learning progress|goal|goals|inside|listening|private meeting|check-?in)\b/i.test(String(text || ''));
+  return /\b(students?|accountability|torah|learning progress|goal|goals|inside|listening|private meeting|check-?in|devices?|tablet|qstudio|qustodio|bedtime|wake)\b/i.test(String(text || ''));
 }
 
 function wantsContentSnapshot(text) {
-  return /\b(content|recording|transcript|blog|whatsapp|facebook|newsletter|youtube|media|draft|publish|post)\b/i.test(String(text || ''));
+  return /\b(content|recording|transcript|blog|whatsapp|facebook|newsletter|youtube|media|draft|publish|post|prompt|prompts|bundle|bundles)\b/i.test(String(text || ''));
+}
+
+function wantsTaskSnapshot(text) {
+  return /\b(task|tasks|queue|queued|pending|waiting|decision|decisions|my work|rabbi|codex|brief|briefs|implementation|changelog|done|order|sort|audit|section)\b/i.test(String(text || ''));
+}
+
+function sanitizeContextText(value, maxChars = 220) {
+  const text = String(value ?? '')
+    .replace(/\b(?:sk|rk|ghl|pat|xoxp|AIza)[A-Za-z0-9_\-]{12,}\b/g, '[redacted]')
+    .replace(/\b\d{8,}:[A-Za-z0-9_\-]{20,}\b/g, '[redacted]')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!text) return '';
+  return text.length > maxChars ? `${text.slice(0, maxChars - 15).trim()}...[truncated]` : text;
+}
+
+function compactDateForContext(value) {
+  if (!value) return '';
+  return String(value).replace('T', ' ').replace(/\.\d+Z$/, 'Z').slice(0, 19);
+}
+
+function countByField(items = [], field, fallback = 'unknown') {
+  return (Array.isArray(items) ? items : []).reduce((counts, item) => {
+    const key = sanitizeContextText(item?.[field] || fallback, 80) || fallback;
+    counts[key] = (counts[key] || 0) + 1;
+    return counts;
+  }, {});
+}
+
+function formatCounts(counts = {}) {
+  return Object.entries(counts)
+    .sort((a, b) => String(a[0]).localeCompare(String(b[0])))
+    .map(([key, value]) => `${key}:${value}`)
+    .join(', ') || 'none';
+}
+
+function detectRequestedAppSections(text) {
+  const normalized = String(text || '').toLowerCase();
+  const broad = wantsWholeSystemSnapshot(text);
+  const sections = new Set();
+  if (broad || wantsTaskSnapshot(text)) sections.add('tasks');
+  if (broad || wantsStudentSnapshot(text)) sections.add('students');
+  if (broad || wantsContentSnapshot(text)) sections.add('content');
+  if (broad || /\bcontacts?|parents?|roster|signup|signups|intake|follow-?up|tags?\b/.test(normalized)) sections.add('contacts');
+  if (broad || wantsAccountingSnapshot(text)) sections.add('accounting');
+  if (broad || /\bagent|fleet|codex|automation|background|worker|swarm\b/.test(normalized)) sections.add('agents');
+  if (!sections.size) sections.add('tasks');
+  return sections;
+}
+
+function buildOperationsUiInventoryContext(sections = new Set(['tasks', 'students', 'content', 'contacts', 'accounting'])) {
+  const ui = {
+    tasks: {
+      subtabs: ['Overview', 'Decisions', 'My Tasks', 'Changelog'],
+      primaryActions: ['Open task card/details', 'Add comment', 'Mark done', 'Archive', 'Use Decision lane when Shloimie must decide', 'Use Changelog for queued, active, and verified machine work'],
+      filters: ['Urgency/date/project filters', 'Clear filters', 'Lane/subtab chips'],
+    },
+    students: {
+      subtabs: ['Overview', 'Group Goal', 'Student List', 'Student Profile', 'Goal Board', 'Tablet Access', 'Questions', 'Portal Links'],
+      primaryActions: ['Open student profile', 'Save / Update Torah Entry', 'Create Goal Board Item', 'Check Not Yet/Half/Done/Wait/Archive', 'Add Mock Tablet', 'Open/Refresh/Regenerate portal link'],
+      filters: ['Needs Setup', 'Due Today', 'Checked Off', 'Missed', 'Access Open', 'Locked', 'Needs Review'],
+    },
+    content: {
+      subtabs: ['Library', 'Selected', 'Repurpose', 'Newsletter', 'Prompts', 'Bundles'],
+      primaryActions: ['Select content', 'Choose output', 'Open details', 'Open Drive file', 'Approve or revise', 'View/Edit Prompt', 'Make output', 'Save prompt version'],
+      filters: ['Media type', 'Uploaded date', 'Project', 'Collapsed Filters panel'],
+    },
+    contacts: {
+      subtabs: ['Parents', 'Students', 'Intake', 'Needs Follow-up', 'Tags'],
+      primaryActions: ['Open roster card', 'Email', 'WhatsApp', 'Mark follow-up', 'Open student', 'Review timeline/tags/source/language/payment fields'],
+      filters: ['Parent/student/intake/follow-up/tag subtabs'],
+    },
+    accounting: {
+      subtabs: ['Overview', 'Payments', 'Needs Attention', 'Paid', 'Needs Signup', 'Exceptions'],
+      primaryActions: ['Review parent/student/payment roster', 'Check amount/method/status/next due', 'Use overview summaries before table views'],
+      filters: ['Payment status subtabs', 'Attention/exception views'],
+    },
+    agents: {
+      subtabs: ['Changelog Queue', 'Agent Fleet Status'],
+      primaryActions: ['Inspect queued/active/completed agent work in Changelog', 'Read completed changelog', 'Review fleet status', 'Escalate blocked tasks to Decisions'],
+      filters: ['Owner/stage/project'],
+    },
+  };
+
+  const lines = ['Operations UI inventory available to OpenAI:'];
+  for (const key of ['tasks', 'students', 'content', 'contacts', 'accounting', 'agents']) {
+    if (!sections.has(key)) continue;
+    const item = ui[key];
+    lines.push(`- ${key.toUpperCase()} subtabs: ${item.subtabs.join(', ')}`);
+    lines.push(`  Actions/buttons: ${item.primaryActions.join('; ')}`);
+    lines.push(`  Filters: ${item.filters.join('; ')}`);
+  }
+  return lines.join('\n');
 }
 
 function compactTaskForContext(task) {
@@ -831,6 +1209,32 @@ function compactTaskForContext(task) {
   ].filter(Boolean).join(' | ');
 }
 
+function compactTaskDetailForContext(task, comments = []) {
+  const parts = [
+    compactTaskForContext(task),
+    task.decision_required ? 'decision_required=true' : '',
+    task.due_date ? `due=${compactDateForContext(task.due_date)}` : '',
+    task.created_at ? `created=${compactDateForContext(task.created_at)}` : '',
+    task.updated_at ? `updated=${compactDateForContext(task.updated_at)}` : '',
+    task.notes ? `notes=${sanitizeContextText(task.notes, 260)}` : '',
+    task.verification_notes ? `verification=${sanitizeContextText(task.verification_notes, 220)}` : '',
+    comments.length ? `comments=${comments.map((comment) => `(${compactDateForContext(comment.created_at)} ${sanitizeContextText(comment.author, 40)}: ${sanitizeContextText(comment.body, 180)})`).join(' ')}` : '',
+  ].filter(Boolean);
+  return parts.join(' | ');
+}
+
+function compactBriefForContext(brief) {
+  return [
+    brief.id || brief.slug || brief.filename || brief.relative_path || 'brief',
+    sanitizeContextText(brief.title || brief.name || brief.filename || brief.relative_path || 'Implementation brief', 120),
+    brief.lifecycle_stage ? `stage=${brief.lifecycle_stage}` : '',
+    brief.status ? `status=${brief.status}` : '',
+    brief.updated_at || brief.mtime ? `updated=${compactDateForContext(brief.updated_at || brief.mtime)}` : '',
+    brief.relative_path ? `file=${brief.relative_path}` : '',
+    brief.summary ? `summary=${sanitizeContextText(brief.summary, 220)}` : '',
+  ].filter(Boolean).join(' | ');
+}
+
 function compactStudentForContext(student) {
   return [
     `#${student.id}`,
@@ -842,6 +1246,21 @@ function compactStudentForContext(student) {
     student.torah_trip_progress_percentage !== undefined && student.torah_trip_progress_percentage !== null
       ? `torah_trip=${Math.round(Number(student.torah_trip_progress_percentage))}%`
       : '',
+    student.device_status ? `device=${student.device_status}` : '',
+    student.latest_device_name ? `tablet=${sanitizeContextText(student.latest_device_name, 60)}` : '',
+  ].filter(Boolean).join(' | ');
+}
+
+function compactAccountabilityForContext(event) {
+  return [
+    `#${event.id}`,
+    event.student_name || event.student?.name ? `student=${sanitizeContextText(event.student_name || event.student?.name, 70)}` : '',
+    event.event_type ? `type=${event.event_type}` : '',
+    sanitizeContextText(event.title || 'Accountability event', 110),
+    event.progress_percent !== null && event.progress_percent !== undefined ? `progress=${event.progress_percent}%` : '',
+    event.follow_up_required ? 'follow_up=true' : '',
+    event.next_check_in_date ? `next=${compactDateForContext(event.next_check_in_date)}` : '',
+    event.notes ? `notes=${sanitizeContextText(event.notes, 200)}` : '',
   ].filter(Boolean).join(' | ');
 }
 
@@ -856,6 +1275,28 @@ function compactContentJobForContext(job) {
     job.source_type ? `source=${job.source_type}` : '',
     job.drive_stage ? `drive=${job.drive_stage}` : '',
     outputSummary ? `outputs=${outputSummary}` : '',
+    job.summary ? `summary=${sanitizeContextText(job.summary, 160)}` : '',
+  ].filter(Boolean).join(' | ');
+}
+
+function compactPromptForContext(prompt) {
+  return [
+    prompt.prompt_key || prompt.key || prompt.output_type || `#${prompt.id}`,
+    sanitizeContextText(prompt.label || prompt.title || prompt.name || 'Prompt', 90),
+    prompt.active_version_id ? `active_version=${prompt.active_version_id}` : '',
+    prompt.updated_at ? `updated=${compactDateForContext(prompt.updated_at)}` : '',
+    prompt.description ? `description=${sanitizeContextText(prompt.description, 180)}` : '',
+  ].filter(Boolean).join(' | ');
+}
+
+function compactDeviceForContext(device) {
+  return [
+    `#${device.id}`,
+    sanitizeContextText(device.device_name || device.name || 'Tablet', 80),
+    device.student?.name || device.student_name ? `student=${sanitizeContextText(device.student?.name || device.student_name, 70)}` : '',
+    device.status || device.status_label ? `status=${device.status_label || device.status}` : '',
+    device.provider ? `provider=${device.provider}` : '',
+    device.active_session?.expires_at ? `expires=${compactDateForContext(device.active_session.expires_at)}` : '',
   ].filter(Boolean).join(' | ');
 }
 
@@ -875,19 +1316,34 @@ function compactPaymentForContext(item) {
 async function buildBnaAppSnapshotForMessage(config, text) {
   if (!shouldAttachAppContext(text) || !config.opsUsername || !config.opsPassword) return '';
 
-  const includeStudents = wantsStudentSnapshot(text) || /what'?s left|what is left|status|system|dashboard|operations/i.test(text);
-  const includeContent = wantsContentSnapshot(text) || /what'?s left|what is left|status|system|dashboard|operations/i.test(text);
-  const includeAccounting = wantsAccountingSnapshot(text);
+  const scopedProject = isScopedProjectBot(config);
+  const requestedSections = detectRequestedAppSections(text);
+  const includeTasks = requestedSections.has('tasks') || scopedProject;
+  const includeStudents = !scopedProject && requestedSections.has('students');
+  const includeContent = !scopedProject && requestedSections.has('content');
+  const includeContacts = !scopedProject && requestedSections.has('contacts');
+  const includeAccounting = !scopedProject && requestedSections.has('accounting');
+  const includeAgents = !scopedProject && requestedSections.has('agents');
+  const includeTaskDetails = wantsTaskSnapshot(text) || wantsWholeSystemSnapshot(text);
 
   const requests = [
     ['projects', appRequest(config, 'GET', '/api/bna/projects')],
-    ['tasks', appRequest(config, 'GET', '/api/bna/tasks')],
+    includeTasks ? ['tasks', appRequest(config, 'GET', '/api/bna/tasks')] : null,
+    includeAgents ? ['agentFleet', appRequest(config, 'GET', '/api/bna/agent-fleet/status')] : null,
     includeStudents ? ['students', appRequest(config, 'GET', '/api/bna/students')] : null,
     includeStudents ? ['torah', appRequest(config, 'GET', '/api/bna/torah-learning')] : null,
+    includeStudents ? ['accountability', appRequest(config, 'GET', '/api/bna/accountability?limit=80')] : null,
+    includeStudents ? ['devices', appRequest(config, 'GET', '/api/bna/devices')] : null,
+    includeStudents ? ['deviceRules', appRequest(config, 'GET', '/api/bna/device-access-rules')] : null,
     includeContent ? ['contentJobs', appRequest(config, 'GET', '/api/bna/content-jobs')] : null,
+    includeContent ? ['contentPrompts', appRequest(config, 'GET', '/api/bna/content-prompts')] : null,
+    includeContent ? ['contentBundles', appRequest(config, 'GET', '/api/bna/content-bundles')] : null,
+    includeContacts ? ['signups', appRequest(config, 'GET', '/api/bna/signups')] : null,
     includeAccounting ? ['signups', appRequest(config, 'GET', '/api/bna/signups')] : null,
     includeAccounting ? ['paymentIntake', appRequest(config, 'GET', '/api/bna/payment-intake')] : null,
     includeAccounting ? ['payments', appRequest(config, 'GET', '/api/bna/payments')] : null,
+    includeAccounting ? ['paymentReminders', appRequest(config, 'GET', '/api/bna/payment-reminders/due')] : null,
+    includeAccounting ? ['greenInvoiceWebhooks', appRequest(config, 'GET', '/api/bna/green-invoice/webhooks?limit=12')] : null,
   ].filter(Boolean);
 
   const settled = await Promise.allSettled(requests.map(([, request]) => request));
@@ -903,17 +1359,41 @@ async function buildBnaAppSnapshotForMessage(config, text) {
   });
 
   const tasks = Array.isArray(data.tasks?.tasks) ? data.tasks.tasks : [];
-  const activeTasks = tasks.filter((task) => !['done', 'archive'].includes(String(task.stage || ''))).slice(0, 12);
-  const recentDoneTasks = tasks.filter((task) => String(task.stage || '') === 'done').slice(0, 6);
+  const activeTasksAll = tasks.filter((task) => !['done', 'archive'].includes(String(task.stage || '')));
+  const activeTasks = activeTasksAll.slice(0, includeTaskDetails ? 35 : 14);
+  const recentDoneTasks = tasks.filter((task) => String(task.stage || '') === 'done').slice(0, includeTaskDetails ? 12 : 6);
   const codexTasks = activeTasks.filter((task) => /codex|kimi|system|agent/i.test(String(task.assigned_to || ''))).slice(0, 8);
   const shloimieTasks = activeTasks.filter((task) => /shloimie/i.test(String(task.assigned_to || ''))).slice(0, 6);
   const decisionTasks = activeTasks.filter((task) => String(task.stage || '') === 'needs_decision' || task.decision_required).slice(0, 6);
+  const taskComments = {};
+
+  if (includeTaskDetails && activeTasks.length) {
+    const commentTasks = activeTasks
+      .filter((task) => Number(task.comment_count || 0) > 0 || /codex|decision|pending|queue|audit|order/i.test(`${task.assigned_to || ''} ${task.stage || ''} ${task.title || ''}`))
+      .slice(0, 12);
+    const settledComments = await Promise.allSettled(commentTasks.map((task) => appRequest(config, 'GET', `/api/bna/tasks/${task.id}/comments`)));
+    commentTasks.forEach((task, index) => {
+      const result = settledComments[index];
+      if (result.status === 'fulfilled' && Array.isArray(result.value?.comments)) {
+        taskComments[task.id] = result.value.comments.slice(-3);
+      }
+    });
+  }
 
   const lines = [
-    'Live BNA app snapshot available to the Telegram bridge:',
+    scopedProject
+      ? 'Live One Time Mishnah Class app snapshot available to this scoped Telegram bridge:'
+      : 'Live BNA app snapshot available to the Telegram bridge:',
     '- Source: protected BNA app APIs through the bridge service account.',
-    '- Snapshot is summarized and sanitized; secrets, access codes, raw credentials, and full raw transcripts are intentionally omitted.',
+    scopedProject
+      ? '- Scope: One Time Mishnah Class project routes only. Students, Accounting, Devices, Content, and operator-only areas are intentionally not requested.'
+      : '- Snapshot is summarized and sanitized; secrets, access codes, raw credentials, and full raw transcripts are intentionally omitted.',
   ];
+
+  if (!scopedProject) {
+    lines.push('');
+    lines.push(buildOperationsUiInventoryContext(requestedSections));
+  }
 
   if (Array.isArray(data.projects?.projects)) {
     lines.push('');
@@ -923,27 +1403,48 @@ async function buildBnaAppSnapshotForMessage(config, text) {
     }
   }
 
-  lines.push('');
-  lines.push(`Tasks: ${tasks.length} visible total, ${activeTasks.length} active shown.`);
-  if (codexTasks.length) {
-    lines.push('Active Codex tasks:');
-    for (const task of codexTasks) lines.push(`- ${compactTaskForContext(task)}`);
+  if (includeTasks) {
+    lines.push('');
+    lines.push(`Tasks section live data: total=${tasks.length}, active=${activeTasksAll.length}, shown=${activeTasks.length}.`);
+    lines.push(`- Stage counts: ${formatCounts(countByField(tasks, 'stage'))}`);
+    lines.push(`- Owner counts: ${formatCounts(countByField(tasks, 'assigned_to', 'Unassigned'))}`);
+    lines.push(`- Category counts: ${formatCounts(countByField(tasks, 'category'))}`);
+    if (activeTasks.length) {
+      lines.push('Active task records to use for ordering/audits:');
+      for (const task of activeTasks) {
+        lines.push(`- ${includeTaskDetails ? compactTaskDetailForContext(task, taskComments[task.id] || []) : compactTaskForContext(task)}`);
+      }
+    }
+    if (codexTasks.length) {
+      lines.push('Active Codex tasks:');
+      for (const task of codexTasks) lines.push(`- ${compactTaskForContext(task)}`);
+    }
+    if (shloimieTasks.length) {
+      lines.push('Active Shloimie tasks:');
+      for (const task of shloimieTasks) lines.push(`- ${compactTaskForContext(task)}`);
+    }
+    if (decisionTasks.length) {
+      lines.push('Decision/clarification tasks:');
+      for (const task of decisionTasks) lines.push(`- ${compactTaskForContext(task)}`);
+    }
+    if (recentDoneTasks.length) {
+      lines.push('Recent done/changelog task records:');
+      for (const task of recentDoneTasks) lines.push(`- ${compactTaskForContext(task)}`);
+    }
   }
-  if (shloimieTasks.length) {
-    lines.push('Active Shloimie tasks:');
-    for (const task of shloimieTasks) lines.push(`- ${compactTaskForContext(task)}`);
-  }
-  if (decisionTasks.length) {
-    lines.push('Decision/clarification tasks:');
-    for (const task of decisionTasks) lines.push(`- ${compactTaskForContext(task)}`);
-  }
-  if (recentDoneTasks.length) {
-    lines.push('Recent done tasks:');
-    for (const task of recentDoneTasks) lines.push(`- ${compactTaskForContext(task)}`);
+
+  if (includeAgents && data.agentFleet) {
+    lines.push('');
+    lines.push('Agent fleet / background automation:');
+    lines.push(`- status=${data.agentFleet.fleet?.status || data.agentFleet.status || 'unknown'}`);
+    lines.push(`- active_queue=${data.agentFleet.queue?.pending ?? data.agentFleet.pending ?? 'unknown'}`);
+    if (Array.isArray(data.agentFleet.queue?.tasks)) {
+      for (const task of data.agentFleet.queue.tasks.slice(0, 8)) lines.push(`- queued ${compactTaskForContext(task)}`);
+    }
   }
 
   if (includeStudents && Array.isArray(data.students?.students)) {
-    const students = data.students.students.slice(0, 12);
+    const students = data.students.students.slice(0, 20);
     lines.push('');
     lines.push(`Students: ${data.students.students.length} visible, ${students.length} shown.`);
     for (const student of students) lines.push(`- ${compactStudentForContext(student)}`);
@@ -962,11 +1463,59 @@ async function buildBnaAppSnapshotForMessage(config, text) {
     }
   }
 
+  if (includeStudents && Array.isArray(data.accountability?.events)) {
+    const events = data.accountability.events.slice(0, 20);
+    lines.push('');
+    lines.push(`Student accountability events: ${data.accountability.events.length} visible, newest ${events.length} shown.`);
+    lines.push(`- Event type counts shown: ${formatCounts(countByField(events, 'event_type'))}`);
+    for (const event of events) lines.push(`- ${compactAccountabilityForContext(event)}`);
+  }
+
+  if (includeStudents && Array.isArray(data.devices?.devices)) {
+    const devices = data.devices.devices.slice(0, 12);
+    lines.push('');
+    lines.push(`Tablet/device access: provider_mode=${data.devices.provider_mode || 'unknown'}, real_device_calls_enabled=${Boolean(data.devices.real_device_calls_enabled)}, devices=${data.devices.devices.length}.`);
+    for (const device of devices) lines.push(`- ${compactDeviceForContext(device)}`);
+  }
+
+  if (includeStudents && Array.isArray(data.deviceRules?.rules)) {
+    lines.push(`Device access rules: ${data.deviceRules.rules.length} visible.`);
+    for (const rule of data.deviceRules.rules.slice(0, 10)) {
+      lines.push(`- #${rule.id} student=${sanitizeContextText(rule.student?.name || rule.student_name || rule.student_id, 70)} device=${sanitizeContextText(rule.device?.device_name || rule.device_id, 70)} type=${rule.rule_type || 'unknown'} duration=${rule.duration_minutes || ''} enabled=${rule.enabled !== false}`);
+    }
+  }
+
   if (includeContent && Array.isArray(data.contentJobs?.jobs)) {
-    const jobs = data.contentJobs.jobs.slice(0, 10);
+    const jobs = data.contentJobs.jobs.slice(0, 18);
     lines.push('');
     lines.push(`Content jobs: ${data.contentJobs.jobs.length} visible, newest ${jobs.length} shown.`);
+    lines.push(`- Status counts shown: ${formatCounts(countByField(data.contentJobs.jobs, 'status'))}`);
+    lines.push(`- Drive stage counts shown: ${formatCounts(countByField(data.contentJobs.jobs, 'drive_stage'))}`);
     for (const job of jobs) lines.push(`- ${compactContentJobForContext(job)}`);
+  }
+
+  if (includeContent && Array.isArray(data.contentPrompts?.prompts)) {
+    lines.push('');
+    lines.push(`Content prompts: ${data.contentPrompts.prompts.length} visible.`);
+    for (const prompt of data.contentPrompts.prompts.slice(0, 12)) lines.push(`- ${compactPromptForContext(prompt)}`);
+  }
+
+  if (includeContent && Array.isArray(data.contentBundles?.bundles)) {
+    lines.push(`Content bundles: ${data.contentBundles.bundles.length} visible.`);
+    for (const bundle of data.contentBundles.bundles.slice(0, 8)) {
+      lines.push(`- #${bundle.id} ${sanitizeContextText(bundle.title || 'Bundle', 110)} | status=${bundle.status || 'unknown'} | jobs=${Array.isArray(bundle.jobs) ? bundle.jobs.length : 0} | outputs=${Array.isArray(bundle.outputs) ? bundle.outputs.length : 0}`);
+    }
+  }
+
+  if (includeContacts || includeAccounting) {
+    const signups = Array.isArray(data.signups?.signups) ? data.signups.signups : [];
+    if (includeContacts) {
+      lines.push('');
+      lines.push(`Contacts/roster: signups/contact records=${signups.length}.`);
+      lines.push(`- Signup status counts: ${formatCounts(countByField(signups, 'status'))}`);
+      lines.push(`- Payment status counts: ${formatCounts(countByField(signups, 'payment_status'))}`);
+      for (const item of signups.slice(0, 12)) lines.push(`- contact ${compactPaymentForContext(item)} | email=${sanitizeContextText(item.parent_email, 80)} | phone=${sanitizeContextText(item.parent_phone, 40)}`);
+    }
   }
 
   if (includeAccounting) {
@@ -977,11 +1526,17 @@ async function buildBnaAppSnapshotForMessage(config, text) {
         : Array.isArray(data.paymentIntake?.payments) ? data.paymentIntake.payments
           : [];
     const payments = Array.isArray(data.payments?.payments) ? data.payments.payments : [];
+    const reminders = Array.isArray(data.paymentReminders?.candidates) ? data.paymentReminders.candidates : [];
+    const webhooks = Array.isArray(data.greenInvoiceWebhooks?.events) ? data.greenInvoiceWebhooks.events
+      : Array.isArray(data.greenInvoiceWebhooks?.webhooks) ? data.greenInvoiceWebhooks.webhooks
+        : [];
     lines.push('');
-    lines.push(`Accounting: signups=${signups.length}, payment_intake=${intake.length}, payments=${payments.length}.`);
+    lines.push(`Accounting: signups=${signups.length}, payment_intake=${intake.length}, payments=${payments.length}, reminders_due=${reminders.length}, recent_green_invoice_webhooks=${webhooks.length}.`);
     for (const item of signups.slice(0, 8)) lines.push(`- signup ${compactPaymentForContext(item)}`);
     for (const item of intake.slice(0, 6)) lines.push(`- intake ${compactPaymentForContext(item)}`);
     for (const item of payments.slice(0, 6)) lines.push(`- payment ${compactPaymentForContext(item)}`);
+    for (const item of reminders.slice(0, 6)) lines.push(`- reminder ${compactPaymentForContext(item)}`);
+    for (const event of webhooks.slice(0, 6)) lines.push(`- webhook #${event.id} event=${sanitizeContextText(event.event_type || event.event || 'unknown', 80)} status=${event.processing_status || event.status || 'unknown'} received=${compactDateForContext(event.webhook_received_at || event.created_at)} matched_student=${event.matched_student_id || ''} matched_signup=${event.matched_signup_id || ''}`);
   }
 
   if (errors.length) {
@@ -991,7 +1546,9 @@ async function buildBnaAppSnapshotForMessage(config, text) {
   }
 
   lines.push('');
-  lines.push('Use this app snapshot to answer navigation/status questions directly. If a write/build/deploy/code edit is needed, route it into tracked Codex work rather than pretending OpenAI performed it.');
+  lines.push(scopedProject
+    ? 'Use this app snapshot to answer One Time task/status questions directly. If the message is not an explicit task/comment command, summarize and ask before creating new tasks.'
+    : 'Use this app snapshot to answer navigation/status/ordering/audit questions directly. For section ordering, use the live records above and recommend next order. If a write/build/deploy/code edit is needed, route it into tracked Codex work rather than pretending OpenAI performed it. Do not substitute transcript/class-topic content for dashboard/system questions.');
   return lines.join('\n');
 }
 
@@ -1126,26 +1683,29 @@ async function formatLiveTaskQueueReply(config) {
   const active = tasks.filter((task) => isActiveStage(task.stage));
   const codex = active.filter(isAgentOwnedTask);
   const decisions = active.filter((task) => String(task.stage || '') === 'needs_decision');
-  const mine = active.filter((task) => /shloimie|operator/i.test(String(task.assigned_to || task.author || '')));
+  const minePattern = isScopedProjectBot(config)
+    ? /rabbi elie|elie scheller|shloimie/i
+    : /shloimie|operator/i;
+  const mine = active.filter((task) => minePattern.test(String(task.assigned_to || task.author || '')));
   const localMediaJobs = listPendingJobs(50);
 
   const lines = [
-    'Live Operations queue:',
-    `- Codex Queue: ${codex.length}`,
+    isScopedProjectBot(config) ? 'Live One Time queue:' : 'Live Operations queue:',
+    ...(isScopedProjectBot(config) ? [] : [`- Changelog queue: ${codex.length}`]),
     `- Decisions: ${decisions.length}`,
-    `- My/Operator tasks: ${mine.length}`,
-    `- Legacy local media/intake jobs: ${localMediaJobs.length}`,
+    isScopedProjectBot(config) ? `- Rabbi/Shloimie tasks: ${mine.length}` : `- My/Operator tasks: ${mine.length}`,
+    ...(isScopedProjectBot(config) ? [] : [`- Legacy local media/intake jobs: ${localMediaJobs.length}`]),
   ];
 
-  if (codex.length) {
+  if (!isScopedProjectBot(config) && codex.length) {
     lines.push('');
-    lines.push('Codex Queue:');
+    lines.push('Changelog queue:');
     for (const task of codex.slice(0, 12)) {
       lines.push(`- ${taskStatusLine(task)}`);
     }
   }
 
-  if (localMediaJobs.length) {
+  if (!isScopedProjectBot(config) && localMediaJobs.length) {
     lines.push('');
     lines.push('Note: legacy local media/intake jobs are separate from live app tasks; they should not be treated as Codex implementation work.');
   }
@@ -1231,8 +1791,11 @@ function detectTelegramModeButton(text) {
 }
 
 function telegramModeKeyboard() {
+  const row = activeTelegramCodexEnabled
+    ? [{ text: 'OpenAI API' }, { text: 'Codex' }]
+    : [{ text: 'OpenAI API' }];
   return {
-    keyboard: [[{ text: 'OpenAI API' }, { text: 'Codex' }]],
+    keyboard: [row],
     resize_keyboard: true,
     is_persistent: true,
   };
@@ -1243,18 +1806,21 @@ function isLikelyCodexDevelopmentRequest(text) {
   if (!normalized.trim()) return false;
   if (/\bbuild everything\b/.test(normalized)) return true;
 
-  const devVerb = /\b(build|fix|wire|deploy|test|inspect|edit|update|change|add|create|implement|rename|standardize|connect|scope|migrate|refactor|verify)\b/.test(normalized);
+  const devVerb = /\b(build|fix|wire|deploy|test|inspect|edit|update|change|add|create|implement|rename|standardize|connect|scope|migrate|refactor|verify|remove|hide|get rid|stop showing)\b/.test(normalized);
   const devObject =
-    /\b(repo|backend|database|schema|table|migration|server|server\.js|railway|webhook|telegram bridge|telegram bot|bot setup|agent config|agent configuration|task manager|dashboard|project filter|access|route|routing|parser|buttons?|code|files?)\b/.test(normalized);
+    /\b(repo|backend|database|schema|table|migration|server|server\.js|railway|webhook|telegram bridge|telegram bot|bot setup|agent config|agent configuration|task manager|dashboard|section|planned briefs?|implementation briefs?|project filter|access|route|routing|parser|buttons?|code|files?)\b/.test(normalized);
 
   if (devVerb && devObject) return true;
-  if (/\b(codex|programming|developer|development|cli|app implementation|backend implementation)\b/.test(normalized)) {
-    return /\b(do|build|fix|wire|inspect|edit|update|implement|change|create|setup|set up)\b/.test(normalized);
+  if (/\b(codex|kodak|codak|programming|developer|development|cli|app implementation|backend implementation)\b/.test(normalized)) {
+    return /\b(do|build|fix|wire|inspect|edit|update|implement|change|create|setup|set up|remove|hide|get rid)\b/.test(normalized);
   }
   return false;
 }
 
 function selectTelegramReplyMode(config, chatId, text) {
+  if (!config.codexEnabled) {
+    return { mode: 'openai', reason: 'scoped_openai_only' };
+  }
   const chatMode = getTelegramChatMode(chatId, config);
   if (chatMode === 'codex') {
     return { mode: 'codex', reason: 'manual_codex' };
@@ -1288,13 +1854,20 @@ function extractDecisionOptions(text) {
   return options.length >= 2 ? options : [];
 }
 
-function buildCodexPrompt(messageText, chatId, messageId, extraContext = '') {
+function buildCodexPrompt(config, messageText, chatId, messageId, extraContext = '') {
   const date = new Date().toISOString();
   const memoryRelativePath = path.relative(repoRoot, todayMemoryPath()).replace(/\\/g, '/');
+  const scopedContext = buildScopedAgentContext(config);
   return [
-    'You are Codex, the active BNA Telegram development sidekick for this repository.',
-    'The operator wants Telegram to feel like talking directly to Codex in the CLI while building the system.',
-    'You may inspect and edit files when the operator asks for development work. For pure questions, answer directly.',
+    isScopedProjectBot(config)
+      ? 'You are Codex only if Shloimie explicitly enabled Codex for this scoped One Time bot.'
+      : 'You are Codex, the active BNA Telegram development sidekick for this repository.',
+    isScopedProjectBot(config)
+      ? 'This scoped bot is limited to One Time Mishnah Class task collaboration. Do not expose broader BNA private areas.'
+      : 'The operator wants Telegram to feel like talking directly to Codex in the CLI while building the system.',
+    isScopedProjectBot(config)
+      ? 'Answer and work only inside the scoped project unless Shloimie explicitly changes this scope.'
+      : 'You may inspect and edit files when the operator asks for development work. For pure questions, answer directly.',
     '',
     'Operator message metadata:',
     `- chat_id: ${chatId}`,
@@ -1313,6 +1886,13 @@ function buildCodexPrompt(messageText, chatId, messageId, extraContext = '') {
     'Repo context: OpenAI capability and synchronization contract',
     buildOpenAiCapabilityContext(),
     '',
+    ...(scopedContext
+      ? [
+          'Repo context: scoped agent files',
+          scopedContext,
+          '',
+        ]
+      : []),
     'Repo context: shared agent ledger and changelog tail',
     buildAgentSyncContext(2200),
     '',
@@ -1360,6 +1940,8 @@ function buildCodexPrompt(messageText, chatId, messageId, extraContext = '') {
     '- The Tasks dashboard should feel like a normal task manager: Decisions, My Tasks, Changelog, and Done. Codex machine work belongs in Changelog after it is queued or completed; Shloimie should not see machine work as his personal tasks.',
     '- The active human worker is Shloimie. The active development agent is Codex. Kimi is only a provider fallback or legacy alias.',
     '- Telegram should feel like natural conversation first. Do not announce background queues or Codex job mechanics; mention capture only when a real task, student note, payment item, content item, or decision was created or needs action.',
+    '- Strategy, product, research, and "why is the system behaving this way" questions should be answered directly first, with recommendations and tradeoffs. Do not turn them into Codex tasks unless the operator asks to build the fix or the needed implementation is obvious.',
+    '- Do not surprise the operator with random questions. If you see a useful recommendation from the current system state, label it as a suggestion and explain why it matters.',
     '- When a decision is needed, give 2-3 crisp options formatted exactly like "Option A: label", "Option B: label", and "Option C: label" so Telegram can create buttons.',
     '- Do not ask format-option questions for transcript/topic/content drafting requests. If the operator asks for topics, a transcript summary, a newsletter, or a revised post, choose the most useful default and return the actual text in chat.',
     '- If the request is clear, answer naturally or say what you will do next instead of asking unnecessary questions.',
@@ -1374,33 +1956,58 @@ function buildCodexPrompt(messageText, chatId, messageId, extraContext = '') {
   ].join('\n');
 }
 
-function buildKimiPrompt(messageText, chatId, messageId, extraContext = '') {
-  return buildCodexPrompt(messageText, chatId, messageId, extraContext)
+function buildKimiPrompt(config, messageText, chatId, messageId, extraContext = '') {
+  return buildCodexPrompt(config, messageText, chatId, messageId, extraContext)
+    .replace('You are Codex only if Shloimie explicitly enabled Codex for this scoped One Time bot.', 'You are Rabbi Elie Scheller\'s scoped One Time Mishnah Class Telegram sidekick.')
     .replace('You are Codex, the active BNA Telegram development sidekick for this repository.', 'You are the active BNA Telegram sidekick for this repository.')
     .replace('The operator wants Telegram to feel like talking directly to Codex in the CLI while building the system.', 'Answer using ONLY the repo context included below unless the operator explicitly asks you to inspect or edit code.');
 }
 
-function buildApiFallbackMessages(messageText, chatId, messageId, extraContext = '') {
+function buildApiFallbackMessages(config, messageText, chatId, messageId, extraContext = '') {
   const date = new Date().toISOString();
   const memoryRelativePath = path.relative(repoRoot, todayMemoryPath()).replace(/\\/g, '/');
-  const system = [
-    'You are the active BNA Telegram sidekick for this repository.',
-    'Answer using ONLY the repo context provided by the user message.',
-    'Keep the reply practical and concise.',
-    'Use ASCII characters only in the final reply.',
-    'If the message contains a ramble, break it into the clearest next tasks.',
-    'If the operator says "build everything", choose the order from TASKS.md and the newest tasks-pending handoffs, start executing, and do not ask for ordering confirmation unless there is a real blocker or product decision.',
-    'Use the BNA lanes Tasks, Students, Content, Contacts, and Accounting. Do not use the old Pipeline, Signups, Billing, or Ramble tab language.',
-    'Use task language like Decisions, My Tasks, Changelog, and Done. Codex work belongs in Changelog, not in Shloimie personal tasks.',
-    'Only assign work to Shloimie or Codex. Treat Kimi as a fallback provider or legacy alias, not the active worker.',
-    'Telegram should feel like natural conversation first. Do not announce background queues or Codex job mechanics; mention capture only when a real task, student note, payment item, content item, or decision was created or needs action.',
-    'When a decision is needed, give 2-3 options formatted exactly like "Option A: label", "Option B: label", and "Option C: label" so Telegram can create buttons.',
-    'Do not ask format-option questions for transcript/topic/content drafting requests. If the operator asks for topics, a transcript summary, a newsletter, or a revised post, choose the most useful default and return the actual text in chat.',
-    'Avoid vague headings like "Next" by itself. Use Captured, Already filed, Queued work, and Blocked only if blocked.',
-    'If the operator references recent work by phrase, such as "the image slider", first use SYSTEM-STATE.md and the newest tasks-pending handoff before asking what they mean.',
-    'If the live snapshot contains a task that was just auto-captured from the same operator message, do not make that capture the main answer unless the operator asked to create or file a task. Answer the actual question first.',
-    'If the operator asks why a Telegram reply was cut off, malformed, or missing, use only the recent Telegram memory included below. Say clearly when OpenAI cannot inspect delivery logs and that Codex must inspect the bridge/logs for a real diagnosis.',
-  ].join('\n');
+  const scopedContext = buildScopedAgentContext(config);
+  const system = buildApiSystemInstructions(config);
+  const scoped = isScopedProjectBot(config);
+  const repoContext = scoped
+    ? [
+        'Repo context: scoped access summary',
+        [
+          '- This is the Rabbi Elie Scheller One Time Mishnah Class profile.',
+          '- It may use One Time project/task/comment APIs through scoped Operations credentials.',
+          '- It must not expose BNA private Students, Accounting, Devices, student accountability, broad Content, or operator-only Changelog areas.',
+        ].join('\n'),
+        '',
+        'Repo context: scoped agent files',
+        scopedContext || '[missing scoped agent files]',
+        '',
+        'Repo context: One Time handoff',
+        readContextFile('tasks-pending/2026-06-05-telegram-ai-mode-and-one-time-rabbi-setup.md', 2600),
+        '',
+      ]
+    : [
+        'Repo context: AGENTS.md',
+        readContextFile('AGENTS.md', 1800),
+        '',
+        'Repo context: MEMORY.md',
+        readContextFile('MEMORY.md', 2200),
+        '',
+        'Repo context: TASKS.md',
+        readContextFile('TASKS.md', 1800),
+        '',
+        'Repo context: PROJECT-NOTES.md',
+        readContextFile('PROJECT-NOTES.md', 1400),
+        '',
+        'Repo context: current system state and newest handoffs',
+        buildRecentRepoContext(1800),
+        '',
+        'Repo context: OpenAI capability and synchronization contract',
+        buildOpenAiCapabilityContext(),
+        '',
+        'Repo context: shared agent ledger and changelog tail',
+        buildAgentSyncContext(2200),
+        '',
+      ];
 
   const user = [
     'Operator message metadata:',
@@ -1408,27 +2015,7 @@ function buildApiFallbackMessages(messageText, chatId, messageId, extraContext =
     `- message_id: ${messageId}`,
     `- received_at: ${date}`,
     '',
-    'Repo context: AGENTS.md',
-    readContextFile('AGENTS.md', 1800),
-    '',
-    'Repo context: MEMORY.md',
-    readContextFile('MEMORY.md', 2200),
-    '',
-    'Repo context: TASKS.md',
-    readContextFile('TASKS.md', 1800),
-    '',
-    'Repo context: PROJECT-NOTES.md',
-    readContextFile('PROJECT-NOTES.md', 1400),
-    '',
-    'Repo context: current system state and newest handoffs',
-    buildRecentRepoContext(1800),
-    '',
-    'Repo context: OpenAI capability and synchronization contract',
-    buildOpenAiCapabilityContext(),
-    '',
-    'Repo context: shared agent ledger and changelog tail',
-    buildAgentSyncContext(2200),
-    '',
+    ...repoContext,
     ...(extraContext
       ? [
           'Repo context: request-specific external system snapshot',
@@ -1436,30 +2023,32 @@ function buildApiFallbackMessages(messageText, chatId, messageId, extraContext =
           '',
         ]
       : []),
-    'Repo context: tasks-pending/2026-05-26-login-ghl-audit.md',
-    readContextFile('tasks-pending/2026-05-26-login-ghl-audit.md', 1800),
-    '',
-    'Repo context: tasks-pending/2026-05-27-bna-telegram-accountability-audit.md',
-    readContextFile('tasks-pending/2026-05-27-bna-telegram-accountability-audit.md', 1800),
-    '',
-    'Repo context: tasks-pending/2026-05-27-content-repurposing-pipeline.md',
-    readContextFile('tasks-pending/2026-05-27-content-repurposing-pipeline.md', 1800),
-    '',
-    'Repo context: tasks-pending/2026-05-28-accountability-and-ramble-routing.md',
-    readContextFile('tasks-pending/2026-05-28-accountability-and-ramble-routing.md', 1600),
-    '',
-    'Repo context: brand-kit/README.md',
-    readContextFile('brand-kit/README.md', 1200),
-    '',
-    'Repo context: brand-kit/01-core-beliefs.md',
-    readContextFile('brand-kit/01-core-beliefs.md', 1200),
-    '',
-    'Repo context: brand-kit/03-parent-messaging.md',
-    readContextFile('brand-kit/03-parent-messaging.md', 1200),
-    '',
-    `Repo context: ${memoryRelativePath}`,
-    readTailContextFile(memoryRelativePath, 3200),
-    '',
+    ...(scoped ? [] : [
+      'Repo context: tasks-pending/2026-05-26-login-ghl-audit.md',
+      readContextFile('tasks-pending/2026-05-26-login-ghl-audit.md', 1800),
+      '',
+      'Repo context: tasks-pending/2026-05-27-bna-telegram-accountability-audit.md',
+      readContextFile('tasks-pending/2026-05-27-bna-telegram-accountability-audit.md', 1800),
+      '',
+      'Repo context: tasks-pending/2026-05-27-content-repurposing-pipeline.md',
+      readContextFile('tasks-pending/2026-05-27-content-repurposing-pipeline.md', 1800),
+      '',
+      'Repo context: tasks-pending/2026-05-28-accountability-and-ramble-routing.md',
+      readContextFile('tasks-pending/2026-05-28-accountability-and-ramble-routing.md', 1600),
+      '',
+      'Repo context: brand-kit/README.md',
+      readContextFile('brand-kit/README.md', 1200),
+      '',
+      'Repo context: brand-kit/01-core-beliefs.md',
+      readContextFile('brand-kit/01-core-beliefs.md', 1200),
+      '',
+      'Repo context: brand-kit/03-parent-messaging.md',
+      readContextFile('brand-kit/03-parent-messaging.md', 1200),
+      '',
+      `Repo context: ${memoryRelativePath}`,
+      readTailContextFile(memoryRelativePath, 3200),
+      '',
+    ]),
     'Operator message:',
     messageText.trim(),
   ].join('\n');
@@ -1688,6 +2277,57 @@ function runOpenAiSidekickSmoke(timeoutMs = 240000) {
   });
 }
 
+function runNpmScript(scriptName, timeoutMs = 10 * 60 * 1000) {
+  return new Promise((resolve, reject) => {
+    const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+    const child = spawn(npmCommand, ['run', scriptName], {
+      cwd: repoRoot,
+      shell: false,
+      env: process.env,
+      windowsHide: true,
+    });
+
+    let stdout = '';
+    let stderr = '';
+    const timer = setTimeout(() => {
+      child.kill();
+      reject(new Error(`${scriptName} timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+
+    child.stdout.on('data', (chunk) => {
+      stdout += chunk.toString();
+    });
+    child.stderr.on('data', (chunk) => {
+      stderr += chunk.toString();
+    });
+    child.on('error', (error) => {
+      clearTimeout(timer);
+      reject(error);
+    });
+    child.on('close', (code) => {
+      clearTimeout(timer);
+      if (code === 0) {
+        resolve([stdout, stderr].filter(Boolean).join('\n').trim());
+        return;
+      }
+      reject(new Error((stderr || stdout || `${scriptName} exited ${code}`).trim()));
+    });
+  });
+}
+
+async function runRailwayDeployAndDoctor() {
+  const deployOutput = await runNpmScript('railway:redeploy', 20 * 60 * 1000);
+  const doctorOutput = await runNpmScript('railway:doctor', 8 * 60 * 1000);
+  return [
+    'Railway deploy completed.',
+    '',
+    deployOutput,
+    '',
+    'Railway doctor:',
+    doctorOutput,
+  ].join('\n').trim();
+}
+
 function runAgentFleet(args = ['--status'], timeoutMs = 10 * 60 * 1000) {
   return new Promise((resolve, reject) => {
     const child = spawn(process.execPath, ['scripts/agent-fleet-supervisor.mjs', ...args], {
@@ -1766,15 +2406,17 @@ async function runKimiApiFallback(config, messageText, chatId, messageId) {
   }
 
   const externalContextParts = [];
-  try {
-    const driveContext = await buildDriveContextForMessage(messageText);
-    if (driveContext) {
-      log(`Attached Google Drive context to Kimi API fallback message ${messageId} (${driveContext.length} chars)`);
-      externalContextParts.push(driveContext);
+  if (!isScopedProjectBot(config)) {
+    try {
+      const driveContext = await buildDriveContextForMessage(messageText);
+      if (driveContext) {
+        log(`Attached Google Drive context to Kimi API fallback message ${messageId} (${driveContext.length} chars)`);
+        externalContextParts.push(driveContext);
+      }
+    } catch (error) {
+      externalContextParts.push(`Google Drive context lookup failed: ${error instanceof Error ? error.message : String(error)}`);
+      log(`Drive context lookup failed for Kimi API fallback message ${messageId}: ${error instanceof Error ? error.message : String(error)}`);
     }
-  } catch (error) {
-    externalContextParts.push(`Google Drive context lookup failed: ${error instanceof Error ? error.message : String(error)}`);
-    log(`Drive context lookup failed for Kimi API fallback message ${messageId}: ${error instanceof Error ? error.message : String(error)}`);
   }
   try {
     const appContext = await buildBnaAppSnapshotForMessage(config, messageText);
@@ -1787,7 +2429,7 @@ async function runKimiApiFallback(config, messageText, chatId, messageId) {
     log(`BNA app snapshot lookup failed for Kimi API fallback message ${messageId}: ${error instanceof Error ? error.message : String(error)}`);
   }
 
-  const { system, user } = buildApiFallbackMessages(messageText, chatId, messageId, externalContextParts.join('\n\n'));
+  const { system, user } = buildApiFallbackMessages(config, messageText, chatId, messageId, externalContextParts.join('\n\n'));
   const response = await fetch(`${config.kimiApiBaseUrl.replace(/\/+$/, '')}/chat/completions`, {
     method: 'POST',
     headers: {
@@ -1851,17 +2493,87 @@ async function runChatApiProvider(provider, messages) {
   return cleanKimiOutput(text);
 }
 
+function shouldUseOpenAiResearch(text) {
+  const normalized = String(text || '').toLowerCase();
+  if (!normalized.trim()) return false;
+  if (/\b(latest|current|today|recent|newest|up to date|up-to-date|look up|research|investigate|web search|search the web|youtube api|api docs|agentic framework|frameworks|market|competitor|seo|aeo|geo)\b/.test(normalized)) {
+    return true;
+  }
+  if (/\bwhat (?:other )?(?:tools|apis|frameworks|integrations|capabilities)\b/.test(normalized)) return true;
+  return false;
+}
+
+function extractResponsesOutputText(data) {
+  if (typeof data?.output_text === 'string') return data.output_text.trim();
+  const parts = [];
+  for (const item of data?.output || []) {
+    for (const content of item?.content || []) {
+      if (typeof content?.text === 'string') parts.push(content.text);
+    }
+  }
+  return parts.join('\n').trim();
+}
+
+async function runOpenAiResearchResponse(config, messageText, system, user) {
+  if (!config.openaiApiKey) throw new Error('OPENAI_API_KEY is not configured');
+  const response = await fetch(`${config.openaiBaseUrl.replace(/\/+$/, '')}/responses`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${config.openaiApiKey}`,
+    },
+    body: JSON.stringify({
+      model: config.openaiResearchModel || config.openaiSummaryModel,
+      tools: [{ type: 'web_search' }],
+      tool_choice: 'auto',
+      include: ['web_search_call.action.sources'],
+      max_output_tokens: 900,
+      input: [
+        {
+          role: 'system',
+          content: [
+            system,
+            '',
+            'Research mode is enabled. Use web search only when it materially improves the answer.',
+            'When you use web information, include concise source links in the answer.',
+            'For BNA system questions, combine live repo/app context with research. Do not ignore the local context.',
+          ].join('\n'),
+        },
+        {
+          role: 'user',
+          content: [
+            user,
+            '',
+            'Original research trigger:',
+            String(messageText || '').trim(),
+          ].join('\n'),
+        },
+      ],
+    }),
+  });
+  const body = await response.text();
+  if (!response.ok) {
+    throw new Error(`OpenAI Responses research ${response.status}: ${body.slice(0, 700)}`);
+  }
+  const data = JSON.parse(body);
+  const text = extractResponsesOutputText(data);
+  if (!text) throw new Error('OpenAI Responses research returned no text');
+  return cleanKimiOutput(text);
+}
+
 async function runApiFallback(config, messageText, chatId, messageId) {
   const externalContextParts = [];
-  try {
-    const driveContext = await buildDriveContextForMessage(messageText);
-    if (driveContext) {
-      log(`Attached Google Drive context to API fallback message ${messageId} (${driveContext.length} chars)`);
-      externalContextParts.push(driveContext);
+  if (!isScopedProjectBot(config)) {
+    try {
+      const driveContext = await buildDriveContextForMessage(messageText);
+      if (driveContext) {
+        log(`Attached Google Drive context to API fallback message ${messageId} (${driveContext.length} chars)`);
+        externalContextParts.push(driveContext);
+      }
+    } catch (error) {
+      externalContextParts.push(`Google Drive context lookup failed: ${error instanceof Error ? error.message : String(error)}`);
+      log(`Drive context lookup failed for API fallback message ${messageId}: ${error instanceof Error ? error.message : String(error)}`);
     }
-  } catch (error) {
-    externalContextParts.push(`Google Drive context lookup failed: ${error instanceof Error ? error.message : String(error)}`);
-    log(`Drive context lookup failed for API fallback message ${messageId}: ${error instanceof Error ? error.message : String(error)}`);
   }
   try {
     const appContext = await buildBnaAppSnapshotForMessage(config, messageText);
@@ -1874,7 +2586,16 @@ async function runApiFallback(config, messageText, chatId, messageId) {
     log(`BNA app snapshot lookup failed for API fallback message ${messageId}: ${error instanceof Error ? error.message : String(error)}`);
   }
 
-  const { system, user } = buildApiFallbackMessages(messageText, chatId, messageId, externalContextParts.join('\n\n'));
+  const { system, user } = buildApiFallbackMessages(config, messageText, chatId, messageId, externalContextParts.join('\n\n'));
+  if (config.openaiApiKey && shouldUseOpenAiResearch(messageText)) {
+    try {
+      log(`Using OpenAI Responses web-search research path for message ${messageId}`);
+      const reply = await runOpenAiResearchResponse(config, messageText, system, user);
+      return { provider: 'OpenAI Research', reply, errors: [] };
+    } catch (error) {
+      log(`OpenAI research path failed for message ${messageId}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
   const providers = [
     config.openaiApiKey ? {
       kind: 'openai',
@@ -2231,7 +2952,143 @@ function isExploratoryQuestionWithoutTaskIntent(text) {
   return true;
 }
 
+function inferScopedOneTimeCategory(text) {
+  const normalized = String(text || '').toLowerCase();
+  if (/\b(marketing|ad|ads|outreach|flyer|campaign|copy)\b/.test(normalized)) return 'marketing';
+  if (/\b(content|post|blog|video|recording|caption|whatsapp|facebook)\b/.test(normalized)) return 'content';
+  if (/\b(bot|login|access|api|website|dashboard|technology|tech|software|tooling)\b/.test(normalized)) return 'technology';
+  if (/\b(accounting|payment|invoice|money|budget|tuition)\b/.test(normalized)) return 'accounting';
+  if (/\b(ghl|go high level|highlevel|crm|pipeline)\b/.test(normalized)) return 'ghl_setup';
+  if (/\b(community|participant|attendee|parent|family|group)\b/.test(normalized)) return 'community';
+  if (/\b(source sheet|sources?|mareh|makom|sefaria)\b/.test(normalized)) return 'source_sheets';
+  if (/\b(shiur idea|ideas?|topic|topics?|sugya)\b/.test(normalized)) return 'shiur_ideas';
+  if (/\b(class prep|prepare class|prep|mishnah|mishna|torah class|lesson)\b/.test(normalized)) return 'torah_class_prep';
+  if (/\b(admin|schedule|logistics|registration)\b/.test(normalized)) return 'admin';
+  return 'general';
+}
+
+function inferScopedOneTimeAssignee(text) {
+  const normalized = String(text || '').toLowerCase();
+  if (/\b(shloimie|shlomo|dratler)\b/.test(normalized)) return 'Shloimie';
+  if (/\b(rabbi elie|elie scheller|rabbi|me|mine|my task)\b/.test(normalized)) return 'Rabbi Elie Scheller';
+  return null;
+}
+
+function hasExplicitScopedTaskIntent(text) {
+  const normalized = String(text || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  if (!normalized) return false;
+  return (
+    /^\/(?:task|todo|decision)\b/.test(normalized) ||
+    /^(?:task|todo|decision)\s*[:.-]/.test(normalized) ||
+    /\b(create|add|file|make|put|open|assign)\b.{0,80}\b(task|todo|decision)\b/.test(normalized) ||
+    /\b(make this|add this|file this|turn this)\b.{0,60}\b(task|todo|decision)\b/.test(normalized) ||
+    /\b(decision required|needs decision|mark .*decision)\b/.test(normalized)
+  );
+}
+
+function scopedTaskTitleFromText(text) {
+  let title = String(text || '').trim()
+    .replace(/^\/(?:task|todo|decision)\b[:\s-]*/i, '')
+    .replace(/^(?:task|todo|decision)\s*[:.-]\s*/i, '')
+    .replace(/^(?:please\s+)?(?:create|add|file|make|put|open)\s+(?:this\s+)?(?:as\s+)?(?:a\s+)?(?:task|todo|decision)\s*(?:for\s+)?[:\s-]*/i, '')
+    .replace(/^(?:assign)\s+(?:this\s+)?(?:task\s+)?(?:to\s+)?/i, '')
+    .trim();
+  if (!title) title = String(text || '').trim();
+  title = title.replace(/\s+/g, ' ').slice(0, 180).trim();
+  return title || 'One Time task';
+}
+
+function parseScopedCommentCommand(text) {
+  const raw = String(text || '').trim();
+  const match =
+    raw.match(/^\/(?:comment|note)\s+(?:on|for)?\s*(?:task\s*)?#?(\d+)\s*[:.-]\s*([\s\S]+)$/i) ||
+    raw.match(/^(?:comment|note)\s+(?:on|for)?\s*(?:task\s*)?#?(\d+)\s*[:.-]\s*([\s\S]+)$/i) ||
+    raw.match(/^(?:task\s*)?#?(\d+)\s+(?:comment|note)\s*[:.-]\s*([\s\S]+)$/i);
+  if (!match) return null;
+  const taskId = Number(match[1]);
+  const body = String(match[2] || '').trim();
+  if (!Number.isFinite(taskId) || taskId <= 0 || !body) return null;
+  return { taskId, body };
+}
+
+async function captureScopedProjectToApp(config, text, chatId, messageId) {
+  if (!config.opsUsername || !config.opsPassword) {
+    return { enabled: false, tasksCreated: 0, eventsCreated: 0, commentsCreated: 0 };
+  }
+
+  const commentCommand = parseScopedCommentCommand(text);
+  if (commentCommand) {
+    const result = await appRequest(config, 'POST', `/api/bna/tasks/${commentCommand.taskId}/comments`, {
+      body: commentCommand.body,
+      author: config.agentDisplayName || 'Rabbi Elie Scheller',
+      visibility: 'project',
+      source: 'telegram',
+      source_context: { chat_id: chatId, message_id: messageId, bridge_profile: config.bridgeProfile },
+    });
+    return {
+      enabled: true,
+      tasksCreated: 0,
+      eventsCreated: 0,
+      commentsCreated: 1,
+      comments: [result?.comment].filter(Boolean),
+    };
+  }
+
+  if (!hasExplicitScopedTaskIntent(text)) {
+    return { enabled: true, tasksCreated: 0, eventsCreated: 0, commentsCreated: 0 };
+  }
+
+  const decisionRequired = /\b(decision required|needs decision|decision)\b/i.test(text);
+  const task = await appRequest(config, 'POST', '/api/bna/tasks', {
+    title: scopedTaskTitleFromText(text),
+    raw_text: text,
+    notes: text,
+    source: 'telegram',
+    created_by: config.bridgeProfile || 'rabbi-elie-scheller',
+    author: config.agentDisplayName || 'Rabbi Elie Scheller',
+    project_key: config.scopedProjectKey || ONE_TIME_PROJECT_KEY,
+    category: inferScopedOneTimeCategory(text),
+    assigned_to: inferScopedOneTimeAssignee(text),
+    stage: decisionRequired ? 'needs_decision' : 'assigned',
+    decision_required: decisionRequired,
+    ai_parsed: {
+      parser: 'telegram-scoped-one-time-v1',
+      kind: decisionRequired ? 'decision' : 'task',
+      original_text: text,
+      project: config.scopedProjectKey || ONE_TIME_PROJECT_KEY,
+    },
+  });
+  const createdTask = task?.task || task;
+  if (createdTask?.id) {
+    appendAgentTaskLedger({
+      event: 'task_created',
+      source: 'telegram_scoped',
+      bridge_profile: config.bridgeProfile,
+      chat_id: chatId,
+      message_id: messageId,
+      task_id: createdTask.id,
+      title: createdTask.title,
+      stage: createdTask.stage,
+      category: createdTask.category,
+      assigned_to: createdTask.assigned_to || null,
+      project_key: createdTask.project_key || config.scopedProjectKey || ONE_TIME_PROJECT_KEY,
+    });
+  }
+
+  return {
+    enabled: true,
+    tasksCreated: createdTask?.id ? 1 : 0,
+    tasks: createdTask?.id ? [createdTask] : [],
+    eventsCreated: 0,
+    commentsCreated: 0,
+  };
+}
+
 async function captureRambleToApp(config, text, chatId, messageId) {
+  if (isScopedProjectBot(config)) {
+    return captureScopedProjectToApp(config, text, chatId, messageId);
+  }
+
   if (!config.opsUsername || !config.opsPassword) {
     return { enabled: false, tasksCreated: 0, eventsCreated: 0 };
   }
@@ -2451,9 +3308,31 @@ async function sendReply(botToken, chatId, text, replyToMessageId, options = {})
   };
 }
 
-async function sendDashboardMenu(botToken, chatId, replyToMessageId) {
+async function sendDashboardMenu(config, chatId, replyToMessageId) {
+  if (isScopedProjectBot(config)) {
+    await sendReply(
+      config.botToken,
+      chatId,
+      [
+        'One Time bot is live.',
+        '',
+        'Scope: One Time Mishnah Class tasks, comments, decisions, shiur ideas, source sheets, and class prep.',
+        'Dashboard: https://bneineviimacademy.org/operations?view=tasks',
+        '',
+        'Useful commands:',
+        '- /queue',
+        '- /status',
+        '- /help',
+        '- task: prepare source sheet for...',
+        '- comment task #123: ...',
+      ].join('\n'),
+      replyToMessageId
+    );
+    return;
+  }
+
   await sendReply(
-    botToken,
+    config.botToken,
     chatId,
     [
       'BNA Telegram bridge is live. Ramble in plain English or open a lane.',
@@ -2643,6 +3522,10 @@ function captureSummaryText(captureSummary = {}) {
     lines.push(`Filed in Accounting: ${captureSummary.paymentIntakeCreated} payment intake item(s).`);
   }
 
+  if (captureSummary.commentsCreated) {
+    lines.push(`Filed in One Time comments: ${captureSummary.commentsCreated} comment(s).`);
+  }
+
   return lines.length ? lines.join('\n') : 'Captured in BNA.';
 }
 
@@ -2651,6 +3534,7 @@ function hasStructuredCapture(captureSummary = {}) {
     Number(captureSummary.tasksCreated || 0) ||
     Number(captureSummary.eventsCreated || 0) ||
     Number(captureSummary.paymentIntakeCreated || 0) ||
+    Number(captureSummary.commentsCreated || 0) ||
     captureSummary.studentMatchDecisions?.length
   );
 }
@@ -2982,7 +3866,7 @@ async function runAgentReplyJob(job) {
   try {
     if (String(config.primaryAgent || '').toLowerCase() === 'kimi') {
       replyProvider = 'Kimi CLI';
-      reply = await runKimi(buildKimiPrompt(text, chatId, messageId), config.kimiModel, config.kimiTimeoutMs);
+      reply = await runKimi(buildKimiPrompt(config, text, chatId, messageId), config.kimiModel, config.kimiTimeoutMs);
     } else {
       reply = await runCodex(prompt, config);
     }
@@ -4358,10 +5242,14 @@ function detectWeeklyTranscriptTopicIntent(text) {
   const normalized = String(text || '').toLowerCase();
   if (!normalized.trim()) return false;
 
+  const operationalSystemAsk = /\b(dashboard|operations|system|task|tasks|queue|queued|pending|section|sections|buttons?|actions?|accountability|students?|contacts?|accounting|payments?|devices?|tablet|codex|agent|fleet|logistics|scheduling|status|updates?|audit|order|sort|brainstorm)\b/.test(normalized);
+  const explicitTranscriptSource = /\b(transcripts?|recordings?|audios?|videos?|content jobs?|class recordings?|class transcript|raw transcript)\b/.test(normalized);
+  const explicitClassContentAsk = /\b(class content|torah topics?|learning topics?|what we learned|covered in class|sources?|pesukim|parsha|shiur topics?)\b/.test(normalized);
   const mentionsSource = /\b(transcripts?|recordings?|audios?|videos?|content jobs?|all the files|all of them|whole week|this week|rest of the week)\b/.test(normalized);
   const asksForTopics = /\b(list|go through|actual things|topics?|covered|learned|what we learned|discussed|class report|all notes|everything we learned)\b/.test(normalized);
   const asksForFinalDraft = /\b(newsletter|parent update|whatsapp|facebook|post|copy block|caption|draft)\b/.test(normalized);
 
+  if (operationalSystemAsk && !(explicitTranscriptSource && explicitClassContentAsk)) return false;
   return mentionsSource && asksForTopics && !asksForFinalDraft;
 }
 
@@ -5218,10 +6106,58 @@ async function parseMixedContentJob(config, jobId, options = {}) {
   });
 }
 
+async function handleScopedStructuredTextCommand(config, msg) {
+  const chatId = String(msg.chat.id);
+  const messageId = msg.message_id;
+  const text = getTelegramMessageText(msg);
+
+  if (text === '/help' || text === '/capabilities' || text === '/openai_capabilities') {
+    await sendReply(
+      config.botToken,
+      chatId,
+      [
+        'One Time bot commands:',
+        '- Plain messages use scoped OpenAI chat for brainstorming and organization',
+        '- /status',
+        '- /queue',
+        '- task: prepare source sheet for...',
+        '- decision: choose registration flow...',
+        '- comment task #123: add this context...',
+        '',
+        'Scope: One Time Mishnah Class tasks, comments, decisions, shiur ideas, source sheets, Torah class prep, marketing, community, GHL setup, admin, and accounting planning.',
+        'Not available here: BNA Students, Accounting, Devices, broad Content jobs, Drive/GHL posting commands, agent fleet, OpenAI smoke, or Codex repo execution.',
+      ].join('\n'),
+      messageId
+    );
+    return true;
+  }
+
+  if (text === '/queue' || text === '/tasks') {
+    await sendReply(config.botToken, chatId, await formatLiveTaskQueueReply(config), messageId);
+    return true;
+  }
+
+  if (/^\/(?:accounts|blogs|drive_auth|sync_drive_memory|pull_drive_memory|ingest_drive|drive|website_images|edit_video|video_edit|remotion_edit|edit_drive|edit_drop|drop_edit|smoke_openai|openai_smoke|railway_deploy|deploy|railway_doctor|agent_fleet|fleet_)/i.test(text)) {
+    await sendReply(
+      config.botToken,
+      chatId,
+      'That command is not enabled for the scoped One Time bot. This bot only handles One Time task collaboration and brainstorming.',
+      messageId
+    );
+    return true;
+  }
+
+  return false;
+}
+
 async function handleStructuredTextCommand(config, msg) {
   const chatId = String(msg.chat.id);
   const messageId = msg.message_id;
   const text = getTelegramMessageText(msg);
+
+  if (isScopedProjectBot(config)) {
+    return handleScopedStructuredTextCommand(config, msg);
+  }
 
   if (text === '/help') {
     await sendReply(
@@ -5234,6 +6170,7 @@ async function handleStructuredTextCommand(config, msg) {
         '- /status',
         '- /capabilities',
         '- /smoke_openai',
+        '- /railway_deploy',
         '- /agent_fleet_status',
         '- /agent_fleet_start',
         '- /agent_fleet_once',
@@ -5276,10 +6213,11 @@ async function handleStructuredTextCommand(config, msg) {
         `Kimi fallback: ${config.kimiApiKey ? `configured (${config.kimiApiModel})` : 'missing'}`,
         '',
         'Can read/summarize:',
-        '- AGENTS, MEMORY, TASKS, SYSTEM-STATE, newest tasks-pending briefs',
+        '- AGENTS, MEMORY, TASKS, SYSTEM-STATE, internal Codex handoff notes',
         '- Today memory, shared agent ledger, and agent changelog tails',
         '- Live BNA app snapshots for task/student/content/accounting/system questions',
         '- Google Drive pipeline snapshots for Drive/upload/intake questions',
+        '- Web research through OpenAI Responses web_search for current/API/framework/research questions',
         '',
         'Can write safely through the bridge:',
         '- Create Tasks, Student accountability items, Accounting/payment intake, Content jobs, Decisions',
@@ -5291,7 +6229,7 @@ async function handleStructuredTextCommand(config, msg) {
         '',
         'Routes to Codex instead of pretending:',
         '- Code edits, filesystem writes, migrations, deployments, tests, destructive changes, and long implementation work',
-        '- Autonomous agent-fleet worker can claim Codex Queue tasks, run Codex, run verifier smokes, update Changelog/ledger, and notify Telegram',
+        '- Autonomous agent-fleet worker can claim queued Changelog tasks, run Codex, run verifier smokes, update Changelog/ledger, and notify Telegram',
         '',
         'Sync trail:',
         '- memory/YYYY-MM-DD.md',
@@ -5316,6 +6254,22 @@ async function handleStructuredTextCommand(config, msg) {
         config.botToken,
         chatId,
         `OpenAI sidekick smoke failed: ${error instanceof Error ? error.message : String(error)}`,
+        messageId
+      );
+    }
+    return true;
+  }
+
+  if (text === '/railway_deploy' || text === '/deploy' || text === '/railway_doctor') {
+    try {
+      await sendReply(config.botToken, chatId, 'Running Railway deploy and live doctor now. I will send the result here when it finishes.', messageId);
+      const output = await runRailwayDeployAndDoctor();
+      await sendReply(config.botToken, chatId, output.slice(-3500) || 'Railway deploy and doctor completed.', messageId);
+    } catch (error) {
+      await sendReply(
+        config.botToken,
+        chatId,
+        `Railway deploy/doctor failed: ${error instanceof Error ? error.message : String(error)}`.slice(0, 3500),
         messageId
       );
     }
@@ -6837,12 +7791,21 @@ async function handleTextMessage(config, msg) {
   }
 
   if (text === '/start') {
-    await sendDashboardMenu(config.botToken, chatId, messageId);
+    await sendDashboardMenu(config, chatId, messageId);
     return;
   }
 
   const requestedMode = detectTelegramModeButton(text);
   if (requestedMode) {
+    if (requestedMode === 'codex' && !config.codexEnabled) {
+      await sendReply(
+        config.botToken,
+        chatId,
+        'Codex mode is not enabled for this scoped bot. One Time chat stays on OpenAI API with scoped task access.',
+        messageId
+      );
+      return;
+    }
     const mode = setTelegramChatMode(chatId, requestedMode);
     appendMemoryEntry('Telegram Reply Mode', `Mode set to ${mode}.`, {
       chat_id: chatId,
@@ -6862,11 +7825,30 @@ async function handleTextMessage(config, msg) {
   if (text === '/status') {
     const queueCount = listPendingJobs(50).length;
     const chatMode = getTelegramChatMode(chatId, config);
+    if (isScopedProjectBot(config)) {
+      await sendReply(
+        config.botToken,
+        chatId,
+        [
+          'Bridge status: online',
+          `Profile: ${config.bridgeProfileLabel}`,
+          'Scope: One Time Mishnah Class tasks/comments only',
+          `Telegram mode: ${chatMode === 'codex' ? 'Codex' : 'OpenAI API default'}`,
+          `API path: OpenAI API (${config.openaiSummaryModel}) -> Kimi API (${config.kimiApiModel})`,
+          `API keys: OpenAI ${config.openaiApiKey ? 'configured' : 'missing'}, Kimi ${config.kimiApiKey ? 'configured' : 'missing'}`,
+          `Scoped Operations login: ${config.opsUsername && config.opsPassword ? 'configured' : 'missing'}`,
+          `Allowed chats: ${config.allowedChatIds.join(',') || 'all'}`,
+        ].join('\n'),
+        messageId,
+      );
+      return;
+    }
     await sendReply(
       config.botToken,
       chatId,
       [
         'Bridge status: online',
+        `Profile: ${config.bridgeProfileLabel}`,
         `Telegram mode: ${chatMode === 'codex' ? 'Codex' : 'OpenAI API default'}`,
         `Codex CLI: ${config.codexCommand}${config.codexModel ? ` (${config.codexModel})` : ''}`,
         `API path: OpenAI API (${config.openaiSummaryModel}) -> Kimi API (${config.kimiApiModel})`,
@@ -6891,7 +7873,8 @@ async function handleTextMessage(config, msg) {
     return;
   }
 
-  if (await handleStructuredTextCommand(config, msg)) {
+  const multipartSpecChunk = looksLikeMultipartSpecChunk(text);
+  if (!multipartSpecChunk && await handleStructuredTextCommand(config, msg)) {
     appendMemoryEntry('Telegram Action', text, {
       chat_id: chatId,
       message_id: messageId,
@@ -6912,8 +7895,9 @@ async function handleTextMessage(config, msg) {
   let captureSummary = { enabled: false, tasksCreated: 0, eventsCreated: 0, paymentIntakeCreated: 0 };
   try {
     captureSummary = await captureRambleToApp(config, text, chatId, messageId);
+    captureSummary = await handleMultipartSpecContext(config, text, chatId, messageId, captureSummary);
     log(
-      `Capture summary for chat ${chatId} message ${messageId}: tasks=${captureSummary.tasksCreated || 0}, events=${captureSummary.eventsCreated || 0}, payments=${captureSummary.paymentIntakeCreated || 0}`
+      `Capture summary for chat ${chatId} message ${messageId}: tasks=${captureSummary.tasksCreated || 0}, events=${captureSummary.eventsCreated || 0}, payments=${captureSummary.paymentIntakeCreated || 0}, comments=${captureSummary.commentsCreated || 0}`
     );
     appendMemoryEntry('BNA Capture', JSON.stringify(captureSummary), {
       chat_id: chatId,
@@ -6942,7 +7926,7 @@ async function handleTextMessage(config, msg) {
   const codexWorkText = trackedCodexTasks.length
     ? buildCodexTaskWorkMessage(text, trackedCodexTasks, trackedTaskSource)
     : text;
-  const prompt = buildCodexPrompt(codexWorkText, chatId, messageId);
+  const prompt = buildCodexPrompt(config, codexWorkText, chatId, messageId);
 
   if (replyRouting.mode === 'codex' && config.asyncAgentReplies) {
     const queued = enqueueAgentReplyJob({
@@ -7005,7 +7989,7 @@ async function handleTextMessage(config, msg) {
       log(`OpenAI default reply failed, trying Kimi CLI fallback without Codex: ${message}`);
       try {
         replyProvider = 'Kimi CLI fallback';
-        const kimiReply = await runKimi(buildKimiPrompt(text, chatId, messageId), config.kimiModel, config.kimiTimeoutMs);
+        const kimiReply = await runKimi(buildKimiPrompt(config, text, chatId, messageId), config.kimiModel, config.kimiTimeoutMs);
         reply = [
           'By the way, this is Kimi fallback. OpenAI API was unavailable for this reply, so Kimi is answering using the BNA repo context files that the bridge passed in.',
           '',
@@ -7030,7 +8014,7 @@ async function handleTextMessage(config, msg) {
     try {
       if (String(config.primaryAgent || '').toLowerCase() === 'kimi') {
         replyProvider = 'Kimi CLI';
-        reply = await runKimi(buildKimiPrompt(text, chatId, messageId), config.kimiModel, config.kimiTimeoutMs);
+        reply = await runKimi(buildKimiPrompt(config, text, chatId, messageId), config.kimiModel, config.kimiTimeoutMs);
       } else {
         reply = await runCodex(prompt, config);
       }
@@ -7509,26 +8493,29 @@ async function getBotIdentity(botToken) {
 }
 
 async function main() {
-  if (process.argv[2] === 'ingest-website-image-once') {
+  const args = commandArgs();
+  const command = args[0] || '';
+
+  if (command === 'ingest-website-image-once') {
     const config = loadConfig();
     const chatId = config.allowedChatIds[0];
     if (!chatId) throw new Error('No allowed Telegram chat id is configured for one-off website image ingest.');
     await handleWebsiteImageIngestCommand(config, {
       chat: { id: chatId },
       message_id: Math.floor(Date.now() / 1000),
-      text: `/website_images ${process.argv.slice(3).join(' ')}`.trim(),
+      text: `/website_images ${args.slice(1).join(' ')}`.trim(),
     });
     return;
   }
 
-  if (process.argv[2] === 'ingest-drive-once') {
+  if (command === 'ingest-drive-once') {
     const config = loadConfig();
     const chatId = config.allowedChatIds[0];
     if (!chatId) throw new Error('No allowed Telegram chat id is configured for one-off Drive ingest.');
     await handleDriveIngestCommand(config, {
       chat: { id: chatId },
       message_id: Math.floor(Date.now() / 1000),
-      text: `/ingest_drive ${process.argv.slice(3).join(' ')}`.trim(),
+      text: `/ingest_drive ${args.slice(1).join(' ')}`.trim(),
     });
     return;
   }
@@ -7546,8 +8533,14 @@ async function main() {
 
   const config = loadConfig();
   if (!config.botToken) {
-    throw new Error('No Telegram bot token found. Set TELEGRAM_BOT_TOKEN or add .secrets/telegram-bot-token.txt.');
+    throw new Error(isScopedProjectBot(config)
+      ? 'No Rabbi Elie Telegram bot token found. Set TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER or add .secrets/telegram-rabbi-elie-scheller-bot-token.txt.'
+      : 'No Telegram bot token found. Set TELEGRAM_BOT_TOKEN or add .secrets/telegram-bot-token.txt.');
   }
+  if (isScopedProjectBot(config) && (!config.opsUsername || !config.opsPassword)) {
+    throw new Error('Rabbi Elie scoped bot requires ONE_TIME_OPS_USERNAME and ONE_TIME_OPS_PASSWORD (or RABBI_ELIE_SCHELLER_OPS_USERNAME/PASSWORD aliases).');
+  }
+  activeTelegramCodexEnabled = Boolean(config.codexEnabled);
   activeTokenFingerprint = config.botToken.slice(0, 10).replace(/[^a-zA-Z0-9_-]/g, '_');
 
   const botIdentity = await getBotIdentity(config.botToken);
@@ -7555,7 +8548,7 @@ async function main() {
     ? await getBotIdentity(config.academyToken)
     : null;
 
-  if (config.academyToken && config.botToken !== config.academyToken) {
+  if (!isScopedProjectBot(config) && config.academyToken && config.botToken !== config.academyToken) {
     throw new Error('Bridge refused to start because the selected Telegram token is not the academy token.');
   }
 
@@ -7566,7 +8559,7 @@ async function main() {
   let nextDriveWatchAt = 0;
   let nextTaskWatchAt = Date.now() + 5000;
   log(
-    `Bridge starting. Bot=${botIdentity.username || botIdentity.firstName || botIdentity.id} TelegramDefault=${config.telegramDefaultReplyMode || 'openai'} BuildAgent=${config.primaryAgent || 'codex'} CodexModel=${config.codexModel || 'default'} ApiFallback=${config.openaiSummaryModel}->${config.kimiApiModel} OpenAIKey=${config.openaiApiKey ? 'yes' : 'no'} KimiKey=${config.kimiApiKey ? 'yes' : 'no'} AllowedChats=${config.allowedChatIds.join(',') || 'all'}`
+    `Bridge starting. Profile=${config.bridgeProfileLabel} Bot=${botIdentity.username || botIdentity.firstName || botIdentity.id} TelegramDefault=${config.telegramDefaultReplyMode || 'openai'} BuildAgent=${config.codexEnabled ? (config.primaryAgent || 'codex') : 'disabled'} CodexModel=${config.codexModel || 'default'} ApiFallback=${config.openaiSummaryModel}->${config.kimiApiModel} OpenAIKey=${config.openaiApiKey ? 'yes' : 'no'} KimiKey=${config.kimiApiKey ? 'yes' : 'no'} AllowedChats=${config.allowedChatIds.join(',') || 'all'}`
   );
   if (academyIdentity) {
     log(`Academy token resolves to ${academyIdentity.username || academyIdentity.firstName || academyIdentity.id}`);
@@ -7588,7 +8581,7 @@ async function main() {
       );
       clearTimeout(timeout);
 
-      if (!updates.length && !busy && Date.now() >= nextDriveWatchAt) {
+      if (!isScopedProjectBot(config) && !updates.length && !busy && Date.now() >= nextDriveWatchAt) {
         nextDriveWatchAt = Date.now() + config.driveWatchIntervalMs;
         busy = true;
         try {
@@ -7603,7 +8596,7 @@ async function main() {
         }
       }
 
-      if (!busy && Date.now() >= nextTaskWatchAt) {
+      if (!isScopedProjectBot(config) && !busy && Date.now() >= nextTaskWatchAt) {
         nextTaskWatchAt = Date.now() + config.taskWatchIntervalMs;
         busy = true;
         try {
@@ -7655,7 +8648,16 @@ async function main() {
           } else if (msg.text) {
             await handleTextMessage(config, msg);
           } else if (detectMediaDescriptor(msg)) {
-            await handleMediaMessage(config, msg);
+            if (isScopedProjectBot(config)) {
+              await sendReply(
+                config.botToken,
+                String(msg.chat.id),
+                'Media intake is not enabled for the scoped One Time bot yet. Send text task/comment/brainstorm messages here, or use the academy bot for media workflows.',
+                msg.message_id,
+              );
+            } else {
+              await handleMediaMessage(config, msg);
+            }
           } else {
             await sendReply(
               config.botToken,

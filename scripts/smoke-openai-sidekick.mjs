@@ -101,6 +101,14 @@ function compactPayment(item) {
   };
 }
 
+function countBy(items = [], field, fallback = 'unknown') {
+  return (Array.isArray(items) ? items : []).reduce((counts, item) => {
+    const key = String(item?.[field] || fallback);
+    counts[key] = (counts[key] || 0) + 1;
+    return counts;
+  }, {});
+}
+
 function sanitizeForPrompt(summary) {
   return JSON.parse(JSON.stringify(summary, (key, value) => {
     if (/password|token|secret|key|authorization|access_code|pin/i.test(key)) return '[redacted]';
@@ -127,9 +135,15 @@ async function collectAppData(config) {
     health: '/api/health',
     projects: '/api/bna/projects',
     tasks: '/api/bna/tasks',
+    agentFleet: '/api/bna/agent-fleet/status',
     students: '/api/bna/students',
     torah: '/api/bna/torah-learning',
+    accountability: '/api/bna/accountability?limit=40',
+    devices: '/api/bna/devices',
+    deviceAccessRules: '/api/bna/device-access-rules',
     contentJobs: '/api/bna/content-jobs',
+    contentPrompts: '/api/bna/content-prompts',
+    contentBundles: '/api/bna/content-bundles',
     signups: '/api/bna/signups',
     paymentIntake: '/api/bna/payment-intake',
     payments: '/api/bna/payments',
@@ -269,6 +283,11 @@ async function askOpenAi(config, expected, promptData) {
               'pending_payment_students',
               'drive_raw_folder_name',
               'repo_transcript_export_count',
+              'operations_sections',
+              'task_stage_counts',
+              'content_prompt_count',
+              'device_count',
+              'agent_fleet_status',
             ],
             expected_shape: expected,
             system_data: promptData,
@@ -374,6 +393,8 @@ async function main() {
   const activeTasks = tasks.filter((task) => !['done', 'archive'].includes(String(task.stage || '')));
   const codexTasks = activeTasks.filter((task) => /codex|kimi|system|agent/i.test(String(task.assigned_to || '')));
   const students = app.result.students?.data?.students || [];
+  const devices = app.result.devices?.data?.devices || [];
+  const contentPrompts = app.result.contentPrompts?.data?.prompts || [];
   const contentJobs = app.result.contentJobs?.data?.jobs || [];
   const transcriptJobs = contentJobs.filter((job) => String(job.transcript_text || '').trim());
   const signups = app.result.signups?.data?.signups || [];
@@ -412,15 +433,32 @@ async function main() {
     pending_payment_students: [...new Set(pendingPaymentStudents)],
     drive_raw_folder_name: drive.folders?.rawIntake?.name || null,
     repo_transcript_export_count: repo.transcript_export_count,
+    operations_sections: ['Tasks', 'Students', 'Content', 'Contacts', 'Accounting'],
+    task_stage_counts: countBy(tasks, 'stage'),
+    content_prompt_count: contentPrompts.length,
+    device_count: devices.length,
+    agent_fleet_status: app.result.agentFleet?.data?.fleet?.status || app.result.agentFleet?.data?.status || 'unknown',
   };
 
   const promptData = sanitizeForPrompt({
     repo,
     app: {
       projects: app.result.projects?.data?.projects || [],
+      operations_ui: {
+        sections: expected.operations_sections,
+        subtabs: {
+          Tasks: ['Overview', 'Decisions', 'My Tasks', 'Rabbi Tasks', 'Codex Queue', 'Changelog', 'Done'],
+          Students: ['Overview', 'Group Goal', 'Student List', 'Student Profile', 'Goal Board', 'Tablet Access', 'Questions', 'Portal Links'],
+          Content: ['Library', 'Selected', 'Repurpose', 'Newsletter', 'Prompts', 'Bundles'],
+          Contacts: ['Parents', 'Students', 'Intake', 'Needs Follow-up', 'Tags'],
+          Accounting: ['Overview', 'Payments', 'Needs Attention', 'Paid', 'Needs Signup', 'Exceptions'],
+        },
+        actions: ['Open card/details', 'Add comment', 'Mark done', 'Select content', 'View/Edit Prompt', 'Make output', 'Mark follow-up', 'Open student', 'Review payment status'],
+      },
       tasks: {
         active_codex: codexTasks.map(compactTask),
         active_total: activeTasks.length,
+        stage_counts: expected.task_stage_counts,
       },
       students: students.map(compactStudent),
       torah: {
@@ -432,7 +470,21 @@ async function main() {
       },
       content: {
         transcript_jobs: transcriptJobs.map(compactContentJob),
+        prompts: contentPrompts.map((prompt) => ({
+          platform: prompt.platform,
+          label: prompt.label || prompt.title || prompt.platform,
+          version: prompt.version,
+          examples: Array.isArray(prompt.examples) ? prompt.examples.length : 0,
+        })),
+        bundles: app.result.contentBundles?.data?.bundles || [],
       },
+      devices: devices.map((device) => ({
+        id: device.id,
+        student_name: device.student?.name || device.student_name || null,
+        device_name: device.device_name,
+        status: device.status,
+      })),
+      agent_fleet: app.result.agentFleet?.data || {},
       accounting: {
         pending_payment_students: expected.pending_payment_students,
         sample_payments: payments.slice(0, 12).map(compactPayment),
@@ -465,6 +517,11 @@ async function main() {
     detail: `${Object.keys(app.result).length} endpoints returned`,
   });
   checks.push({
+    name: 'Operations system endpoints readable',
+    ok: ['agentFleet', 'accountability', 'devices', 'deviceAccessRules', 'contentPrompts', 'contentBundles'].every((key) => app.result[key]?.ok),
+    detail: `${expected.operations_sections.length} sections, ${expected.content_prompt_count} prompts, ${expected.device_count} devices`,
+  });
+  checks.push({
     name: 'Drive folders readable',
     ok: Boolean(drive.ok && drive.folders?.rawIntake?.name && drive.folders?.processedRecordings?.name),
     detail: drive.ok ? `${Object.keys(drive.folders || {}).length} folders read as ${drive.account}` : drive.error,
@@ -485,6 +542,18 @@ async function main() {
     detail: `expected ${expected.transcript_job_count}, got ${openaiAnswer?.transcript_job_count}`,
   });
   checks.push({
+    name: 'OpenAI returned Operations section map',
+    ok: expected.operations_sections.every((section) => normalizeArray(openaiAnswer?.operations_sections).includes(section)),
+    detail: `${expected.operations_sections.join(', ')}`,
+  });
+  checks.push({
+    name: 'OpenAI returned live dashboard counts',
+    ok:
+      Number(openaiAnswer?.content_prompt_count) === expected.content_prompt_count &&
+      Number(openaiAnswer?.device_count) === expected.device_count,
+    detail: `prompts ${expected.content_prompt_count}, devices ${expected.device_count}`,
+  });
+  checks.push({
     name: 'OpenAI returned Drive raw folder name',
     ok: String(openaiAnswer?.drive_raw_folder_name || '') === String(expected.drive_raw_folder_name || ''),
     detail: expected.drive_raw_folder_name || 'missing',
@@ -495,7 +564,9 @@ async function main() {
     active_tasks: activeTasks.length,
     active_codex_tasks: codexTasks.length,
     students: students.length,
+    devices: devices.length,
     transcript_jobs: transcriptJobs.length,
+    content_prompts: contentPrompts.length,
     pending_payment_students: expected.pending_payment_students.length,
     drive_folders: Object.keys(drive.folders || {}).length,
   };
@@ -528,6 +599,9 @@ async function main() {
     `Repo files: ${Object.values(repo.files).filter((file) => file.exists).length} readable`,
     `Transcript exports: ${repo.transcript_export_count}`,
     `Protected app endpoints: ${Object.keys(app.result).length} readable`,
+    `Operations sections: ${expected.operations_sections.join(', ')}`,
+    `Content prompts: ${expected.content_prompt_count}`,
+    `Devices: ${expected.device_count}`,
     `Drive folders: ${Object.keys(drive.folders || {}).length} readable`,
     `OpenAI model: ${config.openaiModel}`,
     '',

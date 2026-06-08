@@ -76,8 +76,8 @@
             color: white;
         }
 
-        .form-section { padding: 3rem 1.25rem 5rem; }
-        .container { max-width: 760px; margin: 0 auto; }
+        .form-section { padding: 3rem clamp(1rem, 4vw, 3rem) 5rem; }
+        .container { width: min(1120px, 100%); margin: 0 auto; }
 
         .form-header {
             text-align: center;
@@ -98,8 +98,8 @@
 
         .form-card {
             background: var(--white);
-            padding: 2.5rem;
-            border-radius: 18px;
+            padding: clamp(1.5rem, 4vw, 3.25rem);
+            border-radius: 24px;
             box-shadow: 0 20px 40px rgba(30, 58, 95, 0.15);
             border: 1px solid rgba(30, 58, 95, 0.1);
         }
@@ -235,44 +235,246 @@
             border: 1px solid #f5c6cb;
         }
 
-        .waiver-box {
+        .document-signature-intro {
+            color: #475569;
+            line-height: 1.65;
+            margin: -0.35rem 0 1rem;
+        }
+
+        .document-signature-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .document-card,
+        .agreement-card {
             background: #f8fafc;
             border: 1px solid #dbe3ef;
-            border-radius: 14px;
+            border-radius: 18px;
             padding: 1.25rem;
             margin-top: 1rem;
         }
 
-        .waiver-box h4 {
+        .document-card {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 0.9rem;
+            align-items: start;
+            margin-top: 0;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+        }
+
+        .document-card.is-signed {
+            border-color: rgba(22, 101, 52, 0.35);
+            background: #f0fdf4;
+        }
+
+        .document-card:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 14px 28px rgba(30, 58, 95, 0.1);
+        }
+
+        .document-card-number {
+            width: 2.2rem;
+            height: 2.2rem;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 999px;
+            background: var(--primary-blue);
+            color: #fff;
+            font-weight: 900;
+        }
+
+        .document-card-main {
+            min-width: 0;
+        }
+
+        .document-card h4,
+        .agreement-card h4 {
             color: var(--primary-blue);
-            font-size: 1rem;
-            margin-bottom: 0.75rem;
+            font-size: 1.08rem;
+            margin-bottom: 0.55rem;
         }
 
-        .waiver-text {
-            max-height: 230px;
-            overflow-y: auto;
-            background: #fff;
-            border: 1px solid #e2e8f0;
-            border-radius: 10px;
-            padding: 1rem;
+        .document-card p,
+        .agreement-card p {
             color: #475569;
-            font-size: 0.95rem;
-            line-height: 1.65;
+            line-height: 1.6;
         }
 
-        .waiver-check {
-            display: flex;
-            gap: 0.6rem;
-            align-items: flex-start;
+        .agreement-open-btn {
+            width: 100%;
             margin-top: 1rem;
+            padding: 0.9rem 1.2rem;
+            border: none;
+            border-radius: 999px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: #fff;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 900;
+            box-shadow: 0 12px 22px rgba(30, 58, 95, 0.18);
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+
+        .document-open-btn {
+            grid-column: 1 / -1;
+        }
+
+        .agreement-open-btn:hover:not(:disabled) {
+            transform: translateY(-1px);
+            box-shadow: 0 16px 28px rgba(30, 58, 95, 0.22);
+        }
+
+        .agreement-open-btn:disabled,
+        .agreement-sign-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.55;
+            box-shadow: none;
+        }
+
+        .signature-status {
+            margin-top: 0.85rem;
+            padding: 0.8rem 0.95rem;
+            border-radius: 10px;
+            background: #fff7ed;
+            color: #9a3412;
+            font-size: 0.92rem;
+            font-weight: 700;
+        }
+
+        .signature-status.is-signed {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-overlay.show {
+            display: flex;
+        }
+
+        body.document-modal-open {
+            overflow: hidden;
+        }
+
+        .agreement-dialog {
+            width: min(1040px, calc(100vw - 2rem));
+            height: min(90vh, 900px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border-radius: 24px;
+            background: #fff;
+            box-shadow: 0 24px 70px rgba(15, 23, 42, 0.32);
+            direction: ltr;
+            text-align: left;
+        }
+
+        .agreement-dialog-header,
+        .agreement-dialog-footer {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .agreement-dialog-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .agreement-dialog-header h3 {
+            margin: 0 0 0.25rem;
+            color: var(--primary-blue);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+        }
+
+        .agreement-close-btn {
+            border: none;
+            background: #e2e8f0;
+            color: #1e293b;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: 800;
+            padding: 0.55rem 0.8rem;
+        }
+
+        .agreement-document {
+            overflow-y: auto;
+            padding: clamp(1.2rem, 3vw, 2.2rem);
+            color: #1e293b;
+            font-size: 1.05rem;
+            line-height: 1.75;
+            flex: 1;
+        }
+
+        .agreement-document p,
+        .agreement-document li {
+            margin: 0 0 1rem;
+        }
+
+        .agreement-document h3 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 2rem;
+            color: var(--primary-blue);
+            margin: 0 0 1rem;
+        }
+
+        .agreement-document h4 {
+            color: var(--secondary-blue);
+            margin: 1.4rem 0 0.7rem;
+            font-size: 1.2rem;
+        }
+
+        .agreement-document h5 {
+            color: var(--primary-blue);
+            margin: 1rem 0 0.5rem;
+            font-size: 1.05rem;
+        }
+
+        .agreement-document ul {
+            padding-inline-start: 1.4rem;
+            margin: 0 0 1rem;
+        }
+
+        .agreement-dialog-footer {
+            border-top: 1px solid #e2e8f0;
+            border-bottom: none;
+            background: #f8fafc;
+        }
+
+        .signature-preview {
+            margin-bottom: 0.9rem;
             color: #334155;
             font-weight: 700;
         }
 
-        .waiver-check input {
-            margin-top: 0.2rem;
-            width: auto;
+        .agreement-sign-btn {
+            width: 100%;
+            padding: 1rem 1.2rem;
+            border: none;
+            border-radius: 999px;
+            background: var(--accent-gold);
+            color: var(--dark-text);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 900;
+            box-shadow: 0 12px 22px rgba(201, 162, 39, 0.24);
         }
 
         footer {
@@ -284,9 +486,30 @@
 
         @media (max-width: 768px) {
             .form-row { grid-template-columns: 1fr; }
-            .form-card { padding: 1.5rem; }
+            .document-signature-list { grid-template-columns: 1fr; }
+            .form-card { padding: 1.35rem; border-radius: 18px; }
             .nav-container { align-items: flex-start; }
             .nav-actions { flex-wrap: wrap; justify-content: flex-end; }
+            .modal-overlay.document-modal {
+                padding: 0;
+                align-items: stretch;
+            }
+            .agreement-dialog {
+                width: 100vw;
+                height: 100dvh;
+                max-height: none;
+                border-radius: 0;
+            }
+            .agreement-dialog-header,
+            .agreement-dialog-footer {
+                padding: 1rem;
+            }
+            .agreement-dialog-header h3 {
+                font-size: 1.55rem;
+            }
+            .agreement-document {
+                font-size: 1rem;
+            }
         }
     </style>
 </head>
@@ -306,8 +529,9 @@
     <section class="form-section">
         <div class="container">
             <div class="form-header">
-                <h1>טופס הרשמה</h1>
-                <p>הרשמה ל-Bnei Nevi'im Academy</p>
+                <h1>Bnei Nevi'im Academy Registration</h1>
+                <p>2026-2027 / תשפ"ז</p>
+                <p>הרשמה לבני נביאים אקדמי<br>לשנת תשפ"ז / 2026-2027</p>
             </div>
 
             <div class="form-card">
@@ -395,7 +619,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label>בחרו כיצד תרצו לשלם את דמי ההרשמה</label>
+                        <label>בחרו כיצד תרצו לשלם את התשלום הראשון של שכר הלימוד</label>
                         <div class="payment-options">
                             <label class="payment-option" for="payment-credit">
                                 <input type="radio" id="payment-credit" name="payment_method" value="credit" checked>
@@ -405,26 +629,23 @@
                                 <input type="radio" id="payment-cash" name="payment_method" value="cash">
                                 <div class="payment-option-card">מזומן</div>
                             </label>
+                            <label class="payment-option" for="payment-bank-transfer">
+                                <input type="radio" id="payment-bank-transfer" name="payment_method" value="bank_transfer">
+                                <div class="payment-option-card">העברה בנקאית</div>
+                            </label>
                         </div>
-                        <p class="payment-note">אשראי יעביר לעמוד תשלום מאובטח לאחר השליחה. מזומן יירשם אצלנו להמשך מעקב.</p>
+                        <p class="payment-note">אשראי יעביר לעמוד תשלום מאובטח לאחר השליחה. מזומן והעברה בנקאית יירשמו אצלנו להמשך מעקב.</p>
                     </div>
 
                     <div class="section-divider">
-                        <h3>אישור והצהרת הורים</h3>
+                        <h3 id="documentSignatureHeading">מסמכי הרשמה נדרשים</h3>
                     </div>
 
-                    <div class="waiver-box">
-                        <h4>אישור הורים - Bnei Neviim Academy</h4>
-                        <div class="waiver-text">
-                            <p>אני מבין/ה כי Bnei Neviim Academy היא מסגרת לימודית/חינוכית וליווי, וכי בני עשוי להיפגש עם המדריך ועם תלמידים נוספים בבית, במקום פתוח, או במקום אחר שסוכם. אני מבין/ה כי המדריך ישתדל באופן סביר להשגיח על הבחורים ולקיים סביבה בטוחה ומכבדת.</p>
-                            <p>אני מאשר/ת כי האחריות לתת לבני הוראות ברורות לגבי הגעה, חציית כבישים, יציאה או הישארות במקום, השתתפות ביציאות, וכל גבול או הנחיית בטיחות אישית, נשארת בידי ההורה/אפוטרופוס. אם ההורה אינו רוצה שבנו יצא ממקום מסוים, יחצה כביש, יצטרף ליציאה, או ישתתף בפעילות מסוימת, על ההורה להודיע זאת בבירור לילד ולמדריך מראש.</p>
-                            <p>אני מבין/ה כי ההשתתפות היא מרצון וכי הורה רשאי להוציא את בנו מהמסגרת בכל עת. במידה המרבית המותרת על פי דין, אני משחרר/ת את המדריך ואת Bnei Neviim Academy מאחריות לפציעות, הפסדים, נזקים או אירועים העלולים להתרחש בקשר להשתתפות, למעט מקרים שנגרמו בזדון או ברשלנות חמורה. אני מאשר/ת שקראתי והסכמתי לאישור ולהצהרה זו.</p>
-                        </div>
-                        <label class="waiver-check" for="waiver_accepted">
-                            <input type="checkbox" id="waiver_accepted" name="waiver_accepted" required>
-                            <span>קראתי ואני מסכים/ה לאישור ולהצהרת ההורים. סימון תיבה זו מהווה חתימה אלקטרונית שלי.</span>
-                        </label>
-                    </div>
+                    <p class="document-signature-intro" id="documentSignatureIntro">
+                        פתחו כל מסמך, קראו אותו במסך מלא, גללו עד הסוף וחתמו.
+                    </p>
+                    <div class="document-signature-list" id="documentSignatureList"></div>
+                    <input type="hidden" id="waiver_accepted" name="waiver_accepted" value="true">
 
                     <button type="submit" class="submit-btn" id="submitBtn">שליחת הרשמה</button>
                 </form>
@@ -432,16 +653,209 @@
         </div>
     </section>
 
+    <div class="modal-overlay document-modal" id="documentModal" role="dialog" aria-modal="true" aria-labelledby="documentModalTitle">
+        <div class="agreement-dialog">
+            <div class="agreement-dialog-header">
+                <div>
+                    <h3 id="documentModalTitle">Document</h3>
+                    <p id="documentModalSubtitle"></p>
+                </div>
+                <button type="button" class="agreement-close-btn" id="documentModalCloseBtn">Close</button>
+            </div>
+            <div class="agreement-document" id="documentModalBody" tabindex="0"></div>
+            <div class="agreement-dialog-footer">
+                <div class="signature-preview" id="documentModalProgress">יש לגלול עד סוף המסמך כדי לאפשר חתימה.</div>
+                <button type="button" class="agreement-sign-btn" id="documentModalSignBtn" disabled>קראתי ואני מסכים/ה.</button>
+            </div>
+        </div>
+    </div>
+
     <footer>
         <p>&copy; 2026 Bnei Nevi'im Academy</p>
     </footer>
 
+    <script src="/js/signup-documents.js"></script>
     <script>
+        const TUITION_AGREEMENT_VERSION = '2026-06-07-v1';
+        const REGISTRATION_PACKAGE_VERSION = '2026-2027-v1';
+        const REGISTRATION_PACKAGE_URL = '/documents/bnei_neviim_registration_documents_bilingual_codex.md';
+        let tuitionAgreementSignature = null;
+        let registrationPackageSignature = null;
+        let registrationPackageLoaded = false;
+        const signupDocumentFlow = window.createSignupDocumentFlow({ language: 'he' });
+        signupDocumentFlow.init();
+
         function buildThankYouUrl(paymentMethod, paymentLink) {
             const params = new URLSearchParams({ payment: paymentMethod, lang: 'he' });
             if (paymentLink) params.set('paymentLink', paymentLink);
             return `/signup-thank-you.html?${params.toString()}`;
         }
+
+        function getTuitionAgreementSigner() {
+            return {
+                name: document.getElementById('parent1_name').value.trim(),
+                email: document.getElementById('parent1_email').value.trim()
+            };
+        }
+
+        function updateTuitionSignaturePreview() {
+            const signer = getTuitionAgreementSigner();
+            const preview = document.getElementById('tuitionSignaturePreview');
+            if (!preview) return;
+
+            if (signer.name && signer.email) {
+                preview.textContent = `Signer: ${signer.name} (${signer.email}). Clicking below records your electronic signature.`;
+            } else {
+                preview.textContent = 'Enter Parent 1 name and email before signing.';
+            }
+        }
+
+        function updateTuitionAgreementStatus() {
+            const status = document.getElementById('tuitionAgreementStatus');
+            if (!status) return;
+
+            if (!tuitionAgreementSignature) {
+                status.className = 'signature-status';
+                status.textContent = 'Not signed yet. Open the agreement and sign before submitting.';
+                return;
+            }
+
+            const signedAt = new Date(tuitionAgreementSignature.clientSignedAt).toLocaleString();
+            status.className = 'signature-status is-signed';
+            status.textContent = `Signed by ${tuitionAgreementSignature.signerName} on ${signedAt}.`;
+        }
+
+        function resetTuitionAgreementSignature() {
+            if (!tuitionAgreementSignature) return;
+            tuitionAgreementSignature = null;
+            updateTuitionAgreementStatus();
+        }
+
+        function openTuitionAgreement() {
+            updateTuitionSignaturePreview();
+            document.getElementById('tuitionAgreementModal').classList.add('show');
+            const documentBody = document.querySelector('#tuitionAgreementModal .agreement-document');
+            if (documentBody) documentBody.scrollTop = 0;
+        }
+
+        function closeTuitionAgreement() {
+            document.getElementById('tuitionAgreementModal').classList.remove('show');
+        }
+
+        function signTuitionAgreement() {
+            const signer = getTuitionAgreementSigner();
+            if (!signer.name || !signer.email) {
+                alert('Please enter Parent 1 name and Parent 1 email before signing the tuition agreement.');
+                return;
+            }
+
+            tuitionAgreementSignature = {
+                accepted: true,
+                version: TUITION_AGREEMENT_VERSION,
+                signerName: signer.name,
+                signerEmail: signer.email,
+                clientSignedAt: new Date().toISOString()
+            };
+            updateTuitionAgreementStatus();
+            closeTuitionAgreement();
+        }
+
+        function updateRegistrationPackageSignaturePreview() {
+            const signer = getTuitionAgreementSigner();
+            const preview = document.getElementById('registrationPackageSignaturePreview');
+            if (!preview) return;
+
+            if (signer.name && signer.email) {
+                preview.textContent = `Signer: ${signer.name} (${signer.email}). Clicking below records your electronic signature for the package.`;
+            } else {
+                preview.textContent = 'Enter Parent 1 name and email before signing.';
+            }
+        }
+
+        function updateRegistrationPackageStatus() {
+            const status = document.getElementById('registrationPackageStatus');
+            if (!status) return;
+
+            if (!registrationPackageSignature) {
+                status.className = 'signature-status';
+                status.textContent = 'עדיין לא נחתם. פתחו את החבילה וחתמו לפני השליחה.';
+                return;
+            }
+
+            const signedAt = new Date(registrationPackageSignature.clientSignedAt).toLocaleString();
+            status.className = 'signature-status is-signed';
+            status.textContent = `Signed by ${registrationPackageSignature.signerName} on ${signedAt}.`;
+        }
+
+        function resetRegistrationPackageSignature() {
+            if (!registrationPackageSignature) return;
+            registrationPackageSignature = null;
+            updateRegistrationPackageStatus();
+        }
+
+        async function loadRegistrationPackageText() {
+            if (registrationPackageLoaded) return;
+            const target = document.getElementById('registrationPackageText');
+            try {
+                const response = await fetch(REGISTRATION_PACKAGE_URL, { cache: 'no-store' });
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                target.textContent = await response.text();
+                registrationPackageLoaded = true;
+            } catch (error) {
+                target.textContent = 'The registration document package could not be loaded. Please contact Bnei Neviim Academy before signing.';
+            }
+        }
+
+        async function openRegistrationPackage() {
+            updateRegistrationPackageSignaturePreview();
+            document.getElementById('registrationPackageModal').classList.add('show');
+            const documentBody = document.querySelector('#registrationPackageModal .agreement-document');
+            if (documentBody) documentBody.scrollTop = 0;
+            await loadRegistrationPackageText();
+        }
+
+        function closeRegistrationPackage() {
+            document.getElementById('registrationPackageModal').classList.remove('show');
+        }
+
+        function signRegistrationPackage() {
+            const signer = getTuitionAgreementSigner();
+            if (!signer.name || !signer.email) {
+                alert('Please enter Parent 1 name and Parent 1 email before signing the registration package.');
+                return;
+            }
+
+            registrationPackageSignature = {
+                accepted: true,
+                version: REGISTRATION_PACKAGE_VERSION,
+                signerName: signer.name,
+                signerEmail: signer.email,
+                clientSignedAt: new Date().toISOString()
+            };
+            updateRegistrationPackageStatus();
+            closeRegistrationPackage();
+        }
+
+        document.getElementById('openTuitionAgreementBtn')?.addEventListener('click', openTuitionAgreement);
+        document.getElementById('closeTuitionAgreementBtn')?.addEventListener('click', closeTuitionAgreement);
+        document.getElementById('signTuitionAgreementBtn')?.addEventListener('click', signTuitionAgreement);
+        document.getElementById('tuitionAgreementModal')?.addEventListener('click', (event) => {
+            if (event.target.id === 'tuitionAgreementModal') closeTuitionAgreement();
+        });
+        document.getElementById('openRegistrationPackageBtn')?.addEventListener('click', openRegistrationPackage);
+        document.getElementById('closeRegistrationPackageBtn')?.addEventListener('click', closeRegistrationPackage);
+        document.getElementById('signRegistrationPackageBtn')?.addEventListener('click', signRegistrationPackage);
+        document.getElementById('registrationPackageModal')?.addEventListener('click', (event) => {
+            if (event.target.id === 'registrationPackageModal') closeRegistrationPackage();
+        });
+        document.getElementById('parent1_name').addEventListener('input', () => {
+            resetTuitionAgreementSignature();
+            resetRegistrationPackageSignature();
+        });
+        document.getElementById('parent1_email').addEventListener('input', () => {
+            resetTuitionAgreementSignature();
+            resetRegistrationPackageSignature();
+        });
 
         document.getElementById('signupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -451,6 +865,28 @@
             submitBtn.textContent = 'שולח...';
             messageDiv.className = 'message';
             messageDiv.textContent = '';
+
+            const documentValidation = signupDocumentFlow.validateBeforeSubmit();
+            if (!documentValidation.ok) {
+                messageDiv.className = 'message error';
+                messageDiv.textContent = documentValidation.message;
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'שליחת הרשמה';
+                return;
+            }
+            const documentPayload = signupDocumentFlow.payload();
+            tuitionAgreementSignature = {
+                version: documentPayload.tuition_agreement_version,
+                signerName: documentPayload.tuition_agreement_signer_name,
+                signerEmail: documentPayload.tuition_agreement_signer_email,
+                clientSignedAt: documentPayload.tuition_agreement_client_signed_at
+            };
+            registrationPackageSignature = {
+                version: documentPayload.registration_package_version,
+                signerName: documentPayload.registration_package_signer_name,
+                signerEmail: documentPayload.registration_package_signer_email,
+                clientSignedAt: documentPayload.registration_package_client_signed_at
+            };
 
             const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
             const formData = {
@@ -467,8 +903,7 @@
                 hobbies: document.getElementById('hobbies').value,
                 payment_method: paymentMethod,
                 form_language: 'he',
-                waiver_accepted: document.getElementById('waiver_accepted').checked,
-                waiver_version: '2026-05-28-v1'
+                ...documentPayload
             };
 
             try {
@@ -483,9 +918,13 @@
                 }
 
                 document.getElementById('signupForm').reset();
-                window.location.href = result.paymentMethod === 'cash'
-                    ? buildThankYouUrl('cash')
-                    : buildThankYouUrl('credit', result.paymentLink || '');
+                if (result.paymentMethod === 'cash') {
+                    window.location.href = buildThankYouUrl('cash');
+                } else if (result.paymentMethod === 'bank_transfer') {
+                    window.location.href = buildThankYouUrl('bank_transfer');
+                } else {
+                    window.location.href = buildThankYouUrl('credit', result.paymentLink || '');
+                }
             } catch (error) {
                 console.error(error);
                 messageDiv.className = 'message error';

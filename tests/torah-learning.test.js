@@ -2,9 +2,12 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 
 const {
+  calculateCompletedDailyUnitsFromEntries,
+  calculateDailyCompletedUnits,
   calculateGroupTorahProgress,
   calculateStudentTorahProgress,
   calculateStudentTripProgress,
+  dailyCompletionPercentageFromEntry,
   normalizeParsedTorahEngagement,
 } = require('../src/lib/bna/torah-learning');
 
@@ -225,6 +228,54 @@ test('Trip progress carried-over plus one completed day reaches 15 percent', () 
   assert.equal(result.totalTripComplete, false);
 });
 
+test('Trip progress counts partial daily completion units', () => {
+  const halfDay = calculateStudentTripProgress({
+    carriedOverCompletedUnits: 4.5,
+    completedDailyUnits: calculateDailyCompletedUnits(50),
+    totalRequiredUnits: 30,
+  });
+  const twoThirdsDay = calculateStudentTripProgress({
+    carriedOverCompletedUnits: 4.5,
+    completedDailyUnits: calculateDailyCompletedUnits(66.67),
+    totalRequiredUnits: 30,
+  });
+
+  assert.equal(halfDay.totalCompletedUnits, 5);
+  assert.equal(halfDay.totalTripProgressPercentage, 17);
+  assert.equal(Number(twoThirdsDay.totalCompletedUnits.toFixed(4)), 5.1667);
+  assert.equal(twoThirdsDay.totalTripProgressPercentage, 17);
+});
+
+test('Daily completion rows calculate cumulative fractional trip units', () => {
+  const entries = [
+    { daily_completion_percentage: 100 },
+    { daily_completion_percentage: 50 },
+    { daily_completion_percentage: 66.67 },
+    { daily_completion_percentage: 0, daily_completed_boolean: false },
+    { daily_completed_boolean: true },
+  ];
+
+  assert.equal(dailyCompletionPercentageFromEntry({ daily_completed_boolean: true }), 100);
+  assert.equal(Math.round(calculateCompletedDailyUnitsFromEntries(entries) * 100), 317);
+});
+
+test('Task 134 fractions do not flatten every student to 15 percent', () => {
+  const carriedOverCompletedUnits = 3.5;
+  const totalRequiredUnits = 30;
+  const migrationSeedUnit = 1;
+  const fridayFractions = [1, 1, 0.5, 0.5, 2 / 3];
+  const percentages = fridayFractions.map((fraction) =>
+    calculateStudentTripProgress({
+      carriedOverCompletedUnits,
+      completedDailyUnits: migrationSeedUnit + fraction,
+      totalRequiredUnits,
+    }).totalTripProgressPercentage
+  );
+
+  assert.deepEqual(percentages, [18, 18, 17, 17, 17]);
+  assert.equal(calculateGroupTorahProgress(percentages).groupPercentage, 17);
+});
+
 test('Daily 100 percent does not imply full trip completion after one day', () => {
   const daily = calculateStudentTorahProgress({
     goalMinutes: 30,
@@ -233,7 +284,7 @@ test('Daily 100 percent does not imply full trip completion after one day', () =
   });
   const trip = calculateStudentTripProgress({
     carriedOverCompletedUnits: 3.5,
-    completedDailyUnits: daily.individualComplete ? 1 : 0,
+    completedDailyUnits: calculateDailyCompletedUnits(daily.individualPercentageRaw),
     totalRequiredUnits: 30,
   });
 
