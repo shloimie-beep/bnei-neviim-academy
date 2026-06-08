@@ -196,24 +196,6 @@ const REQUIRED_SIGNUP_AGREEMENT_DEFINITIONS = [
       he: 'אישור בטיחות, הצהרה וויתור - Bnei Neviim Academy',
     },
   },
-  {
-    agreement_type: 'registration_intake_form',
-    package_index: 4,
-    version: REGISTRATION_PACKAGE_VERSION,
-    title: {
-      en: 'Registration / Intake Form',
-      he: 'טופס הרשמה / שאלון קליטה',
-    },
-  },
-  {
-    agreement_type: 'parent_agreement_signature_page',
-    package_index: 5,
-    version: REGISTRATION_PACKAGE_VERSION,
-    title: {
-      en: 'Parent Agreement / Checkbox and Signature Page',
-      he: 'הסכמת הורים / עמוד תיבות סימון וחתימה',
-    },
-  },
 ];
 const BNA_TIME_ZONE = process.env.BNA_TIME_ZONE || 'Asia/Jerusalem';
 const DEFAULT_TORAH_GOAL_MINUTES = Number(process.env.BNA_DEFAULT_TORAH_GOAL_MINUTES || 10);

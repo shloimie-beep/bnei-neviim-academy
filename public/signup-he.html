@@ -367,25 +367,33 @@
             display: flex;
         }
 
+        .modal-overlay.document-modal {
+            padding: 0;
+            align-items: stretch;
+            background: #fff;
+        }
+
         body.document-modal-open {
             overflow: hidden;
         }
 
         .agreement-dialog {
-            width: min(1040px, calc(100vw - 2rem));
-            height: min(90vh, 900px);
+            width: 100vw;
+            height: 100dvh;
+            max-height: none;
             display: flex;
             flex-direction: column;
             overflow: hidden;
-            border-radius: 24px;
+            border-radius: 0;
             background: #fff;
-            box-shadow: 0 24px 70px rgba(15, 23, 42, 0.32);
+            box-shadow: none;
             direction: ltr;
             text-align: left;
         }
 
         .agreement-dialog-header,
         .agreement-dialog-footer {
+            flex: 0 0 auto;
             padding: 1.2rem 1.5rem;
             border-bottom: 1px solid #e2e8f0;
         }
@@ -421,6 +429,7 @@
             font-size: 1.05rem;
             line-height: 1.75;
             flex: 1;
+            min-height: 0;
         }
 
         .agreement-document p,
@@ -676,12 +685,6 @@
 
     <script src="/js/signup-documents.js"></script>
     <script>
-        const TUITION_AGREEMENT_VERSION = '2026-06-07-v1';
-        const REGISTRATION_PACKAGE_VERSION = '2026-2027-v1';
-        const REGISTRATION_PACKAGE_URL = '/documents/bnei_neviim_registration_documents_bilingual_codex.md';
-        let tuitionAgreementSignature = null;
-        let registrationPackageSignature = null;
-        let registrationPackageLoaded = false;
         const signupDocumentFlow = window.createSignupDocumentFlow({ language: 'he' });
         signupDocumentFlow.init();
 
@@ -691,171 +694,22 @@
             return `/signup-thank-you.html?${params.toString()}`;
         }
 
-        function getTuitionAgreementSigner() {
-            return {
-                name: document.getElementById('parent1_name').value.trim(),
-                email: document.getElementById('parent1_email').value.trim()
-            };
+        function initializePaymentUi() {
+            document.querySelectorAll('.payment-option').forEach((option) => {
+                const input = option.querySelector('input[name="payment_method"]');
+                if (!input) return;
+                option.setAttribute('for', input.id);
+                option.addEventListener('click', () => {
+                    input.checked = true;
+                });
+            });
         }
 
-        function updateTuitionSignaturePreview() {
-            const signer = getTuitionAgreementSigner();
-            const preview = document.getElementById('tuitionSignaturePreview');
-            if (!preview) return;
+        initializePaymentUi();
 
-            if (signer.name && signer.email) {
-                preview.textContent = `Signer: ${signer.name} (${signer.email}). Clicking below records your electronic signature.`;
-            } else {
-                preview.textContent = 'Enter Parent 1 name and email before signing.';
-            }
+        function selectedPaymentMethod() {
+            return document.querySelector('input[name="payment_method"]:checked')?.value || 'credit';
         }
-
-        function updateTuitionAgreementStatus() {
-            const status = document.getElementById('tuitionAgreementStatus');
-            if (!status) return;
-
-            if (!tuitionAgreementSignature) {
-                status.className = 'signature-status';
-                status.textContent = 'Not signed yet. Open the agreement and sign before submitting.';
-                return;
-            }
-
-            const signedAt = new Date(tuitionAgreementSignature.clientSignedAt).toLocaleString();
-            status.className = 'signature-status is-signed';
-            status.textContent = `Signed by ${tuitionAgreementSignature.signerName} on ${signedAt}.`;
-        }
-
-        function resetTuitionAgreementSignature() {
-            if (!tuitionAgreementSignature) return;
-            tuitionAgreementSignature = null;
-            updateTuitionAgreementStatus();
-        }
-
-        function openTuitionAgreement() {
-            updateTuitionSignaturePreview();
-            document.getElementById('tuitionAgreementModal').classList.add('show');
-            const documentBody = document.querySelector('#tuitionAgreementModal .agreement-document');
-            if (documentBody) documentBody.scrollTop = 0;
-        }
-
-        function closeTuitionAgreement() {
-            document.getElementById('tuitionAgreementModal').classList.remove('show');
-        }
-
-        function signTuitionAgreement() {
-            const signer = getTuitionAgreementSigner();
-            if (!signer.name || !signer.email) {
-                alert('Please enter Parent 1 name and Parent 1 email before signing the tuition agreement.');
-                return;
-            }
-
-            tuitionAgreementSignature = {
-                accepted: true,
-                version: TUITION_AGREEMENT_VERSION,
-                signerName: signer.name,
-                signerEmail: signer.email,
-                clientSignedAt: new Date().toISOString()
-            };
-            updateTuitionAgreementStatus();
-            closeTuitionAgreement();
-        }
-
-        function updateRegistrationPackageSignaturePreview() {
-            const signer = getTuitionAgreementSigner();
-            const preview = document.getElementById('registrationPackageSignaturePreview');
-            if (!preview) return;
-
-            if (signer.name && signer.email) {
-                preview.textContent = `Signer: ${signer.name} (${signer.email}). Clicking below records your electronic signature for the package.`;
-            } else {
-                preview.textContent = 'Enter Parent 1 name and email before signing.';
-            }
-        }
-
-        function updateRegistrationPackageStatus() {
-            const status = document.getElementById('registrationPackageStatus');
-            if (!status) return;
-
-            if (!registrationPackageSignature) {
-                status.className = 'signature-status';
-                status.textContent = 'עדיין לא נחתם. פתחו את החבילה וחתמו לפני השליחה.';
-                return;
-            }
-
-            const signedAt = new Date(registrationPackageSignature.clientSignedAt).toLocaleString();
-            status.className = 'signature-status is-signed';
-            status.textContent = `Signed by ${registrationPackageSignature.signerName} on ${signedAt}.`;
-        }
-
-        function resetRegistrationPackageSignature() {
-            if (!registrationPackageSignature) return;
-            registrationPackageSignature = null;
-            updateRegistrationPackageStatus();
-        }
-
-        async function loadRegistrationPackageText() {
-            if (registrationPackageLoaded) return;
-            const target = document.getElementById('registrationPackageText');
-            try {
-                const response = await fetch(REGISTRATION_PACKAGE_URL, { cache: 'no-store' });
-                if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                target.textContent = await response.text();
-                registrationPackageLoaded = true;
-            } catch (error) {
-                target.textContent = 'The registration document package could not be loaded. Please contact Bnei Neviim Academy before signing.';
-            }
-        }
-
-        async function openRegistrationPackage() {
-            updateRegistrationPackageSignaturePreview();
-            document.getElementById('registrationPackageModal').classList.add('show');
-            const documentBody = document.querySelector('#registrationPackageModal .agreement-document');
-            if (documentBody) documentBody.scrollTop = 0;
-            await loadRegistrationPackageText();
-        }
-
-        function closeRegistrationPackage() {
-            document.getElementById('registrationPackageModal').classList.remove('show');
-        }
-
-        function signRegistrationPackage() {
-            const signer = getTuitionAgreementSigner();
-            if (!signer.name || !signer.email) {
-                alert('Please enter Parent 1 name and Parent 1 email before signing the registration package.');
-                return;
-            }
-
-            registrationPackageSignature = {
-                accepted: true,
-                version: REGISTRATION_PACKAGE_VERSION,
-                signerName: signer.name,
-                signerEmail: signer.email,
-                clientSignedAt: new Date().toISOString()
-            };
-            updateRegistrationPackageStatus();
-            closeRegistrationPackage();
-        }
-
-        document.getElementById('openTuitionAgreementBtn')?.addEventListener('click', openTuitionAgreement);
-        document.getElementById('closeTuitionAgreementBtn')?.addEventListener('click', closeTuitionAgreement);
-        document.getElementById('signTuitionAgreementBtn')?.addEventListener('click', signTuitionAgreement);
-        document.getElementById('tuitionAgreementModal')?.addEventListener('click', (event) => {
-            if (event.target.id === 'tuitionAgreementModal') closeTuitionAgreement();
-        });
-        document.getElementById('openRegistrationPackageBtn')?.addEventListener('click', openRegistrationPackage);
-        document.getElementById('closeRegistrationPackageBtn')?.addEventListener('click', closeRegistrationPackage);
-        document.getElementById('signRegistrationPackageBtn')?.addEventListener('click', signRegistrationPackage);
-        document.getElementById('registrationPackageModal')?.addEventListener('click', (event) => {
-            if (event.target.id === 'registrationPackageModal') closeRegistrationPackage();
-        });
-        document.getElementById('parent1_name').addEventListener('input', () => {
-            resetTuitionAgreementSignature();
-            resetRegistrationPackageSignature();
-        });
-        document.getElementById('parent1_email').addEventListener('input', () => {
-            resetTuitionAgreementSignature();
-            resetRegistrationPackageSignature();
-        });
 
         document.getElementById('signupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
@@ -875,20 +729,8 @@
                 return;
             }
             const documentPayload = signupDocumentFlow.payload();
-            tuitionAgreementSignature = {
-                version: documentPayload.tuition_agreement_version,
-                signerName: documentPayload.tuition_agreement_signer_name,
-                signerEmail: documentPayload.tuition_agreement_signer_email,
-                clientSignedAt: documentPayload.tuition_agreement_client_signed_at
-            };
-            registrationPackageSignature = {
-                version: documentPayload.registration_package_version,
-                signerName: documentPayload.registration_package_signer_name,
-                signerEmail: documentPayload.registration_package_signer_email,
-                clientSignedAt: documentPayload.registration_package_client_signed_at
-            };
 
-            const paymentMethod = document.querySelector('input[name="payment_method"]:checked').value;
+            const paymentMethod = selectedPaymentMethod();
             const formData = {
                 parent1_name: document.getElementById('parent1_name').value,
                 parent1_email: document.getElementById('parent1_email').value,

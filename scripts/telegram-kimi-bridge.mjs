@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
 import { spawn } from 'child_process';
 import { pipeline as streamPipeline } from 'stream/promises';
 import ffmpegPath from 'ffmpeg-static';
@@ -12,6 +13,12 @@ import {
   createSocialPost,
   listBlogs,
 } from './ghl-ops.mjs';
+
+const require = createRequire(import.meta.url);
+const {
+  parseContentOutputTypeFromText: parseContentOutputTypeFromTextCore,
+  shouldBlockContentDraftEditIntent,
+} = require('../src/lib/bna/telegram-content-intent');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -5520,14 +5527,7 @@ function platformForContentOutputType(outputType) {
 }
 
 function parseContentOutputTypeFromText(text, fallbackText = '') {
-  const normalized = `${text || ''}\n${fallbackText || ''}`.toLowerCase();
-  if (/\b(facebook|fb)\b/.test(normalized)) return 'facebook_post';
-  if (/\b(whatsapp|what'?s\s*app|wa update|parent update)\b/.test(normalized)) return 'whatsapp_update';
-  if (/\b(newsletter|weekly update|week update|end[-\s]?of[-\s]?week|email)\b/.test(normalized)) return 'weekly_newsletter';
-  if (/\b(blog|article|website post|website draft)\b/.test(normalized)) return 'blog_draft';
-  if (/\blinkedin\b/.test(normalized)) return 'linkedin_post';
-  if (/\byoutube\b/.test(normalized)) return 'youtube_description';
-  return null;
+  return parseContentOutputTypeFromTextCore(text, fallbackText);
 }
 
 function parseContentOutputIdFromText(text) {
@@ -5582,8 +5582,21 @@ function detectContentDraftEditIntent(msg) {
   const outputId = parseContentOutputIdFromText(text) || parseReplyContentOutputId(msg);
   const jobId = parseRequestedContentJobId(text) || parseReplyContentJobId(msg);
   const outputType = parseContentOutputTypeFromText(text, replyText);
-  const draftEvidence = Boolean(outputId || jobId || outputType || contentFollowup || /\b(draft|post|newsletter|facebook|whatsapp|blog|caption|copy block|copy-paste|content output)\b/i.test(combined) || isDraftLikeReply(msg));
+  const draftLikeReply = isDraftLikeReply(msg);
+  const draftEvidence = Boolean(outputId || jobId || outputType || contentFollowup || /\b(draft|post|newsletter|facebook|whatsapp|blog|caption|copy block|copy-paste|content output)\b/i.test(combined) || draftLikeReply);
   if (!draftEvidence) return null;
+
+  if (shouldBlockContentDraftEditIntent({
+    text,
+    replyText,
+    outputId,
+    jobId,
+    outputType,
+    contentFollowup,
+    draftLikeReply,
+  })) {
+    return null;
+  }
 
   const devOnly = /\b(telegram bot|bridge|codex|repo|server|database|railway|code|implementation)\b/i.test(text)
     && !/\b(facebook|whatsapp|newsletter|blog|draft|post|caption|copy)\b/i.test(text);

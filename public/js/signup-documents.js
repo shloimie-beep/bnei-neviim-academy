@@ -59,7 +59,7 @@ Payment may be made by cash, bank transfer, credit card, or another method appro
       close: 'Close',
       loading: 'Loading document...',
       loadError: 'This document could not be loaded. Please contact Bnei Neviim Academy before signing.',
-      submitMissing: 'Please open and sign all six required registration documents before submitting.',
+      submitMissing: 'Please open and sign all four required registration documents before submitting.',
       signerChanged: 'Parent 1 name or email changed after signing. Please review and sign the required documents again.',
       viewer: 'Document viewer'
     },
@@ -77,7 +77,7 @@ Payment may be made by cash, bank transfer, credit card, or another method appro
       close: 'סגירה',
       loading: 'טוען מסמך...',
       loadError: 'לא ניתן היה לטעון את המסמך. אנא צרו קשר עם Bnei Neviim Academy לפני החתימה.',
-      submitMissing: 'יש לפתוח ולחתום על כל ששת מסמכי ההרשמה לפני השליחה.',
+      submitMissing: 'יש לפתוח ולחתום על כל ארבעת מסמכי ההרשמה לפני השליחה.',
       signerChanged: 'שם או אימייל של הורה 1 השתנו לאחר החתימה. יש לעבור שוב על המסמכים ולחתום מחדש.',
       viewer: 'חלון קריאת מסמך'
     }
@@ -122,26 +122,6 @@ Payment may be made by cash, bank transfer, credit card, or another method appro
       description: {
         en: 'Safety responsibilities, activity, medical/emergency permissions, damage responsibility, and liability waiver.',
         he: 'אחריות בטיחותית, פעילות, אישורי חירום ורפואה, אחריות לנזק וויתור אחריות.'
-      }
-    },
-    {
-      type: 'registration_intake_form',
-      packageIndex: 4,
-      version: PACKAGE_VERSION,
-      title: { en: 'Registration / Intake Form', he: 'טופס הרשמה / שאלון קליטה' },
-      description: {
-        en: 'Parent and student information, educational status, program fit, medical, and safety information.',
-        he: 'פרטי הורים ותלמיד, מעמד חינוכי, התאמה לתכנית, מידע רפואי ובטיחותי.'
-      }
-    },
-    {
-      type: 'parent_agreement_signature_page',
-      packageIndex: 5,
-      version: PACKAGE_VERSION,
-      title: { en: 'Parent Agreement / Signature Page', he: 'הסכמת הורים / עמוד חתימה' },
-      description: {
-        en: 'Final parent agreement confirming the required acknowledgments and electronic signature.',
-        he: 'הסכמת ההורים הסופית המאשרת את ההצהרות הנדרשות ואת החתימה האלקטרונית.'
       }
     }
   ];
@@ -411,7 +391,7 @@ Payment may be made by cash, bank transfer, credit card, or another method appro
       const list = DOCUMENTS.map((doc) => signatures[doc.type]).filter(Boolean);
       const tuition = signatures.tuition_agreement;
       const safety = signatures.safety_acknowledgment_waiver;
-      const parentAgreement = signatures.parent_agreement_signature_page;
+      const packageSignature = safety || signatures.parent_handbook || signatures.student_code_of_conduct;
       return {
         agreement_signatures: list,
         waiver_accepted: Boolean(safety),
@@ -422,10 +402,10 @@ Payment may be made by cash, bank transfer, credit card, or another method appro
         tuition_agreement_signer_email: tuition?.signer_email || '',
         tuition_agreement_client_signed_at: tuition?.client_signed_at || '',
         registration_package_accepted: list.length === DOCUMENTS.length,
-        registration_package_version: parentAgreement?.agreement_version || PACKAGE_VERSION,
-        registration_package_signer_name: parentAgreement?.signer_name || '',
-        registration_package_signer_email: parentAgreement?.signer_email || '',
-        registration_package_client_signed_at: parentAgreement?.client_signed_at || ''
+        registration_package_version: packageSignature?.agreement_version || PACKAGE_VERSION,
+        registration_package_signer_name: packageSignature?.signer_name || '',
+        registration_package_signer_email: packageSignature?.signer_email || '',
+        registration_package_client_signed_at: packageSignature?.client_signed_at || ''
       };
     }
 
