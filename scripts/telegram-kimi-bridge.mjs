@@ -9,16 +9,49 @@ import { google } from 'googleapis';
 import {
   listSocialAccounts,
   buildAccountAliases,
-  uploadLocalFileToGhl,
   createSocialPost,
   listBlogs,
 } from './ghl-ops.mjs';
 
 const require = createRequire(import.meta.url);
 const {
+  hasContentCommitToSchedulingIntent,
+  hasPublicPublishNowIntent,
   parseContentOutputTypeFromText: parseContentOutputTypeFromTextCore,
   shouldBlockContentDraftEditIntent,
 } = require('../src/lib/bna/telegram-content-intent');
+const {
+  isConfirmationText,
+  isHandlerBlocked,
+  planTelegramIntent,
+  shouldAskForExternalApproval,
+  stripConfirmationPrefix,
+  summarizeIntentPlan,
+} = require('../src/lib/bna/telegram-agent-intent');
+const {
+  buildCodexWorkFromPlanningSession,
+  buildPlanningTelegramReply,
+  buildVisiblePlanningPrompt,
+  hasExplicitPromptImplementationStart,
+  hasPromptPlanningIntent,
+  isPromptPlanningCancel,
+  isPromptPlanningRefinement,
+  promptPlanningKind,
+} = require('../src/lib/bna/telegram-planning-intent');
+const {
+  extractInterestedParentLeads,
+  hasInterestedParentLeadCaptureIntent,
+} = require('../src/lib/bna/telegram-contact-lead-capture');
+const {
+  detectTelegramAccountabilityType,
+  extractTelegramAccountabilityDetails,
+  hasParentAccountabilityRoutingIntent,
+  isLikelyTelegramStudentAccountabilityUnit,
+} = require('../src/lib/bna/telegram-accountability-parser');
+const {
+  classifyTelegramActionRequest,
+  formatTelegramActionResult,
+} = require('../src/lib/bna/telegram-action-router');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -95,9 +128,11 @@ function runtimeFileForProfile(baseName, extension) {
 const logFile = runtimeFileForProfile('telegram-kimi-bridge', 'log');
 const lockFile = runtimeFileForProfile('telegram-kimi-bridge', 'lock');
 const pendingDecisionsFile = runtimeFileForProfile('telegram-pending-decisions', 'json');
+const pendingExternalActionsFile = runtimeFileForProfile('telegram-pending-external-actions', 'json');
 const telegramChatModesFile = runtimeFileForProfile('telegram-chat-modes', 'json');
 const telegramTaskWatchStateFile = runtimeFileForProfile('telegram-task-watch-state', 'json');
 const telegramMultipartSpecFile = runtimeFileForProfile('telegram-multipart-specs', 'json');
+const telegramPlanningPromptsFile = runtimeFileForProfile('telegram-planning-prompts', 'json');
 
 fs.mkdirSync(runtimeDir, { recursive: true });
 fs.mkdirSync(mediaInboxDir, { recursive: true });
@@ -176,6 +211,20 @@ function acquireLock() {
     fs.writeFileSync(lockFile, JSON.stringify({ pid: process.pid, startedAt: new Date().toISOString() }, null, 2));
   } catch (error) {
     throw error instanceof Error ? error : new Error(String(error));
+  }
+}
+
+function updateBridgeLock(details = {}) {
+  try {
+    const current = readBridgeLock();
+    if (Number(current.pid) !== process.pid) return;
+    fs.writeFileSync(lockFile, JSON.stringify({
+      ...current,
+      ...details,
+      updatedAt: new Date().toISOString(),
+    }, null, 2));
+  } catch (error) {
+    log(`Could not update bridge lock metadata: ${error instanceof Error ? error.message : String(error)}`);
   }
 }
 
@@ -439,6 +488,8 @@ function buildOpenAiCapabilityContext() {
     '- If the operator asks to order, sort, audit, or brainstorm items in a section, answer from the live app snapshot first. Do not answer from transcripts unless the operator explicitly asks for transcript/class-content topics.',
     '- Safe writes already happen before the model reply through bridge capture: Tasks, Student accountability, Accounting/payment intake, Content/media jobs, Decisions, saved Content draft edits, and Codex work queue records.',
     '- Content edits such as revising a newsletter, Facebook post, WhatsApp update, or blog draft should edit the saved Content output directly through OpenAI API first, not be routed as coding work.',
+    '- For Facebook/WhatsApp/blog content, show the draft in Telegram and refine it with the operator in natural writing-partner language. Do not route normal wording changes to Codex.',
+    '- Commit means the operator is done refining and wants the saved draft pushed to Buffer as a scheduling draft. Commit is not the same as publish now.',
     '- Code edits, filesystem edits, database migrations, deployments, tests, and destructive/high-risk operations must route to Codex as a tracked task/job, not be claimed as completed by OpenAI.',
     '- When OpenAI identifies implementation work, it should say it is queued/assigned to Codex and rely on the bridge task queue/ledger/changelog for synchronization.',
     '- Every meaningful action should be synchronized through durable shared files or app records: memory/YYYY-MM-DD.md, TASKS.md, ops/agent-task-ledger.jsonl, ops/agent-changelog.md, tasks-pending/*.md, and app task records.',
@@ -487,6 +538,8 @@ function buildApiSystemInstructions(config = {}) {
     'Keep the reply practical and concise.',
     'Use ASCII characters only in the final reply.',
     'If the message contains a ramble, break it into the clearest next tasks.',
+    'If the operator asks to make or refine a prompt for Codex or ChatGPT, treat that as planning mode first: show a visible prompt/brief draft in chat and refine it before implementation unless they explicitly ask to build, test, run, or apply it.',
+    'When the operator says to test something that can be verified through browser interaction, assume Playwright/browser automation is required and report the actual browser checks performed.',
     'If the operator says "build everything", choose the order from TASKS.md and the newest tasks-pending handoffs, start executing, and do not ask for ordering confirmation unless there is a real blocker or product decision.',
     'Use the BNA lanes Tasks, Students, Content, Contacts, and Accounting. Do not use the old Pipeline, Signups, Billing, or Ramble tab language.',
     'Use task language like Decisions, My Tasks, Changelog, and Done. Codex work belongs in Changelog, not in Shloimie personal tasks.',
@@ -499,6 +552,7 @@ function buildApiSystemInstructions(config = {}) {
     'Do not surprise the operator with random questions. If you see a useful recommendation from the current system state, label it as a suggestion and explain why it matters.',
     'When a decision is needed, give 2-3 options formatted exactly like "Option A: label", "Option B: label", and "Option C: label" so Telegram can create buttons.',
     'Do not ask format-option questions for transcript/topic/content drafting requests. If the operator asks for topics, a transcript summary, a newsletter, or a revised post, choose the most useful default and return the actual text in chat.',
+    'For Facebook posts and other parent-facing copy, act like a natural writing partner: show the current draft in chat, accept conversational edits, and keep refining through OpenAI API. Only when the operator says commit, create the Buffer draft/scheduling handoff. Do not use Codex-task language for copy refinement.',
     'Avoid vague headings like "Next" by itself. Use Captured, Already filed, Queued work, and Blocked only if blocked.',
     'If the operator references recent work by phrase, such as "the image slider", first use SYSTEM-STATE.md and the newest tasks-pending handoff before asking what they mean.',
     'If the live snapshot contains a task that was just auto-captured from the same operator message, do not make that capture the main answer unless the operator asked to create or file a task. Answer the actual question first.',
@@ -1092,11 +1146,11 @@ async function buildDriveContextForMessage(text) {
 
 function shouldAttachAppContext(text) {
   const normalized = String(text || '').toLowerCase();
-  return /\b(system|dashboard|operations|section|sections|buttons?|actions?|task|tasks|queue|queued|pending|waiting|in progress|done|changelog|students?|accountability|torah|learning progress|content|recording|transcript|blog|whatsapp|facebook|newsletter|payments?|accounting|signup|signups|contacts?|parents?|devices?|tablet|green invoice|projects?|one time|rabbi|what'?s left|what is left|status|updates?|capabilities|capability|can you see|what do you see|order|sort|audit|brainstorm|logistics|scheduling)\b/.test(normalized);
+  return /\b(system|dashboard|operations|section|sections|buttons?|actions?|task|tasks|queue|queued|pending|waiting|in progress|done|changelog|students?|accountability|torah|learning progress|content|recording|transcript|blog|whatsapp|communications?|team|tickets?|support|facebook|newsletter|payments?|accounting|signup|signups|contacts?|parents?|devices?|tablet|green invoice|projects?|one time|rabbi|what'?s left|what is left|status|updates?|capabilities|capability|can you see|what do you see|order|sort|audit|brainstorm|logistics|scheduling)\b/.test(normalized);
 }
 
 function wantsWholeSystemSnapshot(text) {
-  return /\b(system|dashboard|operations|sections?|buttons?|actions?|everything|all the things|all sections|whole system|what do you see|can you see|status|updates?|what'?s left|what is left|order|sort|audit|brainstorm|pending|waiting|queue|queued|logistics|scheduling)\b/i.test(String(text || ''));
+  return /\b(system|dashboard|operations|sections?|buttons?|actions?|everything|all the things|all sections|whole system|what do you see|can you see|status|updates?|what'?s left|what is left|order|sort|audit|brainstorm|pending|waiting|queue|queued|team|tickets?|support|logistics|scheduling)\b/i.test(String(text || ''));
 }
 
 function wantsAccountingSnapshot(text) {
@@ -1152,18 +1206,19 @@ function detectRequestedAppSections(text) {
   if (broad || wantsTaskSnapshot(text)) sections.add('tasks');
   if (broad || wantsStudentSnapshot(text)) sections.add('students');
   if (broad || wantsContentSnapshot(text)) sections.add('content');
-  if (broad || /\bcontacts?|parents?|roster|signup|signups|intake|follow-?up|tags?\b/.test(normalized)) sections.add('contacts');
+  if (broad || /\bcontacts?|parents?|roster|signup|signups|intake|follow-?up|tags?|communications?|whatsapp\b/.test(normalized)) sections.add('contacts');
   if (broad || wantsAccountingSnapshot(text)) sections.add('accounting');
+  if (broad || /\bteam|tickets?|support|rabbi\b/.test(normalized)) sections.add('support');
   if (broad || /\bagent|fleet|codex|automation|background|worker|swarm\b/.test(normalized)) sections.add('agents');
   if (!sections.size) sections.add('tasks');
   return sections;
 }
 
-function buildOperationsUiInventoryContext(sections = new Set(['tasks', 'students', 'content', 'contacts', 'accounting'])) {
+function buildOperationsUiInventoryContext(sections = new Set(['tasks', 'students', 'content', 'contacts', 'accounting', 'support'])) {
   const ui = {
     tasks: {
-      subtabs: ['Overview', 'Decisions', 'My Tasks', 'Changelog'],
-      primaryActions: ['Open task card/details', 'Add comment', 'Mark done', 'Archive', 'Use Decision lane when Shloimie must decide', 'Use Changelog for queued, active, and verified machine work'],
+      subtabs: ['Overview', 'Decisions', 'My Tasks', 'Schedule', 'Research', 'Changelog', 'Done'],
+      primaryActions: ['Open task card/details', 'Add comment', 'Mark done', 'Archive', 'Use Schedule for planned/due One Time work', 'Use Decision lane when Shloimie must decide', 'Use Changelog for queued, active, and verified machine work'],
       filters: ['Urgency/date/project filters', 'Clear filters', 'Lane/subtab chips'],
     },
     students: {
@@ -1177,14 +1232,19 @@ function buildOperationsUiInventoryContext(sections = new Set(['tasks', 'student
       filters: ['Media type', 'Uploaded date', 'Project', 'Collapsed Filters panel'],
     },
     contacts: {
-      subtabs: ['Parents', 'Students', 'Intake', 'Needs Follow-up', 'Tags'],
-      primaryActions: ['Open roster card', 'Email', 'WhatsApp', 'Mark follow-up', 'Open student', 'Review timeline/tags/source/language/payment fields'],
+      subtabs: ['Parents', 'Interested Parents', 'Communications', 'Students', 'Intake', 'Needs Follow-up', 'Tags'],
+      primaryActions: ['Open roster card', 'Email', 'WhatsApp', 'Mark follow-up', 'Open student', 'Review communication timeline/tags/source/language/payment fields'],
       filters: ['Parent/student/intake/follow-up/tag subtabs'],
     },
     accounting: {
       subtabs: ['Overview', 'Payments', 'Needs Attention', 'Paid', 'Needs Signup', 'Exceptions'],
       primaryActions: ['Review parent/student/payment roster', 'Check amount/method/status/next due', 'Use overview summaries before table views'],
       filters: ['Payment status subtabs', 'Attention/exception views'],
+    },
+    support: {
+      subtabs: ['Tickets & Messages'],
+      primaryActions: ['Open Ticket', 'Triage', 'Start', 'Resolve', 'Jump to linked task', 'Use Team for internal Rabbi/Shloimie communication and repair requests'],
+      filters: ['Status', 'Severity', 'Category'],
     },
     agents: {
       subtabs: ['Changelog Queue', 'Agent Fleet Status'],
@@ -1194,7 +1254,7 @@ function buildOperationsUiInventoryContext(sections = new Set(['tasks', 'student
   };
 
   const lines = ['Operations UI inventory available to OpenAI:'];
-  for (const key of ['tasks', 'students', 'content', 'contacts', 'accounting', 'agents']) {
+  for (const key of ['tasks', 'students', 'content', 'contacts', 'accounting', 'support', 'agents']) {
     if (!sections.has(key)) continue;
     const item = ui[key];
     lines.push(`- ${key.toUpperCase()} subtabs: ${item.subtabs.join(', ')}`);
@@ -1320,6 +1380,18 @@ function compactPaymentForContext(item) {
   ].filter(Boolean).join(' | ');
 }
 
+function compactSupportTicketForContext(ticket) {
+  return [
+    `#${ticket.id}`,
+    sanitizeContextText(ticket.title || 'Untitled ticket', 110),
+    ticket.status ? `status=${ticket.status}` : '',
+    ticket.severity ? `severity=${ticket.severity}` : '',
+    ticket.category ? `category=${ticket.category}` : '',
+    ticket.related_task_id ? `task=#${ticket.related_task_id}` : '',
+    ticket.created_at ? `created=${compactDateForContext(ticket.created_at)}` : '',
+  ].filter(Boolean).join(' | ');
+}
+
 async function buildBnaAppSnapshotForMessage(config, text) {
   if (!shouldAttachAppContext(text) || !config.opsUsername || !config.opsPassword) return '';
 
@@ -1330,6 +1402,7 @@ async function buildBnaAppSnapshotForMessage(config, text) {
   const includeContent = !scopedProject && requestedSections.has('content');
   const includeContacts = !scopedProject && requestedSections.has('contacts');
   const includeAccounting = !scopedProject && requestedSections.has('accounting');
+  const includeSupport = requestedSections.has('support') || scopedProject;
   const includeAgents = !scopedProject && requestedSections.has('agents');
   const includeTaskDetails = wantsTaskSnapshot(text) || wantsWholeSystemSnapshot(text);
 
@@ -1346,11 +1419,13 @@ async function buildBnaAppSnapshotForMessage(config, text) {
     includeContent ? ['contentPrompts', appRequest(config, 'GET', '/api/bna/content-prompts')] : null,
     includeContent ? ['contentBundles', appRequest(config, 'GET', '/api/bna/content-bundles')] : null,
     includeContacts ? ['signups', appRequest(config, 'GET', '/api/bna/signups')] : null,
+    includeContacts ? ['contactCommunications', appRequest(config, 'GET', '/api/bna/contact-communications')] : null,
     includeAccounting ? ['signups', appRequest(config, 'GET', '/api/bna/signups')] : null,
     includeAccounting ? ['paymentIntake', appRequest(config, 'GET', '/api/bna/payment-intake')] : null,
     includeAccounting ? ['payments', appRequest(config, 'GET', '/api/bna/payments')] : null,
     includeAccounting ? ['paymentReminders', appRequest(config, 'GET', '/api/bna/payment-reminders/due')] : null,
     includeAccounting ? ['greenInvoiceWebhooks', appRequest(config, 'GET', '/api/bna/green-invoice/webhooks?limit=12')] : null,
+    includeSupport ? ['supportTickets', appRequest(config, 'GET', '/api/bna/support-tickets')] : null,
   ].filter(Boolean);
 
   const settled = await Promise.allSettled(requests.map(([, request]) => request));
@@ -1372,6 +1447,8 @@ async function buildBnaAppSnapshotForMessage(config, text) {
   const codexTasks = activeTasks.filter((task) => /codex|kimi|system|agent/i.test(String(task.assigned_to || ''))).slice(0, 8);
   const shloimieTasks = activeTasks.filter((task) => /shloimie/i.test(String(task.assigned_to || ''))).slice(0, 6);
   const decisionTasks = activeTasks.filter((task) => String(task.stage || '') === 'needs_decision' || task.decision_required).slice(0, 6);
+  const supportTickets = Array.isArray(data.supportTickets?.tickets) ? data.supportTickets.tickets : [];
+  const openSupportTickets = supportTickets.filter((ticket) => !['resolved', 'closed'].includes(String(ticket.status || ''))).slice(0, includeTaskDetails ? 12 : 6);
   const taskComments = {};
 
   if (includeTaskDetails && activeTasks.length) {
@@ -1437,6 +1514,17 @@ async function buildBnaAppSnapshotForMessage(config, text) {
     if (recentDoneTasks.length) {
       lines.push('Recent done/changelog task records:');
       for (const task of recentDoneTasks) lines.push(`- ${compactTaskForContext(task)}`);
+    }
+  }
+
+  if (includeSupport) {
+    lines.push('');
+    lines.push(`Team tickets live data: total=${supportTickets.length}, open=${openSupportTickets.length}.`);
+    lines.push(`- Status counts: ${formatCounts(countByField(supportTickets, 'status'))}`);
+    lines.push(`- Severity counts: ${formatCounts(countByField(supportTickets, 'severity'))}`);
+    if (openSupportTickets.length) {
+      lines.push('Open Team tickets:');
+      for (const ticket of openSupportTickets) lines.push(`- ${compactSupportTicketForContext(ticket)}`);
     }
   }
 
@@ -1522,6 +1610,12 @@ async function buildBnaAppSnapshotForMessage(config, text) {
       lines.push(`- Signup status counts: ${formatCounts(countByField(signups, 'status'))}`);
       lines.push(`- Payment status counts: ${formatCounts(countByField(signups, 'payment_status'))}`);
       for (const item of signups.slice(0, 12)) lines.push(`- contact ${compactPaymentForContext(item)} | email=${sanitizeContextText(item.parent_email, 80)} | phone=${sanitizeContextText(item.parent_phone, 40)}`);
+      const communications = Array.isArray(data.contactCommunications?.communications) ? data.contactCommunications.communications : [];
+      lines.push(`Communications: records=${communications.length}.`);
+      for (const item of communications.slice(0, 12)) {
+        const name = item.lead_parent_name || item.signup_parent_name || item.signup_student_name || item.student_name || 'general';
+        lines.push(`- communication #${item.id} ${sanitizeContextText(name, 80)} | ${item.channel || 'unknown'}/${item.direction || 'unknown'} | type=${item.contact_type || 'general'} | follow_up=${Boolean(item.follow_up_required)} | ${sanitizeContextText(item.summary || item.body || '', 140)}`);
+      }
     }
   }
 
@@ -1616,11 +1710,11 @@ function guessExtensionForMime(mimeType) {
 
 function formatAccountsReply(accounts) {
   if (!accounts.length) {
-    return 'No connected GHL social accounts were found for this location.';
+    return 'No connected Buffer social channels were found for this workspace.';
   }
 
   const aliasMap = buildAccountAliases(accounts);
-  const lines = ['Connected GHL accounts:'];
+  const lines = ['Connected Buffer channels:'];
   for (const [alias, account] of aliasMap.entries()) {
     const locality = account?.meta?.storefrontAddress?.locality
       ? ` (${account.meta.storefrontAddress.locality})`
@@ -1733,6 +1827,34 @@ function writePendingDecisions(decisions) {
   fs.writeFileSync(pendingDecisionsFile, JSON.stringify(decisions, null, 2));
 }
 
+function readPendingExternalActions() {
+  if (!fs.existsSync(pendingExternalActionsFile)) return {};
+  try {
+    return JSON.parse(fs.readFileSync(pendingExternalActionsFile, 'utf8'));
+  } catch {
+    return {};
+  }
+}
+
+function writePendingExternalActions(actions) {
+  fs.writeFileSync(pendingExternalActionsFile, JSON.stringify(actions, null, 2));
+}
+
+function savePendingExternalAction(messageId, action) {
+  const actions = readPendingExternalActions();
+  actions[String(messageId)] = {
+    created_at: new Date().toISOString(),
+    ...action,
+  };
+  writePendingExternalActions(actions);
+}
+
+function deletePendingExternalAction(messageId) {
+  const actions = readPendingExternalActions();
+  delete actions[String(messageId)];
+  writePendingExternalActions(actions);
+}
+
 function savePendingDecisionSet(messageId, options, metadata = {}) {
   const decisions = readPendingDecisions();
   decisions[String(messageId)] = {
@@ -1808,10 +1930,114 @@ function telegramModeKeyboard() {
   };
 }
 
+function readPromptPlanningSessions() {
+  try {
+    if (!fs.existsSync(telegramPlanningPromptsFile)) return {};
+    const raw = fs.readFileSync(telegramPlanningPromptsFile, 'utf8').trim();
+    if (!raw) return {};
+    return JSON.parse(raw);
+  } catch {
+    return {};
+  }
+}
+
+function writePromptPlanningSessions(sessions) {
+  fs.writeFileSync(telegramPlanningPromptsFile, JSON.stringify(sessions || {}, null, 2));
+}
+
+function promptPlanningSessionKey(chatId) {
+  return String(chatId || '').trim();
+}
+
+function getActivePromptPlanningSession(chatId) {
+  const key = promptPlanningSessionKey(chatId);
+  if (!key) return null;
+  const sessions = readPromptPlanningSessions();
+  const session = sessions[key];
+  if (!session || session.status !== 'active') return null;
+  const updatedAt = Date.parse(session.updated_at || session.created_at || '');
+  if (Number.isFinite(updatedAt) && Date.now() - updatedAt > 24 * 60 * 60 * 1000) {
+    session.status = 'expired';
+    session.expired_at = new Date().toISOString();
+    sessions[key] = session;
+    writePromptPlanningSessions(sessions);
+    return null;
+  }
+  return session;
+}
+
+function savePromptPlanningSession(chatId, session) {
+  const key = promptPlanningSessionKey(chatId);
+  if (!key || !session) return session;
+  const sessions = readPromptPlanningSessions();
+  sessions[key] = {
+    ...session,
+    updated_at: new Date().toISOString(),
+  };
+  writePromptPlanningSessions(sessions);
+  return sessions[key];
+}
+
+function finishPromptPlanningSession(chatId, status, extra = {}) {
+  const key = promptPlanningSessionKey(chatId);
+  if (!key) return null;
+  const sessions = readPromptPlanningSessions();
+  const session = sessions[key];
+  if (!session) return null;
+  sessions[key] = {
+    ...session,
+    ...extra,
+    status,
+    updated_at: new Date().toISOString(),
+    [`${status}_at`]: new Date().toISOString(),
+  };
+  writePromptPlanningSessions(sessions);
+  return sessions[key];
+}
+
+function createPromptPlanningSession(chatId, messageId, text) {
+  const now = new Date().toISOString();
+  const session = {
+    id: `${chatId}-${messageId || Date.now()}`,
+    status: 'active',
+    kind: promptPlanningKind(text),
+    original_text: String(text || '').trim(),
+    revision_inputs: [],
+    source_message_ids: [messageId].filter(Boolean).map(String),
+    created_at: now,
+    updated_at: now,
+  };
+  session.current_prompt = buildVisiblePlanningPrompt(session);
+  return savePromptPlanningSession(chatId, session);
+}
+
+function refinePromptPlanningSession(chatId, messageId, text, session) {
+  const updated = {
+    ...(session || getActivePromptPlanningSession(chatId)),
+  };
+  updated.revision_inputs = [
+    ...(Array.isArray(updated.revision_inputs) ? updated.revision_inputs : []),
+    {
+      text: String(text || '').trim(),
+      message_id: messageId ? String(messageId) : null,
+      received_at: new Date().toISOString(),
+    },
+  ];
+  updated.source_message_ids = [
+    ...new Set([
+      ...(Array.isArray(updated.source_message_ids) ? updated.source_message_ids : []),
+      ...(messageId ? [String(messageId)] : []),
+    ]),
+  ];
+  updated.current_prompt = buildVisiblePlanningPrompt(updated);
+  return savePromptPlanningSession(chatId, updated);
+}
+
 function isLikelyCodexDevelopmentRequest(text) {
   const normalized = String(text || '').toLowerCase();
   if (!normalized.trim()) return false;
   if (/\bbuild everything\b/.test(normalized)) return true;
+  if (hasPromptPlanningIntent(normalized) && !hasExplicitPromptImplementationStart(normalized)) return false;
 
   const devVerb = /\b(build|fix|wire|deploy|test|inspect|edit|update|change|add|create|implement|rename|standardize|connect|scope|migrate|refactor|verify|remove|hide|get rid|stop showing)\b/.test(normalized);
   const devObject =
@@ -1939,6 +2165,8 @@ function buildCodexPrompt(config, messageText, chatId, messageId, extraContext =
     '- Keep the final Telegram reply practical and concise.',
     '- If the operator asks to build, fix, inspect, wire, deploy, test, or update the repo, do the work end-to-end when feasible.',
     '- If the operator says "build everything", choose the order from TASKS.md and the newest tasks-pending handoffs, start executing, and do not ask for ordering confirmation unless there is a real blocker or product decision.',
+    '- If the operator asks to make or refine a prompt for Codex or ChatGPT, treat that as planning mode first: show a visible prompt/brief draft in chat and refine it before implementation unless they explicitly ask to build, test, run, or apply it.',
+    '- When the operator says to test something that can be verified through browser interaction, assume Playwright/browser automation is required and report the actual browser checks performed.',
     '- If you change files, include a short summary and verification in the final reply.',
     '- Return a Telegram-ready reply in plain text.',
     '- Use ASCII characters only in the final reply. Do not use emoji, arrows, curly quotes, or em dashes.',
@@ -2246,6 +2474,93 @@ function runDriveMemorySync(command = 'sync-memory', timeoutMs = 120000) {
       reject(new Error((stderr || stdout || `Drive sync exited ${code}`).trim()));
     });
   });
+}
+
+function runDriveContentLibrarySync(args = [], timeoutMs = 10 * 60 * 1000) {
+  return new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, ['scripts/sync-drive-content-library.mjs', ...args], {
+      cwd: repoRoot,
+      shell: false,
+      env: process.env,
+    });
+
+    let stdout = '';
+    let stderr = '';
+    const timer = setTimeout(() => {
+      child.kill();
+      reject(new Error(`Drive content library sync timed out after ${timeoutMs}ms`));
+    }, timeoutMs);
+
+    child.stdout.on('data', (chunk) => {
+      stdout += chunk.toString();
+    });
+    child.stderr.on('data', (chunk) => {
+      stderr += chunk.toString();
+    });
+    child.on('error', (error) => {
+      clearTimeout(timer);
+      reject(error);
+    });
+    child.on('close', (code) => {
+      clearTimeout(timer);
+      if (code === 0) {
+        resolve(stdout.trim());
+        return;
+      }
+      reject(new Error((stderr || stdout || `Drive content library sync exited ${code}`).trim()));
+    });
+  });
+}
+
+function parseDriveContentLibrarySyncArgs(text) {
+  const raw = String(text || '').replace(/^\/sync_content_drive\b/i, '').trim();
+  if (!raw) return ['--all', '--verify'];
+  const parts = raw.split(/\s+/).filter(Boolean);
+  const args = [];
+  for (const part of parts) {
+    if (/^\d+$/.test(part)) {
+      args.push('--job-id', part);
+    } else if ([
+      '--all',
+      '--articles',
+      '--force',
+      '--dry-run',
+      '--verify',
+      '--no-ai',
+    ].includes(part)) {
+      args.push(part);
+    } else {
+      throw new Error(`Unsupported sync argument: ${part}`);
+    }
+  }
+  return args;
+}
+
+function driveContentSyncReply(output, prefix = 'Drive content library sync complete.') {
+  const text = String(output || '').trim();
+  if (!text) return prefix;
+  return [prefix, '', text.slice(-3000)].join('\n');
+}
+
+function queueDriveContentLibrarySync(config, chatId, messageId, contentJobId) {
+  if (!contentJobId) return;
+  runDriveContentLibrarySync(['--job-id', String(contentJobId), '--verify'])
+    .then((output) => sendReply(
+      config.botToken,
+      chatId,
+      driveContentSyncReply(output, `Drive transcript library synced for content job #${contentJobId}.`),
+      messageId
+    ))
+    .catch((error) => {
+      const message = error instanceof Error ? error.message : String(error);
+      log(`Drive content library sync failed for content job ${contentJobId}: ${message}`);
+      return sendReply(
+        config.botToken,
+        chatId,
+        `Drive transcript library sync failed for content job #${contentJobId}: ${message.slice(0, 1200)}`,
+        messageId
+      );
+    });
 }
 
 function runOpenAiSidekickSmoke(timeoutMs = 240000) {
@@ -2719,6 +3034,183 @@ async function appRequest(config, method, endpoint, body = null) {
   return data;
 }
 
+async function handleTypedOperationsAction(config, msg, intentPlan) {
+  const chatId = String(msg.chat.id);
+  const text = msg.text?.trim() || '';
+  const messageId = msg.message_id;
+  const actionRoute = classifyTelegramActionRequest({
+    text,
+    intentPlan,
+    scoped: isScopedProjectBot(config),
+  });
+
+  if (actionRoute.kind !== 'typed_action') return false;
+  if (!config.opsUsername || !config.opsPassword) {
+    log(`Typed action ${actionRoute.action_id} skipped for chat ${chatId}: Operations credentials missing`);
+    return false;
+  }
+
+  const workspace = isScopedProjectBot(config) ? 'rabbi_sheller_provider' : 'bna';
+  const result = await appRequest(config, 'POST', '/api/bna/actions/run', {
+    action_id: actionRoute.action_id,
+    inputs: actionRoute.inputs || {},
+    source: 'telegram',
+    workspace,
+    actor_role: isScopedProjectBot(config) ? 'provider_admin' : 'operator',
+    dry_run: Boolean(actionRoute.dry_run),
+    page_context: {
+      telegram_chat_id: chatId,
+      telegram_message_id: messageId,
+      confidence: actionRoute.confidence,
+      reason: actionRoute.reason,
+    },
+  });
+
+  const reply = formatTelegramActionResult(result);
+  const delivery = await sendReply(config.botToken, chatId, reply, messageId);
+  appendMemoryEntry('Telegram Typed Action', JSON.stringify({
+    action_id: actionRoute.action_id,
+    reason: actionRoute.reason,
+    confidence: actionRoute.confidence,
+    result_status: result.success ? (result.executed ? 'executed' : 'previewed') : 'failed',
+    audit_log: result.audit_log?.action_run_id || null,
+  }), {
+    chat_id: chatId,
+    message_id: messageId,
+    telegram_chunks: delivery.chunks,
+    telegram_message_ids: delivery.message_ids.join(','),
+  });
+  return true;
+}
+
+function parseWhatsappTarget(text = '') {
+  const value = String(text || '').trim();
+  const target = {};
+  const patterns = [
+    ['signup_id', /\bsignup\s*[:#]?\s*(\d+)/i],
+    ['lead_id', /\blead\s*[:#]?\s*(\d+)/i],
+    ['student_id', /\bstudent\s*[:#]?\s*(\d+)/i],
+    ['to', /\b(?:phone|to|number)\s*[:#]?\s*([+()\-\s\d]{7,})/i],
+  ];
+  for (const [key, pattern] of patterns) {
+    const match = value.match(pattern);
+    if (match) target[key] = key.endsWith('_id') ? Number(match[1]) : match[1].trim();
+  }
+  if (!target.to && !target.signup_id && !target.lead_id && !target.student_id && /^[+()\-\s\d]{7,}$/.test(value)) {
+    target.to = value;
+  }
+  return target;
+}
+
+function parseWhatsappSendCommand(text = '') {
+  const commandText = String(text || '').replace(/^\/(?:send_whatsapp|whatsapp_send|wa_send)\b/i, '').trim();
+  const [targetPart, ...messageParts] = commandText.split('|');
+  const message = messageParts.join('|').trim();
+  return {
+    target: parseWhatsappTarget(targetPart),
+    message,
+  };
+}
+
+function parseWhatsappLinkCommand(text = '') {
+  const commandText = String(text || '').replace(/^\/(?:link_whatsapp|whatsapp_link|wa_link)\b/i, '').trim();
+  const tokens = {};
+  const tokenPattern = /\b(comm(?:unication)?|note|message|signup|lead|student|phone|parent|parent_name|student_name|email)\s*[:#]\s*([^|]+)/gi;
+  let match;
+  while ((match = tokenPattern.exec(commandText))) {
+    const key = match[1].toLowerCase();
+    tokens[key] = match[2].trim();
+  }
+  const communicationId = Number(tokens.communication || tokens.comm || tokens.note || tokens.message || 0);
+  const payload = {};
+  if (tokens.signup) payload.signup_id = Number(tokens.signup);
+  if (tokens.lead) payload.lead_id = Number(tokens.lead);
+  if (tokens.student) payload.student_id = Number(tokens.student);
+  if (tokens.phone) payload.parent_phone = tokens.phone;
+  if (tokens.parent || tokens.parent_name) payload.parent_name = tokens.parent || tokens.parent_name;
+  if (tokens.student_name) payload.student_name = tokens.student_name;
+  if (tokens.email) payload.parent_email = tokens.email;
+  if (!payload.signup_id && !payload.lead_id && !payload.student_id) payload.create_lead = true;
+  return { communicationId, payload };
+}
+
+function formatWapiDiagnosticsReply(data = {}) {
+  return [
+    'WAPI / WhatsApp status:',
+    `- Inbound webhook: ${data.inbound_webhook_configured ? 'configured' : 'not configured'}`,
+    `- Outbound sending: ${data.outbound_configured ? 'configured' : 'missing token'}`,
+    `- Outbound base: ${data.outbound_base_url || 'not set'}`,
+    data.required_outbound_env?.length ? `- Missing env: ${data.required_outbound_env.join(', ')}` : '',
+  ].filter(Boolean).join('\n');
+}
+
+async function handleWhatsappSendCommand(config, msg) {
+  const chatId = String(msg.chat.id);
+  const messageId = msg.message_id;
+  const parsed = parseWhatsappSendCommand(getTelegramMessageText(msg));
+  if (!parsed.message || (!parsed.target.to && !parsed.target.signup_id && !parsed.target.lead_id && !parsed.target.student_id)) {
+    await sendReply(
+      config.botToken,
+      chatId,
+      [
+        'Use:',
+        '/send_whatsapp signup:123 | message text',
+        '/send_whatsapp lead:123 | message text',
+        '/send_whatsapp student:123 | message text',
+        '/send_whatsapp phone:+972501234567 | message text',
+      ].join('\n'),
+      messageId
+    );
+    return;
+  }
+  const result = await appRequest(config, 'POST', '/api/bna/contact-communications/send-whatsapp', {
+    ...parsed.target,
+    body: parsed.message,
+    confirm: 'SEND_WHATSAPP',
+    source: 'telegram',
+    created_by: config.agentDisplayName || 'Telegram bot',
+  });
+  await sendReply(
+    config.botToken,
+    chatId,
+    result?.sent
+      ? `WhatsApp sent and logged as communication #${result.communication?.id || 'unknown'}.`
+      : 'WhatsApp request completed, but the app did not report sent=true.',
+    messageId
+  );
+}
+
+async function handleWhatsappLinkCommand(config, msg) {
+  const chatId = String(msg.chat.id);
+  const messageId = msg.message_id;
+  const parsed = parseWhatsappLinkCommand(getTelegramMessageText(msg));
+  if (!parsed.communicationId) {
+    await sendReply(
+      config.botToken,
+      chatId,
+      [
+        'Use:',
+        '/link_whatsapp communication:12 signup:3',
+        '/link_whatsapp communication:12 lead:7',
+        '/link_whatsapp communication:12 parent: Shalom Galambo | phone:+972501234567 | student_name:Eitan Chaim',
+      ].join('\n'),
+      messageId
+    );
+    return;
+  }
+  const result = await appRequest(config, 'POST', `/api/bna/contact-communications/${parsed.communicationId}/link`, {
+    ...parsed.payload,
+    link_note: 'Linked from Telegram command',
+  });
+  const createdLeadLine = result?.createdLead?.id ? ` Created parent lead #${result.createdLead.id}.` : '';
+  await sendReply(
+    config.botToken,
+    chatId,
+    `Communication #${result?.communication?.id || parsed.communicationId} linked as ${result?.communication?.contact_type || 'contact'}.${createdLeadLine}`,
+    messageId
+  );
+}
+
 async function getApprovedOutputExamples(config, outputType, limit = 3) {
   try {
     const data = await appRequest(config, 'GET', '/api/bna/content-jobs');
@@ -2777,6 +3269,7 @@ function appendApprovedOutputExample(output) {
 
 function splitRambleIntoUnits(text) {
   return String(text || '')
+    .replace(/\s+\b(another thing that i need to happen is|task for myself(?:\s+is)?|put something on my list|a decision for myself is|decision for myself is|anytime i tell you to test something|i still need to|i need to figure out|i need to finish|i need to make)\b/gi, '\n$1')
     .split(/\r?\n|[.;]/)
     .map((line) => line.trim())
     .filter(Boolean)
@@ -2784,6 +3277,7 @@ function splitRambleIntoUnits(text) {
 }
 
 function detectAccountabilityType(text) {
+  return detectTelegramAccountabilityType(text);
   const normalized = String(text || '').toLowerCase();
   if (/\b(question|asked|asks|שאלה|\?)\b/.test(normalized)) return 'question';
   if (/\b(goal|goals|work on|practice|commit|kabbalah|accountability)\b/.test(normalized)) return 'student_goal';
@@ -2874,6 +3368,7 @@ function studentAliases(student) {
 }
 
 function isLikelyStudentAccountabilityUnit(text, eventType, student) {
+  return isLikelyTelegramStudentAccountabilityUnit(text, eventType, student);
   if (student) return true;
 
   const normalized = String(text || '').toLowerCase();
@@ -2888,6 +3383,7 @@ function isLikelyStudentAccountabilityUnit(text, eventType, student) {
 }
 
 function extractAccountabilityDetails(text) {
+  return extractTelegramAccountabilityDetails(text, { eventType: detectAccountabilityType(text) });
   const normalized = String(text || '').toLowerCase();
   const details = {
     metadata: {
@@ -2967,6 +3463,8 @@ function inferScopedOneTimeCategory(text) {
   if (/\b(accounting|payment|invoice|money|budget|tuition)\b/.test(normalized)) return 'accounting';
   if (/\b(ghl|go high level|highlevel|crm|pipeline)\b/.test(normalized)) return 'ghl_setup';
   if (/\b(community|participant|attendee|parent|family|group)\b/.test(normalized)) return 'community';
+  if (/\b(torah research|halacha|halachic|halakhic|psak|sheilah|shaila|shailah|sefaria|source lookup|look up|research)\b/.test(normalized)
+    && /\b(question|source|sources|sefaria|halacha|halachic|halakhic|psak|fast|fasting|shabbos|shabbat)\b/.test(normalized)) return 'torah_research';
   if (/\b(source sheet|sources?|mareh|makom|sefaria)\b/.test(normalized)) return 'source_sheets';
   if (/\b(shiur idea|ideas?|topic|topics?|sugya)\b/.test(normalized)) return 'shiur_ideas';
   if (/\b(class prep|prepare class|prep|mishnah|mishna|torah class|lesson)\b/.test(normalized)) return 'torah_class_prep';
@@ -2981,6 +3479,22 @@ function inferScopedOneTimeAssignee(text) {
   return null;
 }
 
+function hasConcreteScopedTaskAction(text) {
+  const normalized = String(text || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  if (!normalized) return false;
+  return /\b(start|build|fix|wire|set up|setup|configure|connect|hook up|implement|add|remove|delete|archive|merge|reconcile|clean|clean up|update|change|replace|upload|parse|process|transcribe|source|link|attach|create|make|run|deploy|smoke test|audit|check|verify|finish)\b/.test(normalized);
+}
+
+function hasExplicitScopedDecisionChoice(text) {
+  const normalized = String(text || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  if (!normalized) return false;
+  if (/\boption\s+[a-c]\s*[:.-]/i.test(text)) return true;
+  if (hasConcreteScopedTaskAction(normalized)) return false;
+  if (/\b(choose|which one|which option|a\/b|a b or c|option a|option b|option c|what do you recommend|should we)\b/.test(normalized)) return true;
+  return /\b(decide|decision|figure out|not sure)\b/.test(normalized)
+    && /\b(whether|between|which|option|approach|path|keep|drop)\b/.test(normalized);
+}
+
 function hasExplicitScopedTaskIntent(text) {
   const normalized = String(text || '').toLowerCase().replace(/\s+/g, ' ').trim();
   if (!normalized) return false;
@@ -2991,6 +3505,52 @@ function hasExplicitScopedTaskIntent(text) {
     /\b(make this|add this|file this|turn this)\b.{0,60}\b(task|todo|decision)\b/.test(normalized) ||
     /\b(decision required|needs decision|mark .*decision)\b/.test(normalized)
   );
+}
+
+function hasExplicitScopedSupportTicketIntent(text) {
+  const normalized = String(text || '').toLowerCase().replace(/\s+/g, ' ').trim();
+  if (!normalized) return false;
+  if (/^\/(?:ticket|support)\b/.test(normalized)) return true;
+  if (/^(?:ticket|support)\s*[:.-]/.test(normalized)) return true;
+  if (/\b(open|create|file|make|put)\b.{0,80}\b(?:a\s+)?(?:support\s+)?ticket\b/.test(normalized)) return true;
+  const systemArea = /\b(bot|telegram|login|password|access|dashboard|website|app|api|task manager|tasks?|comments?|parser|watchdog|automation|workflow|drive|payment|checkout|recording|worksheet|link)\b/.test(normalized);
+  const brokenSignal = /\b(broken|not working|doesn'?t work|isn'?t working|bug|error|failed|failing|stuck|crash|crashed|blocked|can'?t|cannot|unable|locked out|down|missing)\b/.test(normalized);
+  return systemArea && brokenSignal;
+}
+
+function scopedSupportTicketTitleFromText(text) {
+  let title = String(text || '').trim()
+    .replace(/^\/(?:ticket|support)\b[:\s-]*/i, '')
+    .replace(/^(?:ticket|support)\s*[:.-]\s*/i, '')
+    .replace(/^(?:please\s+)?(?:open|create|file|make|put)\s+(?:this\s+)?(?:as\s+)?(?:a\s+)?(?:support\s+)?ticket\s*(?:for\s+)?[:\s-]*/i, '')
+    .trim();
+  if (!title) title = String(text || '').trim();
+  title = title.split(/\n|(?<=[.!?])\s+/)[0] || title;
+  title = title.replace(/\s+/g, ' ').slice(0, 160).trim();
+  return title || 'One Time support ticket';
+}
+
+function inferScopedSupportTicketSeverity(text) {
+  const normalized = String(text || '').toLowerCase();
+  if (/\b(blocking|blocked|production down|down|locked out|cannot log in|can'?t log in|no access|nothing works)\b/.test(normalized)) return 'blocking';
+  if (/\b(urgent|high|broken|not working|doesn'?t work|isn'?t working|failed|failing|error|can'?t|cannot|unable)\b/.test(normalized)) return 'high';
+  if (/\b(low|minor|small|cosmetic|not urgent)\b/.test(normalized)) return 'low';
+  return 'normal';
+}
+
+function inferScopedSupportTicketCategory(text) {
+  const normalized = String(text || '').toLowerCase();
+  if (/\b(login|password|log in|signin|sign in)\b/.test(normalized)) return 'login';
+  if (/\b(bot|telegram|api)\b/.test(normalized)) return 'bot_api';
+  if (/\b(task manager|tasks?|comments?|parser|watchdog)\b/.test(normalized)) return 'task_manager';
+  if (/\b(automation|workflow|trigger)\b/.test(normalized)) return 'automation';
+  if (/\b(payment|checkout|invoice|billing)\b/.test(normalized)) return 'payment';
+  if (/\b(drive|google doc|folder)\b/.test(normalized)) return 'drive';
+  if (/\b(recording|video|audio)\b/.test(normalized)) return 'recording';
+  if (/\b(worksheet|source sheet|source-sheet)\b/.test(normalized)) return 'worksheet';
+  if (/\b(access|permission|link|portal)\b/.test(normalized)) return 'access';
+  if (/\b(parent|student|member|customer|data)\b/.test(normalized)) return 'student_parent_data';
+  return 'other';
 }
 
 function scopedTaskTitleFromText(text) {
@@ -3020,7 +3580,7 @@ function parseScopedCommentCommand(text) {
 
 async function captureScopedProjectToApp(config, text, chatId, messageId) {
   if (!config.opsUsername || !config.opsPassword) {
-    return { enabled: false, tasksCreated: 0, eventsCreated: 0, commentsCreated: 0 };
+    return { enabled: false, tasksCreated: 0, eventsCreated: 0, commentsCreated: 0, supportTicketsCreated: 0 };
   }
 
   const commentCommand = parseScopedCommentCommand(text);
@@ -3037,15 +3597,56 @@ async function captureScopedProjectToApp(config, text, chatId, messageId) {
       tasksCreated: 0,
       eventsCreated: 0,
       commentsCreated: 1,
+      supportTicketsCreated: 0,
       comments: [result?.comment].filter(Boolean),
     };
   }
 
-  if (!hasExplicitScopedTaskIntent(text)) {
-    return { enabled: true, tasksCreated: 0, eventsCreated: 0, commentsCreated: 0 };
+  if (hasExplicitScopedSupportTicketIntent(text)) {
+    const result = await appRequest(config, 'POST', '/api/bna/support-tickets', {
+      title: scopedSupportTicketTitleFromText(text),
+      description: text,
+      severity: inferScopedSupportTicketSeverity(text),
+      category: inferScopedSupportTicketCategory(text),
+      source: 'telegram',
+      reporter_name: config.agentDisplayName || 'Rabbi Elie Scheller',
+      reporter_role: 'external_user',
+      project_key: config.scopedProjectKey || ONE_TIME_PROJECT_KEY,
+      source_context: { chat_id: chatId, message_id: messageId, bridge_profile: config.bridgeProfile },
+    });
+    const ticket = result?.ticket || result;
+    if (ticket?.id) {
+      appendAgentTaskLedger({
+        event: 'support_ticket_created',
+        source: 'telegram_scoped',
+        bridge_profile: config.bridgeProfile,
+        chat_id: chatId,
+        message_id: messageId,
+        support_ticket_id: ticket.id,
+        related_task_id: ticket.related_task_id || result?.task?.id || null,
+        title: ticket.title,
+        severity: ticket.severity,
+        category: ticket.category,
+        project_key: ticket.project_key || config.scopedProjectKey || ONE_TIME_PROJECT_KEY,
+      });
+    }
+    return {
+      enabled: true,
+      tasksCreated: result?.task?.id ? 1 : 0,
+      tasks: result?.task?.id ? [result.task] : [],
+      eventsCreated: 0,
+      commentsCreated: 0,
+      supportTicketsCreated: ticket?.id ? 1 : 0,
+      supportTickets: ticket?.id ? [ticket] : [],
+    };
   }
 
-  const decisionRequired = /\b(decision required|needs decision|decision)\b/i.test(text);
+  if (!hasExplicitScopedTaskIntent(text)) {
+    return { enabled: true, tasksCreated: 0, eventsCreated: 0, commentsCreated: 0, supportTicketsCreated: 0 };
+  }
+
+  const decisionRequired = hasExplicitScopedDecisionChoice(text);
+  const assignee = inferScopedOneTimeAssignee(text) || (decisionRequired ? null : 'Codex');
   const task = await appRequest(config, 'POST', '/api/bna/tasks', {
     title: scopedTaskTitleFromText(text),
     raw_text: text,
@@ -3055,7 +3656,7 @@ async function captureScopedProjectToApp(config, text, chatId, messageId) {
     author: config.agentDisplayName || 'Rabbi Elie Scheller',
     project_key: config.scopedProjectKey || ONE_TIME_PROJECT_KEY,
     category: inferScopedOneTimeCategory(text),
-    assigned_to: inferScopedOneTimeAssignee(text),
+    assigned_to: assignee,
     stage: decisionRequired ? 'needs_decision' : 'assigned',
     decision_required: decisionRequired,
     ai_parsed: {
@@ -3088,6 +3689,127 @@ async function captureScopedProjectToApp(config, text, chatId, messageId) {
     tasks: createdTask?.id ? [createdTask] : [],
     eventsCreated: 0,
     commentsCreated: 0,
+    supportTicketsCreated: 0,
+  };
+}
+
+async function captureContactLeadsToApp(config, text, chatId, messageId) {
+  const extractedLeads = extractInterestedParentLeads(text, { chatId, messageId });
+  if (!extractedLeads.length) {
+    return {
+      leadsDetected: hasInterestedParentLeadCaptureIntent(text),
+      contactLeadsCreated: 0,
+      contactLeadsUpdated: 0,
+      contactLeadsMatched: 0,
+      contactNotesCreated: 0,
+      contacts: [],
+    };
+  }
+
+  const contacts = [];
+  let contactLeadsCreated = 0;
+  let contactLeadsUpdated = 0;
+  let contactLeadsMatched = 0;
+  let contactNotesCreated = 0;
+
+  for (const extracted of extractedLeads) {
+    const { communication, ...leadPayload } = extracted;
+    const result = await appRequest(config, 'POST', '/api/bna/parent-leads', {
+      ...leadPayload,
+      source: 'telegram',
+      metadata: {
+        ...(leadPayload.metadata || {}),
+        source_context: { chat_id: chatId, message_id: messageId },
+      },
+    });
+
+    const savedLead = result?.lead || null;
+    const matchedExisting = result?.matched_existing || null;
+    if (savedLead?.id) {
+      if (result?.merged_existing) contactLeadsUpdated += 1;
+      else contactLeadsCreated += 1;
+
+      const note = await appRequest(config, 'POST', '/api/bna/contact-communications', {
+        contact_type: 'lead',
+        lead_id: savedLead.id,
+        channel: 'phone',
+        direction: 'call',
+        summary: communication?.summary || `${savedLead.parent_name || extracted.parent_name}: lead update`,
+        body: communication?.body || extracted.notes || text,
+        follow_up_required: Boolean(communication?.follow_up_required),
+        source: 'telegram',
+        created_by: config.agentDisplayName || 'Telegram bot',
+        source_context: { chat_id: chatId, message_id: messageId },
+        metadata: {
+          parser: 'telegram-contact-lead-capture-v1',
+          lead_source: 'operator_ramble',
+        },
+      });
+      if (note?.communication?.id) contactNotesCreated += 1;
+      contacts.push({
+        id: savedLead.id,
+        parent_name: savedLead.parent_name || extracted.parent_name,
+        status: savedLead.status || extracted.status,
+        interest_level: savedLead.interest_level || extracted.interest_level,
+        action: result?.merged_existing ? 'updated' : 'created',
+      });
+      continue;
+    }
+
+    if (matchedExisting?.id) {
+      const contactType = matchedExisting.kind === 'student' ? 'student' : 'signup';
+      const notePayload = {
+        contact_type: contactType,
+        channel: 'phone',
+        direction: 'call',
+        summary: communication?.summary || `${matchedExisting.display_name || extracted.parent_name}: lead update matched existing record`,
+        body: communication?.body || extracted.notes || text,
+        follow_up_required: Boolean(communication?.follow_up_required),
+        source: 'telegram',
+        created_by: config.agentDisplayName || 'Telegram bot',
+        source_context: { chat_id: chatId, message_id: messageId },
+        metadata: {
+          parser: 'telegram-contact-lead-capture-v1',
+          matched_existing_kind: matchedExisting.kind,
+        },
+      };
+      if (contactType === 'student') notePayload.student_id = matchedExisting.id;
+      else notePayload.signup_id = matchedExisting.id;
+      const note = await appRequest(config, 'POST', '/api/bna/contact-communications', notePayload);
+      if (note?.communication?.id) contactNotesCreated += 1;
+      contactLeadsMatched += 1;
+      contacts.push({
+        id: matchedExisting.id,
+        parent_name: matchedExisting.display_name || extracted.parent_name,
+        status: matchedExisting.status || '',
+        interest_level: '',
+        action: `matched_${matchedExisting.kind || 'existing'}`,
+      });
+    }
+  }
+
+  if (contacts.length) {
+    appendAgentTaskLedger({
+      event: 'contact_leads_captured',
+      source: 'telegram',
+      chat_id: chatId,
+      message_id: messageId,
+      title: 'Captured interested-parent lead update',
+      stage: 'done',
+      category: 'communications',
+      assigned_to: 'Codex',
+      notes: `Captured ${contactLeadsCreated} new lead(s), updated ${contactLeadsUpdated}, matched ${contactLeadsMatched}, and added ${contactNotesCreated} contact note(s).`,
+      contact_names: contacts.slice(0, 12).map((contact) => contact.parent_name).filter(Boolean),
+    });
+  }
+
+  return {
+    leadsDetected: true,
+    contactLeadsCreated,
+    contactLeadsUpdated,
+    contactLeadsMatched,
+    contactNotesCreated,
+    contacts,
   };
 }
 
@@ -3111,6 +3833,18 @@ async function captureRambleToApp(config, text, chatId, messageId) {
       notes: text,
     });
     paymentIntakeCreated = 1;
+  }
+
+  let contactCapture = {
+    leadsDetected: false,
+    contactLeadsCreated: 0,
+    contactLeadsUpdated: 0,
+    contactLeadsMatched: 0,
+    contactNotesCreated: 0,
+    contacts: [],
+  };
+  if (hasInterestedParentLeadCaptureIntent(text)) {
+    contactCapture = await captureContactLeadsToApp(config, text, chatId, messageId);
   }
 
   let students = [];
@@ -3169,11 +3903,15 @@ async function captureRambleToApp(config, text, chatId, messageId) {
   const taskRamble = rambleUnits
     .filter((unit) => !accountabilityUnits.has(unit))
     .filter((unit) => !detectPaymentIntake(unit))
+    .filter((unit) => !hasPromptPlanningIntent(unit))
     .join('\n')
     .trim();
   const singleSentenceSystemTask = eventsCreated
     && /\b(i need you|can you|fix|build|wire|deploy|codex|bot|dashboard|parser|parse|routing|app|system|website|drive)\b/i.test(text);
-  const taskRambleInput = taskRamble || (singleSentenceSystemTask ? text : '');
+  const suppressGenericTaskCapture = Boolean(contactCapture.leadsDetected);
+  const taskRambleInput = suppressGenericTaskCapture
+    ? ''
+    : taskRamble || (singleSentenceSystemTask && !hasPromptPlanningIntent(text) ? text : '');
   if (taskRambleInput && !isExploratoryQuestionWithoutTaskIntent(text)) {
     taskResult = await appRequest(config, 'POST', '/api/bna/tasks', {
       ramble: taskRambleInput,
@@ -3204,6 +3942,11 @@ async function captureRambleToApp(config, text, chatId, messageId) {
     eventsCreated,
     studentMatchDecisions,
     paymentIntakeCreated,
+    contactLeadsCreated: contactCapture.contactLeadsCreated,
+    contactLeadsUpdated: contactCapture.contactLeadsUpdated,
+    contactLeadsMatched: contactCapture.contactLeadsMatched,
+    contactNotesCreated: contactCapture.contactNotesCreated,
+    contacts: contactCapture.contacts,
   };
 }
 
@@ -3377,12 +4120,41 @@ async function sendDecisionButtons(botToken, chatId, replyToMessageId, sourceMes
   });
 }
 
+async function sendExternalActionApproval(botToken, chatId, replyToMessageId, sourceMessageId, intentPlan, text, sourceMsg = {}) {
+  savePendingExternalAction(sourceMessageId, {
+    chat_id: chatId,
+    source_message_id: sourceMessageId,
+    text,
+    reply_text: String(sourceMsg?.reply_to_message?.text || ''),
+    reply_caption: String(sourceMsg?.reply_to_message?.caption || ''),
+    intent_plan: summarizeIntentPlan(intentPlan),
+  });
+
+  await telegramRequest(botToken, 'sendMessage', {
+    chat_id: chatId,
+    text: [
+      'I understood this as a public send/publish action.',
+      '',
+      'I can prepare drafts and internal records automatically, but I need confirmation before sending or publishing anything to other people.',
+    ].join('\n'),
+    reply_to_message_id: replyToMessageId,
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: 'Confirm Send/Publish', callback_data: `external:approve:${sourceMessageId}` },
+          { text: 'Cancel', callback_data: `external:cancel:${sourceMessageId}` },
+        ],
+      ],
+    },
+  });
+}
+
 async function sendContentApproval(botToken, chatId, replyToMessageId, {
   outputId,
   jobId,
   body,
   heading = 'WhatsApp copy draft:',
-  approveLabel = 'Approve Text',
+  approveLabel = 'Save Final Draft',
   publishLabel = '',
 }) {
   const keyboard = [
@@ -3400,13 +4172,15 @@ async function sendContentApproval(botToken, chatId, replyToMessageId, {
     chat_id: chatId,
     text: [
       heading,
-      outputId ? `Content output #${outputId}.` : '',
       '',
       body,
       '',
-      jobId ? `Saved in Content job ${jobId}.` : '',
+      outputId ? `Saved draft: Content output #${outputId}.` : '',
+      jobId ? `Source: Content job ${jobId}.` : '',
       '',
-      'Approve this text when it is ready to paste/send.',
+      publishLabel
+        ? 'Reply with wording changes and I will rewrite it here. When it is ready, tap Commit to Buffer Draft or say "commit this" to create a Buffer draft for scheduling.'
+        : 'Reply with wording changes and I will rewrite it here. When it is ready, save it as the final approved version.',
     ].filter(Boolean).join('\n'),
     reply_to_message_id: replyToMessageId,
     reply_markup: {
@@ -3529,8 +4303,34 @@ function captureSummaryText(captureSummary = {}) {
     lines.push(`Filed in Accounting: ${captureSummary.paymentIntakeCreated} payment intake item(s).`);
   }
 
+  const contactLeadCount =
+    Number(captureSummary.contactLeadsCreated || 0) +
+    Number(captureSummary.contactLeadsUpdated || 0) +
+    Number(captureSummary.contactLeadsMatched || 0);
+  if (contactLeadCount || Number(captureSummary.contactNotesCreated || 0)) {
+    const parts = [];
+    if (captureSummary.contactLeadsCreated) parts.push(`${captureSummary.contactLeadsCreated} new`);
+    if (captureSummary.contactLeadsUpdated) parts.push(`${captureSummary.contactLeadsUpdated} updated`);
+    if (captureSummary.contactLeadsMatched) parts.push(`${captureSummary.contactLeadsMatched} matched existing`);
+    const leadLabel = parts.length ? parts.join(', ') : `${contactLeadCount} lead`;
+    lines.push(`Filed in Contacts: ${leadLabel}; ${Number(captureSummary.contactNotesCreated || 0)} note(s).`);
+  }
+
   if (captureSummary.commentsCreated) {
     lines.push(`Filed in One Time comments: ${captureSummary.commentsCreated} comment(s).`);
+  }
+
+  if (captureSummary.supportTicketsCreated) {
+    const visibleTickets = (captureSummary.supportTickets || [])
+      .filter((ticket) => ticket?.id)
+      .slice(0, 3);
+    if (visibleTickets.length) {
+      for (const ticket of visibleTickets) {
+        lines.push(`Filed in Support: #${ticket.id} ${ticket.title || 'ticket'}.`);
+      }
+    } else {
+      lines.push(`Filed in Team: ${captureSummary.supportTicketsCreated} ticket(s).`);
+    }
   }
 
   return lines.length ? lines.join('\n') : 'Captured in BNA.';
@@ -3541,7 +4341,12 @@ function hasStructuredCapture(captureSummary = {}) {
     Number(captureSummary.tasksCreated || 0) ||
     Number(captureSummary.eventsCreated || 0) ||
     Number(captureSummary.paymentIntakeCreated || 0) ||
+    Number(captureSummary.contactLeadsCreated || 0) ||
+    Number(captureSummary.contactLeadsUpdated || 0) ||
+    Number(captureSummary.contactLeadsMatched || 0) ||
+    Number(captureSummary.contactNotesCreated || 0) ||
     Number(captureSummary.commentsCreated || 0) ||
+    Number(captureSummary.supportTicketsCreated || 0) ||
     captureSummary.studentMatchDecisions?.length
   );
 }
@@ -4044,13 +4849,18 @@ function defaultContentOutputsForMedia(kind, caption) {
 }
 
 function shouldGenerateWhatsAppDraft(caption) {
-  return /\b(whatsapp|daily update|parent update|parents|caption)\b/i.test(String(caption || ''))
+  return /\b(whatsapp|wa update|daily update|parent update|parents update|update for parents|caption|copy)\b/i.test(String(caption || ''))
+    && !hasParentAccountabilityRoutingIntent(caption)
     && !/\b(do not|don't|dont|not yet|hold|wait)\b/i.test(String(caption || ''));
 }
 
 function shouldGenerateFacebookDraft(caption) {
   return /\b(facebook|fb|social post|facebook post)\b/i.test(String(caption || ''))
     && !/\b(do not|don't|dont|not yet|hold|wait)\b/i.test(String(caption || ''));
+}
+
+function shouldAutoSendGeneratedWhatsAppDraftPreview({ outputId = '' } = {}) {
+  return !outputId;
 }
 
 function hasMarketingContentIntent(text) {
@@ -4074,25 +4884,47 @@ function hasTaskStudentParserIntent(text) {
 }
 
 function classifyMediaRouting(caption, transcriptText = '', options = {}) {
-  const text = `${caption || ''}\n${transcriptText || ''}`;
-  const marketingIntent = hasMarketingContentIntent(text)
+  const captionText = String(caption || '');
+  const transcriptOnlyText = String(transcriptText || '');
+  const text = `${captionText}\n${transcriptOnlyText}`;
+  const parentAccountabilityIntent = hasParentAccountabilityRoutingIntent(text);
+  const captionMarketingIntent = hasMarketingContentIntent(captionText);
+  const transcriptMarketingIntent = hasMarketingContentIntent(transcriptOnlyText);
+  const marketingIntent = captionMarketingIntent
     || Boolean(options.generatedContent)
     || Boolean(options.publishIntent?.isPublishRequest);
   const classContentIntent = hasClassContentIntent(text);
-  const parserIntent = hasTaskStudentParserIntent(text);
-  const parserOnly = parserIntent && !marketingIntent && !classContentIntent;
+  const parserIntent = parentAccountabilityIntent || hasTaskStudentParserIntent(text);
+  const parserOnly = parentAccountabilityIntent || (parserIntent && !marketingIntent && !classContentIntent);
   return {
     marketingIntent,
+    captionMarketingIntent,
+    transcriptMarketingIntent,
     classContentIntent,
     parserIntent,
     parserOnly,
-    contentLane: marketingIntent || classContentIntent || !parserIntent,
+    contentLane: parentAccountabilityIntent ? false : (marketingIntent || classContentIntent || (!parserIntent && transcriptMarketingIntent) || !parserIntent),
     shouldParse: parserIntent || classContentIntent,
   };
 }
 
 function shouldAutoParseMixedRecording(transcriptText, caption = '') {
   return classifyMediaRouting(caption, transcriptText).shouldParse;
+}
+
+function buildRecordingIntakeTranscript(caption = '', transcriptText = '') {
+  return [
+    caption ? `Caption/context:\n${String(caption).trim()}` : '',
+    transcriptText ? `Transcript:\n${String(transcriptText).trim()}` : '',
+  ].filter(Boolean).join('\n\n').trim();
+}
+
+function shouldUseRecordingIntake(routing = {}, caption = '', transcriptText = '') {
+  return Boolean(
+    routing.parserOnly
+    && routing.shouldParse
+    && buildRecordingIntakeTranscript(caption, transcriptText)
+  );
 }
 
 function buildGeneratedContentOutputs(kind, caption, {
@@ -4745,11 +5577,19 @@ async function generateWhatsAppDraft(config, transcriptText, caption) {
             'Before drafting, use the brand kit, platform prompt, and approved examples provided by the user message.',
             'Return only the message to copy and paste.',
             'Write in English unless the operator explicitly asks for Hebrew.',
-            'Use professional, direct parent-update language; do not sound promotional, corny, or fluffy.',
-            'Use plain short bullet points; do not use emojis unless the operator explicitly asks for them.',
-            'Do not overhype. Do not invent details.',
-            'Avoid phrases like "Today at Bnei Neviim Academy", "our learners explored", "journey", "special moments", "that is very special", "the practical message is simple", and similar marketing language.',
+            "Use Shloimie's BNA voice: professional, direct, warm, grounded, parent-friendly, concise, and Torah-aware when the source is Torah-based.",
+            'This is not marketing copy. It is a clear parent update from someone serious about Torah, growth, and the whole child.',
+            'For a daily class update, begin with "Today at Bnei Neviim Academy:" unless the operator says it will be pasted under a video.',
+            'For a weekly recap, begin with "This week at Bnei Neviim Academy:" unless the operator says it will be pasted under a video.',
+            'Use plain short bullet points unless a paragraph is clearly better; do not use emojis unless the operator explicitly asks for them.',
+            'Lead with the actual learning, discussion, practical message, source, question, class detail, logistics, or tomorrow note.',
+            'Ignore operator backend notes, parser/debug comments, task instructions, Codex/system work, dashboard fixes, and technical corrections; do not include them in parent-facing copy.',
+            'Do not overhype. Do not invent facts, quotes, sources, outcomes, or student details.',
+            'Avoid phrases like "our learners explored", "journey", "special moments", "that is very special", "we are thrilled", "we are excited", "the practical message is simple", and similar marketing language.',
             'Do not write "if Torah really matters, the basics have to support it"; state the sleep, breakfast, food, screens, and routine points directly.',
+            'Do not describe the conversation as something you "turned into" another idea. State what was discussed or learned directly.',
+            'Do not describe how students felt unless the transcript explicitly says so.',
+            'Do not expose private student accountability details.',
             'If the copy will be pasted under an uploaded video, write it like a compact newsletter caption: video-summary bullets first, weekly recap bullets second.',
             'If the transcript has one main message or concern, lead with short bullet points on that main point before listing other updates.',
             'If the transcript also includes other activities, add a separate section called "This week at BNA" or similar.',
@@ -4812,10 +5652,17 @@ async function generateFacebookDraft(config, transcriptText, caption) {
             'Use the brand kit, platform prompt, and approved examples provided by the user message.',
             'Return only the Facebook post text.',
             'Write in English unless the operator explicitly asks for Hebrew.',
-            'The Facebook version should be warmer, more narrative, and more complete than a WhatsApp bullet update.',
-            'Use 2 to 5 short paragraphs or a concise paragraph plus bullets when useful.',
-            'Do not overhype. Do not invent details. Preserve Hebrew names and Torah terms when they appear.',
-            'Avoid corny school-marketing phrases like "Today at Bnei Neviim Academy", "our learners explored", "journey", and "special moments". Sound like Shloimie speaking clearly to real parents.',
+            "Use Shloimie's BNA voice: professional, grounded, concise, specific, slightly poetic only when it sharpens the truth, and never generic or fluffy.",
+            'If the source is about a specific day, begin with "Today at Bnei Neviim Academy, " followed immediately by one concrete detail from the transcript.',
+            'If the source covers a full week or multiple recordings, begin with "This week at Bnei Neviim Academy, " followed immediately by one concrete detail from the transcript.',
+            'Use 1 to 3 short paragraphs.',
+            'Show what happened at BNA with confidence and specificity; do not sound like a brochure or generic school marketing.',
+            'Explain the deeper educational point in plain language only after the concrete detail.',
+            'Use a final-line CTA only when appropriate: "Contact us to learn more about enrolling."',
+            'Do not overhype. Do not invent facts, quotes, sources, outcomes, or student details. Preserve Hebrew names and Torah terms when they appear.',
+            'Avoid phrases like "our learners explored", "journey", "special moments", "we are thrilled", "we are excited", and "the practical message is simple".',
+            'Do not write "we turned the conversation into..." or similar setup language. Go directly into what was discussed, learned, practiced, or noticed.',
+            'Do not describe how students felt unless the transcript explicitly says so.',
           ].join(' '),
         },
         {
@@ -5209,14 +6056,19 @@ async function generateWeeklyReportDraft(config, jobsInput, operatorInstruction)
         {
           role: 'system',
           content: [
-            'You write warm, parent-facing Bnei Neviim Academy weekly updates.',
+            'You write parent-facing Bnei Neviim Academy weekly newsletters.',
             'Use the transcript as the factual source. Do not invent details.',
             'Use all provided recordings. The first recording is usually the newest/latest recording; give it proper attention if the operator mentions the last video.',
             'Write in English unless the operator explicitly asks for Hebrew.',
             "Preserve Jewish terms naturally: Torah, Hashem, Har Sinai, naaseh v'nishma, Moshe Rabbeinu, gaavah, anavah.",
-            'Style: WhatsApp-ready, clear, warm, compact, and not corny. Sound like a real teacher giving parents a useful update.',
-            'Do not open with "Today at Bnei Neviim Academy" or "our learners explored". Prefer a direct opening like "Here is what we covered today" or "This week we focused on...".',
-            'Use simple emoji bullets sparingly only when they help readability.',
+            "Use Shloimie's BNA voice: calm, direct, honest, parent-friendly, Torah-aware, practical, concise, and slightly poetic only where useful.",
+            'Begin with a short opening paragraph that starts: "This week at Bnei Neviim Academy, " and includes a concrete learning theme or class detail.',
+            'Use the format Subject, Preheader, What we learned, What stood out, Growth we are building, A few practical notes, and Closing unless the operator asks for WhatsApp-only copy.',
+            'Use actual topics, sources, questions, discussions, class moments, logistics, and practical notes.',
+            'No generic newsletter language, vague summaries, fluffy encouragement, or school-brochure language.',
+            'Avoid phrases like "our learners explored", "special moments", "amazing journey", "we are thrilled", "we are excited", and "the practical message is simple".',
+            'Do not write "we turned the conversation into..." or similar setup language. State what happened directly.',
+            'Do not expose private student accountability details.',
             'If the operator gives a Masmid of the Week note, include it as a positive parent-facing shout-out.',
             'Return only the final message to copy and paste.',
           ].join(' '),
@@ -5249,7 +6101,7 @@ function detectWeeklyTranscriptTopicIntent(text) {
   const normalized = String(text || '').toLowerCase();
   if (!normalized.trim()) return false;
 
-  const operationalSystemAsk = /\b(dashboard|operations|system|task|tasks|queue|queued|pending|section|sections|buttons?|actions?|accountability|students?|contacts?|accounting|payments?|devices?|tablet|codex|agent|fleet|logistics|scheduling|status|updates?|audit|order|sort|brainstorm)\b/.test(normalized);
+  const operationalSystemAsk = /\b(dashboard|operations|system|task|tasks|queue|queued|pending|section|sections|buttons?|actions?|accountability|students?|contacts?|communications?|whatsapp|accounting|payments?|devices?|tablet|codex|agent|fleet|logistics|scheduling|status|updates?|audit|order|sort|brainstorm)\b/.test(normalized);
   const explicitTranscriptSource = /\b(transcripts?|recordings?|audios?|videos?|content jobs?|class recordings?|class transcript|raw transcript)\b/.test(normalized);
   const explicitClassContentAsk = /\b(class content|torah topics?|learning topics?|what we learned|covered in class|sources?|pesukim|parsha|shiur topics?)\b/.test(normalized);
   const mentionsSource = /\b(transcripts?|recordings?|audios?|videos?|content jobs?|all the files|all of them|whole week|this week|rest of the week)\b/.test(normalized);
@@ -5512,6 +6364,11 @@ function contentOutputTypeLabel(outputType) {
     blog_draft: 'website blog draft',
     linkedin_post: 'LinkedIn post',
     youtube_description: 'YouTube description',
+    google_business_post: 'Google Business post',
+    daily_report: 'daily report',
+    parent_email: 'parent email',
+    teaching_philosophy_note: 'teaching philosophy note',
+    short_clip: 'short clip packaging',
   })[outputType] || 'content draft';
 }
 
@@ -5523,6 +6380,11 @@ function platformForContentOutputType(outputType) {
     blog_draft: 'website',
     linkedin_post: 'linkedin',
     youtube_description: 'youtube',
+    google_business_post: 'google_business',
+    daily_report: 'internal',
+    parent_email: 'email',
+    teaching_philosophy_note: 'teaching_philosophy',
+    short_clip: 'short_clip',
   })[outputType] || null;
 }
 
@@ -5760,7 +6622,10 @@ async function reviseContentDraft(config, { output, job, sourceJobs = [], instru
 
 function approvalLabelsForOutput(outputType) {
   if (outputType === 'facebook_post') {
-    return { approveLabel: 'Approve Facebook', publishLabel: 'Create Facebook Draft' };
+    return { approveLabel: 'Save Final Draft', publishLabel: 'Commit to Buffer Draft' };
+  }
+  if (outputType === 'linkedin_post' || outputType === 'youtube_description') {
+    return { approveLabel: 'Save Final Draft', publishLabel: 'Commit to Buffer Draft' };
   }
   if (outputType === 'blog_draft') {
     return { approveLabel: 'Approve Blog', publishLabel: 'Publish Blog' };
@@ -5776,7 +6641,11 @@ function detectContentApprovalTextIntent(msg) {
   const replyText = String(msg?.reply_to_message?.text || msg?.reply_to_message?.caption || '');
   const combined = `${text}\n${replyText}`;
   const lowerText = text.toLowerCase();
-  const approveVerb = /\b(approve|approved|save|saved|final version|last version|final draft|looks good|i like this|use this|keep this|save this as (an )?example|save as (an )?example|mark approved|this is good)\b/.test(lowerText);
+  const commitToScheduler = hasContentCommitToSchedulingIntent(text, replyText);
+  const publishNow = hasPublicPublishNowIntent(text, replyText);
+  const approveVerb = /\b(approve|approved|save|saved|final version|last version|final draft|looks good|i like this|use this|keep this|save this as (an )?example|save as (an )?example|mark approved|this is good)\b/.test(lowerText)
+    || commitToScheduler
+    || publishNow;
   if (!approveVerb) return null;
 
   const outputId = parseContentOutputIdFromText(text) || parseReplyContentOutputId(msg);
@@ -5789,7 +6658,8 @@ function detectContentApprovalTextIntent(msg) {
     outputId,
     jobId,
     outputType,
-    publish: /\b(publish|create facebook draft|send to ghl|push to facebook|post it)\b/.test(lowerText),
+    commitToScheduler,
+    publishNow,
   };
 }
 
@@ -5807,15 +6677,18 @@ async function handleContentApprovalTextRequest(config, msg) {
 
   try {
     const { job, output } = await selectContentOutputForEdit(config, intent);
-    if (intent.publish) {
+    if (intent.commitToScheduler || intent.publishNow) {
       const result = await appRequest(config, 'POST', `/api/bna/content-outputs/${output.id}/actions`, {
         action: 'approve_publish',
+        publishNow: Boolean(intent.publishNow),
       });
       await sendReply(
         config.botToken,
         chatId,
         [
-          `${contentOutputTypeLabel(output.output_type)} #${output.id} approved/published.`,
+          intent.publishNow
+            ? `${contentOutputTypeLabel(output.output_type)} #${output.id} approved and published.`
+            : `${contentOutputTypeLabel(output.output_type)} #${output.id} committed to Buffer as a draft.`,
           result?.message || 'The output is approved and filed in the content system.',
         ].join('\n'),
         messageId
@@ -6026,23 +6899,9 @@ async function createFacebookDraftFromContentOutput(config, outputId) {
       : 'No connected Facebook account was found. Use /accounts to confirm aliases.');
   }
 
-  const mediaItems = [];
   const localPath = job.local_path ? path.resolve(repoRoot, job.local_path) : '';
-  if (localPath && fs.existsSync(localPath)) {
-    const uploaded = await uploadLocalFileToGhl(localPath, {
-      filename: path.basename(localPath),
-      mimeType: job.mime_type || 'application/octet-stream',
-    });
-    if (uploaded?.url) {
-      mediaItems.push({
-        url: uploaded.url,
-        type: job.mime_type || 'application/octet-stream',
-        caption: output.body,
-      });
-    }
-  }
-
-  const results = await createSocialPostsForTargets(resolved, output.body, mediaItems, false);
+  const hasLocalMedia = Boolean(localPath && fs.existsSync(localPath));
+  const results = await createSocialPostsForTargets(resolved, output.body, [], false);
   const failed = results.filter((item) => !item.ok);
   if (failed.length) {
     throw new Error(failed.map((item) => `${item.alias}: ${item.message}`).join('; '));
@@ -6051,13 +6910,15 @@ async function createFacebookDraftFromContentOutput(config, outputId) {
   await appRequest(config, 'PATCH', `/api/bna/content-outputs/${outputId}`, {
     status: 'approved',
     metadata: {
-      ghl_facebook_draft_created_at: new Date().toISOString(),
-      ghl_results: results,
-      media_uploaded: mediaItems.length > 0,
+      social_post_provider: 'buffer',
+      buffer_draft_created_at: new Date().toISOString(),
+      buffer_results: results,
+      media_uploaded: false,
+      media_attachment_pending: hasLocalMedia,
     },
   });
 
-  return { job, output, results, mediaUploaded: mediaItems.length > 0 };
+  return { job, output, results, mediaUploaded: false, mediaAttachmentPending: hasLocalMedia };
 }
 
 async function createDraftOutputFromContentJob(config, jobId, outputType) {
@@ -6106,6 +6967,8 @@ async function parseMixedContentJob(config, jobId, options = {}) {
       'Split operator personal tasks into Tasks assigned to Shloimie.',
       'Split coding, app, dashboard, parser, website, bot, Railway, GHL, Remotion, or Codex work into Tasks assigned to Codex.',
       'Split student goals, decisions, private meeting notes, and questions into Student Accountability.',
+      'For student Goal Board updates, include goal_board fields: section, subsection, checklist, bedtime_time, chosen_consequence, recovery_path, incentive, incentive_percent_target, parent_visible, student_visible, approval_required, and approval_status.',
+      'Parent meeting, parent recording, or parent chat goals must be parent_visible true, student_visible false, approval_required true, and approval_status pending_review.',
       'Keep Content limited to teaching philosophy, actual class topics, verses/sources, class discussions, and class questions.',
       'Do not put goals, tasks, accountability, private meetings, daily progress, or follow-up items into Content class notes.',
       'For sources, write the best source/reference heard; include Hebrew source text only when it is present in the transcript.',
@@ -6116,6 +6979,17 @@ async function parseMixedContentJob(config, jobId, options = {}) {
       parserInstruction,
     ].filter(Boolean).join(' '),
     archive_source_after_parse: Boolean(options.archiveSourceAfterParse),
+  });
+}
+
+async function parseMixedRecordingIntake(config, payload = {}, options = {}) {
+  const parserInstruction = [
+    options.instruction || '',
+    'This recording is internal parser intake, not marketing Content. File operator tasks and named student accountability/Torah updates into their proper sections without creating a Content job.',
+  ].filter(Boolean).join('\n\n');
+  return appRequest(config, 'POST', '/api/bna/recording-intake/parse-mixed-recording', {
+    ...payload,
+    instruction: parserInstruction,
   });
 }
 
@@ -6133,11 +7007,12 @@ async function handleScopedStructuredTextCommand(config, msg) {
         '- Plain messages use scoped OpenAI chat for brainstorming and organization',
         '- /status',
         '- /queue',
+        '- /ticket bot is not responding...',
         '- task: prepare source sheet for...',
         '- decision: choose registration flow...',
         '- comment task #123: add this context...',
         '',
-        'Scope: One Time Mishnah Class tasks, comments, decisions, shiur ideas, source sheets, Torah class prep, marketing, community, GHL setup, admin, and accounting planning.',
+        'Scope: One Time Mishnah Class tasks, comments, support tickets, decisions, shiur ideas, source sheets, Torah class prep, marketing, community, GHL setup, admin, and accounting planning.',
         'Not available here: BNA Students, Accounting, Devices, broad Content jobs, Drive/GHL posting commands, agent fleet, OpenAI smoke, or Codex repo execution.',
       ].join('\n'),
       messageId
@@ -6150,7 +7025,7 @@ async function handleScopedStructuredTextCommand(config, msg) {
     return true;
   }
 
-  if (/^\/(?:accounts|blogs|drive_auth|sync_drive_memory|pull_drive_memory|ingest_drive|drive|website_images|edit_video|video_edit|remotion_edit|edit_drive|edit_drop|drop_edit|smoke_openai|openai_smoke|railway_deploy|deploy|railway_doctor|agent_fleet|fleet_)/i.test(text)) {
+  if (/^\/(?:accounts|blogs|drive_auth|sync_drive_memory|pull_drive_memory|sync_content_drive|ingest_drive|drive|website_images|edit_video|video_edit|remotion_edit|edit_drive|edit_drop|drop_edit|smoke_openai|openai_smoke|railway_deploy|deploy|railway_doctor|agent_fleet|fleet_)/i.test(text)) {
     await sendReply(
       config.botToken,
       chatId,
@@ -6163,7 +7038,7 @@ async function handleScopedStructuredTextCommand(config, msg) {
   return false;
 }
 
-async function handleStructuredTextCommand(config, msg) {
+async function handleStructuredTextCommand(config, msg, intentPlan = {}) {
   const chatId = String(msg.chat.id);
   const messageId = msg.message_id;
   const text = getTelegramMessageText(msg);
@@ -6190,15 +7065,20 @@ async function handleStructuredTextCommand(config, msg) {
         '- /accounts',
         '- /blogs',
         '- /queue',
+        '- /wapi_status',
+        '- /send_whatsapp signup:123 | message text',
+        '- /link_whatsapp communication:12 signup:3',
         '- /drive_auth',
         '- /sync_drive_memory',
         '- /pull_drive_memory',
+        '- /sync_content_drive',
         '- /ingest_drive WhatsApp update',
         '- /website_images publish newest Website Images intake photo to Learning Moments',
         '- /edit_video from 3s to 8s speed up 2x, add subtitle: Forest learning',
         '- /edit_drop brighten it, zoom center, add title: BNA moment',
         '- /status',
         '- Send a ramble to capture Tasks, Students, Contacts, or Accounting items',
+        '- Ask to make/refine a Codex or ChatGPT prompt to enter visible planning mode before implementation',
         '- Upload audio/video/image to create a Content job',
         '- Reply to a draft or say "edit output #39: make it shorter" to revise saved WhatsApp/Facebook/newsletter/blog drafts through OpenAI',
         '- Reply to a draft with "approve this", "save as final", or "save this as an example" to save it as the approved version',
@@ -6206,7 +7086,7 @@ async function handleStructuredTextCommand(config, msg) {
         '- Decision points should come back with quick button-style options',
         '- publish draft <target ...> | your caption',
         '- publish now <target ...> | your caption',
-        'Upload a photo, video, or document with a publish command in the caption and I will push the asset into GHL and queue or draft the post.',
+        'Upload a photo, video, or document with a publish command in the caption and I will save the asset, then queue the social draft. Buffer media publishing needs a hosted media URL.',
       ].join('\n'),
       messageId
     );
@@ -6236,6 +7116,7 @@ async function handleStructuredTextCommand(config, msg) {
         '- Create Tasks, Student accountability items, Accounting/payment intake, Content jobs, Decisions',
         '- Revise saved WhatsApp, Facebook, newsletter, and blog drafts directly through OpenAI API and save them back to Content outputs',
         '- Approve/save a content draft by plain Telegram text and store approved versions as reusable prompt examples',
+        '- Keep Codex/ChatGPT prompt-building requests in visible planning mode until the operator says to build/apply/run/test',
         '- Generate weekly parent updates from all recent transcribed Drive/content jobs, not only one latest file',
         '- Queue Codex-owned implementation tasks and mark them in progress',
         '- Ingest media/Drive/drop-folder files, transcribe/describe them, and create content records',
@@ -6352,6 +7233,34 @@ async function handleStructuredTextCommand(config, msg) {
     return true;
   }
 
+  if (text === '/wapi_status' || text === '/whatsapp_status' || text === '/wa_status') {
+    try {
+      const diagnostics = await appRequest(config, 'GET', '/api/bna/wapi/diagnostics');
+      await sendReply(config.botToken, chatId, formatWapiDiagnosticsReply(diagnostics), messageId);
+    } catch (error) {
+      await sendReply(config.botToken, chatId, `WAPI status failed: ${error instanceof Error ? error.message : String(error)}`, messageId);
+    }
+    return true;
+  }
+
+  if (/^\/(?:send_whatsapp|whatsapp_send|wa_send)\b/i.test(text)) {
+    try {
+      await handleWhatsappSendCommand(config, msg);
+    } catch (error) {
+      await sendReply(config.botToken, chatId, `WhatsApp send failed: ${error instanceof Error ? error.message : String(error)}`, messageId);
+    }
+    return true;
+  }
+
+  if (/^\/(?:link_whatsapp|whatsapp_link|wa_link)\b/i.test(text)) {
+    try {
+      await handleWhatsappLinkCommand(config, msg);
+    } catch (error) {
+      await sendReply(config.botToken, chatId, `WhatsApp link failed: ${error instanceof Error ? error.message : String(error)}`, messageId);
+    }
+    return true;
+  }
+
   if (text === '/drive_auth') {
     await sendReply(
       config.botToken,
@@ -6397,6 +7306,23 @@ async function handleStructuredTextCommand(config, msg) {
     return true;
   }
 
+  if (/^\/sync_content_drive\b/i.test(text)) {
+    try {
+      const args = parseDriveContentLibrarySyncArgs(text);
+      await sendReply(config.botToken, chatId, 'Syncing the Drive content library now. I will send the result when it finishes.', messageId);
+      const output = await runDriveContentLibrarySync(args);
+      await sendReply(config.botToken, chatId, driveContentSyncReply(output), messageId);
+    } catch (error) {
+      await sendReply(
+        config.botToken,
+        chatId,
+        `Drive content library sync failed: ${error instanceof Error ? error.message : String(error)}`.slice(0, 3500),
+        messageId
+      );
+    }
+    return true;
+  }
+
   if (/^\/(?:edit_video|video_edit|remotion_edit|edit_drive)\b/i.test(text)) {
     await handleDriveVideoEditCommand(config, msg);
     return true;
@@ -6412,19 +7338,24 @@ async function handleStructuredTextCommand(config, msg) {
     return true;
   }
 
-  if (await handleContentApprovalTextRequest(config, msg)) {
+  if (!msg.__approvedExternalAction && shouldAskForExternalApproval(intentPlan)) {
+    await sendExternalActionApproval(config.botToken, chatId, messageId, messageId, intentPlan, text, msg);
     return true;
   }
 
-  if (await handleContentDraftEditRequest(config, msg)) {
+  if (!isHandlerBlocked(intentPlan, 'contentApproval') && await handleContentApprovalTextRequest(config, msg)) {
     return true;
   }
 
-  if (await handleWeeklyTranscriptTopicRequest(config, msg)) {
+  if (!isHandlerBlocked(intentPlan, 'contentDraftEdit') && await handleContentDraftEditRequest(config, msg)) {
     return true;
   }
 
-  if (isLatestVideoEditRequest(text)) {
+  if (!isHandlerBlocked(intentPlan, 'weeklyTranscriptTopic') && await handleWeeklyTranscriptTopicRequest(config, msg)) {
+    return true;
+  }
+
+  if (!isHandlerBlocked(intentPlan, 'latestVideoEdit') && isLatestVideoEditRequest(text)) {
     await handleDriveVideoEditCommand(config, {
       ...msg,
       text: `/edit_video ${text}`,
@@ -6433,7 +7364,7 @@ async function handleStructuredTextCommand(config, msg) {
     return true;
   }
 
-  if (isLatestDriveIngestRequest(text)) {
+  if (!isHandlerBlocked(intentPlan, 'latestDriveIngest') && isLatestDriveIngestRequest(text)) {
     await handleDriveIngestCommand(config, {
       ...msg,
       text: `/ingest_drive ${buildLatestDriveIngestCaption(text)}`,
@@ -6442,13 +7373,25 @@ async function handleStructuredTextCommand(config, msg) {
     return true;
   }
 
-  if (await handleWeeklyReportRequest(config, msg)) {
+  if (!isHandlerBlocked(intentPlan, 'weeklyReport') && await handleWeeklyReportRequest(config, msg)) {
     return true;
   }
 
-  const publishIntent = parsePublishIntent(text);
+  const publishText = msg.__approvedExternalAction || isConfirmationText(text)
+    ? stripConfirmationPrefix(text)
+    : text;
+  const publishIntent = parsePublishIntent(publishText);
   if (!publishIntent.isPublishRequest) {
     return false;
+  }
+
+  if (!msg.__approvedExternalAction && publishIntent.publishNow) {
+    await sendExternalActionApproval(config.botToken, chatId, messageId, messageId, {
+      ...intentPlan,
+      primaryIntent: 'publish_send',
+      requiresApproval: true,
+    }, text, msg);
+    return true;
   }
 
   const accounts = await listSocialAccounts();
@@ -6483,7 +7426,7 @@ async function handleStructuredTextCommand(config, msg) {
     kind: 'social-text',
     chatId,
     messageId,
-    caption: text,
+    caption: publishText,
     targets: resolved.map((item) => item.alias),
     publishNow: publishIntent.publishNow,
     summary: publishIntent.summary,
@@ -6600,19 +7543,20 @@ async function handleMediaMessage(config, msg) {
 
   const replyLines = [
     `Saved ${descriptor.kind} to ${path.relative(repoRoot, download.localPath).replace(/\\/g, '/')}.`,
-    'Queued for transcription, summary, labeling, and repurpose-ready storage. GHL upload is deferred until publish approval.',
+    'Queued for transcription, summary, labeling, and repurpose-ready storage. Buffer draft handoff is deferred until publish approval.',
   ];
 
   if (publishIntent.isPublishRequest) {
-    const uploaded = await uploadLocalFileToGhl(download.localPath, {
-      filename: descriptor.filename,
-      mimeType: descriptor.mimeType,
-    });
-    job.mediaUrl = uploaded.url;
-    replyLines.push(`Uploaded to GHL media storage for publish request: ${uploaded.url}`);
+    const requestedPublishNow = Boolean(publishIntent.publishNow);
+    if (requestedPublishNow) {
+      publishIntent.publishNow = false;
+      job.publishNow = false;
+      job.notes.push('Publish-now was downgraded to draft because public publishing requires confirmation.');
+      replyLines.push('Publish-now requested; creating a draft only. I will not publish publicly without a separate confirmation.');
+    }
 
     const mediaItem = {
-      url: uploaded.url,
+      url: job.mediaUrl || '',
       type: descriptor.mimeType,
       caption: caption || '',
     };
@@ -6620,10 +7564,13 @@ async function handleMediaMessage(config, msg) {
     const { resolved, unresolved } = resolveTargetAccounts(publishIntent.targets, accounts);
 
     if (resolved.length > 0 && unresolved.length === 0) {
+      if (!mediaItem.url) {
+        replyLines.push('Buffer draft will include the text only; the media file is saved locally until hosted media attachment support is wired.');
+      }
       const results = await createSocialPostsForTargets(
         resolved,
         publishIntent.summary || caption,
-        [mediaItem],
+        mediaItem.url ? [mediaItem] : [],
         publishIntent.publishNow
       );
       job.targets = resolved.map((item) => item.alias);
@@ -6649,7 +7596,7 @@ async function handleMediaMessage(config, msg) {
     }
   } else {
     job.status = 'queued';
-    job.notes = ['Asset saved locally and queued; GHL upload is deferred until publish approval'];
+    job.notes = ['Asset saved locally and queued; Buffer draft handoff is deferred until publish approval'];
     replyLines.push('Queued the asset for follow-up. Add a caption like "publish draft facebook | your caption" next time to create a social post automatically.');
   }
 
@@ -6723,75 +7670,77 @@ async function handleMediaMessage(config, msg) {
       generatedContent: Boolean(whatsAppDraft || facebookDraft),
       publishIntent,
     });
-    const outputs = routing.contentLane
-      ? buildGeneratedContentOutputs(descriptor.kind, caption, { whatsAppDraft, facebookDraft })
-      : [];
     const contentTitle = await generateContentTitle(config, transcriptText, caption, `${descriptor.kind} from Telegram ${messageId}`);
 
-    const contentJob = await appRequest(config, 'POST', '/api/bna/content-jobs', {
-      title: contentTitle,
-      source_type: 'telegram_media',
-      source_message_id: String(messageId),
-      source_chat_id: chatId,
-      local_path: path.relative(repoRoot, download.localPath).replace(/\\/g, '/'),
-      media_url: job.mediaUrl || null,
-      mime_type: descriptor.mimeType,
-      caption,
-      status: routing.parserOnly ? 'parsing' : (whatsAppDraft || facebookDraft ? 'needs_approval' : transcriptText ? 'transcribed' : 'ingested'),
-      transcript_text: transcriptText || null,
-      transcript_json: transcription || null,
-      parse_json: routing.parserOnly
-        ? {
-          intake_lane: 'tasks_students',
-          routing: {
-            parser_only: true,
-            source: 'telegram_media',
-          },
-        }
-        : null,
-      notes: [
-        routing.parserOnly
-          ? 'Parser intake created from Telegram media. This source should be filed into Tasks/Students and hidden from Content.'
-          : 'Content pipeline job created from Telegram media.',
-        routing.contentLane ? 'GHL upload is intentionally deferred until a publish command or approval step.' : '',
-        whatsAppVideoParts.length
-          ? `WhatsApp video parts: ${whatsAppVideoParts.map((part) => path.relative(repoRoot, part.localPath).replace(/\\/g, '/')).join(', ')}`
-          : '',
-        routing.contentLane
-          ? 'Queued work: transcribe, summarize, label, and wait for the next repurposing instruction before drafting platform outputs.'
-          : 'Queued work: parse tasks, student accountability, and Torah progress into their proper lanes.',
-      ].filter(Boolean).join('\n'),
-      outputs,
-    });
-    contentJobId = contentJob?.job?.id || '';
-    const whatsAppOutput = Array.isArray(contentJob?.outputs)
-      ? contentJob.outputs.find((output) => output.output_type === 'whatsapp_update')
-      : null;
-    whatsAppOutputId = whatsAppOutput?.id || '';
-    const facebookOutput = Array.isArray(contentJob?.outputs)
-      ? contentJob.outputs.find((output) => output.output_type === 'facebook_post')
-      : null;
-    facebookOutputId = facebookOutput?.id || '';
-    replyLines.push(
-      routing.contentLane
-        ? `Content pipeline job: ${contentJobId || 'created'}.`
-        : 'Parser intake saved for automatic filing; it will not stay in Content.'
-    );
-    if (contentJobId && routing.shouldParse) {
+    if (shouldUseRecordingIntake(routing, caption, transcriptText)) {
       try {
-        const parsed = await parseMixedContentJob(config, contentJobId, {
-          archiveSourceAfterParse: routing.parserOnly,
+        const parsed = await parseMixedRecordingIntake(config, {
+          title: contentTitle,
+          source_type: 'telegram_media',
+          source_message_id: String(messageId),
+          source_chat_id: chatId,
+          local_path: path.relative(repoRoot, download.localPath).replace(/\\/g, '/'),
+          media_url: job.mediaUrl || null,
+          mime_type: descriptor.mimeType,
+          caption,
+          transcript_text: buildRecordingIntakeTranscript(caption, transcriptText),
+          transcript_json: transcription || null,
         });
         const counts = parsed?.counts || {};
-        replyLines.push(
-          routing.parserOnly
-            ? `Filed automatically: Tasks ${counts.tasks || 0}, Students ${counts.accountability_events || 0}, Torah ${counts.torah_learning_entries || counts.group_goal_entries || 0}.`
-            : `Auto-parsed tasks/students: tasks ${counts.tasks || 0}, students ${counts.accountability_events || 0}, Torah ${counts.torah_learning_entries || counts.group_goal_entries || 0}.`
-        );
+        replyLines.push('Filed recording directly into Tasks/Students; no Content job was created.');
+        replyLines.push(`Filed automatically: Tasks ${counts.tasks || 0}, Students ${counts.accountability_events || 0}, Torah ${counts.torah_learning_entries || counts.group_goal_entries || 0}.`);
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        log(`Auto mixed parse failed for content job ${contentJobId}: ${message}`);
+        log(`Recording intake parse failed for Telegram media ${messageId}: ${message}`);
         replyLines.push(`Auto-parse not completed: ${message}`);
+      }
+    } else {
+      const outputs = routing.contentLane
+        ? buildGeneratedContentOutputs(descriptor.kind, caption, { whatsAppDraft, facebookDraft })
+        : [];
+      const contentJob = await appRequest(config, 'POST', '/api/bna/content-jobs', {
+        title: contentTitle,
+        source_type: 'telegram_media',
+        source_message_id: String(messageId),
+        source_chat_id: chatId,
+        local_path: path.relative(repoRoot, download.localPath).replace(/\\/g, '/'),
+        media_url: job.mediaUrl || null,
+        mime_type: descriptor.mimeType,
+        caption,
+        status: whatsAppDraft || facebookDraft ? 'needs_approval' : transcriptText ? 'transcribed' : 'ingested',
+        transcript_text: transcriptText || null,
+        transcript_json: transcription || null,
+        parse_json: null,
+        notes: [
+          'Content pipeline job created from Telegram media.',
+          routing.contentLane ? 'Buffer draft handoff is intentionally deferred until a publish command or approval step.' : '',
+          whatsAppVideoParts.length
+            ? `WhatsApp video parts: ${whatsAppVideoParts.map((part) => path.relative(repoRoot, part.localPath).replace(/\\/g, '/')).join(', ')}`
+            : '',
+          'Queued work: transcribe, summarize, label, and wait for the next repurposing instruction before drafting platform outputs.',
+        ].filter(Boolean).join('\n'),
+        outputs,
+      });
+      contentJobId = contentJob?.job?.id || '';
+      const whatsAppOutput = Array.isArray(contentJob?.outputs)
+        ? contentJob.outputs.find((output) => output.output_type === 'whatsapp_update')
+        : null;
+      whatsAppOutputId = whatsAppOutput?.id || '';
+      const facebookOutput = Array.isArray(contentJob?.outputs)
+        ? contentJob.outputs.find((output) => output.output_type === 'facebook_post')
+        : null;
+      facebookOutputId = facebookOutput?.id || '';
+      replyLines.push(`Content pipeline job: ${contentJobId || 'created'}.`);
+      if (contentJobId && routing.shouldParse) {
+        try {
+          const parsed = await parseMixedContentJob(config, contentJobId);
+          const counts = parsed?.counts || {};
+          replyLines.push(`Auto-parsed tasks/students: tasks ${counts.tasks || 0}, students ${counts.accountability_events || 0}, Torah ${counts.torah_learning_entries || counts.group_goal_entries || 0}.`);
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          log(`Auto mixed parse failed for content job ${contentJobId}: ${message}`);
+          replyLines.push(`Auto-parse not completed: ${message}`);
+        }
       }
     }
   } catch (error) {
@@ -6805,7 +7754,15 @@ async function handleMediaMessage(config, msg) {
     job_id: job.id,
   });
 
+  const shouldSyncDriveContentLibrary = Boolean(contentJobId && transcriptText && routing.contentLane);
+  if (shouldSyncDriveContentLibrary) {
+    replyLines.push('Drive content library sync queued.');
+  }
+
   await sendReply(config.botToken, chatId, [`Saved job ${job.id}.`, ...replyLines].join('\n'), messageId);
+  if (shouldSyncDriveContentLibrary) {
+    queueDriveContentLibrarySync(config, chatId, messageId, contentJobId);
+  }
 
   for (let index = 0; index < whatsAppVideoParts.length; index += 1) {
     const part = whatsAppVideoParts[index];
@@ -6845,13 +7802,7 @@ async function handleMediaMessage(config, msg) {
   }
 
   if (whatsAppDraft) {
-    if (whatsAppOutputId) {
-      await sendContentApproval(config.botToken, chatId, messageId, {
-        outputId: whatsAppOutputId,
-        jobId: contentJobId,
-        body: whatsAppDraft,
-      });
-    } else {
+    if (shouldAutoSendGeneratedWhatsAppDraftPreview({ outputId: whatsAppOutputId, contentJobId })) {
       await sendReply(
         config.botToken,
         chatId,
@@ -6859,11 +7810,11 @@ async function handleMediaMessage(config, msg) {
           'WhatsApp copy draft:',
           '',
           whatsAppDraft,
-          '',
-          contentJobId ? `Saved in Content job ${contentJobId}.` : '',
-        ].filter(Boolean).join('\n'),
+        ].join('\n'),
         messageId
       );
+    } else {
+      log(`Automatic WhatsApp draft preview suppressed for Content job ${contentJobId || 'unknown'}; draft is saved in Operations.`);
     }
   }
   if (facebookDraft) {
@@ -6873,8 +7824,8 @@ async function handleMediaMessage(config, msg) {
         jobId: contentJobId,
         body: facebookDraft,
         heading: 'Facebook post draft:',
-        approveLabel: 'Approve Facebook',
-        publishLabel: 'Create Facebook Draft',
+        approveLabel: 'Save Final Draft',
+        publishLabel: 'Commit to Buffer Draft',
       });
     } else {
       await sendReply(config.botToken, chatId, ['Facebook post draft:', '', facebookDraft].join('\n'), messageId);
@@ -6912,7 +7863,7 @@ async function handleDropIngestCommand(config, msg) {
   const replyLines = [
     `Picked up ${path.basename(sourcePath)} from media-drop/inbox (${formatBytes(sourceStats.size)}).`,
     `Copied into ${path.relative(repoRoot, localPath).replace(/\\/g, '/')}.`,
-    'Queued for local transcription, summary, labeling, and repurpose-ready storage. GHL upload is deferred.',
+    'Queued for local transcription, summary, labeling, and repurpose-ready storage. Buffer draft handoff is deferred.',
   ];
 
   await sendReply(config.botToken, chatId, replyLines.join('\n'), messageId);
@@ -6926,7 +7877,7 @@ async function handleDropIngestCommand(config, msg) {
     mediaUrl: '',
     mimeType: descriptor.mimeType,
     status: 'queued',
-    notes: ['Local drop-folder asset saved and queued; GHL upload is deferred until publish approval'],
+    notes: ['Local drop-folder asset saved and queued; Buffer draft handoff is deferred until publish approval'],
   });
   saveJob(job);
 
@@ -6938,6 +7889,7 @@ async function handleDropIngestCommand(config, msg) {
   let contentJobId = '';
   let whatsAppOutputId = '';
   let facebookOutputId = '';
+  let routing = classifyMediaRouting(caption, '');
 
   try {
     if (descriptor.kind === 'video' && shouldGenerateWhatsAppDraft(caption)) {
@@ -7009,76 +7961,78 @@ async function handleDropIngestCommand(config, msg) {
     routing = classifyMediaRouting(caption, transcriptText, {
       generatedContent: Boolean(whatsAppDraft || facebookDraft),
     });
-    const outputs = routing.contentLane
-      ? buildGeneratedContentOutputs(descriptor.kind, caption, { whatsAppDraft, facebookDraft })
-      : [];
     const contentTitle = await generateContentTitle(config, transcriptText, caption, `drop folder ${path.basename(sourcePath)}`);
 
-    const contentJob = await appRequest(config, 'POST', '/api/bna/content-jobs', {
-      title: contentTitle,
-      source_type: 'local_drop',
-      source_message_id: String(messageId),
-      source_chat_id: chatId,
-      local_path: path.relative(repoRoot, localPath).replace(/\\/g, '/'),
-      media_url: null,
-      mime_type: descriptor.mimeType,
-      caption,
-      status: routing.parserOnly ? 'parsing' : (whatsAppDraft || facebookDraft ? 'needs_approval' : transcriptText ? 'transcribed' : 'ingested'),
-      transcript_text: transcriptText || null,
-      transcript_json: transcription || null,
-      parse_json: routing.parserOnly
-        ? {
-          intake_lane: 'tasks_students',
-          routing: {
-            parser_only: true,
-            source: 'local_drop',
-          },
-        }
-        : null,
-      notes: [
-        routing.parserOnly
-          ? 'Parser intake created from local media-drop folder. This source should be filed into Tasks/Students and hidden from Content.'
-          : 'Content pipeline job created from local media-drop folder.',
-        routing.contentLane ? 'GHL upload is intentionally deferred until a publish command or approval step.' : '',
-        whatsAppVideoParts.length
-          ? `WhatsApp video parts: ${whatsAppVideoParts.map((part) => path.relative(repoRoot, part.localPath).replace(/\\/g, '/')).join(', ')}`
-          : '',
-        routing.contentLane
-          ? 'Queued work: WhatsApp lane first; blogs/social/video-editor templates are later channels.'
-          : 'Queued work: parse tasks, student accountability, and Torah progress into their proper lanes.',
-      ].filter(Boolean).join('\n'),
-      outputs,
-    });
-
-    contentJobId = contentJob?.job?.id || '';
-    const whatsAppOutput = Array.isArray(contentJob?.outputs)
-      ? contentJob.outputs.find((output) => output.output_type === 'whatsapp_update')
-      : null;
-    whatsAppOutputId = whatsAppOutput?.id || '';
-    const facebookOutput = Array.isArray(contentJob?.outputs)
-      ? contentJob.outputs.find((output) => output.output_type === 'facebook_post')
-      : null;
-    facebookOutputId = facebookOutput?.id || '';
-    replyLines.push(
-      routing.contentLane
-        ? `Content pipeline job: ${contentJobId || 'created'}.`
-        : 'Parser intake saved for automatic filing; it will not stay in Content.'
-    );
-    if (contentJobId && routing.shouldParse) {
+    if (shouldUseRecordingIntake(routing, caption, transcriptText)) {
       try {
-        const parsed = await parseMixedContentJob(config, contentJobId, {
-          archiveSourceAfterParse: routing.parserOnly,
+        const parsed = await parseMixedRecordingIntake(config, {
+          title: contentTitle,
+          source_type: 'local_drop',
+          source_message_id: String(messageId),
+          source_chat_id: chatId,
+          local_path: path.relative(repoRoot, localPath).replace(/\\/g, '/'),
+          media_url: null,
+          mime_type: descriptor.mimeType,
+          caption,
+          transcript_text: buildRecordingIntakeTranscript(caption, transcriptText),
+          transcript_json: transcription || null,
         });
         const counts = parsed?.counts || {};
-        replyLines.push(
-          routing.parserOnly
-            ? `Filed automatically: Tasks ${counts.tasks || 0}, Students ${counts.accountability_events || 0}, Torah ${counts.torah_learning_entries || counts.group_goal_entries || 0}.`
-            : `Auto-parsed tasks/students: tasks ${counts.tasks || 0}, students ${counts.accountability_events || 0}, Torah ${counts.torah_learning_entries || counts.group_goal_entries || 0}.`
-        );
+        replyLines.push('Filed recording directly into Tasks/Students; no Content job was created.');
+        replyLines.push(`Filed automatically: Tasks ${counts.tasks || 0}, Students ${counts.accountability_events || 0}, Torah ${counts.torah_learning_entries || counts.group_goal_entries || 0}.`);
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        log(`Drop auto mixed parse failed for content job ${contentJobId}: ${message}`);
+        log(`Drop recording intake parse failed for ${path.basename(sourcePath)}: ${message}`);
         replyLines.push(`Auto-parse not completed: ${message}`);
+      }
+    } else {
+      const outputs = routing.contentLane
+        ? buildGeneratedContentOutputs(descriptor.kind, caption, { whatsAppDraft, facebookDraft })
+        : [];
+      const contentJob = await appRequest(config, 'POST', '/api/bna/content-jobs', {
+        title: contentTitle,
+        source_type: 'local_drop',
+        source_message_id: String(messageId),
+        source_chat_id: chatId,
+        local_path: path.relative(repoRoot, localPath).replace(/\\/g, '/'),
+        media_url: null,
+        mime_type: descriptor.mimeType,
+        caption,
+        status: whatsAppDraft || facebookDraft ? 'needs_approval' : transcriptText ? 'transcribed' : 'ingested',
+        transcript_text: transcriptText || null,
+        transcript_json: transcription || null,
+        parse_json: null,
+        notes: [
+          'Content pipeline job created from local media-drop folder.',
+          routing.contentLane ? 'Buffer draft handoff is intentionally deferred until a publish command or approval step.' : '',
+          whatsAppVideoParts.length
+            ? `WhatsApp video parts: ${whatsAppVideoParts.map((part) => path.relative(repoRoot, part.localPath).replace(/\\/g, '/')).join(', ')}`
+            : '',
+          'Queued work: WhatsApp lane first; blogs/social/video-editor templates are later channels.',
+        ].filter(Boolean).join('\n'),
+        outputs,
+      });
+
+      contentJobId = contentJob?.job?.id || '';
+      const whatsAppOutput = Array.isArray(contentJob?.outputs)
+        ? contentJob.outputs.find((output) => output.output_type === 'whatsapp_update')
+        : null;
+      whatsAppOutputId = whatsAppOutput?.id || '';
+      const facebookOutput = Array.isArray(contentJob?.outputs)
+        ? contentJob.outputs.find((output) => output.output_type === 'facebook_post')
+        : null;
+      facebookOutputId = facebookOutput?.id || '';
+      replyLines.push(`Content pipeline job: ${contentJobId || 'created'}.`);
+      if (contentJobId && routing.shouldParse) {
+        try {
+          const parsed = await parseMixedContentJob(config, contentJobId);
+          const counts = parsed?.counts || {};
+          replyLines.push(`Auto-parsed tasks/students: tasks ${counts.tasks || 0}, students ${counts.accountability_events || 0}, Torah ${counts.torah_learning_entries || counts.group_goal_entries || 0}.`);
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          log(`Drop auto mixed parse failed for content job ${contentJobId}: ${message}`);
+          replyLines.push(`Auto-parse not completed: ${message}`);
+        }
       }
     }
   } catch (error) {
@@ -7165,8 +8119,8 @@ async function handleDropIngestCommand(config, msg) {
         jobId: contentJobId,
         body: facebookDraft,
         heading: 'Facebook post draft:',
-        approveLabel: 'Approve Facebook',
-        publishLabel: 'Create Facebook Draft',
+        approveLabel: 'Save Final Draft',
+        publishLabel: 'Commit to Buffer Draft',
       });
     } else {
       await sendReply(config.botToken, chatId, ['Facebook post draft:', '', facebookDraft].join('\n'), messageId);
@@ -7472,7 +8426,7 @@ async function handleDriveIngestCommand(config, msg) {
     replyLines.push(
       isImageMime(descriptor.mimeType) && shouldPublishImageToWebsite(caption)
         ? 'Website image publish requested; publishing to the public Learning Moments feed.'
-        : 'Queued for transcription, summary, labeling, and repurpose-ready storage. GHL upload is deferred.'
+        : 'Queued for transcription, summary, labeling, and repurpose-ready storage. Buffer draft handoff is deferred.'
     );
     await sendReply(config.botToken, chatId, replyLines.join('\n'), messageId);
   } catch (error) {
@@ -7613,77 +8567,85 @@ async function handleDriveIngestCommand(config, msg) {
     routing = classifyMediaRouting(caption, transcriptText, {
       generatedContent: Boolean(whatsAppDraft || facebookDraft),
     });
-    const outputs = routing.contentLane
-      ? buildGeneratedContentOutputs(descriptor.kind, caption, { whatsAppDraft, facebookDraft })
-      : [];
     contentTitle = await generateContentTitle(config, transcriptText, caption, `Drive ${driveFile.name}`);
 
-    const contentJob = await appRequest(config, 'POST', '/api/bna/content-jobs', {
-      title: contentTitle,
-      source_type: 'google_drive',
-      source_message_id: String(messageId),
-      source_chat_id: chatId,
-      local_path: path.relative(repoRoot, localPath).replace(/\\/g, '/'),
-      media_url: driveFile.webViewLink || null,
-      drive_file_id: driveFile.id,
-      drive_folder_id: pipelineConfig.stages?.[finalDriveStage] || null,
-      drive_stage: finalDriveStage,
-      mime_type: descriptor.mimeType,
-      caption,
-      status: routing.parserOnly ? 'parsing' : (whatsAppDraft || facebookDraft ? 'needs_approval' : transcriptText ? 'transcribed' : 'ingested'),
-      transcript_text: transcriptText || null,
-      transcript_json: transcription || null,
-      parse_json: routing.parserOnly
-        ? {
-          intake_lane: 'tasks_students',
-          routing: {
-            parser_only: true,
-            source: 'google_drive',
-          },
-        }
-        : null,
-      notes: [
-        routing.parserOnly
-          ? 'Parser intake created from Google Drive Raw Media Intake. This source should be filed into Tasks/Students and hidden from Content.'
-          : 'Content pipeline job created from Google Drive Raw Media Intake.',
-        `Drive stage: ${finalDriveStage}.`,
-        whatsAppVideoParts.length
-          ? `WhatsApp video parts: ${whatsAppVideoParts.map((part) => path.relative(repoRoot, part.localPath).replace(/\\/g, '/')).join(', ')}`
-          : '',
-      ].filter(Boolean).join('\n'),
-      outputs,
-    });
-
-    contentJobId = contentJob?.job?.id || '';
-    const whatsAppOutput = Array.isArray(contentJob?.outputs)
-      ? contentJob.outputs.find((output) => output.output_type === 'whatsapp_update')
-      : null;
-    whatsAppOutputId = whatsAppOutput?.id || '';
-    const facebookOutput = Array.isArray(contentJob?.outputs)
-      ? contentJob.outputs.find((output) => output.output_type === 'facebook_post')
-      : null;
-    facebookOutputId = facebookOutput?.id || '';
-    replyLines.push(
-      routing.contentLane
-        ? `Content job: ${contentJobId || 'created'}.`
-        : 'Parser intake saved for automatic filing; it will not stay in Content.'
-    );
-    if (contentJobId && routing.shouldParse) {
+    if (shouldUseRecordingIntake(routing, caption, transcriptText)) {
       try {
-        const parsed = await parseMixedContentJob(config, contentJobId, {
-          archiveSourceAfterParse: routing.parserOnly,
+        const parsed = await parseMixedRecordingIntake(config, {
+          title: contentTitle,
+          source_type: 'google_drive',
+          source_message_id: String(messageId),
+          source_chat_id: chatId,
+          local_path: path.relative(repoRoot, localPath).replace(/\\/g, '/'),
+          media_url: driveFile.webViewLink || null,
+          drive_file_id: driveFile.id,
+          drive_folder_id: pipelineConfig.stages?.[finalDriveStage] || null,
+          drive_stage: finalDriveStage,
+          mime_type: descriptor.mimeType,
+          caption,
+          transcript_text: buildRecordingIntakeTranscript(caption, transcriptText),
+          transcript_json: transcription || null,
         });
         const counts = parsed?.counts || {};
         finalDriveStage = '04 Parsed';
-        replyLines.push(
-          routing.parserOnly
-            ? `Filed automatically: Tasks ${counts.tasks || 0}, Students ${counts.accountability_events || 0}, Torah ${counts.torah_learning_entries || counts.group_goal_entries || 0}.`
-            : `Auto-parsed tasks/students: tasks ${counts.tasks || 0}, students ${counts.accountability_events || 0}, Torah ${counts.torah_learning_entries || counts.group_goal_entries || 0}.`
-        );
+        replyLines.push('Filed Drive recording directly into Tasks/Students; no Content job was created.');
+        replyLines.push(`Filed automatically: Tasks ${counts.tasks || 0}, Students ${counts.accountability_events || 0}, Torah ${counts.torah_learning_entries || counts.group_goal_entries || 0}.`);
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        log(`Drive auto mixed parse failed for content job ${contentJobId}: ${message}`);
+        log(`Drive recording intake parse failed for ${driveFile.name}: ${message}`);
         replyLines.push(`Auto-parse not completed: ${message}`);
+      }
+    } else {
+      const outputs = routing.contentLane
+        ? buildGeneratedContentOutputs(descriptor.kind, caption, { whatsAppDraft, facebookDraft })
+        : [];
+      const contentJob = await appRequest(config, 'POST', '/api/bna/content-jobs', {
+        title: contentTitle,
+        source_type: 'google_drive',
+        source_message_id: String(messageId),
+        source_chat_id: chatId,
+        local_path: path.relative(repoRoot, localPath).replace(/\\/g, '/'),
+        media_url: driveFile.webViewLink || null,
+        drive_file_id: driveFile.id,
+        drive_folder_id: pipelineConfig.stages?.[finalDriveStage] || null,
+        drive_stage: finalDriveStage,
+        mime_type: descriptor.mimeType,
+        caption,
+        status: whatsAppDraft || facebookDraft ? 'needs_approval' : transcriptText ? 'transcribed' : 'ingested',
+        transcript_text: transcriptText || null,
+        transcript_json: transcription || null,
+        parse_json: null,
+        notes: [
+          'Content pipeline job created from Google Drive Raw Media Intake.',
+          `Drive stage: ${finalDriveStage}.`,
+          whatsAppVideoParts.length
+            ? `WhatsApp video parts: ${whatsAppVideoParts.map((part) => path.relative(repoRoot, part.localPath).replace(/\\/g, '/')).join(', ')}`
+            : '',
+        ].filter(Boolean).join('\n'),
+        outputs,
+      });
+
+      contentJobId = contentJob?.job?.id || '';
+      const whatsAppOutput = Array.isArray(contentJob?.outputs)
+        ? contentJob.outputs.find((output) => output.output_type === 'whatsapp_update')
+        : null;
+      whatsAppOutputId = whatsAppOutput?.id || '';
+      const facebookOutput = Array.isArray(contentJob?.outputs)
+        ? contentJob.outputs.find((output) => output.output_type === 'facebook_post')
+        : null;
+      facebookOutputId = facebookOutput?.id || '';
+      replyLines.push(`Content job: ${contentJobId || 'created'}.`);
+      if (contentJobId && routing.shouldParse) {
+        try {
+          const parsed = await parseMixedContentJob(config, contentJobId);
+          const counts = parsed?.counts || {};
+          finalDriveStage = '04 Parsed';
+          replyLines.push(`Auto-parsed tasks/students: tasks ${counts.tasks || 0}, students ${counts.accountability_events || 0}, Torah ${counts.torah_learning_entries || counts.group_goal_entries || 0}.`);
+        } catch (error) {
+          const message = error instanceof Error ? error.message : String(error);
+          log(`Drive auto mixed parse failed for content job ${contentJobId}: ${message}`);
+          replyLines.push(`Auto-parse not completed: ${message}`);
+        }
       }
     }
     if (!whatsAppDraft && !facebookDraft && contentJobId && routing.contentLane) {
@@ -7712,7 +8674,15 @@ async function handleDriveIngestCommand(config, msg) {
     drive_file_id: driveFile.id,
   });
 
+  const shouldSyncDriveContentLibrary = Boolean(contentJobId && transcriptText && routing.contentLane);
+  if (shouldSyncDriveContentLibrary) {
+    replyLines.push('Drive content library sync queued.');
+  }
+
   await sendReply(config.botToken, chatId, [`Saved Drive job ${job.id}.`, ...replyLines].join('\n'), messageId);
+  if (shouldSyncDriveContentLibrary) {
+    queueDriveContentLibrarySync(config, chatId, messageId, contentJobId);
+  }
 
   for (let index = 0; index < whatsAppVideoParts.length; index += 1) {
     const part = whatsAppVideoParts[index];
@@ -7752,14 +8722,10 @@ async function handleDriveIngestCommand(config, msg) {
   }
 
   if (whatsAppDraft) {
-    if (whatsAppOutputId) {
-      await sendContentApproval(config.botToken, chatId, messageId, {
-        outputId: whatsAppOutputId,
-        jobId: contentJobId,
-        body: whatsAppDraft,
-      });
-    } else {
+    if (shouldAutoSendGeneratedWhatsAppDraftPreview({ outputId: whatsAppOutputId, contentJobId })) {
       await sendReply(config.botToken, chatId, ['WhatsApp copy draft:', '', whatsAppDraft].join('\n'), messageId);
+    } else {
+      log(`Automatic Drive WhatsApp draft preview suppressed for Content job ${contentJobId || 'unknown'}; draft is saved in Operations.`);
     }
   }
 
@@ -7770,8 +8736,8 @@ async function handleDriveIngestCommand(config, msg) {
         jobId: contentJobId,
         body: facebookDraft,
         heading: 'Facebook post draft:',
-        approveLabel: 'Approve Facebook',
-        publishLabel: 'Create Facebook Draft',
+        approveLabel: 'Save Final Draft',
+        publishLabel: 'Commit to Buffer Draft',
       });
     } else {
       await sendReply(config.botToken, chatId, ['Facebook post draft:', '', facebookDraft].join('\n'), messageId);
@@ -7886,8 +8852,33 @@ async function handleTextMessage(config, msg) {
     return;
   }
 
+  const intentPlan = planTelegramIntent({
+    text,
+    replyText: String(msg?.reply_to_message?.text || msg?.reply_to_message?.caption || ''),
+    isCommand: /^\/\w+/.test(text),
+    scoped: isScopedProjectBot(config),
+  });
+  const summarizedIntentPlan = summarizeIntentPlan(intentPlan);
+  appendMemoryEntry('Telegram Intent Plan', JSON.stringify(summarizedIntentPlan), {
+    chat_id: chatId,
+    message_id: messageId,
+  });
+  log(
+    `Intent plan for chat ${chatId} message ${messageId}: ` +
+    `${summarizedIntentPlan.primaryIntent} confidence=${summarizedIntentPlan.confidence} ` +
+    `blocked=${summarizedIntentPlan.blockedHandlers.join(',') || 'none'} approval=${summarizedIntentPlan.requiresApproval ? 'yes' : 'no'}`
+  );
+
+  const operatorMemoryAlreadyAppended = !/^\/\w+/.test(text);
+  if (operatorMemoryAlreadyAppended) {
+    appendMemoryEntry('Telegram Operator', text, {
+      chat_id: chatId,
+      message_id: messageId,
+    });
+  }
+
   const multipartSpecChunk = looksLikeMultipartSpecChunk(text);
-  if (!multipartSpecChunk && await handleStructuredTextCommand(config, msg)) {
+  if (!multipartSpecChunk && await handleStructuredTextCommand(config, msg, intentPlan)) {
     appendMemoryEntry('Telegram Action', text, {
       chat_id: chatId,
       message_id: messageId,
@@ -7900,17 +8891,112 @@ async function handleTextMessage(config, msg) {
     action: 'typing',
   });
 
-  appendMemoryEntry('Telegram Operator', text, {
-    chat_id: chatId,
-    message_id: messageId,
-  });
+  if (!operatorMemoryAlreadyAppended) {
+    appendMemoryEntry('Telegram Operator', text, {
+      chat_id: chatId,
+      message_id: messageId,
+    });
+  }
+
+  const activePlanningSession = getActivePromptPlanningSession(chatId);
+  if (activePlanningSession && isPromptPlanningCancel(text)) {
+    finishPromptPlanningSession(chatId, 'cancelled', {
+      cancelled_by_message_id: messageId ? String(messageId) : null,
+      cancelled_by_text: text,
+    });
+    appendMemoryEntry('Prompt Planning Cancelled', text, {
+      chat_id: chatId,
+      message_id: messageId,
+      planning_prompt_id: activePlanningSession.id,
+    });
+    await sendReply(config.botToken, chatId, 'Planning prompt cancelled. Send a new prompt-building request when you want to start again.', messageId);
+    return;
+  }
+
+  if (activePlanningSession && hasExplicitPromptImplementationStart(text)) {
+    const appliedSession = finishPromptPlanningSession(chatId, 'applied', {
+      applied_by_message_id: messageId ? String(messageId) : null,
+      applied_by_text: text,
+    }) || activePlanningSession;
+    const codexWorkText = buildCodexWorkFromPlanningSession(appliedSession, text);
+    const prompt = buildCodexPrompt(config, codexWorkText, chatId, messageId);
+    const replyRouting = { mode: 'codex', reason: 'planning_prompt_applied' };
+    appendMemoryEntry('Prompt Planning Applied', codexWorkText, {
+      chat_id: chatId,
+      message_id: messageId,
+      planning_prompt_id: appliedSession.id,
+    });
+
+    if (config.asyncAgentReplies) {
+      enqueueAgentReplyJob({
+        config,
+        text: codexWorkText,
+        chatId,
+        messageId,
+        prompt,
+        replyRouting,
+        trackedTasks: [],
+      });
+      await sendReply(
+        config.botToken,
+        chatId,
+        'Planning prompt applied. Codex work started from the refined draft, and I will send the result back here.',
+        messageId,
+      );
+      return;
+    }
+
+    let reply;
+    let replyProvider = 'Codex CLI';
+    try {
+      reply = await runCodex(prompt, config);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      log(`Codex planning-prompt execution failed, using API fallback: ${message}`);
+      const fallback = await runApiFallback(config, codexWorkText, chatId, messageId);
+      replyProvider = `${fallback.provider} API fallback`;
+      reply = fallback.reply;
+    }
+    const delivery = await sendReply(config.botToken, chatId, reply, messageId);
+    appendMemoryEntry(`${replyProvider} Reply`, reply, {
+      chat_id: chatId,
+      reply_to_message_id: messageId,
+      reply_mode: 'codex',
+      reply_mode_reason: 'planning_prompt_applied',
+      telegram_chunks: delivery.chunks,
+      telegram_message_ids: delivery.message_ids.join(','),
+    });
+    return;
+  }
+
+  if (activePlanningSession && !hasPromptPlanningIntent(text) && isPromptPlanningRefinement(text)) {
+    const session = refinePromptPlanningSession(chatId, messageId, text, activePlanningSession);
+    appendMemoryEntry('Prompt Planning Refinement', text, {
+      chat_id: chatId,
+      message_id: messageId,
+      planning_prompt_id: session.id,
+    });
+    const delivery = await sendReply(config.botToken, chatId, buildPlanningTelegramReply(session), messageId);
+    appendMemoryEntry('Prompt Planning Draft', session.current_prompt, {
+      chat_id: chatId,
+      reply_to_message_id: messageId,
+      planning_prompt_id: session.id,
+      telegram_chunks: delivery.chunks,
+      telegram_message_ids: delivery.message_ids.join(','),
+    });
+    return;
+  }
+
+  if (await handleTypedOperationsAction(config, msg, intentPlan)) {
+    return;
+  }
 
   let captureSummary = { enabled: false, tasksCreated: 0, eventsCreated: 0, paymentIntakeCreated: 0 };
   try {
     captureSummary = await captureRambleToApp(config, text, chatId, messageId);
     captureSummary = await handleMultipartSpecContext(config, text, chatId, messageId, captureSummary);
     log(
-      `Capture summary for chat ${chatId} message ${messageId}: tasks=${captureSummary.tasksCreated || 0}, events=${captureSummary.eventsCreated || 0}, payments=${captureSummary.paymentIntakeCreated || 0}, comments=${captureSummary.commentsCreated || 0}`
+      `Capture summary for chat ${chatId} message ${messageId}: tasks=${captureSummary.tasksCreated || 0}, events=${captureSummary.eventsCreated || 0}, payments=${captureSummary.paymentIntakeCreated || 0}, contacts=${(captureSummary.contactLeadsCreated || 0) + (captureSummary.contactLeadsUpdated || 0) + (captureSummary.contactLeadsMatched || 0)}, contact_notes=${captureSummary.contactNotesCreated || 0}, comments=${captureSummary.commentsCreated || 0}, support_tickets=${captureSummary.supportTicketsCreated || 0}`
     );
     appendMemoryEntry('BNA Capture', JSON.stringify(captureSummary), {
       chat_id: chatId,
@@ -7918,6 +9004,31 @@ async function handleTextMessage(config, msg) {
     });
   } catch (error) {
     log(`BNA app capture failed: ${error instanceof Error ? error.message : String(error)}`);
+  }
+
+  if (hasPromptPlanningIntent(text) && !hasExplicitPromptImplementationStart(text)) {
+    const session = createPromptPlanningSession(chatId, messageId, text);
+    appendMemoryEntry('Prompt Planning Provenance', text, {
+      chat_id: chatId,
+      message_id: messageId,
+      planning_prompt_id: session.id,
+    });
+    const reply = [
+      buildPlanningTelegramReply(session),
+      hasStructuredCapture(captureSummary) ? captureSummaryText(captureSummary) : '',
+    ].filter(Boolean).join('\n\n');
+    const delivery = await sendReply(config.botToken, chatId, reply, messageId);
+    appendMemoryEntry('Prompt Planning Draft', session.current_prompt, {
+      chat_id: chatId,
+      reply_to_message_id: messageId,
+      planning_prompt_id: session.id,
+      telegram_chunks: delivery.chunks,
+      telegram_message_ids: delivery.message_ids.join(','),
+    });
+    if (captureSummary.studentMatchDecisions?.length) {
+      await sendStudentMatchButtons(config.botToken, chatId, messageId, captureSummary.studentMatchDecisions);
+    }
+    return;
   }
 
   const replyRouting = selectTelegramReplyMode(config, chatId, text);
@@ -8131,65 +9242,79 @@ async function handleCallbackQuery(config, query) {
     return;
   }
 
-  const taskMatch = data.match(/^task:(mine|codex|kimi|urgent|done):(\d+)$/);
-  if (taskMatch) {
-    const action = taskMatch[1];
-    const normalizedAction = action === 'kimi' ? 'codex' : action;
-    const taskId = taskMatch[2];
-    const patch = {};
-    if (action === 'mine') {
-      patch.stage = 'assigned';
-      patch.assigned_to = 'Shloimie';
-    } else if (action === 'codex' || action === 'kimi') {
-      patch.stage = 'assigned';
-      patch.assigned_to = 'Codex';
-    } else if (action === 'urgent') {
-      patch.urgency = 'urgent';
-    } else if (action === 'done') {
-      patch.stage = 'done';
-      patch.completed_at = new Date().toISOString();
-      patch.verified_at = new Date().toISOString();
-      patch.verification_notes = 'Marked done from Telegram quick action.';
-    }
+  const externalActionMatch = data.match(/^external:(approve|cancel):(\d+)$/);
+  if (externalActionMatch) {
+    const action = externalActionMatch[1];
+    const sourceMessageId = externalActionMatch[2];
+    const pendingActions = readPendingExternalActions();
+    const pending = pendingActions[sourceMessageId];
 
-    try {
-      const result = await appRequest(config, 'PATCH', `/api/bna/tasks/${taskId}`, patch);
-      const task = result?.task || {};
-      appendAgentTaskLedger({
-        event: 'task_updated',
-        source: 'telegram_callback',
-        chat_id: chatId,
-        callback_message_id: messageId,
-        task_id: taskId,
-        action: normalizedAction,
-        patch,
-        title: task.title || null,
-        stage: task.stage || patch.stage || null,
-        urgency: task.urgency || patch.urgency || null,
-        assigned_to: task.assigned_to || patch.assigned_to || null,
-      });
-      if (action === 'done' || (task.assigned_to && /kimi|codex|system/i.test(task.assigned_to) && task.stage === 'done')) {
-        appendAgentChangelog({
-          title: task.title || `Task #${taskId} completed`,
-          summary: task.verification_notes || task.notes || `Task #${taskId} was marked done from Telegram.`,
-          task_id: taskId,
-          source: 'telegram_callback',
-          worker: task.assigned_to || 'agent',
-        });
-      }
+    if (!pending) {
       await telegramRequest(config.botToken, 'answerCallbackQuery', {
         callback_query_id: callbackId,
-        text: `Task updated: ${normalizedAction}.`,
-      });
-      await sendReply(config.botToken, chatId, `Task #${taskId} updated: ${normalizedAction}.`, messageId);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      await telegramRequest(config.botToken, 'answerCallbackQuery', {
-        callback_query_id: callbackId,
-        text: `Task update failed: ${message.slice(0, 160)}`,
+        text: 'That approval request is no longer available.',
         show_alert: true,
       });
+      return;
     }
+
+    if (action === 'cancel') {
+      deletePendingExternalAction(sourceMessageId);
+      await telegramRequest(config.botToken, 'answerCallbackQuery', {
+        callback_query_id: callbackId,
+        text: 'Canceled.',
+      });
+      await sendReply(config.botToken, chatId, 'Canceled. Nothing was sent or published.', messageId);
+      return;
+    }
+
+    await telegramRequest(config.botToken, 'answerCallbackQuery', {
+      callback_query_id: callbackId,
+      text: 'Confirmed. Running the approved action now.',
+    });
+
+    deletePendingExternalAction(sourceMessageId);
+    appendMemoryEntry('Telegram External Action Approved', String(pending.text || ''), {
+      chat_id: chatId,
+      source_message_id: sourceMessageId,
+      callback_message_id: messageId,
+    });
+
+    const approvedText = stripConfirmationPrefix(pending.text || '');
+    const approvedPlan = {
+      ...(pending.intent_plan || {}),
+      primaryIntent: 'publish_send',
+      requiresApproval: false,
+      blockedHandlers: [],
+    };
+    const handled = await handleStructuredTextCommand(config, {
+      chat: { id: chatId },
+      message_id: Number(sourceMessageId) || messageId,
+      text: approvedText,
+      reply_to_message: {
+        text: pending.reply_text || '',
+        caption: pending.reply_caption || '',
+      },
+      __approvedExternalAction: true,
+    }, approvedPlan);
+
+    if (!handled) {
+      await sendReply(
+        config.botToken,
+        chatId,
+        'Confirmed, but I could not match that request to a configured send/publish tool. Nothing was sent or published.',
+        messageId
+      );
+    }
+    return;
+  }
+
+  if (/^task:(mine|codex|kimi|urgent|done):\d+$/.test(data)) {
+    await telegramRequest(config.botToken, 'answerCallbackQuery', {
+      callback_query_id: callbackId,
+      text: 'Task quick actions were retired. Use Operations for manual task changes.',
+      show_alert: true,
+    });
     return;
   }
 
@@ -8274,12 +9399,12 @@ async function handleCallbackQuery(config, query) {
       make_whatsapp: 'WhatsApp copy draft:',
     };
     const approveLabels = {
-      make_facebook: 'Approve Facebook',
+      make_facebook: 'Save Final Draft',
       make_blog: 'Approve Blog',
       make_whatsapp: 'Approve WhatsApp',
     };
     const publishLabels = {
-      make_facebook: 'Create Facebook Draft',
+      make_facebook: 'Commit to Buffer Draft',
       make_blog: 'Publish Blog',
       make_whatsapp: '',
     };
@@ -8332,17 +9457,18 @@ async function handleCallbackQuery(config, query) {
     try {
       const result = await appRequest(config, 'POST', `/api/bna/content-outputs/${outputId}/actions`, {
         action: 'approve_publish',
+        publishNow: false,
       });
       await telegramRequest(config.botToken, 'answerCallbackQuery', {
         callback_query_id: callbackId,
-        text: String(result?.message || 'Published.').slice(0, 180),
+        text: String(result?.message || 'Buffer draft created.').slice(0, 180),
       });
       await sendReply(
         config.botToken,
         chatId,
         [
-          `Published Content output #${outputId}.`,
-          result?.message || 'The output is approved and filed in the content system.',
+          `Committed Content output #${outputId} to Buffer as a draft.`,
+          result?.message || 'The output is approved and available in the connected scheduling surface.',
         ].join('\n'),
         messageId
       );
@@ -8362,13 +9488,13 @@ async function handleCallbackQuery(config, query) {
   const result = await appRequest(config, 'PATCH', `/api/bna/content-outputs/${outputId}`, {
     status,
   });
+  const output = result?.output;
 
   await telegramRequest(config.botToken, 'answerCallbackQuery', {
     callback_query_id: callbackId,
     text: status === 'approved' ? 'Approved.' : 'Rejected.',
   });
 
-  const output = result?.output;
   let promotedPath = null;
   if (status === 'approved') {
     promotedPath = appendApprovedOutputExample(output);
@@ -8553,6 +9679,9 @@ async function main() {
   if (isScopedProjectBot(config) && (!config.opsUsername || !config.opsPassword)) {
     throw new Error('Rabbi Elie scoped bot requires ONE_TIME_OPS_USERNAME and ONE_TIME_OPS_PASSWORD (or RABBI_ELIE_SCHELLER_OPS_USERNAME/PASSWORD aliases).');
   }
+  if (isScopedProjectBot(config) && !config.allowedChatIds.length) {
+    throw new Error('Rabbi Elie scoped bot requires TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER (or RABBI_ELIE_SCHELLER_TELEGRAM_CHAT_ID / ONE_TIME_TELEGRAM_CHAT_ID) before startup.');
+  }
   activeTelegramCodexEnabled = Boolean(config.codexEnabled);
   activeTokenFingerprint = config.botToken.slice(0, 10).replace(/[^a-zA-Z0-9_-]/g, '_');
 
@@ -8564,6 +9693,16 @@ async function main() {
   if (!isScopedProjectBot(config) && config.academyToken && config.botToken !== config.academyToken) {
     throw new Error('Bridge refused to start because the selected Telegram token is not the academy token.');
   }
+
+  updateBridgeLock({
+    profile: config.bridgeProfileLabel,
+    bot_id: botIdentity.id || null,
+    bot_username: botIdentity.username || '',
+    academy_bot_username: academyIdentity?.username || '',
+    default_reply_mode: config.telegramDefaultReplyMode || 'openai',
+    build_agent: config.codexEnabled ? (config.primaryAgent || 'codex') : 'disabled',
+    allowed_chat_ids: config.allowedChatIds,
+  });
 
   await ensurePollingMode(config.botToken);
 

@@ -27,11 +27,77 @@
             margin: 0;
             min-height: 100vh;
             color: var(--ink);
-            font-family: Georgia, "Times New Roman", serif;
+            font-family: "Trebuchet MS", Verdana, sans-serif;
             background:
                 radial-gradient(circle at 14% 10%, rgba(227, 184, 72, 0.22), transparent 34rem),
                 radial-gradient(circle at 90% 14%, rgba(47, 100, 141, 0.16), transparent 30rem),
                 linear-gradient(135deg, #f5eddc 0%, #fffaf0 54%, #e8f0df 100%);
+        }
+
+        body.lang-he {
+            direction: rtl;
+        }
+
+        body.lang-en {
+            direction: ltr;
+        }
+
+        .brand-topbar {
+            position: sticky;
+            top: 0;
+            z-index: 80;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            border-bottom: 1px solid rgba(47, 100, 141, 0.16);
+            background: rgba(255, 255, 255, 0.92);
+            padding: 12px max(14px, calc((100vw - 1040px) / 2));
+            backdrop-filter: blur(16px);
+        }
+
+        .brand-lockup {
+            min-width: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .brand-mark {
+            display: grid;
+            place-items: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            color: #fff;
+            background: linear-gradient(135deg, var(--blue), #173f64);
+            box-shadow: 0 10px 24px rgba(47, 100, 141, 0.24);
+            font-weight: 900;
+        }
+
+        .brand-lockup strong {
+            display: block;
+            color: #173f64;
+            font-size: 15px;
+            line-height: 1.1;
+        }
+
+        .brand-lockup span {
+            display: block;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.2;
+        }
+
+        .brand-chip {
+            border: 1px solid rgba(47, 100, 141, 0.14);
+            border-radius: 999px;
+            background: #f7fbff;
+            color: #173f64;
+            padding: 7px 10px;
+            font-size: 11px;
+            font-weight: 900;
+            white-space: nowrap;
         }
 
         body::before {
@@ -77,6 +143,7 @@
             font-size: 54px;
             line-height: 0.92;
             letter-spacing: 0;
+            color: #173f64;
         }
 
         .hero-text {
@@ -90,7 +157,7 @@
 
         .panel {
             border: 1px solid var(--line);
-            border-radius: 28px;
+            border-radius: 8px;
             background: var(--panel);
             box-shadow: var(--shadow);
             backdrop-filter: blur(10px);
@@ -160,7 +227,7 @@
         }
 
         button:disabled {
-            cursor: wait;
+            cursor: not-allowed;
             opacity: 0.58;
             transform: none;
             box-shadow: none;
@@ -193,6 +260,156 @@
             align-items: start;
             padding: 22px;
             margin: 18px 0;
+        }
+
+        .portal-menu-toggle {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            margin: 0 0 12px;
+        }
+
+        .mobile-menu-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 30;
+            background: rgba(24, 32, 24, 0.34);
+        }
+
+        .portal-layout {
+            display: grid;
+            grid-template-columns: minmax(236px, 280px) minmax(0, 1fr);
+            gap: 16px;
+            align-items: start;
+        }
+
+        .portal-sidebar {
+            position: sticky;
+            top: 74px;
+            z-index: 35;
+            display: grid;
+            gap: 14px;
+            max-height: calc(100vh - 88px);
+            overflow-y: auto;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: var(--shadow);
+            padding: 16px;
+            font-family: "Trebuchet MS", Verdana, sans-serif;
+        }
+
+        .portal-sidebar-header {
+            display: grid;
+            gap: 4px;
+        }
+
+        .portal-sidebar-header strong {
+            font-size: 18px;
+        }
+
+        .side-stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 8px;
+        }
+
+        .side-stat {
+            min-height: 74px;
+            display: grid;
+            gap: 3px;
+            align-content: center;
+            border: 1px solid rgba(24, 32, 24, 0.1);
+            border-radius: 14px;
+            background: rgba(255, 250, 240, 0.82);
+            padding: 10px;
+        }
+
+        .side-stat strong {
+            font-size: 22px;
+            line-height: 1;
+        }
+
+        .side-stat span {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .sidebar-block {
+            display: grid;
+            gap: 8px;
+            border-top: 1px solid var(--line);
+            padding-top: 12px;
+        }
+
+        .upcoming-list {
+            display: grid;
+            gap: 8px;
+        }
+
+        .upcoming-item {
+            display: grid;
+            gap: 2px;
+            border: 1px solid rgba(30, 95, 61, 0.12);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.68);
+            padding: 9px;
+        }
+
+        .upcoming-item strong {
+            font-size: 13px;
+            line-height: 1.2;
+        }
+
+        .upcoming-item span {
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.35;
+        }
+
+        .portal-nav {
+            display: grid;
+            gap: 6px;
+        }
+
+        .portal-nav-button {
+            width: 100%;
+            min-height: 42px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            border-radius: 8px;
+            padding: 10px 12px;
+            color: var(--ink);
+            background: rgba(24, 32, 24, 0.06);
+            text-align: start;
+            letter-spacing: 0;
+        }
+
+        .portal-nav-button.active {
+            color: #fff;
+            background: var(--forest);
+        }
+
+        .portal-nav-count {
+            min-width: 24px;
+            border-radius: 999px;
+            padding: 3px 7px;
+            color: inherit;
+            background: rgba(255, 255, 255, 0.22);
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .portal-content {
+            min-width: 0;
+        }
+
+        .portal-section-hidden {
+            display: none !important;
         }
 
         .access-strip {
@@ -296,7 +513,7 @@
 
         .metric-grid {
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 12px;
             margin-top: 16px;
         }
@@ -352,6 +569,266 @@
             background: linear-gradient(90deg, var(--forest), var(--gold));
         }
 
+        .history-panel,
+        .next-meeting-strip,
+        .daily-checkins,
+        .question-panel,
+        .message-panel {
+            margin-top: 14px;
+            border: 1px solid rgba(24, 32, 24, 0.12);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.64);
+            padding: 12px;
+            font-family: "Trebuchet MS", Verdana, sans-serif;
+        }
+
+        .history-chart {
+            width: 100%;
+            height: 132px;
+            display: block;
+        }
+
+        .history-axis {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 800;
+        }
+
+        .next-meeting-strip {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.35;
+        }
+
+        .next-meeting-strip strong {
+            color: var(--forest);
+        }
+
+        .daily-checkins {
+            display: grid;
+            gap: 10px;
+        }
+
+        .daily-week-label {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .daily-row {
+            display: grid;
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+            gap: 6px;
+        }
+
+        .day-button {
+            min-height: 46px;
+            display: grid;
+            place-items: center;
+            gap: 1px;
+            padding: 6px 4px;
+            border: 1px solid rgba(30, 95, 61, 0.16);
+            border-radius: 12px;
+            color: var(--muted);
+            background: rgba(255, 254, 249, 0.88);
+            font: 800 11px "Trebuchet MS", Verdana, sans-serif;
+            letter-spacing: 0;
+        }
+
+        .day-button span {
+            display: block;
+            font-size: 10px;
+            text-transform: uppercase;
+        }
+
+        .day-button strong {
+            color: var(--ink);
+            font-size: 14px;
+        }
+
+        .day-button.completed {
+            color: #fff;
+            background: var(--forest);
+            border-color: var(--forest);
+        }
+
+        .day-button.completed strong {
+            color: #fff;
+        }
+
+        .day-button.today {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 2px rgba(227, 184, 72, 0.18);
+        }
+
+        .day-note-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 8px;
+            align-items: end;
+        }
+
+        .message-panel {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 36px;
+        }
+
+        .question-list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .calendar-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            justify-content: space-between;
+            margin: 12px 0;
+        }
+
+        .calendar-control-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .calendar-view-button.active {
+            color: #fff;
+            background: var(--forest);
+        }
+
+        .calendar-status-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 8px;
+            margin: 12px 0;
+        }
+
+        .calendar-status-card {
+            display: grid;
+            gap: 4px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.66);
+            padding: 10px;
+        }
+
+        .calendar-event-card {
+            width: 100%;
+            min-height: 0;
+            display: grid;
+            gap: 8px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.76);
+            color: var(--ink);
+            padding: 12px;
+            text-align: start;
+        }
+
+        .calendar-event-card:hover,
+        .calendar-event-card.active {
+            background: rgba(30, 95, 61, 0.08);
+            outline: 2px solid rgba(30, 95, 61, 0.18);
+        }
+
+        .calendar-event-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .calendar-drawer {
+            position: fixed;
+            inset: auto 18px 18px auto;
+            z-index: 90;
+            width: min(420px, calc(100vw - 36px));
+            max-height: min(620px, calc(100vh - 36px));
+            overflow: auto;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fffef9;
+            box-shadow: 0 28px 90px rgba(23, 32, 25, 0.22);
+            padding: 16px;
+        }
+
+        .calendar-drawer-head {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .calendar-drawer dl {
+            display: grid;
+            gap: 8px;
+            margin: 12px 0 0;
+        }
+
+        .calendar-drawer dt {
+            color: var(--muted);
+            font-size: 11px;
+            font-weight: 900;
+            text-transform: uppercase;
+        }
+
+        .calendar-drawer dd {
+            margin: 2px 0 0;
+            font: 700 14px/1.45 "Trebuchet MS", Verdana, sans-serif;
+            word-break: break-word;
+        }
+
+        .question-card {
+            display: grid;
+            gap: 10px;
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.72);
+            padding: 14px;
+        }
+
+        .question-card summary {
+            cursor: pointer;
+            list-style: none;
+        }
+
+        .question-card summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .question-card-body {
+            display: grid;
+            gap: 10px;
+            padding-top: 10px;
+        }
+
+        .source-list,
+        .assignment-list,
+        .response-list {
+            margin: 0;
+            padding-left: 18px;
+            color: var(--muted);
+            font: 700 13px/1.45 "Trebuchet MS", Verdana, sans-serif;
+        }
+
+        .source-list a {
+            color: var(--forest);
+            font-weight: 900;
+        }
+
         .section-title {
             display: flex;
             gap: 12px;
@@ -393,6 +870,17 @@
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
             gap: 8px;
+        }
+
+        .top-filter-row {
+            display: grid;
+            grid-template-columns: minmax(180px, 240px) minmax(0, 1fr);
+            gap: 10px;
+            align-items: end;
+        }
+
+        .top-filter-row label {
+            margin: 0;
         }
 
         .filter-tab {
@@ -456,6 +944,21 @@
             border: 1px solid var(--line);
             border-radius: 24px;
             background: rgba(255, 255, 255, 0.82);
+        }
+
+        .goal-card summary {
+            cursor: pointer;
+            list-style: none;
+        }
+
+        .goal-card summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .goal-card-body {
+            display: grid;
+            gap: 14px;
+            padding-top: 12px;
         }
 
         .goal-card.waiting {
@@ -550,7 +1053,60 @@
             display: none !important;
         }
 
+        body.student-has-helper {
+            padding-bottom: 32px;
+        }
+
+        .student-helper-dock {
+            position: static;
+            z-index: 30;
+            display: flex;
+            justify-content: flex-end;
+            width: min(1040px, calc(100vw - 32px));
+            margin: 16px auto 0;
+            pointer-events: none;
+        }
+
+        [dir="rtl"] .student-helper-dock {
+            justify-content: flex-start;
+        }
+
+        .student-helper-button {
+            pointer-events: auto;
+            display: grid;
+            gap: 3px;
+            max-width: 260px;
+            border-radius: 14px;
+            padding: 10px 12px;
+            text-align: left;
+            box-shadow: 0 12px 34px rgba(30, 95, 61, 0.24);
+        }
+
+        .student-helper-button strong {
+            display: block;
+            color: #fff;
+            font-size: 13px;
+        }
+
+        .student-helper-button span {
+            color: rgba(255, 255, 255, 0.82);
+            font-size: 11px;
+            line-height: 1.35;
+        }
+
         @media (max-width: 720px) {
+            body.student-has-helper {
+                padding-bottom: calc(28px + env(safe-area-inset-bottom, 0px));
+            }
+
+            .brand-topbar {
+                padding: 10px 14px;
+            }
+
+            .brand-chip {
+                display: none;
+            }
+
             .shell {
                 width: min(100% - 18px, 980px);
                 padding-top: 18px;
@@ -570,10 +1126,33 @@
                 justify-content: flex-start;
             }
 
+            .portal-menu-toggle {
+                display: inline-flex;
+            }
+
+            .portal-layout {
+                display: block;
+            }
+
+            .portal-sidebar {
+                position: fixed;
+                top: 64px;
+                bottom: 10px;
+                left: 10px;
+                width: min(320px, calc(100vw - 20px));
+                max-height: none;
+                transform: translateX(calc(-100% - 18px));
+                transition: transform 0.18s ease;
+            }
+
+            body.portal-menu-open .portal-sidebar {
+                transform: translateX(0);
+            }
+
             .metric-grid,
             .portal-command-grid,
             .goal-form-row {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
             .metric {
@@ -591,6 +1170,10 @@
                 grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
+            .top-filter-row {
+                grid-template-columns: 1fr;
+            }
+
             .top-card {
                 padding: 18px;
             }
@@ -600,10 +1183,72 @@
                 display: grid;
                 grid-template-columns: 1fr;
             }
+
+            .student-helper-dock {
+                position: static;
+                margin-top: 0;
+                width: min(100% - 20px, 420px);
+                justify-content: stretch;
+            }
+
+            [dir="rtl"] .student-helper-dock {
+                justify-content: stretch;
+            }
+
+            .student-helper-dock button {
+                width: 100%;
+            }
+
+            .student-helper-button {
+                max-width: none;
+                border-radius: 12px;
+                gap: 1px;
+                padding: 8px 10px;
+            }
+
+            .student-helper-button strong {
+                font-size: 12px;
+            }
+
+            .student-helper-button span {
+                display: -webkit-box;
+                overflow: hidden;
+                -webkit-box-orient: vertical;
+                -webkit-line-clamp: 1;
+                font-size: 10px;
+            }
+
+            .calendar-controls,
+            .calendar-control-group,
+            .calendar-status-grid {
+                display: grid;
+                grid-template-columns: 1fr;
+            }
+
+            .calendar-control-group {
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+            }
+
+            .calendar-drawer {
+                inset: auto 10px 10px 10px;
+                width: auto;
+                max-height: min(72vh, 680px);
+            }
         }
     </style>
+    <link rel="stylesheet" href="/css/bna-app-shell.css">
 </head>
-<body>
+<body class="bna-shell bna-portal-page bna-student-page">
+    <header class="brand-topbar">
+        <div class="brand-lockup">
+            <span class="brand-mark" aria-hidden="true">BNA</span>
+            <div>
+                <strong>Bnei Neviim Academy</strong>
+                <span>Student goal board</span>
+            </div>
+        </div>
+        <span class="brand-chip">Daily accountability</span>
+    </header>
     <main class="shell">
         <header class="hero">
             <div>
@@ -636,19 +1281,46 @@
             <div class="status" id="loginStatus"></div>
         </section>
 
+        <button class="portal-menu-toggle hidden" id="portalMenuToggle" type="button" aria-controls="portalSidebar" aria-expanded="false">
+            <span aria-hidden="true">&#9776;</span>
+            Menu
+        </button>
+        <div class="mobile-menu-backdrop hidden" id="portalMenuBackdrop"></div>
+
+        <section class="portal-layout hidden" id="portalLayout">
+            <aside class="portal-sidebar" id="portalSidebar" aria-label="Student navigation">
+                <div class="portal-sidebar-header">
+                    <span class="eyebrow">My Board</span>
+                    <strong id="portalSidebarName">Student</strong>
+                    <span class="small" id="portalSidebarMeeting">Meeting not scheduled yet</span>
+                </div>
+                <div class="side-stat-grid" id="portalSideStats"></div>
+                <div class="sidebar-block">
+                    <span class="eyebrow">This Week</span>
+                    <div class="upcoming-list" id="portalUpcomingList"></div>
+                </div>
+                <nav class="portal-nav" id="portalNav" aria-label="Student portal sections"></nav>
+            </aside>
+            <div class="portal-content" id="portalContent">
         <section class="panel top-card hidden" id="studentPanel">
             <div>
                 <p class="eyebrow">Torah Trip Progress</p>
                 <h2 id="studentName">Student</h2>
-                <p class="small">This is your cumulative progress toward the full 30-unit trip goal. Daily completion helps move this number up one unit at a time.</p>
+                <p class="small">This shows the class trip progress and your own cumulative progress toward the full 30-unit trip goal.</p>
                 <div class="progress-track" aria-label="Torah trip progress">
                     <div class="progress-fill" id="torahProgressFill"></div>
                 </div>
                 <div class="metric-grid">
+                    <div class="metric compact" id="torahClassMetric">
+                        <div>
+                            <strong id="torahClassText">0%</strong>
+                            <small id="classMetricLabel">Class Trip</small>
+                        </div>
+                    </div>
                     <div class="metric compact" id="torahTripMetric">
                         <div>
                             <strong id="torahProgressText">0%</strong>
-                            <small id="tripMetricLabel">Trip</small>
+                            <small id="tripMetricLabel">My Trip</small>
                         </div>
                     </div>
                     <div class="metric compact" id="torahTodayMetric">
@@ -664,6 +1336,15 @@
                         </div>
                     </div>
                 </div>
+                <div class="history-panel" id="torahHistoryPanel">
+                    <div class="small" id="torahHistoryTitle">Progress history</div>
+                    <svg class="history-chart" id="torahHistoryChart" viewBox="0 0 640 132" role="img" aria-label="Torah progress history"></svg>
+                    <div class="history-axis">
+                        <span id="torahHistoryStart">--</span>
+                        <span id="torahHistoryEnd">--</span>
+                    </div>
+                </div>
+                <div class="next-meeting-strip" id="nextMeetingStrip"></div>
                 <div class="access-strip hidden" id="deviceAccessStrip">
                     <span class="access-pill" id="deviceAccessState">Accountability Only</span>
                     <span id="deviceAccessText">Tablet access is accountability-only.</span>
@@ -672,13 +1353,28 @@
             </div>
         </section>
 
+        <section class="panel question-panel hidden" id="calendarSection">
+            <div class="section-title" style="margin-top:0;">
+                <h2 id="calendarTitle">My Calendar</h2>
+                <span id="calendarCount">0 items</span>
+            </div>
+            <p class="small" id="calendarHelp">Only your visible meetings, classes, assignments, and due dates appear here.</p>
+            <div class="question-list" id="calendarList"></div>
+        </section>
+
         <section class="hidden" id="goalsSection">
             <div class="section-title">
                 <h2>My Goal Checkoff</h2>
                 <span id="goalCount">0 goals</span>
             </div>
             <div class="board-toolbar">
-                <div class="filter-tabs" id="goalFilters"></div>
+                <div class="top-filter-row">
+                    <label for="goalStatusFilter">
+                        Goal view
+                        <select id="goalStatusFilter" aria-label="Goal status filter"></select>
+                    </label>
+                    <div class="filter-tabs" id="goalFilters" aria-label="Goal counts"></div>
+                </div>
                 <div class="student-readonly-note" id="studentReadonlyNote">
                     Goals, consequences, bedtime rules, and tablet rules are assigned by the rebbi/admin. This page is only for honest checkoff, a short note, and read-only progress/status.
                 </div>
@@ -686,6 +1382,62 @@
             <div class="goal-list" id="goalGrid"></div>
             <div class="status" id="saveStatus"></div>
         </section>
+
+        <section class="panel question-panel hidden" id="questionsSection">
+            <div class="section-title" style="margin-top:0;">
+                <h2 id="questionsTitle">My Questions</h2>
+                <span id="questionCount">0 questions</span>
+            </div>
+            <p class="small" id="questionsHelp">Review the questions you asked, suggested Sefaria sources, and optional follow-up learning.</p>
+            <div class="question-list" id="questionList"></div>
+        </section>
+
+        <section class="panel question-panel hidden" id="assignmentsSection">
+            <div class="section-title" style="margin-top:0;">
+                <h2 id="assignmentsTitle">My Assignments</h2>
+                <span id="assignmentCount">0 assignments</span>
+            </div>
+            <p class="small" id="assignmentsHelp">Review assigned videos, worksheets, schedules, and follow-up work.</p>
+            <div class="question-list" id="assignmentList"></div>
+        </section>
+
+        <section class="panel question-panel hidden" id="documentsSection">
+            <div class="section-title" style="margin-top:0;">
+                <h2 id="documentsTitle">Documents / Links</h2>
+                <span id="documentCount">0 links</span>
+            </div>
+            <p class="small" id="documentsHelp">Open the videos, worksheets, and classroom links connected to your assignments.</p>
+            <div class="question-list" id="documentList"></div>
+        </section>
+
+        <section class="panel message-panel hidden" id="parentMessageSection">
+            <div>
+                <p class="eyebrow" id="parentMessageEyebrow">Parent</p>
+                <h2 id="parentMessageTitle">Message your parent</h2>
+                <p class="small" id="parentMessageHelp">Send a note to your parent portal. They can approve or deny it from their dashboard.</p>
+            </div>
+            <textarea id="parentMessage" placeholder="Tell your parent what you checked off or what you need approved"></textarea>
+            <div class="button-row">
+                <button id="sendParentMessageButton" type="button">Send to parent</button>
+            </div>
+            <div class="status" id="parentMessageStatus"></div>
+        </section>
+
+        <section class="panel message-panel hidden" id="messageSection">
+            <div>
+                <p class="eyebrow" id="messageEyebrow">Message</p>
+                <h2 id="messageTitle">Talk to your rabbi about anything</h2>
+                <p class="small" id="messageHelp">Send a private note. It will be logged and sent to the academy Telegram bot.</p>
+            </div>
+            <textarea id="rabbiMessage" placeholder="Write your message here"></textarea>
+            <div class="button-row">
+                <button id="sendRabbiMessageButton" type="button">Send message</button>
+            </div>
+            <div class="status" id="messageStatus"></div>
+        </section>
+            </div>
+        </section>
+        <div class="student-helper-dock hidden" id="studentHelperDock"></div>
     </main>
 
     <script>
@@ -695,12 +1447,19 @@
         let accessCode = new URLSearchParams(window.location.search).get('code') || localStorage.getItem(STORAGE_KEY) || '';
         let language = localStorage.getItem(LANGUAGE_KEY) || 'en';
         let currentFilter = 'today';
+        let currentSection = 'overview';
         let portalData = null;
         let saving = false;
+        let selectedDayByGoal = {};
+        let studentCalendarViewMode = window.matchMedia && window.matchMedia('(max-width: 720px)').matches ? 'list' : 'week';
+        let studentCalendarOffset = 0;
+        let selectedStudentCalendarEventId = '';
 
         const labels = {
             en: {
                 title: 'Student Goal Board',
+                student: 'Student',
+                brandSubtitle: 'Student workspace',
                 intro: 'Open your private link, review your Torah progress, and work through your goals honestly.',
                 portalIntro: 'Your Torah progress is read-only. Your own goals are below it.',
                 privateAccess: 'Private Access',
@@ -710,9 +1469,12 @@
                 codePlaceholder: 'Paste code here',
                 openGoals: 'Open My Board',
                 clearCode: 'Use a different link',
+                menu: 'Menu',
                 opening: 'Opening your board...',
                 torahTitle: 'Torah Trip Progress',
                 torahText: 'This shows only the progress you are allowed to see: trip progress, today, and morning status.',
+                classTrip: 'Class Trip',
+                myTrip: 'My Trip',
                 trip: 'Trip',
                 today: 'Today',
                 morning: 'Morning',
@@ -720,10 +1482,12 @@
                 morningHalf: 'Half',
                 morningNotYet: 'Not Yet',
                 boardTitle: 'My Goal Board',
+                goalView: 'Goal view',
                 goal: 'Goal',
                 urgency: 'Urgency',
                 category: 'Category',
                 due: 'Due',
+                by: 'by',
                 bedtime: 'In bed by',
                 wakeTime: 'Out of bed by',
                 chosenRule: 'My chosen consequence / rule',
@@ -754,9 +1518,127 @@
                 tabletAccess: 'Tablet access',
                 accessUntil: 'until',
                 assignedOnly: 'Goals, consequences, bedtime rules, and tablet rules are assigned by the rebbi/admin. This page is only for honest checkoff, a short note, and read-only progress/status.',
+                historyTitle: 'Progress history',
+                nextMeeting: 'Next meeting',
+                noMeeting: 'Next meeting is not scheduled yet',
+                dailyCheckoffs: 'Daily checkoffs',
+                noteFor: 'Note for',
+                saveDayNote: 'Save day note',
+                questionsTitle: 'My Questions',
+                questionsHelp: 'Review the questions you asked, suggested Sefaria sources, and optional follow-up learning.',
+                questions: 'questions',
+                questionSingular: 'question',
+                noQuestions: 'No questions are linked yet.',
+                assignmentsTitle: 'My Assignments',
+                assignmentsHelp: 'Review assigned videos, worksheets, schedules, and follow-up work.',
+                calendarTitle: 'My Calendar',
+                calendarEvent: 'Calendar event',
+                calendarHelp: 'Only your visible meetings, classes, assignments, and due dates appear here.',
+                calendarItems: 'calendar items',
+                calendarItem: 'calendar item',
+                noCalendarItems: 'No visible calendar items are linked yet.',
+                month: 'Month',
+                week: 'Week',
+                listAgenda: 'List / Agenda',
+                previous: 'Previous',
+                next: 'Next',
+                studentVisible: 'Student-visible',
+                publicVisible: 'Public',
+                internalSource: 'Internal',
+                studentCalendarSource: 'BNA student calendar',
+                googleCalendarSource: 'Google Calendar',
+                classroomSource: 'Classroom',
+                manualSource: 'Manual',
+                source: 'Source',
+                visibility: 'Visibility',
+                eventType: 'Event type',
+                relatedItem: 'Related item',
+                description: 'Description',
+                linksLabel: 'Links',
+                close: 'Close',
+                calendarConnectorTitle: 'Calendar connection',
+                internalCalendarReady: 'Internal calendar is working without Google.',
+                googleCalendarStatus: 'Google Calendar disconnected',
+                googleClassroomStatus: 'Google Classroom disconnected',
+                googleSetupChecklist: 'Google can be connected later by BNA staff. Your internal calendar still works.',
+                assignments: 'assignments',
+                assignmentSingular: 'assignment',
+                noAssignments: 'No assignments are linked yet.',
+                assignmentTitle: 'Assignment',
+                worksheet: 'Worksheet',
+                material: 'Material',
+                link: 'Link',
+                scheduled: 'Scheduled',
+                ready: 'Ready',
+                notGenerated: 'Not generated',
+                synced: 'Synced',
+                notSynced: 'Not synced',
+                assigned: 'Assigned',
+                worksheetNotGenerated: 'Worksheet is not generated yet.',
+                sefariaSources: 'Sefaria sources',
+                optionalFollowUp: 'Optional follow-up',
+                parentResponses: 'Parent responses',
+                parentMessageEyebrow: 'Parent',
+                parentMessageTitle: 'Message your parent',
+                parentMessageHelp: 'Send a note to your parent portal. They can approve or deny it from their dashboard.',
+                parentMessagePlaceholder: 'Tell your parent what you checked off or what you need approved',
+                sendParentMessage: 'Send to parent',
+                parentMessageSent: 'Message sent to your parent portal.',
+                talkEyebrow: 'Message',
+                talkTitle: 'Talk to Rabbi Shloimie',
+                talkHelp: 'Send a private note to Rabbi Shloimie. It will be logged for BNA follow-up.',
+                messagePlaceholder: 'Write your message here',
+                sendMessage: 'Send message',
+                messageSent: 'Message sent.',
+                home: 'Home',
+                overview: 'Overview',
+                messages: 'Messages',
+                documentsLinks: 'Documents / Links',
+                documentsHelp: 'Open the videos, worksheets, and classroom links connected to your assignments.',
+                bot: 'Bot',
+                helpAccount: 'Help / Account',
+                links: 'links',
+                linkSingular: 'link',
+                thisWeek: 'This Week',
+                noUpcoming: 'No upcoming items this week.',
+                askHelper: 'Ask BNA Helper',
+                helperScope: 'Uses only your profile, visible calendar, goals, assignments, questions, documents, and permitted notes.',
+                privateMeeting: 'Private meeting',
+                useMessageBox: 'Use the message box below for Rabbi Shloimie.',
+                adminSource: 'BNA',
+                agreement: 'Agreement',
+                inBedBy: 'in bed by',
+                outOfBedBy: 'out of bed by',
+                afterHonestCheckoff: 'After honest checkoff',
+                tabletAccessOpens: 'tablet access opens',
+                forMinutes: 'for',
+                minutes: 'minutes',
+                chosenRule: 'Chosen rule',
+                myAgreement: 'My Agreement',
+                checkOff: 'Check Off',
+                tabletAccessLabel: 'Tablet Access',
+                torahTripShort: 'Torah / Trip',
+                noGoalYet: 'No goal yet',
+                setByYourRule: 'Set by your rule',
+                chooseAgreement: 'Choose or review your agreement',
+                honestPromise: 'This is the promise you are checking off honestly.',
+                useButtonsBelow: 'Use the buttons below when you are ready.',
+                askRebbiToAdd: "Ask your rebbi to add today's agreement.",
+                accessAfterSuccess: 'After a successful checkoff, access opens when a tablet is configured.',
+                myTripSentence: 'My trip is',
+                writeMessageFirst: 'Write a message first.',
+                requestFailed: 'Request failed.',
+                couldNotSendMessage: 'Could not send this message.',
+                couldNotOpenStudentLink: 'Could not open this student link.',
+                couldNotSaveCheckoff: 'Could not save this checkoff.',
+                couldNotSaveDay: 'Could not save this day.',
+                savedNoDevice: 'Saved. No tablet is configured yet, so access could not open automatically.',
+                tabletOpened: 'Saved. Tablet access opened',
             },
             he: {
                 title: 'לוח מטרות תלמיד',
+                student: 'תלמיד',
+                brandSubtitle: 'מרחב תלמיד',
                 intro: 'פתח את הקישור הפרטי שלך, בדוק את התקדמות התורה, ועבוד על המטרות שלך ביושר.',
                 portalIntro: 'התקדמות התורה לקריאה בלבד. המטרות שלך נמצאות למטה.',
                 privateAccess: 'גישה פרטית',
@@ -766,6 +1648,7 @@
                 codePlaceholder: 'הדבק קוד כאן',
                 openGoals: 'פתח את הלוח שלי',
                 clearCode: 'השתמש בקישור אחר',
+                menu: 'תפריט',
                 opening: 'פותח את הלוח...',
                 torahTitle: 'התקדמות מסע התורה',
                 torahText: 'מוצגת רק ההתקדמות שמותר לך לראות: מסע, היום, ומצב בוקר.',
@@ -776,10 +1659,12 @@
                 morningHalf: 'חצי',
                 morningNotYet: 'עוד לא',
                 boardTitle: 'לוח המטרות שלי',
+                goalView: 'תצוגת מטרות',
                 goal: 'מטרה',
                 urgency: 'דחיפות',
                 category: 'קטגוריה',
                 due: 'זמן יעד',
+                by: 'עד',
                 goalPlaceholder: 'הוסף מטרה',
                 categoryPlaceholder: 'שגרה, לימוד, פרויקט',
                 noGoals: 'אין מטרות במסלול הזה.',
@@ -801,6 +1686,127 @@
                 required: 'נדרש אישור',
                 goals: 'מטרות',
                 goalSingular: 'מטרה',
+                classTrip: 'מסע כיתתי',
+                myTrip: 'המסע שלי',
+                tabletAccess: 'גישה לטאבלט',
+                accessUntil: 'עד',
+                assignedOnly: 'מטרות, השלכות, זמני שינה וכללי טאבלט נקבעים על ידי הרב/מנהל. הדף הזה מיועד רק לסימון אמיתי, פתק קצר, ומעקב קריאה בלבד.',
+                historyTitle: 'היסטוריית התקדמות',
+                nextMeeting: 'הפגישה הבאה',
+                noMeeting: 'הפגישה הבאה עדיין לא נקבעה',
+                dailyCheckoffs: 'סימונים יומיים',
+                noteFor: 'פתק עבור',
+                saveDayNote: 'שמור פתק יומי',
+                questionsTitle: 'השאלות שלי',
+                questionsHelp: 'עיין בשאלות ששאלת, מקורות ספריא מוצעים, ולימוד המשך אפשרי.',
+                questions: 'שאלות',
+                questionSingular: 'שאלה',
+                noQuestions: 'עדיין אין שאלות מקושרות.',
+                assignmentsTitle: 'המשימות שלי',
+                assignmentsHelp: 'עיין בסרטונים, דפי עבודה, זמנים ועבודת המשך שניתנו לך.',
+                calendarTitle: 'לוח השנה שלי',
+                calendarEvent: 'אירוע בלוח השנה',
+                calendarHelp: 'רק פגישות, שיעורים, משימות ותאריכי יעד שמותרים לך מוצגים כאן.',
+                calendarItems: 'פריטי לוח שנה',
+                calendarItem: 'פריט לוח שנה',
+                noCalendarItems: 'עדיין אין פריטי לוח שנה שמותרים לצפייה.',
+                month: 'חודש',
+                week: 'שבוע',
+                listAgenda: 'רשימה / סדר יום',
+                previous: 'הקודם',
+                next: 'הבא',
+                studentVisible: 'גלוי לתלמיד',
+                publicVisible: 'ציבורי',
+                internalSource: 'פנימי',
+                studentCalendarSource: 'לוח שנה של BNA לתלמיד',
+                googleCalendarSource: 'Google Calendar',
+                classroomSource: 'Classroom',
+                manualSource: 'ידני',
+                source: 'מקור',
+                visibility: 'הרשאה',
+                eventType: 'סוג אירוע',
+                relatedItem: 'פריט קשור',
+                description: 'תיאור',
+                linksLabel: 'קישורים',
+                close: 'סגירה',
+                calendarConnectorTitle: 'חיבור לוח שנה',
+                internalCalendarReady: 'לוח השנה הפנימי עובד גם בלי Google.',
+                googleCalendarStatus: 'Google Calendar לא מחובר',
+                googleClassroomStatus: 'Google Classroom לא מחובר',
+                googleSetupChecklist: 'אפשר לחבר את Google בהמשך על ידי צוות BNA. לוח השנה הפנימי שלך עדיין עובד.',
+                assignments: 'משימות',
+                assignmentSingular: 'משימה',
+                noAssignments: 'עדיין אין משימות מקושרות.',
+                assignmentTitle: 'משימה',
+                worksheet: 'דף עבודה',
+                material: 'חומר',
+                link: 'קישור',
+                scheduled: 'מתוזמן',
+                ready: 'מוכן',
+                notGenerated: 'לא נוצר',
+                synced: 'מסונכרן',
+                notSynced: 'לא מסונכרן',
+                assigned: 'שובץ',
+                worksheetNotGenerated: 'דף העבודה עדיין לא נוצר.',
+                sefariaSources: 'מקורות ספריא',
+                optionalFollowUp: 'לימוד המשך אפשרי',
+                parentResponses: 'תגובות הורים',
+                parentMessageEyebrow: 'הורה',
+                parentMessageTitle: 'שלח הודעה להורה',
+                parentMessageHelp: 'שלח פתק לפורטל ההורים. הם יכולים לאשר או לדחות מהדשבורד שלהם.',
+                parentMessagePlaceholder: 'ספר להורה מה סימנת או מה אתה צריך שיאשרו',
+                sendParentMessage: 'שלח להורה',
+                parentMessageSent: 'ההודעה נשלחה לפורטל ההורים.',
+                talkEyebrow: 'הודעה',
+                talkTitle: 'דבר עם רבי שלומי',
+                talkHelp: 'שלח פתק פרטי לרבי שלומי. זה יישמר למעקב BNA.',
+                messagePlaceholder: 'כתוב את ההודעה כאן',
+                sendMessage: 'שלח הודעה',
+                messageSent: 'ההודעה נשלחה.',
+                home: 'בית',
+                overview: 'סקירה',
+                messages: 'הודעות',
+                documentsLinks: 'מסמכים / קישורים',
+                documentsHelp: 'פתח את הסרטונים, דפי העבודה וקישורי הכיתה שמחוברים למשימות שלך.',
+                bot: 'עוזר BNA',
+                helpAccount: 'עזרה / חשבון',
+                links: 'קישורים',
+                linkSingular: 'קישור',
+                thisWeek: 'השבוע',
+                noUpcoming: 'אין פריטים קרובים השבוע.',
+                askHelper: 'שאל את עוזר BNA',
+                helperScope: 'משתמש רק בפרופיל שלך, לוח שנה גלוי, יעדים, משימות, שאלות, מסמכים והערות מותרות.',
+                privateMeeting: 'פגישה אישית',
+                useMessageBox: 'אפשר להשתמש בתיבת ההודעה למטה כדי לפנות לרבי שלוימי.',
+                adminSource: 'BNA',
+                agreement: 'הסכם',
+                inBedBy: 'במיטה עד',
+                outOfBedBy: 'קם עד',
+                afterHonestCheckoff: 'אחרי סימון אמיתי',
+                tabletAccessOpens: 'גישת הטאבלט נפתחת',
+                forMinutes: 'למשך',
+                minutes: 'דקות',
+                chosenRule: 'כלל שנבחר',
+                myAgreement: 'ההסכם שלי',
+                checkOff: 'סימון',
+                tabletAccessLabel: 'גישת טאבלט',
+                torahTripShort: 'תורה / מסע',
+                noGoalYet: 'עדיין אין יעד',
+                setByYourRule: 'נקבע לפי הכלל שלך',
+                chooseAgreement: 'בחר או בדוק את ההסכם שלך',
+                honestPromise: 'זו ההתחייבות שאתה מסמן ביושר.',
+                useButtonsBelow: 'השתמש בכפתורים למטה כשאתה מוכן.',
+                askRebbiToAdd: 'בקש מהרב להוסיף את ההסכם של היום.',
+                accessAfterSuccess: 'אחרי סימון מוצלח, הגישה נפתחת כאשר מוגדר טאבלט.',
+                myTripSentence: 'המסע שלי הוא',
+                writeMessageFirst: 'כתוב הודעה קודם.',
+                requestFailed: 'הבקשה נכשלה.',
+                couldNotSendMessage: 'לא ניתן לשלוח את ההודעה.',
+                couldNotOpenStudentLink: 'לא ניתן לפתוח את קישור התלמיד.',
+                couldNotSaveCheckoff: 'לא ניתן לשמור את הסימון.',
+                couldNotSaveDay: 'לא ניתן לשמור את היום.',
+                savedNoDevice: 'נשמר. עדיין לא מוגדר טאבלט, ולכן הגישה לא יכולה להיפתח אוטומטית.',
+                tabletOpened: 'נשמר. גישת הטאבלט נפתחה',
             },
         };
 
@@ -815,29 +1821,91 @@
             accessCode: document.getElementById('accessCode'),
             openGoalsButton: document.getElementById('openGoalsButton'),
             loginStatus: document.getElementById('loginStatus'),
+            portalMenuToggle: document.getElementById('portalMenuToggle'),
+            portalMenuBackdrop: document.getElementById('portalMenuBackdrop'),
+            portalLayout: document.getElementById('portalLayout'),
+            portalSidebar: document.getElementById('portalSidebar'),
+            portalSidebarName: document.getElementById('portalSidebarName'),
+            portalSidebarMeeting: document.getElementById('portalSidebarMeeting'),
+            portalSideStats: document.getElementById('portalSideStats'),
+            portalUpcomingList: document.getElementById('portalUpcomingList'),
+            portalNav: document.getElementById('portalNav'),
+            portalContent: document.getElementById('portalContent'),
+            studentHelperDock: document.getElementById('studentHelperDock'),
             studentPanel: document.getElementById('studentPanel'),
             studentName: document.getElementById('studentName'),
             torahProgressFill: document.getElementById('torahProgressFill'),
+            torahClassMetric: document.getElementById('torahClassMetric'),
             torahTripMetric: document.getElementById('torahTripMetric'),
             torahTodayMetric: document.getElementById('torahTodayMetric'),
             torahMorningMetric: document.getElementById('torahMorningMetric'),
+            torahClassText: document.getElementById('torahClassText'),
             torahProgressText: document.getElementById('torahProgressText'),
             torahTodayText: document.getElementById('torahTodayText'),
             torahMorningText: document.getElementById('torahMorningText'),
+            torahHistoryPanel: document.getElementById('torahHistoryPanel'),
+            torahHistoryTitle: document.getElementById('torahHistoryTitle'),
+            torahHistoryChart: document.getElementById('torahHistoryChart'),
+            torahHistoryStart: document.getElementById('torahHistoryStart'),
+            torahHistoryEnd: document.getElementById('torahHistoryEnd'),
+            nextMeetingStrip: document.getElementById('nextMeetingStrip'),
             deviceAccessStrip: document.getElementById('deviceAccessStrip'),
             deviceAccessState: document.getElementById('deviceAccessState'),
             deviceAccessText: document.getElementById('deviceAccessText'),
             portalCommandGrid: document.getElementById('portalCommandGrid'),
             studentReadonlyNote: document.getElementById('studentReadonlyNote'),
+            classMetricLabel: document.getElementById('classMetricLabel'),
             tripMetricLabel: document.getElementById('tripMetricLabel'),
             todayMetricLabel: document.getElementById('todayMetricLabel'),
             morningMetricLabel: document.getElementById('morningMetricLabel'),
             goalsSection: document.getElementById('goalsSection'),
             goalCount: document.getElementById('goalCount'),
+            goalStatusFilter: document.getElementById('goalStatusFilter'),
             goalFilters: document.getElementById('goalFilters'),
             goalGrid: document.getElementById('goalGrid'),
             saveStatus: document.getElementById('saveStatus'),
+            questionsSection: document.getElementById('questionsSection'),
+            questionsTitle: document.getElementById('questionsTitle'),
+            questionsHelp: document.getElementById('questionsHelp'),
+            questionCount: document.getElementById('questionCount'),
+            questionList: document.getElementById('questionList'),
+            assignmentsSection: document.getElementById('assignmentsSection'),
+            assignmentsTitle: document.getElementById('assignmentsTitle'),
+            assignmentsHelp: document.getElementById('assignmentsHelp'),
+            assignmentCount: document.getElementById('assignmentCount'),
+            assignmentList: document.getElementById('assignmentList'),
+            calendarSection: document.getElementById('calendarSection'),
+            calendarTitle: document.getElementById('calendarTitle'),
+            calendarHelp: document.getElementById('calendarHelp'),
+            calendarCount: document.getElementById('calendarCount'),
+            calendarList: document.getElementById('calendarList'),
+            documentsSection: document.getElementById('documentsSection'),
+            documentsTitle: document.getElementById('documentsTitle'),
+            documentsHelp: document.getElementById('documentsHelp'),
+            documentCount: document.getElementById('documentCount'),
+            documentList: document.getElementById('documentList'),
+            parentMessageSection: document.getElementById('parentMessageSection'),
+            parentMessageEyebrow: document.getElementById('parentMessageEyebrow'),
+            parentMessageTitle: document.getElementById('parentMessageTitle'),
+            parentMessageHelp: document.getElementById('parentMessageHelp'),
+            parentMessage: document.getElementById('parentMessage'),
+            sendParentMessageButton: document.getElementById('sendParentMessageButton'),
+            parentMessageStatus: document.getElementById('parentMessageStatus'),
+            messageSection: document.getElementById('messageSection'),
+            messageEyebrow: document.getElementById('messageEyebrow'),
+            messageTitle: document.getElementById('messageTitle'),
+            messageHelp: document.getElementById('messageHelp'),
+            rabbiMessage: document.getElementById('rabbiMessage'),
+            sendRabbiMessageButton: document.getElementById('sendRabbiMessageButton'),
+            messageStatus: document.getElementById('messageStatus'),
         };
+
+        Object.assign(strings.he, {
+            googleCalendarSource: 'יומן Google',
+            classroomSource: 'כיתה מקוונת',
+            googleCalendarStatus: 'יומן Google לא מחובר',
+            googleClassroomStatus: 'כיתה מקוונת לא מחוברת',
+        });
 
         function t(key) {
             return labels[language]?.[key] || labels.en[key] || key;
@@ -849,6 +1917,13 @@
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;');
+        }
+
+        function studentDisplayName(student = {}, lang = language) {
+            const localized = student.localized_names || {};
+            const english = student.name_en || student.english_name || localized.en || student.name || '';
+            const hebrew = student.name_he || student.hebrew_name || localized.he || student.name || '';
+            return (lang === 'he' ? (hebrew || english) : (english || student.name || hebrew)) || t('student');
         }
 
         function asNumber(value, fallback = 0) {
@@ -869,8 +1944,20 @@
             localStorage.setItem(LANGUAGE_KEY, language);
             document.documentElement.lang = language;
             document.documentElement.dir = language === 'he' ? 'rtl' : 'ltr';
+            document.documentElement.dataset.language = language;
+            document.body.dataset.language = language;
+            document.body.classList.toggle('lang-he', language === 'he');
+            document.body.classList.toggle('lang-en', language === 'en');
             els.langEnButton.classList.toggle('active', language === 'en');
             els.langHeButton.classList.toggle('active', language === 'he');
+            const menuLabel = document.querySelector('#portalMenuToggle');
+            if (menuLabel) menuLabel.childNodes[menuLabel.childNodes.length - 1].textContent = ` ${t('menu')}`;
+            const sidebarEyebrow = document.querySelector('.portal-sidebar-header .eyebrow');
+            if (sidebarEyebrow) sidebarEyebrow.textContent = t('boardTitle');
+            const thisWeekLabel = document.querySelector('.sidebar-block .eyebrow');
+            if (thisWeekLabel) thisWeekLabel.textContent = t('thisWeek');
+            const brandSubtitle = document.querySelector('.brand-lockup div span');
+            if (brandSubtitle) brandSubtitle.textContent = t('brandSubtitle');
             els.clearCodeButton.textContent = t('clearCode');
             document.querySelector('#loginPanel .eyebrow').textContent = t('privateAccess');
             document.querySelector('#loginPanel h2').textContent = t('enterCode');
@@ -880,13 +1967,35 @@
             els.openGoalsButton.textContent = t('openGoals');
             document.querySelector('#studentPanel .eyebrow').textContent = t('torahTitle');
             document.querySelector('#studentPanel .small').textContent = t('torahText');
-            els.tripMetricLabel.textContent = t('trip');
+            els.classMetricLabel.textContent = t('classTrip');
+            els.tripMetricLabel.textContent = t('myTrip');
             els.todayMetricLabel.textContent = t('today');
             els.morningMetricLabel.textContent = t('morning');
+            els.torahHistoryTitle.textContent = t('historyTitle');
             document.querySelector('#goalsSection .section-title h2').textContent = t('boardTitle');
+            const goalStatusLabel = document.querySelector('label[for="goalStatusFilter"]');
+            if (goalStatusLabel && goalStatusLabel.childNodes[0]) goalStatusLabel.childNodes[0].textContent = `${t('goalView')} `;
             if (els.studentReadonlyNote) {
                 els.studentReadonlyNote.textContent = t('assignedOnly');
             }
+            if (els.questionsTitle) els.questionsTitle.textContent = t('questionsTitle');
+            if (els.questionsHelp) els.questionsHelp.textContent = t('questionsHelp');
+            if (els.assignmentsTitle) els.assignmentsTitle.textContent = t('assignmentsTitle');
+            if (els.assignmentsHelp) els.assignmentsHelp.textContent = t('assignmentsHelp');
+            if (els.calendarTitle) els.calendarTitle.textContent = t('calendarTitle');
+            if (els.calendarHelp) els.calendarHelp.textContent = t('calendarHelp');
+            if (els.documentsTitle) els.documentsTitle.textContent = t('documentsLinks');
+            if (els.documentsHelp) els.documentsHelp.textContent = t('documentsHelp');
+            els.parentMessageEyebrow.textContent = t('parentMessageEyebrow');
+            els.parentMessageTitle.textContent = t('helpAccount');
+            els.parentMessageHelp.textContent = t('parentMessageHelp');
+            els.parentMessage.placeholder = t('parentMessagePlaceholder');
+            els.sendParentMessageButton.textContent = t('sendParentMessage');
+            els.messageEyebrow.textContent = t('talkEyebrow');
+            els.messageTitle.textContent = t('askHelper');
+            els.messageHelp.textContent = t('talkHelp');
+            els.rabbiMessage.placeholder = t('messagePlaceholder');
+            els.sendRabbiMessageButton.textContent = t('sendMessage');
         }
 
         async function apiRequest(path, options = {}) {
@@ -899,7 +2008,7 @@
             });
             const data = await response.json().catch(() => ({}));
             if (!response.ok) {
-                throw new Error(data.error || 'Request failed');
+                throw new Error(language === 'he' ? t('requestFailed') : (data.error || t('requestFailed')));
             }
             return data;
         }
@@ -919,10 +2028,21 @@
             els.pageTitle.textContent = t('title');
             els.pageIntro.textContent = t('intro');
             els.loginPanel.classList.remove('hidden');
+            els.portalLayout.classList.add('hidden');
+            els.portalMenuToggle.classList.add('hidden');
+            closePortalMenu();
             els.studentPanel.classList.add('hidden');
             els.goalsSection.classList.add('hidden');
+            els.questionsSection.classList.add('hidden');
+            els.assignmentsSection.classList.add('hidden');
+            els.calendarSection.classList.add('hidden');
+            els.documentsSection.classList.add('hidden');
+            els.parentMessageSection.classList.add('hidden');
+            els.messageSection.classList.add('hidden');
             els.deviceAccessStrip.classList.add('hidden');
             els.clearCodeButton.classList.add('hidden');
+            els.studentHelperDock.classList.add('hidden');
+            document.body.classList.remove('student-has-helper');
             els.accessCode.value = accessCode || '';
             setLoginState(message, isError);
         }
@@ -943,6 +2063,19 @@
             return t('today');
         }
 
+        function assignmentStatusLabel(status = 'assigned') {
+            const normalized = String(status || 'assigned').trim().toLowerCase().replace(/[\s-]+/g, '_');
+            const labelsByStatus = {
+                assigned: 'assigned',
+                ready: 'ready',
+                generated: 'ready',
+                synced: 'synced',
+                not_synced: 'notSynced',
+                not_generated: 'notGenerated',
+            };
+            return t(labelsByStatus[normalized] || 'assigned');
+        }
+
         function urgencyLabel(urgency) {
             return ({
                 urgent: language === 'he' ? 'דחוף' : 'Urgent',
@@ -954,14 +2087,674 @@
 
         function formatDue(value) {
             if (!value) return '';
-            const date = new Date(value);
-            if (!Number.isFinite(date.getTime())) return '';
-            return date.toLocaleString(language === 'he' ? 'he-IL' : 'en-GB', {
+            const date = parsePortalDate(value);
+            if (!date || !Number.isFinite(date.getTime())) return '';
+            const hasTime = /(?:T|\s)\d{1,2}:\d{2}/.test(String(value));
+            const options = hasTime ? {
                 month: 'short',
                 day: 'numeric',
                 hour: '2-digit',
                 minute: '2-digit',
+            } : {
+                month: 'short',
+                day: 'numeric',
+            };
+            return date.toLocaleString(language === 'he' ? 'he-IL' : 'en-GB', options);
+        }
+
+        function formatDateShort(value) {
+            if (!value) return '';
+            const date = parsePortalDate(value);
+            if (!date || !Number.isFinite(date.getTime())) return '';
+            return date.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-GB', {
+                month: 'short',
+                day: 'numeric',
             });
+        }
+
+        function closePortalMenu() {
+            document.body.classList.remove('portal-menu-open');
+            els.portalMenuBackdrop.classList.add('hidden');
+            els.portalMenuToggle.setAttribute('aria-expanded', 'false');
+        }
+
+        function openPortalMenu() {
+            document.body.classList.add('portal-menu-open');
+            els.portalMenuBackdrop.classList.remove('hidden');
+            els.portalMenuToggle.setAttribute('aria-expanded', 'true');
+        }
+
+        function togglePortalMenu() {
+            if (document.body.classList.contains('portal-menu-open')) closePortalMenu();
+            else openPortalMenu();
+        }
+
+        function portalSections(data = portalData) {
+            const goals = Array.isArray(data?.goals) ? data.goals : [];
+            const assignments = Array.isArray(data?.assignments) ? data.assignments : [];
+            const questions = Array.isArray(data?.questions) ? data.questions : [];
+            const calendarCount = studentCalendarItems(data).length;
+            const documentCount = assignments.filter(item => String(item.youtube_url || item.material_url || item.classroom_alternate_link || item.calendar_html_link || item.worksheet_body || '').trim()).length;
+            return [
+                { id: 'overview', label: t('home'), count: '' },
+                { id: 'calendar', label: t('calendarTitle'), count: calendarCount },
+                { id: 'goals', label: t('goals'), count: goals.length },
+                { id: 'assignments', label: t('assignments'), count: assignments.length },
+                { id: 'questions', label: t('questions'), count: questions.length },
+                { id: 'documents', label: t('documentsLinks'), count: documentCount },
+                { id: 'bot', label: t('bot'), count: '' },
+                { id: 'help_account', label: t('helpAccount'), count: '' },
+            ];
+        }
+
+        function portalSectionElements() {
+            return {
+                overview: els.studentPanel,
+                calendar: els.calendarSection,
+                goals: els.goalsSection,
+                assignments: els.assignmentsSection,
+                questions: els.questionsSection,
+                documents: els.documentsSection,
+                bot: els.messageSection,
+                help_account: els.parentMessageSection,
+            };
+        }
+
+        function setPortalSection(section, { scroll = true } = {}) {
+            const valid = portalSections().some(item => item.id === section);
+            currentSection = valid ? section : 'overview';
+            applyPortalSectionVisibility();
+            closePortalMenu();
+            if (scroll && els.portalLayout && !els.portalLayout.classList.contains('hidden')) {
+                els.portalLayout.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        }
+
+        function applyPortalSectionVisibility() {
+            const elements = portalSectionElements();
+            Object.entries(elements).forEach(([section, element]) => {
+                if (element) element.classList.toggle('portal-section-hidden', section !== currentSection);
+            });
+            els.portalNav.querySelectorAll('[data-portal-section]').forEach(button => {
+                button.classList.toggle('active', button.dataset.portalSection === currentSection);
+            });
+        }
+
+        function renderPortalNav(data) {
+            els.portalNav.innerHTML = portalSections(data).map(section => `
+                <button class="portal-nav-button ${section.id === currentSection ? 'active' : ''}" type="button" data-portal-section="${escapeHtml(section.id)}">
+                    <span>${escapeHtml(section.label)}</span>
+                    ${section.count !== '' ? `<span class="portal-nav-count">${Number(section.count || 0)}</span>` : ''}
+                </button>
+            `).join('');
+        }
+
+        function renderStudentHelperDock() {
+            els.studentHelperDock.innerHTML = `
+                <button class="student-helper-button" type="button" onclick="setPortalSection('bot')">
+                    <strong>${escapeHtml(t('askHelper'))}</strong>
+                    <span>${escapeHtml(t('helperScope'))}</span>
+                </button>
+            `;
+            els.studentHelperDock.classList.remove('hidden');
+            document.body.classList.add('student-has-helper');
+        }
+
+        function parsePortalDate(value) {
+            if (!value) return null;
+            if (value instanceof Date) return Number.isFinite(value.getTime()) ? value : null;
+            const text = String(value).trim();
+            if (!text) return null;
+            if (/(?:Z|[+-]\d{2}:?\d{2})$/i.test(text)) {
+                const nativeDate = new Date(text);
+                if (Number.isFinite(nativeDate.getTime())) return nativeDate;
+            }
+            const localMatch = text.match(/^(\d{4})-(\d{2})-(\d{2})(?:[T\s](\d{1,2}):(\d{2})(?::(\d{2}))?)?/);
+            if (localMatch) {
+                const [, year, month, day, hour = '0', minute = '0', second = '0'] = localMatch;
+                const localDate = new Date(Number(year), Number(month) - 1, Number(day), Number(hour), Number(minute), Number(second));
+                if (Number.isFinite(localDate.getTime())) return localDate;
+            }
+            const normalized = text.replace(' ', 'T');
+            const date = new Date(normalized);
+            return Number.isFinite(date.getTime()) ? date : null;
+        }
+
+        function isWithinNextDays(value, days = 7) {
+            const date = parsePortalDate(value);
+            if (!date) return false;
+            const start = new Date();
+            start.setHours(0, 0, 0, 0);
+            const end = new Date(start);
+            end.setDate(end.getDate() + days);
+            return date >= start && date <= end;
+        }
+
+        function portalUpcomingItems(data = {}, goals = []) {
+            const items = [];
+            const meeting = data.weekly_private_meeting || {};
+            const meetingDate = data.next_meeting_date || meeting.next_date;
+            if (meetingDate && isWithinNextDays(meetingDate, 7)) {
+                const time = meeting.time_label || meeting.start_time || '';
+                items.push({
+                    title: t('privateMeeting'),
+                    detail: [formatDateShort(meetingDate), time].filter(Boolean).join(', '),
+                });
+            }
+            (Array.isArray(data.calendar_events) ? data.calendar_events : [])
+                .filter(event => isWithinNextDays(event.start_at || event.date, 7))
+                .slice(0, 3)
+                .forEach(event => {
+                    items.push({
+                        title: event.title || t('calendarEvent'),
+                        detail: formatDue(event.start_at || event.date) || studentCalendarSourceLabel(event.source || 'internal'),
+                    });
+                });
+            goals
+                .filter(goal => ['today', 'upcoming', 'waiting'].includes(goal.bucket || goal.status))
+                .slice(0, 4)
+                .forEach(goal => {
+                    items.push({
+                        title: goal.title || t('goal'),
+                        detail: goal.due_at ? `${t('due')}: ${formatDue(goal.due_at)}` : statusLabel(goal),
+                    });
+                });
+            (Array.isArray(data.assignments) ? data.assignments : [])
+                .filter(item => isWithinNextDays(item.scheduled_start_at || item.due_at, 7))
+                .slice(0, 3)
+                .forEach(item => {
+                    items.push({
+                        title: item.title || t('assignmentsTitle'),
+                        detail: formatDue(item.scheduled_start_at || item.due_at) || item.status || '',
+                    });
+                });
+            return items.slice(0, 6);
+        }
+
+        function renderStudentSidebar(data = {}, goals = []) {
+            const torah = data.torah || {};
+            const classPercent = roundedPercent(torah.class_trip_percentage);
+            const studentPercent = roundedPercent(torah.public_trip_percentage);
+            const todayPercent = roundedPercent(torah.daily_completion_percentage);
+            const meeting = data.weekly_private_meeting || {};
+            const meetingDate = data.next_meeting_date || meeting.next_date;
+            const meetingText = meetingDate
+                ? [formatDateShort(meetingDate), meeting.time_label || meeting.start_time].filter(Boolean).join(', ')
+                : t('noMeeting');
+            els.portalSidebarName.textContent = studentDisplayName(data.student);
+            els.portalSidebarMeeting.textContent = meetingText;
+            els.portalSideStats.innerHTML = `
+                <div class="side-stat"><strong>${classPercent}%</strong><span>${escapeHtml(t('classTrip'))}</span></div>
+                <div class="side-stat"><strong>${studentPercent}%</strong><span>${escapeHtml(t('myTrip'))}</span></div>
+                <div class="side-stat"><strong>${todayPercent}%</strong><span>${escapeHtml(t('today'))}</span></div>
+                <div class="side-stat"><strong>${goals.filter(goal => ['today', 'upcoming', 'waiting'].includes(goal.bucket)).length}</strong><span>${escapeHtml(t('thisWeek'))}</span></div>
+            `;
+            const upcoming = portalUpcomingItems(data, goals);
+            els.portalUpcomingList.innerHTML = upcoming.length
+                ? upcoming.map(item => `
+                    <div class="upcoming-item">
+                        <strong>${escapeHtml(item.title)}</strong>
+                        <span>${escapeHtml(item.detail || '')}</span>
+                    </div>
+                `).join('')
+                : `<div class="upcoming-item"><span>${escapeHtml(t('noUpcoming'))}</span></div>`;
+        }
+
+        function renderTorahHistory(history = []) {
+            const rows = Array.isArray(history) ? history.filter(item => item?.date) : [];
+            els.torahHistoryPanel.classList.toggle('hidden', rows.length === 0);
+            if (!rows.length) return;
+            const width = 640;
+            const height = 132;
+            const pad = 14;
+            const maxValue = Math.max(100, ...rows.map(item => roundedPercent(item.public_trip_percentage)));
+            const points = rows.map((item, index) => {
+                const x = rows.length === 1 ? width / 2 : pad + (index * (width - pad * 2)) / (rows.length - 1);
+                const y = height - pad - (roundedPercent(item.public_trip_percentage) / maxValue) * (height - pad * 2);
+                return { x, y, item };
+            });
+            const path = points.map((point, index) => `${index ? 'L' : 'M'}${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join(' ');
+            els.torahHistoryChart.innerHTML = `
+                <line x1="${pad}" y1="${height - pad}" x2="${width - pad}" y2="${height - pad}" stroke="rgba(24,32,24,0.16)" stroke-width="2"></line>
+                <path d="${path}" fill="none" stroke="#1e5f3d" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"></path>
+                ${points.map(point => `<circle cx="${point.x.toFixed(1)}" cy="${point.y.toFixed(1)}" r="${point.item.daily_completed ? 5 : 4}" fill="${point.item.daily_completed ? '#e3b848' : '#fffaf0'}" stroke="#1e5f3d" stroke-width="3"><title>${escapeHtml(`${formatDateShort(point.item.date)} - ${roundedPercent(point.item.public_trip_percentage)}%`)}</title></circle>`).join('')}
+            `;
+            els.torahHistoryStart.textContent = formatDateShort(rows[0].date);
+            els.torahHistoryEnd.textContent = formatDateShort(rows[rows.length - 1].date);
+        }
+
+        function renderNextMeeting(value, meeting = {}, rabbiContact = {}) {
+            const date = formatDateShort(value);
+            const time = meeting?.time_label || (meeting?.start_time ? `${meeting.start_time}${meeting.end_time ? `-${meeting.end_time}` : ''}` : '');
+            const weekday = meeting?.weekday_label || '';
+            const meetingText = date
+                ? `${date}${time ? `, ${time}` : ''}${weekday ? ` (${weekday})` : ''}`
+                : (meeting?.label || t('noMeeting'));
+            const whatsapp = rabbiContact?.whatsapp_url
+                ? `<a class="button-link blue" href="${escapeHtml(rabbiContact.whatsapp_url)}" target="_blank" rel="noopener noreferrer">WhatsApp Rabbi Shloimie</a>`
+                : '';
+            els.nextMeetingStrip.innerHTML = `
+                <strong>${escapeHtml(t('nextMeeting'))}:</strong>
+                <span>${escapeHtml(meetingText)}</span>
+                <span>${escapeHtml(t('useMessageBox'))}</span>
+                ${whatsapp}
+            `;
+        }
+
+        function safeSefariaUrl(source = {}) {
+            const url = String(source.url || '').trim();
+            if (/^https:\/\/www\.sefaria\.org\//i.test(url)) return url;
+            const ref = String(source.ref || '').trim();
+            return ref ? `https://www.sefaria.org/${encodeURIComponent(ref).replace(/%20/g, '_')}` : '';
+        }
+
+        function sefariaSourceLabel(source = {}) {
+            return String(source.heRef || source.he_ref || source.hebrew_ref || source.ref || '').trim() || 'Sefaria';
+        }
+
+        function renderQuestionSources(sources = []) {
+            const list = Array.isArray(sources) ? sources.filter(source => source?.ref || source?.url) : [];
+            if (!list.length) return '';
+            return `
+                <div>
+                    <div class="goal-meta"><strong>${escapeHtml(t('sefariaSources'))}</strong></div>
+                    <ul class="source-list">
+                        ${list.slice(0, 6).map(source => {
+                            const url = safeSefariaUrl(source);
+                            const label = sefariaSourceLabel(source);
+                            return `
+                                <li>
+                                    ${url ? `<a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(label)}</a>` : escapeHtml(label)}
+                                    ${source.snippet ? `<div>${escapeHtml(source.snippet)}</div>` : ''}
+                                </li>
+                            `;
+                        }).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        function renderQuestionAssignments(assignments = []) {
+            const list = Array.isArray(assignments) ? assignments.filter(Boolean) : [];
+            if (!list.length) return '';
+            return `
+                <div>
+                    <div class="goal-meta"><strong>${escapeHtml(t('optionalFollowUp'))}</strong></div>
+                    <ul class="assignment-list">
+                        ${list.slice(0, 4).map(item => `<li>${escapeHtml(item)}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        function renderQuestionResponses(responses = []) {
+            const list = Array.isArray(responses) ? responses.filter(item => item?.body) : [];
+            if (!list.length) return '';
+            return `
+                <div>
+                    <div class="goal-meta"><strong>${escapeHtml(t('parentResponses'))}</strong></div>
+                    <ul class="response-list">
+                        ${list.slice(0, 4).map(item => `<li>${escapeHtml(item.body)}${item.created_at ? ` <span>(${escapeHtml(formatDateShort(item.created_at))})</span>` : ''}</li>`).join('')}
+                    </ul>
+                </div>
+            `;
+        }
+
+        function renderQuestions(questions = []) {
+            const list = Array.isArray(questions) ? questions : [];
+            els.questionCount.textContent = `${list.length} ${list.length === 1 ? t('questionSingular') : t('questions')}`;
+            els.questionList.innerHTML = list.length
+                ? list.map(question => `
+                    <details class="question-card">
+                        <summary>
+                            <h3>${escapeHtml(question.title || question.question_text || 'Question')}</h3>
+                            <div class="goal-meta">
+                                ${question.topic ? `${escapeHtml(question.topic)} &middot; ` : ''}${escapeHtml(formatDateShort(question.occurred_at || question.created_at))}
+                            </div>
+                        </summary>
+                        <div class="question-card-body">
+                            ${question.question_text ? `<p class="goal-meta">${escapeHtml(question.question_text)}</p>` : ''}
+                            ${question.answer ? `<p class="goal-meta"><strong>Answer:</strong> ${escapeHtml(question.answer)}</p>` : ''}
+                            ${renderQuestionSources(question.sources)}
+                            ${renderQuestionAssignments(question.assignments)}
+                            ${renderQuestionResponses(question.parent_responses)}
+                        </div>
+                    </details>
+                `).join('')
+                : `<div class="empty">${escapeHtml(t('noQuestions'))}</div>`;
+        }
+
+        function addPortalDays(date, days) {
+            const next = new Date(date);
+            next.setDate(next.getDate() + Number(days || 0));
+            return next;
+        }
+
+        function isoPortalDate(date) {
+            return date instanceof Date && Number.isFinite(date.getTime()) ? date.toISOString().slice(0, 10) : '';
+        }
+
+        function startOfStudentCalendarWeek(offset = 0) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const day = today.getDay();
+            const mondayOffset = day === 0 ? -6 : 1 - day;
+            return addPortalDays(today, mondayOffset + Number(offset || 0) * 7);
+        }
+
+        function startOfStudentCalendarMonth(offset = 0) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            return new Date(today.getFullYear(), today.getMonth() + Number(offset || 0), 1);
+        }
+
+        function studentCalendarSourceKey(value = '') {
+            const normalized = String(value || '').toLowerCase();
+            if (normalized.includes('google')) return 'google_calendar';
+            if (normalized.includes('classroom')) return 'classroom';
+            if (normalized.includes('manual')) return 'manual';
+            return 'internal';
+        }
+
+        function studentCalendarSourceLabel(value = '') {
+            const key = studentCalendarSourceKey(value);
+            return ({
+                internal: t('internalSource'),
+                classroom: t('classroomSource'),
+                google_calendar: t('googleCalendarSource'),
+                manual: t('manualSource'),
+            })[key] || t('internalSource');
+        }
+
+        function studentCalendarEventTypeLabel(type = '') {
+            return ({
+                meeting: t('nextMeeting'),
+                assignment: t('assignmentsTitle'),
+                goal: t('goals'),
+                question: t('questionsTitle'),
+                calendar_event: t('calendarEvent'),
+                class_session: t('calendarEvent'),
+            })[type] || t('calendarTitle');
+        }
+
+        function studentCalendarVisibilityLabel(value = '') {
+            const normalized = String(value || '').toLowerCase();
+            if (normalized === 'public') return t('publicVisible');
+            return t('studentVisible');
+        }
+
+        function makeStudentCalendarEvent(item = {}) {
+            const rawDate = item.date || item.start_at || item.startAt || item.due_at || item.scheduled_start_at || item.created_at;
+            const parsed = parsePortalDate(rawDate);
+            const date = parsed ? isoPortalDate(parsed) : '';
+            const type = item.type || 'assignment';
+            const source = item.source || 'internal';
+            const id = [
+                type,
+                date || 'undated',
+                item.itemId || item.title || item.detail || 'event',
+            ].join('-').replace(/[^a-z0-9_-]+/gi, '_');
+            return {
+                id,
+                date,
+                rawDate,
+                endAt: item.end_at || item.endAt || '',
+                type,
+                typeLabel: studentCalendarEventTypeLabel(type),
+                title: item.title || studentCalendarEventTypeLabel(type),
+                description: item.description || item.detail || item.location || '',
+                related: item.related || '',
+                source: studentCalendarSourceLabel(source),
+                sourceKey: studentCalendarSourceKey(source),
+                visibility: studentCalendarVisibilityLabel(item.visibility || 'student'),
+                link: item.link || item.meeting_url || '',
+            };
+        }
+
+        function studentCalendarItems(data = portalData) {
+            const items = [];
+            const meeting = data?.weekly_private_meeting || {};
+            const meetingDate = data?.next_meeting_date || meeting.next_date;
+            if (meetingDate) {
+                items.push(makeStudentCalendarEvent({
+                    type: 'meeting',
+                    itemId: meeting.id || meetingDate,
+                    title: meeting.title || t('nextMeeting'),
+                    date: meetingDate,
+                    detail: meeting.label || t('privateMeeting'),
+                    source: 'internal',
+                }));
+            }
+            (Array.isArray(data?.calendar_events) ? data.calendar_events : []).forEach(event => {
+                const date = event.start_at || event.date;
+                if (!date) return;
+                items.push(makeStudentCalendarEvent({
+                    type: event.related_type || event.type || 'calendar_event',
+                    itemId: event.id || event.title,
+                    title: event.title || t('calendarEvent'),
+                    date,
+                    end_at: event.end_at,
+                    detail: event.description || event.location || event.status || '',
+                    related: event.related_type || '',
+                    source: event.source || 'internal',
+                    visibility: event.visibility || 'student',
+                    link: event.meeting_url || '',
+                    created_at: event.created_at || '',
+                }));
+            });
+            (Array.isArray(data?.goals) ? data.goals : []).forEach(goal => {
+                if (!goal.due_at) return;
+                items.push(makeStudentCalendarEvent({
+                    type: 'goal',
+                    itemId: goal.id || goal.title,
+                    title: goal.title || t('goal'),
+                    date: goal.due_at,
+                    detail: statusLabel(goal),
+                    related: t('goals'),
+                    source: 'internal',
+                }));
+            });
+            (Array.isArray(data?.assignments) ? data.assignments : []).forEach(item => {
+                const date = item.scheduled_start_at || item.due_at;
+                if (!date) return;
+                items.push(makeStudentCalendarEvent({
+                    type: 'assignment',
+                    itemId: item.id || item.title,
+                    title: item.title || t('assignmentsTitle'),
+                    date,
+                    detail: assignmentStatusLabel(item.status),
+                    related: item.worksheet_type || '',
+                    source: item.calendar_html_link ? 'google_calendar' : item.classroom_alternate_link ? 'classroom' : 'internal',
+                    link: item.calendar_html_link || item.classroom_alternate_link || item.material_url || item.youtube_url || '',
+                }));
+            });
+            return items.sort((a, b) => {
+                const aDate = parsePortalDate(a.rawDate || a.date);
+                const bDate = parsePortalDate(b.rawDate || b.date);
+                return (aDate ? aDate.getTime() : 0) - (bDate ? bDate.getTime() : 0);
+            });
+        }
+
+        function studentCalendarPeriod() {
+            const mode = studentCalendarViewMode === 'month' ? 'month' : 'week';
+            const start = mode === 'month' ? startOfStudentCalendarMonth(studentCalendarOffset) : startOfStudentCalendarWeek(studentCalendarOffset);
+            const end = mode === 'month'
+                ? new Date(start.getFullYear(), start.getMonth() + 1, 0)
+                : addPortalDays(start, 6);
+            end.setHours(23, 59, 59, 999);
+            return { start, end };
+        }
+
+        function studentCalendarPeriodLabel() {
+            const { start, end } = studentCalendarPeriod();
+            if (studentCalendarViewMode === 'month') {
+                return start.toLocaleDateString(language === 'he' ? 'he-IL' : 'en-GB', { month: 'long', year: 'numeric' });
+            }
+            return `${formatDateShort(isoPortalDate(start))} - ${formatDateShort(isoPortalDate(end))}`;
+        }
+
+        function studentCalendarItemsForView(data = portalData) {
+            const items = studentCalendarItems(data);
+            if (studentCalendarViewMode === 'list') return items;
+            const { start, end } = studentCalendarPeriod();
+            return items.filter(item => {
+                const date = parsePortalDate(item.rawDate || item.date);
+                return date && date >= start && date <= end;
+            });
+        }
+
+        function renderStudentCalendarConnectorStatus() {
+            return `
+                <div class="calendar-status-grid" aria-label="${escapeHtml(t('calendarConnectorTitle'))}">
+                    <div class="calendar-status-card">
+                        <strong>${escapeHtml(t('internalSource'))}</strong>
+                        <span class="small">${escapeHtml(t('internalCalendarReady'))}</span>
+                    </div>
+                    <div class="calendar-status-card">
+                        <strong>${escapeHtml(t('googleCalendarSource'))}</strong>
+                        <span class="small">${escapeHtml(t('googleCalendarStatus'))}</span>
+                    </div>
+                    <div class="calendar-status-card">
+                        <strong>${escapeHtml(t('classroomSource'))}</strong>
+                        <span class="small">${escapeHtml(t('googleClassroomStatus'))}</span>
+                    </div>
+                </div>
+                <p class="small">${escapeHtml(t('googleSetupChecklist'))}</p>
+            `;
+        }
+
+        function renderStudentCalendarCard(item = {}) {
+            return `
+                <button class="calendar-event-card ${item.id === selectedStudentCalendarEventId ? 'active' : ''}" type="button" data-student-calendar-event="${escapeHtml(item.id)}">
+                    <span class="goal-meta">${escapeHtml(item.typeLabel)} - ${escapeHtml(formatDue(item.rawDate) || formatDateShort(item.date))}</span>
+                    <strong>${escapeHtml(item.title)}</strong>
+                    <span class="goal-meta">${escapeHtml(item.description || item.related || '')}</span>
+                    <span class="calendar-event-meta">
+                        <span class="badge">${escapeHtml(item.source)}</span>
+                        <span class="badge">${escapeHtml(item.visibility)}</span>
+                    </span>
+                </button>
+            `;
+        }
+
+        function renderStudentCalendarDrawer(data = portalData) {
+            if (!selectedStudentCalendarEventId) return '';
+            const item = studentCalendarItems(data).find(event => event.id === selectedStudentCalendarEventId);
+            if (!item) return '';
+            return `
+                <aside class="calendar-drawer" role="dialog" aria-label="${escapeHtml(item.title)}">
+                    <div class="calendar-drawer-head">
+                        <div>
+                            <p class="eyebrow">${escapeHtml(t('calendarTitle'))}</p>
+                            <h3>${escapeHtml(item.title)}</h3>
+                        </div>
+                        <button class="secondary" type="button" data-student-calendar-close>${escapeHtml(t('close'))}</button>
+                    </div>
+                    <dl>
+                        <div><dt>${escapeHtml(t('due'))}</dt><dd>${escapeHtml(formatDue(item.rawDate) || formatDateShort(item.date))}</dd></div>
+                        <div><dt>${escapeHtml(t('eventType'))}</dt><dd>${escapeHtml(item.typeLabel)}</dd></div>
+                        <div><dt>${escapeHtml(t('source'))}</dt><dd>${escapeHtml(item.source)}</dd></div>
+                        <div><dt>${escapeHtml(t('visibility'))}</dt><dd>${escapeHtml(item.visibility)}</dd></div>
+                        ${item.related ? `<div><dt>${escapeHtml(t('relatedItem'))}</dt><dd>${escapeHtml(item.related)}</dd></div>` : ''}
+                        ${item.description ? `<div><dt>${escapeHtml(t('description'))}</dt><dd>${escapeHtml(item.description)}</dd></div>` : ''}
+                        ${item.link ? `<div><dt>${escapeHtml(t('linksLabel'))}</dt><dd><a href="${escapeHtml(item.link)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.link)}</a></dd></div>` : ''}
+                    </dl>
+                </aside>
+            `;
+        }
+
+        function renderStudentCalendar(data = portalData) {
+            const allItems = studentCalendarItems(data);
+            const items = studentCalendarItemsForView(data);
+            els.calendarCount.textContent = `${allItems.length} ${allItems.length === 1 ? t('calendarItem') : t('calendarItems')}`;
+            els.calendarList.innerHTML = `
+                <div class="calendar-controls">
+                    <div class="calendar-control-group">
+                        <button class="secondary" type="button" data-student-calendar-today>${escapeHtml(t('today'))}</button>
+                        <button class="secondary" type="button" data-student-calendar-offset="-1">${escapeHtml(t('previous'))}</button>
+                        <button class="secondary" type="button" data-student-calendar-offset="1">${escapeHtml(t('next'))}</button>
+                    </div>
+                    <div class="calendar-control-group" role="tablist" aria-label="${escapeHtml(t('calendarTitle'))}">
+                        <button class="secondary calendar-view-button ${studentCalendarViewMode === 'month' ? 'active' : ''}" type="button" data-student-calendar-mode="month">${escapeHtml(t('month'))}</button>
+                        <button class="secondary calendar-view-button ${studentCalendarViewMode === 'week' ? 'active' : ''}" type="button" data-student-calendar-mode="week">${escapeHtml(t('week'))}</button>
+                        <button class="secondary calendar-view-button ${studentCalendarViewMode === 'list' ? 'active' : ''}" type="button" data-student-calendar-mode="list">${escapeHtml(t('listAgenda'))}</button>
+                    </div>
+                </div>
+                <p class="small">${escapeHtml(studentCalendarViewMode === 'list' ? t('listAgenda') : studentCalendarPeriodLabel())}</p>
+                ${renderStudentCalendarConnectorStatus()}
+                ${items.length ? items.map(renderStudentCalendarCard).join('') : `<div class="empty">${escapeHtml(t('noCalendarItems'))}</div>`}
+                ${renderStudentCalendarDrawer(data)}
+            `;
+        }
+
+        function renderAssignments(assignments = []) {
+            const list = Array.isArray(assignments) ? assignments : [];
+            els.assignmentCount.textContent = `${list.length} ${list.length === 1 ? t('assignmentSingular') : t('assignments')}`;
+            els.assignmentList.innerHTML = list.length
+                ? list.map(item => {
+                    const material = String(item.youtube_url || item.material_url || '').trim();
+                    const scheduled = formatDue(item.scheduled_start_at || item.due_at);
+                    const worksheetStatus = item.worksheet_body ? t('ready') : t('notGenerated');
+                    const classroomStatus = item.classroom_alternate_link ? t('synced') : assignmentStatusLabel(item.google_classroom_status || 'not_synced');
+                    const calendarStatus = item.calendar_html_link ? t('synced') : assignmentStatusLabel(item.google_calendar_status || 'not_synced');
+                    const status = assignmentStatusLabel(item.status);
+                    return `
+                        <details class="question-card">
+                            <summary>
+                                <h3>${escapeHtml(item.title || t('assignmentTitle'))}</h3>
+                                <div class="goal-meta">
+                                    ${item.schedule_bucket ? `${escapeHtml(item.schedule_bucket)} &middot; ` : ''}
+                                    ${item.worksheet_type ? `${escapeHtml(item.worksheet_type.replace(/_/g, ' '))} &middot; ` : ''}
+                                    ${scheduled ? `${escapeHtml(t('scheduled'))}: ${escapeHtml(scheduled)} &middot; ` : ''}
+                                    ${escapeHtml(status)}
+                                </div>
+                            </summary>
+                            <div class="question-card-body">
+                                <div class="goal-badges">
+                                    <span class="badge">${escapeHtml(t('worksheet'))}: ${escapeHtml(worksheetStatus)}</span>
+                                    <span class="badge">${escapeHtml(t('classroomSource'))}: ${escapeHtml(classroomStatus)}</span>
+                                    <span class="badge">${escapeHtml(t('calendarTitle'))}: ${escapeHtml(calendarStatus)}</span>
+                                </div>
+                                ${item.instructions ? `<p class="goal-meta">${escapeHtml(item.instructions)}</p>` : ''}
+                                ${material ? `<div class="goal-meta"><strong>${escapeHtml(t('material'))}:</strong> <a href="${escapeHtml(material)}" target="_blank" rel="noopener noreferrer">${escapeHtml(material)}</a></div>` : ''}
+                                ${item.classroom_alternate_link ? `<div class="goal-meta"><strong>${escapeHtml(t('classroomSource'))}:</strong> <a href="${escapeHtml(item.classroom_alternate_link)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.classroom_alternate_link)}</a></div>` : ''}
+                                ${item.calendar_html_link ? `<div class="goal-meta"><strong>${escapeHtml(t('calendarTitle'))}:</strong> <a href="${escapeHtml(item.calendar_html_link)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.calendar_html_link)}</a></div>` : ''}
+                                ${item.worksheet_body ? `
+                                    <div class="goal-meta"><strong>${escapeHtml(t('worksheet'))}</strong></div>
+                                    <div class="goal-meta" style="white-space:pre-wrap;">${escapeHtml(item.worksheet_body)}</div>
+                                ` : `<div class="goal-meta">${escapeHtml(t('worksheetNotGenerated'))}</div>`}
+                            </div>
+                        </details>
+                    `;
+                }).join('')
+                : `<div class="empty">${escapeHtml(t('noAssignments'))}</div>`;
+        }
+
+        function assignmentDocumentLinks(item = {}) {
+            return [
+                { label: t('material'), url: String(item.youtube_url || item.material_url || '').trim() },
+                { label: t('classroomSource'), url: String(item.classroom_alternate_link || '').trim() },
+                { label: t('calendarTitle'), url: String(item.calendar_html_link || '').trim() },
+            ].filter(link => link.url);
+        }
+
+        function renderStudentDocuments(assignments = []) {
+            const docs = (Array.isArray(assignments) ? assignments : [])
+                .map(item => ({ item, links: assignmentDocumentLinks(item) }))
+                .filter(row => row.links.length || String(row.item.worksheet_body || '').trim());
+            els.documentCount.textContent = `${docs.length} ${docs.length === 1 ? t('linkSingular') : t('links')}`;
+            els.documentList.innerHTML = docs.length
+                ? docs.map(({ item, links }) => `
+                    <article class="question-card">
+                        <h3>${escapeHtml(item.title || t('assignmentTitle'))}</h3>
+                        <div class="goal-meta">${escapeHtml(assignmentStatusLabel(item.status))}${item.due_at ? ` - ${escapeHtml(formatDue(item.due_at))}` : ''}</div>
+                        <div class="question-card-body">
+                            ${links.map(link => `<div class="goal-meta"><strong>${escapeHtml(link.label)}:</strong> <a href="${escapeHtml(link.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(link.url)}</a></div>`).join('')}
+                            ${item.worksheet_body ? `<div class="goal-meta"><strong>${escapeHtml(t('worksheet'))}</strong></div><div class="goal-meta" style="white-space:pre-wrap;">${escapeHtml(item.worksheet_body)}</div>` : ''}
+                        </div>
+                    </article>
+                `).join('')
+                : `<div class="empty">${escapeHtml(t('noAssignments'))}</div>`;
         }
 
         function goalCounts(goals) {
@@ -973,11 +2766,69 @@
 
         function renderFilters(goals) {
             const counts = goalCounts(goals);
+            els.goalStatusFilter.innerHTML = FILTERS.map(filter => `
+                <option value="${escapeHtml(filter)}" ${currentFilter === filter ? 'selected' : ''}>
+                    ${escapeHtml(filterLabel(filter))}${counts[filter] ? ` (${counts[filter]})` : ''}
+                </option>
+            `).join('');
             els.goalFilters.innerHTML = FILTERS.map(filter => `
                 <button class="filter-tab ${currentFilter === filter ? 'active' : ''}" type="button" data-filter="${filter}">
                     ${escapeHtml(filterLabel(filter))}${counts[filter] ? ` ${counts[filter]}` : ''}
                 </button>
             `).join('');
+        }
+
+        function allGoalDays(goal) {
+            return (Array.isArray(goal.daily_checkins) ? goal.daily_checkins : [])
+                .flatMap(week => Array.isArray(week.days) ? week.days : []);
+        }
+
+        function selectedDayForGoal(goal) {
+            const days = allGoalDays(goal);
+            const selected = selectedDayByGoal[goal.id];
+            return days.find(day => day.date === selected)
+                || days.find(day => day.is_today)
+                || days.find(day => !day.completed)
+                || days[0]
+                || null;
+        }
+
+        function renderGoalDailyRows(goal) {
+            const weeks = Array.isArray(goal.daily_checkins) ? goal.daily_checkins : [];
+            if (!weeks.length) return '';
+            const selected = selectedDayForGoal(goal);
+            return `
+                <div class="daily-checkins">
+                    <div class="daily-week-label">${escapeHtml(t('dailyCheckoffs'))}</div>
+                    ${weeks.map(week => `
+                        <div>
+                            <div class="daily-week-label">${escapeHtml(formatDateShort(week.week_start))}</div>
+                            <div class="daily-row">
+                                ${(week.days || []).map(day => `
+                                    <button type="button"
+                                        class="day-button ${day.completed ? 'completed' : ''} ${day.is_today ? 'today' : ''}"
+                                        data-day-checkoff="${Number(goal.id)}"
+                                        data-day-date="${escapeHtml(day.date)}"
+                                        data-day-completed="${day.completed ? 'true' : 'false'}"
+                                        title="${escapeHtml(day.note || '')}">
+                                        <span>${escapeHtml(day.label)}</span>
+                                        <strong>${Number(day.day_number || 0)}</strong>
+                                    </button>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `).join('')}
+                    ${selected ? `
+                        <div class="day-note-row">
+                            <label>
+                                ${escapeHtml(t('noteFor'))} ${escapeHtml(formatDateShort(selected.date))}
+                                <textarea data-day-note="${Number(goal.id)}" data-day-note-date="${escapeHtml(selected.date)}">${escapeHtml(selected.note || '')}</textarea>
+                            </label>
+                            <button class="ghost" type="button" data-day-note-save="${Number(goal.id)}" data-day-note-save-date="${escapeHtml(selected.date)}">${escapeHtml(t('saveDayNote'))}</button>
+                        </div>
+                    ` : ''}
+                </div>
+            `;
         }
 
         function renderGoal(goal) {
@@ -1002,45 +2853,48 @@
             const chosenConsequence = agreement.chosen_consequence || recovery || '';
 
             return `
-                <article class="goal-card ${escapeHtml(goal.bucket || '')}">
-                    <div class="goal-heading">
+                <details class="goal-card ${escapeHtml(goal.bucket || '')}" ${['today', 'waiting'].includes(goal.bucket) ? 'open' : ''}>
+                    <summary class="goal-heading">
                         <h3>${escapeHtml(goal.title || t('goal'))}</h3>
                         <span class="badge">${escapeHtml(statusLabel(goal))}</span>
-                    </div>
-                    <div class="goal-badges">
-                        <span class="badge">${escapeHtml(goal.source_label || goal.source || 'Admin')}</span>
-                        <span class="badge">${escapeHtml(urgencyLabel(goal.urgency))}</span>
-                        ${goal.category ? `<span class="badge">${escapeHtml(goal.category)}</span>` : ''}
-                        ${waiting ? `<span class="badge">${escapeHtml(t('required'))}</span>` : ''}
-                    </div>
-                    ${due ? `<div class="goal-meta">${escapeHtml(t('due'))}: ${escapeHtml(due)}</div>` : ''}
-                    ${agreement.bedtime_time || agreement.wake_time ? `<div class="goal-meta"><strong>Agreement:</strong> in bed by ${escapeHtml(agreement.bedtime_time || '--')}; out of bed by ${escapeHtml(agreement.wake_time || '--')}.</div>` : ''}
-                    ${agreement.student_commitment ? `<div class="goal-meta">${escapeHtml(agreement.student_commitment)}</div>` : ''}
-                    <div class="progress-track">
-                        <div class="progress-fill" style="--progress:${progress}%"></div>
-                    </div>
-                    <div class="goal-meta"><strong>${progress}%</strong> ${escapeHtml(t('progress'))}${targetText ? ` - ${targetText}` : ''}</div>
-                    ${successAccess ? `<div class="goal-meta"><strong>After honest checkoff:</strong> tablet access opens${successMinutes ? ` for ${Number(successMinutes)} minutes` : ''}.</div>` : ''}
-                    ${chosenConsequence ? `<div class="goal-meta"><strong>Chosen rule:</strong> ${escapeHtml(chosenConsequence)}</div>` : ''}
-                    ${goal.student_summary ? `<div class="goal-meta">${escapeHtml(goal.student_summary)}</div>` : ''}
-                    <details class="goal-details">
-                        <summary>${escapeHtml(t('details'))}</summary>
-                        ${Array.isArray(goal.checklist) && goal.checklist.length ? `<ul class="goal-meta">${goal.checklist.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>` : ''}
-                        ${classroom ? `<div class="goal-meta">${escapeHtml(t('classroom'))}: <span style="word-break:break-all;">${escapeHtml(classroom)}</span></div>` : ''}
-                        ${recovery ? `<div class="goal-meta">${escapeHtml(t('recovery'))}: ${escapeHtml(recovery)}</div>` : ''}
-                        ${goal.reflection_note ? `<div class="goal-meta">${escapeHtml(t('reflection'))}: ${escapeHtml(goal.reflection_note)}</div>` : ''}
-                        <div class="reflection-box">
-                            <label for="reflection-${Number(goal.id)}">${escapeHtml(t('checkIn'))}</label>
-                            <textarea id="reflection-${Number(goal.id)}" data-reflection-input="${Number(goal.id)}">${escapeHtml(goal.reflection_note || '')}</textarea>
-                            <button class="ghost" type="button" data-reflection-id="${Number(goal.id)}">${escapeHtml(t('saveNote'))}</button>
+                    </summary>
+                    <div class="goal-card-body">
+                        <div class="goal-badges">
+                            <span class="badge">${escapeHtml(goal.source_label || goal.source || t('adminSource'))}</span>
+                            <span class="badge">${escapeHtml(urgencyLabel(goal.urgency))}</span>
+                            ${goal.category ? `<span class="badge">${escapeHtml(goal.category)}</span>` : ''}
+                            ${waiting ? `<span class="badge">${escapeHtml(t('required'))}</span>` : ''}
                         </div>
-                    </details>
-                    <div class="actions">
-                        <button class="secondary" type="button" data-goal-id="${Number(goal.id)}" data-progress="0" ${waiting ? 'disabled' : ''}>${escapeHtml(t('notYet'))}</button>
-                        <button class="blue" type="button" data-goal-id="${Number(goal.id)}" data-progress="50" ${waiting ? 'disabled' : ''}>${escapeHtml(t('half'))}</button>
-                        <button class="gold" type="button" data-goal-id="${Number(goal.id)}" data-progress="100">${escapeHtml(t('done'))}</button>
+                        ${due ? `<div class="goal-meta">${escapeHtml(t('due'))}: ${escapeHtml(due)}</div>` : ''}
+                        ${agreement.bedtime_time || agreement.wake_time ? `<div class="goal-meta"><strong>${escapeHtml(t('agreement'))}:</strong> ${escapeHtml(t('inBedBy'))} ${escapeHtml(agreement.bedtime_time || '--')}; ${escapeHtml(t('outOfBedBy'))} ${escapeHtml(agreement.wake_time || '--')}.</div>` : ''}
+                        ${agreement.student_commitment ? `<div class="goal-meta">${escapeHtml(agreement.student_commitment)}</div>` : ''}
+                        <div class="progress-track">
+                            <div class="progress-fill" style="--progress:${progress}%"></div>
+                        </div>
+                        <div class="goal-meta"><strong>${progress}%</strong> ${escapeHtml(t('progress'))}${targetText ? ` - ${targetText}` : ''}</div>
+                        ${successAccess ? `<div class="goal-meta"><strong>${escapeHtml(t('afterHonestCheckoff'))}:</strong> ${escapeHtml(t('tabletAccessOpens'))}${successMinutes ? ` ${escapeHtml(t('forMinutes'))} ${Number(successMinutes)} ${escapeHtml(t('minutes'))}` : ''}.</div>` : ''}
+                        ${chosenConsequence ? `<div class="goal-meta"><strong>${escapeHtml(t('chosenRule'))}:</strong> ${escapeHtml(chosenConsequence)}</div>` : ''}
+                        ${goal.student_summary ? `<div class="goal-meta">${escapeHtml(goal.student_summary)}</div>` : ''}
+                        ${renderGoalDailyRows(goal)}
+                        <details class="goal-details">
+                            <summary>${escapeHtml(t('details'))}</summary>
+                            ${Array.isArray(goal.checklist) && goal.checklist.length ? `<ul class="goal-meta">${goal.checklist.map(item => `<li>${escapeHtml(item)}</li>`).join('')}</ul>` : ''}
+                            ${classroom ? `<div class="goal-meta">${escapeHtml(t('classroom'))}: <span style="word-break:break-all;">${escapeHtml(classroom)}</span></div>` : ''}
+                            ${recovery ? `<div class="goal-meta">${escapeHtml(t('recovery'))}: ${escapeHtml(recovery)}</div>` : ''}
+                            ${goal.reflection_note ? `<div class="goal-meta">${escapeHtml(t('reflection'))}: ${escapeHtml(goal.reflection_note)}</div>` : ''}
+                            <div class="reflection-box">
+                                <label for="reflection-${Number(goal.id)}">${escapeHtml(t('checkIn'))}</label>
+                                <textarea id="reflection-${Number(goal.id)}" data-reflection-input="${Number(goal.id)}">${escapeHtml(goal.reflection_note || '')}</textarea>
+                                <button class="ghost" type="button" data-reflection-id="${Number(goal.id)}">${escapeHtml(t('saveNote'))}</button>
+                            </div>
+                        </details>
+                        <div class="actions">
+                            <button class="secondary" type="button" data-goal-id="${Number(goal.id)}" data-progress="0" ${waiting ? 'disabled' : ''}>${escapeHtml(t('notYet'))}</button>
+                            <button class="blue" type="button" data-goal-id="${Number(goal.id)}" data-progress="50" ${waiting ? 'disabled' : ''}>${escapeHtml(t('half'))}</button>
+                            <button class="gold" type="button" data-goal-id="${Number(goal.id)}" data-progress="100">${escapeHtml(t('done'))}</button>
+                        </div>
                     </div>
-                </article>
+                </details>
             `;
         }
 
@@ -1048,7 +2902,7 @@
             if (!value) return '';
             const date = new Date(value);
             if (!Number.isFinite(date.getTime())) return '';
-            return date.toLocaleString('en-GB', {
+            return date.toLocaleString(language === 'he' ? 'he-IL' : 'en-GB', {
                 month: 'short',
                 day: 'numeric',
                 hour: '2-digit',
@@ -1082,47 +2936,48 @@
             const agreement = activeGoal?.agreement || {};
             const consequence = activeGoal?.consequence || {};
             const access = data?.device_access || {};
+            const classPercent = roundedPercent(data?.torah?.class_trip_percentage);
             const torahPercent = roundedPercent(data?.torah?.public_trip_percentage);
             const todayPercent = roundedPercent(data?.torah?.daily_completion_percentage);
             const due = formatDue(activeGoal?.due_at);
-            const status = activeGoal ? statusLabel(activeGoal) : 'No goal yet';
-            const accessLabel = access?.status_label || String(access?.status || 'Accountability only').replace(/_/g, ' ');
-            const accessMinutes = consequence?.success_duration_minutes ? `${Number(consequence.success_duration_minutes)} minutes` : 'Set by your rule';
+            const status = activeGoal ? statusLabel(activeGoal) : t('noGoalYet');
+            const accessLabel = access?.status_label || String(access?.status || t('tabletAccess')).replace(/_/g, ' ');
+            const accessMinutes = consequence?.success_duration_minutes ? `${Number(consequence.success_duration_minutes)} ${t('minutes')}` : t('setByYourRule');
             const agreementText = agreement.bedtime_time || agreement.wake_time
-                ? `Bed ${agreement.bedtime_time || '--'} / up ${agreement.wake_time || '--'}`
-                : (activeGoal?.title || 'Choose or review your agreement');
+                ? `${t('inBedBy')} ${agreement.bedtime_time || '--'} / ${t('outOfBedBy')} ${agreement.wake_time || '--'}`
+                : (activeGoal?.title || t('chooseAgreement'));
             const checkoffText = activeGoal
-                ? `${status}${due ? ` by ${due}` : ''}`
-                : 'Ask your rebbi to add today\'s agreement.';
+                ? `${status}${due ? ` ${t('by')} ${due}` : ''}`
+                : t('askRebbiToAdd');
 
             return `
                 <article class="portal-command-card">
                     <div>
-                        <div class="portal-command-label">My Agreement</div>
+                        <div class="portal-command-label">${escapeHtml(t('myAgreement'))}</div>
                         <strong>${escapeHtml(agreementText)}</strong>
                     </div>
-                    <span>${escapeHtml(agreement.student_commitment || agreement.chosen_consequence || 'This is the promise you are checking off honestly.')}</span>
+                    <span>${escapeHtml(agreement.student_commitment || agreement.chosen_consequence || t('honestPromise'))}</span>
                 </article>
                 <article class="portal-command-card">
                     <div>
-                        <div class="portal-command-label">Check Off</div>
+                        <div class="portal-command-label">${escapeHtml(t('checkOff'))}</div>
                         <strong>${escapeHtml(checkoffText)}</strong>
                     </div>
-                    <span>Use the buttons below when you are ready.</span>
+                    <span>${escapeHtml(t('useButtonsBelow'))}</span>
                 </article>
                 <article class="portal-command-card">
                     <div>
-                        <div class="portal-command-label">Tablet Access</div>
+                        <div class="portal-command-label">${escapeHtml(t('tabletAccessLabel'))}</div>
                         <strong>${escapeHtml(accessLabel)}</strong>
                     </div>
-                    <span>After a successful checkoff, access opens for ${escapeHtml(accessMinutes)} when a tablet is configured.</span>
+                    <span>${escapeHtml(t('accessAfterSuccess'))} ${escapeHtml(accessMinutes)}.</span>
                 </article>
                 <article class="portal-command-card">
                     <div>
-                        <div class="portal-command-label">Torah / Trip</div>
-                        <strong>${torahPercent}% trip</strong>
+                        <div class="portal-command-label">${escapeHtml(t('torahTripShort'))}</div>
+                        <strong>${classPercent}% ${escapeHtml(t('classTrip'))}</strong>
                     </div>
-                    <span>Today is ${todayPercent}%. Daily success adds one unit toward the full trip goal.</span>
+                    <span>${escapeHtml(t('myTripSentence'))} ${torahPercent}%. ${escapeHtml(t('today'))} ${todayPercent}%.</span>
                 </article>
             `;
         }
@@ -1130,7 +2985,8 @@
         function renderPortal(data) {
             portalData = data;
             applyLanguage();
-            const studentName = data?.student?.name || 'Student';
+            const studentName = studentDisplayName(data?.student);
+            const classPercent = roundedPercent(data?.torah?.class_trip_percentage);
             const torahPercent = roundedPercent(data?.torah?.public_trip_percentage);
             const todayPercent = roundedPercent(data?.torah?.daily_completion_percentage);
             const morningStatus = data?.torah?.morning_goal_status || 'not_yet';
@@ -1139,29 +2995,49 @@
             const visibleGoals = goals.filter(goal => goal.bucket === currentFilter);
 
             els.loginPanel.classList.add('hidden');
+            els.portalLayout.classList.remove('hidden');
+            els.portalMenuToggle.classList.remove('hidden');
             els.studentPanel.classList.remove('hidden');
             els.goalsSection.classList.remove('hidden');
-            els.clearCodeButton.classList.remove('hidden');
+            els.questionsSection.classList.remove('hidden');
+            els.assignmentsSection.classList.remove('hidden');
+            els.calendarSection.classList.remove('hidden');
+            els.documentsSection.classList.remove('hidden');
+            els.parentMessageSection.classList.remove('hidden');
+            els.messageSection.classList.remove('hidden');
+            els.clearCodeButton.classList.add('hidden');
             els.pageTitle.textContent = studentName;
             els.pageIntro.textContent = t('portalIntro');
             els.studentName.textContent = studentName;
+            els.torahClassText.textContent = `${classPercent}%`;
             els.torahProgressText.textContent = `${torahPercent}%`;
             els.torahTodayText.textContent = `${todayPercent}%`;
             els.torahMorningText.textContent = morningStatus === 'done'
                 ? t('morningDone')
                 : morningStatus === 'in_progress' ? t('morningHalf') : t('morningNotYet');
+            setProgressStyle(els.torahClassMetric, classPercent);
             setProgressStyle(els.torahTripMetric, torahPercent);
             setProgressStyle(els.torahTodayMetric, todayPercent);
             setProgressStyle(els.torahMorningMetric, morningPercent);
             setProgressStyle(els.torahProgressFill, torahPercent);
+            renderTorahHistory(data?.torah?.history || []);
+            renderNextMeeting(data?.next_meeting_date, data?.weekly_private_meeting || {}, data?.rabbi_contact || {});
             renderDeviceAccessSummary(data?.device_access);
             els.portalCommandGrid.innerHTML = renderPortalCommandGrid(data, goals);
             els.goalCount.textContent = `${goals.length} ${goals.length === 1 ? t('goalSingular') : t('goals')}`;
             renderFilters(goals);
+            renderStudentSidebar(data, goals);
+            renderPortalNav(data);
+            renderStudentHelperDock();
 
             els.goalGrid.innerHTML = visibleGoals.length
                 ? visibleGoals.map(renderGoal).join('')
                 : `<div class="panel empty">${escapeHtml(t('noGoals'))}</div>`;
+            renderQuestions(data?.questions || []);
+            renderAssignments(data?.assignments || []);
+            renderStudentCalendar(data);
+            renderStudentDocuments(data?.assignments || []);
+            applyPortalSectionVisibility();
         }
 
         async function loadPortal(code = accessCode) {
@@ -1180,7 +3056,7 @@
                 renderPortal(data);
             } catch (error) {
                 localStorage.removeItem(STORAGE_KEY);
-                showLogin(error.message || 'Could not open this student link.', true);
+                showLogin(error.message || t('couldNotOpenStudentLink'), true);
             }
         }
 
@@ -1209,19 +3085,108 @@
                 await refreshPortal();
                 const autoAccess = result?.automatic_device_access;
                 if (autoAccess?.status === 'applied') {
-                    setSaveState(`Saved. Tablet access opened for ${Number(autoAccess.duration_minutes || 0) || 60} minutes.`);
+                    setSaveState(`${t('tabletOpened')} ${t('forMinutes')} ${Number(autoAccess.duration_minutes || 0) || 60} ${t('minutes')}.`);
                 } else if (autoAccess?.status === 'no_device_configured') {
-                    setSaveState('Saved. No tablet is configured yet, so access could not open automatically.', true);
+                    setSaveState(t('savedNoDevice'), true);
                 } else {
                     setSaveState(t('saved'));
                 }
             } catch (error) {
-                setSaveState(error.message || 'Could not save this checkoff.', true);
+                setSaveState(error.message || t('couldNotSaveCheckoff'), true);
             } finally {
                 saving = false;
                 document.querySelectorAll('[data-goal-id], [data-reflection-id]').forEach(button => {
                     button.disabled = false;
                 });
+            }
+        }
+
+        async function updateGoalDay(goalId, date, completed, note = null) {
+            if (saving) return;
+            saving = true;
+            selectedDayByGoal[goalId] = date;
+            setSaveState(t('saving'));
+            document.querySelectorAll('[data-day-checkoff], [data-day-note-save]').forEach(button => {
+                button.disabled = true;
+            });
+
+            try {
+                await apiRequest(`/api/student-portal/goals/${encodeURIComponent(goalId)}/day-checkoff`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        access_code: accessCode,
+                        date,
+                        completed,
+                        ...(note !== null ? { note } : {}),
+                    }),
+                });
+                await refreshPortal();
+                setSaveState(t('saved'));
+            } catch (error) {
+                setSaveState(error.message || t('couldNotSaveDay'), true);
+            } finally {
+                saving = false;
+                document.querySelectorAll('[data-day-checkoff], [data-day-note-save]').forEach(button => {
+                    button.disabled = false;
+                });
+            }
+        }
+
+        async function sendParentMessage() {
+            const message = els.parentMessage.value.trim();
+            if (!message) {
+                els.parentMessageStatus.textContent = t('writeMessageFirst');
+                els.parentMessageStatus.classList.add('error');
+                return;
+            }
+            els.sendParentMessageButton.disabled = true;
+            els.parentMessageStatus.textContent = t('saving');
+            els.parentMessageStatus.classList.remove('error');
+            try {
+                const activeGoal = activePortalGoal(Array.isArray(portalData?.goals) ? portalData.goals : []);
+                await apiRequest('/api/student-portal/message-parent', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        access_code: accessCode,
+                        message,
+                        ...(activeGoal?.id ? { goal_id: activeGoal.id } : {}),
+                    }),
+                });
+                els.parentMessage.value = '';
+                els.parentMessageStatus.textContent = t('parentMessageSent');
+            } catch (error) {
+                els.parentMessageStatus.textContent = error.message || t('couldNotSendMessage');
+                els.parentMessageStatus.classList.add('error');
+            } finally {
+                els.sendParentMessageButton.disabled = false;
+            }
+        }
+
+        async function sendRabbiMessage() {
+            const message = els.rabbiMessage.value.trim();
+            if (!message) {
+                els.messageStatus.textContent = t('writeMessageFirst');
+                els.messageStatus.classList.add('error');
+                return;
+            }
+            els.sendRabbiMessageButton.disabled = true;
+            els.messageStatus.textContent = t('saving');
+            els.messageStatus.classList.remove('error');
+            try {
+                await apiRequest('/api/student-portal/message-rabbi', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        access_code: accessCode,
+                        message,
+                    }),
+                });
+                els.rabbiMessage.value = '';
+                els.messageStatus.textContent = t('messageSent');
+            } catch (error) {
+                els.messageStatus.textContent = error.message || t('couldNotSendMessage');
+                els.messageStatus.classList.add('error');
+            } finally {
+                els.sendRabbiMessageButton.disabled = false;
             }
         }
 
@@ -1233,6 +3198,8 @@
         els.clearCodeButton.addEventListener('click', () => {
             accessCode = '';
             portalData = null;
+            currentSection = 'overview';
+            selectedDayByGoal = {};
             localStorage.removeItem(STORAGE_KEY);
             const url = new URL(window.location.href);
             url.searchParams.delete('code');
@@ -1248,14 +3215,84 @@
             });
         });
 
+        els.portalMenuToggle.addEventListener('click', togglePortalMenu);
+        els.portalMenuBackdrop.addEventListener('click', closePortalMenu);
+
+        els.portalNav.addEventListener('click', (event) => {
+            const button = event.target.closest('[data-portal-section]');
+            if (!button) return;
+            setPortalSection(button.dataset.portalSection);
+        });
+
+        els.goalStatusFilter.addEventListener('change', (event) => {
+            currentFilter = FILTERS.includes(event.target.value) ? event.target.value : 'today';
+            currentSection = 'goals';
+            if (portalData) renderPortal(portalData);
+        });
+
         els.goalFilters.addEventListener('click', (event) => {
             const button = event.target.closest('[data-filter]');
             if (!button) return;
             currentFilter = FILTERS.includes(button.dataset.filter) ? button.dataset.filter : 'today';
+            currentSection = 'goals';
             if (portalData) renderPortal(portalData);
         });
 
+        els.sendRabbiMessageButton.addEventListener('click', sendRabbiMessage);
+        els.sendParentMessageButton.addEventListener('click', sendParentMessage);
+
         document.addEventListener('click', (event) => {
+            const calendarModeButton = event.target.closest('[data-student-calendar-mode]');
+            if (calendarModeButton) {
+                studentCalendarViewMode = calendarModeButton.dataset.studentCalendarMode || 'list';
+                selectedStudentCalendarEventId = '';
+                if (portalData) renderPortal(portalData);
+                return;
+            }
+            const calendarOffsetButton = event.target.closest('[data-student-calendar-offset]');
+            if (calendarOffsetButton) {
+                studentCalendarOffset += Number(calendarOffsetButton.dataset.studentCalendarOffset || 0);
+                selectedStudentCalendarEventId = '';
+                if (portalData) renderPortal(portalData);
+                return;
+            }
+            const calendarTodayButton = event.target.closest('[data-student-calendar-today]');
+            if (calendarTodayButton) {
+                studentCalendarOffset = 0;
+                selectedStudentCalendarEventId = '';
+                if (portalData) renderPortal(portalData);
+                return;
+            }
+            const calendarEventButton = event.target.closest('[data-student-calendar-event]');
+            if (calendarEventButton) {
+                selectedStudentCalendarEventId = calendarEventButton.dataset.studentCalendarEvent || '';
+                if (portalData) renderPortal(portalData);
+                return;
+            }
+            const calendarCloseButton = event.target.closest('[data-student-calendar-close]');
+            if (calendarCloseButton) {
+                selectedStudentCalendarEventId = '';
+                if (portalData) renderPortal(portalData);
+                return;
+            }
+            const dayButton = event.target.closest('[data-day-checkoff]');
+            if (dayButton) {
+                const goalId = dayButton.dataset.dayCheckoff;
+                const date = dayButton.dataset.dayDate;
+                const nextCompleted = dayButton.dataset.dayCompleted !== 'true';
+                updateGoalDay(goalId, date, nextCompleted);
+                return;
+            }
+            const dayNoteButton = event.target.closest('[data-day-note-save]');
+            if (dayNoteButton) {
+                const goalId = dayNoteButton.dataset.dayNoteSave;
+                const date = dayNoteButton.dataset.dayNoteSaveDate;
+                const note = document.querySelector(`[data-day-note="${goalId}"][data-day-note-date="${date}"]`)?.value || '';
+                const goal = (portalData?.goals || []).find(item => String(item.id) === String(goalId));
+                const day = allGoalDays(goal || {}).find(item => item.date === date);
+                updateGoalDay(goalId, date, Boolean(day?.completed), note);
+                return;
+            }
             const progressButton = event.target.closest('[data-goal-id]');
             if (progressButton) {
                 updateGoal(progressButton.dataset.goalId, Number(progressButton.dataset.progress));
@@ -1273,5 +3310,6 @@
         applyLanguage();
         loadPortal();
     </script>
+    <script src="/js/app-select.js"></script>
 </body>
 </html>

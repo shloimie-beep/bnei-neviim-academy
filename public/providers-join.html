@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Join the BNA Provider Index</title>
+    <style>
+        :root {
+            --ink: #111111;
+            --muted: #5f5f5f;
+            --paper: #f7f7f4;
+            --panel: #ffffff;
+            --gold: #d6a92d;
+            --line: rgba(17, 17, 17, 0.14);
+            --shadow: 0 18px 44px rgba(0, 0, 0, 0.08);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            color: var(--ink);
+            font-family: "Trebuchet MS", Verdana, sans-serif;
+            background: linear-gradient(180deg, #ffffff 0%, var(--paper) 100%);
+        }
+
+        button,
+        input,
+        textarea,
+        select {
+            font: inherit;
+            max-width: 100%;
+        }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 20;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            border-bottom: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.92);
+            padding: 12px max(16px, calc((100vw - 1120px) / 2));
+            backdrop-filter: blur(16px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .mark {
+            display: grid;
+            place-items: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            background: #111111;
+            color: #ffffff;
+            font-weight: 900;
+        }
+
+        .brand strong,
+        .brand span {
+            display: block;
+            line-height: 1.15;
+        }
+
+        .brand span,
+        .muted {
+            color: var(--muted);
+        }
+
+        .chip {
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: #fff;
+            padding: 7px 10px;
+            font-size: 12px;
+            font-weight: 900;
+            white-space: nowrap;
+        }
+
+        main {
+            width: min(1120px, calc(100% - 28px));
+            margin: 0 auto;
+            padding: 30px 0 54px;
+        }
+
+        .hero {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+            gap: 20px;
+            align-items: start;
+            margin-bottom: 18px;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin-top: 0;
+            letter-spacing: 0;
+        }
+
+        h1 {
+            font-size: clamp(38px, 6vw, 62px);
+            line-height: 0.96;
+            margin-bottom: 14px;
+        }
+
+        .panel {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.94);
+            box-shadow: var(--shadow);
+            padding: 18px;
+        }
+
+        .plans {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+            margin: 18px 0;
+        }
+
+        .plan {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fff;
+            padding: 14px;
+        }
+
+        .plan strong {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .plan ul {
+            margin: 10px 0 0;
+            padding-left: 18px;
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        form {
+            display: grid;
+            gap: 12px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        label {
+            display: grid;
+            gap: 5px;
+            color: #2d2d2d;
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--ink);
+            padding: 10px 11px;
+        }
+
+        textarea {
+            min-height: 92px;
+            resize: vertical;
+        }
+
+        .button-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--ink);
+            cursor: pointer;
+            font-weight: 900;
+            padding: 10px 14px;
+        }
+
+        .btn.primary {
+            border-color: #111111;
+            background: #111111;
+            color: #fff;
+        }
+
+        .notice {
+            border: 1px solid rgba(214, 169, 45, 0.42);
+            border-radius: 8px;
+            background: rgba(214, 169, 45, 0.1);
+            color: #3a2a00;
+            padding: 12px;
+            font-size: 13px;
+            line-height: 1.45;
+        }
+
+        .status {
+            display: none;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .status.show { display: block; }
+        .status.ok { background: #e8f7ee; color: #14532d; }
+        .status.error { background: #fff1f2; color: #9f1239; }
+
+        @media (max-width: 860px) {
+            .hero,
+            .plans,
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .topbar {
+                align-items: flex-start;
+            }
+
+            .chip {
+                white-space: normal;
+                text-align: right;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <div class="mark">BNA</div>
+            <div>
+                <strong>Bnei Neviim Academy</strong>
+                <span>Provider Network</span>
+            </div>
+        </div>
+        <span class="chip">Free listings and paid provider workspaces are separate</span>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div>
+                <p class="chip" style="display:inline-block;">Provider Commercial Model</p>
+                <h1>Join the BNA provider index</h1>
+                <p class="muted">Start with a public listing, or ask for managed setup, launch support, or a full school workspace. Nothing is published or automated until BNA reviews it.</p>
+                <div class="plans" aria-label="Provider plan options">
+                    <article class="plan">
+                        <strong>Free Listing</strong>
+                        <p class="muted">Public profile, provider index visibility, contact CTA.</p>
+                        <ul><li>No funnels</li><li>No automations</li><li>No school portal</li></ul>
+                    </article>
+                    <article class="plan">
+                        <strong>Managed Setup</strong>
+                        <p class="muted">Funnels, lead pipeline, messaging, social, payment-link setup, reporting.</p>
+                        <ul><li>Done-for-you setup</li><li>Manual connectors first</li></ul>
+                    </article>
+                    <article class="plan">
+                        <strong>School Workspace</strong>
+                        <p class="muted">Parents, students, goals, assignments, calendar, billing, communications.</p>
+                        <ul><li>Paid workspace</li><li>School operations</li></ul>
+                    </article>
+                    <article class="plan">
+                        <strong>Partner</strong>
+                        <p class="muted">Custom revenue-share terms, launch checklist, reporting, program tiers.</p>
+                        <ul><li>Custom agreement</li><li>Shared approvals</li></ul>
+                    </article>
+                </div>
+            </div>
+            <aside class="panel">
+                <h2>Provider signup</h2>
+                <p class="muted">This creates a draft provider record, an onboarding pipeline item, and an internal BNA review task.</p>
+                <form id="providerJoinForm">
+                    <div class="grid">
+                        <label>Provider name
+                            <input name="provider_name" required>
+                        </label>
+                        <label>Contact name
+                            <input name="contact_name" required>
+                        </label>
+                        <label>Email
+                            <input name="email" type="email" required>
+                        </label>
+                        <label>Phone / WhatsApp
+                            <input name="phone" type="tel">
+                        </label>
+                        <label>Category
+                            <input name="category" placeholder="Torah class, tutoring, therapy">
+                        </label>
+                        <label>Location / online
+                            <input name="location" placeholder="Beit Shemesh, online, both">
+                        </label>
+                        <label>Language
+                            <input name="language" placeholder="English, Hebrew">
+                        </label>
+                        <label>Age range
+                            <input name="age_range" placeholder="8-16">
+                        </label>
+                    </div>
+                    <label>Website
+                        <input name="website" type="url" placeholder="https://">
+                    </label>
+                    <label>Interested in
+                        <select name="interested_in">
+                            <option value="free_listing">Free provider listing</option>
+                            <option value="paid_setup">Paid funnel/setup help</option>
+                            <option value="school_workspace">School / micro-school workspace</option>
+                            <option value="not_sure">Not sure yet</option>
+                        </select>
+                    </label>
+                    <label>Program / class description
+                        <textarea name="program_description"></textarea>
+                    </label>
+                    <label>Notes
+                        <textarea name="notes" placeholder="Anything BNA should know before review"></textarea>
+                    </label>
+                    <div class="notice">Submission does not create a public listing, send messages, publish posts, or charge payments. BNA reviews every provider first.</div>
+                    <div id="providerJoinStatus" class="status"></div>
+                    <div class="button-row">
+                        <button class="btn primary" type="submit">Submit For Review</button>
+                        <a class="btn" href="/">Back to BNA</a>
+                    </div>
+                </form>
+            </aside>
+        </section>
+    </main>
+
+    <script>
+        const form = document.getElementById('providerJoinForm');
+        const statusEl = document.getElementById('providerJoinStatus');
+
+        function formObject(formEl) {
+            return Object.fromEntries(new FormData(formEl).entries());
+        }
+
+        function showStatus(text, kind) {
+            statusEl.textContent = text;
+            statusEl.className = `status show ${kind}`;
+        }
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const button = form.querySelector('button[type="submit"]');
+            button.disabled = true;
+            button.textContent = 'Submitting...';
+            showStatus('', '');
+            try {
+                const response = await fetch('/api/provider-onboarding', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formObject(form))
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.error || 'Could not submit provider signup');
+                showStatus(data.message || 'Provider onboarding received. BNA will review it before publishing.', 'ok');
+                form.reset();
+            } catch (error) {
+                showStatus(error.message || 'Could not submit provider signup', 'error');
+            } finally {
+                button.disabled = false;
+                button.textContent = 'Submit For Review';
+            }
+        });
+    </script>
+    <script src="/js/app-select.js"></script>
+</body>
+</html>
