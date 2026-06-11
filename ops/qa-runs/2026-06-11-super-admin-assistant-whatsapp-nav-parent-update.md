@@ -216,6 +216,11 @@ Results:
   - FAIL: local OpenAI key currently available to the smoke returned OpenAI 401 `invalid_api_key`.
   - The release checkout also does not include Google Drive smoke secrets unless they are copied/loaded from the main local secret store.
   - Report: `ops/openai-smokes/2026-06-11T16-28-52-075Z-openai-sidekick-smoke.md`
+- `npm run openai:smoke` after copying Drive smoke secrets and intentionally leaving OpenAI unset
+  - FAIL as expected on missing OpenAI key.
+  - PASS for repo context, transcript exports, protected app APIs, Operations endpoints, and Drive folder reads.
+  - Drive readback: 7 folders as `office@bneineviimacademy.org`; raw folder `00 Upload Here - Raw Media Intake`.
+  - Report: `ops/openai-smokes/2026-06-11T17-01-15-783Z-openai-sidekick-smoke.md`
 - `npm run lighthouse`
   - Generated `lighthouse-report.html`
   - Exited 1 because Lighthouse/Chrome cleanup hit Windows temp-folder `EPERM`.
@@ -247,12 +252,11 @@ branch/worktree strategy for any follow-up deployment.
 
 ## Remaining Blocker
 
-OpenAI sidekick smoke is still blocked because the locally available OpenAI key
-was rejected by OpenAI with `invalid_api_key`. Rotate/create a fresh key and
-store it locally in `.secrets/openai-api-key.txt` or `.env.local`; do not paste
-it into chat. The next OpenAI smoke should also load/copy the local Google Drive
-smoke secrets into the clean release checkout so the Drive folder checks can
-run.
+OpenAI sidekick smoke is still blocked only by a valid OpenAI key. Drive smoke
+secrets have been copied into the clean release checkout and the latest smoke
+confirms Drive folders are readable. Rotate/create a fresh OpenAI key and store
+it locally in `.secrets/openai-api-key.txt` or `.env.local`; do not paste it
+into chat.
 
 ## Readiness
 
