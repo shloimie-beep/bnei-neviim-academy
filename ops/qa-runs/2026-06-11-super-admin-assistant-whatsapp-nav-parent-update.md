@@ -204,16 +204,35 @@ Results:
   - Report: `ops/openai-smokes/2026-06-11T15-16-03-006Z-openai-sidekick-smoke.md`
 - `npm run railway:doctor`
   - PASS
-  - No deploy performed.
+  - Pre-deploy PASS.
+  - Post-deploy PASS after Railway deployment `5a01eea4-345a-428e-a2f2-01e00b208cd5` reached `SUCCESS`.
+- `npm run railway:redeploy`
+  - PASS from clean release worktree `C:\Users\User\bna-release-clean`.
+  - Uploaded deployment `5a01eea4-345a-428e-a2f2-01e00b208cd5` to Railway production service `skillful-motivation`.
+- `npm run app:smoke` after deploy
+  - PASS against production.
+  - Report: `ops/live-smokes/2026-06-11T16-28-00-888Z-live-app-smoke.md`
+- `npm run openai:smoke` after deploy
+  - FAIL: local OpenAI key currently available to the smoke returned OpenAI 401 `invalid_api_key`.
+  - The release checkout also does not include Google Drive smoke secrets unless they are copied/loaded from the main local secret store.
+  - Report: `ops/openai-smokes/2026-06-11T16-28-52-075Z-openai-sidekick-smoke.md`
 - `npm run lighthouse`
   - Generated `lighthouse-report.html`
   - Exited 1 because Lighthouse/Chrome cleanup hit Windows temp-folder `EPERM`.
 
-## Deployment Blocker
+## Deployment
 
-No deploy was performed.
+Deployment was completed from the clean release worktree, not from the dirty
+original workspace.
 
-Deployment is blocked because the workspace contains substantial pre-existing staged/dirty release changes outside this focused pass. Do not upload this full dirty workspace accidentally.
+Railway deployment:
+
+- Deployment id: `5a01eea4-345a-428e-a2f2-01e00b208cd5`
+- Service/environment: `skillful-motivation` / `production`
+- Final Railway status: `SUCCESS`
+- Live app smoke: PASS
+
+Do not deploy from the original dirty workspace. That warning still stands.
 
 Changed in this focused pass:
 
@@ -222,7 +241,18 @@ Changed in this focused pass:
 - WhatsApp/action registry updates
 - Screenshot/report artifacts
 
-Unrelated or pre-existing dirty release files include many already-staged release cleanup files, app shell files, provider pages, smoke scripts, Telegram/content intent files, Google/student helper libraries, task briefs, and prior QA reports. Use a clean branch/commit strategy with exact-path staging before any deployment.
+Unrelated or pre-existing dirty release files include generated local files,
+screenshots, task briefs, and prior QA/release reports. Use the clean release
+branch/worktree strategy for any follow-up deployment.
+
+## Remaining Blocker
+
+OpenAI sidekick smoke is still blocked because the locally available OpenAI key
+was rejected by OpenAI with `invalid_api_key`. Rotate/create a fresh key and
+store it locally in `.secrets/openai-api-key.txt` or `.env.local`; do not paste
+it into chat. The next OpenAI smoke should also load/copy the local Google Drive
+smoke secrets into the clean release checkout so the Drive folder checks can
+run.
 
 ## Readiness
 
