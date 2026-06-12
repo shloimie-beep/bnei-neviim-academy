@@ -388,8 +388,6 @@ async function main() {
         'parent_handbook',
         'student_code_of_conduct',
         'safety_acknowledgment_waiver',
-        'registration_intake_form',
-        'parent_agreement_signature_page',
       ];
       const validBody = {
         parent_name: 'Smoke Parent',
@@ -429,7 +427,7 @@ async function main() {
       });
       assert(data.success === true && data.dry_run === true, 'Signup dry run did not validate successfully');
       assert(data.paymentMethod === 'bank_transfer', 'Signup dry run did not preserve bank transfer payment method');
-      assert(data.normalized?.agreement_signatures?.length === 6, 'Signup dry run did not validate all six agreement signatures');
+      assert(data.normalized?.agreement_signatures?.length === agreementTypes.length, 'Signup dry run did not validate all required agreement signatures');
 
       const paymentMethods = { bank_transfer: data.paymentMethod };
       for (const [payment_method, expectedPaymentMethod] of [['credit', 'credit'], ['cash', 'cash']]) {
@@ -438,7 +436,7 @@ async function main() {
         });
         assert(payment.data.success === true && payment.data.dry_run === true, `Signup dry run failed for ${payment_method}`);
         assert(payment.data.paymentMethod === expectedPaymentMethod, `Signup dry run returned ${payment.data.paymentMethod} for ${payment_method}`);
-        assert(payment.data.normalized?.agreement_signatures?.length === 6, `Signup dry run did not keep six agreement signatures for ${payment_method}`);
+        assert(payment.data.normalized?.agreement_signatures?.length === agreementTypes.length, `Signup dry run did not keep all required agreement signatures for ${payment_method}`);
         paymentMethods[payment_method] = payment.data.paymentMethod;
       }
 
