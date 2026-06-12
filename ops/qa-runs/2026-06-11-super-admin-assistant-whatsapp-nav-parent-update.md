@@ -221,6 +221,15 @@ Results:
   - PASS for repo context, transcript exports, protected app APIs, Operations endpoints, and Drive folder reads.
   - Drive readback: 7 folders as `office@bneineviimacademy.org`; raw folder `00 Upload Here - Raw Media Intake`.
   - Report: `ops/openai-smokes/2026-06-11T17-01-15-783Z-openai-sidekick-smoke.md`
+- `npm run openai:smoke` after fresh local OpenAI key was stored outside chat
+  - PASS.
+  - Repo files: 8 readable.
+  - Transcript exports: 18.
+  - Protected app endpoints: 16 readable.
+  - Operations sections: Tasks, Students, Content, Contacts, Accounting.
+  - Drive folders: 7 readable.
+  - Active Codex tasks: 5 (`491`, `490`, `489`, `488`, `483`).
+  - Report: `ops/openai-smokes/2026-06-12T06-22-48-616Z-openai-sidekick-smoke.md`
 - `npm run lighthouse`
   - Generated `lighthouse-report.html`
   - Exited 1 because Lighthouse/Chrome cleanup hit Windows temp-folder `EPERM`.
@@ -252,11 +261,8 @@ branch/worktree strategy for any follow-up deployment.
 
 ## Remaining Blocker
 
-OpenAI sidekick smoke is still blocked only by a valid OpenAI key. Drive smoke
-secrets have been copied into the clean release checkout and the latest smoke
-confirms Drive folders are readable. Rotate/create a fresh OpenAI key and store
-it locally in `.secrets/openai-api-key.txt` or `.env.local`; do not paste it
-into chat.
+None for the parent/student/action-registry release verification. OpenAI
+sidekick smoke passed after the fresh key was stored locally outside chat.
 
 ## Readiness
 
