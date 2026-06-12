@@ -6,6 +6,7 @@ const server = fs.readFileSync('server.js', 'utf8');
 const studentHtml = fs.readFileSync('public/student.html', 'utf8');
 const parentHtml = fs.readFileSync('public/parent.html', 'utf8');
 const operationsHtml = fs.readFileSync('public/operations.html', 'utf8');
+const signupDocumentsJs = fs.readFileSync('public/js/signup-documents.js', 'utf8');
 
 test('server exposes student daily checkoff and message APIs', () => {
   assert.match(server, /CREATE TABLE IF NOT EXISTS bna_goal_board_checkins/);
@@ -105,6 +106,22 @@ test('student portal renders history, next meeting, daily rows, and rabbi messag
   assert.match(studentHtml, /\/api\/student-portal\/goals\/\$\{encodeURIComponent\(goalId\)\}\/day-checkoff/);
   assert.match(studentHtml, /Talk to your rabbi about anything/);
   assert.match(studentHtml, /\/api\/student-portal\/message-rabbi/);
+});
+
+test('student portal rejects invalid credentials and clears stored access codes', () => {
+  assert.match(server, /const STUDENT_PORTAL_AUTH_MAX_FAILURES = 8/);
+  assert.match(server, /function recordStudentPortalAuthFailure/);
+  assert.match(server, /async function getStudentForPortalCredential/);
+  assert.match(server, /res\.status\(401\)\.json\(\{ error: 'A valid student access code is required' \}\)/);
+  assert.match(server, /res\.status\(401\)\.json\(\{ error: 'Invalid or expired student access code' \}\)/);
+  assert.match(server, /res\.status\(429\)\.json\(\{ error: 'Too many failed access attempts/);
+  assert.match(server, /await getStudentForPortalCredential\(req, res, code/);
+  assert.doesNotMatch(server, /Student access code was not found/);
+  assert.doesNotMatch(server, /Student access code is required/);
+  assert.match(studentHtml, /function handlePortalCredentialError/);
+  assert.match(studentHtml, /localStorage\.removeItem\(STORAGE_KEY\)/);
+  assert.match(studentHtml, /if \(handlePortalCredentialError\(error\)\) return/);
+  assert.match(studentHtml, /Coming soon/);
 });
 
 test('parent portal uses login, calendar navigation, help, and scoped visible student data', () => {
@@ -367,8 +384,14 @@ test('student and parent portals expose weekly meeting slots, attendance, financ
   assert.match(parentHtml, /Present by default/);
 });
 
-test('July 1 registration renewal flow requires six signatures and avoids unconfirmed payment-link fallback', () => {
+test('July 1 registration renewal flow requires four visible signatures and avoids unconfirmed payment-link fallback', () => {
   assert.match(server, /REQUIRED_SIGNUP_AGREEMENT_DEFINITIONS = \[/);
+  assert.match(server, /\]\.filter\(\(definition\) => !\['registration_intake_form', 'parent_agreement_signature_page'\]\.includes\(definition\.agreement_type\)\)/);
+  assert.match(signupDocumentsJs, /submitMissing: 'Please open and sign all four required registration documents before submitting\.'/);
+  assert.match(signupDocumentsJs, /title: \{ en: 'Handbook'/);
+  assert.match(signupDocumentsJs, /title: \{ en: 'Tuition'/);
+  assert.match(signupDocumentsJs, /title: \{ en: 'Waiver'/);
+  assert.match(signupDocumentsJs, /title: \{ en: 'Student Handbook'/);
   assert.match(server, /registration_renewal: Boolean\(existingSignup\)/);
   assert.match(server, /tuition_year_starts_on: '2026-07-01'/);
   assert.match(server, /yearly_amount_ils: DEFAULT_TUITION_AMOUNT \* 12/);

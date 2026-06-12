@@ -6,13 +6,16 @@
     <title>Join the BNA Provider Index</title>
     <style>
         :root {
-            --ink: #111111;
-            --muted: #5f5f5f;
-            --paper: #f7f7f4;
+            --primary-blue: #1e3a5f;
+            --secondary-blue: #2c5282;
+            --light-blue: #e8f0f8;
+            --accent-gold: #c9a227;
+            --ink: #1a202c;
+            --muted: #52647a;
+            --paper: #f5f8fc;
             --panel: #ffffff;
-            --gold: #d6a92d;
-            --line: rgba(17, 17, 17, 0.14);
-            --shadow: 0 18px 44px rgba(0, 0, 0, 0.08);
+            --line: rgba(30, 58, 95, 0.14);
+            --shadow: 0 18px 44px rgba(30, 58, 95, 0.12);
         }
 
         * { box-sizing: border-box; }
@@ -20,8 +23,10 @@
         body {
             margin: 0;
             color: var(--ink);
-            font-family: "Trebuchet MS", Verdana, sans-serif;
-            background: linear-gradient(180deg, #ffffff 0%, var(--paper) 100%);
+            font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(245, 248, 252, 0.98)),
+                url("/images/sitting on grass.jpg") center top / cover fixed;
         }
 
         button,
@@ -59,7 +64,7 @@
             width: 38px;
             height: 38px;
             border-radius: 8px;
-            background: #111111;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
             color: #ffffff;
             font-weight: 900;
         }
@@ -77,7 +82,7 @@
 
         .chip {
             border: 1px solid var(--line);
-            border-radius: 999px;
+            border-radius: 8px;
             background: #fff;
             padding: 7px 10px;
             font-size: 12px;
@@ -111,6 +116,7 @@
             font-size: clamp(38px, 6vw, 62px);
             line-height: 0.96;
             margin-bottom: 14px;
+            color: var(--primary-blue);
         }
 
         .panel {
@@ -133,6 +139,12 @@
             border-radius: 8px;
             background: #fff;
             padding: 14px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .plan:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
         }
 
         .plan strong {
@@ -178,6 +190,14 @@
             padding: 10px 11px;
         }
 
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: rgba(30, 58, 95, 0.52);
+            box-shadow: 0 0 0 4px rgba(30, 58, 95, 0.12);
+        }
+
         textarea {
             min-height: 92px;
             resize: vertical;
@@ -198,22 +218,49 @@
             cursor: pointer;
             font-weight: 900;
             padding: 10px 14px;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
         }
 
         .btn.primary {
-            border-color: #111111;
-            background: #111111;
-            color: #fff;
+            border-color: var(--accent-gold);
+            background: var(--accent-gold);
+            color: var(--ink);
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
         }
 
         .notice {
-            border: 1px solid rgba(214, 169, 45, 0.42);
+            border: 1px solid rgba(201, 162, 39, 0.42);
             border-radius: 8px;
-            background: rgba(214, 169, 45, 0.1);
+            background: rgba(201, 162, 39, 0.12);
             color: #3a2a00;
             padding: 12px;
             font-size: 13px;
             line-height: 1.45;
+        }
+
+        .field-note {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .site-footer {
+            border-top: 1px solid var(--line);
+            background: rgba(30, 58, 95, 0.96);
+            color: #fff;
+            padding: 28px 16px;
+            text-align: center;
+        }
+
+        .site-footer-content {
+            display: grid;
+            gap: 8px;
+            justify-items: center;
         }
 
         .status {
@@ -255,7 +302,7 @@
                 <span>Provider Network</span>
             </div>
         </div>
-        <span class="chip">Free listings and paid provider workspaces are separate</span>
+        <span class="chip">Free listings and AI Max applications are review-only</span>
     </header>
 
     <main>
@@ -263,7 +310,7 @@
             <div>
                 <p class="chip" style="display:inline-block;">Provider Commercial Model</p>
                 <h1>Join the BNA provider index</h1>
-                <p class="muted">Start with a public listing, or ask for managed setup, launch support, or a full school workspace. Nothing is published or automated until BNA reviews it.</p>
+                <p class="muted">Apply for a free listing in the BNA provider index, or ask about AI Max if you want help reaching more students. BNA connects providers with micro-schools, online school systems, and network service providers. Nothing is published, automated, or charged until Shloimie reviews it.</p>
                 <div class="plans" aria-label="Provider plan options">
                     <article class="plan">
                         <strong>Free Listing</strong>
@@ -272,8 +319,8 @@
                     </article>
                     <article class="plan">
                         <strong>Managed Setup</strong>
-                        <p class="muted">Funnels, lead pipeline, messaging, social, payment-link setup, reporting.</p>
-                        <ul><li>Done-for-you setup</li><li>Manual connectors first</li></ul>
+                        <p class="muted">AI Max interest path for lead generation, marketing automation, funnels, ad tracking, admin, banking, and billing support.</p>
+                        <ul><li>Application only</li><li>No checkout yet</li></ul>
                     </article>
                     <article class="plan">
                         <strong>School Workspace</strong>
@@ -292,7 +339,7 @@
                 <p class="muted">This creates a draft provider record, an onboarding pipeline item, and an internal BNA review task.</p>
                 <form id="providerJoinForm">
                     <div class="grid">
-                        <label>Provider name
+                        <label>Business / provider name
                             <input name="provider_name" required>
                         </label>
                         <label>Contact name
@@ -307,34 +354,78 @@
                         <label>Category
                             <input name="category" placeholder="Torah class, tutoring, therapy">
                         </label>
-                        <label>Location / online
+                        <label>Location / service area
                             <input name="location" placeholder="Beit Shemesh, online, both">
                         </label>
                         <label>Language
                             <input name="language" placeholder="English, Hebrew">
                         </label>
-                        <label>Age range
+                        <label>Ages served
                             <input name="age_range" placeholder="8-16">
                         </label>
                     </div>
-                    <label>Website
+                    <label>Website / social link
                         <input name="website" type="url" placeholder="https://">
+                    </label>
+                    <label>Google Business Profile or Maps link
+                        <input name="google_business_profile_url" type="url" placeholder="https://maps.google.com/...">
+                    </label>
+                    <label>Place ID
+                        <input name="google_place_id" placeholder="Optional if you know it">
                     </label>
                     <label>Interested in
                         <select name="interested_in">
                             <option value="free_listing">Free provider listing</option>
-                            <option value="paid_setup">Paid funnel/setup help</option>
+                            <option value="ai_max">AI Max: more students and marketing systems</option>
+                            <option value="paid_setup">Managed setup / funnel help</option>
                             <option value="school_workspace">School / micro-school workspace</option>
                             <option value="not_sure">Not sure yet</option>
                         </select>
+                        <span class="field-note">AI Max is an interest/application path until pricing and payment terms are approved.</span>
                     </label>
-                    <label>Program / class description
+                    <label>Description of business
                         <textarea name="program_description"></textarea>
                     </label>
-                    <label>Notes
+                    <div class="grid">
+                        <label>Types of kids served
+                            <input name="types_kids_served" placeholder="Learning differences, advanced learners, teens">
+                        </label>
+                        <label>Years active
+                            <input name="years_active" type="number" min="0" step="1">
+                        </label>
+                    </div>
+                    <label>Experience / background
+                        <textarea name="experience_background"></textarea>
+                    </label>
+                    <label>Problems you have solved
+                        <textarea name="problems_solved" placeholder="What outcomes or situations have you helped families with?"></textarea>
+                    </label>
+                    <div class="grid">
+                        <label>Pricing structure
+                            <input name="pricing_structure" placeholder="Per session, monthly, package, custom">
+                        </label>
+                        <label>Typical charge
+                            <input name="typical_charge" placeholder="Example: ILS 250/session">
+                        </label>
+                    </div>
+                    <label>Discounts / group options
+                        <textarea name="discounts_group_options" placeholder="Customized discounts, group rates, BNA network options"></textarea>
+                    </label>
+                    <label>Are you currently running ads?
+                        <select name="running_ads">
+                            <option value="">Choose one</option>
+                            <option value="yes">Yes</option>
+                            <option value="no">No</option>
+                            <option value="planning">Planning to</option>
+                        </select>
+                    </label>
+                    <label>Plain-language setup notes
+                        <textarea name="raw_intake" placeholder="Paste a paragraph, website notes, or setup details. BNA will parse it for review."></textarea>
+                    </label>
+                    <label>Notes for Shloimie approval
                         <textarea name="notes" placeholder="Anything BNA should know before review"></textarea>
                     </label>
-                    <div class="notice">Submission does not create a public listing, send messages, publish posts, or charge payments. BNA reviews every provider first.</div>
+                    <div class="notice">AI Max can include lead generation, marketing automation, natural-language voice marketing, funnels, ad tracking and management, admin, banking, and billing. This form only records interest; it does not publish a listing, send messages, publish posts, start ads, or charge payments.</div>
                     <div id="providerJoinStatus" class="status"></div>
                     <div class="button-row">
                         <button class="btn primary" type="submit">Submit For Review</button>
@@ -344,6 +435,14 @@
             </aside>
         </section>
     </main>
+
+    <footer class="site-footer">
+        <div class="site-footer-content">
+            <strong>Bnei Neviim Academy</strong>
+            <span>Ramat Beit Shemesh</span>
+            <span>Registered nonprofit in the State of New Jersey</span>
+        </div>
+    </footer>
 
     <script>
         const form = document.getElementById('providerJoinForm');

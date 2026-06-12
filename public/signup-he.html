@@ -69,11 +69,18 @@
 
         .nav-btn {
             padding: 0.75rem 1.25rem;
-            border-radius: 50px;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 600;
             background: var(--primary-blue);
             color: white;
+            white-space: nowrap;
+        }
+
+        .nav-btn:hover {
+            background: var(--secondary-blue);
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(30, 58, 95, 0.18);
         }
 
         .form-section { padding: 3rem clamp(1rem, 4vw, 3rem) 5rem; }
@@ -96,10 +103,33 @@
             font-size: 1.15rem;
         }
 
+        .language-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 0.75rem;
+            margin: 0 auto 1.25rem;
+        }
+
+        .language-tab {
+            border: 1px solid rgba(30, 58, 95, 0.16);
+            border-radius: 8px;
+            background: var(--white);
+            color: var(--primary-blue);
+            padding: 0.65rem 1.1rem;
+            text-decoration: none;
+            font-weight: 700;
+            box-shadow: 0 10px 22px rgba(30, 58, 95, 0.08);
+        }
+
+        .language-tab.active {
+            background: var(--primary-blue);
+            color: var(--white);
+        }
+
         .form-card {
             background: var(--white);
             padding: clamp(1.5rem, 4vw, 3.25rem);
-            border-radius: 24px;
+            border-radius: 12px;
             box-shadow: 0 20px 40px rgba(30, 58, 95, 0.15);
             border: 1px solid rgba(30, 58, 95, 0.1);
         }
@@ -541,6 +571,11 @@
                 <h1>Bnei Nevi'im Academy Registration</h1>
                 <p>2026-2027 / תשפ"ז</p>
                 <p>הרשמה לבני נביאים אקדמי<br>לשנת תשפ"ז / 2026-2027</p>
+            </div>
+
+            <div class="language-tabs" aria-label="Registration language">
+                <a class="language-tab" href="/signup.html">English</a>
+                <a class="language-tab active" href="/signup-he.html">עברית</a>
             </div>
 
             <div class="form-card">

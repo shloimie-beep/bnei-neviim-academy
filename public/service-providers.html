@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BNA Service Provider Index</title>
+    <style>
+        :root {
+            --primary-blue: #1e3a5f;
+            --secondary-blue: #2c5282;
+            --light-blue: #e8f0f8;
+            --accent-gold: #c9a227;
+            --ink: #1a202c;
+            --muted: #52647a;
+            --paper: #f5f8fc;
+            --panel: #ffffff;
+            --line: rgba(30, 58, 95, 0.14);
+            --gold: #c9a227;
+            --green: #2f6f5e;
+            --shadow: 0 18px 44px rgba(30, 58, 95, 0.12);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--ink);
+            font-family: "Inter", "Segoe UI", system-ui, sans-serif;
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(247, 247, 244, 0.96)),
+                url("/images/sitting on grass.jpg") center top / cover fixed;
+        }
+
+        a { color: inherit; }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            border-bottom: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.94);
+            padding: 12px max(16px, calc((100vw - 1120px) / 2));
+            backdrop-filter: blur(16px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .mark {
+            display: grid;
+            place-items: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
+            color: #ffffff;
+            font-weight: 900;
+        }
+
+        .brand strong,
+        .brand span {
+            display: block;
+            line-height: 1.15;
+        }
+
+        .brand span,
+        .muted,
+        .meta {
+            color: var(--muted);
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
+        .button,
+        button {
+            min-height: 40px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #ffffff;
+            color: var(--ink);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font: inherit;
+            font-weight: 900;
+            padding: 9px 12px;
+            text-decoration: none;
+            white-space: nowrap;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .button.primary {
+            border-color: var(--accent-gold);
+            background: var(--accent-gold);
+            color: var(--ink);
+        }
+
+        .button:hover,
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow);
+        }
+
+        main {
+            width: min(1120px, calc(100% - 28px));
+            margin: 0 auto;
+            padding: 30px 0 54px;
+        }
+
+        .intro,
+        .toolbar,
+        .listing {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.94);
+            box-shadow: var(--shadow);
+        }
+
+        .intro {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 16px;
+            align-items: end;
+            margin-bottom: 14px;
+            padding: 20px;
+        }
+
+        h1,
+        h2,
+        h3,
+        p {
+            margin-top: 0;
+            letter-spacing: 0;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+            font-size: clamp(34px, 6vw, 58px);
+            line-height: 0.98;
+            color: var(--primary-blue);
+        }
+
+        .toolbar {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+            margin-bottom: 14px;
+            padding: 14px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            min-height: 40px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #ffffff;
+            color: var(--ink);
+            font: inherit;
+            padding: 9px 10px;
+        }
+
+        .list {
+            display: grid;
+            gap: 12px;
+        }
+
+        .listing {
+            display: grid;
+            grid-template-columns: 72px minmax(0, 1fr);
+            gap: 14px;
+            padding: 16px;
+        }
+
+        .avatar {
+            display: grid;
+            place-items: center;
+            width: 72px;
+            height: 72px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(214, 169, 45, 0.22), rgba(47, 111, 94, 0.12));
+            color: var(--primary-blue);
+            font-weight: 900;
+            overflow: hidden;
+        }
+
+        .site-footer {
+            border-top: 1px solid var(--line);
+            background: rgba(30, 58, 95, 0.96);
+            color: #fff;
+            padding: 28px 16px;
+            text-align: center;
+        }
+
+        .site-footer-content {
+            display: grid;
+            gap: 8px;
+            justify-items: center;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .listing-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .pills,
+        .service-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+        }
+
+        .pill {
+            border: 1px solid rgba(17, 17, 17, 0.14);
+            border-radius: 999px;
+            background: #ffffff;
+            color: #242424;
+            padding: 5px 8px;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .service {
+            flex: 1 1 260px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #ffffff;
+            padding: 12px;
+        }
+
+        .empty {
+            border: 1px dashed var(--line);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.84);
+            padding: 22px;
+            text-align: center;
+        }
+
+        @media (max-width: 760px) {
+            .topbar,
+            .intro,
+            .listing {
+                display: grid;
+                grid-template-columns: 1fr;
+            }
+
+            .actions {
+                justify-content: flex-start;
+            }
+
+            .toolbar {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <span class="mark">BNA</span>
+            <div>
+                <strong>Bnei Neviim Academy</strong>
+                <span>Service provider index</span>
+            </div>
+        </div>
+        <div class="actions">
+            <a class="button" href="/parent/login">Parent Login</a>
+            <a class="button" href="/student/login">Student Login</a>
+            <a class="button primary" href="/become-service-provider">Become a Service Provider</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="intro">
+            <div>
+                <h1>Approved service providers</h1>
+                <p class="muted">A practical index of outside classes, tutors, and programs BNA can point families toward. Listings are public; payment, discounts, and messages stay gated until the right account path is confirmed.</p>
+            </div>
+            <a class="button primary" href="/parent/login">Message From Parent Portal</a>
+        </section>
+
+        <section class="toolbar" aria-label="Provider filters">
+            <input id="q" placeholder="Search provider or service">
+            <input id="city" placeholder="City or service area">
+            <select id="type"><option value="">All categories</option></select>
+            <input id="age" type="number" min="0" placeholder="Child age">
+        </section>
+
+        <section id="status" class="empty">Loading providers...</section>
+        <section id="list" class="list" aria-live="polite"></section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="site-footer-content">
+            <strong>Bnei Neviim Academy</strong>
+            <span>Ramat Beit Shemesh</span>
+            <span>Registered nonprofit in the State of New Jersey</span>
+        </div>
+    </footer>
+
+    <script>
+        const state = { providers: [] };
+        const els = {
+            q: document.getElementById('q'),
+            city: document.getElementById('city'),
+            type: document.getElementById('type'),
+            age: document.getElementById('age'),
+            list: document.getElementById('list'),
+            status: document.getElementById('status'),
+        };
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;',
+            })[char]);
+        }
+
+        function initials(name = '') {
+            return String(name || 'BNA').split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase() || 'BNA';
+        }
+
+        function serviceMatches(service = {}, provider = {}) {
+            const q = els.q.value.trim().toLowerCase();
+            const city = els.city.value.trim().toLowerCase();
+            const type = els.type.value;
+            const age = els.age.value === '' ? null : Number(els.age.value);
+            const haystack = [
+                provider.display_name,
+                provider.provider_name,
+                provider.category,
+                provider.short_description,
+                service.title,
+                service.service_type,
+                service.description,
+                service.city,
+            ].filter(Boolean).join(' ').toLowerCase();
+            if (q && !haystack.includes(q)) return false;
+            if (city && !String(service.city || provider.city || provider.service_area || '').toLowerCase().includes(city)) return false;
+            if (type && String(service.service_type || provider.category || '') !== type) return false;
+            if (Number.isFinite(age)) {
+                if (service.age_min && Number(service.age_min) > age) return false;
+                if (service.age_max && Number(service.age_max) < age) return false;
+            }
+            return true;
+        }
+
+        function render() {
+            const filtered = state.providers.map(provider => ({
+                ...provider,
+                services: (provider.services || []).filter(service => serviceMatches(service, provider)),
+            })).filter(provider => provider.services.length || serviceMatches({}, provider));
+            els.status.style.display = filtered.length ? 'none' : 'block';
+            els.status.textContent = state.providers.length ? 'No approved providers match these filters.' : 'No approved providers are listed yet.';
+            els.list.innerHTML = filtered.map(provider => {
+                const name = provider.display_name || provider.provider_name || 'Provider';
+                const serviceArea = [provider.city, provider.neighborhood, provider.service_area].filter(Boolean).join(' / ');
+                const links = [
+                    provider.website_url ? `<a class="button" href="${escapeHtml(provider.website_url)}" target="_blank" rel="noopener noreferrer">Website</a>` : '',
+                    provider.google_business_profile_url ? `<a class="button" href="${escapeHtml(provider.google_business_profile_url)}" target="_blank" rel="noopener noreferrer">Google Profile</a>` : '',
+                    provider.whatsapp_phone ? `<a class="button" href="https://wa.me/${escapeHtml(String(provider.whatsapp_phone).replace(/\D/g, ''))}" target="_blank" rel="noopener noreferrer">WhatsApp</a>` : '',
+                    `<a class="button primary" href="/parent/login">Parent Message</a>`,
+                ].filter(Boolean).join('');
+                return `
+                    <article class="listing">
+                        <div class="avatar">${provider.profile_image_url ? `<img src="${escapeHtml(provider.profile_image_url)}" alt="${escapeHtml(name)}">` : escapeHtml(initials(name))}</div>
+                        <div>
+                            <div class="listing-head">
+                                <div>
+                                    <h2>${escapeHtml(name)}</h2>
+                                    <p class="meta">${escapeHtml([provider.category, serviceArea].filter(Boolean).join(' / ') || 'Approved provider')}</p>
+                                </div>
+                                <span class="pill">${escapeHtml(String(provider.listing_tier || provider.commercial_model || 'free listing').replace(/_/g, ' '))}</span>
+                            </div>
+                            ${provider.short_description || provider.public_notes ? `<p>${escapeHtml(provider.short_description || provider.public_notes)}</p>` : ''}
+                            <div class="service-grid">
+                                ${(provider.services || []).map(service => `
+                                    <div class="service">
+                                        <strong>${escapeHtml(service.title || 'Service')}</strong>
+                                        <p class="meta">${escapeHtml([service.service_type, service.city, service.price_amount ? `${service.currency || 'ILS'} ${service.price_amount}` : 'Price pending'].filter(Boolean).join(' / '))}</p>
+                                        ${service.description ? `<p>${escapeHtml(service.description)}</p>` : ''}
+                                    </div>
+                                `).join('') || '<div class="service"><strong>Profile listing</strong><p class="meta">Service details pending BNA review.</p></div>'}
+                            </div>
+                            <div class="actions" style="justify-content:flex-start;margin-top:12px;">${links}</div>
+                        </div>
+                    </article>
+                `;
+            }).join('');
+        }
+
+        function refreshTypes() {
+            const types = [...new Set(state.providers.flatMap(provider => (provider.services || []).map(service => service.service_type || provider.category).filter(Boolean)))].sort();
+            els.type.innerHTML = '<option value="">All categories</option>' + types.map(type => `<option value="${escapeHtml(type)}">${escapeHtml(type)}</option>`).join('');
+        }
+
+        async function loadProviders() {
+            try {
+                const response = await fetch('/api/service-providers');
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.error || 'Could not load providers');
+                state.providers = Array.isArray(data.providers) ? data.providers : [];
+                refreshTypes();
+                render();
+            } catch (error) {
+                els.status.style.display = 'block';
+                els.status.textContent = error.message || 'Could not load providers.';
+            }
+        }
+
+        [els.q, els.city, els.type, els.age].forEach(input => input.addEventListener('input', render));
+        loadProviders();
+    </script>
+    <script src="/js/app-select.js"></script>
+</body>
+</html>

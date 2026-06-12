@@ -88,7 +88,7 @@ Payment may be made by cash, bank transfer, credit card, or another method appro
       type: 'tuition_agreement',
       packageIndex: null,
       version: TUITION_VERSION,
-      title: { en: 'Tuition Agreement', he: 'הסכם שכר לימוד' },
+      title: { en: 'Tuition', he: 'הסכם שכר לימוד' },
       description: {
         en: 'Monthly tuition, payment timing, refund policy, and withdrawal notice.',
         he: 'שכר לימוד חודשי, זמני תשלום, מדיניות החזרים והודעת פרישה.'
@@ -98,7 +98,7 @@ Payment may be made by cash, bank transfer, credit card, or another method appro
       type: 'parent_handbook',
       packageIndex: 1,
       version: PACKAGE_VERSION,
-      title: { en: 'Parent Handbook', he: 'מדריך הורים' },
+      title: { en: 'Handbook', he: 'מדריך הורים' },
       description: {
         en: 'Program philosophy, parent partnership, structure, safety, and no-smartphone policy.',
         he: 'גישה חינוכית, שותפות הורים, מבנה התכנית, בטיחות ומדיניות ללא סמארטפונים.'
@@ -108,7 +108,7 @@ Payment may be made by cash, bank transfer, credit card, or another method appro
       type: 'student_code_of_conduct',
       packageIndex: 2,
       version: PACKAGE_VERSION,
-      title: { en: 'Student Handbook / Code of Conduct', he: 'מדריך תלמידים / קוד התנהגות' },
+      title: { en: 'Student Handbook', he: 'מדריך תלמידים / קוד התנהגות' },
       description: {
         en: 'Parent confirms these expectations were reviewed, or will be reviewed, with the child.',
         he: 'ההורה מאשר שהציפיות האלו נלמדו, או יילמדו, עם הילד.'
@@ -118,7 +118,7 @@ Payment may be made by cash, bank transfer, credit card, or another method appro
       type: 'safety_acknowledgment_waiver',
       packageIndex: 3,
       version: PACKAGE_VERSION,
-      title: { en: 'Safety Acknowledgment and Liability Waiver', he: 'אישור בטיחות, הצהרה וויתור' },
+      title: { en: 'Waiver', he: 'אישור בטיחות, הצהרה וויתור' },
       description: {
         en: 'Safety responsibilities, activity, medical/emergency permissions, damage responsibility, and liability waiver.',
         he: 'אחריות בטיחותית, פעילות, אישורי חירום ורפואה, אחריות לנזק וויתור אחריות.'

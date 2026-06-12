@@ -2169,7 +2169,7 @@ const REQUIRED_SIGNUP_AGREEMENT_DEFINITIONS = [
       he: 'הסכמת הורים / עמוד חתימה - Bnei Neviim Academy',
     },
   },
-];
+].filter((definition) => !['registration_intake_form', 'parent_agreement_signature_page'].includes(definition.agreement_type));
 const BNA_TIME_ZONE = process.env.BNA_TIME_ZONE || 'Asia/Jerusalem';
 const DEFAULT_TORAH_GOAL_MINUTES = Number(process.env.BNA_DEFAULT_TORAH_GOAL_MINUTES || 10);
 const DEFAULT_TORAH_TRIP_REQUIRED_UNITS = Number(process.env.BNA_TORAH_TRIP_REQUIRED_UNITS || 30);
@@ -3644,6 +3644,67 @@ async function findStudentByAccessCode(code, db = pool) {
      LIMIT 1`,
     [String(code || '').trim()]
   )).rows[0] || null;
+}
+
+const STUDENT_PORTAL_AUTH_WINDOW_MS = 15 * 60 * 1000;
+const STUDENT_PORTAL_AUTH_MAX_FAILURES = 8;
+const studentPortalAuthFailures = new Map();
+
+function studentPortalAuthFailureKey(req, code) {
+  return `${getRequestIp(req) || 'unknown'}:${sha256Hex(String(code || '').trim()).slice(0, 24)}`;
+}
+
+function pruneStudentPortalAuthFailures(now = Date.now()) {
+  for (const [key, entry] of studentPortalAuthFailures.entries()) {
+    if (!entry || now - Number(entry.firstFailureAt || 0) > STUDENT_PORTAL_AUTH_WINDOW_MS) {
+      studentPortalAuthFailures.delete(key);
+    }
+  }
+}
+
+function recordStudentPortalAuthFailure(req, code) {
+  const now = Date.now();
+  pruneStudentPortalAuthFailures(now);
+  const key = studentPortalAuthFailureKey(req, code);
+  const previous = studentPortalAuthFailures.get(key);
+  const entry = previous && now - previous.firstFailureAt <= STUDENT_PORTAL_AUTH_WINDOW_MS
+    ? { firstFailureAt: previous.firstFailureAt, count: previous.count + 1 }
+    : { firstFailureAt: now, count: 1 };
+  studentPortalAuthFailures.set(key, entry);
+  return entry;
+}
+
+function clearStudentPortalAuthFailures(req, code) {
+  studentPortalAuthFailures.delete(studentPortalAuthFailureKey(req, code));
+}
+
+async function getStudentForPortalCredential(req, res, code, db = pool) {
+  const trimmedCode = String(code || '').trim();
+  if (!trimmedCode) {
+    res.status(401).json({ error: 'A valid student access code is required' });
+    return null;
+  }
+
+  const key = studentPortalAuthFailureKey(req, trimmedCode);
+  const previous = studentPortalAuthFailures.get(key);
+  if (
+    previous
+    && previous.count >= STUDENT_PORTAL_AUTH_MAX_FAILURES
+    && Date.now() - previous.firstFailureAt <= STUDENT_PORTAL_AUTH_WINDOW_MS
+  ) {
+    res.status(429).json({ error: 'Too many failed access attempts. Please wait and try again.' });
+    return null;
+  }
+
+  const student = await findStudentByAccessCode(trimmedCode, db);
+  if (!student) {
+    recordStudentPortalAuthFailure(req, trimmedCode);
+    res.status(401).json({ error: 'Invalid or expired student access code' });
+    return null;
+  }
+
+  clearStudentPortalAuthFailures(req, trimmedCode);
+  return student;
 }
 
 function goalBoardAdminView(row) {
@@ -19116,6 +19177,15 @@ app.patch('/api/bna/service-providers/:id', requireAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/service-providers', async (req, res) => {
+  try {
+    const providers = await getServiceProviderDirectory({ approved_only: true });
+    res.json({ providers: providers.map(publicServiceProviderView) });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get('/api/provider-plans', async (req, res) => {
   res.json({ success: true, plans: providerPlansView() });
 });
@@ -19219,11 +19289,14 @@ app.post('/api/provider-onboarding', async (req, res) => {
   const interest = String(body.interested_in || body.interest || 'free_listing').trim().toLowerCase();
   const commercialModel = interest.includes('school')
     ? 'school_subscription'
-    : /paid|funnel|setup|managed|automation/.test(interest)
+    : /paid|funnel|setup|managed|automation|ai[_\s-]*max|lead|marketing|ads?/.test(interest)
       ? 'paid_setup'
       : 'free_listing';
   const entitlementPlan = safeProviderPlan('', commercialModel);
   const serviceTitle = limitText(body.program_description || body.program || body.service_description || body.description, 180);
+  const serviceCategory = limitText(body.service_category || body.serviceCategory || body.category, 120);
+  const serviceArea = limitText(body.service_area || body.serviceArea || body.location, 180);
+  const agesServed = limitText(body.ages_served || body.agesServed || body.age_range || body.ageRange, 120);
 
   const client = await pool.connect();
   try {
@@ -19261,13 +19334,25 @@ app.post('/api/provider-onboarding', async (req, res) => {
         limitText(body.notes, 1200) || null,
         JSON.stringify({
           source: 'provider_onboarding',
-          category: body.category || null,
+          category: serviceCategory || null,
           service_type: body.service_type || body.serviceType || null,
-          location: body.location || null,
+          location: serviceArea || null,
           online: body.online || null,
           language: body.language || null,
-          age_range: body.age_range || body.ageRange || null,
+          age_range: agesServed || null,
+          types_kids_served: limitText(body.types_kids_served || body.typesKidsServed, 800) || null,
+          experience_background: limitText(body.experience_background || body.experienceBackground, 1200) || null,
+          problems_solved: limitText(body.problems_solved || body.problemsSolved, 1200) || null,
+          years_active: limitText(body.years_active || body.yearsActive, 80) || null,
+          pricing_structure: limitText(body.pricing_structure || body.pricingStructure, 500) || null,
+          typical_charge: limitText(body.typical_charge || body.typicalCharge, 240) || null,
+          discounts_group_options: limitText(body.discounts_group_options || body.discountsGroupOptions, 1200) || null,
+          running_ads: limitText(body.running_ads || body.runningAds, 80) || null,
+          ai_max_interest: /ai[_\s-]*max/.test(interest),
           website: body.website || null,
+          social_link: body.social_link || body.socialLink || null,
+          google_business_profile_url: body.google_business_profile_url || body.googleBusinessProfileUrl || null,
+          google_place_id: body.google_place_id || body.googlePlaceId || null,
           raw_interest: interest,
         }),
       ]
@@ -19282,10 +19367,10 @@ app.post('/api/provider-onboarding', async (req, res) => {
         [
           provider.id,
           serviceTitle,
-          limitText(body.service_type || body.serviceType || body.category || 'learning', 80) || 'learning',
+          limitText(body.service_type || body.serviceType || serviceCategory || 'learning', 80) || 'learning',
           limitText(body.program_description || body.description, 1600) || null,
-          limitText(body.location, 120) || null,
-          normalizeTextArray([body.category, body.language, body.age_range || body.ageRange].filter(Boolean)),
+          limitText(serviceArea, 120) || null,
+          normalizeTextArray([serviceCategory, body.language, agesServed].filter(Boolean)),
           JSON.stringify({ source: 'provider_onboarding', public_pending_review: true }),
         ]
       );
@@ -21989,11 +22074,10 @@ app.get('/api/torah-learning/public-summary', async (req, res) => {
 
 app.get('/api/student-portal', async (req, res) => {
   const code = String(req.query.code || '').trim();
-  if (!code) return res.status(400).json({ error: 'Student access code is required' });
 
   try {
-    const student = await findStudentByAccessCode(code);
-    if (!student) return res.status(404).json({ error: 'Student access code was not found' });
+    const student = await getStudentForPortalCredential(req, res, code);
+    if (!student) return;
     res.json(await getStudentPortalPayload(student));
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -22003,12 +22087,11 @@ app.get('/api/student-portal', async (req, res) => {
 app.post('/api/student-portal/goals', async (req, res) => {
   const code = String((req.body || {}).access_code || '').trim();
   const title = String((req.body || {}).title || '').trim();
-  if (!code) return res.status(400).json({ error: 'Student access code is required' });
   if (!title) return res.status(400).json({ error: 'Goal title is required' });
 
   try {
-    const student = await findStudentByAccessCode(code);
-    if (!student) return res.status(404).json({ error: 'Student access code was not found' });
+    const student = await getStudentForPortalCredential(req, res, code);
+    if (!student) return;
 
     const metadata = goalBoardMetadataFromPayload({
       ...(req.body || {}),
@@ -22048,16 +22131,15 @@ app.post('/api/student-portal/goals', async (req, res) => {
 app.post('/api/student-portal/goals/:id/checkoff', async (req, res) => {
   const code = String((req.body || {}).access_code || '').trim();
   const progressPercent = Math.max(0, Math.min(100, Math.round(Number((req.body || {}).progress_percent))));
-  if (!code) return res.status(400).json({ error: 'Student access code is required' });
   if (!Number.isFinite(progressPercent)) return res.status(400).json({ error: 'progress_percent must be a number' });
 
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-    const student = await findStudentByAccessCode(code, client);
+    const student = await getStudentForPortalCredential(req, res, code, client);
     if (!student) {
       await client.query('ROLLBACK');
-      return res.status(404).json({ error: 'Student access code was not found' });
+      return;
     }
 
     const current = await getGoalBoardEvent(req.params.id, client);
@@ -22181,16 +22263,15 @@ app.post('/api/student-portal/goals/:id/day-checkoff', async (req, res) => {
   const note = Object.prototype.hasOwnProperty.call(req.body || {}, 'note')
     ? String((req.body || {}).note || '').trim().slice(0, 1000)
     : null;
-  if (!code) return res.status(400).json({ error: 'Student access code is required' });
   if (!date) return res.status(400).json({ error: 'A valid date is required' });
 
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-    const student = await findStudentByAccessCode(code, client);
+    const student = await getStudentForPortalCredential(req, res, code, client);
     if (!student) {
       await client.query('ROLLBACK');
-      return res.status(404).json({ error: 'Student access code was not found' });
+      return;
     }
 
     const current = await getGoalBoardEvent(req.params.id, client);
@@ -22271,17 +22352,16 @@ app.post('/api/student-portal/message-parent', async (req, res) => {
   const code = String((req.body || {}).access_code || '').trim();
   const message = String((req.body || {}).message || (req.body || {}).body || '').trim();
   const goalId = (req.body || {}).goal_id ? Number((req.body || {}).goal_id) : null;
-  if (!code) return res.status(400).json({ error: 'Student access code is required' });
   if (!message) return res.status(400).json({ error: 'Message is required' });
   if (message.length > 2000) return res.status(400).json({ error: 'Message is too long' });
 
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-    const student = await findStudentByAccessCode(code, client);
+    const student = await getStudentForPortalCredential(req, res, code, client);
     if (!student) {
       await client.query('ROLLBACK');
-      return res.status(404).json({ error: 'Student access code was not found' });
+      return;
     }
     const notificationStudent = await hydrateStudentParentNotificationRecord(student, client);
     if (!normalizeEmail(notificationStudent.parent_email)) {
@@ -22331,13 +22411,12 @@ app.post('/api/student-portal/message-rabbi', async (req, res) => {
   const code = String((req.body || {}).access_code || '').trim();
   const body = String((req.body || {}).message || '').trim();
   const goalId = (req.body || {}).goal_id ? Number((req.body || {}).goal_id) : null;
-  if (!code) return res.status(400).json({ error: 'Student access code is required' });
   if (!body) return res.status(400).json({ error: 'Message is required' });
   if (body.length > 2000) return res.status(400).json({ error: 'Message is too long' });
 
   try {
-    const student = await findStudentByAccessCode(code);
-    if (!student) return res.status(404).json({ error: 'Student access code was not found' });
+    const student = await getStudentForPortalCredential(req, res, code);
+    if (!student) return;
     if (goalId) {
       const goal = await getGoalBoardEvent(goalId);
       if (!goal || Number(goal.student_id) !== Number(student.id)) {
@@ -28954,6 +29033,11 @@ app.get(['/provider-participant', '/provider/member'], (req, res) => {
 app.get('/providers/join', (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'public', 'providers-join.html'));
+});
+
+app.get(['/service-providers', '/providers'], (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, 'public', 'service-providers.html'));
 });
 
 // Operations dashboard - with login redirect

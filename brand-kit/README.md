@@ -21,4 +21,5 @@ Google Drive mirrors this as `BNA V2 / BNA Brand Kit` so the working docs are ea
 - `05-phrases-to-use.md`
 - `06-phrases-to-avoid.md`
 - `07-brand-kit-suggestions.md`
+- `09-visual-design-tokens.md`
 

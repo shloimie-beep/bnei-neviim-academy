@@ -9,6 +9,7 @@ const operations = fs.readFileSync(path.join(repoRoot, 'public', 'operations.htm
 const parent = fs.readFileSync(path.join(repoRoot, 'public', 'parent.html'), 'utf8');
 const provider = fs.readFileSync(path.join(repoRoot, 'public', 'provider.html'), 'utf8');
 const providerJoin = fs.readFileSync(path.join(repoRoot, 'public', 'providers-join.html'), 'utf8');
+const serviceProviders = fs.readFileSync(path.join(repoRoot, 'public', 'service-providers.html'), 'utf8');
 
 test('service-provider directory schema and guarded APIs are bootstrapped', () => {
   assert.match(server, /CREATE TABLE IF NOT EXISTS bna_service_providers/);
@@ -93,16 +94,34 @@ test('public parent/provider surfaces use sanitized provider records and safe CT
 test('provider onboarding route and page create draft commercial records safely', () => {
   assert.match(server, /app\.post\('\/api\/provider-onboarding'/);
   assert.match(server, /app\.get\('\/providers\/join'/);
+  assert.match(server, /app\.get\(\['\/service-providers', '\/providers'\]/);
+  assert.match(server, /app\.get\('\/api\/service-providers'/);
   assert.match(server, /provider_onboarding/);
   assert.match(server, /Review provider onboarding/);
   assert.match(server, /'unknown_pending_access', 'no_access'/);
   assert.match(server, /commercial_model: commercialModel/);
+  assert.match(server, /serviceCategory/);
+  assert.match(server, /agesServed/);
+  assert.match(server, /types_kids_served/);
+  assert.match(server, /experience_background/);
+  assert.match(server, /problems_solved/);
+  assert.match(server, /discounts_group_options/);
+  assert.match(server, /running_ads/);
+  assert.match(server, /ai_max_interest/);
   assert.match(providerJoin, /Provider Network/);
   assert.match(providerJoin, /Free Listing/);
   assert.match(providerJoin, /Managed Setup/);
   assert.match(providerJoin, /School Workspace/);
   assert.match(providerJoin, /Partner/);
+  assert.match(providerJoin, /AI Max/);
+  assert.match(providerJoin, /No checkout yet/);
+  assert.match(providerJoin, /lead generation, marketing automation, natural-language voice marketing/);
+  assert.match(providerJoin, /types_kids_served/);
+  assert.match(providerJoin, /discounts_group_options/);
+  assert.match(providerJoin, /running_ads/);
   assert.match(providerJoin, /\/api\/provider-onboarding/);
+  assert.match(serviceProviders, /\/api\/service-providers/);
+  assert.match(serviceProviders, /Become a Service Provider/);
 });
 
 test('Operations exposes commercial settings, entitlements, access/materials, and audit pages', () => {

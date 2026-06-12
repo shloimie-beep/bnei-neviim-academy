@@ -1570,11 +1570,11 @@
                 link: 'Link',
                 scheduled: 'Scheduled',
                 ready: 'Ready',
-                notGenerated: 'Not generated',
+                notGenerated: 'Coming soon',
                 synced: 'Synced',
                 notSynced: 'Not synced',
                 assigned: 'Assigned',
-                worksheetNotGenerated: 'Worksheet is not generated yet.',
+                worksheetNotGenerated: 'Worksheet is coming soon.',
                 sefariaSources: 'Sefaria sources',
                 optionalFollowUp: 'Optional follow-up',
                 parentResponses: 'Parent responses',
@@ -1810,6 +1810,8 @@
                 tabletOpened: 'נשמר. גישת הטאבלט נפתחה',
             },
         };
+        labels.he.notGenerated = '\u05d1\u05e7\u05e8\u05d5\u05d1';
+        labels.he.worksheetNotGenerated = '\u05d3\u05e3 \u05d4\u05e2\u05d1\u05d5\u05d3\u05d4 \u05d9\u05d5\u05e4\u05d9\u05e2 \u05d1\u05e7\u05e8\u05d5\u05d1.';
 
         const els = {
             pageTitle: document.getElementById('pageTitle'),
@@ -2009,7 +2011,10 @@
             });
             const data = await response.json().catch(() => ({}));
             if (!response.ok) {
-                throw new Error(language === 'he' ? t('requestFailed') : (data.error || t('requestFailed')));
+                const error = new Error(language === 'he' ? t('requestFailed') : (data.error || t('requestFailed')));
+                error.status = response.status;
+                error.data = data;
+                throw error;
             }
             return data;
         }
@@ -2046,6 +2051,14 @@
             document.body.classList.remove('student-has-helper');
             els.accessCode.value = accessCode || '';
             setLoginState(message, isError);
+        }
+
+        function handlePortalCredentialError(error) {
+            if (![401, 403, 404].includes(Number(error?.status || 0))) return false;
+            accessCode = '';
+            localStorage.removeItem(STORAGE_KEY);
+            showLogin(error.message || t('couldNotOpenStudentLink'), true);
+            return true;
         }
 
         function filterLabel(filter) {
@@ -3048,22 +3061,28 @@
                 return;
             }
 
-            accessCode = trimmedCode;
-            localStorage.setItem(STORAGE_KEY, accessCode);
             setLoginState(t('opening'));
 
             try {
-                const data = await apiRequest(`/api/student-portal?code=${encodeURIComponent(accessCode)}`);
+                const data = await apiRequest(`/api/student-portal?code=${encodeURIComponent(trimmedCode)}`);
+                accessCode = trimmedCode;
+                localStorage.setItem(STORAGE_KEY, accessCode);
                 renderPortal(data);
             } catch (error) {
+                accessCode = '';
                 localStorage.removeItem(STORAGE_KEY);
                 showLogin(error.message || t('couldNotOpenStudentLink'), true);
             }
         }
 
         async function refreshPortal() {
-            const data = await apiRequest(`/api/student-portal?code=${encodeURIComponent(accessCode)}`);
-            renderPortal(data);
+            try {
+                const data = await apiRequest(`/api/student-portal?code=${encodeURIComponent(accessCode)}`);
+                renderPortal(data);
+            } catch (error) {
+                if (handlePortalCredentialError(error)) return;
+                throw error;
+            }
         }
 
         async function updateGoal(goalId, progressPercent, reflectionNote = null) {
@@ -3093,6 +3112,7 @@
                     setSaveState(t('saved'));
                 }
             } catch (error) {
+                if (handlePortalCredentialError(error)) return;
                 setSaveState(error.message || t('couldNotSaveCheckoff'), true);
             } finally {
                 saving = false;
@@ -3124,6 +3144,7 @@
                 await refreshPortal();
                 setSaveState(t('saved'));
             } catch (error) {
+                if (handlePortalCredentialError(error)) return;
                 setSaveState(error.message || t('couldNotSaveDay'), true);
             } finally {
                 saving = false;
@@ -3156,6 +3177,7 @@
                 els.parentMessage.value = '';
                 els.parentMessageStatus.textContent = t('parentMessageSent');
             } catch (error) {
+                if (handlePortalCredentialError(error)) return;
                 els.parentMessageStatus.textContent = error.message || t('couldNotSendMessage');
                 els.parentMessageStatus.classList.add('error');
             } finally {
@@ -3184,6 +3206,7 @@
                 els.rabbiMessage.value = '';
                 els.messageStatus.textContent = t('messageSent');
             } catch (error) {
+                if (handlePortalCredentialError(error)) return;
                 els.messageStatus.textContent = error.message || t('couldNotSendMessage');
                 els.messageStatus.classList.add('error');
             } finally {
