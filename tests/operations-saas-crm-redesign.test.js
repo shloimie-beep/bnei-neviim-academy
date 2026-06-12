@@ -37,6 +37,11 @@ test('Operations uses the SaaS shell with global nav, workspace switcher, and ne
   assert.match(operations, /function renderSidebarSubnav/);
   assert.match(operations, /function currentSubnavConfig/);
   assert.match(operations, /class="ops-nested-subnav"/);
+  assert.match(operations, /All modules/);
+  assert.match(operations, /tasks: \{ label: 'Work', marker: 'WK' \}/);
+  assert.match(operations, /contacts: \{ label: 'Parents', marker: 'PA' \}/);
+  assert.match(operations, /service_providers: \{ label: 'Providers', marker: 'PR' \}/);
+  assert.match(operations, /api_usage: \{ label: 'API \/ Bots', marker: 'API' \}/);
   assert.match(operations, /class="ops-brand-topbar saas-topbar"/);
   assert.match(operations, /function renderSectionNav\(tabs, activeId, handlerName\) \{\s*return '';/);
   assert.match(operations, /\.ops-app-shell\.drawer-open \.ops-main\s*{[\s\S]*display:\s*none/);
@@ -60,7 +65,19 @@ test('Operations exposes provider, communications, API usage, settings, and disa
   assert.match(operations, /Email Identities/);
   assert.match(operations, /Google Classroom/);
   assert.match(operations, /WhatsApp/);
+  assert.match(operations, /WhatsApp \/ WAPI/);
+  assert.match(operations, /WAPI_BASE_URL/);
+  assert.match(operations, /WAPI_API_KEY/);
   assert.match(operations, /Social Accounts/);
+  for (const group of [
+    'Users & Roles',
+    'Bots & AI',
+    'Calendar & Classroom',
+    'Billing & Payments',
+    'Advanced',
+  ]) {
+    assert.match(operations, new RegExp(group.replace('&', '&')));
+  }
   assert.match(server, /allowedViews: platformAllowedViews/);
   assert.match(server, /allowedViews: providerAllowedViews/);
 });
@@ -108,6 +125,17 @@ test('Operations task and student details are query-addressable routed views', (
   assert.match(operations, /function openTaskDetail/);
   assert.match(operations, /function closeTaskDetail/);
   assert.match(operations, /Open detail page for notes, timestamps, comments, and decisions/);
+  assert.match(operations, /columnId === 'decisions'/);
+  assert.match(operations, /items\.map\(renderDecisionCard\)/);
+  assert.match(operations, /task\.decision_question/);
+  assert.match(operations, /task\.decision_recommendation/);
+  assert.match(operations, /onclick="openSupportTicketForm\(\)">Report problem/);
+  assert.match(operations, /function renderSupportTicketModal/);
+  assert.match(operations, /id="supportTicketDescription"/);
+  assert.match(operations, /id="supportTicketExpected"/);
+  assert.match(operations, /report_mode: 'in_app_support_ticket_form'/);
+  assert.match(operations, /function resetTaskDetailViewportAfterRender/);
+  assert.match(operations, /resetTaskDetailViewportAfterRender\(\)/);
   assert.match(operations, /\{ id: 'parent_family', label: 'Parent \/ Family' \}/);
   assert.match(operations, /\{ id: 'documents', label: 'Documents' \}/);
   assert.match(operations, /\{ id: 'bot_settings', label: 'Bot Settings' \}/);

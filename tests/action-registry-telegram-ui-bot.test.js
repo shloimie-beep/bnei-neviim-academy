@@ -1,5 +1,6 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
+const path = require('node:path');
 const test = require('node:test');
 
 const { listActions, getAction } = require('../src/lib/actions/registry');
@@ -44,6 +45,15 @@ test('core Telegram/UI operations are present in the registry', () => {
     'show_child_calendar',
     'draft_whatsapp_message',
     'send_whatsapp_via_wapi',
+    'find_latest_uploaded_media',
+    'transcribe_or_parse_media_if_needed',
+    'summarize_weekly_topics',
+    'extract_student_questions',
+    'generate_weekly_update',
+    'generate_parent_newsletter',
+    'generate_whatsapp_weekly_post',
+    'attach_video_to_parent_portal',
+    'save_weekly_update_revision',
     'prepare_rabbi_sheller_access_request',
     'create_report_problem_ticket',
     'send_test_email',
@@ -105,6 +115,21 @@ test('Telegram routes normal operations to typed actions before Codex', () => {
     classifyTelegramActionRequest({ text: 'Send this WhatsApp to the parent group after approval' }).action_id,
     'send_whatsapp_to_group',
   );
+  const weeklyFromMedia = classifyTelegramActionRequest({
+    text: 'Use the latest uploaded video and make a weekly WhatsApp parent update',
+  });
+  assert.equal(weeklyFromMedia.action_id, 'generate_whatsapp_weekly_post');
+  assert.equal(weeklyFromMedia.inputs.from_latest_media, true);
+  assert.equal(weeklyFromMedia.reason, 'weekly_update_from_latest_media');
+  assert.deepEqual(
+    classifyTelegramActionRequest({ text: 'Find the latest uploaded recording' }).action_id,
+    'find_latest_uploaded_media',
+  );
+  const parentUpdateFromMedia = classifyTelegramActionRequest({
+    text: 'Generate a parent weekly update from the latest uploaded audio',
+  });
+  assert.equal(parentUpdateFromMedia.action_id, 'generate_weekly_update');
+  assert.equal(parentUpdateFromMedia.inputs.from_latest_media, true);
 });
 
 test('Telegram routes code/development work to Codex instead of normal operation actions', () => {
@@ -145,6 +170,86 @@ test('email draft can execute without sending email', async () => {
   assert.equal(result.executed, true);
   assert.equal(result.result.sent, false);
   assert.match(result.result.identity, /BNA school/);
+});
+
+test('weekly update actions can draft from latest uploaded media context', async () => {
+  const db = {
+    query: async () => ({
+      rows: [{
+        id: 77,
+        title: 'Latest class recording',
+        source_type: 'telegram_media',
+        media_url: 'https://example.test/class-77.mp4',
+        status: 'ready',
+        transcript_text: 'The boys learned Mishnah Berachos and reviewed responsibility. Dovid asked why a beracha needs kavana?',
+        parse_json: null,
+        caption: '',
+        notes: '',
+      }],
+    }),
+  };
+  const result = await runAction({
+    action_id: 'generate_weekly_update',
+    source: 'telegram',
+    inputs: { from_latest_media: true, student_name: 'BNA boys' },
+    actor: { user_id: 'telegram-local', role: 'operator', workspace_id: 'bna' },
+  }, { db });
+  assert.equal(result.success, true);
+  assert.equal(result.executed, true);
+  assert.equal(result.result.weekly_update_created, true);
+  assert.equal(result.result.media.id, 77);
+  assert.match(result.result.body, /Mishnah Berachos/);
+  assert.ok(result.result.student_questions.some((question) => /kavana/i.test(question)));
+
+  const whatsapp = await runAction({
+    action_id: 'generate_whatsapp_weekly_post',
+    source: 'telegram',
+    inputs: { from_latest_media: true },
+    actor: { user_id: 'telegram-local', role: 'operator', workspace_id: 'bna' },
+  }, { db });
+  assert.equal(whatsapp.success, true);
+  assert.equal(whatsapp.result.draft_created, true);
+  assert.equal(whatsapp.result.sent, false);
+  assert.match(whatsapp.result.body, /BNA weekly update/);
+});
+
+test('WhatsApp WAPI action falls back safely when unconfigured and honors test mode', async () => {
+  const unconfigured = await runAction({
+    action_id: 'send_whatsapp_via_wapi',
+    source: 'telegram',
+    approved: true,
+    inputs: { to: '+15555551212', body: 'Parent update draft' },
+    actor: { user_id: 'telegram-local', role: 'operator', workspace_id: 'bna' },
+  });
+  assert.equal(unconfigured.success, true);
+  assert.equal(unconfigured.executed, true);
+  assert.equal(unconfigured.result.sent, false);
+  assert.equal(unconfigured.result.connector, 'manual_link');
+  assert.equal(unconfigured.result.blocked_by_config, true);
+  assert.match(unconfigured.result.manual_link_fallback, /^https:\/\/wa\.me\/15555551212/);
+
+  const testMode = await runAction({
+    action_id: 'send_whatsapp_via_wapi',
+    source: 'telegram',
+    approved: true,
+    inputs: { to: '+15555551212', body: 'Parent update draft' },
+    actor: { user_id: 'telegram-local', role: 'operator', workspace_id: 'bna' },
+  }, {
+    connectors: {
+      whatsapp: {
+        provider: 'wapi',
+        configured: true,
+        test_mode: true,
+        base_url: 'https://wapi.example.test',
+        default_parent_group_id: 'parents',
+      },
+    },
+  });
+  assert.equal(testMode.success, true);
+  assert.equal(testMode.result.connector, 'wapi');
+  assert.equal(testMode.result.test_mode, true);
+  assert.equal(testMode.result.sent, false);
+  assert.match(testMode.result.blocked_reason, /test mode/i);
 });
 
 test('task creation action uses typed runner and does not require Codex', async () => {
@@ -188,6 +293,47 @@ test('calendar event create supports dry-run and mobile-safe internal calendar f
   assert.equal(result.audit_log.result_status, 'previewed');
 });
 
+test('report problem action preserves selected page context for support tickets', async () => {
+  const result = await runAction({
+    action_id: 'create_report_problem_ticket',
+    source: 'dashboard',
+    dry_run: true,
+    inputs: {
+      description: 'The weekly update button does nothing',
+      selector: 'button[data-action="weekly"]',
+      bounding_box: { x: 12, y: 34, width: 180, height: 44 },
+      page_context: { route: '/operations?view=communications&section=whatsapp' },
+      reporter_user_id: 'super-admin-local',
+      reporter_role: 'super_admin',
+      workspace_id: 'platform',
+    },
+    actor: { user_id: 'super-admin-local', role: 'super_admin', workspace_id: 'platform' },
+  });
+  assert.equal(result.success, true);
+  assert.equal(result.executed, false);
+  assert.equal(result.preview.ticket_ready, true);
+  assert.equal(result.preview.selector, 'button[data-action="weekly"]');
+  assert.deepEqual(result.preview.bounding_box, { x: 12, y: 34, width: 180, height: 44 });
+  assert.equal(result.preview.screenshot_status, 'not_captured_in_browser');
+  assert.equal(result.preview.route, '/operations?view=communications&section=whatsapp');
+});
+
+test('Rabbi Sheller access request includes credential and materials checklist without sending', async () => {
+  const result = await runAction({
+    action_id: 'prepare_rabbi_sheller_access_request',
+    source: 'dashboard',
+    inputs: { recipient: 'Rabbi Sheller' },
+    actor: { user_id: 'super-admin-local', role: 'operator', workspace_id: 'rabbi_sheller_provider' },
+  });
+  assert.equal(result.success, true);
+  assert.equal(result.executed, true);
+  assert.equal(result.result.sent, false);
+  assert.ok(result.result.checklist.length >= 10);
+  assert.ok(result.result.safe_intake_methods.includes('Shared password-manager item'));
+  assert.match(result.result.message, /Please do not send raw passwords/i);
+  assert.match(result.result.message, /BNA school student data/i);
+});
+
 test('sensitive email/whatsapp/send/sync actions require approval and do not send in tests', async () => {
   for (const action_id of ['send_test_email', 'schedule_email', 'sync_google_calendar', 'send_whatsapp_via_wapi']) {
     const inputs = action_id === 'sync_google_calendar'
@@ -227,9 +373,34 @@ test('action registry artifacts are generated for UI button mapping', () => {
   const pageMap = JSON.parse(fs.readFileSync('ops/action-registry/page-action-map.json', 'utf8'));
   const buttonMap = fs.readFileSync('ops/action-registry/ui-button-map.md', 'utf8');
   assert.ok(actionsJson.some((action) => action.action_id === 'refine_newsletter_draft'));
+  assert.ok(actionsJson.some((action) => action.action_id === 'generate_whatsapp_weekly_post'));
+  assert.ok(actionsJson.some((action) => action.action_id === 'find_latest_uploaded_media'));
   assert.ok(pageMap.telegram.some((entry) => entry.action_id === 'create_task'));
+  assert.ok(pageMap.telegram.some((entry) => entry.action_id === 'generate_whatsapp_weekly_post'));
   assert.match(buttonMap, /refine_newsletter_draft/);
   assert.match(buttonMap, /create_calendar_event/);
+  assert.match(buttonMap, /generate_whatsapp_weekly_post/);
+});
+
+test('scoped bot context templates exist for super admin, parent, student, and provider roles', () => {
+  const contextDir = path.join('content-memory', 'user-contexts');
+  for (const file of [
+    'README.md',
+    'super_admin.md',
+    'workspace_admin_template.md',
+    'parent_template.md',
+    'student_template.md',
+    'provider_admin_template.md',
+    'provider_member_template.md',
+  ]) {
+    const body = fs.readFileSync(path.join(contextDir, file), 'utf8');
+    if (file === 'README.md') {
+      assert.match(body, /Log Fields/i, `${file} should describe audit log fields`);
+    } else {
+      assert.match(body, /Allowed data sources|Allowed sources|Allowed actions/i, `${file} should declare allowed scope`);
+      if (/_template\.md$/.test(file)) assert.match(body, /Denied data sources|Approval rules/i, `${file} should declare denied scope or approval rules`);
+    }
+  }
 });
 
 test('server, Operations UI, and Telegram bridge are wired to the shared action runner', () => {

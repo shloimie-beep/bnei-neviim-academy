@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 const OUT_DIR = path.join(process.cwd(), 'screenshots');
+const APP_URL = (process.env.BNA_APP_URL || 'http://localhost:8080').replace(/\/+$/, '');
 
 if (!fs.existsSync(OUT_DIR)) {
   fs.mkdirSync(OUT_DIR, { recursive: true });
@@ -22,7 +23,7 @@ const viewports = [
 
   for (const vp of viewports) {
     await page.setViewportSize({ width: vp.width, height: vp.height });
-    await page.goto('http://localhost:8080', { waitUntil: 'networkidle' });
+    await page.goto(APP_URL, { waitUntil: 'networkidle' });
 
     const hasHorizontalScroll = await page.evaluate(() => {
       return document.documentElement.scrollWidth > document.documentElement.clientWidth;

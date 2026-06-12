@@ -236,6 +236,92 @@ async function draftEmailFromNewsletter(inputs = {}, context = {}) {
   return draftEmail({ ...inputs, body: newsletterBody }, context);
 }
 
+function parseJsonValue(value, fallback = null) {
+  if (!value) return fallback;
+  if (typeof value === 'object') return value;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return fallback;
+  }
+}
+
+function listFromInput(value = '', maxItems = 8) {
+  if (Array.isArray(value)) return value.map((item) => compactText(item, 220)).filter(Boolean).slice(0, maxItems);
+  return String(value || '')
+    .split(/\r?\n|;|\u2022/)
+    .map((item) => compactText(item.replace(/^[-*]\s*/, ''), 220))
+    .filter(Boolean)
+    .slice(0, maxItems);
+}
+
+async function findLatestUploadedMedia(inputs = {}, context = {}) {
+  if (!context.db) {
+    return {
+      found: false,
+      source: 'no_db',
+      note: 'No database context was available, so latest uploaded media could not be inspected.',
+    };
+  }
+  const mediaId = Number(inputs.media_id || inputs.content_job_id || inputs.job_id || 0);
+  const params = [];
+  const conditions = [
+    "source_type IN ('telegram_media', 'local_drop', 'google_drive', 'manual')",
+    "status <> 'archived'",
+  ];
+  if (mediaId) {
+    params.push(mediaId);
+    conditions.push(`id = $${params.length}`);
+  }
+  const result = await context.db.query(
+    `SELECT id, title, source_type, local_path, media_url, drive_file_id, drive_folder_id,
+            drive_stage, mime_type, caption, status, transcript_text, parse_json, notes,
+            created_at, updated_at
+     FROM bna_content_jobs
+     WHERE ${conditions.join(' AND ')}
+     ORDER BY updated_at DESC NULLS LAST, created_at DESC, id DESC
+     LIMIT 1`,
+    params
+  );
+  const media = result.rows[0] || null;
+  return {
+    found: Boolean(media),
+    source: 'bna_content_jobs',
+    media,
+    needs_transcription: Boolean(media && !media.transcript_text && !parseJsonValue(media.parse_json, {})?.summary),
+    next_actions: media
+      ? ['generate_weekly_update', 'generate_parent_newsletter', 'generate_whatsapp_weekly_post', 'attach_video_to_parent_portal']
+      : ['create_content_job', 'upload_media_to_drive'],
+  };
+}
+
+function summarizeWeeklyTopics(inputs = {}) {
+  const explicit = listFromInput(inputs.topics || inputs.topic_list || inputs.weekly_topics, 8);
+  if (explicit.length) return { topics: explicit, source: 'inputs' };
+  const text = String(inputs.source_text || inputs.transcript_text || inputs.learning || inputs.summary || '').replace(/\r/g, '');
+  const candidates = text
+    .split(/\n+|(?<=[.!?])\s+/)
+    .map((line) => compactText(line.replace(/^[-*]\s*/, ''), 220))
+    .filter((line) => line.length > 12 && !/^dear parents/i.test(line))
+    .slice(0, 8);
+  return {
+    topics: candidates.length ? candidates : ['Learning topics need staff review before sending.'],
+    source: candidates.length ? 'source_text' : 'placeholder',
+  };
+}
+
+function extractStudentQuestions(inputs = {}) {
+  const explicit = listFromInput(inputs.questions || inputs.student_questions, 8);
+  if (explicit.length) return { questions: explicit, source: 'inputs' };
+  const text = String(inputs.source_text || inputs.transcript_text || inputs.learning || '').replace(/\r/g, '');
+  const questions = text
+    .split(/\n+|(?<=[.!?])\s+/)
+    .map((line) => compactText(line.replace(/^[-*]\s*/, ''), 240))
+    .filter((line) => /\?|asked|question/i.test(line))
+    .slice(0, 8);
+  return { questions, source: questions.length ? 'source_text' : 'none_found' };
+}
+
 function refineEmail(inputs = {}) {
   const body = String(inputs.body || '').trim();
   if (!body) throw new Error('body is required');
@@ -443,11 +529,32 @@ function connectorGuardedResult(kind, inputs = {}, context = {}) {
     executed: false,
     connector: kind,
     connector_ready: connectorReady,
+    blocked_by_config: !connectorReady,
     approval_checked: Boolean(context.approved),
     note: connectorReady
       ? 'Connector is present, but this safety pass still requires a dedicated send adapter before live external writes.'
       : `${kind} connector is not configured; no external send, publish, sync, payment, or access change was performed.`,
     requested_inputs: inputs,
+  };
+}
+
+function whatsappConnectorStatus(context = {}) {
+  const config = context.connectors?.whatsapp || {};
+  const provider = config.provider || (config.configured ? 'wapi' : 'manual_link');
+  const configured = Boolean(config.configured || config.api_key_configured || context.helpers?.sendWhatsappMessage);
+  const testMode = Boolean(config.test_mode);
+  return {
+    provider,
+    configured,
+    base_url: config.base_url || '',
+    instance_id: config.instance_id || '',
+    default_sender: config.default_sender || '',
+    default_parent_group_id: config.default_parent_group_id || config.default_group_id || '',
+    approval_required: config.approval_required !== false,
+    test_mode: testMode,
+    ready_to_send: configured && !testMode,
+    blocked_by_config: !configured,
+    blocked_reason: configured ? (testMode ? 'WAPI test mode is enabled; no real WhatsApp send is performed.' : '') : 'WAPI is not configured. Use the manual WhatsApp link fallback.',
   };
 }
 
@@ -482,6 +589,7 @@ function draftWhatsAppMessage(inputs = {}, context = {}) {
     body,
     sent: false,
     approval_required_before_send: true,
+    connector_status: whatsappConnectorStatus(context),
     compose_url: whatsAppComposeUrl(inputs.to || inputs.phone || inputs.whatsapp || '', body),
   };
 }
@@ -498,6 +606,8 @@ function generateWhatsAppLink(inputs = {}, context = {}) {
 async function sendWhatsAppViaWapi(inputs = {}, context = {}) {
   const draft = draftWhatsAppMessage(inputs, context);
   const sendInputs = { ...inputs, body: draft.body };
+  const connectorStatus = whatsappConnectorStatus(context);
+  const composeUrl = draft.compose_url || whatsAppComposeUrl(inputs.to || inputs.phone || inputs.whatsapp || '', draft.body);
   if (context.dryRun || !context.approved) {
     return {
       ...draft,
@@ -505,7 +615,35 @@ async function sendWhatsAppViaWapi(inputs = {}, context = {}) {
       sent: false,
       approval_required_before_send: true,
       connector: 'wapi',
-      connector_ready: Boolean(context.connectors?.whatsapp?.configured || context.helpers?.sendWhatsappMessage),
+      connector_ready: connectorStatus.configured,
+      blocked_by_config: connectorStatus.blocked_by_config,
+      blocked_reason: connectorStatus.blocked_reason,
+      manual_link_fallback: composeUrl,
+      log_status: 'action_audit_logged_only',
+    };
+  }
+  if (!connectorStatus.configured) {
+    return {
+      ...draft,
+      sent: false,
+      connector: 'manual_link',
+      connector_ready: false,
+      blocked_by_config: true,
+      blocked_reason: connectorStatus.blocked_reason,
+      manual_link_fallback: composeUrl,
+      log_status: 'action_audit_logged_only',
+    };
+  }
+  if (connectorStatus.test_mode) {
+    return {
+      ...draft,
+      sent: false,
+      connector: 'wapi',
+      connector_ready: true,
+      test_mode: true,
+      blocked_reason: connectorStatus.blocked_reason,
+      manual_link_fallback: composeUrl,
+      log_status: 'action_audit_logged_only',
     };
   }
   if (context.helpers?.sendWhatsappMessage) {
@@ -591,35 +729,157 @@ function draftParentLoginWhatsApp(inputs = {}, context = {}) {
   return {
     ...draftWhatsAppMessage({ ...inputs, body, audience: 'BNA parent' }, context),
     parent_email: inputs.parent_email || null,
+    safe_to_send_after_approval: Boolean(url),
     note: 'Parent login WhatsApp is generated as a draft/preview first. Live sending uses the parent access link endpoint or approved WAPI action.',
   };
 }
 
-function generateWeeklyUpdate(inputs = {}, context = {}) {
+async function generateWeeklyUpdate(inputs = {}, context = {}) {
+  let latestMedia = null;
+  if (inputs.from_latest_media || inputs.latest_media || inputs.use_latest_media) {
+    latestMedia = await findLatestUploadedMedia(inputs, context);
+  }
+  const media = latestMedia?.media || {};
   const studentName = compactText(inputs.student_name || inputs.student || 'your child', 120);
-  const learning = summarizeBody(inputs.learning || inputs.learning_notes || inputs.source_text || '', 400);
-  const questions = summarizeBody(inputs.questions || inputs.student_questions || '', 260);
+  const parsed = parseJsonValue(media.parse_json, {}) || {};
+  const sourceText = inputs.source_text || inputs.learning || inputs.learning_notes || media.transcript_text || media.caption || media.notes || parsed.summary || '';
+  const topicResult = summarizeWeeklyTopics({ ...inputs, source_text: sourceText, summary: parsed.summary });
+  const questionResult = extractStudentQuestions({ ...inputs, source_text: sourceText });
+  const learning = summarizeBody(sourceText, 520);
   const links = Array.isArray(inputs.links) ? inputs.links : String(inputs.links || '').split(/\s+/).filter(Boolean);
+  const mediaLink = inputs.video_url || inputs.media_url || media.media_url || (media.drive_file_id ? `drive:${media.drive_file_id}` : '');
+  const title = inputs.title || `${studentName} weekly update`;
+  const summary = learning || 'Learning notes are ready for staff review before publishing to parents.';
   const body = [
-    `${studentName} - weekly update`,
+    title,
     '',
-    learning || 'Learning notes are ready for staff review before publishing to parents.',
-    questions ? `Questions noticed: ${questions}` : '',
+    summary,
+    '',
+    topicResult.topics.length ? 'Topics learned/discussed:' : '',
+    ...topicResult.topics.map((topic) => `- ${topic}`),
+    questionResult.questions.length ? '\nStudent questions:' : '',
+    ...questionResult.questions.map((question) => `- ${question}`),
     links.length ? `Links: ${links.slice(0, 4).join(', ')}` : '',
+    mediaLink ? `Video/audio: ${mediaLink}` : '',
   ].filter(Boolean).join('\n');
   return {
     weekly_update_created: true,
     student_name: studentName,
-    title: inputs.title || `${studentName} weekly update`,
+    title,
+    date: inputs.date || new Date().toISOString().slice(0, 10),
+    summary,
+    topics: topicResult.topics,
+    student_questions: questionResult.questions,
+    worksheet_links: links,
+    attendance_snapshot: inputs.attendance_snapshot || inputs.attendance || null,
+    payment_form_alerts: listFromInput(inputs.payment_form_alerts || inputs.alerts, 4),
+    media: media && media.id ? {
+      id: media.id,
+      title: media.title,
+      source_type: media.source_type,
+      status: media.status,
+      media_url: mediaLink,
+      needs_transcription: latestMedia?.needs_transcription || false,
+    } : null,
     body,
     parent_visible: Boolean(inputs.parent_visible),
     published: false,
     workspace: normalizeWorkspace(inputs.workspace_key || inputs.workspace || context.actor?.workspace_id),
+    next_actions: ['refine_newsletter_draft', 'publish_weekly_update_to_parent_portal', 'generate_parent_newsletter', 'generate_whatsapp_weekly_post', 'send_weekly_update_whatsapp'],
   };
 }
 
-function publishWeeklyUpdate(inputs = {}, context = {}) {
-  const update = generateWeeklyUpdate({ ...inputs, parent_visible: true }, context);
+async function generateParentNewsletter(inputs = {}, context = {}) {
+  const update = await generateWeeklyUpdate(inputs, context);
+  const body = [
+    'Dear parents,',
+    '',
+    update.summary,
+    '',
+    update.topics?.length ? 'This week we worked on:' : '',
+    ...(update.topics || []).map((topic) => `- ${topic}`),
+    update.student_questions?.length ? '\nQuestions the boys raised:' : '',
+    ...(update.student_questions || []).map((question) => `- ${question}`),
+    update.media?.media_url ? `\nVideo/audio link: ${update.media.media_url}` : '',
+    '',
+    'Warmly,',
+    'Bnei Neviim Academy',
+  ].filter(Boolean).join('\n');
+  return {
+    newsletter_draft_created: true,
+    title: inputs.newsletter_title || update.title,
+    body,
+    sent: false,
+    source_update: update,
+  };
+}
+
+async function generateWhatsAppWeeklyPost(inputs = {}, context = {}) {
+  const update = await generateWeeklyUpdate(inputs, context);
+  const lines = [
+    'BNA weekly update',
+    '',
+    update.summary,
+    ...(update.topics || []).slice(0, 4).map((topic) => `- ${topic}`),
+    update.student_questions?.length ? `Questions: ${update.student_questions.slice(0, 2).join('; ')}` : '',
+    update.media?.media_url ? `Video/audio: ${update.media.media_url}` : '',
+  ].filter(Boolean);
+  return draftWhatsAppMessage({
+    ...inputs,
+    body: lines.join('\n'),
+    audience: inputs.audience || 'BNA parent group',
+  }, context);
+}
+
+function attachVideoToParentPortal(inputs = {}, context = {}) {
+  const videoUrl = String(inputs.video_url || inputs.media_url || inputs.drive_url || '').trim();
+  return {
+    attached: Boolean(videoUrl && !context.dryRun),
+    preview_only: Boolean(context.dryRun),
+    video_url: videoUrl || null,
+    thumbnail_url: inputs.thumbnail_url || null,
+    parent_visible: Boolean(inputs.parent_visible || inputs.publish),
+    note: videoUrl
+      ? 'Video is ready to attach to the parent portal weekly update after approval.'
+      : 'No video URL was provided. Use find_latest_uploaded_media first or attach a Drive/Vimeo/Replit link.',
+  };
+}
+
+async function saveWeeklyUpdateRevision(inputs = {}, context = {}) {
+  const body = String(inputs.body || inputs.update_body || '').trim();
+  if (!body) throw new Error('body is required');
+  if (context.dryRun || !context.db) {
+    return {
+      saved: false,
+      title: inputs.title || titleFromBody(body, 'Weekly parent update revision'),
+      body_preview: summarizeBody(body, 520),
+      parent_visible: Boolean(inputs.parent_visible),
+    };
+  }
+  const jobId = Number(inputs.job_id || inputs.content_job_id || 0);
+  if (!jobId) throw new Error('job_id or content_job_id is required to save a weekly update revision');
+  const result = await context.db.query(
+    `INSERT INTO bna_content_outputs (job_id, output_type, title, body, platform, status, metadata)
+     VALUES ($1, 'weekly_newsletter', $2, $3, 'parent_portal', $4, $5::jsonb)
+     RETURNING *`,
+    [
+      jobId,
+      inputs.title || titleFromBody(body, 'Weekly parent update revision'),
+      body,
+      inputs.parent_visible ? 'approved' : 'needs_approval',
+      JSON.stringify({
+        action_registry_revision: true,
+        parent_portal_weekly_update: true,
+        student_id: inputs.student_id || null,
+        links: inputs.links || [],
+      }),
+    ]
+  );
+  return { saved: true, output: result.rows[0] };
+}
+
+async function publishWeeklyUpdate(inputs = {}, context = {}) {
+  const update = await generateWeeklyUpdate({ ...inputs, parent_visible: true }, context);
   return {
     ...update,
     published: !context.dryRun,
@@ -631,39 +891,86 @@ function publishWeeklyUpdate(inputs = {}, context = {}) {
 
 function prepareRabbiShellerAccessRequest(inputs = {}) {
   const checklist = [
-    'Confirm app URL and login path.',
-    'Confirm whether read-only admin access exists.',
-    'Confirm where worksheets/source sheets are stored.',
-    'Confirm where member payments and access states are visible.',
-    'Confirm whether API/webhook access is available or manual-only.',
+    'Replit access or deploy/project invitation.',
+    'Website admin access and read-only backend/database visibility.',
+    'Vimeo/video library access or export list.',
+    'GoDaddy/DNS/domain records as redacted screenshots or delegated access.',
+    'Payment processor/link and Israeli payment setup.',
+    'Email domain/account ownership and sender identities.',
+    'Publer/social connector accounts or invitations.',
+    'Past members/customers CSV export and WhatsApp/contact list.',
+    'Questions/comments system export or screenshots.',
+    'Worksheets/source sheets folder and video library structure.',
+    'Analytics dashboard, app backend docs, and API/export options.',
+  ];
+  const safeIntakeMethods = [
+    'Direct account invitation',
+    'Shared password-manager item',
+    'One-time secret link',
+    'OAuth/connect flow',
+    'Redacted screenshot for non-secret config',
+    'Drive upload for non-secret materials only',
   ];
   const message = [
     'Hi Rabbi Sheller,',
     '',
-    'To set up the participant/member portal safely, can you please send access for the class/member system?',
+    'To prepare tonight safely, can you please share the access/materials below? Please do not send raw passwords in Drive screenshots if an invite, password manager share, or one-time secret link is possible.',
     '',
     checklist.map(item => `- ${item}`).join('\n'),
+    '',
+    'Safe ways to send sensitive access:',
+    safeIntakeMethods.map(item => `- ${item}`).join('\n'),
     '',
     'We will keep this separate from BNA school student data and will not change anything without approval.',
   ].join('\n');
   return {
     access_request_ready: true,
     recipient: inputs.recipient || 'Rabbi Sheller',
-    checklist,
+    checklist: checklist.map((item) => ({
+      item,
+      status: /access|invitation|processor|account/i.test(item) ? 'needed' : 'requested',
+      owner: /payment|domain|email|social|member|customer/i.test(item) ? 'Rabbi Sheller' : 'Shloimie/Rabbi Sheller',
+      safe_intake_method: /password|access|account|processor|database/i.test(item)
+        ? 'direct invitation, password manager, OAuth, or one-time secret link'
+        : 'Drive upload or redacted screenshot is acceptable',
+      credential_status: /access|account|processor|database/i.test(item) ? 'secret_not_received' : 'non_secret_material',
+    })),
+    safe_intake_methods: safeIntakeMethods,
+    drive_folder_plan: ['screenshots of pages', 'CSV exports', 'docs', 'videos', 'transcripts', 'website screenshots', 'non-secret setup notes'],
     message,
     sent: false,
   };
 }
 
 function createReportProblemTicket(inputs = {}, context = {}) {
+  const pageContext = inputs.page_context || inputs.source_context || {};
+  const target = pageContext.target || inputs.target || {};
+  const boundingBox = inputs.bounding_box || target.rect || target.bounding_box || null;
+  const selector = compactText(inputs.selector || [
+    target.tag,
+    target.id ? `#${target.id}` : '',
+    target.classes ? `.${String(target.classes).split(/\s+/).slice(0, 3).join('.')}` : '',
+  ].filter(Boolean).join(''), 240);
   return {
     ticket_ready: true,
+    issue_id: inputs.issue_id || `ui-${Date.now().toString(36)}`,
     title: compactText(inputs.title || 'Operations UI issue', 180),
     description: summarizeBody(inputs.description || inputs.note || 'Reported from Operations assistant.', 900),
     severity: inputs.severity || 'normal',
     category: inputs.category || 'bot_api',
-    page_context: inputs.page_context || {},
+    reporter_user_id: context.actor?.user_id || inputs.reporter_user_id || null,
+    reporter_role: context.actor?.role || inputs.reporter_role || null,
+    workspace_id: context.actor?.workspace_id || inputs.workspace_id || null,
+    route: pageContext.route || inputs.route || null,
+    page_context: pageContext,
+    selector,
+    bounding_box: boundingBox,
+    note: inputs.note || inputs.description || '',
     screenshot_path: inputs.screenshot_path || null,
+    screenshot_status: inputs.screenshot_path ? 'captured' : 'not_captured_in_browser',
+    status: inputs.status || 'open',
+    assigned_to: inputs.assigned_to || (['high', 'blocking'].includes(inputs.severity) ? 'Codex' : 'Shloimie'),
+    created_task_id: inputs.created_task_id || null,
     created: !context.dryRun,
   };
 }
@@ -751,8 +1058,32 @@ async function runOperationsHandler(handler, inputs = {}, context = {}) {
       return logWhatsAppMessage(inputs, context);
     case 'whatsapp.viewThread':
       return viewWhatsAppThread(inputs, context);
+    case 'content.findLatestUploadedMedia':
+      return findLatestUploadedMedia(inputs, context);
+    case 'content.transcribeOrParseMediaIfNeeded': {
+      const media = await findLatestUploadedMedia(inputs, context);
+      return {
+        ...media,
+        queued: false,
+        note: media.needs_transcription
+          ? 'Media needs transcription/parsing before a final parent update. This action previews the blocker; it does not start an external transcription job.'
+          : 'Media already has transcript/parse context available.',
+      };
+    }
+    case 'content.summarizeWeeklyTopics':
+      return summarizeWeeklyTopics(inputs);
+    case 'content.extractStudentQuestions':
+      return extractStudentQuestions(inputs);
     case 'parent.generateWeeklyUpdate':
       return generateWeeklyUpdate(inputs, context);
+    case 'parent.generateNewsletter':
+      return generateParentNewsletter(inputs, context);
+    case 'whatsapp.generateWeeklyPost':
+      return generateWhatsAppWeeklyPost(inputs, context);
+    case 'parent.attachVideoToPortal':
+      return attachVideoToParentPortal(inputs, context);
+    case 'parent.saveWeeklyUpdateRevision':
+      return saveWeeklyUpdateRevision(inputs, context);
     case 'parent.publishWeeklyUpdate':
       return publishWeeklyUpdate(inputs, context);
     case 'provider.prepareAccessRequest':

@@ -1415,6 +1415,7 @@
             helpCopy: 'For technology or portal issues, send this form. For questions about your child, use WhatsApp Rabbi Shloimie.',
             helpCategory: 'Help topic',
             helpTech: 'Technology / portal',
+            helpProblem: 'Report problem / suggestion',
             helpProvider: 'Provider / program',
             helpStudent: 'My child / accountability',
             helpBilling: 'Billing',
@@ -1683,6 +1684,7 @@
             helpCopy: 'לתקלות טכנולוגיה או פורטל שלחו את הטופס. לשאלות על הילד השתמשו בוואטסאפ לרב שלוימי.',
             helpCategory: 'נושא העזרה',
             helpTech: 'טכנולוגיה / פורטל',
+            helpProblem: 'דיווח על בעיה / הצעה',
             helpStudent: 'הילד / אחריות',
             helpBilling: 'תשלומים',
             helpAssignment: 'משימות / לוח שנה',
@@ -1859,6 +1861,13 @@
             return value || hebrewValue || (fallbackKey ? t(fallbackKey) : '');
         }
 
+        function parentStudentDisplayName(student = {}, lang = language) {
+            const localized = student.localized_names || {};
+            const english = student.name_en || student.english_name || localized.en || (!hasHebrew(student.name) ? student.name : '') || '';
+            const hebrew = student.name_he || student.hebrew_name || localized.he || (hasHebrew(student.name) ? student.name : '') || '';
+            return (lang === 'he' ? (hebrew || english) : (english || student.name || hebrew)) || t('student');
+        }
+
         function translatedStatus(value, fallbackKey = 'status') {
             const raw = String(value || '').trim();
             const key = raw.replace(/([a-z0-9])([A-Z])/g, '$1_$2').toLowerCase().replace(/[\s-]+/g, '_');
@@ -2008,7 +2017,7 @@
             parentStudents(data).forEach(studentPayload => {
                 const student = studentPayload.student || {};
                 if (!studentMatchesCalendarFilter(student)) return;
-                const studentName = student.name || t('student');
+                const studentName = parentStudentDisplayName(student);
                 const torah = studentPayload.torah || {};
                 const torahDate = torah.date ? itemDate(torah.date) : '';
                 if (torahDate) {
@@ -2206,7 +2215,7 @@
                 const meetingDate = studentPayload.next_meeting_date || meeting.next_date;
                 if (meetingDate && isWithinNextDays(meetingDate, 7)) {
                     items.push({
-                        title: `${student.name || t('student')} ${t('privateMeeting')}`,
+                        title: `${parentStudentDisplayName(student)} ${t('privateMeeting')}`,
                         detail: [formatDate(meetingDate), meeting.time_label || meeting.start_time].filter(Boolean).join(', '),
                     });
                 }
@@ -2215,14 +2224,14 @@
                     .slice(0, 2)
                     .forEach(item => items.push({
                         title: localizedDynamic(item.title, item.title_he, 'assignment'),
-                        detail: `${student.name || t('student')}${item.due_at ? ` - ${formatDate(item.due_at)}` : ''}`,
+                        detail: `${parentStudentDisplayName(student)}${item.due_at ? ` - ${formatDate(item.due_at)}` : ''}`,
                     }));
                 (Array.isArray(studentPayload.parent_notifications) ? studentPayload.parent_notifications : [])
                     .filter(item => String(item.action_status || 'pending').toLowerCase() === 'pending')
                     .slice(0, 2)
                     .forEach(item => items.push({
                         title: localizedDynamic(item.summary, item.summary_he, 'messages'),
-                        detail: student.name || t('student'),
+                        detail: parentStudentDisplayName(student),
                     }));
             });
             return items.slice(0, 7);
@@ -2751,7 +2760,7 @@
                 <section class="panel stack">
                     <div>
                         <p class="eyebrow">${escapeHtml(t('student'))}</p>
-                        <h2>${escapeHtml(student.name || t('student'))}</h2>
+                        <h2>${escapeHtml(parentStudentDisplayName(student))}</h2>
                         <p class="small">${studentPayload.weekly_private_meeting?.label ? `${escapeHtml(t('privateMeeting'))}: ${escapeHtml(studentPayload.weekly_private_meeting.label)}` : studentPayload.next_meeting_date ? `${escapeHtml(t('privateMeeting'))}: ${formatDate(studentPayload.next_meeting_date)}` : escapeHtml(t('notScheduled'))}</p>
                     </div>
                     <div class="metric-row">
@@ -2803,7 +2812,7 @@
             return `
                 <div>
                     <p class="eyebrow">${escapeHtml(t('student'))}</p>
-                    <h2>${escapeHtml(student.name || t('student'))}</h2>
+                    <h2>${escapeHtml(parentStudentDisplayName(student))}</h2>
                     <p class="small">${escapeHtml(meetingText)}</p>
                     <div class="student-action-row">
                         <span class="badge">${escapeHtml(t('readOnlyChildSnapshot'))}</span>
@@ -2931,7 +2940,7 @@
                                 <option value="all" ${calendarStudentFilter === 'all' ? 'selected' : ''}>${escapeHtml(students.length === 1 ? parentChildrenLabel(data) : t('allChildren'))}</option>
                                 ${students.map(item => {
                                     const student = item.student || {};
-                                    return `<option value="${Number(student.id)}" ${String(calendarStudentFilter) === String(student.id) ? 'selected' : ''}>${escapeHtml(student.name || t('student'))}</option>`;
+                                    return `<option value="${Number(student.id)}" ${String(calendarStudentFilter) === String(student.id) ? 'selected' : ''}>${escapeHtml(parentStudentDisplayName(student))}</option>`;
                                 }).join('')}
                             </select>
                         </label>
@@ -2981,6 +2990,7 @@
                             ${escapeHtml(t('helpCategory'))}
                             <select name="category">
                                 <option value="technology">${escapeHtml(t('helpTech'))}</option>
+                                <option value="problem">${escapeHtml(t('helpProblem'))}</option>
                                 <option value="provider">${escapeHtml(t('helpProvider'))}</option>
                                 <option value="student">${escapeHtml(t('helpStudent'))}</option>
                                 <option value="billing">${escapeHtml(t('helpBilling'))}</option>
@@ -2993,7 +3003,7 @@
                                 <option value="">${escapeHtml(students.length === 1 ? parentChildrenLabel(data) : t('allChildren'))}</option>
                                 ${students.map(item => {
                                     const student = item.student || {};
-                                    return `<option value="${Number(student.id)}">${escapeHtml(student.name || t('student'))}</option>`;
+                                    return `<option value="${Number(student.id)}">${escapeHtml(parentStudentDisplayName(student))}</option>`;
                                 }).join('')}
                             </select>
                         </label>
@@ -3568,6 +3578,12 @@
                         category: formData.get('category'),
                         student_id: formData.get('student_id'),
                         message: formData.get('message'),
+                        route: `${window.location.pathname}${window.location.search}${window.location.hash}`,
+                        viewport: {
+                            width: window.innerWidth,
+                            height: window.innerHeight,
+                        },
+                        language,
                     }),
                 });
                 form.reset();

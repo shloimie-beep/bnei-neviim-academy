@@ -6,6 +6,42 @@ Codex, and other agents. It is intentionally separate from raw daily memory.
 Agents should append concise completed-work records here when a machine task is
 marked done, verified, deployed, or otherwise finished.
 
+## 2026-06-12T14:44:08+03:00 - Clean stale Codex queue and restore mobile portal fixes
+
+Codex audited the clean release workspace, confirmed the production UI ramble
+was saved in `tasks-pending/2026-06-11-production-ui-qa-fix-loop.md`, and found
+the missing live behavior was caused by the saved local QA pass not being
+deployed from a separated clean branch.
+
+Changes:
+- Restored the Operations task-detail `Report problem` button and clean in-app
+  support ticket modal.
+- Added mobile task-detail viewport reset for `?task=...` routes.
+- Fixed the student portal `strings is not defined` load bug by writing Hebrew
+  label additions to `labels.he`.
+- Closed stale Codex queue tasks `483`, `488`, `489`, `490`, and `491` after the
+  current OpenAI smoke gate passed.
+- Closed support tickets `3`, `4`, `5`, and `6`.
+- Recorded the task/mobile audit in
+  `ops/system-audits/2026-06-12-clean-release-task-mobile-audit.md`.
+
+Verification:
+- PASS focused Operations and parent/student tests.
+- PASS `npm test` 115/115.
+- PASS inline script parse for Operations, parent, student, and provider
+  participant pages.
+- PASS Playwright 360px mobile collapse smoke for Operations, parent, student,
+  provider participant, and public homepage.
+- PASS screenshot check at 360, 390, 430, 768, and 1440px against the clean
+  local server.
+- PASS local app smoke:
+  `ops/live-smokes/2026-06-12T11-40-13-103Z-live-app-smoke.md`.
+- PASS post-cleanup OpenAI smoke:
+  `ops/openai-smokes/2026-06-12T11-43-52-779Z-openai-sidekick-smoke.md`.
+
+- source: codex
+- status: local verified, deploy pending
+
 ## 2026-06-07T16:09:29+03:00 - Add signup Tuition Agreement signature flow
 
 Codex added the first required parent document signature flow to the public
@@ -2819,3 +2855,40 @@ Verification:
 - PASS `npm run app:smoke -- --require-drive`
   (`ops/live-smokes/2026-06-07T18-38-49-806Z-live-app-smoke.md`)
 - PASS live mobile Playwright signup readback for English and Hebrew
+
+## 2026-06-11T20:10:00+03:00 - Operations assistant, WAPI, weekly update, and navigation release pass
+
+Completed a no-deploy release-branch pass for the Operations Super Admin
+assistant, WhatsApp/WAPI safety, Telegram weekly-update routing, task decisions,
+and provider access/materials language.
+
+Implemented:
+- Added latest-media weekly update, parent newsletter, weekly WhatsApp, media
+  attachment, and weekly revision actions to the action registry.
+- Added safe WAPI connector status, test-mode behavior, manual `wa.me` fallback,
+  diagnostics, and `.env.example` placeholders.
+- Routed Telegram latest-uploaded-media parent update requests to typed actions
+  instead of Codex development work.
+- Added Super Admin assistant quick actions and typed command input.
+- Added richer Report Problem payloads with selector, route, bounding box,
+  reporter/workspace context, console-error capture, and action preview.
+- Simplified Operations nav/settings groups, compacted task lanes, and rendered
+  Needs Decision tasks as decision cards.
+- Renamed provider checklist surfaces to Access & Materials and expanded Rabbi
+  Sheller safe access/materials request output.
+- Added scoped bot context templates for super admin, workspace admin, parent,
+  student, provider admin, and provider member roles.
+
+Verification:
+- PASS `node --check server.js`
+- PASS `node --check scripts/telegram-kimi-bridge.mjs`
+- PASS `node --check src/lib/actions/actions/operations.js`
+- PASS `node --check src/lib/actions/registry.js`
+- PASS Operations inline script parse
+- PASS focused action/navigation/provider/portal contract suite
+- PASS `npm test` 115/115
+- PASS stubbed local Playwright screenshots for WAPI settings, Super Admin
+  assistant, task decision card, and provider Access & Materials.
+
+Deployment:
+- Not run by operator request.

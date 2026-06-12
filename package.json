@@ -41,6 +41,7 @@
     "website:add-moment": "node scripts/add-learning-moment-image.mjs",
     "website:ingest-image": "node scripts/telegram-kimi-bridge.mjs ingest-website-image-once",
     "screenshot": "node tools/screenshot-check.js",
+    "mobile:smoke": "node scripts/smoke-mobile-release-ui.cjs",
     "format": "prettier --write public/index.html",
     "lighthouse": "lighthouse http://localhost:8080 --output=html --output-path=./lighthouse-report.html"
   },

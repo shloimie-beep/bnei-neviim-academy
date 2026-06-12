@@ -308,6 +308,78 @@
       ]
     },
     {
+      "action_id": "find_latest_uploaded_media",
+      "label": "Find latest uploaded media",
+      "category": "content",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Find Latest Media"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "transcribe_or_parse_media_if_needed",
+      "label": "Check media transcript/parse readiness",
+      "category": "content",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Check Transcript"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "summarize_weekly_topics",
+      "label": "Summarize weekly topics",
+      "category": "content",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Summarize Topics"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "extract_student_questions",
+      "label": "Extract student questions",
+      "category": "content",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Extract Questions"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "generate_parent_newsletter",
+      "label": "Generate parent newsletter",
+      "category": "newsletter",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Generate Newsletter"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "generate_whatsapp_weekly_post",
+      "label": "Generate weekly WhatsApp post",
+      "category": "whatsapp",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Generate Weekly WhatsApp"
+      ],
+      "related_routes": [
+        "/operations?view=communications&section=whatsapp"
+      ]
+    },
+    {
       "action_id": "prepare_rabbi_sheller_access_request",
       "label": "Prepare Rabbi Sheller access request",
       "category": "provider",
@@ -428,6 +500,31 @@
       "related_routes": [
         "/operations?view=students",
         "/parent"
+      ]
+    },
+    {
+      "action_id": "attach_video_to_parent_portal",
+      "label": "Attach video to parent portal",
+      "category": "parent",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Attach Video"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/parent"
+      ]
+    },
+    {
+      "action_id": "save_weekly_update_revision",
+      "label": "Save weekly update revision",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Save Weekly Update Revision"
+      ],
+      "related_routes": [
+        "/operations?view=content"
       ]
     },
     {
@@ -560,6 +657,103 @@
       "related_routes": [
         "/operations?view=students",
         "/parent"
+      ]
+    },
+    {
+      "action_id": "find_latest_uploaded_media",
+      "label": "Find latest uploaded media",
+      "category": "content",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Find Latest Media"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "transcribe_or_parse_media_if_needed",
+      "label": "Check media transcript/parse readiness",
+      "category": "content",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Check Transcript"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "summarize_weekly_topics",
+      "label": "Summarize weekly topics",
+      "category": "content",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Summarize Topics"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "extract_student_questions",
+      "label": "Extract student questions",
+      "category": "content",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Extract Questions"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "generate_parent_newsletter",
+      "label": "Generate parent newsletter",
+      "category": "newsletter",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Generate Newsletter"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "generate_whatsapp_weekly_post",
+      "label": "Generate weekly WhatsApp post",
+      "category": "whatsapp",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Generate Weekly WhatsApp"
+      ],
+      "related_routes": [
+        "/operations?view=communications&section=whatsapp"
+      ]
+    },
+    {
+      "action_id": "attach_video_to_parent_portal",
+      "label": "Attach video to parent portal",
+      "category": "parent",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Attach Video"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/parent"
+      ]
+    },
+    {
+      "action_id": "save_weekly_update_revision",
+      "label": "Save weekly update revision",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Save Weekly Update Revision"
+      ],
+      "related_routes": [
+        "/operations?view=content"
       ]
     },
     {
@@ -830,6 +1024,30 @@
       "approval_required": false,
       "ui_button_labels": [
         "View WhatsApp Thread"
+      ],
+      "related_routes": [
+        "/operations?view=communications&section=whatsapp"
+      ]
+    },
+    {
+      "action_id": "generate_parent_newsletter",
+      "label": "Generate parent newsletter",
+      "category": "newsletter",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Generate Newsletter"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "generate_whatsapp_weekly_post",
+      "label": "Generate weekly WhatsApp post",
+      "category": "whatsapp",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Generate Weekly WhatsApp"
       ],
       "related_routes": [
         "/operations?view=communications&section=whatsapp"
@@ -1371,6 +1589,31 @@
       ]
     },
     {
+      "action_id": "attach_video_to_parent_portal",
+      "label": "Attach video to parent portal",
+      "category": "parent",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Attach Video"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/parent"
+      ]
+    },
+    {
+      "action_id": "save_weekly_update_revision",
+      "label": "Save weekly update revision",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Save Weekly Update Revision"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
       "action_id": "publish_weekly_update_to_parent_portal",
       "label": "Publish weekly update to parent portal",
       "category": "parent",
@@ -1464,18 +1707,53 @@
       ]
     }
   ],
-  "operations_shell": [
+  "ui_bot": [
     {
-      "action_id": "create_report_problem_ticket",
-      "label": "Report a problem",
-      "category": "admin",
+      "action_id": "find_latest_uploaded_media",
+      "label": "Find latest uploaded media",
+      "category": "content",
       "approval_required": false,
       "ui_button_labels": [
-        "Report Problem",
-        "Send Bug Report"
+        "Find Latest Media"
       ],
       "related_routes": [
-        "/operations?view=admin&section=tickets"
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "transcribe_or_parse_media_if_needed",
+      "label": "Check media transcript/parse readiness",
+      "category": "content",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Check Transcript"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "summarize_weekly_topics",
+      "label": "Summarize weekly topics",
+      "category": "content",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Summarize Topics"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "extract_student_questions",
+      "label": "Extract student questions",
+      "category": "content",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Extract Questions"
+      ],
+      "related_routes": [
+        "/operations?view=content"
       ]
     },
     {
@@ -1491,7 +1769,20 @@
       ]
     }
   ],
-  "ui_bot": [
+  "operations_shell": [
+    {
+      "action_id": "create_report_problem_ticket",
+      "label": "Report a problem",
+      "category": "admin",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Report Problem",
+        "Send Bug Report"
+      ],
+      "related_routes": [
+        "/operations?view=admin&section=tickets"
+      ]
+    },
     {
       "action_id": "summarize_current_page",
       "label": "Summarize current page",

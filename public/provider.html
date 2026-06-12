@@ -471,7 +471,7 @@
             </section>
 
             <section class="panel provider-section" data-provider-section="access">
-                <h2>Access Checklist</h2>
+                <h2>Access & Materials</h2>
                 <div id="accessChecklist" class="service-list"></div>
             </section>
 
@@ -551,7 +551,7 @@
             }
             if (portalEntitlementEnabled('provider_admin') || portalEntitlementEnabled('custom_partnership_terms')) {
                 sections.push({ id: 'integrations', label: 'External Apps' });
-                sections.push({ id: 'access', label: 'Access Checklist' });
+                sections.push({ id: 'access', label: 'Access & Materials' });
             }
             sections.push({ id: 'activity', label: 'Activity' });
             sections.push({ id: 'settings', label: 'Settings' });
@@ -654,7 +654,7 @@
                         </div>
                     </article>
                 `).join('')
-                : '<p class="small">No access checklist items are configured yet.</p>';
+                : '<p class="small">No access/material items are configured yet.</p>';
             document.getElementById('providerActivity').innerHTML = `
                 <article class="service-card">
                     <div class="service-head">

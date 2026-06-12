@@ -59,6 +59,41 @@ function classifyTelegramActionRequest(input = {}) {
   }
 
   const outputId = extractOutputId(text);
+  if (/\b(latest|uploaded|upload|drive|video|audio|recording|media)\b/.test(value)
+    && /\b(parent update|weekly update|newsletter|whatsapp post|whatsapp update|erev shabbos|topics|questions)\b/.test(value)) {
+    const wantsWhatsApp = /\bwhatsapp|wa\.me|wapi\b/.test(value);
+    const wantsNewsletter = /\bnewsletter|email\b/.test(value);
+    return {
+      kind: 'typed_action',
+      action_id: wantsWhatsApp ? 'generate_whatsapp_weekly_post' : wantsNewsletter ? 'generate_parent_newsletter' : 'generate_weekly_update',
+      confidence: 0.9,
+      dry_run: false,
+      inputs: {
+        from_latest_media: true,
+        source_text: text,
+        requested_outputs: [
+          'parent_portal_weekly_update',
+          wantsNewsletter ? 'newsletter' : '',
+          wantsWhatsApp ? 'whatsapp' : '',
+        ].filter(Boolean),
+      },
+      reason: 'weekly_update_from_latest_media',
+    };
+  }
+
+  if (/\b(find|show|get|use)\b.{0,60}\b(latest|uploaded|upload)\b.{0,60}\b(video|audio|recording|media)\b/.test(value)) {
+    return {
+      kind: 'typed_action',
+      action_id: 'find_latest_uploaded_media',
+      confidence: 0.84,
+      dry_run: false,
+      inputs: {
+        source_text: text,
+      },
+      reason: 'latest_uploaded_media_lookup',
+    };
+  }
+
   if (/\b(refine|revise|polish|tighten|clean up|rewrite|improve)\b.{0,80}\b(newsletter|weekly update|parent update)\b/.test(value)
     || /\b(newsletter|weekly update|parent update)\b.{0,80}\b(refine|revise|polish|tighten|clean up|rewrite|improve)\b/.test(value)) {
     return {
@@ -83,6 +118,21 @@ function classifyTelegramActionRequest(input = {}) {
       dry_run: false,
       inputs: { output_id: outputId || undefined },
       reason: 'newsletter_lookup',
+    };
+  }
+
+  if (/\b(generate|make|create|write|draft)\b.{0,80}\b(parent update|weekly update)\b/.test(value)
+    || /\b(parent update|weekly update)\b.{0,80}\b(generate|make|create|write|draft)\b/.test(value)) {
+    return {
+      kind: 'typed_action',
+      action_id: 'generate_weekly_update',
+      confidence: 0.86,
+      dry_run: false,
+      inputs: {
+        source_text: text,
+        from_latest_media: /\b(latest|uploaded|video|audio|recording|drive)\b/.test(value),
+      },
+      reason: 'weekly_update_generate',
     };
   }
 

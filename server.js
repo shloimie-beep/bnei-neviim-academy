@@ -2039,14 +2039,20 @@ const DATABASE_URL =
   usableSecretValue(readLocalSecretFile('railway-database-url.txt'));
 const PAYMENT_LINK = process.env.PAYMENT_LINK || '';
 const WAPI_API_BASE_URL =
+  process.env.WAPI_BASE_URL ||
   process.env.WAPI_API_BASE_URL ||
   process.env.WHAPI_API_BASE_URL ||
   'https://gate.whapi.cloud';
 const WAPI_API_TOKEN =
+  usableSecretValue(process.env.WAPI_API_KEY) ||
   usableSecretValue(process.env.WAPI_API_TOKEN) ||
   usableSecretValue(process.env.WHAPI_API_TOKEN) ||
   usableSecretValue(readLocalSecretFile('wapi-api-token.txt')) ||
   usableSecretValue(readLocalSecretFile('whapi-api-token.txt'));
+const WAPI_INSTANCE_ID = process.env.WAPI_INSTANCE_ID || process.env.WHAPI_INSTANCE_ID || '';
+const WAPI_DEFAULT_GROUP_ID = process.env.WAPI_DEFAULT_GROUP_ID || process.env.WHAPI_DEFAULT_GROUP_ID || '';
+const WAPI_DEFAULT_SENDER = process.env.WAPI_DEFAULT_SENDER || process.env.WHAPI_DEFAULT_SENDER || '';
+const WAPI_TEST_MODE = String(process.env.WAPI_TEST_MODE || '').toLowerCase() === 'true';
 const RABBI_SHLOIMIE_WHATSAPP_NUMBER =
   process.env.RABBI_SHLOIMIE_WHATSAPP_NUMBER ||
   process.env.BNA_RABBI_SHLOIMIE_WHATSAPP_NUMBER ||
@@ -3049,6 +3055,7 @@ async function mergeParentRecordTags(parentEmail, tags = [], db = pool) {
 
 function parentHelpCategory(value) {
   const normalized = normalizeTagKey(value);
+  if (['problem', 'bug', 'feedback', 'suggestion', 'broken', 'broken-button', 'ui', 'report-problem'].includes(normalized)) return 'problem';
   if (['technology', 'tech', 'app', 'portal', 'access'].includes(normalized)) return 'technology';
   if (['provider', 'providers', 'service_provider', 'service-providers', 'service'].includes(normalized)) return 'provider';
   if (['billing', 'payment', 'accounting'].includes(normalized)) return 'billing';
@@ -3844,18 +3851,22 @@ async function getWeeklyPrivateMeetingSlotForStudent(studentId, db = pool) {
   const index = internalBoys.findIndex((student) => Number(student.id) === Number(studentId));
   if (index < 0) return null;
   const weekdays = [
+    { weekday: 'sunday', weekday_label: 'Sunday', iso_weekday: 7 },
     { weekday: 'monday', weekday_label: 'Monday', iso_weekday: 1 },
     { weekday: 'tuesday', weekday_label: 'Tuesday', iso_weekday: 2 },
     { weekday: 'wednesday', weekday_label: 'Wednesday', iso_weekday: 3 },
     { weekday: 'thursday', weekday_label: 'Thursday', iso_weekday: 4 },
-    { weekday: 'friday', weekday_label: 'Friday', iso_weekday: 5 },
   ];
   const day = weekdays[index % weekdays.length];
   return {
     ...day,
-    start_time: '09:00',
+    // Legacy contract reference only: start_time: '09:00' was the old one-hour placeholder.
+    start_time: '09:40',
     end_time: '10:00',
     assignment_rule: 'active_internal_boys_one_per_weekday',
+    slot_policy: 'one_twenty_minute_slot_sunday_thursday',
+    duration_minutes: 20,
+    school_start_time: '10:00',
     roster_size: internalBoys.length,
   };
 }
@@ -5022,6 +5033,13 @@ async function buildParentPortalPayload(parentEmail, db = pool) {
       parent_name: student.parent_name,
       parent_email: student.parent_email,
       parent_phone: student.parent_phone,
+      name_en: student.name_en || student.english_name || null,
+      name_he: student.name_he || student.hebrew_name || null,
+      english_name: student.english_name || student.name_en || null,
+      hebrew_name: student.hebrew_name || student.name_he || null,
+      preferred_language: student.preferred_language || student.preferred_display_language || null,
+      preferred_display_language: student.preferred_display_language || student.preferred_language || null,
+      form_language: student.form_language || null,
       current_school: student.current_school,
       tags: student.tags,
     }, { audience: 'parent' }, db);
@@ -5585,7 +5603,7 @@ function identifyOpsUser(username, password = null) {
   const pass = password === null || password === undefined ? null : String(password || '');
   if (!user) return null;
   const platformAllowedViews = ['dashboard', 'pipelines', 'tasks', 'students', 'contacts', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'api_usage', 'admin', 'settings'];
-  const providerAllowedViews = ['dashboard', 'pipelines', 'tasks', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'api_usage', 'settings'];
+  const providerAllowedViews = ['dashboard', 'pipelines', 'tasks', 'contacts', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'api_usage', 'settings'];
 
   if (OPS_USERNAME && user.toLowerCase() === OPS_USERNAME.toLowerCase()) {
     if (pass !== null && pass.toLowerCase() !== String(OPS_PASSWORD || '').toLowerCase()) return null;
@@ -13194,8 +13212,15 @@ function actionRunnerContext(req, source = 'ui_button') {
     },
     connectors: {
       whatsapp: {
+        provider: WAPI_API_TOKEN ? 'wapi' : 'manual_link',
         configured: Boolean(WAPI_API_TOKEN),
         base_url: WAPI_API_BASE_URL,
+        instance_id: WAPI_INSTANCE_ID,
+        default_group_id: WAPI_DEFAULT_GROUP_ID,
+        default_parent_group_id: WAPI_DEFAULT_GROUP_ID,
+        default_sender: WAPI_DEFAULT_SENDER || RABBI_SHLOIMIE_WHATSAPP_NUMBER,
+        test_mode: WAPI_TEST_MODE,
+        approval_required: true,
       },
     },
   };
@@ -22518,9 +22543,18 @@ app.get('/api/parent-portal', async (req, res) => {
 
 app.post('/api/parent-portal/help', async (req, res) => {
   const cookies = parseCookies(req);
-  const message = String((req.body || {}).message || (req.body || {}).body || '').trim();
-  const category = parentHelpCategory((req.body || {}).category || (req.body || {}).topic);
-  const studentId = (req.body || {}).student_id ? Number((req.body || {}).student_id) : null;
+  const body = req.body || {};
+  const message = String(body.message || body.body || '').trim();
+  const category = parentHelpCategory(body.category || body.topic);
+  const studentId = body.student_id ? Number(body.student_id) : null;
+  const route = String(body.route || body.path || '').trim().slice(0, 400);
+  const viewport = body.viewport && typeof body.viewport === 'object'
+    ? {
+        width: Number(body.viewport.width || 0) || null,
+        height: Number(body.viewport.height || 0) || null,
+      }
+    : null;
+  const language = String(body.language || '').trim().slice(0, 16);
   if (!message) return res.status(400).json({ error: 'Help message is required' });
   if (message.length > 3000) return res.status(400).json({ error: 'Help message is too long' });
 
@@ -22535,7 +22569,17 @@ app.post('/api/parent-portal/help', async (req, res) => {
       if (!student) return res.status(404).json({ error: 'Student was not found for this parent session' });
     }
     const tags = parentInteractionTags('portal_help', category, message);
-    const summary = `${category === 'technology' ? 'Parent technology help' : 'Parent help'}: ${records.students[0]?.parent_name || session.parentEmail}`;
+    const isProblemReport = category === 'problem';
+    const parentName = records.students[0]?.parent_name || session.parentEmail;
+    const summary = `${isProblemReport ? 'Parent portal problem report' : category === 'technology' ? 'Parent technology help' : 'Parent help'}: ${parentName}`;
+    const sourceContext = {
+      source: isProblemReport ? 'parent_portal_report_problem' : 'parent_portal_help',
+      category,
+      student_id: student?.id || null,
+      route: route || null,
+      viewport,
+      language: language || null,
+    };
     const communication = (await client.query(
       `INSERT INTO bna_contact_communications (
          contact_type, signup_id, student_id, channel, direction, summary, body,
@@ -22551,7 +22595,7 @@ app.post('/api/parent-portal/help', async (req, res) => {
         student?.id || records.students[0]?.id || null,
         summary,
         message,
-        JSON.stringify({ source: 'parent_portal_help', category, student_id: student?.id || null }),
+        JSON.stringify(sourceContext),
         JSON.stringify({
           parent_email: session.parentEmail,
           category,
@@ -22562,36 +22606,64 @@ app.post('/api/parent-portal/help', async (req, res) => {
     )).rows[0];
 
     await mergeParentRecordTags(session.parentEmail, tags, client);
-    const task = await createTaskFromText({
-      title: `${category === 'technology' ? 'Parent technology help' : 'Parent help'}: ${records.students[0]?.parent_name || session.parentEmail}`,
-      raw_text: message,
-      notes: [
-        `Parent: ${session.parentEmail}`,
-        student ? `Student: ${student.name}` : '',
-        `Category: ${category}`,
-        `Communication #${communication.id}`,
-        '',
-        message,
-      ].filter(Boolean).join('\n'),
-      stage: 'assigned',
-      category: parentHelpTaskCategory(category),
-      urgency: category === 'technology' || category === 'access' ? 'today' : 'this_week',
-      assigned_to: 'Shloimie',
-      source: 'web',
-      created_by: 'parent_portal',
-      source_context: {
-        parent_email: session.parentEmail,
-        student_id: student?.id || null,
-        communication_id: communication.id,
-        internal_tags: tags,
-      },
-      ai_parsed: {
-        parser: 'parent-portal-help-v1',
-        kind: 'parent_help',
-        category,
-        internal_tags: tags,
-      },
-    }, {}, client);
+    let supportTicket = null;
+    if (isProblemReport) {
+      const project = await getProjectByKey(DEFAULT_PROJECT_KEY, client);
+      const ticketResult = await client.query(
+        `INSERT INTO bna_support_tickets (
+           project_id, title, description, severity, status, category,
+           reporter_name, reporter_role, assigned_to, source, source_context, created_by
+         )
+         VALUES ($1, $2, $3, 'normal', 'open', 'other', $4, 'parent', 'Shloimie', 'dashboard', $5::jsonb, 'parent_portal')
+         RETURNING *`,
+        [
+          project.id,
+          summary,
+          message,
+          parentName,
+          JSON.stringify({
+            ...sourceContext,
+            parent_email: session.parentEmail,
+            communication_id: communication.id,
+            internal_tags: tags,
+          }),
+        ]
+      );
+      supportTicket = supportTicketView(ticketResult.rows[0]);
+    }
+
+    const task = isProblemReport
+      ? null
+      : await createTaskFromText({
+          title: summary,
+          raw_text: message,
+          notes: [
+            `Parent: ${session.parentEmail}`,
+            student ? `Student: ${student.name}` : '',
+            `Category: ${category}`,
+            `Communication #${communication.id}`,
+            '',
+            message,
+          ].filter(Boolean).join('\n'),
+          stage: 'assigned',
+          category: parentHelpTaskCategory(category),
+          urgency: category === 'technology' || category === 'access' ? 'today' : 'this_week',
+          assigned_to: 'Shloimie',
+          source: 'web',
+          created_by: 'parent_portal',
+          source_context: {
+            parent_email: session.parentEmail,
+            student_id: student?.id || null,
+            communication_id: communication.id,
+            internal_tags: tags,
+          },
+          ai_parsed: {
+            parser: 'parent-portal-help-v1',
+            kind: 'parent_help',
+            category,
+            internal_tags: tags,
+          },
+        }, {}, client);
 
     let emailSent = false;
     let emailError = '';
@@ -22603,7 +22675,8 @@ app.post('/api/parent-portal/help', async (req, res) => {
         student ? `Student: ${student.name}` : '',
         `Category: ${category}`,
         `Communication: #${communication.id}`,
-        `Task: #${task.id}`,
+        task ? `Task: #${task.id}` : '',
+        supportTicket ? `Support ticket: #${supportTicket.id}` : '',
         '',
         message,
       ].filter(Boolean).join('\n');
@@ -22622,7 +22695,8 @@ app.post('/api/parent-portal/help', async (req, res) => {
       success: true,
       message: 'Help request sent.',
       communication_id: communication.id,
-      task_id: task.id,
+      task_id: task?.id || null,
+      support_ticket_id: supportTicket?.id || null,
       email_sent: emailSent,
       email_error: emailError,
       tags,
@@ -26463,7 +26537,7 @@ async function resolveWapiOutboundRecipient(body = {}, db = pool) {
 
 async function sendWapiTextMessage({ to, body, typingTime = 0 }) {
   if (!WAPI_API_TOKEN) {
-    const error = new Error('WAPI_API_TOKEN or WHAPI_API_TOKEN is not configured for outbound WhatsApp sending');
+    const error = new Error('WAPI_API_KEY, WAPI_API_TOKEN, or WHAPI_API_TOKEN is not configured for outbound WhatsApp sending');
     error.statusCode = 503;
     throw error;
   }
@@ -26472,6 +26546,18 @@ async function sendWapiTextMessage({ to, body, typingTime = 0 }) {
   const message = String(body || '').trim();
   if (!recipient) throw new Error('WhatsApp recipient is required');
   if (!message) throw new Error('WhatsApp message body is required');
+  if (WAPI_TEST_MODE) {
+    return {
+      status: 202,
+      test_mode: true,
+      response: {
+        ok: true,
+        test_mode: true,
+        to: recipient,
+        body_preview: message.slice(0, 240),
+      },
+    };
+  }
 
   const response = await fetch(`${WAPI_API_BASE_URL.replace(/\/+$/, '')}/messages/text`, {
     method: 'POST',
@@ -26674,8 +26760,14 @@ app.get('/api/bna/wapi/diagnostics', requireAdmin, async (req, res) => {
     inbound_webhook_configured: Boolean(String(process.env.WAPI_WEBHOOK_SECRET || '').trim()),
     outbound_configured: Boolean(WAPI_API_TOKEN),
     outbound_base_url: WAPI_API_BASE_URL,
+    provider: WAPI_API_TOKEN ? 'wapi' : 'manual_link',
+    instance_id_configured: Boolean(WAPI_INSTANCE_ID),
+    default_group_configured: Boolean(WAPI_DEFAULT_GROUP_ID),
+    default_sender_configured: Boolean(WAPI_DEFAULT_SENDER || RABBI_SHLOIMIE_WHATSAPP_NUMBER),
+    test_mode: WAPI_TEST_MODE,
+    approval_required: true,
     send_endpoint: '/api/bna/contact-communications/send-whatsapp',
-    required_outbound_env: WAPI_API_TOKEN ? [] : ['WAPI_API_TOKEN or WHAPI_API_TOKEN'],
+    required_outbound_env: WAPI_API_TOKEN ? [] : ['WAPI_API_KEY or WAPI_API_TOKEN or WHAPI_API_TOKEN'],
   });
 });
 

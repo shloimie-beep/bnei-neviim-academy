@@ -42,6 +42,8 @@ test('student workspace has localized Hebrew labels and agenda-first calendar co
   assert.match(studentHtml, /data-student-calendar-event/);
   assert.match(studentHtml, /calendar-drawer/);
   assert.match(studentHtml, /googleSetupChecklist/);
+  assert.match(studentHtml, /Object\.assign\(labels\.he,/);
+  assert.doesNotMatch(studentHtml, /Object\.assign\(strings\.he,/);
 });
 
 test('provider participant portal stays separate from BNA school accountability nav', () => {

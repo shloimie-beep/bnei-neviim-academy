@@ -105,7 +105,7 @@ test('provider onboarding route and page create draft commercial records safely'
   assert.match(providerJoin, /\/api\/provider-onboarding/);
 });
 
-test('Operations exposes commercial settings, entitlements, access checklist, and audit pages', () => {
+test('Operations exposes commercial settings, entitlements, access/materials, and audit pages', () => {
   assert.match(operations, /Commercial Model/);
   assert.match(operations, /Plans \/ Entitlements/);
   assert.match(operations, /Provider Plans/);
@@ -120,6 +120,8 @@ test('Operations exposes commercial settings, entitlements, access checklist, an
   assert.match(operations, /function renderProviderAccessChecklistPanel/);
   assert.match(operations, /function renderProviderIntegrationAuditPanel/);
   assert.match(operations, /async function updateProviderPlan/);
+  assert.match(operations, /Access & Materials/);
+  assert.match(operations, /Collect app access, exports, folders, recordings, worksheets, and payment\/access evidence/);
 });
 
 test('provider login is scoped and keeps edits in BNA review', () => {
@@ -140,5 +142,5 @@ test('provider login is scoped and keeps edits in BNA review', () => {
   assert.match(provider, /Commercial Model/);
   assert.match(provider, /Plan \/ Entitlements/);
   assert.match(provider, /External Apps \/ Integrations/);
-  assert.match(provider, /Access Checklist/);
+  assert.match(provider, /Access & Materials/);
 });

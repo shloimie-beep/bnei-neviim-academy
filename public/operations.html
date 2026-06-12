@@ -2149,6 +2149,20 @@
             font-size: 11px;
         }
 
+        .compact-lanes {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .compact-lanes .task-filter {
+            width: auto;
+            min-height: 34px;
+            padding: 7px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+        }
+
         .task-signal {
             border-radius: 14px;
             background: linear-gradient(135deg, rgba(201, 162, 39, 0.14), rgba(37, 99, 235, 0.1));
@@ -3669,6 +3683,32 @@
             flex: 1;
         }
 
+        .modal-error {
+            margin-bottom: 14px;
+        }
+
+        .support-ticket-modal {
+            max-width: 760px;
+        }
+
+        .support-ticket-context-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .support-ticket-context-grid .form-group {
+            margin-bottom: 0;
+        }
+
+        .support-ticket-context-grid input[readonly] {
+            color: #94a3b8;
+            cursor: default;
+        }
+
+        .support-ticket-primary-field textarea {
+            min-height: 132px;
+        }
+
         /* Loading */
         .loading {
             display: flex;
@@ -5036,6 +5076,21 @@
             white-space: pre-wrap;
         }
 
+        .super-assistant-command {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 6px;
+        }
+
+        .super-assistant-command input {
+            width: 100%;
+            min-height: 34px;
+            border: 1px solid rgba(17, 17, 17, 0.14);
+            border-radius: 8px;
+            padding: 0 10px;
+            font-size: 12px;
+        }
+
         .report-mode-banner {
             padding: 10px 12px;
             color: var(--bna-blue-dark);
@@ -5597,6 +5652,7 @@
         let connectorSettings = [];
         let supportedBotActions = [];
         let botActionLogs = [];
+        let clientConsoleErrors = [];
         let superAssistantOpen = false;
         let superAssistantOutput = '';
         let reportProblemMode = false;
@@ -5719,6 +5775,15 @@
         let supportStatusFilter = 'all';
         let supportSeverityFilter = 'all';
         let supportCategoryFilter = 'all';
+        let supportTicketModalOpen = false;
+        let supportTicketFormError = '';
+        let supportTicketDraft = {
+            title: '',
+            description: '',
+            expected: '',
+            severity: 'normal',
+            category: 'task_manager'
+        };
         let serviceProviderSection = currentView === 'service_providers' && ['overview', 'directory', 'workspaces', 'commercial', 'plans', 'onboarding', 'access_checklist', 'integration_audit', 'communities', 'content', 'marketing', 'leads', 'communications', 'settings', 'program', 'tiers', 'schedule', 'worksheets', 'questions', 'access'].includes(initialSection)
             ? initialSection
             : 'overview';
@@ -5753,6 +5818,7 @@
         let selectedTaskId = initialTask || null;
         let expandedTaskId = null;
         let expandedTaskComments = {};
+        let lastTaskDetailScrollResetKey = null;
         let textEntryHoldUntil = 0;
         let textEntryCompositionActive = false;
         let deferredRenderErrors = null;
@@ -5974,7 +6040,7 @@
             { id: 'commercial', label: 'Commercial Model' },
             { id: 'plans', label: 'Plans / Entitlements' },
             { id: 'onboarding', label: 'Onboarding' },
-            { id: 'access_checklist', label: 'Access Checklist' },
+            { id: 'access_checklist', label: 'Access & Materials' },
             { id: 'integration_audit', label: 'Integration Audit' },
             { id: 'communities', label: 'Communities' },
             { id: 'content', label: 'Content / Posts' },
@@ -6120,12 +6186,17 @@
         ];
 
         const SETTINGS_GROUPS = [
-            { id: 'basics', label: 'Basics', tabs: ['profile', 'workspace', 'branding', 'language', 'users_roles'] },
-            { id: 'portals', label: 'Portals', tabs: ['parent_portal', 'student_portal', 'provider_portal', 'provider_index'] },
-            { id: 'communications', label: 'Communications', tabs: ['email_identities', 'whatsapp', 'social_accounts', 'communications', 'bot_permissions'] },
-            { id: 'providers', label: 'Providers', tabs: ['provider_plans', 'provider_entitlements', 'provider_onboarding', 'commercial_models'] },
-            { id: 'integrations', label: 'Integrations', tabs: ['calendar', 'google_calendar', 'google_classroom', 'integrations', 'external_apps', 'payment_links'] },
-            { id: 'governance', label: 'Governance', tabs: ['api_limits', 'billing', 'automations', 'danger'] }
+            { id: 'account', label: 'Account', tabs: ['profile', 'language'] },
+            { id: 'workspace', label: 'Workspace', tabs: ['workspace', 'branding'] },
+            { id: 'users_roles', label: 'Users & Roles', tabs: ['users_roles'] },
+            { id: 'communications', label: 'Communications', tabs: ['email_identities', 'whatsapp', 'communications'] },
+            { id: 'learning', label: 'Learning', tabs: ['student_portal', 'parent_portal', 'provider_portal'] },
+            { id: 'calendar_classroom', label: 'Calendar & Classroom', tabs: ['calendar', 'google_calendar', 'google_classroom'] },
+            { id: 'bots_ai', label: 'Bots & AI', tabs: ['bot_permissions', 'api_limits', 'automations'] },
+            { id: 'provider_index', label: 'Provider Index', tabs: ['provider_index', 'provider_plans', 'provider_entitlements', 'provider_onboarding', 'commercial_models'] },
+            { id: 'billing_payments', label: 'Billing & Payments', tabs: ['billing', 'payment_links'] },
+            { id: 'integrations', label: 'Integrations', tabs: ['integrations', 'social_accounts', 'external_apps'] },
+            { id: 'advanced', label: 'Advanced', tabs: ['danger'] }
         ];
 
         const COMMON_DATE_FILTERS = [
@@ -6314,6 +6385,9 @@
                         ${collapsed ? '' : `
                             <div class="super-assistant-actions">
                                 <button type="button" class="task-action" onclick="runSuperAssistantQuickAction('summarize')">Summarize Page</button>
+                                <button type="button" class="task-action" onclick="runSuperAssistantQuickAction('weekly_update')">Weekly Update</button>
+                                <button type="button" class="task-action" onclick="runSuperAssistantQuickAction('weekly_whatsapp')">Weekly WhatsApp</button>
+                                <button type="button" class="task-action" onclick="runSuperAssistantQuickAction('newsletter')">Newsletter</button>
                                 <button type="button" class="task-action" onclick="runSuperAssistantQuickAction('whatsapp')">Draft WhatsApp</button>
                                 <button type="button" class="task-action" onclick="runSuperAssistantQuickAction('sheller_access')">Sheller Access</button>
                                 <button type="button" class="task-action" onclick="runSuperAssistantQuickAction('task')">Create Task</button>
@@ -6321,6 +6395,10 @@
                                 <button type="button" class="task-action" onclick="switchView('settings')">Open Settings</button>
                             </div>
                             <div class="super-assistant-output">${escapeHtml(superAssistantOutput || 'Choose an action. Sensitive sends stay preview/approval gated.')}</div>
+                            <form class="super-assistant-command" onsubmit="runSuperAssistantCommand(event)">
+                                <input id="superAssistantCommandInput" type="text" placeholder="Ask for a typed action..." aria-label="Super Admin assistant command">
+                                <button type="submit" class="task-action primary">Run</button>
+                            </form>
                         `}
                     </div>
                 </div>
@@ -6450,6 +6528,7 @@
             if (currentView === 'settings') {
                 return `
                     <div class="ops-nested-subnav" aria-label="Settings sections">
+                        <button type="button" class="ops-nested-button back" onclick="switchView('dashboard')"><span>&lt;- All modules</span></button>
                         <div class="ops-nested-label">Settings Groups</div>
                         ${SETTINGS_GROUPS.map(group => {
                             const groupTabs = tabsWithCounts(settingsTabsForGroup(group.id), config.countSource || {});
@@ -6468,6 +6547,7 @@
             }
             return `
                 <div class="ops-nested-subnav" aria-label="${escapeHtml(config.label)} sections">
+                    <button type="button" class="ops-nested-button back" onclick="switchView('dashboard')"><span>&lt;- All modules</span></button>
                     <div class="ops-nested-label">${escapeHtml(config.label)} Sections</div>
                     ${tabs.map(tab => `
                         <button type="button" class="ops-nested-button ${String(config.active) === String(tab.id) ? 'active' : ''}" onclick="setCurrentSection('${tab.id}')">
@@ -7507,8 +7587,13 @@
             return `
                 <section class="focus-panel compact-panel" aria-label="Operational lanes">
                     <div class="task-section-header"><h3>Operational Lanes</h3><span>No generic pending lane</span></div>
-                    <div class="task-overview-grid">
-                        ${TASK_OPERATIONAL_LANES.map(lane => renderMetricButton(lane.label, counts[lane.id] || 0, operationalLaneNote(lane.id), operationalLaneTarget(lane.id))).join('')}
+                    <div class="task-filter-bar compact-lanes">
+                        ${TASK_OPERATIONAL_LANES.map(lane => `
+                            <button class="task-filter ${taskFocus === lane.id ? 'active' : ''}" title="${escapeHtml(operationalLaneNote(lane.id))}" onclick="${operationalLaneTarget(lane.id)}">
+                                <span>${escapeHtml(lane.label)}</span>
+                                <span class="task-filter-count">${Number(counts[lane.id] || 0)}</span>
+                            </button>
+                        `).join('')}
                     </div>
                 </section>
             `;
@@ -7773,6 +7858,17 @@
         }
 
         function renderTaskListSection(label, items, columnId) {
+            if (columnId === 'decisions') {
+                return `
+                    <div class="task-list-section">
+                        <div class="task-section-header">
+                            <h3>${escapeHtml(label)}</h3>
+                            <span>${items.length} item${items.length === 1 ? '' : 's'}</span>
+                        </div>
+                        ${items.length ? `<div class="content-section-grid">${items.map(renderDecisionCard).join('')}</div>` : renderTaskEmpty(columnId)}
+                    </div>
+                `;
+            }
             return `
                 <div class="task-list-section">
                     <div class="task-section-header">
@@ -7882,6 +7978,7 @@
                             <div class="task-actions detail-actions">
                                 ${renderTaskActions(task, columnId)}
                                 <button class="task-action" onclick="editTask(${Number(task.id)})">Edit task</button>
+                                <button class="task-action" onclick="openSupportTicketForm()">Report problem</button>
                             </div>
                         </aside>
                         <div class="detail-main-panel">
@@ -10005,11 +10102,11 @@
                 : loadedRows;
             const rows = fallbackRows;
             return `
-                <section class="focus-panel" aria-label="Provider access checklist">
-                    <div class="task-section-header"><h3>Provider Access Checklist</h3><span>${rows.length} items</span></div>
+                <section class="focus-panel" aria-label="Provider access and materials">
+                    <div class="task-section-header"><h3>Provider Access & Materials</h3><span>${rows.length} items</span></div>
                     ${currentWorkspaceKey() === 'rabbi_sheller_provider' ? `
                         <div class="contact-detail-note" style="margin-bottom:12px;">
-                            Rabbi Sheller participants/members stay separate from BNA students. Use this checklist before any import, sync, or access automation.
+                            Rabbi Sheller participants/members stay separate from BNA students. Collect app access, exports, folders, recordings, worksheets, and payment/access evidence here before any import, sync, or automation.
                             <button class="task-action" type="button" style="margin-top:8px;" onclick="runSuperAssistantQuickAction('sheller_access')">Draft access request message</button>
                         </div>
                     ` : ''}
@@ -10019,7 +10116,7 @@
                             <div class="content-card-meta">${escapeHtml(provider.provider_name || 'Provider')} / ${escapeHtml(String(item.status || 'needed').replace(/_/g, ' '))}</div>
                             <p class="event-meta">${escapeHtml(item.next_action || item.notes || 'Request or confirm access before enabling sync/import automation.')}</p>
                         </article>
-                    `).join('')}</div>` : '<div class="empty-state">No access checklist items loaded.</div>'}
+                    `).join('')}</div>` : '<div class="empty-state">No access/material items loaded.</div>'}
                 </section>
             `;
         }
@@ -10212,14 +10309,74 @@
             `;
         }
 
+        function decisionCardDetails(task = {}) {
+            const parsed = parseJsonField(task.ai_parsed) || {};
+            const workflow = taskWorkflowDetail(task) || {};
+            const options = decisionOptionLabels(task).map((option, index) => {
+                const taskOptions = parseJsonField(task.decision_options) || task.decision_options || [];
+                const parsedOptions = Array.isArray(parsed.options) ? parsed.options : Array.isArray(taskOptions) ? taskOptions : [];
+                const parsedOption = parsedOptions[index] || {};
+                return {
+                    ...option,
+                    pros: listFromClient(parsedOption.pros || parsedOption.pro || '', 3),
+                    cons: listFromClient(parsedOption.cons || parsedOption.con || '', 3),
+                    recommended: Boolean(parsedOption.recommended),
+                };
+            });
+            const title = taskDisplayTitle(task);
+            const question = task.decision_question || parsed.question || parsed.exact_question || workflow.question || (/\?/.test(title) ? title : `What should happen next for: ${title}?`);
+            const context = task.decision_context || parsed.context_summary || parsed.context || workflow.summary || task.notes || 'Decision context was not parsed yet. Open the task or ask the assistant to clarify options before deciding.';
+            const recommendation = task.decision_recommendation || parsed.recommended_option || parsed.recommendation || options.find(option => option.recommended)?.label || '';
+            return {
+                title,
+                question,
+                context,
+                options,
+                recommendation,
+                why: parsed.why_it_matters || parsed.why || workflow.objective || '',
+                owner: taskOwnerLabel(task),
+                due: task.due_date || task.planned_at || '',
+            };
+        }
+
+        function listFromClient(value = '', maxItems = 3) {
+            if (Array.isArray(value)) return value.map(item => String(item || '').trim()).filter(Boolean).slice(0, maxItems);
+            return String(value || '').split(/\n|;|\u2022/).map(item => item.replace(/^[-*]\s*/, '').trim()).filter(Boolean).slice(0, maxItems);
+        }
+
+        function decisionActionButtonLabel(option = {}) {
+            const label = String(option.label || 'option').trim() || 'option';
+            return /^approve\b/i.test(label) ? label : `Approve ${label}`;
+        }
+
         function renderDecisionCard(task = {}) {
-            const options = decisionOptionLabels(task);
+            const details = decisionCardDetails(task);
+            const options = details.options;
             return `
                 <article class="content-card decision-card">
-                    <div class="content-card-title">${escapeHtml(taskDisplayTitle(task))}</div>
-                    <p class="event-meta">${escapeHtml(limitTextClient(task.notes || 'Decision needed before this can move forward.', 220))}</p>
-                    ${options.length ? `<div class="decision-options">${options.map(option => `<button class="task-action" onclick="taskDecisionAction(event, ${Number(task.id)}, ${JSON.stringify(option).replace(/"/g, '&quot;')})">${escapeHtml(option.label)}</button>`).join('')}</div>` : '<div class="settings-disabled-note">Options are not parsed yet. Ask the bot to clarify the decision.</div>'}
+                    <div class="content-card-title">${escapeHtml(details.title)}</div>
+                    <div class="settings-disabled-note"><strong>Question:</strong> ${escapeHtml(limitTextClient(details.question, 260))}</div>
+                    <p class="event-meta">${escapeHtml(limitTextClient(details.context, 320))}</p>
+                    <div class="task-inline-grid">
+                        <div class="task-inline-item"><div class="task-inline-label">Owner</div><div class="task-inline-value">${escapeHtml(details.owner)}</div></div>
+                        <div class="task-inline-item"><div class="task-inline-label">Due</div><div class="task-inline-value">${escapeHtml(details.due ? formatDate(details.due) || details.due : 'Not set')}</div></div>
+                    </div>
+                    ${details.why ? `<div class="settings-disabled-note"><strong>Why it matters:</strong> ${escapeHtml(limitTextClient(details.why, 220))}</div>` : ''}
+                    ${details.recommendation ? `<div class="settings-disabled-note"><strong>Recommendation:</strong> ${escapeHtml(details.recommendation)}</div>` : ''}
+                    ${options.length ? `
+                        <div class="decision-options">
+                            ${options.map(option => `
+                                <div class="task-decision-panel">
+                                    <div class="task-decision-title">${escapeHtml(option.label)}: ${escapeHtml(limitTextClient(option.value, 160))}</div>
+                                    ${option.pros?.length ? `<div class="task-inline-text"><strong>Pros:</strong> ${escapeHtml(option.pros.join('; '))}</div>` : ''}
+                                    ${option.cons?.length ? `<div class="task-inline-text"><strong>Cons:</strong> ${escapeHtml(option.cons.join('; '))}</div>` : ''}
+                                    <button class="task-action primary" onclick="taskDecisionAction(event, ${Number(task.id)}, ${JSON.stringify(option).replace(/"/g, '&quot;')})">${escapeHtml(decisionActionButtonLabel(option))}</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : '<div class="settings-disabled-note">Options are not parsed yet. Ask the assistant to clarify the exact decision, choices, pros, cons, and recommendation.</div>'}
                     <div class="task-actions">
+                        <button class="task-action" onclick="runSuperAssistantQuickAction('summarize')">Ask Assistant</button>
                         <button class="task-action primary" onclick="openTaskDetail(event, ${Number(task.id)})">Open Decision</button>
                     </div>
                 </article>
@@ -10679,7 +10836,7 @@
             };
 
             if (section === 'email_identities') return renderConnectorSettingsSection(['email_identity'], 'Email Identities', 'Support BNA and Rabbi Sheller sending identities. Bot drafts, user approves, then the connector sends and logs.');
-            if (section === 'whatsapp') return renderConnectorSettingsSection(['whatsapp'], 'WhatsApp', 'Manual prefilled WhatsApp links are the first workflow. API mode stays disabled until volume and provider choice justify it.');
+            if (section === 'whatsapp') return renderWhatsAppSettings();
             if (section === 'social_accounts') return renderConnectorSettingsSection(['social'], 'Social Accounts', 'Buffer/Publer-style connectors schedule approved posts for BNA and provider accounts.');
             if (section === 'calendar') return renderCalendarPolicySettings();
             if (section === 'google_calendar') return renderGoogleCalendarSettings();
@@ -10722,6 +10879,39 @@
                     <div class="connector-grid">
                         ${visible.length ? visible.map(renderConnectorSettingCard).join('') : '<div class="empty-state">No connector settings are loaded for this workspace.</div>'}
                     </div>
+                </div>
+            `;
+        }
+
+        function renderWhatsAppSettings() {
+            const setting = activeWorkspaceConnectorSettings('whatsapp')[0] || {};
+            const config = setting.config || {};
+            const status = setting.status || 'not_configured';
+            const provider = config.provider || config.mode || (status === 'test_mode' ? 'wapi' : 'manual_link');
+            const approvalRequired = config.approval_required !== false;
+            return `
+                <div class="connector-settings-section">
+                    <div class="task-section-header"><h3>WhatsApp / WAPI</h3><span>${escapeHtml(status)}</span></div>
+                    <p class="settings-disabled-note">Default behavior is safe: if WAPI is not configured, the assistant creates a manual WhatsApp link; if configured, real sends still require approval unless Super Admin deliberately changes the connector policy.</p>
+                    <div class="settings-control-grid">
+                        ${renderSettingsControlRow('Provider', provider, 'manual_link is the fallback; wapi requires base URL, API key, and approved send flow.', status)}
+                        ${renderSettingsControlRow('WAPI base URL', config.base_url || config.wapi_base_url || 'WAPI_BASE_URL', 'Set WAPI_BASE_URL or WAPI_API_BASE_URL in the environment.', config.base_url || config.wapi_base_url ? 'Configured' : 'Env placeholder')}
+                        ${renderSettingsControlRow('WAPI API key/token', config.api_key_set || config.token_set ? 'Stored server-side' : 'WAPI_API_KEY', 'Never show the token in the browser. Server accepts WAPI_API_KEY, WAPI_API_TOKEN, or WHAPI_API_TOKEN.', config.api_key_set || config.token_set ? 'Configured' : 'Required for WAPI')}
+                        ${renderSettingsControlRow('WAPI instance ID', config.instance_id || 'WAPI_INSTANCE_ID', 'Optional, depending on provider account shape.', config.instance_id ? 'Configured' : 'Optional')}
+                        ${renderSettingsControlRow('Default sender', config.default_sender || config.default_number || 'WAPI_DEFAULT_SENDER / Rabbi Shloimie number', 'Used for previews and outbound attribution.', config.default_sender || config.default_number ? 'Configured' : 'Optional')}
+                        ${renderSettingsControlRow('Default parent group ID', config.default_parent_group_id || config.default_group_id || 'WAPI_DEFAULT_GROUP_ID', 'Used only for approved parent-group sends.', config.default_parent_group_id || config.default_group_id ? 'Configured' : 'Blocked until set')}
+                        ${renderSettingsControlRow('Default admin number', config.default_admin_number || 'Not set', 'Admin test recipient for dry-run/test-message previews.', config.default_admin_number ? 'Configured' : 'Optional')}
+                        ${renderSettingsControlRow('Default provider number', config.default_provider_number || 'Not set', 'Provider workspace test recipient.', config.default_provider_number ? 'Configured' : 'Optional')}
+                        ${renderSettingsControlRow('Test mode', config.test_mode || status === 'test_mode' ? 'Enabled' : 'WAPI_TEST_MODE=true recommended until launch', 'When test mode is enabled, approved sends do not call the live provider.', config.test_mode || status === 'test_mode' ? 'Safe' : 'Review')}
+                        ${renderSettingsControlRow('Approval required', approvalRequired ? 'Yes' : 'No', 'Real WhatsApp sends and group posts should stay approval-gated.', approvalRequired ? 'Safe' : 'Super Admin override')}
+                        ${renderSettingsControlRow('Last test status', setting.last_test_status || setting.last_synced_at || 'No test recorded', 'Use a dry-run test before enabling live sends.', setting.last_test_status ? 'Logged' : 'No test')}
+                    </div>
+                    <div class="task-actions">
+                        <button class="task-action primary" onclick="previewWhatsAppTestMessage()">Send test message preview</button>
+                        <button class="task-action" onclick="runSuperAssistantQuickAction('weekly_whatsapp')">Draft weekly WhatsApp</button>
+                        <button class="task-action" onclick="runSuperAssistantQuickAction('whatsapp')">Draft WhatsApp</button>
+                    </div>
+                    ${renderConnectorSettingsSection(['whatsapp'], 'Stored WhatsApp connector records', 'These records are read from connector settings. Secret values stay server-side.')}
                 </div>
             `;
         }
@@ -10863,50 +11053,86 @@
             render();
         }
 
+        function assistantResultText(result = {}) {
+            const payload = result.result || result.preview || result;
+            if (typeof payload === 'string') return payload;
+            if (payload.body) return payload.body;
+            if (payload.message) return payload.message;
+            if (payload.note) return payload.note;
+            return JSON.stringify(payload, null, 2);
+        }
+
+        async function runAssistantAction(actionId, inputs = {}, options = {}) {
+            setSuperAssistantOutput(options.status || 'Thinking...');
+            const result = await api.runAction({
+                action_id: actionId,
+                source: 'ui_bot',
+                dry_run: Boolean(options.dry_run),
+                approved: Boolean(options.approved),
+                workspace_key: options.workspace_key || currentWorkspaceKey(),
+                inputs: {
+                    page_context: currentAssistantPageContext(),
+                    ...inputs,
+                },
+            });
+            const approval = result.approval_required ? '\n\nWaiting for approval before any sensitive execution.' : '';
+            setSuperAssistantOutput(`${assistantResultText(result)}${approval}`);
+            return result;
+        }
+
         async function runSuperAssistantQuickAction(kind) {
             try {
                 if (kind === 'summarize') {
-                    const result = await api.runAction({
-                        action_id: 'summarize_current_page',
-                        source: 'ui_bot',
-                        dry_run: false,
-                        workspace_key: currentWorkspaceKey(),
-                        inputs: {
-                            title: currentSectionLabel(),
-                            route: window.location.pathname + window.location.search,
-                            visible_counts: {
-                                tasks: tasks.length,
-                                students: students.length,
-                                tickets: supportTickets.length,
-                                communications: contactCommunications.length,
-                            },
+                    await runAssistantAction('summarize_current_page', {
+                        title: currentSectionLabel(),
+                        route: window.location.pathname + window.location.search,
+                        visible_counts: {
+                            tasks: tasks.length,
+                            students: students.length,
+                            tickets: supportTickets.length,
+                            communications: contactCommunications.length,
                         },
-                    });
-                    setSuperAssistantOutput(JSON.stringify(result.result || result.preview || result, null, 2));
+                    }, { status: 'Thinking...' });
+                    return;
+                }
+
+                if (kind === 'weekly_update') {
+                    await runAssistantAction('generate_weekly_update', {
+                        from_latest_media: true,
+                        source_text: 'Use the latest uploaded video/audio and make this week parent update.',
+                    }, { status: 'Finding latest media...' });
+                    return;
+                }
+
+                if (kind === 'weekly_whatsapp') {
+                    await runAssistantAction('generate_whatsapp_weekly_post', {
+                        from_latest_media: true,
+                        audience: 'BNA parent group',
+                        source_text: 'Use the latest weekly update and make a WhatsApp post.',
+                    }, { status: 'Preparing preview...' });
+                    return;
+                }
+
+                if (kind === 'newsletter') {
+                    await runAssistantAction('generate_parent_newsletter', {
+                        from_latest_media: true,
+                        source_text: 'Use the latest weekly update and make a parent newsletter.',
+                    }, { status: 'Preparing newsletter draft...' });
                     return;
                 }
 
                 if (kind === 'whatsapp') {
                     const body = prompt('WhatsApp draft text:', '');
                     if (!body) return;
-                    const result = await api.runAction({
-                        action_id: 'draft_whatsapp_message',
-                        source: 'ui_bot',
-                        workspace_key: currentWorkspaceKey(),
-                        inputs: { body, page_context: currentAssistantPageContext() },
-                    });
-                    setSuperAssistantOutput(`${result.result?.body || result.preview?.body || 'Draft created.'}\n\nNo WhatsApp was sent.`);
+                    await runAssistantAction('draft_whatsapp_message', { body }, { status: 'Preparing preview...' });
                     return;
                 }
 
                 if (kind === 'sheller_access') {
-                    const result = await api.runAction({
-                        action_id: 'prepare_rabbi_sheller_access_request',
-                        source: 'ui_bot',
+                    await runAssistantAction('prepare_rabbi_sheller_access_request', {}, {
                         workspace_key: currentWorkspaceKey() === 'platform' ? 'rabbi_sheller_provider' : currentWorkspaceKey(),
-                        inputs: { page_context: currentAssistantPageContext() },
+                        status: 'Preparing access/materials request...',
                     });
-                    setSuperAssistantOutput(result.result?.message || result.preview?.message || 'Access request prepared.');
                     return;
                 }
 
@@ -10927,6 +11153,75 @@
                 }
             } catch (error) {
                 setSuperAssistantOutput(error.message || 'Assistant action failed.');
+            }
+        }
+
+        async function runSuperAssistantCommand(event) {
+            event.preventDefault();
+            const input = document.getElementById('superAssistantCommandInput');
+            const text = String(input?.value || '').trim();
+            if (!text) return;
+            if (input) input.value = '';
+            const lower = text.toLowerCase();
+            try {
+                if (/report problem|ui issue|broken|bug/.test(lower)) {
+                    startReportProblemMode();
+                    return;
+                }
+                if (/sheller|access|materials|credential|meeting/.test(lower)) {
+                    await runAssistantAction('prepare_rabbi_sheller_access_request', { notes: text }, {
+                        workspace_key: currentWorkspaceKey() === 'platform' ? 'rabbi_sheller_provider' : currentWorkspaceKey(),
+                        status: 'Preparing access/materials request...',
+                    });
+                    return;
+                }
+                if (/weekly|parent update|newsletter|uploaded|video|audio|recording/.test(lower)) {
+                    const actionId = /whatsapp/.test(lower)
+                        ? 'generate_whatsapp_weekly_post'
+                        : /newsletter|email/.test(lower)
+                            ? 'generate_parent_newsletter'
+                            : 'generate_weekly_update';
+                    await runAssistantAction(actionId, {
+                        from_latest_media: /latest|uploaded|video|audio|recording|drive/.test(lower),
+                        source_text: text,
+                        audience: /group|parents/.test(lower) ? 'BNA parent group' : undefined,
+                    }, { status: 'Preparing preview...' });
+                    return;
+                }
+                if (/whatsapp|wapi|wa\.me/.test(lower)) {
+                    await runAssistantAction('draft_whatsapp_message', { body: text }, { status: 'Preparing preview...' });
+                    return;
+                }
+                if (/task|codex|code|system/.test(lower)) {
+                    await runAssistantAction('create_task', {
+                        title: text.replace(/^create\s+(a\s+)?task\s*/i, '').slice(0, 180) || text,
+                        raw_text: text,
+                        stage: /codex|code|system/.test(lower) ? 'assigned' : 'raw_input',
+                        assigned_to: /codex|code|system/.test(lower) ? 'Codex' : 'Shloimie',
+                        category: /codex|code|system/.test(lower) ? 'technology' : 'operations',
+                    }, { status: 'Creating task...' });
+                    return;
+                }
+                await runAssistantAction('summarize_current_page', {
+                    title: text,
+                    route: window.location.pathname + window.location.search,
+                    visible_counts: { tasks: tasks.length, students: students.length, tickets: supportTickets.length },
+                }, { status: 'Thinking...' });
+            } catch (error) {
+                setSuperAssistantOutput(error.message || 'Assistant command failed.');
+            }
+        }
+
+        async function previewWhatsAppTestMessage() {
+            try {
+                const body = prompt('Test WhatsApp preview text:', 'BNA WhatsApp connector test. No live send unless approved and configured.');
+                if (!body) return;
+                await runAssistantAction('send_whatsapp_via_wapi', { body, to: '', test_message: true }, {
+                    dry_run: true,
+                    status: 'Preparing preview...',
+                });
+            } catch (error) {
+                setSuperAssistantOutput(error.message || 'Could not preview WhatsApp test.');
             }
         }
 
@@ -10961,9 +11256,44 @@
         }
 
         async function submitProblemReport(note, targetContext = {}) {
-            const pageContext = currentAssistantPageContext({ target: targetContext });
+            const issueId = `ui-${Date.now().toString(36)}`;
+            const selector = targetContext.tag ? [
+                targetContext.tag,
+                targetContext.id ? `#${targetContext.id}` : '',
+                targetContext.classes ? `.${String(targetContext.classes).split(/\s+/).slice(0, 3).join('.')}` : '',
+            ].filter(Boolean).join('') : '';
+            const pageContext = currentAssistantPageContext({
+                issue_id: issueId,
+                target: targetContext,
+                selector,
+                bounding_box: targetContext.rect || null,
+                screenshot_path: null,
+                screenshot_status: 'not_captured_in_browser',
+                console_errors: clientConsoleErrors.slice(-10),
+            });
             const title = `UI issue: ${currentNavItem().label || currentView} / ${currentSectionLabel()}`;
             const project = currentWorkspaceKey() === 'rabbi_sheller_provider' ? 'one_time_mishnah_class' : 'bna';
+            let actionPreview = null;
+            try {
+                actionPreview = await api.runAction({
+                    action_id: 'create_report_problem_ticket',
+                    source: 'ui_bot',
+                    dry_run: true,
+                    workspace_key: currentWorkspaceKey(),
+                    inputs: {
+                        title,
+                        description: note,
+                        severity: 'normal',
+                        category: 'task_manager',
+                        page_context: pageContext,
+                        selector,
+                        bounding_box: pageContext.bounding_box,
+                        route: pageContext.route,
+                    },
+                });
+            } catch {
+                actionPreview = null;
+            }
             const ticket = await api.createSupportTicket({
                 project,
                 title,
@@ -10975,14 +11305,17 @@
                 ].join('\n'),
                 severity: 'normal',
                 status: 'open',
-                category: 'bot_api',
+                category: 'task_manager',
                 source: 'dashboard',
-                source_context: pageContext,
+                source_context: {
+                    ...pageContext,
+                    action_registry_preview: actionPreview?.preview || actionPreview?.result || null,
+                },
                 reporter_name: opsMe?.username || 'super-admin-assistant',
                 reporter_role: currentWorkspaceRoleLabel(),
                 assigned_to: 'Codex',
             });
-            setSuperAssistantOutput(`Problem ticket created: #${ticket.ticket?.id || ticket.id || 'new'}`);
+            setSuperAssistantOutput(`Problem ticket created: #${ticket.ticket?.id || ticket.id || 'new'}\nIssue: ${issueId}\nSelection: ${selector || 'element captured'}\nScreenshot: not captured in browser.`);
             loadData({ background: true });
         }
 
@@ -15343,6 +15676,85 @@
             `;
         }
 
+        function renderSupportTicketModal() {
+            const draft = supportTicketDraft || {};
+            const contextLabel = [currentWorkspaceRecord().display_name || currentWorkspaceKey(), currentNavItem().label || currentView, currentSectionLabel()]
+                .filter(Boolean)
+                .join(' / ');
+            const sourceContext = currentSupportTicketSourceContext();
+            const routeLabel = sourceContext.route || '/operations';
+            const taskLabel = sourceContext.task_id ? `Task #${sourceContext.task_id}` : '';
+            const categoryOptions = [
+                { id: 'task_manager', label: 'Task / UI' },
+                { id: 'bot_api', label: 'Bot / API' },
+                { id: 'automation', label: 'Automation' },
+                { id: 'login', label: 'Login' },
+                { id: 'access', label: 'Access' },
+                { id: 'payment', label: 'Payment' },
+                { id: 'recording', label: 'Recording' },
+                { id: 'worksheet', label: 'Worksheet' },
+                { id: 'drive', label: 'Drive' },
+                { id: 'student_parent_data', label: 'Student / parent data' },
+                { id: 'link', label: 'Link' },
+                { id: 'other', label: 'Other' }
+            ];
+            return `
+                <div class="modal-overlay ${supportTicketModalOpen ? 'show' : ''}" id="supportTicketModal" role="dialog" aria-modal="true" aria-labelledby="supportTicketModalTitle">
+                    <form class="modal support-ticket-modal" id="supportTicketForm" onsubmit="submitSupportTicketForm(event)">
+                        <div class="modal-header">
+                            <h2 id="supportTicketModalTitle">Report a Problem</h2>
+                            <button class="modal-close" type="button" aria-label="Close support ticket form" onclick="closeSupportTicketForm()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            ${supportTicketFormError ? `<div class="error-banner modal-error">${escapeHtml(supportTicketFormError)}</div>` : ''}
+                            <div class="form-group support-ticket-primary-field">
+                                <label for="supportTicketDescription">Issue</label>
+                                <textarea id="supportTicketDescription" rows="5" autocomplete="off" oninput="updateSupportTicketDraftField('description', this.value)" placeholder="What happened or looked wrong?">${escapeHtml(draft.description || '')}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="supportTicketExpected">Expected result</label>
+                                <textarea id="supportTicketExpected" rows="3" autocomplete="off" oninput="updateSupportTicketDraftField('expected', this.value)" placeholder="What should the app have shown or done?">${escapeHtml(draft.expected || '')}</textarea>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="supportTicketTitle">Short title</label>
+                                    <input type="text" id="supportTicketTitle" autocomplete="off" maxlength="160" value="${escapeHtml(draft.title || '')}" oninput="updateSupportTicketDraftField('title', this.value)" placeholder="Optional summary">
+                                </div>
+                                <div class="form-group">
+                                    <label for="supportTicketSeverity">Severity</label>
+                                    <select id="supportTicketSeverity" onchange="updateSupportTicketDraftField('severity', this.value)">
+                                        ${['low', 'normal', 'high', 'blocking'].map(severity => `<option value="${severity}" ${(draft.severity || 'normal') === severity ? 'selected' : ''}>${escapeHtml(severity.replace(/_/g, ' '))}</option>`).join('')}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="supportTicketCategory">Area</label>
+                                    <select id="supportTicketCategory" onchange="updateSupportTicketDraftField('category', this.value)">
+                                        ${categoryOptions.map(option => `<option value="${option.id}" ${(draft.category || 'task_manager') === option.id ? 'selected' : ''}>${escapeHtml(option.label)}</option>`).join('')}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="supportTicketContext">App context</label>
+                                    <input type="text" id="supportTicketContext" readonly value="${escapeHtml([contextLabel, taskLabel].filter(Boolean).join(' / '))}">
+                                </div>
+                            </div>
+                            <div class="support-ticket-context-grid">
+                                <div class="form-group">
+                                    <label for="supportTicketRoute">Current route</label>
+                                    <input type="text" id="supportTicketRoute" readonly value="${escapeHtml(routeLabel)}">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" onclick="closeSupportTicketForm()">Cancel</button>
+                            <button class="btn btn-primary" type="submit" id="supportTicketSubmit">Submit Report</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+        }
+
         function renderTaskComments() {
             const comments = Array.isArray(taskComments) ? taskComments : [];
             return `
@@ -16298,7 +16710,8 @@
 
         function decisionOptionLabels(task) {
             const parsed = parseJsonField(task.ai_parsed) || {};
-            const fromParsed = Array.isArray(parsed.options) ? parsed.options : [];
+            const taskOptions = parseJsonField(task.decision_options) || task.decision_options || [];
+            const fromParsed = Array.isArray(parsed.options) ? parsed.options : Array.isArray(taskOptions) ? taskOptions : [];
             const text = [task.title, task.notes].filter(Boolean).join('\n');
             const fromText = [...text.matchAll(/\bOption\s+([A-C])\s*:\s*([^\n]+)/gi)]
                 .map(match => ({ label: `Option ${match[1].toUpperCase()}`, value: match[2].trim().slice(0, 160) }));
@@ -16326,7 +16739,7 @@
         }
 
         function viewAllowed(view) {
-            return allowedViews().has(view) && workspaceNavViewIds().includes(view);
+            return allowedViews().has(view);
         }
 
         function normalizeProjectKey(value) {
@@ -16390,9 +16803,9 @@
         function workspaceNavViewIds(workspaceKey = currentWorkspaceKey()) {
             const key = normalizeWorkspaceKey(workspaceKey) || 'platform';
             const nav = {
-                platform: ['dashboard', 'admin', 'service_providers', 'pipelines', 'tasks', 'communications', 'api_usage', 'settings'],
-                bna: ['dashboard', 'pipelines', 'tasks', 'students', 'contacts', 'content', 'calendar', 'communications', 'accounting', 'service_providers', 'api_usage', 'settings'],
-                rabbi_sheller_provider: ['dashboard', 'service_providers', 'contacts', 'pipelines', 'content', 'calendar', 'communications', 'tasks', 'api_usage', 'settings']
+                platform: ['dashboard', 'admin', 'pipelines', 'service_providers', 'communications', 'api_usage', 'settings'],
+                bna: ['dashboard', 'tasks', 'students', 'contacts', 'content', 'calendar', 'communications', 'service_providers', 'accounting', 'settings'],
+                rabbi_sheller_provider: ['dashboard', 'service_providers', 'contacts', 'content', 'calendar', 'communications', 'tasks', 'api_usage', 'settings']
             };
             return nav[key] || nav.platform;
         }
@@ -16403,25 +16816,24 @@
                 platform: {
                     dashboard: { label: 'Platform Dashboard', marker: 'PD' },
                     admin: { label: 'Workspaces', marker: 'WS' },
-                    service_providers: { label: 'Provider Index', marker: 'PI' },
-                    pipelines: { label: 'Pipelines', marker: 'PL' },
-                    tasks: { label: 'Tasks', marker: 'TS' },
+                    pipelines: { label: 'Operations', marker: 'OP' },
+                    service_providers: { label: 'Providers', marker: 'PR' },
                     communications: { label: 'Communications', marker: 'CM' },
-                    api_usage: { label: 'API Usage', marker: 'API' },
+                    api_usage: { label: 'API / Bots', marker: 'API' },
                     settings: { label: 'Settings', marker: 'SE' },
                 },
                 bna: {
                     dashboard: { label: 'Dashboard', marker: 'DB' },
-                    contacts: { label: 'Parents / Contacts', marker: 'PC' },
-                    service_providers: { label: 'Provider Index', marker: 'PI' },
+                    tasks: { label: 'Work', marker: 'WK' },
+                    contacts: { label: 'Parents', marker: 'PA' },
+                    service_providers: { label: 'Providers', marker: 'PR' },
                 },
                 rabbi_sheller_provider: {
                     dashboard: { label: 'Dashboard', marker: 'DB' },
-                    service_providers: { label: 'Program / Membership', marker: 'PM' },
-                    contacts: { label: 'Participants / Members', marker: 'MB' },
-                    pipelines: { label: 'Leads / Pipeline', marker: 'LD' },
-                    content: { label: 'Content / Videos', marker: 'CV' },
-                    calendar: { label: 'Calendar / Schedule', marker: 'SC' },
+                    service_providers: { label: 'Program', marker: 'PG' },
+                    contacts: { label: 'Members', marker: 'MB' },
+                    content: { label: 'Content', marker: 'CT' },
+                    calendar: { label: 'Schedule', marker: 'SC' },
                     communications: { label: 'Communications', marker: 'CM' },
                     tasks: { label: 'Tasks', marker: 'TS' },
                     api_usage: { label: 'Reporting', marker: 'RP' },
@@ -16845,7 +17257,8 @@
                 ? `<div class="container"><div class="error-banner">Some dashboard data could not load: ${errors.map(escapeHtml).join('; ')}</div></div>`
                 : '';
 
-            app.innerHTML = renderAppShell(errorBanner + content + renderTaskModal()) + renderSuperAdminAssistantDock();
+            app.innerHTML = renderAppShell(errorBanner + content + renderTaskModal() + renderSupportTicketModal()) + renderSuperAdminAssistantDock();
+            resetTaskDetailViewportAfterRender();
         }
 
         function switchView(view) {
@@ -16976,26 +17389,156 @@
             render();
         }
 
-        async function createSupportTicketPrompt() {
-            const title = prompt('Ticket title');
-            if (!title || !title.trim()) return;
-            const description = prompt('What is broken or not working?') || '';
-            const severityInput = (prompt('Severity: low, normal, high, blocking', 'normal') || 'normal').toLowerCase();
-            const severity = ['low', 'normal', 'high', 'blocking'].includes(severityInput) ? severityInput : 'normal';
-            try {
-                await api.createSupportTicket({
-                    title: title.trim(),
-                    description: description.trim(),
-                    severity,
-                    category: /bot|telegram|api/i.test(`${title} ${description}`) ? 'bot_api' : 'other',
-                    source: 'dashboard'
-                });
+        function resetSupportTicketDraft() {
+            supportTicketDraft = {
+                title: '',
+                description: '',
+                expected: '',
+                severity: 'normal',
+                category: 'task_manager'
+            };
+        }
+
+        function createSupportTicketPrompt() {
+            openSupportTicketForm();
+        }
+
+        function openSupportTicketForm() {
+            supportTicketModalOpen = true;
+            supportTicketFormError = '';
+            render();
+            requestAnimationFrame(() => {
+                const input = document.getElementById('supportTicketDescription');
+                if (input) input.focus();
+            });
+        }
+
+        function closeSupportTicketForm() {
+            supportTicketModalOpen = false;
+            supportTicketFormError = '';
+            resetSupportTicketDraft();
+            render();
+        }
+
+        function updateSupportTicketDraftField(field, value) {
+            supportTicketDraft = {
+                ...supportTicketDraft,
+                [field]: value
+            };
+            if (['title', 'description', 'expected'].includes(field)) holdTextEntryRender();
+        }
+
+        function currentSupportTicketSourceContext() {
+            const contextLabel = [currentWorkspaceRecord().display_name || currentWorkspaceKey(), currentNavItem().label || currentView, currentSectionLabel()]
+                .filter(Boolean)
+                .join(' / ');
+            const context = {
+                route: `${window.location.pathname}${window.location.search}`,
+                view: currentView,
+                section: currentSectionId(),
+                section_label: currentSectionLabel(),
+                workspace_key: currentWorkspaceKey(),
+                context_label: contextLabel,
+                role: currentWorkspaceRoleLabel(),
+                report_mode: 'in_app_support_ticket_form',
+                viewport: {
+                    width: window.innerWidth,
+                    height: window.innerHeight
+                },
+                user_agent: navigator.userAgent || ''
+            };
+            if (currentView === 'tasks' && selectedTaskId) context.task_id = selectedTaskId;
+            if (currentView === 'students' && selectedStudentId) context.student_id = selectedStudentId;
+            if (currentView === 'content' && selectedContentDetailJobId) context.content_job_id = selectedContentDetailJobId;
+            return context;
+        }
+
+        function openSupportTicketResultView() {
+            const visibleViews = workspaceNavViewIds();
+            if (visibleViews.includes('admin') && allowedViews().has('admin')) {
                 currentView = 'admin';
                 adminSection = 'tickets';
+                return;
+            }
+            if (visibleViews.includes('communications') && allowedViews().has('communications')) {
+                currentView = 'communications';
+                communicationsSection = 'support_threads';
+                return;
+            }
+            currentView = 'dashboard';
+            dashboardSection = 'overview';
+        }
+
+        async function submitSupportTicketForm(event) {
+            event?.preventDefault?.();
+            const form = document.getElementById('supportTicketForm');
+            const button = document.getElementById('supportTicketSubmit');
+            const titleInput = (document.getElementById('supportTicketTitle')?.value || '').trim();
+            const issue = (document.getElementById('supportTicketDescription')?.value || '').trim();
+            const expected = (document.getElementById('supportTicketExpected')?.value || '').trim();
+            const severityInput = (document.getElementById('supportTicketSeverity')?.value || 'normal').toLowerCase();
+            const category = document.getElementById('supportTicketCategory')?.value || 'task_manager';
+            const severity = ['low', 'normal', 'high', 'blocking'].includes(severityInput) ? severityInput : 'normal';
+            const description = [
+                issue ? `Issue:\n${issue}` : '',
+                expected ? `Expected result:\n${expected}` : ''
+            ].filter(Boolean).join('\n\n');
+            const title = titleInput || issue.slice(0, 140) || expected.slice(0, 140) || 'Support report';
+            supportTicketDraft = { title: titleInput, description: issue, expected, severity, category };
+            if (!titleInput && !issue && !expected) {
+                supportTicketFormError = 'Add the issue or expected result before creating the ticket.';
+                render();
+                requestAnimationFrame(() => document.getElementById('supportTicketDescription')?.focus());
+                return;
+            }
+            if (button) {
+                button.disabled = true;
+                button.textContent = 'Submitting...';
+            }
+            if (form) form.setAttribute('aria-busy', 'true');
+            try {
+                await api.createSupportTicket({
+                    title,
+                    description,
+                    severity,
+                    category,
+                    source: 'dashboard',
+                    source_context: currentSupportTicketSourceContext()
+                });
+                supportTicketModalOpen = false;
+                supportTicketFormError = '';
+                resetSupportTicketDraft();
+                openSupportTicketResultView();
+                syncOperationsUrl();
                 await loadData();
             } catch (error) {
-                alert(error.message);
+                supportTicketFormError = error.message || 'Could not create the support ticket.';
+                render();
+                requestAnimationFrame(() => document.getElementById('supportTicketDescription')?.focus());
             }
+        }
+
+        function resetOperationsViewportScroll() {
+            requestAnimationFrame(() => {
+                window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+                document.documentElement.scrollTop = 0;
+                document.body.scrollTop = 0;
+                const main = document.querySelector('.ops-main');
+                if (main) main.scrollTop = 0;
+            });
+        }
+
+        function resetTaskDetailViewportAfterRender() {
+            const taskDetailKey = currentView === 'tasks' && selectedTaskId && document.querySelector('.task-detail-page')
+                ? String(selectedTaskId)
+                : null;
+            if (!taskDetailKey) {
+                lastTaskDetailScrollResetKey = null;
+                return;
+            }
+            if (lastTaskDetailScrollResetKey === taskDetailKey) return;
+            lastTaskDetailScrollResetKey = taskDetailKey;
+            resetOperationsViewportScroll();
         }
 
         async function updateSupportTicketStatus(id, status) {
@@ -19181,6 +19724,25 @@
         });
         window.addEventListener('resize', positionOpenFilterDropdowns);
         window.addEventListener('scroll', positionOpenFilterDropdowns, true);
+        window.addEventListener('error', (event) => {
+            clientConsoleErrors.push({
+                type: 'error',
+                message: String(event.message || ''),
+                source: String(event.filename || ''),
+                line: event.lineno || null,
+                column: event.colno || null,
+                at: new Date().toISOString(),
+            });
+            clientConsoleErrors = clientConsoleErrors.slice(-20);
+        });
+        window.addEventListener('unhandledrejection', (event) => {
+            clientConsoleErrors.push({
+                type: 'unhandledrejection',
+                message: String(event.reason?.message || event.reason || ''),
+                at: new Date().toISOString(),
+            });
+            clientConsoleErrors = clientConsoleErrors.slice(-20);
+        });
 
         // Init
         normalizeCurrentRouteForWorkspace();
