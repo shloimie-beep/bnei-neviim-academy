@@ -66,6 +66,7 @@ const { runAction } = require('./src/lib/actions/runner');
 const app = express();
 const PORT = process.env.PORT || 8080;
 const HOST = process.env.HOST || process.env.BNA_BIND_HOST || '0.0.0.0';
+const RELEASE_BUILD_ID = process.env.BNA_RELEASE_BUILD_ID || '2026-06-12-clean-mobile-queue-3ecd6a0';
 
 const DEFAULT_PROJECT_KEY = 'bna';
 const ONE_TIME_PROJECT_KEY = 'one_time_mishnah_class';
@@ -17598,7 +17599,11 @@ app.get('/api/health', async (req, res) => {
     res.json({
       status: 'ok',
       database: 'connected',
-      ghl: GHL_PIT_TOKEN ? 'configured' : 'not configured'
+      ghl: GHL_PIT_TOKEN ? 'configured' : 'not configured',
+      release: {
+        build_id: RELEASE_BUILD_ID,
+        required_signup_documents: REQUIRED_SIGNUP_AGREEMENT_DEFINITIONS.length,
+      },
     });
   } catch (err) {
     res.status(500).json({ status: 'error', database: 'disconnected' });

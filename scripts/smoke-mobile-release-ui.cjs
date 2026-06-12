@@ -177,7 +177,7 @@ async function shot(page, name) {
     }));
     assert.equal(drawerState.mainDisplay, 'none', `operations drawer should hide main on mobile: ${JSON.stringify(drawerState)}`);
     assert.ok(drawerState.sidebarWidth >= 340, `operations drawer should be full-width on mobile: ${JSON.stringify(drawerState)}`);
-    await page.click("button[onclick=\"switchView('tasks')\"]");
+    await page.locator('.ops-sidebar-button', { hasText: 'Work' }).click();
     await page.waitForFunction(() => !document.querySelector('.ops-app-shell')?.classList.contains('drawer-open'));
     await noHorizontalScroll(page, 'operations mobile drawer');
     await shot(page, 'operations-mobile-drawer-closed-360x701.png');
