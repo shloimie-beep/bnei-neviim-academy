@@ -120,6 +120,10 @@
 
 ## Recent Wins
 
+- [x] Deployed the four-document signup release plus provider/AI Max intake,
+  public service-provider directory, and student invalid-code hardening on
+  Railway deployment `acada8a6-b98d-4bec-b690-22fb92236966`; app, OpenAI, and
+  live Playwright smokes passed.
 - [x] Completed the Telegram UI redesign follow-up for task #130: after the app shell/sidebar/subtabs deploy, Codex removed the student portal Add Goal/configuration UI and collapsed the admin Goal Board creation form behind an Add Goal expander. Railway deployment `54a5e5f4-078a-4ce6-b76d-2f60d022e9f1` passed live smoke `ops/live-smokes/2026-06-07T08-55-35-102Z-live-app-smoke.md` and targeted live student-portal mobile validation.
 - [x] Deployed the first-pass BNA Command Center UI cleanup: Operations now has a top Daily Command Center, cleaner task lanes/cards, clearer student accountability/device signal cards, compact Content next-action cards, roster-only Accounting, a simplified student portal command strip, and shared public-page spacing/card polish. Railway deployment `683dc322-538e-4ca0-bdb5-272c194d9861` passed live smoke `ops/live-smokes/2026-06-07T03-00-07-526Z-live-app-smoke.md`.
 - [x] Fixed the Operations dashboard `column j.summary does not exist` load error by correcting the content-bundles API summary query; added that endpoint to live smoke coverage and deployed a clearer Task Manager strip with active filters, clear filters, and separate Decisions/My Work/Rabbi/Codex lanes.

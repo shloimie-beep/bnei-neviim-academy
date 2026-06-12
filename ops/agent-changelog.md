@@ -2921,3 +2921,41 @@ Verification:
   (`ops/openai-smokes/2026-06-12T12-16-00-075Z-openai-sidekick-smoke.md`).
 - Live task audit: 249 total tasks, 31 active tasks, 0 active Codex tasks,
   0 open support tickets.
+
+## 2026-06-12T16:08:00+03:00 - Registration, provider intake, and student portal security release deployed
+
+Completed the clean release/deploy pass for the registration document reduction,
+provider/AI Max intake, public provider directory, and student portal credential
+hardening work.
+
+Implemented:
+- Reduced the public signup signing flow to four visible required documents:
+  Tuition, Handbook, Student Handbook, and Waiver.
+- Added the provider join page fields for AI Max, kids served, pricing,
+  discounts/group options, ad status, and review-only/no-checkout copy.
+- Added the public service-provider directory page and sanitized
+  `/api/service-providers` route.
+- Hardened student portal invalid credential handling with server-side
+  throttling and client-side stored-code clearing.
+- Added visual design token documentation and an internal handoff brief for the
+  Rabbi/provider/security follow-up set.
+
+Deployment:
+- Pushed commits `8f0cc10` and `1d4b520` to
+  `release/operations-parent-student-action-registry-2026-06-11`.
+- Deployed Railway production deployment
+  `acada8a6-b98d-4bec-b690-22fb92236966`.
+
+Verification:
+- PASS `node --check server.js`
+- PASS `node --check scripts/telegram-kimi-bridge.mjs`
+- PASS `node --check scripts/smoke-live-app.mjs`
+- PASS `npm test` 116/116.
+- PASS `npm run railway:doctor`.
+- PASS production `npm run app:smoke`
+  (`ops/live-smokes/2026-06-12T13-06-44-723Z-live-app-smoke.md`).
+- PASS production `npm run openai:smoke`
+  (`ops/openai-smokes/2026-06-12T13-06-58-492Z-openai-sidekick-smoke.md`).
+- PASS live Playwright readback for `/signup.html`, `/signup-he.html`,
+  `/providers/join`, `/service-providers`, `/api/service-providers`, and
+  invalid student-code cleanup on `/student.html`.
