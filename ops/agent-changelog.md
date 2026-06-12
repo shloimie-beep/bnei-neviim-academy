@@ -2892,3 +2892,32 @@ Verification:
 
 Deployment:
 - Not run by operator request.
+
+## 2026-06-12T15:16:47+03:00 - Clean Operations mobile release deployed and stale Codex queue closed
+
+Completed the clean release/deploy pass requested after the mobile-collapse
+ramble appeared stale.
+
+Implemented:
+- Confirmed the ramble was saved in `tasks-pending/2026-06-11-production-ui-qa-fix-loop.md` and `ops/pro-codex/inbox/2026-06-11-parent-login-navigation-weekly-update-rabbi-audit.md`.
+- Restored the Operations task-detail Report Problem modal, support-ticket context payload, and mobile task-detail viewport reset.
+- Fixed the student portal `labels.he` loading bug.
+- Added authenticated mobile smoke coverage for Operations, parent, student, provider participant, and public mobile menus.
+- Closed stale verified Codex tasks `483`, `488`, `489`, `490`, and `491`, plus support tickets `3`, `4`, `5`, and `6`.
+- Added `/api/health` release marker for deployment verification.
+
+Deployment:
+- Pushed commits `3ecd6a0` and `6344863` to `release/operations-parent-student-action-registry-2026-06-11`.
+- Deployed Railway production deployment `65e96817-8172-4288-a32e-8dd816207eba`.
+- Production `/api/health` returned marker `2026-06-12-clean-mobile-queue-3ecd6a0` and `required_signup_documents=6`.
+
+Verification:
+- PASS `npm test` 115/115.
+- PASS local and production `npm run mobile:smoke`.
+- PASS local and production `npm run screenshot`.
+- PASS production `npm run app:smoke`
+  (`ops/live-smokes/2026-06-12T12-15-04-039Z-live-app-smoke.md`).
+- PASS production `npm run openai:smoke`
+  (`ops/openai-smokes/2026-06-12T12-16-00-075Z-openai-sidekick-smoke.md`).
+- Live task audit: 249 total tasks, 31 active tasks, 0 active Codex tasks,
+  0 open support tickets.

@@ -3,6 +3,17 @@
 Deployment is blocked from the original workspace. Deployment has now been
 completed from the clean release worktree.
 
+2026-06-12 update: the clean Operations/mobile follow-up was deployed again
+from a detached clean worktree at commit `6344863`.
+
+- Railway deployment: `65e96817-8172-4288-a32e-8dd816207eba`
+- Production health marker: `2026-06-12-clean-mobile-queue-3ecd6a0`
+- Production app smoke:
+  `ops/live-smokes/2026-06-12T12-15-04-039Z-live-app-smoke.md`
+- Production OpenAI smoke:
+  `ops/openai-smokes/2026-06-12T12-16-00-075Z-openai-sidekick-smoke.md`
+- Live queue status: 0 active Codex tasks and 0 open support tickets.
+
 ## Why
 
 - The original worktree contains 353 dirty git status entries and 1957 individual tracked/untracked classified file entries.

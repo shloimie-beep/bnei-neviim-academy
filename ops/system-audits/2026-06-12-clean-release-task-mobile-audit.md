@@ -113,11 +113,32 @@ No horizontal overflow was detected in the smoke.
 
 ## Current Release Status
 
-Local cleanup is verified.
+Deployed and verified.
 
-Next required gate before marking this release externally done:
+- Commits: `3ecd6a0`, `6344863`
+- Pushed branch: `release/operations-parent-student-action-registry-2026-06-11`
+- Railway deployment: `65e96817-8172-4288-a32e-8dd816207eba`
+- Production health marker: `2026-06-12-clean-mobile-queue-3ecd6a0`
+- Production health required signup documents: `6`
 
-1. Run full repo tests and screenshot check.
-2. Commit and push the focused release branch.
-3. Deploy to Railway.
-4. Run Railway doctor and live app/OpenAI smoke against production.
+Production verification:
+
+- PASS Railway deployment reached `SUCCESS`
+- PASS `/api/health` on production returned database `connected`
+- PASS `npm run app:smoke` with `BNA_APP_URL=https://bneineviimacademy.org`
+  - Report: `ops/live-smokes/2026-06-12T12-15-04-039Z-live-app-smoke.md`
+- PASS `npm run mobile:smoke` with `BNA_APP_URL=https://bneineviimacademy.org`
+  - Screenshots: `ops/qa-runs/2026-06-12-clean-deploy-mobile-smoke-live/`
+- PASS `npm run screenshot` with `BNA_APP_URL=https://bneineviimacademy.org`
+- PASS `npm run openai:smoke` with `BNA_APP_URL=https://bneineviimacademy.org`
+  - Report: `ops/openai-smokes/2026-06-12T12-16-00-075Z-openai-sidekick-smoke.md`
+
+Final live queue counts:
+
+- Total tasks: 249
+- Active tasks: 31
+- Active Codex tasks: 0
+- Open support tickets: 0
+- Stage counts: `done=161`, `assigned=18`, `archive=57`, `needs_decision=13`
+
+The remaining active tasks are owner/operator items, not stale Codex queue work.

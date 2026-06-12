@@ -1,8 +1,22 @@
 # Operations Action Registry, Telegram, UI Bot Handoff
 
-Status: ready for Codex implementation
+Status: deployed and verified
 Priority: P0 architecture
 Created: 2026-06-11
+
+## Completion - 2026-06-12
+
+Implemented, committed, pushed, deployed, and verified in production as part of
+the clean Operations/mobile release.
+
+- Commits: `3ecd6a0`, `6344863`
+- Railway deployment: `65e96817-8172-4288-a32e-8dd816207eba`
+- Production health marker: `2026-06-12-clean-mobile-queue-3ecd6a0`
+- Production app smoke: `ops/live-smokes/2026-06-12T12-15-04-039Z-live-app-smoke.md`
+- Production OpenAI smoke: `ops/openai-smokes/2026-06-12T12-16-00-075Z-openai-sidekick-smoke.md`
+
+The live OpenAI smoke reports `Active Codex tasks: 0 (none)`, confirming normal
+operations are no longer stuck in the Codex queue after this cleanup.
 
 ## Objective
 

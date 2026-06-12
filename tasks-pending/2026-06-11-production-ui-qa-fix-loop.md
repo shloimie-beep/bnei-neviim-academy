@@ -1,8 +1,24 @@
 # Production UI QA + Fix Loop Handoff
 
-Status: ready for Codex implementation
+Status: deployed and verified
 Priority: P0/P1 user-facing polish
 Created: 2026-06-11
+
+## Completion - 2026-06-12
+
+Implemented, committed, pushed, deployed, and verified in production.
+
+- Commits: `3ecd6a0`, `6344863`
+- Railway deployment: `65e96817-8172-4288-a32e-8dd816207eba`
+- Production health marker: `2026-06-12-clean-mobile-queue-3ecd6a0`
+- Production mobile smoke: `ops/qa-runs/2026-06-12-clean-deploy-mobile-smoke-live/`
+- Production app smoke: `ops/live-smokes/2026-06-12T12-15-04-039Z-live-app-smoke.md`
+- Production OpenAI smoke: `ops/openai-smokes/2026-06-12T12-16-00-075Z-openai-sidekick-smoke.md`
+
+The ramble was saved in this handoff. The reason it did not appear live earlier
+was that the 2026-06-11 pass stopped at local QA because the original workspace
+was too dirty to deploy safely. This release moved the clean patch through
+Railway and verified the mobile menu collapse/loading behavior on production.
 
 ## Objective
 
