@@ -87,6 +87,18 @@ function splitName(fullName) {
   return { firstName: parts[0], lastName: parts.slice(1).join(' ') };
 }
 
+function studentIdentityEmailForSignup(signup) {
+  const rawKey = signup.id
+    ? `signup-${signup.id}`
+    : `${signup.student_name || signup.child_name || 'student'}-${signup.submitted_at || signup.created_at || 'no-registration-date'}`;
+  const slug = String(rawKey)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 72) || 'unknown-student';
+  return `bna-student-${slug}@bna-student.invalid`;
+}
+
 async function searchGhlContact(email, phone) {
   const searches = [];
   if (email) searches.push({ query: email, type: 'email' });
@@ -185,17 +197,19 @@ async function syncSignupToGHL(signup, fieldMap) {
   
   // Create/Update Parent Contact
   const { firstName, lastName } = splitName(signup.parent1_name);
+  const parentEmail = signup.parent1_email;
+  const parentPhone = signup.parent1_phone;
   
   const parentContactData = {
     firstName,
     lastName,
-    email: signup.parent1_email,
-    phone: signup.parent1_phone,
+    email: parentEmail,
+    phone: parentPhone,
     address1: signup.address,
   };
   
   console.log('Searching for existing parent contact...');
-  let parentContact = await searchGhlContact(signup.parent1_email, signup.parent1_phone);
+  let parentContact = await searchGhlContact(parentEmail, parentPhone);
   
   if (parentContact?.id) {
     console.log(`Found existing parent: ${parentContact.id}`);
@@ -262,12 +276,11 @@ async function syncSignupToGHL(signup, fieldMap) {
   const studentContactData = {
     firstName: childFirst,
     lastName: childLast,
-    email: signup.parent1_email,
-    phone: signup.parent1_phone,
+    email: studentIdentityEmailForSignup(signup),
   };
   
   console.log('Searching for existing student contact...');
-  let studentContact = await searchGhlContact(signup.parent1_email, null);
+  let studentContact = await searchGhlContact(studentContactData.email, null);
   
   // Check if found contact has same name
   if (studentContact && (studentContact.firstName !== childFirst || studentContact.lastName !== childLast)) {

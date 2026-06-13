@@ -5,6 +5,8 @@ build/
 dist/
 .deploy-railway/
 .runtime/
+.tmp-lighthouse/
+tmp/
 
 # env
 .env
@@ -32,6 +34,7 @@ renders/*
 !renders/.gitkeep
 src/remotion/generated/*.json
 !src/remotion/generated/.gitkeep
+public/organic-clip-assets/
 
 # PWA build artifacts
 public/sw.js
@@ -47,10 +50,13 @@ public/fallback-*.js
 next-env.d.ts
 
 # generated operation receipts
+install-packages/
 ops/agent-fleet-runs/
 ops/live-smokes/
 ops/openai-smokes/
 ops/remotion-smokes/
 ops/pending/
 ops/system-audits/*.json
+ops/system-audits/*-watchdog.md
+ops/system-audits/*-watchdog-improvements.md
 screenshots/

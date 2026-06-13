@@ -64,9 +64,20 @@ Keep `MEMORY.md` compact and curated.
   to choose the implementation order, work through the queued tasks, and report
   completed/verified results. Do not ask for ordering confirmation unless a
   real blocker or product decision is required.
+- When the operator asks to make or refine a prompt for Codex or ChatGPT,
+  treat it as planning/refinement mode first: show the visible prompt/brief in
+  chat, refine it with the operator, and only implement once the operator asks
+  to build, test, run, or apply it.
+- When the operator asks to test something that can be verified through browser
+  interaction, use Playwright or the browser automation tools and report what
+  was actually checked.
 - When uncertain, propose 2-3 concrete options and recommend one.
 - Preserve operator language and intent while turning it into usable plans.
 - Avoid creating sprawling prompt junk drawers or giant rejected-memory files.
+- After implementing ramble-derived work, record what changed, where it changed,
+  verification performed, and remaining decisions in the relevant
+  `tasks-pending/` handoff, `ops/agent-changelog.md`, and
+  `ops/agent-task-ledger.jsonl`.
 - Do not create a generic Pending task stage, lane, or dashboard section.
   Ambiguous work should be audited into Needs Decision, an owner lane, Codex
   Queue/In Progress, Done, or Archive; use pending-style wording only for a real
@@ -82,6 +93,15 @@ Keep `MEMORY.md` compact and curated.
 - It is being repurposed into BNA's school project.
 - The current app and schema still contain family-oriented assumptions that
   need to be systematically replaced.
+- The live Operations dashboard/task UI is the Express/static
+  `public/operations.html` surface. The old React local-storage TaskApp
+  prototype is archived under
+  `docs/archive/dormant-next-supabase-app/src/app/operations/`; do not edit it
+  for live Operations behavior unless deliberately reviving it in a new task.
+- Archived files under `docs/archive/` are historical reference only. Do not
+  use archived family-accountability docs, old Supabase setup files, or old
+  launch/onboarding surfaces as current BNA product, database, school-model, or
+  workflow guidance.
 
 ## Current AI Setup
 
@@ -101,7 +121,7 @@ Keep `MEMORY.md` compact and curated.
 - Keep the Telegram bridge capable of both:
   - OpenAI API chat for ordinary conversation and content/tone refinement
   - Codex coding turns for repo work
-  - structured GHL ops commands for uploads, posting, and queue management
+  - structured Buffer social commands for draft/post scheduling and queue management
 - Keep one canonical memory system across channels.
 
 ## Telegram Ops Reality
@@ -113,7 +133,7 @@ Keep `MEMORY.md` compact and curated.
   - persistent Telegram bottom buttons for `OpenAI API` and `Codex` mode switching
   - `/accounts`, `/blogs`, `/queue`, `/help`, `/status`
   - photo, video, voice, and document intake
-  - automatic local asset capture plus GHL media upload
+  - automatic local asset capture plus Buffer text draft handoff for social posts
 - Telegram task captures should not show per-task owner/status buttons such as
   `Mine`, `Codex`, `Urgent`, or `Done`; the parser should assign ownership and
   route the item into the correct app lane.
@@ -130,8 +150,9 @@ Keep `MEMORY.md` compact and curated.
   mark the task done. If deployment is unavailable or fails, keep the task open
   and notify Telegram with the blocker.
 - Social posting is partially wired:
-  - draft/publish commands can create social posts for resolved targets
-  - Google targets need explicit alias selection when multiple Google accounts exist
+  - Buffer is the active social posting provider for Facebook, LinkedIn, and YouTube.
+  - draft/publish commands create Buffer text drafts/posts for resolved targets.
+  - media assets are saved locally; Buffer media posting needs hosted media URL support before local photos/videos can be attached.
   - voice assets are saved, but not transcribed yet
 
 ## Pending Work Convention

@@ -24,6 +24,16 @@ The intended workflow is:
 3. The command writes safe Remotion props into `src/remotion/generated/`.
 4. The command renders the selected Remotion composition into `renders/`.
 
+For One Time Mishnah Class or Rabbi Elie Scheller content, compose a prompt
+patch first from `content-memory/prompt-patches/rabbi-video-content/`:
+
+```bash
+node scripts/rabbi-video-prompt-library.mjs --stack one-time-vertical-short --topic "Mishnayos review clip"
+```
+
+Use the composed prompt as the natural-language request, or paste it into a
+CapCut/AI-video handoff when Remotion is not the final renderer.
+
 Examples:
 
 ```bash

@@ -98,6 +98,18 @@ function splitName(fullName: string): { firstName: string; lastName: string } {
   };
 }
 
+function studentIdentityEmail(data: BnaRegistrationData): string {
+  const rawKey = data.registrationId
+    ? `registration-${data.registrationId}`
+    : `${data.childName}-${data.parent1Email || data.parent1Phone || 'no-parent-contact'}`;
+  const slug = rawKey
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+    .slice(0, 72) || 'unknown-student';
+  return `bna-student-${slug}@bna-student.invalid`;
+}
+
 /**
  * Create or update parent contact in GHL
  */
@@ -148,9 +160,12 @@ export async function createOrUpdateParent(data: BnaRegistrationData): Promise<{
 }
 
 /**
- * Create or update student contact in GHL
- * Note: GHL doesn't have native "child of" relationships, so we create a separate contact
- * with parent info and tag it as BNA Student
+ * Create or update a true student contact in GHL.
+ *
+ * Do not reuse the parent email or phone as the student's searchable identity:
+ * GHL upserts by email/phone, so parent details on the student contact can
+ * collide with the parent contact and cross-tag the parent as a student.
+ * Parent contact details are stored as relationship custom fields instead.
  */
 export async function createOrUpdateStudent(
   data: BnaRegistrationData,
@@ -158,12 +173,10 @@ export async function createOrUpdateStudent(
 ): Promise<{ contact: GhlContact; created: boolean }> {
   const { firstName, lastName } = splitName(data.childName);
   
-  // Use parent's email/phone for the student contact (since students don't have their own)
   const studentContact: GhlContact = {
     firstName,
     lastName,
-    email: data.parent1Email, // Use parent's email
-    phone: data.parent1Phone, // Use parent's phone
+    email: studentIdentityEmail(data),
     tags: [BNA_TAGS.STUDENT],
   };
   

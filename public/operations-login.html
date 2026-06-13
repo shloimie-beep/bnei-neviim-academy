@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sign In - BNA Operations</title>
     <meta name="theme-color" content="#1e3a5f">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/operations-manifest.json">
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png">
     <link rel="icon" href="/icons/favicon-16.png" sizes="16x16" type="image/png">
@@ -114,8 +114,9 @@
         }
         .error.show { display: block; }
     </style>
+    <link rel="stylesheet" href="/css/bna-app-shell.css">
 </head>
-<body>
+<body class="bna-shell bna-login-shell">
     <div class="card">
         <div class="logo">BNA</div>
         <h1>Welcome back</h1>
@@ -137,11 +138,40 @@
     </div>
 
     <script>
+        function operationsReturnTo() {
+            const fallback = '/operations';
+            const candidate = new URLSearchParams(window.location.search).get('returnTo');
+            if (!candidate) return fallback;
+            try {
+                const url = new URL(candidate, window.location.origin);
+                if (url.origin !== window.location.origin || url.pathname !== '/operations') return fallback;
+                return url.pathname + url.search + url.hash;
+            } catch {
+                return fallback;
+            }
+        }
+
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations()
                 .then((registrations) => registrations.forEach((registration) => registration.unregister()))
                 .catch(() => {});
         }
+
+        async function redirectIfAlreadySignedIn() {
+            try {
+                const response = await fetch('/api/bna/auth/me', {
+                    credentials: 'same-origin',
+                    headers: { 'Accept': 'application/json' }
+                });
+                if (response.ok) {
+                    window.location.replace(operationsReturnTo());
+                }
+            } catch {
+                // Stay on the login form when the session check cannot complete.
+            }
+        }
+
+        redirectIfAlreadySignedIn();
 
         document.getElementById('loginForm').addEventListener('submit', async (e) => {
             e.preventDefault();
@@ -166,7 +196,7 @@
 
                 if (data.success) {
                     localStorage.setItem('bna_ops_session', data.sessionId || '');
-                    window.location.href = '/operations';
+                    window.location.href = operationsReturnTo();
                 } else {
                     errorEl.textContent = data.error || 'Invalid credentials';
                     errorEl.classList.add('show');
@@ -180,5 +210,6 @@
             }
         });
     </script>
+    <script src="/js/bna-bot-widget.js"></script>
 </body>
 </html>

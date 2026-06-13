@@ -2,11 +2,14 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
 import { google } from 'googleapis';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '..');
+const require = createRequire(import.meta.url);
+const { buildBnaAiContextSummary } = require('../src/lib/bna/ai-context');
 const envLocalPath = path.join(repoRoot, '.env.local');
 const secretsDir = path.join(repoRoot, '.secrets');
 const reportDir = path.join(repoRoot, 'ops', 'openai-smokes');
@@ -147,6 +150,7 @@ async function collectAppData(config) {
     signups: '/api/bna/signups',
     paymentIntake: '/api/bna/payment-intake',
     payments: '/api/bna/payments',
+    supportTickets: '/api/bna/support-tickets',
     greenInvoiceWebhooks: '/api/bna/green-invoice/webhooks',
   };
   const entries = await Promise.allSettled(Object.entries(endpointMap).map(async ([key, endpoint]) => {
@@ -288,6 +292,7 @@ async function askOpenAi(config, expected, promptData) {
               'content_prompt_count',
               'device_count',
               'agent_fleet_status',
+              'brand_kit_file_count',
             ],
             expected_shape: expected,
             system_data: promptData,
@@ -371,6 +376,7 @@ async function main() {
   const errors = [];
   const checks = [];
   const repo = collectRepoData();
+  const aiContext = buildBnaAiContextSummary({ repoRoot });
 
   if (!config.opsUsername || !config.opsPassword) errors.push('OPS_USERNAME/OPS_PASSWORD missing');
   if (!config.openaiApiKey) errors.push('OpenAI key missing');
@@ -433,27 +439,33 @@ async function main() {
     pending_payment_students: [...new Set(pendingPaymentStudents)],
     drive_raw_folder_name: drive.folders?.rawIntake?.name || null,
     repo_transcript_export_count: repo.transcript_export_count,
-    operations_sections: ['Tasks', 'Students', 'Content', 'Contacts', 'Accounting'],
+    operations_sections: ['Tasks', 'Students', 'Content', 'Contacts', 'Accounting', 'Team'],
     task_stage_counts: countBy(tasks, 'stage'),
     content_prompt_count: contentPrompts.length,
     device_count: devices.length,
     agent_fleet_status: app.result.agentFleet?.data?.fleet?.status || app.result.agentFleet?.data?.status || 'unknown',
+    brand_kit_file_count: aiContext.counts.brand_kit_files,
   };
 
   const promptData = sanitizeForPrompt({
     repo,
+    ai_context: {
+      counts: aiContext.counts,
+      sources: aiContext.summary_text,
+    },
     app: {
       projects: app.result.projects?.data?.projects || [],
       operations_ui: {
         sections: expected.operations_sections,
         subtabs: {
-          Tasks: ['Overview', 'Decisions', 'My Tasks', 'Rabbi Tasks', 'Codex Queue', 'Changelog', 'Done'],
+          Tasks: ['Overview', 'Decisions', 'My Tasks', 'Schedule', 'Research', 'Changelog', 'Done'],
           Students: ['Overview', 'Group Goal', 'Student List', 'Student Profile', 'Goal Board', 'Tablet Access', 'Questions', 'Portal Links'],
           Content: ['Library', 'Selected', 'Repurpose', 'Newsletter', 'Prompts', 'Bundles'],
-          Contacts: ['Parents', 'Students', 'Intake', 'Needs Follow-up', 'Tags'],
+          Contacts: ['People', 'Parents', 'Interested Parents', 'Providers', 'Communications', 'Students', 'Intake', 'Needs Follow-up', 'Tags'],
           Accounting: ['Overview', 'Payments', 'Needs Attention', 'Paid', 'Needs Signup', 'Exceptions'],
+          Team: ['Tickets & Messages'],
         },
-        actions: ['Open card/details', 'Add comment', 'Mark done', 'Select content', 'View/Edit Prompt', 'Make output', 'Mark follow-up', 'Open student', 'Review payment status'],
+        actions: ['Open card/details', 'Add comment', 'Mark done', 'Open Ticket', 'Select content', 'View/Edit Prompt', 'Make output', 'Mark follow-up', 'Open student', 'Review payment status'],
       },
       tasks: {
         active_codex: codexTasks.map(compactTask),
@@ -507,6 +519,11 @@ async function main() {
     detail: `${Object.values(repo.files).filter((file) => file.exists).length} files found`,
   });
   checks.push({
+    name: 'brand kit context readable',
+    ok: aiContext.counts.brand_kit_files >= 6,
+    detail: `${aiContext.counts.brand_kit_files} brand kit files`,
+  });
+  checks.push({
     name: 'transcript exports readable',
     ok: repo.transcript_export_count > 0 && repo.files['content-memory/transcripts/index.md']?.chars > 100,
     detail: `${repo.transcript_export_count} transcript files`,
@@ -558,6 +575,11 @@ async function main() {
     ok: String(openaiAnswer?.drive_raw_folder_name || '') === String(expected.drive_raw_folder_name || ''),
     detail: expected.drive_raw_folder_name || 'missing',
   });
+  checks.push({
+    name: 'OpenAI returned brand kit file count',
+    ok: Number(openaiAnswer?.brand_kit_file_count) === expected.brand_kit_file_count,
+    detail: `expected ${expected.brand_kit_file_count}, got ${openaiAnswer?.brand_kit_file_count}`,
+  });
 
   const liveCounts = {
     tasks_total: tasks.length,
@@ -569,6 +591,7 @@ async function main() {
     content_prompts: contentPrompts.length,
     pending_payment_students: expected.pending_payment_students.length,
     drive_folders: Object.keys(drive.folders || {}).length,
+    brand_kit_files: aiContext.counts.brand_kit_files,
   };
 
   const report = {
@@ -597,6 +620,7 @@ async function main() {
     `OpenAI sidekick smoke: ${report.ok ? 'PASS' : 'FAIL'}`,
     '',
     `Repo files: ${Object.values(repo.files).filter((file) => file.exists).length} readable`,
+    `Brand kit files: ${aiContext.counts.brand_kit_files} readable`,
     `Transcript exports: ${repo.transcript_export_count}`,
     `Protected app endpoints: ${Object.keys(app.result).length} readable`,
     `Operations sections: ${expected.operations_sections.join(', ')}`,

@@ -102,13 +102,19 @@ Goal Board unless explicitly summarized for the student.
 
 Official Google Classroom docs confirm that `CourseWork` supports assignments,
 short answer questions, and multiple-choice questions; can include YouTube
-materials; and supports `dueDate`/`dueTime` in UTC. Creating/modifying
-CourseWork requires an authorized teacher/project context.
+materials; supports `scheduledTime` plus `dueDate`/`dueTime`; and can target
+individual students with `individualStudentsOptions`. Creating/modifying
+CourseWork requires an authorized teacher/project context. Google Calendar
+reminders/events are a separate Calendar API `events.insert` operation against
+a student/parent authenticated account or another calendar the system can write
+to; `primary` means the authenticated user's primary calendar.
 
 Reference docs:
 
 - https://developers.google.com/workspace/classroom/guides/manage-coursework
 - https://developers.google.com/workspace/classroom/reference/rest/v1/courses.courseWork
+- https://developers.google.com/workspace/classroom/reference/rest/v1/Material
+- https://developers.google.com/calendar/api/v3/reference/events/insert
 - https://developers.google.com/workspace/classroom/guides/key-concepts/api-structure
 
 ### Admin Workflow

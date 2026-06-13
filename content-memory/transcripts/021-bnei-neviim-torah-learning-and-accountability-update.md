@@ -9,7 +9,7 @@ drive_stage: "04 Parsed"
 drive_file_id: "1KzRBWxL9Vs2xPuZ_E9bJcemou_fbQyct"
 media_url: "https://drive.google.com/file/d/1KzRBWxL9Vs2xPuZ_E9bJcemou_fbQyct/view?usp=drivesdk"
 transcript_chars: 8568
-outputs: "facebook_post:needs_approval#40, teaching_philosophy_note:draft#38, whatsapp_update:needs_approval#39, weekly_newsletter:needs_approval#41"
+outputs: "teaching_philosophy_note:draft#38, whatsapp_update:needs_approval#39, facebook_post:approved#40, weekly_newsletter:needs_approval#41"
 ---
 
 # Bnei Neviim Torah Learning and Accountability Update
@@ -17,7 +17,7 @@ outputs: "facebook_post:needs_approval#40, teaching_philosophy_note:draft#38, wh
 - Content job: #21
 - Drive stage: 04 Parsed
 - Source file: https://drive.google.com/file/d/1KzRBWxL9Vs2xPuZ_E9bJcemou_fbQyct/view?usp=drivesdk
-- Outputs: facebook_post:needs_approval#40, teaching_philosophy_note:draft#38, whatsapp_update:needs_approval#39, weekly_newsletter:needs_approval#41
+- Outputs: teaching_philosophy_note:draft#38, whatsapp_update:needs_approval#39, facebook_post:approved#40, weekly_newsletter:needs_approval#41
 
 ## Transcript
 

@@ -9,7 +9,7 @@ drive_stage: "05 WhatsApp Ready"
 drive_file_id: "1OJxX8nUmerPJ6YoCTNs1OaP6Dzydp_Dx"
 media_url: "https://drive.google.com/file/d/1OJxX8nUmerPJ6YoCTNs1OaP6Dzydp_Dx/view?usp=drivesdk"
 transcript_chars: 2464
-outputs: "teaching_philosophy_note:draft#11, whatsapp_update:needs_approval#12, facebook_post:needs_approval#13"
+outputs: "whatsapp_update:needs_approval#12, facebook_post:needs_approval#13, teaching_philosophy_note:draft#11"
 ---
 
 # Outdoor Torah Learning and Forest Day Schedule Update
@@ -17,7 +17,7 @@ outputs: "teaching_philosophy_note:draft#11, whatsapp_update:needs_approval#12, 
 - Content job: #5
 - Drive stage: 05 WhatsApp Ready
 - Source file: https://drive.google.com/file/d/1OJxX8nUmerPJ6YoCTNs1OaP6Dzydp_Dx/view?usp=drivesdk
-- Outputs: teaching_philosophy_note:draft#11, whatsapp_update:needs_approval#12, facebook_post:needs_approval#13
+- Outputs: whatsapp_update:needs_approval#12, facebook_post:needs_approval#13, teaching_philosophy_note:draft#11
 
 ## Transcript
 

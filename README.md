@@ -1,45 +1,71 @@
-# Family Accountability
+# BNA v2.0
 
-A small, warm web app for the Dratler family. Two kids, two parents,
-one Telegram bot, a nightly summary email, and a goal that the kids
-tap to check off each day.
+This repository is the shared operating brain and live app workspace for Bnei
+Neviim Academy, the Whole Child Torah Learning Community in Beit Shemesh.
 
-This is **not** a WebCraft Media / Holy Flow product. Same operator,
-same billing accounts (Railway + Supabase), but a completely separate
-codebase, separate database, separate Telegram identity. Family data
-never sits near client work.
+## Current Source Of Truth
 
-## Quick start
+- `AGENTS.md` - agent operating rules and workflow behavior
+- `MEMORY.md` - durable BNA facts, requirements, preferences, and definitions
+- `TASKS.md` - current work queue and visible next actions
+- `SYSTEM-STATE.md` - verified live system state and deployment notes
+- `PROJECT-NOTES.md` - local migration notes and technical caveats
+- `brand-kit/` - BNA voice, philosophy, parent messaging, and teaching principles
+- `content-memory/` - transcript/content inventory and platform prompt memory
+- `ops/agent-changelog.md` - completed agent work and verification trail
 
-1. **Supabase project** — see [SETUP.md §1](./SETUP.md)
-2. **Resend domain** — see [SETUP.md §2](./SETUP.md)
-3. **Telegram bot** — see [SETUP.md §3](./SETUP.md)
-4. **Env vars** — copy `.env.example` to `.env.local`, fill in
-5. **Install + run**
+## Current App Reality
 
-   ```bash
-   npm install
-   npm run dev
-   ```
+- Live Operations is the Express/static app served by `server.js` and
+  `public/operations.html`.
+- The normal public site is the static public website under `public/`.
+- Railway is the live hosting and production Postgres source of truth.
+- Supabase is not the current BNA operations database unless explicitly
+  reintroduced.
+- The old Next/Supabase family-app code has been moved out of active source and
+  archived under `docs/archive/dormant-next-supabase-app/`.
 
-   Open http://localhost:3000
+## BNA Model
 
-6. **Deploy** — see [SETUP.md §5](./SETUP.md)
+BNA is not the old family accountability app and not a generic secular-project
+school platform. The current academy model is a home-based, integrative Torah
+learning program, currently framed around a 10:00 to 1:00 learning window, with
+private coaching/check-ins and parent partnership around the child.
 
-## Docs
+The stable philosophy lives in `MEMORY.md` and `brand-kit/`. In short: Torah
+learning should meet the whole child, responsibility grows through autonomy,
+mastery, purpose, meaningful roles, and honest coaching, and practical
+real-world skills should serve the Torah learning environment rather than
+replacing it.
 
-- [`SPEC.md`](./SPEC.md) — what the app does, who uses it
-- [`ARCHITECTURE.md`](./ARCHITECTURE.md) — stack, data flow, security
-- [`DESIGN.md`](./DESIGN.md) — type system, palette, micro-interactions
-- [`SETUP.md`](./SETUP.md) — step-by-step deploy walkthrough (forward §7 to Ahuva)
-- [`supabase-schema.sql`](./supabase-schema.sql) — paste into Supabase SQL editor
-- [`CHANGELOG.md`](./CHANGELOG.md) — what's done, what's pending
+## Legacy Archive
 
-## Tech
+The old family-accountability bundle and historical Supabase setup files were
+archived under:
 
-Next.js 14 App Router · TypeScript · Tailwind · Supabase · Resend ·
-node-telegram-bot-api · Railway · PWA via next-pwa.
+- `docs/archive/legacy-family-accountability/`
+- `docs/archive/legacy-supabase-setup/`
+- `docs/archive/dormant-next-supabase-app/`
 
-## License
+Those files are historical reference only. Do not use them to decide current
+BNA product behavior, database setup, Telegram behavior, parent/student
+workflow, school model, or brand voice.
 
-Private — Dratler family only.
+The root `SUPABASE_SETUP.md` is only a deprecation pointer. It is not a setup
+guide.
+Old family launch, onboarding, webhook, and Supabase helper scripts were also
+removed from `scripts/` and preserved under the legacy archive.
+Old Next/Supabase app-router code, parent/kid React surfaces, localStorage
+TaskApp code, and family Telegram/email helpers are preserved only in the
+dormant Next/Supabase app archive.
+
+## Useful Checks
+
+```powershell
+node --check server.js
+npm test
+npm run railway:doctor
+```
+
+Do not deploy or mark live tasks done unless the task explicitly requires that
+system-state change and the live Railway smoke checks pass.

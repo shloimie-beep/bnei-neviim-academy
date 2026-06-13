@@ -35,6 +35,10 @@
             background:
                 radial-gradient(circle at top right, rgba(201, 162, 39, 0.18), transparent 28%),
                 linear-gradient(180deg, #f7fbff 0%, #e8f0f8 100%);
+        }
+
+        .thank-you-shell {
+            min-height: calc(100vh - 70px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -158,9 +162,14 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="/css/bna-site-nav.css">
 </head>
 <body>
-    <main class="card">
+    <div id="siteNavMount" data-bna-site-nav></div>
+    <script src="/js/bna-site-nav.js"></script>
+
+    <main class="thank-you-shell">
+    <article class="card">
         <section class="hero">
             <div class="eyebrow">Bnei Nevi'im Academy</div>
             <h1 id="headline">Thank you for signing up.</h1>
@@ -184,6 +193,7 @@
 
             <p class="small" id="small"></p>
         </section>
+    </article>
     </main>
 
     <script>
@@ -229,6 +239,9 @@
                 setTimeout(() => {
                     window.location.href = paymentLink;
                 }, 1800);
+            } else {
+                noteEl.textContent = 'Your registration was received. BNA will send the confirmed credit-card payment link separately.';
+                smallEl.textContent = 'No payment URL is shown until the correct link is confirmed.';
             }
         } else if (payment === 'bank_transfer') {
             noteEl.textContent = lang === 'he'

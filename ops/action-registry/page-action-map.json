@@ -1,0 +1,1211 @@
+{
+  "tasks": [
+    {
+      "action_id": "create_task",
+      "label": "Create task",
+      "category": "tasks",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Task",
+        "Add Task",
+        "Save Task"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "update_task_stage",
+      "label": "Update task stage",
+      "category": "tasks",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Move Task",
+        "Mark Done",
+        "Archive"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    }
+  ],
+  "dashboard": [
+    {
+      "action_id": "create_task",
+      "label": "Create task",
+      "category": "tasks",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Task",
+        "Add Task",
+        "Save Task"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    }
+  ],
+  "internal_dialogue": [
+    {
+      "action_id": "create_task",
+      "label": "Create task",
+      "category": "tasks",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Task",
+        "Add Task",
+        "Save Task"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "add_timeline_note",
+      "label": "Add timeline note",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Add Note",
+        "Save Note"
+      ],
+      "related_routes": [
+        "/operations?view=internal_dialogue"
+      ]
+    }
+  ],
+  "telegram": [
+    {
+      "action_id": "create_task",
+      "label": "Create task",
+      "category": "tasks",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Create Task",
+        "Add Task",
+        "Save Task"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "update_task_stage",
+      "label": "Update task stage",
+      "category": "tasks",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Move Task",
+        "Mark Done",
+        "Archive"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "find_latest_newsletter_draft",
+      "label": "Find latest newsletter draft",
+      "category": "newsletter",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Latest Newsletter",
+        "Open Draft"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "refine_newsletter_draft",
+      "label": "Refine newsletter draft",
+      "category": "newsletter",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Refine Newsletter",
+        "Save Revision"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "draft_email_from_newsletter",
+      "label": "Draft email from newsletter",
+      "category": "email",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Email",
+        "Email This"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "draft_email",
+      "label": "Draft email",
+      "category": "email",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Email",
+        "Create Email Draft"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "refine_email",
+      "label": "Refine email",
+      "category": "email",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Refine Email"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "create_calendar_event",
+      "label": "Create calendar event",
+      "category": "calendar",
+      "approval_required": false,
+      "ui_button_labels": [
+        "New Event",
+        "Create Event"
+      ],
+      "related_routes": [
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "generate_whatsapp_from_newsletter",
+      "label": "Generate WhatsApp from newsletter",
+      "category": "whatsapp",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft WhatsApp"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "move_lead_stage",
+      "label": "Move lead stage",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Move Lead",
+        "Payment Pending"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines",
+        "/operations?view=contacts"
+      ]
+    }
+  ],
+  "task_detail": [
+    {
+      "action_id": "update_task_stage",
+      "label": "Update task stage",
+      "category": "tasks",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Move Task",
+        "Mark Done",
+        "Archive"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "add_timeline_note",
+      "label": "Add timeline note",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Add Note",
+        "Save Note"
+      ],
+      "related_routes": [
+        "/operations?view=internal_dialogue"
+      ]
+    }
+  ],
+  "student_detail": [
+    {
+      "action_id": "add_timeline_note",
+      "label": "Add timeline note",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Add Note",
+        "Save Note"
+      ],
+      "related_routes": [
+        "/operations?view=internal_dialogue"
+      ]
+    },
+    {
+      "action_id": "create_student_schedule_item",
+      "label": "Create student schedule item",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Add Student Event"
+      ],
+      "related_routes": [
+        "/student",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_parent_visible_event",
+      "label": "Create parent-visible event",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Add Parent Event"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=calendar"
+      ]
+    }
+  ],
+  "provider_detail": [
+    {
+      "action_id": "add_timeline_note",
+      "label": "Add timeline note",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Add Note",
+        "Save Note"
+      ],
+      "related_routes": [
+        "/operations?view=internal_dialogue"
+      ]
+    }
+  ],
+  "content": [
+    {
+      "action_id": "find_latest_newsletter_draft",
+      "label": "Find latest newsletter draft",
+      "category": "newsletter",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Latest Newsletter",
+        "Open Draft"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "refine_newsletter_draft",
+      "label": "Refine newsletter draft",
+      "category": "newsletter",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Refine Newsletter",
+        "Save Revision"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "save_newsletter_revision",
+      "label": "Save newsletter revision",
+      "category": "newsletter",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Save Revision"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "approve_newsletter",
+      "label": "Approve newsletter",
+      "category": "newsletter",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Approve Newsletter"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "draft_email_from_newsletter",
+      "label": "Draft email from newsletter",
+      "category": "email",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Email",
+        "Email This"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "generate_whatsapp_from_newsletter",
+      "label": "Generate WhatsApp from newsletter",
+      "category": "whatsapp",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft WhatsApp"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "generate_social_posts_from_newsletter",
+      "label": "Generate social posts from newsletter",
+      "category": "social",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Make Social Posts"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "open_content_item_url",
+      "label": "Open content item",
+      "category": "content",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Open in UI"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    }
+  ],
+  "communications": [
+    {
+      "action_id": "find_latest_newsletter_draft",
+      "label": "Find latest newsletter draft",
+      "category": "newsletter",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Latest Newsletter",
+        "Open Draft"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "refine_newsletter_draft",
+      "label": "Refine newsletter draft",
+      "category": "newsletter",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Refine Newsletter",
+        "Save Revision"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "approve_newsletter",
+      "label": "Approve newsletter",
+      "category": "newsletter",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Approve Newsletter"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "draft_email_from_newsletter",
+      "label": "Draft email from newsletter",
+      "category": "email",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Email",
+        "Email This"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "draft_email",
+      "label": "Draft email",
+      "category": "email",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Email",
+        "Create Email Draft"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "refine_email",
+      "label": "Refine email",
+      "category": "email",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Refine Email"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "approve_email",
+      "label": "Approve email",
+      "category": "email",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Approve Email"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "schedule_email",
+      "label": "Schedule email",
+      "category": "email",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Schedule Email"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "send_test_email",
+      "label": "Send test email",
+      "category": "email",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Send Test Email"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=email"
+      ]
+    },
+    {
+      "action_id": "pause_scheduled_email",
+      "label": "Pause scheduled email",
+      "category": "email",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Pause Email"
+      ],
+      "related_routes": []
+    },
+    {
+      "action_id": "view_email_log",
+      "label": "View email log",
+      "category": "email",
+      "approval_required": false,
+      "ui_button_labels": [
+        "View Email Log"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "generate_whatsapp_from_newsletter",
+      "label": "Generate WhatsApp from newsletter",
+      "category": "whatsapp",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft WhatsApp"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "generate_social_posts_from_newsletter",
+      "label": "Generate social posts from newsletter",
+      "category": "social",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Make Social Posts"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "action_id": "send_test_email",
+      "label": "Send test email",
+      "category": "email",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Send Test Email"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=email"
+      ]
+    },
+    {
+      "action_id": "view_email_log",
+      "label": "View email log",
+      "category": "email",
+      "approval_required": false,
+      "ui_button_labels": [
+        "View Email Log"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "sync_google_calendar",
+      "label": "Sync Google Calendar",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Sync Google Calendar"
+      ],
+      "related_routes": []
+    },
+    {
+      "action_id": "sync_google_classroom",
+      "label": "Sync Google Classroom",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Sync Google Classroom"
+      ],
+      "related_routes": []
+    }
+  ],
+  "calendar": [
+    {
+      "action_id": "create_calendar_event",
+      "label": "Create calendar event",
+      "category": "calendar",
+      "approval_required": false,
+      "ui_button_labels": [
+        "New Event",
+        "Create Event"
+      ],
+      "related_routes": [
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "update_calendar_event",
+      "label": "Update calendar event",
+      "category": "calendar",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Edit Event"
+      ],
+      "related_routes": [
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "delete_calendar_event",
+      "label": "Archive calendar event",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Archive Event",
+        "Delete Event"
+      ],
+      "related_routes": [
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_student_schedule_item",
+      "label": "Create student schedule item",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Add Student Event"
+      ],
+      "related_routes": [
+        "/student",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_parent_visible_event",
+      "label": "Create parent-visible event",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Add Parent Event"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_provider_class_session",
+      "label": "Create provider class session",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "New Class Session"
+      ],
+      "related_routes": [
+        "/provider-participant",
+        "/operations?workspace=rabbi_sheller_provider&view=calendar"
+      ]
+    },
+    {
+      "action_id": "sync_google_calendar",
+      "label": "Sync Google Calendar",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Sync Google Calendar"
+      ],
+      "related_routes": []
+    },
+    {
+      "action_id": "open_calendar_event",
+      "label": "Open calendar event",
+      "category": "calendar",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Open Event"
+      ],
+      "related_routes": [
+        "/operations?view=calendar",
+        "/parent",
+        "/student",
+        "/provider-participant"
+      ]
+    },
+    {
+      "action_id": "mark_event_parent_visible",
+      "label": "Mark event parent-visible",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Parent Visible"
+      ],
+      "related_routes": []
+    },
+    {
+      "action_id": "mark_event_student_visible",
+      "label": "Mark event student-visible",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Student Visible"
+      ],
+      "related_routes": []
+    },
+    {
+      "action_id": "mark_event_admin_only",
+      "label": "Mark event admin-only",
+      "category": "calendar",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Admin Only"
+      ],
+      "related_routes": []
+    }
+  ],
+  "student_portal": [
+    {
+      "action_id": "create_calendar_event",
+      "label": "Create calendar event",
+      "category": "calendar",
+      "approval_required": false,
+      "ui_button_labels": [
+        "New Event",
+        "Create Event"
+      ],
+      "related_routes": [
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_student_schedule_item",
+      "label": "Create student schedule item",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Add Student Event"
+      ],
+      "related_routes": [
+        "/student",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "show_today_plan",
+      "label": "Show today plan",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Today Plan",
+        "Ask BNA Helper"
+      ],
+      "related_routes": [
+        "/student"
+      ]
+    },
+    {
+      "action_id": "show_assignments",
+      "label": "Show assignments",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Assignments"
+      ],
+      "related_routes": [
+        "/student",
+        "/parent"
+      ]
+    },
+    {
+      "action_id": "explain_assignment",
+      "label": "Explain assignment",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Explain"
+      ],
+      "related_routes": [
+        "/student"
+      ]
+    },
+    {
+      "action_id": "create_report_problem_ticket",
+      "label": "Create report-problem ticket",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Report problem",
+        "Send feedback",
+        "Report a bug",
+        "Report a suggestion"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=admin&section=support_tickets"
+      ]
+    }
+  ],
+  "parent_portal": [
+    {
+      "action_id": "create_calendar_event",
+      "label": "Create calendar event",
+      "category": "calendar",
+      "approval_required": false,
+      "ui_button_labels": [
+        "New Event",
+        "Create Event"
+      ],
+      "related_routes": [
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_parent_visible_event",
+      "label": "Create parent-visible event",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Add Parent Event"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "show_assignments",
+      "label": "Show assignments",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Assignments"
+      ],
+      "related_routes": [
+        "/student",
+        "/parent"
+      ]
+    },
+    {
+      "action_id": "create_report_problem_ticket",
+      "label": "Create report-problem ticket",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Report problem",
+        "Send feedback",
+        "Report a bug",
+        "Report a suggestion"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=admin&section=support_tickets"
+      ]
+    },
+    {
+      "action_id": "show_child_calendar",
+      "label": "Show child calendar",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Calendar",
+        "Show Calendar"
+      ],
+      "related_routes": [
+        "/parent"
+      ]
+    },
+    {
+      "action_id": "view_parent_visible_notes",
+      "label": "View parent-visible notes",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Visible Notes"
+      ],
+      "related_routes": [
+        "/parent"
+      ]
+    }
+  ],
+  "provider_workspace": [
+    {
+      "action_id": "create_provider_class_session",
+      "label": "Create provider class session",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "New Class Session"
+      ],
+      "related_routes": [
+        "/provider-participant",
+        "/operations?workspace=rabbi_sheller_provider&view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_provider_question_post",
+      "label": "Create provider question/post",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Post Question",
+        "Save Post"
+      ],
+      "related_routes": [
+        "/provider-participant"
+      ]
+    },
+    {
+      "action_id": "update_provider_profile",
+      "label": "Update provider profile",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Save Provider",
+        "Publish Provider"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers"
+      ]
+    }
+  ],
+  "provider_participant": [
+    {
+      "action_id": "create_provider_class_session",
+      "label": "Create provider class session",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "New Class Session"
+      ],
+      "related_routes": [
+        "/provider-participant",
+        "/operations?workspace=rabbi_sheller_provider&view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_provider_question_post",
+      "label": "Create provider question/post",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Post Question",
+        "Save Post"
+      ],
+      "related_routes": [
+        "/provider-participant"
+      ]
+    }
+  ],
+  "assignments": [
+    {
+      "action_id": "sync_google_classroom",
+      "label": "Sync Google Classroom",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Sync Google Classroom"
+      ],
+      "related_routes": []
+    }
+  ],
+  "student_helper": [
+    {
+      "action_id": "show_today_plan",
+      "label": "Show today plan",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Today Plan",
+        "Ask BNA Helper"
+      ],
+      "related_routes": [
+        "/student"
+      ]
+    },
+    {
+      "action_id": "explain_assignment",
+      "label": "Explain assignment",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Explain"
+      ],
+      "related_routes": [
+        "/student"
+      ]
+    },
+    {
+      "action_id": "create_help_request",
+      "label": "Create help request",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Ask for help",
+        "Ask BNA Helper",
+        "Parent Help"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=communications"
+      ]
+    }
+  ],
+  "parent_helper": [
+    {
+      "action_id": "create_help_request",
+      "label": "Create help request",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Ask for help",
+        "Ask BNA Helper",
+        "Parent Help"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "create_report_problem_ticket",
+      "label": "Create report-problem ticket",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Report problem",
+        "Send feedback",
+        "Report a bug",
+        "Report a suggestion"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=admin&section=support_tickets"
+      ]
+    },
+    {
+      "action_id": "show_child_calendar",
+      "label": "Show child calendar",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Calendar",
+        "Show Calendar"
+      ],
+      "related_routes": [
+        "/parent"
+      ]
+    },
+    {
+      "action_id": "draft_message_to_admin",
+      "label": "Draft message to admin",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Message"
+      ],
+      "related_routes": [
+        "/parent"
+      ]
+    },
+    {
+      "action_id": "view_parent_visible_notes",
+      "label": "View parent-visible notes",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Visible Notes"
+      ],
+      "related_routes": [
+        "/parent"
+      ]
+    }
+  ],
+  "messages_help": [
+    {
+      "action_id": "create_help_request",
+      "label": "Create help request",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Ask for help",
+        "Ask BNA Helper",
+        "Parent Help"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "create_report_problem_ticket",
+      "label": "Create report-problem ticket",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Report problem",
+        "Send feedback",
+        "Report a bug",
+        "Report a suggestion"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=admin&section=support_tickets"
+      ]
+    },
+    {
+      "action_id": "draft_message_to_admin",
+      "label": "Draft message to admin",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Draft Message"
+      ],
+      "related_routes": [
+        "/parent"
+      ]
+    }
+  ],
+  "support_tickets": [
+    {
+      "action_id": "create_report_problem_ticket",
+      "label": "Create report-problem ticket",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Report problem",
+        "Send feedback",
+        "Report a bug",
+        "Report a suggestion"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=admin&section=support_tickets"
+      ]
+    }
+  ],
+  "provider_index": [
+    {
+      "action_id": "update_provider_profile",
+      "label": "Update provider profile",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Save Provider",
+        "Publish Provider"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers"
+      ]
+    }
+  ],
+  "contacts": [
+    {
+      "action_id": "move_lead_stage",
+      "label": "Move lead stage",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Move Lead",
+        "Payment Pending"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines",
+        "/operations?view=contacts"
+      ]
+    }
+  ],
+  "pipelines": [
+    {
+      "action_id": "move_lead_stage",
+      "label": "Move lead stage",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Move Lead",
+        "Payment Pending"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines",
+        "/operations?view=contacts"
+      ]
+    }
+  ]
+}

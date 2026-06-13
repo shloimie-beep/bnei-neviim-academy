@@ -22,21 +22,20 @@
     <meta name="twitter:description" content="A calm, relationship-based Torah learning environment for boys in Beit Shemesh.">
     <meta name="twitter:image" content="https://bneineviimacademy.org/images/bna-social-preview.png">
     <link rel="canonical" href="https://bneineviimacademy.org/">
-    <script>
-        (function () {
-            var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
-            var homePath = window.location.pathname === '/' || window.location.pathname === '/he' || window.location.pathname === '/index.html';
-            var publicBypass = new URLSearchParams(window.location.search).has('public');
-            if (standalone && homePath && !publicBypass) {
-                window.location.replace('/operations');
-            }
-        })();
-    </script>
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png">
     <link rel="icon" href="/icons/favicon-16.png" sizes="16x16" type="image/png">
     <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+    <script>
+        (function redirectStandaloneLaunchToOperations() {
+            const isStandalone = window.matchMedia?.('(display-mode: standalone)').matches || window.navigator.standalone === true;
+            if (!isStandalone) return;
+            if (['/', '/he', '/index.html'].includes(window.location.pathname)) {
+                window.location.replace('/operations?source=pwa');
+            }
+        })();
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Inter:wght@300;400;500;600&family=Noto+Serif+Hebrew:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script type="application/ld+json">
@@ -177,6 +176,10 @@
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .nav-btn-contact {
@@ -212,6 +215,11 @@
             padding: 0;
             display: block;
             overflow: hidden;
+            background-color: #111d2b;
+            background-image: url('images/sitting on grass.jpg');
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center 48%;
         }
 
         .hero-image {
@@ -244,7 +252,7 @@
 
         .hero-verse {
             position: absolute;
-            top: 22px;
+            top: 14px;
             left: 50%;
             transform: translateX(-50%);
             width: min(980px, calc(100% - 80px));
@@ -281,7 +289,7 @@
 
         .hero-headline {
             position: absolute;
-            top: 132px;
+            top: 166px;
             left: 50%;
             transform: translateX(-50%);
             width: min(820px, calc(100% - 120px));
@@ -299,10 +307,77 @@
             text-shadow: 0 3px 16px rgba(0,0,0,0.68);
         }
 
+        .hero-spots-badge {
+            position: absolute;
+            top: 112px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-1deg);
+            z-index: 3;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            min-width: 350px;
+            min-height: 58px;
+            padding: 5px 28px;
+            border-radius: 999px;
+            border: 3px solid #10233f;
+            box-shadow:
+                inset 0 0 0 2px rgba(255, 255, 255, 0.88),
+                0 10px 28px rgba(0, 0, 0, 0.34);
+            background: #c9212d;
+            color: #ffffff;
+            font-size: 20px;
+            line-height: 1.05;
+            font-weight: 900;
+            text-transform: uppercase;
+            white-space: normal;
+            text-align: center;
+            text-shadow: 0 2px 7px rgba(0, 0, 0, 0.36);
+        }
+
+        .hero-spots-badge::before,
+        .hero-spots-badge::after {
+            content: "";
+            flex: 0 0 auto;
+            width: 18px;
+            height: 3px;
+            border-radius: 999px;
+            background: #f4c430;
+            box-shadow:
+                0 -7px 0 -1px #f4c430,
+                0 7px 0 -1px #f4c430;
+        }
+
+        .hero-spots-copy {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 2px;
+        }
+
+        .hero-spots-main,
+        .hero-spots-sub {
+            display: block;
+        }
+
+        .hero-spots-main {
+            font-size: 21px;
+            line-height: 1;
+            font-weight: 900;
+        }
+
+        .hero-spots-sub {
+            font-size: 13px;
+            line-height: 1.1;
+            font-weight: 800;
+        }
+
         .hero-cta-strip {
             position: absolute;
             left: 50%;
-            bottom: 42px;
+            bottom: 64px;
             transform: translateX(-50%);
             width: min(900px, calc(100% - 80px));
             height: auto;
@@ -323,7 +398,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 18px;
+            gap: 16px;
             text-align: center;
         }
 
@@ -346,15 +421,15 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 18px;
+            gap: 0;
             flex-shrink: 0;
         }
 
         .hero-btn {
-            min-width: 170px;
-            height: 52px;
+            min-width: 158px;
+            height: 48px;
             border-radius: 999px;
-            padding: 0 28px;
+            padding: 0 26px;
             font-size: 16px;
             font-weight: 700;
             display: inline-flex;
@@ -440,7 +515,7 @@
         /* ===== BELIEFS SECTION ===== */
         .beliefs {
             background: linear-gradient(rgba(30, 58, 95, 0.85), rgba(30, 58, 95, 0.9)),
-                        url('images/reuvane-jump-ball.png') center 70%/cover fixed;
+                        url('images/reuvane-jump-ball.jpg') center 70%/cover fixed;
             color: var(--white);
             padding: 6rem 2rem;
             min-height: 80vh;
@@ -984,7 +1059,7 @@
         /* ===== CTA SECTION ===== */
         .cta-section {
             background: linear-gradient(rgba(30, 58, 95, 0.85), rgba(30, 58, 95, 0.9)),
-                        url('images/huddle.png') center/cover fixed;
+                        url('images/huddle.jpg') center/cover fixed;
             color: var(--white);
             text-align: center;
             padding: 6rem 2rem;
@@ -1307,7 +1382,7 @@
                 min-height: 0;
                 background-size: cover;
                 background-repeat: no-repeat;
-                background-position: center 50%;
+                background-position: 48% 50%;
             }
 
             .hero-image::before {
@@ -1352,6 +1427,39 @@
                 line-height: 1.12;
             }
 
+            .hero-spots-badge {
+                top: 258px;
+                left: 18px;
+                transform: rotate(-2deg);
+                min-width: 0;
+                min-height: 0;
+                width: max-content;
+                max-width: 148px;
+                padding: 6px 10px;
+                border-width: 2px;
+                gap: 5px;
+            }
+
+            .hero-spots-badge::before,
+            .hero-spots-badge::after {
+                width: 8px;
+                box-shadow:
+                    0 -4px 0 -1px #f4c430,
+                    0 4px 0 -1px #f4c430;
+            }
+
+            .hero-spots-copy {
+                max-width: 108px;
+            }
+
+            .hero-spots-main {
+                font-size: 14px;
+            }
+
+            .hero-spots-sub {
+                font-size: 9px;
+            }
+
             .hero-cta-strip {
                 position: absolute;
                 left: 50%;
@@ -1366,7 +1474,7 @@
 
             .hero-cta-inner {
                 padding: 0;
-                gap: 14px;
+                gap: 13px;
             }
 
             .hero-subheadline {
@@ -1383,13 +1491,12 @@
 
             .hero-buttons {
                 flex-direction: column;
-                gap: 10px;
                 width: 100%;
             }
 
             .hero-btn {
-                width: min(290px, 100%);
-                height: 50px;
+                width: min(250px, 100%);
+                height: 48px;
                 font-size: 16px;
             }
 
@@ -2274,11 +2381,15 @@
                     </details>
                     <a href="#blog" class="nav-link nav-link--mobile-only" data-i18n="navBlog" data-en-href="#blog" data-he-href="#blog">Blog</a>
                     <a href="#faq" class="nav-link" data-i18n="navFaq" data-en-href="#faq" data-he-href="#faq">FAQ</a>
+                    <a href="/parent/login" class="nav-link" data-i18n="navParentLogin" data-en-href="/parent/login" data-he-href="/parent/login">Parent Login</a>
+                    <a href="/student/login" class="nav-link" data-i18n="navStudentLogin" data-en-href="/student/login" data-he-href="/student/login">Student Login</a>
+                    <a href="/provider" class="nav-link" data-i18n="navProviderAccess" data-en-href="/provider" data-he-href="/provider">Rabbi / Provider Login</a>
+                    <a href="/become-service-provider" class="nav-link" data-i18n="navProviderJoin" data-en-href="/become-service-provider" data-he-href="/become-service-provider">Become a Service Provider</a>
                 </div>
                 <div class="nav-buttons">
                     <button class="lang-toggle" onclick="toggleLanguage()" data-i18n="langButton">עברית</button>
                     <a href="https://wa.me/972534932631" class="nav-btn nav-btn-contact" target="_blank" data-i18n="contact">Contact Us</a>
-                    <a href="/signup.html" class="nav-btn nav-btn-signup" data-i18n="signup">Sign Up</a>
+                    <a href="/signup.html" class="nav-btn nav-btn-signup" data-i18n="navSignup">Register</a>
                 </div>
             </div>
         </div>
@@ -2295,15 +2406,20 @@
             <div class="hero-headline">
                 <h1 data-i18n="heroHeadline">Home-Based Integrative Torah Learning for Boys Ages 7–13</h1>
             </div>
+            <div class="hero-spots-badge">
+                <span class="hero-spots-copy">
+                    <span class="hero-spots-main" data-i18n="heroSpotsMain">7 Spots Left</span>
+                    <span class="hero-spots-sub" data-i18n="heroSpotsSub">At Current Tuition Rate</span>
+                </span>
+            </div>
         </div>
         <div class="hero-cta-strip">
             <div class="hero-cta-inner">
                 <div class="hero-subheadline">
-                    <p data-i18n="heroSubheadline">A calm, relationship-based Torah learning environment for boys who don't fit the system.</p>
+                    <p data-i18n="heroSubheadline">A calm, relationship-based Torah learning environment for boys ready for something more than regular school.</p>
                 </div>
                 <div class="hero-buttons">
-                    <a href="https://wa.me/972534932631" class="hero-btn hero-btn-contact" target="_blank" data-i18n="contact">Contact Us</a>
-                    <a href="/signup.html" class="hero-btn hero-btn-signup" data-i18n="signup">Sign Up</a>
+                    <a href="https://wa.me/972534932631" class="hero-btn hero-btn-contact" target="_blank" data-i18n="heroContact">Call Now</a>
                 </div>
             </div>
         </div>
@@ -2314,7 +2430,7 @@
         <div class="container">
             <div class="mission-content">
                 <div class="mission-image slide-in-left">
-                    <img src="images/meir-bunny.png" alt="Boy learning Torah">
+                    <img src="images/meir-bunny.jpg" alt="Boy learning Torah">
                 </div>
                 <div class="mission-text fade-in">
                     <h2 class="section-title" style="text-align: left; margin-bottom: 1.5rem;" data-i18n="missionTitle">Our Mission</h2>
@@ -2575,7 +2691,7 @@
     <section class="reviews">
         <div class="martin-card fade-in">
             <div class="martin-photo">
-                <img src="images/hillel.png" alt="Martin's son">
+                <img src="images/hillel.jpg" alt="Martin's son">
             </div>
             <div class="martin-content">
                 <div class="martin-name" data-i18n="reviewerName">Martin Braka</div>
@@ -2587,10 +2703,10 @@
 
     <!-- CTA Section -->
     <section class="cta-section" id="contact">
-        <h2 class="fade-in" data-i18n="ctaTitle">Ready to Get Started?</h2>
+        <h2 class="fade-in" data-i18n="ctaTitle">Registration Is Open for This Year</h2>
         <div class="cta-buttons fade-in">
             <a href="https://wa.me/972534932631" class="cta-button cta-whatsapp" target="_blank" data-i18n="contact">Contact Us</a>
-            <a href="/signup.html" class="cta-button cta-signup" data-i18n="signup">Sign Up</a>
+            <a href="/signup.html" class="cta-button cta-signup" data-i18n="signup">Register for This Year</a>
         </div>
     </section>
 
@@ -2702,21 +2818,21 @@
         const learningMoments = [
             {
                 type: 'image',
-                src: 'images/learning-moments/forest-learning-01-web.jpg',
+                src: '/images/learning-moments/forest-learning-01-web.jpg',
                 title: 'Forest learning with the boys',
                 description: 'A day of Torah learning and shared goals in the hills around Ramat Beit Shemesh.',
                 timestamp: '28 May 2026'
             },
             {
                 type: 'image',
-                src: 'images/learning-moments/forest-learning-02-web.jpg',
+                src: '/images/learning-moments/forest-learning-02-web.jpg',
                 title: 'Real life learning',
                 description: 'The forest gives the boys room to move, notice, ask questions, and connect the learning to the world around them.',
                 timestamp: '28 May 2026'
             },
             {
                 type: 'image',
-                src: 'images/learning-moments/forest-learning-03-web.jpg',
+                src: '/images/learning-moments/forest-learning-03-web.jpg',
                 title: 'Conversation, movement, and Torah',
                 description: 'Learning stays alive when the boys can think together, challenge ideas, and take ownership of the day.',
                 timestamp: '28 May 2026'
@@ -2740,8 +2856,25 @@
             }
         }
 
+        function normalizeLearningMomentSrc(src) {
+            const value = String(src || '').trim();
+            if (!value) return '';
+            try {
+                const url = new URL(value, window.location.origin);
+                return url.origin === window.location.origin ? url.pathname : url.href;
+            } catch {
+                return value.startsWith('/') ? value : `/${value}`;
+            }
+        }
+
         function getLearningMoments() {
-            return [...extraLearningMoments, ...learningMoments];
+            const seen = new Set();
+            return [...extraLearningMoments, ...learningMoments].filter((item) => {
+                const normalizedSrc = normalizeLearningMomentSrc(item?.src);
+                if (!normalizedSrc || seen.has(normalizedSrc)) return false;
+                seen.add(normalizedSrc);
+                return true;
+            });
         }
 
         function torahGoalCopy() {
@@ -2845,16 +2978,21 @@
             const dots = document.getElementById('mediaDots');
             if (!track || !dots) return;
             const moments = getLearningMoments();
+            if (currentMediaSlide >= moments.length) currentMediaSlide = 0;
 
             track.innerHTML = moments.map((item) => {
+                const src = normalizeLearningMomentSrc(item.src);
+                const title = escapeHtml(item.title || item.alt || 'Learning moment');
+                const timestamp = escapeHtml(item.timestamp || 'Learning moment');
+                const description = escapeHtml(item.description || '');
                 const media = item.type === 'video'
-                    ? `<video src="${item.src}" controls playsinline preload="metadata"></video>`
+                    ? `<video src="${escapeHtml(src)}" controls playsinline preload="metadata"></video>`
                     : item.type === 'youtube'
-                        ? `<iframe src="${item.src}" title="${item.title}" loading="lazy" allowfullscreen></iframe>`
-                        : `<img src="${item.src}" alt="${item.title}">`;
+                        ? `<iframe src="${escapeHtml(src)}" title="${title}" loading="lazy" allowfullscreen></iframe>`
+                        : `<img src="${escapeHtml(src)}" alt="${title}" decoding="async">`;
 
                 return `
-                    <article class="media-slide" aria-label="${item.timestamp}: ${item.title}" data-description="${item.description}" data-timestamp="${item.timestamp}">
+                    <article class="media-slide" aria-label="${timestamp}: ${title}" data-description="${description}" data-timestamp="${timestamp}">
                         <div class="media-visual">${media}</div>
                     </article>
                 `;
@@ -2915,7 +3053,9 @@
                 navBrand: "Bnei Nevi'im Academy",
                 navLocation: "Ramat Beit Shemesh",
                 contact: "Contact Us",
-                signup: "Sign Up",
+                heroContact: "Call Now",
+                navSignup: "Register",
+                signup: "Register for This Year",
                 langButton: "עברית",
                 navHome: "Home",
                 navBlog: "Blog",
@@ -2930,6 +3070,10 @@
                 navBlogTechnology: "Technology",
                 navBlogFuture: "Future Vision",
                 navFaq: "FAQ",
+                navParentLogin: "Parent Login",
+                navStudentLogin: "Student Login",
+                navProviderAccess: "Rabbi / Provider Login",
+                navProviderJoin: "Become a Service Provider",
                 homeBlogEyebrow: "Guides and Topics",
                 homeBlogTitle: "Our Philosophy",
                 homeBlogSubtitle: "Ideas that shape how we teach, mentor, and help boys grow.",
@@ -2941,7 +3085,9 @@
                 heroVerseEn: '"For the earth will be filled with the knowledge of Hashem as the waters cover the sea."',
                 heroVerseSource: "Yeshayahu 11:9",
                 heroHeadline: "Home-Based Integrative Torah Learning for Boys Ages 7–13",
-                heroSubheadline: "A calm, relationship-based Torah learning environment for boys who don't fit the system.",
+                heroSpotsMain: "7 Spots Left",
+                heroSpotsSub: "At Current Tuition Rate",
+                heroSubheadline: "A calm, relationship-based Torah learning environment for boys ready for something more than regular school.",
 
                 missionTitle: "Our Mission",
                 missionText: "To raise future leaders of the Jewish people who understand their role in society, live with purpose, develop self-governance, and experience Torah and Hashem as a real and meaningful part of daily life.",
@@ -3003,7 +3149,7 @@
                 reviewerName: "Martin Braka",
                 reviewText: '"Rav Dratler is a very dynamic and motivated individual who is passionate about making serious change within the education system. He is a very talented educator which I have experienced first hand through him teaching my son who was a non motivated student and he aided him to become a child who is enthusiastic and engaged with his learning."',
 
-                ctaTitle: "Ready to Get Started?",
+                ctaTitle: "Registration Is Open for This Year",
                 philosophyTitle: "Explore the Philosophy",
                 philosophySubtitle: "The homepage is short on purpose. The deeper ideas behind Bnei Neviim are explained in the blog.",
                 philosophySelfTitle: "Self-Governance",
@@ -3033,7 +3179,9 @@
                 navBrand: "אקדמיית בני נביאים",
                 navLocation: "רמת בית שמש",
                 contact: "צור קשר",
-                signup: "הרשמה",
+                heroContact: "\u05d3\u05d1\u05e8\u05d5 \u05e2\u05db\u05e9\u05d9\u05d5",
+                navSignup: "\u05d4\u05e8\u05e9\u05de\u05d4",
+                signup: "\u05d4\u05e8\u05e9\u05de\u05d4 \u05dc\u05e9\u05e0\u05d4 \u05d4\u05e7\u05e8\u05d5\u05d1\u05d4",
                 langButton: "English",
                 navHome: "בית",
                 navBlog: "מאמרים",
@@ -3048,6 +3196,10 @@
                 navBlogTechnology: "טכנולוגיה",
                 navBlogFuture: "חזון עתידי",
                 navFaq: "שאלות",
+                navParentLogin: "כניסת הורים",
+                navStudentLogin: "כניסת תלמיד",
+                navProviderAccess: "כניסת רב / ספק",
+                navProviderJoin: "הצטרפות כספק שירות",
                 homeBlogEyebrow: "\u05de\u05d3\u05e8\u05d9\u05db\u05d9\u05dd \u05d5\u05e0\u05d5\u05e9\u05d0\u05d9\u05dd",
                 homeBlogTitle: "\u05de\u05d0\u05de\u05e8\u05d9\u05dd",
                 homeBlogSubtitle: "\u05e2\u05d9\u05d5\u05df \u05d1\u05e0\u05d5\u05e9\u05d0\u05d9\u05dd \u05e9\u05d4\u05d5\u05e8\u05d9\u05dd \u05e9\u05d5\u05d0\u05dc\u05d9\u05dd \u05e2\u05dc\u05d9\u05d4\u05dd: \u05de\u05e1\u05d2\u05e8\u05ea \u05d7\u05dc\u05d5\u05e4\u05d9\u05ea, \u05dc\u05d9\u05de\u05d5\u05d3 \u05ea\u05d5\u05e8\u05d4, \u05e7\u05e9\u05d1 \u05d5\u05e8\u05d9\u05db\u05d5\u05d6, \u05d7\u05d9\u05e0\u05d5\u05da \u05d1\u05d9\u05ea\u05d9, \u05d4\u05d5\u05e8\u05d5\u05ea, \u05d5\u05d0\u05d7\u05e8\u05d9\u05d5\u05ea \u05d0\u05d9\u05e9\u05d9\u05ea.",
@@ -3059,7 +3211,9 @@
                 heroVerseEn: "",
                 heroVerseSource: "ישעיהו י״א:ט׳",
                 heroHeadline: "לימוד תורה אינטגרטיבי באווירה ביתית לבנים בגילאי 7–13",
-                heroSubheadline: "סביבה רגועה ומבוססת קשר ללימוד תורה עבור בנים שלא מוצאים את מקומם במערכת.",
+                heroSpotsMain: "\u05e0\u05e9\u05d0\u05e8\u05d5 7 \u05de\u05e7\u05d5\u05de\u05d5\u05ea",
+                heroSpotsSub: "\u05d1\u05de\u05d7\u05d9\u05e8 \u05d4\u05e0\u05d5\u05db\u05d7\u05d9",
+                heroSubheadline: "סביבה רגועה ומבוססת קשר ללימוד תורה עבור בנים שמוכנים למשהו מעבר לבית ספר רגיל.",
 
                 missionTitle: "השליחות שלנו",
                 missionText: "לגדל מנהיגים עתידיים בעם ישראל, שמבינים את תפקידם בעולם, חיים עם מטרה, מפתחים ניהול עצמי, וחווים את התורה ואת הקשר עם ה׳ כחלק אמיתי ומשמעותי מחיי היום־יום.",
@@ -3101,7 +3255,7 @@
                 reviewerName: "מרטין ברקה",
                 reviewText: '״הרב דרטלר הוא אדם דינמי ובעל מוטיבציה גדולה, עם תשוקה אמיתית לחולל שינוי משמעותי במערכת החינוך. הוא מחנך מוכשר מאוד, כפי שחוויתי באופן אישי דרך העבודה שלו עם הבן שלי, שלא היה מחובר ללמידה, ובעזרתו הפך לילד שמתלהב ומשתתף בלמידה שלו.״',
 
-                ctaTitle: "רוצים לבדוק התאמה?",
+                ctaTitle: "\u05d4\u05d4\u05e8\u05e9\u05de\u05d4 \u05dc\u05e9\u05e0\u05d4 \u05d4\u05e7\u05e8\u05d5\u05d1\u05d4 \u05e4\u05ea\u05d5\u05d7\u05d4",
                 philosophyTitle: "להעמיק בפילוסופיה",
                 philosophySubtitle: "העמוד הראשי קצר בכוונה. הרעיונות העמוקים שמאחורי בני נביאים מוסברים במאמרים.",
                 philosophySelfTitle: "אחריות אישית",
@@ -3506,5 +3660,6 @@
             navigator.serviceWorker.register('/sw.js').catch(() => {});
         }
     </script>
+    <script src="/js/bna-bot-widget.js"></script>
 </body>
 </html>

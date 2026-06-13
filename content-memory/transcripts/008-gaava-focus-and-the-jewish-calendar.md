@@ -9,7 +9,7 @@ drive_stage: "05 WhatsApp Ready"
 drive_file_id: "18itNzABgIdqFFW8sreIwqwtS2eM0Og4o"
 media_url: "https://drive.google.com/file/d/18itNzABgIdqFFW8sreIwqwtS2eM0Og4o/view?usp=drivesdk"
 transcript_chars: 37268
-outputs: "facebook_post:needs_approval#22, teaching_philosophy_note:draft#20, whatsapp_update:needs_approval#21"
+outputs: "teaching_philosophy_note:draft#20, whatsapp_update:needs_approval#21, facebook_post:needs_approval#22"
 ---
 
 # Gaava, Focus, and the Jewish Calendar
@@ -17,7 +17,7 @@ outputs: "facebook_post:needs_approval#22, teaching_philosophy_note:draft#20, wh
 - Content job: #8
 - Drive stage: 05 WhatsApp Ready
 - Source file: https://drive.google.com/file/d/18itNzABgIdqFFW8sreIwqwtS2eM0Og4o/view?usp=drivesdk
-- Outputs: facebook_post:needs_approval#22, teaching_philosophy_note:draft#20, whatsapp_update:needs_approval#21
+- Outputs: teaching_philosophy_note:draft#20, whatsapp_update:needs_approval#21, facebook_post:needs_approval#22
 
 ## Transcript
 

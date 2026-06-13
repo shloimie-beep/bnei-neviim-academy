@@ -36,6 +36,7 @@
             --dark-text: #1a202c;
             --white: #ffffff;
             --whatsapp-green: #25d366;
+            --hover-shadow: 0 14px 28px rgba(30, 58, 95, 0.18);
         }
         
         * {
@@ -66,6 +67,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            gap: 1rem;
         }
         
         .logo {
@@ -74,17 +76,27 @@
         
         .nav-btn {
             padding: 0.75rem 1.5rem;
-            border-radius: 50px;
+            border-radius: 8px;
             text-decoration: none;
             font-weight: 500;
             transition: all 0.3s ease;
             background: var(--primary-blue);
             color: white;
+            white-space: nowrap;
         }
         
         .nav-btn:hover {
             background: var(--secondary-blue);
             transform: translateY(-2px);
+            box-shadow: var(--hover-shadow);
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 0.75rem;
+            align-items: center;
+            justify-content: flex-end;
+            flex-wrap: wrap;
         }
         
         /* Form Section */
@@ -113,11 +125,41 @@
             color: var(--secondary-blue);
             font-size: 1.1rem;
         }
+
+        .language-tabs {
+            display: inline-flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            padding: 0.35rem;
+            border: 1px solid rgba(30, 58, 95, 0.14);
+            border-radius: 10px;
+            background: #fff;
+        }
+
+        .language-tab {
+            min-width: 104px;
+            padding: 0.7rem 1rem;
+            border-radius: 8px;
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 800;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .language-tab.active {
+            background: var(--primary-blue);
+            color: #fff;
+        }
+
+        .language-tab:hover {
+            transform: translateY(-1px);
+            box-shadow: var(--hover-shadow);
+        }
         
         .form-card {
             background: var(--white);
             padding: clamp(1.5rem, 4vw, 3.25rem);
-            border-radius: 24px;
+            border-radius: 12px;
             box-shadow: 0 20px 40px rgba(30, 58, 95, 0.15);
             border: 1px solid rgba(30, 58, 95, 0.1);
         }
@@ -271,6 +313,57 @@
             color: var(--primary-blue);
             font-size: 0.98rem;
         }
+
+        .permission-intro {
+            margin: -0.25rem 0 1rem;
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .permission-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .permission-card {
+            border: 1px solid #dbe3ef;
+            border-radius: 8px;
+            background: #f8fafc;
+            padding: 1rem;
+        }
+
+        .permission-card label {
+            display: block;
+            color: var(--primary-blue);
+            font-weight: 800;
+            line-height: 1.35;
+            margin-bottom: 0.65rem;
+        }
+
+        .permission-card select {
+            width: 100%;
+        }
+
+        .permission-checkbox {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            border: 1px solid rgba(30, 58, 95, 0.15);
+            border-radius: 8px;
+            background: #fffdf5;
+            color: #243953;
+            line-height: 1.55;
+            font-weight: 700;
+        }
+
+        .permission-checkbox input {
+            width: auto;
+            margin-top: 0.2rem;
+            flex: 0 0 auto;
+        }
         
         .submit-btn {
             width: 100%;
@@ -278,7 +371,7 @@
             background: var(--accent-gold);
             color: var(--dark-text);
             border: none;
-            border-radius: 50px;
+            border-radius: 8px;
             font-size: 1.1rem;
             font-weight: 600;
             cursor: pointer;
@@ -289,7 +382,7 @@
         .submit-btn:hover {
             background: #d4b43a;
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(201, 162, 39, 0.4);
+            box-shadow: 0 14px 28px rgba(201, 162, 39, 0.26);
         }
         
         .submit-btn:disabled {
@@ -335,7 +428,7 @@
         .agreement-card {
             background: #f8fafc;
             border: 1px solid #dbe3ef;
-            border-radius: 18px;
+            border-radius: 8px;
             padding: 1.25rem;
             margin-top: 1rem;
         }
@@ -365,7 +458,7 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            border-radius: 999px;
+            border-radius: 8px;
             background: var(--primary-blue);
             color: #fff;
             font-weight: 900;
@@ -393,7 +486,7 @@
             margin-top: 1rem;
             padding: 0.95rem 1.2rem;
             border: none;
-            border-radius: 999px;
+            border-radius: 8px;
             background: linear-gradient(135deg, var(--primary-blue), var(--secondary-blue));
             color: #fff;
             cursor: pointer;
@@ -592,7 +685,7 @@
             width: 100%;
             padding: 1rem 1.2rem;
             border: none;
-            border-radius: 999px;
+            border-radius: 8px;
             background: var(--accent-gold);
             color: var(--dark-text);
             cursor: pointer;
@@ -608,6 +701,37 @@
             text-align: center;
             padding: 2rem;
         }
+
+        .footer-content {
+            max-width: 980px;
+            margin: 0 auto;
+            display: grid;
+            gap: 0.75rem;
+            justify-items: center;
+        }
+
+        .footer-socials {
+            display: flex;
+            gap: 0.75rem;
+            justify-content: center;
+        }
+
+        .footer-socials a {
+            width: 38px;
+            height: 38px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        .footer-socials svg {
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
         
         /* Responsive */
         @media (max-width: 768px) {
@@ -616,6 +740,10 @@
             }
 
             .document-signature-list {
+                grid-template-columns: 1fr;
+            }
+
+            .permission-grid {
                 grid-template-columns: 1fr;
             }
             
@@ -658,20 +786,12 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="/css/bna-site-nav.css">
 </head>
 <body>
     <!-- Navigation -->
-    <nav>
-        <div class="nav-container">
-            <a href="/">
-                <img src="images/bna-logo-nobg.png" alt="Bnei Nevi'im Academy" class="logo">
-            </a>
-            <div style="display:flex; gap:0.75rem; align-items:center;">
-                <a href="/signup-he.html" class="nav-btn">עברית</a>
-                <a href="/" class="nav-btn">Back to Home</a>
-            </div>
-        </div>
-    </nav>
+    <div id="siteNavMount" data-bna-site-nav data-nav-language="en" data-nav-active="signup"></div>
+    <script src="/js/bna-site-nav.js"></script>
 
     <!-- Form Section -->
     <section class="form-section">
@@ -680,6 +800,10 @@
                 <h1>Bnei Nevi'im Academy Registration</h1>
                 <p>2026-2027 / תשפ"ז</p>
                 <p>הרשמה לבני נביאים אקדמי<br>לשנת תשפ"ז / 2026-2027</p>
+                <div class="language-tabs" aria-label="Registration language">
+                    <a class="language-tab active" href="/signup.html">English</a>
+                    <a class="language-tab" href="/signup-he.html">עברית</a>
+                </div>
             </div>
             
             <div class="form-card">
@@ -764,6 +888,89 @@
                         <label for="hobbies">Additional Information</label>
                         <textarea id="hobbies" name="hobbies" placeholder="Optional: interests, strengths, needs, or anything else that would help us understand your son."></textarea>
                     </div>
+
+                    <!-- Parent Permissions -->
+                    <div class="section-divider">
+                        <h3>Parent Guidance & Reporting Preferences</h3>
+                    </div>
+
+                    <p class="permission-intro">
+                        These answers are for awareness and parent alignment. BNA is not taking responsibility to enforce pickup, drop-off, travel, purchases, food, treats, spending, swimming, or staying late. Parents remain responsible for giving their son clear instructions at home. We use this information to know what you allow and to report back if something does not match what was agreed at home.
+                    </p>
+
+                    <div class="permission-grid">
+                        <div class="permission-card">
+                            <label for="permission_leave_premises">May he leave the premises during program hours?</label>
+                            <select id="permission_leave_premises" name="permission_leave_premises">
+                                <option value="ask_first" selected>Contact parent first</option>
+                                <option value="yes">Parent allows this</option>
+                                <option value="no">Parent does not allow this</option>
+                            </select>
+                        </div>
+                        <div class="permission-card">
+                            <label for="permission_walk_unaccompanied">May he walk or travel home unaccompanied?</label>
+                            <select id="permission_walk_unaccompanied" name="permission_walk_unaccompanied">
+                                <option value="ask_first" selected>Contact parent first</option>
+                                <option value="yes">Parent allows this</option>
+                                <option value="no">Parent does not allow this</option>
+                            </select>
+                        </div>
+                        <div class="permission-card">
+                            <label for="permission_swimming">May he participate in swimming or water activities?</label>
+                            <select id="permission_swimming" name="permission_swimming">
+                                <option value="ask_first" selected>Contact parent first</option>
+                                <option value="yes">Parent allows this</option>
+                                <option value="no">Parent does not allow this</option>
+                            </select>
+                        </div>
+                        <div class="permission-card">
+                            <label for="permission_buy_food">May he buy food during supervised outings?</label>
+                            <select id="permission_buy_food" name="permission_buy_food">
+                                <option value="ask_first" selected>Contact parent first</option>
+                                <option value="yes">Parent allows this</option>
+                                <option value="no">Parent does not allow this</option>
+                            </select>
+                        </div>
+                        <div class="permission-card">
+                            <label for="permission_junk_food">May he have junk food or treats if offered or purchased?</label>
+                            <select id="permission_junk_food" name="permission_junk_food">
+                                <option value="ask_first" selected>Contact parent first</option>
+                                <option value="yes">Parent allows this</option>
+                                <option value="no">Parent does not allow this</option>
+                            </select>
+                        </div>
+                        <div class="permission-card">
+                            <label for="permission_spend_money">May he spend personal money during BNA time?</label>
+                            <select id="permission_spend_money" name="permission_spend_money">
+                                <option value="ask_first" selected>Contact parent first</option>
+                                <option value="yes">Parent allows this</option>
+                                <option value="no">Parent does not allow this</option>
+                            </select>
+                        </div>
+                        <div class="permission-card">
+                            <label for="permission_stay_late">May he stay late when timing changes?</label>
+                            <select id="permission_stay_late" name="permission_stay_late">
+                                <option value="ask_first" selected>Contact parent first</option>
+                                <option value="yes">Parent allows this</option>
+                                <option value="no">Parent does not allow this</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="permission-checkbox" role="note">
+                        <span>Pickup, drop-off, travel, food, money, and activity choices remain the parent's responsibility. BNA uses the answers above for awareness, value-based coaching, and parent reporting; they are not a separate enforcement agreement.</span>
+                    </div>
+                    <input type="hidden" id="pickup_responsibility_acknowledged" name="pickup_responsibility_acknowledged" value="true">
+
+                    <div class="form-group">
+                        <label for="pickup_dropoff_notes">Pickup/drop-off notes</label>
+                        <textarea id="pickup_dropoff_notes" name="pickup_dropoff_notes" placeholder="Optional: regular pickup plan, authorized adults, walking route, timing limits, or transportation notes."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="parent_permission_notes">Other permission notes</label>
+                        <textarea id="parent_permission_notes" name="parent_permission_notes" placeholder="Optional: food restrictions, swimming limits, spending limits, or anything staff should know."></textarea>
+                    </div>
                     
                     <!-- Payment Method -->
                     <div class="section-divider">
@@ -844,9 +1051,19 @@
 
     <!-- Footer -->
     <footer>
-        <p>&copy; 2025 Bnei Nevi'im Academy. All rights reserved.</p>
+        <div class="footer-content">
+            <strong>Ramat Beit Shemesh</strong>
+            <div class="footer-socials" aria-label="Social profiles">
+                <a href="https://www.youtube.com/channel/UCKnmIcZqhzNCdAbE6RK-U-g" target="_blank" rel="noopener noreferrer" aria-label="Bnei Neviim Academy on YouTube"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.6 12 3.6 12 3.6s-7.5 0-9.4.5A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.5 9.4.5 9.4.5s7.5 0 9.4-.5a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8ZM9.6 15.6V8.4L15.8 12l-6.2 3.6Z"/></svg></a>
+                <a href="https://www.linkedin.com/company/108630189/" target="_blank" rel="noopener noreferrer" aria-label="Bnei Neviim Academy on LinkedIn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.14 1.45-2.14 2.94v5.67H9.34V9h3.42v1.56h.05c.48-.91 1.64-1.86 3.37-1.86 3.61 0 4.28 2.38 4.28 5.47v6.28ZM5.32 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12Zm1.78 13.02H3.54V9H7.1v11.45ZM22.23 0H1.76C.79 0 0 .77 0 1.72v20.55C0 23.22.79 24 1.76 24h20.47c.97 0 1.77-.78 1.77-1.73V1.72C24 .77 23.2 0 22.23 0Z"/></svg></a>
+                <a href="https://www.facebook.com/profile.php?id=61590512065756" target="_blank" rel="noopener noreferrer" aria-label="Bnei Neviim Academy on Facebook"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M24 12a12 12 0 1 0-13.88 11.86v-8.39H7.08V12h3.04V9.36c0-3 1.79-4.66 4.52-4.66 1.31 0 2.68.23 2.68.23v2.95h-1.51c-1.49 0-1.96.93-1.96 1.88V12h3.33l-.53 3.47h-2.8v8.39A12 12 0 0 0 24 12Z"/></svg></a>
+            </div>
+            <span>Registered nonprofit in the State of New Jersey</span>
+            <span>&copy; 2025 Bnei Nevi'im Academy. All rights reserved.</span>
+        </div>
     </footer>
 
+    <script src="/js/app-select.js"></script>
     <script src="/js/signup-documents.js"></script>
     <script>
         function buildThankYouUrl(paymentMethod, paymentLink) {
@@ -897,6 +1114,32 @@
             return document.querySelector('input[name="payment_method"]:checked')?.value || 'credit';
         }
 
+        function permissionValue(id) {
+            return document.getElementById(id)?.value || 'ask_first';
+        }
+
+        function pickupResponsibilityAcknowledged() {
+            const field = document.getElementById('pickup_responsibility_acknowledged');
+            if (!field) return true;
+            if (field.type === 'checkbox') return Boolean(field.checked);
+            return field.value !== 'false';
+        }
+
+        function collectParentPermissions() {
+            return {
+                leave_premises: permissionValue('permission_leave_premises'),
+                walk_unaccompanied: permissionValue('permission_walk_unaccompanied'),
+                swimming: permissionValue('permission_swimming'),
+                buy_food: permissionValue('permission_buy_food'),
+                junk_food: permissionValue('permission_junk_food'),
+                spend_money: permissionValue('permission_spend_money'),
+                stay_late: permissionValue('permission_stay_late'),
+                pickup_responsibility_acknowledged: pickupResponsibilityAcknowledged(),
+                pickup_dropoff_notes: document.getElementById('pickup_dropoff_notes')?.value || '',
+                parent_permission_notes: document.getElementById('parent_permission_notes')?.value || ''
+            };
+        }
+
         document.getElementById('signupForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -934,6 +1177,10 @@
                 hobbies: document.getElementById('hobbies').value,
                 payment_method: paymentMethod,
                 form_language: document.getElementById('form_language').value,
+                parent_permissions: collectParentPermissions(),
+                pickup_responsibility_acknowledged: pickupResponsibilityAcknowledged(),
+                pickup_dropoff_notes: document.getElementById('pickup_dropoff_notes').value,
+                parent_permission_notes: document.getElementById('parent_permission_notes').value,
                 ...documentPayload
             };
             
@@ -985,5 +1232,6 @@
             navigator.serviceWorker.register('/sw.js').catch(() => {});
         }
     </script>
+    <script src="/js/bna-bot-widget.js"></script>
 </body>
 </html>

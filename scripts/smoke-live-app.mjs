@@ -47,7 +47,7 @@ function loadConfig() {
     opsUsername: env.OPS_USERNAME || '',
     opsPassword: env.OPS_PASSWORD || '',
     requireDrive: process.argv.includes('--require-drive'),
-    requireGhl: process.argv.includes('--require-ghl'),
+    requireBuffer: process.argv.includes('--require-buffer') || process.argv.includes('--require-ghl'),
     googleRefreshToken: env.GOOGLE_REFRESH_TOKEN || readSecret('google-refresh-token.txt'),
     googleRedirectUri: env.GOOGLE_REDIRECT_URI || '',
     googleDrivePipelineConfig: env.GOOGLE_DRIVE_PIPELINE_CONFIG
@@ -427,7 +427,7 @@ async function main() {
       });
       assert(data.success === true && data.dry_run === true, 'Signup dry run did not validate successfully');
       assert(data.paymentMethod === 'bank_transfer', 'Signup dry run did not preserve bank transfer payment method');
-      assert(data.normalized?.agreement_signatures?.length === 4, 'Signup dry run did not validate all four agreement signatures');
+      assert(data.normalized?.agreement_signatures?.length === 4, 'Signup dry run did not validate all four required agreement signatures');
 
       const paymentMethods = { bank_transfer: data.paymentMethod };
       for (const [payment_method, expectedPaymentMethod] of [['credit', 'credit'], ['cash', 'cash']]) {
@@ -436,7 +436,7 @@ async function main() {
         });
         assert(payment.data.success === true && payment.data.dry_run === true, `Signup dry run failed for ${payment_method}`);
         assert(payment.data.paymentMethod === expectedPaymentMethod, `Signup dry run returned ${payment.data.paymentMethod} for ${payment_method}`);
-        assert(payment.data.normalized?.agreement_signatures?.length === 4, `Signup dry run did not keep four agreement signatures for ${payment_method}`);
+        assert(payment.data.normalized?.agreement_signatures?.length === 4, `Signup dry run did not keep four required agreement signatures for ${payment_method}`);
         paymentMethods[payment_method] = payment.data.paymentMethod;
       }
 
@@ -471,9 +471,9 @@ async function main() {
       };
     });
 
-    await step('GHL social diagnostics', async () => {
-      const { response, data } = await request(config, 'GET', '/api/bna/ghl-social/diagnostics', {
-        acceptStatuses: config.requireGhl ? [200] : [200, 401, 403, 503],
+    await step('Buffer social diagnostics', async () => {
+      const { response, data } = await request(config, 'GET', '/api/bna/buffer/diagnostics', {
+        acceptStatuses: config.requireBuffer ? [200] : [200, 401, 403, 429, 503],
       });
       if (response.status !== 200) {
         return {
@@ -481,16 +481,18 @@ async function main() {
           blocked: true,
           status: response.status,
           error: data.error || null,
-          hint: data.hint || 'GHL credentials/scopes need account-side attention.',
+          hint: data.hint || 'Buffer credentials/channel IDs need account-side attention.',
         };
       }
-      assert(data.configured === true, 'GHL is not configured');
+      assert(data.configured === true, 'Buffer is not configured');
       return {
         configured: true,
         blocked: false,
-        facebook_accounts: data.facebook_accounts?.length || 0,
-        other_accounts: data.other_accounts?.length || 0,
-        posts_read_check: data.posts_read_check?.ok || data.posts_read_check?.status || null,
+        provider: data.provider,
+        channels: data.social_channels?.length || 0,
+        facebook_configured: Boolean(data.required_channels?.facebook_post),
+        linkedin_configured: Boolean(data.required_channels?.linkedin_post),
+        youtube_configured: Boolean(data.required_channels?.youtube_description),
       };
     });
 

@@ -9,7 +9,7 @@ drive_stage: "06 Newsletter Candidates"
 drive_file_id: "1NiAOXkTZlWFMuT1pUazCFz2Hk2-6hHRK"
 media_url: "https://drive.google.com/file/d/1NiAOXkTZlWFMuT1pUazCFz2Hk2-6hHRK/view?usp=drivesdk"
 transcript_chars: 53319
-outputs: "daily_report:draft#10, weekly_newsletter:needs_approval#9"
+outputs: "weekly_newsletter:needs_approval#9, daily_report:draft#10"
 ---
 
 # Class recording: Weber torah.m4a
@@ -17,7 +17,7 @@ outputs: "daily_report:draft#10, weekly_newsletter:needs_approval#9"
 - Content job: #4
 - Drive stage: 06 Newsletter Candidates
 - Source file: https://drive.google.com/file/d/1NiAOXkTZlWFMuT1pUazCFz2Hk2-6hHRK/view?usp=drivesdk
-- Outputs: daily_report:draft#10, weekly_newsletter:needs_approval#9
+- Outputs: weekly_newsletter:needs_approval#9, daily_report:draft#10
 
 ## Transcript
 

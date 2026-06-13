@@ -1,3 +1,37 @@
 {
-  "items": []
+  "items": [
+    {
+      "type": "image",
+      "src": "/images/learning-moments/forest-learning-01-web.jpg",
+      "title": "Forest learning with the boys",
+      "description": "A day of Torah learning and shared goals in the hills around Ramat Beit Shemesh.",
+      "timestamp": "28 May 2026",
+      "alt": "Bnei Neviim Academy boys learning Torah outdoors in the forest",
+      "source": "Google Drive Approved Website Assets",
+      "driveFileName": "20260528_122314.jpg",
+      "addedAt": "2026-06-08T19:46:32.096Z"
+    },
+    {
+      "type": "image",
+      "src": "/images/learning-moments/forest-learning-02-web.jpg",
+      "title": "Real life learning",
+      "description": "The forest gives the boys room to move, notice, ask questions, and connect the learning to the world around them.",
+      "timestamp": "28 May 2026",
+      "alt": "Bnei Neviim Academy boys learning together outdoors",
+      "source": "Google Drive Approved Website Assets",
+      "driveFileName": "20260528_123610.jpg",
+      "addedAt": "2026-06-08T19:46:32.096Z"
+    },
+    {
+      "type": "image",
+      "src": "/images/learning-moments/forest-learning-03-web.jpg",
+      "title": "Conversation, movement, and Torah",
+      "description": "Learning stays alive when the boys can think together, challenge ideas, and take ownership of the day.",
+      "timestamp": "28 May 2026",
+      "alt": "Bnei Neviim Academy boys in an outdoor Torah learning moment",
+      "source": "Google Drive Approved Website Assets",
+      "driveFileName": "20260528_124630.jpg",
+      "addedAt": "2026-06-08T19:46:32.096Z"
+    }
+  ]
 }

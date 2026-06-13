@@ -67,6 +67,7 @@ ALTER TABLE bna_tasks
     'community',
     'general',
     'torah_class_prep',
+    'torah_research',
     'source_sheets',
     'shiur_ideas'
   ));
@@ -144,6 +145,6 @@ WITH one_time AS (
 UPDATE bna_tasks
 SET project_id = (SELECT id FROM one_time)
 WHERE
-  category IN ('torah_class_prep', 'source_sheets', 'shiur_ideas', 'ghl_setup', 'community')
+  category IN ('torah_class_prep', 'torah_research', 'source_sheets', 'shiur_ideas', 'ghl_setup', 'community')
   OR lower(COALESCE(title, '') || ' ' || COALESCE(notes, '')) ~
     '(one time|mishnah|mishna|rabbi elie scheller|elie scheller|source sheet|shiur)';

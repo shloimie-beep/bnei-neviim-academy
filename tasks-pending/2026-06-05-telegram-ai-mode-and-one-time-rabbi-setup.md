@@ -6,8 +6,12 @@ Date: 2026-06-05
 
 Project/workspace model implemented by task #72 and deployed. Rabbi scoped
 Telegram/agent profile implemented by task #110 and included in the deployed
-bundle. Live Rabbi bot startup is blocked only on the Rabbi-specific bot token,
-chat id, and scoped One Time login credentials.
+bundle. On 2026-06-08 the Rabbi-specific local token file was configured and
+smoke-tested against Telegram. On 2026-06-10 the Rabbi bot token and
+`RABBI_ELIE_SCHELLER_CODEX_ENABLED=false` were added to Railway production
+service `skillful-motivation`. Later on 2026-06-10 the scoped One Time login
+credentials were installed locally and on Railway. Live Rabbi bot startup is
+now blocked on the confirmed allowed chat ID.
 
 ## Implemented In Task #110 Pass
 
@@ -42,16 +46,92 @@ chat id, and scoped One Time login credentials.
 
 ## Live Values Still Needed
 
-- `TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER` or
-  `.secrets/telegram-rabbi-elie-scheller-bot-token.txt`
 - `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER`
-- `ONE_TIME_OPS_USERNAME`
-- `ONE_TIME_OPS_PASSWORD`
 
 Optional/advanced:
 
 - `RABBI_ELIE_SCHELLER_CODEX_ENABLED=false` should stay false unless Shloimie
   explicitly wants the Rabbi bot to execute Codex repo work.
+
+## 2026-06-10 Partial Live Credential Pass
+
+- Set Railway production service `skillful-motivation` variable
+  `TELEGRAM_BOT_TOKEN_RABBI_ELIE_SCHELLER` from the existing local Rabbi token
+  file without printing the value.
+- Set Railway production service `skillful-motivation` variable
+  `RABBI_ELIE_SCHELLER_CODEX_ENABLED=false`.
+- Rechecked Railway variable names: Rabbi token and Codex flag are present;
+  Rabbi chat ID and scoped One Time username/password are still missing.
+- Telegram `getMe` accepted the token and returned `onetimeaios_bot`;
+  `getWebhookInfo` showed no webhook and 0 pending updates; `getUpdates`
+  returned 0 updates, so the chat ID is still not discoverable.
+- Later 2026-06-10 recheck showed one `/start` update from Shlomo/chat
+  `8202155026`. Do not treat this as Rabbi Elie's allowed chat ID unless
+  Shloimie explicitly confirms that this is the intended allowed chat for the
+  Rabbi bot.
+- At that point, `npm run telegram:rabbi` still failed at the expected scoped
+  credential guard: missing `ONE_TIME_OPS_USERNAME` / `ONE_TIME_OPS_PASSWORD`.
+
+## 2026-06-10 Worker Prep Update
+
+- Rechecked Railway production with values redacted: `skillful-motivation` has
+  the Rabbi bot token, scoped One Time Operations username/password, and
+  `RABBI_ELIE_SCHELLER_CODEX_ENABLED`.
+- Railway and local env still lack `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER`.
+- The shared `railway.json` is now builder-only so a separate
+  `rabbi-telegram-worker` Railway service does not inherit a web-only
+  `/api/health` check.
+- The Docker image now starts through `scripts/railway-start.mjs`; the web
+  service defaults to `node server.js`, and the Rabbi worker uses
+  `BNA_RAILWAY_PROCESS=telegram-rabbi` to run `npm run telegram:rabbi`.
+- Worker runbook:
+  `ops/one-time-mishnah-class/rabbi-telegram-worker.md`.
+
+## 2026-06-10 External User / Ticketing Update
+
+- Operator wants Rabbi Elie Scheller to become the first external user/account,
+  not a parent record.
+- Shloimie should be super admin and able to manage Rabbi Elie's account.
+- Rabbi Elie needs his own scoped parents and students under One Time, separate
+  from BNA parents and BNA students.
+- The Rabbi-facing task manager should reuse BNA task/comments/parser/watchdog
+  behavior where possible, but omit BNA-only business fields and private areas.
+- Add Rabbi-facing support tickets for system issues, access problems, bot
+  failures, missing data, or automation problems. These should route to
+  Shloimie/Codex quickly and stay distinct from Torah class-prep tasks.
+- New implementation handoff:
+  `tasks-pending/2026-06-10-one-time-external-user-portal-and-ticketing.md`.
+
+## 2026-06-08 Token Smoke
+
+- `.secrets/telegram-rabbi-elie-scheller-bot-token.txt` is present locally.
+- Telegram `getMe` accepted the token and returned bot username
+  `onetimeaios_bot`.
+- `getWebhookInfo` showed no webhook configured.
+- `getUpdates` returned 0 updates, so the allowed Rabbi chat ID cannot be
+  inferred until Rabbi Elie sends the bot a message or the chat ID is provided
+  directly.
+- `node --check scripts/telegram-kimi-bridge.mjs` passed.
+- `npm run telegram:rabbi` reached the intended Rabbi profile startup guard and
+  failed on missing `ONE_TIME_OPS_USERNAME` / `ONE_TIME_OPS_PASSWORD`.
+
+## 2026-06-09 Re-Smoke
+
+- `node --check scripts/telegram-kimi-bridge.mjs` passed.
+- Telegram `getMe` accepted the configured local token and returned
+  `onetimeaios_bot`.
+- `getWebhookInfo` showed no webhook URL and 0 pending updates.
+- `getUpdates` returned 0 updates, so the Rabbi chat ID is still not
+  discoverable until Rabbi Elie messages the bot or the ID is provided.
+- Local `.env.local` has no Rabbi chat ID and no scoped One Time
+  username/password.
+- `npm run telegram:rabbi` fails only at the expected scoped credential guard.
+- Railway doctor passed for service `skillful-motivation` / production, but
+  Railway variables on that service are missing all Rabbi-specific runtime
+  values: Rabbi bot token, allowed chat ID, scoped One Time username/password,
+  and `RABBI_ELIE_SCHELLER_CODEX_ENABLED`.
+- `railway.json` starts only `node server.js`; the Rabbi bridge is not currently
+  hosted as a long-running Railway worker/service.
 
 ## Implemented In This Pass
 

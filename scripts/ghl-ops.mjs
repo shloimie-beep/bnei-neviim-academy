@@ -7,12 +7,16 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '..');
 const envLocalPath = path.join(repoRoot, '.env.local');
 const secretFilePath = path.join(repoRoot, '.secrets', 'ghl-pit-token.txt');
+const bufferSecretFilePath = path.join(repoRoot, '.secrets', 'buffer-api-key.txt');
 
 const GHL_API_BASE = 'https://services.leadconnectorhq.com';
 const GHL_API_VERSION = '2023-02-21';
+const BUFFER_API_BASE = 'https://api.buffer.com';
 
 let cachedConfig = null;
+let cachedBufferConfig = null;
 let cachedAccounts = null;
+let cachedBufferOrganizations = null;
 let cachedUserId = null;
 
 function parseEnvBlock(rawValue) {
@@ -39,7 +43,7 @@ function readEnvBlockFile(filePath) {
 }
 
 function pickToken(rawToken, inlineToken, fileToken) {
-  if (rawToken && !rawToken.includes('\n') && !rawToken.startsWith('GHL_PIT_TOKEN=')) {
+  if (rawToken && !rawToken.includes('\n') && !/^[A-Z0-9_]+=/.test(rawToken)) {
     return rawToken.trim();
   }
   return inlineToken || fileToken || '';
@@ -87,6 +91,75 @@ export function getGhlConfig() {
   return cachedConfig;
 }
 
+export function getBufferConfig() {
+  if (cachedBufferConfig) return cachedBufferConfig;
+
+  const envFile = fs.existsSync(envLocalPath)
+    ? parseEnvBlock(fs.readFileSync(envLocalPath, 'utf8'))
+    : {};
+  const secretFile = readEnvBlockFile(bufferSecretFilePath);
+  const inlineSecrets = parseEnvBlock(process.env.BUFFER_API_KEY || '');
+
+  const token = pickToken(
+    process.env.BUFFER_API_KEY || envFile.BUFFER_API_KEY,
+    inlineSecrets.BUFFER_API_KEY || envFile.BUFFER_API_KEY,
+    secretFile.BUFFER_API_KEY
+  );
+  if (!token) {
+    throw new Error('BUFFER_API_KEY not configured');
+  }
+
+  cachedBufferConfig = {
+    token,
+    apiBase: process.env.BUFFER_API_BASE || envFile.BUFFER_API_BASE || secretFile.BUFFER_API_BASE || BUFFER_API_BASE,
+    organizationId: process.env.BUFFER_ORGANIZATION_ID || envFile.BUFFER_ORGANIZATION_ID || secretFile.BUFFER_ORGANIZATION_ID || '',
+  };
+  return cachedBufferConfig;
+}
+
+async function bufferGraphql(query, variables = {}) {
+  const config = getBufferConfig();
+  const response = await fetch(config.apiBase, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${config.token}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ query, variables }),
+  });
+  const text = await response.text();
+  let data = null;
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    data = { raw: text };
+  }
+  if (!response.ok || data.errors) {
+    const message = data.errors?.map((item) => item.message).filter(Boolean).join('; ')
+      || data.raw
+      || `Buffer ${response.status}`;
+    throw new Error(`Buffer ${response.status}: ${message}`);
+  }
+  return data.data || {};
+}
+
+async function listBufferOrganizations() {
+  if (cachedBufferOrganizations) return cachedBufferOrganizations;
+  const data = await bufferGraphql(`
+    query GetOrganizations {
+      account {
+        organizations {
+          id
+          name
+          ownerEmail
+        }
+      }
+    }
+  `);
+  cachedBufferOrganizations = data.account?.organizations || [];
+  return cachedBufferOrganizations;
+}
+
 async function ghlRequest(endpoint, options = {}) {
   const config = getGhlConfig();
   const url = `${config.apiBase}${endpoint}`;
@@ -117,9 +190,35 @@ async function ghlRequest(endpoint, options = {}) {
 
 export async function listSocialAccounts(forceRefresh = false) {
   if (cachedAccounts && !forceRefresh) return cachedAccounts;
-  const { locationId } = getGhlConfig();
-  const data = await ghlRequest(`/social-media-posting/${locationId}/accounts`);
-  const accounts = data?.results?.accounts || [];
+  const { organizationId } = getBufferConfig();
+  const organizationIds = organizationId
+    ? [organizationId]
+    : (await listBufferOrganizations()).map((organization) => organization.id).filter(Boolean);
+  const accounts = [];
+  for (const currentOrganizationId of organizationIds) {
+    const data = await bufferGraphql(`
+      query GetChannels($organizationId: OrganizationId!) {
+        channels(input: { organizationId: $organizationId, filter: { isLocked: false } }) {
+          id
+          name
+          displayName
+          service
+          avatar
+          isQueuePaused
+        }
+      }
+    `, { organizationId: currentOrganizationId });
+    accounts.push(...(data.channels || []).map((channel) => ({
+      ...channel,
+      platform: channel.service,
+      name: channel.displayName || channel.name || channel.service,
+      originId: channel.id,
+      organizationId: currentOrganizationId,
+      isExpired: false,
+      deleted: false,
+      provider: 'buffer',
+    })));
+  }
   cachedAccounts = accounts;
   return accounts;
 }
@@ -156,6 +255,9 @@ export async function getDefaultUserId() {
 }
 
 export async function uploadLocalFileToGhl(filePath, options = {}) {
+  if (String(process.env.SOCIAL_POST_PROVIDER || 'buffer').toLowerCase() === 'buffer') {
+    throw new Error('Buffer social posting is configured. Buffer media posts require already-hosted media URLs; local file upload to GHL is disabled.');
+  }
   const { locationId, token, apiBase, apiVersion } = getGhlConfig();
   const fileBuffer = fs.readFileSync(filePath);
   const filename = options.filename || path.basename(filePath);
@@ -200,25 +302,47 @@ export async function createSocialPost({
   publishNow = false,
   targetPlatform = '',
 }) {
-  const { locationId } = getGhlConfig();
-  const userId = await getDefaultUserId();
-  const type = inferSocialPostType(media, [targetPlatform]);
-  const body = {
-    accountIds: [accountId],
-    userId,
-    summary: summary || '',
-    media,
-    type,
-    status: publishNow ? 'published' : 'draft',
-  };
-
-  return ghlRequest(`/social-media-posting/${locationId}/posts`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
+  if (media.length) {
+    throw new Error('Buffer media posting from Telegram needs hosted asset URLs; this bridge currently creates text Buffer drafts only.');
+  }
+  const mode = publishNow ? 'shareNow' : 'addToQueue';
+  const saveToDraft = !publishNow;
+  const data = await bufferGraphql(`
+    mutation CreateBufferPost($text: String!, $channelId: ChannelId!, $saveToDraft: Boolean!) {
+      createPost(input: {
+        text: $text
+        channelId: $channelId
+        schedulingType: automatic
+        mode: ${mode}
+        saveToDraft: $saveToDraft
+      }) {
+        ... on PostActionSuccess {
+          post {
+            id
+            text
+            status
+          }
+        }
+        ... on MutationError {
+          message
+        }
+      }
+    }
+  `, { text: summary || '', channelId: accountId, saveToDraft });
+  if (data.createPost?.message && !data.createPost?.post) {
+    throw new Error(data.createPost.message);
+  }
+  return {
+    results: {
+      post: {
+        _id: data.createPost?.post?.id || '',
+        id: data.createPost?.post?.id || '',
+        status: data.createPost?.post?.status || (publishNow ? 'published' : 'draft'),
+      },
     },
-    body: JSON.stringify(body),
-  });
+    provider: 'buffer',
+    raw: data.createPost || null,
+  };
 }
 
 export async function deleteSocialPost(postId) {

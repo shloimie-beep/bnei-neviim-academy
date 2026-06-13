@@ -2,6 +2,14 @@
   const PACKAGE_URL = '/documents/bnei_neviim_registration_documents_bilingual_codex.md';
   const PACKAGE_VERSION = '2026-2027-v1';
   const TUITION_VERSION = '2026-06-07-v1';
+  const CONTEXT_STORAGE_KEY = 'bnaSignupDocumentContext';
+  const SIGNATURE_STORAGE_KEY = 'bnaSignupDocumentSignatures';
+  const DEDICATED_PAGE_DOCUMENTS = new Set([
+    'parent_handbook',
+    'tuition_agreement',
+    'safety_acknowledgment_waiver',
+    'student_code_of_conduct'
+  ]);
 
   const TUITION_TEXT = {
     en: `Bnei Neviim Academy is a private Torah learning and mentoring program. It is not a Ministry of Education-recognized school. Parents are responsible for arranging any legal homeschooling registration or other educational status required for their child.
@@ -47,7 +55,7 @@ Payment may be made by cash, bank transfer, credit card, or another method appro
   const COPY = {
     en: {
       heading: 'Required Registration Documents',
-      intro: 'Open each document, read it in the full-screen viewer, scroll to the bottom, and sign. Each signature is recorded separately.',
+      intro: 'Open each document as a full registration page, read it, and sign. Each signature is recorded separately.',
       open: 'Open and Sign',
       signed: 'Signed',
       unsigned: 'Not signed yet',
@@ -82,13 +90,14 @@ Payment may be made by cash, bank transfer, credit card, or another method appro
       viewer: 'חלון קריאת מסמך'
     }
   };
+  COPY.he.submitMissing = '\u05d9\u05e9 \u05dc\u05e4\u05ea\u05d5\u05d7 \u05d5\u05dc\u05d7\u05ea\u05d5\u05dd \u05e2\u05dc \u05db\u05dc \u05d0\u05e8\u05d1\u05e2\u05ea \u05de\u05e1\u05de\u05db\u05d9 \u05d4\u05d4\u05e8\u05e9\u05de\u05d4 \u05dc\u05e4\u05e0\u05d9 \u05d4\u05e9\u05dc\u05d9\u05d7\u05d4.';
 
   const DOCUMENTS = [
     {
       type: 'tuition_agreement',
       packageIndex: null,
       version: TUITION_VERSION,
-      title: { en: 'Tuition Agreement', he: 'הסכם שכר לימוד' },
+      title: { en: 'Tuition', he: 'הסכם שכר לימוד' },
       description: {
         en: 'Monthly tuition, payment timing, refund policy, and withdrawal notice.',
         he: 'שכר לימוד חודשי, זמני תשלום, מדיניות החזרים והודעת פרישה.'
@@ -98,7 +107,7 @@ Payment may be made by cash, bank transfer, credit card, or another method appro
       type: 'parent_handbook',
       packageIndex: 1,
       version: PACKAGE_VERSION,
-      title: { en: 'Parent Handbook', he: 'מדריך הורים' },
+      title: { en: 'Handbook', he: 'מדריך הורים' },
       description: {
         en: 'Program philosophy, parent partnership, structure, safety, and no-smartphone policy.',
         he: 'גישה חינוכית, שותפות הורים, מבנה התכנית, בטיחות ומדיניות ללא סמארטפונים.'
@@ -108,7 +117,7 @@ Payment may be made by cash, bank transfer, credit card, or another method appro
       type: 'student_code_of_conduct',
       packageIndex: 2,
       version: PACKAGE_VERSION,
-      title: { en: 'Student Handbook / Code of Conduct', he: 'מדריך תלמידים / קוד התנהגות' },
+      title: { en: 'Student Handbook', he: 'מדריך תלמידים / קוד התנהגות' },
       description: {
         en: 'Parent confirms these expectations were reviewed, or will be reviewed, with the child.',
         he: 'ההורה מאשר שהציפיות האלו נלמדו, או יילמדו, עם הילד.'
@@ -118,13 +127,37 @@ Payment may be made by cash, bank transfer, credit card, or another method appro
       type: 'safety_acknowledgment_waiver',
       packageIndex: 3,
       version: PACKAGE_VERSION,
-      title: { en: 'Safety Acknowledgment and Liability Waiver', he: 'אישור בטיחות, הצהרה וויתור' },
+      title: { en: 'Waiver', he: 'אישור בטיחות, הצהרה וויתור' },
       description: {
         en: 'Safety responsibilities, activity, medical/emergency permissions, damage responsibility, and liability waiver.',
         he: 'אחריות בטיחותית, פעילות, אישורי חירום ורפואה, אחריות לנזק וויתור אחריות.'
       }
+    },
+    {
+      type: 'registration_intake_form',
+      packageIndex: 4,
+      version: PACKAGE_VERSION,
+      title: { en: 'Registration / Intake Form', he: 'טופס הרשמה / שאלון קליטה' },
+      description: {
+        en: 'Parent and student information, educational status, program fit, medical, and safety information.',
+        he: 'פרטי הורים ותלמיד, מעמד חינוכי, התאמה לתכנית, מידע רפואי ובטיחותי.'
+      }
+    },
+    {
+      type: 'parent_agreement_signature_page',
+      packageIndex: 5,
+      version: PACKAGE_VERSION,
+      title: { en: 'Parent Agreement / Signature Page', he: 'הסכמת הורים / עמוד חתימה' },
+      description: {
+        en: 'Final parent agreement confirming the required acknowledgments and electronic signature.',
+        he: 'הסכמת ההורים הסופית המאשרת את ההצהרות הנדרשות ואת החתימה האלקטרונית.'
+      }
     }
-  ];
+  ].filter((doc) => !['registration_intake_form', 'parent_agreement_signature_page'].includes(doc.type))
+    .sort((a, b) => {
+      const order = ['parent_handbook', 'tuition_agreement', 'safety_acknowledgment_waiver', 'student_code_of_conduct'];
+      return order.indexOf(a.type) - order.indexOf(b.type);
+    });
 
   function escapeHtml(value) {
     return String(value || '')
@@ -217,6 +250,36 @@ Payment may be made by cash, bank transfer, credit card, or another method appro
     return block.slice(start, start + startMatch[0].length + endMatch.index).trim();
   }
 
+  let sharedPackageText = '';
+
+  async function loadRegistrationPackage() {
+    if (sharedPackageText) return sharedPackageText;
+    const response = await fetch(PACKAGE_URL, { cache: 'no-store' });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    sharedPackageText = await response.text();
+    return sharedPackageText;
+  }
+
+  async function registrationDocumentMarkdown(type, languageValue = 'en') {
+    const selectedLanguage = String(languageValue || 'en').toLowerCase().startsWith('he') ? 'he' : 'en';
+    const doc = DOCUMENTS.find((item) => item.type === type) || DOCUMENTS[0];
+    if (!doc.packageIndex) return TUITION_TEXT[selectedLanguage] || TUITION_TEXT.en;
+    const markdown = await loadRegistrationPackage();
+    return extractPackageSection(markdown, selectedLanguage, doc.packageIndex) || COPY[selectedLanguage].loadError;
+  }
+
+  window.BnaRegistrationDocuments = {
+    contextStorageKey: CONTEXT_STORAGE_KEY,
+    signatureStorageKey: SIGNATURE_STORAGE_KEY,
+    packageVersion: PACKAGE_VERSION,
+    tuitionVersion: TUITION_VERSION,
+    documents: DOCUMENTS,
+    copy: COPY,
+    escapeHtml,
+    markdownToHtml,
+    documentMarkdown: registrationDocumentMarkdown
+  };
+
   function createSignupDocumentFlow(options = {}) {
     const language = String(options.language || 'en').toLowerCase().startsWith('he') ? 'he' : 'en';
     const copy = COPY[language];
@@ -231,6 +294,50 @@ Payment may be made by cash, bank transfer, credit card, or another method appro
       name: getEl('parent1_name')?.value.trim() || '',
       email: getEl('parent1_email')?.value.trim() || ''
     });
+    const signerScope = () => {
+      const currentSigner = signer();
+      return `${language}:${currentSigner.name}:${currentSigner.email}`;
+    };
+
+    function readStoredSignaturePayload() {
+      try {
+        return JSON.parse(localStorage.getItem(SIGNATURE_STORAGE_KEY) || 'null');
+      } catch {
+        return null;
+      }
+    }
+
+    function persistSignatures() {
+      localStorage.setItem(SIGNATURE_STORAGE_KEY, JSON.stringify({
+        scope: signerScope(),
+        signatures,
+        updatedAt: new Date().toISOString()
+      }));
+    }
+
+    function importStoredSignatures() {
+      const stored = readStoredSignaturePayload();
+      if (!stored || stored.scope !== signerScope() || !stored.signatures) return false;
+      let changed = false;
+      for (const doc of DOCUMENTS) {
+        const signature = stored.signatures[doc.type];
+        if (signature && !signatures[doc.type]) {
+          signatures[doc.type] = signature;
+          changed = true;
+        }
+      }
+      return changed;
+    }
+
+    function persistDocumentContext() {
+      localStorage.setItem(CONTEXT_STORAGE_KEY, JSON.stringify({
+        language,
+        signer: signer(),
+        returnUrl: `${window.location.pathname}${window.location.search}`,
+        updatedAt: new Date().toISOString()
+      }));
+      persistSignatures();
+    }
 
     async function loadPackage() {
       if (packageText) return packageText;
@@ -242,13 +349,7 @@ Payment may be made by cash, bank transfer, credit card, or another method appro
 
     async function documentMarkdown(doc) {
       if (documentText[doc.type]) return documentText[doc.type];
-      if (!doc.packageIndex) {
-        documentText[doc.type] = TUITION_TEXT[language] || TUITION_TEXT.en;
-        return documentText[doc.type];
-      }
-      const markdown = await loadPackage();
-      const section = extractPackageSection(markdown, language, doc.packageIndex);
-      documentText[doc.type] = section || copy.loadError;
+      documentText[doc.type] = await registrationDocumentMarkdown(doc.type, language);
       return documentText[doc.type];
     }
 
@@ -303,6 +404,12 @@ Payment may be made by cash, bank transfer, credit card, or another method appro
 
     async function openDocument(type) {
       const doc = DOCUMENTS.find((item) => item.type === type) || DOCUMENTS[0];
+      if (DEDICATED_PAGE_DOCUMENTS.has(doc.type)) {
+        persistDocumentContext();
+        const returnUrl = encodeURIComponent(`${window.location.pathname}${window.location.search}`);
+        window.open(`/documents/registration-document?document=${encodeURIComponent(doc.type)}&lang=${encodeURIComponent(language)}&return=${returnUrl}`, '_blank');
+        return;
+      }
       activeDocument = doc;
       reachedBottom = false;
       const modal = getEl('documentModal');
@@ -359,16 +466,20 @@ Payment may be made by cash, bank transfer, credit card, or another method appro
         language_viewed: language,
         accepted: true
       };
+      persistSignatures();
       updateCards();
       closeDocument();
     }
 
     function resetSignatures() {
       Object.keys(signatures).forEach((key) => delete signatures[key]);
+      localStorage.removeItem(SIGNATURE_STORAGE_KEY);
+      localStorage.removeItem(CONTEXT_STORAGE_KEY);
       updateCards();
     }
 
     function validateBeforeSubmit() {
+      if (importStoredSignatures()) updateCards();
       const missing = DOCUMENTS.filter((doc) => !signatures[doc.type]);
       if (missing.length) {
         openDocument(missing[0].type);
@@ -431,6 +542,25 @@ Payment may be made by cash, bank transfer, credit card, or another method appro
       });
       getEl('parent1_name')?.addEventListener('input', resetSignatures);
       getEl('parent1_email')?.addEventListener('input', resetSignatures);
+      window.addEventListener('message', (event) => {
+        if (event.origin !== window.location.origin) return;
+        if (event.data?.source !== 'bna-signup-document-signature') return;
+        const signature = event.data.signature;
+        if (!signature || !DOCUMENTS.some((doc) => doc.type === signature.agreement_type)) return;
+        const currentSigner = signer();
+        if (signature.signer_name !== currentSigner.name || signature.signer_email !== currentSigner.email) return;
+        signatures[signature.agreement_type] = signature;
+        persistSignatures();
+        updateCards();
+      });
+      window.addEventListener('storage', (event) => {
+        if (event.key !== SIGNATURE_STORAGE_KEY) return;
+        if (importStoredSignatures()) updateCards();
+      });
+      window.addEventListener('focus', () => {
+        if (importStoredSignatures()) updateCards();
+      });
+      importStoredSignatures();
       updateCards();
     }
 
