@@ -6,8 +6,8 @@
     <title>Join the BNA Provider Index</title>
     <style>
         :root {
-            --primary-blue: #1e3a5f;
-            --secondary-blue: #2c5282;
+            --primary-blue: #111111;
+            --secondary-blue: #2f6f5e;
             --light-blue: #e8f0f8;
             --accent-gold: #c9a227;
             --ink: #1a202c;
@@ -127,14 +127,14 @@
             padding: 18px;
         }
 
-        .plans {
+        .free-listing-grid {
             display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             gap: 10px;
             margin: 18px 0;
         }
 
-        .plan {
+        .free-listing-card {
             border: 1px solid var(--line);
             border-radius: 8px;
             background: #fff;
@@ -142,17 +142,17 @@
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .plan:hover {
+        .free-listing-card:hover {
             transform: translateY(-2px);
             box-shadow: var(--shadow);
         }
 
-        .plan strong {
+        .free-listing-card strong {
             display: block;
             margin-bottom: 6px;
         }
 
-        .plan ul {
+        .free-listing-card ul {
             margin: 10px 0 0;
             padding-left: 18px;
             color: var(--muted);
@@ -277,7 +277,7 @@
 
         @media (max-width: 860px) {
             .hero,
-            .plans,
+            .free-listing-grid,
             .grid {
                 grid-template-columns: 1fr;
             }
@@ -302,42 +302,38 @@
                 <span>Provider Network</span>
             </div>
         </div>
-        <span class="chip">Free listings and AI Max applications are review-only</span>
+        <span class="chip">Free listing applications are reviewed before publishing</span>
     </header>
 
     <main>
         <section class="hero">
             <div>
-                <p class="chip" style="display:inline-block;">Provider Commercial Model</p>
+                <p class="chip" style="display:inline-block;">Service Provider Network</p>
                 <h1>Join the BNA provider index</h1>
-                <p class="muted">Apply for a free listing in the BNA provider index, or ask about AI Max if you want help reaching more students. BNA connects providers with micro-schools, online school systems, and network service providers. Nothing is published, automated, or charged until Shloimie reviews it.</p>
-                <div class="plans" aria-label="Provider plan options">
-                    <article class="plan">
+                <p class="muted">Apply for a free listing in the BNA provider index. BNA reviews each listing before it appears publicly, and families use your own website, phone, WhatsApp, email, or custom CTA for booking.</p>
+                <div class="free-listing-grid" aria-label="Free listing details">
+                    <article class="free-listing-card">
                         <strong>Free Listing</strong>
-                        <p class="muted">Public profile, provider index visibility, contact CTA.</p>
-                        <ul><li>No funnels</li><li>No automations</li><li>No school portal</li></ul>
+                        <p class="muted">A reviewed public profile in the BNA provider index.</p>
+                        <ul><li>Name and category</li><li>Short description</li><li>Image or logo</li></ul>
                     </article>
-                    <article class="plan">
-                        <strong>Managed Setup</strong>
-                        <p class="muted">AI Max interest path for lead generation, marketing automation, funnels, ad tracking, admin, banking, and billing support.</p>
-                        <ul><li>Application only</li><li>No checkout yet</li></ul>
+                    <article class="free-listing-card">
+                        <strong>External CTA</strong>
+                        <p class="muted">Parents can continue to your existing intake or contact path.</p>
+                        <ul><li>Website</li><li>Phone or WhatsApp</li><li>Email or custom URL</li></ul>
                     </article>
-                    <article class="plan">
-                        <strong>School Workspace</strong>
-                        <p class="muted">Parents, students, goals, assignments, calendar, billing, communications.</p>
-                        <ul><li>Paid workspace</li><li>School operations</li></ul>
-                    </article>
-                    <article class="plan">
-                        <strong>Partner</strong>
-                        <p class="muted">Custom revenue-share terms, launch checklist, reporting, program tiers.</p>
-                        <ul><li>Custom agreement</li><li>Shared approvals</li></ul>
+                    <article class="free-listing-card">
+                        <strong>BNA Review</strong>
+                        <p class="muted">Submission creates an internal review record, not a live listing.</p>
+                        <ul><li>No checkout</li><li>No automatic publishing</li><li>No approval promise</li></ul>
                     </article>
                 </div>
             </div>
             <aside class="panel">
                 <h2>Provider signup</h2>
-                <p class="muted">This creates a draft provider record, an onboarding pipeline item, and an internal BNA review task.</p>
+                <p class="muted">This creates a draft provider record and an internal BNA review task. It does not publish a listing or send messages.</p>
                 <form id="providerJoinForm">
+                    <input type="hidden" name="interested_in" value="free_listing">
                     <div class="grid">
                         <label>Business / provider name
                             <input name="provider_name" required>
@@ -354,7 +350,7 @@
                         <label>Category
                             <input name="category" placeholder="Torah class, tutoring, therapy">
                         </label>
-                        <label>Location / service area
+                        <label>City / service area
                             <input name="location" placeholder="Beit Shemesh, online, both">
                         </label>
                         <label>Language
@@ -364,68 +360,45 @@
                             <input name="age_range" placeholder="8-16">
                         </label>
                     </div>
-                    <label>Website / social link
+                    <label>Website
                         <input name="website" type="url" placeholder="https://">
                     </label>
-                    <label>Google Business Profile or Maps link
-                        <input name="google_business_profile_url" type="url" placeholder="https://maps.google.com/...">
+                    <label>Image or logo URL
+                        <input name="profile_image_url" type="url" placeholder="https://">
                     </label>
-                    <label>Place ID
-                        <input name="google_place_id" placeholder="Optional if you know it">
-                    </label>
-                    <label>Interested in
-                        <select name="interested_in">
-                            <option value="free_listing">Free provider listing</option>
-                            <option value="ai_max">AI Max: more students and marketing systems</option>
-                            <option value="paid_setup">Managed setup / funnel help</option>
-                            <option value="school_workspace">School / micro-school workspace</option>
-                            <option value="not_sure">Not sure yet</option>
+                    <label>Preferred CTA
+                        <select name="cta_preference">
+                            <option value="website">Website</option>
+                            <option value="phone">Phone</option>
+                            <option value="whatsapp">WhatsApp</option>
+                            <option value="email">Email</option>
+                            <option value="custom_url">Custom URL</option>
                         </select>
-                        <span class="field-note">AI Max is an interest/application path until pricing and payment terms are approved.</span>
                     </label>
-                    <label>Description of business
+                    <label>Custom CTA URL
+                        <input name="custom_cta_url" type="url" placeholder="Optional booking, intake, or information link">
+                    </label>
+                    <label>Short description
                         <textarea name="program_description"></textarea>
                     </label>
-                    <div class="grid">
-                        <label>Types of kids served
-                            <input name="types_kids_served" placeholder="Learning differences, advanced learners, teens">
-                        </label>
-                        <label>Years active
-                            <input name="years_active" type="number" min="0" step="1">
-                        </label>
-                    </div>
-                    <label>Experience / background
-                        <textarea name="experience_background"></textarea>
-                    </label>
-                    <label>Problems you have solved
-                        <textarea name="problems_solved" placeholder="What outcomes or situations have you helped families with?"></textarea>
+                    <label>Services offered
+                        <textarea name="services_offered" placeholder="Tutoring, class, therapy, coaching, evaluation, group program, etc."></textarea>
                     </label>
                     <div class="grid">
-                        <label>Pricing structure
-                            <input name="pricing_structure" placeholder="Per session, monthly, package, custom">
+                        <label>Pricing summary
+                            <input name="pricing_structure" placeholder="Optional: per session, monthly, package, custom">
                         </label>
-                        <label>Typical charge
-                            <input name="typical_charge" placeholder="Example: ILS 250/session">
+                        <label>Community / rabbi affiliation
+                            <input name="community_affiliation" placeholder="Optional">
                         </label>
                     </div>
-                    <label>Discounts / group options
-                        <textarea name="discounts_group_options" placeholder="Customized discounts, group rates, BNA network options"></textarea>
-                    </label>
-                    <label>Are you currently running ads?
-                        <select name="running_ads">
-                            <option value="">Choose one</option>
-                            <option value="yes">Yes</option>
-                            <option value="no">No</option>
-                            <option value="planning">Planning to</option>
-                        </select>
-                    </label>
-                    <label>Plain-language setup notes
-                        <textarea name="raw_intake" placeholder="Paste a paragraph, website notes, or setup details. BNA will parse it for review."></textarea>
+                    <label>Discount / group option
+                        <textarea name="discounts_group_options" placeholder="Optional: group rates, community discount, BNA network options"></textarea>
                     </label>
                     <label>Notes for Shloimie approval
                         <textarea name="notes" placeholder="Anything BNA should know before review"></textarea>
                     </label>
-                    <div class="notice">AI Max can include lead generation, marketing automation, natural-language voice marketing, funnels, ad tracking and management, admin, banking, and billing. This form only records interest; it does not publish a listing, send messages, publish posts, start ads, or charge payments.</div>
+                    <div class="notice">This is a free listing application only. BNA reviews listings before publishing. Booking and payment stay on the provider's own website, phone, WhatsApp, email, or custom CTA.</div>
                     <div id="providerJoinStatus" class="status"></div>
                     <div class="button-row">
                         <button class="btn primary" type="submit">Submit For Review</button>

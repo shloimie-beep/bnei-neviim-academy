@@ -6,8 +6,8 @@
     <title>BNA Service Provider Index</title>
     <style>
         :root {
-            --primary-blue: #1e3a5f;
-            --secondary-blue: #2c5282;
+            --primary-blue: #111111;
+            --secondary-blue: #2f6f5e;
             --light-blue: #e8f0f8;
             --accent-gold: #c9a227;
             --ink: #1a202c;
@@ -298,7 +298,7 @@
         <section class="intro">
             <div>
                 <h1>Approved service providers</h1>
-                <p class="muted">A practical index of outside classes, tutors, and programs BNA can point families toward. Listings are public; payment, discounts, and messages stay gated until the right account path is confirmed.</p>
+                <p class="muted">A practical index of reviewed outside classes, tutors, and programs BNA can point families toward. Listings are free and reviewed; booking stays with the provider's own website, phone, WhatsApp, email, or custom CTA.</p>
             </div>
             <a class="button primary" href="/parent/login">Message From Parent Portal</a>
         </section>
@@ -397,7 +397,7 @@
                                     <h2>${escapeHtml(name)}</h2>
                                     <p class="meta">${escapeHtml([provider.category, serviceArea].filter(Boolean).join(' / ') || 'Approved provider')}</p>
                                 </div>
-                                <span class="pill">${escapeHtml(String(provider.listing_tier || provider.commercial_model || 'free listing').replace(/_/g, ' '))}</span>
+                                <span class="pill">Reviewed listing</span>
                             </div>
                             ${provider.short_description || provider.public_notes ? `<p>${escapeHtml(provider.short_description || provider.public_notes)}</p>` : ''}
                             <div class="service-grid">

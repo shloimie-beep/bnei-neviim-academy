@@ -112,24 +112,25 @@ test('provider onboarding route and page create draft commercial records safely'
   assert.match(server, /commercial_model: commercialModel/);
   assert.match(server, /serviceCategory/);
   assert.match(server, /agesServed/);
+  assert.match(server, /public_future_plan_mentions_blocked/);
+  assert.match(server, /cta_preference/);
+  assert.match(server, /services_offered/);
+  assert.match(server, /community_affiliation/);
   assert.match(server, /types_kids_served/);
   assert.match(server, /experience_background/);
   assert.match(server, /problems_solved/);
   assert.match(server, /discounts_group_options/);
   assert.match(server, /running_ads/);
-  assert.match(server, /ai_max_interest/);
+  assert.match(server, /ai_max_interest: false/);
   assert.match(providerJoin, /Provider Network/);
   assert.match(providerJoin, /Free Listing/);
-  assert.match(providerJoin, /Managed Setup/);
-  assert.match(providerJoin, /School Workspace/);
-  assert.match(providerJoin, /Partner/);
-  assert.match(providerJoin, /AI Max/);
-  assert.match(providerJoin, /No checkout yet/);
-  assert.match(providerJoin, /lead generation, marketing automation, natural-language voice marketing/);
-  assert.match(providerJoin, /types_kids_served/);
+  assert.match(providerJoin, /This is a free listing application only/);
+  assert.match(providerJoin, /Preferred CTA/);
+  assert.match(providerJoin, /services_offered/);
+  assert.match(providerJoin, /community_affiliation/);
   assert.match(providerJoin, /discounts_group_options/);
-  assert.match(providerJoin, /running_ads/);
   assert.match(providerJoin, /\/api\/provider-onboarding/);
+  assert.doesNotMatch(providerJoin, /Managed Setup|School Workspace|Partner|AI Max|Paid workspace|lead generation|marketing automation|No checkout yet/);
 });
 
 test('Operations exposes commercial settings, entitlements, access checklist, and audit pages', () => {

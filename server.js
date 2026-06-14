@@ -2015,14 +2015,20 @@ const ONE_TIME_OPEN_DECISIONS = [
 
 function readLocalSecretFile(name) {
   try {
-    return fs.readFileSync(path.join(__dirname, '.secrets', name), 'utf8').trim();
+    return fs.readFileSync(path.join(__dirname, '.secrets', name), 'utf8');
   } catch {
     return '';
   }
 }
 
 function usableSecretValue(value) {
-  const normalized = String(value || '').trim();
+  let normalized = String(value || '').replace(/^\uFEFF/, '').trim();
+  if (
+    (normalized.startsWith('"') && normalized.endsWith('"')) ||
+    (normalized.startsWith("'") && normalized.endsWith("'"))
+  ) {
+    normalized = normalized.slice(1, -1).trim();
+  }
   if (!normalized || normalized.includes('[YOUR-PASSWORD]')) return '';
   return normalized;
 }
@@ -11628,11 +11634,12 @@ function providerPlansView() {
 }
 
 function providerPublicCta(provider = {}) {
-  const model = safeCommercialModel(provider.commercial_model);
-  if (model === 'school_subscription') return { primary: 'Apply', secondary: 'Contact School', tertiary: 'Parent Portal' };
-  if (model === 'revenue_share' || model === 'custom') return { primary: 'Join Membership', secondary: 'Request Info' };
-  if (model === 'paid_setup' || model === 'monthly_management') return { primary: 'Signup', secondary: 'Request Info', tertiary: 'View Program' };
-  return { primary: 'Request Info', secondary: 'Contact', tertiary: provider.claim_listing_enabled === false ? '' : 'Claim This Listing' };
+  const hasWebsite = Boolean(provider.website_url || provider.google_business_profile_url);
+  return {
+    primary: hasWebsite ? 'Visit Website' : 'Request Info',
+    secondary: provider.whatsapp_phone || provider.contact_phone ? 'WhatsApp / Phone' : 'Contact Provider',
+    tertiary: provider.can_receive_messages === false ? '' : 'Parent Request',
+  };
 }
 
 async function seedProviderCommercialRows(provider, {
@@ -20409,13 +20416,9 @@ app.post('/api/provider-onboarding', async (req, res) => {
     return res.status(400).json({ error: 'Provider name, contact name, and email are required' });
   }
 
-  const interest = String(body.interested_in || body.interest || 'free_listing').trim().toLowerCase();
-  const commercialModel = interest.includes('school')
-    ? 'school_subscription'
-    : /ai[_\s-]*max|paid|funnel|setup|managed|automation|lead|marketing|ads?/.test(interest)
-      ? 'paid_setup'
-      : 'free_listing';
-  const entitlementPlan = safeProviderPlan('', commercialModel);
+  const interest = 'free_listing';
+  const commercialModel = 'free_listing';
+  const entitlementPlan = safeProviderPlan('free_listing', commercialModel);
   const serviceTitle = limitText(body.program_description || body.program || body.service_description || body.description, 180);
   const serviceCategory = limitText(body.service_category || body.serviceCategory || body.category, 120);
   const serviceArea = limitText(body.service_area || body.serviceArea || body.location, 180);
@@ -20448,11 +20451,14 @@ app.post('/api/provider-onboarding', async (req, res) => {
         contactPhone || null,
         commercialModel,
         entitlementPlan,
-        commercialModel === 'school_subscription' ? 'School workspace discovery' : commercialModel === 'paid_setup' ? 'Managed growth/setup discovery' : 'Free listing review',
-        JSON.stringify({ requested_interest: interest }),
+        'Free listing review',
+        JSON.stringify({
+          requested_interest: interest,
+          public_future_plan_mentions_blocked: true,
+        }),
         commercialModel === 'free_listing',
-        commercialModel !== 'free_listing',
-        `Public onboarding requested: ${interest}. No listing is live until BNA reviews and approves it.`,
+        false,
+        'Public free listing application. No listing is live until BNA reviews and approves it.',
         limitText(body.program_description || body.description, 1200) || null,
         limitText(body.notes, 1200) || null,
         JSON.stringify({
@@ -20471,8 +20477,13 @@ app.post('/api/provider-onboarding', async (req, res) => {
           typical_charge: limitText(body.typical_charge || body.typicalCharge, 240) || null,
           discounts_group_options: limitText(body.discounts_group_options || body.discountsGroupOptions, 1200) || null,
           running_ads: limitText(body.running_ads || body.runningAds, 80) || null,
-          ai_max_interest: /ai[_\s-]*max/.test(interest),
+          ai_max_interest: false,
           website: body.website || null,
+          cta_preference: limitText(body.cta_preference || body.ctaPreference, 120) || null,
+          custom_cta_url: limitText(body.custom_cta_url || body.customCtaUrl, 400) || null,
+          profile_image_url: limitText(body.profile_image_url || body.image_url || body.logo_url, 400) || null,
+          community_affiliation: limitText(body.community_affiliation || body.rabbi_affiliation, 400) || null,
+          services_offered: limitText(body.services_offered || body.servicesOffered, 1600) || null,
           raw_interest: interest,
         }),
       ]

@@ -2,6 +2,11 @@ const { compactText, normalizeWorkspace, WORKSPACES } = require('../types');
 
 const TASK_STAGES = new Set(['raw_input', 'needs_decision', 'assigned', 'in_progress', 'done', 'archive']);
 const CALENDAR_VISIBILITIES = new Set(['internal', 'parent', 'student', 'provider', 'public']);
+const TASK_SOURCES = new Set(['manual', 'ramble', 'telegram', 'web', 'google_drive', 'content_job', 'import', 'community_webhook', 'green_invoice']);
+const TICKET_CATEGORIES = new Set(['login', 'payment', 'link', 'recording', 'worksheet', 'access', 'cancellation', 'bot_api', 'drive', 'automation', 'task_manager', 'student_parent_data', 'other']);
+const TICKET_SOURCES = new Set(['dashboard', 'telegram', 'api', 'system', 'web_assistant']);
+const TICKET_SEVERITIES = new Set(['low', 'normal', 'high', 'blocking']);
+const COMMUNITY_AUDIENCES = new Set(['members', 'parents', 'students', 'providers', 'staff']);
 
 function normalizeStage(value) {
   const normalized = String(value || 'assigned').trim().toLowerCase().replace(/[\s-]+/g, '_');
@@ -13,6 +18,45 @@ function normalizeStage(value) {
 function normalizeVisibility(value, fallback = 'internal') {
   const normalized = String(value || fallback).trim().toLowerCase().replace(/[\s-]+/g, '_');
   return CALENDAR_VISIBILITIES.has(normalized) ? normalized : fallback;
+}
+
+function normalizeTaskSource(value) {
+  const normalized = String(value || 'manual').trim().toLowerCase().replace(/[\s-]+/g, '_');
+  if (normalized === 'ui' || normalized === 'ui_button' || normalized === 'assistant') return 'web';
+  return TASK_SOURCES.has(normalized) ? normalized : 'manual';
+}
+
+function normalizeTicketSource(value) {
+  const normalized = String(value || 'dashboard').trim().toLowerCase().replace(/[\s-]+/g, '_');
+  if (normalized === 'ui' || normalized === 'ui_button' || normalized === 'assistant') return 'web_assistant';
+  return TICKET_SOURCES.has(normalized) ? normalized : 'dashboard';
+}
+
+function normalizeTicketCategory(value) {
+  const normalized = String(value || 'other').trim().toLowerCase().replace(/[\s-]+/g, '_');
+  if (['bug', 'technical', 'system', 'codex', 'deployment', 'deploy'].includes(normalized)) return 'task_manager';
+  if (['bot', 'ai', 'openai'].includes(normalized)) return 'bot_api';
+  if (['student', 'parent', 'privacy'].includes(normalized)) return 'student_parent_data';
+  return TICKET_CATEGORIES.has(normalized) ? normalized : 'other';
+}
+
+function normalizeSeverity(value) {
+  const normalized = String(value || 'normal').trim().toLowerCase().replace(/[\s-]+/g, '_');
+  return TICKET_SEVERITIES.has(normalized) ? normalized : 'normal';
+}
+
+function normalizeCommunityAudience(value, fallback = 'members') {
+  const normalized = String(value || fallback).trim().toLowerCase().replace(/[\s-]+/g, '_');
+  return COMMUNITY_AUDIENCES.has(normalized) ? normalized : fallback;
+}
+
+function actorCommunityType(actor = {}) {
+  const role = String(actor.role || '').toLowerCase();
+  if (/provider/.test(role)) return 'service_provider';
+  if (/parent/.test(role)) return 'parent';
+  if (/student/.test(role)) return 'student';
+  if (/rabbi|rebbe|school/.test(role)) return 'rabbi';
+  return 'admin';
 }
 
 function identityForWorkspace(workspaceId, requestedIdentity = '') {
@@ -269,7 +313,7 @@ async function createTask(inputs = {}, context = {}) {
     const task = await context.helpers.createTaskFromText({
       ...inputs,
       title,
-      source: inputs.source || context.source || 'telegram',
+      source: normalizeTaskSource(inputs.source || context.source || 'telegram'),
       created_by: inputs.created_by || context.actor?.user_id || context.source || 'action_registry',
     });
     return { task_created: true, task };
@@ -285,7 +329,7 @@ async function createTask(inputs = {}, context = {}) {
       normalizeStage(inputs.stage),
       inputs.category || 'operations',
       inputs.urgency || 'this_week',
-      inputs.source || context.source || 'telegram',
+      normalizeTaskSource(inputs.source || context.source || 'telegram'),
       inputs.created_by || context.actor?.user_id || 'action_registry',
       inputs.assigned_to || null,
       JSON.stringify({ parser: 'action-registry', action_id: 'create_task', original_text: inputs.raw_text || title }),

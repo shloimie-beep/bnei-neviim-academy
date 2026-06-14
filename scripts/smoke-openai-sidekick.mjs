@@ -42,7 +42,18 @@ function readJsonIfExists(filePath) {
 
 function readSecret(name) {
   const filePath = path.join(secretsDir, name);
-  return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8').trim() : '';
+  return fs.existsSync(filePath) ? normalizeLoadedSecret(fs.readFileSync(filePath, 'utf8')) : '';
+}
+
+function normalizeLoadedSecret(value) {
+  let normalized = String(value || '').replace(/^\uFEFF/, '').trim();
+  if (
+    (normalized.startsWith('"') && normalized.endsWith('"')) ||
+    (normalized.startsWith("'") && normalized.endsWith("'"))
+  ) {
+    normalized = normalized.slice(1, -1).trim();
+  }
+  return normalized;
 }
 
 function relative(filePath) {
@@ -366,7 +377,7 @@ async function main() {
     appUrl: env.BNA_APP_URL || env.NEXT_PUBLIC_APP_URL || 'https://bneineviimacademy.org',
     opsUsername: env.OPS_USERNAME || '',
     opsPassword: env.OPS_PASSWORD || '',
-    openaiApiKey: readSecret('openai-api-key.txt') || env.OPENAI_API_KEY || '',
+    openaiApiKey: readSecret('openai-api-key.txt') || normalizeLoadedSecret(env.OPENAI_API_KEY) || '',
     openaiBaseUrl: env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
     openaiModel: env.OPENAI_MODEL || 'gpt-4.1-mini',
     telegramToken: readSecret('telegram-bot-token.txt') || env.TELEGRAM_BOT_TOKEN_BNA || env.TELEGRAM_BOT_TOKEN || '',
