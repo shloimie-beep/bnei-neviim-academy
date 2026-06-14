@@ -75,13 +75,19 @@ Build universal BNA helper and fix contact tagging/settings/Hebrew menu issues.
   - no browser-side OpenAI token, OpenAI API path, or OpenAI literal routing value; the client sends neutral `ai`, and the server maps it for super-admin only.
 - Mounted the universal helper on `public/operations.html`, `public/operations-login.html`, `public/signup.html`, and `public/signup-he.html`.
 - Added BNA AI context helper `src/lib/bna/ai-context.js` and wired `scripts/smoke-openai-sidekick.mjs` to include core memory/task files plus 9 brand-kit files.
-- Fixed GHL student contact identity separation:
-  - `src/lib/ghl/bna.ts`, `scripts/sync-signups-to-ghl.mjs`, and signup GHL creation in `server.js` now use synthetic `bna-student-...@bna-student.invalid` student identity emails.
-  - Parent email/phone stay on parent contacts and student custom fields, not the GHL student identity.
+- Superseded retired-GHL note:
+  - Earlier work attempted to separate student contact identity in the retired
+    GHL path. As of the 2026-06-14 no-GHL cleanup, that path is archive-only
+    and must not be used for active BNA implementation.
+  - Parent email/phone and student identity separation now belong in
+    first-party BNA contact/student/provider records.
 - Added `scripts/repair-bna-contact-roles.mjs`:
   - dry-run by default.
-  - audits known Hillel/Menachem rows, internal student tag issues, signup/GHL parent-student ID collisions, phone-only WAPI contacts, resolvable phone-only contacts, and unresolved WAPI communications.
-  - `--apply` repairs internal student tags; `--apply-ghl` is a separate explicit GHL cleanup path.
+  - audits known Hillel/Menachem rows, internal student tag issues, historical
+    retired-CRM parent-student ID collisions, phone-only WAPI contacts,
+    resolvable phone-only contacts, and unresolved WAPI communications.
+  - `--apply` repairs internal student tags; retired GHL cleanup is not an
+    active path.
 - Updated Whapi/WAPI import and webhook communication naming:
   - `scripts/sync-whapi-history.mjs` and `server.js` prefer `matched_name` before falling back to raw phone/chat labels.
 - Cleaned live UI shell behavior:
@@ -95,7 +101,8 @@ Build universal BNA helper and fix contact tagging/settings/Hebrew menu issues.
 
 - PASS `node --check server.js`
 - PASS `node --check scripts/repair-bna-contact-roles.mjs`
-- PASS `node --check scripts/sync-signups-to-ghl.mjs`
+- SUPERSEDED retired-GHL check removed from active verification; do not run or
+  restore signup-to-GHL sync.
 - PASS `node --check scripts/sync-whapi-history.mjs`
 - PASS `node --check public/js/bna-bot-widget.js`
 - PASS `node --check scripts/smoke-openai-sidekick.mjs`
@@ -121,4 +128,5 @@ Build universal BNA helper and fix contact tagging/settings/Hebrew menu issues.
 - Replace/fix the OpenAI API key, then rerun `npm run openai:smoke`. The new brand-kit context path is readable, but OpenAI could not answer because the key is invalid.
 - Restore Supabase DNS/network reachability for `db.amipeuneopdbzuhlnimt.supabase.co`, then rerun `node scripts/repair-bna-contact-roles.mjs --json --limit=25` before using `--apply`.
 - Live completion still requires deploy, Railway doctor, and live app smoke. Do not mark the master task done until those gates pass.
-- If contact repair dry-run identifies GHL collisions, review the JSON report before using `--apply-ghl`; GHL cleanup is intentionally separated from internal tag repair.
+- If contact repair dry-run identifies retired-CRM collisions, keep them as
+  first-party BNA compatibility cleanup. Do not use any retired GHL apply path.

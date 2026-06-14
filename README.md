@@ -1,84 +1,149 @@
 # BNA v2.0
 
-This repository is the shared operating brain and live app workspace for Bnei
-Neviim Academy, the Whole Child Torah Learning Community in Beit Shemesh.
+BNA v2.0 is the shared operating brain and live Express/static app for Bnei
+Neviim Academy, a Whole Child Torah Learning Community in Beit Shemesh. The
+repo holds durable memory, active tasks, public website code, parent/student/
+provider portals, Operations/admin surfaces, Telegram bridge code, and release
+verification records.
 
-## Current Source Of Truth
+## Active App Surfaces
 
-- `AGENTS.md` - agent operating rules and workflow behavior
-- `MEMORY.md` - durable BNA facts, requirements, preferences, and definitions
-- `TASKS.md` - current work queue and visible next actions
-- `SYSTEM-STATE.md` - verified live system state and deployment notes
-- `PROJECT-NOTES.md` - local migration notes and technical caveats
-- `brand-kit/` - BNA voice, philosophy, parent messaging, and teaching principles
-- `content-memory/` - transcript/content inventory and platform prompt memory
-- `ops/agent-changelog.md` - completed agent work and verification trail
+- Public website: `/`, `/he`, `/blog`, `/faq`
+- Signup: `/signup`, `/signup.html`, `/signup-he`, `/signup-he.html`
+- Parent portal: `/parent/login`, `/parent`
+- Student portal: `/student/login`, `/student`
+- Provider directory and signup: `/service-providers`, `/providers/join`
+- Provider workspace: `/provider/login`, `/provider`
+- Operations/admin: `/operations`
+- Bot/prompt/action center: Operations assistant, prompt/action registry, and
+  role-aware portal assistant widgets
 
-## Current App Reality
+The active app entrypoint is `server.js`; public UI files live in `public/`.
 
-- Live Operations is the Express/static app served by `server.js` and
-  `public/operations.html`.
-- The normal public site is the static public website under `public/`.
-- First-party BNA Operations owns CRM, contacts, tasks, learning communities,
-  providers, messages, parent/student portals, and internal workflow state.
-- Buffer is the active social scheduler connector. Whapi/WAPI is the active
-  WhatsApp API path. GoHighLevel/LeadConnector/GHL is deprecated and archived;
-  do not add new active runtime paths for it.
-- PWA manifests are intentionally split: `/manifest.json` for the public site,
-  `/parent-manifest.json` for parent portal installs, and
-  `/operations-manifest.json` for private Operations installs.
-- Railway is the live hosting and production Postgres source of truth.
-- Supabase is not the current BNA operations database unless explicitly
-  reintroduced.
-- The old Next/Supabase family-app code has been moved out of active source and
-  archived under `docs/archive/dormant-next-supabase-app/`.
+## No-GHL Policy
 
-## BNA Model
+BNA no longer uses GHL, GoHighLevel, LeadConnector, or LeadConnectorHQ as an
+active runtime dependency.
 
-BNA is not the old family accountability app and not a generic secular-project
-school platform. The current academy model is a home-based, integrative Torah
-learning program, currently framed around a 10:00 to 1:00 learning window, with
-private coaching/check-ins and parent partnership around the child.
+All contacts, parents, students, service providers, learning communities,
+provider listings, provider requests, parent/provider messages, newsletters,
+workspace records, bot actions, tasks, tickets, and decisions are first-party
+BNA records.
 
-The stable philosophy lives in `MEMORY.md` and `brand-kit/`. In short: Torah
-learning should meet the whole child, responsibility grows through autonomy,
-mastery, purpose, meaningful roles, and honest coaching, and practical
-real-world skills should serve the Torah learning environment rather than
-replacing it.
+Buffer may be used for social scheduling if configured. Whapi/WAPI may be used
+for WhatsApp if configured. Gmail/Google APIs may be used for office email,
+Drive, Classroom, Calendar, and Docs if configured. External services are
+connectors only and never the source of truth unless explicitly approved later.
 
-## Legacy Archive
+Legacy GHL files are archived under `docs/archive/legacy-ghl/` only for
+historical reference. Do not add new GHL code, env vars, tests, docs, routes,
+prompts, MCP tools, smoke checks, or workflows.
 
-The old family-accountability bundle and historical Supabase setup files were
-archived under:
+## Workspace Model
 
-- `docs/archive/legacy-family-accountability/`
-- `docs/archive/legacy-supabase-setup/`
-- `docs/archive/dormant-next-supabase-app/`
-- `docs/archive/legacy-ghl/`
+- Platform / Super Admin: Shloimie's control layer for all workspaces, deploy
+  state, tasks, tickets, decisions, prompts, and system routing.
+- BNA Academy / School: the live school workspace for parents, students,
+  rabbi/rebbe/admin, classes, assignments, newsletters, learning communities,
+  approved provider links, and parent/student portals.
+- Service Provider: provider listing/workspace scope with provider admins and
+  managers, public free listing, external CTA, provider updates, and scoped
+  parent/provider request records.
+- Rabbi Sheller / One Time: the first external provider workspace, separated
+  from BNA Academy parents/students unless a person is explicitly enrolled in
+  both scopes.
 
-Those files are historical reference only. Do not use them to decide current
-BNA product behavior, database setup, Telegram behavior, parent/student
-workflow, school model, or brand voice.
+Detailed maps live in:
 
-The legacy GHL archive is historical reference only. Active integrations should
-use first-party BNA APIs/tables plus explicitly approved connectors such as
-Buffer, WAPI/Whapi, Google APIs, Green Invoice, or provider-owned apps.
+- `docs/architecture/no-ghl-policy.md`
+- `docs/architecture/workspace-community-provider-role-map.md`
+- `docs/architecture/community-dialogue-map.md`
+- `docs/architecture/bot-context-and-ticket-routing.md`
 
-The root `SUPABASE_SETUP.md` is only a deprecation pointer. It is not a setup
-guide.
-Old family launch, onboarding, webhook, and Supabase helper scripts were also
-removed from `scripts/` and preserved under the legacy archive.
-Old Next/Supabase app-router code, parent/kid React surfaces, localStorage
-TaskApp code, and family Telegram/email helpers are preserved only in the
-dormant Next/Supabase app archive.
+## Provider Funnel
 
-## Useful Checks
+Public provider signup is free-listing-only. The public UI must not advertise
+paid plans, checkout, paid placement, or approval guarantees. Provider booking
+stays external through the provider's website, phone, WhatsApp, email, or
+custom CTA. BNA stores first-party review/request records and publishes only
+approved listings.
+
+## OpenAI Key Loading
+
+Local OpenAI diagnostics use `npm run openai:diagnose`. The script checks only
+safe metadata and never prints keys. It compares:
+
+- `process.env.OPENAI_API_KEY`
+- `.secrets/openai-api-key.txt`
+- `.env.local` entry metadata
+- Railway variable metadata when the Railway CLI/token is available
+
+It reports source, length, SHA-256 fingerprint prefix, quote/newline/CR/BOM
+normalization, base URL presence, org/project variable presence, `/v1/models`
+status, and a minimal Responses API smoke.
+
+Expected variables:
+
+```powershell
+OPENAI_API_KEY=
+OPENAI_BASE_URL=https://api.openai.com/v1
+OPENAI_MODEL=gpt-4.1-mini
+OPENAI_PROJECT=
+OPENAI_ORG=
+```
+
+## Local Run
+
+```powershell
+npm install
+node --check server.js
+npm test
+npm start
+```
+
+The normal app runs on the port provided by `PORT` or the app default.
+
+## Connectors
+
+- Railway/Postgres: production hosting and current operations database
+- Buffer: social scheduler connector for Facebook, LinkedIn, and YouTube
+- Whapi/WAPI: WhatsApp connector
+- Gmail/Google APIs: office email, Drive, Classroom, Calendar, Docs/Sheets
+- Green Invoice/payment links: payment reconciliation connector
+- Provider-owned systems: external delivery/booking CTAs unless explicitly
+  integrated
+
+## PWA Manifests
+
+- Public website: `/manifest.json`
+- Parent portal: `/parent-manifest.json`
+- Operations/admin: `/operations-manifest.json`
+
+Public and parent installs must not launch private Operations.
+
+## Release Checklist
+
+Run before deploy unless the operator explicitly approves a narrower check:
 
 ```powershell
 node --check server.js
 npm test
+npm run openai:diagnose
+npm run openai:smoke
 npm run railway:doctor
+npm run app:smoke
 ```
 
-Do not deploy or mark live tasks done unless the task explicitly requires that
-system-state change and the live Railway smoke checks pass.
+After deploy, rerun Railway doctor and live smoke. Do not mark app-visible work
+Done after local verification only.
+
+## Source Of Truth
+
+- `AGENTS.md`: agent operating rules and workflow behavior
+- `MEMORY.md`: durable BNA facts, requirements, preferences, and definitions
+- `TASKS.md`: current work queue and visible next actions
+- `SYSTEM-STATE.md`: verified live system state and deployment notes
+- `PROJECT-NOTES.md`: local migration notes and technical caveats
+- `ops/agent-changelog.md`: completed agent work and verification trail
+- `ops/agent-task-ledger.jsonl`: append-only task trail
+- `tasks-pending/*.md`: internal Codex handoff briefs

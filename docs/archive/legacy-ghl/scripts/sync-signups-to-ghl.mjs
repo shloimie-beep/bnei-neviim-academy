@@ -1,4 +1,6 @@
 /**
+ * Legacy retired GHL archive. GHL/GoHighLevel/LeadConnector is not active BNA runtime and must not be used for new BNA implementation.
+ *
  * Script to retroactively sync existing signups to GHL
  * Usage: node scripts/sync-signups-to-ghl.mjs
  */

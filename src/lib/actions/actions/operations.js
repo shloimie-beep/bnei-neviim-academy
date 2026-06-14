@@ -495,12 +495,381 @@ function connectorGuardedResult(kind, inputs = {}, context = {}) {
   };
 }
 
+async function createTicket(inputs = {}, context = {}) {
+  const description = String(inputs.message || inputs.description || inputs.body || '').trim();
+  if (!description) throw new Error('message is required');
+  const title = compactText(inputs.title || titleFromBody(description, 'Support ticket'), 220);
+  const severity = normalizeSeverity(inputs.severity);
+  const category = normalizeTicketCategory(inputs.category || inputs.route);
+  const preview = {
+    ticket_created: false,
+    title,
+    category,
+    severity,
+    route: inputs.route || null,
+    related_type: inputs.related_type || null,
+    related_id: inputs.related_id || null,
+    source: normalizeTicketSource(context.source || inputs.source),
+    no_codex_task_created: category !== 'task_manager',
+  };
+  if (context.dryRun || !context.db) return preview;
+  const result = await context.db.query(
+    `INSERT INTO bna_support_tickets (
+       title, description, severity, status, category, reporter_name, reporter_role,
+       assigned_to, source, source_context, created_by
+     ) VALUES (
+       $1, $2, $3, 'open', $4, $5, $6,
+       $7, $8, $9::jsonb, $10
+     )
+     RETURNING *`,
+    [
+      title,
+      description,
+      severity,
+      category,
+      inputs.reporter_name || context.actor?.user_id || null,
+      context.actor?.role || null,
+      inputs.assigned_to || null,
+      preview.source,
+      JSON.stringify({
+        action_registry: true,
+        route: inputs.route || null,
+        related_type: inputs.related_type || null,
+        related_id: inputs.related_id || null,
+      }),
+      context.actor?.user_id || 'action_registry',
+    ]
+  );
+  return { ...preview, ticket_created: true, ticket: result.rows[0] };
+}
+
+async function createDecision(inputs = {}, context = {}) {
+  const title = compactText(inputs.title || inputs.question || inputs.message, 240);
+  if (!title) throw new Error('title is required');
+  const notes = [
+    inputs.question || '',
+    Array.isArray(inputs.options) && inputs.options.length
+      ? `Options:\n${inputs.options.map((option, index) => `${index + 1}. ${option}`).join('\n')}`
+      : '',
+    inputs.recommendation ? `Recommendation: ${inputs.recommendation}` : '',
+    inputs.context ? `Context: ${inputs.context}` : '',
+  ].filter(Boolean).join('\n\n');
+  if (context.dryRun || !context.db) {
+    return {
+      decision_created: false,
+      title,
+      stage: 'needs_decision',
+      decision_required: true,
+      route: 'Shloimie Decisions',
+    };
+  }
+  const result = await context.db.query(
+    `INSERT INTO bna_tasks (
+       title, notes, stage, category, urgency, source, source_context,
+       created_by, assigned_to, ai_parsed, decision_required, author
+     ) VALUES (
+       $1, $2, 'needs_decision', 'operations', 'this_week', $3, $4,
+       $5, 'Shloimie', $6::jsonb, TRUE, $7
+     )
+     RETURNING *`,
+    [
+      title,
+      notes || null,
+      normalizeTaskSource(context.source || inputs.source),
+      JSON.stringify({ action_registry: true, route: 'shloimie_decisions' }),
+      context.actor?.user_id || 'action_registry',
+      JSON.stringify({ kind: 'decision', options: Array.isArray(inputs.options) ? inputs.options : [], recommendation: inputs.recommendation || null }),
+      context.actor?.user_id || 'action_registry',
+    ]
+  );
+  return { decision_created: true, decision: result.rows[0] };
+}
+
+async function draftWeeklyUpdate(inputs = {}, context = {}) {
+  const sourceText = String(inputs.source_text || inputs.body || inputs.message || '').trim();
+  const title = compactText(inputs.title || titleFromBody(sourceText, 'Weekly BNA Update'), 220);
+  const summary = summarizeBody(inputs.summary || sourceText, 900);
+  const workspaceKey = normalizeWorkspace(inputs.workspace_key || inputs.workspace || context.actor?.workspace_id);
+  const body = sourceText || [
+    'Dear parents,',
+    '',
+    'This weekly update is ready for staff review before it is selected for the parent dashboard.',
+  ].join('\n');
+  const base = {
+    draft_created: false,
+    title,
+    summary,
+    body,
+    workspace_key: workspaceKey,
+    selected_for_parent_portal: false,
+    sent: false,
+    privacy_filtered: true,
+  };
+  if (context.dryRun || !context.db) return base;
+  const result = await context.db.query(
+    `INSERT INTO bna_weekly_updates (
+       workspace_key, title, summary, body, status, selected_for_parent_portal, metadata_json, created_by
+     ) VALUES (
+       $1, $2, $3, $4, 'draft', FALSE, $5::jsonb, $6
+     )
+     RETURNING *`,
+    [
+      workspaceKey,
+      title,
+      summary || null,
+      body,
+      JSON.stringify({
+        action_registry: true,
+        source: context.source || 'bot',
+        audience: inputs.audience || null,
+        provider_id: inputs.provider_id || null,
+        community_id: inputs.community_id || null,
+        privacy_filter: 'parent_safe',
+      }),
+      context.actor?.user_id || 'action_registry',
+    ]
+  );
+  return { ...base, draft_created: true, update: result.rows[0] };
+}
+
+async function selectWeeklyUpdateHero(inputs = {}, context = {}) {
+  const updateId = Number(inputs.update_id || inputs.updateId || 0);
+  if (!updateId) throw new Error('update_id is required');
+  if (context.dryRun || !context.db) {
+    return { hero_selected: false, update_id: updateId, selected_for_parent_portal: true, approval_required: true };
+  }
+  const existing = (await context.db.query('SELECT * FROM bna_weekly_updates WHERE id = $1', [updateId])).rows[0];
+  if (!existing) throw new Error('Weekly update was not found');
+  await context.db.query(
+    `UPDATE bna_weekly_updates
+     SET selected_for_parent_portal = FALSE,
+         updated_at = NOW()
+     WHERE workspace_key = $1
+       AND id <> $2`,
+    [existing.workspace_key, updateId]
+  );
+  const result = await context.db.query(
+    `UPDATE bna_weekly_updates
+     SET selected_for_parent_portal = TRUE,
+         status = 'selected',
+         updated_at = NOW()
+     WHERE id = $1
+     RETURNING *`,
+    [updateId]
+  );
+  return { hero_selected: true, update: result.rows[0] };
+}
+
+function generateStudentWorksheet(inputs = {}, context = {}) {
+  const studentId = inputs.student_id || inputs.studentId;
+  const assignmentId = inputs.assignment_id || inputs.assignmentId;
+  if (!studentId) throw new Error('student_id is required');
+  if (!assignmentId) throw new Error('assignment_id is required');
+  const language = compactText(inputs.language || 'English/Hebrew as appropriate', 80);
+  const level = compactText(inputs.level || inputs.reading_level || 'student-safe level', 120);
+  const interests = Array.isArray(inputs.interests) ? inputs.interests.slice(0, 8) : compactText(inputs.interests || '', 220);
+  return {
+    worksheet_generated: !context.dryRun,
+    student_id: studentId,
+    assignment_id: assignmentId,
+    privacy_filtered: true,
+    admin_only_notes_excluded: true,
+    parent_private_notes_excluded: true,
+    source_context_preview: {
+      language,
+      level,
+      interests,
+      prompt_patch_used: Boolean(inputs.prompt_patch),
+    },
+    worksheet_preview: [
+      '1. Review the source idea in your own words.',
+      '2. Answer one clear question connected to the class topic.',
+      '3. Choose one small practice step for the next class.',
+    ],
+  };
+}
+
+function draftParentResponse(inputs = {}) {
+  const message = compactText(inputs.message || inputs.body || '', 1200);
+  if (!message) throw new Error('message is required');
+  return {
+    draft_created: true,
+    sent: false,
+    privacy_filtered: true,
+    admin_only_notes_excluded: true,
+    student_id: inputs.student_id || null,
+    body: [
+      'Thank you for reaching out.',
+      '',
+      summarizeBody(message, 900),
+      '',
+      'I will make sure this is reviewed in the right BNA channel and follow up with parent-safe details.',
+    ].join('\n'),
+  };
+}
+
+async function postCommunityMessage(inputs = {}, context = {}) {
+  const communityId = Number(inputs.community_id || inputs.communityId || 0);
+  const body = String(inputs.message || inputs.body || '').trim();
+  if (!communityId) throw new Error('community_id is required');
+  if (!body) throw new Error('message is required');
+  const audience = normalizeCommunityAudience(inputs.audience || inputs.visibility);
+  const actorType = actorCommunityType(context.actor);
+  const preview = {
+    community_message_posted: false,
+    community_id: communityId,
+    audience,
+    visibility: audience,
+    privacy_filtered: true,
+  };
+  if (context.dryRun || !context.db) return preview;
+  let threadId = Number(inputs.thread_id || inputs.threadId || 0);
+  if (!threadId) {
+    const thread = (await context.db.query(
+      `INSERT INTO bna_community_threads (
+         community_id, title, created_by_type, created_by_email, audience, metadata_json
+       ) VALUES (
+         $1, $2, $3, $4, $5, $6::jsonb
+       )
+       RETURNING *`,
+      [
+        communityId,
+        compactText(inputs.title || titleFromBody(body, 'Community update'), 180),
+        actorType,
+        context.actor?.user_id || null,
+        audience,
+        JSON.stringify({ action_registry: true }),
+      ]
+    )).rows[0];
+    threadId = thread.id;
+  }
+  const result = await context.db.query(
+    `INSERT INTO bna_community_messages (
+       thread_id, author_type, author_email, author_name, body, visibility, metadata_json
+     ) VALUES (
+       $1, $2, $3, $4, $5, $6, $7::jsonb
+     )
+     RETURNING *`,
+    [
+      threadId,
+      actorType,
+      context.actor?.user_id || null,
+      inputs.author_name || context.actor?.user_id || 'BNA admin',
+      body,
+      audience,
+      JSON.stringify({ action_registry: true, privacy_filter: 'scoped_community' }),
+    ]
+  );
+  return { ...preview, community_message_posted: true, thread_id: threadId, message: result.rows[0] };
+}
+
+async function requestProviderContact(inputs = {}, context = {}) {
+  const providerId = Number(inputs.provider_id || inputs.providerId || 0);
+  const body = String(inputs.message || inputs.body || '').trim();
+  if (!providerId) throw new Error('provider_id is required');
+  if (!body) throw new Error('message is required');
+  const preview = {
+    provider_contact_request_saved: false,
+    provider_id: providerId,
+    student_id: inputs.student_id || null,
+    community_id: inputs.community_id || null,
+    preferred_contact_method: compactText(inputs.preferred_contact_method || 'provider_cta', 80),
+    live_send_performed: false,
+    external_booking_owned_by_provider: true,
+  };
+  if (context.dryRun || !context.db) return preview;
+  const result = await context.db.query(
+    `INSERT INTO bna_provider_messages (
+       provider_id, service_id, parent_email, student_id, direction, channel,
+       subject, body, status, source, source_context, metadata
+     ) VALUES (
+       $1, $2, $3, $4, 'parent_to_provider', 'portal',
+       $5, $6, 'open', 'parent_portal', $7::jsonb, $8::jsonb
+     )
+     RETURNING *`,
+    [
+      providerId,
+      inputs.service_id ? Number(inputs.service_id) : null,
+      inputs.parent_email || context.actor?.user_id || null,
+      inputs.student_id ? Number(inputs.student_id) : null,
+      compactText(inputs.subject || 'Provider contact request', 180),
+      body,
+      JSON.stringify({
+        action_registry: true,
+        community_id: inputs.community_id || null,
+        request_type: inputs.request_type || 'contact',
+      }),
+      JSON.stringify({
+        preferred_contact_method: preview.preferred_contact_method,
+        live_send_performed: false,
+      }),
+    ]
+  );
+  return { ...preview, provider_contact_request_saved: true, request: result.rows[0] };
+}
+
+function queueTelegramReport(inputs = {}) {
+  const message = compactText(inputs.message || inputs.body || '', 1800);
+  if (!message) throw new Error('message is required');
+  return {
+    telegram_report_queued: false,
+    approval_required_before_send: true,
+    live_send_performed: false,
+    related_task_id: inputs.related_task_id || null,
+    message_preview: message,
+  };
+}
+
+async function routeBugToCodex(inputs = {}, context = {}) {
+  const title = compactText(inputs.title || inputs.message || 'Technical issue for Codex', 240);
+  if (!title) throw new Error('title is required');
+  const notes = [
+    inputs.message || '',
+    inputs.route ? `Route: ${inputs.route}` : '',
+    inputs.evidence ? `Evidence: ${typeof inputs.evidence === 'string' ? inputs.evidence : JSON.stringify(inputs.evidence)}` : '',
+  ].filter(Boolean).join('\n\n');
+  if (context.dryRun || !context.db) {
+    return {
+      codex_task_created: false,
+      title,
+      assigned_to: 'Codex',
+      category: 'technology',
+      approval_required_before_queue: true,
+    };
+  }
+  const result = await context.db.query(
+    `INSERT INTO bna_tasks (
+       title, notes, stage, category, urgency, source, source_context,
+       created_by, assigned_to, ai_parsed, decision_required, author
+     ) VALUES (
+       $1, $2, 'assigned', 'technology', $3, $4, $5,
+       $6, 'Codex', $7::jsonb, FALSE, $8
+     )
+     RETURNING *`,
+    [
+      title,
+      notes || null,
+      normalizeSeverity(inputs.severity) === 'blocking' ? 'urgent' : 'this_week',
+      normalizeTaskSource(context.source || inputs.source),
+      JSON.stringify({ action_registry: true, route: inputs.route || null, ticket_id: inputs.ticket_id || null }),
+      context.actor?.user_id || 'action_registry',
+      JSON.stringify({ kind: 'technical_bug', evidence: inputs.evidence || null }),
+      context.actor?.user_id || 'action_registry',
+    ]
+  );
+  return { codex_task_created: true, task: result.rows[0] };
+}
+
 async function runOperationsHandler(handler, inputs = {}, context = {}) {
   switch (handler) {
     case 'tasks.create':
       return createTask(inputs, context);
     case 'tasks.updateStage':
       return updateTaskStage(inputs, context);
+    case 'tickets.create':
+      return createTicket(inputs, context);
+    case 'decisions.create':
+      return createDecision(inputs, context);
     case 'timeline.addNote':
       return { note_added: !context.dryRun, note: inputs.note, related_type: inputs.related_type || null, related_id: inputs.related_id || null };
     case 'content.findLatestNewsletterDraft':
@@ -511,6 +880,10 @@ async function runOperationsHandler(handler, inputs = {}, context = {}) {
       return saveNewsletterRevision(inputs, context);
     case 'content.approveNewsletter':
       return approveNewsletter(inputs, context);
+    case 'weekly.draftUpdate':
+      return draftWeeklyUpdate(inputs, context);
+    case 'weekly.selectHero':
+      return selectWeeklyUpdateHero(inputs, context);
     case 'content.openItemUrl':
       return { url: `/operations?view=content&content=${encodeURIComponent(inputs.content_id || '')}` };
     case 'email.draft':
@@ -558,11 +931,16 @@ async function runOperationsHandler(handler, inputs = {}, context = {}) {
     case 'student.showTodayPlan':
     case 'student.showAssignments':
     case 'student.explainAssignment':
+      return { scope_safe: true, handler, note: 'Returned through scoped helper context; admin-only notes and other-family data are excluded.' };
+    case 'student.generateWorksheet':
+      return generateStudentWorksheet(inputs, context);
     case 'parent.showChildCalendar':
     case 'parent.draftMessageToAdmin':
     case 'parent.viewVisibleNotes':
     case 'support.createHelpRequest':
       return { scope_safe: true, handler, note: 'Returned through scoped helper context; admin-only notes and other-family data are excluded.' };
+    case 'parent.draftResponse':
+      return draftParentResponse(inputs, context);
     case 'support.createReportProblemTicket':
       return {
         scope_safe: true,
@@ -575,10 +953,18 @@ async function runOperationsHandler(handler, inputs = {}, context = {}) {
       };
     case 'provider.createQuestionPost':
       return { provider_scope: true, post_created: !context.dryRun, body: inputs.body || '', note: 'Provider participant data stays separate from BNA school accountability.' };
+    case 'community.postMessage':
+      return postCommunityMessage(inputs, context);
+    case 'provider.requestContact':
+      return requestProviderContact(inputs, context);
     case 'provider.updateProfile':
       return { provider_scope: true, approved_write_required: true, provider_id: inputs.provider_id || null };
     case 'crm.moveLeadStage':
       return { lead_stage_update: !context.dryRun, stage: inputs.stage, lead_id: inputs.lead_id || null, lead_name: inputs.lead_name || null, note: 'CRM stage update is typed and audited; external CRM connector writes remain approval-gated.' };
+    case 'telegram.queueReport':
+      return queueTelegramReport(inputs, context);
+    case 'codex.routeBug':
+      return routeBugToCodex(inputs, context);
     default:
       return { executed: false, handler, note: 'No dedicated handler is wired yet; action was validated and audited only.' };
   }

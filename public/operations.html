@@ -5436,11 +5436,26 @@
 
             getTasks(filters = {}) {
                 const params = new URLSearchParams();
+                if (filters.workspace_id) params.set('workspace_id', filters.workspace_id);
+                if (filters.project_id) params.set('project_id', filters.project_id);
+                if (filters.project_key) params.set('project_key', filters.project_key);
                 if (filters.stage) params.set('stage', filters.stage);
                 if (filters.category) params.set('category', filters.category);
                 if (filters.urgency) params.set('urgency', filters.urgency);
                 if (filters.project) params.set('project', filters.project);
-                return this.request('GET', '/tasks?' + params.toString());
+                if (filters.item_type) params.set('item_type', filters.item_type);
+                if (filters.status_bucket) params.set('status_bucket', filters.status_bucket);
+                if (filters.assigned_to) params.set('assigned_to', filters.assigned_to);
+                if (filters.waiting_on) params.set('waiting_on', filters.waiting_on);
+                if (filters.decision_owner) params.set('decision_owner', filters.decision_owner);
+                if (filters.agent_status) params.set('agent_status', filters.agent_status);
+                if (filters.date_from) params.set('date_from', filters.date_from);
+                if (filters.date_to) params.set('date_to', filters.date_to);
+                if (filters.due_date) params.set('due_date', filters.due_date);
+                if (filters.stale_only) params.set('stale_only', filters.stale_only);
+                if (filters.search) params.set('search', filters.search);
+                const query = params.toString();
+                return this.request('GET', '/tasks' + (query ? '?' + query : ''));
             },
 
             getAuthMe() { return this.request('GET', '/auth/me'); },
@@ -5464,6 +5479,13 @@
             deleteTask(id) { return this.request('DELETE', '/tasks/' + id); },
             getTaskComments(id) { return this.request('GET', '/tasks/' + id + '/comments'); },
             addTaskComment(id, comment) { return this.request('POST', '/tasks/' + id + '/comments', comment); },
+            taskAction(id, action, payload = {}) { return this.request('POST', '/tasks/' + id + '/actions/' + action, payload); },
+            chooseTaskDecision(id, payload = {}) { return this.taskAction(id, 'choose-decision', payload); },
+            convertTaskToWork(id, payload = {}) { return this.taskAction(id, 'convert-to-task', payload); },
+            markTaskPending(id, payload = {}) { return this.taskAction(id, 'mark-pending', payload); },
+            spawnTaskAgentJob(id, payload = {}) { return this.taskAction(id, 'spawn-agent-job', payload); },
+            markTaskDone(id, payload = {}) { return this.taskAction(id, 'mark-done', payload); },
+            reassignTask(id, payload = {}) { return this.taskAction(id, 'reassign', payload); },
 
             getSignups(filters = {}) {
                 const params = new URLSearchParams();
@@ -5715,6 +5737,7 @@
         const initialView = initialParams.get('view');
         const initialSection = initialParams.get('section');
         const initialWorkspace = initialParams.get('workspace');
+        const initialProject = initialParams.get('project');
         const initialStudent = initialParams.get('student');
         const initialTask = initialParams.get('task');
         let selectedContentDetailJobId = Number(initialParams.get('content_job') || '') || null;
@@ -5782,7 +5805,7 @@
             : 'overview';
         let taskUrgencyFilter = 'all';
         let taskDateFilter = 'all';
-        let taskProjectFilter = 'all';
+        let taskProjectFilter = initialProject ? normalizeProjectKey(initialProject) : 'all';
         let taskCategoryFilter = 'all';
         let pipelineSection = currentView === 'pipelines' && ['overview', 'bna_enrollment', 'provider_class', 'provider_onboarding', 'participants', 'stale_tasks', 'decisions'].includes(initialSection)
             ? initialSection
@@ -7955,46 +7978,67 @@
 
         function renderTaskEmpty(columnId) {
             const message = ({
-                raw_input: 'No raw captures are waiting to be parsed.',
-                decisions: 'No decisions waiting. The bot should only ask when your choice changes the outcome.',
-                assigned: 'No assigned tasks match these filters.',
-                in_progress: 'No in-progress tasks match these filters.',
-                stale: 'No stale, ownerless, or blocked tasks match these filters.',
-                mine: 'No assigned tasks in this focus.',
-                waiting_shloimie: 'No Shloimie-owned work matches these filters.',
-                waiting_sheller: 'No Rabbi Sheller/provider dependency tasks match these filters.',
-                waiting_access: 'No access, credential, permission, or connector blockers match these filters.',
-                schedule: 'No scheduled tasks match these filters.',
-                changelog: 'No Codex-ready tasks are waiting right now.',
-                done: 'No completed tasks shown yet.',
-                archive: 'No archived tasks match these filters.'
+                decisions: 'No decisions match these filters.',
+                pending: 'No human or external blockers match these filters.',
+                tasks: 'No actionable tasks match these filters.',
+                schedule: 'No calendar items match these filters.',
+                done: 'No completed work matches these filters.',
+                activity: 'No recent task activity matches these filters.'
             })[columnId] || 'Nothing here right now.';
             return `<div class="task-empty">${escapeHtml(message)}</div>`;
+        }
+
+        function taskBadgeLabel(task = {}, columnId = '') {
+            const bucket = taskStatusBucket(task) || columnId;
+            const agentStatus = String(task.agent_status || '').toLowerCase();
+            if (bucket === 'done') return 'Done';
+            if (['queued', 'running'].includes(agentStatus) || (taskIsMachine(task) && bucket === 'tasks')) return 'Agent Working';
+            if (bucket === 'decisions') return 'Decision';
+            if (bucket === 'pending') return 'Pending';
+            return 'Task';
+        }
+
+        function taskActionNeededLabel(task = {}) {
+            if (task.waiting_on) return task.waiting_on;
+            if (task.decision_owner) return task.decision_owner;
+            if (task.assigned_to) return task.assigned_to;
+            if (taskIsMachine(task)) return 'Agent';
+            return 'Unassigned';
         }
 
         function renderTaskCard(task, columnId) {
             const detail = taskDisplayDetail(task, columnId);
             const id = Number(task.id);
             const workflow = taskWorkflowDetail(task);
+            const dueLabel = task.due_date ? `${formatDate(task.due_date)}${formatHebrewDate(task.due_date) ? ` / ${formatHebrewDate(task.due_date)}` : ''}` : 'No due date';
+            const lastUpdate = task.last_activity_at || task.last_comment_at || task.updated_at || task.created_at;
+            const staleReasons = taskStaleReasonList(task);
+            const summary = task.summary || detail;
 
             return `
                 <div class="task-row" title="${escapeHtml(task.title || '')}" onclick="openTaskDetail(event, ${id})">
                     <div class="task-row-main">
+                        <div class="task-card-badges">
+                            <span class="task-type-badge">${escapeHtml(taskBadgeLabel(task, columnId))}</span>
+                            ${task.agent_status && task.agent_status !== 'none' ? `<span class="badge">Agent ${escapeHtml(String(task.agent_status).replace(/_/g, ' '))}</span>` : ''}
+                            ${staleReasons.length ? '<span class="badge badge-urgency-urgent">Stale</span>' : ''}
+                        </div>
                         <div class="task-row-title">${escapeHtml(taskDisplayTitle(task))}</div>
-                        ${detail ? `<div class="task-row-detail">${escapeHtml(detail)}</div>` : ''}
+                        ${summary ? `<div class="task-row-detail">${escapeHtml(summary)}</div>` : ''}
                         <div class="task-row-meta primary-only">
                             <span class="badge badge-project-${taskProjectKey(task)}">${escapeHtml(taskProjectLabel(task))}</span>
                             <span class="badge badge-urgency-${task.urgency}">${formatUrgency(task.urgency)}</span>
-                            <span class="badge">${escapeHtml(taskOwnerLabel(task))}</span>
+                            <span class="badge">Action: ${escapeHtml(taskActionNeededLabel(task))}</span>
                             <span class="badge">${escapeHtml(taskStageLabel(task))}</span>
                             ${workflow?.code ? `<span class="badge">Workflow ${escapeHtml(workflow.code)}</span>` : ''}
                             ${task.decision_required ? '<span class="badge badge-decision">Decision Required</span>' : ''}
                             ${Number(task.comment_count || 0) ? `<span class="badge">${Number(task.comment_count)} comment${Number(task.comment_count) === 1 ? '' : 's'}</span>` : ''}
-                            ${task.planned_at ? `<span class="badge">Planned ${formatDateTime(task.planned_at)}</span>` : ''}
-                            ${task.due_date ? `<span class="badge">Due ${formatDate(task.due_date)}</span>` : ''}
+                            <span class="badge">Due ${escapeHtml(dueLabel)}</span>
+                            ${lastUpdate ? `<span class="badge">Updated ${escapeHtml(formatDateTime(lastUpdate) || lastUpdate)}</span>` : ''}
                             ${task.completed_at ? `<span class="badge">Done ${formatDateTime(task.completed_at)}</span>` : ''}
                             ${task.verified_at ? `<span class="badge">Verified ${formatDateTime(task.verified_at)}</span>` : ''}
                         </div>
+                        ${staleReasons.length ? `<div class="task-stale-warning">${escapeHtml(task.recommended_next_action || staleReasons.join(' / '))}</div>` : ''}
                         <div class="task-open-cue">Open detail page for notes, timestamps, comments, and decisions.</div>
                     </div>
                     <div class="task-row-actions" onclick="event.stopPropagation()">
@@ -16496,6 +16540,69 @@
             return true;
         }
 
+        function startOfTodayMs() {
+            const start = new Date();
+            start.setHours(0, 0, 0, 0);
+            return start.getTime();
+        }
+
+        function taskDueTime(task = {}) {
+            const value = Date.parse(task.due_date || task.planned_at || '');
+            return Number.isFinite(value) ? value : null;
+        }
+
+        function taskIsDueToday(task = {}) {
+            const due = taskDueTime(task);
+            if (!Number.isFinite(due)) return false;
+            return due >= startOfTodayMs() && due < startOfTodayMs() + 24 * 60 * 60 * 1000;
+        }
+
+        function taskIsDueWithinDays(task = {}, days = 7) {
+            const due = taskDueTime(task);
+            if (!Number.isFinite(due)) return false;
+            return due >= startOfTodayMs() && due < startOfTodayMs() + Number(days) * 24 * 60 * 60 * 1000;
+        }
+
+        function taskPeopleText(task = {}) {
+            return [task.assigned_to, task.waiting_on, task.decision_owner]
+                .filter(Boolean)
+                .join(' ')
+                .toLowerCase();
+        }
+
+        function taskMatchesSignalFilter(task = {}, signal = taskSignalFilter) {
+            const normalized = String(signal || 'all').toLowerCase();
+            if (normalized === 'all') return true;
+            const people = taskPeopleText(task);
+            const agentStatus = String(task.agent_status || '').toLowerCase();
+            const bucket = taskStatusBucket(task);
+            if (normalized === 'needs_shloimie') return /(shloimie|operator|manager)/.test(`${task.decision_owner || ''} ${task.waiting_on || ''}`.toLowerCase());
+            if (normalized === 'needs_rabbi') return /(rabbi|scheller|sheller|provider)/.test(`${task.decision_owner || ''} ${task.waiting_on || ''}`.toLowerCase());
+            if (normalized === 'assigned_shloimie') return /shloimie|operator|manager/.test(String(task.assigned_to || '').toLowerCase());
+            if (normalized === 'assigned_rabbi') return /rabbi|scheller|sheller|provider/.test(String(task.assigned_to || '').toLowerCase());
+            if (normalized === 'external') return Boolean(task.waiting_on) && !/(shloimie|rabbi|scheller|sheller|codex|agent|system)/.test(people);
+            if (normalized === 'agent_working') return taskIsMachine(task) || ['queued', 'running', 'failed', 'blocked_needs_human_decision'].includes(agentStatus);
+            if (normalized === 'due_today') return taskIsDueToday(task);
+            if (normalized === 'due_week') return taskIsDueWithinDays(task, 7);
+            if (normalized === 'stale') return Boolean(task.is_stale) || taskStaleReasonList(task).length > 0;
+            if (normalized === 'done') return bucket === 'done';
+            return true;
+        }
+
+        function formatHebrewDate(value) {
+            const parsed = Date.parse(value || '');
+            if (!Number.isFinite(parsed)) return '';
+            try {
+                return new Intl.DateTimeFormat('en-u-ca-hebrew', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric'
+                }).format(new Date(parsed));
+            } catch (error) {
+                return '';
+            }
+        }
+
         function renderContentFilterChip(kind, value, label, currentValue) {
             return renderFilterChip('setContentFilter', kind, value, label, currentValue);
         }
@@ -16686,10 +16793,10 @@
                 if (columnId === 'decisions') return 'Needs a clear choice before it becomes work.';
                 return '';
             }
-            if (columnId === 'codex' || columnId === 'changelog') {
-                const changelogDetail = task.verification_notes || notes;
-                if (changelogDetail.length > 260) return changelogDetail.slice(0, 257).trim() + '...';
-                return changelogDetail;
+            if (taskIsMachine(task)) {
+                const agentDetail = task.result_summary || task.error_message || task.verification_notes || notes;
+                if (agentDetail.length > 260) return agentDetail.slice(0, 257).trim() + '...';
+                return agentDetail;
             }
             const polished = polishTaskText(notes);
             if (polished.length > 260) return polished.slice(0, 257).trim() + '...';
@@ -16735,10 +16842,11 @@
         function taskOwnerLabel(task) {
             const owner = String(task.assigned_to || '').trim();
             if (owner) return owner;
-            const column = taskColumn(task);
-            if (column === 'decisions') return 'Needs decision';
-            if (column === 'codex' || column === 'changelog') return 'Agent';
-            if (column === 'mine') return 'Shloimie';
+            if (task.decision_owner) return `Decision: ${task.decision_owner}`;
+            if (task.waiting_on) return `Waiting on ${task.waiting_on}`;
+            const bucket = taskStatusBucket(task);
+            if (bucket === 'decisions') return 'Needs decision';
+            if (taskIsMachine(task)) return 'Agent';
             return 'Unassigned';
         }
 
@@ -16754,12 +16862,15 @@
 
         function decisionOptionLabels(task) {
             const parsed = parseJsonField(task.ai_parsed) || {};
+            const fromColumn = parseJsonField(task.decision_options_json);
+            const columnOptions = Array.isArray(fromColumn) ? fromColumn : [];
             const fromParsed = Array.isArray(parsed.options) ? parsed.options : [];
             const text = [task.title, task.notes].filter(Boolean).join('\n');
             const fromText = [...text.matchAll(/\bOption\s+([A-C])\s*:\s*([^\n]+)/gi)]
                 .map(match => ({ label: `Option ${match[1].toUpperCase()}`, value: match[2].trim().slice(0, 160) }));
-            const options = fromParsed.length
-                ? fromParsed.map((option, index) => ({
+            const sourceOptions = columnOptions.length ? columnOptions : fromParsed;
+            const options = sourceOptions.length
+                ? sourceOptions.map((option, index) => ({
                     label: option.label || `Option ${String.fromCharCode(65 + index)}`,
                     value: option.value || option.text || String(option),
                     patch: option.patch || null,
@@ -16791,12 +16902,14 @@
         function decisionDetailModel(task = {}) {
             const parsed = parseJsonField(task.ai_parsed) || {};
             const options = decisionOptionLabels(task);
-            const question = parsed.question
+            const question = task.decision_prompt
+                || parsed.question
                 || parsed.decision_question
                 || parsed.title
                 || taskDisplayTitle(task)
                 || 'Decision needed';
-            const context = parsed.context
+            const context = task.summary
+                || parsed.context
                 || parsed.summary
                 || parsed.reason
                 || task.notes
@@ -16817,7 +16930,7 @@
                 context: limitTextClient(context, 360),
                 recommendation: limitTextClient(recommendation, 120),
                 why: limitTextClient(why, 240),
-                owner: taskOwnerLabel(task),
+                owner: task.decision_owner || taskOwnerLabel(task),
                 due: dueValue ? formatDate(dueValue) : 'No due date',
                 options
             };
@@ -17129,11 +17242,18 @@
         function taskColumn(task) {
             const stage = normalizeTaskStage(task.stage);
             if (isHiddenCapture(task)) return null;
-            const isMachine = taskIsMachine(task);
-            if (stage === 'needs_decision') return 'decisions';
-            if ((task.completed_at || task.verified_at || stage === 'done') && !isMachine) return 'done';
-            if (isMachine) return 'changelog';
-            return 'mine';
+            return taskStatusBucket(task);
+        }
+
+        function taskStatusBucket(task = {}) {
+            const stage = normalizeTaskStage(task.stage);
+            if (isHiddenCapture(task)) return null;
+            if (task.completed_at || task.verified_at || ['done', 'archive'].includes(stage)) return 'done';
+            const itemType = String(task.item_type || '').toLowerCase();
+            if (itemType === 'decision' || stage === 'needs_decision' || task.decision_required) return 'decisions';
+            const waitingOn = String(task.waiting_on || '').trim();
+            if (waitingOn && !/(codex|agent|system|openai|kimi)/i.test(waitingOn)) return 'pending';
+            return 'tasks';
         }
 
         function isTextEntryTarget(target) {
@@ -17288,7 +17408,7 @@
                     needsDialogueData ? api.getInternalDialogue(workspaceFilter ? { workspace: workspaceFilter } : {}) : Promise.resolve({ threads: [], messages: [] }),
                     needsProjectData ? api.getProjects() : Promise.resolve({ projects: [] }),
                     needsPeopleData ? api.getPeople() : Promise.resolve({ people: [] }),
-                    needsTaskData ? api.getTasks() : Promise.resolve({ tasks: [] }),
+                    needsTaskData ? api.getTasks(taskProjectFilter !== 'all' ? { project_key: taskProjectFilter } : {}) : Promise.resolve({ tasks: [] }),
                     needsAgentFleetData ? api.getAgentFleetStatus() : Promise.resolve(null),
                     needsSupportData ? api.getSupportTickets() : Promise.resolve({ tickets: [] }),
                     needsSignupData || needsAccountingData ? api.getSignups() : Promise.resolve({ signups: [] }),
@@ -17447,6 +17567,8 @@
             if (currentView === 'students' && selectedStudentId) url.searchParams.set('student', selectedStudentId);
             if (currentView !== 'tasks') url.searchParams.delete('task');
             if (currentView === 'tasks' && selectedTaskId) url.searchParams.set('task', selectedTaskId);
+            if (currentView === 'tasks' && taskProjectFilter !== 'all') url.searchParams.set('project', taskProjectFilter);
+            if (currentView !== 'tasks' || taskProjectFilter === 'all') url.searchParams.delete('project');
             if (currentView !== 'content') url.searchParams.delete('content_job');
             if (currentView === 'content' && selectedContentDetailJobId) url.searchParams.set('content_job', selectedContentDetailJobId);
             window.history.replaceState({}, '', url);
@@ -17456,7 +17578,7 @@
             if (currentView === 'dashboard') dashboardSection = DASHBOARD_SUBTABS.some(tab => tab.id === section) ? section : 'overview';
             if (currentView === 'pipelines') pipelineSection = PIPELINE_SUBTABS.some(tab => tab.id === section) ? section : 'overview';
             if (currentView === 'tasks') {
-                taskFocus = TASK_SUBTABS.some(tab => tab.id === section) ? section : 'overview';
+                taskFocus = TASK_SUBTABS.some(tab => tab.id === section) ? section : 'tasks';
                 selectedTaskId = null;
             }
             if (currentView === 'students') studentSection = STUDENT_SUBTABS.some(tab => tab.id === section) ? section : 'overview';
@@ -17506,7 +17628,7 @@
             sidebarMode = 'sections';
             if (currentView === 'tasks' && focus) {
                 const normalizedFocus = TASK_FOCUS_ALIASES[focus] || focus;
-                taskFocus = TASK_SUBTABS.some(tab => tab.id === normalizedFocus) ? normalizedFocus : 'overview';
+                taskFocus = TASK_SUBTABS.some(tab => tab.id === normalizedFocus) ? normalizedFocus : 'tasks';
             }
             if (currentView === 'students' && focus) {
                 studentSection = focus === 'locked' || focus === 'tablet_access' ? 'tablet_access' : 'list';
@@ -17518,7 +17640,7 @@
 
         function setTaskFocus(focus) {
             const normalizedFocus = TASK_FOCUS_ALIASES[focus] || focus;
-            taskFocus = TASK_SUBTABS.some(tab => tab.id === normalizedFocus) ? normalizedFocus : 'overview';
+            taskFocus = TASK_SUBTABS.some(tab => tab.id === normalizedFocus) ? normalizedFocus : 'tasks';
             currentView = 'tasks';
             selectedTaskId = null;
             sidebarMode = 'sections';
@@ -17527,9 +17649,10 @@
         }
 
         function openTaskUrgentToday() {
-            taskFocus = 'waiting_shloimie';
+            taskFocus = 'tasks';
             taskUrgencyFilter = 'all';
             taskDateFilter = 'all';
+            taskSignalFilter = 'due_today';
             currentView = 'tasks';
             selectedTaskId = null;
             sidebarMode = 'sections';
@@ -17542,6 +17665,7 @@
             if (kind === 'date') taskDateFilter = value;
             if (kind === 'project') taskProjectFilter = value;
             if (kind === 'category') taskCategoryFilter = value;
+            if (kind === 'signal') taskSignalFilter = value;
             render();
         }
 
@@ -17695,6 +17819,7 @@
             taskDateFilter = 'all';
             taskProjectFilter = 'all';
             taskCategoryFilter = 'all';
+            taskSignalFilter = 'all';
             render();
         }
 

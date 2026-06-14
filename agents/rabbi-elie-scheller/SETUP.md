@@ -65,8 +65,8 @@ The bot is scoped to One Time Mishnah Class project routes:
 - brainstorm, summarize, and ask before task creation when intent is not
   explicit
 
-It does not request BNA Students, Accounting, Devices, broad Content jobs, Drive
-pipeline, GHL posting, agent fleet, or OpenAI smoke commands.
+It does not request BNA Students, Accounting, Devices, broad Content jobs,
+Drive pipeline, retired GHL posting, agent fleet, or OpenAI smoke commands.
 
 ## Login Handoff Guard
 

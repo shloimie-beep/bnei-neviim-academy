@@ -9,6 +9,45 @@ async function loadSupervisor() {
   return import(supervisorUrl);
 }
 
+function watchdogImprovementFixture() {
+  return {
+    id: 'no_ghl_policy_fixture',
+    title: 'Verify no-GHL policy stays enforced',
+    decision_title: 'Decide no-GHL watchdog follow-up',
+    signature: 'watchdog-improvement-v1:no_ghl_policy_fixture',
+    category: 'docs',
+    task_category: 'operations',
+    urgency: 'this_week',
+    message: 'Fixture finding used to verify watchdog decision creation without requiring stale docs to exist in the repo.',
+    evidence: [
+      {
+        file: 'README.md',
+        count: 1,
+        line: null,
+        excerpt: 'No-GHL policy is current and should stay enforced.',
+      },
+    ],
+    options: [
+      {
+        label: 'Option A',
+        value: 'Keep the no-GHL policy enforced in active docs and tests.',
+        patch: {
+          title: 'Verify active docs keep no-GHL policy',
+          category: 'operations',
+        },
+      },
+      {
+        label: 'Option B',
+        value: 'Add a follow-up scan only if active GHL language returns.',
+        patch: {
+          title: 'Add no-GHL watchdog follow-up scan',
+          category: 'operations',
+        },
+      },
+    ],
+  };
+}
+
 test('watchdog can clean the raw task #195 style title safely', async () => {
   const {
     buildTaskTitleRepair,
@@ -317,25 +356,20 @@ test('watchdog secret scan allowlists marked placeholders only', async () => {
   assert.equal(evidence.file, 'fixture.md');
 });
 
-test('watchdog improvement audit detects stale docs and task filter visibility drift', async () => {
+test('watchdog improvement audit stays quiet after stale docs and task filter drift are cleaned', async () => {
   const { collectWatchdogImprovementFindings } = await loadSupervisor();
   const findings = collectWatchdogImprovementFindings();
   const ids = new Set(findings.map((finding) => finding.id));
 
-  assert.equal(ids.has('stale_legacy_docs'), true);
+  assert.equal(ids.has('stale_legacy_docs'), false);
   assert.equal(ids.has('task_filter_visibility_drift'), false);
-  const staleDocs = findings.find((finding) => finding.id === 'stale_legacy_docs');
-  assert.equal(staleDocs.evidence.some((item) => item.file === 'README.md'), true);
-  assert.equal(staleDocs.options.length >= 2, true);
 });
 
 test('watchdog improvement selection dedupes an active decision with the same signature', async () => {
   const {
-    collectWatchdogImprovementFindings,
     selectWatchdogImprovementFindingsForCreation,
   } = await loadSupervisor();
-  const finding = collectWatchdogImprovementFindings().find((item) => item.id === 'stale_legacy_docs');
-  assert.ok(finding);
+  const finding = watchdogImprovementFixture();
   const activeTask = {
     id: 501,
     title: finding.decision_title,
@@ -360,9 +394,8 @@ test('watchdog improvement selection dedupes an active decision with the same si
 test('watchdog improvement decision payload creates an actionable Decisions item', async () => {
   const {
     buildWatchdogImprovementDecisionPayload,
-    collectWatchdogImprovementFindings,
   } = await loadSupervisor();
-  const finding = collectWatchdogImprovementFindings().find((item) => item.id === 'stale_legacy_docs');
+  const finding = watchdogImprovementFixture();
   const payload = buildWatchdogImprovementDecisionPayload(finding, 'ops/system-audits/example-watchdog-improvements.md');
 
   assert.equal(payload.stage, 'needs_decision');

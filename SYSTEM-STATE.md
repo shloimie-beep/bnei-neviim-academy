@@ -1,12 +1,15 @@
 # BNA Current System State
 
-Last updated: 2026-06-13
+Last updated: 2026-06-14
 
-2026-06-13 production cleanup in progress:
-- GoHighLevel/LeadConnector/GHL is deprecated for active BNA runtime. Active
-  code should not use GHL env vars, MCP tools, API clients, dashboard controls,
-  Telegram actions, smoke checks, or schema assumptions. Legacy code is archived
-  under `docs/archive/legacy-ghl/` for reference only.
+2026-06-14 workspace/community/provider/bot cleanup in progress:
+- BNA does not use GHL, GoHighLevel, LeadConnector, or LeadConnectorHQ as active
+  runtime. Active code must not use GHL env vars, MCP tools, API clients,
+  dashboard controls, Telegram actions, smoke checks, docs, routes, prompts, or
+  schema assumptions. Legacy files are archived under
+  `docs/archive/legacy-ghl/` for retired historical reference only.
+- Any older entries in this file that mention former GHL/social publishing work
+  are historical deployment notes only and are superseded by the no-GHL policy.
 - BNA Operations is the first-party source of truth for contacts, leads,
   students, tasks, communications, learning communities, provider listings,
   provider messages, parent/student/provider portals, and internal dialogue.
@@ -15,9 +18,11 @@ Last updated: 2026-06-13
   explicitly integrated.
 - Public, parent, and Operations PWA manifests are split so public/parent
   installs do not launch private Operations.
-- Local cleanup verification has begun. Completion remains blocked until the
-  current cleanup branch passes the full test suite, Railway doctor/live smoke,
-  and OpenAI smoke after the invalid OpenAI API key is repaired.
+- Local cleanup verification has begun on
+  `cleanup/bna-workspace-community-provider-bot-no-ghl`. Completion remains
+  blocked until full tests, OpenAI smoke, Railway doctor/live smoke, deploy, and
+  live post-deploy smoke pass, or a real external blocker is proven and
+  recorded.
 
 2026-06-12 Registration/provider/student-security pass deployed:
 - Public signup now shows the four visible required documents: Handbook,
@@ -990,11 +995,11 @@ Last updated: 2026-06-13
   and task-source sanitization so invalid task sources no longer become
   database constraint 500s. Latest live smoke report:
   `ops/live-smokes/2026-06-06T18-32-32-620Z-live-app-smoke.md`.
-- The live app smoke verifies health, Operations login/session, protected
-  dashboard APIs, public/admin Torah cumulative progress, task create/comment/
-  delete, signup submit dry-run, GHL diagnostics, and Drive Website Images
-  lane access. Latest smoke reports GHL diagnostics configured, 1 Facebook
-  account, 3 other social accounts, and posts read OK.
+- Historical 2026-06-06 smoke note: the app smoke verified health, Operations
+  login/session, protected dashboard APIs, public/admin Torah cumulative
+  progress, task create/comment/delete, signup submit dry-run, then-active
+  retired social diagnostics, and Drive Website Images lane access. This note is
+  superseded by the 2026-06-14 no-GHL policy.
 - GHL/Facebook drafting now has a safer account-selection rule: Content
   approval will use the only active Facebook account, or the configured
   `GHL_DEFAULT_FACEBOOK_ACCOUNT_ID`; if multiple active Facebook accounts are
@@ -1024,9 +1029,9 @@ Last updated: 2026-06-13
   paid/intake records needing signup/contact reconciliation; Hillel Baraka is
   signed up and payment pending. Report:
   `ops/system-audits/2026-06-06-payment-signup-reconciliation-agent-e.md`.
-- Telegram/GHL publish code paths are verified for `/accounts`, `publish draft`,
-  `publish now`, media captions, aliases, ambiguity handling, and diagnostics,
-  but no live GHL draft/post was created. Reports:
+- Historical retired-social publish code paths were verified for `/accounts`,
+  `publish draft`, `publish now`, media captions, aliases, ambiguity handling,
+  and diagnostics, but no live retired-provider draft/post was created. Reports:
   `ops/system-audits/2026-06-06-telegram-ghl-publish-workflow.md` and
   `ops/system-audits/2026-06-06-agent-f-telegram-ghl-publish-workflow-verification.md`.
 - Stale family cleanup audit was created at
@@ -1277,8 +1282,10 @@ Last updated: 2026-06-13
 
 2026-06-01 update:
 - Local server restarted on port 8080 and the Academy Telegram bridge restarted against `bneineviimacademy_bot`.
-- GHL Social diagnostics pass for location `IIofSrquLHvNxc8zrpka`: Bnei Neviim Academy Facebook page is connected and not expired, posts list/read works, and a GHL admin user is available.
-- Facebook draft creation now works locally. Content job #7 created a text-only GHL draft. Content job #6 uploaded its MP4 to GHL media storage and created a GHL draft with `type: reel`.
+- Historical retired-social diagnostics passed for the former location/account.
+  This is not active BNA runtime.
+- Historical Facebook draft creation worked locally through the retired provider.
+  Current social posting should use Buffer where wired, not retired GHL paths.
 - Operations Tasks copy was cleaned up again: do not say "raw capture" in the visible UI, and machine work is shown as `Changelog`, not as Shloimie's personal tasks.
 - Playwright mobile smoke passed for Tasks, Content, and Students with no browser errors using a real session cookie.
 - Railway audit completed: the saved token works as a project-scoped `RAILWAY_TOKEN`, but the old deploy script incorrectly required `railway whoami` account-login auth. Deploy tooling now loads `.secrets/railway-token.txt`, skips `whoami` in project-token mode, and explicitly targets service `skillful-motivation` in `production`.
@@ -1297,8 +1304,11 @@ Last updated: 2026-06-13
 - Future task extraction now stores a polished title and explanatory note instead of showing raw Telegram ramble language as the dashboard task.
 - The bad test student `Fh` and linked signup #5 were removed from active views by setting the student inactive and archiving the signup.
 - WhatsApp, Facebook, and weekly report prompts now prefer English, natural teacher language and explicitly avoid corny phrases like `Today at Bnei Neviim Academy` and `our learners explored`.
-- GHL Facebook action smoke passed locally: Content job #7 created a text draft and Content job #6 created a media draft for the connected `Bnei Neviim Academy` Facebook page.
-- Railway deployment `75d78726-dc90-40ed-b27b-ae649fa956f6` deployed the final cleanup. Live smoke passed: health, Students without `Fh`, GHL Facebook diagnostics, mobile Tasks, and mobile Content.
+- Historical retired-provider Facebook action smoke passed locally for older
+  content jobs. Current social posting should use Buffer where wired.
+- Railway deployment `75d78726-dc90-40ed-b27b-ae649fa956f6` deployed the older
+  cleanup. Live smoke passed at the time for health, Students without `Fh`,
+  then-active retired-provider diagnostics, mobile Tasks, and mobile Content.
 - 2026-06-02 update: Homepage 30-page goal progress is now 3/30 pages with 10 percent progress and updated English/Hebrew note copy. This was filed as clean Changelog task #33, assigned to Kimi and marked done/verified, so agents can see it without relying on the original Telegram ramble.
 - 2026-06-02 update: Operations Tasks routing now keeps Active Work to decisions/personal actionable items, sends completed Codex/system work to read-only Changelog, and keeps Done for Shloimie's personal completed tasks only. Changelog cards have no action buttons.
 - Railway deployment `cd63e998-98ba-49be-b2db-7f9b4af821c1` deployed the 3/30 progress update and final Tasks/Changelog routing cleanup. Live smoke passed: health, homepage 3/30, Changelog task #33 visible, no Changelog action buttons, and no stale `Review and organize` prefix on that changelog item.
@@ -1360,7 +1370,8 @@ Last updated: 2026-06-13
 - Natural language like "I dropped a video into Drive Raw Intake, make WhatsApp/Facebook captions" should be handled directly as Drive ingest. Pick the newest file in `BNA V2 / 01 Raw Intake`; do not ask for filename/time unless that configured folder is empty.
 - The Telegram bridge now has a Drive auto-watcher. About every 10 seconds, it checks the configured `BNA V2 / 01 Raw Intake` folder. If a file is found, it ingests it automatically, transcribes audio/video or describes images, titles it, creates a Content job with the Drive link, moves the file down the pipeline, and pings Telegram with WhatsApp/Facebook action buttons.
 - WhatsApp and Facebook drafts are separate outputs. WhatsApp should be short parent bullet points. Facebook should be a warmer, longer narrative draft saved as `facebook_post` with its own approval button.
-- Facebook drafts also have a `Create Facebook Draft` Telegram button. It should create a GHL draft on the connected `Bnei Neviim Academy` Facebook account.
+- Historical note superseded by no-GHL policy: Facebook draft creation must use
+  the currently approved Buffer connector or remain a first-party draft.
 - Amitay/Amitai/Amitize should fuzzy-match to student `אמיתי קוסובסקי`. Student questions, goals, and private-meeting notes belong in Student Accountability, not Tasks.
 - Amitay's conversion/fairness question was filed as Student Accountability event #8 on 2026-05-31. Accidental task captures #28 and #29 were archived.
 
@@ -1369,12 +1380,16 @@ Last updated: 2026-06-13
 - Website/database should be the source of truth for BNA content.
 - Google Drive is raw intake and storage.
 - YouTube should host public videos later; the website should embed YouTube videos instead of hosting large video files directly.
-- GHL can be used as a publishing destination for social/blog/email, but it should not be treated as the master content memory.
+- Retired GHL/GoHighLevel/LeadConnector paths must not be used as publishing
+  destinations. Buffer may be used for social where wired; first-party BNA
+  records remain canonical.
 - Operations Content view now has media filters (`All`, `Video`, `Audio`, `Images`) and uploaded-date filters (`All dates`, `Today`, `Last 7 days`, `Last 30 days`). Content cards sort newest first and show media type, title, upload date, Drive stage, and Drive link.
 - Operations Tasks view should not show a separate Smoke Test filter. It uses `Decisions`, `My Tasks`, `Changelog`, and `Done`. Changelog is read-only machine/Codex work; Done is for Shloimie's completed personal tasks.
 - 2026-05-31 update: Tasks now also has urgency/date filter chips and the Kimi lane is labeled `Changelog` so machine work does not read like Shloimie's personal task list.
 - 2026-05-31 update: Content has a project filter for `BNA` vs the Mishnah/One Time lane. As of 2026-06-05 the visible label is `One Time`, preserving the internal `mishna` key. The latest `Meeting rabbi sheller.m4a` was auto-ingested as Content job #7, titled `All-Day Mishnayas Learning and Micro Schools`, and classified under the Mishnah/One Time lane.
-- 2026-06-02 update: Dashboard content actions now use the Prompt Studio. `Make WhatsApp`, `Make Facebook Post`, `Make Newsletter`, `Make LinkedIn Post`, and `Make YouTube Description` generate or regenerate drafts from their tracked prompts and examples. `Approve + Save Example` stores the output as a future example. `Approve + Create GHL Draft` creates a GHL Facebook draft for Facebook outputs.
+- 2026-06-02 historical update: Dashboard content actions moved into Prompt
+  Studio. Current no-GHL behavior keeps outputs as first-party drafts and uses
+  approved non-GHL connectors such as Buffer where wired.
 - 2026-05-31 update: Students view now supports clickable student profiles. Selecting a student opens their accountability page with KPI counts, an accountability/progress chart, interests/topics, questions, goals, and private meeting/notes sections. Amitay's saved conversion/fairness question appears under his profile.
 - 2026-06-01 update: Accounting has safe payment reminder controls. Real email sending requires the operator to explicitly confirm `SEND_REMINDERS`; dry run is the default path for testing.
 

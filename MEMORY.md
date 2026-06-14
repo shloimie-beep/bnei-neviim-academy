@@ -39,11 +39,12 @@
   YouTube. Buffer API credentials live in Railway and local `.secrets`; never
   commit or display the API key. The current key appears to be named `BNAv2`,
   created 2026-06-09, and expires 2026-07-09.
-- **Legacy CRM/GHL**: Deprecated for active BNA runtime. Do not add new
-  GoHighLevel/LeadConnector code, MCP tools, env vars, smoke checks, dashboard
-  promises, or Telegram actions. Historical files are archived under
-  `docs/archive/legacy-ghl/`; existing production data that used old CRM column
-  names should be migrated into `legacy_crm_*` compatibility columns only.
+- **No-GHL policy**: BNA does not use GHL, GoHighLevel, LeadConnector, or
+  LeadConnectorHQ as active runtime. Do not add new GHL code, MCP tools, env
+  vars, smoke checks, dashboard promises, docs, routes, prompts, or Telegram
+  actions. Historical files are archived under `docs/archive/legacy-ghl/`;
+  existing production data that used old CRM column names should be kept only
+  as `legacy_crm_*` compatibility references.
 - **Whapi/WAPI**: Active WhatsApp API path. Outbound sends and webhook delivery
   logs use WAPI/Whapi credentials; Operations also has an explicit admin-only
   Whapi log sync that imports recent sent/received message history into
@@ -81,17 +82,12 @@
   Workspace is the first provider workspace for the One Time Mishnayos
   Membership and 7:00 class. Provider participants/members should not be called
   BNA students unless they are actually enrolled in BNA.
-- Provider commercial packaging must be entitlement-driven. Separate free
-  provider listings, paid managed provider setup, paid school/micro-school
-  workspaces, and custom partner/revenue-share projects. Free listings get
-  public profile/index visibility/basic CTA only; managed providers can unlock
-  funnels, pipeline, email/WhatsApp/social, payment-link, content, reporting,
-  automation, and support setup; school workspaces unlock parents, students,
-  portals, goals, assignments, billing, communications, bots, and school
-  operations; partner/revenue-share projects unlock custom terms, launch
-  checklists, shared tasks, approvals, split reporting, and program/tier setup.
-  Do not show paid automation or school controls to free providers except as a
-  clear upgrade path.
+- Provider public signup is free-listing-only. The data model may keep
+  admin-only/future commercial fields, but the public UI must not advertise paid
+  plans, paid placement, checkout, paid automation, or approval guarantees.
+  Free listings get public profile/index visibility and an external CTA only.
+  Provider booking stays on the provider's website, phone, WhatsApp, email, or
+  custom URL unless BNA later approves a specific connector.
 - Provider records should track commercial clarity fields such as
   `provider_status`, `commercial_model`, `source_of_truth`,
   `integration_status`, `setup_package`, `managed_services`,
@@ -107,19 +103,16 @@
   external delivery system until inspected. BNA Operations owns CRM, lead
   pipeline, automations, content workflow, reporting, launch tasks, access
   checklist, and integration audit around that external delivery system.
-- As of 2026-06-11, the provider commercial model is shipped and live: free
-  listing, managed provider setup, school/micro-school workspace, and
-  revenue-share partner plans exist; public provider onboarding is at
-  `/providers/join`; Rabbi Sheller is the only active provider and is modeled as
-  `revenue_share` / `revenue_share_partner`; archived/hidden provider records
-  stay out of active commercial setup views.
-- Provider intake should collect enough review context before BNA publishes or
-  sells anything: business/contact details, category, location/service area,
-  language, ages served, website/Google links, kids served, years active,
-  background, problems solved, pricing, typical charges, discounts/group
-  options, current ads, raw notes, and Shloimie approval notes. AI Max is an
-  interest/application path only until pricing, payment, and delivery terms are
-  explicitly approved.
+- Public provider onboarding is at `/providers/join` and creates a reviewed
+  free-listing application. Rabbi Sheller is the first external provider/
+  partner workspace and remains separate from BNA Academy parents/students
+  unless explicit enrollment links them.
+- Provider intake should collect enough review context before BNA publishes a
+  listing: provider/contact details, category, city/service area, languages,
+  ages served, short description, services offered, website/phone/WhatsApp/
+  email/custom CTA preference, image/logo URL, optional pricing summary,
+  optional discount/group option, community/rabbi affiliation, notes, and
+  Shloimie approval notes.
 - The first internal-first CRM backend primitives are persisted in the app:
   workspace settings, connector settings, internal calendar events, pipeline
   cards, internal dialogue threads/messages, and bot action logs. Missing live
@@ -527,11 +520,11 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 
 **NOT:** Stock photos, corporate polish, bright colors, generic Jewish clipart
 
-## Legacy CRM/GHL Status
+## No-GHL Status
 
-- As of 2026-06-13, GoHighLevel/LeadConnector is not an active BNA runtime,
-  social posting provider, CRM source of truth, dashboard dependency, Telegram
-  action path, or MCP server.
+- As of 2026-06-14, GHL, GoHighLevel, LeadConnector, and LeadConnectorHQ are
+  not active BNA runtime, social posting provider, CRM source of truth,
+  dashboard dependency, Telegram action path, smoke target, or MCP server.
 - Archived legacy code lives under `docs/archive/legacy-ghl/` for reference
   only. Do not revive it unless the operator explicitly creates a new task to
   inspect historical data or export records.
@@ -543,8 +536,8 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   apps, and future review widgets are connector candidates, not canonical CRM.
 - Existing old CRM identifiers in production data should be treated as
   historical `legacy_crm_*` references only. Do not write new records back to
-  GHL/LeadConnector, create GHL tags, depend on PIT tokens, or expose GHL setup
-  controls in Operations.
+  retired GHL/LeadConnector systems, create tags there, depend on PIT tokens, or
+  expose retired setup controls in Operations.
 
 ## Non-Negotiables
 
@@ -646,12 +639,12 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 - Features: academy-sidekick chat, Buffer account commands, media intake, social job queue
 - Natural language parsing for rambles plus structured Telegram ops commands
 
-### Social And CRM Runtime
+### Social And First-Party Runtime
 - Buffer is the active social scheduler for Facebook, LinkedIn, and YouTube.
 - First-party BNA Operations is the CRM/community/provider runtime.
-- Legacy GHL/LeadConnector code is archived and should not be used for new
-  runtime paths, smoke checks, MCP tools, dashboard controls, or Telegram
-  commands.
+- Retired GHL/LeadConnector code is archive-only and should not be used for new
+  runtime paths, smoke checks, MCP tools, dashboard controls, docs, prompts,
+  routes, or Telegram commands.
 - Live publish/send actions still require explicit operator approval.
 
 ### Kimi Runtime Note

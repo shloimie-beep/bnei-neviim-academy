@@ -183,8 +183,9 @@ test('provider onboarding integrations foundation exposes intake, public index, 
   assert.match(server, /google_place_id/);
   assert.match(serviceProviders, /\/api\/service-providers/);
   assert.match(serviceProviders, /Become a Service Provider/);
-  assert.match(providerJoin, /raw_intake/);
-  assert.match(providerJoin, /google_business_profile_url/);
+  assert.match(providerJoin, /cta_preference/);
+  assert.match(providerJoin, /services_offered/);
+  assert.match(providerJoin, /community_affiliation/);
   assert.match(parent, /\/api\/parent-portal\/provider-messages/);
   assert.match(parent, /provider_messages/);
   assert.match(provider, /providerMessages/);

@@ -104,7 +104,7 @@ create table if not exists bna_signups (
   payment_amount    decimal(10,2),
   paid_at           timestamptz,
   
-  -- GHL sync
+  -- Retired legacy CRM sync
   ghl_contact_id    text,  -- Parent contact ID in GHL
   ghl_student_id    text,  -- Student contact ID in GHL
   ghl_synced_at     timestamptz,

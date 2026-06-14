@@ -6,6 +6,8 @@ const server = fs.readFileSync('server.js', 'utf8');
 const studentHtml = fs.readFileSync('public/student.html', 'utf8');
 const parentHtml = fs.readFileSync('public/parent.html', 'utf8');
 const operationsHtml = fs.readFileSync('public/operations.html', 'utf8');
+const signupHtml = fs.readFileSync('public/signup.html', 'utf8');
+const signupHeHtml = fs.readFileSync('public/signup-he.html', 'utf8');
 const signupDocumentsJs = fs.readFileSync('public/js/signup-documents.js', 'utf8');
 
 test('server exposes student daily checkoff and message APIs', () => {
@@ -416,6 +418,14 @@ test('July 1 registration renewal flow requires four visible signatures and avoi
   assert.match(server, /buildRequiredSignupAgreementRecords/);
   assert.match(server, /requiredAgreementRecords\.length/);
   assert.match(server, /ON CONFLICT \(signup_id, agreement_type, agreement_version\) DO UPDATE SET/);
+  assert.match(signupHtml, /current official BNA registration and payment setup/);
+  assert.match(signupHtml, /older payment links are no longer active/);
+  assert.match(signupHtml, /Billing for this setup begins on July 1/);
+  assert.match(signupHtml, /lock in the current rate/);
+  assert.match(signupHtml, /not double-charged/);
+  assert.match(signupHeHtml, /1 ביולי/);
+  assert.match(signupHeHtml, /קישורי תשלום קודמים אינם פעילים/);
+  assert.match(signupHeHtml, /חיוב כפול/);
 });
 
 test('credit signup confirmation email sends the configured payment link to every parent email', () => {

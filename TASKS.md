@@ -1,18 +1,24 @@
 # BNA Tasks
 
+Completed older entries that mention former GHL/legacy-CRM work are historical
+changelog context only. They are superseded by the current no-GHL policy and do
+not authorize active GHL runtime paths.
+
 ## Now
 
-- [ ] Finish BNA production cleanup/no-GHL release: active code now removes
-  legacy CRM/LeadConnector runtime paths, archives legacy provider code, moves
-  social posting to Buffer-only helper code, splits public/parent/Operations
-  PWA manifests, and adds first-party `legacy_crm_*` compatibility columns.
-  Local full suite passed (`npm test` 306/306), active provider scan is clean,
-  Railway doctor passed, live app smoke passed, and contact repair dry-run now
-  reaches the Railway database after bypassing stale `.env.local` Supabase
-  config. Keep open because `npm run openai:smoke` still fails with
-  `401 invalid_api_key`, so this branch was not deployed and app-visible
-  completion/Telegram reporting cannot be marked done. Handoff:
-  `tasks-pending/2026-06-14-bna-production-community-no-ghl.md`.
+- [ ] Finish BNA workspace/community/provider/bot no-GHL release on
+  `cleanup/bna-workspace-community-provider-bot-no-ghl`: dirty worktree was
+  preserved on a safety branch/commit, active runtime is first-party BNA plus
+  explicit connectors only, provider public signup is free-listing-only, action
+  registry has role-aware ticket/decision/provider/community/worksheet bot
+  actions, and OpenAI key diagnostics now prove `.secrets/openai-api-key.txt`
+  and Railway share the selected key fingerprint but OpenAI rejects it with
+  `401 invalid_api_key`. Local syntax checks, `npm test` 309/309, Railway
+  doctor, live app smoke, and screenshot smoke pass. Keep open until a valid
+  OpenAI project/org key is supplied, `npm run openai:smoke` passes, the changed
+  bundle is deployed, post-deploy live smoke passes, and Telegram completion is
+  sent. Handoff:
+  `tasks-pending/2026-06-14-workspace-community-provider-bot-no-ghl.md`.
 - [ ] Deploy and live-smoke the signup credit payment-link email fix: manual
   resend for signup #12 succeeded to both recorded parent emails, and local code
   now includes the configured credit `PAYMENT_LINK` in confirmation emails sent
@@ -42,7 +48,7 @@
   `tasks-pending/2026-06-14-operations-parent-student-links-live-deploy.md`.
 - [ ] Build universal BNA helper and fix contact tagging/settings/Hebrew menu
   issues: local implementation and tests passed on 2026-06-13. Shipped local
-  slices include role-safe universal assistant backend/widget, legacy CRM
+  slices include role-safe universal assistant backend/widget, retired CRM
   contact compatibility cleanup, contact-role repair dry-run script, Whapi
   resolved-name fallback, Settings light-shell cleanup, Hebrew RTL drawer fix,
   and brand-kit AI context in the OpenAI sidekick smoke. Keep open until OpenAI

@@ -102,6 +102,10 @@ const ONE_TIME_TASK_CATEGORIES = [
   'shiur_ideas',
 ];
 const ALL_TASK_CATEGORIES = [...new Set([...BNA_TASK_CATEGORIES, ...ONE_TIME_TASK_CATEGORIES])];
+const TASK_ITEM_TYPES = new Set(['task', 'decision']);
+const TASK_AGENT_STATUSES = new Set(['none', 'queued', 'running', 'completed', 'failed', 'blocked_needs_human_decision']);
+const AGENT_JOB_STATUSES = new Set(['queued', 'running', 'completed', 'failed', 'cancelled', 'blocked_needs_human_decision']);
+const AGENT_JOB_PRIORITIES = new Set(['urgent', 'today', 'normal', 'low']);
 const ONE_TIME_PROPOSAL_SEED = 'one-time-full-workflow-2026-06-10';
 const ONE_TIME_FINAL_PROPOSAL = {
   title: 'Rabbi Sheller + Shloimie Dratler 50/50 Partnership Proposal',
@@ -6691,6 +6695,105 @@ CREATE TABLE IF NOT EXISTS bna_task_comments (
 );
 `;
 
+const createTaskWorkflowExtensionsSQL = `
+ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspace_settings(id) ON DELETE SET NULL;
+ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS workspace_role TEXT;
+ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS item_type TEXT DEFAULT 'task';
+ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS decision_owner TEXT;
+ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS waiting_on TEXT;
+ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS agent_status TEXT DEFAULT 'none';
+ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS agent_job_id INTEGER;
+ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS source_channel TEXT;
+ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS source_message_id TEXT;
+ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS summary TEXT;
+ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS decision_prompt TEXT;
+ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS decision_options_json JSONB DEFAULT '[]';
+ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS next_action_label TEXT;
+ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS last_activity_at TIMESTAMP;
+ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS stale_at TIMESTAMP;
+
+UPDATE bna_tasks
+SET item_type = CASE WHEN COALESCE(decision_required, FALSE) OR stage = 'needs_decision' THEN 'decision' ELSE 'task' END
+WHERE item_type IS NULL OR item_type NOT IN ('task', 'decision');
+UPDATE bna_tasks
+SET agent_status = CASE
+  WHEN completed_at IS NOT NULL OR verified_at IS NOT NULL OR stage = 'done' THEN 'completed'
+  WHEN LOWER(COALESCE(assigned_to, '')) ~ '(codex|kimi|system|agent)' AND stage = 'in_progress' THEN 'running'
+  WHEN LOWER(COALESCE(assigned_to, '')) ~ '(codex|kimi|system|agent)' AND COALESCE(stage, '') NOT IN ('done', 'archive', 'needs_decision') THEN 'queued'
+  ELSE COALESCE(agent_status, 'none')
+END
+WHERE agent_status IS NULL OR agent_status NOT IN ('none', 'queued', 'running', 'completed', 'failed', 'blocked_needs_human_decision');
+UPDATE bna_tasks
+SET last_activity_at = COALESCE(last_activity_at, updated_at, created_at)
+WHERE last_activity_at IS NULL;
+
+ALTER TABLE bna_tasks DROP CONSTRAINT IF EXISTS bna_tasks_item_type_check;
+ALTER TABLE bna_tasks
+  ADD CONSTRAINT bna_tasks_item_type_check CHECK (item_type IN ('task', 'decision'));
+ALTER TABLE bna_tasks DROP CONSTRAINT IF EXISTS bna_tasks_agent_status_check;
+ALTER TABLE bna_tasks
+  ADD CONSTRAINT bna_tasks_agent_status_check
+  CHECK (agent_status IN ('none', 'queued', 'running', 'completed', 'failed', 'blocked_needs_human_decision'));
+
+ALTER TABLE bna_task_comments DROP CONSTRAINT IF EXISTS bna_task_comments_visibility_check;
+ALTER TABLE bna_task_comments
+  ADD CONSTRAINT bna_task_comments_visibility_check
+  CHECK (visibility IN ('workspace', 'internal', 'manager_only', 'provider_visible', 'system', 'operator', 'project'));
+
+CREATE INDEX IF NOT EXISTS idx_bna_tasks_workspace_id ON bna_tasks (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_tasks_item_type ON bna_tasks (item_type);
+CREATE INDEX IF NOT EXISTS idx_bna_tasks_waiting_on ON bna_tasks (lower(waiting_on));
+CREATE INDEX IF NOT EXISTS idx_bna_tasks_decision_owner ON bna_tasks (lower(decision_owner));
+CREATE INDEX IF NOT EXISTS idx_bna_tasks_assigned_to ON bna_tasks (lower(assigned_to));
+CREATE INDEX IF NOT EXISTS idx_bna_tasks_agent_status ON bna_tasks (agent_status);
+CREATE INDEX IF NOT EXISTS idx_bna_tasks_due_date ON bna_tasks (due_date);
+CREATE INDEX IF NOT EXISTS idx_bna_tasks_last_activity_at ON bna_tasks (last_activity_at DESC);
+`;
+
+const createAgentJobsSQL = `
+CREATE TABLE IF NOT EXISTS bna_agent_jobs (
+  id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspace_settings(id) ON DELETE SET NULL,
+  task_id INTEGER REFERENCES bna_tasks(id) ON DELETE CASCADE,
+  agent_name TEXT NOT NULL DEFAULT 'Codex',
+  job_type TEXT NOT NULL DEFAULT 'implementation',
+  status TEXT NOT NULL DEFAULT 'queued'
+    CHECK (status IN ('queued', 'running', 'completed', 'failed', 'cancelled', 'blocked_needs_human_decision')),
+  priority TEXT NOT NULL DEFAULT 'normal'
+    CHECK (priority IN ('urgent', 'today', 'normal', 'low')),
+  input_summary TEXT,
+  input_payload JSONB DEFAULT '{}',
+  result_summary TEXT,
+  result_payload JSONB DEFAULT '{}',
+  error_message TEXT,
+  heartbeat_at TIMESTAMP,
+  started_at TIMESTAMP,
+  completed_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_bna_agent_jobs_task_id ON bna_agent_jobs (task_id);
+CREATE INDEX IF NOT EXISTS idx_bna_agent_jobs_workspace_id ON bna_agent_jobs (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_agent_jobs_status ON bna_agent_jobs (status);
+CREATE INDEX IF NOT EXISTS idx_bna_agent_jobs_created_at ON bna_agent_jobs (created_at DESC);
+`;
+
+const createTaskEventsSQL = `
+CREATE TABLE IF NOT EXISTS bna_task_events (
+  id SERIAL PRIMARY KEY,
+  task_id INTEGER NOT NULL REFERENCES bna_tasks(id) ON DELETE CASCADE,
+  event_type TEXT NOT NULL,
+  actor TEXT NOT NULL DEFAULT 'system',
+  summary TEXT,
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_bna_task_events_task_id ON bna_task_events (task_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_task_events_type ON bna_task_events (event_type);
+`;
+
 const createSupportTicketsSQL = `
 CREATE TABLE IF NOT EXISTS bna_support_tickets (
   id SERIAL PRIMARY KEY,
@@ -9160,8 +9263,16 @@ function inferTaskStage(text) {
   return 'raw_input';
 }
 
+function isAgentAssignee(value) {
+  return /\b(codex|kimi|system|agent|automation)\b/i.test(String(value || ''));
+}
+
 function inferTaskOwner(text) {
   const normalized = String(text || '').toLowerCase();
+  if (/\b(whatsapp|posts?|content section)\b/.test(normalized)
+    && /\b(parser|parsing|routing|recording|record|tasks?|technical|backend|codex)\b/.test(normalized)) return 'Codex';
+  if (hasParserRoutingWorkIntent(normalized)
+    && /\b(whatsapp|posts?|content section|backend|technical|recordings?|parser|routing)\b/.test(normalized)) return 'Codex';
   if (hasExplicitDecisionChoice(normalized)) return 'Shloimie';
   if (/\b(smoke test|playwright|browser interaction|browser automation)\b/.test(normalized) && /\b(can you|you have to|you should|need to happen|we need)\b/.test(normalized)) return 'Codex';
   if (isWatchdogWarningTaskText(normalized)) return 'Codex';
@@ -9178,6 +9289,37 @@ function inferTaskOwner(text) {
   if (isSpeakerDiarizationText(normalized) && /\b(add|fix|implement|verify|improve|support|label|transcribe|record|recording)\b/.test(normalized)) return 'Codex';
   if (/\b(kimi|kimmy|codex|kodak|codak|bot|agent|system|machine task|programming|fix|build|wire|configure|process|transcribe|deploy|verify|parse|parser|routing|dashboard|task manager|content section|telegram buttons?)\b/.test(normalized)) return 'Codex';
   return null;
+}
+
+function inferTaskWaitingOn(text) {
+  const normalized = String(text || '').toLowerCase();
+  if (/\b(whatsapp|posts?|content section)\b/.test(normalized)
+    && /\b(parser|parsing|routing|recording|record|tasks?|technical|backend|codex)\b/.test(normalized)) return null;
+  if (hasParserRoutingWorkIntent(normalized)
+    && /\b(whatsapp|posts?|content section|backend|technical|recordings?|parser|routing)\b/.test(normalized)) return null;
+  const waitingCue = /\b(waiting on|waiting for|need(?:ed)?|needs|get|collect|access|login|credentials?|permission|approval|approve|export|list|account|api key|token|domain|dns|registrar|stripe|resend|vimeo|replit|drive|godaddy)\b/.test(normalized);
+  if (!waitingCue) return null;
+  if (/\b(rabbi|elie|scheller|sheller)\b/.test(normalized)) return 'Rabbi Elie Scheller';
+  if (/\b(shloimie|shlomo|operator|me|myself)\b/.test(normalized)) return 'Shloimie';
+  if (/\b(accountant|legal|lawyer|processor|stripe|resend|godaddy|dns|domain|vimeo|replit|drive|external|api approval|approval)\b/.test(normalized)) return 'External system';
+  return null;
+}
+
+function inferTaskItemType(text) {
+  const normalized = String(text || '').toLowerCase();
+  if (/\b(whatsapp|posts?|content section)\b/.test(normalized)
+    && /\b(parser|parsing|routing|recording|record|tasks?|technical|backend|codex)\b/.test(normalized)) return 'task';
+  if (hasParserRoutingWorkIntent(normalized)
+    && /\b(whatsapp|posts?|content section|backend|technical|recordings?|parser|routing)\b/.test(normalized)) return 'task';
+  return hasExplicitDecisionChoice(text) ? 'decision' : 'task';
+}
+
+function inferTaskNextActionLabel({ itemType, waitingOn, assignedTo, title } = {}) {
+  if (itemType === 'decision') return 'Choose an option';
+  if (waitingOn) return `Request from ${waitingOn}`;
+  if (isAgentAssignee(assignedTo)) return 'Agent working';
+  if (/audit/i.test(String(title || ''))) return 'Start audit';
+  return 'Start task';
 }
 
 function polishTaskCandidateText(text) {
@@ -9374,17 +9516,36 @@ function parseRambleIntoTaskCandidates(ramble) {
 
   if (!candidates.length) return [];
 
-  const mapped = candidates.map((line) => ({
-    title: polishTaskCandidateText(line),
-    notes: explainTaskCandidate(line),
-    stage: inferTaskStage(line),
-    category: inferTaskCategory(line),
-    urgency: /urgent|asap|right away|immediately|today/i.test(line) ? 'urgent' : 'this_week',
-    assigned_to: inferTaskOwner(line),
-    project_key: inferProjectKeyFromText(line),
-    decision_required: inferTaskStage(line) === 'needs_decision',
-    original_text: line,
-  }));
+  const mapped = candidates.map((line) => {
+    const title = polishTaskCandidateText(line);
+    const itemType = inferTaskItemType(line);
+    const waitingOn = itemType === 'decision' ? null : inferTaskWaitingOn(line);
+    const assignedTo = itemType === 'decision'
+      ? 'Shloimie'
+      : waitingOn
+        ? waitingOn
+        : inferTaskOwner(line);
+    const agentExecutable = itemType !== 'decision' && !waitingOn && isAgentAssignee(assignedTo);
+    return {
+      title,
+      clean_title: title,
+      summary: explainTaskCandidate(line),
+      notes: explainTaskCandidate(line),
+      item_type: itemType,
+      stage: itemType === 'decision' ? 'needs_decision' : 'assigned',
+      category: inferTaskCategory(line),
+      urgency: /urgent|asap|right away|immediately|today/i.test(line) ? 'urgent' : 'this_week',
+      assigned_to: assignedTo,
+      decision_owner: itemType === 'decision' ? 'Shloimie' : null,
+      waiting_on: waitingOn,
+      project_key: inferProjectKeyFromText(line),
+      decision_required: itemType === 'decision',
+      agent_executable: agentExecutable,
+      needs_human_review: itemType === 'decision' || Boolean(waitingOn),
+      next_action_label: inferTaskNextActionLabel({ itemType, waitingOn, assignedTo, title }),
+      original_text: line,
+    };
+  });
   const seenTitles = new Set();
   return mapped.filter((candidate) => {
     const key = String(candidate.title || '').toLowerCase();
@@ -9401,6 +9562,227 @@ function normalizeTaskAssignee(value) {
   if (/^(shloimie|shlomo|operator|me|myself)$/i.test(raw)) return 'Shloimie';
   if (/^(kimi|kimmy|codex|agent|system|ai)$/i.test(raw)) return 'Codex';
   return raw.slice(0, 120);
+}
+
+function normalizeTaskPerson(value) {
+  const raw = String(value || '').trim();
+  if (!raw) return null;
+  return normalizeTaskAssignee(raw) || raw.slice(0, 160);
+}
+
+function safeTaskItemType(value, fallback = 'task') {
+  const normalized = String(value || '').trim().toLowerCase();
+  return TASK_ITEM_TYPES.has(normalized) ? normalized : fallback;
+}
+
+function safeAgentStatus(value, fallback = 'none') {
+  const normalized = String(value || '').trim().toLowerCase();
+  return TASK_AGENT_STATUSES.has(normalized) ? normalized : fallback;
+}
+
+function safeAgentJobStatus(value, fallback = 'queued') {
+  const normalized = String(value || '').trim().toLowerCase();
+  return AGENT_JOB_STATUSES.has(normalized) ? normalized : fallback;
+}
+
+function normalizeTaskStage(stage) {
+  const normalized = String(stage || '').trim().toLowerCase();
+  return ({
+    inbox: 'raw_input',
+    clarify: 'needs_decision',
+    plan: 'needs_decision',
+    execute: 'in_progress',
+    review: 'needs_decision',
+    complete: 'done',
+  })[normalized] || normalized || 'raw_input';
+}
+
+function agentJobPriorityFromUrgency(value) {
+  const normalized = String(value || '').trim().toLowerCase();
+  if (normalized === 'urgent') return 'urgent';
+  if (normalized === 'today') return 'today';
+  if (normalized === 'low') return 'low';
+  return 'normal';
+}
+
+function isAgentAssignee(value) {
+  return /\b(codex|kimi|system|agent|automation)\b/i.test(String(value || ''));
+}
+
+function isHumanOrExternalWaitingOn(value) {
+  const raw = String(value || '').trim();
+  return Boolean(raw) && !isAgentAssignee(raw);
+}
+
+function parseJsonArrayMaybe(value) {
+  if (!value) return [];
+  if (Array.isArray(value)) return value;
+  if (typeof value === 'object') return [value].filter(Boolean);
+  try {
+    const parsed = JSON.parse(value);
+    if (Array.isArray(parsed)) return parsed;
+    if (parsed && typeof parsed === 'object') return [parsed];
+  } catch {}
+  return String(value)
+    .split(/\r?\n|;/)
+    .map((item) => item.trim())
+    .filter(Boolean);
+}
+
+function normalizeDecisionOptions(value) {
+  return parseJsonArrayMaybe(value).map((option, index) => {
+    if (option && typeof option === 'object') {
+      return {
+        label: String(option.label || option.title || `Option ${String.fromCharCode(65 + index)}`).slice(0, 80),
+        value: String(option.value || option.summary || option.label || option.title || '').slice(0, 500),
+        recommended: Boolean(option.recommended),
+        tradeoff: option.tradeoff ? String(option.tradeoff).slice(0, 500) : undefined,
+        patch: option.patch && typeof option.patch === 'object' ? option.patch : undefined,
+      };
+    }
+    return {
+      label: `Option ${String.fromCharCode(65 + index)}`,
+      value: String(option || '').slice(0, 500),
+    };
+  }).filter((option) => option.value || option.label);
+}
+
+function taskNeedsAgentJob(task = {}, input = {}) {
+  if (safeTaskItemType(task.item_type || input.item_type) === 'decision') return false;
+  if (Boolean(task.decision_required ?? input.decision_required)) return false;
+  if (normalizeTaskStage(task.stage || input.stage) === 'needs_decision') return false;
+  if (isHumanOrExternalWaitingOn(task.waiting_on || input.waiting_on)) return false;
+  if (['done', 'archive'].includes(normalizeTaskStage(task.stage || input.stage))) return false;
+  return Boolean(input.agent_executable || input.agentExecutable || isAgentAssignee(task.assigned_to || input.assigned_to || input.assignedTo));
+}
+
+function taskEventMetadata(value = {}) {
+  return JSON.stringify(value && typeof value === 'object' ? value : {});
+}
+
+async function appendTaskEvent(taskId, eventType, { actor = 'system', summary = '', metadata = {} } = {}, db = pool) {
+  if (!taskId || !eventType) return null;
+  const result = await db.query(
+    `INSERT INTO bna_task_events (task_id, event_type, actor, summary, metadata)
+     VALUES ($1, $2, $3, $4, $5::jsonb)
+     RETURNING *`,
+    [taskId, String(eventType).slice(0, 120), String(actor || 'system').slice(0, 120), summary || null, taskEventMetadata(metadata)]
+  );
+  return result.rows[0] || null;
+}
+
+async function updateLatestAgentJobForTask(taskId, status, updates = {}, db = pool) {
+  const jobStatus = safeAgentJobStatus(status, null);
+  if (!taskId || !jobStatus) return null;
+  const current = (await db.query(
+    `SELECT *
+     FROM bna_agent_jobs
+     WHERE task_id = $1
+     ORDER BY created_at DESC
+     LIMIT 1`,
+    [taskId]
+  )).rows[0];
+  if (!current) return null;
+  const result = await db.query(
+    `UPDATE bna_agent_jobs
+     SET status = $1,
+         result_summary = COALESCE($2, result_summary),
+         error_message = COALESCE($3, error_message),
+         heartbeat_at = CASE WHEN $1 = 'running' THEN NOW() ELSE heartbeat_at END,
+         started_at = CASE WHEN $1 = 'running' THEN COALESCE(started_at, NOW()) ELSE started_at END,
+         completed_at = CASE WHEN $1 IN ('completed', 'failed', 'cancelled', 'blocked_needs_human_decision') THEN COALESCE(completed_at, NOW()) ELSE completed_at END,
+         result_payload = COALESCE($4::jsonb, result_payload),
+         updated_at = NOW()
+     WHERE id = $5
+     RETURNING *`,
+    [
+      jobStatus,
+      updates.result_summary || updates.resultSummary || null,
+      updates.error_message || updates.errorMessage || null,
+      updates.result_payload || updates.resultPayload ? JSON.stringify(updates.result_payload || updates.resultPayload) : null,
+      current.id,
+    ]
+  );
+  return result.rows[0] || null;
+}
+
+async function ensureAgentJobForTask(task, input = {}, db = pool) {
+  if (!task?.id) return null;
+  if (!taskNeedsAgentJob(task, input)) return null;
+  const existing = (await db.query(
+    `SELECT *
+     FROM bna_agent_jobs
+     WHERE task_id = $1
+       AND status IN ('queued', 'running')
+     ORDER BY created_at DESC
+     LIMIT 1`,
+    [task.id]
+  )).rows[0];
+  if (existing) {
+    await db.query(
+      `UPDATE bna_tasks
+       SET agent_status = $1,
+           agent_job_id = $2,
+           assigned_to = COALESCE(assigned_to, 'Codex'),
+           last_activity_at = COALESCE(last_activity_at, NOW()),
+           updated_at = NOW()
+       WHERE id = $3`,
+      [existing.status === 'running' ? 'running' : 'queued', existing.id, task.id]
+    );
+    return existing;
+  }
+
+  const result = await db.query(
+    `INSERT INTO bna_agent_jobs (
+       workspace_id, task_id, agent_name, job_type, status, priority,
+       input_summary, input_payload, heartbeat_at
+     ) VALUES ($1, $2, 'Codex', $3, 'queued', $4, $5, $6::jsonb, NOW())
+     RETURNING *`,
+    [
+      task.workspace_id || null,
+      task.id,
+      input.job_type || input.jobType || 'implementation',
+      agentJobPriorityFromUrgency(task.urgency || input.urgency),
+      String(input.input_summary || input.summary || task.summary || task.notes || task.title || '').slice(0, 1200),
+      JSON.stringify({
+        source: 'task_api',
+        created_from: input.source || task.source || 'dashboard',
+        project_id: task.project_id || null,
+        project_key: task.project_key || input.project_key || input.project || null,
+        title: task.title,
+        agent_executable: true,
+      }),
+    ]
+  );
+  const job = result.rows[0];
+  await db.query(
+    `UPDATE bna_tasks
+     SET agent_status = 'queued',
+         agent_job_id = $1,
+         assigned_to = COALESCE(assigned_to, 'Codex'),
+         last_activity_at = NOW(),
+         updated_at = NOW()
+     WHERE id = $2`,
+    [job.id, task.id]
+  );
+  await appendTaskEvent(task.id, 'agent_job_spawned', {
+    actor: 'system',
+    summary: `Agent job #${job.id} queued for Codex.`,
+    metadata: { agent_job_id: job.id, status: job.status },
+  }, db);
+  return job;
+}
+
+async function fetchTaskWithProject(taskId, db = pool) {
+  const result = await db.query(
+    `SELECT t.*, p.project_key, p.name AS project_name, p.short_name AS project_short_name
+     FROM bna_tasks t
+     LEFT JOIN bna_projects p ON p.id = t.project_id
+     WHERE t.id = $1
+     LIMIT 1`,
+    [taskId]
+  );
+  return result.rows[0] || null;
 }
 
 function sourceContextToText(value) {
@@ -9453,14 +9835,26 @@ async function createTaskFromText(input = {}, options = {}, db = pool) {
 
   const taskTextForRouting = `${title}\n${rawText}`;
   const inferredStage = inferTaskStage(taskTextForRouting);
-  const assignedTo = normalizeTaskAssignee(input.assigned_to || input.assignedTo || input.owner);
+  const explicitItemType = safeTaskItemType(input.item_type || input.itemType, null);
+  const requestedWaitingOn = normalizeTaskPerson(input.waiting_on || input.waitingOn || input.blocked_by || input.blockedBy);
+  const waitingOn = requestedWaitingOn && isAgentAssignee(requestedWaitingOn) ? null : requestedWaitingOn;
+  let assignedTo = normalizeTaskAssignee(input.assigned_to || input.assignedTo || input.owner);
+  if (!assignedTo && (input.agent_executable || input.agentExecutable) && !waitingOn && explicitItemType !== 'decision') {
+    assignedTo = 'Codex';
+  }
   const requestedDecisionRequired =
-    input.decision_required !== undefined
+    explicitItemType === 'decision'
+      ? true
+      : input.decision_required !== undefined
       ? Boolean(input.decision_required)
       : Boolean(input.decisionRequired) || inferredStage === 'needs_decision';
-  const hasRealDecision = hasExplicitDecisionChoice(taskTextForRouting);
+  const decisionOptions = normalizeDecisionOptions(input.decision_options_json || input.decision_options || input.decisionOptionsJson || input.decisionOptions);
+  const hasRealDecision = explicitItemType === 'decision' || decisionOptions.length > 0 || hasExplicitDecisionChoice(taskTextForRouting);
   const isCodexAction = /codex|kimi|system/i.test(String(assignedTo || '')) && hasConcreteTaskAction(taskTextForRouting);
-  const decisionRequired = requestedDecisionRequired && hasRealDecision && !isCodexAction;
+  const decisionRequired = explicitItemType === 'decision'
+    ? true
+    : requestedDecisionRequired && hasRealDecision && !isCodexAction;
+  const itemType = decisionRequired ? 'decision' : 'task';
   const inferredCategory = inferTaskCategory(taskTextForRouting);
   const requestedCategory = input.category ? safeTaskCategory(input.category) : null;
   const category = requestedCategory && !shouldOverrideRequestedTaskCategory(requestedCategory, inferredCategory, taskTextForRouting)
@@ -9481,25 +9875,39 @@ async function createTaskFromText(input = {}, options = {}, db = pool) {
       : String(requestedStage || (inferredStage === 'raw_input' ? 'assigned' : inferredStage || 'assigned')).trim();
   const urgency = safeTaskUrgency(input.urgency);
   const source = safeTaskSource(input.source || 'telegram');
+  const sourceChannel = String(input.source_channel || input.sourceChannel || source || '').trim().slice(0, 80) || null;
+  const sourceMessageId = input.source_message_id || input.sourceMessageId || null;
+  const summary = String(input.summary || input.short_summary || input.shortSummary || '').trim() || null;
+  const decisionPrompt = String(input.decision_prompt || input.decisionPrompt || '').trim()
+    || (decisionRequired ? title : null);
+  const decisionOwner = normalizeTaskPerson(input.decision_owner || input.decisionOwner)
+    || (decisionRequired ? normalizeTaskPerson(assignedTo || waitingOn || 'Shloimie') : null);
+  const nextActionLabel = String(input.next_action_label || input.nextActionLabel || '').trim()
+    || (decisionRequired ? 'Choose an option' : waitingOn ? `Request from ${waitingOn}` : isAgentAssignee(assignedTo) ? 'Agent working' : 'Start task');
   const aiParsedBase = input.ai_parsed || {
     parser: 'create_task_from_text-v1',
-    kind: decisionRequired ? 'decision' : 'task',
+    kind: itemType,
     display_title: title,
     original_text: rawText || title,
     project: project.name,
   };
   const aiParsed = {
     ...aiParsedBase,
-    kind: decisionRequired ? 'decision' : (aiParsedBase.kind === 'decision' ? 'task' : aiParsedBase.kind || 'task'),
+    kind: itemType,
     decision_required: decisionRequired,
+    waiting_on: waitingOn,
+    agent_executable: Boolean(input.agent_executable || input.agentExecutable || isAgentAssignee(assignedTo)),
   };
 
   const result = await db.query(
     `INSERT INTO bna_tasks (
        title, notes, stage, category, urgency, energy_required, estimated_minutes, due_date,
-       source, source_context, created_by, assigned_to, ai_parsed, project_id, decision_required, author
+       source, source_context, created_by, assigned_to, ai_parsed, project_id, decision_required, author,
+       item_type, decision_owner, waiting_on, agent_status, source_channel, source_message_id,
+       summary, decision_prompt, decision_options_json, next_action_label, last_activity_at
      )
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,
+       $17, $18, $19, $20, $21, $22, $23, $24, $25::jsonb, $26, NOW())
      RETURNING *`,
     [
       title,
@@ -9518,10 +9926,62 @@ async function createTaskFromText(input = {}, options = {}, db = pool) {
       project.id,
       decisionRequired,
       author,
+      itemType,
+      decisionOwner,
+      waitingOn,
+      isAgentAssignee(assignedTo) && !decisionRequired && !waitingOn ? 'queued' : 'none',
+      sourceChannel,
+      sourceMessageId === null || sourceMessageId === undefined ? null : String(sourceMessageId).slice(0, 160),
+      summary,
+      decisionPrompt,
+      JSON.stringify(decisionOptions),
+      nextActionLabel,
     ]
   );
+  let task = result.rows[0];
+  await appendTaskEvent(task.id, decisionRequired ? 'classified_decision' : waitingOn ? 'classified_pending' : 'classified_task', {
+    actor: createdBy,
+    summary: decisionRequired
+      ? 'Task classified as a Decision.'
+      : waitingOn
+        ? `Task classified as Pending on ${waitingOn}.`
+        : 'Task classified as actionable work.',
+    metadata: {
+      source,
+      assigned_to: assignedTo,
+      waiting_on: waitingOn,
+      item_type: itemType,
+    },
+  }, db);
+  try {
+    await ensureAgentJobForTask({ ...task, project_key: project.project_key }, input, db);
+    task = await fetchTaskWithProject(task.id, db) || task;
+  } catch (error) {
+    const blockerSummary = `Agent could not start because ${error.message || 'the agent job could not be created'}.`;
+    const blocked = await db.query(
+      `UPDATE bna_tasks
+       SET item_type = 'decision',
+           stage = 'needs_decision',
+           decision_required = TRUE,
+           decision_owner = COALESCE(decision_owner, 'Shloimie'),
+           agent_status = 'blocked_needs_human_decision',
+           verification_notes = $1,
+           next_action_label = 'Resolve agent start blocker',
+           last_activity_at = NOW(),
+           updated_at = NOW()
+       WHERE id = $2
+       RETURNING *`,
+      [blockerSummary, task.id]
+    );
+    await appendTaskEvent(task.id, 'agent_job_spawn_failed', {
+      actor: 'system',
+      summary: blockerSummary,
+      metadata: { error: error.message || String(error) },
+    }, db);
+    task = blocked.rows[0] || task;
+  }
   return {
-    ...result.rows[0],
+    ...task,
     project_key: project.project_key,
     project_name: project.name,
     project_short_name: project.short_name,
@@ -12436,6 +12896,9 @@ async function initDb() {
     await pool.query(createProjectMembersSQL);
     await pool.query(createWorkspacePlatformSQL);
     await pool.query(createTaskCommentsSQL);
+    await pool.query(createTaskWorkflowExtensionsSQL);
+    await pool.query(createAgentJobsSQL);
+    await pool.query(createTaskEventsSQL);
     await pool.query(createSupportTicketsSQL);
     await pool.query(createAssistantSQL);
     await pool.query(createAgentRuntimeStatusSQL);
@@ -13686,6 +14149,680 @@ async function ensureOneTimeProposalTasks(oneTime, db = pool) {
   }
 }
 
+const RABBI_SCHELLER_LAUNCH_SEED = 'rabbi-scheller-launch-2026-06-14-v1';
+
+function rabbiLaunchTaskSpecs(today = getTodayDateInTimeZone()) {
+  const d = (offset) => addDaysToDateString(today, offset);
+  const options = (...items) => items.map((item, index) => ({
+    label: item.label || `Option ${String.fromCharCode(65 + index)}`,
+    value: item.value || item,
+    recommended: Boolean(item.recommended),
+    tradeoff: item.tradeoff || '',
+  }));
+  return [
+    {
+      key: 'stripe-access',
+      title: 'Get Stripe access from Rabbi Scheller',
+      item_type: 'task',
+      stage: 'assigned',
+      waiting_on: 'Rabbi Elie Scheller',
+      assigned_to: 'Rabbi Elie Scheller',
+      category: 'accounting',
+      urgency: 'this_week',
+      summary: 'Shloimie needs Stripe access to inspect or configure payment links, products, checkout, and payment reporting.',
+      notes: 'Confirm whether Stripe is the temporary launch processor or whether an Israeli-compatible processor is required before public launch. Do not send live payment links until the payment/accounting decision is confirmed.',
+      next_action_label: 'Request Stripe access',
+    },
+    {
+      key: 'resend-ownership-decision',
+      title: 'Decide Resend account ownership for Rabbi Scheller launch',
+      item_type: 'decision',
+      stage: 'needs_decision',
+      decision_owner: 'Shloimie',
+      waiting_on: 'Shloimie',
+      category: 'communications',
+      urgency: 'today',
+      summary: 'Decide whether launch emails should use Rabbi Scheller existing Resend account/domain, Shloimie account/system, or a clean dedicated sender setup.',
+      decision_prompt: 'Which Resend account and sender domain should be used for the Rabbi Scheller launch?',
+      decision_options_json: options(
+        { label: 'A', value: 'Use Rabbi Scheller existing Resend account and domain.' },
+        { label: 'B', value: 'Use Shloimie Resend/account temporarily with a dedicated sender/domain.' },
+        { label: 'C', value: 'Create a clean dedicated project account/domain for the Rabbi Scheller launch.' }
+      ),
+      notes: 'Rabbi already has Resend. Inspect account/domain status, SPF/DKIM/DMARC, suppression/bounce state, and list import risk before the email blast.',
+      due_date: today,
+      next_action_label: 'Choose sender ownership',
+    },
+    {
+      key: 'resend-access',
+      title: 'Get Resend access from Rabbi Scheller',
+      item_type: 'task',
+      stage: 'assigned',
+      waiting_on: 'Rabbi Elie Scheller',
+      assigned_to: 'Rabbi Elie Scheller',
+      category: 'communications',
+      urgency: 'this_week',
+      summary: 'Needed to inspect existing sender setup and prepare the warm launch email sequence safely.',
+      notes: 'Depends on the Resend ownership decision. If Shloimie chooses a different account, this becomes informational rather than blocking.',
+      next_action_label: 'Request Resend access',
+    },
+    {
+      key: 'domain-dns-access',
+      title: 'Get GoDaddy, domain, and DNS access from Rabbi Scheller',
+      item_type: 'task',
+      stage: 'assigned',
+      waiting_on: 'Rabbi Elie Scheller',
+      assigned_to: 'Rabbi Elie Scheller',
+      category: 'technology',
+      urgency: 'this_week',
+      summary: 'Needed for domain, DNS, sender authentication, landing-page domain, and tracking configuration.',
+      notes: 'Confirm registrar/host. Add or verify SPF, DKIM, DMARC, landing-page subdomain, and any app/domain records.',
+      next_action_label: 'Request domain/DNS access',
+    },
+    {
+      key: 'vimeo-access',
+      title: 'Get Vimeo and video-library access from Rabbi Scheller',
+      item_type: 'task',
+      stage: 'assigned',
+      waiting_on: 'Rabbi Elie Scheller',
+      assigned_to: 'Rabbi Elie Scheller',
+      category: 'content',
+      urgency: 'this_week',
+      summary: 'Needed to inspect existing videos, library structure, embeds, access rules, and migration path.',
+      notes: 'Vimeo should not become the main customer-facing source of truth if the flow moves into the first-party BNA/Rabbi workspace, but existing assets must be audited.',
+      next_action_label: 'Request Vimeo/library access',
+    },
+    {
+      key: 'replit-source-access',
+      title: 'Get Replit source app access or export',
+      item_type: 'task',
+      stage: 'assigned',
+      waiting_on: 'Rabbi Elie Scheller',
+      assigned_to: 'Rabbi Elie Scheller',
+      category: 'technology',
+      urgency: 'today',
+      summary: 'Shloimie needs access/export for Rabbi Scheller current app so it can be audited, synced to GitHub, and moved off Replit.',
+      notes: 'Access should include source code, env/config map without exposing secrets in git, database/storage notes, analytics/statistics logic, and deployment/runtime details.',
+      due_date: today,
+      next_action_label: 'Request Replit export',
+    },
+    {
+      key: 'email-list-export',
+      title: 'Get email list and past customer/contact exports',
+      item_type: 'task',
+      stage: 'assigned',
+      waiting_on: 'Rabbi Elie Scheller',
+      assigned_to: 'Rabbi Elie Scheller',
+      category: 'communications',
+      urgency: 'this_week',
+      summary: 'Needed to prepare the warm launch sequence and original email blast.',
+      notes: 'Segment past paying customers, warm leads, general interest list, WhatsApp contacts where legally/technically appropriate. Do not send a blast until deliverability, sender, copy, and opt-out handling are tested.',
+      next_action_label: 'Request contact export',
+    },
+    {
+      key: 'drive-source-folders',
+      title: 'Get Drive worksheets and source-sheet folders',
+      item_type: 'task',
+      stage: 'assigned',
+      waiting_on: 'Rabbi Elie Scheller',
+      assigned_to: 'Rabbi Elie Scheller',
+      category: 'content',
+      urgency: 'this_week',
+      summary: 'Needed to map library content, worksheets, source sheets, daily class recordings, and upload workflow.',
+      notes: 'This feeds the member area/library and recording/worksheet posting workflow.',
+      next_action_label: 'Request Drive folders',
+    },
+    {
+      key: 'social-channel-permissions',
+      title: 'Get social and video channel permissions if needed',
+      item_type: 'task',
+      stage: 'assigned',
+      waiting_on: 'Rabbi Elie Scheller',
+      assigned_to: 'Rabbi Elie Scheller',
+      category: 'marketing',
+      urgency: 'low',
+      summary: 'Needed later for organic clips, testimonials, and ad candidates.',
+      notes: 'Not a launch-day blocker unless landing page proof/social posting depends on it.',
+      next_action_label: 'Confirm later channel access',
+    },
+    {
+      key: 'audit-replit-app',
+      title: 'Audit Rabbi Scheller Replit app and create migration plan',
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: 'Shloimie',
+      category: 'technology',
+      urgency: 'today',
+      summary: 'Inspect Rabbi Scheller existing app, runtime, data model, library/statistics features, user flows, auth, analytics, and dependencies.',
+      notes: 'Produce an audit report with what exists, what to keep, what to migrate, what to replace, risks, required secrets/access, and first migration PR/tasks. Replit is a source to audit/migrate away from, not the canonical runtime.',
+      due_date: d(2),
+      next_action_label: 'Start app audit',
+    },
+    {
+      key: 'sync-app-github',
+      title: 'Sync Rabbi Scheller app code and config map to GitHub workflow',
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: 'Shloimie',
+      category: 'technology',
+      urgency: 'this_week',
+      summary: 'Bring the app source and non-secret configuration map into the GitHub-managed workflow.',
+      notes: 'Do not commit secrets. Create .env.example entries and private secret instructions. Preserve source history if possible.',
+      due_date: d(4),
+      next_action_label: 'Prepare GitHub sync',
+    },
+    {
+      key: 'analytics-backend-decision',
+      title: 'Decide analytics and backend strategy for Rabbi Scheller app',
+      item_type: 'decision',
+      stage: 'needs_decision',
+      decision_owner: 'Shloimie',
+      waiting_on: 'Shloimie',
+      category: 'technology',
+      urgency: 'today',
+      summary: 'Decide whether Rabbi Scheller analytics/community/dialogue should use his existing backend, BNA first-party backend, or a temporary bridge.',
+      decision_prompt: 'Where should Rabbi Scheller analytics, community dialogue, and operational records live during launch?',
+      decision_options_json: options(
+        { label: 'A', value: 'Move all community/dialogue/analytics into BNA first-party backend now.' },
+        { label: 'B', value: 'Keep Rabbi app analytics temporarily and sync only key events into BNA.' },
+        { label: 'C', value: 'Use Rabbi app for customer-facing stats but BNA for CRM/tasks/billing/dialogue.', recommended: true }
+      ),
+      notes: 'Current leaning: push users/community/dialogue into Rabbi Scheller own app/context if it makes sense, but BNA remains the first-party operational source of truth.',
+      due_date: today,
+      next_action_label: 'Choose backend strategy',
+    },
+    {
+      key: 'configure-payment-links',
+      title: 'Configure launch payment links after processor decision/access',
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: 'Shloimie',
+      category: 'accounting',
+      urgency: 'this_week',
+      summary: 'Configure payment products/links for Live Membership and Library after Stripe/processor access and business/legal decision are confirmed.',
+      notes: 'Current pricing target: $149/month Live Membership and $67/month Library tier unless the latest signed agreement says otherwise. Payment success must create/update first-party BNA/Rabbi workspace records and trigger welcome/access flow.',
+      due_date: d(7),
+      next_action_label: 'Configure after processor choice',
+    },
+    {
+      key: 'prepare-resend-warm-blast',
+      title: 'Prepare Resend email sender setup and warm blast plan',
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: 'Shloimie',
+      category: 'communications',
+      urgency: 'this_week',
+      summary: 'Prepare sender domain, Resend account decision, email list segmentation, deliverability checks, and the first warm launch email sequence.',
+      notes: 'Do not blast the full list until sender authentication, test emails, unsubscribe/consent handling, and segmentation are verified.',
+      due_date: d(7),
+      next_action_label: 'Prepare warm email plan',
+    },
+    {
+      key: 'landing-page-funnel',
+      title: 'Build or update Rabbi Scheller landing page and funnel',
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: 'Shloimie',
+      category: 'marketing',
+      urgency: 'this_week',
+      summary: 'Build or refocus landing page around the Live Daily Mishnayos membership with Library as secondary option.',
+      notes: 'Include short Rabbi video slot, what boys get, how it works, US/UK/Israel positioning, testimonials/proof, pricing, FAQ, and payment/support CTAs.',
+      due_date: d(10),
+      next_action_label: 'Draft funnel update',
+    },
+    {
+      key: 'visible-launch-timeline',
+      title: 'Build Rabbi workspace task and calendar visibility for the next 2-4 weeks',
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: 'Codex',
+      agent_executable: true,
+      category: 'technology',
+      urgency: 'today',
+      summary: 'Create a visible launch timeline inside the Rabbi workspace so Rabbi Scheller sees what Shloimie is doing this week and what remains before ads.',
+      notes: 'This task is agent-executable. It must spawn an agent job immediately and never sit as pending for Codex.',
+      due_date: d(2),
+      next_action_label: 'Agent working',
+    },
+    {
+      key: 'payment-processor-decision',
+      title: 'Decide payment processor and accounting path',
+      item_type: 'decision',
+      stage: 'needs_decision',
+      decision_owner: 'Shloimie',
+      waiting_on: 'Shloimie',
+      category: 'accounting',
+      urgency: 'this_week',
+      summary: 'Decide whether to use Stripe temporarily, Rabbi Scheller existing payment setup, or an Israeli-compatible recurring payment processor before public launch.',
+      decision_prompt: 'Which payment processor/accounting path is approved for public launch?',
+      decision_options_json: options(
+        { label: 'A', value: 'Use Stripe temporarily for speed, with clear reporting and migration plan.' },
+        { label: 'B', value: 'Use Rabbi Scheller existing processor if it supports recurring subscriptions/webhooks/reporting.' },
+        { label: 'C', value: 'Pause public payments until Israeli-compatible billing/invoicing is confirmed.' }
+      ),
+      notes: 'Do not send public payment links until the business/payment/legal setup is confirmed enough for launch.',
+      next_action_label: 'Choose processor',
+    },
+    {
+      key: 'replit-migration-decision',
+      title: 'Decide Replit migration path',
+      item_type: 'decision',
+      stage: 'needs_decision',
+      decision_owner: 'Shloimie',
+      waiting_on: 'Shloimie',
+      category: 'technology',
+      urgency: 'this_week',
+      summary: 'Decide whether to migrate the whole Rabbi app off Replit now or keep a temporary bridge while rebuilding key flows in BNA.',
+      decision_prompt: 'Should the Rabbi app fully migrate now, bridge temporarily, or become read-only while BNA takes over operations?',
+      decision_options_json: options(
+        { label: 'A', value: 'Full migration now.' },
+        { label: 'B', value: 'Temporary bridge; migrate critical flows first.', recommended: true },
+        { label: 'C', value: 'Leave Replit read-only while BNA takes over CRM/tasks/billing/dialogue.' }
+      ),
+      notes: 'Recommended: temporary bridge until the app audit is complete.',
+      next_action_label: 'Choose migration path',
+    },
+    {
+      key: 'ad-start-gate-decision',
+      title: 'Define public launch and ad-start gate',
+      item_type: 'decision',
+      stage: 'needs_decision',
+      decision_owner: 'Shloimie',
+      waiting_on: 'Shloimie',
+      category: 'marketing',
+      urgency: 'this_week',
+      summary: 'Define the checklist that must pass before paid ads begin.',
+      decision_prompt: 'What must be tested before paid ads begin?',
+      decision_options_json: options(
+        { label: 'A', value: 'Start ads after payment links and landing page work.' },
+        { label: 'B', value: 'Start only after funnel, checkout, access, email, support, recordings, worksheets, and tracking are tested.' },
+        { label: 'C', value: 'Start with warm launch only, then paid retargeting after early data.', recommended: true }
+      ),
+      notes: 'Recommended: C, then B before cold ads.',
+      next_action_label: 'Choose ad gate',
+    },
+    {
+      key: 'timeline-promise-decision',
+      title: 'Decide setup timeline promise to Rabbi Scheller',
+      item_type: 'decision',
+      stage: 'needs_decision',
+      decision_owner: 'Shloimie',
+      waiting_on: 'Shloimie',
+      category: 'operations',
+      urgency: 'today',
+      summary: 'Decide how to communicate the setup timeline to Rabbi Scheller.',
+      decision_prompt: 'What setup timeline should Shloimie communicate to Rabbi Scheller?',
+      decision_options_json: options(
+        { label: 'A', value: 'Promise 2 weeks.' },
+        { label: 'B', value: 'Say 2-4 weeks, with a goal to over-deliver.', recommended: true },
+        { label: 'C', value: 'Say 4 weeks conservative timeline, with weekly milestones.' }
+      ),
+      notes: 'Shloimie prefers to under-promise and over-deliver. Say the first week is audit/access/app migration/payment/email setup; weeks 2-3 are community/funnel/testing; ads begin only after the system holds.',
+      due_date: today,
+      next_action_label: 'Choose timeline language',
+    },
+    {
+      key: 'pricing-reconciliation-decision',
+      title: 'Confirm active launch pricing and update stale docs',
+      item_type: 'decision',
+      stage: 'needs_decision',
+      decision_owner: 'Shloimie',
+      waiting_on: 'Shloimie',
+      category: 'accounting',
+      urgency: 'this_week',
+      summary: 'Confirm active launch pricing and update stale docs/tasks.',
+      decision_prompt: 'Which launch pricing should the workspace use?',
+      decision_options_json: options(
+        { label: 'A', value: '$149 Live / $67 Library as latest user direction.', recommended: true },
+        { label: 'B', value: '$149 Live / $49 Library from older playbook.' },
+        { label: 'C', value: 'Different pricing after Rabbi/accountant review.' }
+      ),
+      notes: 'The UI/docs/tasks must not conflict. Historical docs with older pricing should be marked legacy or updated.',
+      next_action_label: 'Confirm pricing',
+    },
+    {
+      key: 'fix-workspace-task-ui',
+      title: 'Fix workspace task UI and mobile layout',
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: 'Codex',
+      agent_executable: true,
+      category: 'technology',
+      urgency: 'today',
+      summary: 'Replace the awkward task board with Decisions/Pending/Tasks, no horizontal mobile overflow, clear card detail drawer, and clean BNA styling.',
+      notes: 'Agent-executable cleanup. Agent work must not appear as Pending.',
+      due_date: d(2),
+      next_action_label: 'Agent working',
+    },
+    {
+      key: 'no-stale-agent-queue',
+      title: 'Implement no-stale agent queue and staleness audit',
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: 'Codex',
+      agent_executable: true,
+      category: 'technology',
+      urgency: 'today',
+      summary: 'Add agent job lifecycle and ensure Codex/system work cannot remain human-facing Pending.',
+      notes: 'Queued agent tasks older than 10 minutes should retry or escalate; running jobs without heartbeat should stale/escalate; failed jobs should create clear human blockers.',
+      due_date: d(2),
+      next_action_label: 'Agent working',
+    },
+    {
+      key: 'seed-launch-timeline',
+      title: 'Seed Rabbi Scheller launch timeline',
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: 'Codex',
+      agent_executable: true,
+      category: 'operations',
+      urgency: 'today',
+      summary: 'Create/update Rabbi workspace timeline tasks for the 2-4 week launch plan and show them in the task calendar.',
+      notes: 'Timeline must say target 2-4 weeks to launch readiness, faster if access and migration are smooth, and no paid ads until funnel/payment/access/email/support/content/tracking are tested.',
+      due_date: d(2),
+      next_action_label: 'Agent working',
+    },
+    {
+      key: 'clean-import-contacts',
+      title: 'Clean and import Rabbi Scheller contacts',
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: 'Shloimie',
+      category: 'communications',
+      urgency: 'this_week',
+      summary: 'Import and clean Rabbi Scheller contacts into first-party records, not GHL.',
+      notes: 'Segment past paying customers, warm interested list, WhatsApp contacts if appropriate, existing parents/students/testimonials, and general organic leads.',
+      due_date: d(7),
+      next_action_label: 'Import after export',
+    },
+    {
+      key: 'warm-launch-email-sequence',
+      title: 'Prepare warm launch email sequence',
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: 'Shloimie',
+      category: 'communications',
+      urgency: 'this_week',
+      summary: 'Draft the warm launch email sequence and require explicit approval before live send.',
+      notes: 'No full blast from a brand-new sender/domain. Include unsubscribe/opt-out handling, idempotent send logs, and test deliverability first.',
+      due_date: d(8),
+      next_action_label: 'Draft emails',
+    },
+    {
+      key: 'resend-sender-auth',
+      title: 'Configure Resend sender authentication',
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: 'Shloimie',
+      category: 'communications',
+      urgency: 'this_week',
+      summary: 'Verify sender domain and DNS authentication before any launch email.',
+      notes: 'Check SPF, DKIM, DMARC, suppression/bounce state, and test deliverability to Gmail/Outlook/Yahoo/Israeli address if available.',
+      due_date: d(7),
+      next_action_label: 'Configure after account decision',
+    },
+    {
+      key: 'internal-test-emails',
+      title: 'Send internal test emails only',
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: 'Shloimie',
+      category: 'communications',
+      urgency: 'this_week',
+      summary: 'Run internal/test-recipient email checks before any live blast.',
+      notes: 'Do not send live emails during tests without explicit approval.',
+      due_date: d(9),
+      next_action_label: 'Send tests after auth',
+    },
+    {
+      key: 'email-send-approval-gate',
+      title: 'Create email send approval gate',
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: 'Shloimie',
+      category: 'communications',
+      urgency: 'this_week',
+      summary: 'Make live email sends require explicit approval and preserve idempotency/logs.',
+      notes: 'Every send must have idempotency, logs, and opt-out handling before public blast.',
+      due_date: d(9),
+      next_action_label: 'Define approval gate',
+    },
+    {
+      key: 'payment-products-metadata',
+      title: 'Configure payment products and checkout metadata after processor decision',
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: 'Shloimie',
+      category: 'accounting',
+      urgency: 'this_week',
+      summary: 'Prepare Live Membership and Library products/prices with checkout metadata and first-party record updates.',
+      notes: 'Include tier, parent email, child name if available, source/UTM, workspace/project, success/failure/cancel handling, email/access workflow, and reporting. Do not mix provider sponsorship billing with student/member tuition.',
+      due_date: d(8),
+      next_action_label: 'Configure after decision',
+    },
+    {
+      key: 'checkout-access-qa',
+      title: 'Test checkout success, failure, cancel, and access flow',
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: 'Shloimie',
+      category: 'accounting',
+      urgency: 'this_week',
+      summary: 'Test payment success/failure/cancel handling and first-party access provisioning before live links.',
+      notes: 'Use test mode or documented dry-run paths only unless the operator explicitly approves live payment operations.',
+      due_date: d(10),
+      next_action_label: 'QA checkout flow',
+    },
+    {
+      key: 'timeline-week-1',
+      title: 'Week 1 launch milestone: access, app audit, source sync, payment/email decisions',
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: 'Shloimie',
+      category: 'operations',
+      urgency: 'today',
+      summary: 'Week 1 focuses on access, audit, source sync, payment/email decisions, and visible workspace timeline.',
+      notes: 'Done means payment access path known, Resend account decision made, DNS access requested/received, Replit app audited, source synced or export plan created, contact export requested, first technical migration plan written, and visible workspace timeline created.',
+      due_date: d(7),
+      next_action_label: 'Work Week 1 milestone',
+    },
+    {
+      key: 'timeline-week-2',
+      title: 'Week 2 launch milestone: app migration, funnel, payment links, email setup',
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: 'Shloimie',
+      category: 'operations',
+      urgency: 'this_week',
+      summary: 'Week 2 starts core app migration/integration, funnel work, payment readiness, and Resend/domain testing.',
+      notes: 'Done means migration path started, payment products/links configured in test mode or ready for approval, landing page draft updated, Resend/domain records tested, contact segments prepared, no live email blast until tests pass, and Rabbi can see task status/comments.',
+      due_date: d(14),
+      next_action_label: 'Work Week 2 milestone',
+    },
+    {
+      key: 'timeline-week-3',
+      title: 'Week 3 launch milestone: community, access, support, and question-flow QA',
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: 'Shloimie',
+      category: 'operations',
+      urgency: 'this_week',
+      summary: 'Week 3 validates the first-party community/member/access flow and support/question operations.',
+      notes: 'Done means community/member/access flow tested, question form/digest flow tested, support categories tested, recording/worksheet workflow mapped/tested, payment/access flow tested, and email sequence tested internally.',
+      due_date: d(21),
+      next_action_label: 'Work Week 3 milestone',
+    },
+    {
+      key: 'timeline-week-4',
+      title: 'Week 4 launch milestone: warm launch readiness and ads gate',
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: 'Shloimie',
+      category: 'operations',
+      urgency: 'this_week',
+      summary: 'Week 4 prepares warm launch readiness and confirms that paid ads wait for the launch gate.',
+      notes: 'Done means warm audience email/WhatsApp plan approved, past paying users/email segment plan ready, support/access/payment issues tested, tracking/reporting visible, and no cold paid ads until launch gate passes. Target: 2-4 weeks to launch readiness; move faster only if access and migration are smooth.',
+      due_date: d(28),
+      next_action_label: 'Work Week 4 milestone',
+    },
+  ];
+}
+
+function normalizedTaskTitleKey(title) {
+  return String(title || '').toLowerCase().replace(/[^a-z0-9]+/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+async function ensureRabbiSchellerLaunchTasks(oneTime, db = pool) {
+  if (!oneTime?.id) return [];
+  const specs = rabbiLaunchTaskSpecs();
+  const touched = [];
+  for (const spec of specs) {
+    const titleKey = normalizedTaskTitleKey(spec.title);
+    let existing = (await db.query(
+      `SELECT t.*, p.project_key, p.name AS project_name, p.short_name AS project_short_name
+       FROM bna_tasks t
+       LEFT JOIN bna_projects p ON p.id = t.project_id
+       WHERE t.project_id = $1
+         AND COALESCE(t.stage, '') <> 'archive'
+         AND (
+           COALESCE(t.ai_parsed, '{}'::jsonb)->>'rabbi_launch_seed' = $2
+           AND COALESCE(t.ai_parsed, '{}'::jsonb)->>'seed_key' = $3
+         )
+       ORDER BY t.created_at ASC
+       LIMIT 1`,
+      [oneTime.id, RABBI_SCHELLER_LAUNCH_SEED, spec.key]
+    )).rows[0];
+    if (!existing) {
+      existing = (await db.query(
+        `SELECT t.*, p.project_key, p.name AS project_name, p.short_name AS project_short_name
+         FROM bna_tasks t
+         LEFT JOIN bna_projects p ON p.id = t.project_id
+         WHERE t.project_id = $1
+           AND COALESCE(t.stage, '') <> 'archive'
+           AND trim(regexp_replace(lower(regexp_replace(COALESCE(t.title, ''), '[^a-zA-Z0-9]+', ' ', 'g')), '\\s+', ' ', 'g')) = $2
+         ORDER BY t.created_at ASC
+         LIMIT 1`,
+        [oneTime.id, titleKey]
+      )).rows[0];
+    }
+
+    const aiParsedPatch = {
+      rabbi_launch_seed: RABBI_SCHELLER_LAUNCH_SEED,
+      seed_key: spec.key,
+      parser: 'rabbi-scheller-launch-seed',
+      kind: spec.item_type === 'decision' ? 'decision' : 'task',
+      display_title: spec.title,
+      original_text: spec.summary || spec.title,
+      agent_executable: Boolean(spec.agent_executable),
+    };
+    if (!existing) {
+      const created = await createTaskFromText({
+        title: spec.title,
+        raw_text: spec.summary || spec.title,
+        notes: spec.notes,
+        summary: spec.summary,
+        item_type: spec.item_type,
+        stage: spec.stage,
+        category: spec.category,
+        urgency: spec.urgency,
+        assigned_to: spec.assigned_to,
+        decision_owner: spec.decision_owner,
+        waiting_on: spec.waiting_on,
+        decision_prompt: spec.decision_prompt,
+        decision_options_json: spec.decision_options_json,
+        due_date: spec.due_date || null,
+        next_action_label: spec.next_action_label,
+        source: 'manual',
+        source_channel: 'seed',
+        created_by: 'system',
+        project: ONE_TIME_PROJECT_KEY,
+        agent_executable: Boolean(spec.agent_executable),
+        ai_parsed: aiParsedPatch,
+      }, {}, db);
+      touched.push({ ...created, launch_seed_created: true });
+      continue;
+    }
+
+    const nextOptions = normalizeDecisionOptions(spec.decision_options_json);
+    const existingOptions = normalizeDecisionOptions(existing.decision_options_json);
+    const changed = [
+      ['title', spec.title],
+      ['summary', spec.summary || null],
+      ['notes', spec.notes || null],
+      ['item_type', spec.item_type || 'task'],
+      ['stage', spec.stage || 'assigned'],
+      ['category', safeTaskCategory(spec.category)],
+      ['urgency', safeTaskUrgency(spec.urgency)],
+      ['assigned_to', normalizeTaskAssignee(spec.assigned_to)],
+      ['decision_owner', normalizeTaskPerson(spec.decision_owner)],
+      ['waiting_on', spec.waiting_on ? normalizeTaskPerson(spec.waiting_on) : null],
+      ['decision_prompt', spec.decision_prompt || null],
+      ['due_date', spec.due_date || null],
+      ['next_action_label', spec.next_action_label || null],
+    ].some(([key, value]) => String(existing[key] ?? '') !== String(value ?? ''))
+      || JSON.stringify(existingOptions) !== JSON.stringify(nextOptions)
+      || (existing.ai_parsed || {})?.rabbi_launch_seed !== RABBI_SCHELLER_LAUNCH_SEED;
+
+    let task = existing;
+    if (changed) {
+      const updated = await db.query(
+        `UPDATE bna_tasks
+         SET title = $1,
+             summary = $2,
+             notes = $3,
+             item_type = $4,
+             stage = $5,
+             category = $6,
+             urgency = $7,
+             assigned_to = $8,
+             decision_owner = $9,
+             waiting_on = $10,
+             decision_required = $11,
+             decision_prompt = $12,
+             decision_options_json = $13::jsonb,
+             due_date = $14::date,
+             next_action_label = $15,
+             ai_parsed = COALESCE(ai_parsed, '{}'::jsonb) || $16::jsonb,
+             last_activity_at = COALESCE(last_activity_at, created_at),
+             updated_at = NOW()
+         WHERE id = $17
+         RETURNING *`,
+        [
+          spec.title,
+          spec.summary || null,
+          spec.notes || null,
+          spec.item_type || 'task',
+          spec.stage || 'assigned',
+          safeTaskCategory(spec.category),
+          safeTaskUrgency(spec.urgency),
+          normalizeTaskAssignee(spec.assigned_to),
+          normalizeTaskPerson(spec.decision_owner),
+          spec.waiting_on ? normalizeTaskPerson(spec.waiting_on) : null,
+          spec.item_type === 'decision',
+          spec.decision_prompt || null,
+          JSON.stringify(nextOptions),
+          spec.due_date || null,
+          spec.next_action_label || null,
+          JSON.stringify(aiParsedPatch),
+          existing.id,
+        ]
+      );
+      task = updated.rows[0] || existing;
+      await appendTaskEvent(task.id, 'rabbi_launch_seed_updated', {
+        actor: 'system',
+        summary: 'Rabbi Scheller launch seed clarified this workspace task.',
+        metadata: { seed_key: spec.key, seed: RABBI_SCHELLER_LAUNCH_SEED },
+      }, db);
+    }
+    if (spec.agent_executable || isAgentAssignee(task.assigned_to)) {
+      await ensureAgentJobForTask(task, { agent_executable: true, source: 'rabbi_launch_seed' }, db);
+      task = await fetchTaskWithProject(task.id, db) || task;
+    }
+    touched.push({ ...task, launch_seed_created: false, launch_seed_updated: changed });
+  }
+  return touched;
+}
+
 async function ensureDefaultProjects(db = pool) {
   const bna = await upsertProject({
     projectKey: DEFAULT_PROJECT_KEY,
@@ -13737,6 +14874,7 @@ async function ensureDefaultProjects(db = pool) {
     [bna.id]
   );
   await ensureOneTimeProposalTasks(oneTime, db);
+  await ensureRabbiSchellerLaunchTasks(oneTime, db);
 
   return { bna, oneTime };
 }
@@ -15368,7 +16506,8 @@ function safeTaskCategory(value) {
 
 function safeTaskUrgency(value) {
   const allowed = new Set(['urgent', 'today', 'this_week', 'low']);
-  return allowed.has(value) ? value : 'this_week';
+  const normalized = String(value || '').trim().toLowerCase();
+  return allowed.has(normalized) ? normalized : 'this_week';
 }
 
 function safeTaskSource(value) {
@@ -31563,36 +32702,75 @@ app.get('/api/bna/pending-briefs', requireAdmin, (req, res) => {
 });
 
 app.get('/api/bna/tasks', requireAdmin, async (req, res) => {
-  const { stage, category, urgency, project } = req.query;
+  const {
+    stage,
+    category,
+    urgency,
+    project,
+    project_key,
+    project_id,
+    workspace_id,
+    item_type,
+    status_bucket,
+    assigned_to,
+    waiting_on,
+    decision_owner,
+    agent_status,
+    date_from,
+    date_to,
+    due_date,
+    stale_only,
+    search,
+  } = req.query;
   const requestedLimit = Number(req.query.limit || 500);
   const taskLimit = Math.max(1, Math.min(Number.isFinite(requestedLimit) ? Math.trunc(requestedLimit) : 500, 1000));
 
-  let whereClause = 'WHERE 1=1';
   const params = [];
   let paramIdx = 1;
-
+  const where = ['1=1'];
+  const outerWhere = ['1=1'];
+  const addParam = (value) => {
+    params.push(value);
+    return `$${paramIdx++}`;
+  };
   const scopedProjectKey = opsScopeProjectKey(req);
-  const projectKey = scopedProjectKey || (project && project !== 'all' ? normalizeProjectKey(project) : '');
-  
-  if (stage) {
-    whereClause += ` AND t.stage = $${paramIdx++}`;
-    params.push(stage);
+  const projectKey = scopedProjectKey || normalizeProjectKey(project_key || project || '');
+
+  if (stage) where.push(`t.stage = ${addParam(String(stage))}`);
+  if (category) where.push(`t.category = ${addParam(safeTaskCategory(category))}`);
+  if (urgency) where.push(`t.urgency = ${addParam(safeTaskUrgency(urgency))}`);
+  if (project_id) where.push(`t.project_id = ${addParam(Number(project_id))}`);
+  if (projectKey && projectKey !== 'all') where.push(`p.project_key = ${addParam(projectKey)}`);
+  if (workspace_id) where.push(`t.workspace_id = ${addParam(Number(workspace_id))}`);
+  if (item_type && item_type !== 'all') where.push(`COALESCE(t.item_type, 'task') = ${addParam(safeTaskItemType(item_type))}`);
+  if (assigned_to) where.push(`LOWER(COALESCE(t.assigned_to, '')) = LOWER(${addParam(String(assigned_to))})`);
+  if (waiting_on) where.push(`LOWER(COALESCE(t.waiting_on, '')) = LOWER(${addParam(String(waiting_on))})`);
+  if (decision_owner) where.push(`LOWER(COALESCE(t.decision_owner, '')) = LOWER(${addParam(String(decision_owner))})`);
+  if (agent_status) where.push(`COALESCE(t.agent_status, 'none') = ${addParam(safeAgentStatus(agent_status))}`);
+  if (date_from) where.push(`COALESCE(t.due_date, t.created_at::date) >= ${addParam(String(date_from))}::date`);
+  if (date_to) where.push(`COALESCE(t.due_date, t.created_at::date) <= ${addParam(String(date_to))}::date`);
+  if (due_date) where.push(`t.due_date = ${addParam(String(due_date))}::date`);
+  if (search) {
+    where.push(`(
+      t.title ILIKE ${addParam(`%${String(search)}%`)}
+      OR COALESCE(t.summary, '') ILIKE ${addParam(`%${String(search)}%`)}
+      OR COALESCE(t.notes, '') ILIKE ${addParam(`%${String(search)}%`)}
+      OR COALESCE(t.waiting_on, '') ILIKE ${addParam(`%${String(search)}%`)}
+      OR COALESCE(t.assigned_to, '') ILIKE ${addParam(`%${String(search)}%`)}
+    )`);
   }
-  if (category) {
-    whereClause += ` AND t.category = $${paramIdx++}`;
-    params.push(category);
+
+  const normalizedBucket = String(status_bucket || '').trim().toLowerCase();
+  if (['decisions', 'pending', 'tasks', 'done'].includes(normalizedBucket)) {
+    outerWhere.push(`status_bucket = ${addParam(normalizedBucket)}`);
   }
-  if (urgency) {
-    whereClause += ` AND t.urgency = $${paramIdx++}`;
-    params.push(urgency);
+  if (/^(1|true|yes)$/i.test(String(stale_only || ''))) {
+    outerWhere.push('is_stale = true');
   }
-  if (projectKey) {
-    whereClause += ` AND COALESCE(p.project_key, $${paramIdx}) = $${paramIdx++}`;
-    params.push(projectKey);
-  }
-  params.push(taskLimit);
+  const limitParam = addParam(taskLimit);
+
   const query = `
-    WITH filtered_tasks AS (
+    WITH task_base AS (
       SELECT
         t.*,
         p.project_key,
@@ -31600,23 +32778,124 @@ app.get('/api/bna/tasks', requireAdmin, async (req, res) => {
         p.short_name AS project_short_name
       FROM bna_tasks t
       LEFT JOIN bna_projects p ON p.id = t.project_id
-      ${whereClause}
-      ORDER BY t.created_at DESC
-      LIMIT $${paramIdx}
+      WHERE ${where.join(' AND ')}
     ),
     comment_counts AS (
-      SELECT task_id, COUNT(*) AS comment_count
+      SELECT task_id, COUNT(*) AS comment_count, MAX(created_at) AS last_comment_at
       FROM bna_task_comments
-      WHERE task_id IN (SELECT id FROM filtered_tasks)
+      WHERE task_id IN (SELECT id FROM task_base)
       GROUP BY task_id
+    ),
+    latest_comments AS (
+      SELECT DISTINCT ON (task_id)
+        task_id,
+        body AS latest_comment_preview,
+        created_at AS latest_comment_at
+      FROM bna_task_comments
+      WHERE task_id IN (SELECT id FROM task_base)
+      ORDER BY task_id, created_at DESC
+    ),
+    latest_jobs AS (
+      SELECT DISTINCT ON (task_id)
+        id AS latest_agent_job_id,
+        task_id,
+        agent_name,
+        job_type,
+        status AS agent_job_status,
+        heartbeat_at AS agent_job_heartbeat_at,
+        started_at AS agent_job_started_at,
+        completed_at AS agent_job_completed_at,
+        result_summary AS agent_result_summary,
+        error_message AS agent_error_message,
+        created_at AS agent_job_created_at,
+        updated_at AS agent_job_updated_at
+      FROM bna_agent_jobs
+      WHERE task_id IN (SELECT id FROM task_base)
+      ORDER BY task_id, created_at DESC
+    ),
+    enriched_base AS (
+      SELECT
+        task_base.*,
+        COALESCE(comment_counts.comment_count, 0)::int AS comment_count,
+        comment_counts.last_comment_at,
+        latest_comments.latest_comment_preview,
+        latest_jobs.latest_agent_job_id,
+        latest_jobs.agent_name,
+        latest_jobs.job_type,
+        latest_jobs.agent_job_status,
+        latest_jobs.agent_job_heartbeat_at,
+        latest_jobs.agent_job_started_at,
+        latest_jobs.agent_job_completed_at,
+        latest_jobs.agent_job_created_at,
+        latest_jobs.agent_job_updated_at,
+        latest_jobs.agent_result_summary,
+        latest_jobs.agent_error_message,
+        COALESCE(task_base.last_activity_at, comment_counts.last_comment_at, task_base.updated_at, task_base.created_at) AS effective_last_activity_at,
+        COALESCE(latest_jobs.agent_job_status, task_base.agent_status, 'none') AS effective_agent_status,
+        CASE
+          WHEN task_base.completed_at IS NOT NULL OR task_base.verified_at IS NOT NULL OR task_base.stage IN ('done', 'archive') THEN 'done'
+          WHEN COALESCE(task_base.item_type, 'task') = 'decision' OR task_base.decision_required OR task_base.stage = 'needs_decision' THEN 'decisions'
+          WHEN COALESCE(task_base.waiting_on, '') <> ''
+            AND LOWER(COALESCE(task_base.waiting_on, '')) !~ '(codex|kimi|system|agent|automation)' THEN 'pending'
+          ELSE 'tasks'
+        END AS status_bucket
+      FROM task_base
+      LEFT JOIN comment_counts ON comment_counts.task_id = task_base.id
+      LEFT JOIN latest_comments ON latest_comments.task_id = task_base.id
+      LEFT JOIN latest_jobs ON latest_jobs.task_id = task_base.id
+    ),
+    enriched AS (
+      SELECT
+        enriched_base.*,
+        CASE
+          WHEN status_bucket = 'done' THEN NULL
+          WHEN effective_agent_status = 'queued'
+            AND COALESCE(agent_job_created_at, updated_at, created_at) < NOW() - INTERVAL '10 minutes'
+            THEN 'Agent job queued more than 10 minutes'
+          WHEN effective_agent_status = 'running'
+            AND COALESCE(agent_job_heartbeat_at, agent_job_started_at, started_at, updated_at, created_at) < NOW() - INTERVAL '2 hours'
+            THEN 'Agent job running without a fresh heartbeat'
+          WHEN effective_agent_status = 'failed'
+            THEN COALESCE(agent_error_message, 'Agent job failed and needs a human-readable blocker')
+          WHEN status_bucket = 'decisions'
+            AND effective_last_activity_at < NOW() - INTERVAL '48 hours'
+            THEN 'Decision has had no activity for 48 hours'
+          WHEN status_bucket = 'pending'
+            AND effective_last_activity_at < NOW() - INTERVAL '24 hours'
+            THEN 'Pending blocker has had no update for 24 hours'
+          WHEN status_bucket = 'tasks'
+            AND due_date IS NOT NULL
+            AND due_date < CURRENT_DATE
+            THEN 'Task due date has passed'
+          WHEN status_bucket = 'tasks'
+            AND effective_last_activity_at < NOW() - INTERVAL '48 hours'
+            THEN 'Task has had no activity for 48 hours'
+          ELSE NULL
+        END AS stale_reason,
+        CASE
+          WHEN status_bucket = 'decisions' THEN 'Choose, ask for more info, or convert to a task'
+          WHEN status_bucket = 'pending' THEN 'Request the missing access/input or mark received'
+          WHEN effective_agent_status = 'queued' THEN 'Retry/start the agent job or escalate if it cannot start'
+          WHEN effective_agent_status = 'running' THEN 'Check heartbeat and latest agent report'
+          WHEN effective_agent_status = 'failed' THEN 'Create a human decision or pending blocker from the failure'
+          WHEN due_date IS NOT NULL AND due_date < CURRENT_DATE THEN 'Reschedule, start, or mark done'
+          ELSE COALESCE(next_action_label, 'Review next action')
+        END AS recommended_next_action
+      FROM enriched_base
     )
     SELECT
-      filtered_tasks.*,
-      COALESCE(comment_counts.comment_count, 0)::int AS comment_count
-    FROM filtered_tasks
-    LEFT JOIN comment_counts ON comment_counts.task_id = filtered_tasks.id
-    ORDER BY filtered_tasks.created_at DESC`;
-  
+      *,
+      (stale_reason IS NOT NULL) AS is_stale,
+      CASE WHEN stale_reason IS NOT NULL THEN COALESCE(stale_at, effective_last_activity_at) ELSE NULL END AS stale_since
+    FROM enriched
+    WHERE ${outerWhere.join(' AND ')}
+    ORDER BY
+      CASE status_bucket WHEN 'decisions' THEN 1 WHEN 'pending' THEN 2 WHEN 'tasks' THEN 3 WHEN 'done' THEN 4 ELSE 5 END,
+      CASE urgency WHEN 'urgent' THEN 1 WHEN 'today' THEN 2 WHEN 'this_week' THEN 3 ELSE 4 END,
+      COALESCE(due_date, created_at::date) ASC,
+      created_at DESC
+    LIMIT ${limitParam}`;
+
   try {
     await ensureDefaultProjects();
     const result = await pool.query(query, params);
@@ -31641,19 +32920,28 @@ app.post('/api/bna/tasks', requireAdmin, async (req, res) => {
           title: candidate.title,
           raw_text: candidate.original_text,
           notes: candidate.notes,
+          summary: candidate.summary,
+          item_type: candidate.item_type,
           stage: candidate.stage,
           category: candidate.category,
           urgency: candidate.urgency,
           source: source || 'ramble',
           created_by: created_by || 'operator',
           assigned_to: candidate.assigned_to,
+          decision_owner: candidate.decision_owner,
+          waiting_on: candidate.waiting_on,
+          next_action_label: candidate.next_action_label,
+          agent_executable: candidate.agent_executable,
           project: candidate.project_key || inferProjectKeyFromText(candidate.original_text),
           decision_required: candidate.decision_required,
           ai_parsed: {
             parser: 'heuristic-v3',
-            kind: 'task_or_decision',
+            kind: candidate.item_type || 'task',
             display_title: candidate.title,
             original_text: candidate.original_text,
+            waiting_on: candidate.waiting_on || null,
+            agent_executable: Boolean(candidate.agent_executable),
+            needs_human_review: Boolean(candidate.needs_human_review),
             project: candidate.project_key || inferProjectKeyFromText(candidate.original_text),
           },
         },
@@ -31736,7 +33024,7 @@ app.post('/api/bna/tasks/:id/comments', requireAdmin, async (req, res) => {
   try {
     await assertTaskAccess(req, req.params.id);
     const author = String(req.body?.author || req.opsUser || 'dashboard').slice(0, 120);
-    const visibility = ['internal', 'operator', 'project'].includes(req.body?.visibility) ? req.body.visibility : 'internal';
+    const visibility = ['workspace', 'internal', 'manager_only', 'provider_visible', 'system', 'operator', 'project'].includes(req.body?.visibility) ? req.body.visibility : 'workspace';
     const source = ['dashboard', 'telegram', 'api', 'system'].includes(req.body?.source) ? req.body.source : 'dashboard';
     const result = await pool.query(
       `INSERT INTO bna_task_comments (task_id, author, body, visibility, source, source_context)
@@ -31758,12 +33046,17 @@ app.post('/api/bna/tasks/:id/comments', requireAdmin, async (req, res) => {
         `UPDATE bna_tasks
          SET stage = 'assigned',
              assigned_to = 'Codex',
+             item_type = 'task',
+             waiting_on = NULL,
+             agent_status = 'queued',
              decision_required = FALSE,
              started_at = NULL,
              completed_at = NULL,
              archived_at = NULL,
              verified_at = NULL,
              verification_notes = $2,
+             next_action_label = 'Agent working',
+             last_activity_at = NOW(),
              updated_at = NOW()
          WHERE id = $1
          RETURNING *`,
@@ -31773,6 +33066,27 @@ app.post('/api/bna/tasks/:id/comments', requireAdmin, async (req, res) => {
         ]
       );
       task = taskResult.rows[0] || null;
+      if (task) {
+        await appendTaskEvent(task.id, 'human_comment_requeued_agent_job', {
+          actor: author,
+          summary: 'Human comment requeued the task for Codex.',
+          metadata: { comment_id: result.rows[0]?.id || null, source },
+        });
+        await ensureAgentJobForTask(task, { agent_executable: true, source: 'comment_requeue' });
+        task = await fetchTaskWithProject(task.id) || task;
+      }
+    } else {
+      await pool.query(
+        `UPDATE bna_tasks
+         SET last_activity_at = NOW(), updated_at = NOW()
+         WHERE id = $1`,
+        [req.params.id]
+      );
+      await appendTaskEvent(req.params.id, 'human_commented', {
+        actor: author,
+        summary: 'Comment added to task.',
+        metadata: { comment_id: result.rows[0]?.id || null, source },
+      });
     }
     res.json({ success: true, comment: result.rows[0], requeued: Boolean(task), task });
   } catch (err) {
@@ -31787,10 +33101,12 @@ app.patch('/api/bna/tasks/:id', requireAdmin, async (req, res) => {
   const fields = [];
   const values = [];
   let idx = 1;
+  const suppliedKeys = new Set(Object.keys(updates || {}));
   
   const allowedFields = new Set([
     'title',
     'notes',
+    'summary',
     'stage',
     'category',
     'urgency',
@@ -31806,6 +33122,18 @@ app.patch('/api/bna/tasks/:id', requireAdmin, async (req, res) => {
     'verification_notes',
     'decision_required',
     'author',
+    'item_type',
+    'decision_owner',
+    'waiting_on',
+    'agent_status',
+    'source_channel',
+    'source_message_id',
+    'workspace_role',
+    'decision_prompt',
+    'decision_options_json',
+    'next_action_label',
+    'last_activity_at',
+    'stale_at',
   ]);
   try {
     await assertTaskAccess(req, id);
@@ -31818,15 +33146,47 @@ app.patch('/api/bna/tasks/:id', requireAdmin, async (req, res) => {
         continue;
       }
       if (!allowedFields.has(key)) continue;
-      const nextValue = key === 'assigned_to'
-        ? normalizeTaskAssignee(value)
-        : key === 'category'
-          ? safeTaskCategory(value)
-          : value;
+      let nextValue = value;
+      if (key === 'assigned_to') nextValue = normalizeTaskAssignee(value);
+      if (key === 'category') nextValue = safeTaskCategory(value);
+      if (key === 'urgency') nextValue = safeTaskUrgency(value);
+      if (key === 'item_type') nextValue = safeTaskItemType(value);
+      if (key === 'decision_owner') nextValue = normalizeTaskPerson(value);
+      if (key === 'waiting_on') {
+        const normalized = normalizeTaskPerson(value);
+        nextValue = normalized && isAgentAssignee(normalized) ? null : normalized;
+      }
+      if (key === 'agent_status') nextValue = safeAgentStatus(value);
+      if (key === 'decision_options_json') nextValue = JSON.stringify(normalizeDecisionOptions(value));
       fields.push(`${key} = $${idx++}`);
       values.push(nextValue);
     }
     if (!fields.length) return res.status(400).json({ error: 'No allowed task fields supplied' });
+    if (
+      updates.item_type === 'decision'
+      || updates.decision_required === true
+      || updates.stage === 'needs_decision'
+    ) {
+      if (!suppliedKeys.has('item_type')) fields.push(`item_type = 'decision'`);
+      if (!suppliedKeys.has('decision_required')) fields.push(`decision_required = TRUE`);
+      if (!suppliedKeys.has('stage')) fields.push(`stage = 'needs_decision'`);
+    }
+    if (updates.item_type === 'task' && updates.decision_required === false && updates.stage !== 'needs_decision') {
+      if (!suppliedKeys.has('item_type')) fields.push(`item_type = 'task'`);
+      if (!suppliedKeys.has('decision_required')) fields.push(`decision_required = FALSE`);
+    }
+    if (!suppliedKeys.has('agent_status') && (
+      updates.stage === 'done'
+      || updates.completed_at
+      || updates.verified_at
+    )) {
+      fields.push(`agent_status = CASE WHEN LOWER(COALESCE(assigned_to, '')) ~ '(codex|kimi|system|agent)' THEN 'completed' ELSE agent_status END`);
+    } else if (!suppliedKeys.has('agent_status') && updates.stage === 'in_progress' && isAgentAssignee(updates.assigned_to || updates.assignedTo || '')) {
+      fields.push(`agent_status = 'running'`);
+    } else if (!suppliedKeys.has('agent_status') && updates.stage === 'assigned' && isAgentAssignee(updates.assigned_to || updates.assignedTo || '')) {
+      fields.push(`agent_status = 'queued'`);
+    }
+    if (!suppliedKeys.has('last_activity_at')) fields.push('last_activity_at = NOW()');
     fields.push('updated_at = NOW()');
     values.push(id);
 
@@ -31834,10 +33194,242 @@ app.patch('/api/bna/tasks/:id', requireAdmin, async (req, res) => {
       `UPDATE bna_tasks SET ${fields.join(', ')} WHERE id = $${idx} RETURNING *`,
       values
     );
-    res.json({ success: true, task: result.rows[0] });
+    let task = result.rows[0];
+    const stageNow = normalizeTaskStage(task?.stage);
+    const actor = req.opsUser || 'dashboard';
+    await appendTaskEvent(id, 'task_updated', {
+      actor,
+      summary: `Task updated from ${req.path}.`,
+      metadata: { fields: Object.keys(updates || {}) },
+    });
+    if (stageNow === 'done' || task.completed_at || task.verified_at) {
+      await updateLatestAgentJobForTask(id, 'completed', {
+        result_summary: task.verification_notes || 'Task marked complete.',
+      });
+    } else if (stageNow === 'needs_decision' || task.decision_required || task.item_type === 'decision') {
+      if (isAgentAssignee(task.assigned_to) || safeAgentStatus(task.agent_status) !== 'none') {
+        await updateLatestAgentJobForTask(id, 'blocked_needs_human_decision', {
+          result_summary: task.verification_notes || 'Task needs a human decision before agent work continues.',
+        });
+      }
+    } else if (stageNow === 'in_progress' && isAgentAssignee(task.assigned_to)) {
+      await ensureAgentJobForTask(task, { agent_executable: true, source: 'patch' });
+      await updateLatestAgentJobForTask(id, 'running', {
+        result_summary: 'Agent task marked running.',
+      });
+    } else if (taskNeedsAgentJob(task, { agent_executable: isAgentAssignee(task.assigned_to), source: 'patch' })) {
+      await ensureAgentJobForTask(task, { agent_executable: true, source: 'patch' });
+    }
+    task = await fetchTaskWithProject(id) || task;
+    res.json({ success: true, task });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
   }
+});
+
+async function patchTaskAndReturn(id, updates = {}, { actor = 'dashboard', eventType = 'task_action', eventSummary = 'Task action applied.' } = {}) {
+  const fields = [];
+  const values = [];
+  let idx = 1;
+  for (const [key, value] of Object.entries(updates)) {
+    fields.push(`${key} = $${idx++}`);
+    values.push(value);
+  }
+  fields.push('last_activity_at = NOW()');
+  fields.push('updated_at = NOW()');
+  values.push(id);
+  const result = await pool.query(
+    `UPDATE bna_tasks SET ${fields.join(', ')} WHERE id = $${idx} RETURNING *`,
+    values
+  );
+  const task = result.rows[0] || null;
+  if (task) {
+    await appendTaskEvent(id, eventType, {
+      actor,
+      summary: eventSummary,
+      metadata: { updates: Object.keys(updates) },
+    });
+  }
+  return task;
+}
+
+async function taskActionResponse(req, res, action) {
+  try {
+    await assertTaskAccess(req, req.params.id);
+    const task = await action();
+    res.json({ success: true, task: await fetchTaskWithProject(req.params.id) || task });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+}
+
+app.post('/api/bna/tasks/:id/actions/spawn-agent-job', requireAdmin, async (req, res) => {
+  taskActionResponse(req, res, async () => {
+    const task = await patchTaskAndReturn(req.params.id, {
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: 'Codex',
+      waiting_on: null,
+      decision_required: false,
+      agent_status: 'queued',
+      next_action_label: 'Agent working',
+    }, {
+      actor: req.opsUser || 'dashboard',
+      eventType: 'agent_job_requested',
+      eventSummary: 'Agent job requested from task action.',
+    });
+    await ensureAgentJobForTask(task, { agent_executable: true, source: 'task_action' });
+    return task;
+  });
+});
+
+app.post('/api/bna/tasks/:id/actions/mark-done', requireAdmin, async (req, res) => {
+  taskActionResponse(req, res, async () => {
+    const note = String(req.body?.verification_notes || req.body?.notes || 'Marked done from task action.').slice(0, 4000);
+    const task = await patchTaskAndReturn(req.params.id, {
+      stage: 'done',
+      completed_at: req.body?.completed_at || new Date().toISOString(),
+      verified_at: req.body?.verified_at || new Date().toISOString(),
+      verification_notes: note,
+      decision_required: false,
+      agent_status: 'completed',
+      next_action_label: 'Done',
+    }, {
+      actor: req.opsUser || 'dashboard',
+      eventType: 'task_marked_done',
+      eventSummary: note,
+    });
+    await updateLatestAgentJobForTask(req.params.id, 'completed', { result_summary: note });
+    return task;
+  });
+});
+
+app.post('/api/bna/tasks/:id/actions/mark-pending', requireAdmin, async (req, res) => {
+  taskActionResponse(req, res, async () => {
+    const waitingOn = normalizeTaskPerson(req.body?.waiting_on || req.body?.waitingOn || req.body?.assigned_to || 'Shloimie');
+    if (!waitingOn || isAgentAssignee(waitingOn)) {
+      const error = new Error('Pending requires a human or external waiting_on value.');
+      error.statusCode = 400;
+      throw error;
+    }
+    const task = await patchTaskAndReturn(req.params.id, {
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: normalizeTaskAssignee(req.body?.assigned_to || waitingOn) || waitingOn,
+      waiting_on: waitingOn,
+      decision_required: false,
+      agent_status: 'none',
+      next_action_label: String(req.body?.next_action_label || req.body?.nextActionLabel || `Request from ${waitingOn}`).slice(0, 180),
+    }, {
+      actor: req.opsUser || 'dashboard',
+      eventType: 'task_marked_pending',
+      eventSummary: `Task is pending on ${waitingOn}.`,
+    });
+    await updateLatestAgentJobForTask(req.params.id, 'blocked_needs_human_decision', {
+      result_summary: `Task is pending on ${waitingOn}.`,
+    });
+    return task;
+  });
+});
+
+app.post('/api/bna/tasks/:id/actions/convert-to-task', requireAdmin, async (req, res) => {
+  taskActionResponse(req, res, async () => {
+    const assignedTo = normalizeTaskAssignee(req.body?.assigned_to || req.body?.assignedTo || 'Shloimie');
+    const task = await patchTaskAndReturn(req.params.id, {
+      item_type: 'task',
+      stage: 'assigned',
+      assigned_to: assignedTo,
+      waiting_on: null,
+      decision_required: false,
+      agent_status: isAgentAssignee(assignedTo) ? 'queued' : 'none',
+      next_action_label: String(req.body?.next_action_label || req.body?.nextActionLabel || (isAgentAssignee(assignedTo) ? 'Agent working' : 'Start task')).slice(0, 180),
+    }, {
+      actor: req.opsUser || 'dashboard',
+      eventType: 'decision_converted_to_task',
+      eventSummary: 'Decision converted to an actionable task.',
+    });
+    if (isAgentAssignee(assignedTo)) await ensureAgentJobForTask(task, { agent_executable: true, source: 'convert_to_task' });
+    return task;
+  });
+});
+
+app.post('/api/bna/tasks/:id/actions/reassign', requireAdmin, async (req, res) => {
+  taskActionResponse(req, res, async () => {
+    const assignedTo = normalizeTaskAssignee(req.body?.assigned_to || req.body?.assignedTo);
+    if (!assignedTo) {
+      const error = new Error('assigned_to is required.');
+      error.statusCode = 400;
+      throw error;
+    }
+    const task = await patchTaskAndReturn(req.params.id, {
+      assigned_to: assignedTo,
+      waiting_on: isAgentAssignee(assignedTo) ? null : (req.body?.waiting_on ? normalizeTaskPerson(req.body.waiting_on) : null),
+      agent_status: isAgentAssignee(assignedTo) ? 'queued' : 'none',
+      next_action_label: isAgentAssignee(assignedTo) ? 'Agent working' : `Assigned to ${assignedTo}`,
+    }, {
+      actor: req.opsUser || 'dashboard',
+      eventType: 'task_reassigned',
+      eventSummary: `Task reassigned to ${assignedTo}.`,
+    });
+    if (isAgentAssignee(assignedTo)) await ensureAgentJobForTask(task, { agent_executable: true, source: 'reassign' });
+    return task;
+  });
+});
+
+app.post('/api/bna/tasks/:id/actions/choose-decision', requireAdmin, async (req, res) => {
+  taskActionResponse(req, res, async () => {
+    const current = await fetchTaskWithProject(req.params.id);
+    if (!current) {
+      const error = new Error('Task not found');
+      error.statusCode = 404;
+      throw error;
+    }
+    const optionLabel = String(req.body?.option_label || req.body?.label || 'Chosen option').slice(0, 160);
+    const optionValue = String(req.body?.option_value || req.body?.value || '').slice(0, 1000);
+    const decisionLine = `Decision chosen: ${optionLabel}${optionValue ? ` - ${optionValue}` : ''}`;
+    const workRemains = Boolean(req.body?.work_remains || req.body?.workRemains || req.body?.assigned_to || req.body?.agent_executable);
+    const assignedTo = normalizeTaskAssignee(req.body?.assigned_to || req.body?.assignedTo || (req.body?.agent_executable ? 'Codex' : 'Shloimie'));
+    const updates = workRemains
+      ? {
+        item_type: 'task',
+        stage: 'assigned',
+        assigned_to: assignedTo,
+        waiting_on: null,
+        decision_required: false,
+        agent_status: isAgentAssignee(assignedTo) ? 'queued' : 'none',
+        notes: [current.notes, decisionLine, req.body?.notes].filter(Boolean).join('\n\n'),
+        verification_notes: decisionLine,
+        next_action_label: isAgentAssignee(assignedTo) ? 'Agent working' : 'Start task',
+      }
+      : {
+        stage: 'done',
+        completed_at: new Date().toISOString(),
+        verified_at: new Date().toISOString(),
+        decision_required: false,
+        agent_status: 'completed',
+        notes: [current.notes, decisionLine, req.body?.notes].filter(Boolean).join('\n\n'),
+        verification_notes: decisionLine,
+        next_action_label: 'Decision resolved',
+      };
+    const task = await patchTaskAndReturn(req.params.id, updates, {
+      actor: req.opsUser || 'dashboard',
+      eventType: 'decision_chosen',
+      eventSummary: decisionLine,
+    });
+    await pool.query(
+      `INSERT INTO bna_task_comments (task_id, author, body, visibility, source, source_context)
+       VALUES ($1, $2, $3, 'workspace', 'system', $4::jsonb)`,
+      [
+        req.params.id,
+        req.opsUser || 'dashboard',
+        decisionLine,
+        JSON.stringify({ action: 'choose_decision', option_label: optionLabel, option_value: optionValue }),
+      ]
+    );
+    if (workRemains && isAgentAssignee(assignedTo)) await ensureAgentJobForTask(task, { agent_executable: true, source: 'choose_decision' });
+    if (!workRemains) await updateLatestAgentJobForTask(req.params.id, 'completed', { result_summary: decisionLine });
+    return task;
+  });
 });
 
 // Database migration endpoint
@@ -31959,6 +33551,9 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
     await pool.query(createStudentsSQL);
     await pool.query(createStudentBotSettingsSQL);
     await pool.query(createTaskCommentsSQL);
+    await pool.query(createTaskWorkflowExtensionsSQL);
+    await pool.query(createAgentJobsSQL);
+    await pool.query(createTaskEventsSQL);
     await pool.query(createSupportTicketsSQL);
     await pool.query(createAssistantSQL);
     await pool.query(createSessionsSQL);

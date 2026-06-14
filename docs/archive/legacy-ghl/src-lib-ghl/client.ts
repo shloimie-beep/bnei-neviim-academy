@@ -1,4 +1,6 @@
 /**
+ * Legacy retired GHL archive. GHL/GoHighLevel/LeadConnector is not active BNA runtime and must not be used for new BNA implementation.
+ *
  * GoHighLevel (GHL) API Client for BNA
  * Uses Private Integration Token (PIT) for authentication
  */

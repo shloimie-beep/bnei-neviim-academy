@@ -25,3 +25,7 @@ Current state:
   program, currently framed around 10:00 to 1:00, with private coaching and
   parent partnership. It is not the old family-accountability app and not a
   standalone outsourced secular-curriculum platform.
+- BNA no longer uses GHL, GoHighLevel, LeadConnector, or LeadConnectorHQ as
+  active runtime. First-party BNA Operations owns contacts, communities,
+  providers, parent/student portals, bot actions, tickets, decisions, and
+  newsletters. External services are explicit connectors only.

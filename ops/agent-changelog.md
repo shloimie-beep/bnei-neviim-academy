@@ -14851,3 +14851,43 @@ Remaining:
 - worker: Codex
 - audit: `ops/audits/2026-06-14T00-33-00-bna-production-cleanup-audit.md`
 - handoff: `tasks-pending/2026-06-14-bna-production-community-no-ghl.md`
+
+## 2026-06-14T08:44:18+03:00 - Workspace/community/provider/bot no-GHL release locally verified, deploy held on proven OpenAI key rejection
+
+Continued the production cleanup/buildout prompt without stopping on the dirty
+worktree. Earlier in the run, preserved current work on
+`safety/pre-next-superprompt-20260614-072250` with safety commit `30bddbd`.
+Implemented and verified the OpenAI key diagnostic script, first-party
+provider/free-listing flow, role-aware Action Registry bot actions, architecture
+docs, no-GHL source-of-truth docs, and July 1 registration copy. Restored an
+accidental Operations task-lane diff after preserving it under `.runtime/`.
+
+Verification:
+- PASS `node --check server.js`
+- PASS `node --check scripts/openai-key-diagnostics.mjs`
+- PASS `node --check scripts/smoke-openai-sidekick.mjs`
+- PASS `node --check src/lib/actions/actions/operations.js`
+- PASS focused Operations regression cluster
+- PASS `npm test` 309/309
+- PASS active runtime no-GHL scan outside intentional guard tests
+- PASS `npm run railway:doctor` for `skillful-motivation / production`, latest
+  deployment `6b1e8b3a-c325-4fb1-ab73-80e6f0e6918d`
+- PASS `npm run app:smoke`
+  `ops/live-smokes/2026-06-14T05-39-22-374Z-live-app-smoke.md`
+- PASS `npm run screenshot` on local Express with throwaway local-only
+  Operations credentials; all tested widths reported no horizontal scroll
+
+OpenAI/deploy blocker:
+- FAIL `npm run openai:diagnose`: selected `.secrets/openai-api-key.txt`;
+  local/Railway fingerprint `02079c0b5ca1`; `/v1/models` returned
+  `401 invalid_api_key`, request id `b56d1e96-62f7-4e87-a339-14e54409c8fb`.
+- FAIL `npm run openai:smoke`: OpenAI `401 invalid_api_key`, report
+  `ops/openai-smokes/2026-06-14T05-39-06-579Z-openai-sidekick-smoke.md`.
+- No deploy was run under the operator's gate because the changed bundle must
+  not deploy until OpenAI smoke passes or the operator explicitly approves
+  deploying with this proven external blocker.
+
+- source: codex_chat
+- worker: Codex
+- qa: `ops/qa-runs/2026-06-14T08-44-18-workspace-provider-bot-release-gate.md`
+- handoff: `tasks-pending/2026-06-14-workspace-community-provider-bot-no-ghl.md`

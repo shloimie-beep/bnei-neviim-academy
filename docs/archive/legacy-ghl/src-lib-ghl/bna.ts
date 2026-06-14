@@ -1,4 +1,6 @@
 /**
+ * Legacy retired GHL archive. GHL/GoHighLevel/LeadConnector is not active BNA runtime and must not be used for new BNA implementation.
+ *
  * BNA-specific GHL operations
  * Handles parent and student contact creation, tagging, and billing fields
  */

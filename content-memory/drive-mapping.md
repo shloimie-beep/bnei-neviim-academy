@@ -34,10 +34,10 @@ Separate project roots:
 
 - `My Drive / One Time Mishnah Class - Rabbi Elie Scheller`: separate Rabbi
   Elie / One Time partnership workspace for proposals, project maps,
-  GHL/community setup, content/media intake, launch material, finance/admin
-  notes, shiur materials, and drafting-agent tasks. Keep this distinct from the
-  BNA Academy media pipeline and use `ops/one-time-mishnah-class/` for the repo
-  report.
+  provider/community setup, content/media intake, launch material,
+  finance/admin notes, shiur materials, and drafting-agent tasks. Keep this
+  distinct from the BNA Academy media pipeline and use
+  `ops/one-time-mishnah-class/` for the repo report.
 
 The important rule: generated content should read brand-kit and platform memory
 before drafting. Approved content should feed back into examples.

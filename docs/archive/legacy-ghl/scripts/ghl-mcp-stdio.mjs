@@ -1,3 +1,4 @@
+// Legacy retired GHL archive. GHL/GoHighLevel/LeadConnector is not active BNA runtime and must not be used for new BNA implementation.
 import fs from 'fs';
 import path from 'path';
 import { spawn } from 'child_process';

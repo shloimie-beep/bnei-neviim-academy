@@ -44,6 +44,16 @@ test('core Telegram/UI operations are present in the registry', () => {
     'show_today_plan',
     'show_child_calendar',
     'create_report_problem_ticket',
+    'create_ticket',
+    'create_decision',
+    'draft_weekly_update',
+    'select_weekly_update_hero',
+    'generate_student_worksheet',
+    'draft_parent_response',
+    'post_community_message',
+    'request_provider_contact',
+    'queue_telegram_report',
+    'route_bug_to_codex',
     'send_test_email',
     'sync_google_calendar',
   ]) {
@@ -69,6 +79,124 @@ test('parent/student problem reports create review tickets without Codex tasks',
   assert.equal(result.audit_log.action_id, 'create_report_problem_ticket');
 });
 
+test('bot actions route parent/provider requests away from Codex and keep risky sends preview-only', async () => {
+  const ticket = await runAction({
+    action_id: 'create_ticket',
+    source: 'bot',
+    inputs: {
+      message: 'I need help understanding the provider request status.',
+      category: 'student_parent_data',
+      route: '/parent',
+    },
+    actor: { user_id: 'parent-local', role: 'parent', workspace_id: 'bna' },
+  });
+  assert.equal(ticket.success, true);
+  assert.equal(ticket.executed, true);
+  assert.equal(ticket.result.no_codex_task_created, true);
+
+  const providerRequest = await runAction({
+    action_id: 'request_provider_contact',
+    source: 'bot',
+    inputs: {
+      provider_id: 42,
+      student_id: 7,
+      message: 'Please ask this provider to contact me about tutoring.',
+      preferred_contact_method: 'whatsapp',
+    },
+    actor: { user_id: 'parent@example.com', role: 'parent', workspace_id: 'bna' },
+  });
+  assert.equal(providerRequest.success, true);
+  assert.equal(providerRequest.executed, true);
+  assert.equal(providerRequest.result.live_send_performed, false);
+  assert.equal(providerRequest.result.external_booking_owned_by_provider, true);
+
+  const telegramReport = await runAction({
+    action_id: 'queue_telegram_report',
+    source: 'bot',
+    inputs: { message: 'Release smoke completed.' },
+    actor: { user_id: 'operator-local', role: 'operator', workspace_id: 'bna' },
+  });
+  assert.equal(telegramReport.success, true);
+  assert.equal(telegramReport.executed, false);
+  assert.equal(telegramReport.approval_required, true);
+  assert.equal(telegramReport.preview.live_send_performed, false);
+});
+
+test('technical bugs require approval before Codex routing while decisions stay in Decisions', async () => {
+  const decision = await runAction({
+    action_id: 'create_decision',
+    source: 'bot',
+    inputs: {
+      title: 'Should parents see provider discount notes?',
+      options: ['Show only approved badges', 'Show all notes'],
+      recommendation: 'Show only approved badges.',
+    },
+    actor: { user_id: 'school-manager-local', role: 'school_manager', workspace_id: 'bna' },
+  });
+  assert.equal(decision.success, true);
+  assert.equal(decision.executed, true);
+  assert.equal(decision.result.route, 'Shloimie Decisions');
+
+  const technical = await runAction({
+    action_id: 'route_bug_to_codex',
+    source: 'bot',
+    inputs: {
+      title: 'Parent portal crashes on mobile',
+      route: '/parent',
+      severity: 'blocking',
+    },
+    actor: { user_id: 'admin-local', role: 'super_admin', workspace_id: 'bna' },
+  });
+  assert.equal(technical.success, true);
+  assert.equal(technical.executed, false);
+  assert.equal(technical.approval_required, true);
+  assert.equal(technical.preview.approval_required_before_queue, true);
+});
+
+test('worksheet, weekly update, and parent response actions expose safe context only', async () => {
+  const worksheet = await runAction({
+    action_id: 'generate_student_worksheet',
+    source: 'bot',
+    inputs: {
+      student_id: 12,
+      assignment_id: 22,
+      language: 'Hebrew and English',
+      interests: ['stories', 'projects'],
+      prompt_patch: 'Make it warmer.',
+    },
+    actor: { user_id: 'parent-local', role: 'parent', workspace_id: 'bna' },
+  });
+  assert.equal(worksheet.success, true);
+  assert.equal(worksheet.result.privacy_filtered, true);
+  assert.equal(worksheet.result.admin_only_notes_excluded, true);
+
+  const weekly = await runAction({
+    action_id: 'draft_weekly_update',
+    source: 'bot',
+    inputs: {
+      source_text: 'The class reviewed Mishnayos and practiced clear questions.',
+      audience: 'BNA parents',
+    },
+    actor: { user_id: 'admin-local', role: 'bna_admin', workspace_id: 'bna' },
+  });
+  assert.equal(weekly.success, true);
+  assert.equal(weekly.result.sent, false);
+  assert.equal(weekly.result.privacy_filtered, true);
+
+  const response = await runAction({
+    action_id: 'draft_parent_response',
+    source: 'bot',
+    inputs: {
+      message: 'Can you explain what my child should practice?',
+      student_id: 12,
+    },
+    actor: { user_id: 'parent-local', role: 'parent', workspace_id: 'bna' },
+  });
+  assert.equal(response.success, true);
+  assert.equal(response.result.sent, false);
+  assert.equal(response.result.admin_only_notes_excluded, true);
+});
+
 test('permission checks protect parent/student/provider scopes', () => {
   assert.equal(
     checkActionPermission(getAction('show_today_plan'), { role: 'student', workspace_id: 'bna' }).allowed,
@@ -88,6 +216,22 @@ test('permission checks protect parent/student/provider scopes', () => {
   );
   assert.equal(
     checkActionPermission(getAction('mark_event_parent_visible'), { role: 'parent', workspace_id: 'bna' }).allowed,
+    false,
+  );
+  assert.equal(
+    checkActionPermission(getAction('create_decision'), { role: 'school_manager', workspace_id: 'bna' }).allowed,
+    true,
+  );
+  assert.equal(
+    checkActionPermission(getAction('update_provider_profile'), { role: 'provider_manager', workspace_id: 'rabbi_sheller_provider' }).allowed,
+    true,
+  );
+  assert.equal(
+    checkActionPermission(getAction('generate_student_worksheet'), { role: 'parent', workspace_id: 'bna' }).allowed,
+    true,
+  );
+  assert.equal(
+    checkActionPermission(getAction('route_bug_to_codex'), { role: 'parent', workspace_id: 'bna' }).allowed,
     false,
   );
 });
@@ -252,10 +396,13 @@ test('action registry artifacts are generated for UI button mapping', () => {
   const buttonMap = fs.readFileSync('ops/action-registry/ui-button-map.md', 'utf8');
   assert.ok(actionsJson.some((action) => action.action_id === 'refine_newsletter_draft'));
   assert.ok(actionsJson.some((action) => action.action_id === 'create_report_problem_ticket'));
+  assert.ok(actionsJson.some((action) => action.action_id === 'route_bug_to_codex'));
+  assert.ok(actionsJson.some((action) => action.action_id === 'request_provider_contact'));
   assert.ok(pageMap.telegram.some((entry) => entry.action_id === 'create_task'));
   assert.match(buttonMap, /refine_newsletter_draft/);
   assert.match(buttonMap, /create_calendar_event/);
   assert.match(buttonMap, /create_report_problem_ticket/);
+  assert.match(buttonMap, /route_bug_to_codex/);
 });
 
 test('server, Operations UI, and Telegram bridge are wired to the shared action runner', () => {

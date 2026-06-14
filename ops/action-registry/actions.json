@@ -41,8 +41,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -55,6 +59,126 @@
     "audit_log_event": "task_created",
     "success_message": "Task created.",
     "failure_message": "Task could not be created."
+  },
+  {
+    "required_inputs": [
+      "message"
+    ],
+    "optional_inputs": [
+      "title",
+      "category",
+      "route",
+      "severity",
+      "related_type",
+      "related_id"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=admin&section=support_tickets",
+      "/parent",
+      "/provider"
+    ],
+    "ui_button_labels": [
+      "Create Ticket",
+      "Report Issue"
+    ],
+    "telegram_intent_examples": [
+      "Open a support ticket about login",
+      "This provider request needs help"
+    ],
+    "action_id": "create_ticket",
+    "label": "Create ticket",
+    "description": "Create a support or technical ticket without creating a code task unless routing rules allow it.",
+    "category": "communications",
+    "page_contexts": [
+      "support_tickets",
+      "parent_helper",
+      "provider_workspace",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "parent",
+      "student",
+      "provider_admin",
+      "provider_manager",
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "tickets.create",
+    "audit_log_event": "ticket_created",
+    "success_message": "Ticket created.",
+    "failure_message": "Ticket could not be created."
+  },
+  {
+    "required_inputs": [
+      "title"
+    ],
+    "optional_inputs": [
+      "question",
+      "options",
+      "recommendation",
+      "context"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=pipelines&section=decisions",
+      "/operations?view=tasks"
+    ],
+    "ui_button_labels": [
+      "Create Decision",
+      "Needs Decision"
+    ],
+    "telegram_intent_examples": [
+      "Should parents see this? Create a decision",
+      "File this as a Shloimie decision"
+    ],
+    "action_id": "create_decision",
+    "label": "Create decision",
+    "description": "Route a product, design, policy, or approval question into Shloimie Decisions.",
+    "category": "tasks",
+    "page_contexts": [
+      "tasks",
+      "decisions",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "decisions.create",
+    "audit_log_event": "decision_created",
+    "success_message": "Decision created.",
+    "failure_message": "Decision could not be created."
   },
   {
     "required_inputs": [
@@ -93,8 +217,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -144,8 +272,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -190,8 +322,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -241,8 +377,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -286,8 +426,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -328,8 +472,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -342,6 +490,115 @@
     "audit_log_event": "newsletter_approved",
     "success_message": "Newsletter approved.",
     "failure_message": "Newsletter could not be approved."
+  },
+  {
+    "required_inputs": [],
+    "optional_inputs": [
+      "title",
+      "source_text",
+      "audience",
+      "workspace_key",
+      "provider_id",
+      "community_id"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=content",
+      "/operations?view=communications"
+    ],
+    "ui_button_labels": [
+      "Draft Weekly Update"
+    ],
+    "telegram_intent_examples": [
+      "Draft this as the weekly update",
+      "Make a parent-safe newsletter from this"
+    ],
+    "action_id": "draft_weekly_update",
+    "label": "Draft weekly update",
+    "description": "Draft a parent-safe weekly update/newsletter for review without sending it.",
+    "category": "newsletter",
+    "page_contexts": [
+      "content",
+      "communications",
+      "parent_portal",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "weekly.draftUpdate",
+    "audit_log_event": "weekly_update_drafted",
+    "success_message": "Weekly update drafted.",
+    "failure_message": "Weekly update could not be drafted."
+  },
+  {
+    "required_inputs": [
+      "update_id"
+    ],
+    "optional_inputs": [
+      "workspace_key",
+      "provider_id",
+      "community_id"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=communications",
+      "/parent"
+    ],
+    "ui_button_labels": [
+      "Select Hero Update"
+    ],
+    "telegram_intent_examples": [
+      "Use this as the parent dashboard weekly update"
+    ],
+    "action_id": "select_weekly_update_hero",
+    "label": "Select weekly update hero",
+    "description": "Select an approved weekly update for the parent dashboard hero.",
+    "category": "newsletter",
+    "page_contexts": [
+      "content",
+      "parent_portal",
+      "communications",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "weekly.selectHero",
+    "audit_log_event": "weekly_update_hero_selected",
+    "success_message": "Weekly update hero selected.",
+    "failure_message": "Weekly update hero could not be selected."
   },
   {
     "required_inputs": [],
@@ -376,8 +633,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -424,8 +685,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -470,8 +735,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -511,8 +780,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -557,8 +830,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -601,8 +878,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -640,8 +921,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -683,8 +968,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -740,8 +1029,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -788,8 +1081,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -830,8 +1127,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -879,8 +1180,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -925,8 +1230,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -974,6 +1283,7 @@
       "admin",
       "operator",
       "provider_admin",
+      "provider_manager",
       "system"
     ],
     "allowed_workspaces": [
@@ -1007,8 +1317,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -1044,8 +1358,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -1087,8 +1405,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system",
       "parent",
@@ -1129,8 +1451,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -1166,8 +1492,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -1203,8 +1533,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -1247,8 +1581,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -1291,8 +1629,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -1332,8 +1674,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -1416,8 +1762,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system",
       "parent",
@@ -1430,6 +1780,62 @@
     "audit_log_event": "student_assignments_shown",
     "success_message": "Assignments loaded.",
     "failure_message": "Assignments could not be loaded."
+  },
+  {
+    "required_inputs": [
+      "student_id",
+      "assignment_id"
+    ],
+    "optional_inputs": [
+      "prompt_patch",
+      "language",
+      "level",
+      "interests",
+      "dry_run_reason"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=calendar&section=worksheets",
+      "/student"
+    ],
+    "ui_button_labels": [
+      "Generate Worksheet",
+      "Regenerate Worksheet"
+    ],
+    "telegram_intent_examples": [
+      "Generate a worksheet for this student",
+      "Regenerate with this prompt patch"
+    ],
+    "action_id": "generate_student_worksheet",
+    "label": "Generate student worksheet",
+    "description": "Generate or preview a student-safe worksheet using filtered assignment context.",
+    "category": "student",
+    "page_contexts": [
+      "student_detail",
+      "assignments",
+      "student_helper",
+      "parent_helper",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "staff",
+      "parent",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "bna"
+    ],
+    "execution_handler": "student.generateWorksheet",
+    "audit_log_event": "student_worksheet_generated",
+    "success_message": "Student worksheet generated.",
+    "failure_message": "Student worksheet could not be generated."
   },
   {
     "required_inputs": [
@@ -1505,8 +1911,12 @@
       "parent",
       "student",
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -1562,8 +1972,12 @@
       "parent",
       "student",
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -1604,8 +2018,12 @@
     "allowed_roles": [
       "parent",
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -1645,8 +2063,12 @@
     "allowed_roles": [
       "parent",
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -1657,6 +2079,58 @@
     "audit_log_event": "parent_admin_message_drafted",
     "success_message": "Message draft created.",
     "failure_message": "Message draft could not be created."
+  },
+  {
+    "required_inputs": [
+      "message"
+    ],
+    "optional_inputs": [
+      "student_id",
+      "tone",
+      "source_context"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/parent",
+      "/operations?view=communications"
+    ],
+    "ui_button_labels": [
+      "Draft Parent Response"
+    ],
+    "telegram_intent_examples": [
+      "Draft a parent-safe response to this question"
+    ],
+    "action_id": "draft_parent_response",
+    "label": "Draft parent response",
+    "description": "Draft a parent-safe response without exposing private admin notes.",
+    "category": "parent",
+    "page_contexts": [
+      "parent_helper",
+      "communications",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "parent",
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "bna"
+    ],
+    "execution_handler": "parent.draftResponse",
+    "audit_log_event": "parent_response_drafted",
+    "success_message": "Parent response drafted.",
+    "failure_message": "Parent response could not be drafted."
   },
   {
     "required_inputs": [],
@@ -1686,8 +2160,12 @@
     "allowed_roles": [
       "parent",
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -1732,6 +2210,8 @@
       "admin",
       "operator",
       "provider_admin",
+      "provider_manager",
+      "provider_staff",
       "participant",
       "system"
     ],
@@ -1742,6 +2222,116 @@
     "audit_log_event": "provider_question_post_created",
     "success_message": "Provider question/post created.",
     "failure_message": "Provider question/post could not be created."
+  },
+  {
+    "required_inputs": [
+      "community_id",
+      "message"
+    ],
+    "optional_inputs": [
+      "thread_id",
+      "visibility",
+      "audience"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/operations?view=communications",
+      "/parent",
+      "/provider"
+    ],
+    "ui_button_labels": [
+      "Post Community Message"
+    ],
+    "telegram_intent_examples": [
+      "Post this update to the learning community"
+    ],
+    "action_id": "post_community_message",
+    "label": "Post community message",
+    "description": "Create a scoped learning-community message after permission checks.",
+    "category": "communications",
+    "page_contexts": [
+      "community",
+      "communications",
+      "provider_workspace",
+      "telegram",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "staff",
+      "provider_admin",
+      "provider_manager",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "community.postMessage",
+    "audit_log_event": "community_message_posted",
+    "success_message": "Community message posted.",
+    "failure_message": "Community message could not be posted."
+  },
+  {
+    "required_inputs": [
+      "provider_id",
+      "message"
+    ],
+    "optional_inputs": [
+      "student_id",
+      "service_id",
+      "community_id",
+      "preferred_contact_method",
+      "request_type"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": false,
+    "related_routes": [
+      "/parent",
+      "/operations?view=service_providers"
+    ],
+    "ui_button_labels": [
+      "Request Provider Contact"
+    ],
+    "telegram_intent_examples": [
+      "Ask this provider to contact me",
+      "Request information from the tutor"
+    ],
+    "action_id": "request_provider_contact",
+    "label": "Request provider contact",
+    "description": "Store a first-party parent/provider request without sending live external messages in tests.",
+    "category": "provider",
+    "page_contexts": [
+      "parent_portal",
+      "provider_index",
+      "parent_helper",
+      "bot"
+    ],
+    "allowed_roles": [
+      "parent",
+      "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
+      "admin",
+      "bna_admin",
+      "school_manager",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "bna"
+    ],
+    "execution_handler": "provider.requestContact",
+    "audit_log_event": "provider_contact_requested",
+    "success_message": "Provider contact request saved.",
+    "failure_message": "Provider contact request could not be saved."
   },
   {
     "required_inputs": [
@@ -1778,6 +2368,7 @@
       "admin",
       "operator",
       "provider_admin",
+      "provider_manager",
       "system"
     ],
     "allowed_workspaces": [
@@ -1823,8 +2414,12 @@
     ],
     "allowed_roles": [
       "super_admin",
+      "platform_manager",
+      "support_admin",
+      "technical_agent",
       "admin",
       "bna_admin",
+      "school_manager",
       "operator",
       "system"
     ],
@@ -1837,5 +2432,102 @@
     "audit_log_event": "lead_stage_update_requested",
     "success_message": "Lead stage update prepared.",
     "failure_message": "Lead stage could not be updated."
+  },
+  {
+    "required_inputs": [
+      "message"
+    ],
+    "optional_inputs": [
+      "chat_id",
+      "related_task_id",
+      "send_after_approval"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=communications"
+    ],
+    "ui_button_labels": [
+      "Queue Telegram Report"
+    ],
+    "telegram_intent_examples": [
+      "Report this completion back to Telegram"
+    ],
+    "action_id": "queue_telegram_report",
+    "label": "Queue Telegram report",
+    "description": "Queue or preview a concise Telegram completion/status report for an approved operator chat.",
+    "category": "communications",
+    "page_contexts": [
+      "telegram",
+      "admin",
+      "bot"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "admin",
+      "operator",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "telegram.queueReport",
+    "audit_log_event": "telegram_report_queued",
+    "success_message": "Telegram report queued.",
+    "failure_message": "Telegram report could not be queued."
+  },
+  {
+    "required_inputs": [
+      "title"
+    ],
+    "optional_inputs": [
+      "message",
+      "route",
+      "severity",
+      "evidence",
+      "ticket_id"
+    ],
+    "validation": {},
+    "dry_run_supported": true,
+    "approval_required": true,
+    "related_routes": [
+      "/operations?view=tasks",
+      "/operations?view=admin&section=support_tickets"
+    ],
+    "ui_button_labels": [
+      "Route To Codex"
+    ],
+    "telegram_intent_examples": [
+      "This page is broken; route it to Codex"
+    ],
+    "action_id": "route_bug_to_codex",
+    "label": "Route bug to Codex",
+    "description": "Route a verified technical/system issue into the Codex implementation queue for super-admin/system use.",
+    "category": "system",
+    "page_contexts": [
+      "support_tickets",
+      "admin",
+      "bot",
+      "telegram"
+    ],
+    "allowed_roles": [
+      "super_admin",
+      "admin",
+      "operator",
+      "technical_agent",
+      "system"
+    ],
+    "allowed_workspaces": [
+      "platform",
+      "bna",
+      "rabbi_sheller_provider"
+    ],
+    "execution_handler": "codex.routeBug",
+    "audit_log_event": "bug_routed_to_codex",
+    "success_message": "Bug routed to Codex.",
+    "failure_message": "Bug could not be routed to Codex."
   }
 ]

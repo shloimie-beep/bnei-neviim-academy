@@ -1,11 +1,15 @@
 # GHL TypeScript Helper Notes
 
+> Legacy retired GHL archive. GHL/GoHighLevel/LeadConnector is not active BNA runtime and must not be used for new BNA implementation.
+
 These TypeScript helpers are preserved as BNA-specific implementation patterns.
-They are not imported by the live Express runtime today.
+They are not imported by the live Express runtime today and must stay archive
+only.
 
-Current live GHL behavior is implemented in `server.js` and the operational
-scripts under `scripts/`, especially `scripts/ghl-ops.mjs` and
-`scripts/sync-signups-to-ghl.mjs`.
+Former live GHL behavior was retired and archived under
+`docs/archive/legacy-ghl/`. Current BNA runtime uses first-party BNA records and
+explicit non-GHL connectors such as Buffer, Whapi/WAPI, Resend/email, Google
+APIs, and provider-owned CTAs where approved.
 
-Before using these helpers in live code, audit them against the current Railway
-environment, current LeadConnector API behavior, and the BNA Postgres schema.
+Do not revive these helpers without a new explicit operator decision, a fresh
+architecture review, tests, and deployment approval.

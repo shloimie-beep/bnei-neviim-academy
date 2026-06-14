@@ -43,7 +43,7 @@ One Time categories:
 - Technology
 - Admin
 - Accounting
-- GHL Setup
+- Provider/Community Setup
 - Community
 - General
 - Torah Class Prep
@@ -59,7 +59,7 @@ Expected patterns:
 
 - "Here are the main points I heard."
 - "This sounds like it could become a task. Do you want me to create one?"
-- "Do you want this as a shiur idea, a source sheet task, a marketing task, or a GHL/community setup task?"
+- "Do you want this as a shiur idea, a source sheet task, a marketing task, or a provider/community setup task?"
 - "Here are a few possible directions for this class/topic."
 - "Should I assign this to you, to Shloimie, or leave it unassigned?"
 - "This sounds like a system issue. Should I open a support ticket for

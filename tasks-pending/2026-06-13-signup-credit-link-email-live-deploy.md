@@ -33,13 +33,17 @@ Ship the locally verified signup email fix so future credit signups receive the 
 - PASS `node --test tests/parent-student-portal-contract.test.js`
 - PASS `node --test tests/signup-permissions-mobile-homepage.test.js`
 - PASS encoding readback: `signupConfirmationEmail` contains real Hebrew codepoints, no BOM, one trailing newline.
-- BLOCKED latest `npm test`: unrelated staged legacy-GHL archive removed `src/lib/ghl/bna.ts` while `tests/contact-role-repair.test.js` still reads it. Do not treat this as a signup email failure.
+- Superseded blocker note: the old retired-GHL archive/test-path issue is no
+  longer a signup email blocker. Current release gates are the no-GHL branch
+  checks, OpenAI key diagnosis/smoke, deploy, Railway doctor, and live smoke.
 
 ## Live Blocker
 
 Do not deploy from the current checkout without an explicit decision: the worktree contains a very large set of unrelated uncommitted changes and deleted/archived files. A Railway deploy from this checkout would likely ship unrelated local work.
 
-The same dirty-worktree issue currently blocks a clean full-suite result: `src/lib/ghl/bna.ts` is staged as renamed into `docs/archive/legacy-ghl/src-lib-ghl/bna.ts`, but `tests/contact-role-repair.test.js` still reads the old path.
+Superseded: do not restore the retired GHL path. Contact repair and signup
+email validation should run against first-party BNA compatibility code and the
+current no-GHL test suite.
 
 ## Next Step
 
