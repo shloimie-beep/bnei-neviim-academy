@@ -23,30 +23,39 @@ test('Operations expanded task details can add comments inline', () => {
   assert.match(operationsHtml, /onsubmit="addInlineTaskComment\(event, \$\{id\}\)"/);
   assert.match(operationsHtml, /function addInlineTaskComment/);
   assert.match(operationsHtml, /api\.addTaskComment\(id/);
-  assert.match(operationsHtml, /requeue: true/);
+  assert.match(operationsHtml, /visibility: 'workspace'/);
+  assert.match(operationsHtml, /requeue: false/);
   assert.match(operationsHtml, /\.\.\.\(saved\?\.task \|\| \{\}\)/);
   assert.match(operationsHtml, /expandedTaskComments = \{[\s\S]*\.\.\.expandedTaskComments[\s\S]*\[id\]: comments/);
 });
 
-test('Human task comments requeue work and refresh the visible card', () => {
+test('Human task comments are shared dialogue; explicit requeue creates agent work', () => {
   assert.match(server, /function shouldRequeueTaskAfterHumanComment/);
   assert.match(server, /function isTaskCommentRequeueOptOut/);
+  assert.match(server, /function isTaskCommentRequeueRequest/);
+  assert.match(server, /if \(!isTaskCommentRequeueRequest\(requeue\)\) return false;/);
   assert.match(server, /\['dashboard', 'telegram', 'api'\]\.includes\(normalizedSource\)/);
   assert.match(server, /source = 'dashboard'/);
-  assert.match(server, /stage = 'assigned'[\s\S]*assigned_to = 'Codex'[\s\S]*decision_required = FALSE/);
+  assert.match(server, /stage = 'assigned'[\s\S]*assigned_to = 'Codex'[\s\S]*agent_status = 'queued'[\s\S]*decision_required = FALSE/);
+  assert.match(server, /item_type = 'task'[\s\S]*waiting_on = NULL/);
+  assert.match(server, /next_action_label = 'Agent working'/);
   assert.match(server, /started_at = NULL[\s\S]*completed_at = NULL[\s\S]*verified_at = NULL/);
   assert.match(server, /res\.json\(\{ success: true, comment: result\.rows\[0\], requeued: Boolean\(task\), task \}\)/);
-  assert.match(operationsHtml, /Add Comment &amp; Requeue/);
-  assert.match(operationsHtml, /source: 'dashboard',[\s\S]*requeue: true/);
+  assert.match(operationsHtml, /Add comment/);
+  assert.match(operationsHtml, /source: 'dashboard',[\s\S]*requeue: false/);
+  assert.doesNotMatch(operationsHtml, /Add Comment &amp; Requeue/);
   assert.match(operationsHtml, /\.\.\.\(saved\?\.task \|\| \{\}\)/);
 });
 
 test('Comment requeue gate distinguishes human comments, explicit opt-outs, and agent comments', () => {
   const shouldRequeue = loadCommentRequeueHelper();
 
-  assert.equal(shouldRequeue({ source: 'dashboard', author: 'dashboard' }), true);
-  assert.equal(shouldRequeue({ source: 'telegram', author: 'Shloimie' }), true);
-  assert.equal(shouldRequeue({ source: 'api', author: 'operator' }), true);
+  assert.equal(shouldRequeue({ source: 'dashboard', author: 'dashboard' }), false);
+  assert.equal(shouldRequeue({ source: 'telegram', author: 'Shloimie' }), false);
+  assert.equal(shouldRequeue({ source: 'api', author: 'operator' }), false);
+  assert.equal(shouldRequeue({ source: 'dashboard', author: 'dashboard', requeue: true }), true);
+  assert.equal(shouldRequeue({ source: 'telegram', author: 'Shloimie', requeue: 'yes' }), true);
+  assert.equal(shouldRequeue({ source: 'api', author: 'operator', requeue: 'requeue' }), true);
 
   assert.equal(shouldRequeue({ source: 'dashboard', author: 'dashboard', requeue: false }), false);
   assert.equal(shouldRequeue({ source: 'telegram', author: 'Shloimie', requeue: 'no' }), false);
@@ -83,13 +92,20 @@ test('Operations defers full re-renders while dictation or text entry is active'
   assert.match(operationsHtml, /setInterval\(\(\) => loadData\(\{ background: true \}\), 30000\)/);
 });
 
-test('Operations moves resolved decision cards out of Decisions into Done or Changelog', () => {
+test('Operations moves resolved decisions to Done or actionable Tasks', () => {
+  assert.match(operationsHtml, /const TASK_LANE_IDS = \['decisions', 'pending', 'tasks', 'schedule', 'done', 'activity'\]/);
   assert.match(operationsHtml, /\{ id: 'done', label: 'Done' \}/);
+  assert.match(operationsHtml, /\{ id: 'tasks', label: 'Tasks' \}/);
   assert.match(operationsHtml, /done: \[\]/);
+  assert.match(operationsHtml, /tasks: \[\]/);
   assert.match(operationsHtml, /done: buckets\.done/);
+  assert.match(operationsHtml, /tasks: buckets\.tasks/);
   assert.match(operationsHtml, /Decision handled/);
+  assert.match(operationsHtml, /chooseTaskDecision/);
+  assert.match(server, /actions\/choose-decision/);
   assert.match(operationsHtml, /function decisionPatchRoutesToWork/);
-  assert.match(operationsHtml, /stage: 'done'[\s\S]*completed_at: now[\s\S]*verified_at: now/);
-  assert.match(operationsHtml, /if \(\(task\.completed_at \|\| task\.verified_at \|\| stage === 'done'\) && !isMachine\) return 'done';/);
+  assert.match(operationsHtml, /function taskStatusBucket/);
+  assert.match(operationsHtml, /if \(task\.completed_at \|\| task\.verified_at \|\| \['done', 'archive'\]\.includes\(stage\)\) return 'done';/);
+  assert.match(operationsHtml, /return 'tasks';/);
   assert.match(operationsHtml, /if \(\['assigned', 'in_progress'\]\.includes\(stage\)\) return true;/);
 });

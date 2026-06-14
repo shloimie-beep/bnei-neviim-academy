@@ -53,6 +53,25 @@ prompts, MCP tools, smoke checks, or workflows.
   from BNA Academy parents/students unless a person is explicitly enrolled in
   both scopes.
 
+## Workspace Task Workflow
+
+Operations task work is organized around three primary human-facing buckets:
+
+- `Decisions`: real human choices with an owner, question, options, impact, and
+  next action.
+- `Pending`: only human or external blockers such as missing Rabbi access,
+  account approval, DNS/payment/email credentials, or legal/accounting input.
+- `Tasks`: actionable work for Shloimie, Rabbi/workspace owners, providers,
+  managers, or Codex/internal agents.
+
+Codex/system work must never sit in human-facing Pending. Executable agent work
+uses `agent_status` and `bna_agent_jobs` (`queued`, `running`, `completed`,
+`failed`, or `blocked_needs_human_decision`). Failures become a clear Decision
+or human/external Pending blocker. Raw Telegram rambles are provenance only;
+visible task titles must be concise and actionable. Task comments are shared
+internal workspace dialogue, not private author-only notes unless an explicit
+visibility value says otherwise.
+
 Detailed maps live in:
 
 - `docs/architecture/no-ghl-policy.md`
@@ -67,6 +86,28 @@ paid plans, checkout, paid placement, or approval guarantees. Provider booking
 stays external through the provider's website, phone, WhatsApp, email, or
 custom CTA. BNA stores first-party review/request records and publishes only
 approved listings.
+
+## AI Provider Mode
+
+OpenAI is the normal preferred hosted AI provider. Kimi is the temporary
+primary provider when `BNA_AI_PRIMARY_PROVIDER=kimi`; this keeps chat/content AI
+working while OpenAI credentials are unhealthy. Codex remains the development
+agent and task owner either way.
+
+Provider variables:
+
+```powershell
+BNA_AI_PRIMARY_PROVIDER=openai   # set to kimi for the temporary Kimi-primary mode
+KIMI_API_KEY=
+KIMI_BASE_URL=https://api.moonshot.ai/v1
+KIMI_MODEL=kimi-k2.6
+```
+
+The historical `npm run openai:smoke` script now smokes the selected hosted AI
+provider. When `BNA_AI_PRIMARY_PROVIDER=kimi`, it uses Kimi chat completions and
+records the provider in the smoke report. `npm run openai:diagnose` remains a
+specific OpenAI-key diagnostic and may still fail while Kimi-primary mode is in
+use.
 
 ## OpenAI Key Loading
 

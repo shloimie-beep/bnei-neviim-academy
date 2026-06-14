@@ -53,9 +53,10 @@ test('contact pipeline and source-sheet rambles have separate routing cues', () 
   assert.match(server, /Build source-sheet research workflow for student questions/);
   assert.match(server, /Clarify Signup Intake in Contacts/);
   assert.match(server, /hasInterestedParentLeadCaptureIntent\(text\) && !hasContactLeadPipelineBuildIntent\(text\)/);
-  assert.match(operations, /\{ id: 'research', label: 'Research' \}/);
   assert.match(operations, /const RESEARCH_TASK_CATEGORIES = new Set/);
-  assert.match(operations, /\['overview', 'decisions', 'waiting_shloimie', 'waiting_sheller', 'waiting_access', 'schedule', 'research', 'changelog', 'done', 'archive'\]/);
+  assert.match(operations, /const TASK_LANE_IDS = \['decisions', 'pending', 'tasks', 'schedule', 'done', 'activity'\]/);
+  assert.match(operations, /\{ id: 'agent_working', label: 'Agent Working' \}/);
+  assert.doesNotMatch(operations, /waiting_shloimie|waiting_sheller|waiting_access|Ready for Codex/);
   assert.match(operations, /\{ id: 'intake', label: 'Signup Intake' \}/);
 });
 

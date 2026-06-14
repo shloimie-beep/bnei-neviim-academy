@@ -14891,3 +14891,116 @@ OpenAI/deploy blocker:
 - worker: Codex
 - qa: `ops/qa-runs/2026-06-14T08-44-18-workspace-provider-bot-release-gate.md`
 - handoff: `tasks-pending/2026-06-14-workspace-community-provider-bot-no-ghl.md`
+
+## 2026-06-14T09:43:04+03:00 - Workspace task dialogue cleanup locally verified, deploy gated
+
+Implemented the Rabbi Scheller / workspace task cleanup on
+`cleanup/workspace-task-dialogue-rabbi-scheller`. Operations Tasks now uses
+Decisions, Pending, Tasks, Calendar, Done, and Activity; Pending is reserved for
+human/external blockers; agent work stays in the agent lifecycle/status model;
+task comments default to shared workspace dialogue without implicit agent
+requeue; and the task calendar has month/week/selected-day views with Hebrew
+dates. Added the Rabbi Scheller app audit template and a dedicated handoff.
+
+Verification:
+- PASS `node --check server.js`
+- PASS Operations inline script parse
+- PASS targeted task/comment/routing/no-stale regression suite
+
+Remaining:
+- Full `npm test`, Railway doctor, app smoke, OpenAI diagnose/smoke, browser
+  mobile smoke, deploy, and post-deploy live smoke still need to run or be
+  blocked explicitly. The known OpenAI `401 invalid_api_key` release gate may
+  still block deploy unless fixed or explicitly waived.
+
+- source: codex_chat
+- worker: Codex
+- handoff: `tasks-pending/2026-06-14-workspace-task-dialogue-rabbi-scheller.md`
+
+## 2026-06-14T10:00:28+03:00 - Respecting-each-other source-sheet packet produced
+
+Created a class-ready Torah source packet for the current BNA rules/respect
+lesson at
+`content-memory/source-sheets/2026-06-14-respecting-each-other-rules-and-responsibility.md`.
+The packet is anchored to transcripts #52, #42, #40, and the existing student
+question/source-sheet lane. It includes direct Sefaria links, short Hebrew
+excerpts, topic-by-topic explanations, which questions each source answers, a
+ready class flow, practical rule language, and a short student handout version.
+
+Verification:
+- Sefaria refs were checked through Sefaria API/direct pages during preparation.
+- Final extracted-link verification recorded in
+  `ops/qa-runs/2026-06-14T10-00-28-respecting-each-other-source-sheet.md`.
+
+- source: codex_chat
+- worker: Codex
+- handoff: `tasks-pending/2026-06-14-respecting-each-other-source-sheet.md`
+
+## 2026-06-14T10:25:49+03:00 - Temporary Kimi-primary AI provider mode wired
+
+Added an explicit temporary hosted-AI provider override:
+`BNA_AI_PRIMARY_PROVIDER=kimi`. Server-side content AI, Telegram API chat, and
+the historical `npm run openai:smoke` script now select Kimi first when that
+override is set, while keeping OpenAI as the normal preferred provider and
+fallback candidate when healthy. Codex remains the development/task owner; Kimi
+is only a hosted chat/content provider.
+
+Verification:
+- PASS `node --check server.js`
+- PASS `node --check scripts/telegram-kimi-bridge.mjs`
+- PASS `node --check scripts/smoke-openai-sidekick.mjs`
+- PASS `node --test tests/ai-provider-selection.test.js`
+- PASS `npm test` 315/315
+- PASS local `.env.local` override readback
+- PASS Railway variable readback for `BNA_AI_PRIMARY_PROVIDER=kimi`
+- PASS Kimi selected-provider smoke assertions: Kimi returned the expected JSON
+  fields in `ops/openai-smokes/2026-06-14T07-31-27-913Z-openai-sidekick-smoke.md`.
+
+Remaining:
+- Overall selected-provider smoke still fails because live production
+  `/api/bna/tasks` and `/api/bna/support-tickets` return the existing
+  `bna_tasks_category_check` 500. This is a live app/task-category blocker, not
+  an OpenAI/Kimi provider-selection blocker.
+
+- source: codex_chat
+- worker: Codex
+- qa: `ops/qa-runs/2026-06-14T10-35-00-kimi-primary-provider-mode.md`
+
+## 2026-06-14T10:59:00+03:00 - Workspace task dialogue cleanup deployed and live-smoked
+
+Shipped the Rabbi Scheller / workspace task cleanup. Operations Tasks now uses
+Decisions, Pending, Tasks, Calendar, Done, and Activity as the primary
+human-facing structure. Pending is reserved for human/external blockers;
+Codex/system work is tracked by agent jobs/status and never as human Pending.
+Task comments remain shared workspace dialogue by default, with explicit requeue
+required before spawning agent work. The Rabbi Scheller launch tasks, decisions,
+access blockers, and 2-4 week timeline are seeded/readable through the One Time
+project.
+
+Verification:
+- PASS `node --check server.js`
+- PASS Operations inline script parse
+- PASS `npm test` 315/315
+- PASS local mobile task smoke:
+  `ops/playwright-smokes/2026-06-14-workspace-task-system-local/2026-06-14T07-48-14-549Z-report.md`
+- PASS Kimi CLI smoke: `KIMI_OK workspace-task-smoke`
+- PASS Kimi-backed hosted AI smoke:
+  `ops/openai-smokes/2026-06-14T07-54-18-768Z-openai-sidekick-smoke.md`
+- PASS Railway deployment `954411df-9a0a-4892-820e-28ebbdb9c85c`
+- PASS `npm run railway:doctor`
+- PASS `npm run app:smoke`:
+  `ops/live-smokes/2026-06-14T07-56-50-529Z-live-app-smoke.md`
+- PASS live task API readback: 96 Rabbi project records, 8 Rabbi-waiting
+  pending blockers, 18 Rabbi decisions, 0 queued agent jobs, 4 completed agent
+  cleanup jobs
+- PASS live mobile task smoke:
+  `ops/playwright-smokes/2026-06-14-workspace-task-system-live/2026-06-14T07-58-30-461Z-report.md`
+
+Remaining:
+- OpenAI itself still rejects the selected key with `401 invalid_api_key`; Kimi
+  is the operator-approved temporary hosted-AI provider. Codex remains the
+  implementation/task owner.
+
+- source: codex_chat
+- worker: Codex
+- handoff: `tasks-pending/2026-06-14-workspace-task-dialogue-rabbi-scheller.md`

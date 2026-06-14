@@ -2443,6 +2443,254 @@
             min-width: 0;
         }
 
+        .task-calendar-shell {
+            display: grid;
+            gap: 14px;
+        }
+
+        .task-calendar-toolbar {
+            align-items: center;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: space-between;
+        }
+
+        .task-calendar-title {
+            color: #102033;
+            font-size: 18px;
+            font-weight: 850;
+            line-height: 1.2;
+        }
+
+        .task-calendar-subtitle {
+            color: #64748b;
+            font-size: 12px;
+            font-weight: 700;
+            margin-top: 2px;
+        }
+
+        .task-calendar-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .task-calendar-grid {
+            display: grid;
+            gap: 8px;
+        }
+
+        .task-calendar-grid.month {
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+        }
+
+        .task-calendar-grid.week {
+            grid-template-columns: repeat(7, minmax(0, 1fr));
+        }
+
+        .task-calendar-weekday {
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 850;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        .task-calendar-cell {
+            border: 1px solid rgba(148, 163, 184, 0.28);
+            border-radius: 10px;
+            background: #ffffff;
+            min-height: 124px;
+            padding: 8px;
+            min-width: 0;
+        }
+
+        .task-calendar-cell.outside {
+            background: #f8fafc;
+            color: #94a3b8;
+        }
+
+        .task-calendar-cell.selected {
+            border-color: #c9a227;
+            box-shadow: 0 0 0 2px rgba(201, 162, 39, 0.16);
+        }
+
+        .task-calendar-cell.today {
+            border-color: #1e3a5f;
+        }
+
+        .task-calendar-date-button {
+            border: 0;
+            background: transparent;
+            color: #102033;
+            cursor: pointer;
+            display: grid;
+            gap: 1px;
+            padding: 0;
+            text-align: left;
+            width: 100%;
+        }
+
+        .task-calendar-day-number {
+            font-size: 15px;
+            font-weight: 900;
+        }
+
+        .task-calendar-hebrew {
+            color: #64748b;
+            font-size: 10px;
+            font-weight: 750;
+            line-height: 1.25;
+        }
+
+        .task-calendar-items {
+            display: grid;
+            gap: 5px;
+            margin-top: 8px;
+        }
+
+        .task-calendar-item {
+            border: 1px solid rgba(30, 58, 95, 0.16);
+            border-left: 3px solid #c9a227;
+            border-radius: 7px;
+            background: #f8fafc;
+            color: #102033;
+            cursor: pointer;
+            display: grid;
+            gap: 2px;
+            min-width: 0;
+            padding: 6px;
+            text-align: left;
+        }
+
+        .task-calendar-item strong {
+            display: block;
+            font-size: 11px;
+            font-weight: 850;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .task-calendar-item span {
+            color: #64748b;
+            display: block;
+            font-size: 10px;
+            font-weight: 750;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .task-calendar-more {
+            color: #1e3a5f;
+            font-size: 11px;
+            font-weight: 850;
+        }
+
+        .task-calendar-day-panel {
+            border: 1px solid rgba(30, 58, 95, 0.14);
+            border-radius: 12px;
+            background: #ffffff;
+            display: grid;
+            gap: 10px;
+            padding: 12px;
+        }
+
+        .task-detail-overlay {
+            align-items: stretch;
+            background: rgba(15, 23, 42, 0.38);
+            display: flex;
+            inset: 0;
+            justify-content: flex-end;
+            padding: 18px;
+            position: fixed;
+            z-index: 260;
+        }
+
+        .task-detail-sheet {
+            background: #f8fafc;
+            border: 1px solid rgba(30, 58, 95, 0.16);
+            border-radius: 14px;
+            box-shadow: 0 28px 80px rgba(15, 23, 42, 0.28);
+            color: #102033;
+            display: grid;
+            grid-template-rows: auto minmax(0, 1fr);
+            max-width: min(860px, calc(100vw - 36px));
+            min-width: min(720px, calc(100vw - 36px));
+            overflow: hidden;
+        }
+
+        .task-detail-header {
+            align-items: flex-start;
+            background: #ffffff;
+            border-bottom: 1px solid rgba(30, 58, 95, 0.12);
+            display: flex;
+            gap: 14px;
+            justify-content: space-between;
+            padding: 18px;
+        }
+
+        .task-detail-kicker {
+            color: #64748b;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .task-detail-header h2 {
+            color: #102033;
+            font-size: 22px;
+            line-height: 1.15;
+            margin: 3px 0 10px;
+        }
+
+        .task-detail-close {
+            align-items: center;
+            border: 1px solid rgba(30, 58, 95, 0.16);
+            border-radius: 8px;
+            background: #ffffff;
+            color: #102033;
+            cursor: pointer;
+            display: inline-flex;
+            font: inherit;
+            font-size: 18px;
+            font-weight: 900;
+            height: 36px;
+            justify-content: center;
+            line-height: 1;
+            width: 36px;
+        }
+
+        .task-detail-body {
+            display: grid;
+            gap: 12px;
+            overflow-y: auto;
+            padding: 14px;
+        }
+
+        .task-detail-body .detail-section {
+            background: #ffffff;
+            border: 1px solid rgba(30, 58, 95, 0.12);
+            border-radius: 10px;
+            display: grid;
+            gap: 10px;
+            padding: 13px;
+        }
+
+        .task-detail-body .detail-section h3,
+        .task-detail-body .detail-section summary {
+            color: #102033;
+            font-size: 14px;
+            font-weight: 900;
+        }
+
+        .task-original-capture summary {
+            cursor: pointer;
+        }
+
         .task-inline-item {
             border: 1px solid rgba(51, 65, 85, 0.9);
             border-radius: 12px;
@@ -3126,7 +3374,7 @@
         }
 
         .content-source-meta span + span::before {
-            content: "·";
+            content: "Ã‚Â·";
             color: #475569;
             margin-right: 8px;
         }
@@ -4412,6 +4660,94 @@
                 gap: 2px;
             }
 
+            .task-detail-overlay {
+                padding: 0;
+            }
+
+            .task-detail-sheet {
+                border-radius: 0;
+                border-width: 0;
+                height: 100dvh;
+                max-width: 100vw;
+                min-width: 0;
+                width: 100vw;
+            }
+
+            .task-detail-header {
+                padding: 14px 12px;
+            }
+
+            .task-detail-header h2 {
+                font-size: 18px;
+            }
+
+            .task-detail-body {
+                padding: 10px;
+            }
+
+            .task-detail-body .detail-section {
+                border-radius: 8px;
+                padding: 11px;
+            }
+
+            .task-calendar-toolbar {
+                align-items: stretch;
+                flex-direction: column;
+            }
+
+            .task-calendar-controls {
+                display: grid;
+                grid-template-columns: repeat(3, minmax(0, 1fr));
+                width: 100%;
+            }
+
+            .task-calendar-controls .task-action {
+                justify-content: center;
+                min-width: 0;
+                padding-left: 7px;
+                padding-right: 7px;
+            }
+
+            .task-calendar-grid.month {
+                gap: 5px;
+            }
+
+            .task-calendar-grid.week {
+                grid-template-columns: 1fr;
+            }
+
+            .task-calendar-weekday {
+                font-size: 9px;
+            }
+
+            .task-calendar-cell {
+                min-height: 86px;
+                padding: 5px;
+            }
+
+            .task-calendar-grid.week .task-calendar-cell {
+                min-height: 104px;
+            }
+
+            .task-calendar-day-number {
+                font-size: 13px;
+            }
+
+            .task-calendar-hebrew {
+                font-size: 9px;
+                max-height: 24px;
+                overflow: hidden;
+            }
+
+            .task-calendar-item {
+                padding: 4px;
+            }
+
+            .task-calendar-item strong,
+            .task-calendar-item span {
+                font-size: 9px;
+            }
+
             .content-card-header {
                 flex-direction: column;
             }
@@ -4539,6 +4875,29 @@
 
             .task-overview-strip {
                 grid-template-columns: 1fr;
+            }
+
+            .task-calendar-controls {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .task-calendar-grid.month {
+                gap: 3px;
+            }
+
+            .task-calendar-cell {
+                border-radius: 7px;
+                min-height: 66px;
+                padding: 3px;
+            }
+
+            .task-calendar-items {
+                gap: 3px;
+                margin-top: 4px;
+            }
+
+            .task-calendar-item span {
+                display: none;
             }
 
             .task-row-actions .task-action {
@@ -5781,32 +6140,38 @@
             ? normalizedInitialDashboardSection
             : 'overview';
         const TASK_FOCUS_ALIASES = {
-            assigned: 'waiting_shloimie',
+            assigned: 'tasks',
             calendar: 'schedule',
-            codex: 'changelog',
-            codex_ready: 'changelog',
+            codex: 'tasks',
+            codex_ready: 'tasks',
             done: 'done',
-            in_progress: 'changelog',
-            mine: 'waiting_shloimie',
-            parsed: 'overview',
-            pending: 'changelog',
-            queue: 'changelog',
-            rabbi: 'waiting_sheller',
-            raw_input: 'overview',
-            ready_for_codex: 'changelog',
+            in_progress: 'tasks',
+            mine: 'tasks',
+            overview: 'tasks',
+            parsed: 'tasks',
+            pending: 'pending',
+            queue: 'tasks',
+            rabbi: 'pending',
+            raw_input: 'tasks',
+            ready_for_codex: 'tasks',
             roadmap: 'schedule',
-            source_sheets: 'research',
-            stale: 'waiting_access',
-            torah_research: 'research'
+            source_sheets: 'tasks',
+            stale: 'tasks',
+            torah_research: 'tasks'
         };
         const normalizedInitialTaskSection = TASK_FOCUS_ALIASES[initialSection] || initialSection;
-        let taskFocus = currentView === 'tasks' && ['overview', 'decisions', 'waiting_shloimie', 'waiting_sheller', 'waiting_access', 'schedule', 'research', 'changelog', 'done', 'archive'].includes(normalizedInitialTaskSection)
+        let taskFocus = currentView === 'tasks' && ['decisions', 'pending', 'tasks', 'schedule', 'done', 'activity'].includes(normalizedInitialTaskSection)
             ? normalizedInitialTaskSection
-            : 'overview';
+            : 'tasks';
         let taskUrgencyFilter = 'all';
         let taskDateFilter = 'all';
         let taskProjectFilter = initialProject ? normalizeProjectKey(initialProject) : 'all';
         let taskCategoryFilter = 'all';
+        let taskSignalFilter = 'all';
+        let taskCalendarMode = ['month', 'week', 'day'].includes(String(initialParams.get('calendar_mode') || '').toLowerCase())
+            ? String(initialParams.get('calendar_mode') || '').toLowerCase()
+            : 'month';
+        let taskCalendarSelectedDate = normalizeDateKey(initialParams.get('date')) || new Date().toISOString().slice(0, 10);
         let pipelineSection = currentView === 'pipelines' && ['overview', 'bna_enrollment', 'provider_class', 'provider_onboarding', 'participants', 'stale_tasks', 'decisions'].includes(initialSection)
             ? initialSection
             : 'overview';
@@ -5901,10 +6266,10 @@
 
         // Config
         const TASK_COLUMNS = [
-            { id: 'waiting_shloimie', label: 'Waiting for Shloimie', marker: 'WS' },
-            { id: 'changelog', label: 'Ready for Codex', marker: 'CX' }
+            { id: 'decisions', label: 'Decisions', marker: 'DE' },
+            { id: 'pending', label: 'Pending', marker: 'PE' },
+            { id: 'tasks', label: 'Tasks', marker: 'TA' }
         ];
-
         const MAIN_NAV_ITEMS = [
             { id: 'dashboard', label: 'Dashboard', marker: 'DB' },
             { id: 'pipelines', label: 'Pipelines', marker: 'PL' },
@@ -5931,40 +6296,30 @@
         ];
 
         const TASK_SUBTABS = [
-            { id: 'overview', label: 'Overview' },
-            { id: 'decisions', label: 'Needs Decision' },
-            { id: 'waiting_shloimie', label: 'Waiting for Shloimie' },
-            { id: 'waiting_sheller', label: 'Waiting for Rabbi Sheller' },
-            { id: 'waiting_access', label: 'Waiting for Access' },
-            { id: 'changelog', label: 'Ready for Codex' },
-            { id: 'schedule', label: 'Schedule' },
-            { id: 'research', label: 'Research' },
+            { id: 'decisions', label: 'Decisions' },
+            { id: 'pending', label: 'Pending' },
+            { id: 'tasks', label: 'Tasks' },
+            { id: 'schedule', label: 'Calendar' },
             { id: 'done', label: 'Done' },
-            { id: 'archive', label: 'Archive' }
+            { id: 'activity', label: 'Activity' }
         ];
 
-        const TASK_STAGE_FLOW = [
-            { id: 'decisions', label: 'Needs Decision' },
-            { id: 'waiting_shloimie', label: 'Waiting for Shloimie' },
-            { id: 'waiting_sheller', label: 'Waiting for Rabbi Sheller' },
-            { id: 'waiting_access', label: 'Waiting for Access' },
-            { id: 'changelog', label: 'Ready for Codex' },
-            { id: 'schedule', label: 'Schedule' },
-            { id: 'done', label: 'Done' },
-            { id: 'archive', label: 'Archive' }
+        const TASK_LANE_IDS = ['decisions', 'pending', 'tasks', 'schedule', 'done', 'activity'];
+        const TASK_STAGE_FLOW = TASK_SUBTABS;
+        const TASK_OPERATIONAL_LANES = TASK_SUBTABS;
+        const TASK_SIGNAL_FILTERS = [
+            { id: 'all', label: 'All' },
+            { id: 'needs_shloimie', label: 'Needs Shloimie' },
+            { id: 'needs_rabbi', label: 'Needs Rabbi' },
+            { id: 'assigned_shloimie', label: 'Assigned to Shloimie' },
+            { id: 'assigned_rabbi', label: 'Assigned to Rabbi' },
+            { id: 'external', label: 'External' },
+            { id: 'agent_working', label: 'Agent Working' },
+            { id: 'due_today', label: 'Due Today' },
+            { id: 'due_week', label: 'Due This Week' },
+            { id: 'stale', label: 'Stale' },
+            { id: 'done', label: 'Done' }
         ];
-
-        const TASK_OPERATIONAL_LANES = [
-            { id: 'decisions', label: 'Needs Decision' },
-            { id: 'waiting_shloimie', label: 'Waiting for Shloimie' },
-            { id: 'waiting_sheller', label: 'Waiting for Rabbi Sheller' },
-            { id: 'waiting_access', label: 'Waiting for Access' },
-            { id: 'codex_ready', label: 'Ready for Codex' },
-            { id: 'schedule', label: 'Scheduled' },
-            { id: 'done', label: 'Done' },
-            { id: 'archive', label: 'Archive' }
-        ];
-
         const PIPELINE_SUBTABS = [
             { id: 'overview', label: 'Overview' },
             { id: 'bna_enrollment', label: 'BNA Enrollment' },
@@ -6652,7 +7007,7 @@
             if (currentView === 'accounting') return '<button class="primary-button" onclick="setAccountingSection(\'payments\')">Open Payments</button>';
             if (currentView === 'admin') return '<button class="primary-button" onclick="addInternalPerson(event)">Add User</button>';
             if (currentView === 'settings') return '<button class="primary-button" onclick="saveVisibleSettings()">Save Settings</button>';
-            return '<button class="primary-button" onclick="openCommandTarget(\'tasks\', \'waiting_shloimie\')">New Task</button>';
+            return '<button class="primary-button" onclick="openCommandTarget(\'tasks\', \'tasks\')">New Task</button>';
         }
 
         function opsWorkspaceLabel() {
@@ -7208,11 +7563,11 @@
                     tone: metrics.decisions ? 'attention' : 'ok'
                 },
                 {
-                    label: 'Ready for Codex',
+                    label: 'Agent Working',
                     value: metrics.codexPending,
-                    note: `${metrics.codexInProgress} in progress. Agent work stays visible from queue to verification.`,
-                    action: 'Open Codex queue',
-                    target: "openCommandTarget('tasks', 'changelog')",
+                    note: `${metrics.codexInProgress} running. Agent work stays in Tasks and never human Pending.`,
+                    action: 'Open agent tasks',
+                    target: "setTaskFilter('signal', 'agent_working'); openCommandTarget('tasks', 'tasks')",
                     tone: metrics.codexPending ? 'active' : 'ok'
                 },
                 {
@@ -7355,8 +7710,8 @@
 
             return {
                 decisions: buckets.decisions.length,
-                codexPending: Number(queue.pending ?? buckets.changelog.filter(task => taskIsMachine(task) && !task.completed_at && !task.verified_at && normalizeTaskStage(task.stage) !== 'done').length ?? 0),
-                codexInProgress: Number(queue.in_progress ?? 0),
+                codexPending: Number(queue.pending ?? buckets.tasks.filter(task => taskIsMachine(task) && String(task.agent_status || '').toLowerCase() === 'queued').length ?? 0),
+                codexInProgress: Number(queue.in_progress ?? buckets.tasks.filter(task => String(task.agent_status || '').toLowerCase() === 'running').length ?? 0),
                 accountabilityAttention: snapshots.filter(snapshot => ['needs_setup', 'due_today', 'missed', 'needs_review'].includes(snapshot.status)).length,
                 studentsDueToday: snapshots.filter(snapshot => snapshot.status === 'due_today').length,
                 studentsMissed: snapshots.filter(snapshot => snapshot.status === 'missed').length,
@@ -7372,19 +7727,23 @@
         function getTaskBuckets() {
             const buckets = {
                 decisions: [],
-                mine: [],
-                changelog: [],
-                done: []
+                pending: [],
+                tasks: [],
+                done: [],
+                activity: []
             };
             let hiddenCaptures = 0;
 
             tasks.forEach((task) => {
-                const column = taskColumn(task);
-                if (!column) {
+                const bucket = taskStatusBucket(task);
+                if (!bucket) {
                     if (isHiddenCapture(task)) hiddenCaptures += 1;
                     return;
                 }
-                buckets[column].push(task);
+                if (buckets[bucket]) buckets[bucket].push(task);
+                if (task.last_activity_at || task.latest_comment_preview || Number(task.comment_count || 0)) {
+                    buckets.activity.push(task);
+                }
             });
 
             Object.values(buckets).forEach((items) => {
@@ -7424,23 +7783,23 @@
         function renderAgentStatusPanel(buckets) {
             const queue = agentFleetStatus?.queue || {};
             const fleet = agentFleetStatus?.fleet || {};
-            const changelogQueue = (buckets.changelog || []).filter(task => taskIsMachine(task) && !task.completed_at && !task.verified_at && normalizeTaskStage(task.stage) !== 'done');
-            const queued = Number(queue.pending ?? changelogQueue.length ?? 0);
-            const inProgress = Number(queue.in_progress ?? 0);
-            const urgent = Number(queue.urgent_today ?? 0);
-            const latestTitle = queue.latest_task?.title || changelogQueue[0]?.title || buckets.changelog?.[0]?.title || '';
+            const agentWork = (buckets.tasks || []).filter(task => taskIsMachine(task) || ['queued', 'running', 'failed', 'blocked_needs_human_decision'].includes(String(task.agent_status || '').toLowerCase()));
+            const queued = Number(queue.pending ?? agentWork.filter(task => String(task.agent_status || '').toLowerCase() === 'queued').length ?? 0);
+            const inProgress = Number(queue.in_progress ?? agentWork.filter(task => String(task.agent_status || '').toLowerCase() === 'running').length ?? 0);
+            const urgent = Number(queue.urgent_today ?? agentWork.filter(task => ['urgent', 'today'].includes(String(task.urgency || '').toLowerCase())).length ?? 0);
+            const latestTitle = queue.latest_task?.title || agentWork[0]?.title || '';
             const status = String(fleet.status || 'unknown').toLowerCase();
             const stale = Boolean(fleet.stale);
             const healthy = status === 'running' && !stale;
             const health = healthy || queued === 0 ? 'ok' : 'attention';
             const statusTitle = healthy
-                ? 'Agent fleet is watching the changelog queue'
+                ? 'Agent work has a fresh heartbeat'
                 : queued > 0
                     ? 'Agent work is queued, but the worker is not reporting a fresh heartbeat'
                     : 'No queued agent work is waiting right now';
             const note = latestTitle
                 ? `Next visible item: ${taskDisplayTitle({ title: latestTitle })}`
-                : 'New Telegram tasks assigned to the agent fleet show as Ready for Codex, in progress, or verified.';
+                : 'Agent work appears as Tasks with an Agent Working filter, never as human Pending.';
             const heartbeat = fleet.last_seen_at
                 ? `Last seen ${formatDateTime(fleet.last_seen_at)}`
                 : 'No heartbeat recorded yet';
@@ -7448,17 +7807,17 @@
             return `
                 <div class="agent-status-panel" data-health="${health}">
                     <div class="agent-status-main">
-                        <div class="agent-status-kicker">Codex Queue Visibility</div>
+                        <div class="agent-status-kicker">Agent Work</div>
                         <div class="agent-status-title">${escapeHtml(statusTitle)}</div>
                         <div class="agent-status-note">${escapeHtml(note)}</div>
                         <div class="agent-status-note">${escapeHtml(heartbeat)}</div>
                     </div>
                     <div class="agent-status-stat">
-                        <span>Queued Agent Work</span>
+                        <span>Queued</span>
                         <strong>${queued}</strong>
                     </div>
                     <div class="agent-status-stat">
-                        <span>In Progress</span>
+                        <span>Running</span>
                         <strong>${inProgress}</strong>
                     </div>
                     <div class="agent-status-stat">
@@ -7471,86 +7830,53 @@
 
         function taskViewState() {
             const { buckets } = getTaskBuckets();
-            const overviewTasks = [...buckets.decisions, ...buckets.mine, ...buckets.changelog, ...buckets.done].sort(sortTasks);
-            const researchTasks = overviewTasks.filter(taskIsResearchWorkflow);
-            const scheduleTasks = overviewTasks.filter(taskHasSchedule);
-            const activeTasks = overviewTasks.filter(task => {
-                const stage = normalizeTaskStage(task.stage);
-                return !['done', 'archive'].includes(stage) && !task.completed_at && !task.verified_at;
+            const openTasks = [...buckets.decisions, ...buckets.pending, ...buckets.tasks].sort(sortTasks);
+            const scheduleTasks = tasks.filter(task => taskHasSchedule(task) && taskStatusBucket(task) !== null).sort(sortTasks);
+            const activityTasks = (buckets.activity.length ? buckets.activity : tasks).slice().sort((a, b) => {
+                const aTime = Date.parse(a.last_activity_at || a.updated_at || a.created_at || 0);
+                const bTime = Date.parse(b.last_activity_at || b.updated_at || b.created_at || 0);
+                return bTime - aTime;
             });
-            const rawInputTasks = tasks.filter(task => {
-                const stage = normalizeTaskStage(task.stage);
-                return stage === 'raw_input' || (stage !== 'archive' && isHiddenCapture(task));
-            }).sort(sortTasks);
-            const assignedTasks = overviewTasks.filter(task => {
-                const stage = normalizeTaskStage(task.stage);
-                return stage === 'assigned' || (task.assigned_to && !['in_progress', 'done', 'archive', 'needs_decision'].includes(stage) && !taskIsMachine(task));
-            });
-            const inProgressTasks = overviewTasks.filter(task => normalizeTaskStage(task.stage) === 'in_progress' || task.started_at);
             const staleTasks = staleTaskItems();
-            const archiveTasks = tasks.filter(task => {
-                const stage = normalizeTaskStage(task.stage);
-                return stage === 'archive' || String(task.status || '').toLowerCase() === 'archived';
-            }).sort(sortTasks);
-            const waitingAccessTasks = activeTasks.filter(task => /access|credential|login|permission|oauth|api key|token|connector|blocked/i.test(`${task.title || ''} ${task.notes || ''} ${task.next_action || ''} ${task.source_context || ''}`)).sort(sortTasks);
-            const waitingShellerTasks = activeTasks.filter(taskIsRabbi).sort(sortTasks);
-            const waitingShloimieTasks = activeTasks.filter(task => {
-                if (taskIsMachine(task) || taskIsRabbi(task)) return false;
-                return /shloimie/i.test(taskOwnerLabel(task)) || taskColumn(task) === 'mine';
-            }).sort(sortTasks);
-            const codexReadyTasks = buckets.changelog
-                .filter(task => taskIsMachine(task) && !task.started_at && !task.completed_at && !task.verified_at && !['done', 'archive'].includes(normalizeTaskStage(task.stage)))
-                .sort(sortTasks);
             const focusMap = {
-                overview: overviewTasks,
                 decisions: buckets.decisions,
-                waiting_shloimie: waitingShloimieTasks,
-                waiting_sheller: waitingShellerTasks,
-                waiting_access: waitingAccessTasks,
+                pending: buckets.pending,
+                tasks: buckets.tasks,
                 schedule: scheduleTasks,
-                research: researchTasks,
-                changelog: codexReadyTasks,
                 done: buckets.done,
-                archive: archiveTasks
+                activity: activityTasks
             };
             const decisionCount = buckets.decisions.length;
-            const myTaskCount = waitingShloimieTasks.length;
-            const codexQueueCount = codexReadyTasks.length;
-            const changelogCount = buckets.changelog.length;
+            const pendingCount = buckets.pending.length;
+            const taskCount = buckets.tasks.length;
+            const agentWorkingCount = buckets.tasks.filter(task => taskMatchesSignalFilter(task, 'agent_working')).length;
             const doneCount = buckets.done.length;
-            const urgentCount = [...buckets.decisions, ...buckets.mine, ...buckets.changelog].filter(t => ['urgent', 'today'].includes(t.urgency)).length;
-            const normalizedFocus = TASK_SUBTABS.some(tab => tab.id === taskFocus) ? taskFocus : 'overview';
-            const focusTasks = [...(focusMap[normalizedFocus] || focusMap.overview)].sort(sortTasks);
+            const urgentCount = openTasks.filter(t => ['urgent', 'today'].includes(t.urgency)).length;
+            const normalizedFocus = TASK_SUBTABS.some(tab => tab.id === taskFocus) ? taskFocus : 'tasks';
+            const focusTasks = [...(focusMap[normalizedFocus] || focusMap.tasks)].sort(sortTasks);
             const projectCounts = taskProjectCounts(focusTasks);
             const categoryCounts = taskCategoryCounts(focusTasks);
             const filteredTasks = focusTasks
                 .filter(task => taskUrgencyFilter === 'all' || task.urgency === taskUrgencyFilter)
                 .filter(task => taskProjectFilter === 'all' || taskProjectKey(task) === taskProjectFilter)
                 .filter(task => taskCategoryFilter === 'all' || taskCategoryKey(task) === taskCategoryFilter)
+                .filter(task => taskSignalFilter === 'all' || taskMatchesSignalFilter(task, taskSignalFilter))
                 .filter(task => taskMatchesDateFilter(task, taskDateFilter));
             const title = ({
-                overview: 'All Work',
-                decisions: 'Needs Decision',
-                waiting_shloimie: 'Waiting for Shloimie',
-                waiting_sheller: 'Waiting for Rabbi Sheller',
-                waiting_access: 'Waiting for Access',
-                schedule: 'Scheduled',
-                research: 'Research',
-                changelog: 'Ready for Codex',
+                decisions: 'Decisions',
+                pending: 'Pending',
+                tasks: 'Tasks',
+                schedule: 'Calendar',
                 done: 'Done',
-                archive: 'Archive'
-            })[normalizedFocus] || 'Overview';
+                activity: 'Activity'
+            })[normalizedFocus] || 'Tasks';
             const tabCounts = {
-                overview: overviewTasks.length,
                 decisions: decisionCount,
-                waiting_shloimie: waitingShloimieTasks.length,
-                waiting_sheller: waitingShellerTasks.length,
-                waiting_access: waitingAccessTasks.length,
-                changelog: codexReadyTasks.length,
+                pending: pendingCount,
+                tasks: taskCount,
                 schedule: scheduleTasks.length,
-                research: researchTasks.length,
                 done: doneCount,
-                archive: archiveTasks.length
+                activity: activityTasks.length
             };
 
             return {
@@ -7564,19 +7890,16 @@
                 categoryCounts,
                 tabCounts,
                 decisionCount,
-                myTaskCount,
-                codexQueueCount,
-                changelogCount,
+                pendingCount,
+                taskCount,
+                agentWorkingCount,
                 doneCount,
                 urgentCount,
-                rawInputCount: rawInputTasks.length,
-                assignedCount: assignedTasks.length,
-                inProgressCount: inProgressTasks.length,
+                rawInputCount: 0,
+                assignedCount: buckets.tasks.filter(task => task.assigned_to && !taskIsMachine(task)).length,
+                inProgressCount: buckets.tasks.filter(task => normalizeTaskStage(task.stage) === 'in_progress' || task.started_at).length,
                 staleCount: staleTasks.length,
-                waitingShloimieCount: waitingShloimieTasks.length,
-                waitingShellerCount: waitingShellerTasks.length,
-                waitingAccessCount: waitingAccessTasks.length,
-                archiveCount: archiveTasks.length,
+                activityCount: activityTasks.length,
             };
         }
 
@@ -7585,19 +7908,20 @@
             const selectedTask = selectedTaskId
                 ? tasks.find(task => String(task.id) === String(selectedTaskId))
                 : null;
-            if (selectedTask) return renderTaskDetailPage(selectedTask, state);
             return `
                 <div class="container">
                     <div class="page-heading task-heading">
                         <div>
-                            <div class="page-kicker">Work Queue</div>
-                            <h2>Tasks</h2>
-                            <p>Decisions, named waiting states, Codex-ready work, scheduled items, done work, and archives stay separated so unclear work cannot hide in a generic pending bucket.</p>
+                            <div class="page-kicker">Workspace Work</div>
+                            <h2>Decisions, Pending, Tasks</h2>
+                            <p>Pending is only for human or external blockers. Agent work stays in Tasks with live status and staleness handling.</p>
                         </div>
                     </div>
+                    ${renderAgentStatusPanel(state.buckets)}
                     ${renderTaskStatusToolbar(state)}
                     ${renderTaskFocusedLane(state)}
                 </div>
+                ${selectedTask ? renderTaskDetailPage(selectedTask, state) : ''}
             `;
         }
 
@@ -7609,9 +7933,9 @@
                 <section class="local-toolbar task-status-toolbar" aria-label="Task status and filters">
                     <div class="local-toolbar-header">
                         <div>
-                            <div class="local-toolbar-kicker">Task Lane</div>
+                            <div class="local-toolbar-kicker">Workspace Bucket</div>
                             <strong class="local-toolbar-title">${escapeHtml(state.title || 'Tasks')}</strong>
-                            <p class="local-toolbar-copy">${Number(focusCount)} visible item${Number(focusCount) === 1 ? '' : 's'}${activeFilters.length ? ` after ${activeFilters.length} filter${activeFilters.length === 1 ? '' : 's'}` : ''}. Only concrete task lanes are shown.</p>
+                            <p class="local-toolbar-copy">${Number(focusCount)} visible item${Number(focusCount) === 1 ? '' : 's'}${activeFilters.length ? ` after ${activeFilters.length} filter${activeFilters.length === 1 ? '' : 's'}` : ''}. Agent status is a signal, not a Pending bucket.</p>
                         </div>
                         ${activeFilters.length ? '<button type="button" class="status-chip" onclick="resetTaskFilters()">Clear filters</button>' : ''}
                     </div>
@@ -7625,7 +7949,7 @@
 
         function renderTaskStatusChip(lane, count) {
             const focus = operationalLaneFocus(lane.id);
-            const active = taskFocus === focus || (lane.id === 'codex_ready' && taskFocus === 'changelog');
+            const active = taskFocus === focus;
             return `
                 <button type="button" class="status-chip ${active ? 'active' : ''}" onclick="${operationalLaneTarget(lane.id)}" title="${escapeHtml(operationalLaneNote(lane.id))}">
                     <span>${escapeHtml(lane.label)}</span>
@@ -7638,16 +7962,16 @@
             return `
                 <section class="focus-panel" aria-label="Tasks overview">
                     <div class="focused-grid">
-                        ${renderMetricButton('Urgent / Today', state.urgentCount, 'Open personal work that needs attention now.', "openTaskUrgentToday()")}
-                        ${renderMetricButton('Needs Decision', state.decisionCount, 'Choices waiting for your answer.', "setTaskFocus('decisions')")}
-                        ${renderMetricButton('Waiting Shloimie', state.waitingShloimieCount, 'Owned tasks with a clear next action.', "setTaskFocus('waiting_shloimie')")}
-                        ${renderMetricButton('Waiting Access', state.waitingAccessCount, 'Credential, permission, or connector blockers.', "setTaskFocus('waiting_access')")}
-                        ${renderMetricButton('Ready for Codex', state.codexQueueCount, 'Queued implementation work.', "setTaskFocus('changelog')")}
-                        ${renderMetricButton('Done', state.doneCount, 'Completed decisions and personal work.', "setTaskFocus('done')")}
+                        ${renderMetricButton('Urgent / Today', state.urgentCount, 'Open work due now.', "openTaskUrgentToday()")}
+                        ${renderMetricButton('Decisions', state.decisionCount, 'Human choices that unlock the next step.', "setTaskFocus('decisions')")}
+                        ${renderMetricButton('Pending', state.pendingCount, 'Human or external blockers only.', "setTaskFocus('pending')")}
+                        ${renderMetricButton('Tasks', state.taskCount, 'Actionable work that can move now.', "setTaskFocus('tasks')")}
+                        ${renderMetricButton('Agent Working', state.agentWorkingCount, 'Codex/system work with queued or running status.', "setTaskFilter('signal', 'agent_working'); setTaskFocus('tasks')")}
+                        ${renderMetricButton('Done', state.doneCount, 'Completed and verified work.', "setTaskFocus('done')")}
                     </div>
                     <details class="workflow-details">
                         <summary>Workflow rule</summary>
-                        <p>Telegram and dashboard captures enter Raw Input, move to Needs Decision only when a real A/B/C choice is required, then become Assigned or In Progress. Agent implementation work remains visible in Changelog from queue to verification.</p>
+                        <p>Captures become Decisions only when a human choice is needed, Pending only when blocked by a human or outside service, and Tasks when work can move. Codex work is never Pending.</p>
                     </details>
                 </section>
             `;
@@ -7656,44 +7980,38 @@
         function renderTaskWorkflowStrip(state = {}) {
             const countForStage = {
                 decisions: state.decisionCount,
-                waiting_shloimie: state.waitingShloimieCount,
-                waiting_sheller: state.waitingShellerCount,
-                waiting_access: state.waitingAccessCount,
-                changelog: state.codexQueueCount,
+                pending: state.pendingCount,
+                tasks: state.taskCount,
                 schedule: state.tabCounts?.schedule || 0,
                 done: state.doneCount,
-                archive: state.archiveCount,
+                activity: state.activityCount,
             };
             return `
                 <section class="focus-panel compact-panel" aria-label="Task stage flow">
-                    <div class="task-section-header"><h3>Status Flow</h3><span>Needs Decision / Waiting / Ready for Codex / Scheduled / Done / Archive</span></div>
+                    <div class="task-section-header"><h3>Status Flow</h3><span>Decisions / Pending / Tasks / Calendar / Done / Activity</span></div>
                     <div class="task-overview-grid">
-                        ${TASK_STAGE_FLOW.map(stage => renderMetricButton(stage.label, countForStage[stage.id] || 0, stage.id === 'archive' ? 'Closed historical work.' : 'Visible task lane.', `setTaskFocus('${stage.id}')`)).join('')}
+                        ${TASK_STAGE_FLOW.map(stage => renderMetricButton(stage.label, countForStage[stage.id] || 0, operationalLaneNote(stage.id), `setTaskFocus('${stage.id}')`)).join('')}
                     </div>
                 </section>
             `;
         }
 
         function taskOperationalLaneCounts(state = {}) {
-            const overviewTasks = state.focusMap?.overview || [];
-            const changelogTasks = state.focusMap?.changelog || [];
             return {
                 decisions: state.decisionCount || 0,
-                codex_ready: changelogTasks.length,
-                waiting_shloimie: state.waitingShloimieCount || 0,
-                waiting_sheller: state.waitingShellerCount || 0,
-                waiting_access: state.waitingAccessCount || 0,
+                pending: state.pendingCount || 0,
+                tasks: state.taskCount || 0,
                 schedule: state.tabCounts?.schedule || 0,
                 done: state.doneCount || 0,
-                archive: state.archiveCount || 0,
+                activity: state.activityCount || 0,
             };
         }
 
         function renderOperationalLaneStrip(state = {}) {
             const counts = taskOperationalLaneCounts(state);
             return `
-                <section class="focus-panel compact-panel" aria-label="Operational lanes">
-                    <div class="task-section-header"><h3>Operational Lanes</h3><span>No generic pending lane</span></div>
+                <section class="focus-panel compact-panel" aria-label="Operational buckets">
+                    <div class="task-section-header"><h3>Operational Buckets</h3><span>Pending is human or external only</span></div>
                     <div class="task-overview-grid">
                         ${TASK_OPERATIONAL_LANES.map(lane => renderMetricButton(lane.label, counts[lane.id] || 0, operationalLaneNote(lane.id), operationalLaneTarget(lane.id))).join('')}
                     </div>
@@ -7704,40 +8022,34 @@
         function operationalLaneTarget(laneId) {
             return ({
                 decisions: "setTaskFocus('decisions')",
-                codex_ready: "setTaskFocus('changelog')",
-                waiting_shloimie: "setTaskFocus('waiting_shloimie')",
-                waiting_sheller: "setTaskFocus('waiting_sheller')",
-                waiting_access: "setTaskFocus('waiting_access')",
+                pending: "setTaskFocus('pending')",
+                tasks: "setTaskFocus('tasks')",
                 schedule: "setTaskFocus('schedule')",
                 done: "setTaskFocus('done')",
-                archive: "setTaskFocus('archive')",
-            })[laneId] || "setTaskFocus('overview')";
+                activity: "setTaskFocus('activity')",
+            })[laneId] || "setTaskFocus('tasks')";
         }
 
         function operationalLaneFocus(laneId) {
             return ({
                 decisions: 'decisions',
-                codex_ready: 'changelog',
-                waiting_shloimie: 'waiting_shloimie',
-                waiting_sheller: 'waiting_sheller',
-                waiting_access: 'waiting_access',
+                pending: 'pending',
+                tasks: 'tasks',
                 schedule: 'schedule',
                 done: 'done',
-                archive: 'archive',
-            })[laneId] || 'overview';
+                activity: 'activity',
+            })[laneId] || 'tasks';
         }
 
         function operationalLaneNote(laneId) {
             return ({
                 decisions: 'Real choices that need approval before work moves.',
-                codex_ready: 'Agent-owned work ready for implementation.',
-                waiting_shloimie: 'Operator-owned or awaiting Shloimie.',
-                waiting_sheller: 'Rabbi Sheller/provider dependency.',
-                waiting_access: 'Blocked by credentials, permissions, or connector access.',
+                pending: 'Human or outside-service blockers only.',
+                tasks: 'Actionable work, including Codex/system jobs.',
                 schedule: 'Tasks with due or planned dates.',
                 done: 'Completed or verified work.',
-                archive: 'Archived historical work.',
-            })[laneId] || 'Operational lane.';
+                activity: 'Recent comments and system activity.',
+            })[laneId] || 'Operational bucket.';
         }
 
         function renderMetricButton(label, value, note, onclick) {
@@ -7753,14 +8065,12 @@
         function renderTaskFocusedLane(state) {
             return `
                 <section class="focus-panel" aria-label="${escapeHtml(state.title)}">
-                    ${state.focus === 'changelog' ? renderCodexStatusDetails(state.buckets) : ''}
                     ${state.focus === 'schedule'
                         ? renderTaskSchedule(state.filteredTasks)
                         : renderTaskListSection(state.title, state.filteredTasks, state.focus)}
                 </section>
             `;
         }
-
         function taskScheduleDate(task = {}) {
             return task.due_date || task.planned_at || null;
         }
@@ -7772,6 +8082,166 @@
             return new Date(parsed).toISOString().slice(0, 10);
         }
 
+        function normalizeDateKey(value) {
+            if (!value) return '';
+            const direct = String(value).trim().match(/^(\d{4})-(\d{2})-(\d{2})/);
+            if (direct) return `${direct[1]}-${direct[2]}-${direct[3]}`;
+            const parsed = Date.parse(value);
+            if (!Number.isFinite(parsed)) return '';
+            return dateKeyFromDate(new Date(parsed));
+        }
+
+        function dateFromKey(key) {
+            const match = String(key || '').match(/^(\d{4})-(\d{2})-(\d{2})$/);
+            if (!match) return null;
+            return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+        }
+
+        function dateKeyFromDate(date) {
+            if (!(date instanceof Date) || Number.isNaN(date.getTime())) return '';
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        }
+
+        function addDaysDateKey(key, amount) {
+            const date = dateFromKey(key) || new Date();
+            date.setDate(date.getDate() + Number(amount || 0));
+            return dateKeyFromDate(date);
+        }
+
+        function addMonthsDateKey(key, amount) {
+            const date = dateFromKey(key) || new Date();
+            date.setMonth(date.getMonth() + Number(amount || 0), 1);
+            return dateKeyFromDate(date);
+        }
+
+        function startOfTaskWeek(date) {
+            const start = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+            start.setDate(start.getDate() - start.getDay());
+            return start;
+        }
+
+        function taskScheduleGroups(items = []) {
+            return (items || []).reduce((groups, task) => {
+                const key = normalizeDateKey(taskScheduleDate(task));
+                if (!key) return groups;
+                if (!groups[key]) groups[key] = [];
+                groups[key].push(task);
+                return groups;
+            }, {});
+        }
+
+        function renderTaskCalendarToolbar(selectedDate, itemCount) {
+            const selectedKey = dateKeyFromDate(selectedDate);
+            const periodLabel = taskCalendarMode === 'month'
+                ? selectedDate.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })
+                : taskCalendarMode === 'week'
+                    ? `Week of ${formatDate(dateKeyFromDate(startOfTaskWeek(selectedDate)))}`
+                    : formatDate(selectedKey);
+            const hebrew = formatHebrewDate(selectedKey);
+            return `
+                <div class="task-calendar-toolbar">
+                    <div>
+                        <div class="task-calendar-title">${escapeHtml(periodLabel)}</div>
+                        <div class="task-calendar-subtitle">${escapeHtml(hebrew || 'Hebrew date unavailable')} · ${Number(itemCount || 0)} scheduled item${Number(itemCount || 0) === 1 ? '' : 's'}</div>
+                    </div>
+                    <div class="task-calendar-controls" aria-label="Calendar controls">
+                        <button class="task-action" type="button" onclick="shiftTaskCalendar(-1)">Previous</button>
+                        <button class="task-action" type="button" onclick="jumpTaskCalendarToday()">Today</button>
+                        <button class="task-action" type="button" onclick="shiftTaskCalendar(1)">Next</button>
+                        <button class="task-action ${taskCalendarMode === 'month' ? 'primary' : ''}" type="button" onclick="setTaskCalendarMode('month')">Month</button>
+                        <button class="task-action ${taskCalendarMode === 'week' ? 'primary' : ''}" type="button" onclick="setTaskCalendarMode('week')">Week</button>
+                        <button class="task-action ${taskCalendarMode === 'day' ? 'primary' : ''}" type="button" onclick="setTaskCalendarMode('day')">Selected day</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderTaskCalendarItem(task) {
+            const id = Number(task.id || 0);
+            return `
+                <button class="task-calendar-item" type="button" onclick="openTaskDetail(event, ${id})">
+                    <strong>${escapeHtml(taskDisplayTitle(task))}</strong>
+                    <span>${escapeHtml(taskBadgeLabel(task))} · ${escapeHtml(taskActionNeededLabel(task))}</span>
+                </button>
+            `;
+        }
+
+        function renderTaskCalendarCell(date, groups, options = {}) {
+            const key = dateKeyFromDate(date);
+            const tasksForDay = (groups[key] || []).sort(sortTasks);
+            const selected = key === normalizeDateKey(taskCalendarSelectedDate);
+            const today = key === dateKeyFromDate(new Date());
+            return `
+                <section class="task-calendar-cell ${options.outside ? 'outside' : ''} ${selected ? 'selected' : ''} ${today ? 'today' : ''}" aria-label="${escapeHtml(formatDate(key))}">
+                    <button class="task-calendar-date-button" type="button" onclick="setTaskCalendarSelectedDate(${attrJson(key)})">
+                        <span class="task-calendar-day-number">${date.getDate()}</span>
+                        <span class="task-calendar-hebrew">${escapeHtml(formatHebrewDate(key))}</span>
+                    </button>
+                    <div class="task-calendar-items">
+                        ${tasksForDay.slice(0, options.limit || 3).map(renderTaskCalendarItem).join('')}
+                        ${tasksForDay.length > (options.limit || 3) ? `<span class="task-calendar-more">+${tasksForDay.length - (options.limit || 3)} more</span>` : ''}
+                    </div>
+                </section>
+            `;
+        }
+
+        function renderTaskMonthCalendar(items = [], groups = taskScheduleGroups(items)) {
+            const selectedDate = dateFromKey(taskCalendarSelectedDate) || new Date();
+            const monthStart = new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1);
+            const gridStart = startOfTaskWeek(monthStart);
+            const cells = Array.from({ length: 42 }, (_, index) => {
+                const date = new Date(gridStart);
+                date.setDate(gridStart.getDate() + index);
+                return date;
+            });
+            return `
+                <div class="task-calendar-grid month" aria-label="Month task calendar">
+                    ${['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Shabbos'].map(day => `<div class="task-calendar-weekday">${day}</div>`).join('')}
+                    ${cells.map(date => renderTaskCalendarCell(date, groups, {
+                        outside: date.getMonth() !== selectedDate.getMonth(),
+                        limit: 2
+                    })).join('')}
+                </div>
+            `;
+        }
+
+        function renderTaskWeekCalendar(items = [], groups = taskScheduleGroups(items)) {
+            const selectedDate = dateFromKey(taskCalendarSelectedDate) || new Date();
+            const weekStart = startOfTaskWeek(selectedDate);
+            const cells = Array.from({ length: 7 }, (_, index) => {
+                const date = new Date(weekStart);
+                date.setDate(weekStart.getDate() + index);
+                return date;
+            });
+            return `
+                <div class="task-calendar-grid week" aria-label="Week task calendar">
+                    ${cells.map(date => renderTaskCalendarCell(date, groups, { limit: 4 })).join('')}
+                </div>
+            `;
+        }
+
+        function renderTaskSelectedDayPanel(items = [], groups = taskScheduleGroups(items)) {
+            const selectedKey = normalizeDateKey(taskCalendarSelectedDate) || dateKeyFromDate(new Date());
+            const tasksForDay = (groups[selectedKey] || []).sort(sortTasks);
+            return `
+                <section class="task-calendar-day-panel" aria-label="Selected day tasks">
+                    <div class="task-section-header">
+                        <div>
+                            <h3>${escapeHtml(formatDate(selectedKey) || 'Selected day')}</h3>
+                            <p>${escapeHtml(formatHebrewDate(selectedKey) || '')}</p>
+                        </div>
+                        <span>${tasksForDay.length} item${tasksForDay.length === 1 ? '' : 's'}</span>
+                    </div>
+                    ${tasksForDay.length
+                        ? `<div class="task-list">${tasksForDay.map(task => renderTaskCard(task, taskColumn(task) || 'schedule')).join('')}</div>`
+                        : renderTaskEmpty('schedule')}
+                </section>
+            `;
+        }
+
         function renderTaskSchedule(items = []) {
             const sorted = [...items].sort((a, b) => {
                 const aTime = Date.parse(taskScheduleDate(a) || '') || Infinity;
@@ -7780,29 +8250,21 @@
                 return sortTasks(a, b);
             });
             if (!sorted.length) return renderTaskEmpty('schedule');
-            const groups = [];
-            sorted.forEach(task => {
-                const key = taskScheduleKey(task);
-                let group = groups.find(item => item.key === key);
-                if (!group) {
-                    group = { key, tasks: [] };
-                    groups.push(group);
-                }
-                group.tasks.push(task);
-            });
+            const groups = taskScheduleGroups(sorted);
+            if (!dateFromKey(taskCalendarSelectedDate)) {
+                taskCalendarSelectedDate = normalizeDateKey(taskScheduleDate(sorted[0])) || dateKeyFromDate(new Date());
+            }
+            const selectedDate = dateFromKey(taskCalendarSelectedDate) || new Date();
+            const calendarBody = taskCalendarMode === 'week'
+                ? renderTaskWeekCalendar(sorted, groups)
+                : taskCalendarMode === 'day'
+                    ? renderTaskSelectedDayPanel(sorted, groups)
+                    : renderTaskMonthCalendar(sorted, groups);
             return `
-                <div class="task-schedule-grid" aria-label="Task schedule">
-                    ${groups.map(group => `
-                        <section class="task-schedule-day">
-                            <div class="task-section-header">
-                                <h3>${escapeHtml(group.key === 'unscheduled' ? 'Unscheduled' : formatDate(group.key))}</h3>
-                                <span>${group.tasks.length} item${group.tasks.length === 1 ? '' : 's'}</span>
-                            </div>
-                            <div class="task-list">
-                                ${group.tasks.map(task => renderTaskCard(task, taskColumn(task) || 'schedule')).join('')}
-                            </div>
-                        </section>
-                    `).join('')}
+                <div class="task-calendar-shell" aria-label="Task calendar">
+                    ${renderTaskCalendarToolbar(selectedDate, sorted.length)}
+                    ${calendarBody}
+                    ${taskCalendarMode === 'day' ? '' : renderTaskSelectedDayPanel(sorted, groups)}
                 </div>
             `;
         }
@@ -7852,12 +8314,12 @@
         function renderCodexStatusDetails(buckets) {
             const queue = agentFleetStatus?.queue || {};
             const fleet = agentFleetStatus?.fleet || {};
-            const queued = Number(queue.pending ?? buckets.changelog.filter(task => taskIsMachine(task) && !task.completed_at && !task.verified_at && normalizeTaskStage(task.stage) !== 'done').length ?? 0);
+            const queued = Number(queue.pending ?? (buckets.tasks || []).filter(task => taskIsMachine(task) && String(task.agent_status || '').toLowerCase() === 'queued').length ?? 0);
             const inProgress = Number(queue.in_progress ?? 0);
             const heartbeat = fleet.last_seen_at ? `Last seen ${formatDateTime(fleet.last_seen_at)}.` : 'No heartbeat recorded yet.';
             return `
                 <details class="workflow-details">
-                    <summary>Agent queue status</summary>
+                    <summary>Agent work status</summary>
                     <p>${queued} queued, ${inProgress} in progress. ${escapeHtml(heartbeat)}</p>
                 </details>
             `;
@@ -7885,16 +8347,16 @@
                             <div class="task-overview-label">Current task view</div>
                             <div class="task-overview-value">${escapeHtml(state.title || 'Tasks')}</div>
                         </div>
-                        <div class="task-overview-note">Showing ${Number(state.filteredCount || 0)} of ${Number(state.totalCount || 0)} item${Number(state.totalCount || 0) === 1 ? '' : 's'} in this lane.</div>
+                        <div class="task-overview-note">Showing ${Number(state.filteredTasks?.length || 0)} of ${Number(state.focusTasks?.length || 0)} item${Number(state.focusTasks?.length || 0) === 1 ? '' : 's'} in this bucket.</div>
                         <div class="task-filter-summary">
                             ${filterNote}
                             ${activeFilters.length ? '<button class="task-reset-button" onclick="resetTaskFilters()">Clear filters</button>' : ''}
                         </div>
                     </div>
                     ${renderTaskOverviewButton('decisions', 'Decisions', state.decisionCount, 'Choices needed')}
-                    ${renderTaskOverviewButton('waiting_shloimie', 'Shloimie', state.myTaskCount, 'Operator tasks')}
-                    ${renderTaskOverviewButton('schedule', 'Schedule', state.tabCounts?.schedule || 0, 'Planned work')}
-                    ${renderTaskOverviewButton('changelog', 'Ready for Codex', state.codexQueueCount, 'Queued work')}
+                    ${renderTaskOverviewButton('pending', 'Pending', state.pendingCount, 'Human or external blockers')}
+                    ${renderTaskOverviewButton('tasks', 'Tasks', state.taskCount, 'Actionable work')}
+                    ${renderTaskOverviewButton('schedule', 'Calendar', state.tabCounts?.schedule || 0, 'Planned work')}
                     ${renderTaskOverviewButton('done', 'Done', state.doneCount, 'Closed work')}
                 </div>
             `;
@@ -8069,40 +8531,54 @@
             ].filter(([, value]) => value);
             const contextRows = [
                 ['Owner', taskOwnerLabel(task)],
+                ['Needs action', taskActionNeededLabel(task)],
                 ['Stage', taskStageLabel(task)],
                 ['Category', taskCategoryLabel(task.category)],
                 ['Source', task.source || 'dashboard'],
                 ['Project', taskProjectLabel(task)],
                 ['Urgency', formatUrgency(task.urgency)],
             ];
+            const activityRows = [
+                task.agent_status && task.agent_status !== 'none' ? ['Agent status', String(task.agent_status).replace(/_/g, ' ')] : null,
+                task.agent_job_status ? ['Agent job', String(task.agent_job_status).replace(/_/g, ' ')] : null,
+                task.is_stale ? ['Stale', task.stale_reason || taskStaleReasonList(task).join(' / ')] : null,
+                task.recommended_next_action ? ['Next action', task.recommended_next_action] : null,
+                task.latest_comment_preview ? ['Latest comment', task.latest_comment_preview] : null,
+            ].filter(Boolean);
 
             return `
-                <div class="container">
-                    <div class="detail-page-header">
-                        <button type="button" class="task-action" onclick="closeTaskDetail()">Back to ${escapeHtml(state.title || 'Tasks')}</button>
-                        <div class="breadcrumb-line">Tasks / ${escapeHtml(state.title || 'Overview')} / Task #${Number(task.id)}</div>
-                    </div>
-                    <section class="detail-page-layout task-detail-page">
-                        <aside class="detail-side-panel">
-                            <div class="detail-side-kicker">Task</div>
-                            <h2>${escapeHtml(taskDisplayTitle(task))}</h2>
-                            <div class="task-row-meta">
-                                <span class="badge badge-project-${taskProjectKey(task)}">${escapeHtml(taskProjectLabel(task))}</span>
-                                <span class="badge badge-urgency-${task.urgency}">${formatUrgency(task.urgency)}</span>
-                                <span class="badge">${escapeHtml(taskStageLabel(task))}</span>
-                                ${task.decision_required ? '<span class="badge badge-decision">Decision Required</span>' : ''}
-                                ${workflow?.code ? `<span class="badge">Workflow ${escapeHtml(workflow.code)}</span>` : ''}
+                <div class="task-detail-overlay task-detail-page" role="dialog" aria-modal="true" aria-label="Task detail" onclick="closeTaskDetail()">
+                    <section class="task-detail-sheet" onclick="event.stopPropagation()">
+                        <header class="task-detail-header">
+                            <div>
+                                <div class="task-detail-kicker">Header</div>
+                                <h2>${escapeHtml(taskDisplayTitle(task))}</h2>
+                                <div class="task-row-meta">
+                                    <span class="task-type-badge">${escapeHtml(taskBadgeLabel(task, columnId))}</span>
+                                    <span class="badge badge-project-${taskProjectKey(task)}">${escapeHtml(taskProjectLabel(task))}</span>
+                                    <span class="badge badge-urgency-${task.urgency}">${formatUrgency(task.urgency)}</span>
+                                    <span class="badge">${escapeHtml(taskStageLabel(task))}</span>
+                                    <span class="badge">Action: ${escapeHtml(taskActionNeededLabel(task))}</span>
+                                    ${task.decision_required ? '<span class="badge badge-decision">Decision Required</span>' : ''}
+                                    ${workflow?.code ? `<span class="badge">Workflow ${escapeHtml(workflow.code)}</span>` : ''}
+                                </div>
                             </div>
-                            <div class="task-actions detail-actions">
-                                ${renderTaskActions(task, columnId)}
-                                <button class="task-action" onclick="editTask(${Number(task.id)})">Edit task</button>
-                                <button class="task-action" onclick="openSupportTicketForm()">Report problem</button>
-                            </div>
-                        </aside>
-                        <div class="detail-main-panel">
-                            ${renderTaskInlineDecisionPanel(task, columnId)}
-                            <div class="detail-section">
+                            <button type="button" class="task-detail-close" onclick="closeTaskDetail()" aria-label="Close task detail">x</button>
+                        </header>
+                        <div class="task-detail-body">
+                            <section class="detail-section">
+                                <h3>Decision / Action</h3>
+                                ${renderTaskInlineDecisionPanel(task, columnId)}
+                                <div class="task-actions detail-actions">
+                                    ${renderTaskActions(task, columnId)}
+                                    <button class="task-action" onclick="editTask(${Number(task.id)})">Edit task</button>
+                                    <button class="task-action" onclick="openSupportTicketForm()">Report problem</button>
+                                    <button class="task-action" onclick="closeTaskDetail()">Back to ${escapeHtml(state.title || 'Tasks')}</button>
+                                </div>
+                            </section>
+                            <section class="detail-section">
                                 <h3>Summary</h3>
+                                <p class="task-inline-text">${escapeHtml(task.summary || taskDisplayDetail(task, columnId) || notes || 'No summary has been recorded yet.')}</p>
                                 <div class="task-inline-grid">
                                     ${contextRows.map(([label, value]) => `
                                         <div class="task-inline-item">
@@ -8111,42 +8587,31 @@
                                         </div>
                                     `).join('')}
                                 </div>
-                            </div>
-                            <div class="detail-section">
-                                <h3>Timeline</h3>
-                                <div class="timeline-list">
-                                    ${timestampRows.length ? timestampRows.map(([label, value, type]) => `
-                                        <div class="timeline-item compact">
-                                            <span class="timeline-dot"></span>
-                                            <div>
-                                                <strong>${escapeHtml(label)}</strong>
-                                                <p>${escapeHtml(type === 'date' ? (formatDate(value) || value) : (formatDateTime(value) || value))}</p>
-                                            </div>
-                                        </div>
-                                    `).join('') : '<div class="empty-state">No task timestamps are recorded yet.</div>'}
-                                </div>
-                            </div>
-                            ${notes ? `
-                                <div class="detail-section">
-                                    <h3>Notes</h3>
-                                    <div class="task-inline-text">${escapeHtml(notes)}</div>
-                                </div>
-                            ` : ''}
-                            ${renderTaskWorkflowPanel(task)}
-                            ${verification ? `
-                                <div class="detail-section">
-                                    <h3>Verification</h3>
-                                    <div class="task-inline-text">${escapeHtml(verification)}</div>
-                                </div>
-                            ` : ''}
+                            </section>
+                            <section class="detail-section">
+                                <h3>Details</h3>
+                                ${notes ? `<div class="task-inline-text">${escapeHtml(notes)}</div>` : '<div class="task-inline-text">No additional details recorded yet.</div>'}
+                                ${renderTaskWorkflowPanel(task)}
+                                ${verification ? `
+                                    <div class="task-inline-item">
+                                        <div class="task-inline-label">Verification</div>
+                                        <div class="task-inline-text">${escapeHtml(verification)}</div>
+                                    </div>
+                                ` : ''}
+                            </section>
                             ${originalText ? `
-                                <div class="detail-section">
-                                    <h3>Original Capture</h3>
+                                <details class="detail-section task-original-capture">
+                                    <summary>Original Capture</summary>
                                     <div class="task-inline-text">${escapeHtml(originalText)}</div>
-                                </div>
-                            ` : ''}
-                            <div class="detail-section">
-                                <h3>Comments</h3>
+                                </details>
+                            ` : `
+                                <details class="detail-section task-original-capture">
+                                    <summary>Original Capture</summary>
+                                    <div class="task-inline-text">No original capture stored for this task.</div>
+                                </details>
+                            `}
+                            <section class="detail-section">
+                                <h3>Comments / Internal Dialogue</h3>
                                 ${!loadedComments ? '<div class="task-comment-chip"><div class="task-inline-text">Loading comments...</div></div>' : ''}
                                 ${loadedComments && comments.length ? comments.slice(0, 12).map(comment => `
                                     <div class="timeline-item compact">
@@ -8159,6 +8624,30 @@
                                 `).join('') : ''}
                                 ${loadedComments && !comments.length ? '<div class="task-comment-chip"><div class="task-inline-text">No comments yet.</div></div>' : ''}
                                 ${renderTaskInlineCommentForm(task)}
+                            </section>
+                            <section class="detail-section">
+                                <h3>Activity</h3>
+                                <div class="timeline-list">
+                                    ${timestampRows.map(([label, value, type]) => `
+                                        <div class="timeline-item compact">
+                                            <span class="timeline-dot"></span>
+                                            <div>
+                                                <strong>${escapeHtml(label)}</strong>
+                                                <p>${escapeHtml(type === 'date' ? (formatDate(value) || value) : (formatDateTime(value) || value))}</p>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                    ${activityRows.map(([label, value]) => `
+                                        <div class="timeline-item compact">
+                                            <span class="timeline-dot"></span>
+                                            <div>
+                                                <strong>${escapeHtml(label)}</strong>
+                                                <p>${escapeHtml(value || '')}</p>
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                    ${!timestampRows.length && !activityRows.length ? '<div class="empty-state">No activity recorded yet.</div>' : ''}
+                                </div>
                             </div>
                         </div>
                     </section>
@@ -8252,7 +8741,7 @@
             return `
                 <form class="task-inline-comment-form" onsubmit="addInlineTaskComment(event, ${id})">
                     <textarea id="taskInlineComment-${id}" placeholder="Add decision context, audit notes, or handoff..."></textarea>
-                    <button class="task-action primary" type="submit">Add Comment &amp; Requeue</button>
+                    <button class="task-action primary" type="submit">Add comment</button>
                 </form>
             `;
         }
@@ -8338,7 +8827,7 @@
                         </div>
                         <div class="task-decision-options">
                             <button class="task-action" onclick="taskAction(event, ${id}, { stage: 'assigned', assigned_to: 'Shloimie', decision_required: false })">Defer</button>
-                            <button class="task-action" onclick="taskAction(event, ${id}, { stage: 'assigned', assigned_to: 'Codex', decision_required: false, next_action: 'Clarify decision options and return a concise recommendation.' })">Ask assistant</button>
+                            <button class="task-action" onclick="taskEndpointAction(event, ${id}, 'convert-to-task', { assigned_to: 'Shloimie' })">Convert to task</button>
                         </div>
                     </div>
                 `;
@@ -8346,12 +8835,11 @@
             return `
                 <div class="task-decision-panel">
                     <div class="task-decision-title">No real options were captured</div>
-                    <div class="task-inline-text">If this is actionable work, send it to Codex or make it your task. A Decision should only stay here when there is an actual A/B/C choice for you.</div>
+                    <div class="task-inline-text">If this is actionable work, convert it to a task. A Decision should only stay here when there is an actual choice for a human owner.</div>
                     <div class="task-decision-options">
-                        <button class="task-action primary" onclick="taskAction(event, ${id}, { stage: 'assigned', assigned_to: 'Codex', decision_required: false })">Send to Codex queue</button>
-                        <button class="task-action" onclick="taskAction(event, ${id}, { stage: 'assigned', assigned_to: 'Shloimie', decision_required: false })">Make my task</button>
-                        <button class="task-action" onclick="taskAction(event, ${id}, { stage: 'done', completed_at: new Date().toISOString(), verified_at: new Date().toISOString(), decision_required: false })">Decision handled</button>
-                        <button class="task-action" onclick="taskAction(event, ${id}, { stage: 'archive', decision_required: false })">Archive</button>
+                        <button class="task-action primary" onclick="taskEndpointAction(event, ${id}, 'convert-to-task', { assigned_to: 'Shloimie' })">Convert to task</button>
+                        <button class="task-action" onclick="taskEndpointAction(event, ${id}, 'reassign', { assigned_to: 'Shloimie' })">Assign to Shloimie</button>
+                        <button class="task-action" onclick="taskEndpointAction(event, ${id}, 'mark-done')">Decision handled</button>
                     </div>
                 </div>
             `;
@@ -8382,11 +8870,8 @@
                 }
                 return `
                     <button class="task-action primary" onclick="taskAction(event, ${id}, { stage: 'in_progress', started_at: new Date().toISOString() })">Start</button>
-                    <button class="task-action" onclick="taskAction(event, ${id}, { stage: 'done', completed_at: new Date().toISOString(), verified_at: new Date().toISOString() })">Done</button>
+                    <button class="task-action" onclick="taskEndpointAction(event, ${id}, 'mark-done')">Done</button>
                 `;
-            }
-            if (columnId === 'codex' || columnId === 'changelog') {
-                return '';
             }
             return '';
         }
@@ -8960,7 +9445,7 @@
                     </div>
                     <div class="contact-card-contact">
                         ${escapeHtml(signup.parent_email || 'No email yet')}
-                        ${signup.parent_phone ? ` · ${escapeHtml(signup.parent_phone)}` : ' · No phone yet'}
+                        ${signup.parent_phone ? ` Ã‚Â· ${escapeHtml(signup.parent_phone)}` : ' Ã‚Â· No phone yet'}
                     </div>
                     <div class="contact-card-meta">
                         <div class="tag-list">
@@ -8983,7 +9468,7 @@
             const lastTouch = signup.last_communication_at || communications[0]?.occurred_at || communications[0]?.created_at || null;
             const studentMeta = [signup.student_age ? `Age ${signup.student_age}` : '', signup.student_grade ? `Grade ${signup.student_grade}` : '']
                 .filter(Boolean)
-                .join(' · ');
+                .join(' Ã‚Â· ');
             const applicationNotes = [
                 signup.previous_school ? `Previous school: ${signup.previous_school}` : '',
                 signup.reason_applying ? `Reason applying: ${signup.reason_applying}` : '',
@@ -9021,7 +9506,7 @@
                     <div class="contact-detail-header">
                         <div>
                             <div class="contact-detail-title">${escapeHtml(signup.parent_name || 'Unknown parent')}</div>
-                            <div class="contact-detail-note">${escapeHtml(signup.student_name || 'Student not entered yet')}${studentMeta ? ` · ${escapeHtml(studentMeta)}` : ''}</div>
+                            <div class="contact-detail-note">${escapeHtml(signup.student_name || 'Student not entered yet')}${studentMeta ? ` Ã‚Â· ${escapeHtml(studentMeta)}` : ''}</div>
                         </div>
                         <span class="payment-status ${escapeHtml(paymentStatus)}">${escapeHtml(paymentStatusLabel(paymentStatus))}</span>
                     </div>
@@ -15864,7 +16349,7 @@
                         <label>Add Comment</label>
                         <textarea id="taskNewComment" placeholder="Add a project note, decision context, or handoff..."></textarea>
                     </div>
-                    <button class="task-action primary" type="button" onclick="addTaskComment(event)">Add Comment &amp; Requeue</button>
+                    <button class="task-action primary" type="button" onclick="addTaskComment(event)">Add comment</button>
                 </div>
             `;
         }
@@ -15955,8 +16440,8 @@
         function cleanEnglishDisplayText(value) {
             return String(value || '')
                 .replace(/[\u0590-\u05ff]+/g, '')
-                .replace(/[🙂👉🌳☀️🐑🥚💰📌✅•]/g, '')
-                .replace(/^[\s\-–—:*]+/, '')
+                .replace(/[Ã°Å¸â„¢â€šÃ°Å¸â€˜â€°Ã°Å¸Å’Â³Ã¢Ëœâ‚¬Ã¯Â¸ÂÃ°Å¸Ââ€˜Ã°Å¸Â¥Å¡Ã°Å¸â€™Â°Ã°Å¸â€œÅ’Ã¢Å“â€¦Ã¢â‚¬Â¢]/g, '')
+                .replace(/^[\s\-Ã¢â‚¬â€œÃ¢â‚¬â€:*]+/, '')
                 .replace(/\btranscript\b/gi, 'recording')
                 .replace(/\(\s*\)/g, '')
                 .replace(/\s+([,.;:!?])/g, '$1')
@@ -16004,8 +16489,8 @@
 
         function sourceContentLine(value) {
             const cleaned = contentItemText(value)
-                .replace(/[ðŸ™‚ðŸ‘‰ðŸŒ³â˜€ï¸ðŸ‘ðŸ¥šðŸ’°ðŸ“Œâœ…â€¢]/g, '')
-                .replace(/^[\s\-â€“â€”:*]+/, '')
+                .replace(/[ÃƒÂ°Ã…Â¸Ã¢â€žÂ¢Ã¢â‚¬Å¡ÃƒÂ°Ã…Â¸Ã¢â‚¬ËœÃ¢â‚¬Â°ÃƒÂ°Ã…Â¸Ã…â€™Ã‚Â³ÃƒÂ¢Ã‹Å“Ã¢â€šÂ¬ÃƒÂ¯Ã‚Â¸Ã‚ÂÃƒÂ°Ã…Â¸Ã‚ÂÃ¢â‚¬ËœÃƒÂ°Ã…Â¸Ã‚Â¥Ã…Â¡ÃƒÂ°Ã…Â¸Ã¢â‚¬â„¢Ã‚Â°ÃƒÂ°Ã…Â¸Ã¢â‚¬Å“Ã…â€™ÃƒÂ¢Ã…â€œÃ¢â‚¬Â¦ÃƒÂ¢Ã¢â€šÂ¬Ã‚Â¢]/g, '')
+                .replace(/^[\s\-ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Å“ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â:*]+/, '')
                 .replace(/\btranscript\b/gi, 'recording')
                 .replace(/\s+([,.;:!?])/g, '$1')
                 .replace(/\s+/g, ' ')
@@ -16066,7 +16551,7 @@
             bodies.forEach((body) => {
                 String(body || '').split(/\r?\n/).forEach((line) => {
                     const raw = line.trim();
-                    if (!raw || !/^[-*•👉🙂🌳☀️🐑🥚]/.test(raw)) return;
+                    if (!raw || !/^[-*Ã¢â‚¬Â¢Ã°Å¸â€˜â€°Ã°Å¸â„¢â€šÃ°Å¸Å’Â³Ã¢Ëœâ‚¬Ã¯Â¸ÂÃ°Å¸Ââ€˜Ã°Å¸Â¥Å¡]/.test(raw)) return;
                     const cleaned = englishContentLine(raw);
                     if (cleaned) bullets.push(cleaned);
                 });
@@ -17571,6 +18056,13 @@
             if (currentView === 'tasks' && selectedTaskId) url.searchParams.set('task', selectedTaskId);
             if (currentView === 'tasks' && taskProjectFilter !== 'all') url.searchParams.set('project', taskProjectFilter);
             if (currentView !== 'tasks' || taskProjectFilter === 'all') url.searchParams.delete('project');
+            if (currentView === 'tasks' && taskFocus === 'schedule') {
+                url.searchParams.set('calendar_mode', taskCalendarMode);
+                url.searchParams.set('date', taskCalendarSelectedDate);
+            } else {
+                url.searchParams.delete('calendar_mode');
+                url.searchParams.delete('date');
+            }
             if (currentView !== 'content') url.searchParams.delete('content_job');
             if (currentView === 'content' && selectedContentDetailJobId) url.searchParams.set('content_job', selectedContentDetailJobId);
             window.history.replaceState({}, '', url);
@@ -17668,6 +18160,45 @@
             if (kind === 'project') taskProjectFilter = value;
             if (kind === 'category') taskCategoryFilter = value;
             if (kind === 'signal') taskSignalFilter = value;
+            render();
+        }
+
+        function setTaskCalendarMode(mode) {
+            taskCalendarMode = ['month', 'week', 'day'].includes(mode) ? mode : 'month';
+            taskFocus = 'schedule';
+            currentView = 'tasks';
+            syncOperationsUrl();
+            render();
+        }
+
+        function setTaskCalendarSelectedDate(value) {
+            const key = normalizeDateKey(value);
+            if (key) taskCalendarSelectedDate = key;
+            taskFocus = 'schedule';
+            currentView = 'tasks';
+            syncOperationsUrl();
+            render();
+        }
+
+        function jumpTaskCalendarToday() {
+            taskCalendarSelectedDate = dateKeyFromDate(new Date());
+            taskFocus = 'schedule';
+            currentView = 'tasks';
+            syncOperationsUrl();
+            render();
+        }
+
+        function shiftTaskCalendar(amount) {
+            if (taskCalendarMode === 'month') {
+                taskCalendarSelectedDate = addMonthsDateKey(taskCalendarSelectedDate, amount);
+            } else if (taskCalendarMode === 'week') {
+                taskCalendarSelectedDate = addDaysDateKey(taskCalendarSelectedDate, Number(amount || 0) * 7);
+            } else {
+                taskCalendarSelectedDate = addDaysDateKey(taskCalendarSelectedDate, amount);
+            }
+            taskFocus = 'schedule';
+            currentView = 'tasks';
+            syncOperationsUrl();
             render();
         }
 
@@ -18745,9 +19276,9 @@
                 await api.addTaskComment(editingTask.id, {
                     body,
                     author: 'dashboard',
-                    visibility: 'internal',
+                    visibility: 'workspace',
                     source: 'dashboard',
-                    requeue: true
+                    requeue: false
                 });
                 if (textarea) textarea.value = '';
                 const result = await api.getTaskComments(editingTask.id);
@@ -18777,9 +19308,9 @@
                 const saved = await api.addTaskComment(id, {
                     body,
                     author: 'dashboard',
-                    visibility: 'internal',
+                    visibility: 'workspace',
                     source: 'dashboard',
-                    requeue: true
+                    requeue: false
                 });
                 if (textarea) textarea.value = '';
                 const result = await api.getTaskComments(id);

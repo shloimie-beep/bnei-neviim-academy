@@ -135,3 +135,23 @@ Local verification passed:
 
 Live Operations task #322 was not marked done by this worker; supervisor
 baseline verification should make the live-state decision.
+
+## Status Update - 2026-06-14T10:00:28+03:00
+
+Created a focused class-ready source sheet for the newest rules/respect topic:
+
+- `content-memory/source-sheets/2026-06-14-respecting-each-other-rules-and-responsibility.md`
+
+Coverage:
+
+- Anchored to transcripts #52, #42, #40, and related #9 lashon hara/free choice
+  material.
+- Built topic sections for Hillel's reverse rule, `ואהבת לרעך כמוך`, kavod,
+  ona'at devarim, public embarrassment, tochacha without shame, machlokes
+  l'shem shamayim, Beis Hillel's humility, peace, and class-rule translation.
+- Included a ready class flow, student prompts, practical BNA rule language, and
+  links back to the existing June 9/June 10 student-question sheets.
+
+This does not close the broader transcript-wide source-sheet lane; it completes
+the immediate class-prep packet requested for the respecting-each-other/rules
+lesson.

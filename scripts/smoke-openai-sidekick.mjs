@@ -56,6 +56,15 @@ function normalizeLoadedSecret(value) {
   return normalized;
 }
 
+function normalizeAiPrimaryProvider(value) {
+  const normalized = String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, '_');
+  if (['kimi', 'kimmy', 'moonshot', 'moonshot_ai'].includes(normalized)) return 'kimi';
+  return 'openai';
+}
+
 function relative(filePath) {
   return path.relative(repoRoot, filePath).replace(/\\/g, '/');
 }
@@ -129,6 +138,46 @@ function sanitizeForPrompt(summary) {
     if (typeof value === 'string' && value.length > 1000) return `${value.slice(0, 1000)}...[truncated]`;
     return value;
   }));
+}
+
+function selectAiSmokeProvider(env) {
+  const openaiApiKey = readSecret('openai-api-key.txt') || normalizeLoadedSecret(env.OPENAI_API_KEY) || '';
+  const kimiApiKey = readSecret('kimi-api-key.txt') || normalizeLoadedSecret(env.KIMI_API_KEY) || '';
+  const preferred = normalizeAiPrimaryProvider(env.BNA_AI_PRIMARY_PROVIDER || env.AI_PRIMARY_PROVIDER || 'openai');
+  if (preferred === 'kimi' && kimiApiKey) {
+    return {
+      provider: 'kimi',
+      label: 'Kimi',
+      apiKey: kimiApiKey,
+      baseUrl: env.KIMI_BASE_URL || 'https://api.moonshot.ai/v1',
+      model: env.KIMI_MODEL || 'kimi-k2.6',
+    };
+  }
+  if (openaiApiKey) {
+    return {
+      provider: 'openai',
+      label: 'OpenAI',
+      apiKey: openaiApiKey,
+      baseUrl: env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
+      model: env.OPENAI_MODEL || 'gpt-4.1-mini',
+    };
+  }
+  if (kimiApiKey) {
+    return {
+      provider: 'kimi',
+      label: 'Kimi',
+      apiKey: kimiApiKey,
+      baseUrl: env.KIMI_BASE_URL || 'https://api.moonshot.ai/v1',
+      model: env.KIMI_MODEL || 'kimi-k2.6',
+    };
+  }
+  return {
+    provider: preferred,
+    label: preferred === 'kimi' ? 'Kimi' : 'OpenAI',
+    apiKey: '',
+    baseUrl: preferred === 'kimi' ? (env.KIMI_BASE_URL || 'https://api.moonshot.ai/v1') : (env.OPENAI_BASE_URL || 'https://api.openai.com/v1'),
+    model: preferred === 'kimi' ? (env.KIMI_MODEL || 'kimi-k2.6') : (env.OPENAI_MODEL || 'gpt-4.1-mini'),
+  };
 }
 
 async function appRequest(config, endpoint) {
@@ -270,16 +319,16 @@ function collectRepoData() {
   };
 }
 
-async function askOpenAi(config, expected, promptData) {
-  const response = await fetch(`${config.openaiBaseUrl.replace(/\/+$/, '')}/chat/completions`, {
+async function askAiProvider(config, expected, promptData) {
+  const response = await fetch(`${config.aiBaseUrl.replace(/\/+$/, '')}/chat/completions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
-      Authorization: `Bearer ${config.openaiApiKey}`,
+      Authorization: `Bearer ${config.aiApiKey}`,
     },
     body: JSON.stringify({
-      model: config.openaiModel,
-      temperature: 0,
+      model: config.aiModel,
+      temperature: config.aiProvider === 'kimi' ? 1 : 0,
       messages: [
         {
           role: 'system',
@@ -313,18 +362,20 @@ async function askOpenAi(config, expected, promptData) {
     }),
   });
   const text = await response.text();
-  if (!response.ok) throw new Error(`OpenAI smoke failed ${response.status}: ${text.slice(0, 500)}`);
+  if (!response.ok) throw new Error(`${config.aiProviderLabel} smoke failed ${response.status}: ${text.slice(0, 500)}`);
   const content = JSON.parse(text)?.choices?.[0]?.message?.content || '';
   const jsonMatch = content.match(/\{[\s\S]*\}/);
-  if (!jsonMatch) throw new Error(`OpenAI did not return JSON: ${content.slice(0, 500)}`);
+  if (!jsonMatch) throw new Error(`${config.aiProviderLabel} did not return JSON: ${content.slice(0, 500)}`);
   return JSON.parse(jsonMatch[0]);
 }
 
 function renderMarkdown(report) {
   const lines = [
-    `# OpenAI Sidekick Smoke - ${report.generated_at}`,
+    `# AI Sidekick Smoke - ${report.generated_at}`,
     '',
     `Overall: ${report.ok ? 'PASS' : 'FAIL'}`,
+    '',
+    `Provider: ${report.ai_provider} (${report.ai_model})`,
     '',
     '## Checks',
     '',
@@ -333,7 +384,7 @@ function renderMarkdown(report) {
     lines.push(`- ${check.ok ? 'PASS' : 'FAIL'} ${check.name}${check.detail ? ` - ${check.detail}` : ''}`);
   }
   lines.push('', '## Expected', '', '```json', JSON.stringify(report.expected, null, 2), '```');
-  lines.push('', '## OpenAI Returned', '', '```json', JSON.stringify(report.openai_answer, null, 2), '```');
+  lines.push('', '## AI Returned', '', '```json', JSON.stringify(report.openai_answer, null, 2), '```');
   lines.push('', '## Live Counts', '', '```json', JSON.stringify(report.live_counts, null, 2), '```');
   if (report.errors.length) {
     lines.push('', '## Errors', '');
@@ -373,13 +424,16 @@ async function sendTelegram(config, text) {
 
 async function main() {
   const env = { ...parseEnvFile(envLocalPath), ...process.env };
+  const aiProvider = selectAiSmokeProvider(env);
   const config = {
     appUrl: env.BNA_APP_URL || env.NEXT_PUBLIC_APP_URL || 'https://bneineviimacademy.org',
     opsUsername: env.OPS_USERNAME || '',
     opsPassword: env.OPS_PASSWORD || '',
-    openaiApiKey: readSecret('openai-api-key.txt') || normalizeLoadedSecret(env.OPENAI_API_KEY) || '',
-    openaiBaseUrl: env.OPENAI_BASE_URL || 'https://api.openai.com/v1',
-    openaiModel: env.OPENAI_MODEL || 'gpt-4.1-mini',
+    aiProvider: aiProvider.provider,
+    aiProviderLabel: aiProvider.label,
+    aiApiKey: aiProvider.apiKey,
+    aiBaseUrl: aiProvider.baseUrl,
+    aiModel: aiProvider.model,
     telegramToken: readSecret('telegram-bot-token.txt') || env.TELEGRAM_BOT_TOKEN_BNA || env.TELEGRAM_BOT_TOKEN || '',
     telegramChatId: env.TELEGRAM_CHAT_ID_BNA || env.TELEGRAM_CHAT_ID || '',
   };
@@ -390,7 +444,7 @@ async function main() {
   const aiContext = buildBnaAiContextSummary({ repoRoot });
 
   if (!config.opsUsername || !config.opsPassword) errors.push('OPS_USERNAME/OPS_PASSWORD missing');
-  if (!config.openaiApiKey) errors.push('OpenAI key missing');
+  if (!config.aiApiKey) errors.push(`${config.aiProviderLabel} key missing`);
 
   let app = { result: {}, errors: [] };
   if (config.opsUsername && config.opsPassword) {
@@ -518,7 +572,7 @@ async function main() {
 
   let openaiAnswer = null;
   try {
-    openaiAnswer = await askOpenAi(config, expected, promptData);
+    openaiAnswer = await askAiProvider(config, expected, promptData);
   } catch (error) {
     errors.push(error instanceof Error ? error.message : String(error));
   }
@@ -555,39 +609,39 @@ async function main() {
     detail: drive.ok ? `${Object.keys(drive.folders || {}).length} folders read as ${drive.account}` : drive.error,
   });
   checks.push({
-    name: 'OpenAI returned expected active Codex task count',
+    name: 'AI returned expected active Codex task count',
     ok: Number(openaiAnswer?.active_codex_count) === expected.active_codex_count,
     detail: `expected ${expected.active_codex_count}, got ${openaiAnswer?.active_codex_count}`,
   });
   checks.push({
-    name: 'OpenAI returned expected student names',
+    name: 'AI returned expected student names',
     ok: expected.student_names.length > 0 && expected.student_names.every((name) => normalizeArray(openaiAnswer?.student_names).includes(String(name))),
     detail: `${expected.student_names.length} expected student(s)`,
   });
   checks.push({
-    name: 'OpenAI returned expected transcript job count',
+    name: 'AI returned expected transcript job count',
     ok: Number(openaiAnswer?.transcript_job_count) === expected.transcript_job_count,
     detail: `expected ${expected.transcript_job_count}, got ${openaiAnswer?.transcript_job_count}`,
   });
   checks.push({
-    name: 'OpenAI returned Operations section map',
+    name: 'AI returned Operations section map',
     ok: expected.operations_sections.every((section) => normalizeArray(openaiAnswer?.operations_sections).includes(section)),
     detail: `${expected.operations_sections.join(', ')}`,
   });
   checks.push({
-    name: 'OpenAI returned live dashboard counts',
+    name: 'AI returned live dashboard counts',
     ok:
       Number(openaiAnswer?.content_prompt_count) === expected.content_prompt_count &&
       Number(openaiAnswer?.device_count) === expected.device_count,
     detail: `prompts ${expected.content_prompt_count}, devices ${expected.device_count}`,
   });
   checks.push({
-    name: 'OpenAI returned Drive raw folder name',
+    name: 'AI returned Drive raw folder name',
     ok: String(openaiAnswer?.drive_raw_folder_name || '') === String(expected.drive_raw_folder_name || ''),
     detail: expected.drive_raw_folder_name || 'missing',
   });
   checks.push({
-    name: 'OpenAI returned brand kit file count',
+    name: 'AI returned brand kit file count',
     ok: Number(openaiAnswer?.brand_kit_file_count) === expected.brand_kit_file_count,
     detail: `expected ${expected.brand_kit_file_count}, got ${openaiAnswer?.brand_kit_file_count}`,
   });
@@ -608,6 +662,8 @@ async function main() {
   const report = {
     generated_at: new Date().toISOString(),
     ok: checks.every((check) => check.ok) && errors.length === 0,
+    ai_provider: config.aiProviderLabel,
+    ai_model: config.aiModel,
     checks,
     errors,
     expected,
@@ -628,7 +684,7 @@ async function main() {
   fs.writeFileSync(mdPath, renderMarkdown(report));
 
   const summary = [
-    `OpenAI sidekick smoke: ${report.ok ? 'PASS' : 'FAIL'}`,
+    `AI sidekick smoke: ${report.ok ? 'PASS' : 'FAIL'}`,
     '',
     `Repo files: ${Object.values(repo.files).filter((file) => file.exists).length} readable`,
     `Brand kit files: ${aiContext.counts.brand_kit_files} readable`,
@@ -638,7 +694,7 @@ async function main() {
     `Content prompts: ${expected.content_prompt_count}`,
     `Devices: ${expected.device_count}`,
     `Drive folders: ${Object.keys(drive.folders || {}).length} readable`,
-    `OpenAI model: ${config.openaiModel}`,
+    `AI provider: ${config.aiProviderLabel} (${config.aiModel})`,
     '',
     `Active Codex tasks: ${expected.active_codex_count} (${expected.active_codex_ids.join(', ') || 'none'})`,
     `Students: ${expected.student_names.join(', ') || 'none'}`,

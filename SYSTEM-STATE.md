@@ -8,6 +8,15 @@ Last updated: 2026-06-14
   dashboard controls, Telegram actions, smoke checks, docs, routes, prompts, or
   schema assumptions. Legacy files are archived under
   `docs/archive/legacy-ghl/` for retired historical reference only.
+- 2026-06-14 workspace task cleanup supersedes older My Tasks/Changelog lane
+  guidance. The active Operations task buckets are Decisions, Pending, Tasks,
+  Calendar, Done, and Activity. Pending is only for human/external blockers;
+  Codex/system work uses agent lifecycle status and `bna_agent_jobs`, not a
+  human-facing "pending for Codex" state.
+- Rabbi Scheller / One Time launch work is workspace-scoped. Replit/current app
+  access is a migration/audit source, not the canonical runtime. Resend,
+  Stripe/payment processors, Buffer, Whapi/WAPI, Vimeo, and DNS/domain tools are
+  connectors only and require approval/access before live sends or payments.
 - Any older entries in this file that mention former GHL/social publishing work
   are historical deployment notes only and are superseded by the no-GHL policy.
 - BNA Operations is the first-party source of truth for contacts, leads,
@@ -16,12 +25,17 @@ Last updated: 2026-06-14
 - Buffer is the active social scheduler connector; WAPI/Whapi is the active
   WhatsApp API path. Provider-owned delivery systems remain connectors until
   explicitly integrated.
+- OpenAI remains the normal preferred hosted AI provider, but the operator
+  approved temporary Kimi-primary mode while the OpenAI key/account path issue
+  is unresolved. Use `BNA_AI_PRIMARY_PROVIDER=kimi` to make server content AI,
+  Telegram API chat, and the historical `npm run openai:smoke` script select
+  Kimi first. Codex remains the development/task owner.
 - Public, parent, and Operations PWA manifests are split so public/parent
   installs do not launch private Operations.
 - Local cleanup verification has begun on
   `cleanup/bna-workspace-community-provider-bot-no-ghl`. Completion remains
-  blocked until full tests, OpenAI smoke, Railway doctor/live smoke, deploy, and
-  live post-deploy smoke pass, or a real external blocker is proven and
+  blocked until full tests, selected hosted-AI smoke, Railway doctor/live smoke,
+  deploy, and live post-deploy smoke pass, or a real external blocker is proven and
   recorded.
 
 2026-06-12 Registration/provider/student-security pass deployed:

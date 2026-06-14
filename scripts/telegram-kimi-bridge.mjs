@@ -346,6 +346,9 @@ function loadConfig() {
     openaiResearchModel: env.OPENAI_RESEARCH_MODEL || env.OPENAI_MODEL || 'gpt-4.1-mini',
     openaiTranscriptionModel: env.OPENAI_TRANSCRIPTION_MODEL || 'gpt-4o-mini-transcribe',
     openaiRequestTimeoutMs: Number(env.OPENAI_REQUEST_TIMEOUT_MS || 10 * 60 * 1000),
+    apiPrimaryProvider: normalizeApiPrimaryProvider(
+      env.BNA_AI_PRIMARY_PROVIDER || env.TELEGRAM_API_PRIMARY_PROVIDER || env.AI_PRIMARY_PROVIDER || 'openai'
+    ),
     telegramDefaultReplyMode: normalizeTelegramReplyMode(
       env.TELEGRAM_DEFAULT_REPLY_MODE || env.TELEGRAM_DEFAULT_CHAT_MODE || 'openai'
     ),
@@ -483,18 +486,18 @@ function buildAgentSyncContext(maxCharsPerFile = 2400) {
 
 function buildOpenAiCapabilityContext() {
   return [
-    'OpenAI Telegram sidekick capability contract:',
-    '- OpenAI is the fast conversational/operator sidekick for brainstorming, planning, tone/content drafting, system navigation, and reading summarized live context.',
-    '- OpenAI receives repo context from AGENTS.md, MEMORY.md, TASKS.md, SYSTEM-STATE.md, internal Codex handoff notes, today memory, shared task ledger, and agent changelog.',
-    '- OpenAI receives live app snapshots for system/navigation/task/student/content/accounting questions and Drive snapshots for Drive/upload/intake questions.',
+    'Hosted API Telegram sidekick capability contract:',
+    '- The hosted API sidekick is for brainstorming, planning, tone/content drafting, system navigation, and reading summarized live context. OpenAI is normally preferred; Kimi may be the temporary primary provider when OpenAI credentials are unhealthy.',
+    '- The hosted API provider receives repo context from AGENTS.md, MEMORY.md, TASKS.md, SYSTEM-STATE.md, internal Codex handoff notes, today memory, shared task ledger, and agent changelog.',
+    '- The hosted API provider receives live app snapshots for system/navigation/task/student/content/accounting questions and Drive snapshots for Drive/upload/intake questions.',
     '- For Operations/dashboard questions, the live app snapshot is the primary source of truth: sections, subtabs, visible buttons/actions, task lanes, task records/comments, students, content, contacts, accounting, devices, agent fleet status, and recent updates.',
     '- If the operator asks to order, sort, audit, or brainstorm items in a section, answer from the live app snapshot first. Do not answer from transcripts unless the operator explicitly asks for transcript/class-content topics.',
     '- Safe writes already happen before the model reply through bridge capture: Tasks, Student accountability, Accounting/payment intake, Content/media jobs, Decisions, saved Content draft edits, and Codex work queue records.',
-    '- Content edits such as revising a newsletter, Facebook post, WhatsApp update, or blog draft should edit the saved Content output directly through OpenAI API first, not be routed as coding work.',
+    '- Content edits such as revising a newsletter, Facebook post, WhatsApp update, or blog draft should edit the saved Content output directly through the hosted API provider first, not be routed as coding work.',
     '- For Facebook/WhatsApp/blog content, show the draft in Telegram and refine it with the operator in natural writing-partner language. Do not route normal wording changes to Codex.',
     '- Commit means the operator is done refining and wants the saved draft pushed to Buffer as a scheduling draft. Commit is not the same as publish now.',
-    '- Code edits, filesystem edits, database migrations, deployments, tests, and destructive/high-risk operations must route to Codex as a tracked task/job, not be claimed as completed by OpenAI.',
-    '- When OpenAI identifies implementation work, it should say it is queued/assigned to Codex and rely on the bridge task queue/ledger/changelog for synchronization.',
+    '- Code edits, filesystem edits, database migrations, deployments, tests, and destructive/high-risk operations must route to Codex as a tracked task/job, not be claimed as completed by the hosted API provider.',
+    '- When the hosted API provider identifies implementation work, it should say it is queued/assigned to Codex and rely on the bridge task queue/ledger/changelog for synchronization.',
     '- Every meaningful action should be synchronized through durable shared files or app records: memory/YYYY-MM-DD.md, TASKS.md, ops/agent-task-ledger.jsonl, ops/agent-changelog.md, tasks-pending/*.md, and app task records.',
     '- Do not expose secrets, API keys, raw credentials, private access codes, or full raw transcripts unless the operator explicitly asks and the bridge provided them.',
   ].join('\n');
@@ -549,13 +552,13 @@ function buildApiSystemInstructions(config = {}) {
     'When a live Operations snapshot is included, treat it as the primary source for questions about sections, buttons, tasks, ordering, status, pending/queued work, accountability, payments, contacts, content jobs, and system updates.',
     'If the operator asks about logistics, scheduling, tasks, dashboard sections, or what is waiting, answer from the live app/system snapshot. Do not switch to transcript/class-topic inventory unless the operator explicitly asks for transcript topics, class content, or what was learned.',
     'If asked to order or audit a dashboard section, list the relevant live items with IDs/statuses and recommend an order. If the snapshot is incomplete, say exactly which endpoint or section is missing instead of guessing.',
-    'Only assign work to Shloimie or Codex. Treat Kimi as a fallback provider or legacy alias, not the active worker.',
+    'Only assign work to Shloimie or Codex. Kimi may be a temporary hosted API provider, but it is not the active worker or task assignee.',
     'Telegram should feel like natural conversation first. Do not announce background queues or Codex job mechanics; mention capture only when a real task, student note, payment item, content item, or decision was created or needs action.',
     'Strategy, product, research, and "why is the system behaving this way" questions should be answered directly first, with recommendations and tradeoffs. Do not turn them into Codex tasks unless the operator asks to build the fix or the needed implementation is obvious.',
     'Do not surprise the operator with random questions. If you see a useful recommendation from the current system state, label it as a suggestion and explain why it matters.',
     'When a decision is needed, give 2-3 options formatted exactly like "Option A: label", "Option B: label", and "Option C: label" so Telegram can create buttons.',
     'Do not ask format-option questions for transcript/topic/content drafting requests. If the operator asks for topics, a transcript summary, a newsletter, or a revised post, choose the most useful default and return the actual text in chat.',
-    'For Facebook posts and other parent-facing copy, act like a natural writing partner: show the current draft in chat, accept conversational edits, and keep refining through OpenAI API. Only when the operator says commit, create the Buffer draft/scheduling handoff. Do not use Codex-task language for copy refinement.',
+    'For Facebook posts and other parent-facing copy, act like a natural writing partner: show the current draft in chat, accept conversational edits, and keep refining through the hosted API provider. Only when the operator says commit, create the Buffer draft/scheduling handoff. Do not use Codex-task language for copy refinement.',
     'Avoid vague headings like "Next" by itself. Use Captured, Already filed, Queued work, and Blocked only if blocked.',
     'If the operator references recent work by phrase, such as "the image slider", first use SYSTEM-STATE.md and the newest tasks-pending handoff before asking what they mean.',
     'If the live snapshot contains a task that was just auto-captured from the same operator message, do not make that capture the main answer unless the operator asked to create or file a task. Answer the actual question first.',
@@ -1937,6 +1940,42 @@ function normalizeTelegramReplyMode(value) {
   return 'openai';
 }
 
+function normalizeApiPrimaryProvider(value) {
+  const normalized = String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, '_');
+  if (['kimi', 'kimmy', 'moonshot', 'moonshot_ai'].includes(normalized)) return 'kimi';
+  return 'openai';
+}
+
+function apiProviderConfigs(config = {}) {
+  const openaiProvider = config.openaiApiKey ? {
+    kind: 'openai',
+    label: 'OpenAI',
+    apiKey: config.openaiApiKey,
+    baseUrl: config.openaiBaseUrl,
+    model: config.openaiSummaryModel,
+  } : null;
+  const kimiProvider = config.kimiApiKey ? {
+    kind: 'kimi',
+    label: 'Kimi',
+    apiKey: config.kimiApiKey,
+    baseUrl: config.kimiApiBaseUrl,
+    model: config.kimiApiModel,
+  } : null;
+  return (config.apiPrimaryProvider === 'kimi'
+    ? [kimiProvider, openaiProvider]
+    : [openaiProvider, kimiProvider]
+  ).filter(Boolean);
+}
+
+function apiProviderPathLabel(config = {}) {
+  const providers = apiProviderConfigs(config);
+  if (!providers.length) return 'not configured';
+  return providers.map((provider) => `${provider.label} API (${provider.model})`).join(' -> ');
+}
+
 function readTelegramChatModes() {
   try {
     return JSON.parse(fs.readFileSync(telegramChatModesFile, 'utf8'));
@@ -2965,7 +3004,7 @@ async function runApiFallback(config, messageText, chatId, messageId) {
   }
 
   const { system, user } = buildApiFallbackMessages(config, messageText, chatId, messageId, externalContextParts.join('\n\n'));
-  if (config.openaiApiKey && shouldUseOpenAiResearch(messageText)) {
+  if (config.apiPrimaryProvider !== 'kimi' && config.openaiApiKey && shouldUseOpenAiResearch(messageText)) {
     try {
       log(`Using OpenAI Responses web-search research path for message ${messageId}`);
       const reply = await runOpenAiResearchResponse(config, messageText, system, user);
@@ -2974,22 +3013,7 @@ async function runApiFallback(config, messageText, chatId, messageId) {
       log(`OpenAI research path failed for message ${messageId}: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
-  const providers = [
-    config.openaiApiKey ? {
-      kind: 'openai',
-      label: 'OpenAI',
-      apiKey: config.openaiApiKey,
-      baseUrl: config.openaiBaseUrl,
-      model: config.openaiSummaryModel,
-    } : null,
-    config.kimiApiKey ? {
-      kind: 'kimi',
-      label: 'Kimi',
-      apiKey: config.kimiApiKey,
-      baseUrl: config.kimiApiBaseUrl,
-      model: config.kimiApiModel,
-    } : null,
-  ].filter(Boolean);
+  const providers = apiProviderConfigs(config);
 
   const errors = [];
   for (const provider of providers) {
@@ -2998,7 +3022,7 @@ async function runApiFallback(config, messageText, chatId, messageId) {
         { role: 'system', content: system },
         { role: 'user', content: user },
       ]);
-      const labeledReply = provider.kind === 'kimi'
+      const labeledReply = provider.kind === 'kimi' && config.apiPrimaryProvider !== 'kimi'
         ? [
             'By the way, this is Kimi fallback. OpenAI API was unavailable for this reply, so Kimi is answering using the BNA repo context files that the bridge passed in.',
             '',
@@ -8920,7 +8944,7 @@ async function handleTextMessage(config, msg) {
       chatId,
       mode === 'codex'
         ? 'Mode set to Codex. I will use Codex for replies until you switch back.'
-        : 'Mode set to OpenAI API. Normal chat and content tone stay on OpenAI API, and development work still routes to Codex automatically.',
+        : `Mode set to API chat. Current API path: ${apiProviderPathLabel(config)}. Development work still routes to Codex automatically.`,
       messageId
     );
     return;
@@ -8937,8 +8961,8 @@ async function handleTextMessage(config, msg) {
           'Bridge status: online',
           `Profile: ${config.bridgeProfileLabel}`,
           'Scope: One Time Mishnah Class tasks/comments only',
-          `Telegram mode: ${chatMode === 'codex' ? 'Codex' : 'OpenAI API default'}`,
-          `API path: OpenAI API (${config.openaiSummaryModel}) -> Kimi API (${config.kimiApiModel})`,
+          `Telegram mode: ${chatMode === 'codex' ? 'Codex' : 'API chat default'}`,
+          `API path: ${apiProviderPathLabel(config)}`,
           `API keys: OpenAI ${config.openaiApiKey ? 'configured' : 'missing'}, Kimi ${config.kimiApiKey ? 'configured' : 'missing'}`,
           `Scoped Operations login: ${config.opsUsername && config.opsPassword ? 'configured' : 'missing'}`,
           `Allowed chats: ${config.allowedChatIds.join(',') || 'all'}`,
@@ -8953,9 +8977,9 @@ async function handleTextMessage(config, msg) {
       [
         'Bridge status: online',
         `Profile: ${config.bridgeProfileLabel}`,
-        `Telegram mode: ${chatMode === 'codex' ? 'Codex' : 'OpenAI API default'}`,
+        `Telegram mode: ${chatMode === 'codex' ? 'Codex' : 'API chat default'}`,
         `Codex CLI: ${config.codexCommand}${config.codexModel ? ` (${config.codexModel})` : ''}`,
-        `API path: OpenAI API (${config.openaiSummaryModel}) -> Kimi API (${config.kimiApiModel})`,
+        `API path: ${apiProviderPathLabel(config)}`,
         `API keys: OpenAI ${config.openaiApiKey ? 'configured' : 'missing'}, Kimi ${config.kimiApiKey ? 'configured' : 'missing'}`,
         'Workspace: BNA v2.0',
         `Drive watcher: every ${Math.round(config.driveWatchIntervalMs / 1000)}s`,
@@ -9836,7 +9860,7 @@ async function main() {
   let nextDriveWatchAt = 0;
   let nextTaskWatchAt = Date.now() + 5000;
   log(
-    `Bridge starting. Profile=${config.bridgeProfileLabel} Bot=${botIdentity.username || botIdentity.firstName || botIdentity.id} TelegramDefault=${config.telegramDefaultReplyMode || 'openai'} BuildAgent=${config.codexEnabled ? (config.primaryAgent || 'codex') : 'disabled'} CodexModel=${config.codexModel || 'default'} ApiFallback=${config.openaiSummaryModel}->${config.kimiApiModel} OpenAIKey=${config.openaiApiKey ? 'yes' : 'no'} KimiKey=${config.kimiApiKey ? 'yes' : 'no'} AllowedChats=${config.allowedChatIds.join(',') || 'all'}`
+    `Bridge starting. Profile=${config.bridgeProfileLabel} Bot=${botIdentity.username || botIdentity.firstName || botIdentity.id} TelegramDefault=${config.telegramDefaultReplyMode || 'openai'} BuildAgent=${config.codexEnabled ? (config.primaryAgent || 'codex') : 'disabled'} CodexModel=${config.codexModel || 'default'} ApiPath=${apiProviderPathLabel(config)} OpenAIKey=${config.openaiApiKey ? 'yes' : 'no'} KimiKey=${config.kimiApiKey ? 'yes' : 'no'} AllowedChats=${config.allowedChatIds.join(',') || 'all'}`
   );
   if (academyIdentity) {
     log(`Academy token resolves to ${academyIdentity.username || academyIdentity.firstName || academyIdentity.id}`);

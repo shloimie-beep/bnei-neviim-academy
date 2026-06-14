@@ -78,14 +78,15 @@ Keep `MEMORY.md` compact and curated.
   verification performed, and remaining decisions in the relevant
   `tasks-pending/` handoff, `ops/agent-changelog.md`, and
   `ops/agent-task-ledger.jsonl`.
-- Do not create a generic Pending task stage, lane, or dashboard section.
-  Ambiguous work should be audited into Needs Decision, an owner lane, Codex
-  Queue/In Progress, Done, or Archive; use pending-style wording only for a real
-  blocker, dependency, approval, review, or error.
+- Operations task buckets are `Decisions`, `Pending`, and `Tasks`, with
+  `Calendar` and `Done / Activity` as supporting views. `Pending` means a
+  human or external system is blocking progress; it must not mean "waiting for
+  Codex."
+- Codex/system work belongs in the agent lifecycle (`queued`, `running`,
+  `completed`, `failed`, or `blocked_needs_human_decision`) and stays visible as
+  agent status under Tasks/Activity, not as a human-facing Pending card.
 - Do not show `tasks-pending/*.md` as a visible Planned Briefs, Pending Briefs,
-  or Implementation Briefs section. Those files are internal Codex handoffs. If
-  no Shloimie decision is needed, the work belongs in Codex Queue/In Progress
-  and then Changelog.
+  or Implementation Briefs section. Those files are internal Codex handoffs.
 
 ## Current Project Reality
 
@@ -122,15 +123,20 @@ Keep `MEMORY.md` compact and curated.
   available.
 - Clear repo, code, database, bridge, deploy, test, dashboard, or programming
   requests should route to Codex automatically.
-- Kimi is fallback only for API/model-provider failures or legacy records.
-- OpenAI is the preferred hosted AI provider when available; Kimi can be used after that as fallback.
+- OpenAI is the preferred hosted AI provider when available.
+- Kimi is normally fallback only for API/model-provider failures or legacy
+  records, but `BNA_AI_PRIMARY_PROVIDER=kimi` is the approved temporary
+  Kimi-primary mode while the OpenAI key path/account issue is unresolved.
+- Kimi is never the task owner. Codex remains the development/task/deploy owner
+  even when Kimi is the temporary hosted chat/content provider.
 
 ## Near-Term Priorities
 
 - Build a proper BNA memory structure.
 - Replace family-specific language, prompts, and schema assumptions.
 - Keep the Telegram bridge capable of both:
-  - OpenAI API chat for ordinary conversation and content/tone refinement
+  - hosted API chat for ordinary conversation and content/tone refinement
+    (OpenAI normally, Kimi during explicit temporary Kimi-primary mode)
   - Codex coding turns for repo work
   - structured Buffer social commands for draft/post scheduling and queue management
 - Keep one canonical memory system across channels.
@@ -139,7 +145,8 @@ Keep `MEMORY.md` compact and curated.
 
 - The academy Telegram bot is the active bot, not the old family bot.
 - The bridge now supports:
-  - OpenAI API default chat for ordinary conversation and content/tone refinement
+  - hosted API default chat for ordinary conversation and content/tone refinement
+    (OpenAI normally, Kimi during explicit temporary Kimi-primary mode)
   - automatic Codex routing for repo/development work
   - persistent Telegram bottom buttons for `OpenAI API` and `Codex` mode switching
   - `/accounts`, `/blogs`, `/queue`, `/help`, `/status`

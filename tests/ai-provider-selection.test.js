@@ -1,0 +1,28 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const test = require('node:test');
+
+const server = fs.readFileSync('server.js', 'utf8');
+const bridge = fs.readFileSync('scripts/telegram-kimi-bridge.mjs', 'utf8');
+const smoke = fs.readFileSync('scripts/smoke-openai-sidekick.mjs', 'utf8');
+const envExample = fs.readFileSync('.env.example', 'utf8');
+const agents = fs.readFileSync('AGENTS.md', 'utf8');
+
+test('temporary Kimi-primary hosted AI override is wired across runtime and smoke paths', () => {
+  assert.match(envExample, /^BNA_AI_PRIMARY_PROVIDER=openai$/m);
+  assert.match(server, /function normalizeAiPrimaryProvider/);
+  assert.match(server, /readLocalEnvValue\('BNA_AI_PRIMARY_PROVIDER'\)/);
+  assert.match(server, /AI_PRIMARY_PROVIDER === 'kimi' && KIMI_API_KEY/);
+  assert.match(bridge, /function normalizeApiPrimaryProvider/);
+  assert.match(bridge, /apiPrimaryProvider: normalizeApiPrimaryProvider/);
+  assert.match(bridge, /const providers = apiProviderConfigs\(config\)/);
+  assert.match(smoke, /function selectAiSmokeProvider/);
+  assert.match(smoke, /preferred === 'kimi' && kimiApiKey/);
+  assert.match(smoke, /temperature: config\.aiProvider === 'kimi' \? 1 : 0/);
+});
+
+test('docs keep Kimi as provider override, not a Codex replacement', () => {
+  assert.match(agents, /Kimi-primary mode/);
+  assert.match(agents, /Kimi is never the task owner/);
+  assert.match(agents, /Codex remains the development\/task\/deploy owner/);
+});

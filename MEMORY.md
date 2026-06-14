@@ -30,10 +30,12 @@
 ## Tooling Preferences
 
 - **Codex**: Primary coding, development, and visible machine-work owner
-- **OpenAI API**: Default Telegram reply engine for ordinary conversation,
-  content/tone refinement, brainstorming, and normal system running when
-  configured
-- **Kimi**: Fallback-only provider/model path for failures or legacy records
+- **OpenAI API**: Normal preferred Telegram/content hosted AI provider for
+  ordinary conversation, content/tone refinement, brainstorming, and normal
+  system running when configured and healthy
+- **Kimi**: Normally fallback-only for provider failures or legacy records; as
+  of 2026-06-14, approved as temporary primary hosted AI provider via
+  `BNA_AI_PRIMARY_PROVIDER=kimi` while the OpenAI key issue is unresolved
 - **Telegram**: Front-end channel for operator communication
 - **Buffer**: Active social posting provider for Facebook, LinkedIn, and
   YouTube. Buffer API credentials live in Railway and local `.secrets`; never
@@ -329,13 +331,17 @@
   should live in a side/section list with clear Back navigation rather than
   oversized square buttons.
 - Google Drive Raw Media Intake is also allowed to feed website updates: single dropped images should be candidates for the public website image/learning-moments lane, and uploaded recordings/videos can be candidates for website blog generation after approval.
-- Task stages are Raw Input, Needs Decision, Assigned, In Progress, Done, and Archive.
-- Do not use a generic Pending task lane or visible task bucket. Ambiguous work
-  should be audited into Needs Decision, My Tasks, Changelog Queue/In Progress,
-  Done, or Archive. Machine-owned implementation work belongs in Changelog from
-  queued through verified; there should not be a separate visible Codex Queue
-  lane.
-- Active task owners are Shloimie and Codex.
+- Operations task buckets are Decisions, Pending, and Tasks, with Calendar and
+  Done / Activity as supporting views.
+- Pending means blocked by a human or external system, such as Rabbi access,
+  account approval, payment/email/domain credentials, or legal/accounting
+  choice. Pending must not be used for Codex/system work.
+- Codex/system work uses agent status (`queued`, `running`, `completed`,
+  `failed`, or `blocked_needs_human_decision`) and must auto-spawn an agent job
+  when executable. A failed or blocked agent job should create a clear Decision
+  or human/external Pending blocker, never a vague "waiting for Codex" card.
+- Active task actors include Shloimie, Rabbi/workspace owners, external
+  providers/managers, and Codex/internal agents.
 - Visible task titles must be refined into normal actionable language; raw Telegram wording belongs only in provenance fields such as `ai_parsed.original_text` or daily memory captures.
 - Telegram task captures should not show per-task owner/status buttons. The parser should infer owner and lane automatically, then summarize the routing in plain text.
 - If an actionable Telegram ramble is found to have no capture summary/tasks, create a Codex-owned agent-fleet audit/backfill task. The worker should identify the missed message(s), explain why ingestion failed, backfill clean tasks/records, fix the routing gap when feasible, verify, and report completion back to Telegram.
@@ -344,10 +350,10 @@
   student note, payment item, content item, or decision was created or needs
   action.
 - Telegram should keep persistent bottom buttons for `OpenAI API` and `Codex`.
-  `OpenAI API` is the default mode for ordinary conversation and content/tone
-  refinement. Clear repo/code/database/bridge/deploy/test/programming requests
-  still route to Codex automatically. Pressing `Codex` forces Codex replies
-  until `OpenAI API` is selected again.
+  `OpenAI API` means hosted API chat mode: OpenAI when healthy, or Kimi during
+  approved temporary Kimi-primary mode. Clear repo/code/database/bridge/deploy/
+  test/programming requests still route to Codex automatically. Pressing
+  `Codex` forces Codex replies until API chat mode is selected again.
 - Prompt-building requests for Codex or ChatGPT should stay in visible
   planning/refinement mode first: show the prompt/brief draft in Telegram,
   preserve the raw operator input as provenance, and only implement after
@@ -728,8 +734,11 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   blog generation, and ingestion workflows while adding normalized records and
   backfill.
 - Mixed uploaded audio/video/text recordings should route items by type:
-  - Shloimie's personal/operator tasks go to My Tasks.
-  - Codex/app/code/dashboard/parser/Railway/external-connector/Remotion work goes to the machine/Changelog lane.
+  - Human choices go to Decisions with clear options and owner.
+  - Human/external blockers go to Pending with `waiting_on` and the exact
+    missing access/input.
+  - Actionable operator/provider/agent work goes to Tasks; executable Codex
+    work should spawn an agent job immediately.
   - Named student accountability, goal updates, and Torah progress go to Students/accountability records, not general tasks.
   - Halacha/source lookup questions that Shloimie marks for research go to Tasks as `Torah Research` / `torah_research`, assigned to Codex. The task must preserve the exact question, use Sefaria/source research, include direct Sefaria links, include a source map and summary of where each source is found, and flag open points for Shloimie/rav review instead of presenting automated final psak.
   - Student philosophy/hashkafa/curiosity questions stay in Student Questions or class notes unless Shloimie explicitly marks them as halacha/source lookup work.
@@ -738,12 +747,10 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   observations and correction paths. They must be visible in Operations
   Students/Admin views and must not leak into the student portal, public
   website, or content lanes.
-- The Tasks dashboard should not have a generic visible Pending lane or a
-  visible Planned/Implementation Briefs lane. Open work belongs only in
-  Decisions, My Tasks, Changelog Queue/In Progress, Done, or Archive. Machine
-  work should be visible in Changelog from queue to verification.
-  `tasks-pending/*.md` files are internal Codex handoffs, not an operator-facing
-  workload section.
+- The Tasks dashboard primary structure is Decisions, Pending, and Tasks.
+  Waiting for Shloimie/Rabbi/External and Agent Working are filters or metadata,
+  not primary columns. `tasks-pending/*.md` files are internal Codex handoffs,
+  not an operator-facing workload section.
 
 ## Remotion Video Editing Workflow
 
@@ -765,8 +772,9 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 
 ## Telegram Development Agent
 
-- Plain Telegram messages to the academy bot should use OpenAI API first for
-  ordinary conversation, tone/content refinement, and brainstorming.
+- Plain Telegram messages to the academy bot should use hosted API chat first
+  for ordinary conversation, tone/content refinement, and brainstorming:
+  OpenAI normally, Kimi temporarily when `BNA_AI_PRIMARY_PROVIDER=kimi`.
 - For dashboard/system questions, OpenAI must receive and use the live Operations
   snapshot first: sections, subtabs, visible actions/buttons, task lanes,
   task records/comments, students/accountability, content/prompts/bundles,
@@ -778,11 +786,14 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 - Development conversations should still feel like talking to Codex in the repo:
   Codex may inspect, edit, test, and summarize work when the operator asks for
   repo, code, database, bridge, deploy, or dashboard changes.
-- Kimi remains fallback only for API/model-provider failures or legacy records.
-- Operations Decisions must only contain real operator choices, ideally with
-  explicit options. Actionable requests that Codex can execute should go into
-  the Changelog/Codex queue, and human errands should go into My Tasks; nothing
-  should sit in a vague pending/decision state without a concrete choice needed.
+- Kimi remains fallback only for API/model-provider failures or legacy records
+  unless `BNA_AI_PRIMARY_PROVIDER=kimi` is explicitly set as the current
+  temporary primary-provider override.
+- Operations Decisions must only contain real human choices, ideally with
+  explicit options and a clear owner. Actionable requests that Codex can execute
+  should become Tasks with an agent job; human/external blockers should become
+  Pending with a precise `waiting_on`; nothing should sit in a vague
+  pending/decision state without a concrete choice or blocker.
 - Operations task details should support inline comments from the expanded row,
   and dashboard refreshes must preserve active Windows+H dictation/text entry by
   deferring full re-renders while an input, textarea, contenteditable field, or

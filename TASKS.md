@@ -6,18 +6,34 @@ not authorize active GHL runtime paths.
 
 ## Now
 
-- [ ] Finish BNA workspace/community/provider/bot no-GHL release on
+- [x] Deploy and live-smoke the workspace task system cleanup for Rabbi
+  Scheller / One Time: local work now makes Decisions, Pending, Tasks, Calendar,
+  Done, and Activity the active Operations task structure; Pending is
+  human/external only; comments default to shared workspace dialogue; explicit
+  comment requeue is required before spawning agent work; task calendar has
+  month/week/selected-day views with Hebrew dates; and the Rabbi Scheller launch
+  seed/backfill is idempotent in the server startup path. Verified with
+  `npm test` 315/315, Kimi-backed hosted AI smoke, Railway deployment
+  `954411df-9a0a-4892-820e-28ebbdb9c85c`, Railway doctor, live app smoke
+  `ops/live-smokes/2026-06-14T07-56-50-529Z-live-app-smoke.md`, live task API
+  readback, and live mobile Playwright smoke
+  `ops/playwright-smokes/2026-06-14-workspace-task-system-live/2026-06-14T07-58-30-461Z-report.md`.
+  Handoff:
+  `tasks-pending/2026-06-14-workspace-task-dialogue-rabbi-scheller.md`.
+- [x] Finish BNA workspace/community/provider/bot no-GHL release on
   `cleanup/bna-workspace-community-provider-bot-no-ghl`: dirty worktree was
   preserved on a safety branch/commit, active runtime is first-party BNA plus
   explicit connectors only, provider public signup is free-listing-only, action
   registry has role-aware ticket/decision/provider/community/worksheet bot
   actions, and OpenAI key diagnostics now prove `.secrets/openai-api-key.txt`
   and Railway share the selected key fingerprint but OpenAI rejects it with
-  `401 invalid_api_key`. Local syntax checks, `npm test` 309/309, Railway
-  doctor, live app smoke, and screenshot smoke pass. Keep open until a valid
-  OpenAI project/org key is supplied, `npm run openai:smoke` passes, the changed
-  bundle is deployed, post-deploy live smoke passes, and Telegram completion is
-  sent. Handoff:
+  `401 invalid_api_key`. Operator approved temporary Kimi-primary hosted AI
+  mode via `BNA_AI_PRIMARY_PROVIDER=kimi` while OpenAI remains unresolved. Local
+  and Railway non-secret overrides are set to `kimi`; the live task/support
+  category blocker was fixed, Kimi-backed hosted AI smoke now passes
+  end-to-end, and the changed bundle was deployed in Railway deployment
+  `954411df-9a0a-4892-820e-28ebbdb9c85c` with Railway doctor and live app
+  smoke passing. Handoff:
   `tasks-pending/2026-06-14-workspace-community-provider-bot-no-ghl.md`.
 - [ ] Deploy and live-smoke the signup credit payment-link email fix: manual
   resend for signup #12 succeeded to both recorded parent emails, and local code

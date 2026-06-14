@@ -29,3 +29,11 @@ Current state:
   active runtime. First-party BNA Operations owns contacts, communities,
   providers, parent/student portals, bot actions, tickets, decisions, and
   newsletters. External services are explicit connectors only.
+- Active workspace task behavior lives in `server.js` plus
+  `public/operations.html`. The visible task buckets are Decisions, Pending,
+  and Tasks; Pending is only for human/external blockers. Codex/system work is
+  tracked through agent jobs/status and must not be left as "pending for
+  Codex."
+- Rabbi Scheller's current app/Replit runtime is a source to audit and migrate
+  from, not the canonical BNA runtime. Resend, Stripe/payment processors,
+  Buffer, Whapi/WAPI, Vimeo, and domain/DNS tools are connectors only.

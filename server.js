@@ -2025,6 +2025,18 @@ function readLocalSecretFile(name) {
   }
 }
 
+function readLocalEnvValue(name) {
+  try {
+    const raw = fs.readFileSync(path.join(__dirname, '.env.local'), 'utf8');
+    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const match = raw.match(new RegExp(`^${escaped}=(.*)$`, 'm'));
+    if (!match) return '';
+    return match[1].trim().replace(/^["']|["']$/g, '');
+  } catch {
+    return '';
+  }
+}
+
 function usableSecretValue(value) {
   let normalized = String(value || '').replace(/^\uFEFF/, '').trim();
   if (
@@ -2203,13 +2215,40 @@ const OPENAI_BASE_URL = process.env.OPENAI_BASE_URL || 'https://api.openai.com/v
 const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4.1-mini';
 const KIMI_API_KEY =
   usableSecretValue(process.env.KIMI_API_KEY) ||
-  usableSecretValue(readLocalSecretFile('kimi-api-key.txt'));
-const KIMI_BASE_URL = process.env.KIMI_BASE_URL || 'https://api.moonshot.ai/v1';
-const KIMI_MODEL = process.env.KIMI_MODEL || 'kimi-k2.6';
-const CONTENT_AI_API_KEY = OPENAI_API_KEY || KIMI_API_KEY;
-const CONTENT_AI_BASE_URL = OPENAI_API_KEY ? OPENAI_BASE_URL : KIMI_BASE_URL;
-const CONTENT_AI_MODEL = OPENAI_API_KEY ? OPENAI_MODEL : KIMI_MODEL;
-const CONTENT_AI_PROVIDER = OPENAI_API_KEY ? 'openai' : 'kimi';
+  usableSecretValue(readLocalSecretFile('kimi-api-key.txt')) ||
+  usableSecretValue(readLocalEnvValue('KIMI_API_KEY'));
+const KIMI_BASE_URL = process.env.KIMI_BASE_URL || readLocalEnvValue('KIMI_BASE_URL') || 'https://api.moonshot.ai/v1';
+const KIMI_MODEL = process.env.KIMI_MODEL || readLocalEnvValue('KIMI_MODEL') || 'kimi-k2.6';
+
+function normalizeAiPrimaryProvider(value) {
+  const normalized = String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, '_');
+  if (['kimi', 'kimmy', 'moonshot', 'moonshot_ai'].includes(normalized)) return 'kimi';
+  return 'openai';
+}
+
+const AI_PRIMARY_PROVIDER = normalizeAiPrimaryProvider(
+  process.env.BNA_AI_PRIMARY_PROVIDER ||
+  readLocalEnvValue('BNA_AI_PRIMARY_PROVIDER') ||
+  process.env.CONTENT_AI_PRIMARY_PROVIDER ||
+  readLocalEnvValue('CONTENT_AI_PRIMARY_PROVIDER') ||
+  process.env.AI_PRIMARY_PROVIDER ||
+  readLocalEnvValue('AI_PRIMARY_PROVIDER') ||
+  'openai'
+);
+const CONTENT_AI_PROVIDER =
+  AI_PRIMARY_PROVIDER === 'kimi' && KIMI_API_KEY
+    ? 'kimi'
+    : OPENAI_API_KEY
+      ? 'openai'
+      : KIMI_API_KEY
+        ? 'kimi'
+        : AI_PRIMARY_PROVIDER;
+const CONTENT_AI_API_KEY = CONTENT_AI_PROVIDER === 'kimi' ? KIMI_API_KEY : OPENAI_API_KEY;
+const CONTENT_AI_BASE_URL = CONTENT_AI_PROVIDER === 'kimi' ? KIMI_BASE_URL : OPENAI_BASE_URL;
+const CONTENT_AI_MODEL = CONTENT_AI_PROVIDER === 'kimi' ? KIMI_MODEL : OPENAI_MODEL;
 const BNA_YTDLP_ENABLED = ['1', 'true', 'yes'].includes(String(process.env.BNA_YTDLP_ENABLED || '').toLowerCase());
 const YTDLP_BINARY = process.env.YTDLP_BINARY || 'yt-dlp';
 const YTDLP_OUTPUT_DIR = process.env.YTDLP_OUTPUT_DIR || path.join(__dirname, 'media-inbox', 'youtube-downloads');
@@ -6560,6 +6599,22 @@ CREATE INDEX IF NOT EXISTS idx_bna_internal_messages_thread ON bna_internal_mess
 CREATE INDEX IF NOT EXISTS idx_bna_bot_action_logs_workspace ON bna_bot_action_logs(workspace_key, created_at DESC);
 `;
 
+const normalizeConnectorSettingsCheckSQL = `
+DO $$
+BEGIN
+  IF to_regclass('public.bna_connector_settings') IS NOT NULL THEN
+    ALTER TABLE bna_connector_settings DROP CONSTRAINT IF EXISTS bna_connector_settings_connector_type_check;
+    UPDATE bna_connector_settings
+       SET connector_type = 'legacy_crm',
+           updated_at = NOW()
+     WHERE connector_type IN ('ghl_legacy', 'gohighlevel', 'leadconnector', 'leadconnectorhq');
+    ALTER TABLE bna_connector_settings
+      ADD CONSTRAINT bna_connector_settings_connector_type_check
+      CHECK (connector_type IN ('google_calendar', 'google_classroom', 'email_identity', 'whatsapp', 'social', 'payment', 'video_library', 'rabbi_app', 'legacy_crm', 'other'));
+  END IF;
+END $$;
+`;
+
 const createParentPermissionProfilesSQL = `
 CREATE TABLE IF NOT EXISTS bna_parent_permission_profiles (
   id SERIAL PRIMARY KEY,
@@ -6697,6 +6752,7 @@ CREATE TABLE IF NOT EXISTS bna_task_comments (
 
 const createTaskWorkflowExtensionsSQL = `
 ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspace_settings(id) ON DELETE SET NULL;
+ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS project_key TEXT;
 ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS workspace_role TEXT;
 ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS item_type TEXT DEFAULT 'task';
 ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS decision_owner TEXT;
@@ -6726,6 +6782,14 @@ WHERE agent_status IS NULL OR agent_status NOT IN ('none', 'queued', 'running', 
 UPDATE bna_tasks
 SET last_activity_at = COALESCE(last_activity_at, updated_at, created_at)
 WHERE last_activity_at IS NULL;
+UPDATE bna_tasks t
+SET project_key = COALESCE(t.project_key, p.project_key)
+FROM bna_projects p
+WHERE t.project_id = p.id
+  AND (t.project_key IS NULL OR trim(t.project_key) = '');
+UPDATE bna_tasks
+SET project_key = COALESCE(NULLIF(project_key, ''), '${DEFAULT_PROJECT_KEY}')
+WHERE project_key IS NULL OR trim(project_key) = '';
 
 ALTER TABLE bna_tasks DROP CONSTRAINT IF EXISTS bna_tasks_item_type_check;
 ALTER TABLE bna_tasks
@@ -6741,6 +6805,7 @@ ALTER TABLE bna_task_comments
   CHECK (visibility IN ('workspace', 'internal', 'manager_only', 'provider_visible', 'system', 'operator', 'project'));
 
 CREATE INDEX IF NOT EXISTS idx_bna_tasks_workspace_id ON bna_tasks (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_tasks_project_key ON bna_tasks (project_key);
 CREATE INDEX IF NOT EXISTS idx_bna_tasks_item_type ON bna_tasks (item_type);
 CREATE INDEX IF NOT EXISTS idx_bna_tasks_waiting_on ON bna_tasks (lower(waiting_on));
 CREATE INDEX IF NOT EXISTS idx_bna_tasks_decision_owner ON bna_tasks (lower(decision_owner));
@@ -9903,11 +9968,11 @@ async function createTaskFromText(input = {}, options = {}, db = pool) {
     `INSERT INTO bna_tasks (
        title, notes, stage, category, urgency, energy_required, estimated_minutes, due_date,
        source, source_context, created_by, assigned_to, ai_parsed, project_id, decision_required, author,
-       item_type, decision_owner, waiting_on, agent_status, source_channel, source_message_id,
+       project_key, item_type, decision_owner, waiting_on, agent_status, source_channel, source_message_id,
        summary, decision_prompt, decision_options_json, next_action_label, last_activity_at
      )
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16,
-       $17, $18, $19, $20, $21, $22, $23, $24, $25::jsonb, $26, NOW())
+       $17, $18, $19, $20, $21, $22, $23, $24, $25, $26::jsonb, $27, NOW())
      RETURNING *`,
     [
       title,
@@ -9926,6 +9991,7 @@ async function createTaskFromText(input = {}, options = {}, db = pool) {
       project.id,
       decisionRequired,
       author,
+      project.project_key,
       itemType,
       decisionOwner,
       waitingOn,
@@ -11899,40 +11965,68 @@ async function ensureInitialParentLeads() {
   ];
 
   for (const seed of seeds) {
-    const leadResult = await pool.query(
-      `INSERT INTO bna_parent_leads (
-        parent_name, lead_type, status, interest_level, source, source_detail,
-        legacy_crm_contact_id, legacy_crm_conversation_id, tags, notes, owner, metadata
-      ) VALUES (
-        $1, $2, $3, $4, $5, $6,
-        $7, $8, $9, $10, 'Shloimie', $11
+    const existingLead = seed.legacy_crm_contact_id
+      ? (await pool.query(
+        `SELECT *
+         FROM bna_parent_leads
+         WHERE legacy_crm_contact_id = $1
+         ORDER BY id ASC
+         LIMIT 1`,
+        [seed.legacy_crm_contact_id]
+      )).rows[0]
+      : null;
+
+    const leadResult = existingLead
+      ? await pool.query(
+        `UPDATE bna_parent_leads
+         SET parent_name = $2,
+             lead_type = $3,
+             status = $4,
+             interest_level = $5,
+             source = $6,
+             source_detail = $7,
+             legacy_crm_conversation_id = $8,
+             tags = $9,
+             notes = $10,
+             updated_at = NOW()
+         WHERE id = $1
+         RETURNING *`,
+        [
+          existingLead.id,
+          seed.parent_name,
+          seed.lead_type,
+          seed.status,
+          seed.interest_level,
+          seed.source,
+          seed.source_detail,
+          seed.legacy_crm_conversation_id,
+          seed.tags,
+          seed.notes,
+        ]
       )
-      ON CONFLICT (legacy_crm_contact_id) DO UPDATE SET
-        parent_name = EXCLUDED.parent_name,
-        lead_type = EXCLUDED.lead_type,
-        status = EXCLUDED.status,
-        interest_level = EXCLUDED.interest_level,
-        source = EXCLUDED.source,
-        source_detail = EXCLUDED.source_detail,
-        legacy_crm_conversation_id = EXCLUDED.legacy_crm_conversation_id,
-        tags = EXCLUDED.tags,
-        notes = EXCLUDED.notes,
-        updated_at = NOW()
-      RETURNING *`,
-      [
-        seed.parent_name,
-        seed.lead_type,
-        seed.status,
-        seed.interest_level,
-        seed.source,
-        seed.source_detail,
-        seed.legacy_crm_contact_id,
-        seed.legacy_crm_conversation_id,
-        seed.tags,
-        seed.notes,
-        JSON.stringify({ seed: '2026-06-09-school-interest-leads' }),
-      ]
-    );
+      : await pool.query(
+        `INSERT INTO bna_parent_leads (
+          parent_name, lead_type, status, interest_level, source, source_detail,
+          legacy_crm_contact_id, legacy_crm_conversation_id, tags, notes, owner, metadata
+        ) VALUES (
+          $1, $2, $3, $4, $5, $6,
+          $7, $8, $9, $10, 'Shloimie', $11
+        )
+        RETURNING *`,
+        [
+          seed.parent_name,
+          seed.lead_type,
+          seed.status,
+          seed.interest_level,
+          seed.source,
+          seed.source_detail,
+          seed.legacy_crm_contact_id,
+          seed.legacy_crm_conversation_id,
+          seed.tags,
+          seed.notes,
+          JSON.stringify({ seed: '2026-06-09-school-interest-leads' }),
+        ]
+      );
 
     const lead = leadResult.rows[0];
     await pool.query(
@@ -12895,6 +12989,7 @@ async function initDb() {
     await pool.query(createTasksTableSQL);
     await pool.query(createProjectMembersSQL);
     await pool.query(createWorkspacePlatformSQL);
+    await pool.query(normalizeConnectorSettingsCheckSQL);
     await pool.query(createTaskCommentsSQL);
     await pool.query(createTaskWorkflowExtensionsSQL);
     await pool.query(createAgentJobsSQL);
@@ -32897,7 +32992,6 @@ app.get('/api/bna/tasks', requireAdmin, async (req, res) => {
     LIMIT ${limitParam}`;
 
   try {
-    await ensureDefaultProjects();
     const result = await pool.query(query, params);
     res.json({ tasks: result.rows });
   } catch (err) {
@@ -33009,8 +33103,14 @@ function isTaskCommentRequeueOptOut(value) {
   return /^(?:false|no|off|0)$/i.test(String(value || '').trim());
 }
 
+function isTaskCommentRequeueRequest(value) {
+  if (value === true || value === 1) return true;
+  return /^(?:true|yes|on|1|requeue)$/i.test(String(value || '').trim());
+}
+
 function shouldRequeueTaskAfterHumanComment({ source, author, requeue } = {}) {
   if (isTaskCommentRequeueOptOut(requeue)) return false;
+  if (!isTaskCommentRequeueRequest(requeue)) return false;
   const normalizedSource = String(source || '').trim().toLowerCase();
   if (!['dashboard', 'telegram', 'api'].includes(normalizedSource)) return false;
   const actor = String(author || '').trim().toLowerCase();
@@ -33704,7 +33804,7 @@ async function handleTelegramCallback(query) {
   const replies = {
     view_inbox: `Tasks:\n${dashboardUrl}?view=tasks`,
     view_urgent: `Tasks needing attention:\n${dashboardUrl}?view=tasks`,
-    view_pipeline: `Tasks: decisions, my tasks, changelog, and done.\n${dashboardUrl}?view=tasks`,
+    view_pipeline: `Tasks: Decisions, Pending, Tasks, Calendar, and Done.\n${dashboardUrl}?view=tasks`,
     quick_add: 'Quick add: send a task or ramble in this chat. I will capture it into BNA Operations.',
     view_billing: `Accounting:\n${dashboardUrl}?view=accounting`,
     view_signups: `Contacts:\n${dashboardUrl}?view=contacts`,

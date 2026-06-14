@@ -90,10 +90,55 @@ local diagnostics and the same fingerprint exists in Railway, but OpenAI rejects
 it. A valid/re-enabled key for the correct project/org is required, or the
 operator must explicitly approve deployment with this known blocker.
 
-## Pending Gates
+## Status Update - 2026-06-14T10:35:00+03:00
 
-- Finish deploy/live smoke once OpenAI gate passes or operator approves a deploy
-  with the proven external OpenAI blocker.
-- Send/queue Telegram completion report after deployment and live smoke.
+Operator approved temporary Kimi-primary hosted AI mode while the OpenAI key
+path/account issue remains unresolved.
+
+Implemented:
+
+- `BNA_AI_PRIMARY_PROVIDER=kimi` support in `server.js` content AI provider
+  selection.
+- `BNA_AI_PRIMARY_PROVIDER=kimi` support in Telegram hosted API provider
+  ordering.
+- Historical `npm run openai:smoke` now smokes the selected hosted AI provider;
+  when Kimi is selected, it uses Kimi-compatible temperature and records Kimi as
+  the provider in the report.
+- Local `.env.local` and Railway production variable
+  `BNA_AI_PRIMARY_PROVIDER=kimi` are set; Railway was updated with
+  `--skip-deploys`, so this does not by itself redeploy or restart production.
+- QA report:
+  `ops/qa-runs/2026-06-14T10-35-00-kimi-primary-provider-mode.md`.
+
+Verification:
+
+- PASS `node --check server.js`
+- PASS `node --check scripts/telegram-kimi-bridge.mjs`
+- PASS `node --check scripts/smoke-openai-sidekick.mjs`
+- PASS `node --test tests/ai-provider-selection.test.js`
+- PASS `npm test` 315/315
+- PASS Railway variable readback for `BNA_AI_PRIMARY_PROVIDER=kimi`
+- Kimi selected-provider smoke assertions passed in
+  `ops/openai-smokes/2026-06-14T07-31-27-913Z-openai-sidekick-smoke.md`.
+
+## Final Status - 2026-06-14
+
+The live task-category constraint blocker was fixed in the workspace task system
+release. The selected hosted-AI smoke now passes with Kimi:
+
+- PASS `npm run openai:smoke` with `BNA_AI_PRIMARY_PROVIDER=kimi`:
+  `ops/openai-smokes/2026-06-14T07-54-18-768Z-openai-sidekick-smoke.md`
+- PASS Railway deployment `954411df-9a0a-4892-820e-28ebbdb9c85c`
+- PASS `npm run railway:doctor`
+- PASS `npm run app:smoke`:
+  `ops/live-smokes/2026-06-14T07-56-50-529Z-live-app-smoke.md`
+- PASS live task/support-related API readback through the app smoke and focused
+  task API readback.
+
+Remaining note:
+
+- The OpenAI key itself is still rejected by OpenAI with `401 invalid_api_key`.
+  Kimi is the approved temporary hosted-AI provider, not a replacement for
+  Codex as the task/development owner.
 - Continue replacing old historical GHL wording if those files are revived, but
   do not restore any retired runtime.
