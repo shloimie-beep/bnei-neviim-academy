@@ -17242,6 +17242,8 @@
         function taskColumn(task) {
             const stage = normalizeTaskStage(task.stage);
             if (isHiddenCapture(task)) return null;
+            const isMachine = taskIsMachine(task);
+            if ((task.completed_at || task.verified_at || stage === 'done') && !isMachine) return 'done';
             return taskStatusBucket(task);
         }
 
