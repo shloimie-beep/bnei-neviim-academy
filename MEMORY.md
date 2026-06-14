@@ -53,6 +53,11 @@
   `bna_contact_communications` with sync-run audit records.
 - **Railway**: Hosting plus current production Postgres/database source of truth
 - **Supabase**: Not currently used for BNA operations data unless explicitly reintroduced
+- **BNA Keyholder**: Local key updates should go through
+  `C:\Users\User\BNA-Keyholder`, outside the repo. Use `npm run keyholder:open`
+  to open/create it and `npm run keyholder:diagnose` to report only metadata
+  and SHA-256 fingerprints. Do not print or commit secret values; copying a key
+  into `.secrets` or Railway requires an explicit operator request.
 - Shared repo files should be the canonical brain for both terminal and future
   Telegram bridge use
 
@@ -172,6 +177,18 @@
   across BNA surfaces. Avoid scattered helper buttons, duplicate parent/student
   text boxes, or static quick-action widgets that bypass the shared assistant,
   action registry, task ledger, and memory trail.
+- The public website assistant is a lead-magnet guide, not a settings panel:
+  it should open proactively after a short delay, speak Hebrew on Hebrew/RTL
+  pages and English on English pages, use Shloimie's public self-governance/
+  accountability/learning-program knowledge, and avoid internal tasks, private
+  records, provider names, API/provider failures, or admin implementation
+  details.
+- Public assistant contact requests should create an internal Shloimie
+  follow-up reminder/ticket/communication. Public bug or UX feedback should
+  become a support ticket plus a Codex review queue item when it is a clear
+  site/app issue; product suggestions should become Shloimie Decisions. This
+  must not grant public users admin, CLI, deploy, migration, or private-data
+  access.
 - Super-admin/Shloimie may access OpenAI and tracked Codex/CLI routing from the
   web assistant. Non-admin users may create tickets/messages and use scoped safe
   helper workflows, but must never invoke Codex, CLI, deployments, migrations,
@@ -182,6 +199,16 @@
   same CRM/person record should receive both parent and student roles.
 - BNA admin UI should follow the brand kit and current light BNA palette, not
   generic dark placeholder dashboard styling.
+- Rabbi Scheller / One Time technical source-of-truth split as of 2026-06-14:
+  `shloimie-beep/one-time-one-time` is the existing web/backend product source;
+  `shloimie-beep/one-time-app` is an Expo/mobile companion prototype and UI
+  reference. Keep One Time member/media/payment records separate from BNA school
+  private records until a deliberate integration decision is approved.
+- The One Time Mishnah website/funnel work in BNA is preview-only unless
+  Shloimie approves launch. `/preview/one-time-mishnah` and `/one-time-preview`
+  may show draft copy, TBD ILS/USD pricing, and a secondary video-library
+  fallback, but must not activate checkout or replace Rabbi Scheller's live site
+  without approval.
 - Hebrew menus must be RTL-native, open from the right, and avoid overlapping
   sticky controls on mobile.
 - The parent dashboard treats the approved weekly newsletter/update as a
@@ -762,6 +789,10 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   Waiting for Shloimie/Rabbi/External and Agent Working are filters or metadata,
   not primary columns. `tasks-pending/*.md` files are internal Codex handoffs,
   not an operator-facing workload section.
+- Bulk task-title cleanup should run through `npm run task:title-cleanup` first.
+  The script is dry-run by default, skips closed tasks unless explicitly
+  included, excludes full raw operator wording from reports, and requires
+  `--apply --confirm APPLY_TASK_TITLE_CLEANUP` before patching live tasks.
 
 ## Remotion Video Editing Workflow
 
@@ -897,6 +928,12 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 
 - The existing Mishnah/Mishna project/filter should be standardized as `One
   Time Mishnah Class`; short display name may be `One Time`.
+- The 2026-06-14 white-label/onboarding/Google/content superprompt is now an
+  active Codex build brief for One Time/BNA continuation work. The canonical
+  internal handoff is
+  `tasks-pending/2026-06-14-rabbi-sheller-whitelabel-onboarding-google-content.md`;
+  the original source file path is recorded there rather than copied into
+  visible task titles.
 - Do not create a duplicate project if the existing Mishnah/Mishna filter already
   represents this work.
 - Rabbi Elie Scheller should eventually have scoped access to the One Time
@@ -907,6 +944,11 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   as a parent. Shloimie is the super admin who can manage Rabbi Elie's account.
 - The app needs a broader Users/accounts model: BNA parents and BNA students are
   separate from Rabbi Elie's One Time parents and One Time students.
+- One Time should be treated as the first real service-provider/white-label
+  workspace: Shloimie is platform super admin/admin manager, Rabbi Elie is a
+  scoped provider/teacher admin, and One Time members/students/parents must not
+  see BNA private students, accounting, family accountability, or Shloimie's
+  super-admin data.
 - Rabbi Elie needs his own scoped parent and student sections under the One
   Time account/project. Do not mix those records with BNA school students or BNA
   parents.
@@ -937,6 +979,13 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   source only: task deck, one workflow at a time, observe-before-act, API first,
   operator walkthroughs for OAuth/vendor gates, and explicit confirmation
   before any external connector writes. Do not add new GHL/LeadConnector writes.
+- One Time live site/payment behavior is preview-first: preview landing pages,
+  offer copy, pricing, checkout/payment links, and public replacement require
+  Shloimie approval before going live. The video library supports the live
+  Mishnayos/community offer but should not replace the main membership CTA.
+- One Time content intake should support Drive/upload to transcript, library
+  card, worksheet/source-sheet draft, newsletter/social drafts, approval queue,
+  and workspace-scoped publishing.
 - The canonical separate One Time Drive workspace was rechecked on 2026-06-10
   with `npm run drive:setup-one-time`: `My Drive / One Time Mishnah Class -
   Rabbi Elie Scheller` exists, the exact final proposal
@@ -964,3 +1013,32 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 - That audit is intentionally not a redesign. It is the traceable map for the
   next implementation prompt: screenshots, routes, actions, flows, issues,
   role/workspace matrix, bot-placement audit, and prioritized backlog.
+
+## Public / Portal Privacy Rules
+
+- Public and unauthenticated routes must never hydrate real parent/student
+  records from cookies, query parameters, local storage, or stale browser state.
+- `/parent/login?onboard=accountability` is a public intake/onboarding route;
+  it must keep the login/onboarding shell visible and must not auto-render the
+  private parent portal even when a valid parent session cookie exists.
+- `/student/login` must show the access-code login shell unless a current code
+  is explicitly supplied or entered; stale `bnaStudentAccessCode` values should
+  be cleared instead of auto-opening a student board.
+- Non-student public/parent/provider/signup pages should clear saved student
+  access codes so a previous student session cannot influence public assistant
+  or page context.
+- Student-audience portal payloads should not include parent email, parent
+  phone, or other parent contact fields. Parent-audience portal payloads may
+  include scoped parent/student fields after parent authentication.
+
+## Google Integration Rules
+
+- Natural-language Google commands still require OAuth scopes for execution.
+  BNA should preview/dry-run Google actions now, run them only for connected
+  test users where configured, and prepare public verification later.
+- Operations Settings > Google Workspace is the canonical readiness surface for
+  Drive, Calendar, Classroom, and Google Business Profile. It must distinguish
+  no-OAuth/manual links, test-user OAuth, and public production OAuth.
+- Manual Google Business links and Place IDs are allowed now. Live Google
+  Business Profile API actions require provider opt-in, `business.manage`, and
+  approval/verification planning.

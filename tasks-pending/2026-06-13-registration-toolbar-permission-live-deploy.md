@@ -38,11 +38,42 @@ Ship the locally verified registration-page toolbar and parent-permission notice
   - Hebrew thank-you page: shared nav visible and Hebrew copy renders.
 - PASS 2026-06-14 focused signup test after parent-name black readability follow-up:
   `node --test tests/signup-permissions-mobile-homepage.test.js` (6/6)
+- PASS 2026-06-14 focused registration/nav regression:
+  `node --test tests/signup-permissions-mobile-homepage.test.js tests/app-wide-brand-shell.test.js --test-reporter=spec`
+  (9/9)
+- PASS 2026-06-14 full suite after the 1280px nav overflow fix:
+  `npm test` (353/353)
+- PASS Railway doctor on current production deployment
+  `bda4f5e4-7cdf-4f2c-b4a2-0d0daaeca225`
+- PASS live app smoke:
+  `ops/live-smokes/2026-06-14T15-41-19-444Z-live-app-smoke.md`
+- PASS live registration toolbar/permission smoke:
+  `ops/playwright-smokes/2026-06-14-registration-toolbar-permission-live/report.md`
+  - `/signup` at 1280px: shared nav present, no horizontal overflow, hidden
+    parent responsibility acknowledgment, no checkbox ack, parent
+    responsibility notice visible, Parent 1/Parent 2 headings/labels/name
+    inputs black.
+  - `/signup-he` at 390px: RTL, hamburger visible and opens, hidden ack, no
+    checkbox ack, notice visible, no horizontal overflow.
+  - `/documents/registration-document?document=parent_handbook&lang=en&returnUrl=/signup.html`
+    at 1280px: shared nav present, document content and signature section
+    load, back link points to `/signup.html`, no horizontal overflow.
+  - `/signup-thank-you.html?payment=credit` at 390px: shared nav present,
+    credit/payment copy visible, hamburger visible, no horizontal overflow.
 
-## Live Blocker
+## Live Deployment Closeout
 
-Do not deploy from the current checkout without an explicit decision: the worktree contains a very large set of unrelated uncommitted changes and deleted/archived files. A Railway deploy from this checkout would likely ship unrelated local work.
+- Closed on 2026-06-14 after Railway deployment
+  `bda4f5e4-7cdf-4f2c-b4a2-0d0daaeca225` reached SUCCESS and live smokes
+  passed.
+- Production CSS served the `box-sizing: border-box` fix for
+  `.bna-site-nav`.
+- A second live smoke found the real 1280px issue: the full public-site nav
+  action row was too wide for the registration document page. The final CSS
+  fix moves that long row behind the existing hamburger up to 1400px.
 
 ## Next Step
 
-Use a clean deploy scope or get explicit approval to deploy the full dirty worktree, then run Railway doctor and live smoke before marking the task done. Include a visual/signup smoke confirming the Parent 1/Parent 2 names are black/readable.
+No further deployment step is needed for this slice. Keep the broader
+goal-mode queue open for the remaining helper, CRM/WAPI, provider login,
+automation, and Rabbi/One Time follow-ups.

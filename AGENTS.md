@@ -87,6 +87,11 @@ Keep `MEMORY.md` compact and curated.
   agent status under Tasks/Activity, not as a human-facing Pending card.
 - Do not show `tasks-pending/*.md` as a visible Planned Briefs, Pending Briefs,
   or Implementation Briefs section. Those files are internal Codex handoffs.
+- Use the local BNA keyholder workflow for new or rotated API keys. The default
+  keyholder folder is `C:\Users\User\BNA-Keyholder`, outside the repo. Do not
+  paste secrets into chat, tracked files, screenshots, task titles, or logs.
+  Diagnostics may report only metadata and fingerprints. Copying a key from the
+  keyholder into `.secrets` or Railway requires an explicit operator request.
 
 ## Current Project Reality
 

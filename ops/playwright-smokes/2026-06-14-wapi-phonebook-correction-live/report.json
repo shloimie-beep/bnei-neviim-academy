@@ -1,0 +1,58 @@
+{
+  "started_at": "2026-06-14T16:28:17.145Z",
+  "app_url": "https://bneineviimacademy.org",
+  "result": "passed",
+  "steps": [
+    {
+      "name": "operations login via session cookie",
+      "ok": true,
+      "duration_ms": 633,
+      "details": {
+        "status": 200,
+        "session_cookie_present": true,
+        "session": "bna_ops_session=U0hMT0lNSUU6MTc4MTQ1NDQ5NjQwNTptYmszNTF5bnVn"
+      }
+    },
+    {
+      "name": "open Communications WhatsApp panel",
+      "ok": true,
+      "duration_ms": 2728,
+      "details": {
+        "title": "BNA Operations"
+      }
+    },
+    {
+      "name": "build phonebook report in UI",
+      "ok": true,
+      "duration_ms": 4518,
+      "details": {
+        "report_heading_count": 1
+      }
+    },
+    {
+      "name": "preview apply flow without saving correction",
+      "ok": true,
+      "duration_ms": 3551,
+      "details": {
+        "dialogs_seen": [
+          "prompt",
+          "confirm"
+        ],
+        "dry_run_preview_seen": true
+      }
+    },
+    {
+      "name": "mobile report renders without horizontal overflow",
+      "ok": true,
+      "duration_ms": 3495,
+      "details": {
+        "overflow_px": 0
+      }
+    }
+  ],
+  "screenshots": [
+    "ops/playwright-smokes/2026-06-14-wapi-phonebook-correction-live/communications-whatsapp-report-desktop.png",
+    "ops/playwright-smokes/2026-06-14-wapi-phonebook-correction-live/communications-whatsapp-report-mobile.png"
+  ],
+  "console_errors": []
+}

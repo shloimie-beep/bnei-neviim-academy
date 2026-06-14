@@ -2,6 +2,51 @@
 
 Last updated: 2026-06-14
 
+2026-06-14 Rabbi Scheller white-label superprompt imported:
+- The operator-provided Downloads superprompt is now represented by the
+  internal handoff
+  `tasks-pending/2026-06-14-rabbi-sheller-whitelabel-onboarding-google-content.md`.
+  Use that handoff for continuation work instead of copying the full raw prompt
+  into visible task titles.
+- Preflight preservation is complete:
+  `ops/worktree-snapshots/2026-06-14T18-50-41-pre-rabbi-whitelabel-onboarding.md`,
+  `.runtime/pre-rabbi-whitelabel-onboarding-20260614-185041.patch`, and
+  `.runtime/pre-rabbi-whitelabel-onboarding-status-20260614-185041.txt`.
+- The current dirty tree includes 35 modified tracked files and 139 untracked
+  files; it should be grouped into logical commits before staging. Do not
+  delete or revert existing dirty work.
+- The next implementation lane is Rabbi Mishnayos onboarding, One Time
+  content-library skeleton, and the full WAPI phonebook-first conversation
+  workspace.
+
+2026-06-14 task-title cleanup dry-run implemented locally:
+- `npm run task:title-cleanup` runs
+  `scripts/task-title-cleanup-dry-run.mjs` against the admin task API in
+  dry-run mode by default.
+- The script skips closed tasks unless `--include-closed` is supplied, excludes
+  full raw operator wording from reports, routes unsafe generated titles to
+  manual review, and requires `--apply --confirm APPLY_TASK_TITLE_CLEANUP`
+  before any live task patch.
+- Verification passed: `node --check scripts/task-title-cleanup-dry-run.mjs`,
+  focused task/watchdog/reconciler tests 28/28, full `npm test` 367/367, and
+  live dry-run report
+  `ops/system-audits/2026-06-14T16-37-35-442Z-task-title-cleanup-dry-run.md`
+  with 304 tasks scanned, 224 closed tasks skipped, 0 automatic candidates,
+  and 1 manual-review item. No deploy was required because this was local
+  CLI/report tooling only.
+
+2026-06-14 Rabbi white-label route privacy re-audit deployed:
+- Public provider pages now clear stale `bnaStudentAccessCode` values on load:
+  `public/service-providers.html`, `public/providers-join.html`, and
+  `public/provider-profile.html`.
+- Regression coverage lives in `tests/universal-assistant-contract.test.js`.
+- Verification passed: focused route/privacy tests 36/36, local Playwright
+  route audit 17/17, `npm test` 357/357, Railway deployment
+  `f2595077-6c36-4a04-a5b8-a69452d3dfa5`, post-deploy Railway doctor, app
+  smoke `ops/live-smokes/2026-06-14T16-02-47-718Z-live-app-smoke.md`, and live
+  provider/privacy smoke
+  `ops/playwright-smokes/2026-06-14-rabbi-whitelabel-provider-privacy-live/report.md`.
+
 2026-06-14 workspace/community/provider/bot cleanup current state:
 - BNA does not use GHL, GoHighLevel, LeadConnector, or LeadConnectorHQ as active
   runtime. Active code must not use GHL env vars, MCP tools, API clients,
@@ -43,6 +88,136 @@ Last updated: 2026-06-14
   app smoke `ops/live-smokes/2026-06-14T09-32-40-859Z-live-app-smoke.md`, and
   focused live read/dry-run smoke
   `ops/live-smokes/2026-06-14T09-33-21-093Z-assistant-portal-focused-live-smoke.json`.
+
+2026-06-14 Registration toolbar and parent-permission notice deployed:
+- Signup, Hebrew signup, registration-document, and signup thank-you pages use
+  the shared public-site toolbar in production.
+- The parent responsibility checkbox remains replaced by a visible notice plus
+  hidden backend acknowledgment; BNA records the notice shown without treating
+  it as a separate enforcement agreement.
+- Parent 1/Parent 2 headings, labels, and name input text are verified
+  black/readable on the live English signup page.
+- The public-site nav uses the existing hamburger layout through
+  small-desktop widths so the long action row does not cause horizontal
+  overflow at 1280px.
+- Verification passed: syntax checks, focused registration/nav tests 9/9,
+  `npm test` 353/353, Railway doctor on deployment
+  `bda4f5e4-7cdf-4f2c-b4a2-0d0daaeca225`, live app smoke
+  `ops/live-smokes/2026-06-14T15-41-19-444Z-live-app-smoke.md`, and live
+  browser smoke
+  `ops/playwright-smokes/2026-06-14-registration-toolbar-permission-live/report.md`.
+
+2026-06-14 Rabbi task UI/helper/audit preview deployed:
+- Branch `cleanup/rabbi-workspace-task-ui-helper-20260614-155524` has
+  BNA blue/gold/parchment Operations task styling, logo header marks,
+  workspace/role/viewing/filter context strip, clearer task filters, typed
+  decision button routing, `needs-more-info` decision endpoint, and selected-day
+  task calendar actions.
+- BNA now contains a preview-only One Time funnel at
+  `/preview/one-time-mishnah` and `/one-time-preview`; checkout is inactive and
+  prices are TBD until approved.
+- One Time audit docs live under `ops/audits/`: repo inventory, backend advice,
+  billing/referral/forum plan, and helper/action matrix.
+- Official goal-mode Rabbi deliverables also exist at the exact requested
+  paths:
+  `ops/rabbi-scheller/2026-06-14-one-time-app-audit.md` and
+  `ops/rabbi-scheller/green-invoice-billing-options.md`.
+- Local verification passed: syntax checks, focused tests, `npm test` 341/341,
+  and authenticated Playwright smoke covering Operations tasks/decisions/
+  schedule/providers plus parent/student/signup/preview routes at
+  390/430/768/1440 widths.
+- Railway deployment `f8c16762-9a73-4a77-8a9b-c5cbe2a00ec8` reached SUCCESS;
+  Railway doctor, live app smoke
+  `ops/live-smokes/2026-06-14T13-56-08-327Z-live-app-smoke.md`, and live
+  Playwright smoke
+  `ops/playwright-smokes/2026-06-14-task-ui-brand-cleanup-live/report.md`
+ passed. Do not replace Rabbi Scheller's live production site or activate
+  payment links until Shloimie approves.
+- Follow-up verification after adding the exact Rabbi docs: GitHub refs still
+  matched `one-time-app` commit `a3463bc6756ac34d8f304451fa0e5190309b8ae1`
+  and `one-time-one-time` commit
+  `050fe2468a3f5601e74e738c219cbe5c1bdf398e`; focused doc tests passed and
+  `npm test` passed 347/347.
+
+2026-06-14 Goal-mode public/portal privacy hardening deployed:
+- Railway deployment `59b07235-039a-4d0c-9676-8ecea6736390` reached SUCCESS.
+- `/parent/login?onboard=accountability` now stays in the public onboarding/
+  login shell even when a parent session exists, so it does not render the
+  private parent portal from session state.
+- `/student/login` clears stale `bnaStudentAccessCode` values when no current
+  code is present, non-student surfaces clear saved student codes, and the
+  helper no longer reads saved student codes from local storage.
+- Student-audience portal payloads redact parent email/phone/name fields while
+  preserving full parent-audience payloads.
+- Verification passed: syntax checks, focused privacy/assistant/workspace
+  tests, `npm test` 341/341, local privacy smoke
+  `ops/playwright-smokes/2026-06-14-public-portal-privacy-fix/report.md`,
+  Railway doctor, live app smoke
+  `ops/live-smokes/2026-06-14T14-25-57-627Z-live-app-smoke.md`, and live
+  public/parent/student privacy smoke
+  `ops/playwright-smokes/2026-06-14-public-portal-privacy-live/report.md`.
+- The broader 2026-06-14 goal-mode brief remains open for helper action
+  coverage, CRM/contact timeline, automations/prompts/drips, provider login,
+  and deeper Rabbi/One Time follow-through.
+
+2026-06-14 Google Workspace readiness panel deployed:
+- Railway deployment `e38167f2-5e6d-4447-b9d4-e195375c4315` reached SUCCESS
+  for the readiness panel, followed by deployment
+  `d2ee16bc-cacd-4025-a77d-f1d358d1230c` for connection-management follow-up.
+- Operations Settings > Google Workspace is the canonical readiness surface for
+  Drive, Calendar, Classroom, and Google Business Profile.
+- The panel separates no-OAuth/manual/public-link capabilities, test-user OAuth
+  work, and later public production verification. It must not claim live sync
+  unless a connected account and scope actually support the action.
+- The BNA Operations API namespace exposes
+  `/api/bna/integrations/google/status` for the Google readiness payload, and
+  that payload now includes real OAuth rows from `bna_google_connections` when
+  test-user accounts are connected.
+- Google disconnect is confirmation-gated through
+  `/api/google/connections/:connectionId/disconnect` and
+  `/api/bna/integrations/google/connections/:connectionId/disconnect`; it
+  removes stored refresh tokens locally and attempts Google revocation when
+  OAuth credentials are configured.
+- Verification passed: syntax checks, focused Google/workspace/Operations
+  tests, `npm test` 349/349, Railway doctor, live app smokes
+  `ops/live-smokes/2026-06-14T14-52-26-757Z-live-app-smoke.md`, direct live API
+  read of `/api/bna/integrations/google/status`, live Operations browser smoke
+  `ops/playwright-smokes/2026-06-14-google-workspace-settings-live/report.md`,
+  follow-up live app smoke
+  `ops/live-smokes/2026-06-14T15-02-18-301Z-live-app-smoke.md`, non-mutating
+  disconnect route probe, and live Operations browser smoke
+  `ops/playwright-smokes/2026-06-14-google-workspace-disconnect-live/report.md`
+  at desktop and 390px mobile.
+
+2026-06-14 Operations parent-to-student link deployed:
+- Current live bundle in Railway deployment
+  `c4a3bc0f-a2d4-4e1a-b975-50ddd1eaf3e9` includes the Operations Contacts
+  parent-to-student link fix.
+- Contacts > Parents loads the student roster, resolves linked students by
+  signup id or parent email/student name, shows `Student linked`, renders
+  Linked Records, and opens the matching student profile.
+- Verification passed: `node --check server.js`, `node --check
+  public/js/bna-bot-widget.js`, focused Operations/portal tests 35/35, full
+  `npm test` 350/350, production HTML readback, `npm run railway:doctor`, live
+  app smoke
+  `ops/live-smokes/2026-06-14T15-08-19-575Z-live-app-smoke.md`, and PII-safe
+  live Operations smoke
+  `ops/playwright-smokes/2026-06-14-operations-parent-student-links-live/report.md`.
+
+2026-06-14 Local BNA keyholder workflow created:
+- The local outside-repo keyholder folder is `C:\Users\User\BNA-Keyholder`.
+- The Windows desktop shortcut `BNA Keyholder` opens/initializes the folder.
+- Repo commands:
+  - `npm run keyholder:open`
+  - `npm run keyholder:diagnose`
+- Keyholder diagnostics report only file presence, length, normalized length,
+  SHA-256 fingerprint prefixes, newline/quote/BOM status, last modified time,
+  and `.secrets` fingerprint matches. They must never print secret values.
+- Documentation: `docs/local-keyholder.md`.
+- Verification passed: `node --check scripts/keyholder-diagnostics.mjs`,
+  `node --test tests/keyholder-diagnostics.test.js`, `npm test` 345/345, and
+  diagnostics report
+  `ops/qa-runs/2026-06-14T14-41-27-809Z-keyholder-diagnostics.md`.
 
 2026-06-12 Registration/provider/student-security pass deployed:
 - Public signup now shows the four visible required documents: Handbook,
@@ -1426,3 +1601,178 @@ Last updated: 2026-06-14
 - `BNA V2 / 00 Website Moments Intake` was created in Drive. Folder ID:
   `1aiCzZ-lKEKSWTYfOMvXoO4YE56cVaK23`. The website image lane is implemented
   and covered by live app smoke.
+
+## 2026-06-14 Goal-Mode Privacy Hardening
+
+- Current branch for the latest goal-mode pass:
+  `cleanup/onboarding-helper-crm-workspace-rabbi`.
+- The dirty local tree from the prior Rabbi task UI/helper cleanup was
+  preserved in a named stash before switching branches, then reapplied.
+- Local privacy fix is implemented but not deployed:
+  `/parent/login?onboard=accountability` stays public/onboarding-only even when
+  a parent session exists; `/student/login` no longer auto-opens from saved
+  `bnaStudentAccessCode`; non-student pages clear stale student codes; student
+  audience portal payloads omit parent contact fields.
+- Local verification passed:
+  `node --check server.js`,
+  `node --check public/js/bna-bot-widget.js`,
+  `node --check scripts/telegram-kimi-bridge.mjs`,
+  `node --check scripts/agent-fleet-supervisor.mjs`,
+  focused privacy tests, `npm test` 341/341, and browser smoke
+  `ops/playwright-smokes/2026-06-14-public-portal-privacy-fix/report.md`.
+- Deployment gate remains open: deploy bundle, run Railway doctor, run live app
+  smoke, and live-smoke public/parent/student privacy routes before marking
+  the item done.
+
+## 2026-06-14 Google Drive Preview Actions
+
+- Railway deployment `c4a3bc0f-a2d4-4e1a-b975-50ddd1eaf3e9` deployed the
+  Google Drive preview-only action buttons in Operations Settings > Google
+  Workspace.
+- Registered actions:
+  - `google_drive_find_file_preview`
+  - `google_drive_create_doc_preview`
+  - `google_drive_create_folder_preview`
+  - `google_drive_move_file_preview`
+- These actions are dry-run previews only. They do not read Drive metadata or
+  write Drive files, folders, or Docs.
+- Post-deploy checks passed:
+  - `npm run railway:doctor`
+  - `npm run app:smoke`:
+    `ops/live-smokes/2026-06-14T15-07-51-724Z-live-app-smoke.md`
+  - live browser smoke:
+    `ops/playwright-smokes/2026-06-14-google-drive-preview-live/report.md`
+- Live Drive adapters remain blocked until Drive scope policy, OAuth/test-user
+  connection, and explicit external-write confirmation are approved.
+
+## 2026-06-14 Provider Google Business Link Capture Action
+
+- Railway deployment `03c2c30c-7639-494c-8e05-20863386c054` deployed
+  `capture_provider_google_business_link`.
+- The action is approval-gated and manual-only: it can store provider Google
+  Business/Profile URLs and Place IDs for review, but it does not call the live
+  Google Business Profile API or perform external Google writes.
+- Telegram and the web assistant can route natural-language provider Google
+  Business/Profile/Maps/Place ID capture requests into the typed action.
+- Verification passed: syntax checks for `server.js`,
+  `src/lib/bna/telegram-action-router.js`,
+  `src/lib/actions/actions/operations.js`, and
+  `src/lib/actions/registry.js`; focused action/assistant/Google tests 44/44;
+  `npm test` 350/350; Railway doctor; live app smoke
+  `ops/live-smokes/2026-06-14T15-16-29-530Z-live-app-smoke.md`; and live
+  action catalog/API dry-run smoke
+  `ops/live-smokes/2026-06-14T15-19-19-000Z-provider-google-business-action-smoke.md`.
+- Live GBP API/feed sync remains blocked until provider opt-in,
+  `business.manage`, OAuth/test-user setup, and explicit approval are in place.
+
+## 2026-06-14 WAPI Phonebook Grouping Report Deployed
+
+- Railway deployment `bda4f5e4-7cdf-4f2c-b4a2-0d0daaeca225` deployed the
+  read-only WAPI phonebook grouping report.
+- Surfaces:
+  - CLI: `npm run wapi:phonebook-report`
+  - API: `/api/bna/wapi/phonebook-report`
+  - UI: Operations Communications > WhatsApp > Phonebook grouping
+- The report groups local Whapi contacts/chats/communications with first-party
+  leads, signups, students, provider profiles, service providers, and contacts.
+  It returns recommended types, confidence labels, review flags, aggregate
+  manual correction candidates, and no-send guardrails.
+- Nati Freeze/Fries defaults to `friend_non_lead` unless actual message content
+  shows school interest.
+- The report is dry-run/read-only: `dry_run: true`, `no_send: true`, and
+  `external_write_performed: false`. It does not write contact tags/stages or
+  send WhatsApp messages.
+- Verification passed: syntax checks, Operations inline parse, focused WAPI/CRM
+  tests 17/17, `npm test` 353/353, local smoke
+  `ops/playwright-smokes/2026-06-14-wapi-phonebook-local/report.md`, Railway
+  doctor, live app smoke
+  `ops/live-smokes/2026-06-14T15-40-45-848Z-live-app-smoke.md`, and live
+  WAPI phonebook smoke
+  `ops/playwright-smokes/2026-06-14-wapi-phonebook-live/report.md`.
+- Manual correction apply UI is deployed separately below. Remaining WAPI/CRM
+  work: phonebook-first conversation workspace and durable parent announcement
+  approval/readback.
+
+## 2026-06-14 Telegram Note-To-CRM Matcher Deployed
+
+- Railway deployment `73a812e2-572e-4231-a971-20aef4f52450` deployed the
+  Telegram note-to-CRM matcher.
+- Surfaces:
+  - shared parser/scorer: `src/lib/bna/telegram-note-to-crm.js`
+  - API: `POST /api/bna/contact-communications/match-note`
+  - Telegram commands: `/crm_note`, `/whatsapp_note`, `/wa_note`
+  - natural language: "that WhatsApp with X was about Y"
+- The matcher reads recent local WhatsApp/WAPI rows from
+  `bna_contact_communications`, scores name/phone/text matches, and creates a
+  local Telegram/internal CRM note only when the match is confident or the
+  communication id is explicit.
+- Dry-run and no-match calls return `dry_run: true`, `no_send: true`,
+  `external_write_performed: false`, and `local_write_performed: false`.
+  The flow never sends WhatsApp messages.
+- Verification passed: syntax checks, focused Telegram/WAPI tests 15/15,
+  final `npm test` 357/357, local smoke
+  `ops/live-smokes/2026-06-14T15-54-29-499Z-telegram-note-to-crm-local-smoke.md`,
+  Railway doctor, live app smoke
+  `ops/live-smokes/2026-06-14T15-56-27-842Z-live-app-smoke.md`, and live
+  endpoint dry-run smoke
+  `ops/live-smokes/2026-06-14T15-57-04-987Z-telegram-note-to-crm-live-smoke.md`.
+
+## 2026-06-14 WAPI Phonebook Correction Apply UI Deployed
+
+- Railway deployment `4c152697-dbd0-4dd7-8834-83b483999459` deployed the
+  follow-up WAPI phonebook manual correction apply UI.
+- Surfaces:
+  - local correction table: `bna_wapi_phonebook_corrections`
+  - API: `POST /api/bna/wapi/phonebook-corrections`
+  - UI: Operations Communications > WhatsApp > Phonebook grouping correction
+    buttons
+- The report overlays the latest local correction per `phonebook_key`, exposes
+  `applied_type`, `manual_correction_applied`, and correction notes, and keeps
+  already-corrected groups out of the manual correction candidate queue.
+- Operations now requests a dry-run CRM write preview first, shows the planned
+  local contact/lead tag writes, and only sends the final apply request after
+  the operator confirms.
+- Non-dry-run correction writes require `confirm: "APPLY_WAPI_CORRECTION"`.
+  Confirmed applies can update first-party `bna_contacts` tags/status and
+  linked `bna_parent_leads` tags/status/lead type. Student, signup, and
+  provider records are skipped by design.
+- Dry-runs return `dry_run: true`, `no_send: true`,
+  `external_write_performed: false`, and `local_write_performed: false`.
+  The correction route does not send WhatsApp messages, create broadcasts, or
+  perform external CRM writes.
+- Verification passed: syntax checks, focused WAPI tests 5/5, adjacent
+  WAPI/communications/action tests 33/33, full `npm test` 359/359, Railway
+  doctor, live app smoke
+  `ops/live-smokes/2026-06-14T16-22-20-061Z-live-app-smoke.md`, live endpoint
+  dry-run/confirmation-gate smoke
+  `ops/live-smokes/2026-06-14T16-24-46-381Z-wapi-phonebook-correction-live-smoke.md`,
+  and live browser smoke
+  `ops/playwright-smokes/2026-06-14-wapi-phonebook-correction-live/report.md`.
+
+## 2026-06-14 Parent Announcement Persistence Deployed
+
+- Railway deployment `e0f3b52d-b16c-4812-8221-3c4d1fbbc05e` deployed parent
+  announcement approved-draft persistence/readback.
+- Surfaces:
+  - API: `GET /api/bna/parent-announcements`
+  - API: `POST /api/bna/parent-announcements`
+  - UI: Operations Communications > Announcements
+- The implementation reuses `bna_weekly_updates` as the durable source of
+  truth, selecting one parent-visible update through
+  `selected_for_parent_portal`.
+- Non-dry-run approval requires `confirm: "APPROVE_PARENT_ANNOUNCEMENT"`.
+  Dry-runs return `dry_run: true`, `no_send: true`,
+  `external_write_performed: false`, and `local_write_performed: false`.
+- The route and UI do not send email, WhatsApp, or social posts.
+- Verification passed: syntax checks, Operations inline parse, focused
+  community/Operations/portal tests 38/38, full `npm test` 360/360, local
+  dry-run/API+UI smokes
+  `ops/live-smokes/2026-06-14T16-26-08-240Z-parent-announcement-local-smoke.md`
+  and
+  `ops/playwright-smokes/2026-06-14-parent-announcements-local/report.md`,
+  Railway doctor, live app smoke
+  `ops/live-smokes/2026-06-14T16-27-29-418Z-live-app-smoke.md`, live dry-run
+  smoke
+  `ops/live-smokes/2026-06-14T16-28-27-990Z-parent-announcement-live-smoke.md`,
+  and live UI smoke
+  `ops/playwright-smokes/2026-06-14-parent-announcements-live/report.md`.

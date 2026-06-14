@@ -35,22 +35,38 @@ resolve and open its linked student profile.
   Contacts loaded `/api/bna/students`, parent card showed `Student linked`,
   `Linked Records` showed `Student #34` with `Signup ID`, and `Open linked
   student` opened the student profile.
+- PASS current focused verification:
+  `node --test tests/operations-people-filter.test.js tests/operations-saas-crm-redesign.test.js tests/parent-student-portal-contract.test.js --test-reporter=spec`
+  (35/35)
+- PASS `node --check server.js`
+- PASS `node --check public/js/bna-bot-widget.js`
+- PASS `npm test` 350/350
+- PASS production `operations.html` readback confirmed the deployed bundle
+  contains `linkedStudentForSignup` and `Open linked student`.
 
-## Live Blocker
+## Deployment Gate
 
-Do not deploy from the current checkout without an explicit decision: the
-worktree contains a very large set of unrelated uncommitted changes and
-deleted/archived files. A Railway deploy from this checkout would likely ship
-unrelated local work.
+Completed.
 
-## Next Step
+- Current Railway deployment: `c4a3bc0f-a2d4-4e1a-b975-50ddd1eaf3e9`.
+- PASS `npm run railway:doctor`.
+- PASS `npm run app:smoke`:
+  `ops/live-smokes/2026-06-14T15-08-19-575Z-live-app-smoke.md`.
+- PASS PII-safe live Operations browser smoke:
+  `ops/playwright-smokes/2026-06-14-operations-parent-student-links-live/report.md`.
 
-Use a clean deploy scope or get explicit approval to deploy the full dirty
-worktree, then run Railway doctor and live smoke before marking the task done.
-Live smoke should verify:
+Live smoke verified:
 
 - Operations Contacts / Parents loads parent rows.
 - Opening a parent with a matching student shows the `Student linked` pill or
   linked detail.
 - `Linked Records` shows the student record and match source.
 - `Open linked student` opens the matching student profile.
+- The report records only internal IDs and match source; no parent/student
+  names, emails, phones, or screenshots were written.
+
+## Status
+
+Closed for this scoped parent-to-student link fix. Broader goal-mode follow-up
+work remains open for onboarding, helper action coverage, CRM/WAPI, provider
+login, automations/prompts, and deeper Rabbi/One Time implementation.

@@ -434,3 +434,57 @@ Remaining:
 - This creates the official structure and navigation. The next data task is to
   add real parent-household records, parent login management, and people
   population flows into the directory.
+
+## 2026-06-14 Public Assistant Lead-Magnet Follow-Up
+
+Status: deployed and live Playwright-smoked in Railway deployment
+`b0c87179-7801-4af3-8716-b0b87d64f299`.
+
+What changed:
+
+- Updated the shared public/signup assistant widget so it auto-opens after a
+  short delay, greets in the page language, then shows a second follow-up after
+  a typing-style pause unless the visitor closes it.
+- Kept the visible interface to one chat drawer with the history clock, close,
+  textarea, and send button. No settings, mode buttons, prompt cards, or
+  separate agent box render for regular visitors.
+- Added a safe public assistant context in `server.js` built from the BNA
+  self-governance/accountability model plus approved/published public content
+  outputs and class-session summaries after existing public-content sanitation.
+- Let regular users get hosted assistant answers with provider-neutral fallback
+  behavior. OpenAI/Kimi/provider names and failures stay out of user-facing
+  public replies.
+- Added public lead capture: contact/follow-up requests create a support ticket
+  and a general communication record for Shloimie.
+- Added public feedback capture: clear site/app/bot issues create a support
+  ticket plus a Codex review queue item; broader product suggestions become
+  Shloimie Decisions. Public users still do not get admin, CLI, deploy,
+  migration, or private-data access.
+- Traced the parent newsletter task: the parent newsletter hero infrastructure
+  was deployed on 2026-06-12, but it only renders when a `bna_weekly_updates`
+  row is `selected`/`published` and selected for the parent portal. The still
+  open task is selecting/entering approved weekly copy and pool/talking-head
+  media.
+
+Verification:
+
+- PASS `node --check server.js`
+- PASS `node --check public/js/bna-bot-widget.js`
+- PASS focused assistant/newsletter contracts
+- PASS `npm test` 337/337
+- PASS local Playwright public assistant smoke:
+  `ops/playwright-smokes/2026-06-14-public-assistant-local/report.md`
+- PASS Railway deployment `b0c87179-7801-4af3-8716-b0b87d64f299`
+- PASS `npm run railway:doctor`
+- PASS `npm run app:smoke`:
+  `ops/live-smokes/2026-06-14T13-07-54-304Z-live-app-smoke.md`
+- PASS live Playwright public assistant smoke:
+  `ops/playwright-smokes/2026-06-14-public-assistant-live/report.md`
+
+Remaining:
+
+- Deeper role-specific agentic coaching remains open: parent/student/provider
+  assistants should read and update scoped goal/interests/profile records, not
+  only assistant thread memory and public knowledge context.
+- Select or enter the approved BNA weekly newsletter copy/media row so the
+  already-built parent hero has content to render.
