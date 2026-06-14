@@ -1,6 +1,23 @@
 # BNA Current System State
 
-Last updated: 2026-06-12
+Last updated: 2026-06-13
+
+2026-06-13 production cleanup in progress:
+- GoHighLevel/LeadConnector/GHL is deprecated for active BNA runtime. Active
+  code should not use GHL env vars, MCP tools, API clients, dashboard controls,
+  Telegram actions, smoke checks, or schema assumptions. Legacy code is archived
+  under `docs/archive/legacy-ghl/` for reference only.
+- BNA Operations is the first-party source of truth for contacts, leads,
+  students, tasks, communications, learning communities, provider listings,
+  provider messages, parent/student/provider portals, and internal dialogue.
+- Buffer is the active social scheduler connector; WAPI/Whapi is the active
+  WhatsApp API path. Provider-owned delivery systems remain connectors until
+  explicitly integrated.
+- Public, parent, and Operations PWA manifests are split so public/parent
+  installs do not launch private Operations.
+- Local cleanup verification has begun. Completion remains blocked until the
+  current cleanup branch passes the full test suite, Railway doctor/live smoke,
+  and OpenAI smoke after the invalid OpenAI API key is repaired.
 
 2026-06-12 Registration/provider/student-security pass deployed:
 - Public signup now shows the four visible required documents: Handbook,

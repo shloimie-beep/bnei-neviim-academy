@@ -4,8 +4,10 @@ const test = require('node:test');
 
 const loginHtml = fs.readFileSync('public/operations-login.html', 'utf8');
 const publicIndexHtml = fs.readFileSync('public/index.html', 'utf8');
+const parentHtml = fs.readFileSync('public/parent.html', 'utf8');
 const operationsManifest = JSON.parse(fs.readFileSync('public/operations-manifest.json', 'utf8'));
 const publicManifest = JSON.parse(fs.readFileSync('public/manifest.json', 'utf8'));
+const parentManifest = JSON.parse(fs.readFileSync('public/parent-manifest.json', 'utf8'));
 const serviceWorker = fs.readFileSync('public/sw.js', 'utf8');
 const serverJs = fs.readFileSync('server.js', 'utf8');
 
@@ -13,16 +15,18 @@ test('Operations login installs and resumes as the Operations PWA', () => {
   assert.match(loginHtml, /<link rel="manifest" href="\/operations-manifest\.json">/);
   assert.equal(operationsManifest.id, '/operations');
   assert.equal(operationsManifest.start_url, '/operations?source=ops-pwa');
-  assert.equal(publicManifest.start_url, '/operations?source=pwa');
-  assert.match(serviceWorker, /bna-public-v8/);
+  assert.equal(operationsManifest.background_color, '#f8f5ee');
+  assert.match(serviceWorker, /bna-public-v9/);
 });
 
-test('installed public app opens Operations while browser homepage stays public', () => {
-  assert.match(publicIndexHtml, /function redirectStandaloneLaunchToOperations\(\)/);
-  assert.match(publicIndexHtml, /\(display-mode: standalone\)/);
-  assert.match(publicIndexHtml, /window\.navigator\.standalone === true/);
-  assert.match(publicIndexHtml, /window\.location\.replace\('\/operations\?source=pwa'\)/);
+test('public and parent installs do not open Operations', () => {
+  assert.equal(publicManifest.start_url, '/?source=public-pwa');
+  assert.equal(parentManifest.id, '/parent');
+  assert.equal(parentManifest.start_url, '/parent?source=parent-pwa');
+  assert.match(parentHtml, /<link rel="manifest" href="\/parent-manifest\.json">/);
+  assert.match(serviceWorker, /\/parent-manifest\.json/);
   assert.match(publicIndexHtml, /<title>Bnei Nevi'im Academy \| Torah Learning for Boys<\/title>/);
+  assert.doesNotMatch(publicIndexHtml, /redirectStandaloneLaunchToOperations|\/operations\?source=pwa/);
   assert.doesNotMatch(serverJs, /source === 'pwa'[\s\S]{0,120}res\.redirect\('\/'\)/);
 });
 

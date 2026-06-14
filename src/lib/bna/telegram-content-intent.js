@@ -38,7 +38,7 @@ function hasExplicitDraftEvidence(text, replyText = '') {
 
 function hasContentCommitToSchedulingIntent(text, replyText = '') {
   const combined = normalizedText(text, replyText);
-  return /\b(commit|commit it|committed|finalize|finalise|create facebook draft|create buffer draft|create ghl draft|send to buffer|send to ghl|push to buffer|push to ghl|push it to buffer|push it to ghl|ready to schedule|schedule it|schedule this|scheduler|buffer draft|ghl draft)\b/
+  return /\b(commit|commit it|committed|finalize|finalise|create facebook draft|create buffer draft|send to buffer|push to buffer|push it to buffer|ready to schedule|schedule it|schedule this|scheduler|buffer draft)\b/
     .test(combined);
 }
 

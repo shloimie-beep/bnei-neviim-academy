@@ -1,2 +1,0 @@
-GHL_PIT_TOKEN=pit-08830ae3-faed-432a-a02a-44c63b170a67
-GHL_LOCATION_ID=IIofSrquLHvNxc8zrpka

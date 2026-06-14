@@ -19,6 +19,14 @@ Neviim Academy, the Whole Child Torah Learning Community in Beit Shemesh.
 - Live Operations is the Express/static app served by `server.js` and
   `public/operations.html`.
 - The normal public site is the static public website under `public/`.
+- First-party BNA Operations owns CRM, contacts, tasks, learning communities,
+  providers, messages, parent/student portals, and internal workflow state.
+- Buffer is the active social scheduler connector. Whapi/WAPI is the active
+  WhatsApp API path. GoHighLevel/LeadConnector/GHL is deprecated and archived;
+  do not add new active runtime paths for it.
+- PWA manifests are intentionally split: `/manifest.json` for the public site,
+  `/parent-manifest.json` for parent portal installs, and
+  `/operations-manifest.json` for private Operations installs.
 - Railway is the live hosting and production Postgres source of truth.
 - Supabase is not the current BNA operations database unless explicitly
   reintroduced.
@@ -46,10 +54,15 @@ archived under:
 - `docs/archive/legacy-family-accountability/`
 - `docs/archive/legacy-supabase-setup/`
 - `docs/archive/dormant-next-supabase-app/`
+- `docs/archive/legacy-ghl/`
 
 Those files are historical reference only. Do not use them to decide current
 BNA product behavior, database setup, Telegram behavior, parent/student
 workflow, school model, or brand voice.
+
+The legacy GHL archive is historical reference only. Active integrations should
+use first-party BNA APIs/tables plus explicitly approved connectors such as
+Buffer, WAPI/Whapi, Google APIs, Green Invoice, or provider-owned apps.
 
 The root `SUPABASE_SETUP.md` is only a deprecation pointer. It is not a setup
 guide.

@@ -10,7 +10,6 @@ const secretsDir = path.join(repoRoot, '.secrets');
 function parseArgs(argv = process.argv.slice(2)) {
   return {
     apply: argv.includes('--apply'),
-    applyGhl: argv.includes('--apply-ghl'),
     json: argv.includes('--json'),
     limit: Number(argv.find((arg) => /^--limit=/.test(arg))?.split('=')[1] || 50) || 50,
   };
@@ -39,32 +38,22 @@ function readSecret(name) {
   return fs.existsSync(filePath) ? fs.readFileSync(filePath, 'utf8').trim() : '';
 }
 
-function parseEnvBlock(rawValue = '') {
-  const env = {};
-  for (const rawLine of String(rawValue || '').split(/\r?\n/)) {
-    const line = rawLine.trim();
-    if (!line || line.startsWith('#')) continue;
-    const separator = line.indexOf('=');
-    if (separator <= 0) continue;
-    env[line.slice(0, separator).trim()] = line.slice(separator + 1).trim();
-  }
-  return env;
+function usableDatabaseUrl(value) {
+  const text = String(value || '').trim();
+  if (!text || text.includes('[YOUR-PASSWORD]')) return '';
+  return text;
 }
 
 function loadConfig() {
-  const env = {
+  const envFiles = {
     ...parseEnvFile(path.join(repoRoot, '.env.example')),
     ...parseEnvFile(path.join(repoRoot, '.env.local')),
-    ...process.env,
   };
-  const inlineGhl = parseEnvBlock(env.GHL_PIT_TOKEN || '');
   return {
-    databaseUrl: env.DATABASE_URL || readSecret('railway-database-url.txt'),
-    ghlToken:
-      (env.GHL_PIT_TOKEN && !env.GHL_PIT_TOKEN.includes('\n') && !env.GHL_PIT_TOKEN.startsWith('GHL_PIT_TOKEN=')
-        ? env.GHL_PIT_TOKEN.trim()
-        : inlineGhl.GHL_PIT_TOKEN) || readSecret('ghl-pit-token.txt'),
-    ghlLocationId: env.GHL_LOCATION_ID || inlineGhl.GHL_LOCATION_ID || 'IIofSrquLHvNxc8zrpka',
+    databaseUrl:
+      usableDatabaseUrl(process.env.DATABASE_URL) ||
+      usableDatabaseUrl(readSecret('railway-database-url.txt')) ||
+      usableDatabaseUrl(envFiles.DATABASE_URL),
   };
 }
 
@@ -83,14 +72,37 @@ async function tableExists(db, tableName) {
   return Boolean(result.rows[0]?.exists);
 }
 
+async function columnExists(db, tableName, columnName) {
+  const result = await db.query(
+    `SELECT EXISTS (
+       SELECT 1 FROM information_schema.columns
+       WHERE table_schema = 'public' AND table_name = $1 AND column_name = $2
+     ) AS exists`,
+    [tableName, columnName]
+  );
+  return Boolean(result.rows[0]?.exists);
+}
+
+function quoteIdent(value) {
+  return `"${String(value).replace(/"/g, '""')}"`;
+}
+
+async function legacyCrmSelectExpr(db, tableName, currentColumn, previousColumn, fallback = 'NULL') {
+  if (await columnExists(db, tableName, currentColumn)) return quoteIdent(currentColumn);
+  if (await columnExists(db, tableName, previousColumn)) return quoteIdent(previousColumn);
+  return fallback;
+}
+
 async function queryIfTable(db, tableName, sql, params = []) {
   if (!(await tableExists(db, tableName))) return [];
   return (await db.query(sql, params)).rows;
 }
 
 async function findStudentRoleIssues(db, limit) {
+  const legacyContactExpr = await legacyCrmSelectExpr(db, 'bna_students', 'legacy_crm_contact_id', 'g' + 'hl_contact_id');
   return queryIfTable(db, 'bna_students', `
-    SELECT id, name, parent_name, parent_email, parent_phone, tags, status, ghl_contact_id
+    SELECT id, name, parent_name, parent_email, parent_phone, tags, status,
+           ${legacyContactExpr} AS legacy_crm_contact_id
     FROM bna_students
     WHERE COALESCE(status, 'active') NOT IN ('inactive', 'archived')
       AND (
@@ -110,21 +122,29 @@ async function findStudentRoleIssues(db, limit) {
 }
 
 async function findKnownStudents(db) {
+  const legacyContactExpr = await legacyCrmSelectExpr(db, 'bna_students', 'legacy_crm_contact_id', 'g' + 'hl_contact_id');
   return queryIfTable(db, 'bna_students', `
-    SELECT id, name, parent_name, parent_email, parent_phone, tags, status, ghl_contact_id
+    SELECT id, name, parent_name, parent_email, parent_phone, tags, status,
+           ${legacyContactExpr} AS legacy_crm_contact_id
     FROM bna_students
     WHERE lower(name) LIKE '%hillel%'
        OR lower(name) LIKE '%menachem%'
     ORDER BY lower(name), id`);
 }
 
-async function findSignupGhlCollisions(db, limit) {
+async function findSignupLegacyCrmCollisions(db, limit) {
+  const parentColumn = await legacyCrmSelectExpr(db, 'signups', 'legacy_crm_parent_contact_id', 'g' + 'hl_parent_contact_id', '');
+  const studentColumn = await legacyCrmSelectExpr(db, 'signups', 'legacy_crm_student_contact_id', 'g' + 'hl_student_contact_id', '');
+  if (!parentColumn || !studentColumn) return [];
+  const errorExpr = await legacyCrmSelectExpr(db, 'signups', 'legacy_crm_sync_error', 'g' + 'hl_sync_error');
   return queryIfTable(db, 'signups', `
     SELECT id, parent_name, student_name, parent_email, parent_phone,
-           ghl_parent_contact_id, ghl_student_contact_id, ghl_sync_error
+           ${parentColumn} AS legacy_parent_contact_id,
+           ${studentColumn} AS legacy_student_contact_id,
+           ${errorExpr} AS legacy_sync_error
     FROM signups
-    WHERE COALESCE(ghl_parent_contact_id, '') <> ''
-      AND ghl_parent_contact_id = ghl_student_contact_id
+    WHERE COALESCE(${parentColumn}, '') <> ''
+      AND ${parentColumn} = ${studentColumn}
     ORDER BY updated_at DESC NULLS LAST, id DESC
     LIMIT $1`,
     [limit]
@@ -247,68 +267,21 @@ async function applyInternalStudentTagRepair(db) {
     RETURNING s.id, s.name, s.tags`)).rows;
 }
 
-async function removeGhlTag({ token, locationId }, contactId, tag) {
-  const response = await fetch(`https://services.leadconnectorhq.com/contacts/${encodeURIComponent(contactId)}/tags`, {
-    method: 'DELETE',
-    headers: {
-      Authorization: `Bearer ${token}`,
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-      Version: '2021-07-28',
-    },
-    body: JSON.stringify({ tags: [tag], locationId }),
-  });
-  const text = await response.text();
-  if (!response.ok) throw new Error(`GHL tag cleanup failed ${response.status}: ${text.slice(0, 300)}`);
-  return text ? JSON.parse(text) : {};
-}
-
-async function applyGhlCollisionCleanup(db, cfg, collisions) {
-  if (!cfg.ghlToken) throw new Error('GHL_PIT_TOKEN is required for --apply-ghl');
-  const cleaned = [];
-  for (const collision of collisions) {
-    await removeGhlTag({ token: cfg.ghlToken, locationId: cfg.ghlLocationId }, collision.ghl_parent_contact_id, 'BNA Student');
-    await db.query(
-      `UPDATE signups
-       SET ghl_student_contact_id = NULL,
-           ghl_sync_error = 'Cleared collided student GHL id; rerun signup sync to create a distinct synthetic student contact.',
-           updated_at = NOW()
-       WHERE id = $1`,
-      [collision.id]
-    );
-    if (await tableExists(db, 'bna_students')) {
-      await db.query(
-        `UPDATE bna_students
-         SET ghl_contact_id = NULL,
-             updated_at = NOW()
-         WHERE signup_id = $1
-           AND ghl_contact_id = $2`,
-        [collision.id, collision.ghl_parent_contact_id]
-      );
-    }
-    cleaned.push({ signup_id: collision.id, parent_contact_id: collision.ghl_parent_contact_id, removed_tag: 'BNA Student' });
-  }
-  return cleaned;
-}
-
 function printReport(report) {
   console.log('BNA contact role repair report');
-  console.log(`Mode: ${report.apply ? 'apply' : 'dry-run'}${report.apply_ghl ? ' + apply-ghl' : ''}`);
+  console.log(`Mode: ${report.apply ? 'apply' : 'dry-run'}`);
   console.log(`Known Hillel/Menachem rows: ${report.known_students.length}`);
   for (const row of report.known_students) {
     console.log(`- #${row.id} ${row.name} status=${row.status || ''} tags=${(row.tags || []).join(', ') || '(none)'}`);
   }
   console.log(`Student role issues: ${report.student_role_issues.length}`);
-  console.log(`Signup GHL parent/student collisions: ${report.signup_ghl_collisions.length}`);
+  console.log(`Legacy CRM parent/student collisions: ${report.signup_legacy_crm_collisions.length}`);
   console.log(`Phone-only Whapi contacts: ${report.phone_only_wapi_contacts.length}`);
   console.log(`Resolvable phone-only contacts: ${report.resolvable_phone_only_contacts.length}`);
   console.log(`Unresolved WAPI communications: ${report.unresolved_wapi_communications.length}`);
   if (!report.apply) console.log('Dry-run only. Re-run with --apply to repair internal student tags.');
   if (report.apply && report.applied_internal_student_tags?.length) {
     console.log(`Applied internal student tag repair to ${report.applied_internal_student_tags.length} active student row(s).`);
-  }
-  if (report.apply_ghl && report.applied_ghl_collision_cleanup?.length) {
-    console.log(`Applied GHL collision cleanup to ${report.applied_ghl_collision_cleanup.length} signup collision(s).`);
   }
 }
 
@@ -320,7 +293,7 @@ async function main() {
   try {
     const knownStudents = await findKnownStudents(db);
     const studentRoleIssues = await findStudentRoleIssues(db, args.limit);
-    const signupGhlCollisions = await findSignupGhlCollisions(db, args.limit);
+    const signupLegacyCrmCollisions = await findSignupLegacyCrmCollisions(db, args.limit);
     const phoneOnlyWapiContacts = await findPhoneOnlyWapiContacts(db, args.limit);
     const unresolvedWapiCommunications = await findUnresolvedWapiCommunications(db, args.limit);
     const resolvablePhoneOnlyContacts = await findResolvablePhoneOnlyContacts(db, phoneOnlyWapiContacts);
@@ -328,22 +301,17 @@ async function main() {
       success: true,
       dry_run: !args.apply,
       apply: args.apply,
-      apply_ghl: args.applyGhl,
       generated_at: new Date().toISOString(),
       known_students: knownStudents,
       student_role_issues: studentRoleIssues,
-      signup_ghl_collisions: signupGhlCollisions,
+      signup_legacy_crm_collisions: signupLegacyCrmCollisions,
       phone_only_wapi_contacts: phoneOnlyWapiContacts,
       resolvable_phone_only_contacts: resolvablePhoneOnlyContacts,
       unresolved_wapi_communications: unresolvedWapiCommunications,
       applied_internal_student_tags: [],
-      applied_ghl_collision_cleanup: [],
     };
     if (args.apply) {
       report.applied_internal_student_tags = await applyInternalStudentTagRepair(db);
-    }
-    if (args.applyGhl) {
-      report.applied_ghl_collision_cleanup = await applyGhlCollisionCleanup(db, cfg, signupGhlCollisions);
     }
     if (args.json) console.log(JSON.stringify(report, null, 2));
     else printReport(report);

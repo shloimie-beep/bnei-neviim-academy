@@ -14754,3 +14754,100 @@ Remaining:
 - source: codex_chat
 - worker: Codex
 - handoff: `tasks-pending/2026-06-13-registration-toolbar-permission-live-deploy.md`
+
+## 2026-06-14T00:08:27+03:00 - Operations parent-to-student links locally verified
+
+Updated Operations Contacts so parent records can reliably resolve and open the
+linked student profile. Contacts now loads the student roster separately from
+the heavier student workspace data, parent-to-student matching prefers
+`signup_id` then parent email plus student name, parent cards show a `Student
+linked` pill when matched, and parent detail has a `Linked Records` section plus
+`Open linked student` actions.
+
+Verification:
+- PASS `node --test tests/operations-people-filter.test.js` (5/5)
+- PASS `node --check server.js`
+- PASS `git diff --check -- public\operations.html tests\operations-people-filter.test.js`
+- PASS mocked Playwright smoke for BNA Operations Contacts parent detail:
+  Contacts loaded `/api/bna/students`, the parent card showed `Student linked`,
+  `Linked Records` showed `Student #34` with `Signup ID`, and `Open linked
+  student` opened the student profile.
+
+Remaining:
+- Not deployed. Live deploy, Railway doctor, and live Operations smoke are
+  blocked until a safe deploy scope is chosen because the current checkout has a
+  large unrelated dirty worktree.
+
+- source: codex_chat
+- worker: Codex
+- handoff: `tasks-pending/2026-06-14-operations-parent-student-links-live-deploy.md`
+
+## 2026-06-13T23:55:00+03:00 - Signup credit payment-link email fix locally verified and manual resend completed
+
+Fixed the signup confirmation email path locally so credit/Green Invoice signups include the configured `PAYMENT_LINK` in the email body and send confirmation to every parent email supplied on the form. The sender now collects Parent 1, submitted Parent 2, and the saved `Parent 2 Email:` notes fallback, sends/logs each recipient separately, and records whether the payment link was included.
+
+Manual production action:
+- Inspected latest signup #12: credit payment selected, Parent 2 email present, previous signup confirmation logged only one recipient.
+- Sent the credit payment link manually to both recorded parent emails for signup #12.
+- Sent a second readable English resend after the first Hebrew-script one-off logged with a garbled subject through PowerShell encoding.
+- Read back `bna_email_log`: two `credit_payment_link_resend_readable` entries are `sent` with subject `Bnei Neviim Academy credit payment link`, zero failures.
+
+Verification:
+- PASS `node --check server.js`
+- PASS `node --test tests/parent-student-portal-contract.test.js`
+- PASS `node --test tests/signup-permissions-mobile-homepage.test.js`
+- PASS encoding readback: `signupConfirmationEmail` contains real Hebrew codepoints, no BOM, one trailing newline.
+- BLOCKED latest `npm test`: unrelated staged legacy-GHL archive removed `src/lib/ghl/bna.ts` while `tests/contact-role-repair.test.js` still reads it.
+
+Remaining:
+- Future-signup code is not deployed. Live deploy, Railway doctor, live credit-signup/email-log smoke, and a clean full-suite rerun are blocked by the very large unrelated dirty worktree until a safe deploy scope is chosen.
+
+- source: codex_chat
+- worker: Codex
+- handoff: `tasks-pending/2026-06-13-signup-credit-link-email-live-deploy.md`
+
+## 2026-06-14T00:00:00+03:00 - Signup parent-name readability locally verified
+
+Updated the English and Hebrew signup forms so Parent 1/Parent 2 section headings, parent-name labels, and typed parent-name text render explicitly in black.
+
+Verification:
+- PASS `node --test tests/signup-permissions-mobile-homepage.test.js` (6/6)
+- PASS `git diff --check` for touched signup files/test
+
+Remaining:
+- Not deployed. This follows the same live blocker as the registration toolbar bundle: the current checkout has a large unrelated dirty worktree, so Railway deploy/doctor/live smoke need a safe deploy scope first.
+
+- source: codex_chat
+- worker: Codex
+- handoff: `tasks-pending/2026-06-13-registration-toolbar-permission-live-deploy.md`
+
+## 2026-06-14T00:33:00+03:00 - BNA production cleanup locally verified, release blocked by OpenAI key
+
+Executed the master cleanup prompt from
+`C:\Users\User\Downloads\BNA_Codex_Master_Cleanup_Community_No_GHL_Prompt_2026-06-13.md`.
+Preserved the worktree with safety branch `safety/pre-cleanup-20260613-2343`
+and safety commit `70c2388`, then moved legacy GHL scripts/library code into
+`docs/archive/legacy-ghl/`, removed active GHL/LeadConnector runtime paths,
+removed the GHL MCP/env surface, added Buffer-only social helper code, renamed
+active compatibility fields to `legacy_crm_*`, and split public/parent/Operations
+PWA manifests.
+
+Verification:
+- PASS `npm test` (306/306)
+- PASS active provider scan for GHL/GoHighLevel/LeadConnector/`ghl_` terms in
+  active code paths
+- PASS `npm run railway:doctor` for `skillful-motivation / production`
+- PASS `npm run app:smoke`
+- PASS `node scripts/repair-bna-contact-roles.mjs --json --limit=25`
+  after fixing DB source precedence away from stale `.env.local` Supabase config
+- FAIL `npm run openai:smoke`: OpenAI API returned `401 invalid_api_key`
+
+Remaining:
+- Not deployed from this cleanup branch. Fix the OpenAI API key outside chat,
+  rerun OpenAI smoke, deploy, rerun Railway doctor/live app smoke, then report
+  completion or the remaining blocker back through Telegram before marking done.
+
+- source: codex_chat
+- worker: Codex
+- audit: `ops/audits/2026-06-14T00-33-00-bna-production-cleanup-audit.md`
+- handoff: `tasks-pending/2026-06-14-bna-production-community-no-ghl.md`

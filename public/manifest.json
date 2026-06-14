@@ -1,9 +1,9 @@
 {
   "name": "Bnei Neviim Academy",
   "short_name": "BNA",
-  "description": "Bnei Neviim Academy Torah learning program and operations dashboard.",
+  "description": "Bnei Neviim Academy Torah learning program.",
   "id": "/",
-  "start_url": "/operations?source=pwa",
+  "start_url": "/?source=public-pwa",
   "scope": "/",
   "display": "standalone",
   "background_color": "#f8f5ee",

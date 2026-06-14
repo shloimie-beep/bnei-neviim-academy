@@ -1203,7 +1203,7 @@
         .badge-category-content { background: #0f766e; color: white; }
         .badge-category-technology { background: #4f46e5; color: white; }
         .badge-category-accounting { background: #be123c; color: white; }
-        .badge-category-ghl_setup { background: #9333ea; color: white; }
+        .badge-category-community_setup { background: #9333ea; color: white; }
         .badge-category-community { background: #16a34a; color: white; }
         .badge-category-general { background: #64748b; color: white; }
         .badge-category-torah_class_prep { background: #ca8a04; color: #0f172a; }
@@ -5990,6 +5990,7 @@
 
         const CONTACT_DETAIL_SECTIONS = [
             { id: 'overview', label: 'Overview' },
+            { id: 'linked', label: 'Linked Records' },
             { id: 'contact', label: 'Contact Actions' },
             { id: 'payment', label: 'Payment' },
             { id: 'tags', label: 'Tags' },
@@ -6289,7 +6290,7 @@
             { id: 'content', label: 'Content', color: '#0f766e' },
             { id: 'technology', label: 'Technology', color: '#4f46e5' },
             { id: 'accounting', label: 'Accounting', color: '#be123c' },
-            { id: 'ghl_setup', label: 'GHL Setup', color: '#9333ea' },
+            { id: 'community_setup', label: 'Community Setup', color: '#9333ea' },
             { id: 'community', label: 'Community', color: '#16a34a' },
             { id: 'general', label: 'General', color: '#64748b' },
             { id: 'torah_class_prep', label: 'Torah Class Prep', color: '#ca8a04' },
@@ -6359,7 +6360,7 @@
             { id: 'whatsapp_update', label: 'WhatsApp', action: 'Make WhatsApp', hint: 'Short parent-ready copy with clear bullets.' },
             { id: 'facebook_post', label: 'Facebook', action: 'Make Facebook Post', hint: 'Warmer public post. Approval creates a Buffer draft.' },
             { id: 'weekly_newsletter', label: 'Newsletter', action: 'Make Newsletter', hint: 'Can use one item or a selected weekly bundle.' },
-            { id: 'blog_draft', label: 'Website Blog', action: 'Make Website Blog', hint: 'First-party website article. Approval publishes to the BNA website, not GHL.' },
+            { id: 'blog_draft', label: 'Website Blog', action: 'Make Website Blog', hint: 'First-party website article. Approval publishes to the BNA website, not legacy CRM.' },
             { id: 'linkedin_post', label: 'LinkedIn', action: 'Make LinkedIn Post', hint: 'Professional education-facing reflection. Approval creates a Buffer draft.' },
             { id: 'youtube_description', label: 'YouTube', action: 'Make YouTube Description', hint: 'Title/description style copy for upload notes. Approval creates a Buffer draft.' },
             { id: 'google_business_post', label: 'Google Business', action: 'Make Google Post', hint: 'Concise public Google Business Profile copy.' },
@@ -8256,7 +8257,7 @@
                         <div class="task-inline-grid">
                             ${renderTaskWorkflowList(workflow.required_fields_label || 'Required Lead Fields', workflow.required_fields)}
                             ${renderTaskWorkflowList('Membership Intent', workflow.membership_intent_options)}
-                            ${renderTaskWorkflowList('Proposed GHL Tags', workflow.proposed_tags)}
+                            ${renderTaskWorkflowList('Proposed Community Tags', workflow.proposed_tags)}
                             ${renderTaskWorkflowList('Market Versions', workflow.market_versions)}
                             ${renderTaskWorkflowList('Routing Rules', workflow.routing_rules)}
                             ${renderTaskWorkflowList('Tracking Fields', workflow.tracking_fields)}
@@ -8580,6 +8581,9 @@
             }
             const studentName = normalizePersonKey(signup.student_name);
             if (!studentName) return null;
+            const parentEmail = normalizeEmailKey(signup.parent_email);
+            const byParentAndName = students.find(student => parentEmail && normalizeEmailKey(student.parent_email) === parentEmail && normalizePersonKey(student.name) === studentName);
+            if (byParentAndName) return byParentAndName;
             return students.find(student => normalizePersonKey(student.name) === studentName) || null;
         }
 
@@ -8867,6 +8871,7 @@
             const lastTouch = signup.last_communication_at || communications[0]?.occurred_at || communications[0]?.created_at || null;
             const lastTouchText = lastTouch ? `Last touch ${formatDateTime(lastTouch)}` : 'No communication yet';
             const latestWhatsapp = latestWhatsappCommunication(communications);
+            const linkedStudent = linkedStudentForSignup(signup);
             return `
                 <article class="contact-card ${isActive ? 'active' : ''}">
                     <button class="contact-card-summary" type="button" onclick="selectContact(${attrJson(key)})" aria-expanded="${isActive ? 'true' : 'false'}">
@@ -8886,6 +8891,7 @@
                                 ${contactTags(signup).slice(0, 3).map(tag => `<span class="tag ${escapeHtml(cssToken(tag))}">${escapeHtml(tag)}</span>`).join('') || '<span class="tag">No tags</span>'}
                             </div>
                             <span class="contact-detail-note">${escapeHtml(lastTouchText)} - ${communicationCount} note${communicationCount === 1 ? '' : 's'}</span>
+                            ${linkedStudent ? '<span class="page-status-pill">Student linked</span>' : ''}
                             ${missingContact ? '<span class="page-status-pill">Missing contact</span>' : ''}
                             ${latestWhatsapp ? renderCommunicationDeliveryPill(latestWhatsapp) : ''}
                         </div>
@@ -8941,17 +8947,22 @@
                 signup.notes ? `Notes: ${signup.notes}` : ''
             ].filter(Boolean);
             const linkedStudent = linkedStudentForSignup(signup);
+            const linkedStudentName = linkedStudent?.name || signup.student_name || 'Not linked';
+            const linkedStudentMatch = linkedStudent
+                ? (Number(linkedStudent.signup_id) === Number(signup.id) ? 'Signup ID' : 'Parent email / student name')
+                : 'No student profile linked';
             const timeline = [
                 signup.created_at ? `Signup created ${formatDateTime(signup.created_at)}` : '',
                 signup.updated_at ? `Last updated ${formatDateTime(signup.updated_at)}` : '',
                 paidDate ? `Payment recorded ${formatDateTime(paidDate)}` : '',
-                signup.ghl_synced_at ? `GHL synced ${formatDateTime(signup.ghl_synced_at)}` : '',
+                signup.legacy_crm_synced_at ? `Legacy CRM imported ${formatDateTime(signup.legacy_crm_synced_at)}` : '',
                 signup.confirmation_email_sent_at ? `Confirmation email sent ${formatDateTime(signup.confirmation_email_sent_at)}` : ''
             ].filter(Boolean);
             const tagPicker = renderContactTagPicker(signup);
             const activeSection = CONTACT_DETAIL_SECTIONS.some(section => section.id === contactDetailSection) ? contactDetailSection : 'overview';
             const detailSections = CONTACT_DETAIL_SECTIONS.map(section => {
                 const count = ({
+                    linked: linkedStudent || signup.student_name ? 1 : 0,
                     tags: contactTags(signup).length,
                     application: applicationNotes.length,
                     communication: communications.length,
@@ -8989,12 +9000,28 @@
                                 <div class="contact-detail-grid">
                                     ${renderContactDetailItem('Parent Email', signup.parent_email || 'Not entered')}
                                     ${renderContactDetailItem('Parent Phone', signup.parent_phone || 'Not entered')}
-                                    ${renderContactDetailItem('Linked Student', signup.student_name || 'Not entered')}
+                                    ${renderContactDetailItem('Linked Student', linkedStudentName)}
                                     ${renderContactDetailItem('Form Source', signup.form_source || signup.source || 'Signup / manual intake')}
                                     ${renderContactDetailItem('Language', signup.language || signup.preferred_language || 'Not set')}
                                     ${renderContactDetailItem('Signup Status', signup.status || 'new')}
                                     ${renderContactDetailItem('Last Touch', lastTouch ? formatDateTime(lastTouch) : 'No communication yet')}
                                     ${renderContactDetailItem('Created', signup.created_at ? formatDate(signup.created_at) : 'Unknown')}
+                                </div>
+                                <div class="task-actions" style="margin-top:14px;">
+                                    ${linkedStudent ? `<button class="task-action primary" onclick="selectStudentAndOpen(${Number(linkedStudent.id)}, 'profile')">Open linked student</button>` : '<button class="task-action" disabled>No student profile linked</button>'}
+                                </div>
+                            ` : ''}
+                            ${activeSection === 'linked' ? `
+                                <div class="contact-detail-grid">
+                                    ${renderContactDetailItem('Student', linkedStudentName)}
+                                    ${renderContactDetailItem('Student Record', linkedStudent ? `Student #${linkedStudent.id}` : 'No student profile linked')}
+                                    ${renderContactDetailItem('Signup', signup.id ? `Signup #${signup.id}` : 'No signup id')}
+                                    ${renderContactDetailItem('Parent', signup.parent_name || linkedStudent?.parent_name || 'Unknown parent')}
+                                    ${renderContactDetailItem('Match Source', linkedStudentMatch)}
+                                </div>
+                                <div class="task-actions" style="margin-top:14px;">
+                                    ${linkedStudent ? `<button class="task-action primary" onclick="selectStudentAndOpen(${Number(linkedStudent.id)}, 'profile')">Open linked student</button>` : '<button class="task-action" disabled>No student profile linked</button>'}
+                                    <button class="task-action" onclick="openSignupContact(${attrJson(contactKey(signup))})">Open parent/contact detail</button>
                                 </div>
                             ` : ''}
                             ${activeSection === 'contact' ? `
@@ -9558,8 +9585,8 @@
                                     ${renderContactDetailItem('Other Phones', otherPhones.length ? otherPhones.join(', ') : 'None')}
                                     ${renderContactDetailItem('Email', lead.parent_email || 'Not entered')}
                                     ${renderContactDetailItem('Latest WhatsApp', latestWhatsapp ? communicationDeliveryText(latestWhatsapp) : 'No WhatsApp log yet')}
-                                    ${renderContactDetailItem('GHL Contact', lead.ghl_contact_id || 'Not linked')}
-                                    ${renderContactDetailItem('GHL Conversation', lead.ghl_conversation_id || 'Not linked')}
+                                    ${renderContactDetailItem('Legacy CRM Contact', lead.legacy_crm_contact_id || 'Not linked')}
+                                    ${renderContactDetailItem('Legacy CRM Conversation', lead.legacy_crm_conversation_id || 'Not linked')}
                                 </div>
                                 <div class="task-actions">
                                     ${phoneDigits ? `<a class="task-action primary" href="https://wa.me/${escapeHtml(phoneDigits)}" target="_blank" rel="noopener">WhatsApp</a>` : '<button class="task-action" disabled>No phone</button>'}
@@ -10950,7 +10977,7 @@
             if (section === 'calendar') return renderCalendarPolicySettings();
             if (section === 'google_calendar') return renderGoogleCalendarSettings();
             if (section === 'google_classroom') return renderGoogleClassroomSettings();
-            if (section === 'integrations') return renderConnectorSettingsSection(['email_identity', 'whatsapp', 'social', 'google_calendar', 'google_classroom', 'payment', 'video_library'], 'Integrations', 'External systems are connectors only; no GHL dependency is required for BNA Operations.');
+            if (section === 'integrations') return renderConnectorSettingsSection(['email_identity', 'whatsapp', 'social', 'google_calendar', 'google_classroom', 'payment', 'video_library'], 'Integrations', 'External systems are connectors only; no legacy CRM dependency is required for BNA Operations.');
 
             const rows = basicSections[section] || basicSections.workspace;
             return `
@@ -15918,7 +15945,7 @@
             const text = String(value || '').toLowerCase();
             if (!text.trim()) return false;
             return (
-                /\b(codex|kimi|kimmy|dashboard|telegram|bot|bridge|railway|ghl|green invoice|webhook|parser|routing|database|deploy|task|tasks|my task|for me|app build|coding|content card|content section cleanup)\b/.test(text) ||
+                /\b(codex|kimi|kimmy|dashboard|telegram|bot|bridge|railway|legacy crm|green invoice|webhook|parser|routing|database|deploy|task|tasks|my task|for me|app build|coding|content card|content section cleanup)\b/.test(text) ||
                 /\b(accountability|private meeting|check-?in|follow-?up|attendance|engagement|goals?|student goal|student goals|personal goal|personal goals|fitness|exercise|workout|diet goal|work goal|job goal|torah goal|learning goal|group goal|daily completion|progress percent|percentage|points?|camping trip|student ownership|daily follow-?through|work responsibility)\b/.test(text)
             );
         }
@@ -16422,7 +16449,7 @@
             ].filter(Boolean).join(' ').toLowerCase();
             const isOneTime = contentProject(job) === 'mishna'
                 || /\b(one time|rabbi elie|elie scheller|elie sheller|scheller|sheller|mishna|mishnah)\b/.test(haystack);
-            const isMeeting = /\b(meeting|strategy|software|ghl|go high level|google classroom|workspace|parent login|student login|revenue|ownership|vimeo|analytics|zoom|voice\s*\d{6})\b/.test(haystack)
+            const isMeeting = /\b(meeting|strategy|software|legacy crm|google classroom|workspace|parent login|student login|revenue|ownership|vimeo|analytics|zoom|voice\s*\d{6})\b/.test(haystack)
                 || contentMediaType(job) === 'audio';
             return Boolean(isOneTime && isMeeting);
         }
@@ -17060,7 +17087,7 @@
                     'technology',
                     'admin',
                     'accounting',
-                    'ghl_setup',
+                    'community_setup',
                     'community',
                     'general',
                     'torah_class_prep',
@@ -17250,6 +17277,7 @@
                 const needsSignupData = needsContactData || activeView === 'students' || activeView === 'accounting' || (activeView === 'settings' && activeSettingsSection === 'parent_portal');
                 const needsAccountingData = needsDashboardData || ['accounting', 'api_usage'].includes(activeView) || (activeView === 'settings' && ['billing', 'api_limits'].includes(activeSettingsSection));
                 const needsContentData = needsDashboardData || ['content', 'service_providers', 'calendar'].includes(activeView);
+                const needsStudentRosterData = needsDashboardData || ['students', 'contacts', 'api_usage', 'calendar'].includes(activeView) || (activeView === 'settings' && ['parent_portal', 'student_portal'].includes(activeSettingsSection));
                 const needsStudentData = needsDashboardData || ['students', 'api_usage', 'calendar'].includes(activeView) || (activeView === 'settings' && activeSettingsSection === 'student_portal');
                 const needsProviderData = needsDashboardData || ['service_providers', 'contacts', 'communications', 'api_usage', 'pipelines'].includes(activeView) || (activeView === 'settings' && ['provider_index', 'provider_portal', 'provider_plans', 'provider_entitlements', 'provider_onboarding', 'commercial_models', 'payment_links', 'external_apps'].includes(activeSettingsSection));
                 const needsSupportData = needsDashboardData || ['admin', 'communications', 'api_usage', 'internal_dialogue', 'pipelines'].includes(activeView) || (activeView === 'settings' && ['automations', 'api_limits', 'bot_permissions'].includes(activeSettingsSection));
@@ -17275,7 +17303,7 @@
                     needsContentData ? api.getProjectMeetings({ project: 'one_time_mishnah_class' }) : Promise.resolve({ meetings: [] }),
                     needsContentData ? api.getContentPrompts() : Promise.resolve({ prompts: [] }),
                     needsContentData ? api.getContentBundles() : Promise.resolve({ bundles: [] }),
-                    needsStudentData ? api.getStudents() : Promise.resolve({ students: [] }),
+                    needsStudentRosterData ? api.getStudents() : Promise.resolve({ students: [] }),
                     needsStudentData ? api.getAssignments() : Promise.resolve({ assignments: [] }),
                     needsStudentData ? api.getAssignmentPrompts() : Promise.resolve({ prompts: [] }),
                     needsStudentData ? api.getDevices() : Promise.resolve({ devices: [] }),

@@ -86,7 +86,7 @@ test('project backfill does not rewrite explicit BNA source-sheet tasks', () => 
   assert.match(block, /project_id IS NULL\s+AND \(/);
   assert.doesNotMatch(block, /category IN \('torah_class_prep', 'source_sheets'/);
   assert.ok(
-    block.indexOf("category IN ('torah_class_prep', 'shiur_ideas', 'ghl_setup', 'community')") <
+    block.indexOf("category IN ('torah_class_prep', 'shiur_ideas', 'community_setup', 'community')") <
       block.lastIndexOf('WHERE project_id IS NULL'),
     'One Time backfill should run before the default BNA backfill'
   );
@@ -201,7 +201,7 @@ test('WhatsApp parser cleanup rambles become Codex operations tasks', () => {
   assert.equal(candidates[0].assigned_to, 'Codex');
 });
 
-test('decision lead-in fragments are dropped while the real GHL decision is kept', () => {
+test('decision lead-in fragments are dropped while the real legacy CRM decision is kept', () => {
   const { parseRambleIntoTaskCandidates } = loadServerTaskRouting();
   const text = [
     "How hard is it to actually build like a classroom module that just looks just like Google isn't that like easy",
@@ -209,12 +209,12 @@ test('decision lead-in fragments are dropped while the real GHL decision is kept
     "but I'm guessing it just wasn't smoke tested so just make sure that Mark this down also that everything is going to play right you know tested",
     'that the whole UI is like screenshots and we are really looking into it so everything goes nicely so everything loads nicely if we can make everything internal that would be best',
     'another thing that I need you to put into I guess a like a decision',
-    "I need to make is regarding the email oh no now we're going to be using ghl I'm just really need a scope out whether ghl is still necessary",
+    "I need to make is regarding the email oh no now we're going to be using legacy CRM I'm just really need a scope out whether legacy CRM is still necessary",
     'and we could just do every module kind of separately on our own like can we just get some sort of classroom',
     'is there like some public GitHub for like a classroom set up',
-    'if we could just do everything with API access then it make more sense than actually just using ghl',
+    'if we could just do everything with API access then it make more sense than actually just using legacy CRM',
     'if we could just have different moving Parts by us either building them out from files and GitHub or from signing up for separate pieces',
-    'that would be maybe more worth it than using ghl if we have more ability to do Integrations',
+    'that would be maybe more worth it than using legacy CRM if we have more ability to do Integrations',
     'so that would be like a decision at a brainstorm you need to make',
   ].join(' ');
 
@@ -225,11 +225,11 @@ test('decision lead-in fragments are dropped while the real GHL decision is kept
     false
   );
 
-  const ghlDecision = candidates.find((candidate) => /GHL/i.test(candidate.title));
-  assert.ok(ghlDecision, 'the GHL decision should still be captured');
-  assert.equal(ghlDecision.title, 'Decide whether to keep using GHL');
+  const ghlDecision = candidates.find((candidate) => /legacy CRM/i.test(candidate.title));
+  assert.ok(ghlDecision, 'the legacy CRM decision should still be captured');
+  assert.equal(ghlDecision.title, 'Decide whether to keep using legacy CRM');
   assert.equal(ghlDecision.stage, 'needs_decision');
   assert.equal(ghlDecision.decision_required, true);
   assert.equal(ghlDecision.assigned_to, 'Shloimie');
-  assert.equal(ghlDecision.category, 'ghl_setup');
+  assert.equal(ghlDecision.category, 'community_setup');
 });

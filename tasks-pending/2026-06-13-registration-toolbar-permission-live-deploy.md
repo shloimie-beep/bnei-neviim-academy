@@ -22,6 +22,7 @@ Ship the locally verified registration-page toolbar and parent-permission notice
 - Left `public/documents/bnei_neviim_registration_documents_bilingual_codex.md` unchanged because the waiver already states parent responsibility for pickup/drop-off, travel, restrictions, and safety instructions.
 - Updated internal signup notes in `server.js` from `pickup responsibility acknowledged` to `parent responsibility notice shown`.
 - Updated `tests/signup-permissions-mobile-homepage.test.js`.
+- 2026-06-14 follow-up: made Parent 1/Parent 2 section headings, parent-name labels, and parent-name input text explicitly black on English and Hebrew signup forms for readability.
 
 ## Verification
 
@@ -35,6 +36,8 @@ Ship the locally verified registration-page toolbar and parent-permission notice
   - Hebrew signup mobile 390x844: hamburger button visible, menu opens with dropdown links.
   - Hebrew registration document page: shared nav visible, back link points to `/signup-he.html`, document content loads, signature section visible.
   - Hebrew thank-you page: shared nav visible and Hebrew copy renders.
+- PASS 2026-06-14 focused signup test after parent-name black readability follow-up:
+  `node --test tests/signup-permissions-mobile-homepage.test.js` (6/6)
 
 ## Live Blocker
 
@@ -42,4 +45,4 @@ Do not deploy from the current checkout without an explicit decision: the worktr
 
 ## Next Step
 
-Use a clean deploy scope or get explicit approval to deploy the full dirty worktree, then run Railway doctor and live smoke before marking the task done.
+Use a clean deploy scope or get explicit approval to deploy the full dirty worktree, then run Railway doctor and live smoke before marking the task done. Include a visual/signup smoke confirming the Parent 1/Parent 2 names are black/readable.

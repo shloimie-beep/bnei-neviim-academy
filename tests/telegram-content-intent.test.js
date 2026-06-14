@@ -219,10 +219,10 @@ test('content commit to scheduler is not treated as public publish now', () => {
   assert.equal(isHandlerBlocked(plan, 'contentApproval'), false);
 });
 
-test('legacy GHL scheduler wording still maps to scheduler commit intent', () => {
-  const text = 'Create a GHL draft for this Facebook post.';
+test('legacy CRM scheduler wording no longer maps to scheduler commit intent', () => {
+  const text = 'Create a legacy CRM draft for this Facebook post.';
 
-  assert.equal(hasContentCommitToSchedulingIntent(text), true);
+  assert.equal(hasContentCommitToSchedulingIntent(text), false);
   assert.equal(hasPublicPublishNowIntent(text), false);
 });
 

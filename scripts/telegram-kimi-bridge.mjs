@@ -11,7 +11,7 @@ import {
   buildAccountAliases,
   createSocialPost,
   listBlogs,
-} from './ghl-ops.mjs';
+} from './buffer-ops.mjs';
 
 const require = createRequire(import.meta.url);
 const {
@@ -522,13 +522,13 @@ function buildApiSystemInstructions(config = {}) {
       'Answer using ONLY the repo/app context provided by the user message.',
       'Keep the reply practical, organized, and concise.',
       'Use ASCII characters only in the final reply.',
-      'Your scope is One Time Mishnah Class tasks, comments, brainstorming, shiur ideas, source-sheet work, Torah class prep, marketing/community/GHL setup planning, and decisions inside that project.',
+      'Your scope is One Time Mishnah Class tasks, comments, brainstorming, shiur ideas, source-sheet work, Torah class prep, marketing/community/legacy CRM setup planning, and decisions inside that project.',
       'Do not expose or discuss BNA private Students, Accounting, Devices, student accountability, broad content pipelines, credentials, private access codes, or operator-only Changelog details.',
       'If asked for out-of-scope BNA private data, say this bot is scoped to One Time Mishnah Class and suggest asking Shloimie through the academy bot.',
       'Usually summarize and ask before creating tasks unless the message explicitly says to create, add, file, assign, or comment on a task.',
       'When a task should be created, ask for or infer the useful fields: category, assignee, urgency, decision required, and any context.',
       'Allowed assignees are Rabbi Elie Scheller, Shloimie, and Unassigned.',
-      'Allowed One Time categories are Marketing, Content, Technology, Admin, Accounting, GHL Setup, Community, General, Torah Class Prep, Source Sheets, and Shiur Ideas.',
+      'Allowed One Time categories are Marketing, Content, Technology, Admin, Accounting, Community Setup, Community, General, Torah Class Prep, Source Sheets, and Shiur Ideas.',
       'Codex/repo editing is disabled for this scoped bot unless Shloimie explicitly enables it later.',
       'When a decision is needed, give 2-3 options formatted exactly like "Option A: label", "Option B: label", and "Option C: label" so Telegram can create buttons.',
       'Do not ask unnecessary questions when a concise answer or next step is clear.',
@@ -1174,7 +1174,7 @@ function wantsTaskSnapshot(text) {
 
 function sanitizeContextText(value, maxChars = 220) {
   const text = String(value ?? '')
-    .replace(/\b(?:sk|rk|ghl|pat|xoxp|AIza)[A-Za-z0-9_\-]{12,}\b/g, '[redacted]')
+    .replace(/\b(?:sk|rk|pat|xoxp|AIza)[A-Za-z0-9_\-]{12,}\b/g, '[redacted]')
     .replace(/\b\d{8,}:[A-Za-z0-9_\-]{20,}\b/g, '[redacted]')
     .replace(/\s+/g, ' ')
     .trim();
@@ -1781,10 +1781,10 @@ function formatAccountsReply(accounts) {
 
 function formatBlogsReply(blogs) {
   if (!blogs.length) {
-    return 'No GHL blog site is configured yet for this location.';
+    return 'No first-party BNA blog destination is configured yet.';
   }
 
-  return ['Configured GHL blogs:', ...blogs.map((blog) => `- ${blog.name} (${blog._id})`)].join('\n');
+  return ['First-party BNA blog destinations:', ...blogs.map((blog) => `- ${blog.name} (${blog.url || blog.id})`)].join('\n');
 }
 
 function formatQueueReply(jobs) {
@@ -2192,8 +2192,8 @@ function buildCodexPrompt(config, messageText, chatId, messageId, extraContext =
           '',
         ]
       : []),
-    'Repo context: tasks-pending/2026-05-26-login-ghl-audit.md',
-    readContextFile('tasks-pending/2026-05-26-login-ghl-audit.md', 1800),
+    'Repo context: tasks-pending/2026-05-26-login-legacy CRM-audit.md',
+    readContextFile('tasks-pending/2026-05-26-login-legacy CRM-audit.md', 1800),
     '',
     'Repo context: tasks-pending/2026-05-27-bna-telegram-accountability-audit.md',
     readContextFile('tasks-pending/2026-05-27-bna-telegram-accountability-audit.md', 1800),
@@ -2315,8 +2315,8 @@ function buildApiFallbackMessages(config, messageText, chatId, messageId, extraC
         ]
       : []),
     ...(scoped ? [] : [
-      'Repo context: tasks-pending/2026-05-26-login-ghl-audit.md',
-      readContextFile('tasks-pending/2026-05-26-login-ghl-audit.md', 1800),
+      'Repo context: tasks-pending/2026-05-26-login-legacy CRM-audit.md',
+      readContextFile('tasks-pending/2026-05-26-login-legacy CRM-audit.md', 1800),
       '',
       'Repo context: tasks-pending/2026-05-27-bna-telegram-accountability-audit.md',
       readContextFile('tasks-pending/2026-05-27-bna-telegram-accountability-audit.md', 1800),
@@ -3475,7 +3475,7 @@ function isLikelyStudentAccountabilityUnit(text, eventType, student) {
   if (student) return true;
 
   const normalized = String(text || '').toLowerCase();
-  const systemRamble = /\b(api|app|dashboard|telegram|bot|bridge|drive|folder|whisper|openai|kimi|kimmy|codex|video|facebook|whatsapp|youtube|blog|newsletter|pipeline|repo|database|railway|ghl)\b/.test(normalized);
+  const systemRamble = /\b(api|app|dashboard|telegram|bot|bridge|drive|folder|whisper|openai|kimi|kimmy|codex|video|facebook|whatsapp|youtube|blog|newsletter|pipeline|repo|database|railway|legacy crm)\b/.test(normalized);
   if (systemRamble) return false;
 
   if (eventType === 'learning_note' || eventType === 'question') {
@@ -3564,7 +3564,7 @@ function inferScopedOneTimeCategory(text) {
   if (/\b(content|post|blog|video|recording|caption|whatsapp|facebook)\b/.test(normalized)) return 'content';
   if (/\b(bot|login|access|api|website|dashboard|technology|tech|software|tooling)\b/.test(normalized)) return 'technology';
   if (/\b(accounting|payment|invoice|money|budget|tuition)\b/.test(normalized)) return 'accounting';
-  if (/\b(ghl|go high level|highlevel|crm|pipeline)\b/.test(normalized)) return 'ghl_setup';
+  if (/\b(legacy crm|crm|pipeline)\b/.test(normalized)) return 'community_setup';
   if (/\b(community|participant|attendee|parent|family|group)\b/.test(normalized)) return 'community';
   if (/\b(torah research|halacha|halachic|halakhic|psak|sheilah|shaila|shailah|sefaria|source lookup|look up|research)\b/.test(normalized)
     && /\b(question|source|sources|sefaria|halacha|halachic|halakhic|psak|fast|fasting|shabbos|shabbat)\b/.test(normalized)) return 'torah_research';
@@ -7073,7 +7073,7 @@ async function parseMixedContentJob(config, jobId, options = {}) {
     instruction: [
       'This recording may include both operator tasks and student accountability.',
       'Split operator personal tasks into Tasks assigned to Shloimie.',
-      'Split coding, app, dashboard, parser, website, bot, Railway, GHL, Remotion, or Codex work into Tasks assigned to Codex.',
+      'Split coding, app, dashboard, parser, website, bot, Railway, legacy CRM, Remotion, or Codex work into Tasks assigned to Codex.',
       'Split student goals, decisions, private meeting notes, and questions into Student Accountability.',
       'For student Goal Board updates, include goal_board fields: section, subsection, checklist, bedtime_time, chosen_consequence, recovery_path, incentive, incentive_percent_target, parent_visible, student_visible, approval_required, and approval_status.',
       'Parent meeting, parent recording, or parent chat goals must be parent_visible true, student_visible false, approval_required true, and approval_status pending_review.',
@@ -7120,8 +7120,8 @@ async function handleScopedStructuredTextCommand(config, msg) {
         '- decision: choose registration flow...',
         '- comment task #123: add this context...',
         '',
-        'Scope: One Time Mishnah Class tasks, comments, support tickets, decisions, shiur ideas, source sheets, Torah class prep, marketing, community, GHL setup, admin, and accounting planning.',
-        'Not available here: BNA Students, Accounting, Devices, broad Content jobs, Drive/GHL posting commands, agent fleet, OpenAI smoke, or Codex repo execution.',
+        'Scope: One Time Mishnah Class tasks, comments, support tickets, decisions, shiur ideas, source sheets, Torah class prep, marketing, community, legacy CRM setup, admin, and accounting planning.',
+        'Not available here: BNA Students, Accounting, Devices, broad Content jobs, Drive/legacy CRM posting commands, agent fleet, OpenAI smoke, or Codex repo execution.',
       ].join('\n'),
       messageId
     );

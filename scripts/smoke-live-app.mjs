@@ -47,7 +47,7 @@ function loadConfig() {
     opsUsername: env.OPS_USERNAME || '',
     opsPassword: env.OPS_PASSWORD || '',
     requireDrive: process.argv.includes('--require-drive'),
-    requireBuffer: process.argv.includes('--require-buffer') || process.argv.includes('--require-ghl'),
+    requireBuffer: process.argv.includes('--require-buffer') || process.argv.includes('--require-legacy CRM'),
     googleRefreshToken: env.GOOGLE_REFRESH_TOKEN || readSecret('google-refresh-token.txt'),
     googleRedirectUri: env.GOOGLE_REDIRECT_URI || '',
     googleDrivePipelineConfig: env.GOOGLE_DRIVE_PIPELINE_CONFIG
@@ -266,7 +266,7 @@ async function main() {
       const { data } = await request(config, 'GET', '/api/health', { auth: false });
       assert(data.status === 'ok', 'Health endpoint did not return ok');
       assert(data.database === 'connected', 'Database is not connected');
-      return { status: data.status, database: data.database, ghl: data.ghl };
+      return { status: data.status, database: data.database };
     });
 
     await step('operations login session', async () => {

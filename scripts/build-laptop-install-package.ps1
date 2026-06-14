@@ -235,7 +235,6 @@ function Set-EnvFromBlockFile {
 Set-EnvFromBlockFile `$envLocal
 `$secrets = Join-Path `$Root ".secrets"
 Set-EnvFromBlockFile (Join-Path `$secrets "buffer-api-key.txt")
-Set-EnvFromBlockFile (Join-Path `$secrets "ghl-pit-token.txt")
 Set-EnvFromBlockFile (Join-Path `$secrets "railway-google-env.txt")
 Set-EnvFromBlockFile (Join-Path `$secrets "whapi-env.txt")
 Set-EnvFromFile "DATABASE_URL" (Join-Path `$secrets "railway-database-url.txt")

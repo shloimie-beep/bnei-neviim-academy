@@ -50,6 +50,16 @@ test('English and Hebrew signup forms collect parent permissions before submit',
   }
 });
 
+test('parent name fields are explicitly black for readability', () => {
+  for (const html of [signupEn, signupHe]) {
+    assert.match(html, /parent-section-divider/);
+    assert.match(html, /label\[for="parent1_name"\]/);
+    assert.match(html, /label\[for="parent2_name"\]/);
+    assert.match(html, /#parent1_name,\s*\r?\n\s*#parent2_name\s*\{\s*\r?\n\s*color: #000;/);
+    assert.match(html, /-webkit-text-fill-color: #000;/);
+  }
+});
+
 test('registration pages use the shared main-site navigation shell', () => {
   for (const html of [signupEn, signupHe, signupThankYou, registrationDocumentHtml]) {
     assert.match(html, /\/css\/bna-site-nav\.css/);

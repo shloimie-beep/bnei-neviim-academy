@@ -47,7 +47,7 @@ function hasInterestedParentLeadCaptureIntent(text) {
 function hasContactLeadPipelineBuildIntent(text) {
   const normalized = normalizeText(text);
   if (!normalized) return false;
-  const pipelineObject = /\b(lead section|interested parents?|parents? (?:that are )?interested|warm leads?|pipeline(?: type)? view|pipeline created from contacts?|contacts? pipeline|crm|ghl pipeline|contact history|previous contact|whatsapp history|whatsapp button|online logins?|parent portal logins?|tagged accordingly)\b/.test(normalized);
+  const pipelineObject = /\b(lead section|interested parents?|parents? (?:that are )?interested|warm leads?|pipeline(?: type)? view|pipeline created from contacts?|contacts? pipeline|crm|legacy crm pipeline|contact history|previous contact|whatsapp history|whatsapp button|online logins?|parent portal logins?|tagged accordingly)\b/.test(normalized);
   const parentContactSection = /\b(parent section|parents section|contacts section)\b/.test(normalized)
     && /\b(whatsapp|previous contact|contact history|login|logins?|parent portal|manage)\b/.test(normalized);
   const buildVerb = /\b(build|build out|need|needs|we need|wanted|want|update|hooked up|track|open it up|see|manage|created?)\b/.test(normalized);

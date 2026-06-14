@@ -18,8 +18,8 @@
 
 **Phase 1 (Current): Foundation**
 - New database for BNA operations (NOT using family accountability schema)
-- Marketing system with Buffer for social posting and GHL/other connectors only
-  where they remain explicitly wired
+- Marketing system with Buffer for social posting and first-party BNA
+  Operations as the CRM/community/provider source of truth
 - School website for Whole Child Torah Learning Community
 - Telegram bot integration
 - Service provider network setup
@@ -35,12 +35,15 @@
   configured
 - **Kimi**: Fallback-only provider/model path for failures or legacy records
 - **Telegram**: Front-end channel for operator communication
-- **GHL (GoHighLevel)**: CRM/marketing automation (ALREADY SET UP)
 - **Buffer**: Active social posting provider for Facebook, LinkedIn, and
   YouTube. Buffer API credentials live in Railway and local `.secrets`; never
   commit or display the API key. The current key appears to be named `BNAv2`,
-  created 2026-06-09, and expires 2026-07-09. GHL is not the active social
-  posting provider.
+  created 2026-06-09, and expires 2026-07-09.
+- **Legacy CRM/GHL**: Deprecated for active BNA runtime. Do not add new
+  GoHighLevel/LeadConnector code, MCP tools, env vars, smoke checks, dashboard
+  promises, or Telegram actions. Historical files are archived under
+  `docs/archive/legacy-ghl/`; existing production data that used old CRM column
+  names should be migrated into `legacy_crm_*` compatibility columns only.
 - **Whapi/WAPI**: Active WhatsApp API path. Outbound sends and webhook delivery
   logs use WAPI/Whapi credentials; Operations also has an explicit admin-only
   Whapi log sync that imports recent sent/received message history into
@@ -66,10 +69,10 @@
   horizontal section tabs should not be reintroduced as the main IA.
 - BNA Operations is the canonical internal-first operating system for CRM,
   tasks, workflows, provider platform, communications, calendar, settings, and
-  bot action/audit context. External systems such as GHL, Google
-  Calendar/Classroom, WhatsApp APIs, email providers, social schedulers, Vimeo,
-  Green Invoice, and provider-owned class apps are connectors only unless
-  explicitly promoted by a later decision.
+  bot action/audit context. External systems such as Google Calendar/Classroom,
+  WhatsApp APIs, email providers, social schedulers, Vimeo, Green Invoice, and
+  provider-owned class apps are connectors only unless explicitly promoted by a
+  later decision.
 - BNA is one school workspace. Rabbi/service-provider work belongs in separate
   provider/project workspaces and should not mix with BNA school parents or
   students.
@@ -136,6 +139,12 @@
   values-based coaching, and parent reporting only; they are not a BNA
   enforcement responsibility or a separate approval system for every change.
   The signup UI should not use a final checkbox for this responsibility notice.
+- Credit-card signup confirmations must email the configured `PAYMENT_LINK` to
+  every parent email supplied on the form. Parent 1 is stored as
+  `signups.parent_email`; Parent 2 email may only exist in the submitted form or
+  the `Parent 2 Email:` line in signup notes, so confirmation sending must fan
+  out before relying only on the saved signup row. Log each recipient send in
+  `bna_email_log`.
 - BNA signup documents now use four required branded document pages for
   Handbook, Tuition, Waiver/Safety Acknowledgment, and Student Handbook/Code of
   Conduct. The page flow preserves the typed signup form in the opener tab and
@@ -189,13 +198,15 @@
 - Contacts should distinguish current/signed-up parents from separate lead
   categories: `school_interest`, `content_interest`, and `group_member`.
   School-interest leads are BNA-owned CRM records with lead status, interest
-  level, source, notes, next follow-up, and optional GHL WhatsApp/contact
-  linkage; GHL remains a connector, not the canonical CRM.
+  level, source, notes, next follow-up, and optional historical
+  `legacy_crm_*` linkage only. First-party BNA Operations remains the canonical
+  CRM.
 - Contacts parent records should expand inside the clicked card itself, not in a
   separate detail panel under/next to the list. Tag filtering and tag assignment
-  should use compact dropdowns rather than large piles of buttons. Future GHL
-  WhatsApp conversation sync should display recent conversation history inside
-  the matching parent/lead card after message storage is explicitly built.
+  should use compact dropdowns rather than large piles of buttons. Future
+  WhatsApp/WAPI conversation sync should display recent conversation history
+  inside the matching parent/lead card after message storage is explicitly
+  built.
 - UI redesign work must preserve existing data, backend fields, business logic,
   and functionality unless Shloimie explicitly says to remove/change them.
 - Operations app sections should show subcategory counts only once, in the
@@ -300,13 +311,11 @@
   Partnership Project` exists but is not the canonical workspace. Claude or
   another drafting assistant may be used for text drafting, proposal cleanup,
   policy wording, launch copy, and summaries; Codex remains responsible for
-  repo, Drive, app, GHL API/browser automation, tests, deploys, and
-  verification.
+  repo, Drive, app, tests, deploys, and verification.
 - One Time platform default is internal-first: BNA should own the parent,
   student, Rabbi/admin, meeting, task, assignment, calendar, and messaging
-  interfaces unless GHL/HighLevel earns a specific backend connector role.
-  Rabbi Elie already has video/library/statistics tooling, so GHL community or
-  course-builder UI is not assumed necessary.
+  interfaces. Rabbi Elie already has video/library/statistics tooling, so a
+  legacy CRM community or course-builder UI is not assumed necessary.
 - One Time meeting recordings should be handled as Content > Meeting Drops:
   structure the relevant Drive/content job into a meeting summary, decision
   list, linked tasks, source-media provenance, and project-scoped follow-up
@@ -316,7 +325,7 @@
   library/Vimeo analytics, Google Classroom/Workspace account strategy, Zoom
   scheduling, WhatsApp provider, current website/product tiers, and
   ownership/revenue terms, then build the internal-first parent/student/Rabbi
-  admin MVP with GHL only as a justified connector.
+  admin MVP in first-party BNA Operations.
 - One Time user access should stay project-scoped: Shloimie is super admin,
   Rabbi Elie is an external One Time admin, and future BNA versus One Time
   parent/student accounts must be separated by `project_id` and project-level
@@ -421,7 +430,7 @@
 ## My Role (AI Sidekick)
 
 - Run entire repo and database
-- Integrate with existing GHL setup
+- Build and operate first-party BNA systems and approved connectors
 - Handle marketing systems
 - Build/manage task managers
 - Build school website
@@ -518,35 +527,24 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 
 **NOT:** Stock photos, corporate polish, bright colors, generic Jewish clipart
 
-## GHL/CRM Status
+## Legacy CRM/GHL Status
 
-**Already Exists:**
-- Service Provider Registration form (with specific field keys)
-- Learning Community forms
-- Affiliate Business forms
-- Custom fields mapped
-
-**Evaluation Criteria (2026-06-09):**
-- The operator is evaluating whether GHL is worth keeping if its main use is
-  connecting YouTube, Facebook, Google Business Profile, and a review widget.
-- Required replacement coverage: YouTube posting/API, Facebook Page
-  posting/API, Google Business Profile posts/reviews/API, a flowing Google
-  reviews widget for the public website, and the chosen Wappy/WhatsApp path.
-- Wappy must be disambiguated before replacing GHL WhatsApp: `wappy.chat` is
-  primarily a website click-to-WhatsApp widget, while `wappy.ai` presents as a
-  WhatsApp Business automation/API platform. Only an API/webhook/export-capable
-  Wappy path can replace GHL's WhatsApp API role.
-- BNA should remain the internal CRM/source of truth for contacts,
-  conversations, tasks, and decisions; GHL or a scheduler can be a channel
-  adapter, not canonical memory.
-- Do not cancel, delete, or restructure GHL until current forms, workflows,
-  connected social accounts, review/reputation tools, conversations, and paid
-  add-ons have been audited.
-
-**Guardrails:**
-- Do NOT delete anything in GHL
-- Do NOT change unique keys
-- Always search by key first; create only if missing
+- As of 2026-06-13, GoHighLevel/LeadConnector is not an active BNA runtime,
+  social posting provider, CRM source of truth, dashboard dependency, Telegram
+  action path, or MCP server.
+- Archived legacy code lives under `docs/archive/legacy-ghl/` for reference
+  only. Do not revive it unless the operator explicitly creates a new task to
+  inspect historical data or export records.
+- BNA-owned contacts, leads, students, learning communities, provider listings,
+  provider messages, parent/provider portals, tasks, communications, and
+  internal dialogue belong in first-party BNA Operations tables and APIs.
+- Buffer is the active social scheduler connector. Whapi/WAPI is the active
+  WhatsApp API path. Gmail/Google APIs, Green Invoice, Vimeo/Replit/provider
+  apps, and future review widgets are connector candidates, not canonical CRM.
+- Existing old CRM identifiers in production data should be treated as
+  historical `legacy_crm_*` references only. Do not write new records back to
+  GHL/LeadConnector, create GHL tags, depend on PIT tokens, or expose GHL setup
+  controls in Operations.
 
 ## Non-Negotiables
 
@@ -645,18 +643,16 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 ### Telegram Bot (Configured ✅)
 - Bot token: `@bneineviimacademy_bot`
 - Chat ID: 8202155026
-- Features: academy-sidekick chat, GHL account commands, media intake, social job queue
+- Features: academy-sidekick chat, Buffer account commands, media intake, social job queue
 - Natural language parsing for rambles plus structured Telegram ops commands
 
-### GHL Integration (Active, Guarded)
-- PIT-token based HighLevel integration uses the current LeadConnector API path
-  with the required API-version header.
-- GHL Social diagnostics are part of the live app smoke path and currently pass.
-- GHL MCP is configured through `.mcp.json` with the local
-  `scripts/ghl-mcp-stdio.mjs` wrapper; the PIT token is stored outside tracked
-  files under `.secrets/ghl-pit-token.txt`.
-- Live publish/send actions still require explicit operator approval, and a
-  safe draft write/delete smoke remains the next GHL verification step.
+### Social And CRM Runtime
+- Buffer is the active social scheduler for Facebook, LinkedIn, and YouTube.
+- First-party BNA Operations is the CRM/community/provider runtime.
+- Legacy GHL/LeadConnector code is archived and should not be used for new
+  runtime paths, smoke checks, MCP tools, dashboard controls, or Telegram
+  commands.
+- Live publish/send actions still require explicit operator approval.
 
 ### Kimi Runtime Note
 
@@ -668,7 +664,7 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 - bneineviimacademy.org is the live production domain.
 
 ### Current Technical Blockers
-- Safe GHL draft write/delete smoke for Telegram draft publishing.
+- Hosted media URL support for Buffer media publishing from local uploads.
 - Google posting alias/default selection for multiple connected Google accounts.
 - Rabbi Elie Scheller live bot token/chat credentials and scoped login.
 - Physical tablet plus QStudio/Qustodio/Headwind/FreeKiosk credentials for real
@@ -701,7 +697,7 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 ### Task Categories
 - admin, marketing, parent_coaching, student_operations
 - finance, legal, communications, operations
-- content, technology, accounting, ghl_setup, community, general
+- content, technology, accounting, community_setup, community, general
 - torah_class_prep, torah_research, source_sheets, shiur_ideas
 
 ### Ramble Protocol
@@ -714,7 +710,7 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 - No cron jobs (avoid API usage burn)
 - Webhook-triggered actions only
 - Telegram bot: inline buttons link to Operations dashboard
-- GHL webhooks: real-time contact sync
+- WAPI, Google, Green Invoice, and approved first-party webhooks only
 
 ---
 
@@ -740,7 +736,7 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   backfill.
 - Mixed uploaded audio/video/text recordings should route items by type:
   - Shloimie's personal/operator tasks go to My Tasks.
-  - Codex/app/code/dashboard/parser/Railway/GHL/Remotion work goes to the machine/Changelog lane.
+  - Codex/app/code/dashboard/parser/Railway/external-connector/Remotion work goes to the machine/Changelog lane.
   - Named student accountability, goal updates, and Torah progress go to Students/accountability records, not general tasks.
   - Halacha/source lookup questions that Shloimie marks for research go to Tasks as `Torah Research` / `torah_research`, assigned to Codex. The task must preserve the exact question, use Sefaria/source research, include direct Sefaria links, include a source map and summary of where each source is found, and flag open points for Shloimie/rav review instead of presenting automated final psak.
   - Student philosophy/hashkafa/curiosity questions stay in Student Questions or class notes unless Shloimie explicitly marks them as halacha/source lookup work.
@@ -887,7 +883,7 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   Time account/project. Do not mix those records with BNA school students or BNA
   parents.
 - One Time task categories should include Marketing, Content, Technology, Admin,
-  Accounting, GHL Setup, Community, General, Torah Class Prep, Source Sheets,
+  Accounting, Community Setup, Community, General, Torah Class Prep, Source Sheets,
   and Shiur Ideas.
 - Rabbi Elie's scoped workspace should reuse the BNA task-management machinery
   where possible: tasks, comments, natural-language task updates, parser
@@ -909,10 +905,10 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   `ONE_TIME_OPS_USERNAME` / `ONE_TIME_OPS_PASSWORD` values. Live bot startup now
   intentionally refuses to run until `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` (or
   an accepted alias) is set and a hosted bridge runtime is chosen/started.
-- One Time/GHL automation should reuse the Holy Flow agent-loop pattern only as
-  a design source: task deck, one workflow at a time, observe-before-act, API
-  first, browser only for UI-only GHL work, operator walkthroughs for OAuth or
-  vendor gates, and explicit confirmation before GHL writes.
+- One Time automation should reuse the Holy Flow agent-loop pattern as a design
+  source only: task deck, one workflow at a time, observe-before-act, API first,
+  operator walkthroughs for OAuth/vendor gates, and explicit confirmation
+  before any external connector writes. Do not add new GHL/LeadConnector writes.
 - The canonical separate One Time Drive workspace was rechecked on 2026-06-10
   with `npm run drive:setup-one-time`: `My Drive / One Time Mishnah Class -
   Rabbi Elie Scheller` exists, the exact final proposal

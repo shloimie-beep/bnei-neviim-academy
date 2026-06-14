@@ -102,6 +102,16 @@ Keep `MEMORY.md` compact and curated.
   use archived family-accountability docs, old Supabase setup files, or old
   launch/onboarding surfaces as current BNA product, database, school-model, or
   workflow guidance.
+- GoHighLevel/LeadConnector/GHL is deprecated for active BNA runtime. Do not
+  add new GHL MCP tools, env vars, API clients, smoke checks, dashboard
+  controls, Telegram actions, tags, workflows, or schema assumptions. Historical
+  code belongs under `docs/archive/legacy-ghl/`; active contact/community/
+  provider behavior belongs in first-party BNA Operations tables/APIs with
+  Buffer only as the social scheduler connector.
+- Public, parent, and Operations PWAs must keep separate manifest identities:
+  public `/manifest.json`, parent `/parent-manifest.json`, and Operations
+  `/operations-manifest.json`. Do not make the public or parent install launch
+  the private Operations app.
 
 ## Current AI Setup
 

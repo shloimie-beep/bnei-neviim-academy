@@ -85,8 +85,8 @@ function hasBrowserTestIntent(normalized) {
   ]);
 }
 
-function hasGhlIntent(normalized) {
-  return /\b(ghl|go high level|highlevel|leadconnector|crm|pipeline|contact|opportunity)\b/.test(normalized);
+function hasCrmIntent(normalized) {
+  return /\b(crm|community platform|pipeline|contact|opportunity)\b/.test(normalized);
 }
 
 function hasBufferIntent(normalized) {
@@ -112,7 +112,7 @@ function hasDirectExternalSendOrPublish(normalized) {
 
 function hasDraftOrInternalPublish(normalized) {
   return includesAny(normalized, [
-    /\b(publish draft|post draft|create facebook draft|create buffer draft|create ghl draft|send to buffer|send to ghl|push to buffer|push to ghl|buffer draft|ghl draft)\b/,
+    /\b(publish draft|post draft|create facebook draft|create buffer draft|send to buffer|push to buffer|buffer draft)\b/,
   ]);
 }
 
@@ -266,11 +266,11 @@ function planTelegramIntent({ text = '', replyText = '', isCommand = false, scop
     confidence = 0.78;
     replyStrategy = primaryIntent === 'buffer_action' ? 'use_buffer_tool_if_clear' : 'answer_naturally';
     proposedActions.push(buildAction(primaryIntent === 'buffer_action' ? 'buffer_draft_or_lookup' : 'discuss_buffer', 'buffer', primaryIntent === 'buffer_action' ? 'external_write' : 'read_only', false, 'Buffer was referenced'));
-  } else if (hasGhlIntent(normalized)) {
-    primaryIntent = hasDraftOrInternalPublish(normalized) ? 'ghl_action' : 'ghl_discussion';
-    confidence = 0.78;
-    replyStrategy = primaryIntent === 'ghl_action' ? 'use_ghl_tool_if_clear' : 'answer_naturally';
-    proposedActions.push(buildAction(primaryIntent === 'ghl_action' ? 'ghl_draft_or_lookup' : 'discuss_ghl', 'ghl', primaryIntent === 'ghl_action' ? 'external_write' : 'read_only', false, 'GHL was referenced'));
+  } else if (hasCrmIntent(normalized)) {
+    primaryIntent = 'community_crm_discussion';
+    confidence = 0.74;
+    replyStrategy = 'answer_naturally';
+    proposedActions.push(buildAction('discuss_community_crm', 'community', 'read_only', false, 'Community CRM was referenced'));
   }
 
   return {

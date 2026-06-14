@@ -217,6 +217,15 @@
             color: var(--primary-blue);
             margin-bottom: 1.5rem;
         }
+
+        .parent-section-divider h3,
+        label[for="parent1_name"],
+        label[for="parent2_name"],
+        #parent1_name,
+        #parent2_name {
+            color: #000;
+            -webkit-text-fill-color: #000;
+        }
         
         /* Payment Method Selection */
         .payment-legend {
@@ -812,7 +821,7 @@
                 <form id="signupForm">
                     <input type="hidden" id="form_language" name="form_language" value="en">
                     <!-- Parent 1 Information -->
-                    <div class="section-divider" style="margin-top: 0; padding-top: 0; border-top: none;">
+                    <div class="section-divider parent-section-divider" style="margin-top: 0; padding-top: 0; border-top: none;">
                         <h3>Parent 1 Information</h3>
                     </div>
                     
@@ -833,7 +842,7 @@
                     </div>
                     
                     <!-- Parent 2 Information -->
-                    <div class="section-divider">
+                    <div class="section-divider parent-section-divider">
                         <h3>Parent 2 Information</h3>
                     </div>
                     

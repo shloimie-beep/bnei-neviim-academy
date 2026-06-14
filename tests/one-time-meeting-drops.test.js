@@ -23,7 +23,7 @@ test('content jobs can be structured into One Time meeting summaries and decisio
   assert.match(server, /oneTimeMeetingDecisionList/);
   assert.match(server, /ensureOneTimeMeetingTask/);
   assert.match(server, /Option A: internal BNA app/);
-  assert.match(server, /Option B: GHL-backed CRM\/community\/course builder/);
+  assert.match(server, /Option B: first-party community-backed CRM\/community\/course builder/);
   assert.match(server, /project: ONE_TIME_PROJECT_KEY/);
   assert.match(server, /INSERT INTO bna_task_comments/);
   assert.match(server, /extracted_task_ids/);
@@ -44,7 +44,7 @@ test('Operations Content exposes Meeting Drops and structure action', () => {
 
 test('durable memory records the internal-first One Time platform assumption', () => {
   assert.match(memory, /One Time platform default is internal-first/);
-  assert.match(memory, /GHL\/HighLevel earns a specific backend connector role/);
+  assert.match(memory, /interfaces\. Rabbi Elie already has video\/library\/statistics tooling/);
   assert.match(memory, /One Time meeting recordings should be handled as Content > Meeting Drops/);
   assert.match(memory, /parent\/student accounts must be separated by `project_id`/);
 });

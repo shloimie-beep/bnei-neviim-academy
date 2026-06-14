@@ -2,21 +2,53 @@
 
 ## Now
 
+- [ ] Finish BNA production cleanup/no-GHL release: active code now removes
+  legacy CRM/LeadConnector runtime paths, archives legacy provider code, moves
+  social posting to Buffer-only helper code, splits public/parent/Operations
+  PWA manifests, and adds first-party `legacy_crm_*` compatibility columns.
+  Local full suite passed (`npm test` 306/306), active provider scan is clean,
+  Railway doctor passed, live app smoke passed, and contact repair dry-run now
+  reaches the Railway database after bypassing stale `.env.local` Supabase
+  config. Keep open because `npm run openai:smoke` still fails with
+  `401 invalid_api_key`, so this branch was not deployed and app-visible
+  completion/Telegram reporting cannot be marked done. Handoff:
+  `tasks-pending/2026-06-14-bna-production-community-no-ghl.md`.
+- [ ] Deploy and live-smoke the signup credit payment-link email fix: manual
+  resend for signup #12 succeeded to both recorded parent emails, and local code
+  now includes the configured credit `PAYMENT_LINK` in confirmation emails sent
+  to Parent 1 plus Parent 2. Local syntax and focused signup tests passed; the
+  latest full-suite rerun belongs with the current no-GHL cleanup branch.
+  Future-signup behavior is not live because this checkout has a very large
+  unrelated dirty worktree. Do not mark done until a safe deploy scope is
+  chosen, Railway doctor passes, and a live credit signup/email-log smoke proves
+  both parent emails receive the payment link. Handoff:
+  `tasks-pending/2026-06-13-signup-credit-link-email-live-deploy.md`.
 - [ ] Deploy and live-smoke the registration toolbar/parent-permission notice
   fix: local implementation is complete and verified, but live deployment is
   blocked because this checkout has a very large unrelated dirty worktree. Do
   not mark done until a safe deploy scope is chosen, Railway doctor passes, and
   live signup/document/thank-you smoke verifies the shared public-site hamburger
-  toolbar plus the no-checkbox parent responsibility notice. Handoff:
+  toolbar, the no-checkbox parent responsibility notice, and black/readable
+  Parent 1/Parent 2 name headings/labels/typed text. Handoff:
   `tasks-pending/2026-06-13-registration-toolbar-permission-live-deploy.md`.
+- [ ] Deploy and live-smoke the Operations parent-to-student link fix: local
+  implementation now loads the student roster for Contacts, resolves parent
+  signups to student profiles by signup id or parent email/student name, and
+  adds parent-detail linked-record actions. Local Operations regression test
+  passed; live deployment is blocked by the same large unrelated dirty
+  worktree. Do not mark done until a safe deploy scope is chosen, Railway
+  doctor passes, and live Operations smoke verifies opening a parent shows and
+  opens the linked student. Handoff:
+  `tasks-pending/2026-06-14-operations-parent-student-links-live-deploy.md`.
 - [ ] Build universal BNA helper and fix contact tagging/settings/Hebrew menu
   issues: local implementation and tests passed on 2026-06-13. Shipped local
-  slices include role-safe universal assistant backend/widget, GHL student
-  identity separation, contact-role repair dry-run script, Whapi resolved-name
-  fallback, Settings light-shell cleanup, Hebrew RTL drawer fix, and brand-kit AI
-  context in the OpenAI sidekick smoke. Keep open until OpenAI API credentials
-  are fixed, the contact repair dry-run can reach Supabase, and the changed app
-  bundle is deployed with Railway doctor/live smoke. Handoff:
+  slices include role-safe universal assistant backend/widget, legacy CRM
+  contact compatibility cleanup, contact-role repair dry-run script, Whapi
+  resolved-name fallback, Settings light-shell cleanup, Hebrew RTL drawer fix,
+  and brand-kit AI context in the OpenAI sidekick smoke. Keep open until OpenAI
+  API credentials are fixed, the contact repair dry-run can reach the live
+  database, and the changed app bundle is deployed with Railway doctor/live
+  smoke. Handoff:
   `tasks-pending/2026-06-13-universal-helper-tagging-settings-hebrew.md`.
 - [ ] One Time: collect Rabbi Scheller contact email, WhatsApp/contact phone,
   and scoped login username, then send the Drive folder/WhatsApp and login
@@ -109,10 +141,10 @@
 - [x] Add per-card Content Library research/source links and student questions: every Content Library item now exposes student questions, sourceable topics, Sefaria search/direct source links, and a source-sheet task action while task/decision captures stay out of Content. Verified with `node --check server.js`, Operations script parse, focused Content tests 7/7, `npm test` 230/230, local card smoke `tmp/qa-runs/content-card-research-links/local-content-card-research-links-smoke.json`, Railway deployment `6b375c1d-ce49-4d2b-8582-b86825baa483` SUCCESS, Railway doctor, live app smoke `ops/live-smokes/2026-06-11T07-36-26-862Z-live-app-smoke.md`, and production card smoke `tmp/qa-runs/content-card-research-links/production-content-card-research-links-smoke.json`.
 - [x] Add Content Library topic/source filters and clear transcript-only backlog status: Content Library now shows top Topic and Source filters, Torah/psychology/health/etc. topic pills, source pills/links, output counts, transcript length, and `Needs Output` / `Generate output` for saved transcripts with no platform drafts. Verified with `node --check server.js`, Operations script parse, focused Content tests 9/9, `npm test` 229/229, local Content UI smoke `tmp/qa-runs/content-library-taxonomy/local-content-library-taxonomy-smoke.json`, Railway deployment `a5692ae9-0284-4614-910e-dfd3076390bd` SUCCESS, Railway doctor, live app smoke `ops/live-smokes/2026-06-11T07-19-34-467Z-live-app-smoke.md`, and production Content UI smoke `tmp/qa-runs/content-library-taxonomy/production-content-library-taxonomy-smoke.json`.
 - [x] Complete Operations full professional QA/product-polish pass: behaved as a fake user across Platform, BNA School Workspace, Rabbi Sheller Provider Workspace, parent/student/provider portals, settings, connectors, mobile, role/workspace switching, primary prompts/actions, dry-run workflows, privacy checks, and production pages; fixed workspace switcher search/stable hook, not-configured placeholder polish, and bot action preview response shape. Verified with `node --check server.js`, Operations script parse, `npm test` 220/220, `npm run screenshot`, `npm run openai:smoke`, Lighthouse `lighthouse-report.html` (performance 63, accessibility 84, best-practices 100, SEO 100; Windows temp-profile cleanup after report write), local full QA matrix `tmp/qa-runs/operations-full-qa-results-clean.json` (54 routes, 15 workflows, 38 screenshots, 0 failures), Railway deployment `ea35c7ae-f36d-4fd1-98f2-4327ceea530e` SUCCESS, Railway doctor, live app smoke `ops/live-smokes/2026-06-10T20-07-12-261Z-live-app-smoke.md`, production UI smoke `tmp/qa-runs/live-smoke/production-ui-smoke.json`, and QA report `ops/qa-runs/2026-06-10-operations-full-qa.md`.
-- [x] Complete the BNA internal-first CRM/workspace connector pass: Operations is now the canonical CRM/workflow/calendar/task/communication/provider/settings shell with Platform, BNA School, and Rabbi Sheller Provider workspaces; persisted workspace settings, connector settings, internal calendar events, pipeline cards, internal dialogue, and typed bot action logs; manual/test/not-configured connector states for email identities, WhatsApp, social, Google Calendar/Classroom, Rabbi video/library, and disabled GHL legacy reference; role-aware nav and scoped provider access; settings tabs that load promptly without unrelated CRM hydration; and local/live desktop/mobile portal smoke coverage. Verified with `node --check server.js`, Operations script parse, focused tests 49/49, `npm test` 220/220, local Operations/portal Playwright smoke `ops/playwright-smokes/2026-06-10T19-23-57-000Z-bna-operations-crm-local/report.md`, `npm run screenshot`, Lighthouse report `lighthouse-report.html` (scores: performance 68, accessibility 84, best-practices 100, SEO 100; CLI exit was Windows temp cleanup after report write), Railway deployment `86d727fc-1b09-4b90-847f-479506f665d4` SUCCESS, Railway doctor, live app smoke `ops/live-smokes/2026-06-10T19-29-39-508Z-live-app-smoke.md`, and production Operations/portal Playwright smoke `ops/playwright-smokes/2026-06-10T19-31-30-000Z-bna-operations-crm-production/report.md`.
+- [x] Complete the BNA internal-first CRM/workspace connector pass: Operations is now the canonical CRM/workflow/calendar/task/communication/provider/settings shell with Platform, BNA School, and Rabbi Sheller Provider workspaces; persisted workspace settings, connector settings, internal calendar events, pipeline cards, internal dialogue, and typed bot action logs; manual/test/not-configured connector states for email identities, WhatsApp, social, Google Calendar/Classroom, Rabbi video/library, and disabled legacy CRM legacy reference; role-aware nav and scoped provider access; settings tabs that load promptly without unrelated CRM hydration; and local/live desktop/mobile portal smoke coverage. Verified with `node --check server.js`, Operations script parse, focused tests 49/49, `npm test` 220/220, local Operations/portal Playwright smoke `ops/playwright-smokes/2026-06-10T19-23-57-000Z-bna-operations-crm-local/report.md`, `npm run screenshot`, Lighthouse report `lighthouse-report.html` (scores: performance 68, accessibility 84, best-practices 100, SEO 100; CLI exit was Windows temp cleanup after report write), Railway deployment `86d727fc-1b09-4b90-847f-479506f665d4` SUCCESS, Railway doctor, live app smoke `ops/live-smokes/2026-06-10T19-29-39-508Z-live-app-smoke.md`, and production Operations/portal Playwright smoke `ops/playwright-smokes/2026-06-10T19-31-30-000Z-bna-operations-crm-production/report.md`.
 - [x] Build the BNA Operations SaaS/CRM redesign: shipped the global workspace shell with nested left subnav, top bar/breadcrumbs, Dashboard, Service Providers, Communications, API Usage, Team/Admin, Settings, clean query-addressable detail surfaces, parent/student/provider portal IA cleanup, Hebrew/RTL portal support, guarded not-configured states, faster task API/query handling, and immediate Operations shell rendering for slow data hydration. Verified with `node --check server.js`, `npm test` 219/219, local Playwright smoke `ops/playwright-smokes/2026-06-10T15-59-29-059Z-saas-redesign-local/report.md`, Railway deployment `13d594d3-42ff-4df3-8c06-7c9ad1b9ec6b` SUCCESS, Railway doctor, live app smoke `ops/live-smokes/2026-06-10T16-01-05-691Z-live-app-smoke.md`, and production Playwright smoke `ops/playwright-smokes/2026-06-10T16-02-20-756Z-saas-redesign-production/report.md`.
 - [x] Turn Rabbi meeting drop #1 into a One Time build brief: distilled Content job #57 into `tasks-pending/2026-06-10-one-time-rabbi-meeting-build-brief.md` with internal-first platform direction, parent/student/Rabbi admin surfaces, Rabbi stack discovery checklist, platform/login/ownership/Classroom/integration decision gates, implementation slices, and acceptance criteria.
-- [x] Implement One Time meeting drops and student navigation cleanup: added structured Rabbi meeting artifacts/tasks from Content job #57, created Meeting Drops artifact #1 with linked tasks #417-#422, added Decision Required follow-ups for GHL/internal stack and access model, compact student list/workspace navigation, mobile hamburger full navigation page, light student workspace polish, tests, Railway deployment `5c96321e-1759-4cdb-9541-3920d4fa518b`, Railway doctor, live app smoke `ops/live-smokes/2026-06-10T14-20-47-965Z-live-app-smoke.md`, and production Playwright smoke `ops/playwright-smokes/2026-06-10T14-21-37-287Z-one-time-meeting-student-nav-live-structured/report.md`
+- [x] Implement One Time meeting drops and student navigation cleanup: added structured Rabbi meeting artifacts/tasks from Content job #57, created Meeting Drops artifact #1 with linked tasks #417-#422, added Decision Required follow-ups for legacy CRM/internal stack and access model, compact student list/workspace navigation, mobile hamburger full navigation page, light student workspace polish, tests, Railway deployment `5c96321e-1759-4cdb-9541-3920d4fa518b`, Railway doctor, live app smoke `ops/live-smokes/2026-06-10T14-20-47-965Z-live-app-smoke.md`, and production Playwright smoke `ops/playwright-smokes/2026-06-10T14-21-37-287Z-one-time-meeting-student-nav-live-structured/report.md`
 - [x] Convert the One Time/Rabbi roadmap into scheduled task work and Team tickets: removed the separate Roadmap Operations section for scoped users, added Tasks > Schedule for planned/due One Time proposal work, backfilled proposal workflow task metadata/details, renamed Support to Team/Tickets & Messages, kept Rabbi as a limited project admin without programming controls, updated the shared UI shell to crisp black/white/gold, fixed Railway to bind the app on `0.0.0.0`, deployed Railway `35707ab0-1069-44e3-a34d-0a062ca7833c`, and verified with `npm test` 204/204, Railway doctor, live app smoke `ops/live-smokes/2026-06-10T13-03-37-257Z-live-app-smoke.md`, OpenAI smoke `ops/openai-smokes/2026-06-10T13-04-44-064Z-openai-sidekick-smoke.md`, and live Playwright visual smoke `ops/playwright-smokes/one-time-schedule-team-live-2026-06-10T12-40-32-794Z/report.md`
 - [x] Apply app-wide BNA brand shell and million-dollar SaaS UI polish: live task #402 is done/verified; app-wide light BNA brand shell/topbars, Operations provider directory UI, parent/student/provider portal brand bars, Telegram UI-intent parser guard, `npm test` 204/204, Railway deployment `56747aa2-6dd8-41ad-96a8-2846097e46d8`, live app smoke, and desktop/mobile Playwright smokes passed
 - [x] Generate Sefaria source sheets from every class transcript: live task #322 is done/verified; produced `content-memory/source-sheets/2026-06-10-transcript-wide-class-source-sheets.md` with transcript coverage, direct Sefaria links, source maps, review notes, and verified URL/link checks
@@ -129,7 +161,7 @@
 - [x] Add inline comments inside expanded Operations task details and protect Windows+H dictation/text entry from background dashboard re-renders; live HTML check and live app smoke passed on deployment `ed9b96a0-1a0a-4e23-a6fc-7beb34b4e584` while Railway CLI still reported `INITIALIZING`
 - [x] Fix Operations decision-card completion flow: resolved decision cards now leave Decisions, plain decisions close into Done, and selected options that create agent work move to Changelog; deployed Railway `af620276-69c4-47e4-b614-fee15171381a` and live smoke passed
 - [x] Update Content prompt feedback workflow so WhatsApp, Facebook, newsletter, website blog, LinkedIn, and YouTube outputs use one correction/regenerate action that patches and versions the saved prompt before regenerating; deployed Railway `a54d62da-0abc-4986-83ae-a5ad3df35d6f` and live smoke passed
-- [x] Switch social posting from GHL Social Planner to Buffer for Facebook, LinkedIn, and YouTube; Railway env, server approval path, Telegram bridge copy, Operations buttons, diagnostics, deploy, and live smoke are verified
+- [x] Switch social posting from legacy CRM Social Planner to Buffer for Facebook, LinkedIn, and YouTube; Railway env, server approval path, Telegram bridge copy, Operations buttons, diagnostics, deploy, and live smoke are verified
 - [x] Test the WhatsApp-first content lane with a real long video upload
 - [x] Re-ingest/audit old raw rambles into the new Tasks / Students / Content / Contacts / Accounting model; live audit now shows 0 active tasks and 0 raw-looking task titles
 - [x] Add Telegram student-match decision buttons when accountability capture cannot confidently match a student
@@ -176,8 +208,8 @@
 - [x] Harden mixed recording parser routing and compact Content cards: topic-only collapsed cards, expanded detail sections, auto-parse triggers, and duplicate-safe filing
 - [x] Add first-pass mixed recording parser: content job -> tasks, student accountability, class notes, and group-goal entries with fallback review report
 - [x] Add edit/regenerate flow for platform drafts through tracked prompt versions
-- [x] Add GHL Facebook draft creation from approved content outputs
-- [x] Verify the live GHL Facebook publish path with a real post: Content output #52 is published as Facebook reel `6a26eb3dc39f87e2e6cf9f34`, and future draft/publish actions now store GHL post readback metadata
+- [x] Add legacy CRM Facebook draft creation from approved content outputs
+- [x] Verify the live legacy CRM Facebook publish path with a real post: Content output #52 is published as Facebook reel `6a26eb3dc39f87e2e6cf9f34`, and future draft/publish actions now store legacy CRM post readback metadata
 - [x] Add blog-create flow later, after the WhatsApp lane is reliable; first-party website blog publishing is live
 - [x] Add approval rules and safer target-selection for multi-account publishing
 - [x] Build separate Drive `Website Moments Intake` lane that auto-adds approved images to the homepage carousel
@@ -197,7 +229,7 @@
 - [x] Fix the hosted operations login/session flow and redeploy it
 - [x] Fix the signup payment flow to `Cash` vs `Credit` and redeploy it
 - [x] Remove the broken `mailto:` signup fallback that opened the email app
-- [x] Wire Telegram media intake into local storage with GHL upload deferred until publish approval
+- [x] Wire Telegram media intake into local storage with legacy CRM upload deferred until publish approval
 - [x] Add Telegram commands for `/accounts`, `/blogs`, and `/queue`
 - [x] Reshape operations dashboard language around Tasks, Students, Content, Contacts, and Accounting
 - [x] Finish Telegram UI redesign acceptance follow-up: Contacts now uses compact clickable roster cards with a detail panel instead of a dense table
@@ -221,7 +253,7 @@
 - [x] Run the first operator-directed plain-English Remotion video edit from an available source clip and verify the rendered MP4 output; fallback source used because no fresh non-generated clip was present
 - [ ] Build BNA Organic Clip Factory: ingest Drive/local image and video folders, auto-inventory assets, generate 22-second vertical Remotion clips with 2-second image chunks, captions/transcript overlays, transitions, background music, and a final flyer/update card, plus a CapCut handoff pack/prompt for manual finishing
 - [ ] Produce first BNA `Set your son free` daily-video intro clip: use the 4K Downloader audio segment from 1:10-1:27, 4-5 slow-motion boy clips from local/Drive sources such as drums and cooking, pan/zoom transitions, top title overlay, and a roughly 15-second intro render
-- [ ] One Time: map GHL API/browser capability for the Rabbi Sheller platform before any writes: contacts, tags, custom fields, pipelines/opportunities, calendars/classes, payments/access, workflows, community/membership support, social/content posting, and browser-only gaps
+- [ ] One Time: map first-party BNA Operations capability for the Rabbi Sheller platform before external writes: contacts, tags, pipelines/opportunities, calendars/classes, payments/access, workflows, community/membership support, social/content posting through Buffer, and browser-only gaps in Rabbi-owned systems
 - [ ] One Time: turn the partnership proposal into a drafting pack for Claude or another writing assistant: cleaner agreement draft, values checklist, refund/cancellation policy, family/device and Zoom/access rules, landing-page copy, launch emails, and reactivation copy
 - [ ] One Time: design the Rabbi content/media intake workflow from Drive drops into recordings, source sheets, worksheets, question digests, organic clips, ad candidates, approval, posting, and reporting
 - [x] One Time: ship first-pass external Rabbi portal/ticketing: generated scoped One Time Operations login, deployed `one_time_admin` project scope, Team tickets and Tasks > Schedule instead of a separate Roadmap section, project-scoped task/comment/parent/student/support-ticket APIs, final proposal task scheduling/workflow metadata seeding, and scoped Telegram support-ticket capture. Railway deployment `35707ab0-1069-44e3-a34d-0a062ca7833c`, Railway doctor, live smoke `ops/live-smokes/2026-06-10T13-03-37-257Z-live-app-smoke.md`, OpenAI smoke `ops/openai-smokes/2026-06-10T13-04-44-064Z-openai-sidekick-smoke.md`, and focused One Time live visual smoke passed.
@@ -244,17 +276,17 @@
 - [ ] Call Hillel's rabbi about whether to keep his learning approach inspiration/connection-first before moving him into text-based learning (live task #172)
 - [ ] Set up updated payment links: new signups immediate charge then first-of-month 12-payment schedule; existing credit-card parents first-of-month link with no immediate charge (live task #173)
 - [ ] Update `www.bneineviimacademy.org` DNS/Railway custom-domain setup so the www address gets a valid certificate or redirects cleanly (live task #194)
-- [x] Build first-pass Contacts `Interested Parents` CRM lane with BNA-owned lead status, lead category, interest level, tags, notes, next follow-up, source, GHL linkage fields, and a separate Communications log; seeded Adina Block and Sari Kaplan as school-interest leads
+- [x] Build first-pass Contacts `Interested Parents` CRM lane with BNA-owned lead status, lead category, interest level, tags, notes, next follow-up, historical legacy CRM linkage fields, and a separate Communications log; seeded Adina Block and Sari Kaplan as school-interest leads
 - [ ] Add hosted-media URL support for Buffer social posts so Telegram/Content photos and videos can attach to Buffer drafts instead of creating text-only drafts
-- [ ] Build GHL WhatsApp lead-candidate review importer: audit the recent GHL WhatsApp contacts into reviewable candidates, match current parents first, and avoid any GHL tag writes until explicit review
-- [ ] Build GHL WhatsApp conversation history sync for Contacts cards: match by GHL contact ID/normalized phone, store safe conversation/message history, and render recent parent/lead WhatsApp messages inside the matching expanded card
-- [ ] Confirm whether the intended Wappy product is `wappy.chat` or `wappy.ai`, and verify number portability, WhatsApp Business API access, webhooks/API export, Zapier/Pipedrive timing, AI automation, and data ownership before deciding whether GHL is still needed for WhatsApp
+- [ ] Build WAPI/Whapi WhatsApp lead-candidate review importer: audit recent WhatsApp contacts into reviewable first-party candidates, match current parents first, and avoid any external CRM writes
+- [ ] Build WAPI/Whapi WhatsApp conversation history sync for Contacts cards: match by normalized phone/first-party contact, store safe conversation/message history, and render recent parent/lead WhatsApp messages inside the matching expanded card
+- [ ] Confirm whether the intended Wappy product is `wappy.chat` or `wappy.ai`, and verify number portability, WhatsApp Business API access, webhooks/API export, Zapier/Pipedrive timing, AI automation, and data ownership before choosing any future WhatsApp connector
 - [x] Redesign Operations section top controls into compact subcategory count buttons plus open date/status/category/tag filters, removing duplicate large count cards across Tasks, Students, Content, Contacts, and Accounting
 - [x] Implement Drive Raw Intake website-image watcher from `tasks-pending/2026-06-03-website-moments-and-parser-routing.md`
 - [x] Archive stale family-accountability docs and dormant Next/Supabase code paths; retained legacy files now live under `docs/archive/` and are marked historical reference only
 - [ ] Decide whether the long-term runtime stays Express or moves fully to Next
 - [ ] Rebuild the operations dashboard against one canonical API surface
-- [x] Add smoke tests for login, task APIs, signup submit, and GHL sync
+- [x] Add smoke tests for login, task APIs, signup submit, and contact sync
 - [x] Configure Green Invoice webhook logging, reconciliation, and manual reprocess path
 - [ ] Verify Green Invoice sender-side webhook delivery/log settings once account access is available; app-side receiver/log/reprocess path is complete
 - [x] Clean Green Invoice app route so only one live `/api/webhooks/green-invoice` handler processes production webhooks
@@ -263,9 +295,9 @@
 
 ## Blockers
 
-- [x] First-party website blog posting is live; a GHL blog site is no longer required for BNA website articles
-- [x] GHL Social Planner diagnostics is live-smoke green again; latest `npm run app:smoke -- --require-drive` returned configured, 1 Facebook account, 3 other accounts, and posts read OK
-- [x] `GHL_DEFAULT_FACEBOOK_ACCOUNT_ID` is optional while only one active Facebook account exists; Content approval now refuses ambiguous multi-Facebook drafting if more are added without a default
+- [x] First-party website blog posting is live; an external CRM blog site is no longer required for BNA website articles
+- [x] Buffer social account lookup is the active social scheduler path for Facebook, LinkedIn, and YouTube
+- [x] Content approval no longer depends on the old default Facebook account env var; ambiguous social posting should resolve through Buffer channel/account selection
 - [ ] Google posting needs explicit alias selection because multiple Google accounts are connected
 - [ ] Rabbi Elie scoped Telegram bot token is configured locally and in Railway, with `RABBI_ELIE_SCHELLER_CODEX_ENABLED=false`; the One Time Drive folder and scoped Operations login are set up and smoke-tested, but live bot startup intentionally blocks until `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER` is confirmed and a hosted bridge runtime for `npm run telegram:rabbi` is chosen/started
 - [ ] Real Android/tablet shutoff requires a physical test tablet plus confirmed QStudio/Qustodio/Headwind/FreeKiosk credentials; app-side device control is mock-only until then
@@ -273,7 +305,7 @@
 - [ ] Cloud video rendering requires choosing/provisioning Shotstack, Creatomate, or another provider if local Remotion is not enough
 - [x] Unsynced paid intake records were reconciled into admin-created signup rows; unknown parent contact fields are intentionally blank instead of blocking the Accounting roster
 - [x] Voice/audio transcription is wired through the content ingestion path
-- [x] GHL blog posting is not required for first-party website blogs; GHL remains optional for distribution/contact workflows
+- [x] External CRM blog posting is not required for first-party website blogs; Buffer remains the social distribution connector
 
 ## Recent Wins
 
@@ -332,16 +364,16 @@
 - [x] Converted the public homepage into a one-page Blog/FAQ experience with anchor navigation, topic filters, FAQ filters, homepage Blog/FAQ JSON-LD, `robots.txt`, and `sitemap.xml`; live smoke passed on Railway deployment `631758d2-d759-46e0-886b-d85322502b95`
 - [x] Simplified Operations Accounting into one payment roster and removed Recent Payments, Pending Payments, and Green Invoice webhook audit from the visible payment section on Railway deployment `0b7adc21-6b1b-423b-aa73-190ed27964ee`
 - [x] Launched public Blog, Article, FAQ, Hebrew route shells, homepage philosophy cards, Blog/FAQ navigation, and SEO/AEO JSON-LD on Railway deployment `da9dfcc5-94e8-473e-abf4-5cc85f2da6b4`
-- [x] Found and fixed the GHL auth issue in code by switching to the current HighLevel PIT API
+- [x] Found and fixed the legacy CRM auth issue in code by switching to the current legacy CRM PIT API
 - [x] Found and fixed the broken operations login/session flow in local code
 - [x] Confirmed local Kimi CLI is configured for `kimi-k2.6`
 - [x] Created a repo-level pending-work convention using `tasks-pending/*.md`
 - [x] Local Telegram bot now routes directly to local Kimi CLI on `kimi-k2.6`
-- [x] Confirmed the connected GHL social accounts for Facebook, YouTube, and Google
-- [x] Confirmed GHL media upload works from local code
-- [x] Confirmed GHL social draft creation works from local code
-- [x] Confirmed 2026-06-01 that Content job #6 uploads video to GHL media and creates a Bnei Neviim Academy Facebook draft
-- [x] Added a GHL Social diagnostics endpoint at `/api/bna/ghl-social/diagnostics`
+- [x] Confirmed the connected legacy CRM social accounts for Facebook, YouTube, and Google
+- [x] Confirmed legacy CRM media upload works from local code
+- [x] Confirmed legacy CRM social draft creation works from local code
+- [x] Confirmed 2026-06-01 that Content job #6 uploads video to legacy CRM media and creates a Bnei Neviim Academy Facebook draft
+- [x] Added a legacy CRM Social diagnostics endpoint at `/api/bna/legacy CRM-social/diagnostics`
 - [x] Cleaned the Operations task manager language so old raw rambles stay out of the visible task UI
 - [x] Mobile-smoked Tasks, Content, and Students with Playwright after the task/content/student UI changes
 - [x] Fixed Railway deploy auth loop by switching scripts to project-token mode and explicit service/environment targeting
@@ -352,7 +384,7 @@
 - [x] Tightened Tasks routing: Changelog is read-only machine work, Done is Shloimie's completed personal work
 - [x] Added safe payment reminder endpoints and Accounting UI controls; local smoke passed without sending live email
 - [x] Added Telegram student-match buttons for unmatched accountability notes and a protected accountability PATCH endpoint
-- [x] Verified GHL Facebook draft creation works for text and media content through the Content action path
+- [x] Verified legacy CRM Facebook draft creation works for text and media content through the Content action path
 - [x] Added Content tab and database tables for raw uploads, platform drafts, and approval status
 - [x] Added shared content pipeline brief at `tasks-pending/2026-05-27-content-repurposing-pipeline.md`
 - [x] Added Content Prompt Studio: each platform output has a versioned prompt, examples/files, generate/regenerate, copy, and approval flow
@@ -370,7 +402,7 @@
 - [x] Cleaned Content job #19 fallback parse into concrete student accountability goals, private Torah goal minutes, and Operations student-goal checkoff buttons; live Torah public progress remains 15 percent and trip locked
 - [x] Added private student checkoff links at `/student.html`; all five current students have live access codes, canonical names, 15 percent Torah trip progress, and scoped `student_goal` checkoff updates
 - [x] Cleaned Accounting payment state so Braka/Baraka is the only active pending payment; Dratler and Kosofsky are paid cash, Weber is paid Green Invoice intake, and Golombo/Galambo is paid cash intake needing signup
-- [x] Added first-party website blog publishing from Content outputs: `blog_draft` prompts, Operations Website Blog generation, Telegram `Make Website Blog`, approval/publish to public JSON, and dynamic homepage/blog/article loading. GHL blogs are no longer a blocker for website articles.
+- [x] Added first-party website blog publishing from Content outputs: `blog_draft` prompts, Operations Website Blog generation, Telegram `Make Website Blog`, approval/publish to public JSON, and dynamic homepage/blog/article loading. legacy CRM blogs are no longer a blocker for website articles.
 - [x] Added homepage Learning Moments dynamic image feed plus `npm run website:add-moment -- --source ...` to optimize/copy images into the public carousel feed; Drive watcher/approval automation remains next.
 - [x] Expanded mixed-recording parsing with `daily_torah_updates` so spoken daily Torah completion writes admin-visible daily entries and cumulative 30-unit trip progress recalculates without setting public trip progress to 100.
 - [x] Extended Telegram Remotion editing so Drive/drop-folder companion images and audio become overlay assets for `/edit_video` and `/edit_drop`; dry-run smoke confirmed image overlay, audio overlay, and subtitle props.
@@ -381,7 +413,7 @@
 - `SYSTEM-STATE.md`
 - `tasks-pending/2026-06-11-content-library-v2-build-brief.md`
 - `tasks-pending/2026-05-31-website-slider-and-telegram-context.md`
-- `tasks-pending/2026-05-26-login-ghl-audit.md`
+- `tasks-pending/2026-05-26-login-legacy CRM-audit.md`
 - `tasks-pending/2026-05-27-content-repurposing-pipeline.md`
 - `tasks-pending/2026-05-27-bna-telegram-accountability-audit.md`
 - `memory/2026-05-26.md`

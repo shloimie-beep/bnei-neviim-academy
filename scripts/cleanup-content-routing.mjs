@@ -123,7 +123,7 @@ const nonContentPatterns = [
   /\bprivate meeting|check-?in|follow-?up|attendance|engagement\b/i,
   /\bprogress|percent|percentage|daily completion|group goal|points?|camping trip\b/i,
   /\bfitness|exercise|workout|diet|job goal|work goal\b/i,
-  /\bcodex|kimi|dashboard|telegram|bot|bridge|railway|ghl|webhook|parser|routing|task|tasks\b/i,
+  /\bcodex|kimi|dashboard|telegram|bot|bridge|railway|crm|webhook|parser|routing|task|tasks\b/i,
 ];
 
 const classContentPatterns = [

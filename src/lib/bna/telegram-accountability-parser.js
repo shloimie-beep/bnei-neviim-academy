@@ -231,7 +231,7 @@ function isLikelyTelegramStudentAccountabilityUnit(text, eventType, student) {
   if (hasParentAccountabilityRoutingIntent(text)) return true;
 
   const normalized = String(text || '').toLowerCase();
-  const systemRamble = /\b(api|app|dashboard|telegram|bot|bridge|drive|folder|whisper|openai|kimi|kimmy|codex|video|facebook|whatsapp|youtube|blog|newsletter|pipeline|repo|database|railway|ghl)\b/.test(normalized);
+  const systemRamble = /\b(api|app|dashboard|telegram|bot|bridge|drive|folder|whisper|openai|kimi|kimmy|codex|video|facebook|whatsapp|youtube|blog|newsletter|pipeline|repo|database|railway|legacy crm)\b/.test(normalized);
   if (systemRamble) return false;
 
   if (eventType === 'learning_note' || eventType === 'question') {

@@ -417,3 +417,14 @@ test('July 1 registration renewal flow requires four visible signatures and avoi
   assert.match(server, /requiredAgreementRecords\.length/);
   assert.match(server, /ON CONFLICT \(signup_id, agreement_type, agreement_version\) DO UPDATE SET/);
 });
+
+test('credit signup confirmation email sends the configured payment link to every parent email', () => {
+  assert.match(server, /function signupConfirmationRecipients/);
+  assert.match(server, /add\(signup\.parent_email\)/);
+  assert.match(server, /add\(signup\.parent2_email\)/);
+  assert.match(server, /extraRecipients: \[parent2_email\]/);
+  assert.match(server, /Please complete the ILS \$\{amount\} first tuition payment here: \$\{creditPaymentLink\}/);
+  assert.match(server, /paymentLink: normalizedPaymentMethod === 'green_invoice' && !matchedPaymentIntake \? PAYMENT_LINK : ''/);
+  assert.match(server, /payment_link_status: paymentLinkIncluded \? 'included' : 'not_included'/);
+  assert.match(server, /confirmationEmailRecipientCount: emailResult\.sent\?\.length \|\| 0/);
+});

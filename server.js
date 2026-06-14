@@ -93,7 +93,7 @@ const ONE_TIME_TASK_CATEGORIES = [
   'content',
   'technology',
   'accounting',
-  'ghl_setup',
+  'community_setup',
   'community',
   'general',
   'torah_class_prep',
@@ -125,10 +125,10 @@ const ONE_TIME_WORKFLOW_MAP = [
     category: 'marketing',
     assignee: 'Codex',
     owner: 'Shloimie/Codex',
-    summary: 'capture leads into GHL with source, tags, and membership intent.',
-    task: 'Document the lead form, GHL contact fields, tags, source attribution, first-response path, approval gate, and smoke-test criteria before any GHL writes.',
+    summary: 'capture leads into legacy CRM with source, tags, and membership intent.',
+    task: 'Document the lead form, legacy CRM contact fields, tags, source attribution, first-response path, approval gate, and smoke-test criteria before any legacy CRM writes.',
     implementation_status: 'documented_pending_approval',
-    objective: 'Every One Time prospect lands in GHL with enough attribution and membership intent to route follow-up, report conversions, and separate One Time leads from BNA Academy contacts.',
+    objective: 'Every One Time prospect lands in legacy CRM with enough attribution and membership intent to route follow-up, report conversions, and separate One Time leads from BNA Academy contacts.',
     required_fields: [
       'parent or buyer name',
       'email',
@@ -157,16 +157,16 @@ const ONE_TIME_WORKFLOW_MAP = [
       'one-time-needs-first-response',
     ],
     current_state_checklist: [
-      'Read current GHL forms, contact custom fields, pipelines, workflows, and relevant tags.',
+      'Read current legacy CRM forms, contact custom fields, pipelines, workflows, and relevant tags.',
       'Confirm whether the existing Lead Intake form should be reused or a One Time-specific form should be created.',
       'Confirm whether current source/intake fields can support One Time reporting or need new custom fields.',
       'Confirm the first-response workflow name and trigger before enabling it.',
     ],
-    approval_gate: 'No GHL contact, custom-field, tag, form, pipeline, or workflow writes until Shloimie approves the exact write plan for this workflow.',
+    approval_gate: 'No legacy CRM contact, custom-field, tag, form, pipeline, or workflow writes until Shloimie approves the exact write plan for this workflow.',
     smoke_tests: [
       'Read-only roadmap/API smoke shows Workflow A with required fields, membership intent options, approval gate, and task card link.',
-      'Dry-run payload maps one sample lead to source, tags, membership intent, first-response status, and notes without writing to GHL.',
-      'Post-approval live smoke creates or updates one approved test lead in GHL, verifies fields/tags/source/membership intent and first-response trigger, then records the result on the task.',
+      'Dry-run payload maps one sample lead to source, tags, membership intent, first-response status, and notes without writing to legacy CRM.',
+      'Post-approval live smoke creates or updates one approved test lead in legacy CRM, verifies fields/tags/source/membership intent and first-response trigger, then records the result on the task.',
     ],
   },
   {
@@ -176,7 +176,7 @@ const ONE_TIME_WORKFLOW_MAP = [
     assignee: 'Codex',
     owner: 'Shloimie',
     summary: 'reactivate the interested list and prior $9/$30 customers.',
-    task: 'Document the segmented warm-launch/reactivation workflow for interested emails and prior $9/$30 customers before any list import, tagging, email send, SMS/WhatsApp, or GHL workflow change.',
+    task: 'Document the segmented warm-launch/reactivation workflow for interested emails and prior $9/$30 customers before any list import, tagging, email send, SMS/WhatsApp, or legacy CRM workflow change.',
     implementation_status: 'documented_pending_approval',
     objective: 'One Time should separate the warm interested list from prior low-ticket customers, confirm consent and suppression rules, send only approved reactivation copy, preserve attribution through Workflow A/C, and report replies, clicks, and conversions without contacting anyone before approval.',
     required_fields_label: 'Required reactivation fields',
@@ -240,17 +240,17 @@ const ONE_TIME_WORKFLOW_MAP = [
       'suppression_reason',
     ],
     current_state_checklist: [
-      'Live read-only GHL audit on 2026-06-11 found generic interest tags such as interested, very-interested, replied-interested, and not-interested, but no exact One Time/Mishnah/Scheller reactivation tags or custom fields in reachable metadata.',
-      'The same audit found one reachable GHL workflow named Past Customer Review Blast; it is not confirmed as a One Time workflow and must be reviewed before reuse, cloning, triggering, or sending.',
-      'Reachable GHL products returned zero records; email templates returned HTTP 404 and email campaigns returned HTTP 401, so the active email/campaign source and permissions still need confirmation before implementation.',
-      'Confirm where the 1,500 interested emails and prior $9/$30 customer exports live, whether they include opt-in/unsubscribe/bounce data, and whether they may be imported into GHL or should stay in a review sheet first.',
+      'Live read-only legacy CRM audit on 2026-06-11 found generic interest tags such as interested, very-interested, replied-interested, and not-interested, but no exact One Time/Mishnah/Scheller reactivation tags or custom fields in reachable metadata.',
+      'The same audit found one reachable legacy CRM workflow named Past Customer Review Blast; it is not confirmed as a One Time workflow and must be reviewed before reuse, cloning, triggering, or sending.',
+      'Reachable legacy CRM products returned zero records; email templates returned HTTP 404 and email campaigns returned HTTP 401, so the active email/campaign source and permissions still need confirmation before implementation.',
+      'Confirm where the 1,500 interested emails and prior $9/$30 customer exports live, whether they include opt-in/unsubscribe/bounce data, and whether they may be imported into legacy CRM or should stay in a review sheet first.',
       'Confirm the approved sender identity, from-domain deliverability, copy owner, market/offer links, unsubscribe handling, and test recipients before any real send.',
-      'Confirm whether prior $9/$30 customers came from GHL payments, an external checkout, Rabbi/Replit/Vimeo tooling, spreadsheets, or another source before creating tags or reporting.',
+      'Confirm whether prior $9/$30 customers came from legacy CRM payments, an external checkout, Rabbi/Replit/Vimeo tooling, spreadsheets, or another source before creating tags or reporting.',
     ],
     approval_gate: 'No list import, contact update, tag/custom-field/workflow, email template/campaign, SMS/WhatsApp, payment-link/funnel, sender-domain, or reporting write until Shloimie approves the exact segments, suppression rules, sender/copy, links, and smoke-test recipients.',
     smoke_tests: [
       'Read-only roadmap/API smoke shows Workflow B with required segmentation fields, proposed tags, routing rules, current-state checklist, approval gate, and task card link.',
-      'Dry-run segmentation maps sample interested, prior $9, prior $30, duplicate, unsubscribed, bounced, and do-not-contact rows to tags/status/suppression without writing to GHL or sending messages.',
+      'Dry-run segmentation maps sample interested, prior $9, prior $30, duplicate, unsubscribed, bounced, and do-not-contact rows to tags/status/suppression without writing to legacy CRM or sending messages.',
       'Dry-run link smoke verifies sample reactivation links preserve market, offer, source list, campaign, and segment parameters for Workflows A/C/D/E.',
       'Post-approval live smoke sends only to approved internal/test recipients first, verifies unsubscribe link and attribution, confirms no suppressed contact is messaged, and records evidence before any broader send.',
     ],
@@ -262,7 +262,7 @@ const ONE_TIME_WORKFLOW_MAP = [
     assignee: 'Codex',
     owner: 'Codex',
     summary: 'route traffic to the correct offer and market version.',
-    task: 'Document the US/UK routing matrix, offer-page destinations, market-specific copy/payment assumptions, source tracking, approval gate, and smoke-test criteria before any domain, GHL, funnel, or payment-link writes.',
+    task: 'Document the US/UK routing matrix, offer-page destinations, market-specific copy/payment assumptions, source tracking, approval gate, and smoke-test criteria before any domain, legacy CRM, funnel, or payment-link writes.',
     implementation_status: 'documented_pending_approval',
     objective: 'One Time prospects should land on the correct market version and offer path, with attribution preserved from ad/email/referral link through lead capture and checkout reporting.',
     required_fields_label: 'Required routing fields',
@@ -275,7 +275,7 @@ const ONE_TIME_WORKFLOW_MAP = [
       'landing-page variant',
       'checkout/payment destination',
       'fallback market/version',
-      'contact handoff destination in GHL',
+      'contact handoff destination in legacy CRM',
     ],
     market_versions: [
       'US landing page/version: American spelling, schedule/time-zone expectations, US pricing/checkout once approved, One Time lead capture and reporting.',
@@ -286,7 +286,7 @@ const ONE_TIME_WORKFLOW_MAP = [
       'Prefer explicit URL/campaign parameters such as market=us, market=uk, offer=library, and offer=live over geolocation assumptions.',
       'Email/reactivation/referral links should carry market and offer parameters from the source list whenever known.',
       'Unknown or mixed traffic should show a clear market/offer choice instead of silently sending buyers to the wrong checkout.',
-      'Do not enable automatic redirects, domain rewrites, GHL funnel changes, or payment-link swaps until the approved routing matrix is recorded.',
+      'Do not enable automatic redirects, domain rewrites, legacy CRM funnel changes, or payment-link swaps until the approved routing matrix is recorded.',
     ],
     tracking_fields: [
       'utm_source',
@@ -300,23 +300,23 @@ const ONE_TIME_WORKFLOW_MAP = [
       'referrer or source detail',
     ],
     current_state_checklist: [
-      'Inventory current One Time landing pages, domains/subdomains, GHL funnels/forms, payment links, and any Replit/site routes before writing.',
+      'Inventory current One Time landing pages, domains/subdomains, legacy CRM funnels/forms, payment links, and any Replit/site routes before writing.',
       'Confirm whether US and UK need separate public pages, separate checkout links, copy-only variants, or just tracked URL parameters.',
       'Confirm approved currency/pricing wording and time-zone copy for each market before publishing.',
       'Confirm how lead capture from each page maps into Workflow A fields and tags.',
       'Confirm fallback behavior for Israel/other/unknown traffic and for old links.',
     ],
-    approval_gate: 'No public routing, redirect, GHL funnel, domain/DNS, form, tracking-script, or payment-link change until Shloimie approves the exact US/UK routing matrix and fallback behavior.',
+    approval_gate: 'No public routing, redirect, legacy CRM funnel, domain/DNS, form, tracking-script, or payment-link change until Shloimie approves the exact US/UK routing matrix and fallback behavior.',
     smoke_tests: [
       'Read-only roadmap/API smoke shows Workflow C with routing fields, market versions, tracking fields, approval gate, and task card link.',
-      'Dry-run URL matrix verifies sample US, UK, unknown, email, ad, and referral links resolve to the expected page/offer/checkout destination without writing to GHL or DNS.',
-      'Post-approval live smoke opens the approved US and UK URLs, verifies visible market copy and CTA destinations, submits or dry-runs one approved test lead per market, and confirms attribution arrives in GHL/reporting.',
+      'Dry-run URL matrix verifies sample US, UK, unknown, email, ad, and referral links resolve to the expected page/offer/checkout destination without writing to legacy CRM or DNS.',
+      'Post-approval live smoke opens the approved US and UK URLs, verifies visible market copy and CTA destinations, submits or dry-runs one approved test lead per market, and confirms attribution arrives in legacy CRM/reporting.',
     ],
   },
   {
     code: 'D',
     name: 'Abandoned checkout',
-    category: 'ghl_setup',
+    category: 'community_setup',
     assignee: 'Codex',
     owner: 'Codex',
     summary: 'recover started-but-unpaid checkout sessions.',
@@ -371,25 +371,25 @@ const ONE_TIME_WORKFLOW_MAP = [
       'suppression_reason',
     ],
     current_state_checklist: [
-      'Live read-only audit on 2026-06-10 found no exact One Time, Mishnah, Scheller, checkout, abandoned-checkout, or payment-recovery matches in reachable GHL custom fields, tags, workflows, pipelines, funnels, orders, or transactions.',
-      'Confirm the actual checkout provider/payment-link source and whether it can emit checkout-started and payment-success webhooks to GHL or the BNA app.',
+      'Live read-only audit on 2026-06-10 found no exact One Time, Mishnah, Scheller, checkout, abandoned-checkout, or payment-recovery matches in reachable legacy CRM custom fields, tags, workflows, pipelines, funnels, orders, or transactions.',
+      'Confirm the actual checkout provider/payment-link source and whether it can emit checkout-started and payment-success webhooks to legacy CRM or the BNA app.',
       'Inventory current One Time landing-page CTA and checkout destinations once Workflow C is approved.',
       'Confirm reminder channels: email, SMS, WhatsApp, internal task/comment only, or no automated external send at first.',
       'Confirm approved timing for first reminder, second reminder, and stop window.',
       'Confirm copy approval owner and whether Rabbi Elie signs content or Shloimie/business voice sends.',
       'Confirm suppression rules for paid customers, failed payments, manual contact, refund/cancellation requests, and children safety/community access concerns.',
     ],
-    approval_gate: 'No GHL tag/custom-field/workflow, payment-link/funnel, webhook, email/SMS/WhatsApp, or reporting write until Shloimie approves the exact checkout source, reminder timing/copy, suppression rules, and smoke-test contact/session.',
+    approval_gate: 'No legacy CRM tag/custom-field/workflow, payment-link/funnel, webhook, email/SMS/WhatsApp, or reporting write until Shloimie approves the exact checkout source, reminder timing/copy, suppression rules, and smoke-test contact/session.',
     smoke_tests: [
       'Read-only roadmap/API smoke shows Workflow D with required checkout fields, tags, routing rules, tracking fields, current-state checklist, approval gate, and task card link.',
-      'Dry-run payload maps one sample checkout-started event and one payment-success event to tags/status/suppression without writing to GHL or sending messages.',
+      'Dry-run payload maps one sample checkout-started event and one payment-success event to tags/status/suppression without writing to legacy CRM or sending messages.',
       'Post-approval live smoke creates or uses one approved test checkout/session, verifies abandonment tag/reminder scheduling, verifies payment success suppresses recovery and hands to Workflow E, and records recovered/abandoned reporting evidence.',
     ],
   },
   {
     code: 'E',
     name: 'Payment success',
-    category: 'ghl_setup',
+    category: 'community_setup',
     assignee: 'Codex',
     owner: 'Codex',
     summary: 'grant access and notify the buyer after payment succeeds.',
@@ -462,18 +462,18 @@ const ONE_TIME_WORKFLOW_MAP = [
       'manual_review_reason',
     ],
     current_state_checklist: [
-      'Live read-only audit on 2026-06-10 found general GHL paid/setup tags and two paid setup workflows, but no exact One Time, Mishnah, Scheller, payment-success, access-grant, product, pipeline, funnel, or form match in reachable GHL objects.',
-      'Generic GHL payment order/transaction/subscription list attempts returned HTTP 422, so the approved checkout provider and exact readback/query shape still need confirmation before implementation.',
-      'Confirm whether checkout/subscriptions are owned by GHL payments, an external/Replit backend, Green Invoice, Stripe, or another provider before writing webhooks or tags.',
-      'Confirm the membership/access destination for Video Library and Live Membership: GHL community, website portal, Drive/classroom resources, Zoom/live-class link, Telegram group, or another platform.',
+      'Live read-only audit on 2026-06-10 found general legacy CRM paid/setup tags and two paid setup workflows, but no exact One Time, Mishnah, Scheller, payment-success, access-grant, product, pipeline, funnel, or form match in reachable legacy CRM objects.',
+      'Generic legacy CRM payment order/transaction/subscription list attempts returned HTTP 422, so the approved checkout provider and exact readback/query shape still need confirmation before implementation.',
+      'Confirm whether checkout/subscriptions are owned by legacy CRM payments, an external/Replit backend, Green Invoice, Stripe, or another provider before writing webhooks or tags.',
+      'Confirm the membership/access destination for Video Library and Live Membership: legacy CRM community, website portal, Drive/classroom resources, Zoom/live-class link, Telegram group, or another platform.',
       'Confirm the approved tier mapping, especially that Premium Cohort is future-only and should not be granted automatically.',
       'Confirm buyer notification channel, sender voice, receipt/legal wording, refund/cancellation implications, and whether Rabbi Elie or Shloimie signs the welcome message.',
       'Confirm the approved test buyer/session/payment event and rollback/revoke path before any live smoke writes access or sends messages.',
     ],
-    approval_gate: 'No GHL tag/custom-field/workflow, payment-product/order/subscription, webhook, membership/community access, email/SMS/WhatsApp, receipt, or reporting write until Shloimie approves the checkout provider, access destination, purchased-tier mapping, notification copy/channel, test buyer/session, and rollback/revoke path.',
+    approval_gate: 'No legacy CRM tag/custom-field/workflow, payment-product/order/subscription, webhook, membership/community access, email/SMS/WhatsApp, receipt, or reporting write until Shloimie approves the checkout provider, access destination, purchased-tier mapping, notification copy/channel, test buyer/session, and rollback/revoke path.',
     smoke_tests: [
       'Read-only roadmap/API smoke shows Workflow E with required payment fields, proposed tags, routing rules, tracking fields, current-state checklist, approval gate, and task card link.',
-      'Dry-run payload maps one sample payment-success event to contact, tier, access status, Workflow D suppression, tags, receipt/welcome notification record, and reporting fields without writing to GHL or sending messages.',
+      'Dry-run payload maps one sample payment-success event to contact, tier, access status, Workflow D suppression, tags, receipt/welcome notification record, and reporting fields without writing to legacy CRM or sending messages.',
       'Idempotency dry-run replays the same payment event and verifies it would not duplicate access, tags, welcome messages, receipts, or reporting rows.',
       'Post-approval live smoke uses one approved test purchase/session or sandbox payment event, verifies correct tier access, buyer notification delivery, Workflow D recovery suppression, and reporting/ledger evidence.',
     ],
@@ -557,20 +557,20 @@ const ONE_TIME_WORKFLOW_MAP = [
       'manual_review_reason',
     ],
     current_state_checklist: [
-      'Live read-only GHL audit on 2026-06-10 found no exact One Time, Mishnah, Scheller, failed-payment, dunning, payment-recovery, subscription-failure, funnel, pipeline, or workflow match in reachable objects.',
-      'Reachable GHL tags include generic paid-recurring and recurring-authorized tags plus bot-declined; the only failure-like custom field match was Review - Request Status, which is not a One Time billing field.',
-      'Generic GHL payment order/transaction/subscription list attempts returned HTTP 422 and products returned HTTP 404, so the approved provider and exact readback/query shape still need confirmation before implementation.',
+      'Live read-only legacy CRM audit on 2026-06-10 found no exact One Time, Mishnah, Scheller, failed-payment, dunning, payment-recovery, subscription-failure, funnel, pipeline, or workflow match in reachable objects.',
+      'Reachable legacy CRM tags include generic paid-recurring and recurring-authorized tags plus bot-declined; the only failure-like custom field match was Review - Request Status, which is not a One Time billing field.',
+      'Generic legacy CRM payment order/transaction/subscription list attempts returned HTTP 422 and products returned HTTP 404, so the approved provider and exact readback/query shape still need confirmation before implementation.',
       'Local BNA accounting currently records payment logs, payment intake, and Green Invoice webhook deliveries, but it does not yet model One Time recurring subscription failure, retry, grace-period, or access-recovery state.',
-      'Confirm whether recurring billing is owned by GHL payments, Green Invoice, Stripe, Replit/site code, or another provider before writing webhooks, tags, or reporting rows.',
+      'Confirm whether recurring billing is owned by legacy CRM payments, Green Invoice, Stripe, Replit/site code, or another provider before writing webhooks, tags, or reporting rows.',
       'Confirm failure event names/statuses for card declined, invoice failed, retry scheduled, subscription past due, subscription canceled, and recovered payment.',
       'Confirm retry count/timing, grace period, access limitation or revocation policy, Rabbi/Shloimie owner alerts, and manual do-not-dunning rules.',
       'Confirm approved customer notification channel, sender voice, help/payment-update copy, and whether Rabbi Elie or Shloimie signs the message.',
       'Confirm the approved test subscription/customer, rollback or no-send path, and evidence required before any live smoke changes billing/access state.',
     ],
-    approval_gate: 'No GHL tag/custom-field/workflow, payment-product/order/subscription, webhook, membership/community access, email/SMS/WhatsApp, owner alert, support/task auto-creation, or reporting write until Shloimie approves the provider/source, retry/grace/access policy, notification copy/channel, test subscription/customer, and rollback/no-send path.',
+    approval_gate: 'No legacy CRM tag/custom-field/workflow, payment-product/order/subscription, webhook, membership/community access, email/SMS/WhatsApp, owner alert, support/task auto-creation, or reporting write until Shloimie approves the provider/source, retry/grace/access policy, notification copy/channel, test subscription/customer, and rollback/no-send path.',
     smoke_tests: [
       'Read-only roadmap/API smoke shows Workflow F with required failed-payment fields, proposed tags, routing rules, tracking fields, current-state checklist, approval gate, and task card link.',
-      'Dry-run payload maps one sample failed recurring payment event and one recovered payment event to subscription/contact, tags/status, retry/grace/access state, notification/owner alert, and reporting fields without writing to GHL or sending messages.',
+      'Dry-run payload maps one sample failed recurring payment event and one recovered payment event to subscription/contact, tags/status, retry/grace/access state, notification/owner alert, and reporting fields without writing to legacy CRM or sending messages.',
       'Idempotency dry-run replays the same failed attempt and verifies it would not duplicate reminders, owner alerts, access changes, tags, or reporting rows.',
       'Post-approval live smoke uses one approved sandbox/test subscription event, verifies failure detection, retry/grace state, approved customer message or owner alert, recovery suppression/restoration, and reporting/ledger evidence.',
     ],
@@ -658,17 +658,17 @@ const ONE_TIME_WORKFLOW_MAP = [
     ],
     current_state_checklist: [
       'Workflow G was previously only a placeholder card in the One Time roadmap and Drive setup workflow map.',
-      'Live read-only GHL/payment audits from 2026-06-10 found no exact One Time, Mishnah, Scheller, checkout, payment-success, failed-payment, tier-change, cancellation, refund, or access-removal automation in reachable workflow-card evidence.',
+      'Live read-only legacy CRM/payment audits from 2026-06-10 found no exact One Time, Mishnah, Scheller, checkout, payment-success, failed-payment, tier-change, cancellation, refund, or access-removal automation in reachable workflow-card evidence.',
       'Local BNA accounting currently records project-scoped payment logs, payment intake, and Green Invoice webhook deliveries; payment_log status includes refunded, but there is no dedicated One Time subscription, cancellation, refund, churn, or access-removal table.',
       'Support tickets include a cancellation category and can create accounting handoffs, but they are not a billing, refund, or access-removal automation.',
       'One Time open decisions still include refund/cancellation policy, and payment provider, access destination, save/retention rules, and notification copy are not confirmed.',
-      'Confirm whether cancellation/refund state is owned by GHL payments, Green Invoice, Stripe, Replit/site code, manual admin action, support ticket workflow, or another provider before writing webhooks, tags, access records, or reporting rows.',
+      'Confirm whether cancellation/refund state is owned by legacy CRM payments, Green Invoice, Stripe, Replit/site code, manual admin action, support ticket workflow, or another provider before writing webhooks, tags, access records, or reporting rows.',
       'Confirm effective-date policy, refund/credit rules, access-removal destination, save/retention behavior, customer notification channel, Rabbi/Shloimie approval owner, test customer/subscription, rollback/reinstate path, and no-send path.',
     ],
-    approval_gate: 'No GHL tag/custom-field/workflow, payment-product/order/subscription cancellation or refund, webhook, membership/community/live-class access removal, email/SMS/WhatsApp, owner alert, support/task auto-creation, reporting/churn write, or customer-facing policy publication until Shloimie approves the provider/source, cancellation/refund policy, effective-date/access-removal rules, save behavior, notification copy/channel, test customer/subscription, and rollback/reinstate/no-send path.',
+    approval_gate: 'No legacy CRM tag/custom-field/workflow, payment-product/order/subscription cancellation or refund, webhook, membership/community/live-class access removal, email/SMS/WhatsApp, owner alert, support/task auto-creation, reporting/churn write, or customer-facing policy publication until Shloimie approves the provider/source, cancellation/refund policy, effective-date/access-removal rules, save behavior, notification copy/channel, test customer/subscription, and rollback/reinstate/no-send path.',
     smoke_tests: [
       'Read-only roadmap/API smoke shows Workflow G with required cancellation fields, proposed tags, routing rules, tracking fields, current-state checklist, approval gate, and task card link.',
-      'Dry-run payload maps one cancel-at-period-end request and one immediate refund/access-removal request to subscription/contact, effective date, refund state, access state, tags/status, notification/no-send behavior, and reporting fields without writing to GHL, payment providers, access systems, or messages.',
+      'Dry-run payload maps one cancel-at-period-end request and one immediate refund/access-removal request to subscription/contact, effective date, refund state, access state, tags/status, notification/no-send behavior, and reporting fields without writing to legacy CRM, payment providers, access systems, or messages.',
       'Exception smoke verifies unverified requests, ambiguous contacts, failed payments, tier-change requests, support tickets, refund disputes, and already-canceled subscriptions route to manual review or Workflows F/H/N instead of changing billing or access.',
       'Idempotency dry-run replays the same cancellation request/provider event and verifies it would not duplicate refunds, access removal, tags, notifications, owner alerts, support tasks, or reporting rows.',
       'Post-approval live smoke uses one approved sandbox/test subscription or manually approved test customer, verifies cancellation/effective date, refund/no-refund state, access removal or pending handoff, customer notification/no-send behavior, reporting evidence, and rollback/reinstate path.',
@@ -677,7 +677,7 @@ const ONE_TIME_WORKFLOW_MAP = [
   {
     code: 'H',
     name: 'Upgrade/downgrade',
-    category: 'ghl_setup',
+    category: 'community_setup',
     assignee: 'Codex',
     owner: 'Codex',
     summary: 'move customers between Library and Live Membership.',
@@ -754,20 +754,20 @@ const ONE_TIME_WORKFLOW_MAP = [
       'manual_review_reason',
     ],
     current_state_checklist: [
-      'Live read-only GHL audit on 2026-06-10 found no exact One Time, Mishnah, Scheller, Video Library, Live Membership, upgrade, downgrade, tier-change, access-update, funnel, form, pipeline, or workflow match in reachable objects.',
-      'Reachable GHL tags include generic paid-recurring, recurring-authorized, quality-tier-a/b/c/d, tier-unknown, and religious-community tags; the only tier-like custom field match was Quality Tier, which is not a confirmed One Time membership field.',
-      'GHL products returned zero records, and generic payment order/transaction/subscription list attempts returned HTTP 422, so the approved billing provider and exact readback/query shape still need confirmation before implementation.',
+      'Live read-only legacy CRM audit on 2026-06-10 found no exact One Time, Mishnah, Scheller, Video Library, Live Membership, upgrade, downgrade, tier-change, access-update, funnel, form, pipeline, or workflow match in reachable objects.',
+      'Reachable legacy CRM tags include generic paid-recurring, recurring-authorized, quality-tier-a/b/c/d, tier-unknown, and religious-community tags; the only tier-like custom field match was Quality Tier, which is not a confirmed One Time membership field.',
+      'legacy CRM products returned zero records, and generic payment order/transaction/subscription list attempts returned HTTP 422, so the approved billing provider and exact readback/query shape still need confirmation before implementation.',
       'Local BNA/Railway schema currently has no One Time membership, subscription, tier-change, or access-grant table; schema matches for access/tier are unrelated device access, project member access_level, and student access-code fields.',
-      'Confirm whether tier changes are owned by GHL payments, Green Invoice, Stripe, Replit/site code, manual admin action, or another provider before writing webhooks, tags, access records, or reporting rows.',
+      'Confirm whether tier changes are owned by legacy CRM payments, Green Invoice, Stripe, Replit/site code, manual admin action, or another provider before writing webhooks, tags, access records, or reporting rows.',
       'Confirm the membership/access destination for Video Library and Live Membership, including whether live class reminders, recordings, worksheets/source sheets, community access, Zoom links, or Telegram groups are tier-gated.',
       'Confirm upgrade proration, downgrade effective date, refund/credit policy, next billing date behavior, and whether Shloimie or Rabbi Elie must approve each downgrade.',
       'Confirm customer notification channel, sender voice, billing/access wording, and whether Rabbi Elie or Shloimie signs the upgrade/downgrade message.',
       'Confirm the approved test subscription/customer, rollback/revoke path, and no-send path before any live smoke changes billing, access, tags, or messages.',
     ],
-    approval_gate: 'No GHL tag/custom-field/workflow, payment-product/order/subscription, webhook, membership/community/live-class access, email/SMS/WhatsApp, owner alert, support/task auto-creation, or reporting write until Shloimie approves the provider/source, tier mapping, proration/effective-date/access policy, notification copy/channel, test subscription/customer, and rollback/no-send path.',
+    approval_gate: 'No legacy CRM tag/custom-field/workflow, payment-product/order/subscription, webhook, membership/community/live-class access, email/SMS/WhatsApp, owner alert, support/task auto-creation, or reporting write until Shloimie approves the provider/source, tier mapping, proration/effective-date/access policy, notification copy/channel, test subscription/customer, and rollback/no-send path.',
     smoke_tests: [
       'Read-only roadmap/API smoke shows Workflow H with required tier-change fields, proposed tags, routing rules, tracking fields, current-state checklist, approval gate, and task card link.',
-      'Dry-run payload maps one Library-to-Live upgrade and one Live-to-Library downgrade to subscription/contact, billing/proration/effective date, access changes, tags/status, notification, and reporting fields without writing to GHL or sending messages.',
+      'Dry-run payload maps one Library-to-Live upgrade and one Live-to-Library downgrade to subscription/contact, billing/proration/effective date, access changes, tags/status, notification, and reporting fields without writing to legacy CRM or sending messages.',
       'Idempotency dry-run replays the same tier-change event and verifies it would not duplicate invoices, access changes, tags, notifications, owner alerts, or reporting rows.',
       'Post-approval live smoke uses one approved sandbox/test subscription or manually approved test customer, verifies the tier change, access update, notification/no-send behavior, reporting evidence, and rollback/revoke path.',
     ],
@@ -814,14 +814,14 @@ const ONE_TIME_WORKFLOW_MAP = [
       'Operations Calendar or task schedule: internal class events can store date/time, status, meeting URL, visibility, source, and metadata.',
       'Rabbi/admin class plan: Rabbi Elie or Shloimie confirms the five-class weekly schedule, class status, topic, and live link before reminders are enabled.',
       'Membership/access workflows: Workflow E grants Live Membership access, Workflow H changes tier eligibility, and Workflow G cancellation/access-removal suppresses reminders at the approved effective date.',
-      'GHL calendar/workflows may become a send channel only after the exact calendar, workflow, tags, and opt-in rules are approved.',
+      'legacy CRM calendar/workflows may become a send channel only after the exact calendar, workflow, tags, and opt-in rules are approved.',
       'Zoom, Telegram, email, SMS, WhatsApp, portal, or another access system remains a connector choice until approved.',
     ],
     routing_rules: [
       'Send class reminders only to confirmed Live Membership recipients with active paid, comped, trial, or explicitly approved live access.',
       'Library-only members do not receive live-class reminders unless Workflow H or a manual approval grants Live access.',
       'Cancellation, downgrade, failed-payment grace rules, refund/access removal, do-not-contact, and manual review states must suppress or pause reminders according to Workflows F/G/H and the approved access policy.',
-      'Use the canonical One Time class calendar/schedule version; do not infer five weekly class dates from old recordings, ad copy, or generic GHL appointment reminders.',
+      'Use the canonical One Time class calendar/schedule version; do not infer five weekly class dates from old recordings, ad copy, or generic legacy CRM appointment reminders.',
       'If a class is canceled, rescheduled, or the access link changes, send only the approved change notice and suppress stale reminder windows for the old class time/link.',
       'Make the workflow idempotent by class/session id, recipient id, reminder window, and schedule version so retries do not duplicate messages, tags, tasks, or reporting rows.',
       'After class, reminder status hands off to Workflow J for recordings, Workflow K for worksheets/source sheets, and Workflow L for submitted questions where relevant.',
@@ -853,17 +853,17 @@ const ONE_TIME_WORKFLOW_MAP = [
     ],
     current_state_checklist: [
       'Workflow I was previously only a placeholder card in the One Time roadmap and Drive setup workflow map.',
-      'Live read-only GHL probe on 2026-06-11 found generic appointment/reminder workflows and two calendars, including a Zoom-capable Default Service Calendar, but no exact One Time, Mishnah, Scheller, Live Membership, live-class reminder, product, or email-template match in reachable metadata.',
+      'Live read-only legacy CRM probe on 2026-06-11 found generic appointment/reminder workflows and two calendars, including a Zoom-capable Default Service Calendar, but no exact One Time, Mishnah, Scheller, Live Membership, live-class reminder, product, or email-template match in reachable metadata.',
       'Local BNA app has bna_calendar_events plus /api/bna/calendar-events for workspace-scoped internal events with meeting_url, status, visibility, source, and metadata.',
       'Local BNA app has project-scoped bna_class_sessions plus /api/bna/class-sessions readback for parsed class recordings/topics, but no dedicated One Time live-class reminder send/log table.',
       'Workflow E/H/G cards document Live Membership access changes, but the approved membership/access destination, recipient source, payment provider, and live-class entitlement table are not confirmed.',
       'The existing payment reminder engine is BNA signup/payment-specific and must not be reused for One Time class reminders without a separate approved design.',
       'Confirm the five-class weekly schedule, timezone, holiday/cancellation handling, Zoom/access destination, eligible recipient source, opt-in/suppression rules, reminder windows, sender voice/copy, and approved test member before any live writes or sends.',
     ],
-    approval_gate: 'No GHL tag/custom-field/workflow/calendar write, Google Calendar/Zoom/access-system change, member entitlement write, reminder send/log table, cron/job, email/SMS/WhatsApp/Telegram/portal message, task/status auto-update, or reporting write until Shloimie approves the exact weekly schedule, recipient source, access-link policy, channel/copy, suppression rules, test class/member, and rollback/no-send path.',
+    approval_gate: 'No legacy CRM tag/custom-field/workflow/calendar write, Google Calendar/Zoom/access-system change, member entitlement write, reminder send/log table, cron/job, email/SMS/WhatsApp/Telegram/portal message, task/status auto-update, or reporting write until Shloimie approves the exact weekly schedule, recipient source, access-link policy, channel/copy, suppression rules, test class/member, and rollback/no-send path.',
     smoke_tests: [
       'Read-only roadmap/API smoke shows Workflow I with required class reminder fields, intake channels, routing rules, tracking fields, current-state checklist, approval gate, and task card link.',
-      'Dry-run weekly matrix maps five sample classes to class status, Live-member recipients, reminder windows, access link handling, material readiness, and suppressions without writing to GHL, calendar providers, access systems, or sending messages.',
+      'Dry-run weekly matrix maps five sample classes to class status, Live-member recipients, reminder windows, access link handling, material readiness, and suppressions without writing to legacy CRM, calendar providers, access systems, or sending messages.',
       'Eligibility smoke verifies Library-only, canceled, downgraded, failed-payment/manual-review, do-not-contact, and active Live members route to the correct send or suppression outcome.',
       'Idempotency dry-run replays the same class reminder window and verifies it would not duplicate messages, tags, tasks, calendar state, or reporting rows.',
       'Post-approval live smoke uses one approved test class and one approved test member, verifies reminder delivery/no-send behavior, confirms stale links are not sent after reschedule/cancellation, and records evidence before enabling broader reminders.',
@@ -888,7 +888,7 @@ const ONE_TIME_WORKFLOW_MAP = [
       'recorded date, class date, duration, file type, and processing status',
       'privacy review status: raw, reviewed, trimmed, redacted, approved, rejected, or manual review',
       'Rabbi/admin approval status and approver',
-      'posting destination: member portal, external Rabbi app/Vimeo, Drive/Classroom folder, website library, GHL community, or no-post marker',
+      'posting destination: member portal, external Rabbi app/Vimeo, Drive/Classroom folder, website library, legacy CRM community, or no-post marker',
       'eligible audience: Video Library, Live Membership, comped/trial access, or manually approved household',
       'library/lesson URL or destination id plus public-safe URL hash for reporting',
       'notification channel, copy version, send status, and suppression/no-send reason',
@@ -961,12 +961,12 @@ const ONE_TIME_WORKFLOW_MAP = [
       'Provider setup records model a Rabbi Sheller video/library app as an external delivery system with manual-link mode, and the Rabbi software/Vimeo/Replit backend still needs inspection before treating it as writable.',
       'Workflow E/H/G cards document member access changes, but the approved access destination for Video Library and Live Membership recordings is not confirmed.',
       'Confirm source recording provider, processing/transcript path, privacy review rules, posting destination, eligible recipient source, notification channel/copy, same-day SLA, archive/rollback path, and approved test recording/member before live writes or sends.',
-      'No GHL, Buffer, Vimeo/Replit, Zoom, Drive permission, website/member portal, email, SMS, WhatsApp, Telegram, task-closure, or reporting writes were made while documenting this workflow card.',
+      'No legacy CRM, Buffer, Vimeo/Replit, Zoom, Drive permission, website/member portal, email, SMS, WhatsApp, Telegram, task-closure, or reporting writes were made while documenting this workflow card.',
     ],
-    approval_gate: 'No GHL tag/custom-field/workflow, Buffer/social post, blog/public website post, Vimeo/Replit/Rabbi-app/video-library write, Zoom/cloud-recording change, Drive permission/member-link change, membership/access write, recording-post table/job, email/SMS/WhatsApp/Telegram/portal notification, task/status auto-update, support auto-creation, or reporting write until Shloimie approves the source provider, privacy review policy, posting destination, eligible audience, notification copy/channel, same-day/late policy, test recording/member, and rollback/no-send path.',
+    approval_gate: 'No legacy CRM tag/custom-field/workflow, Buffer/social post, blog/public website post, Vimeo/Replit/Rabbi-app/video-library write, Zoom/cloud-recording change, Drive permission/member-link change, membership/access write, recording-post table/job, email/SMS/WhatsApp/Telegram/portal notification, task/status auto-update, support auto-creation, or reporting write until Shloimie approves the source provider, privacy review policy, posting destination, eligible audience, notification copy/channel, same-day/late policy, test recording/member, and rollback/no-send path.',
     smoke_tests: [
       'Read-only roadmap/API smoke shows Workflow J with required recording fields, intake channels, routing rules, tracking fields, current-state checklist, approval gate, and task card link.',
-      'Dry-run recording payload maps one completed class to source asset, transcript, privacy/Rabbi review, destination, eligible Video Library/Live audience, notification/no-send state, archive, and rollback fields without writing to GHL, Buffer, Drive permissions, video providers, portals, or sending messages.',
+      'Dry-run recording payload maps one completed class to source asset, transcript, privacy/Rabbi review, destination, eligible Video Library/Live audience, notification/no-send state, archive, and rollback fields without writing to legacy CRM, Buffer, Drive permissions, video providers, portals, or sending messages.',
       'Privacy smoke verifies raw/private recordings, child names, operational rambles, unclear audio, missing class id, and rejected recordings stay out of the member library and route to manual review or support/task handoff.',
       'Idempotency dry-run replays the same approved recording and verifies it would not duplicate library posts, tags, notifications, support tickets, tasks, or reporting rows.',
       'Post-approval live smoke uses one approved test recording and one approved test member, verifies the member-visible link/destination, notification/no-send behavior, unpublish/rollback path, Workflow K/L links, and reporting evidence before enabling broader recording posting.',
@@ -1026,7 +1026,7 @@ const ONE_TIME_WORKFLOW_MAP = [
       'Attach materials to the correct lesson by class/session id plus recording/lesson id when available; ambiguous or duplicate class matches route to manual review instead of posting.',
       'Video Library and Live Membership members can receive materials only when Workflow E/H grants active access and Workflow F/G suppression rules do not pause or remove access.',
       'Student worksheets, parent discussion versions, Rabbi/teacher notes, and member-library source sheets are separate audience versions; do not expose student names, private questions, or internal notes unless explicitly approved.',
-      'Google Classroom, Drive, GHL, portal, email, WhatsApp, Telegram, or external Rabbi-app delivery can be used only as approved destinations; public/social/website publishing belongs to separate content workflows.',
+      'Google Classroom, Drive, legacy CRM, portal, email, WhatsApp, Telegram, or external Rabbi-app delivery can be used only as approved destinations; public/social/website publishing belongs to separate content workflows.',
       'If a worksheet/source sheet is corrected, replaced, unpublished, or moved, notify only approved recipients with approved copy and retain an archive/rollback trail.',
       'Link Workflow K artifacts to Workflow J recordings and Workflow L submitted questions when they belong to the same lesson.',
       'Make the workflow idempotent by class/session id, material asset id, material version, destination id, audience/tier version, and notification channel so retries do not duplicate posts, messages, tags, tasks, or reports.',
@@ -1069,12 +1069,12 @@ const ONE_TIME_WORKFLOW_MAP = [
       'Local BNA/Railway schema currently has no dedicated One Time worksheet/source-sheet post, lesson-material asset, member-material notification, or material access entitlement table.',
       'Provider setup records model the Rabbi Sheller video/library app as an external delivery system with manual-link mode, and the Rabbi software/Vimeo/Replit backend still needs inspection before treating it as writable.',
       'Confirm material source provider, citation/source-review policy, Rabbi approval owner, posting destination, audience/tier rules, notification channel/copy, Classroom/Drive account policy, approved test lesson/member, and rollback/no-send path before live writes or sends.',
-      'No GHL, Google Classroom, Drive permission, Google Docs, Sefaria sheet, Vimeo/Replit/Rabbi-app, website/member portal, email, SMS, WhatsApp, Telegram, task-closure, support auto-creation, or reporting writes were made while documenting this workflow card.',
+      'No legacy CRM, Google Classroom, Drive permission, Google Docs, Sefaria sheet, Vimeo/Replit/Rabbi-app, website/member portal, email, SMS, WhatsApp, Telegram, task-closure, support auto-creation, or reporting writes were made while documenting this workflow card.',
     ],
-    approval_gate: 'No GHL tag/custom-field/workflow, Google Classroom/coursework, Google Calendar, Drive permission/document, Sefaria sheet, Vimeo/Replit/Rabbi-app/video-library, website/member portal, membership/access write, worksheet/source-sheet post table/job, email/SMS/WhatsApp/Telegram/portal notification, task/status auto-update, support auto-creation, or reporting write until Shloimie approves the material source, source-check/Rabbi-review policy, posting destination, eligible audience, Classroom/Drive account policy, notification copy/channel, test lesson/member, and rollback/no-send path.',
+    approval_gate: 'No legacy CRM tag/custom-field/workflow, Google Classroom/coursework, Google Calendar, Drive permission/document, Sefaria sheet, Vimeo/Replit/Rabbi-app/video-library, website/member portal, membership/access write, worksheet/source-sheet post table/job, email/SMS/WhatsApp/Telegram/portal notification, task/status auto-update, support auto-creation, or reporting write until Shloimie approves the material source, source-check/Rabbi-review policy, posting destination, eligible audience, Classroom/Drive account policy, notification copy/channel, test lesson/member, and rollback/no-send path.',
     smoke_tests: [
       'Read-only roadmap/API smoke shows Workflow K with required material fields, intake channels, routing rules, tracking fields, current-state checklist, approval gate, and task card link.',
-      'Dry-run material payload maps one completed class to recording link, source citations, draft material, Rabbi review, destination, eligible audience, notification/no-send state, archive, and rollback fields without writing to GHL, Google Classroom, Drive permissions, external apps, portals, or sending messages.',
+      'Dry-run material payload maps one completed class to recording link, source citations, draft material, Rabbi review, destination, eligible audience, notification/no-send state, archive, and rollback fields without writing to legacy CRM, Google Classroom, Drive permissions, external apps, portals, or sending messages.',
       'Source-quality smoke verifies missing citations, unverified Hebrew, practical halacha/psak claims, private student names/questions, ambiguous lesson matches, and rejected drafts stay private and route to manual review.',
       'Eligibility smoke verifies Video Library, Live Membership, canceled/downgraded/failed-payment, do-not-contact, manual-review, and approved assigned-student cases route to the correct visible or suppressed outcome.',
       'Idempotency dry-run replays the same approved material version and verifies it would not duplicate posts, tags, notifications, support tickets, tasks, or reporting rows.',
@@ -1098,7 +1098,7 @@ const ONE_TIME_WORKFLOW_MAP = [
       'student/child name or anonymous household label when needed',
       'question text',
       'related class, recording, worksheet/source sheet, masechta/perek/mishnah, or topic',
-      'submission source: member portal/form, email, WhatsApp, Telegram, GHL form, or admin entry',
+      'submission source: member portal/form, email, WhatsApp, Telegram, legacy CRM form, or admin entry',
       'visibility level: private to Rabbi/Shloimie/Codex, anonymized for class, or approved for member digest',
       'response owner: Rabbi Elie, Shloimie/admin, Codex/source-sheet prep, or needs decision',
       'response status: received, triaged, assigned, answered privately, answered in class, source-sheet needed, or archived',
@@ -1107,7 +1107,7 @@ const ONE_TIME_WORKFLOW_MAP = [
       'Private member form or portal submission once approved; no public forum or member-to-member posting.',
       'Admin/Rabbi entry from email, WhatsApp, Telegram, or live class questions using the same required fields.',
       'Class recording/content parser can suggest candidate questions for Rabbi review, but should not publish or notify members automatically.',
-      'Optional GHL form/webhook only after Workflow A/C identity and source tracking are approved.',
+      'Optional legacy CRM form/webhook only after Workflow A/C identity and source tracking are approved.',
     ],
     routing_rules: [
       'Every submission stays private by default; public forum threads, member comments, and peer replies are out of scope for launch.',
@@ -1139,13 +1139,13 @@ const ONE_TIME_WORKFLOW_MAP = [
       'Current roadmap already has Workflow L as a placeholder; this card expands it into a documented private workflow.',
       'Existing BNA parent/student question features are school/accountability-specific and should not be reused as public One Time forum behavior.',
       'Support ticket workflow exists separately for broken-system questions; do not mix support tickets into Torah/member question submissions.',
-      'No dedicated One Time question submission table, member portal form, GHL question form, or Rabbi digest sender has been approved yet.',
+      'No dedicated One Time question submission table, member portal form, legacy CRM question form, or Rabbi digest sender has been approved yet.',
       'Confirm identity source, intake channel, digest cadence, response channel, anonymization policy, and test submitter before any live writes or messages.',
     ],
-    approval_gate: 'No public forum, member-visible question feed, GHL form/tag/workflow, notification, email/SMS/WhatsApp send, member portal form, database question table, or digest automation write until Shloimie approves the exact intake channel, privacy policy, response cadence, owner routing, copy/channel, and smoke-test submitter.',
+    approval_gate: 'No public forum, member-visible question feed, legacy CRM form/tag/workflow, notification, email/SMS/WhatsApp send, member portal form, database question table, or digest automation write until Shloimie approves the exact intake channel, privacy policy, response cadence, owner routing, copy/channel, and smoke-test submitter.',
     smoke_tests: [
       'Read-only roadmap/API smoke shows Workflow L with private intake fields, intake channels, routing rules, tracking fields, current-state checklist, approval gate, and task card link.',
-      'Dry-run question payload maps one sample member question to visibility, owner, lesson/source-sheet link, digest grouping, response status, and follow-up task without writing to GHL or sending messages.',
+      'Dry-run question payload maps one sample member question to visibility, owner, lesson/source-sheet link, digest grouping, response status, and follow-up task without writing to legacy CRM or sending messages.',
       'Privacy smoke verifies sample output does not expose child/member names unless visibility is explicitly approved.',
       'Post-approval live smoke submits one approved test question, verifies Rabbi/Codex digest/assignment readback, verifies private/member follow-up behavior, and confirms no public forum/feed was created.',
     ],
@@ -1159,7 +1159,7 @@ const ONE_TIME_WORKFLOW_MAP = [
     summary: 'send relevant parent/member updates.',
     task: 'Document and, after approval, build the parent/member update workflow: update trigger, audience selection, privacy review, Rabbi/Shloimie copy approval, channel delivery, suppression/no-send handling, communication logging, reply follow-up, and smoke-test evidence.',
     implementation_status: 'documented_pending_approval',
-    objective: 'One Time parents and members should receive only the relevant class, recording, material, question-response, schedule, access, or support update that applies to their household or tier, with private student/family details protected and no email, WhatsApp, portal, Telegram, or GHL send happening before approval.',
+    objective: 'One Time parents and members should receive only the relevant class, recording, material, question-response, schedule, access, or support update that applies to their household or tier, with private student/family details protected and no email, WhatsApp, portal, Telegram, or legacy CRM send happening before approval.',
     required_fields_label: 'Required parent/member update fields',
     required_fields: [
       'parent/member update id and update type: schedule, class summary, recording, worksheet/source sheet, question response, access, payment, support, or general announcement',
@@ -1194,7 +1194,7 @@ const ONE_TIME_WORKFLOW_MAP = [
       'Workflow I/J/K/L handoffs: class status, recording posts, worksheet/source-sheet posts, and private question responses can request a parent/member update only after the related class/material/question identity is known.',
       'Workflow E/F/G/H access and billing handoffs: payment success, failed payment, cancellation, and tier change state can request notices only under the approved access/billing policy.',
       'Admin/Rabbi manual entry from email, WhatsApp, phone, in-person conversation, Telegram, or dashboard note can draft an update with the same required fields.',
-      'GHL email/SMS, WhatsApp/WAPI, Telegram, portal, or external Rabbi-app delivery can become send channels only after the exact recipient source, copy, sender, opt-in, and rollback/no-send policy are approved.',
+      'legacy CRM email/SMS, WhatsApp/WAPI, Telegram, portal, or external Rabbi-app delivery can become send channels only after the exact recipient source, copy, sender, opt-in, and rollback/no-send policy are approved.',
     ],
     routing_rules: [
       'Parent/member updates are relationship and operations messages, not public marketing content; organic/social posts stay in Workflows Q/R and support problems stay in Workflow N.',
@@ -1248,12 +1248,12 @@ const ONE_TIME_WORKFLOW_MAP = [
       'Parent portal magic/password links and per-family login-link sends exist for BNA/portal access, but no dedicated One Time parent/member update cadence, template approval, audience entitlement, delivery log, or update table has been approved.',
       'Content prompts can generate public WhatsApp/newsletter/social drafts, but public content generation must not be reused for private One Time parent/member updates or mix in child, support, payment, or operational details.',
       'Confirm recipient source, membership/access destination, update types/cadence, privacy policy, Rabbi/Shloimie copy ownership, channel/sender, opt-in/suppression rules, approved test recipient, and rollback/no-send path before live writes or sends.',
-      'No GHL, contact-list, email, SMS, WhatsApp, Telegram, portal, Rabbi-app, parent-update table/job, task-closure, support auto-creation, or reporting writes were made while documenting this workflow card.',
+      'No legacy CRM, contact-list, email, SMS, WhatsApp, Telegram, portal, Rabbi-app, parent-update table/job, task-closure, support auto-creation, or reporting writes were made while documenting this workflow card.',
     ],
-    approval_gate: 'No GHL tag/custom-field/workflow/contact-list write, email template/campaign, SMS/WhatsApp/Telegram/portal notification, parent/member update table/job/cron, portal/member-access write, contact update, task/status auto-update, support auto-creation, or reporting write until Shloimie approves the exact update types/cadence, recipient source, audience eligibility, privacy policy, Rabbi/Shloimie approval rule, channel/copy/sender, test recipient, and rollback/no-send path.',
+    approval_gate: 'No legacy CRM tag/custom-field/workflow/contact-list write, email template/campaign, SMS/WhatsApp/Telegram/portal notification, parent/member update table/job/cron, portal/member-access write, contact update, task/status auto-update, support auto-creation, or reporting write until Shloimie approves the exact update types/cadence, recipient source, audience eligibility, privacy policy, Rabbi/Shloimie approval rule, channel/copy/sender, test recipient, and rollback/no-send path.',
     smoke_tests: [
       'Read-only roadmap/API smoke shows Workflow M with required parent/member update fields, proposed tags, intake channels, routing rules, tracking fields, current-state checklist, approval gate, and task card link.',
-      'Dry-run update payload maps one sample class/material/question update to recipient source, tier eligibility, privacy review, copy approval, channel, suppression/no-send state, communication log, and follow-up owner without writing to GHL, WAPI, portal, Telegram, or sending messages.',
+      'Dry-run update payload maps one sample class/material/question update to recipient source, tier eligibility, privacy review, copy approval, channel, suppression/no-send state, communication log, and follow-up owner without writing to legacy CRM, WAPI, portal, Telegram, or sending messages.',
       'Privacy smoke verifies child names, private family details, private questions, support issues, operational rambles, and unreviewed AI drafts stay out of parent/member sends and route to manual review.',
       'Eligibility smoke verifies Video Library, Live Membership, canceled/downgraded/failed-payment, do-not-contact, manual-review, duplicate-contact, and approved household cases route to the correct send or suppression outcome.',
       'Idempotency dry-run replays the same approved update and verifies it would not duplicate messages, tags, communication records, support tickets, tasks, or reporting rows.',
@@ -1392,7 +1392,7 @@ const ONE_TIME_WORKFLOW_MAP = [
       'Workflow M parent/member update replies can suggest happy-member candidates only after privacy and support/billing state are checked.',
       'Workflow E/H/G/F access and billing state can confirm active, upgraded, canceled, failed-payment, or refund status before asking for referrals or granting a thank-you.',
       'Workflow L/P positive questions or testimonial/reputation signals can create referral candidates only after Rabbi/Shloimie approval.',
-      'GHL forms, referral links, coupons, rewards, portal prompts, email/SMS/WhatsApp, or external Rabbi-app referral capture can become live intake/delivery channels only after the exact policy and test path are approved.',
+      'legacy CRM forms, referral links, coupons, rewards, portal prompts, email/SMS/WhatsApp, or external Rabbi-app referral capture can become live intake/delivery channels only after the exact policy and test path are approved.',
     ],
     routing_rules: [
       'Ask for referrals only from happy, eligible members or parents; do not ask contacts with open support issues, failed payments, cancellations/refunds, unresolved private concerns, do-not-contact status, or ambiguous household identity.',
@@ -1446,15 +1446,15 @@ const ONE_TIME_WORKFLOW_MAP = [
       'Repo/code observation on 2026-06-11 found Workflow A already proposes one-time-source:referral and Workflow C already expects referral links to carry market/offer/source parameters, but no dedicated Workflow O referral request or reward policy was documented.',
       'The bna_parent_leads table already supports source=referral, source_detail, tags, owner, and project-scoped contact ownership; /api/bna/parent-leads can create/read/update leads, but it is not a dedicated One Time referral program.',
       'The bna_contact_communications table and /api/bna/contact-communications can log outbound/inbound notes and follow-up requirements; the WAPI send endpoint requires explicit confirm SEND_WHATSAPP and must not be used as a referral broadcast without approved recipients/copy.',
-      'No dedicated referral table, referral code/link generator, referral landing page, coupon/credit/reward ledger, referrer dashboard, public leaderboard, or GHL referral automation has been approved yet.',
+      'No dedicated referral table, referral code/link generator, referral landing page, coupon/credit/reward ledger, referrer dashboard, public leaderboard, or legacy CRM referral automation has been approved yet.',
       'Workflow E/F/G/H payment and access cards still require approved provider/source-of-truth decisions, so referral conversion and reward triggers must stay dry-run/manual until trusted payment/access readback exists.',
       'Confirm happy-member eligibility, referral ask timing, copy/sender voice, privacy wording, reward/no-reward policy, attribution parameters, channel/opt-in rules, approved test referrer, approved test referred lead, and rollback/no-send path before live writes or sends.',
-      'No GHL, contact-list, referral-link/code, email, SMS, WhatsApp, Telegram, portal, Rabbi-app, payment/credit/reward, task-closure, support auto-creation, or reporting writes were made while documenting this workflow card.',
+      'No legacy CRM, contact-list, referral-link/code, email, SMS, WhatsApp, Telegram, portal, Rabbi-app, payment/credit/reward, task-closure, support auto-creation, or reporting writes were made while documenting this workflow card.',
     ],
-    approval_gate: 'No GHL tag/custom-field/workflow/contact-list write, referral form/link/code/coupon, email template/campaign, SMS/WhatsApp/Telegram/portal notification, contact update, payment credit/discount/refund/reward, public proof/leaderboard, referral table/job/cron, task/status auto-update, support auto-creation, or reporting write until Shloimie approves the exact happy-member eligibility, ask timing, copy/sender, channel/opt-in rules, attribution fields, reward/no-reward policy, test referrer, test referred lead, and rollback/no-send path.',
+    approval_gate: 'No legacy CRM tag/custom-field/workflow/contact-list write, referral form/link/code/coupon, email template/campaign, SMS/WhatsApp/Telegram/portal notification, contact update, payment credit/discount/refund/reward, public proof/leaderboard, referral table/job/cron, task/status auto-update, support auto-creation, or reporting write until Shloimie approves the exact happy-member eligibility, ask timing, copy/sender, channel/opt-in rules, attribution fields, reward/no-reward policy, test referrer, test referred lead, and rollback/no-send path.',
     smoke_tests: [
       'Read-only roadmap/API smoke shows Workflow O with required referral fields, proposed tags, intake channels, routing rules, tracking fields, current-state checklist, approval gate, and task card link.',
-      'Dry-run referral request payload maps one happy active member and one suppressed member to eligibility, copy approval, channel, referral code/link, no-send reason, communication log, and follow-up owner without writing to GHL, WAPI, portal, Telegram, payment providers, or sending messages.',
+      'Dry-run referral request payload maps one happy active member and one suppressed member to eligibility, copy approval, channel, referral code/link, no-send reason, communication log, and follow-up owner without writing to legacy CRM, WAPI, portal, Telegram, payment providers, or sending messages.',
       'Dry-run referred-lead payload maps one referred prospect into Workflow A/C source, market, offer, referrer hash, attribution, checkout handoff, and payment-success handoff without creating a real contact or checkout.',
       'Privacy smoke verifies child names, family details, private questions, support issues, payment state, raw testimonials, and unreviewed AI drafts stay out of referral requests and links unless explicitly approved.',
       'Idempotency dry-run replays the same referral request, referred lead, conversion event, and thank-you action and verifies it would not duplicate messages, tags, lead records, rewards, credits, tasks, or reporting rows.',
@@ -1476,11 +1476,11 @@ const ONE_TIME_WORKFLOW_MAP = [
       'testimonial or reputation request id and contact/member/household id',
       'candidate source: positive reply, Workflow M update reply, Workflow L question gratitude, Workflow J/K recording or worksheet feedback, Workflow O referral-positive signal, Rabbi/Shloimie manual approval, or manual review',
       'relationship and tier context: parent, member, student household, Video Library, Live Membership, comped/trial, canceled, failed-payment, or manual review',
-      'consent basis and approved use scope: private feedback only, internal proof, website, landing page, ad, social, email, Google/Facebook review request, GHL/reputation widget, or manual review',
+      'consent basis and approved use scope: private feedback only, internal proof, website, landing page, ad, social, email, Google/Facebook review request, legacy CRM/reputation widget, or manual review',
       'raw testimonial text and source location: message id, communication id, transcript excerpt id, form submission, email, WhatsApp, Telegram, Drive file, or manual note',
       'edited quote/draft, exact approved wording, approval status, approved_by, approved_at, language, version, and display-name policy',
       'privacy review status for child names, family details, private questions, support issues, payment state, health/sensitive data, and Torah/chinuch-sensitive claims',
-      'destination/channel: website, landing page, email, ad, social/Buffer, review widget, GHL reputation, Google/Facebook review, Drive proof library, or no-publish marker',
+      'destination/channel: website, landing page, email, ad, social/Buffer, review widget, legacy CRM reputation, Google/Facebook review, Drive proof library, or no-publish marker',
       'reputation request status, review URL/provider, request channel, copy/template version, send status, and suppression/no-send reason',
       'reuse/audit status, expiration or reconfirm date, takedown/withdrawal path, communication log id, and follow-up task id',
     ],
@@ -1505,7 +1505,7 @@ const ONE_TIME_WORKFLOW_MAP = [
       'Operations Contacts and Communications: project-scoped bna_parent_leads and bna_contact_communications can hold positive replies, request notes, consent evidence, manual approvals, and follow-up requirements.',
       'Workflow M parent/member update replies, Workflow L private questions, Workflow J/K recording or material feedback, and Workflow O referral candidates can suggest testimonial candidates only after privacy, support, billing, and relationship state are checked.',
       'Content Library and content-output approval can draft public-safe quote/ad/social/blog copy only from reviewed source material; raw transcripts, student notes, task notes, support issues, and private parent communications are not public proof by default.',
-      'GHL reputation/review widgets, Google/Facebook review links, Buffer/social outputs, website/landing pages, external Rabbi-app surfaces, and email/SMS/WhatsApp/Telegram requests become live destinations only after the exact provider, copy, consent policy, and test path are approved.',
+      'legacy CRM reputation/review widgets, Google/Facebook review links, Buffer/social outputs, website/landing pages, external Rabbi-app surfaces, and email/SMS/WhatsApp/Telegram requests become live destinations only after the exact provider, copy, consent policy, and test path are approved.',
       'Drive 05 Marketing and Launch can become the approved proof-library/archive location for quote packets only after file naming, permissions, and takedown rules are approved.',
     ],
     routing_rules: [
@@ -1563,17 +1563,17 @@ const ONE_TIME_WORKFLOW_MAP = [
       'Repo/code observation on 2026-06-11 found project-scoped bna_parent_leads and bna_contact_communications can log contact notes, inbound/outbound message evidence, follow-up requirements, and manual source context, but no dedicated One Time testimonial, consent, quote library, review-request, or reputation table exists.',
       'Content outputs can be drafted, approved, published to the website blog, or committed to Buffer social drafts/posts, but those actions are general content publishing paths and are not a testimonial consent/reputation workflow.',
       'Public content generation already has source-separation guardrails and must not turn private parent/student/support/task/accountability material into public testimonials or ad proof without explicit review.',
-      'Marketing notes from 2026-06-09 identify GHL review widgets, third-party review widgets, Buffer/Publer-style social schedulers, and direct Google Business Profile APIs as possible reputation paths, but no One Time review-widget/reputation adapter or approved provider is wired into the app.',
-      'No dedicated public testimonial library, consent record, review-request log, review widget embed, Google Business Profile review API adapter, GHL reputation automation, or One Time landing-page quote placement has been approved yet.',
+      'Marketing notes from 2026-06-09 identify legacy CRM review widgets, third-party review widgets, Buffer/Publer-style social schedulers, and direct Google Business Profile APIs as possible reputation paths, but no One Time review-widget/reputation adapter or approved provider is wired into the app.',
+      'No dedicated public testimonial library, consent record, review-request log, review widget embed, Google Business Profile review API adapter, legacy CRM reputation automation, or One Time landing-page quote placement has been approved yet.',
       'Confirm testimonial candidate criteria, request timing, copy/sender voice, consent/use scope, privacy and display-name policy, allowed channels, review provider/widget URL, approved test contact, approved test quote, and rollback/takedown path before live writes or sends.',
-      'No GHL/reputation/review, Google/Facebook/GBP, Buffer/social, website/landing page, email, SMS, WhatsApp, Telegram, portal, Drive proof-library, contact update, task-closure, support auto-creation, or reporting writes were made while documenting this workflow card.',
+      'No legacy CRM/reputation/review, Google/Facebook/GBP, Buffer/social, website/landing page, email, SMS, WhatsApp, Telegram, portal, Drive proof-library, contact update, task-closure, support auto-creation, or reporting writes were made while documenting this workflow card.',
     ],
-    approval_gate: 'No GHL tag/custom-field/workflow/reputation/review-widget write, Google/Facebook/GBP review request, Buffer/social post or draft, website/landing-page quote placement, Drive proof-library write, email template/campaign, SMS/WhatsApp/Telegram/portal notification, contact update, testimonial/consent/review table/job/cron, task/status auto-update, support auto-creation, or reporting write until Shloimie approves the exact candidate criteria, request timing, copy/sender, consent/use scope, privacy/display-name policy, provider/widget/review URL, approved test contact, approved test quote, and rollback/takedown/no-send path.',
+    approval_gate: 'No legacy CRM tag/custom-field/workflow/reputation/review-widget write, Google/Facebook/GBP review request, Buffer/social post or draft, website/landing-page quote placement, Drive proof-library write, email template/campaign, SMS/WhatsApp/Telegram/portal notification, contact update, testimonial/consent/review table/job/cron, task/status auto-update, support auto-creation, or reporting write until Shloimie approves the exact candidate criteria, request timing, copy/sender, consent/use scope, privacy/display-name policy, provider/widget/review URL, approved test contact, approved test quote, and rollback/takedown/no-send path.',
     smoke_tests: [
       'Read-only roadmap/API smoke shows Workflow P with required testimonial/reputation fields, proposed tags, intake channels, routing rules, tracking fields, current-state checklist, approval gate, and task card link.',
-      'Dry-run testimonial request payload maps one happy eligible member and one suppressed member to eligibility, request copy, consent requirement, channel, no-send reason, communication log, and follow-up owner without writing to GHL, Buffer, website, Drive, WAPI, Telegram, portals, or sending messages.',
+      'Dry-run testimonial request payload maps one happy eligible member and one suppressed member to eligibility, request copy, consent requirement, channel, no-send reason, communication log, and follow-up owner without writing to legacy CRM, Buffer, website, Drive, WAPI, Telegram, portals, or sending messages.',
       'Dry-run testimonial approval payload maps one raw compliment into exact approved wording, display-name policy, consent/use scope, privacy/Rabbi/business review, destination eligibility, publication status, and takedown path without publishing or creating public proof.',
-      'Reputation request dry-run maps one approved review ask to review provider, neutral copy, request URL hash, channel, suppression state, and communication log without sending a Google/Facebook/GBP/GHL review request.',
+      'Reputation request dry-run maps one approved review ask to review provider, neutral copy, request URL hash, channel, suppression state, and communication log without sending a Google/Facebook/GBP/legacy CRM review request.',
       'Privacy smoke verifies child names, family details, private questions, support issues, payment state, health/sensitive data, raw testimonials, and unreviewed AI drafts stay out of public quotes, ads, social posts, review requests, and landing pages.',
       'Idempotency dry-run replays the same testimonial request, quote approval, destination publish attempt, and review request and verifies it would not duplicate messages, tags, quotes, review asks, tasks, posts, or reporting rows.',
       'Post-approval live smoke uses one approved test contact and one approved test quote/review request, verifies consent capture, no-send/suppression behavior, destination preview or sandbox publish, communication log evidence, and rollback/takedown path before enabling broader requests.',
@@ -1586,7 +1586,7 @@ const ONE_TIME_WORKFLOW_MAP = [
     assignee: 'Rabbi Elie Scheller',
     owner: 'Rabbi/Codex',
     summary: 'turn Rabbi videos/source material into organic posts.',
-    task: 'Document and, after approval, build the organic content upload workflow: Rabbi/source-material intake, transcript/source review, clip or visual prompt planning, platform-specific social drafts, Buffer/GHL/upload handoff, approval gates, performance tracking, and smoke-test evidence.',
+    task: 'Document and, after approval, build the organic content upload workflow: Rabbi/source-material intake, transcript/source review, clip or visual prompt planning, platform-specific social drafts, Buffer/legacy CRM/upload handoff, approval gates, performance tracking, and smoke-test evidence.',
     implementation_status: 'documented_pending_approval',
     objective: 'One Time should turn Rabbi videos, transcripts, source sheets, worksheets, and approved class/source material into public organic posts only after source ownership, Torah accuracy, privacy, platform, caption, CTA, and channel approval are clear, while keeping member-only material, private questions, testimonials, referrals, and paid ads in their own workflows.',
     required_fields_label: 'Required organic content fields',
@@ -1594,7 +1594,7 @@ const ONE_TIME_WORKFLOW_MAP = [
       'organic content id, source asset id, content job id, transcript id, source-sheet id, worksheet id, class/session id, or manual source reference',
       'source material type: Rabbi video, class recording, source sheet, worksheet, transcript excerpt, clip idea, still image, B-roll prompt, blog/social draft, or manual note',
       'source ownership and release status for Rabbi footage, music, images, student/parent appearances, generated visuals, third-party assets, and source-sheet excerpts',
-      'platform/account destination: Facebook, LinkedIn, YouTube description/Short, WhatsApp status, email/newsletter excerpt, website/blog, GHL social scheduler, Buffer channel, or manual review',
+      'platform/account destination: Facebook, LinkedIn, YouTube description/Short, WhatsApp status, email/newsletter excerpt, website/blog, Buffer social scheduler, Buffer channel, or manual review',
       'format: vertical short, square/feed, wide YouTube, text-only post, image carousel, clip caption, source-sheet B-roll, or link post',
       'approved clip/render/handoff path: raw file, Remotion props/render, CapCut handoff, prompt-library stack, Drive file, hosted media URL, or no-media text draft',
       'caption/body/title, hook, Torah/source note, CTA, offer link, UTM/source parameters, language, version, and target audience',
@@ -1625,7 +1625,7 @@ const ONE_TIME_WORKFLOW_MAP = [
       'The Rabbi video prompt patch library at content-memory/prompt-patches/rabbi-video-content and scripts/rabbi-video-prompt-library.mjs can compose platform-specific prompt plans for shorts, YouTube previews, source-sheet B-roll, and ad candidates without calling an AI model.',
       'The local video clip factory and Remotion/CapCut handoff path can prepare clips or handoff packages, but it is not a social uploader and should stay dry-run/manual until approved for a specific asset.',
       'Operations Content outputs can generate Facebook, LinkedIn, YouTube-description, blog, newsletter, and WhatsApp-style drafts; approved social output actions can create Buffer text drafts/posts for configured channels.',
-      'Buffer, GHL social scheduler, YouTube upload, Facebook/LinkedIn pages, WhatsApp status, website/blog, email/newsletter, and external Rabbi-app destinations become live upload channels only after exact account, media-hosting, copy, and test-path approval.',
+      'Buffer, Buffer social scheduler, YouTube upload, Facebook/LinkedIn pages, WhatsApp status, website/blog, email/newsletter, and external Rabbi-app destinations become live upload channels only after exact account, media-hosting, copy, and test-path approval.',
     ],
     routing_rules: [
       'Organic posts use only reviewed public-safe source material; raw class/member recordings, member-only library content, private questions, support issues, billing state, student details, and operational task notes are excluded unless explicitly approved for public use.',
@@ -1633,7 +1633,7 @@ const ONE_TIME_WORKFLOW_MAP = [
       'Workflow Q creates organic/public content; parent/member operational updates stay in Workflow M, testimonials/reputation stay in Workflow P, referrals stay in Workflow O, paid-ad promotion stays in Workflow R, member-library recording/material posting stays in Workflows J/K, and lead capture from published links enters Workflow A/C.',
       'Do not invent Torah sources, quotes, students, testimonials, results, prices, dates, or approvals; if a source or claim is missing, mark the draft for Rabbi/source-sheet review before upload.',
       'Do not use child faces/names, private family stories, health/education struggles, support tickets, payment state, or sensitive class moments in public clips without exact written approval for that item and destination.',
-      'Media posts need an approved hosted media URL, platform-safe crop, caption/subtitle review, music/image rights, and rollback/delete path before any upload or Buffer/GHL scheduler write.',
+      'Media posts need an approved hosted media URL, platform-safe crop, caption/subtitle review, music/image rights, and rollback/delete path before any upload or Buffer/legacy CRM scheduler write.',
       'Text-only Buffer drafts are still external scheduler writes; create them only after approving the source material, channel/account, copy, CTA/link tracking, and no-send/rollback path. Publishing now requires a separate explicit approval.',
       'Organic winner metrics can suggest Workflow R only after the post id/url, channel, reach/engagement/conversion evidence, and source/claim approvals are recorded; Q itself does not launch paid ads.',
       'Make the workflow idempotent by organic content id, source asset hash, transcript/source id, output id, prompt stack/version, approval version, platform/account, destination id, and schedule/publish action id so retries do not duplicate drafts, uploads, posts, tasks, tags, or reports.',
@@ -1690,15 +1690,15 @@ const ONE_TIME_WORKFLOW_MAP = [
       'Approved content output actions can create Buffer social text drafts/posts for Facebook, LinkedIn, and YouTube-description output types, but this is a generic content publishing path and not a dedicated One Time organic upload approval table.',
       'Buffer is the active social posting provider for Facebook, LinkedIn, and YouTube text drafts/posts; local media assets are saved locally and Buffer media posting still needs hosted media URL support before photos/videos can be attached reliably.',
       'Public content generation already has source-separation guardrails that filter operational/admin/task/accountability/private material before public drafts, and those guardrails must remain active for One Time organic posts.',
-      'No dedicated One Time organic content table, source-release record, hosted-media pipeline, public content calendar, YouTube/Facebook/LinkedIn media uploader, GHL social scheduler adapter, WhatsApp status uploader, metrics collector, or Workflow R ad-candidate handoff has been approved yet.',
+      'No dedicated One Time organic content table, source-release record, hosted-media pipeline, public content calendar, YouTube/Facebook/LinkedIn media uploader, Buffer social scheduler adapter, WhatsApp status uploader, metrics collector, or Workflow R ad-candidate handoff has been approved yet.',
       'Confirm source ownership/release, Rabbi/source review policy, platform/account destinations, media-hosting path, clip format, caption/body, CTA/link tracking, schedule window, approved test asset, approved test channel, and rollback/delete/no-post path before live writes or uploads.',
-      'No Buffer/social, GHL social, YouTube/Facebook/LinkedIn/WhatsApp, website/blog, email/newsletter, Drive public-folder, hosted-media, contact update, task-closure, support auto-creation, metrics/reporting, or paid-ad writes were made while documenting this workflow card.',
+      'No Buffer/social, Buffer social, YouTube/Facebook/LinkedIn/WhatsApp, website/blog, email/newsletter, Drive public-folder, hosted-media, contact update, task-closure, support auto-creation, metrics/reporting, or paid-ad writes were made while documenting this workflow card.',
     ],
-    approval_gate: 'No Buffer/social post or draft, GHL social post/scheduler write, YouTube/Facebook/LinkedIn media upload, WhatsApp status, website/blog publish, email/newsletter send, Drive public-folder or permission change, hosted-media upload, content-output approval/publish action, social account/channel setting, contact update, organic content table/job/cron, metrics/reporting write, Workflow R ad handoff, task/status auto-update, or support auto-creation until Shloimie approves the exact source material, source ownership/release, Rabbi/source review, platform/account, media-hosting path, caption/body/title, CTA/link tracking, schedule window, approved test asset, approved test channel, and rollback/delete/no-post path.',
+    approval_gate: 'No Buffer/social post or draft, Buffer social post/scheduler write, YouTube/Facebook/LinkedIn media upload, WhatsApp status, website/blog publish, email/newsletter send, Drive public-folder or permission change, hosted-media upload, content-output approval/publish action, social account/channel setting, contact update, organic content table/job/cron, metrics/reporting write, Workflow R ad handoff, task/status auto-update, or support auto-creation until Shloimie approves the exact source material, source ownership/release, Rabbi/source review, platform/account, media-hosting path, caption/body/title, CTA/link tracking, schedule window, approved test asset, approved test channel, and rollback/delete/no-post path.',
     smoke_tests: [
       'Read-only roadmap/API smoke shows Workflow Q with required organic content fields, proposed tags, intake channels, routing rules, tracking fields, current-state checklist, approval gate, and task card link.',
       'Prompt-library smoke composes one one-time-vertical-short plan from a sample Rabbi topic and verifies project scope, aspect ratio, privacy/source flags, and review flags without calling an AI video model or uploading media.',
-      'Dry-run organic package maps one Rabbi video/source-sheet sample to source asset, transcript, platform, prompt stack, caption, CTA, privacy/Rabbi/business review, Buffer/upload eligibility, no-send reason, and rollback path without writing to Buffer, GHL, website, Drive permissions, hosted media, or social channels.',
+      'Dry-run organic package maps one Rabbi video/source-sheet sample to source asset, transcript, platform, prompt stack, caption, CTA, privacy/Rabbi/business review, Buffer/upload eligibility, no-send reason, and rollback path without writing to Buffer, legacy CRM, website, Drive permissions, hosted media, or social channels.',
       'Dry-run clip handoff verifies one local media/source package can produce props/CapCut handoff or a render plan while keeping upload/scheduling/publish status blocked until approval.',
       'Privacy/source smoke verifies child names, private family details, member-only questions, support issues, billing/payment state, internal task notes, unverified Torah claims, invented citations, and raw testimonials stay out of public organic drafts or route to the correct workflow.',
       'Idempotency dry-run replays the same organic content package, source asset, output approval attempt, Buffer draft attempt, and metrics handoff and verifies it would not duplicate drafts, uploads, posts, tasks, tags, or reports.',
@@ -1721,7 +1721,7 @@ const ONE_TIME_WORKFLOW_MAP = [
       'winner evidence: platform, post date, reach, impressions, engagement rate, saves/shares/comments, clicks, leads, checkout starts, purchases, cost-free conversion signal, and metrics snapshot date',
       'winner threshold and decision owner: engagement benchmark, lead benchmark, qualitative comments, Rabbi/Shloimie override, or manual review',
       'source ownership, release, privacy, Torah/source/Rabbi review, claim substantiation, testimonial/consent status, and public-safe reuse scope',
-      'ad platform and account destination: Meta/Facebook/Instagram, YouTube/Google, LinkedIn, GHL/Meta handoff, manual Ads Manager entry, or no-ad marker',
+      'ad platform and account destination: Meta/Facebook/Instagram, YouTube/Google, LinkedIn, legacy CRM/Meta handoff, manual Ads Manager entry, or no-ad marker',
       'campaign objective, funnel stage, market/version, offer tier, landing page, checkout destination, UTM/source parameters, and Workflow A/C/D/E handoff expectations',
       'ad creative package: video/image/text, hook, headline, primary text, CTA, caption/subtitles, thumbnail, aspect ratio, hosted media URL or manual upload path, and creative version',
       'audience plan: geography, language, age/parent targeting assumptions, exclusions/suppressions, retargeting/lookalike status, and child-safety/community restrictions',
@@ -1751,7 +1751,7 @@ const ONE_TIME_WORKFLOW_MAP = [
       'Operations Content outputs, Rabbi video prompt packages, Remotion/CapCut handoffs, and hosted-media paths can provide creative packages only after public-safe source and Rabbi/Shloimie review.',
       'The archived BNA Facebook ads tracker under ops/marketing/facebook-ads can provide benchmark fields for spend/results, but it is not a One Time ad ledger or live ad integration.',
       'Workflow C landing-page routing, Workflow A lead capture, Workflow D checkout recovery, and Workflow E payment success define where paid traffic must land and how attribution should be preserved.',
-      'Meta Ads Manager, Google/YouTube Ads, LinkedIn Ads, GHL campaign tooling, or another ad platform become live destinations only after the exact account, permissions, budget, creative, tracking, and no-spend/rollback path are approved.',
+      'Meta Ads Manager, Google/YouTube Ads, LinkedIn Ads, legacy CRM campaign tooling, or another ad platform become live destinations only after the exact account, permissions, budget, creative, tracking, and no-spend/rollback path are approved.',
     ],
     routing_rules: [
       'Workflow R starts only from a reviewed Workflow Q organic winner, approved testimonial/proof from Workflow P, or explicit Shloimie ad test decision; it must not turn raw content, private material, or task notes into ads.',
@@ -1833,14 +1833,14 @@ const ONE_TIME_WORKFLOW_MAP = [
       'Repo/code observation on 2026-06-11 found Buffer configured as the active organic social posting provider for Facebook, LinkedIn, and YouTube text drafts/posts, but Buffer is not a paid ads manager and media posting still needs hosted media URL support.',
       'Repo observation found an archived BNA Meta/Facebook ad-spend export and tracker under ops/marketing/facebook-ads with spend/results benchmark fields; it is BNA-specific historical evidence, not a One Time paid-ad system of record.',
       'Existing content output actions can create organic Buffer drafts/posts or website/blog publishes after approval, but no dedicated One Time ad-candidate table, ad creative approval table, ad budget ledger, ad platform API adapter, pixel/conversion API adapter, or paid attribution report is wired in.',
-      'GHL social/Buffer/social publishing paths are scheduling/posting paths, not confirmed campaign management, ad spend, ad account, audience, pixel, or conversion reporting paths for One Time.',
+      'Buffer social/Buffer/social publishing paths are scheduling/posting paths, not confirmed campaign management, ad spend, ad account, audience, pixel, or conversion reporting paths for One Time.',
       'Confirm the approved ad platform/account, payment method/spend authority, initial budget cap, landing page/checkout destination, pixel/conversion tracking, attribution window, audience rules, creative source, Rabbi/privacy review, launch approver, kill/scale thresholds, and rollback/pause path before any live ad write.',
-      'No Meta/Facebook/Instagram, Google/YouTube, LinkedIn, GHL ads, Buffer/social, website/landing-page, payment/checkout, contact, pixel/conversion, audience, budget, reporting, task-closure, or support auto-creation writes were made while documenting this workflow card.',
+      'No Meta/Facebook/Instagram, Google/YouTube, LinkedIn, legacy CRM ads, Buffer/social, website/landing-page, payment/checkout, contact, pixel/conversion, audience, budget, reporting, task-closure, or support auto-creation writes were made while documenting this workflow card.',
     ],
-    approval_gate: 'No Meta/Facebook/Instagram, Google/YouTube, LinkedIn, GHL ads/campaign, boost, ad draft, ad set, audience, budget, spend, pixel/conversion API, landing-page/checkout, UTM/tracking-script, Buffer/social, website, contact update, ad-candidate table/job/cron, metrics/reporting write, task/status auto-update, support auto-creation, or scale/kill automation until Shloimie approves the exact organic winner, source ownership/release, Rabbi/privacy/claim review, ad platform/account, creative package, audience, offer/CTA, landing/checkout path, tracking plan, budget cap, schedule, kill/scale rules, approved test asset, approved test account, and rollback/pause/no-spend path.',
+    approval_gate: 'No Meta/Facebook/Instagram, Google/YouTube, LinkedIn, legacy CRM ads/campaign, boost, ad draft, ad set, audience, budget, spend, pixel/conversion API, landing-page/checkout, UTM/tracking-script, Buffer/social, website, contact update, ad-candidate table/job/cron, metrics/reporting write, task/status auto-update, support auto-creation, or scale/kill automation until Shloimie approves the exact organic winner, source ownership/release, Rabbi/privacy/claim review, ad platform/account, creative package, audience, offer/CTA, landing/checkout path, tracking plan, budget cap, schedule, kill/scale rules, approved test asset, approved test account, and rollback/pause/no-spend path.',
     smoke_tests: [
       'Read-only roadmap/API smoke shows Workflow R with required paid-ad promotion fields, proposed tags, intake channels, routing rules, tracking fields, current-state checklist, approval gate, and task card link.',
-      'Dry-run ad-candidate payload maps one Workflow Q organic winner to source evidence, winner metrics, creative package, review statuses, ad platform/account, audience, budget, UTM set, no-spend reason, and rollback path without writing to Meta, Google, LinkedIn, GHL, Buffer, website, pixels, contacts, or reports.',
+      'Dry-run ad-candidate payload maps one Workflow Q organic winner to source evidence, winner metrics, creative package, review statuses, ad platform/account, audience, budget, UTM set, no-spend reason, and rollback path without writing to Meta, Google, LinkedIn, legacy CRM, Buffer, website, pixels, contacts, or reports.',
       'Privacy/source/compliance smoke verifies child names/faces, private family details, member-only questions, support issues, billing/payment state, raw testimonials, unapproved claims, invented citations, and unreviewed AI drafts stay out of paid ad creative or route to the correct workflow.',
       'Budget guard smoke verifies missing budget approval, missing ad account, missing landing page, missing pixel/tracking, exceeded cap, expired approval, and absent kill criteria all block launch and record manual review reasons.',
       'Attribution dry-run verifies sample ad links preserve platform, campaign, ad, organic source, market, offer, and UTM identifiers through Workflows A/C/D/E/S without creating contacts, checkout sessions, payments, or reports.',
@@ -1862,7 +1862,7 @@ const ONE_TIME_WORKFLOW_MAP = [
     required_fields: [
       'report month and close period start/end',
       'revenue source: Video Library, Live Membership, future Premium Cohort if approved, manual adjustment, or other',
-      'payment provider/source: GHL, Green Invoice, Stripe, Replit/site code, bank transfer, cash, or manual import',
+      'payment provider/source: legacy CRM, Green Invoice, Stripe, Replit/site code, bank transfer, cash, or manual import',
       'gross collected revenue by currency and source',
       'refunds, chargebacks, reversals, failed-payment recoveries, and cancellation credits',
       'net recognized shared platform revenue',
@@ -1875,7 +1875,7 @@ const ONE_TIME_WORKFLOW_MAP = [
     ],
     intake_channels: [
       'Operations Accounting view: project-scoped payment log and payment intake are current app-visible payment sources.',
-      'Payment provider exports or webhooks: GHL payments, Green Invoice, Stripe, Replit/site backend, bank/cash records, or another approved provider once confirmed.',
+      'Payment provider exports or webhooks: legacy CRM payments, Green Invoice, Stripe, Replit/site backend, bank/cash records, or another approved provider once confirmed.',
       'Approved expense records: receipts, ad spend, software, contractor costs, refund fees, and other hard expenses only after the expense rule is approved.',
       'One Time task comments/support tickets: unresolved payment/access/refund exceptions should be linked into the monthly close review.',
       'Drive finance folder: approved monthly report exports belong under 07 Finance, Reporting, and Admin or 90 Completed and Approved.',
@@ -1887,7 +1887,7 @@ const ONE_TIME_WORKFLOW_MAP = [
       'Hard expenses reduce the split only when they match the approved expense rules and have a receipt/reference or explicit Shloimie approval.',
       'The 50/50 split is calculated after approved hard expenses and before any payout execution, subject to final legal/accounting review.',
       'Currency conversion, tax/VAT handling, payment processor fees, ad spend attribution, and carry-forward rules must be explicit before automation.',
-      'Do not send partner reports, mark distributions paid, reimburse expenses, or write external accounting/GHL/payment-provider state from the report until approved.',
+      'Do not send partner reports, mark distributions paid, reimburse expenses, or write external accounting/legacy CRM/payment-provider state from the report until approved.',
     ],
     tracking_fields: [
       'report_month',
@@ -1920,12 +1920,12 @@ const ONE_TIME_WORKFLOW_MAP = [
       'The app does not yet have a dedicated One Time monthly financial report table, report export, approved hard-expense ledger, partner distribution ledger, or monthly close status.',
       'The One Time proposal decisions still include what counts as shared platform revenue versus Rabbi Elie private work and which hard expenses require approval.',
       'Workflow E/F/H notes already say the approved payment provider/source is not confirmed, so S must wait for trusted revenue and refund sources before automating totals.',
-      'No GHL/payment-provider/accounting writes were made while documenting this workflow card.',
+      'No legacy CRM/payment-provider/accounting writes were made while documenting this workflow card.',
     ],
-    approval_gate: 'No GHL/payment-provider/accounting-system write, Drive export as final, partner report send, expense reimbursement, payout/distribution status change, monthly close status change, or schema/report automation write until Shloimie approves the source-of-truth providers, hard-expense rules, split formula, close period, report recipients, test month, and rollback/no-send path.',
+    approval_gate: 'No legacy CRM/payment-provider/accounting-system write, Drive export as final, partner report send, expense reimbursement, payout/distribution status change, monthly close status change, or schema/report automation write until Shloimie approves the source-of-truth providers, hard-expense rules, split formula, close period, report recipients, test month, and rollback/no-send path.',
     smoke_tests: [
       'Read-only roadmap/API smoke shows Workflow S with required monthly report fields, intake channels, routing rules, tracking fields, current-state checklist, approval gate, and task card link.',
-      'Dry-run report maps one sample month of revenue, refunds, failed payments, approved expenses, excluded items, and manual adjustments into net shared revenue and tentative 50/50 split without writing to payment providers, GHL, Drive final folders, or external accounting.',
+      'Dry-run report maps one sample month of revenue, refunds, failed payments, approved expenses, excluded items, and manual adjustments into net shared revenue and tentative 50/50 split without writing to payment providers, legacy CRM, Drive final folders, or external accounting.',
       'Exception smoke verifies unpaid checkouts, unapproved expenses, private Rabbi revenue, BNA payments, and unresolved refunds are excluded or flagged instead of silently entering the split.',
       'Post-approval live smoke uses one approved test month/provider export, verifies report totals against source readback, stores the approved export path/comment, and confirms no payout/distribution status is marked paid without explicit approval.',
     ],
@@ -2000,7 +2000,7 @@ const ONE_TIME_WORKFLOW_MAP = [
 ];
 const ONE_TIME_REQUIRED_ACCESS = [
   'Business/bank/payment processor setup under Rabbi Sheller unless legal/accounting structure changes.',
-  'Replit, DNS/domain, GHL, payment processor, bank reporting, Drive, YouTube, Meta, email list, past customers, WhatsApp/contact lists, videos, worksheets, source sheets, and testimonials.',
+  'Replit, DNS/domain, legacy CRM, payment processor, bank reporting, Drive, YouTube, Meta, email list, past customers, WhatsApp/contact lists, videos, worksheets, source sheets, and testimonials.',
   'Telegram bot credentials: TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER, ONE_TIME_OPS_USERNAME, ONE_TIME_OPS_PASSWORD, and a hosted worker for npm run telegram:rabbi.',
 ];
 const ONE_TIME_OPEN_DECISIONS = [
@@ -2077,42 +2077,42 @@ const TUITION_AGREEMENT_VERSION = process.env.BNA_TUITION_AGREEMENT_VERSION || '
 const TUITION_AGREEMENT_TITLE = 'Bnei Neviim Academy Tuition Agreement';
 const TUITION_AGREEMENT_TEXT = `Bnei Neviim Academy is a private Torah learning and mentoring program. It is not a Ministry of Education-recognized school. Parents are responsible for arranging any legal homeschooling registration or other educational status required for their child.
 
-The standard tuition rate is ₪1,000 per month, or ₪12,000 for a full tuition year.
+The standard tuition rate is â‚ª1,000 per month, or â‚ª12,000 for a full tuition year.
 
 The tuition year runs from July 1 through June 30. Tuition is billed according to the civil calendar and is due at the beginning of each civil month. The program schedule itself follows the Jewish calendar.
 
 There is no separate signup fee. A place in the program is reserved only once the first tuition payment has been made and the required registration forms have been signed.
 
-For students who join after the beginning of a month, tuition may be prorated based on the student’s start date, calculated according to the number of calendar days in that month.
+For students who join after the beginning of a month, tuition may be prorated based on the studentâ€™s start date, calculated according to the number of calendar days in that month.
 
 For students who paid at the end of May 2026, that payment will be applied to June 2026 tuition. The next regular tuition payment is due July 1, 2026.
 
 Once a month has begun, the full tuition for that month is due and non-refundable. This applies even if the child attends for only part of the month, only one week, or only a few days.
 
-If a parent wishes to withdraw a child from the program, 30 days’ notice is required. Tuition remains due during the 30-day notice period. If the notice period continues into a new month, tuition for that month is also due.
+If a parent wishes to withdraw a child from the program, 30 daysâ€™ notice is required. Tuition remains due during the 30-day notice period. If the notice period continues into a new month, tuition for that month is also due.
 
-Scheduled breaks, Jewish holidays, Chol HaMoed, fast days, summer breaks, and other calendar adjustments do not reduce the monthly tuition amount. Tuition reserves the child’s place in the program and supports the continuity of the program as a whole.
+Scheduled breaks, Jewish holidays, Chol HaMoed, fast days, summer breaks, and other calendar adjustments do not reduce the monthly tuition amount. Tuition reserves the childâ€™s place in the program and supports the continuity of the program as a whole.
 
 Payment may be made by cash, bank transfer, credit card, or another method approved by the program director.`;
-const TUITION_AGREEMENT_TEXT_HE = `Bnei Neviim Academy היא תכנית פרטית ללימוד תורה וליווי אישי. היא אינה בית ספר המוכר על ידי משרד החינוך. ההורים אחראים להסדיר כל רישום לחינוך ביתי או כל מעמד חינוכי אחר הנדרש על פי דין עבור ילדם.
+const TUITION_AGREEMENT_TEXT_HE = `Bnei Neviim Academy ×”×™× ×ª×›× ×™×ª ×¤×¨×˜×™×ª ×œ×œ×™×ž×•×“ ×ª×•×¨×” ×•×œ×™×•×•×™ ××™×©×™. ×”×™× ××™× ×” ×‘×™×ª ×¡×¤×¨ ×”×ž×•×›×¨ ×¢×œ ×™×“×™ ×ž×©×¨×“ ×”×—×™× ×•×š. ×”×”×•×¨×™× ××—×¨××™× ×œ×”×¡×“×™×¨ ×›×œ ×¨×™×©×•× ×œ×—×™× ×•×š ×‘×™×ª×™ ××• ×›×œ ×ž×¢×ž×“ ×—×™× ×•×›×™ ××—×¨ ×”× ×“×¨×© ×¢×œ ×¤×™ ×“×™×Ÿ ×¢×‘×•×¨ ×™×œ×“×.
 
-שכר הלימוד הרגיל הוא 1,000 ש"ח לחודש, או 12,000 ש"ח לשנת לימוד מלאה.
+×©×›×¨ ×”×œ×™×ž×•×“ ×”×¨×’×™×œ ×”×•× 1,000 ×©"×— ×œ×—×•×“×©, ××• 12,000 ×©"×— ×œ×©× ×ª ×œ×™×ž×•×“ ×ž×œ××”.
 
-שנת שכר הלימוד נמשכת מ-1 ביולי עד 30 ביוני. שכר הלימוד מחויב לפי הלוח האזרחי והוא לתשלום בתחילת כל חודש אזרחי. סדר התכנית עצמה פועל לפי הלוח היהודי.
+×©× ×ª ×©×›×¨ ×”×œ×™×ž×•×“ × ×ž×©×›×ª ×ž-1 ×‘×™×•×œ×™ ×¢×“ 30 ×‘×™×•× ×™. ×©×›×¨ ×”×œ×™×ž×•×“ ×ž×—×•×™×‘ ×œ×¤×™ ×”×œ×•×— ×”××–×¨×—×™ ×•×”×•× ×œ×ª×©×œ×•× ×‘×ª×—×™×œ×ª ×›×œ ×—×•×“×© ××–×¨×—×™. ×¡×“×¨ ×”×ª×›× ×™×ª ×¢×¦×ž×” ×¤×•×¢×œ ×œ×¤×™ ×”×œ×•×— ×”×™×”×•×“×™.
 
-אין תשלום הרשמה נפרד. מקום בתכנית נשמר רק לאחר שהתשלום הראשון של שכר הלימוד שולם והטפסים הנדרשים נחתמו.
+××™×Ÿ ×ª×©×œ×•× ×”×¨×©×ž×” × ×¤×¨×“. ×ž×§×•× ×‘×ª×›× ×™×ª × ×©×ž×¨ ×¨×§ ×œ××—×¨ ×©×”×ª×©×œ×•× ×”×¨××©×•×Ÿ ×©×œ ×©×›×¨ ×”×œ×™×ž×•×“ ×©×•×œ× ×•×”×˜×¤×¡×™× ×”× ×“×¨×©×™× × ×—×ª×ž×•.
 
-לתלמידים המצטרפים לאחר תחילת חודש, שכר הלימוד עשוי להיות מחושב באופן יחסי לפי תאריך תחילת ההשתתפות, בהתאם למספר הימים הקלנדריים באותו חודש.
+×œ×ª×œ×ž×™×“×™× ×”×ž×¦×˜×¨×¤×™× ×œ××—×¨ ×ª×—×™×œ×ª ×—×•×“×©, ×©×›×¨ ×”×œ×™×ž×•×“ ×¢×©×•×™ ×œ×”×™×•×ª ×ž×—×•×©×‘ ×‘××•×¤×Ÿ ×™×—×¡×™ ×œ×¤×™ ×ª××¨×™×š ×ª×—×™×œ×ª ×”×”×©×ª×ª×¤×•×ª, ×‘×”×ª×× ×œ×ž×¡×¤×¨ ×”×™×ž×™× ×”×§×œ× ×“×¨×™×™× ×‘××•×ª×• ×—×•×“×©.
 
-לתלמידים ששילמו בסוף מאי 2026, התשלום יחול על שכר הלימוד של יוני 2026. התשלום הרגיל הבא לתשלום הוא ב-1 ביולי 2026.
+×œ×ª×œ×ž×™×“×™× ×©×©×™×œ×ž×• ×‘×¡×•×£ ×ž××™ 2026, ×”×ª×©×œ×•× ×™×—×•×œ ×¢×œ ×©×›×¨ ×”×œ×™×ž×•×“ ×©×œ ×™×•× ×™ 2026. ×”×ª×©×œ×•× ×”×¨×’×™×œ ×”×‘× ×œ×ª×©×œ×•× ×”×•× ×‘-1 ×‘×™×•×œ×™ 2026.
 
-לאחר שהחודש התחיל, שכר הלימוד המלא עבור אותו חודש חל ואינו ניתן להחזר. הדבר נכון גם אם הילד השתתף רק בחלק מהחודש, שבוע אחד, או מספר ימים.
+×œ××—×¨ ×©×”×—×•×“×© ×”×ª×—×™×œ, ×©×›×¨ ×”×œ×™×ž×•×“ ×”×ž×œ× ×¢×‘×•×¨ ××•×ª×• ×—×•×“×© ×—×œ ×•××™× ×• × ×™×ª×Ÿ ×œ×”×—×–×¨. ×”×“×‘×¨ × ×›×•×Ÿ ×’× ×× ×”×™×œ×“ ×”×©×ª×ª×£ ×¨×§ ×‘×—×œ×§ ×ž×”×—×•×“×©, ×©×‘×•×¢ ××—×“, ××• ×ž×¡×¤×¨ ×™×ž×™×.
 
-אם הורה מבקש להוציא את הילד מהתכנית, נדרשת הודעה מוקדמת של 30 יום. שכר הלימוד ממשיך לחול במהלך תקופת ההודעה. אם תקופת ההודעה נמשכת לתוך חודש חדש, שכר הלימוד עבור אותו חודש חל גם כן.
+×× ×”×•×¨×” ×ž×‘×§×© ×œ×”×•×¦×™× ××ª ×”×™×œ×“ ×ž×”×ª×›× ×™×ª, × ×“×¨×©×ª ×”×•×“×¢×” ×ž×•×§×“×ž×ª ×©×œ 30 ×™×•×. ×©×›×¨ ×”×œ×™×ž×•×“ ×ž×ž×©×™×š ×œ×—×•×œ ×‘×ž×”×œ×š ×ª×§×•×¤×ª ×”×”×•×“×¢×”. ×× ×ª×§×•×¤×ª ×”×”×•×“×¢×” × ×ž×©×›×ª ×œ×ª×•×š ×—×•×“×© ×—×“×©, ×©×›×¨ ×”×œ×™×ž×•×“ ×¢×‘×•×¨ ××•×ª×• ×—×•×“×© ×—×œ ×’× ×›×Ÿ.
 
-חופשות מתוכננות, חגים, חול המועד, תעניות, חופשות קיץ ושינויים בלוח השנה אינם מפחיתים את שכר הלימוד החודשי. שכר הלימוד שומר את מקומו של הילד בתכנית ותומך ברציפות התכנית כולה.
+×—×•×¤×©×•×ª ×ž×ª×•×›× × ×•×ª, ×—×’×™×, ×—×•×œ ×”×ž×•×¢×“, ×ª×¢× ×™×•×ª, ×—×•×¤×©×•×ª ×§×™×¥ ×•×©×™× ×•×™×™× ×‘×œ×•×— ×”×©× ×” ××™× × ×ž×¤×—×™×ª×™× ××ª ×©×›×¨ ×”×œ×™×ž×•×“ ×”×—×•×“×©×™. ×©×›×¨ ×”×œ×™×ž×•×“ ×©×•×ž×¨ ××ª ×ž×§×•×ž×• ×©×œ ×”×™×œ×“ ×‘×ª×›× ×™×ª ×•×ª×•×ž×š ×‘×¨×¦×™×¤×•×ª ×”×ª×›× ×™×ª ×›×•×œ×”.
 
-ניתן לשלם במזומן, העברה בנקאית, כרטיס אשראי, או דרך אחרת שאושרה על ידי מנהל התכנית.`;
+× ×™×ª×Ÿ ×œ×©×œ× ×‘×ž×–×•×ž×Ÿ, ×”×¢×‘×¨×” ×‘× ×§××™×ª, ×›×¨×˜×™×¡ ××©×¨××™, ××• ×“×¨×š ××—×¨×ª ×©××•×©×¨×” ×¢×œ ×™×“×™ ×ž× ×”×œ ×”×ª×›× ×™×ª.`;
 const REGISTRATION_PACKAGE_VERSION = process.env.BNA_REGISTRATION_PACKAGE_VERSION || '2026-2027-v1';
 const REGISTRATION_PACKAGE_TITLE = 'Bnei Neviim Academy Registration Documents Package';
 const REGISTRATION_PACKAGE_PATH = path.join(__dirname, 'public', 'documents', 'bnei_neviim_registration_documents_bilingual_codex.md');
@@ -2131,7 +2131,7 @@ const REQUIRED_SIGNUP_AGREEMENT_DEFINITIONS = [
     version: TUITION_AGREEMENT_VERSION,
     title: {
       en: TUITION_AGREEMENT_TITLE,
-      he: 'הסכם שכר לימוד - Bnei Neviim Academy',
+      he: '×”×¡×›× ×©×›×¨ ×œ×™×ž×•×“ - Bnei Neviim Academy',
     },
   },
   {
@@ -2140,7 +2140,7 @@ const REQUIRED_SIGNUP_AGREEMENT_DEFINITIONS = [
     version: REGISTRATION_PACKAGE_VERSION,
     title: {
       en: 'Bnei Neviim Academy Parent Handbook',
-      he: 'מדריך הורים - Bnei Neviim Academy',
+      he: '×ž×“×¨×™×š ×”×•×¨×™× - Bnei Neviim Academy',
     },
   },
   {
@@ -2149,7 +2149,7 @@ const REQUIRED_SIGNUP_AGREEMENT_DEFINITIONS = [
     version: REGISTRATION_PACKAGE_VERSION,
     title: {
       en: 'Bnei Neviim Academy Student Handbook / Code of Conduct',
-      he: 'מדריך תלמידים / קוד התנהגות - Bnei Neviim Academy',
+      he: '×ž×“×¨×™×š ×ª×œ×ž×™×“×™× / ×§×•×“ ×”×ª× ×”×’×•×ª - Bnei Neviim Academy',
     },
   },
   {
@@ -2158,7 +2158,7 @@ const REQUIRED_SIGNUP_AGREEMENT_DEFINITIONS = [
     version: REGISTRATION_PACKAGE_VERSION,
     title: {
       en: 'Bnei Neviim Academy Safety Acknowledgment and Waiver',
-      he: 'אישור בטיחות, הצהרה וויתור - Bnei Neviim Academy',
+      he: '××™×©×•×¨ ×‘×˜×™×—×•×ª, ×”×¦×”×¨×” ×•×•×™×ª×•×¨ - Bnei Neviim Academy',
     },
   },
   {
@@ -2167,7 +2167,7 @@ const REQUIRED_SIGNUP_AGREEMENT_DEFINITIONS = [
     version: REGISTRATION_PACKAGE_VERSION,
     title: {
       en: 'Bnei Neviim Academy Registration / Intake Form',
-      he: 'טופס הרשמה / שאלון קליטה - Bnei Neviim Academy',
+      he: '×˜×•×¤×¡ ×”×¨×©×ž×” / ×©××œ×•×Ÿ ×§×œ×™×˜×” - Bnei Neviim Academy',
     },
   },
   {
@@ -2176,7 +2176,7 @@ const REQUIRED_SIGNUP_AGREEMENT_DEFINITIONS = [
     version: REGISTRATION_PACKAGE_VERSION,
     title: {
       en: 'Bnei Neviim Academy Parent Agreement / Signature Page',
-      he: 'הסכמת הורים / עמוד חתימה - Bnei Neviim Academy',
+      he: '×”×¡×›×ž×ª ×”×•×¨×™× / ×¢×ž×•×“ ×—×ª×™×ž×” - Bnei Neviim Academy',
     },
   },
 ].filter((definition) => !['registration_intake_form', 'parent_agreement_signature_page'].includes(definition.agreement_type));
@@ -2275,8 +2275,6 @@ function loadEnvBlockFile(filePath) {
   }
 }
 
-const localGhlSecrets = loadEnvBlockFile(path.join(__dirname, '.secrets', 'ghl-pit-token.txt'));
-const inlineGhlSecrets = parseEnvBlock(process.env.GHL_PIT_TOKEN || '');
 const localBufferSecrets = loadEnvBlockFile(path.join(__dirname, '.secrets', 'buffer-api-key.txt'));
 const inlineBufferSecrets = parseEnvBlock(process.env.BUFFER_API_KEY || '');
 
@@ -2287,29 +2285,8 @@ function pickSecretValue(envValue, inlineValue, fileValue, key) {
   return inlineValue || fileValue || '';
 }
 
-// GHL Configuration
-const GHL_PIT_TOKEN = pickSecretValue(
-  process.env.GHL_PIT_TOKEN,
-  inlineGhlSecrets.GHL_PIT_TOKEN,
-  localGhlSecrets.GHL_PIT_TOKEN,
-  'GHL_PIT_TOKEN'
-);
-const GHL_LOCATION_ID =
-  process.env.GHL_LOCATION_ID ||
-  inlineGhlSecrets.GHL_LOCATION_ID ||
-  localGhlSecrets.GHL_LOCATION_ID ||
-  'IIofSrquLHvNxc8zrpka';
-const GHL_API_BASE = 'https://services.leadconnectorhq.com';
-const GHL_API_VERSION = '2021-07-28';
-const GHL_SOCIAL_API_VERSION = '2023-02-21';
-const GHL_DEFAULT_FACEBOOK_ACCOUNT_ID =
-  process.env.GHL_DEFAULT_FACEBOOK_ACCOUNT_ID ||
-  inlineGhlSecrets.GHL_DEFAULT_FACEBOOK_ACCOUNT_ID ||
-  localGhlSecrets.GHL_DEFAULT_FACEBOOK_ACCOUNT_ID ||
-  process.env.GHL_FACEBOOK_ACCOUNT_ID ||
-  inlineGhlSecrets.GHL_FACEBOOK_ACCOUNT_ID ||
-  localGhlSecrets.GHL_FACEBOOK_ACCOUNT_ID ||
-  '';
+// Buffer is the active social posting provider. Legacy CRM/social integrations
+// are archived and are not runtime dependencies.
 const BUFFER_API_KEY = pickSecretValue(
   process.env.BUFFER_API_KEY,
   inlineBufferSecrets.BUFFER_API_KEY,
@@ -2347,7 +2324,7 @@ const SOCIAL_POST_PROVIDER = String(
   process.env.SOCIAL_POST_PROVIDER ||
   inlineBufferSecrets.SOCIAL_POST_PROVIDER ||
   localBufferSecrets.SOCIAL_POST_PROVIDER ||
-  (BUFFER_API_KEY ? 'buffer' : 'ghl')
+  'buffer'
 ).trim().toLowerCase();
 const SESSION_COOKIE_NAME = 'bna_ops_session';
 const SESSION_TTL_MS = 1000 * 60 * 60 * 12;
@@ -3235,16 +3212,51 @@ async function logEmail({
   );
 }
 
-function signupConfirmationEmail(signup, { matchedPayment = null } = {}) {
+function signupPaymentMethodKey(signup = {}) {
+  const method = String(signup.payment_method || '').trim().toLowerCase();
+  if (method === 'cash') return 'cash';
+  if (method === 'bank_transfer') return 'bank_transfer';
+  return 'credit';
+}
+
+function emailsFromText(value) {
+  return String(value || '').match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi) || [];
+}
+
+function signupConfirmationRecipients(signup = {}, { extraRecipients = [] } = {}) {
+  const seen = new Set();
+  const recipients = [];
+  const add = (value) => {
+    for (const rawEmail of emailsFromText(value)) {
+      const email = normalizeEmail(rawEmail);
+      if (!email || seen.has(email)) continue;
+      seen.add(email);
+      recipients.push(email);
+    }
+  };
+
+  add(signup.parent_email);
+  add(signup.parent2_email);
+  for (const recipient of Array.isArray(extraRecipients) ? extraRecipients : [extraRecipients]) {
+    add(recipient);
+  }
+
+  for (const line of String(signup.notes || '').split(/\r?\n/)) {
+    if (/^Parent 2 Email:/i.test(line)) add(line);
+  }
+
+  return recipients;
+}
+
+function signupConfirmationEmail(signup, { matchedPayment = null, paymentLink = '' } = {}) {
   const lang = normalizeLanguage(signup.form_language);
   const dueDate = signup.payment_due_date ? toDateOnly(signup.payment_due_date) : toDateOnly(addDays(signup.created_at || new Date(), DEFAULT_PAYMENT_INTERVAL_DAYS));
   const amount = Number(signup.payment_amount || DEFAULT_TUITION_AMOUNT);
   const isPaid = signup.payment_status === 'paid' || Boolean(matchedPayment);
-  const paymentMethod = signup.payment_method === 'cash'
-    ? 'cash'
-    : signup.payment_method === 'bank_transfer'
-      ? 'bank_transfer'
-      : 'credit';
+  const paymentMethod = signupPaymentMethodKey(signup);
+  const creditPaymentLink = !isPaid && paymentMethod === 'credit'
+    ? String(paymentLink || '').trim()
+    : '';
 
   if (lang === 'he') {
     const subject = 'ברוכים הבאים ל-Bnei Neviim Academy';
@@ -3258,7 +3270,9 @@ function signupConfirmationEmail(signup, { matchedPayment = null } = {}) {
           ? `בחרתם תשלום במזומן. התשלום בסך ${amount} ש"ח עדיין מסומן כפתוח במערכת.`
           : paymentMethod === 'bank_transfer'
             ? `בחרתם תשלום בהעברה בנקאית. התשלום הראשון של שכר הלימוד בסך ${amount} ש"ח עדיין מסומן כפתוח במערכת עד שנאשר את קבלתו.`
-            : `בחרתם תשלום באשראי. אם עדיין לא השלמתם את התשלום, אנא השתמשו בקישור התשלום שקיבלתם לאחר השליחה.`,
+            : creditPaymentLink
+              ? `בחרתם תשלום באשראי. להשלמת התשלום הראשון בסך ${amount} ש"ח, השתמשו בקישור הזה: ${creditPaymentLink}`
+              : `בחרתם תשלום באשראי. קיבלנו את ההרשמה, אך אין במערכת קישור אשראי מאושר לשליחה אוטומטית; נשלח את הקישור בנפרד.`,
       `החיוב הבא/תזכורת התשלום הבאה נקבעת כל ${signup.payment_interval_days || DEFAULT_PAYMENT_INTERVAL_DAYS} יום. התאריך הבא במערכת: ${dueDate}.`,
       '',
       'שמחים להתחיל את התהליך יחד.',
@@ -3280,7 +3294,9 @@ function signupConfirmationEmail(signup, { matchedPayment = null } = {}) {
         ? `You selected cash. The ILS ${amount} payment is still marked as due in our system.`
         : paymentMethod === 'bank_transfer'
           ? `You selected bank transfer. The ILS ${amount} first tuition payment is still marked as due until we confirm receipt.`
-        : 'You selected credit. If you have not completed payment yet, please use the payment link from the confirmation page.',
+          : creditPaymentLink
+            ? `You selected credit. Please complete the ILS ${amount} first tuition payment here: ${creditPaymentLink}`
+            : 'You selected credit. We received your registration, but no confirmed credit-card payment link is configured for automatic email; BNA will send the link separately.',
     `Payments are tracked every ${signup.payment_interval_days || DEFAULT_PAYMENT_INTERVAL_DAYS} days. The next due date in our system is ${dueDate}.`,
     '',
     'We are looking forward to beginning the process together.',
@@ -3293,9 +3309,21 @@ function signupConfirmationEmail(signup, { matchedPayment = null } = {}) {
 
 async function sendSignupConfirmationEmail(signup, options = {}) {
   const email = signupConfirmationEmail(signup, options);
+  const recipients = signupConfirmationRecipients(signup, options);
+  const paymentMethod = signupPaymentMethodKey(signup);
+  const paymentLinkIncluded = paymentMethod === 'credit'
+    && !options.matchedPayment
+    && Boolean(String(options.paymentLink || '').trim());
+  if (!recipients.length) {
+    return { ok: false, error: 'No confirmation email recipients', recipients: [] };
+  }
+
+  const sent = [];
+  const failed = [];
+  for (const recipient of recipients) {
   try {
     const result = await sendGmailMessage({
-      to: signup.parent_email,
+      to: recipient,
       subject: email.subject,
       text: email.text,
       html: email.html,
@@ -3303,36 +3331,55 @@ async function sendSignupConfirmationEmail(signup, options = {}) {
     await logEmail({
       signupId: signup.id,
       emailType: 'signup_confirmation',
-      to: signup.parent_email,
+      to: recipient,
       subject: email.subject,
       language: signup.form_language,
       providerMessageId: result.data.id,
-      metadata: { payment_method: signup.payment_method, payment_due_date: signup.payment_due_date },
+      metadata: {
+        payment_method: signup.payment_method,
+        payment_due_date: signup.payment_due_date,
+        payment_link_status: paymentLinkIncluded ? 'included' : 'not_included',
+        recipient_count: recipients.length,
+      },
     });
-    await pool.query(
-      `UPDATE signups
-       SET confirmation_email_sent_at = NOW(), confirmation_email_error = NULL
-       WHERE id = $1`,
-      [signup.id]
-    );
-    return { ok: true, id: result.data.id };
+    sent.push({ to: recipient, id: result.data.id });
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     await logEmail({
       signupId: signup.id,
       emailType: 'signup_confirmation',
-      to: signup.parent_email,
+      to: recipient,
       subject: email.subject,
       language: signup.form_language,
       status: 'failed',
       error: message,
     }).catch(() => {});
+    failed.push({ to: recipient, error: message });
+  }
+  }
+
+  if (sent.length) {
+    await pool.query(
+      `UPDATE signups
+       SET confirmation_email_sent_at = NOW(),
+           confirmation_email_error = $1
+       WHERE id = $2`,
+      [failed.length ? failed.map((item) => `${item.to}: ${item.error}`).join('; ') : null, signup.id]
+    ).catch(() => {});
+  } else if (failed.length) {
     await pool.query(
       `UPDATE signups SET confirmation_email_error = $1 WHERE id = $2`,
-      [message, signup.id]
+      [failed.map((item) => `${item.to}: ${item.error}`).join('; '), signup.id]
     ).catch(() => {});
-    return { ok: false, error: message };
   }
+
+  return {
+    ok: sent.length > 0 && failed.length === 0,
+    recipients,
+    sent,
+    failed,
+    error: failed.length ? failed.map((item) => `${item.to}: ${item.error}`).join('; ') : null,
+  };
 }
 
 function paymentReminderEmail(signup) {
@@ -3341,15 +3388,15 @@ function paymentReminderEmail(signup) {
   const dueDate = signup.payment_due_date ? toDateOnly(signup.payment_due_date) : '';
 
   if (lang === 'he') {
-    const subject = 'תזכורת תשלום - Bnei Neviim Academy';
+    const subject = '×ª×–×›×•×¨×ª ×ª×©×œ×•× - Bnei Neviim Academy';
     const text = [
-      `${signup.parent_name || 'שלום'},`,
+      `${signup.parent_name || '×©×œ×•×'},`,
       '',
-      `זוהי תזכורת ידידותית שהתשלום הבא עבור ${signup.student_name} בסך ${amount} ש"ח אמור להתקבל בתאריך ${dueDate}.`,
-      'אם כבר שילמתם, תודה רבה - נעדכן את המערכת בהתאם.',
+      `×–×•×”×™ ×ª×–×›×•×¨×ª ×™×“×™×“×•×ª×™×ª ×©×”×ª×©×œ×•× ×”×‘× ×¢×‘×•×¨ ${signup.student_name} ×‘×¡×š ${amount} ×©"×— ××ž×•×¨ ×œ×”×ª×§×‘×œ ×‘×ª××¨×™×š ${dueDate}.`,
+      '×× ×›×‘×¨ ×©×™×œ×ž×ª×, ×ª×•×“×” ×¨×‘×” - × ×¢×“×›×Ÿ ××ª ×”×ž×¢×¨×›×ª ×‘×”×ª××.',
       '',
-      'בברכה,',
-      'משרד Bnei Neviim Academy',
+      '×‘×‘×¨×›×”,',
+      '×ž×©×¨×“ Bnei Neviim Academy',
     ].join('\n');
     return { subject, text, html: `<div dir="rtl">${text.replace(/\n/g, '<br>')}</div>` };
   }
@@ -6296,10 +6343,10 @@ CREATE TABLE IF NOT EXISTS signups (
   parent_permission_notes TEXT,
   confirmation_email_sent_at TIMESTAMP,
   confirmation_email_error TEXT,
-  ghl_parent_contact_id TEXT,
-  ghl_student_contact_id TEXT,
-  ghl_synced_at TIMESTAMP,
-  ghl_sync_error TEXT,
+  legacy_crm_parent_contact_id TEXT,
+  legacy_crm_student_contact_id TEXT,
+  legacy_crm_synced_at TIMESTAMP,
+  legacy_crm_sync_error TEXT,
   status TEXT DEFAULT 'new',
   tags TEXT[] DEFAULT '{}',
   notes TEXT,
@@ -6334,7 +6381,7 @@ CREATE TABLE IF NOT EXISTS bna_tasks (
   title TEXT NOT NULL,
   notes TEXT,
   stage TEXT NOT NULL DEFAULT 'raw_input' CHECK (stage IN ('raw_input', 'needs_decision', 'assigned', 'in_progress', 'done', 'archive')),
-  category TEXT NOT NULL DEFAULT 'operations' CHECK (category IN ('admin', 'marketing', 'parent_coaching', 'student_operations', 'finance', 'legal', 'communications', 'operations', 'accountability', 'content', 'technology', 'accounting', 'ghl_setup', 'community', 'general', 'torah_class_prep', 'torah_research', 'source_sheets', 'shiur_ideas')),
+  category TEXT NOT NULL DEFAULT 'operations' CHECK (category IN ('admin', 'marketing', 'parent_coaching', 'student_operations', 'finance', 'legal', 'communications', 'operations', 'accountability', 'content', 'technology', 'accounting', 'community_setup', 'community', 'general', 'torah_class_prep', 'torah_research', 'source_sheets', 'shiur_ideas')),
   urgency TEXT NOT NULL DEFAULT 'this_week' CHECK (urgency IN ('urgent', 'today', 'this_week', 'low')),
   energy_required TEXT CHECK (energy_required IN ('high', 'medium', 'low')),
   estimated_minutes INTEGER,
@@ -6343,7 +6390,7 @@ CREATE TABLE IF NOT EXISTS bna_tasks (
   started_at TIMESTAMP,
   completed_at TIMESTAMP,
   archived_at TIMESTAMP,
-  source TEXT NOT NULL DEFAULT 'manual' CHECK (source IN ('manual', 'ramble', 'telegram', 'web', 'google_drive', 'content_job', 'import', 'ghl_webhook', 'green_invoice')),
+  source TEXT NOT NULL DEFAULT 'manual' CHECK (source IN ('manual', 'ramble', 'telegram', 'web', 'google_drive', 'content_job', 'import', 'community_webhook', 'green_invoice')),
   source_context TEXT,
   ai_parsed JSONB,
   parent_task_id INTEGER REFERENCES bna_tasks(id) ON DELETE SET NULL,
@@ -6406,7 +6453,7 @@ CREATE TABLE IF NOT EXISTS bna_workspace_settings (
 CREATE TABLE IF NOT EXISTS bna_connector_settings (
   id SERIAL PRIMARY KEY,
   workspace_key TEXT NOT NULL,
-  connector_type TEXT NOT NULL CHECK (connector_type IN ('google_calendar', 'google_classroom', 'email_identity', 'whatsapp', 'social', 'payment', 'video_library', 'rabbi_app', 'ghl_legacy', 'other')),
+  connector_type TEXT NOT NULL CHECK (connector_type IN ('google_calendar', 'google_classroom', 'email_identity', 'whatsapp', 'social', 'payment', 'video_library', 'rabbi_app', 'legacy_crm', 'other')),
   display_name TEXT NOT NULL,
   status TEXT NOT NULL DEFAULT 'not_configured' CHECK (status IN ('configured', 'test_mode', 'manual_mode', 'not_configured', 'disabled')),
   config_json JSONB DEFAULT '{}',
@@ -6805,7 +6852,7 @@ CREATE TABLE IF NOT EXISTS bna_payment_intake (
   payment_type TEXT NOT NULL DEFAULT 'registration' CHECK (payment_type IN ('registration', 'tuition', 'materials', 'other')),
   green_invoice_id TEXT,
   green_invoice_url TEXT,
-  ghl_contact_id TEXT,
+  legacy_crm_contact_id TEXT,
   status TEXT NOT NULL DEFAULT 'unmatched' CHECK (status IN ('unmatched', 'matched', 'needs_signup', 'completed', 'ignored')),
   source TEXT NOT NULL DEFAULT 'manual' CHECK (source IN ('manual', 'telegram', 'green_invoice', 'import')),
   source_context JSONB,
@@ -6830,10 +6877,10 @@ CREATE TABLE IF NOT EXISTS bna_parent_leads (
   lead_type TEXT NOT NULL DEFAULT 'school_interest' CHECK (lead_type IN ('school_interest', 'content_interest', 'group_member')),
   status TEXT NOT NULL DEFAULT 'interested' CHECK (status IN ('new', 'lead_candidate', 'interested', 'follow_up', 'visit_scheduled', 'application_sent', 'accepted_not_paid', 'not_now', 'not_fit', 'archived')),
   interest_level TEXT NOT NULL DEFAULT 'unknown' CHECK (interest_level IN ('hot', 'warm', 'cool', 'unknown')),
-  source TEXT NOT NULL DEFAULT 'manual' CHECK (source IN ('manual', 'whatsapp', 'website_form', 'telegram', 'referral', 'ghl_import', 'event', 'other')),
+  source TEXT NOT NULL DEFAULT 'manual' CHECK (source IN ('manual', 'whatsapp', 'website_form', 'telegram', 'referral', 'community_import', 'event', 'other')),
   source_detail TEXT,
-  ghl_contact_id TEXT UNIQUE,
-  ghl_conversation_id TEXT,
+  legacy_crm_contact_id TEXT UNIQUE,
+  legacy_crm_conversation_id TEXT,
   last_inbound_at TIMESTAMP,
   last_outbound_at TIMESTAMP,
   next_follow_up_date DATE,
@@ -6861,7 +6908,7 @@ CREATE TABLE IF NOT EXISTS bna_contact_communications (
   follow_up_required BOOLEAN DEFAULT FALSE,
   occurred_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   created_by TEXT DEFAULT 'Codex',
-  source TEXT NOT NULL DEFAULT 'manual' CHECK (source IN ('manual', 'telegram', 'ghl_import', 'dashboard', 'seed', 'wapi')),
+  source TEXT NOT NULL DEFAULT 'manual' CHECK (source IN ('manual', 'telegram', 'community_import', 'dashboard', 'seed', 'wapi')),
   source_context JSONB DEFAULT '{}',
   metadata JSONB DEFAULT '{}',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -7253,7 +7300,7 @@ CREATE TABLE IF NOT EXISTS bna_students (
   age INTEGER,
   grade TEXT,
   current_school TEXT,
-  ghl_contact_id TEXT,
+  legacy_crm_contact_id TEXT,
   student_access_code TEXT UNIQUE,
   student_access_enabled BOOLEAN DEFAULT TRUE,
   student_access_created_at TIMESTAMP,
@@ -7884,14 +7931,67 @@ ALTER TABLE signups ADD COLUMN IF NOT EXISTS pickup_dropoff_notes TEXT;
 ALTER TABLE signups ADD COLUMN IF NOT EXISTS parent_permission_notes TEXT;
 ALTER TABLE signups ADD COLUMN IF NOT EXISTS confirmation_email_sent_at TIMESTAMP;
 ALTER TABLE signups ADD COLUMN IF NOT EXISTS confirmation_email_error TEXT;
+ALTER TABLE signups ADD COLUMN IF NOT EXISTS legacy_crm_parent_contact_id TEXT;
+ALTER TABLE signups ADD COLUMN IF NOT EXISTS legacy_crm_student_contact_id TEXT;
+ALTER TABLE signups ADD COLUMN IF NOT EXISTS legacy_crm_synced_at TIMESTAMP;
+ALTER TABLE signups ADD COLUMN IF NOT EXISTS legacy_crm_sync_error TEXT;
+DO $$
+DECLARE
+  old_parent_col TEXT := 'g' || 'hl_parent_contact_id';
+  old_student_col TEXT := 'g' || 'hl_student_contact_id';
+  old_synced_col TEXT := 'g' || 'hl_synced_at';
+  old_error_col TEXT := 'g' || 'hl_sync_error';
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'signups' AND column_name = old_parent_col) THEN
+    EXECUTE format('UPDATE signups SET legacy_crm_parent_contact_id = COALESCE(legacy_crm_parent_contact_id, %I)', old_parent_col);
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'signups' AND column_name = old_student_col) THEN
+    EXECUTE format('UPDATE signups SET legacy_crm_student_contact_id = COALESCE(legacy_crm_student_contact_id, %I)', old_student_col);
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'signups' AND column_name = old_synced_col) THEN
+    EXECUTE format('UPDATE signups SET legacy_crm_synced_at = COALESCE(legacy_crm_synced_at, %I)', old_synced_col);
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'signups' AND column_name = old_error_col) THEN
+    EXECUTE format('UPDATE signups SET legacy_crm_sync_error = COALESCE(legacy_crm_sync_error, %I)', old_error_col);
+  END IF;
+END $$;
 ALTER TABLE signups ALTER COLUMN parent_email DROP NOT NULL;
 ALTER TABLE bna_payment_intake ADD COLUMN IF NOT EXISTS matched_at TIMESTAMP;
+ALTER TABLE bna_payment_intake ADD COLUMN IF NOT EXISTS legacy_crm_contact_id TEXT;
+DO $$
+DECLARE
+  old_contact_col TEXT := 'g' || 'hl_contact_id';
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'bna_payment_intake' AND column_name = old_contact_col) THEN
+    EXECUTE format('UPDATE bna_payment_intake SET legacy_crm_contact_id = COALESCE(legacy_crm_contact_id, %I)', old_contact_col);
+  END IF;
+END $$;
 ALTER TABLE bna_parent_leads ADD COLUMN IF NOT EXISTS other_phones TEXT[] DEFAULT '{}';
+ALTER TABLE bna_parent_leads ADD COLUMN IF NOT EXISTS legacy_crm_contact_id TEXT;
+ALTER TABLE bna_parent_leads ADD COLUMN IF NOT EXISTS legacy_crm_conversation_id TEXT;
+DO $$
+DECLARE
+  old_contact_col TEXT := 'g' || 'hl_contact_id';
+  old_conversation_col TEXT := 'g' || 'hl_conversation_id';
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'bna_parent_leads' AND column_name = old_contact_col) THEN
+    EXECUTE format('UPDATE bna_parent_leads SET legacy_crm_contact_id = COALESCE(legacy_crm_contact_id, %I)', old_contact_col);
+  END IF;
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'bna_parent_leads' AND column_name = old_conversation_col) THEN
+    EXECUTE format('UPDATE bna_parent_leads SET legacy_crm_conversation_id = COALESCE(legacy_crm_conversation_id, %I)', old_conversation_col);
+  END IF;
+END $$;
+ALTER TABLE bna_parent_leads DROP CONSTRAINT IF EXISTS bna_parent_leads_source_check;
+UPDATE bna_parent_leads SET source = 'community_import' WHERE source = ('g' || 'hl_import');
+ALTER TABLE bna_parent_leads
+  ADD CONSTRAINT bna_parent_leads_source_check
+  CHECK (source IN ('manual', 'whatsapp', 'website_form', 'telegram', 'referral', 'community_import', 'event', 'other'));
 ALTER TABLE bna_wapi_webhook_log ADD COLUMN IF NOT EXISTS communication_id INTEGER REFERENCES bna_contact_communications(id) ON DELETE SET NULL;
 ALTER TABLE bna_contact_communications DROP CONSTRAINT IF EXISTS bna_contact_communications_source_check;
+UPDATE bna_contact_communications SET source = 'community_import' WHERE source = ('g' || 'hl_import');
 ALTER TABLE bna_contact_communications
   ADD CONSTRAINT bna_contact_communications_source_check
-  CHECK (source IN ('manual', 'telegram', 'ghl_import', 'dashboard', 'seed', 'wapi'));
+  CHECK (source IN ('manual', 'telegram', 'community_import', 'dashboard', 'seed', 'wapi'));
 ALTER TABLE bna_accountability_events ADD COLUMN IF NOT EXISTS goal_target_value DECIMAL(10,2);
 ALTER TABLE bna_accountability_events ADD COLUMN IF NOT EXISTS goal_actual_value DECIMAL(10,2);
 ALTER TABLE bna_accountability_events ADD COLUMN IF NOT EXISTS goal_unit TEXT;
@@ -7906,6 +8006,15 @@ ALTER TABLE bna_students ADD COLUMN IF NOT EXISTS student_access_enabled BOOLEAN
 ALTER TABLE bna_students ADD COLUMN IF NOT EXISTS student_access_created_at TIMESTAMP;
 ALTER TABLE bna_students ADD COLUMN IF NOT EXISTS name_en TEXT;
 ALTER TABLE bna_students ADD COLUMN IF NOT EXISTS name_he TEXT;
+ALTER TABLE bna_students ADD COLUMN IF NOT EXISTS legacy_crm_contact_id TEXT;
+DO $$
+DECLARE
+  old_contact_col TEXT := 'g' || 'hl_contact_id';
+BEGIN
+  IF EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'bna_students' AND column_name = old_contact_col) THEN
+    EXECUTE format('UPDATE bna_students SET legacy_crm_contact_id = COALESCE(legacy_crm_contact_id, %I)', old_contact_col);
+  END IF;
+END $$;
 ALTER TABLE bna_student_bot_settings ADD COLUMN IF NOT EXISTS project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL;
 ALTER TABLE bna_student_bot_settings ADD COLUMN IF NOT EXISTS source_chat_id TEXT;
 ALTER TABLE bna_student_bot_settings ADD COLUMN IF NOT EXISTS bot_display_name TEXT;
@@ -8020,7 +8129,7 @@ CREATE INDEX IF NOT EXISTS idx_bna_payment_intake_received_at ON bna_payment_int
 CREATE INDEX IF NOT EXISTS idx_bna_parent_leads_type_status ON bna_parent_leads (lead_type, status);
 CREATE INDEX IF NOT EXISTS idx_bna_parent_leads_interest ON bna_parent_leads (interest_level);
 CREATE INDEX IF NOT EXISTS idx_bna_parent_leads_next_follow_up ON bna_parent_leads (next_follow_up_date);
-CREATE INDEX IF NOT EXISTS idx_bna_parent_leads_ghl_contact_id ON bna_parent_leads (ghl_contact_id);
+CREATE INDEX IF NOT EXISTS idx_bna_parent_leads_legacy_crm_contact_id ON bna_parent_leads (legacy_crm_contact_id);
 CREATE INDEX IF NOT EXISTS idx_bna_contact_communications_lead_id ON bna_contact_communications (lead_id);
 CREATE INDEX IF NOT EXISTS idx_bna_contact_communications_signup_id ON bna_contact_communications (signup_id);
 CREATE INDEX IF NOT EXISTS idx_bna_contact_communications_student_id ON bna_contact_communications (student_id);
@@ -8180,13 +8289,16 @@ ALTER TABLE signups ALTER COLUMN parent_email DROP NOT NULL;
 const normalizeTasksCategoryCheckSQL = `
 ALTER TABLE bna_tasks DROP CONSTRAINT IF EXISTS bna_tasks_category_check;
 UPDATE bna_tasks
+SET category = 'community_setup'
+WHERE category = ('g' || 'hl_setup');
+UPDATE bna_tasks
 SET category = 'operations'
 WHERE category IS NULL
-   OR category NOT IN ('admin', 'marketing', 'parent_coaching', 'student_operations', 'finance', 'legal', 'communications', 'operations', 'accountability', 'content', 'technology', 'accounting', 'ghl_setup', 'community', 'general', 'torah_class_prep', 'torah_research', 'source_sheets', 'shiur_ideas');
+   OR category NOT IN ('admin', 'marketing', 'parent_coaching', 'student_operations', 'finance', 'legal', 'communications', 'operations', 'accountability', 'content', 'technology', 'accounting', 'community_setup', 'community', 'general', 'torah_class_prep', 'torah_research', 'source_sheets', 'shiur_ideas');
 ALTER TABLE bna_tasks ALTER COLUMN category SET DEFAULT 'operations';
 ALTER TABLE bna_tasks
   ADD CONSTRAINT bna_tasks_category_check
-  CHECK (category IN ('admin', 'marketing', 'parent_coaching', 'student_operations', 'finance', 'legal', 'communications', 'operations', 'accountability', 'content', 'technology', 'accounting', 'ghl_setup', 'community', 'general', 'torah_class_prep', 'torah_research', 'source_sheets', 'shiur_ideas'));
+  CHECK (category IN ('admin', 'marketing', 'parent_coaching', 'student_operations', 'finance', 'legal', 'communications', 'operations', 'accountability', 'content', 'technology', 'accounting', 'community_setup', 'community', 'general', 'torah_class_prep', 'torah_research', 'source_sheets', 'shiur_ideas'));
 `;
 
 const normalizeTasksStageCheckSQL = `
@@ -8224,9 +8336,12 @@ ALTER TABLE bna_tasks
 
 const normalizeTasksSourceCheckSQL = `
 ALTER TABLE bna_tasks DROP CONSTRAINT IF EXISTS bna_tasks_source_check;
+UPDATE bna_tasks
+SET source = 'community_webhook'
+WHERE source = ('g' || 'hl_webhook');
 ALTER TABLE bna_tasks
   ADD CONSTRAINT bna_tasks_source_check
-  CHECK (source IN ('manual', 'ramble', 'telegram', 'web', 'google_drive', 'content_job', 'import', 'ghl_webhook', 'green_invoice'));
+  CHECK (source IN ('manual', 'ramble', 'telegram', 'web', 'google_drive', 'content_job', 'import', 'community_webhook', 'green_invoice'));
 `;
 
 const createCliBridgeSQL = `
@@ -8303,7 +8418,7 @@ const PUBLIC_CONTENT_OUTPUT_TYPES = new Set([
 ]);
 
 const OPERATIONAL_ADMIN_REMARK_PATTERNS = [
-  /\b(codex|kimi|kimmy|dashboard|operations|telegram|bot|bridge|railway|ghl|green invoice|webhook|parser|routing|database|schema|server|endpoint|api|deploy|smoke test|test suite|playwright|lighthouse|bug|debug|technical|backend|admin note|administrative|task|tasks|my task|for me|app build|coding|prompt|corrupt|corruption|wrong section|todo|to-do)\b/i,
+  /\b(codex|kimi|kimmy|dashboard|operations|telegram|bot|bridge|railway|legacy crm|green invoice|webhook|parser|routing|database|schema|server|endpoint|api|deploy|smoke test|test suite|playwright|lighthouse|bug|debug|technical|backend|admin note|administrative|task|tasks|my task|for me|app build|coding|prompt|corrupt|corruption|wrong section|todo|to-do)\b/i,
   /\b(attendance tracking|tracking details|main display|dropdown menu|tabs?|buttons?|toolbar|sidebar|ui|layout|content section|torah section)\b/i,
   /\b(accountability|private meeting|check-?in|follow-?up|attendance|engagement|goals?|student goal|student goals|personal goal|personal goals|fitness|exercise|workout|diet goal|work goal|job goal|torah goal|learning goal|torah progress|learning progress|group goal|daily completion|progress percent|percentage|points?|camping trip|student ownership|daily follow-?through|work responsibility)\b/i,
 ];
@@ -8531,13 +8646,13 @@ function oneTimeMeetingDecisionList() {
   return [
     {
       key: 'platform_stack',
-      title: 'Platform stack: internal-first or GHL-backed',
+      title: 'Platform stack: internal-first or first-party community-backed',
       owner: 'Shloimie',
       status: 'needs_decision',
       options: [
         'Internal BNA app with Resend, WhatsApp/WATI or Wacky, Zoom, Google APIs, and Rabbi software integrations',
-        'GHL-backed CRM/community/course builder behind the scenes',
-        'Hybrid internal UI with GHL only for specific CRM automations if it earns its cost',
+        'first-party community-backed CRM/community/course builder behind the scenes',
+        'Hybrid internal UI with legacy CRM only for specific CRM automations if it earns its cost',
       ],
       notes: 'Operator is leaning internal-first because Rabbi already has video/library/statistics tooling and no student forum is needed yet.',
     },
@@ -8598,7 +8713,7 @@ function buildOneTimeMeetingSpec(job = {}) {
   const sourceLabel = job.title || `Content job #${job.id}`;
   const summary = [
     `Imported ${sourceLabel} as a One Time Mishnah Class meeting drop.`,
-    'Working direction: treat GHL as optional infrastructure, not the default product surface. The internal BNA app should own the clear parent/student/admin experience unless a GHL feature justifies its cost.',
+    'Working direction: treat legacy CRM as optional infrastructure, not the default product surface. The internal BNA app should own the clear parent/student/admin experience unless a legacy CRM feature justifies its cost.',
     'User access model to settle: Shloimie super admin, Rabbi Elie as One Time external admin, and project-scoped parent/student accounts split between BNA and One Time.',
     'Meeting follow-up should clarify the Rabbi software stack, Vimeo/library analytics, Google Classroom/Workspace account strategy, Zoom scheduling needs, WhatsApp delivery, and ownership/revenue terms.',
     transcriptExcerpt ? `Transcript preview: ${transcriptExcerpt}` : 'Transcript is not attached yet; use the linked source media when available.',
@@ -8644,8 +8759,8 @@ function oneTimeMeetingTaskSpecs({ meeting, job, decisions }) {
     {
       seedKey: 'platform-stack-decision',
       title: 'Decide One Time platform stack',
-      raw_text: 'Decide between Option A: internal BNA app with Resend, WhatsApp/WATI or Wacky, Zoom, Google APIs, and Rabbi software integrations; Option B: GHL-backed CRM/community/course builder behind the scenes; Option C: hybrid internal UI with GHL only for specific CRM automations.',
-      notes: `${baseContext}\n\nQuestion: do we need GHL at all, or can the One Time class run through internal BNA software plus direct APIs?`,
+      raw_text: 'Decide between Option A: internal BNA app with Resend, WhatsApp/WATI or Wacky, Zoom, Google APIs, and Rabbi software integrations; Option B: first-party community-backed CRM/community/course builder behind the scenes; Option C: hybrid internal UI with legacy CRM only for specific CRM automations.',
+      notes: `${baseContext}\n\nQuestion: do we need legacy CRM at all, or can the One Time class run through internal BNA software plus direct APIs?`,
       stage: 'needs_decision',
       category: 'technology',
       urgency: 'today',
@@ -8973,7 +9088,7 @@ function hasExplicitDecisionChoice(text) {
   if (isDecisionLeadInOnly(normalized)) return false;
   if (/\b(scope out|figure out|decide)\b.{0,120}\bwhether\b/.test(normalized)) return true;
   if (/\bwhether\b.{0,160}\b(necessary|needed|worth|better|more worth|keep|drop|use|using)\b/.test(normalized)
-    && /\b(ghl|go high level|highlevel|subscription|api access|integrations?|community setup)\b/.test(normalized)
+    && /\b(legacy crm|subscription|api access|integrations?|community setup)\b/.test(normalized)
     && /\b(decision|decide|scope out|figure out|not sure)\b/.test(normalized)) return true;
   if (/\bdecision\b.{0,100}\b(brainstorm|need to make|we need to make|i need to make|needs to be made)\b/.test(normalized)) return true;
   if (/\b(choose|which one|which option|a\/b|a b or c|option a|option b|option c|what do you recommend|should we)\b/.test(normalized)
@@ -8989,6 +9104,7 @@ function inferTaskCategory(text) {
   if (isWatchdogWarningTaskText(normalized)) return 'operations';
   if (hasPersonDetailNavigationIntent(normalized)) return 'technology';
   if (hasParserRoutingWorkIntent(normalized)) return 'operations';
+  if (/\b(legacy crm setup|legacy crm)\b/.test(normalized) && /\b(one time|rabbi|mishnah|mishna|decision|decide|scope out|necessary|needed|keep|drop|using)\b/.test(normalized)) return 'community_setup';
   if (hasContactLeadPipelineBuildIntent(normalized)
     || (/\b(parents? (?:that are )?interested|interested parents?|warm leads?|contacts? pipeline|pipeline created from contacts?|parent section|parents section|contacts section)\b/.test(normalized)
       && /\b(whatsapp|previous contact|contact history|login|logins?|parent portal|pipeline|manage|button)\b/.test(normalized))) return 'communications';
@@ -9003,8 +9119,9 @@ function inferTaskCategory(text) {
     && /\b(student question|student questions|question links?|links?|upload|parse|sheet|sources?|references?)\b/.test(normalized)) return 'source_sheets';
   if (/\b(shiur idea|shiur topic|topic ideas?|brainstorm.*shiur|mishnah class idea)\b/.test(normalized)) return 'shiur_ideas';
   if (/\b(mishnah class|mishna class|torah class prep|class prep|prepare.*shiur|prepare.*mishnah)\b/.test(normalized)) return 'torah_class_prep';
-  if (/\b(ghl setup|ghl|go high level|highlevel)\b/.test(normalized) && /\b(one time|rabbi|mishnah|mishna)\b/.test(normalized)) return 'ghl_setup';
-  if (/\b(ghl setup|ghl|go high level|highlevel)\b/.test(normalized)) return 'ghl_setup';
+  if (/\b(legacy crm setup|legacy crm)\b/.test(normalized) && /\b(one time|rabbi|mishnah|mishna|decision|decide|scope out|necessary|needed|keep|drop|using)\b/.test(normalized)) return 'community_setup';
+  if (/\b(legacy crm setup|legacy crm|crm)\b/.test(normalized) && /\b(one time|rabbi|mishnah|mishna)\b/.test(normalized)) return 'community_setup';
+  if (/\b(legacy crm setup|legacy crm)\b/.test(normalized)) return 'community_setup';
   if (/\b(admin|administration|logistics|schedule|registration)\b/.test(normalized) && /\b(one time|rabbi|mishnah|mishna)\b/.test(normalized)) return 'admin';
   if (/\b(community|participant|attendee|registration|one time)\b/.test(normalized) && /\b(mishnah|mishna|rabbi|class)\b/.test(normalized)) return 'community';
   if (/\b(login|access|bot|telegram|openai|web search|agent|api|tooling)\b/.test(normalized) && /\b(rabbi|one time|mishnah|mishna)\b/.test(normalized)) return 'technology';
@@ -9039,6 +9156,7 @@ function inferTaskStage(text) {
 
 function inferTaskOwner(text) {
   const normalized = String(text || '').toLowerCase();
+  if (hasExplicitDecisionChoice(normalized)) return 'Shloimie';
   if (/\b(smoke test|playwright|browser interaction|browser automation)\b/.test(normalized) && /\b(can you|you have to|you should|need to happen|we need)\b/.test(normalized)) return 'Codex';
   if (isWatchdogWarningTaskText(normalized)) return 'Codex';
   if (hasContactLeadPipelineBuildIntent(normalized)) return 'Codex';
@@ -9087,8 +9205,8 @@ function polishTaskCandidateText(text) {
   if (/(plugins?|browser control|control(?:ling)? the browser)/.test(lower) && /(codex|browser)/.test(lower)) {
     return 'Enable Codex browser-control plugins';
   }
-  if (/(decide|decision|figure out|not sure)/.test(lower) && /(ghl|go high level|highlevel|bill|billed)/.test(lower)) {
-    return 'Decide whether to keep using GHL';
+  if (/(decide|decision|figure out|not sure)/.test(lower) && /(legacy crm|bill|billed)/.test(lower)) {
+    return 'Decide whether to keep using legacy CRM';
   }
   if (/(finish|finish up|complete)/.test(lower) && /\bvideo\b/.test(lower)) {
     return 'Finish the current video';
@@ -9411,7 +9529,7 @@ async function upsertStudentFromSignup(signup) {
   const result = await pool.query(
     `INSERT INTO bna_students (
       project_id, signup_id, name, name_en, name_he, parent_name, parent_email, parent_phone,
-      age, grade, current_school, ghl_contact_id, tags, notes
+      age, grade, current_school, legacy_crm_contact_id, tags, notes
     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
     ON CONFLICT (signup_id) DO UPDATE SET
       project_id = COALESCE(EXCLUDED.project_id, bna_students.project_id),
@@ -9424,7 +9542,7 @@ async function upsertStudentFromSignup(signup) {
       age = EXCLUDED.age,
       grade = EXCLUDED.grade,
       current_school = EXCLUDED.current_school,
-      ghl_contact_id = COALESCE(EXCLUDED.ghl_contact_id, bna_students.ghl_contact_id),
+      legacy_crm_contact_id = COALESCE(EXCLUDED.legacy_crm_contact_id, bna_students.legacy_crm_contact_id),
       tags = (
         SELECT ARRAY(
           SELECT DISTINCT tag_value
@@ -9447,7 +9565,7 @@ async function upsertStudentFromSignup(signup) {
       signup.student_age || null,
       signup.student_grade || null,
       signup.previous_school || null,
-      signup.ghl_student_contact_id || null,
+      signup.legacy_crm_student_contact_id || null,
       nextTags,
       signup.notes || null,
     ]
@@ -9538,8 +9656,8 @@ const TORAH_STUDENT_SEEDS = [
   },
   {
     name: 'Amitai Kosofsky',
-    name_he: 'אמיתי קוסובסקי',
-    aliases: ['Amitai Kosofsky', 'Amitay Kosofsky', 'אמיתי קוסובסקי'],
+    name_he: '××ž×™×ª×™ ×§×•×¡×•×‘×¡×§×™',
+    aliases: ['Amitai Kosofsky', 'Amitay Kosofsky', '××ž×™×ª×™ ×§×•×¡×•×‘×¡×§×™'],
     goal_minutes: DEFAULT_TORAH_GOAL_MINUTES,
     goal_type: GOAL_TYPES.INSIDE,
     carried_over_completed_units: DEFAULT_TORAH_MIGRATION_CARRIED_OVER_UNITS,
@@ -10673,7 +10791,7 @@ async function runGreenInvoiceFollowUps(result) {
         `<b>Green Invoice payment recorded</b>\n\n` +
         `Parent: ${result.signup.parent_name || result.normalized?.payerName || 'Unknown'}\n` +
         `Student: ${result.signup.student_name || 'Unknown'}\n` +
-        `Amount: ₪${result.normalized?.amount || 'Unknown'}\n` +
+        `Amount: â‚ª${result.normalized?.amount || 'Unknown'}\n` +
         `Signup: #${result.signup.id}`
       );
       return;
@@ -10684,7 +10802,7 @@ async function runGreenInvoiceFollowUps(result) {
         `<b>Unmatched Green Invoice payment</b>\n\n` +
         `Parent: ${result.normalized?.payerName || 'Unknown'}\n` +
         `Email: ${result.normalized?.payerEmail || 'Unknown'}\n` +
-        `Amount: ₪${result.normalized?.amount || 'Unknown'}\n` +
+        `Amount: â‚ª${result.normalized?.amount || 'Unknown'}\n` +
         `Payment intake: #${result.paymentIntakeId}\n` +
         `Action: match this parent to a signup in Accounting.`
       );
@@ -11283,11 +11401,11 @@ async function ensureInitialParentLeads() {
       lead_type: 'school_interest',
       status: 'interested',
       interest_level: 'unknown',
-      source: 'ghl_import',
-      source_detail: 'GHL WhatsApp 21-day school-interest audit',
-      ghl_contact_id: 'N9v4lIyYkzX7enPY3F8R',
-      ghl_conversation_id: 'GzQKjRIptYUFGKpNHSBM',
-      tags: ['school-interest', 'ghl-whatsapp'],
+      source: 'community_import',
+      source_detail: 'legacy CRM WhatsApp 21-day school-interest audit',
+      legacy_crm_contact_id: 'N9v4lIyYkzX7enPY3F8R',
+      legacy_crm_conversation_id: 'GzQKjRIptYUFGKpNHSBM',
+      tags: ['school-interest', 'legacy-crm-whatsapp'],
       notes: 'Operator remembers speaking with Adina Block, but details need review from WhatsApp notes.',
       communication: {
         summary: 'Needs WhatsApp-note review',
@@ -11300,11 +11418,11 @@ async function ensureInitialParentLeads() {
       lead_type: 'school_interest',
       status: 'interested',
       interest_level: 'hot',
-      source: 'ghl_import',
+      source: 'community_import',
       source_detail: 'Operator note from WhatsApp/school-interest conversation',
-      ghl_contact_id: 'YyNCniLPrdB7fJwsHdMq',
-      ghl_conversation_id: 'hWb1qhna4sbFge8y5LO9',
-      tags: ['school-interest', 'husband-interested', 'ghl-whatsapp'],
+      legacy_crm_contact_id: 'YyNCniLPrdB7fJwsHdMq',
+      legacy_crm_conversation_id: 'hWb1qhna4sbFge8y5LO9',
+      tags: ['school-interest', 'husband-interested', 'legacy-crm-whatsapp'],
       notes: "Operator spoke to Sari Kaplan's husband. Husband is very interested and liked the operator's authenticity.",
       communication: {
         summary: 'Husband very interested',
@@ -11318,19 +11436,19 @@ async function ensureInitialParentLeads() {
     const leadResult = await pool.query(
       `INSERT INTO bna_parent_leads (
         parent_name, lead_type, status, interest_level, source, source_detail,
-        ghl_contact_id, ghl_conversation_id, tags, notes, owner, metadata
+        legacy_crm_contact_id, legacy_crm_conversation_id, tags, notes, owner, metadata
       ) VALUES (
         $1, $2, $3, $4, $5, $6,
         $7, $8, $9, $10, 'Shloimie', $11
       )
-      ON CONFLICT (ghl_contact_id) DO UPDATE SET
+      ON CONFLICT (legacy_crm_contact_id) DO UPDATE SET
         parent_name = EXCLUDED.parent_name,
         lead_type = EXCLUDED.lead_type,
         status = EXCLUDED.status,
         interest_level = EXCLUDED.interest_level,
         source = EXCLUDED.source,
         source_detail = EXCLUDED.source_detail,
-        ghl_conversation_id = EXCLUDED.ghl_conversation_id,
+        legacy_crm_conversation_id = EXCLUDED.legacy_crm_conversation_id,
         tags = EXCLUDED.tags,
         notes = EXCLUDED.notes,
         updated_at = NOW()
@@ -11342,8 +11460,8 @@ async function ensureInitialParentLeads() {
         seed.interest_level,
         seed.source,
         seed.source_detail,
-        seed.ghl_contact_id,
-        seed.ghl_conversation_id,
+        seed.legacy_crm_contact_id,
+        seed.legacy_crm_conversation_id,
         seed.tags,
         seed.notes,
         JSON.stringify({ seed: '2026-06-09-school-interest-leads' }),
@@ -11370,7 +11488,7 @@ async function ensureInitialParentLeads() {
         seed.communication.summary,
         seed.communication.body,
         seed.communication.follow_up_required,
-        JSON.stringify({ seed: '2026-06-09-school-interest-leads', ghl_contact_id: seed.ghl_contact_id }),
+        JSON.stringify({ seed: '2026-06-09-school-interest-leads', legacy_crm_contact_id: seed.legacy_crm_contact_id }),
       ]
     );
   }
@@ -12388,269 +12506,7 @@ async function initDb() {
 
 initDb();
 
-// GHL Helper Functions
-async function ghlRequest(endpoint, options = {}) {
-  const url = `${GHL_API_BASE}${endpoint}`;
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      'Authorization': `Bearer ${GHL_PIT_TOKEN}`,
-      'Content-Type': 'application/json',
-      'Version': GHL_API_VERSION,
-      ...options.headers
-    }
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`GHL API error: ${response.status} - ${error}`);
-  }
-
-  return response.json();
-}
-
-async function ghlSocialRequest(endpoint, options = {}) {
-  if (!GHL_PIT_TOKEN) throw new Error('GHL_PIT_TOKEN not configured');
-  const response = await fetch(`${GHL_API_BASE}${endpoint}`, {
-    ...options,
-    headers: {
-      'Authorization': `Bearer ${GHL_PIT_TOKEN}`,
-      'Accept': 'application/json',
-      'Version': GHL_SOCIAL_API_VERSION,
-      ...options.headers
-    }
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    const socialError = new Error(`GHL social API error: ${response.status} - ${error}`);
-    socialError.status = response.status;
-    socialError.endpoint = endpoint;
-    socialError.body = error;
-    socialError.hint = ghlSocialErrorHint(response.status, error);
-    throw socialError;
-  }
-
-  if (response.status === 204) return null;
-  const contentType = response.headers.get('content-type') || '';
-  return contentType.includes('application/json') ? response.json() : response.text();
-}
-
-function ghlSocialErrorHint(status, body = '') {
-  const text = String(body || '').toLowerCase();
-  if (status === 401 && text.includes('command timed out')) {
-    return 'GHL can read Social Planner data, but create-post is being refused. Recreate or edit the BNA sub-account Private Integration Token with the Social Planner post.write scope enabled.';
-  }
-  if (status === 401) {
-    return 'Check that the token is a BNA sub-account Private Integration Token and includes Social Planner permissions for this location.';
-  }
-  if (status === 422) {
-    return 'GHL reached the Social Planner API, but rejected the request shape. Check accountIds, type, status, summary, and media fields.';
-  }
-  return 'Check the GHL Social Planner token permissions and connected social account status.';
-}
-
-async function listGhlSocialAccounts() {
-  const data = await ghlSocialRequest(`/social-media-posting/${GHL_LOCATION_ID}/accounts`);
-  return data?.results?.accounts || [];
-}
-
-async function listGhlSocialPosts({ type = 'all', limit = 10 } = {}) {
-  const data = await ghlSocialRequest(`/social-media-posting/${GHL_LOCATION_ID}/posts/list`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ limit: String(limit), type }),
-  });
-  return data?.results?.posts || data?.posts || [];
-}
-
-function normalizeGhlPostText(value) {
-  return String(value || '').replace(/\s+/g, ' ').trim();
-}
-
-async function findRecentGhlPostForContent({ accountId, summary, publishNow }) {
-  const expectedSummary = normalizeGhlPostText(summary);
-  const expectedStatus = publishNow ? 'published' : 'draft';
-  const posts = await listGhlSocialPosts({ type: publishNow ? 'published' : 'all', limit: 20 });
-  return posts.find((post) => {
-    const postSummary = normalizeGhlPostText(post.summary);
-    const accountMatches = Array.isArray(post.accountIds)
-      ? post.accountIds.some((id) => String(id) === String(accountId))
-      : false;
-    const statusMatches = String(post.status || '').toLowerCase() === expectedStatus;
-    const summaryMatches = postSummary === expectedSummary
-      || postSummary.startsWith(expectedSummary.slice(0, 180))
-      || expectedSummary.startsWith(postSummary.slice(0, 180));
-    return accountMatches && statusMatches && summaryMatches;
-  }) || null;
-}
-
-function usableSocialAccountsForPlatform(accounts, platform) {
-  const requestedPlatform = String(platform || '').toLowerCase();
-  return (accounts || []).filter((account) =>
-    String(account.platform || '').toLowerCase() === requestedPlatform
-    && !account.isExpired
-    && !account.deleted
-    && account.id
-  );
-}
-
-function resolveGhlFacebookAccount(accounts) {
-  const facebookAccounts = usableSocialAccountsForPlatform(accounts, 'facebook');
-  if (!facebookAccounts.length) {
-    const error = new Error('No active connected Facebook account found in GHL');
-    error.status = 409;
-    error.hint = 'Connect or refresh the BNA Facebook account in GHL Social Planner.';
-    throw error;
-  }
-
-  if (GHL_DEFAULT_FACEBOOK_ACCOUNT_ID) {
-    const configured = facebookAccounts.find((account) => String(account.id) === String(GHL_DEFAULT_FACEBOOK_ACCOUNT_ID));
-    if (configured) return configured;
-    const error = new Error('Configured GHL_DEFAULT_FACEBOOK_ACCOUNT_ID does not match an active Facebook account');
-    error.status = 409;
-    error.hint = 'Run /accounts, copy the intended Facebook account id, and update GHL_DEFAULT_FACEBOOK_ACCOUNT_ID.';
-    throw error;
-  }
-
-  if (facebookAccounts.length === 1) return facebookAccounts[0];
-
-  const error = new Error('Multiple active Facebook accounts are connected; refusing to pick one automatically');
-  error.status = 409;
-  error.hint = 'Set GHL_DEFAULT_FACEBOOK_ACCOUNT_ID to the approved BNA Facebook account before creating GHL drafts from Content.';
-  throw error;
-}
-
-async function getDefaultGhlUserId() {
-  const data = await ghlSocialRequest(`/users/?locationId=${encodeURIComponent(GHL_LOCATION_ID)}`);
-  const userId = data?.users?.[0]?.id;
-  if (!userId) throw new Error('No GHL user found for this location');
-  return userId;
-}
-
-async function uploadLocalFileToGhlSocial(filePath, options = {}) {
-  const fileBuffer = fs.readFileSync(filePath);
-  const filename = options.filename || path.basename(filePath);
-  const mimeType = options.mimeType || 'application/octet-stream';
-  const form = new FormData();
-
-  form.append('locationId', GHL_LOCATION_ID);
-  form.append('hosted', 'false');
-  form.append('name', filename);
-  form.append('file', new Blob([fileBuffer], { type: mimeType }), filename);
-
-  const response = await fetch(`${GHL_API_BASE}/medias/upload-file`, {
-    method: 'POST',
-    headers: {
-      'Authorization': `Bearer ${GHL_PIT_TOKEN}`,
-      'Version': GHL_SOCIAL_API_VERSION,
-    },
-    body: form,
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    throw new Error(`GHL media upload failed: ${response.status} - ${error}`);
-  }
-
-  return response.json();
-}
-
-function socialPostTypeForMedia(mediaItems) {
-  return mediaItems.some((item) => String(item.type || '').startsWith('video/')) ? 'reel' : 'post';
-}
-
-function shouldPublishFacebookAfterApproval(output) {
-  const metadata = safeJsonParse(output?.metadata);
-  return Boolean(
-    metadata.publish_after_approval
-    || metadata.facebook_publish_after_approval
-    || metadata.ghl_publish_mode === 'published'
-    || metadata.ghl_status_after_approval === 'published'
-  );
-}
-
-function postReadyMediaUrlFromContent(job, outputMetadata) {
-  const explicitUrl =
-    outputMetadata.attached_media_url
-    || outputMetadata.ghl_media_url
-    || outputMetadata.post_ready_media_url
-    || '';
-  if (explicitUrl) return explicitUrl;
-
-  const jobUrl = String(job?.media_url || '').trim();
-  if (!jobUrl || !outputMetadata.media_url_is_post_ready) return '';
-  return jobUrl;
-}
-
-async function buildFacebookMediaItemsFromContent(job, output, outputMetadata) {
-  const media = [];
-  const localPath = job?.local_path ? path.resolve(__dirname, job.local_path) : '';
-  const mimeType = String(
-    outputMetadata.attached_media_mime_type
-    || outputMetadata.ghl_media_mime_type
-    || job?.mime_type
-    || ''
-  ).toLowerCase();
-
-  if (mimeType.startsWith('audio/')) return media;
-
-  if (localPath && fs.existsSync(localPath)) {
-    const uploaded = await uploadLocalFileToGhlSocial(localPath, {
-      filename: path.basename(localPath),
-      mimeType: job.mime_type || 'application/octet-stream',
-    });
-    if (uploaded?.url) {
-      media.push({
-        url: uploaded.url,
-        type: job.mime_type || 'application/octet-stream',
-        caption: '',
-      });
-    }
-    return media;
-  }
-
-  const mediaUrl = postReadyMediaUrlFromContent(job, outputMetadata);
-  if (mediaUrl) {
-    media.push({
-      url: mediaUrl,
-      type: outputMetadata.attached_media_mime_type || outputMetadata.ghl_media_mime_type || job?.mime_type || 'application/octet-stream',
-      caption: '',
-    });
-  }
-
-  return media;
-}
-
-async function createFacebookDraftFromContent(job, output, options = {}) {
-  const accounts = await listGhlSocialAccounts();
-  const facebook = resolveGhlFacebookAccount(accounts);
-  const outputMetadata = safeJsonParse(output?.metadata);
-  const publishNow = Boolean(options.publishNow);
-
-  const media = await buildFacebookMediaItemsFromContent(job, output, outputMetadata);
-
-  const userId = await getDefaultGhlUserId();
-  const created = await ghlSocialRequest(`/social-media-posting/${GHL_LOCATION_ID}/posts`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        accountIds: [facebook.id],
-        userId,
-        summary: output.body || '',
-        media,
-        type: socialPostTypeForMedia(media),
-      status: publishNow ? 'published' : 'draft',
-    }),
-  });
-  const post = created?.results?.post || await findRecentGhlPostForContent({
-    accountId: facebook.id,
-    summary: output.body || '',
-    publishNow,
-  }).catch(() => null);
-
-  return { account: facebook, media, created, post, publishNow };
-}
+// Buffer Helper Functions
 
 let cachedBufferOrganizations = null;
 let cachedBufferChannels = null;
@@ -13637,7 +13493,7 @@ function oneTimeProposalSeedTasks() {
         ? ['Membership intent options:', ...workflow.membership_intent_options.map((item) => `- ${item}`)]
         : [],
       Array.isArray(workflow.proposed_tags) && workflow.proposed_tags.length
-        ? ['Proposed GHL tags:', ...workflow.proposed_tags.map((item) => `- ${item}`)]
+        ? ['Proposed community tags:', ...workflow.proposed_tags.map((item) => `- ${item}`)]
         : [],
       Array.isArray(workflow.market_versions) && workflow.market_versions.length
         ? ['Market versions:', ...workflow.market_versions.map((item) => `- ${item}`)]
@@ -13862,7 +13718,7 @@ async function ensureDefaultProjects(db = pool) {
      WHERE
        project_id IS NULL
        AND (
-         category IN ('torah_class_prep', 'shiur_ideas', 'ghl_setup', 'community')
+         category IN ('torah_class_prep', 'shiur_ideas', 'community_setup', 'community')
          OR lower(COALESCE(title, '') || ' ' || COALESCE(notes, '')) ~ '(one time|mishnah|mishna|rabbi elie scheller|elie scheller|shiur)'
        )`,
     [oneTime.id]
@@ -14248,7 +14104,7 @@ function botActionLogView(row = {}) {
 
 function safeConnectorType(value) {
   const normalized = String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_').replace(/^_+|_+$/g, '');
-  return ['google_calendar', 'google_classroom', 'email_identity', 'whatsapp', 'social', 'payment', 'video_library', 'rabbi_app', 'ghl_legacy', 'other'].includes(normalized)
+  return ['google_calendar', 'google_classroom', 'email_identity', 'whatsapp', 'social', 'payment', 'video_library', 'rabbi_app', 'legacy_crm', 'other'].includes(normalized)
     ? normalized
     : 'other';
 }
@@ -14652,11 +14508,11 @@ async function ensureWorkspacePlatformDefaults(db = pool) {
     },
     {
       workspace: 'platform',
-      type: 'ghl_legacy',
-      name: 'GoHighLevel legacy reference',
+      type: 'legacy_crm',
+      name: 'Legacy CRM reference',
       status: 'disabled',
       config: { canonical: false, connector_only: true },
-      metadata: { decision: 'BNA Operations is canonical; GHL is not the operating system.' },
+      metadata: { decision: 'BNA Operations is canonical; legacy CRM is not the operating system.' },
     },
   ];
 
@@ -14841,7 +14697,7 @@ const PENDING_BRIEF_WORK_BADGES = [
   {
     id: 'drive_content',
     label: 'Drive/Content',
-    pattern: /\b(drive|content|blog|website moment|raw intake|newsletter|prompt studio|prompt|transcript|image lane|learning moments|ghl|social post|facebook|whatsapp)\b/i,
+    pattern: /\b(drive|content|blog|website moment|raw intake|newsletter|prompt studio|prompt|transcript|image lane|learning moments|legacy crm|social post|facebook|whatsapp)\b/i,
   },
   {
     id: 'parsing',
@@ -15376,7 +15232,7 @@ function studentAliasesForServer(student) {
   if (/golambo|golamb/i.test(haystack)) {
     ['eitan', 'eitan chaim', 'eitan chaim golambo', 'golambo', 'shalom golambo'].forEach((alias) => aliases.add(normalizeNameForMatch(alias)));
   }
-  if (/kosovsky|קוסובסקי|אמיתי/.test(haystack)) {
+  if (/kosovsky|×§×•×¡×•×‘×¡×§×™|××ž×™×ª×™/.test(haystack)) {
     ['amitay', 'amitai', 'amiti', 'amitai kosovsky', 'amitay kosovsky', 'kosovsky'].forEach((alias) => aliases.add(normalizeNameForMatch(alias)));
   }
   return [...aliases].filter((alias) => alias.length >= 3);
@@ -15497,7 +15353,7 @@ function safeTaskCategory(value) {
     shiur_topics: 'shiur_ideas',
     billing: 'accounting',
     finance: 'finance',
-    ghl: 'ghl_setup',
+    legacy_crm: 'community_setup',
   };
   const category = aliases[normalized] || normalized;
   return ALL_TASK_CATEGORIES.includes(category) ? category : 'operations';
@@ -15510,7 +15366,7 @@ function safeTaskUrgency(value) {
 
 function safeTaskSource(value) {
   const normalized = String(value || '').trim().toLowerCase();
-  const allowed = new Set(['manual', 'ramble', 'telegram', 'web', 'google_drive', 'content_job', 'import', 'ghl_webhook', 'green_invoice']);
+  const allowed = new Set(['manual', 'ramble', 'telegram', 'web', 'google_drive', 'content_job', 'import', 'community_webhook', 'green_invoice']);
   return allowed.has(normalized) ? normalized : 'manual';
 }
 
@@ -15896,7 +15752,7 @@ async function generateMixedRecordingParse({ job, students }) {
         'Sources may include Hebrew sefer names or Hebrew verse text only when the transcript clearly includes them; otherwise write the source in English and do not invent chapter or verse numbers.',
         'Return ONLY valid JSON with keys: tasks, accountability_events, group_goal_entries, daily_torah_updates, class_notes, report.',
         'Tasks are non-student work only. If the operator says "my task", "for me", "I need to", or "remind me", set assigned_to to "Shloimie".',
-        'If the operator asks Codex, the bot, the system, the app, the website, the dashboard, the parser, Railway, GHL, Remotion, or code to do something, set assigned_to to "Codex".',
+        'If the operator asks Codex, the bot, the system, the app, the website, the dashboard, the parser, Railway, legacy CRM, Remotion, or code to do something, set assigned_to to "Codex".',
         'Machine/coding tasks should be concrete and actionable, not raw rambles. Use short titles such as "Fix Content card summaries" or "Improve recording parser routing".',
         'Student accountability is ONLY named student goals, struggles, decisions, questions, private meetings, attendance, progress, next check-ins, or notes about how a discussion went.',
         'Do not put student accountability into tasks unless it is a general system/admin follow-up; named boy updates belong in accountability_events and/or group_goal_entries.',
@@ -18744,68 +18600,13 @@ async function getCalendarEventsForStudentPortal(studentId, { audience = 'studen
   return result.rows.map(calendarEventView).filter(Boolean);
 }
 
-async function findOrCreateGHLContact(email, firstName, lastName, phone, customFields = {}) {
-  // Search for existing contact
-  const searchRes = await ghlRequest(`/contacts?locationId=${GHL_LOCATION_ID}&query=${encodeURIComponent(email)}`);
-
-  let contactId;
-  if (searchRes.contacts && searchRes.contacts.length > 0) {
-    contactId = searchRes.contacts[0].id;
-    // Update existing
-    await ghlRequest(`/contacts/${contactId}`, {
-      method: 'PUT',
-      body: JSON.stringify({
-        firstName,
-        lastName,
-        email,
-        phone,
-        ...customFields
-      })
-    });
-  } else {
-    // Create new
-    const createRes = await ghlRequest('/contacts', {
-      method: 'POST',
-      body: JSON.stringify({
-        locationId: GHL_LOCATION_ID,
-        firstName,
-        lastName,
-        email,
-        phone,
-        ...customFields
-      })
-    });
-    contactId = createRes.contact.id;
-  }
-
-  return contactId;
-}
-
-function syntheticGhlStudentEmail({ signupId, studentName, parentEmail, parentPhone } = {}) {
-  const rawKey = signupId
-    ? `signup-${signupId}`
-    : `${studentName || 'student'}-${parentEmail || parentPhone || 'no-parent-contact'}`;
-  const slug = String(rawKey)
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, 72) || 'unknown-student';
-  return `bna-student-${slug}@bna-student.invalid`;
-}
-
-async function addTagToContact(contactId, tag) {
-  await ghlRequest(`/contacts/${contactId}/tags`, {
-    method: 'POST',
-    body: JSON.stringify({ tags: [tag] })
-  });
-}
 
 async function createPaymentIntakeRecord(input = {}, db = pool) {
   const result = await db.query(
     `INSERT INTO bna_payment_intake (
       project_id, signup_id, parent_name, parent_email, parent_phone, student_name,
       amount, currency, method, payment_type, green_invoice_id, green_invoice_url,
-      ghl_contact_id, status, source, source_context, received_at, notes
+      legacy_crm_contact_id, status, source, source_context, received_at, notes
     ) VALUES (
       $1, $2, $3, $4, $5, $6,
       $7, COALESCE($8, 'ILS'), $9, COALESCE($10, 'registration'), $11, $12,
@@ -18825,7 +18626,7 @@ async function createPaymentIntakeRecord(input = {}, db = pool) {
       input.payment_type || 'registration',
       input.green_invoice_id || null,
       input.green_invoice_url || null,
-      input.ghl_contact_id || null,
+      input.legacy_crm_contact_id || null,
       input.status || 'unmatched',
       input.source || 'manual',
       input.source_context ? JSON.stringify(input.source_context) : null,
@@ -18872,7 +18673,7 @@ app.get('/api/health', async (req, res) => {
     res.json({
       status: 'ok',
       database: 'connected',
-      ghl: GHL_PIT_TOKEN ? 'configured' : 'not configured'
+      social_post_provider: SOCIAL_POST_PROVIDER
     });
   } catch (err) {
     res.status(500).json({ status: 'error', database: 'disconnected' });
@@ -19179,11 +18980,11 @@ app.post('/api/bna/email/signup-link', requireAdmin, async (req, res) => {
     ? 'https://bneineviimacademy.org/signup-he.html'
     : 'https://bneineviimacademy.org/signup.html';
   const subject = lang === 'he'
-    ? 'טופס הרשמה ל-Bnei Neviim Academy'
+    ? '×˜×•×¤×¡ ×”×¨×©×ž×” ×œ-Bnei Neviim Academy'
     : 'Bnei Neviim Academy signup form';
-  const greeting = parent_name ? `${parent_name} שלום,` : 'שלום,';
+  const greeting = parent_name ? `${parent_name} ×©×œ×•×,` : '×©×œ×•×,';
   const text = lang === 'he'
-    ? `${greeting}\n\nתודה רבה. כדי שנוכל לשמור את הפרטים בצורה מסודרת במערכת, אנא מלאו את טופס ההרשמה כאן:\n${signupUrl}\n\nאם כבר שילמתם, נעדכן את התשלום אצלנו לאחר קבלת הפרטים.\n\nבברכה,\nמשרד Bnei Neviim Academy`
+    ? `${greeting}\n\n×ª×•×“×” ×¨×‘×”. ×›×“×™ ×©× ×•×›×œ ×œ×©×ž×•×¨ ××ª ×”×¤×¨×˜×™× ×‘×¦×•×¨×” ×ž×¡×•×“×¨×ª ×‘×ž×¢×¨×›×ª, ×× × ×ž×œ××• ××ª ×˜×•×¤×¡ ×”×”×¨×©×ž×” ×›××Ÿ:\n${signupUrl}\n\n×× ×›×‘×¨ ×©×™×œ×ž×ª×, × ×¢×“×›×Ÿ ××ª ×”×ª×©×œ×•× ××¦×œ× ×• ×œ××—×¨ ×§×‘×œ×ª ×”×¤×¨×˜×™×.\n\n×‘×‘×¨×›×”,\n×ž×©×¨×“ Bnei Neviim Academy`
     : `Hi ${parent_name || ''},\n\nPlease fill out the Bnei Neviim Academy signup form so we can keep your contact and student details properly in our system:\n${signupUrl}\n\nIf you already paid, we will match the payment internally after the form is submitted.\n\nThank you,\nBnei Neviim Academy Office`;
 
   try {
@@ -19244,14 +19045,14 @@ function escapeRegExp(value) {
 
 function getRegistrationPackageLanguageBlock(language) {
   const markdown = String(REGISTRATION_PACKAGE_TEXT || '');
-  const split = markdown.split(/^#\s+(?:HEBREW VERSION|גרסה עברית)\s*$/m);
+  const split = markdown.split(/^#\s+(?:HEBREW VERSION|×’×¨×¡×” ×¢×‘×¨×™×ª)\s*$/m);
   return language === 'he' ? (split[1] || markdown) : (split[0] || markdown);
 }
 
 function extractRegistrationPackageDocumentText(language, index) {
   const block = getRegistrationPackageLanguageBlock(language);
-  const label = language === 'he' ? `מסמך ${index}:` : `Document ${index}:`;
-  const nextLabel = language === 'he' ? `מסמך ${index + 1}:` : `Document ${index + 1}:`;
+  const label = language === 'he' ? `×ž×¡×ž×š ${index}:` : `Document ${index}:`;
+  const nextLabel = language === 'he' ? `×ž×¡×ž×š ${index + 1}:` : `Document ${index + 1}:`;
   const startRegex = new RegExp(`^## ${escapeRegExp(label)}`, 'm');
   const nextRegex = new RegExp(`^## ${escapeRegExp(nextLabel)}`, 'm');
   const startMatch = block.match(startRegex);
@@ -19581,7 +19382,7 @@ app.post('/api/submit', async (req, res) => {
           language_viewed: record.language_viewed,
         })),
       },
-      note: 'Dry run validated the signup payload without writing signup, student, email, Telegram, payment, or GHL records.',
+      note: 'Dry run validated the signup payload without writing signup, student, email, Telegram, payment, or legacy CRM records.',
     });
   }
 
@@ -19735,58 +19536,17 @@ app.post('/api/submit', async (req, res) => {
 
     // Notify via Telegram
     await sendTelegramNotification(
-      `🎉 <b>New Signup!</b>\n\n` +
+      `ðŸŽ‰ <b>New Signup!</b>\n\n` +
       `Parent: ${normalizedParentName}\n` +
       `Student: ${normalizedStudentName}\n` +
       `Payment: ${matchedPaymentIntake ? `Matched prior ${matchedPaymentIntake.method} payment` : paymentDisplayLabel}`
     );
 
-    // Sync to GHL if configured
-    if (GHL_PIT_TOKEN) {
-      try {
-        const [parentFirst, ...parentLast] = normalizedParentName.split(' ');
-        const parentId = await findOrCreateGHLContact(
-          normalizedParentEmail,
-          parentFirst,
-          parentLast.join(' ') || '',
-          normalizedParentPhone,
-          { tags: ['BNA Parent'] }
-        );
-        await addTagToContact(parentId, 'BNA Parent');
-
-        const [studentFirst, ...studentLast] = normalizedStudentName.split(' ');
-        const studentId = await findOrCreateGHLContact(
-          syntheticGhlStudentEmail({
-            signupId: signup.id,
-            studentName: normalizedStudentName,
-            parentEmail: normalizedParentEmail,
-            parentPhone: normalizedParentPhone,
-          }),
-          studentFirst,
-          studentLast.join(' ') || '',
-          '',
-          { tags: ['BNA Student'] }
-        );
-        await addTagToContact(studentId, 'BNA Student');
-
-        await pool.query(
-          'UPDATE signups SET ghl_parent_contact_id = $1, ghl_student_contact_id = $2, ghl_synced_at = NOW() WHERE id = $3',
-          [parentId, studentId, signup.id]
-        );
-        await pool.query(
-          'UPDATE bna_students SET ghl_contact_id = $1, updated_at = NOW() WHERE signup_id = $2',
-          [studentId, signup.id]
-        );
-      } catch (ghlErr) {
-        console.error('GHL sync error:', ghlErr);
-        await pool.query(
-          'UPDATE signups SET ghl_sync_error = $1 WHERE id = $2',
-          [ghlErr.message, signup.id]
-        );
-      }
-    }
-
-    const emailResult = await sendSignupConfirmationEmail(signup, { matchedPayment: matchedPaymentIntake });
+    const emailResult = await sendSignupConfirmationEmail(signup, {
+      matchedPayment: matchedPaymentIntake,
+      paymentLink: normalizedPaymentMethod === 'green_invoice' && !matchedPaymentIntake ? PAYMENT_LINK : '',
+      extraRecipients: [parent2_email],
+    });
     if (!emailResult.ok) {
       console.error('Signup confirmation email error:', emailResult.error);
     }
@@ -19799,6 +19559,7 @@ app.post('/api/submit', async (req, res) => {
         paymentMethod: normalizedPaymentMethod === 'green_invoice' ? 'credit' : normalizedPaymentMethod,
         matchedPaymentIntakeId: matchedPaymentIntake.id,
         confirmationEmailSent: emailResult.ok,
+        confirmationEmailRecipientCount: emailResult.sent?.length || 0,
         registrationRenewal: Boolean(existingSignup),
         billingCopy,
       });
@@ -19810,13 +19571,14 @@ app.post('/api/submit', async (req, res) => {
         paymentLink: PAYMENT_LINK || null,
         paymentLinkStatus: PAYMENT_LINK ? 'configured' : 'unconfirmed',
         confirmationEmailSent: emailResult.ok,
+        confirmationEmailRecipientCount: emailResult.sent?.length || 0,
         registrationRenewal: Boolean(existingSignup),
         billingCopy,
       });
     } else if (normalizedPaymentMethod === 'bank_transfer') {
-      res.json({ success: true, signupId: signup.id, paymentMethod: 'bank_transfer', confirmationEmailSent: emailResult.ok, registrationRenewal: Boolean(existingSignup), billingCopy });
+      res.json({ success: true, signupId: signup.id, paymentMethod: 'bank_transfer', confirmationEmailSent: emailResult.ok, confirmationEmailRecipientCount: emailResult.sent?.length || 0, registrationRenewal: Boolean(existingSignup), billingCopy });
     } else {
-      res.json({ success: true, signupId: signup.id, paymentMethod: 'cash', confirmationEmailSent: emailResult.ok, registrationRenewal: Boolean(existingSignup), billingCopy });
+      res.json({ success: true, signupId: signup.id, paymentMethod: 'cash', confirmationEmailSent: emailResult.ok, confirmationEmailRecipientCount: emailResult.sent?.length || 0, registrationRenewal: Boolean(existingSignup), billingCopy });
     }
   } catch (err) {
     console.error('Signup error:', err);
@@ -20173,7 +19935,7 @@ app.post('/api/bna/parent-leads', requireAdmin, async (req, res) => {
         project_id,
         parent_name, parent_phone, other_phones, parent_email, student_name, student_age,
         student_grade, lead_type, status, interest_level, source, source_detail,
-        ghl_contact_id, ghl_conversation_id, last_inbound_at, last_outbound_at,
+        legacy_crm_contact_id, legacy_crm_conversation_id, last_inbound_at, last_outbound_at,
         next_follow_up_date, owner, tags, notes, metadata
       ) VALUES (
         $1,
@@ -20198,8 +19960,8 @@ app.post('/api/bna/parent-leads', requireAdmin, async (req, res) => {
         body.interest_level || 'unknown',
         body.source || 'manual',
         body.source_detail || null,
-        body.ghl_contact_id || null,
-        body.ghl_conversation_id || null,
+        body.legacy_crm_contact_id || null,
+        body.legacy_crm_conversation_id || null,
         body.last_inbound_at || null,
         body.last_outbound_at || null,
         body.next_follow_up_date || null,
@@ -20229,8 +19991,8 @@ app.patch('/api/bna/parent-leads/:id', requireAdmin, async (req, res) => {
     'interest_level',
     'source',
     'source_detail',
-    'ghl_contact_id',
-    'ghl_conversation_id',
+    'legacy_crm_contact_id',
+    'legacy_crm_conversation_id',
     'last_inbound_at',
     'last_outbound_at',
     'next_follow_up_date',
@@ -21613,7 +21375,7 @@ app.post('/api/bna/students', requireAdmin, async (req, res) => {
       `SELECT *
        FROM bna_students
        WHERE lower(name) = lower($1)
-          OR lower(regexp_replace(name, '[^a-zA-Z0-9א-ת]+', ' ', 'g')) = lower(regexp_replace($1, '[^a-zA-Z0-9א-ת]+', ' ', 'g'))
+          OR lower(regexp_replace(name, '[^a-zA-Z0-9×-×ª]+', ' ', 'g')) = lower(regexp_replace($1, '[^a-zA-Z0-9×-×ª]+', ' ', 'g'))
        ORDER BY status = 'active' DESC, created_at DESC
        LIMIT 1`,
       [name]
@@ -25737,26 +25499,6 @@ app.post('/api/bna/payment-intake', requireAdmin, async (req, res) => {
     const project = await resolveProjectForScopedWrite(req, req.body || {});
     if (signup_id) await assertProjectOwnedRowAccess(req, 'signups', signup_id);
     const signup = signup_id ? (await pool.query('SELECT project_id FROM signups WHERE id = $1', [signup_id])).rows[0] : null;
-    let ghlContactId = null;
-    if (GHL_PIT_TOKEN && (parent_email || parent_phone || parent_name)) {
-      try {
-        const nameParts = String(parent_name || 'BNA Parent').trim().split(/\s+/);
-        const firstName = nameParts.shift() || 'BNA';
-        const lastName = nameParts.join(' ') || 'Parent';
-        ghlContactId = await findOrCreateGHLContact(
-          parent_email || `${String(parent_phone || Date.now()).replace(/\D/g, '')}@bna.payment-intake`,
-          firstName,
-          lastName,
-          parent_phone || '',
-          { tags: ['BNA Parent', 'Payment Intake'] }
-        );
-        await addTagToContact(ghlContactId, 'BNA Parent');
-        await addTagToContact(ghlContactId, 'Payment Intake');
-      } catch (ghlErr) {
-        console.error('Payment intake GHL sync error:', ghlErr);
-      }
-    }
-
     const intake = await createPaymentIntakeRecord({
       project_id: signup?.project_id || project.id,
       signup_id,
@@ -25770,7 +25512,6 @@ app.post('/api/bna/payment-intake', requireAdmin, async (req, res) => {
       payment_type,
       green_invoice_id,
       green_invoice_url,
-      ghl_contact_id: ghlContactId,
       status,
       source,
       source_context,
@@ -25798,7 +25539,7 @@ app.patch('/api/bna/payment-intake/:id', requireAdmin, async (req, res) => {
     'payment_type',
     'green_invoice_id',
     'green_invoice_url',
-    'ghl_contact_id',
+    'legacy_crm_contact_id',
     'status',
     'received_at',
     'notes',
@@ -27184,7 +26925,7 @@ app.post('/api/bna/content-outputs/:id/actions', requireAdmin, async (req, res) 
           const hasPublishOverride = Object.prototype.hasOwnProperty.call(req.body || {}, 'publishNow');
           const publishNow = hasPublishOverride
             ? Boolean(req.body.publishNow)
-            : shouldPublishFacebookAfterApproval(output);
+            : Boolean(metadata.buffer_publish_after_approval || metadata.publish_after_approval);
           publishResult = await createBufferPostFromContent(job, output, { publishNow });
           if (publishNow) {
             metadata.buffer_post_published_at = new Date().toISOString();
@@ -27252,78 +26993,6 @@ app.post('/api/bna/content-outputs/:id/actions', requireAdmin, async (req, res) 
     return res.status(400).json({ error: 'Unknown content output action' });
   } catch (err) {
     res.status(500).json({ error: err.message });
-  }
-});
-
-app.get('/api/bna/ghl-social/diagnostics', requireAdmin, async (req, res) => {
-  if (!GHL_PIT_TOKEN) {
-    return res.status(503).json({
-      configured: false,
-      error: 'GHL_PIT_TOKEN is not configured',
-    });
-  }
-
-  try {
-    const accounts = await listGhlSocialAccounts();
-    const usersData = await ghlSocialRequest(`/users/?locationId=${encodeURIComponent(GHL_LOCATION_ID)}`);
-    let postsList = null;
-    let postsListError = null;
-
-    try {
-      postsList = await ghlSocialRequest(`/social-media-posting/${GHL_LOCATION_ID}/posts/list`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ limit: '1', type: 'all' }),
-      });
-    } catch (err) {
-      postsListError = {
-        status: err.status || 500,
-        error: err.message,
-        hint: err.hint || null,
-      };
-    }
-
-    res.json({
-      configured: true,
-      location_id: GHL_LOCATION_ID,
-      default_facebook_account_id: GHL_DEFAULT_FACEBOOK_ACCOUNT_ID || null,
-      default_facebook_account_configured: Boolean(GHL_DEFAULT_FACEBOOK_ACCOUNT_ID),
-      facebook_accounts: accounts
-        .filter((account) => String(account.platform || '').toLowerCase() === 'facebook')
-        .map((account) => ({
-          id: account.id,
-          name: account.name,
-          type: account.type,
-          isExpired: Boolean(account.isExpired),
-          deleted: Boolean(account.deleted),
-        })),
-      other_accounts: accounts
-        .filter((account) => String(account.platform || '').toLowerCase() !== 'facebook')
-        .map((account) => ({
-          platform: account.platform,
-          name: account.name,
-          type: account.type,
-          isExpired: Boolean(account.isExpired),
-        })),
-      users: (usersData?.users || []).map((user) => ({
-        id: user.id,
-        name: user.name,
-        role: user.roles?.role || null,
-      })),
-      posts_read_check: postsListError || {
-        ok: true,
-        statusCode: postsList?.statusCode || null,
-        message: postsList?.message || null,
-      },
-      post_write_scope_required: 'socialplanner/post.write',
-    });
-  } catch (err) {
-    res.status(err.status || 500).json({
-      configured: true,
-      error: err.message,
-      endpoint: err.endpoint || null,
-      hint: err.hint || null,
-    });
   }
 });
 
@@ -29262,26 +28931,6 @@ app.post('/api/webhooks/green-invoice-disabled-normalized-legacy', async (req, r
     );
 
     if (signupResult.rows.length === 0) {
-      let ghlContactId = null;
-      if (GHL_PIT_TOKEN && (email || phone || name)) {
-        try {
-          const nameParts = String(name || 'BNA Parent').trim().split(/\s+/);
-          const firstName = nameParts.shift() || 'BNA';
-          const lastName = nameParts.join(' ') || 'Parent';
-          ghlContactId = await findOrCreateGHLContact(
-            email || `${String(phone || Date.now()).replace(/\D/g, '')}@bna.payment-intake`,
-            firstName,
-            lastName,
-            phone || '',
-            { tags: ['BNA Parent', 'Payment Intake'] }
-          );
-          await addTagToContact(ghlContactId, 'BNA Parent');
-          await addTagToContact(ghlContactId, 'Payment Intake');
-        } catch (ghlErr) {
-          console.error('Unmatched Green Invoice GHL sync error:', ghlErr);
-        }
-      }
-
       await createPaymentIntakeRecord({
         parent_name: name || null,
         parent_email: email || null,
@@ -29290,7 +28939,6 @@ app.post('/api/webhooks/green-invoice-disabled-normalized-legacy', async (req, r
         method: 'green_invoice',
         green_invoice_id: payment_id,
         green_invoice_url: green_invoice_url || payment_url || null,
-        ghl_contact_id: ghlContactId,
         status: 'needs_signup',
         source: 'green_invoice',
         source_context: { normalized: { email, payment_id, amount, status, name, phone, raw_status }, raw: req.body },
@@ -29302,7 +28950,7 @@ app.post('/api/webhooks/green-invoice-disabled-normalized-legacy', async (req, r
         `Name: ${name || 'Unknown'}\n` +
         `Email: ${email || 'Unknown'}\n` +
         `Phone: ${phone || 'Unknown'}\n` +
-        `Amount: ₪${amount || 'Unknown'}\n` +
+        `Amount: â‚ª${amount || 'Unknown'}\n` +
         `Action: Match this to a contact in Accounting.`
       );
 
@@ -29342,9 +28990,9 @@ app.post('/api/webhooks/green-invoice-disabled-normalized-legacy', async (req, r
     );
 
     await sendTelegramNotification(
-      `💰 <b>Payment Received!</b>\n\n` +
+      `ðŸ’° <b>Payment Received!</b>\n\n` +
       `Parent: ${signup.parent_name}\n` +
-      `Amount: ₪${amount || 'Unknown'}\n` +
+      `Amount: â‚ª${amount || 'Unknown'}\n` +
       `Method: Green Invoice${existingPayment ? '\nDuplicate webhook ignored for payment log.' : ''}`
     );
 
@@ -29374,26 +29022,6 @@ app.post('/api/webhooks/green-invoice-disabled-legacy-fallback', async (req, res
 
     if (signupResult.rows.length === 0) {
       if (status === 'completed') {
-        let ghlContactId = null;
-        if (GHL_PIT_TOKEN && (email || phone || name)) {
-          try {
-            const nameParts = String(name || 'BNA Parent').trim().split(/\s+/);
-            const firstName = nameParts.shift() || 'BNA';
-            const lastName = nameParts.join(' ') || 'Parent';
-            ghlContactId = await findOrCreateGHLContact(
-              email || `${String(phone || Date.now()).replace(/\D/g, '')}@bna.payment-intake`,
-              firstName,
-              lastName,
-              phone || '',
-              { tags: ['BNA Parent', 'Payment Intake'] }
-            );
-            await addTagToContact(ghlContactId, 'BNA Parent');
-            await addTagToContact(ghlContactId, 'Payment Intake');
-          } catch (ghlErr) {
-            console.error('Unmatched Green Invoice GHL sync error:', ghlErr);
-          }
-        }
-
         await createPaymentIntakeRecord({
           parent_name: name || null,
           parent_email: email || null,
@@ -29402,7 +29030,6 @@ app.post('/api/webhooks/green-invoice-disabled-legacy-fallback', async (req, res
           method: 'green_invoice',
           green_invoice_id: payment_id,
           green_invoice_url: green_invoice_url || payment_url || null,
-          ghl_contact_id: ghlContactId,
           status: 'needs_signup',
           source: 'green_invoice',
           source_context: req.body,
@@ -29413,7 +29040,7 @@ app.post('/api/webhooks/green-invoice-disabled-legacy-fallback', async (req, res
           `<b>Unmatched Green Invoice Payment</b>\n\n` +
           `Name: ${name || 'Unknown'}\n` +
           `Email: ${email || 'Unknown'}\n` +
-          `Amount: ₪${amount || 'Unknown'}\n` +
+          `Amount: â‚ª${amount || 'Unknown'}\n` +
           `Action: Match this to a contact in Accounting.`
         );
       }
@@ -29446,9 +29073,9 @@ app.post('/api/webhooks/green-invoice-disabled-legacy-fallback', async (req, res
       );
 
       await sendTelegramNotification(
-        `💰 <b>Payment Received!</b>\n\n` +
+        `ðŸ’° <b>Payment Received!</b>\n\n` +
         `Parent: ${signup.parent_name}\n` +
-        `Amount: ₪${amount}\n` +
+        `Amount: â‚ª${amount}\n` +
         `Method: Green Invoice`
       );
     }
@@ -32238,10 +31865,10 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
       tuition_agreement_signer_name TEXT,
       tuition_agreement_signer_email TEXT,
       tuition_agreement_client_signed_at TIMESTAMP,
-      ghl_parent_contact_id TEXT,
-      ghl_student_contact_id TEXT,
-      ghl_synced_at TIMESTAMP,
-      ghl_sync_error TEXT,
+      legacy_crm_parent_contact_id TEXT,
+      legacy_crm_student_contact_id TEXT,
+      legacy_crm_synced_at TIMESTAMP,
+      legacy_crm_sync_error TEXT,
       status TEXT DEFAULT 'new',
       tags TEXT[] DEFAULT '{}',
       notes TEXT,
@@ -32272,7 +31899,7 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
       title TEXT NOT NULL,
       notes TEXT,
       stage TEXT DEFAULT 'raw_input' CHECK (stage IN ('raw_input', 'needs_decision', 'assigned', 'in_progress', 'done', 'archive')),
-      category TEXT DEFAULT 'operations' CHECK (category IN ('admin', 'marketing', 'parent_coaching', 'student_operations', 'finance', 'legal', 'communications', 'operations', 'accountability', 'content', 'technology', 'accounting', 'ghl_setup', 'community', 'general', 'torah_class_prep', 'torah_research', 'source_sheets', 'shiur_ideas')),
+      category TEXT DEFAULT 'operations' CHECK (category IN ('admin', 'marketing', 'parent_coaching', 'student_operations', 'finance', 'legal', 'communications', 'operations', 'accountability', 'content', 'technology', 'accounting', 'community_setup', 'community', 'general', 'torah_class_prep', 'torah_research', 'source_sheets', 'shiur_ideas')),
       urgency TEXT DEFAULT 'this_week' CHECK (urgency IN ('urgent', 'today', 'this_week', 'low')),
       energy_required TEXT CHECK (energy_required IN ('high', 'medium', 'low')),
       estimated_minutes INTEGER,
@@ -32546,9 +32173,9 @@ async function handleTelegramMessage(msg) {
   
   // Simple task parsing
   if (text.toLowerCase().includes('urgent') || text.toLowerCase().includes('asap')) {
-    await sendTelegramMessage(chatId, `🔴 Got it! Urgent task recorded: "${text}"\n\nView in dashboard: https://bneineviimacademy.org/operations`);
+    await sendTelegramMessage(chatId, `ðŸ”´ Got it! Urgent task recorded: "${text}"\n\nView in dashboard: https://bneineviimacademy.org/operations`);
   } else {
-    await sendTelegramMessage(chatId, `✅ Task recorded: "${text}"\n\nView in dashboard: https://bneineviimacademy.org/operations`);
+    await sendTelegramMessage(chatId, `âœ… Task recorded: "${text}"\n\nView in dashboard: https://bneineviimacademy.org/operations`);
   }
 }
 

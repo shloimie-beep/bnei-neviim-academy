@@ -97,7 +97,7 @@ test('Operations platform scope has backend workspace, connector, calendar, pipe
   }
   assert.match(server, /function ensureWorkspacePlatformDefaults/);
   assert.match(server, /scopedWorkspace && requestedWorkspace && requestedWorkspace !== scopedWorkspace/);
-  assert.match(server, /GHL is not the operating system/);
+  assert.match(server, /legacy CRM is not the operating system/);
   assert.match(operations, /createPipelineCardPrompt/);
   assert.match(operations, /createCalendarEventPrompt/);
   assert.match(operations, /createInternalDialogueNotePrompt/);

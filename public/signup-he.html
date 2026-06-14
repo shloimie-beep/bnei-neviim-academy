@@ -160,6 +160,15 @@
             color: var(--primary-blue);
         }
 
+        .parent-section-divider h3,
+        label[for="parent1_name"],
+        label[for="parent2_name"],
+        #parent1_name,
+        #parent2_name {
+            color: #000;
+            -webkit-text-fill-color: #000;
+        }
+
         .form-row {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -667,7 +676,7 @@
                 <form id="signupForm">
                     <input type="hidden" id="form_language" name="form_language" value="he">
 
-                    <div class="section-divider">
+                    <div class="section-divider parent-section-divider">
                         <h3>פרטי הורה 1</h3>
                     </div>
 
@@ -687,7 +696,7 @@
                         <input type="email" id="parent1_email" name="parent1_email" required>
                     </div>
 
-                    <div class="section-divider">
+                    <div class="section-divider parent-section-divider">
                         <h3>פרטי הורה 2</h3>
                     </div>
 
