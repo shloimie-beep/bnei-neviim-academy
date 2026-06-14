@@ -64,6 +64,7 @@ const { listActions } = require('./src/lib/actions/registry');
 const { listInMemoryActionRuns } = require('./src/lib/actions/audit-log');
 const { runAction } = require('./src/lib/actions/runner');
 const { visibleActionsForActor } = require('./src/lib/actions/permissions');
+const { WORKSPACES } = require('./src/lib/actions/types');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -2069,6 +2070,12 @@ const DATABASE_URL =
   usableSecretValue(process.env.DATABASE_URL) ||
   usableSecretValue(readLocalSecretFile('railway-database-url.txt'));
 const PAYMENT_LINK = process.env.PAYMENT_LINK || '';
+const STRIPE_PROVIDER_UPGRADE_LINK = process.env.STRIPE_PROVIDER_UPGRADE_LINK || '';
+const STRIPE_PROVIDER_PLAN_LINK = process.env.STRIPE_PROVIDER_PLAN_LINK || '';
+const GOOGLE_MAPS_API_KEY =
+  usableSecretValue(process.env.GOOGLE_MAPS_API_KEY) ||
+  usableSecretValue(process.env.GOOGLE_PLACES_API_KEY) ||
+  '';
 const WAPI_API_BASE_URL =
   process.env.WAPI_API_BASE_URL ||
   process.env.WHAPI_API_BASE_URL ||
@@ -2213,6 +2220,7 @@ const STATIC_WEBSITE_CONTENT_PATH = path.join(__dirname, 'public', 'js', 'bna-co
 const OPENAI_API_KEY = usableSecretValue(process.env.OPENAI_API_KEY);
 const OPENAI_BASE_URL = process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1';
 const OPENAI_MODEL = process.env.OPENAI_MODEL || 'gpt-4.1-mini';
+const OPENAI_RESEARCH_MODEL = process.env.OPENAI_RESEARCH_MODEL || process.env.OPENAI_WEB_SEARCH_MODEL || OPENAI_MODEL;
 const KIMI_API_KEY =
   usableSecretValue(process.env.KIMI_API_KEY) ||
   usableSecretValue(readLocalSecretFile('kimi-api-key.txt')) ||
@@ -2376,6 +2384,7 @@ const SOCIAL_POST_PROVIDER = String(
   'buffer'
 ).trim().toLowerCase();
 const SESSION_COOKIE_NAME = 'bna_ops_session';
+const ACTIVE_WORKSPACE_COOKIE_NAME = 'bna_active_workspace';
 const SESSION_TTL_MS = 1000 * 60 * 60 * 12;
 const OPS_ACCESS_LINK_TTL_MS = 1000 * 60 * 20;
 const PARENT_SESSION_COOKIE_NAME = 'bna_parent_session';
@@ -2389,6 +2398,19 @@ const PARENT_HELP_EMAIL =
   normalizeEmail(process.env.PARENT_HELP_EMAIL) ||
   normalizeEmail(process.env.GMAIL_FROM) ||
   normalizeEmail(process.env.OPS_HELP_EMAIL);
+const EMAIL_PROVIDER = String(process.env.EMAIL_PROVIDER || 'gmail').trim().toLowerCase();
+const RESEND_API_KEY = usableSecretValue(process.env.RESEND_API_KEY);
+const RESEND_API_BASE_URL = String(process.env.RESEND_API_BASE_URL || 'https://api.resend.com').replace(/\/+$/, '');
+const RESEND_FROM_EMAIL = normalizeEmail(process.env.RESEND_FROM_EMAIL);
+const RESEND_FROM_NAME = String(process.env.RESEND_FROM_NAME || '').trim();
+const RESEND_REPLY_TO = normalizeEmail(process.env.RESEND_REPLY_TO);
+const RESEND_WEBHOOK_SECRET = usableSecretValue(process.env.RESEND_WEBHOOK_SECRET);
+const MAIL_FROM_EMAIL = normalizeEmail(process.env.MAIL_FROM_EMAIL);
+const MAIL_REPLY_TO = normalizeEmail(process.env.MAIL_REPLY_TO);
+const ABANDONED_CHECKOUT_MINUTES = Math.max(
+  1,
+  Number(process.env.ABANDONED_CHECKOUT_TEST_MINUTES || process.env.ABANDONED_CHECKOUT_MINUTES || 30)
+);
 const OPENAI_TRANSCRIPTION_MODEL = process.env.OPENAI_TRANSCRIPTION_MODEL || 'gpt-4o-mini-transcribe';
 const OPENAI_REQUEST_TIMEOUT_MS = Number(process.env.OPENAI_REQUEST_TIMEOUT_MS || 10 * 60 * 1000);
 const TRANSCRIPTION_MAX_BYTES = Number(process.env.TRANSCRIPTION_MAX_BYTES || 25 * 1024 * 1024);
@@ -2571,7 +2593,7 @@ async function createGoogleClientForConnection(options = {}, db = pool) {
   return oauth2Client;
 }
 
-function encodeGmailMessage({ to, from, subject, text, html }) {
+function encodeGmailMessage({ to, from, subject, text, html, replyTo = null }) {
   const boundary = `bna_${Date.now()}`;
   const encodedSubject = Buffer.from(String(subject || ''), 'utf8').toString('base64');
   const encodePart = (value) => Buffer
@@ -2585,7 +2607,8 @@ function encodeGmailMessage({ to, from, subject, text, html }) {
     `Subject: =?UTF-8?B?${encodedSubject}?=`,
     'MIME-Version: 1.0',
     `Content-Type: multipart/alternative; boundary="${boundary}"`,
-  ];
+  ].filter(Boolean);
+  if (replyTo) headers.splice(3, 0, `Reply-To: ${replyTo}`);
   const body = [
     `--${boundary}`,
     'Content-Type: text/plain; charset="UTF-8"',
@@ -3218,35 +3241,194 @@ async function findExistingSignupForRegistration({ parentEmail, parentPhone, par
   }) || null;
 }
 
-async function sendGmailMessage({ to, subject, text, html }) {
+function safeSenderDisplayName(value, fallback = 'Bnei Neviim Academy Office') {
+  const raw = String(value || '').trim();
+  if (!raw) return fallback;
+  if (/^office\s*p\.?$/i.test(raw)) return fallback;
+  if (/^office$/i.test(raw)) return fallback;
+  return raw;
+}
+
+function academySenderIdentity(workspace = null) {
+  const workspaceKey = typeof workspace === 'string'
+    ? workspace
+    : (workspace?.workspace_key || workspace?.project_key || workspace?.key || '');
+  const fallbackName = /rabbi|scheller|sheller|one_time/i.test(String(workspaceKey || ''))
+    ? 'Rabbi Scheller Office'
+    : 'Bnei Neviim Academy Office';
+  const envName = RESEND_FROM_NAME || process.env.MAIL_FROM_NAME || process.env.GMAIL_FROM_NAME || '';
+  const fromName = safeSenderDisplayName(envName, fallbackName);
+  return {
+    fromName,
+    shortLabel: fromName === 'Bnei Neviim Academy Office' ? 'Academy Office' : fromName,
+    fromEmail: MAIL_FROM_EMAIL || RESEND_FROM_EMAIL || normalizeEmail(process.env.GMAIL_FROM) || 'me',
+    replyTo: MAIL_REPLY_TO || RESEND_REPLY_TO || normalizeEmail(process.env.GMAIL_REPLY_TO) || null,
+  };
+}
+
+async function sendResendMessage({ to, subject, text, html, workspace = null }) {
+  if (!RESEND_API_KEY || !RESEND_FROM_EMAIL) {
+    const error = new Error('Resend is not configured: RESEND_API_KEY and RESEND_FROM_EMAIL are required');
+    error.statusCode = 503;
+    throw error;
+  }
+  const identity = academySenderIdentity(workspace);
+  const response = await fetch(`${RESEND_API_BASE_URL}/emails`, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${RESEND_API_KEY}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      from: `${identity.fromName} <${RESEND_FROM_EMAIL}>`,
+      to: Array.isArray(to) ? to : [to],
+      subject,
+      text: text || '',
+      html: html || (text ? String(text).replace(/\n/g, '<br>') : ''),
+      ...(identity.replyTo ? { reply_to: identity.replyTo } : {}),
+    }),
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const message = payload?.message || payload?.error || `Resend API error: ${response.status}`;
+    const error = new Error(message);
+    error.statusCode = response.status;
+    error.payload = payload;
+    throw error;
+  }
+  return { provider: 'resend', data: { id: payload?.id || null, raw: payload } };
+}
+
+async function sendGmailMessage({ to, subject, text, html, workspace = null }) {
   const auth = createGoogleClientFromRefreshToken();
   const gmail = google.gmail({ version: 'v1', auth });
-  const fromEmail = process.env.GMAIL_FROM || 'me';
-  const fromName = process.env.GMAIL_FROM_NAME || 'Bnei Neviim Academy Office';
+  const identity = academySenderIdentity(workspace);
+  const fromEmail = normalizeEmail(process.env.GMAIL_FROM) || identity.fromEmail || 'me';
+  const fromName = safeSenderDisplayName(process.env.GMAIL_FROM_NAME, identity.fromName);
   const from = fromEmail === 'me' ? fromEmail : `"${fromName}" <${fromEmail}>`;
-  const raw = encodeGmailMessage({ to, from, subject, text, html });
-  return gmail.users.messages.send({
+  const raw = encodeGmailMessage({ to, from, subject, text, html, replyTo: identity.replyTo });
+  const result = await gmail.users.messages.send({
     userId: 'me',
     requestBody: { raw },
   });
+  return { provider: 'gmail', data: result.data };
+}
+
+async function sendEmail({ workspace = null, to, subject, text, html }) {
+  if (EMAIL_PROVIDER === 'resend' && RESEND_API_KEY && RESEND_FROM_EMAIL) {
+    return sendResendMessage({ workspace, to, subject, text, html });
+  }
+  return sendGmailMessage({ workspace, to, subject, text, html });
+}
+
+async function logCommunication({
+  workspaceId = null,
+  projectId = null,
+  contactId = null,
+  signupId = null,
+  studentId = null,
+  providerId = null,
+  taskId = null,
+  ticketId = null,
+  channel = 'email',
+  direction = 'outbound',
+  communicationType = null,
+  fromName = null,
+  fromAddress = null,
+  toName = null,
+  toAddress = null,
+  subject = null,
+  bodyText = null,
+  bodyHtml = null,
+  externalMessageId = null,
+  threadKey = null,
+  provider = null,
+  status = 'logged',
+  language = 'en',
+  metadata = {},
+  occurredAt = null,
+} = {}) {
+  try {
+    const result = await pool.query(
+      `INSERT INTO bna_communications (
+        workspace_id, project_id, contact_id, signup_id, student_id, provider_id,
+        task_id, ticket_id, channel, direction, communication_type,
+        from_name, from_address, to_name, to_address, subject, body_text, body_html,
+        external_message_id, thread_key, provider, status, language, metadata, occurred_at
+      ) VALUES (
+        $1, $2, $3, $4, $5, $6,
+        $7, $8, $9, $10, $11,
+        $12, $13, $14, $15, $16, $17, $18,
+        $19, $20, $21, $22, $23, $24::jsonb, COALESCE($25::timestamp, NOW())
+      )
+      RETURNING *`,
+      [
+        workspaceId || null,
+        projectId || null,
+        contactId || null,
+        signupId || null,
+        studentId || null,
+        providerId || null,
+        taskId || null,
+        ticketId || null,
+        channel,
+        direction,
+        communicationType,
+        fromName,
+        fromAddress,
+        toName,
+        toAddress,
+        subject,
+        bodyText,
+        bodyHtml,
+        externalMessageId,
+        threadKey,
+        provider,
+        status,
+        normalizeLanguage(language),
+        JSON.stringify(metadata || {}),
+        occurredAt || null,
+      ]
+    );
+    return result.rows[0] || null;
+  } catch (error) {
+    console.warn('Communication log failed:', error.message);
+    return null;
+  }
 }
 
 async function logEmail({
   signupId = null,
+  contactId = null,
+  studentId = null,
+  taskId = null,
+  ticketId = null,
+  projectId = null,
+  workspaceId = null,
   emailType,
   to,
   subject,
+  text = null,
+  html = null,
   language = 'en',
+  fromName = null,
+  fromAddress = null,
+  replyTo = null,
+  provider = null,
   providerMessageId = null,
   status = 'sent',
   error = null,
   metadata = null,
 }) {
+  const identity = academySenderIdentity(metadata?.workspace_key || metadata?.project_key || null);
+  const senderName = safeSenderDisplayName(fromName, identity.fromName);
+  const senderAddress = fromAddress || identity.fromEmail || null;
   await pool.query(
     `INSERT INTO bna_email_log (
       signup_id, email_type, recipient_email, subject, language,
-      provider_message_id, status, error, metadata
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+      provider_message_id, status, error, metadata,
+      body_text, body_html, from_name, from_address, reply_to, provider
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb, $10, $11, $12, $13, $14, $15)`,
     [
       signupId,
       emailType,
@@ -3257,8 +3439,41 @@ async function logEmail({
       status,
       error,
       metadata ? JSON.stringify(metadata) : null,
+      text,
+      html,
+      senderName,
+      senderAddress,
+      replyTo || identity.replyTo,
+      provider || EMAIL_PROVIDER || 'gmail',
     ]
   );
+  await logCommunication({
+    workspaceId,
+    projectId,
+    contactId,
+    signupId,
+    studentId,
+    taskId,
+    ticketId,
+    channel: 'email',
+    direction: 'outbound',
+    communicationType: emailType,
+    fromName: senderName,
+    fromAddress: senderAddress,
+    toAddress: to,
+    subject,
+    bodyText: text,
+    bodyHtml: html,
+    externalMessageId: providerMessageId,
+    provider: provider || EMAIL_PROVIDER || 'gmail',
+    status,
+    language,
+    metadata: {
+      ...(metadata || {}),
+      email_log_status: status,
+      error: error || undefined,
+    },
+  });
 }
 
 function signupPaymentMethodKey(signup = {}) {
@@ -3371,7 +3586,7 @@ async function sendSignupConfirmationEmail(signup, options = {}) {
   const failed = [];
   for (const recipient of recipients) {
   try {
-    const result = await sendGmailMessage({
+    const result = await sendEmail({
       to: recipient,
       subject: email.subject,
       text: email.text,
@@ -3382,8 +3597,11 @@ async function sendSignupConfirmationEmail(signup, options = {}) {
       emailType: 'signup_confirmation',
       to: recipient,
       subject: email.subject,
+      text: email.text,
+      html: email.html,
       language: signup.form_language,
       providerMessageId: result.data.id,
+      provider: result.provider,
       metadata: {
         payment_method: signup.payment_method,
         payment_due_date: signup.payment_due_date,
@@ -3399,6 +3617,8 @@ async function sendSignupConfirmationEmail(signup, options = {}) {
       emailType: 'signup_confirmation',
       to: recipient,
       subject: email.subject,
+      text: email.text,
+      html: email.html,
       language: signup.form_language,
       status: 'failed',
       error: message,
@@ -3516,7 +3736,7 @@ async function runPaymentReminderSweep({ dryRun = false, daysBefore = PAYMENT_RE
     }
 
     try {
-      const gmailResult = await sendGmailMessage({
+      const emailResult = await sendEmail({
         to: signup.parent_email,
         subject: email.subject,
         text: email.text,
@@ -3527,15 +3747,18 @@ async function runPaymentReminderSweep({ dryRun = false, daysBefore = PAYMENT_RE
         emailType: 'payment_reminder',
         to: signup.parent_email,
         subject: email.subject,
+        text: email.text,
+        html: email.html,
         language: signup.form_language,
-        providerMessageId: gmailResult.data.id,
+        providerMessageId: emailResult.data.id,
+        provider: emailResult.provider,
         metadata: { payment_due_date: signup.payment_due_date },
       });
       await pool.query(
         'UPDATE signups SET payment_reminder_sent_at = NOW(), updated_at = NOW() WHERE id = $1',
         [signup.id]
       );
-      sent.push({ signup_id: signup.id, to: signup.parent_email, id: gmailResult.data.id });
+      sent.push({ signup_id: signup.id, to: signup.parent_email, id: emailResult.data.id });
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       await logEmail({
@@ -3543,6 +3766,8 @@ async function runPaymentReminderSweep({ dryRun = false, daysBefore = PAYMENT_RE
         emailType: 'payment_reminder',
         to: signup.parent_email,
         subject: email.subject,
+        text: email.text,
+        html: email.html,
         language: signup.form_language,
         status: 'failed',
         error: message,
@@ -3557,6 +3782,223 @@ async function runPaymentReminderSweep({ dryRun = false, daysBefore = PAYMENT_RE
     reminderTarget,
     found: candidates.length,
     sent,
+    failed,
+  };
+}
+
+function abandonedCheckoutEmail(signup = {}, step = 'abandoned_checkout_1', paymentLink = '') {
+  const lang = normalizeLanguage(signup.form_language);
+  const amount = Number(signup.payment_amount || DEFAULT_TUITION_AMOUNT);
+  const due = paymentLink ? `\n\nPayment link: ${paymentLink}` : '';
+  const stepCopy = {
+    abandoned_checkout_1: {
+      subject: 'Need help completing payment?',
+      body: 'Your registration is saved. It looks like the credit payment was not completed yet.',
+    },
+    abandoned_checkout_24h: {
+      subject: 'Your Bnei Neviim registration is saved',
+      body: 'Your registration is still saved in our system, and the first payment is still open.',
+    },
+    abandoned_checkout_72h: {
+      subject: 'Final registration payment reminder',
+      body: 'We are holding your registration details, but the first payment still appears open. Contact us if you need help.',
+    },
+  }[step] || {
+    subject: 'Bnei Neviim payment reminder',
+    body: 'Your registration is saved and payment is still open.',
+  };
+
+  if (lang === 'he') {
+    const subject = step === 'abandoned_checkout_1'
+      ? '×¦×¨×™×›×™× ×¢×–×¨×” ×‘×”×©×œ×ž×ª ×”×ª×©×œ×•×?'
+      : '×”×”×¨×©×ž×” ×©×œ×›× ×©×ž×•×¨×” - ×”×ª×©×œ×•× ×¢×“×™×™×Ÿ ×¤×ª×•×—';
+    const text = [
+      `${signup.parent_name || '×©×œ×•×'},`,
+      '',
+      `×”×”×¨×©×ž×” ×¢×‘×•×¨ ${signup.student_name || '×”×ª×œ×ž×™×“'} ×©×ž×•×¨×” ×‘×ž×¢×¨×›×ª. ×”×ª×©×œ×•× ×”×¨××©×•×Ÿ ×‘×¡×š ${amount} ×©"×— ×¢×“×™×™×Ÿ ×ž×¡×•×ž×Ÿ ×›×¤×ª×•×—.`,
+      paymentLink ? `×œ×”×©×œ×ž×ª ×”×ª×©×œ×•×: ${paymentLink}` : '×× ××ª× ×¦×¨×™×›×™× ×§×™×©×•×¨ ×ª×©×œ×•× ×—×“×©, × ×©×œ×— ×œ×›×.',
+      '',
+      '×× ×”×ª×©×œ×•× ×›×‘×¨ ×‘×•×¦×¢, ×ª×•×“×” - × ×¢×“×›×Ÿ ××ª ×”×ž×¢×¨×›×ª.',
+      '',
+      'Bnei Neviim Academy Office',
+    ].join('\n');
+    return { subject, text, html: `<div dir="rtl">${text.replace(/\n/g, '<br>')}</div>` };
+  }
+
+  const text = [
+    `Hi ${signup.parent_name || ''},`,
+    '',
+    `${stepCopy.body}`,
+    `Student: ${signup.student_name || ''}`,
+    `Open amount: ILS ${amount}`,
+    due.trim(),
+    '',
+    'If payment already went through, thank you - we will update the system. If the link gave you trouble, reply and we will help.',
+    '',
+    'Bnei Neviim Academy Office',
+  ].filter((line) => line !== '').join('\n');
+  return { subject: stepCopy.subject, text, html: text.replace(/\n/g, '<br>') };
+}
+
+async function ensureAbandonedCheckoutTask({ signup, attempt, step = 'abandoned_checkout_1' } = {}, db = pool) {
+  if (!signup?.id || !attempt?.id) return null;
+  const project = await getProjectByKey(signup.project_key || DEFAULT_PROJECT_KEY, db);
+  const title = `Follow up abandoned checkout for ${signup.parent_name || signup.parent_email || `signup #${signup.id}`}`;
+  const existing = (await db.query(
+    `SELECT *
+     FROM bna_tasks
+     WHERE related_signup_id = $1
+       AND COALESCE(stage, '') NOT IN ('done', 'archive')
+       AND lower(title) = lower($2)
+     ORDER BY created_at DESC
+     LIMIT 1`,
+    [signup.id, title]
+  )).rows[0] || null;
+  if (existing) return existing;
+  const result = await db.query(
+    `INSERT INTO bna_tasks (
+       project_id, project_key, title, summary, notes, stage, category, urgency,
+       assigned_to, waiting_on, item_type, source, related_signup_id,
+       created_by, source_context, ai_parsed, next_action_label, last_activity_at
+     ) VALUES (
+       $1, $2, $3, $4, $5, 'assigned', 'accounting', 'today',
+       'Shloimie', 'Parent/payment processor', 'task', 'web', $6,
+       'system', $7, $8, 'Follow up payment', NOW()
+     )
+     RETURNING *`,
+    [
+      project.id,
+      project.project_key,
+      title,
+      'Credit checkout started but no payment webhook/success was recorded in the configured follow-up window.',
+      [
+        `Signup #${signup.id}`,
+        `Checkout attempt #${attempt.id}`,
+        `Parent: ${signup.parent_name || ''} <${signup.parent_email || ''}>`,
+        `Student: ${signup.student_name || ''}`,
+        `Step: ${step}`,
+        'Do not send additional live messages unless approved and opt-out rules are respected.',
+      ].join('\n'),
+      signup.id,
+      JSON.stringify({ checkout_attempt_id: attempt.id, step }),
+      JSON.stringify({ parser: 'abandoned-checkout-sweep-v1', agent_executable: false }),
+    ]
+  );
+  return result.rows[0] || null;
+}
+
+function nextAbandonedCheckoutStep({ signup, attempt, sentTypes = [] } = {}) {
+  const startedAt = new Date(attempt.redirected_at || attempt.started_at || attempt.created_at || Date.now()).getTime();
+  const ageHours = Math.max(0, (Date.now() - startedAt) / (60 * 60 * 1000));
+  const sent = new Set(sentTypes);
+  const schedule = [
+    { type: 'abandoned_checkout_1', hours: ABANDONED_CHECKOUT_MINUTES / 60 },
+    { type: 'abandoned_checkout_24h', hours: 24 },
+    { type: 'abandoned_checkout_72h', hours: 72 },
+  ];
+  return schedule.find((item) => ageHours >= item.hours && !sent.has(item.type))?.type || null;
+}
+
+async function runAbandonedCheckoutSweep({ dryRun = true, sendEmails = false, limit = 50 } = {}, db = pool) {
+  const candidates = (await db.query(
+    `SELECT a.*,
+            s.parent_name, s.parent_email, s.parent_phone, s.student_name,
+            s.form_language, s.payment_amount, s.payment_status, s.project_id
+     FROM bna_checkout_attempts a
+     JOIN signups s ON s.id = a.signup_id
+     WHERE a.status IN ('started', 'redirected', 'manual_followup')
+       AND COALESCE(s.payment_status, 'pending') <> 'paid'
+       AND COALESCE(a.redirected_at, a.started_at, a.created_at) <= NOW() - (($1::text || ' minutes')::interval)
+     ORDER BY COALESCE(a.redirected_at, a.started_at, a.created_at) ASC
+     LIMIT $2`,
+    [ABANDONED_CHECKOUT_MINUTES, Math.min(Number(limit) || 50, 200)]
+  )).rows;
+
+  const processed = [];
+  const failed = [];
+  for (const row of candidates) {
+    try {
+      const sentRows = (await db.query(
+        `SELECT email_type FROM bna_email_log WHERE signup_id = $1 AND email_type LIKE 'abandoned_checkout_%'`,
+        [row.signup_id]
+      )).rows.map((item) => item.email_type);
+      const step = nextAbandonedCheckoutStep({ attempt: row, sentTypes: sentRows });
+      const summary = {
+        checkout_attempt_id: row.id,
+        signup_id: row.signup_id,
+        parent_email: row.parent_email,
+        status: row.status,
+        step,
+        dryRun,
+        email_sent: false,
+      };
+      if (!step) {
+        processed.push({ ...summary, skipped: 'no_due_step' });
+        continue;
+      }
+      if (!dryRun) {
+        const updated = (await db.query(
+          `UPDATE bna_checkout_attempts
+           SET status = 'abandoned',
+               abandoned_at = COALESCE(abandoned_at, NOW()),
+               updated_at = NOW()
+           WHERE id = $1
+           RETURNING *`,
+          [row.id]
+        )).rows[0] || row;
+        await ensureAbandonedCheckoutTask({ signup: row, attempt: updated, step }, db);
+        await logCommunication({
+          workspaceId: updated.workspace_id || null,
+          signupId: row.signup_id,
+          channel: 'system',
+          direction: 'internal',
+          communicationType: 'checkout_abandoned',
+          subject: 'Checkout marked abandoned',
+          bodyText: `Checkout attempt #${row.id} was marked abandoned after no payment webhook/success was recorded.`,
+          status: 'abandoned',
+          metadata: { checkout_attempt_id: row.id, step },
+        });
+        if (sendEmails && row.parent_email) {
+          const email = abandonedCheckoutEmail(row, step, row.payment_link || '');
+          const result = await sendEmail({
+            to: row.parent_email,
+            subject: email.subject,
+            text: email.text,
+            html: email.html,
+          });
+          await logEmail({
+            signupId: row.signup_id,
+            emailType: step,
+            to: row.parent_email,
+            subject: email.subject,
+            text: email.text,
+            html: email.html,
+            language: row.form_language,
+            providerMessageId: result.data.id,
+            provider: result.provider,
+            metadata: { checkout_attempt_id: row.id, abandoned_step: step },
+          });
+          await db.query('UPDATE bna_checkout_attempts SET last_reminder_at = NOW(), updated_at = NOW() WHERE id = $1', [row.id]);
+          summary.email_sent = true;
+        }
+      }
+      processed.push(summary);
+    } catch (error) {
+      failed.push({
+        checkout_attempt_id: row.id,
+        signup_id: row.signup_id,
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  return {
+    success: failed.length === 0,
+    dryRun,
+    sendEmails,
+    abandoned_after_minutes: ABANDONED_CHECKOUT_MINUTES,
+    found: candidates.length,
+    processed,
     failed,
   };
 }
@@ -4915,7 +5357,7 @@ async function sendParentMagicLinkEmail({ parentEmail, url, req }) {
     'Bnei Neviim Academy Office',
   ].join('\n');
   try {
-    const result = await sendGmailMessage({
+    const result = await sendEmail({
       to: parentEmail,
       subject,
       text,
@@ -4926,7 +5368,10 @@ async function sendParentMagicLinkEmail({ parentEmail, url, req }) {
       emailType: 'parent_magic_link',
       to: parentEmail,
       subject,
+      text,
+      html: text.replace(/\n/g, '<br>'),
       providerMessageId: result.data.id,
+      provider: result.provider,
       metadata: { requested_from: req?.ip || null },
     });
     return { ok: true, id: result.data.id };
@@ -4937,6 +5382,8 @@ async function sendParentMagicLinkEmail({ parentEmail, url, req }) {
       emailType: 'parent_magic_link',
       to: parentEmail,
       subject,
+      text,
+      html: text.replace(/\n/g, '<br>'),
       status: 'failed',
       error: message,
       metadata: { requested_from: req?.ip || null },
@@ -4958,7 +5405,7 @@ async function sendParentPasswordResetEmail({ parentEmail, url, req }) {
     'Bnei Neviim Academy Office',
   ].join('\n');
   try {
-    const result = await sendGmailMessage({
+    const result = await sendEmail({
       to: parentEmail,
       subject,
       text,
@@ -4969,7 +5416,10 @@ async function sendParentPasswordResetEmail({ parentEmail, url, req }) {
       emailType: 'parent_password_reset',
       to: parentEmail,
       subject,
+      text,
+      html: text.replace(/\n/g, '<br>'),
       providerMessageId: result.data.id,
+      provider: result.provider,
       metadata: { requested_from: req?.ip || null },
     });
     return { ok: true, id: result.data.id };
@@ -4980,6 +5430,8 @@ async function sendParentPasswordResetEmail({ parentEmail, url, req }) {
       emailType: 'parent_password_reset',
       to: parentEmail,
       subject,
+      text,
+      html: text.replace(/\n/g, '<br>'),
       status: 'failed',
       error: message,
       metadata: { requested_from: req?.ip || null },
@@ -5291,6 +5743,7 @@ async function buildParentPortalPayload(parentEmail, db = pool) {
     .filter((provider) => provider.public_listing_enabled !== false)
     .map(publicServiceProviderView);
   const weeklyUpdates = await getParentPortalWeeklyUpdates(db);
+  const householdContext = await getCurrentHouseholdForParentEmail(records.email, db).catch(() => null);
   return {
     parent: {
       email: records.email,
@@ -5302,6 +5755,18 @@ async function buildParentPortalPayload(parentEmail, db = pool) {
       password_set_at: passwordAccount?.password_set_at || null,
       rabbi_contact: rabbiShloimieContactView(),
     },
+    workspace: householdContext?.workspace ? workspaceProjectView(householdContext.workspace) : null,
+    household: householdContext?.household ? householdView(householdContext.household, householdContext.members || []) : null,
+    setup: householdContext?.household ? {
+      filter_setup_status: householdContext.household.filter_setup_status || 'not_started',
+      filter_setup_code: householdContext.household.filter_setup_code || null,
+      filter_setup_notes: householdContext.household.filter_setup_notes || null,
+      install: {
+        pwa_manifest: '/parent-manifest.json',
+        standalone_ready: true,
+        tablet_widths: [768, 1024],
+      },
+    } : null,
     students,
     communications,
     provider_messages: providerMessages,
@@ -5309,6 +5774,190 @@ async function buildParentPortalPayload(parentEmail, db = pool) {
     latest_weekly_update: weeklyUpdates[0] || null,
     weekly_updates: weeklyUpdates,
   };
+}
+
+async function getCurrentHouseholdForParentEmail(parentEmail, db = pool) {
+  const email = normalizeEmail(parentEmail);
+  if (!email) return null;
+  const records = await findParentAccessRecords(email, db).catch(() => ({ email, signups: [], students: [], leads: [] }));
+  const parentName = records.students[0]?.parent_name || records.signups[0]?.parent_name || records.leads[0]?.parent_name || email.split('@')[0];
+  const parentPerson = await upsertCanonicalPerson({
+    preferred_name: parentName || email,
+    full_name: parentName || email,
+    email,
+    primary_language: resolveParentPortalLanguage(records, []),
+    metadata: { source: 'parent_household_resolution', parent_portal_email: email },
+  }, db);
+  const workspaceKey = `household_${sha256Hex(email).slice(0, 12)}`;
+  const workspace = await ensureWorkspaceProject({
+    projectKey: workspaceKey,
+    name: `${parentName || 'Parent'} Household`,
+    shortName: 'Household',
+    description: 'Parent household accountability workspace.',
+    workspaceType: 'household',
+    ownerPersonId: parentPerson.id,
+    visibility: 'private',
+    languageDefault: parentPerson.primary_language || 'en',
+    slug: workspaceKey.replace(/_/g, '-'),
+    settings: { accountability_mode: 'family', parent_portal_email: email },
+    metadata: { source: 'parent_portal' },
+  }, db);
+  await ensureWorkspaceMembership(workspace, parentPerson, {
+    role: 'parent',
+    access_level: 'owner',
+    tags: ['household:parent'],
+    metadata: { parent_email: email },
+  }, db);
+  const household = await ensureHousehold(workspace, {
+    household_name: `${parentName || 'Parent'} Household`,
+    primary_parent_person_id: parentPerson.id,
+    status: 'active',
+    metadata: { parent_email: email },
+  }, db);
+  await ensureHouseholdMember(household, parentPerson, {
+    role: 'parent',
+    relationship: 'parent',
+    tags: ['household:parent'],
+  }, db);
+
+  const linkedChildren = [];
+  const seenNames = new Set();
+  const childRows = [
+    ...records.students.map((student) => ({
+      name: student.name,
+      email: '',
+      phone: '',
+      student_id: student.id,
+      source: 'bna_students',
+      row: student,
+    })),
+    ...records.signups.map((signup) => ({
+      name: signup.student_name,
+      email: '',
+      phone: '',
+      signup_id: signup.id,
+      source: 'signups',
+      row: signup,
+    })),
+  ].filter((item) => item.name);
+  for (const child of childRows) {
+    const key = personLookupName(child.name);
+    if (!key || seenNames.has(key)) continue;
+    seenNames.add(key);
+    const childPerson = await upsertCanonicalPerson({
+      preferred_name: child.name,
+      full_name: child.name,
+      primary_language: recordPreferredLanguage(child.row) || parentPerson.primary_language || 'en',
+      metadata: { source: child.source, parent_email: email },
+    }, db);
+    await ensureWorkspaceMembership(workspace, childPerson, {
+      role: 'child',
+      access_level: 'member',
+      tags: ['household:child'],
+      metadata: { parent_email: email, student_id: child.student_id || null, signup_id: child.signup_id || null },
+    }, db);
+    await ensureHouseholdMember(household, childPerson, {
+      role: 'child',
+      relationship: child.row?.relationship || null,
+      tags: ['household:child'],
+      metadata: { parent_email: email, student_id: child.student_id || null, signup_id: child.signup_id || null },
+    }, db);
+    if (child.student_id) {
+      await db.query(
+        `UPDATE bna_students
+         SET person_id = COALESCE(person_id, $2),
+             household_id = COALESCE(household_id, $3),
+             updated_at = NOW()
+         WHERE id = $1`,
+        [child.student_id, childPerson.id, household.id]
+      );
+    }
+    if (child.signup_id) {
+      await db.query(
+        `UPDATE signups
+         SET parent_person_id = COALESCE(parent_person_id, $2),
+             student_person_id = COALESCE(student_person_id, $3),
+             household_id = COALESCE(household_id, $4),
+             updated_at = NOW()
+         WHERE id = $1`,
+        [child.signup_id, parentPerson.id, childPerson.id, household.id]
+      );
+    }
+    linkedChildren.push(childPerson);
+  }
+  const memberRows = (await db.query(
+    `SELECT hm.*,
+            p.preferred_name,
+            p.full_name,
+            p.email,
+            p.primary_language
+     FROM bna_household_members hm
+     JOIN bna_people p ON p.id = hm.person_id
+     WHERE hm.household_id = $1
+       AND hm.active = TRUE
+     ORDER BY CASE hm.role WHEN 'parent' THEN 1 WHEN 'child' THEN 2 ELSE 3 END, p.preferred_name ASC`,
+    [household.id]
+  )).rows.map((row) => ({
+    id: row.id,
+    household_id: row.household_id,
+    person_id: row.person_id,
+    role: row.role,
+    relationship: row.relationship,
+    tags: Array.isArray(row.tags) ? row.tags : [],
+    person: canonicalPersonView({
+      id: row.person_id,
+      preferred_name: row.preferred_name,
+      full_name: row.full_name,
+      email: row.email,
+      primary_language: row.primary_language,
+    }),
+  }));
+  const memberships = (await membershipRowsForPerson(parentPerson.id, db)).map(workspaceMembershipView);
+  return { workspace, household, parent_person: parentPerson, members: memberRows, memberships, linkedChildren };
+}
+
+async function getFamilyHouseholdForAdmin(db = pool) {
+  const seeded = await ensurePersonalWorkspacesAndPeople(db);
+  const household = seeded.household;
+  const members = (await db.query(
+    `SELECT hm.*,
+            p.preferred_name,
+            p.full_name,
+            p.email,
+            p.primary_language
+     FROM bna_household_members hm
+     JOIN bna_people p ON p.id = hm.person_id
+     WHERE hm.household_id = $1
+       AND hm.active = TRUE
+     ORDER BY CASE hm.role WHEN 'parent' THEN 1 WHEN 'child' THEN 2 ELSE 3 END, p.preferred_name ASC`,
+    [household.id]
+  )).rows.map((row) => ({
+    id: row.id,
+    household_id: row.household_id,
+    person_id: row.person_id,
+    role: row.role,
+    relationship: row.relationship,
+    tags: Array.isArray(row.tags) ? row.tags : [],
+    person: canonicalPersonView({
+      id: row.person_id,
+      preferred_name: row.preferred_name,
+      full_name: row.full_name,
+      email: row.email,
+      primary_language: row.primary_language,
+    }),
+  }));
+  return { workspace: seeded.family, household, parent_person: seeded.people.shloimie, members, memberships: [] };
+}
+
+async function requireHouseholdContext(req, db = pool) {
+  const cookies = parseCookies(req);
+  const parentSession = await getValidParentSession(cookies[PARENT_SESSION_COOKIE_NAME], db).catch(() => null);
+  if (parentSession) return getCurrentHouseholdForParentEmail(parentSession.parentEmail, db);
+  const admin = await identifyAdminRequest(req).catch(() => null);
+  if (admin?.scope?.type === 'all') return getFamilyHouseholdForAdmin(db);
+  const error = new Error('A parent household or super-admin session is required');
+  error.statusCode = 401;
+  throw error;
 }
 
 async function getParentPortalWeeklyUpdates(db = pool) {
@@ -5861,7 +6510,7 @@ function identifyOpsUser(username, password = null) {
     if (pass !== null && pass.toLowerCase() !== String(OPS_PASSWORD || '').toLowerCase()) return null;
     return {
       username: user,
-      role: 'admin',
+      role: 'super_admin',
       scope: { type: 'all', projectKey: null },
       allowedViews: platformAllowedViews,
     };
@@ -5889,6 +6538,10 @@ function isScopedOpsPathAllowed(req) {
   const method = String(req.method || '').toUpperCase();
   if (routePath === '/operations' && method === 'GET') return true;
   if (routePath === '/api/bna/auth/me' && method === 'GET') return true;
+  if (routePath === '/api/bna/me' && method === 'GET') return true;
+  if (routePath === '/api/bna/workspaces' && method === 'GET') return true;
+  if (/^\/api\/bna\/workspaces\/[^/]+$/.test(routePath) && method === 'GET') return true;
+  if (routePath === '/api/bna/session/workspace' && method === 'POST') return true;
   if (routePath === '/api/bna/agent-fleet/status' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/projects' && method === 'GET') return true;
   if (routePath === '/api/bna/people' && ['GET', 'POST'].includes(method)) return true;
@@ -6007,7 +6660,31 @@ function setSessionCookie(res, sessionId) {
 }
 
 function clearSessionCookie(res) {
-  res.setHeader('Set-Cookie', `${SESSION_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`);
+  res.setHeader('Set-Cookie', [
+    `${SESSION_COOKIE_NAME}=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0`,
+    `${ACTIVE_WORKSPACE_COOKIE_NAME}=; Path=/; SameSite=Lax; Max-Age=0`,
+  ]);
+}
+
+function appendResponseCookie(res, cookie) {
+  const existing = res.getHeader('Set-Cookie');
+  const cookies = Array.isArray(existing)
+    ? existing
+    : existing
+      ? [existing]
+      : [];
+  cookies.push(cookie);
+  res.setHeader('Set-Cookie', cookies);
+}
+
+function setActiveWorkspaceCookie(res, workspaceKey) {
+  const key = normalizeWorkspaceKey(workspaceKey) || 'bna';
+  appendResponseCookie(res, [
+    `${ACTIVE_WORKSPACE_COOKIE_NAME}=${encodeURIComponent(key)}`,
+    'Path=/',
+    'SameSite=Lax',
+    `Max-Age=${Math.floor(SESSION_TTL_MS / 1000)}`,
+  ].join('; '));
 }
 
 function safeOperationsReturnPath(value) {
@@ -6485,11 +7162,224 @@ CREATE TABLE IF NOT EXISTS bna_project_members (
 );
 `;
 
+const createWorkspaceAccountsSQL = `
+CREATE TABLE IF NOT EXISTS bna_people (
+  id SERIAL PRIMARY KEY,
+  preferred_name TEXT NOT NULL,
+  full_name TEXT,
+  email TEXT,
+  phone TEXT,
+  primary_language TEXT DEFAULT 'en' CHECK (primary_language IN ('en', 'he')),
+  avatar_url TEXT,
+  status TEXT DEFAULT 'active' CHECK (status IN ('active', 'pending', 'inactive', 'archived')),
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_bna_people_preferred_name_norm ON bna_people (lower(regexp_replace(COALESCE(preferred_name, ''), '[^a-zA-Z0-9]+', ' ', 'g')));
+CREATE INDEX IF NOT EXISTS idx_bna_people_full_name_norm ON bna_people (lower(regexp_replace(COALESCE(full_name, ''), '[^a-zA-Z0-9]+', ' ', 'g')));
+CREATE INDEX IF NOT EXISTS idx_bna_people_email ON bna_people (lower(email)) WHERE email IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_bna_people_phone ON bna_people (regexp_replace(COALESCE(phone, ''), '\\D', '', 'g')) WHERE phone IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_bna_people_status ON bna_people (status);
+
+ALTER TABLE bna_projects ADD COLUMN IF NOT EXISTS workspace_type TEXT DEFAULT 'project';
+ALTER TABLE bna_projects ADD COLUMN IF NOT EXISTS owner_person_id INTEGER REFERENCES bna_people(id) ON DELETE SET NULL;
+ALTER TABLE bna_projects ADD COLUMN IF NOT EXISTS visibility TEXT DEFAULT 'private';
+ALTER TABLE bna_projects ADD COLUMN IF NOT EXISTS language_default TEXT DEFAULT 'en';
+ALTER TABLE bna_projects ADD COLUMN IF NOT EXISTS settings JSONB DEFAULT '{}';
+ALTER TABLE bna_projects ADD COLUMN IF NOT EXISTS slug TEXT;
+ALTER TABLE bna_projects DROP CONSTRAINT IF EXISTS bna_projects_workspace_type_check;
+ALTER TABLE bna_projects
+  ADD CONSTRAINT bna_projects_workspace_type_check
+  CHECK (workspace_type IN ('super_admin', 'school', 'family', 'household', 'service_provider', 'community', 'project'));
+ALTER TABLE bna_projects DROP CONSTRAINT IF EXISTS bna_projects_visibility_check;
+ALTER TABLE bna_projects
+  ADD CONSTRAINT bna_projects_visibility_check
+  CHECK (visibility IN ('private', 'workspace', 'public'));
+ALTER TABLE bna_projects DROP CONSTRAINT IF EXISTS bna_projects_language_default_check;
+ALTER TABLE bna_projects
+  ADD CONSTRAINT bna_projects_language_default_check
+  CHECK (language_default IN ('en', 'he'));
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_projects_slug_unique ON bna_projects(slug) WHERE slug IS NOT NULL;
+
+CREATE TABLE IF NOT EXISTS bna_workspace_memberships (
+  id SERIAL PRIMARY KEY,
+  workspace_id INTEGER NOT NULL REFERENCES bna_projects(id) ON DELETE CASCADE,
+  person_id INTEGER NOT NULL REFERENCES bna_people(id) ON DELETE CASCADE,
+  role TEXT NOT NULL CHECK (role IN (
+    'owner',
+    'super_admin',
+    'admin',
+    'rabbi',
+    'teacher',
+    'manager',
+    'parent',
+    'child',
+    'student',
+    'service_provider',
+    'client',
+    'tester',
+    'viewer'
+  )),
+  access_level TEXT NOT NULL DEFAULT 'member'
+    CHECK (access_level IN ('owner', 'admin', 'manager', 'member', 'viewer')),
+  relationship_to_owner TEXT,
+  tags TEXT[] DEFAULT '{}',
+  active BOOLEAN DEFAULT TRUE,
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (workspace_id, person_id, role)
+);
+
+CREATE INDEX IF NOT EXISTS idx_bna_workspace_memberships_workspace ON bna_workspace_memberships(workspace_id, active);
+CREATE INDEX IF NOT EXISTS idx_bna_workspace_memberships_person ON bna_workspace_memberships(person_id, active);
+
+CREATE TABLE IF NOT EXISTS bna_households (
+  id SERIAL PRIMARY KEY,
+  workspace_id INTEGER NOT NULL REFERENCES bna_projects(id) ON DELETE CASCADE,
+  household_name TEXT NOT NULL,
+  primary_parent_person_id INTEGER REFERENCES bna_people(id) ON DELETE SET NULL,
+  status TEXT DEFAULT 'active' CHECK (status IN ('active', 'setup', 'paused', 'archived')),
+  filter_setup_status TEXT DEFAULT 'not_started'
+    CHECK (filter_setup_status IN ('not_started', 'instructions_sent', 'waiting_for_parent', 'submitted', 'verified', 'blocked')),
+  filter_setup_code TEXT,
+  filter_setup_notes TEXT,
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (workspace_id, household_name)
+);
+
+CREATE TABLE IF NOT EXISTS bna_household_members (
+  id SERIAL PRIMARY KEY,
+  household_id INTEGER NOT NULL REFERENCES bna_households(id) ON DELETE CASCADE,
+  person_id INTEGER NOT NULL REFERENCES bna_people(id) ON DELETE CASCADE,
+  role TEXT NOT NULL CHECK (role IN ('parent', 'child', 'caregiver', 'viewer')),
+  relationship TEXT,
+  tags TEXT[] DEFAULT '{}',
+  metadata JSONB DEFAULT '{}',
+  active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (household_id, person_id, role)
+);
+
+CREATE INDEX IF NOT EXISTS idx_bna_households_workspace ON bna_households(workspace_id, status);
+CREATE INDEX IF NOT EXISTS idx_bna_household_members_household ON bna_household_members(household_id, active);
+CREATE INDEX IF NOT EXISTS idx_bna_household_members_person ON bna_household_members(person_id, active);
+
+CREATE TABLE IF NOT EXISTS bna_logins (
+  id SERIAL PRIMARY KEY,
+  person_id INTEGER REFERENCES bna_people(id) ON DELETE SET NULL,
+  login_email TEXT,
+  username TEXT,
+  role_type TEXT NOT NULL DEFAULT 'parent' CHECK (role_type IN ('super_admin', 'admin', 'parent', 'service_provider', 'tester', 'student', 'child')),
+  password_hash TEXT,
+  magic_link_token_hash TEXT,
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'pending', 'inactive', 'archived')),
+  last_login_at TIMESTAMP,
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_logins_login_email_unique ON bna_logins(lower(login_email)) WHERE login_email IS NOT NULL;
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_logins_username_unique ON bna_logins(lower(username)) WHERE username IS NOT NULL;
+CREATE INDEX IF NOT EXISTS idx_bna_logins_person ON bna_logins(person_id, status);
+
+CREATE TABLE IF NOT EXISTS bna_service_provider_profiles (
+  id SERIAL PRIMARY KEY,
+  person_id INTEGER REFERENCES bna_people(id) ON DELETE SET NULL,
+  workspace_id INTEGER REFERENCES bna_projects(id) ON DELETE CASCADE,
+  slug TEXT UNIQUE NOT NULL,
+  display_name TEXT NOT NULL,
+  headline TEXT,
+  bio TEXT,
+  service_categories TEXT[] DEFAULT '{}',
+  languages TEXT[] DEFAULT '{}',
+  phone TEXT,
+  email TEXT,
+  service_area TEXT,
+  profile_photo_url TEXT,
+  plan TEXT DEFAULT 'free' CHECK (plan IN ('free', 'starter', 'pro', 'custom')),
+  status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'active', 'paused', 'archived')),
+  google_business_status TEXT DEFAULT 'not_connected'
+    CHECK (google_business_status IN ('not_connected', 'pending_oauth', 'connected', 'blocked', 'manual')),
+  google_account_id TEXT,
+  google_location_id TEXT,
+  google_place_id TEXT,
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS bna_provider_media (
+  id SERIAL PRIMARY KEY,
+  provider_id INTEGER NOT NULL REFERENCES bna_service_provider_profiles(id) ON DELETE CASCADE,
+  media_type TEXT NOT NULL CHECK (media_type IN ('profile', 'gallery', 'document')),
+  url TEXT NOT NULL,
+  alt_text TEXT,
+  sort_order INTEGER DEFAULT 0,
+  status TEXT DEFAULT 'active' CHECK (status IN ('active', 'hidden', 'archived')),
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS bna_provider_comments (
+  id SERIAL PRIMARY KEY,
+  provider_id INTEGER NOT NULL REFERENCES bna_service_provider_profiles(id) ON DELETE CASCADE,
+  author_person_id INTEGER REFERENCES bna_people(id) ON DELETE SET NULL,
+  body TEXT NOT NULL,
+  rating INTEGER CHECK (rating BETWEEN 1 AND 5),
+  source TEXT DEFAULT 'manual' CHECK (source IN ('manual', 'google_business', 'parent_portal', 'import')),
+  visibility TEXT DEFAULT 'visible' CHECK (visibility IN ('visible', 'hidden', 'flagged', 'private')),
+  provider_reply TEXT,
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_bna_service_provider_profiles_workspace ON bna_service_provider_profiles(workspace_id, status);
+CREATE INDEX IF NOT EXISTS idx_bna_provider_media_provider ON bna_provider_media(provider_id, status, sort_order);
+CREATE INDEX IF NOT EXISTS idx_bna_provider_comments_provider ON bna_provider_comments(provider_id, visibility, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS bna_integration_connections (
+  id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_projects(id) ON DELETE CASCADE,
+  person_id INTEGER REFERENCES bna_people(id) ON DELETE SET NULL,
+  provider_profile_id INTEGER REFERENCES bna_service_provider_profiles(id) ON DELETE CASCADE,
+  integration TEXT NOT NULL CHECK (integration IN ('google_oauth', 'google_business_profile', 'google_calendar', 'google_classroom', 'google_maps', 'stripe', 'resend')),
+  status TEXT DEFAULT 'not_connected'
+    CHECK (status IN ('not_connected', 'pending', 'connected', 'blocked', 'error')),
+  scopes TEXT[] DEFAULT '{}',
+  external_account_id TEXT,
+  external_location_id TEXT,
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_bna_integration_connections_workspace ON bna_integration_connections(workspace_id, integration, status);
+CREATE INDEX IF NOT EXISTS idx_bna_integration_connections_provider ON bna_integration_connections(provider_profile_id, integration, status);
+
+DO $$
+BEGIN
+  IF to_regclass('public.bna_workspace_settings') IS NOT NULL THEN
+    ALTER TABLE bna_workspace_settings DROP CONSTRAINT IF EXISTS bna_workspace_settings_workspace_type_check;
+    ALTER TABLE bna_workspace_settings
+      ADD CONSTRAINT bna_workspace_settings_workspace_type_check
+      CHECK (workspace_type IN ('platform', 'super_admin', 'school', 'family', 'household', 'service_provider', 'provider', 'community', 'project'));
+  END IF;
+END $$;
+`;
+
 const createWorkspacePlatformSQL = `
 CREATE TABLE IF NOT EXISTS bna_workspace_settings (
   id SERIAL PRIMARY KEY,
   workspace_key TEXT NOT NULL UNIQUE,
-  workspace_type TEXT NOT NULL DEFAULT 'school' CHECK (workspace_type IN ('platform', 'school', 'provider')),
+  workspace_type TEXT NOT NULL DEFAULT 'school' CHECK (workspace_type IN ('platform', 'super_admin', 'school', 'family', 'household', 'service_provider', 'provider', 'community', 'project')),
   display_name TEXT NOT NULL,
   description TEXT,
   status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'paused', 'archived')),
@@ -6908,6 +7798,44 @@ ALTER TABLE bna_support_ticket_comments
   CHECK (source IN ('dashboard', 'telegram', 'api', 'system', 'web_assistant'));
 `;
 
+const createTicketCompatibilityViewsSQL = `
+CREATE OR REPLACE VIEW bna_tickets AS
+SELECT
+  id,
+  project_id AS workspace_id,
+  NULL::INTEGER AS reporter_account_id,
+  assigned_to,
+  title,
+  description AS summary,
+  status,
+  CASE WHEN severity = 'blocking' THEN 'critical' ELSE severity END AS severity,
+  category,
+  NULL::TEXT AS page_url,
+  NULL::TEXT AS user_agent,
+  NULL::TEXT AS screenshot_url,
+  NULL::TEXT AS reproduction_steps,
+  NULL::TEXT AS expected_behavior,
+  NULL::TEXT AS actual_behavior,
+  related_task_id,
+  NULL::INTEGER AS agent_job_id,
+  source_context AS metadata,
+  created_at,
+  updated_at,
+  resolved_at
+FROM bna_support_tickets;
+
+CREATE OR REPLACE VIEW bna_ticket_comments AS
+SELECT
+  id,
+  ticket_id,
+  NULL::INTEGER AS author_account_id,
+  author AS author_name,
+  body,
+  source_context AS metadata,
+  created_at
+FROM bna_support_ticket_comments;
+`;
+
 const createAssistantSQL = `
 CREATE TABLE IF NOT EXISTS bna_assistant_threads (
   id SERIAL PRIMARY KEY,
@@ -7002,14 +7930,311 @@ CREATE TABLE IF NOT EXISTS bna_email_log (
   email_type TEXT NOT NULL,
   recipient_email TEXT NOT NULL,
   subject TEXT NOT NULL,
+  body_text TEXT,
+  body_html TEXT,
+  from_name TEXT,
+  from_address TEXT,
+  reply_to TEXT,
+  provider TEXT DEFAULT 'gmail',
   language TEXT DEFAULT 'en',
   provider_message_id TEXT,
-  status TEXT NOT NULL DEFAULT 'sent' CHECK (status IN ('sent', 'failed', 'skipped')),
+  status TEXT NOT NULL DEFAULT 'sent' CHECK (status IN ('sent', 'failed', 'skipped', 'queued', 'delivered', 'bounced', 'complained', 'opened', 'clicked', 'delivery_delayed', 'webhook_received')),
   error TEXT,
   metadata JSONB,
   sent_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE bna_email_log ADD COLUMN IF NOT EXISTS body_text TEXT;
+ALTER TABLE bna_email_log ADD COLUMN IF NOT EXISTS body_html TEXT;
+ALTER TABLE bna_email_log ADD COLUMN IF NOT EXISTS from_name TEXT;
+ALTER TABLE bna_email_log ADD COLUMN IF NOT EXISTS from_address TEXT;
+ALTER TABLE bna_email_log ADD COLUMN IF NOT EXISTS reply_to TEXT;
+ALTER TABLE bna_email_log ADD COLUMN IF NOT EXISTS provider TEXT DEFAULT 'gmail';
+ALTER TABLE bna_email_log DROP CONSTRAINT IF EXISTS bna_email_log_status_check;
+ALTER TABLE bna_email_log
+  ADD CONSTRAINT bna_email_log_status_check
+  CHECK (status IN ('sent', 'failed', 'skipped', 'queued', 'delivered', 'bounced', 'complained', 'opened', 'clicked', 'delivery_delayed', 'webhook_received'));
+`;
+
+const createPlatformCommunicationsSQL = `
+CREATE TABLE IF NOT EXISTS bna_contacts (
+  id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspace_settings(id) ON DELETE SET NULL,
+  full_name TEXT,
+  primary_email TEXT,
+  primary_phone TEXT,
+  status TEXT DEFAULT 'lead',
+  source TEXT,
+  tags TEXT[] DEFAULT '{}',
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS bna_contact_identities (
+  id SERIAL PRIMARY KEY,
+  contact_id INTEGER REFERENCES bna_contacts(id) ON DELETE CASCADE,
+  identity_type TEXT NOT NULL CHECK (identity_type IN ('email', 'phone', 'whatsapp', 'telegram', 'google', 'manual')),
+  identity_value TEXT NOT NULL,
+  normalized_value TEXT NOT NULL,
+  verified BOOLEAN DEFAULT FALSE,
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (identity_type, normalized_value)
+);
+
+CREATE TABLE IF NOT EXISTS bna_communications (
+  id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspace_settings(id) ON DELETE SET NULL,
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
+  contact_id INTEGER REFERENCES bna_contacts(id) ON DELETE SET NULL,
+  signup_id INTEGER REFERENCES signups(id) ON DELETE SET NULL,
+  student_id INTEGER REFERENCES bna_students(id) ON DELETE SET NULL,
+  provider_id INTEGER,
+  task_id INTEGER REFERENCES bna_tasks(id) ON DELETE SET NULL,
+  ticket_id INTEGER,
+  channel TEXT NOT NULL CHECK (channel IN ('email', 'whatsapp', 'telegram', 'bot', 'system', 'sms', 'web')),
+  direction TEXT NOT NULL CHECK (direction IN ('inbound', 'outbound', 'internal')),
+  communication_type TEXT,
+  from_name TEXT,
+  from_address TEXT,
+  to_name TEXT,
+  to_address TEXT,
+  subject TEXT,
+  body_text TEXT,
+  body_html TEXT,
+  external_message_id TEXT,
+  thread_key TEXT,
+  provider TEXT,
+  status TEXT DEFAULT 'logged',
+  language TEXT DEFAULT 'en',
+  metadata JSONB DEFAULT '{}',
+  occurred_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS bna_message_connectors (
+  id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspace_settings(id) ON DELETE SET NULL,
+  connector_key TEXT NOT NULL,
+  provider TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'not_configured'
+    CHECK (status IN ('not_configured', 'manual_mode', 'test_mode', 'configured', 'disabled')),
+  config_json JSONB DEFAULT '{}',
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (workspace_id, connector_key)
+);
+
+CREATE TABLE IF NOT EXISTS bna_whatsapp_messages (
+  id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspace_settings(id) ON DELETE SET NULL,
+  contact_id INTEGER REFERENCES bna_contacts(id) ON DELETE SET NULL,
+  provider TEXT,
+  external_message_id TEXT,
+  external_chat_id TEXT,
+  direction TEXT CHECK (direction IN ('inbound', 'outbound')),
+  from_phone TEXT,
+  to_phone TEXT,
+  from_name TEXT,
+  body_text TEXT,
+  occurred_at TIMESTAMP,
+  raw_payload JSONB DEFAULT '{}',
+  imported_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (provider, external_message_id)
+);
+
+CREATE TABLE IF NOT EXISTS bna_contact_pipeline_events (
+  id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspace_settings(id) ON DELETE SET NULL,
+  contact_id INTEGER REFERENCES bna_contacts(id) ON DELETE CASCADE,
+  event_type TEXT NOT NULL,
+  pipeline_status TEXT,
+  summary TEXT,
+  source TEXT DEFAULT 'system',
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS bna_checkout_attempts (
+  id SERIAL PRIMARY KEY,
+  signup_id INTEGER REFERENCES signups(id) ON DELETE SET NULL,
+  contact_id INTEGER REFERENCES bna_contacts(id) ON DELETE SET NULL,
+  workspace_id INTEGER REFERENCES bna_workspace_settings(id) ON DELETE SET NULL,
+  payment_method TEXT NOT NULL DEFAULT 'credit',
+  processor TEXT,
+  payment_link TEXT,
+  checkout_session_id TEXT,
+  status TEXT NOT NULL DEFAULT 'started'
+    CHECK (status IN ('started', 'redirected', 'webhook_received', 'paid', 'abandoned', 'failed', 'cancelled', 'manual_followup')),
+  started_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  redirected_at TIMESTAMP,
+  webhook_received_at TIMESTAMP,
+  paid_at TIMESTAMP,
+  abandoned_at TIMESTAMP,
+  last_reminder_at TIMESTAMP,
+  source_context JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS bna_user_accounts (
+  id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspace_settings(id) ON DELETE SET NULL,
+  contact_id INTEGER REFERENCES bna_contacts(id) ON DELETE SET NULL,
+  student_id INTEGER REFERENCES bna_students(id) ON DELETE SET NULL,
+  email TEXT,
+  phone TEXT,
+  role TEXT NOT NULL CHECK (role IN ('student', 'parent', 'teacher', 'provider', 'service_provider', 'manager', 'admin', 'super_admin', 'developer_tester', 'agent')),
+  password_hash TEXT,
+  status TEXT DEFAULT 'pending_setup',
+  language TEXT DEFAULT 'en',
+  assistant_onboarding_seen_at TIMESTAMP,
+  assistant_onboarding_language TEXT,
+  last_login_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS bna_login_tokens (
+  id SERIAL PRIMARY KEY,
+  user_account_id INTEGER REFERENCES bna_user_accounts(id) ON DELETE CASCADE,
+  token_hash TEXT NOT NULL,
+  purpose TEXT NOT NULL CHECK (purpose IN ('password_setup', 'magic_login', 'student_access', 'provider_invite')),
+  expires_at TIMESTAMP NOT NULL,
+  used_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS bna_assistant_memory (
+  id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspace_settings(id) ON DELETE SET NULL,
+  user_account_id INTEGER REFERENCES bna_user_accounts(id) ON DELETE SET NULL,
+  contact_id INTEGER REFERENCES bna_contacts(id) ON DELETE SET NULL,
+  student_id INTEGER REFERENCES bna_students(id) ON DELETE SET NULL,
+  provider_id INTEGER,
+  memory_key TEXT,
+  memory_text TEXT NOT NULL,
+  importance INTEGER DEFAULT 1,
+  visibility TEXT DEFAULT 'role_scoped',
+  source_thread_id INTEGER REFERENCES bna_assistant_threads(id) ON DELETE SET NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS bna_uploaded_files (
+  id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspace_settings(id) ON DELETE SET NULL,
+  uploader_account_id INTEGER REFERENCES bna_user_accounts(id) ON DELETE SET NULL,
+  original_filename TEXT,
+  mime_type TEXT,
+  storage_path TEXT,
+  source TEXT DEFAULT 'portal',
+  status TEXT DEFAULT 'uploaded',
+  parse_status TEXT DEFAULT 'pending',
+  parse_json JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS bna_review_requests (
+  id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspace_settings(id) ON DELETE SET NULL,
+  contact_id INTEGER REFERENCES bna_contacts(id) ON DELETE SET NULL,
+  provider_id INTEGER,
+  channel TEXT,
+  review_platform TEXT DEFAULT 'google_business_profile',
+  status TEXT DEFAULT 'draft',
+  request_text TEXT,
+  review_url TEXT,
+  sent_at TIMESTAMP,
+  clicked_at TIMESTAMP,
+  responded_at TIMESTAMP,
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS bna_communities (
+  id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspace_settings(id) ON DELETE SET NULL,
+  name TEXT NOT NULL,
+  description TEXT,
+  owner_account_id INTEGER REFERENCES bna_user_accounts(id) ON DELETE SET NULL,
+  status TEXT DEFAULT 'active',
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS bna_classes (
+  id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspace_settings(id) ON DELETE SET NULL,
+  community_id INTEGER REFERENCES bna_communities(id) ON DELETE SET NULL,
+  provider_account_id INTEGER REFERENCES bna_user_accounts(id) ON DELETE SET NULL,
+  title TEXT NOT NULL,
+  description TEXT,
+  class_type TEXT,
+  starts_at TIMESTAMP,
+  ends_at TIMESTAMP,
+  recurrence_rule TEXT,
+  location_type TEXT,
+  meeting_url TEXT,
+  recording_url TEXT,
+  material_file_id INTEGER,
+  status TEXT DEFAULT 'scheduled',
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE IF NOT EXISTS bna_class_members (
+  id SERIAL PRIMARY KEY,
+  class_id INTEGER REFERENCES bna_classes(id) ON DELETE CASCADE,
+  student_id INTEGER REFERENCES bna_students(id) ON DELETE CASCADE,
+  status TEXT DEFAULT 'active',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (class_id, student_id)
+);
+
+CREATE TABLE IF NOT EXISTS bna_class_attendance (
+  id SERIAL PRIMARY KEY,
+  class_id INTEGER REFERENCES bna_classes(id) ON DELETE CASCADE,
+  student_id INTEGER REFERENCES bna_students(id) ON DELETE CASCADE,
+  attendance_date DATE NOT NULL,
+  status TEXT DEFAULT 'present'
+    CHECK (status IN ('present', 'late', 'absent', 'excused', 'unknown')),
+  notes TEXT,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (class_id, student_id, attendance_date)
+);
+
+CREATE INDEX IF NOT EXISTS idx_bna_contacts_workspace ON bna_contacts(workspace_id, status);
+CREATE INDEX IF NOT EXISTS idx_bna_contacts_email ON bna_contacts(lower(primary_email));
+CREATE INDEX IF NOT EXISTS idx_bna_contacts_phone ON bna_contacts(lower(primary_phone));
+CREATE INDEX IF NOT EXISTS idx_bna_contact_identities_contact ON bna_contact_identities(contact_id);
+CREATE INDEX IF NOT EXISTS idx_bna_communications_workspace ON bna_communications(workspace_id, occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_communications_project ON bna_communications(project_id, occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_communications_contact ON bna_communications(contact_id, occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_communications_signup ON bna_communications(signup_id, occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_communications_student ON bna_communications(student_id, occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_communications_task ON bna_communications(task_id, occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_communications_ticket ON bna_communications(ticket_id, occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_communications_channel ON bna_communications(channel, direction, occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_whatsapp_messages_contact ON bna_whatsapp_messages(contact_id, occurred_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_whatsapp_messages_external_chat ON bna_whatsapp_messages(provider, external_chat_id);
+CREATE INDEX IF NOT EXISTS idx_bna_checkout_attempts_signup ON bna_checkout_attempts(signup_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_checkout_attempts_status ON bna_checkout_attempts(status, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_user_accounts_email_role ON bna_user_accounts(lower(email), role);
+CREATE INDEX IF NOT EXISTS idx_bna_login_tokens_hash ON bna_login_tokens(token_hash);
+CREATE INDEX IF NOT EXISTS idx_bna_assistant_memory_scope ON bna_assistant_memory(workspace_id, user_account_id, visibility);
+CREATE INDEX IF NOT EXISTS idx_bna_uploaded_files_workspace ON bna_uploaded_files(workspace_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_review_requests_workspace ON bna_review_requests(workspace_id, status, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_communities_workspace ON bna_communities(workspace_id, status);
+CREATE INDEX IF NOT EXISTS idx_bna_classes_workspace ON bna_classes(workspace_id, status, starts_at);
+CREATE INDEX IF NOT EXISTS idx_bna_class_attendance_class_date ON bna_class_attendance(class_id, attendance_date);
 `;
 
 const createPaymentIntakeSQL = `
@@ -8165,7 +9390,7 @@ ALTER TABLE bna_contact_communications DROP CONSTRAINT IF EXISTS bna_contact_com
 UPDATE bna_contact_communications SET source = 'community_import' WHERE source = ('g' || 'hl_import');
 ALTER TABLE bna_contact_communications
   ADD CONSTRAINT bna_contact_communications_source_check
-  CHECK (source IN ('manual', 'telegram', 'community_import', 'dashboard', 'seed', 'wapi'));
+  CHECK (source IN ('manual', 'telegram', 'community_import', 'dashboard', 'seed', 'wapi', 'web_assistant'));
 ALTER TABLE bna_accountability_events ADD COLUMN IF NOT EXISTS goal_target_value DECIMAL(10,2);
 ALTER TABLE bna_accountability_events ADD COLUMN IF NOT EXISTS goal_actual_value DECIMAL(10,2);
 ALTER TABLE bna_accountability_events ADD COLUMN IF NOT EXISTS goal_unit TEXT;
@@ -8458,6 +9683,107 @@ ALTER TABLE signups ADD COLUMN IF NOT EXISTS parent_permission_notes TEXT;
 ALTER TABLE signups ADD COLUMN IF NOT EXISTS confirmation_email_sent_at TIMESTAMP;
 ALTER TABLE signups ADD COLUMN IF NOT EXISTS confirmation_email_error TEXT;
 ALTER TABLE signups ALTER COLUMN parent_email DROP NOT NULL;
+`;
+
+const createWorkspaceLinkedColumnsSQL = `
+ALTER TABLE bna_students ADD COLUMN IF NOT EXISTS person_id INTEGER REFERENCES bna_people(id) ON DELETE SET NULL;
+ALTER TABLE bna_students ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL;
+ALTER TABLE bna_students ADD COLUMN IF NOT EXISTS household_id INTEGER REFERENCES bna_households(id) ON DELETE SET NULL;
+ALTER TABLE bna_accountability_events ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL;
+ALTER TABLE bna_accountability_events ADD COLUMN IF NOT EXISTS person_id INTEGER REFERENCES bna_people(id) ON DELETE SET NULL;
+ALTER TABLE bna_accountability_events ADD COLUMN IF NOT EXISTS household_id INTEGER REFERENCES bna_households(id) ON DELETE SET NULL;
+ALTER TABLE bna_group_goals ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL;
+ALTER TABLE bna_group_goal_entries ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL;
+ALTER TABLE bna_torah_learning_goals ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL;
+ALTER TABLE bna_torah_learning_entries ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL;
+ALTER TABLE signups ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL;
+ALTER TABLE signups ADD COLUMN IF NOT EXISTS household_id INTEGER REFERENCES bna_households(id) ON DELETE SET NULL;
+ALTER TABLE signups ADD COLUMN IF NOT EXISTS parent_person_id INTEGER REFERENCES bna_people(id) ON DELETE SET NULL;
+ALTER TABLE signups ADD COLUMN IF NOT EXISTS student_person_id INTEGER REFERENCES bna_people(id) ON DELETE SET NULL;
+
+ALTER TABLE bna_assistant_threads ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_projects(id) ON DELETE CASCADE;
+ALTER TABLE bna_assistant_threads ADD COLUMN IF NOT EXISTS household_id INTEGER REFERENCES bna_households(id) ON DELETE SET NULL;
+ALTER TABLE bna_assistant_threads ADD COLUMN IF NOT EXISTS person_id INTEGER REFERENCES bna_people(id) ON DELETE SET NULL;
+ALTER TABLE bna_assistant_threads ADD COLUMN IF NOT EXISTS role_context TEXT;
+ALTER TABLE bna_assistant_threads ADD COLUMN IF NOT EXISTS title TEXT;
+ALTER TABLE bna_assistant_messages ADD COLUMN IF NOT EXISTS role TEXT;
+ALTER TABLE bna_assistant_messages ADD COLUMN IF NOT EXISTS tool_name TEXT;
+ALTER TABLE bna_assistant_messages ADD COLUMN IF NOT EXISTS tool_payload JSONB;
+ALTER TABLE bna_assistant_messages ADD COLUMN IF NOT EXISTS tool_result JSONB;
+ALTER TABLE bna_assistant_messages ADD COLUMN IF NOT EXISTS created_actions JSONB DEFAULT '[]';
+
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL;
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS household_id INTEGER REFERENCES bna_households(id) ON DELETE SET NULL;
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS person_id INTEGER REFERENCES bna_people(id) ON DELETE SET NULL;
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS provider_profile_id INTEGER REFERENCES bna_service_provider_profiles(id) ON DELETE SET NULL;
+ALTER TABLE bna_support_tickets ADD COLUMN IF NOT EXISTS priority TEXT DEFAULT 'normal';
+ALTER TABLE bna_support_tickets DROP CONSTRAINT IF EXISTS bna_support_tickets_priority_check;
+ALTER TABLE bna_support_tickets
+  ADD CONSTRAINT bna_support_tickets_priority_check
+  CHECK (priority IN ('low', 'normal', 'high', 'urgent'));
+
+CREATE INDEX IF NOT EXISTS idx_bna_students_person_id ON bna_students(person_id);
+CREATE INDEX IF NOT EXISTS idx_bna_students_workspace_id ON bna_students(workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_students_household_id ON bna_students(household_id);
+CREATE INDEX IF NOT EXISTS idx_bna_accountability_events_workspace ON bna_accountability_events(workspace_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_accountability_events_person ON bna_accountability_events(person_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_group_goals_workspace ON bna_group_goals(workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_group_goal_entries_workspace ON bna_group_goal_entries(workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_torah_learning_goals_workspace ON bna_torah_learning_goals(workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_torah_learning_entries_workspace ON bna_torah_learning_entries(workspace_id);
+CREATE INDEX IF NOT EXISTS idx_signups_workspace_id ON signups(workspace_id);
+CREATE INDEX IF NOT EXISTS idx_signups_household_id ON signups(household_id);
+CREATE INDEX IF NOT EXISTS idx_bna_assistant_threads_workspace ON bna_assistant_threads(workspace_id, status, updated_at DESC);
+CREATE INDEX IF NOT EXISTS idx_bna_support_tickets_workspace ON bna_support_tickets(workspace_id, status, created_at DESC);
+
+UPDATE bna_projects
+   SET workspace_type = 'school',
+       visibility = 'workspace',
+       language_default = COALESCE(language_default, 'en'),
+       settings = COALESCE(settings, '{}'::jsonb) || '{"primary_role_label":"Rabbi","accountability_mode":"school"}'::jsonb,
+       slug = COALESCE(slug, 'bna'),
+       updated_at = NOW()
+ WHERE project_key = 'bna';
+
+UPDATE bna_projects
+   SET workspace_type = 'service_provider',
+       visibility = 'workspace',
+       language_default = COALESCE(language_default, 'en'),
+       slug = COALESCE(slug, 'one-time-mishnah-class'),
+       updated_at = NOW()
+ WHERE project_key = 'one_time_mishnah_class';
+
+WITH bna AS (SELECT id FROM bna_projects WHERE project_key = 'bna' LIMIT 1)
+UPDATE bna_students SET workspace_id = (SELECT id FROM bna), project_id = COALESCE(project_id, (SELECT id FROM bna))
+WHERE workspace_id IS NULL AND EXISTS (SELECT 1 FROM bna);
+
+WITH bna AS (SELECT id FROM bna_projects WHERE project_key = 'bna' LIMIT 1)
+UPDATE signups SET workspace_id = COALESCE(workspace_id, (SELECT id FROM bna)), project_id = COALESCE(project_id, (SELECT id FROM bna))
+WHERE EXISTS (SELECT 1 FROM bna);
+
+WITH bna AS (SELECT id FROM bna_projects WHERE project_key = 'bna' LIMIT 1)
+UPDATE bna_accountability_events SET workspace_id = COALESCE(workspace_id, (SELECT id FROM bna)), project_id = COALESCE(project_id, (SELECT id FROM bna))
+WHERE EXISTS (SELECT 1 FROM bna);
+
+WITH bna AS (SELECT id FROM bna_projects WHERE project_key = 'bna' LIMIT 1)
+UPDATE bna_group_goals SET workspace_id = COALESCE(workspace_id, (SELECT id FROM bna)), project_id = COALESCE(project_id, (SELECT id FROM bna))
+WHERE EXISTS (SELECT 1 FROM bna);
+
+WITH bna AS (SELECT id FROM bna_projects WHERE project_key = 'bna' LIMIT 1)
+UPDATE bna_group_goal_entries SET workspace_id = COALESCE(workspace_id, (SELECT id FROM bna))
+WHERE EXISTS (SELECT 1 FROM bna);
+
+WITH bna AS (SELECT id FROM bna_projects WHERE project_key = 'bna' LIMIT 1)
+UPDATE bna_torah_learning_goals SET workspace_id = COALESCE(workspace_id, (SELECT id FROM bna))
+WHERE EXISTS (SELECT 1 FROM bna);
+
+WITH bna AS (SELECT id FROM bna_projects WHERE project_key = 'bna' LIMIT 1)
+UPDATE bna_torah_learning_entries SET workspace_id = COALESCE(workspace_id, (SELECT id FROM bna))
+WHERE EXISTS (SELECT 1 FROM bna);
+
+UPDATE bna_assistant_messages
+   SET role = COALESCE(role, author_type)
+ WHERE role IS NULL;
 `;
 
 const normalizeTasksCategoryCheckSQL = `
@@ -10145,6 +11471,296 @@ async function upsertParentPermissionProfileFromSignup(signup, student = null, d
   return result.rows[0];
 }
 
+async function getWorkspaceIdForProjectKey(projectKey = DEFAULT_PROJECT_KEY, db = pool) {
+  const workspaceKey = workspaceKeyForProject(projectKey || DEFAULT_PROJECT_KEY);
+  const result = await db.query(
+    'SELECT id FROM bna_workspace_settings WHERE workspace_key = $1 LIMIT 1',
+    [workspaceKey]
+  );
+  return result.rows[0]?.id || null;
+}
+
+async function upsertContactIdentity({ contactId, identityType, identityValue, verified = false, metadata = {} } = {}, db = pool) {
+  if (!contactId || !identityType || !identityValue) return null;
+  const normalizedValue = identityType === 'email'
+    ? normalizeEmail(identityValue)
+    : identityType === 'phone' || identityType === 'whatsapp'
+      ? normalizePhoneDigits(identityValue)
+      : String(identityValue || '').trim().toLowerCase();
+  if (!normalizedValue) return null;
+  const result = await db.query(
+    `INSERT INTO bna_contact_identities (
+       contact_id, identity_type, identity_value, normalized_value, verified, metadata
+     ) VALUES ($1, $2, $3, $4, $5, $6::jsonb)
+     ON CONFLICT (identity_type, normalized_value) DO UPDATE SET
+       contact_id = COALESCE(bna_contact_identities.contact_id, EXCLUDED.contact_id),
+       identity_value = EXCLUDED.identity_value,
+       verified = bna_contact_identities.verified OR EXCLUDED.verified,
+       metadata = bna_contact_identities.metadata || EXCLUDED.metadata
+     RETURNING *`,
+    [contactId, identityType, identityValue, normalizedValue, Boolean(verified), JSON.stringify(metadata || {})]
+  );
+  return result.rows[0] || null;
+}
+
+async function upsertContactFromSignup(signup = {}, db = pool) {
+  const email = normalizeEmail(signup.parent_email);
+  const phone = normalizePhoneDigits(signup.parent_phone);
+  const workspaceId = await getWorkspaceIdForProjectKey(signup.project_key || DEFAULT_PROJECT_KEY, db);
+  let existing = null;
+  if (email || phone) {
+    existing = (await db.query(
+      `SELECT c.*
+       FROM bna_contacts c
+       LEFT JOIN bna_contact_identities i ON i.contact_id = c.id
+       WHERE ($1 <> '' AND (lower(COALESCE(c.primary_email, '')) = $1 OR (i.identity_type = 'email' AND i.normalized_value = $1)))
+          OR ($2 <> '' AND (regexp_replace(COALESCE(c.primary_phone, ''), '\\D', '', 'g') = $2 OR (i.identity_type IN ('phone', 'whatsapp') AND i.normalized_value = $2)))
+       ORDER BY c.updated_at DESC NULLS LAST, c.created_at ASC
+       LIMIT 1`,
+      [email || '', phone || '']
+    )).rows[0] || null;
+  }
+
+  const tags = ['signup', 'parent', 'bna'].filter(Boolean);
+  const metadata = {
+    signup_id: signup.id || null,
+    student_name: signup.student_name || null,
+    source: 'website_signup',
+  };
+  const result = existing
+    ? await db.query(
+        `UPDATE bna_contacts
+         SET workspace_id = COALESCE(workspace_id, $1),
+             full_name = COALESCE(NULLIF($2, ''), full_name),
+             primary_email = COALESCE(NULLIF($3, ''), primary_email),
+             primary_phone = COALESCE(NULLIF($4, ''), primary_phone),
+             status = CASE WHEN status IS NULL OR status = 'lead' THEN 'signup' ELSE status END,
+             source = COALESCE(source, 'website_signup'),
+             tags = (
+               SELECT ARRAY(
+                 SELECT DISTINCT tag_value
+                 FROM unnest(COALESCE(tags, ARRAY[]::text[]) || $5::text[]) AS tag_values(tag_value)
+                 WHERE tag_value <> ''
+               )
+             ),
+             metadata = COALESCE(metadata, '{}'::jsonb) || $6::jsonb,
+             updated_at = NOW()
+         WHERE id = $7
+         RETURNING *`,
+        [workspaceId, signup.parent_name || '', email || '', signup.parent_phone || '', tags, JSON.stringify(metadata), existing.id]
+      )
+    : await db.query(
+        `INSERT INTO bna_contacts (
+           workspace_id, full_name, primary_email, primary_phone, status, source, tags, metadata
+         ) VALUES ($1, $2, $3, $4, 'signup', 'website_signup', $5, $6::jsonb)
+         RETURNING *`,
+        [workspaceId, signup.parent_name || null, email || null, signup.parent_phone || null, tags, JSON.stringify(metadata)]
+      );
+  const contact = result.rows[0] || null;
+  if (contact) {
+    await upsertContactIdentity({ contactId: contact.id, identityType: 'email', identityValue: email, verified: true, metadata }, db);
+    await upsertContactIdentity({ contactId: contact.id, identityType: 'phone', identityValue: signup.parent_phone, verified: false, metadata }, db);
+    await upsertContactIdentity({ contactId: contact.id, identityType: 'whatsapp', identityValue: signup.parent_phone, verified: false, metadata }, db);
+  }
+  return contact;
+}
+
+async function ensureUserAccountForRole({ workspaceId = null, contactId = null, studentId = null, email = '', phone = '', role = 'parent', language = 'en' } = {}, db = pool) {
+  const normalizedEmail = normalizeEmail(email);
+  const normalizedPhone = normalizePhoneDigits(phone);
+  let existing = null;
+  if (normalizedEmail || studentId) {
+    const params = [role, normalizedEmail || '', studentId || null];
+    existing = (await db.query(
+      `SELECT *
+       FROM bna_user_accounts
+       WHERE role = $1
+         AND (($2 <> '' AND lower(COALESCE(email, '')) = $2) OR ($3::int IS NOT NULL AND student_id = $3))
+       ORDER BY updated_at DESC NULLS LAST, created_at ASC
+       LIMIT 1`,
+      params
+    )).rows[0] || null;
+  }
+
+  const result = existing
+    ? await db.query(
+        `UPDATE bna_user_accounts
+         SET workspace_id = COALESCE(workspace_id, $1),
+             contact_id = COALESCE(contact_id, $2),
+             student_id = COALESCE(student_id, $3),
+             email = COALESCE(NULLIF($4, ''), email),
+             phone = COALESCE(NULLIF($5, ''), phone),
+             language = COALESCE(NULLIF($6, ''), language),
+             updated_at = NOW()
+         WHERE id = $7
+         RETURNING *`,
+        [workspaceId, contactId, studentId, normalizedEmail || '', normalizedPhone || '', normalizeLanguage(language), existing.id]
+      )
+    : await db.query(
+        `INSERT INTO bna_user_accounts (
+           workspace_id, contact_id, student_id, email, phone, role, status, language
+         ) VALUES ($1, $2, $3, $4, $5, $6, 'pending_setup', $7)
+         RETURNING *`,
+        [workspaceId, contactId, studentId, normalizedEmail || null, normalizedPhone || null, role, normalizeLanguage(language)]
+      );
+  return result.rows[0] || null;
+}
+
+async function ensureSignupPortalAccess(signup = {}, student = null, contact = null, db = pool) {
+  const workspaceId = await getWorkspaceIdForProjectKey(signup.project_key || DEFAULT_PROJECT_KEY, db);
+  const parentAccount = await ensureUserAccountForRole({
+    workspaceId,
+    contactId: contact?.id || null,
+    email: signup.parent_email,
+    phone: signup.parent_phone,
+    role: 'parent',
+    language: signup.form_language,
+  }, db);
+  const studentAccount = student?.id
+    ? await ensureUserAccountForRole({
+        workspaceId,
+        contactId: contact?.id || null,
+        studentId: student.id,
+        email: signup.parent_email,
+        phone: signup.parent_phone,
+        role: 'student',
+        language: signup.form_language,
+      }, db)
+    : null;
+  if (student?.id) {
+    await ensureStudentAccessCode(student.id, {}, db).catch(() => null);
+  }
+  let loginToken = null;
+  if (parentAccount?.id) {
+    const token = generateSecureToken(32);
+    const expiresAt = new Date(Date.now() + PARENT_PASSWORD_RESET_TTL_MS);
+    loginToken = (await db.query(
+      `INSERT INTO bna_login_tokens (
+         user_account_id, token_hash, purpose, expires_at
+       ) VALUES ($1, $2, 'password_setup', $3)
+       RETURNING id, expires_at`,
+      [parentAccount.id, sha256Hex(token), expiresAt]
+    )).rows[0] || null;
+    if (loginToken) loginToken.token = token;
+  }
+  return { workspace_id: workspaceId, parent_account: parentAccount, student_account: studentAccount, login_token: loginToken };
+}
+
+function checkoutAttemptSigningSecret() {
+  return String(
+    process.env.CHECKOUT_ATTEMPT_SECRET ||
+    process.env.CRON_SECRET ||
+    process.env.SESSION_SECRET ||
+    DATABASE_URL ||
+    'bna-checkout-local'
+  );
+}
+
+function checkoutAttemptToken(attemptId, signupId) {
+  return crypto
+    .createHmac('sha256', checkoutAttemptSigningSecret())
+    .update(`${Number(attemptId)}:${Number(signupId)}`)
+    .digest('hex');
+}
+
+function verifyCheckoutAttemptToken({ attemptId, signupId, token }) {
+  const expected = checkoutAttemptToken(attemptId, signupId);
+  const supplied = String(token || '');
+  return supplied.length === expected.length
+    && crypto.timingSafeEqual(Buffer.from(supplied), Buffer.from(expected));
+}
+
+async function createOrUpdateCheckoutAttemptForSignup(signup = {}, { paymentLink = '', req = null, status = 'started' } = {}, db = pool) {
+  if (!signup?.id) return null;
+  const workspaceId = await getWorkspaceIdForProjectKey(signup.project_key || DEFAULT_PROJECT_KEY, db);
+  const existing = (await db.query(
+    `SELECT *
+     FROM bna_checkout_attempts
+     WHERE signup_id = $1
+       AND status IN ('started', 'redirected', 'manual_followup')
+     ORDER BY created_at DESC
+     LIMIT 1`,
+    [signup.id]
+  )).rows[0] || null;
+  const sourceContext = {
+    source: 'website_signup',
+    ip: req ? getRequestIp(req) : null,
+    user_agent: req?.headers?.['user-agent'] || null,
+  };
+  const result = existing
+    ? await db.query(
+        `UPDATE bna_checkout_attempts
+         SET workspace_id = COALESCE(workspace_id, $1),
+             payment_method = 'credit',
+             processor = COALESCE(processor, 'payment_link'),
+             payment_link = COALESCE(NULLIF($2, ''), payment_link),
+             status = CASE WHEN status = 'manual_followup' THEN status ELSE $3 END,
+             source_context = COALESCE(source_context, '{}'::jsonb) || $4::jsonb,
+             updated_at = NOW()
+         WHERE id = $5
+         RETURNING *`,
+        [workspaceId, paymentLink || '', status, JSON.stringify(sourceContext), existing.id]
+      )
+    : await db.query(
+        `INSERT INTO bna_checkout_attempts (
+           signup_id, workspace_id, payment_method, processor, payment_link, status, source_context
+         ) VALUES ($1, $2, 'credit', 'payment_link', $3, $4, $5::jsonb)
+         RETURNING *`,
+        [signup.id, workspaceId, paymentLink || null, status, JSON.stringify(sourceContext)]
+      );
+  const attempt = result.rows[0] || null;
+  if (attempt) {
+    await logCommunication({
+      workspaceId,
+      signupId: signup.id,
+      channel: 'system',
+      direction: 'internal',
+      communicationType: 'checkout_attempt_started',
+      subject: 'Credit checkout attempt started',
+      bodyText: `Credit checkout attempt #${attempt.id} was created for signup #${signup.id}.`,
+      status: attempt.status,
+      metadata: { checkout_attempt_id: attempt.id, payment_link_present: Boolean(paymentLink) },
+    });
+  }
+  return attempt ? {
+    ...attempt,
+    signed_token: checkoutAttemptToken(attempt.id, signup.id),
+  } : null;
+}
+
+async function markCheckoutAttemptsPaidForSignup(signupId, { processor = 'payment_webhook', checkoutSessionId = null, metadata = {} } = {}, db = pool) {
+  const id = Number(signupId);
+  if (!Number.isFinite(id)) return [];
+  const result = await db.query(
+    `UPDATE bna_checkout_attempts
+     SET status = 'paid',
+         processor = COALESCE($2, processor),
+         checkout_session_id = COALESCE($3, checkout_session_id),
+         webhook_received_at = COALESCE(webhook_received_at, NOW()),
+         paid_at = COALESCE(paid_at, NOW()),
+         source_context = COALESCE(source_context, '{}'::jsonb) || $4::jsonb,
+         updated_at = NOW()
+     WHERE signup_id = $1
+       AND status IN ('started', 'redirected', 'webhook_received', 'abandoned', 'manual_followup')
+     RETURNING *`,
+    [id, processor || null, checkoutSessionId || null, JSON.stringify(metadata || {})]
+  );
+  for (const attempt of result.rows) {
+    await logCommunication({
+      workspaceId: attempt.workspace_id || null,
+      signupId: id,
+      channel: 'system',
+      direction: 'internal',
+      communicationType: 'checkout_paid',
+      subject: 'Checkout payment received',
+      bodyText: `Checkout attempt #${attempt.id} for signup #${id} was marked paid.`,
+      status: 'paid',
+      metadata: { checkout_attempt_id: attempt.id, processor, checkout_session_id: checkoutSessionId || null },
+    });
+  }
+  return result.rows;
+}
+
 async function ensureStudentsFromSignups() {
   const result = await pool.query("SELECT * FROM signups WHERE COALESCE(status, 'new') <> 'archived' ORDER BY created_at ASC");
   for (const signup of result.rows) {
@@ -11168,6 +12784,11 @@ async function processGreenInvoiceWebhook(rawPayload, headers = {}, options = {}
          WHERE id = $4`,
         [greenInvoiceId, normalized.amount, DEFAULT_PAYMENT_INTERVAL_DAYS, signup.id]
       );
+      await markCheckoutAttemptsPaidForSignup(signup.id, {
+        processor: 'green_invoice',
+        checkoutSessionId: greenInvoiceId || null,
+        metadata: { source: 'green_invoice_webhook', webhook_log_id: webhookLog.id },
+      }, db).catch((error) => processingNotes.push(`Checkout paid update failed: ${error.message}`));
       processingNotes.push(`Updated signup ${signup.id} to paid.`);
 
       webhookLog = (
@@ -12756,6 +14377,11 @@ async function getProviderPortalPayload(providerId, db = pool) {
 
   return {
     provider: providerAccountView(provider),
+    profile: await ensureProviderProfileForServiceProvider(provider, db).catch(() => null),
+    media: await getProviderMediaForLegacyProvider(providerId, db).catch(() => []),
+    comments: await getProviderCommentsForLegacyProvider(providerId, { include_hidden: true }, db).catch(() => []),
+    google_business: providerGoogleBusinessStatus(provider),
+    upgrade: providerUpgradeStatus(),
     services,
     plans: providerPlansView(),
     entitlements: (await db.query(
@@ -12797,6 +14423,241 @@ async function getProviderPortalPayload(providerId, db = pool) {
       entitlements: 'Visible features are controlled by the provider commercial plan. Upgrade-only features stay disabled until BNA changes the plan.',
     },
   };
+}
+
+function providerSlugFromName(name = '', fallback = 'provider') {
+  const key = normalizeProjectKey(name || fallback) || fallback;
+  return key.replace(/_/g, '-').slice(0, 80) || 'provider';
+}
+
+function providerUpgradeStatus() {
+  const link = STRIPE_PROVIDER_UPGRADE_LINK || STRIPE_PROVIDER_PLAN_LINK || '';
+  return {
+    configured: Boolean(link),
+    link: link || null,
+    message: link ? 'Provider upgrade link is configured.' : 'Upgrade is not configured yet.',
+  };
+}
+
+function providerGoogleBusinessStatus(provider = {}, profile = null) {
+  const configured = Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
+  const hasManualProfile = Boolean(provider.google_business_profile_url || profile?.metadata?.manual_google_profile_url);
+  return {
+    status: profile?.google_business_status || (hasManualProfile ? 'manual' : configured ? 'pending_oauth' : 'not_connected'),
+    oauth_configured: configured,
+    maps_key_configured: Boolean(GOOGLE_MAPS_API_KEY),
+    business_profile_live_feed: false,
+    google_place_id: provider.google_place_id || profile?.google_place_id || null,
+    manual_profile_url: provider.google_business_profile_url || profile?.metadata?.manual_google_profile_url || null,
+    fallback: configured
+      ? 'Google OAuth can be started after the app verification/API approval checklist is complete.'
+      : 'Google Business Profile is not connected. Use manual profile/review fields until OAuth and API access are approved.',
+    reviews_live: false,
+    reviews: [],
+  };
+}
+
+async function ensureProviderProfileForServiceProvider(provider = {}, db = pool) {
+  if (!provider?.id) return null;
+  const displayName = provider.display_name || provider.provider_name || `Provider ${provider.id}`;
+  const existing = (await db.query(
+    `SELECT *
+     FROM bna_service_provider_profiles
+     WHERE metadata->>'service_provider_id' = $1
+     LIMIT 1`,
+    [String(provider.id)]
+  )).rows[0] || null;
+  const providerPerson = await upsertCanonicalPerson({
+    preferred_name: provider.contact_name || displayName,
+    full_name: provider.contact_name || displayName,
+    email: provider.contact_email || '',
+    phone: provider.contact_phone || provider.whatsapp_phone || '',
+    primary_language: 'en',
+    metadata: { source: 'service_provider_profile', service_provider_id: provider.id },
+  }, db);
+  const workspace = await ensureWorkspaceProject({
+    projectKey: `provider_${provider.id}`,
+    name: `${displayName} Provider Workspace`,
+    shortName: displayName.slice(0, 80),
+    description: `Service provider workspace for ${displayName}.`,
+    workspaceType: 'service_provider',
+    ownerPersonId: providerPerson.id,
+    visibility: provider.public_listing_enabled === false ? 'private' : 'public',
+    languageDefault: 'en',
+    slug: `provider-${provider.id}`,
+    settings: { accountability_mode: 'provider', service_provider_id: provider.id, free_tier: true },
+    metadata: { source: 'service_provider_profile_bridge' },
+  }, db);
+  await ensureWorkspaceMembership(workspace, providerPerson, {
+    role: 'service_provider',
+    access_level: 'owner',
+    tags: ['service_provider'],
+    metadata: { service_provider_id: provider.id },
+  }, db);
+  const slugBase = providerSlugFromName(displayName, `provider-${provider.id}`);
+  const slug = existing?.slug || `${slugBase}-${provider.id}`;
+  const categories = normalizeTextArray([provider.category, ...(Array.isArray(provider.service_categories) ? provider.service_categories : [])]);
+  const languages = normalizeTextArray(provider.languages || ['English']);
+  const profile = (await db.query(
+    `INSERT INTO bna_service_provider_profiles (
+       person_id, workspace_id, slug, display_name, headline, bio,
+       service_categories, languages, phone, email, service_area,
+       profile_photo_url, plan, status, google_business_status,
+       google_place_id, metadata
+     ) VALUES (
+       $1, $2, $3, $4, $5, $6,
+       $7::text[], $8::text[], $9, $10, $11,
+       $12, $13, $14, $15,
+       $16, $17::jsonb
+     )
+     ON CONFLICT (slug) DO UPDATE SET
+       person_id = COALESCE(EXCLUDED.person_id, bna_service_provider_profiles.person_id),
+       workspace_id = COALESCE(EXCLUDED.workspace_id, bna_service_provider_profiles.workspace_id),
+       display_name = EXCLUDED.display_name,
+       headline = COALESCE(EXCLUDED.headline, bna_service_provider_profiles.headline),
+       bio = COALESCE(EXCLUDED.bio, bna_service_provider_profiles.bio),
+       service_categories = EXCLUDED.service_categories,
+       languages = EXCLUDED.languages,
+       phone = COALESCE(EXCLUDED.phone, bna_service_provider_profiles.phone),
+       email = COALESCE(EXCLUDED.email, bna_service_provider_profiles.email),
+       service_area = COALESCE(EXCLUDED.service_area, bna_service_provider_profiles.service_area),
+       profile_photo_url = COALESCE(EXCLUDED.profile_photo_url, bna_service_provider_profiles.profile_photo_url),
+       plan = EXCLUDED.plan,
+       status = EXCLUDED.status,
+       google_business_status = EXCLUDED.google_business_status,
+       google_place_id = COALESCE(EXCLUDED.google_place_id, bna_service_provider_profiles.google_place_id),
+       metadata = COALESCE(bna_service_provider_profiles.metadata, '{}'::jsonb) || EXCLUDED.metadata,
+       updated_at = NOW()
+     RETURNING *`,
+    [
+      providerPerson.id,
+      workspace.id,
+      slug,
+      displayName,
+      provider.short_description || provider.category || null,
+      provider.full_description || provider.public_notes || provider.short_description || null,
+      categories,
+      languages,
+      provider.contact_phone || provider.whatsapp_phone || null,
+      provider.contact_email || null,
+      provider.service_area || provider.city || null,
+      provider.profile_image_url || null,
+      safeProviderPlan(provider.entitlement_plan, provider.commercial_model) === 'free_listing' ? 'free' : 'starter',
+      provider.status === 'approved' ? 'active' : 'draft',
+      provider.google_business_profile_url || provider.google_place_id ? 'manual' : 'not_connected',
+      provider.google_place_id || null,
+      JSON.stringify({
+        service_provider_id: provider.id,
+        legacy_provider_id: provider.id,
+        manual_google_profile_url: provider.google_business_profile_url || null,
+        free_tier_limits: { gallery_images: 3, service_count: 3, inbound_questions: true },
+      }),
+    ]
+  )).rows[0];
+  if (provider.profile_image_url) {
+    await db.query(
+      `INSERT INTO bna_provider_media (provider_id, media_type, url, alt_text, sort_order, metadata)
+       VALUES ($1, 'profile', $2, $3, 0, $4::jsonb)
+       ON CONFLICT DO NOTHING`,
+      [profile.id, provider.profile_image_url, displayName, JSON.stringify({ source: 'legacy_profile_image' })]
+    ).catch(() => {});
+  }
+  return profile;
+}
+
+async function providerProfileByIdOrSlug(idOrSlug, db = pool) {
+  const numericId = Number(idOrSlug);
+  const result = Number.isFinite(numericId)
+    ? await db.query('SELECT * FROM bna_service_provider_profiles WHERE id = $1 LIMIT 1', [numericId])
+    : await db.query('SELECT * FROM bna_service_provider_profiles WHERE slug = $1 LIMIT 1', [String(idOrSlug || '')]);
+  return result.rows[0] || null;
+}
+
+async function legacyProviderForProfile(profile, db = pool) {
+  const providerId = Number(parseJsonMaybe(profile?.metadata).service_provider_id || parseJsonMaybe(profile?.metadata).legacy_provider_id || 0);
+  if (!Number.isFinite(providerId) || !providerId) return null;
+  return (await db.query('SELECT * FROM bna_service_providers WHERE id = $1 LIMIT 1', [providerId])).rows[0] || null;
+}
+
+async function getProviderMediaForLegacyProvider(providerId, db = pool) {
+  const provider = (await db.query('SELECT * FROM bna_service_providers WHERE id = $1 LIMIT 1', [providerId])).rows[0] || null;
+  if (!provider) return [];
+  const profile = await ensureProviderProfileForServiceProvider(provider, db);
+  return (await db.query(
+    `SELECT * FROM bna_provider_media
+     WHERE provider_id = $1
+       AND status <> 'archived'
+     ORDER BY sort_order ASC, id ASC`,
+    [profile.id]
+  )).rows;
+}
+
+async function getProviderCommentsForLegacyProvider(providerId, options = {}, db = pool) {
+  const provider = (await db.query('SELECT * FROM bna_service_providers WHERE id = $1 LIMIT 1', [providerId])).rows[0] || null;
+  if (!provider) return [];
+  const profile = await ensureProviderProfileForServiceProvider(provider, db);
+  const includeHidden = Boolean(options.include_hidden);
+  const result = await db.query(
+    `SELECT c.*,
+            p.preferred_name AS author_name
+     FROM bna_provider_comments c
+     LEFT JOIN bna_people p ON p.id = c.author_person_id
+     WHERE c.provider_id = $1
+       AND ($2::boolean = TRUE OR c.visibility = 'visible')
+     ORDER BY c.created_at DESC, c.id DESC
+     LIMIT 80`,
+    [profile.id, includeHidden]
+  );
+  return result.rows;
+}
+
+function providerProfilePublicView({ profile, legacy = null, services = [], media = [], comments = [] } = {}) {
+  if (!profile) return null;
+  const metadata = parseJsonMaybe(profile.metadata);
+  return {
+    id: profile.id,
+    legacy_provider_id: metadata.service_provider_id || metadata.legacy_provider_id || null,
+    slug: profile.slug,
+    display_name: profile.display_name,
+    headline: profile.headline,
+    bio: profile.bio,
+    service_categories: Array.isArray(profile.service_categories) ? profile.service_categories : [],
+    languages: Array.isArray(profile.languages) ? profile.languages : [],
+    phone: profile.phone,
+    email: profile.email,
+    service_area: profile.service_area,
+    profile_photo_url: profile.profile_photo_url || legacy?.profile_image_url || null,
+    plan: profile.plan,
+    status: profile.status,
+    google_business: providerGoogleBusinessStatus(legacy || {}, profile),
+    website_url: legacy?.website_url || null,
+    whatsapp_phone: legacy?.whatsapp_phone || null,
+    services,
+    media,
+    comments: comments.filter((comment) => comment.visibility === 'visible').map((comment) => ({
+      id: comment.id,
+      body: comment.body,
+      rating: comment.rating,
+      source: comment.source,
+      provider_reply: comment.provider_reply,
+      author_name: comment.author_name || null,
+      created_at: comment.created_at,
+    })),
+    hidden_comment_count: comments.filter((comment) => comment.visibility === 'hidden').length,
+    free_tier_limits: metadata.free_tier_limits || { gallery_images: 3, service_count: 3, inbound_questions: true },
+  };
+}
+
+async function assertProviderProfileAccess(req, profile, db = pool) {
+  const admin = await identifyAdminRequest(req).catch(() => null);
+  if (admin?.scope?.type === 'all') return { actor: 'admin', admin };
+  const cookies = parseCookies(req);
+  const session = await getValidProviderSession(cookies[PROVIDER_SESSION_COOKIE_NAME], db).catch(() => null);
+  const legacy = await legacyProviderForProfile(profile, db);
+  if (session && legacy && Number(session.providerId) === Number(legacy.id)) return { actor: 'service_provider', session, legacy };
+  const error = new Error('This provider profile is not available for this session');
+  error.statusCode = 403;
+  throw error;
 }
 
 function numericOrNull(value) {
@@ -12989,12 +14850,14 @@ async function initDb() {
     await pool.query(createTasksTableSQL);
     await pool.query(createProjectMembersSQL);
     await pool.query(createWorkspacePlatformSQL);
+    await pool.query(createWorkspaceAccountsSQL);
     await pool.query(normalizeConnectorSettingsCheckSQL);
     await pool.query(createTaskCommentsSQL);
     await pool.query(createTaskWorkflowExtensionsSQL);
     await pool.query(createAgentJobsSQL);
     await pool.query(createTaskEventsSQL);
     await pool.query(createSupportTicketsSQL);
+    await pool.query(createTicketCompatibilityViewsSQL);
     await pool.query(createAssistantSQL);
     await pool.query(createAgentRuntimeStatusSQL);
     await pool.query(normalizeTasksCategoryCheckSQL);
@@ -13012,6 +14875,7 @@ async function initDb() {
     await pool.query(createParentMeetingUploadsSQL);
     await pool.query(createParentAccountabilityPipelinesSQL);
     await pool.query(createContactCommunicationsSQL);
+    await pool.query(createPlatformCommunicationsSQL);
     await pool.query(createServiceProvidersSQL);
     await pool.query(createGoalBoardCheckinsSQL);
     await pool.query(createParentMagicLinksSQL);
@@ -13046,11 +14910,13 @@ async function initDb() {
     await pool.query(createScheduleItemsSQL);
     await pool.query(createGoogleConnectionsSQL);
     await pool.query(createBnaIndexesSQL);
+    await pool.query(createWorkspaceLinkedColumnsSQL);
     await pool.query(createCliBridgeSQL);
     await pool.query(createSessionsSQL);
     await pool.query(createOpsAccessLinksSQL);
     await ensureWorkspacePlatformDefaultsOnce();
     await ensureDefaultProjects();
+    await ensurePersonalWorkspacesAndPeople();
     await ensureDefaultLearningCommunity();
     await ensureDefaultContentPrompts();
     await ensureDefaultAssignmentPrompts();
@@ -14918,6 +16784,205 @@ async function ensureRabbiSchellerLaunchTasks(oneTime, db = pool) {
   return touched;
 }
 
+function assistantPortalReadinessTaskSpecs() {
+  return [
+    {
+      key: 'configure-resend',
+      title: 'Configure Resend sender domain and API key',
+      summary: 'Resend is not fully configured for production email. Need account, API key, sender domain, DNS records, and test sends before any bulk sequence.',
+      notes: 'Resend remains a connector only. Use Gmail fallback for current manual/internal sends when configured; do not run bulk email until sender authentication, opt-out handling, test deliverability, and approval are complete.',
+      category: 'communications',
+      urgency: 'today',
+      assigned_to: 'Shloimie',
+      waiting_on: 'Shloimie',
+      next_action_label: 'Add Resend key/domain',
+    },
+    {
+      key: 'decide-resend-ownership',
+      title: 'Decide Resend account ownership for BNA and Rabbi workspaces',
+      item_type: 'decision',
+      stage: 'needs_decision',
+      decision_owner: 'Shloimie',
+      waiting_on: 'Shloimie',
+      summary: 'Choose whether BNA, Rabbi Scheller, or separate workspace Resend accounts/domains should send workspace email.',
+      notes: 'Recommended long-term: separate Resend accounts/domains per workspace for reputation isolation. Temporary path depends on access and DNS readiness.',
+      category: 'communications',
+      urgency: 'today',
+      next_action_label: 'Choose Resend ownership',
+    },
+    {
+      key: 'google-oauth-checklist',
+      title: 'Prepare Google OAuth consent and API verification checklist',
+      summary: 'Prepare consent screen, minimum scopes, privacy/terms/support URLs, branding, test users, verification explanation, and demo assets if required.',
+      notes: 'Use minimum scopes for Calendar, Classroom, Drive, Gmail, Business Profile, and Maps. Sensitive/restricted scopes require explicit Shloimie approval before public use.',
+      category: 'technology',
+      urgency: 'this_week',
+      assigned_to: 'Shloimie',
+      next_action_label: 'Prepare Google checklist',
+    },
+    {
+      key: 'google-business-profile-maps',
+      title: 'Confirm Google Business Profile API access and Maps API restrictions',
+      summary: 'Confirm account ownership, API approval, OAuth scopes, API key restrictions, and safe review-request workflow rules.',
+      notes: 'Do not auto-post fake reviews, manipulate reviews, scrape beyond terms, or pressure users for positive reviews. Review requests must ask for honest feedback only.',
+      category: 'marketing',
+      urgency: 'this_week',
+      assigned_to: 'Shloimie',
+      next_action_label: 'Confirm GBP/Maps access',
+    },
+    {
+      key: 'whatsapp-connector-audit',
+      title: 'Audit Wappy Whapi WATI WhatsApp connector availability',
+      summary: 'Confirm which WhatsApp provider is active and whether WAPI/Whapi credentials are configured before any automated sync or send.',
+      notes: 'Import/sync is allowed for review. Do not send WhatsApp follow-up automatically without provider configuration, consent, templates if required, and explicit approval.',
+      category: 'communications',
+      urgency: 'today',
+      assigned_to: 'Shloimie',
+      next_action_label: 'Confirm WhatsApp provider',
+    },
+    {
+      key: 'assistant-keyboard-mobile',
+      title: 'Fix mobile assistant keyboard layout',
+      summary: 'Make the assistant sheet stay visible when the mobile keyboard opens, with the composer reachable and no horizontal overflow.',
+      category: 'technology',
+      urgency: 'today',
+      assigned_to: 'Codex',
+      agent_executable: true,
+      next_action_label: 'Agent working',
+    },
+    {
+      key: 'communication-timeline',
+      title: 'Expose full communications timeline in Operations',
+      summary: 'Show email, WhatsApp, bot, ticket, task, and system communications with body previews and full-body readback from first-party records.',
+      category: 'communications',
+      urgency: 'today',
+      assigned_to: 'Codex',
+      agent_executable: true,
+      next_action_label: 'Agent working',
+    },
+    {
+      key: 'checkout-no-webhook',
+      title: 'Implement no-webhook abandoned checkout tracking',
+      summary: 'Track credit checkout attempts, mark abandoned when no webhook/payment arrives, create follow-up tasks, and only send drips with approval.',
+      category: 'accounting',
+      urgency: 'today',
+      assigned_to: 'Codex',
+      agent_executable: true,
+      next_action_label: 'Agent working',
+    },
+    {
+      key: 'portal-toolbar-overview',
+      title: 'Unify portal toolbar and overview-first student UX',
+      summary: 'Keep student, parent, and provider portals visually consistent with the BNA toolbar and show student overview before long filter/detail sections.',
+      category: 'technology',
+      urgency: 'this_week',
+      assigned_to: 'Codex',
+      agent_executable: true,
+      next_action_label: 'Agent working',
+    },
+    {
+      key: 'developer-tester-tickets',
+      title: 'Enable developer tester ticket capture through assistant',
+      summary: 'Let approved developer testers submit tickets with page, device, screenshot/log context, and no access to private parent/student data.',
+      category: 'technology',
+      urgency: 'this_week',
+      assigned_to: 'Codex',
+      agent_executable: true,
+      next_action_label: 'Agent working',
+    },
+  ];
+}
+
+async function ensureAssistantPortalReadinessTasks(bna, db = pool) {
+  if (!bna?.id) return [];
+  const touched = [];
+  for (const spec of assistantPortalReadinessTaskSpecs()) {
+    const titleKey = normalizedTaskTitleKey(spec.title);
+    const existing = (await db.query(
+      `SELECT *
+       FROM bna_tasks
+       WHERE project_id = $1
+         AND COALESCE(stage, '') <> 'archive'
+         AND (
+           COALESCE(ai_parsed, '{}'::jsonb)->>'assistant_portal_seed' = '2026-06-14'
+           AND COALESCE(ai_parsed, '{}'::jsonb)->>'seed_key' = $2
+           OR trim(regexp_replace(lower(regexp_replace(COALESCE(title, ''), '[^a-zA-Z0-9]+', ' ', 'g')), '\\s+', ' ', 'g')) = $3
+         )
+       ORDER BY created_at ASC
+       LIMIT 1`,
+      [bna.id, spec.key, titleKey]
+    )).rows[0] || null;
+    const aiParsed = {
+      assistant_portal_seed: '2026-06-14',
+      seed_key: spec.key,
+      parser: 'assistant-portal-readiness-seed',
+      agent_executable: Boolean(spec.agent_executable),
+    };
+    if (!existing) {
+      const created = await createTaskFromText({
+        title: spec.title,
+        raw_text: spec.summary || spec.title,
+        summary: spec.summary,
+        notes: spec.notes || spec.summary,
+        item_type: spec.item_type || 'task',
+        stage: spec.stage || 'assigned',
+        category: spec.category || 'operations',
+        urgency: spec.urgency || 'this_week',
+        assigned_to: spec.assigned_to || 'Shloimie',
+        decision_owner: spec.decision_owner,
+        waiting_on: spec.waiting_on,
+        next_action_label: spec.next_action_label,
+        source: 'manual',
+        source_channel: 'seed',
+        created_by: 'system',
+        project: DEFAULT_PROJECT_KEY,
+        agent_executable: Boolean(spec.agent_executable),
+        ai_parsed: aiParsed,
+      }, {}, db);
+      touched.push(created);
+      continue;
+    }
+    const updated = (await db.query(
+      `UPDATE bna_tasks
+       SET summary = COALESCE($2, summary),
+           notes = COALESCE($3, notes),
+           item_type = $4,
+           stage = $5,
+           category = $6,
+           urgency = $7,
+           assigned_to = $8,
+           waiting_on = $9,
+           decision_owner = $10,
+           decision_required = $11,
+           next_action_label = $12,
+           ai_parsed = COALESCE(ai_parsed, '{}'::jsonb) || $13::jsonb,
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [
+        existing.id,
+        spec.summary || null,
+        spec.notes || null,
+        spec.item_type || 'task',
+        spec.stage || 'assigned',
+        safeTaskCategory(spec.category || 'operations'),
+        safeTaskUrgency(spec.urgency || 'this_week'),
+        normalizeTaskAssignee(spec.assigned_to || 'Shloimie'),
+        spec.waiting_on ? normalizeTaskPerson(spec.waiting_on) : null,
+        normalizeTaskPerson(spec.decision_owner),
+        (spec.item_type || 'task') === 'decision',
+        spec.next_action_label || null,
+        JSON.stringify(aiParsed),
+      ]
+    )).rows[0] || existing;
+    if (spec.agent_executable || isAgentAssignee(updated.assigned_to)) {
+      await ensureAgentJobForTask(updated, { agent_executable: true, source: 'assistant_portal_seed' }, db);
+    }
+    touched.push(updated);
+  }
+  return touched;
+}
+
 async function ensureDefaultProjects(db = pool) {
   const bna = await upsertProject({
     projectKey: DEFAULT_PROJECT_KEY,
@@ -14970,8 +17035,581 @@ async function ensureDefaultProjects(db = pool) {
   );
   await ensureOneTimeProposalTasks(oneTime, db);
   await ensureRabbiSchellerLaunchTasks(oneTime, db);
+  await ensureAssistantPortalReadinessTasks(bna, db);
 
   return { bna, oneTime };
+}
+
+function canonicalPersonView(row = {}) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    preferred_name: row.preferred_name,
+    full_name: row.full_name,
+    email: row.email,
+    phone: row.phone,
+    primary_language: row.primary_language || 'en',
+    avatar_url: row.avatar_url,
+    status: row.status,
+    metadata: parseJsonMaybe(row.metadata),
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  };
+}
+
+function workspaceProjectView(row = {}) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    project_key: row.project_key,
+    workspace_key: row.project_key,
+    name: row.name,
+    short_name: row.short_name,
+    description: row.description,
+    status: row.status,
+    workspace_type: row.workspace_type || 'project',
+    owner_person_id: row.owner_person_id || null,
+    visibility: row.visibility || 'private',
+    language_default: row.language_default || 'en',
+    slug: row.slug || null,
+    settings: parseJsonMaybe(row.settings),
+    metadata: parseJsonMaybe(row.metadata),
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  };
+}
+
+function workspaceMembershipView(row = {}) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    workspace_id: row.workspace_id,
+    workspace_key: row.workspace_key || row.project_key,
+    project_key: row.project_key || row.workspace_key,
+    workspace_type: row.workspace_type,
+    workspace_name: row.workspace_name || row.name,
+    person_id: row.person_id,
+    person_name: row.person_name || row.preferred_name,
+    role: row.role,
+    access_level: row.access_level,
+    relationship_to_owner: row.relationship_to_owner,
+    tags: Array.isArray(row.tags) ? row.tags : [],
+    active: row.active !== false,
+    metadata: parseJsonMaybe(row.metadata),
+  };
+}
+
+function householdView(row = {}, members = []) {
+  if (!row) return null;
+  return {
+    id: row.id,
+    workspace_id: row.workspace_id,
+    workspace_key: row.workspace_key || row.project_key,
+    household_name: row.household_name,
+    primary_parent_person_id: row.primary_parent_person_id,
+    status: row.status,
+    filter_setup_status: row.filter_setup_status || 'not_started',
+    filter_setup_code: row.filter_setup_code || null,
+    filter_setup_notes: row.filter_setup_notes || null,
+    metadata: parseJsonMaybe(row.metadata),
+    members,
+    created_at: row.created_at,
+    updated_at: row.updated_at,
+  };
+}
+
+function personLookupName(value = '') {
+  return normalizeLooseText(value).replace(/\s+/g, ' ').trim();
+}
+
+async function upsertCanonicalPerson({
+  preferred_name,
+  full_name = '',
+  email = '',
+  phone = '',
+  primary_language = 'en',
+  avatar_url = '',
+  status = 'active',
+  metadata = {},
+} = {}, db = pool) {
+  const preferredName = limitText(preferred_name || full_name || email || phone || '', 180);
+  if (!preferredName) {
+    const error = new Error('preferred_name is required for bna_people');
+    error.statusCode = 400;
+    throw error;
+  }
+  const normalizedEmail = normalizeEmail(email) || null;
+  const normalizedPhone = normalizePhoneDigits(phone) || null;
+  const normalizedName = personLookupName(preferredName);
+  let existing = null;
+  if (normalizedEmail) {
+    existing = (await db.query(
+      `SELECT * FROM bna_people WHERE lower(email) = lower($1) ORDER BY id ASC LIMIT 1`,
+      [normalizedEmail]
+    )).rows[0] || null;
+  }
+  if (!existing && normalizedPhone) {
+    existing = (await db.query(
+      `SELECT *
+       FROM bna_people
+       WHERE regexp_replace(COALESCE(phone, ''), '\\D', '', 'g') = $1
+       ORDER BY id ASC
+       LIMIT 1`,
+      [normalizedPhone]
+    )).rows[0] || null;
+  }
+  if (!existing && normalizedName) {
+    existing = (await db.query(
+      `SELECT *
+       FROM bna_people
+       WHERE trim(regexp_replace(lower(regexp_replace(COALESCE(preferred_name, ''), '[^a-zA-Z0-9]+', ' ', 'g')), '\\s+', ' ', 'g')) = $1
+          OR trim(regexp_replace(lower(regexp_replace(COALESCE(full_name, ''), '[^a-zA-Z0-9]+', ' ', 'g')), '\\s+', ' ', 'g')) = $1
+       ORDER BY id ASC
+       LIMIT 1`,
+      [normalizedName]
+    )).rows[0] || null;
+  }
+  if (existing) {
+    return (await db.query(
+      `UPDATE bna_people
+       SET preferred_name = COALESCE(NULLIF($2, ''), preferred_name),
+           full_name = COALESCE(NULLIF($3, ''), full_name),
+           email = COALESCE($4, email),
+           phone = COALESCE($5, phone),
+           primary_language = $6,
+           avatar_url = COALESCE(NULLIF($7, ''), avatar_url),
+           status = $8,
+           metadata = COALESCE(metadata, '{}'::jsonb) || $9::jsonb,
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [
+        existing.id,
+        preferredName,
+        limitText(full_name, 220) || null,
+        normalizedEmail,
+        normalizedPhone || limitText(phone, 80) || null,
+        ['en', 'he'].includes(primary_language) ? primary_language : 'en',
+        limitText(avatar_url, 520) || null,
+        ['active', 'pending', 'inactive', 'archived'].includes(status) ? status : 'active',
+        JSON.stringify(metadata || {}),
+      ]
+    )).rows[0];
+  }
+  return (await db.query(
+    `INSERT INTO bna_people (
+       preferred_name, full_name, email, phone, primary_language,
+       avatar_url, status, metadata
+     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8::jsonb)
+     RETURNING *`,
+    [
+      preferredName,
+      limitText(full_name, 220) || null,
+      normalizedEmail,
+      normalizedPhone || limitText(phone, 80) || null,
+      ['en', 'he'].includes(primary_language) ? primary_language : 'en',
+      limitText(avatar_url, 520) || null,
+      ['active', 'pending', 'inactive', 'archived'].includes(status) ? status : 'active',
+      JSON.stringify(metadata || {}),
+    ]
+  )).rows[0];
+}
+
+async function ensureWorkspaceProject({
+  projectKey,
+  name,
+  shortName,
+  description = '',
+  workspaceType = 'project',
+  ownerPersonId = null,
+  visibility = 'private',
+  languageDefault = 'en',
+  slug = '',
+  settings = {},
+  metadata = {},
+} = {}, db = pool) {
+  const project = await upsertProject({
+    projectKey,
+    name,
+    shortName: shortName || name,
+    description,
+    metadata,
+  }, db);
+  return (await db.query(
+    `UPDATE bna_projects
+     SET workspace_type = $2,
+         owner_person_id = COALESCE($3, owner_person_id),
+         visibility = $4,
+         language_default = $5,
+         slug = COALESCE(NULLIF($6, ''), slug),
+         settings = COALESCE(settings, '{}'::jsonb) || $7::jsonb,
+         updated_at = NOW()
+     WHERE id = $1
+     RETURNING *`,
+    [
+      project.id,
+      workspaceType,
+      ownerPersonId || null,
+      ['private', 'workspace', 'public'].includes(visibility) ? visibility : 'private',
+      ['en', 'he'].includes(languageDefault) ? languageDefault : 'en',
+      limitText(slug || projectKey, 160),
+      JSON.stringify(settings || {}),
+    ]
+  )).rows[0];
+}
+
+async function ensureWorkspaceMembership(workspace, person, {
+  role = 'viewer',
+  access_level = 'member',
+  relationship_to_owner = '',
+  tags = [],
+  metadata = {},
+} = {}, db = pool) {
+  if (!workspace?.id || !person?.id) return null;
+  const result = await db.query(
+    `INSERT INTO bna_workspace_memberships (
+       workspace_id, person_id, role, access_level, relationship_to_owner, tags, metadata
+     ) VALUES ($1, $2, $3, $4, $5, $6::text[], $7::jsonb)
+     ON CONFLICT (workspace_id, person_id, role) DO UPDATE SET
+       access_level = EXCLUDED.access_level,
+       relationship_to_owner = COALESCE(EXCLUDED.relationship_to_owner, bna_workspace_memberships.relationship_to_owner),
+       tags = (
+         SELECT ARRAY(
+           SELECT DISTINCT tag
+           FROM unnest(COALESCE(bna_workspace_memberships.tags, '{}'::text[]) || COALESCE(EXCLUDED.tags, '{}'::text[])) AS tag
+           WHERE COALESCE(tag, '') <> ''
+           ORDER BY tag
+         )
+       ),
+       metadata = COALESCE(bna_workspace_memberships.metadata, '{}'::jsonb) || EXCLUDED.metadata,
+       active = TRUE,
+       updated_at = NOW()
+     RETURNING *`,
+    [
+      workspace.id,
+      person.id,
+      role,
+      ['owner', 'admin', 'manager', 'member', 'viewer'].includes(access_level) ? access_level : 'member',
+      limitText(relationship_to_owner, 120) || null,
+      normalizeTextArray(tags),
+      JSON.stringify(metadata || {}),
+    ]
+  );
+  return result.rows[0];
+}
+
+async function ensureHousehold(workspace, {
+  household_name,
+  primary_parent_person_id = null,
+  status = 'active',
+  metadata = {},
+} = {}, db = pool) {
+  if (!workspace?.id || !household_name) return null;
+  const result = await db.query(
+    `INSERT INTO bna_households (
+       workspace_id, household_name, primary_parent_person_id, status, metadata
+     ) VALUES ($1, $2, $3, $4, $5::jsonb)
+     ON CONFLICT (workspace_id, household_name) DO UPDATE SET
+       primary_parent_person_id = COALESCE(EXCLUDED.primary_parent_person_id, bna_households.primary_parent_person_id),
+       status = EXCLUDED.status,
+       metadata = COALESCE(bna_households.metadata, '{}'::jsonb) || EXCLUDED.metadata,
+       updated_at = NOW()
+     RETURNING *`,
+    [
+      workspace.id,
+      limitText(household_name, 180),
+      primary_parent_person_id || null,
+      ['active', 'setup', 'paused', 'archived'].includes(status) ? status : 'active',
+      JSON.stringify(metadata || {}),
+    ]
+  );
+  return result.rows[0];
+}
+
+async function ensureHouseholdMember(household, person, {
+  role = 'viewer',
+  relationship = '',
+  tags = [],
+  metadata = {},
+} = {}, db = pool) {
+  if (!household?.id || !person?.id) return null;
+  const result = await db.query(
+    `INSERT INTO bna_household_members (
+       household_id, person_id, role, relationship, tags, metadata
+     ) VALUES ($1, $2, $3, $4, $5::text[], $6::jsonb)
+     ON CONFLICT (household_id, person_id, role) DO UPDATE SET
+       relationship = COALESCE(EXCLUDED.relationship, bna_household_members.relationship),
+       tags = (
+         SELECT ARRAY(
+           SELECT DISTINCT tag
+           FROM unnest(COALESCE(bna_household_members.tags, '{}'::text[]) || COALESCE(EXCLUDED.tags, '{}'::text[])) AS tag
+           WHERE COALESCE(tag, '') <> ''
+           ORDER BY tag
+         )
+       ),
+       metadata = COALESCE(bna_household_members.metadata, '{}'::jsonb) || EXCLUDED.metadata,
+       active = TRUE,
+       updated_at = NOW()
+     RETURNING *`,
+    [
+      household.id,
+      person.id,
+      ['parent', 'child', 'caregiver', 'viewer'].includes(role) ? role : 'viewer',
+      limitText(relationship, 120) || null,
+      normalizeTextArray(tags),
+      JSON.stringify(metadata || {}),
+    ]
+  );
+  return result.rows[0];
+}
+
+async function ensureWorkspaceSetupTask({ project, key, title, summary, notes, category = 'technology', urgency = 'this_week', assigned_to = 'Shloimie' }, db = pool) {
+  const titleKey = normalizedTaskTitleKey(title);
+  const existing = (await db.query(
+    `SELECT *
+     FROM bna_tasks
+     WHERE COALESCE(stage, '') <> 'archive'
+       AND (
+         (COALESCE(ai_parsed, '{}'::jsonb)->>'personal_workspace_seed' = '2026-06-14'
+          AND COALESCE(ai_parsed, '{}'::jsonb)->>'seed_key' = $1)
+         OR trim(regexp_replace(lower(regexp_replace(COALESCE(title, ''), '[^a-zA-Z0-9]+', ' ', 'g')), '\\s+', ' ', 'g')) = $2
+       )
+     ORDER BY created_at ASC
+     LIMIT 1`,
+    [key, titleKey]
+  )).rows[0] || null;
+  const aiParsed = {
+    personal_workspace_seed: '2026-06-14',
+    seed_key: key,
+    parser: 'workspace-person-household-seed',
+  };
+  if (!existing) {
+    return createTaskFromText({
+      title,
+      raw_text: summary || title,
+      summary,
+      notes: notes || summary,
+      stage: 'assigned',
+      category,
+      urgency,
+      assigned_to,
+      waiting_on: assigned_to === 'Shloimie' ? 'Shloimie' : null,
+      next_action_label: assigned_to === 'Codex' ? 'Agent working' : 'Needs setup',
+      source: 'manual',
+      source_channel: 'seed',
+      created_by: 'system',
+      project: project?.project_key || DEFAULT_PROJECT_KEY,
+      ai_parsed: aiParsed,
+    }, {}, db);
+  }
+  return existing;
+}
+
+async function linkExactStudentPerson({ person, name, workspaceId, householdId = null, createAmbiguousTask = true }, db = pool) {
+  const normalized = personLookupName(name || person?.preferred_name || '');
+  if (!person?.id || !normalized) return { linked: false, matches: [] };
+  const matches = (await db.query(
+    `SELECT id, name, parent_email, status
+     FROM bna_students
+     WHERE trim(regexp_replace(lower(regexp_replace(COALESCE(name, ''), '[^a-zA-Z0-9]+', ' ', 'g')), '\\s+', ' ', 'g')) = $1
+       AND COALESCE(status, 'active') NOT IN ('inactive', 'archived')
+     ORDER BY id ASC`,
+    [normalized]
+  )).rows;
+  if (matches.length === 1) {
+    await db.query(
+      `UPDATE bna_students
+       SET person_id = $2,
+           workspace_id = COALESCE(workspace_id, $3),
+           project_id = COALESCE(project_id, $3),
+           household_id = COALESCE(household_id, $4),
+           updated_at = NOW()
+       WHERE id = $1`,
+      [matches[0].id, person.id, workspaceId || null, householdId || null]
+    );
+    return { linked: true, matches };
+  }
+  if (matches.length > 1 && createAmbiguousTask) {
+    const bnaProject = await getProjectByKey(DEFAULT_PROJECT_KEY, db);
+    await ensureWorkspaceSetupTask({
+      project: bnaProject,
+      key: `merge-review-${normalized}`,
+      title: `Review possible duplicate person records for ${person.preferred_name || name}`,
+      summary: `Multiple BNA student rows matched ${name}. Do not merge automatically; review rows ${matches.map((row) => `#${row.id}`).join(', ')}.`,
+      notes: 'Canonical person dedupe rule: exact email, then exact phone, then normalized name plus workspace/relationship context. Ambiguous matches require human review.',
+      category: 'operations',
+      urgency: 'this_week',
+      assigned_to: 'Shloimie',
+    }, db);
+  }
+  return { linked: false, matches };
+}
+
+async function ensurePersonalWorkspacesAndPeople(db = pool) {
+  const { bna, oneTime } = await ensureDefaultProjects(db);
+  const shloimie = await upsertCanonicalPerson({
+    preferred_name: 'Shloimie',
+    full_name: 'Shloimie',
+    primary_language: 'en',
+    metadata: { seed: 'personal-workspaces-2026-06-14', tags: ['super_admin', 'bna:rabbi', 'family:parent'] },
+  }, db);
+  const superAdmin = await ensureWorkspaceProject({
+    projectKey: 'super_admin',
+    name: 'Super Admin',
+    shortName: 'Super Admin',
+    description: "Shloimie's global operator/admin control center.",
+    workspaceType: 'super_admin',
+    ownerPersonId: shloimie.id,
+    visibility: 'private',
+    languageDefault: 'en',
+    slug: 'super-admin',
+    settings: { primary_role_label: 'Operator', accountability_mode: 'admin' },
+    metadata: { source: 'personal_workspace_seed' },
+  }, db);
+  const family = await ensureWorkspaceProject({
+    projectKey: 'dratler_family',
+    name: 'Family Accountability',
+    shortName: 'Family',
+    description: "Private family accountability workspace for Shloimie's household.",
+    workspaceType: 'family',
+    ownerPersonId: shloimie.id,
+    visibility: 'private',
+    languageDefault: 'en',
+    slug: 'family-accountability',
+    settings: { accountability_mode: 'family' },
+    metadata: { source: 'personal_workspace_seed', public: false },
+  }, db);
+  const bnaWorkspace = await ensureWorkspaceProject({
+    projectKey: DEFAULT_PROJECT_KEY,
+    name: bna.name || 'BNA',
+    shortName: bna.short_name || 'BNA',
+    description: bna.description || 'Bnei Neviim Academy school workspace.',
+    workspaceType: 'school',
+    ownerPersonId: shloimie.id,
+    visibility: 'workspace',
+    languageDefault: 'en',
+    slug: 'bna',
+    settings: { primary_role_label: 'Rabbi', accountability_mode: 'school' },
+  }, db);
+  if (oneTime?.id) {
+    await db.query(
+      `UPDATE bna_projects
+       SET workspace_type = 'service_provider',
+           visibility = 'workspace',
+           slug = COALESCE(slug, 'one-time-mishnah-class'),
+           settings = COALESCE(settings, '{}'::jsonb) || '{"accountability_mode":"provider","provider_workspace":true}'::jsonb,
+           updated_at = NOW()
+       WHERE id = $1`,
+      [oneTime.id]
+    );
+  }
+
+  const menachem = await upsertCanonicalPerson({
+    preferred_name: 'Menachem',
+    full_name: 'Menachem',
+    primary_language: 'en',
+    metadata: { seed: 'personal-workspaces-2026-06-14', tags: ['family:son', 'school:student', 'bna:student'] },
+  }, db);
+  const esty = await upsertCanonicalPerson({
+    preferred_name: 'Esty',
+    full_name: 'Esty',
+    primary_language: 'en',
+    metadata: { seed: 'personal-workspaces-2026-06-14', tags: ['family:daughter'] },
+  }, db);
+
+  await ensureWorkspaceMembership(superAdmin, shloimie, { role: 'super_admin', access_level: 'owner', tags: ['super_admin'] }, db);
+  await ensureWorkspaceMembership(superAdmin, shloimie, { role: 'owner', access_level: 'owner', tags: ['super_admin'] }, db);
+  await ensureWorkspaceMembership(bnaWorkspace, shloimie, { role: 'owner', access_level: 'owner', tags: ['bna:owner'] }, db);
+  await ensureWorkspaceMembership(bnaWorkspace, shloimie, { role: 'rabbi', access_level: 'admin', tags: ['bna:rabbi'] }, db);
+  await ensureWorkspaceMembership(bnaWorkspace, shloimie, { role: 'admin', access_level: 'admin', tags: ['bna:admin'] }, db);
+  await ensureWorkspaceMembership(family, shloimie, { role: 'owner', access_level: 'owner', tags: ['family:parent'] }, db);
+  await ensureWorkspaceMembership(family, shloimie, { role: 'parent', access_level: 'owner', tags: ['family:parent'] }, db);
+  await ensureWorkspaceMembership(family, menachem, { role: 'child', access_level: 'member', relationship_to_owner: 'son', tags: ['family:son'] }, db);
+  await ensureWorkspaceMembership(bnaWorkspace, menachem, { role: 'student', access_level: 'member', tags: ['school:student', 'bna:student'] }, db);
+  await ensureWorkspaceMembership(family, esty, { role: 'child', access_level: 'member', relationship_to_owner: 'daughter', tags: ['family:daughter'] }, db);
+
+  const household = await ensureHousehold(family, {
+    household_name: 'Family Accountability',
+    primary_parent_person_id: shloimie.id,
+    status: 'active',
+    metadata: { seed: 'personal-workspaces-2026-06-14' },
+  }, db);
+  await ensureHouseholdMember(household, shloimie, { role: 'parent', relationship: 'parent', tags: ['family:parent'] }, db);
+  await ensureHouseholdMember(household, menachem, { role: 'child', relationship: 'son', tags: ['family:son'] }, db);
+  await ensureHouseholdMember(household, esty, { role: 'child', relationship: 'daughter', tags: ['family:daughter'] }, db);
+
+  await linkExactStudentPerson({ person: menachem, name: 'Menachem', workspaceId: bnaWorkspace.id }, db);
+  const estySchoolMatches = await linkExactStudentPerson({
+    person: esty,
+    name: 'Esty',
+    workspaceId: bnaWorkspace.id,
+    createAmbiguousTask: false,
+  }, db);
+  if (estySchoolMatches.linked) {
+    await ensureWorkspaceSetupTask({
+      project: bnaWorkspace,
+      key: 'review-esty-school-membership',
+      title: 'Review whether Esty should have a BNA student membership',
+      summary: 'An existing BNA student row matched Esty by exact normalized name. Review before adding any BNA school membership.',
+      notes: 'The personal family seed intentionally creates Esty as family child/daughter only. Add BNA membership only if this student row is confirmed as the same person and a current BNA student.',
+      category: 'operations',
+      urgency: 'this_week',
+      assigned_to: 'Shloimie',
+    }, db);
+  }
+
+  await db.query(
+    `INSERT INTO bna_logins (person_id, login_email, username, role_type, status, metadata)
+     VALUES ($1, $2, $3, 'super_admin', 'active', $4::jsonb)
+     ON CONFLICT DO NOTHING`,
+    [
+      shloimie.id,
+      OPS_USERNAME && OPS_USERNAME.includes('@') ? normalizeEmail(OPS_USERNAME) : null,
+      OPS_USERNAME || null,
+      JSON.stringify({ source: 'env_ops_login', seed: 'personal-workspaces-2026-06-14' }),
+    ]
+  ).catch(() => {});
+
+  const setupTasks = [
+    {
+      key: 'google-oauth-app-verification-readiness',
+      title: 'Prepare Google OAuth app verification for BNA workspaces',
+      summary: 'Create consent-screen checklist, minimum scopes, privacy/terms/support URLs, test users, and demo evidence before public Google integration use.',
+      notes: 'Keep sensitive/restricted scopes minimal. Google Business Profile access remains blocked/manual until approval and enabled APIs are confirmed.',
+    },
+    {
+      key: 'google-business-profile-api-access-readiness',
+      title: 'Confirm Google Business Profile API access before live provider reviews',
+      summary: 'Confirm API approval, OAuth scopes, account ownership, and location access. Use manual profile/review fallback until live access exists.',
+      notes: 'Do not fake live Google review data. Provider pages must show manual fallback when disconnected.',
+      category: 'marketing',
+    },
+    {
+      key: 'parent-pwa-tablet-filter-setup-flow',
+      title: 'Verify parent PWA tablet install and filter setup flow',
+      summary: 'Smoke parent portal at phone/tablet widths, install prompt, setup wizard resume, and parent-submitted setup code/status handling.',
+      assigned_to: 'Codex',
+    },
+    {
+      key: 'provider-stripe-upgrade-link-placeholder',
+      title: 'Configure Stripe provider upgrade links',
+      summary: 'Provider paid-feature clicks show a safe not-configured state until STRIPE_PROVIDER_UPGRADE_LINK or STRIPE_PROVIDER_PLAN_LINK is set.',
+      notes: 'Do not fake payments. Add the configured link and smoke the upgrade intent route.',
+      category: 'accounting',
+      assigned_to: STRIPE_PROVIDER_UPGRADE_LINK || STRIPE_PROVIDER_PLAN_LINK ? 'Shloimie' : 'Shloimie',
+    },
+    {
+      key: 'hebrew-i18n-rtl-audit',
+      title: 'Audit Hebrew RTL UI labels across parent, student, signup, and provider surfaces',
+      summary: 'Hebrew mode must be real Hebrew with RTL layout. English fallback labels inside Hebrew UI are bugs except brand names, URLs, code values, and user-entered content.',
+      assigned_to: 'Codex',
+    },
+  ];
+  for (const spec of setupTasks) {
+    await ensureWorkspaceSetupTask({ project: bnaWorkspace, category: spec.category || 'technology', urgency: 'this_week', assigned_to: spec.assigned_to || 'Shloimie', ...spec }, db);
+  }
+
+  return { superAdmin, bna: bnaWorkspace, family, people: { shloimie, menachem, esty }, household };
 }
 
 async function getProjectByKey(projectKey, db = pool) {
@@ -15161,8 +17799,10 @@ function normalizeWorkspaceKey(value) {
     .replace(/[^a-z0-9]+/g, '_')
     .replace(/^_+|_+$/g, '');
   if (!normalized) return '';
-  if (['platform', 'super_admin', 'superadmin', 'agency', 'ops', 'operations'].includes(normalized)) return 'platform';
+  if (['platform', 'agency', 'ops', 'operations'].includes(normalized)) return 'platform';
+  if (['super_admin', 'superadmin', 'global_admin'].includes(normalized)) return 'super_admin';
   if (['bna', 'school', 'bna_school', 'bna_school_workspace', 'bnei_neviim', 'bnei_neviim_academy', DEFAULT_PROJECT_KEY].includes(normalized)) return 'bna';
+  if (['family', 'dratler_family', 'family_accountability', 'private_family', 'household'].includes(normalized)) return 'dratler_family';
   if (
     [
       'provider',
@@ -15188,6 +17828,8 @@ function normalizeWorkspaceKey(value) {
 
 function workspaceProjectKey(workspaceKey) {
   const key = normalizeWorkspaceKey(workspaceKey);
+  if (key === 'super_admin') return 'super_admin';
+  if (key === 'dratler_family') return 'dratler_family';
   if (key === 'bna') return DEFAULT_PROJECT_KEY;
   if (key === 'rabbi_sheller_provider') return ONE_TIME_PROJECT_KEY;
   return '';
@@ -15197,6 +17839,8 @@ function workspaceKeyForProject(projectKey) {
   const key = normalizeProjectKey(projectKey);
   if (key === ONE_TIME_PROJECT_KEY) return 'rabbi_sheller_provider';
   if (key === DEFAULT_PROJECT_KEY) return 'bna';
+  if (key === 'super_admin') return 'super_admin';
+  if (key === 'dratler_family') return 'dratler_family';
   return normalizeWorkspaceKey(key) || 'bna';
 }
 
@@ -15216,6 +17860,127 @@ function assertWorkspaceAccess(req, workspaceKey) {
     throw error;
   }
   return key;
+}
+
+function activeWorkspaceKeyFromRequest(req, fallback = '') {
+  const cookies = parseCookies(req);
+  return normalizeWorkspaceKey(req?.body?.workspace_key || req?.body?.workspace || req?.query?.workspace_key || req?.query?.workspace || cookies[ACTIVE_WORKSPACE_COOKIE_NAME] || fallback);
+}
+
+async function getWorkspaceProjectByKey(workspaceKey, db = pool) {
+  const key = normalizeWorkspaceKey(workspaceKey) || DEFAULT_PROJECT_KEY;
+  const projectKey = workspaceProjectKey(key) || key;
+  const result = await db.query(
+    `SELECT *
+     FROM bna_projects
+     WHERE project_key = $1
+        OR slug = $1
+     LIMIT 1`,
+    [projectKey]
+  );
+  return result.rows[0] || null;
+}
+
+async function getCanonicalPersonForOpsIdentity(identity, db = pool) {
+  if (!identity) return null;
+  if (identity.role === 'super_admin' || identity.scope?.type === 'all') {
+    return (await db.query(
+      `SELECT * FROM bna_people WHERE lower(preferred_name) = 'shloimie' ORDER BY id ASC LIMIT 1`
+    )).rows[0] || null;
+  }
+  const username = String(identity.username || '').trim();
+  if (!username) return null;
+  return (await db.query(
+    `SELECT p.*
+     FROM bna_people p
+     JOIN bna_logins l ON l.person_id = p.id
+     WHERE lower(l.username) = lower($1)
+        OR lower(l.login_email) = lower($1)
+     ORDER BY p.id ASC
+     LIMIT 1`,
+    [username]
+  )).rows[0] || null;
+}
+
+async function membershipRowsForPerson(personId, db = pool) {
+  if (!personId) return [];
+  return (await db.query(
+    `SELECT wm.*,
+            p.project_key,
+            p.name AS workspace_name,
+            p.workspace_type,
+            people.preferred_name AS person_name
+     FROM bna_workspace_memberships wm
+     JOIN bna_projects p ON p.id = wm.workspace_id
+     JOIN bna_people people ON people.id = wm.person_id
+     WHERE wm.person_id = $1
+       AND wm.active = TRUE
+       AND p.status <> 'archived'
+     ORDER BY
+       CASE p.project_key WHEN 'super_admin' THEN 1 WHEN 'bna' THEN 2 WHEN 'dratler_family' THEN 3 WHEN 'one_time_mishnah_class' THEN 4 ELSE 5 END,
+       p.name ASC,
+       wm.role ASC`,
+    [personId]
+  )).rows;
+}
+
+async function buildBnaIdentityPayload({ identity = null, req = null, actor = 'admin', db = pool } = {}) {
+  const seeded = await ensurePersonalWorkspacesAndPeople(db).catch(() => null);
+  const person = actor === 'admin'
+    ? await getCanonicalPersonForOpsIdentity(identity, db)
+    : null;
+  let memberships = person?.id ? await membershipRowsForPerson(person.id, db) : [];
+  if (!memberships.length && identity?.scope?.type === 'project') {
+    const scoped = await getProjectByKey(identity.scope.projectKey, db);
+    memberships = scoped ? [{
+      workspace_id: scoped.id,
+      person_id: null,
+      role: identity.role || 'viewer',
+      access_level: 'viewer',
+      relationship_to_owner: null,
+      tags: [],
+      metadata: {},
+      project_key: scoped.project_key,
+      workspace_name: scoped.name,
+      workspace_type: scoped.workspace_type || 'service_provider',
+      active: true,
+    }] : [];
+  }
+  const requested = activeWorkspaceKeyFromRequest(req, defaultWorkspaceKeyForRequest(req));
+  const scopedWorkspace = identity?.scope?.type === 'project'
+    ? workspaceKeyForProject(identity.scope.projectKey)
+    : '';
+  const activeKey = scopedWorkspace || requested || (memberships[0]?.project_key ? workspaceKeyForProject(memberships[0].project_key) : DEFAULT_PROJECT_KEY);
+  const activeWorkspace = await getWorkspaceProjectByKey(activeKey, db)
+    || seeded?.bna
+    || await getProjectByKey(DEFAULT_PROJECT_KEY, db);
+  const role = identity?.role || (memberships.find((item) => item.project_key === activeWorkspace?.project_key)?.role) || actor;
+  return {
+    success: true,
+    authenticated: true,
+    user: identity?.username || person?.preferred_name || null,
+    username: identity?.username || null,
+    role,
+    legacy_role: role === 'super_admin' ? 'admin' : role,
+    scope: identity?.scope || { type: 'all', projectKey: null },
+    person: person ? canonicalPersonView(person) : null,
+    activeWorkspace: workspaceProjectView(activeWorkspace),
+    active_workspace: workspaceProjectView(activeWorkspace),
+    memberships: memberships.map(workspaceMembershipView),
+    allowedViews: identity?.allowedViews || ['dashboard', 'pipelines', 'tasks', 'students', 'contacts', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'api_usage', 'admin', 'settings'],
+  };
+}
+
+function can(identity = {}, action = '', resource = {}) {
+  const role = String(identity.role || identity.actor_role || '').toLowerCase();
+  const memberships = Array.isArray(identity.memberships) ? identity.memberships : [];
+  const workspaceKey = normalizeProjectKey(resource.workspace_key || resource.project_key || resource.workspaceKey || resource.projectKey || '');
+  if (role === 'super_admin' || identity.scope?.type === 'all' && role !== 'one_time_admin') return true;
+  if (identity.scope?.type === 'project') {
+    return !workspaceKey || workspaceKey === identity.scope.projectKey || workspaceKey === workspaceKeyForProject(identity.scope.projectKey);
+  }
+  if (!workspaceKey) return false;
+  return memberships.some((membership) => normalizeProjectKey(membership.project_key || membership.workspace_key) === workspaceKey && membership.active !== false);
 }
 
 function workspaceView(row = {}) {
@@ -15591,6 +18356,14 @@ async function ensureWorkspacePlatformDefaults(db = pool) {
   const oneTimeDriveSocialMap = oneTimeDriveSocialIngestionMap();
   const workspaces = [
     {
+      key: 'super_admin',
+      type: 'super_admin',
+      name: 'Super Admin',
+      description: 'Shloimie global operator and admin control center across all BNA workspaces.',
+      owner: 'Shloimie',
+      settings: { canonical_role: 'super_admin', nav_model: 'platform', source_of_truth: 'bna_projects' },
+    },
+    {
       key: 'platform',
       type: 'platform',
       name: 'Platform / Super Admin',
@@ -15607,10 +18380,18 @@ async function ensureWorkspacePlatformDefaults(db = pool) {
       settings: { canonical_role: 'bna_admin', project_key: DEFAULT_PROJECT_KEY, provider_index_visible: true },
     },
     {
+      key: 'dratler_family',
+      type: 'family',
+      name: 'Family Accountability',
+      description: "Private family accountability workspace for Shloimie's household. Not public and not part of BNA school views unless a person also has a school role.",
+      owner: 'Shloimie',
+      settings: { canonical_role: 'family_owner', project_key: 'dratler_family', accountability_mode: 'family', provider_index_visible: true },
+    },
+    {
       key: 'rabbi_sheller_provider',
-      type: 'provider',
-      name: 'Rabbi Sheller Provider Workspace',
-      description: 'Provider workspace for Rabbi Sheller / One Time Mishnayos Membership and the 7:00 class.',
+      type: 'service_provider',
+      name: 'One Time Mishnayos Provider Workspace',
+      description: 'Service provider workspace for the One Time Mishnayos Membership and the 7:00 class.',
       owner: 'Rabbi Sheller / Shloimie',
       settings: {
         canonical_role: 'provider_admin',
@@ -15625,6 +18406,14 @@ async function ensureWorkspacePlatformDefaults(db = pool) {
         login_release_guard: oneTimeDriveSocialMap.login_release_guard,
         open_forum: false,
       },
+    },
+    {
+      key: 'parent_households',
+      type: 'household',
+      name: 'Parent Household Workspaces',
+      description: 'Super-admin directory for parent logins, household accountability setup, and child goal onboarding.',
+      owner: 'Shloimie',
+      settings: { canonical_role: 'parent_household_admin', nav_model: 'household_directory', provider_index_visible: true },
     },
   ];
 
@@ -15645,6 +18434,30 @@ async function ensureWorkspacePlatformDefaults(db = pool) {
   }
 
   const connectorDefaults = [
+    {
+      workspace: 'dratler_family',
+      type: 'other',
+      name: 'Parent tablet and filter setup',
+      status: 'manual_mode',
+      config: { mode: 'guided_checklist', remote_control_enabled: false, parent_submits_setup_code: true },
+      metadata: { workflow: 'Parents follow approved setup instructions, submit code/status, and BNA verifies.' },
+    },
+    {
+      workspace: 'super_admin',
+      type: 'payment',
+      name: 'Provider upgrade billing',
+      status: STRIPE_PROVIDER_UPGRADE_LINK || STRIPE_PROVIDER_PLAN_LINK ? 'configured' : 'not_configured',
+      config: { upgrade_link_configured: Boolean(STRIPE_PROVIDER_UPGRADE_LINK), plan_link_configured: Boolean(STRIPE_PROVIDER_PLAN_LINK) },
+      metadata: { workflow: 'Provider paid features route to Stripe only after links are configured.' },
+    },
+    {
+      workspace: 'super_admin',
+      type: 'other',
+      name: 'Google Business Profile approval readiness',
+      status: 'manual_mode',
+      config: { maps_key_configured: Boolean(GOOGLE_MAPS_API_KEY), business_profile_live_feed: false },
+      metadata: { workflow: 'Do not fake Google Business Profile data. Use manual fallback until OAuth/API approval exists.' },
+    },
     {
       workspace: 'bna',
       type: 'email_identity',
@@ -20129,6 +22942,85 @@ app.get('/api/google/connections/status', requireAdmin, async (req, res) => {
   }
 });
 
+function googleIntegrationReadinessPayload() {
+  const oauthConfigured = Boolean(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET);
+  const configuredScopes = googleAuthService.parseGoogleScopeList(GOOGLE_SCOPES);
+  return {
+    success: true,
+    oauth: {
+      configured: oauthConfigured,
+      redirect_uri: GOOGLE_REDIRECT_URI,
+      required_scopes: configuredScopes,
+      sensitive_scope_guard: 'Use minimum scopes and complete Google verification before public/provider use.',
+    },
+    maps: {
+      configured: Boolean(GOOGLE_MAPS_API_KEY),
+      fallback: GOOGLE_MAPS_API_KEY ? 'Maps key configured for allowed map/place features.' : 'Plain text service area fields stay active until a Maps/Places key is configured.',
+    },
+    business_profile: {
+      configured: oauthConfigured,
+      approved: false,
+      status: oauthConfigured ? 'pending_approval' : 'not_configured',
+      fallback: 'Manual Google profile/review fields are used until Business Profile API access is approved. No live reviews are faked.',
+    },
+  };
+}
+
+app.get('/api/integrations/google/status', requireAdmin, async (req, res) => {
+  try {
+    const connections = (await pool.query(
+      `SELECT integration, status, scopes, external_account_id, external_location_id, created_at, updated_at
+       FROM bna_integration_connections
+       WHERE integration IN ('google_oauth', 'google_business_profile', 'google_calendar', 'google_classroom', 'google_maps')
+       ORDER BY updated_at DESC NULLS LAST, created_at DESC
+       LIMIT 50`
+    )).rows;
+    res.json({ ...googleIntegrationReadinessPayload(), connections });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/integrations/google/oauth/start', requireAdmin, (req, res) => {
+  if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+    return res.status(503).json({
+      success: false,
+      configured: false,
+      error: 'Google OAuth credentials are not configured',
+      fallback: googleIntegrationReadinessPayload().business_profile.fallback,
+    });
+  }
+  const params = new URLSearchParams({
+    role: req.query.role || req.query.connection_role || 'admin_teacher',
+    features: req.query.features || req.query.feature || 'calendar,classroom,drive_pipeline',
+  });
+  res.json({
+    success: true,
+    configured: true,
+    oauth_start_url: `/api/google/oauth/start?${params.toString()}`,
+    required_scopes: googleAuthService.parseGoogleScopeList(GOOGLE_SCOPES),
+  });
+});
+
+app.get('/api/integrations/google/oauth/callback', (req, res) => {
+  const qs = new URLSearchParams(req.query || {}).toString();
+  res.redirect(`/api/google/oauth/callback${qs ? `?${qs}` : ''}`);
+});
+
+app.get('/api/integrations/google/business-profile/status', requireAdmin, (req, res) => {
+  const status = googleIntegrationReadinessPayload().business_profile;
+  res.json({
+    success: true,
+    ...status,
+    live_reviews_enabled: false,
+    manual_fallback: {
+      profile_link_field: 'google_business_profile_url',
+      place_id_field: 'google_place_id',
+      manual_review_import: true,
+    },
+  });
+});
+
 app.get('/api/google/classroom/courses', requireAdmin, async (req, res) => {
   try {
     const auth = await createGoogleClientForConnection({
@@ -20204,8 +23096,18 @@ app.post('/api/bna/email/send', requireAdmin, async (req, res) => {
   }
 
   try {
-    const result = await sendGmailMessage({ to, subject, text, html });
-    res.json({ success: true, id: result.data.id });
+    const result = await sendEmail({ to, subject, text, html });
+    await logEmail({
+      emailType: 'manual_email',
+      to,
+      subject,
+      text,
+      html,
+      providerMessageId: result.data.id,
+      provider: result.provider,
+      metadata: { sent_from: 'operations_manual_email' },
+    });
+    res.json({ success: true, id: result.data.id, provider: result.provider });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -20229,13 +23131,24 @@ app.post('/api/bna/email/signup-link', requireAdmin, async (req, res) => {
     : `Hi ${parent_name || ''},\n\nPlease fill out the Bnei Neviim Academy signup form so we can keep your contact and student details properly in our system:\n${signupUrl}\n\nIf you already paid, we will match the payment internally after the form is submitted.\n\nThank you,\nBnei Neviim Academy Office`;
 
   try {
-    const result = await sendGmailMessage({
+    const result = await sendEmail({
       to,
       subject,
       text,
       html: text.replace(/\n/g, '<br>'),
     });
-    res.json({ success: true, id: result.data.id, signupUrl });
+    await logEmail({
+      emailType: 'signup_link',
+      to,
+      subject,
+      text,
+      html: text.replace(/\n/g, '<br>'),
+      providerMessageId: result.data.id,
+      provider: result.provider,
+      language: lang,
+      metadata: { signup_url: signupUrl, sent_from: 'operations_signup_link' },
+    });
+    res.json({ success: true, id: result.data.id, provider: result.provider, signupUrl });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -20251,12 +23164,303 @@ app.get('/api/bna/email-log', requireAdmin, async (req, res) => {
   }
 
   try {
-    await assertProjectOwnedRowAccess(req, 'bna_content_jobs', id);
     const result = await pool.query(
       `SELECT * FROM bna_email_log ${whereClause} ORDER BY created_at DESC LIMIT 100`,
       params
     );
     res.json({ emails: result.rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+function buildCommunicationsQueryFilters(query = {}, forced = {}) {
+  const conditions = [];
+  const params = [];
+  const addParam = (value) => {
+    params.push(value);
+    return `$${params.length}`;
+  };
+  const source = { ...query, ...forced };
+  for (const field of ['workspace_id', 'project_id', 'contact_id', 'signup_id', 'student_id', 'task_id', 'ticket_id']) {
+    if (source[field]) conditions.push(`${field} = ${addParam(Number(source[field]))}`);
+  }
+  for (const field of ['channel', 'direction']) {
+    if (source[field]) conditions.push(`${field} = ${addParam(String(source[field]))}`);
+  }
+  if (source.date_from) conditions.push(`occurred_at >= ${addParam(source.date_from)}::timestamp`);
+  if (source.date_to) conditions.push(`occurred_at <= ${addParam(source.date_to)}::timestamp`);
+  if (source.search) {
+    const term = `%${String(source.search).trim()}%`;
+    conditions.push(`(subject ILIKE ${addParam(term)} OR body_text ILIKE ${addParam(term)} OR to_address ILIKE ${addParam(term)} OR from_address ILIKE ${addParam(term)})`);
+  }
+  return {
+    where: conditions.length ? `WHERE ${conditions.join(' AND ')}` : '',
+    params,
+  };
+}
+
+app.get('/api/bna/communications', requireAdmin, async (req, res) => {
+  try {
+    const { where, params } = buildCommunicationsQueryFilters(req.query || {});
+    const limit = Math.min(Number(req.query.limit) || 200, 500);
+    params.push(limit);
+    const result = await pool.query(
+      `SELECT *
+       FROM bna_communications
+       ${where}
+       ORDER BY occurred_at DESC, id DESC
+       LIMIT $${params.length}`,
+      params
+    );
+    res.json({ communications: result.rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/communications/:id', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM bna_communications WHERE id = $1 LIMIT 1', [req.params.id]);
+    const communication = result.rows[0];
+    if (!communication) return res.status(404).json({ error: 'Communication not found' });
+    res.json({ communication });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/contacts/:id/communications', requireAdmin, async (req, res) => {
+  try {
+    const { where, params } = buildCommunicationsQueryFilters(req.query || {}, { contact_id: req.params.id });
+    const result = await pool.query(`SELECT * FROM bna_communications ${where} ORDER BY occurred_at DESC, id DESC LIMIT 300`, params);
+    res.json({ communications: result.rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/signups/:id/communications', requireAdmin, async (req, res) => {
+  try {
+    const { where, params } = buildCommunicationsQueryFilters(req.query || {}, { signup_id: req.params.id });
+    const result = await pool.query(`SELECT * FROM bna_communications ${where} ORDER BY occurred_at DESC, id DESC LIMIT 300`, params);
+    res.json({ communications: result.rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/students/:id/communications', requireAdmin, async (req, res) => {
+  try {
+    const { where, params } = buildCommunicationsQueryFilters(req.query || {}, { student_id: req.params.id });
+    const result = await pool.query(`SELECT * FROM bna_communications ${where} ORDER BY occurred_at DESC, id DESC LIMIT 300`, params);
+    res.json({ communications: result.rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/tasks/:id/communications', requireAdmin, async (req, res) => {
+  try {
+    const { where, params } = buildCommunicationsQueryFilters(req.query || {}, { task_id: req.params.id });
+    const result = await pool.query(`SELECT * FROM bna_communications ${where} ORDER BY occurred_at DESC, id DESC LIMIT 300`, params);
+    res.json({ communications: result.rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/communications', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  try {
+    const communication = await logCommunication({
+      workspaceId: body.workspace_id || null,
+      projectId: body.project_id || null,
+      contactId: body.contact_id || null,
+      signupId: body.signup_id || null,
+      studentId: body.student_id || null,
+      providerId: body.provider_id || null,
+      taskId: body.task_id || null,
+      ticketId: body.ticket_id || null,
+      channel: body.channel || 'system',
+      direction: body.direction || 'internal',
+      communicationType: body.communication_type || body.type || 'manual_note',
+      fromName: body.from_name || req.opsUser || 'admin',
+      fromAddress: body.from_address || null,
+      toName: body.to_name || null,
+      toAddress: body.to_address || null,
+      subject: body.subject || null,
+      bodyText: body.body_text || body.body || null,
+      bodyHtml: body.body_html || null,
+      externalMessageId: body.external_message_id || null,
+      threadKey: body.thread_key || null,
+      provider: body.provider || null,
+      status: body.status || 'logged',
+      language: body.language || 'en',
+      metadata: body.metadata || {},
+      occurredAt: body.occurred_at || null,
+    });
+    res.json({ success: true, communication });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/resend/webhook', async (req, res) => {
+  const suppliedSecret = String(req.headers['x-resend-webhook-secret'] || req.query.secret || '').trim();
+  if (RESEND_WEBHOOK_SECRET && suppliedSecret !== RESEND_WEBHOOK_SECRET) {
+    return res.status(401).json({ error: 'Unauthorized Resend webhook' });
+  }
+  const payload = req.body && typeof req.body === 'object' ? req.body : {};
+  const eventType = String(payload.type || payload.event || '').trim();
+  const data = payload.data && typeof payload.data === 'object' ? payload.data : payload;
+  const messageId = data.email_id || data.emailId || data.message_id || data.id || null;
+  const status = ({
+    'email.sent': 'sent',
+    'email.delivered': 'delivered',
+    'email.delivery_delayed': 'delivery_delayed',
+    'email.bounced': 'bounced',
+    'email.complained': 'complained',
+    'email.opened': 'opened',
+    'email.clicked': 'clicked',
+  })[eventType] || eventType.replace(/^email\./, '') || 'webhook_received';
+  try {
+    let updated = [];
+    if (messageId) {
+      updated = (await pool.query(
+        `UPDATE bna_communications
+         SET status = $2,
+             metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb
+         WHERE external_message_id = $1
+            OR metadata->>'resend_message_id' = $1
+         RETURNING *`,
+        [messageId, status, JSON.stringify({ resend_event: eventType, resend_payload: payload })]
+      )).rows;
+      await pool.query(
+        `UPDATE bna_email_log
+         SET status = CASE WHEN $2 IN ('delivered', 'bounced', 'complained', 'opened', 'clicked', 'delivery_delayed') THEN $2 ELSE status END,
+             metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb
+         WHERE provider_message_id = $1`,
+        [messageId, status, JSON.stringify({ resend_event: eventType })]
+      ).catch(() => {});
+    }
+    if (!updated.length) {
+      const communication = await logCommunication({
+        channel: 'email',
+        direction: 'outbound',
+        communicationType: 'resend_webhook',
+        subject: data.subject || null,
+        toAddress: Array.isArray(data.to) ? data.to.join(', ') : data.to || null,
+        externalMessageId: messageId,
+        provider: 'resend',
+        status,
+        metadata: { resend_event: eventType, resend_payload: payload },
+      });
+      updated = communication ? [communication] : [];
+    }
+    res.json({ success: true, event: eventType, status, updated_count: updated.length });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/resend/status', requireAdmin, async (req, res) => {
+  const identity = academySenderIdentity();
+  res.json({
+    success: true,
+    email_provider: EMAIL_PROVIDER,
+    resend_configured: Boolean(RESEND_API_KEY && RESEND_FROM_EMAIL),
+    resend_from_email: RESEND_FROM_EMAIL || null,
+    sender_identity: {
+      from_name: identity.fromName,
+      from_email: identity.fromEmail,
+      reply_to: identity.replyTo,
+    },
+    required_env: [
+      RESEND_API_KEY ? null : 'RESEND_API_KEY',
+      RESEND_FROM_EMAIL ? null : 'RESEND_FROM_EMAIL',
+      RESEND_WEBHOOK_SECRET ? null : 'RESEND_WEBHOOK_SECRET (recommended for webhooks)',
+    ].filter(Boolean),
+    live_bulk_send_guard: 'Bulk email remains disabled until sender domain, opt-out, test sends, segmentation, and approval are complete.',
+  });
+});
+
+app.get('/api/bna/google/readiness', requireAdmin, async (req, res) => {
+  res.json({
+    success: true,
+    redirect_uri: GOOGLE_REDIRECT_URI,
+    configured_scopes: GOOGLE_SCOPES,
+    assignment_required_scopes: GOOGLE_ASSIGNMENT_REQUIRED_SCOPES,
+    checklist: [
+      'Prepare OAuth consent screen',
+      'Define minimum scopes per feature',
+      'Add privacy policy URL',
+      'Add terms/support URL',
+      'Add app branding',
+      'Add test users',
+      'Prepare verification explanation',
+      'Prepare demo screenshots/video if Google requires them',
+      'Confirm Calendar, Classroom, Business Profile, and Maps prerequisites',
+    ],
+    scope_discipline: 'Use the narrowest working scope. Sensitive/restricted scopes require explicit decision and verification planning before public use.',
+  });
+});
+
+app.get('/api/bna/review-requests', requireAdmin, async (req, res) => {
+  const params = [];
+  const conditions = [];
+  if (req.query.status) {
+    params.push(String(req.query.status));
+    conditions.push(`status = $${params.length}`);
+  }
+  if (req.query.contact_id) {
+    params.push(Number(req.query.contact_id));
+    conditions.push(`contact_id = $${params.length}`);
+  }
+  try {
+    const result = await pool.query(
+      `SELECT *
+       FROM bna_review_requests
+       ${conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''}
+       ORDER BY created_at DESC
+       LIMIT 200`,
+      params
+    );
+    res.json({ review_requests: result.rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/review-requests', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  try {
+    const workspaceKey = body.workspace_key || body.workspace || (opsScopeProjectKey(req) ? defaultWorkspaceKeyForRequest(req) : 'bna');
+    const workspaceId = await getWorkspaceIdForProjectKey(workspaceProjectKey(workspaceKey) || DEFAULT_PROJECT_KEY);
+    const neutralText = body.request_text || 'If you feel the program helped, we would appreciate an honest review.';
+    const result = await pool.query(
+      `INSERT INTO bna_review_requests (
+         workspace_id, contact_id, provider_id, channel, review_platform,
+         status, request_text, review_url, metadata
+       ) VALUES ($1, $2, $3, $4, COALESCE($5, 'google_business_profile'), 'draft', $6, $7, $8::jsonb)
+       RETURNING *`,
+      [
+        workspaceId,
+        body.contact_id || null,
+        body.provider_id || null,
+        body.channel || 'email',
+        body.review_platform || null,
+        neutralText,
+        body.review_url || null,
+        JSON.stringify({
+          approval_required: true,
+          no_positive_review_pressure: true,
+          source: body.source || 'operations',
+          ...(body.metadata || {}),
+        }),
+      ]
+    );
+    res.json({ success: true, review_request: result.rows[0], sent: false });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -20270,6 +23474,134 @@ app.post('/api/bna/signups/:id/send-confirmation', requireAdmin, async (req, res
 
     const emailResult = await sendSignupConfirmationEmail(signup);
     res.json({ success: emailResult.ok, email: emailResult });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/checkout/attempts', requireAdmin, async (req, res) => {
+  const conditions = [];
+  const params = [];
+  const addParam = (value) => {
+    params.push(value);
+    return `$${params.length}`;
+  };
+  if (req.query.signup_id) conditions.push(`a.signup_id = ${addParam(Number(req.query.signup_id))}`);
+  if (req.query.status) conditions.push(`a.status = ${addParam(String(req.query.status))}`);
+  if (req.query.date_from) conditions.push(`a.created_at >= ${addParam(req.query.date_from)}::timestamp`);
+  if (req.query.date_to) conditions.push(`a.created_at <= ${addParam(req.query.date_to)}::timestamp`);
+  const where = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+  try {
+    const result = await pool.query(
+      `SELECT a.*,
+              s.parent_name,
+              s.parent_email,
+              s.parent_phone,
+              s.student_name,
+              s.payment_status
+       FROM bna_checkout_attempts a
+       LEFT JOIN signups s ON s.id = a.signup_id
+       ${where}
+       ORDER BY a.created_at DESC
+       LIMIT 300`,
+      params
+    );
+    res.json({ attempts: result.rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/checkout/attempts', requireAdmin, async (req, res) => {
+  const signupId = Number(req.body?.signup_id || req.body?.signupId);
+  if (!Number.isFinite(signupId)) return res.status(400).json({ error: 'signup_id is required' });
+  try {
+    const signup = (await pool.query('SELECT * FROM signups WHERE id = $1 LIMIT 1', [signupId])).rows[0];
+    if (!signup) return res.status(404).json({ error: 'Signup not found' });
+    const attempt = await createOrUpdateCheckoutAttemptForSignup(signup, {
+      paymentLink: req.body?.payment_link || req.body?.paymentLink || '',
+      req,
+      status: req.body?.status || 'started',
+    });
+    res.json({ success: true, attempt });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/bna/checkout/attempts/:id', async (req, res) => {
+  const attemptId = Number(req.params.id);
+  const body = req.body || {};
+  if (!Number.isFinite(attemptId)) return res.status(400).json({ error: 'Valid checkout attempt id is required' });
+  try {
+    const attempt = (await pool.query('SELECT * FROM bna_checkout_attempts WHERE id = $1 LIMIT 1', [attemptId])).rows[0];
+    if (!attempt) return res.status(404).json({ error: 'Checkout attempt not found' });
+    const admin = await identifyAdminRequest(req).catch(() => null);
+    const suppliedToken = body.token || req.query.token || '';
+    if (!admin && !verifyCheckoutAttemptToken({ attemptId, signupId: attempt.signup_id, token: suppliedToken })) {
+      return res.status(403).json({ error: 'Invalid checkout attempt token' });
+    }
+    const nextStatus = String(body.status || '').trim();
+    const allowed = new Set(['redirected', 'webhook_received', 'paid', 'failed', 'cancelled', 'manual_followup']);
+    if (!allowed.has(nextStatus)) return res.status(400).json({ error: 'Unsupported checkout attempt status' });
+    const updates = {
+      redirected: `redirected_at = COALESCE(redirected_at, NOW())`,
+      webhook_received: `webhook_received_at = COALESCE(webhook_received_at, NOW())`,
+      paid: `paid_at = COALESCE(paid_at, NOW())`,
+      failed: `abandoned_at = abandoned_at`,
+      cancelled: `abandoned_at = abandoned_at`,
+      manual_followup: `last_reminder_at = last_reminder_at`,
+    };
+    const result = await pool.query(
+      `UPDATE bna_checkout_attempts
+       SET status = $2,
+           ${updates[nextStatus]},
+           source_context = COALESCE(source_context, '{}'::jsonb) || $3::jsonb,
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [
+        attemptId,
+        nextStatus,
+        JSON.stringify({
+          updated_from: admin ? 'admin' : 'checkout_thank_you',
+          ip: getRequestIp(req),
+          user_agent: req.headers?.['user-agent'] || null,
+        }),
+      ]
+    );
+    if (nextStatus === 'paid') {
+      await markCheckoutAttemptsPaidForSignup(attempt.signup_id, { processor: body.processor || 'manual_checkout_update' });
+    } else {
+      await logCommunication({
+        workspaceId: result.rows[0]?.workspace_id || null,
+        signupId: attempt.signup_id,
+        channel: 'system',
+        direction: 'internal',
+        communicationType: `checkout_${nextStatus}`,
+        subject: `Checkout ${nextStatus}`,
+        bodyText: `Checkout attempt #${attemptId} was marked ${nextStatus}.`,
+        status: nextStatus,
+        metadata: { checkout_attempt_id: attemptId },
+      });
+    }
+    res.json({ success: true, attempt: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/checkout/sweep-abandoned', requireAdmin, async (req, res) => {
+  const dryRun = !['false', '0', 'no'].includes(String(req.body?.dry_run ?? req.body?.dryRun ?? req.query.dry_run ?? 'true').toLowerCase());
+  const sendEmails = Boolean(req.body?.send_emails || req.body?.sendEmails)
+    && String(req.body?.confirm || '').trim() === 'SEND_ABANDONED_CHECKOUT_EMAILS';
+  try {
+    const result = await runAbandonedCheckoutSweep({
+      dryRun,
+      sendEmails,
+      limit: req.body?.limit || req.query.limit || 50,
+    });
+    res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -20769,6 +24101,14 @@ app.post('/api/submit', async (req, res) => {
     }
     const signupStudent = await upsertStudentFromSignup(signup);
     await upsertParentPermissionProfileFromSignup(signup, signupStudent);
+    const signupContact = await upsertContactFromSignup(signup).catch((error) => {
+      console.warn('Signup contact upsert failed:', error.message);
+      return null;
+    });
+    const portalAccess = await ensureSignupPortalAccess(signup, signupStudent, signupContact).catch((error) => {
+      console.warn('Signup portal access upsert failed:', error.message);
+      return null;
+    });
     const matchedPaymentIntake = await reconcilePaymentIntakeForSignup(signup);
     if (matchedPaymentIntake) {
       const refreshed = await pool.query('SELECT * FROM signups WHERE id = $1', [signup.id]);
@@ -20791,6 +24131,21 @@ app.post('/api/submit', async (req, res) => {
     if (!emailResult.ok) {
       console.error('Signup confirmation email error:', emailResult.error);
     }
+    const loginSetupResult = await createParentPasswordResetToken({
+      parentEmail: normalizedParentEmail,
+      req,
+      metadata: {
+        source: 'signup_submit',
+        signup_id: signup.id,
+        contact_id: signupContact?.id || null,
+        student_id: signupStudent?.id || null,
+        user_account_id: portalAccess?.parent_account?.id || null,
+      },
+    }).catch((error) => ({
+      parent_email: normalizeEmail(normalizedParentEmail),
+      email_sent: false,
+      email_error: error instanceof Error ? error.message : String(error),
+    }));
 
     // Return payment link for credit payments unless we matched a prior payment intake record.
     if (matchedPaymentIntake) {
@@ -20801,25 +24156,71 @@ app.post('/api/submit', async (req, res) => {
         matchedPaymentIntakeId: matchedPaymentIntake.id,
         confirmationEmailSent: emailResult.ok,
         confirmationEmailRecipientCount: emailResult.sent?.length || 0,
+        loginSetupEmailSent: Boolean(loginSetupResult.email_sent),
+        loginSetupEmailError: loginSetupResult.email_error || null,
+        contactId: signupContact?.id || null,
+        parentAccountId: portalAccess?.parent_account?.id || null,
+        studentAccountId: portalAccess?.student_account?.id || null,
         registrationRenewal: Boolean(existingSignup),
         billingCopy,
       });
     } else if (normalizedPaymentMethod === 'green_invoice') {
+      const checkoutAttempt = await createOrUpdateCheckoutAttemptForSignup(signup, {
+        paymentLink: PAYMENT_LINK || '',
+        req,
+        status: 'started',
+      }).catch((error) => {
+        console.warn('Checkout attempt create failed:', error.message);
+        return null;
+      });
       res.json({
         success: true,
         signupId: signup.id,
         paymentMethod: 'credit',
         paymentLink: PAYMENT_LINK || null,
         paymentLinkStatus: PAYMENT_LINK ? 'configured' : 'unconfirmed',
+        checkoutAttemptId: checkoutAttempt?.id || null,
+        checkoutAttemptToken: checkoutAttempt?.signed_token || null,
         confirmationEmailSent: emailResult.ok,
         confirmationEmailRecipientCount: emailResult.sent?.length || 0,
+        loginSetupEmailSent: Boolean(loginSetupResult.email_sent),
+        loginSetupEmailError: loginSetupResult.email_error || null,
+        contactId: signupContact?.id || null,
+        parentAccountId: portalAccess?.parent_account?.id || null,
+        studentAccountId: portalAccess?.student_account?.id || null,
         registrationRenewal: Boolean(existingSignup),
         billingCopy,
       });
     } else if (normalizedPaymentMethod === 'bank_transfer') {
-      res.json({ success: true, signupId: signup.id, paymentMethod: 'bank_transfer', confirmationEmailSent: emailResult.ok, confirmationEmailRecipientCount: emailResult.sent?.length || 0, registrationRenewal: Boolean(existingSignup), billingCopy });
+      res.json({
+        success: true,
+        signupId: signup.id,
+        paymentMethod: 'bank_transfer',
+        confirmationEmailSent: emailResult.ok,
+        confirmationEmailRecipientCount: emailResult.sent?.length || 0,
+        loginSetupEmailSent: Boolean(loginSetupResult.email_sent),
+        loginSetupEmailError: loginSetupResult.email_error || null,
+        contactId: signupContact?.id || null,
+        parentAccountId: portalAccess?.parent_account?.id || null,
+        studentAccountId: portalAccess?.student_account?.id || null,
+        registrationRenewal: Boolean(existingSignup),
+        billingCopy,
+      });
     } else {
-      res.json({ success: true, signupId: signup.id, paymentMethod: 'cash', confirmationEmailSent: emailResult.ok, confirmationEmailRecipientCount: emailResult.sent?.length || 0, registrationRenewal: Boolean(existingSignup), billingCopy });
+      res.json({
+        success: true,
+        signupId: signup.id,
+        paymentMethod: 'cash',
+        confirmationEmailSent: emailResult.ok,
+        confirmationEmailRecipientCount: emailResult.sent?.length || 0,
+        loginSetupEmailSent: Boolean(loginSetupResult.email_sent),
+        loginSetupEmailError: loginSetupResult.email_error || null,
+        contactId: signupContact?.id || null,
+        parentAccountId: portalAccess?.parent_account?.id || null,
+        studentAccountId: portalAccess?.student_account?.id || null,
+        registrationRenewal: Boolean(existingSignup),
+        billingCopy,
+      });
     }
   } catch (err) {
     console.error('Signup error:', err);
@@ -20875,6 +24276,10 @@ app.post('/api/payment-complete', requireAdmin, async (req, res) => {
        WHERE id = $2`,
       [amount, signup_id, DEFAULT_PAYMENT_INTERVAL_DAYS]
     );
+    await markCheckoutAttemptsPaidForSignup(signup_id, {
+      processor: method || 'manual_admin',
+      metadata: { source: 'api_payment_complete' },
+    }).catch((error) => console.warn('Checkout paid update failed:', error.message));
 
     res.json({ success: true });
   } catch (err) {
@@ -21551,6 +24956,474 @@ app.get('/api/service-providers', async (req, res) => {
     res.json({ success: true, providers });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/providers', async (req, res) => {
+  try {
+    await ensureDefaultServiceProviderDirectoryOnce();
+    const legacyProviders = await getServiceProviderDirectory({ approved_only: true });
+    const providers = [];
+    for (const provider of legacyProviders.filter((item) => item.public_listing_enabled !== false)) {
+      const profile = await ensureProviderProfileForServiceProvider(provider);
+      const media = await getProviderMediaForLegacyProvider(provider.id).catch(() => []);
+      const comments = await getProviderCommentsForLegacyProvider(provider.id, { include_hidden: false }).catch(() => []);
+      providers.push(providerProfilePublicView({
+        profile,
+        legacy: provider,
+        services: provider.services || [],
+        media,
+        comments,
+      }));
+    }
+    res.json({ success: true, providers: providers.filter(Boolean) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/providers/:slug', async (req, res) => {
+  try {
+    const profile = await providerProfileByIdOrSlug(req.params.slug);
+    if (!profile || profile.status === 'archived') return res.status(404).json({ error: 'Provider profile was not found' });
+    const legacy = await legacyProviderForProfile(profile);
+    if (legacy && legacy.public_listing_enabled === false) return res.status(404).json({ error: 'Provider profile was not found' });
+    const directoryProvider = legacy
+      ? (await getServiceProviderDirectory({ approved_only: false })).find((item) => Number(item.id) === Number(legacy.id))
+      : null;
+    const media = (await pool.query(
+      `SELECT *
+       FROM bna_provider_media
+       WHERE provider_id = $1
+         AND status = 'active'
+       ORDER BY sort_order ASC, id ASC`,
+      [profile.id]
+    )).rows;
+    const comments = (await pool.query(
+      `SELECT c.*,
+              p.preferred_name AS author_name
+       FROM bna_provider_comments c
+       LEFT JOIN bna_people p ON p.id = c.author_person_id
+       WHERE c.provider_id = $1
+         AND c.visibility IN ('visible', 'hidden')
+       ORDER BY c.created_at DESC, c.id DESC
+       LIMIT 80`,
+      [profile.id]
+    )).rows;
+    res.json({
+      success: true,
+      provider: providerProfilePublicView({
+        profile,
+        legacy,
+        services: directoryProvider?.services || [],
+        media,
+        comments,
+      }),
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/providers/signup', async (req, res) => {
+  const body = req.body || {};
+  const displayName = limitText(body.display_name || body.business_name || body.service_name || body.provider_name || body.name, 180);
+  if (!displayName) return res.status(400).json({ error: 'Provider or business name is required' });
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const bna = await getProjectByKey(DEFAULT_PROJECT_KEY, client);
+    const legacy = (await client.query(
+      `INSERT INTO bna_service_providers (
+         project_id, provider_name, display_name, category, short_description,
+         contact_name, contact_email, contact_phone, whatsapp_phone, service_area,
+         profile_image_url, status, provider_status, commercial_model, entitlement_plan,
+         source_of_truth, integration_status, public_listing_enabled, public_signup_enabled,
+         claim_listing_enabled, can_receive_messages, metadata
+       ) VALUES (
+         $1, $2, $2, $3, $4,
+         $5, $6, $7, $8, $9,
+         $10, 'pending_review', 'draft', 'free_listing', 'free_listing',
+         'provider_submitted', 'no_access', TRUE, FALSE,
+         TRUE, TRUE, $11::jsonb
+       )
+       RETURNING *`,
+      [
+        bna.id,
+        displayName,
+        limitText(body.category || body.service_category || '', 120) || null,
+        limitText(body.short_description || body.headline || body.bio || '', 320) || null,
+        limitText(body.contact_name || body.name || displayName, 160) || null,
+        normalizeEmail(body.email || body.contact_email) || null,
+        limitText(body.phone || body.contact_phone || '', 80) || null,
+        limitText(body.whatsapp_phone || body.phone || '', 80) || null,
+        limitText(body.service_area || body.location || '', 220) || null,
+        limitText(body.profile_photo_url || body.profile_image_url || body.avatar_url || '', 520) || null,
+        JSON.stringify({
+          provider_signup: true,
+          service_categories: normalizeTextArray(body.service_categories || body.categories || body.category),
+          languages: normalizeTextArray(body.languages || body.language),
+          free_tier: true,
+        }),
+      ]
+    )).rows[0];
+    const profile = await ensureProviderProfileForServiceProvider(legacy, client);
+    await ensureWorkspaceSetupTask({
+      project: bna,
+      key: `provider-signup-review-${legacy.id}`,
+      title: `Review provider signup: ${displayName}`,
+      summary: `${displayName} submitted a service provider profile. Review public listing fields, free-tier limits, and contact details before approving.`,
+      category: 'community',
+      urgency: 'this_week',
+      assigned_to: 'Shloimie',
+    }, client);
+    await client.query('COMMIT');
+    res.json({
+      success: true,
+      provider: providerProfilePublicView({ profile, legacy, services: [], media: [], comments: [] }),
+      login_created: false,
+      review_required: true,
+      free_tier: true,
+    });
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.patch('/api/providers/:id', async (req, res) => {
+  try {
+    const profile = await providerProfileByIdOrSlug(req.params.id);
+    if (!profile) return res.status(404).json({ error: 'Provider profile was not found' });
+    await assertProviderProfileAccess(req, profile);
+    const body = req.body || {};
+    const fields = [];
+    const values = [];
+    const allowed = {
+      display_name: 180,
+      headline: 220,
+      bio: 2000,
+      phone: 80,
+      email: 180,
+      service_area: 220,
+      profile_photo_url: 520,
+      google_place_id: 220,
+    };
+    for (const [key, max] of Object.entries(allowed)) {
+      if (!Object.prototype.hasOwnProperty.call(body, key)) continue;
+      values.push(key === 'email' ? normalizeEmail(body[key]) : limitText(body[key], max) || null);
+      fields.push(`${key} = $${values.length}`);
+    }
+    if (body.service_categories || body.categories) {
+      values.push(normalizeTextArray(body.service_categories || body.categories));
+      fields.push(`service_categories = $${values.length}::text[]`);
+    }
+    if (body.languages || body.language) {
+      values.push(normalizeTextArray(body.languages || body.language));
+      fields.push(`languages = $${values.length}::text[]`);
+    }
+    if (!fields.length) return res.status(400).json({ error: 'No supported provider profile fields supplied' });
+    values.push(profile.id);
+    const updated = (await pool.query(
+      `UPDATE bna_service_provider_profiles
+       SET ${fields.join(', ')},
+           updated_at = NOW()
+       WHERE id = $${values.length}
+       RETURNING *`,
+      values
+    )).rows[0];
+    const legacy = await legacyProviderForProfile(updated);
+    res.json({
+      success: true,
+      provider: providerProfilePublicView({
+        profile: updated,
+        legacy,
+        media: await getProviderMediaForLegacyProvider(legacy?.id || 0).catch(() => []),
+        comments: await getProviderCommentsForLegacyProvider(legacy?.id || 0, { include_hidden: true }).catch(() => []),
+      }),
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/providers/:id/media', async (req, res) => {
+  try {
+    const profile = await providerProfileByIdOrSlug(req.params.id);
+    if (!profile) return res.status(404).json({ error: 'Provider profile was not found' });
+    await assertProviderProfileAccess(req, profile);
+    const body = req.body || {};
+    const url = limitText(body.url || body.media_url || body.profile_photo_url || '', 800);
+    if (!/^https?:\/\//i.test(url) && !url.startsWith('/uploads/') && !url.startsWith('/images/')) {
+      return res.status(400).json({ error: 'A safe http(s) or approved local media URL is required' });
+    }
+    const mediaType = ['profile', 'gallery', 'document'].includes(String(body.media_type || body.type)) ? String(body.media_type || body.type) : 'gallery';
+    const galleryCount = Number((await pool.query(
+      `SELECT COUNT(*) AS count
+       FROM bna_provider_media
+       WHERE provider_id = $1
+         AND media_type = 'gallery'
+         AND status = 'active'`,
+      [profile.id]
+    )).rows[0]?.count || 0);
+    if (profile.plan === 'free' && mediaType === 'gallery' && galleryCount >= 3) {
+      return res.status(402).json({
+        success: false,
+        error: 'Free provider profiles can show up to 3 gallery images.',
+        upgrade: providerUpgradeStatus(),
+      });
+    }
+    const media = (await pool.query(
+      `INSERT INTO bna_provider_media (provider_id, media_type, url, alt_text, sort_order, metadata)
+       VALUES ($1, $2, $3, $4, $5, $6::jsonb)
+       RETURNING *`,
+      [
+        profile.id,
+        mediaType,
+        url,
+        limitText(body.alt_text || body.alt || profile.display_name, 220) || null,
+        Number.isFinite(Number(body.sort_order)) ? Number(body.sort_order) : 0,
+        JSON.stringify({ source: 'provider_api', file_type_checked: true, raw_upload_path_exposed: false }),
+      ]
+    )).rows[0];
+    res.json({ success: true, media });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/providers/:id/comments', async (req, res) => {
+  try {
+    const profile = await providerProfileByIdOrSlug(req.params.id);
+    if (!profile) return res.status(404).json({ error: 'Provider profile was not found' });
+    const body = req.body || {};
+    const text = limitText(body.body || body.comment || body.review || '', 2000);
+    if (!text) return res.status(400).json({ error: 'Comment body is required' });
+    const cookies = parseCookies(req);
+    const parentSession = await getValidParentSession(cookies[PARENT_SESSION_COOKIE_NAME]).catch(() => null);
+    const context = parentSession ? await getCurrentHouseholdForParentEmail(parentSession.parentEmail).catch(() => null) : null;
+    const comment = (await pool.query(
+      `INSERT INTO bna_provider_comments (
+         provider_id, author_person_id, body, rating, source, visibility, metadata
+       ) VALUES ($1, $2, $3, $4, $5, 'visible', $6::jsonb)
+       RETURNING *`,
+      [
+        profile.id,
+        context?.parent_person?.id || null,
+        text,
+        Number.isFinite(Number(body.rating)) ? Math.max(1, Math.min(5, Number(body.rating))) : null,
+        parentSession ? 'parent_portal' : 'manual',
+        JSON.stringify({ source: 'provider_profile', parent_email: parentSession?.parentEmail || null }),
+      ]
+    )).rows[0];
+    res.json({ success: true, comment });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/providers/:id/comments/:commentId', async (req, res) => {
+  try {
+    const profile = await providerProfileByIdOrSlug(req.params.id);
+    if (!profile) return res.status(404).json({ error: 'Provider profile was not found' });
+    await assertProviderProfileAccess(req, profile);
+    const visibility = ['visible', 'hidden', 'flagged', 'private'].includes(String(req.body?.visibility || '')) ? String(req.body.visibility) : null;
+    const providerReply = req.body?.provider_reply || req.body?.reply ? limitText(req.body.provider_reply || req.body.reply, 1600) : null;
+    const updates = [];
+    const values = [];
+    if (visibility) {
+      values.push(visibility);
+      updates.push(`visibility = $${values.length}`);
+    }
+    if (providerReply !== null) {
+      values.push(providerReply);
+      updates.push(`provider_reply = $${values.length}`);
+    }
+    if (!updates.length) return res.status(400).json({ error: 'No supported comment fields supplied' });
+    values.push(profile.id);
+    values.push(req.params.commentId);
+    const updated = (await pool.query(
+      `UPDATE bna_provider_comments
+       SET ${updates.join(', ')},
+           updated_at = NOW()
+       WHERE provider_id = $${values.length - 1}
+         AND id = $${values.length}
+       RETURNING *`,
+      values
+    )).rows[0];
+    if (!updated) return res.status(404).json({ error: 'Provider comment was not found' });
+    res.json({ success: true, comment: updated });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/providers/:id/questions', async (req, res) => {
+  try {
+    const profile = await providerProfileByIdOrSlug(req.params.id);
+    if (!profile) return res.status(404).json({ error: 'Provider profile was not found' });
+    const legacy = await legacyProviderForProfile(profile);
+    if (!legacy) return res.status(409).json({ error: 'Provider messaging is not ready for this profile yet' });
+    const body = req.body || {};
+    const message = limitText(body.body || body.message || body.question || '', 3000);
+    if (!message) return res.status(400).json({ error: 'Question body is required' });
+    const cookies = parseCookies(req);
+    const parentSession = await getValidParentSession(cookies[PARENT_SESSION_COOKIE_NAME]).catch(() => null);
+    const parentEmail = normalizeEmail(parentSession?.parentEmail || body.parent_email || body.email) || null;
+    const row = (await pool.query(
+      `INSERT INTO bna_provider_messages (
+         provider_id, parent_email, direction, channel, subject, body,
+         status, source, source_context, metadata
+       ) VALUES (
+         $1, $2, 'parent_to_provider', 'portal', $3, $4,
+         'open', 'parent_portal', $5::jsonb, $6::jsonb
+       )
+       RETURNING *`,
+      [
+        legacy.id,
+        parentEmail,
+        limitText(body.subject || `Question for ${profile.display_name}`, 220),
+        message,
+        JSON.stringify({ provider_profile_id: profile.id, source: 'public_provider_profile' }),
+        JSON.stringify({ parent_session: Boolean(parentSession) }),
+      ]
+    )).rows[0];
+    res.json({ success: true, question: row });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/providers/:id/upgrade-intent', async (req, res) => {
+  try {
+    const profile = await providerProfileByIdOrSlug(req.params.id);
+    if (!profile) return res.status(404).json({ error: 'Provider profile was not found' });
+    const access = await assertProviderProfileAccess(req, profile).catch(() => null);
+    const upgrade = providerUpgradeStatus();
+    if (!upgrade.configured) {
+      const bna = await getProjectByKey(DEFAULT_PROJECT_KEY);
+      await ensureWorkspaceSetupTask({
+        project: bna,
+        key: 'provider-stripe-upgrade-link-placeholder',
+        title: 'Configure Stripe provider upgrade links',
+        summary: `${profile.display_name} requested a provider upgrade, but Stripe provider upgrade links are not configured.`,
+        notes: 'Set STRIPE_PROVIDER_UPGRADE_LINK or STRIPE_PROVIDER_PLAN_LINK. Do not fake payment success.',
+        category: 'accounting',
+        urgency: 'this_week',
+        assigned_to: 'Shloimie',
+      });
+      return res.json({ success: true, configured: false, upgrade, message: 'Upgrade is not configured yet.' });
+    }
+    res.json({ success: true, configured: true, upgrade, url: upgrade.link, actor: access?.actor || 'unknown' });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/providers/:id/google/connect', async (req, res) => {
+  try {
+    const profile = await providerProfileByIdOrSlug(req.params.id);
+    if (!profile) return res.status(404).json({ error: 'Provider profile was not found' });
+    await assertProviderProfileAccess(req, profile);
+    const legacy = await legacyProviderForProfile(profile);
+    const status = providerGoogleBusinessStatus(legacy || {}, profile);
+    const nextStatus = status.oauth_configured ? 'pending_oauth' : 'blocked';
+    const updated = (await pool.query(
+      `UPDATE bna_service_provider_profiles
+       SET google_business_status = $2,
+           metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb,
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [
+        profile.id,
+        nextStatus,
+        JSON.stringify({ google_business_connect_requested_at: new Date().toISOString(), live_feed_enabled: false }),
+      ]
+    )).rows[0];
+    res.json({
+      success: true,
+      connected: false,
+      status: providerGoogleBusinessStatus(legacy || {}, updated),
+      blocker: status.oauth_configured ? 'OAuth approval/API access must complete before live Google Business data is used.' : 'Google OAuth credentials are not configured.',
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/providers/:id/google-business/connect', async (req, res) => {
+  try {
+    const profile = await providerProfileByIdOrSlug(req.params.id);
+    if (!profile) return res.status(404).json({ error: 'Provider profile was not found' });
+    await assertProviderProfileAccess(req, profile);
+    const legacy = await legacyProviderForProfile(profile);
+    const status = providerGoogleBusinessStatus(legacy || {}, profile);
+    const updated = (await pool.query(
+      `UPDATE bna_service_provider_profiles
+       SET google_business_status = $2,
+           metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb,
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [
+        profile.id,
+        status.oauth_configured ? 'pending_oauth' : 'blocked',
+        JSON.stringify({ google_business_connect_requested_at: new Date().toISOString(), live_feed_enabled: false }),
+      ]
+    )).rows[0];
+    res.json({
+      success: true,
+      connected: false,
+      status: providerGoogleBusinessStatus(legacy || {}, updated),
+      fallback: 'Manual profile link and manual review import remain available until Google Business Profile API access is approved.',
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/providers/:id/google-business/reviews', async (req, res) => {
+  try {
+    const profile = await providerProfileByIdOrSlug(req.params.id);
+    if (!profile) return res.status(404).json({ error: 'Provider profile was not found' });
+    const legacy = await legacyProviderForProfile(profile);
+    res.json({
+      success: true,
+      connected: false,
+      live: false,
+      reviews: [],
+      manual_comments: await getProviderCommentsForLegacyProvider(legacy?.id || 0, { include_hidden: false }).catch(() => []),
+      status: providerGoogleBusinessStatus(legacy || {}, profile),
+      fallback: 'Google live reviews are not connected. Visible manual/parent comments are shown separately.',
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/providers/:id/google-business/locations', async (req, res) => {
+  try {
+    const profile = await providerProfileByIdOrSlug(req.params.id);
+    if (!profile) return res.status(404).json({ error: 'Provider profile was not found' });
+    const legacy = await legacyProviderForProfile(profile);
+    res.json({
+      success: true,
+      connected: false,
+      live: false,
+      locations: [],
+      manual_location: {
+        service_area: profile.service_area || legacy?.service_area || legacy?.city || '',
+        google_place_id: profile.google_place_id || legacy?.google_place_id || '',
+        google_business_profile_url: legacy?.google_business_profile_url || parseJsonMaybe(profile.metadata).manual_google_profile_url || '',
+      },
+      status: providerGoogleBusinessStatus(legacy || {}, profile),
+      fallback: GOOGLE_MAPS_API_KEY ? 'Maps key is configured, but Business Profile locations are not connected.' : 'Use plain text service area until Maps/Places and Business Profile access are configured.',
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -22234,7 +26107,71 @@ app.get('/api/bna/contact-communications', requireAdmin, async (req, res) => {
        LIMIT 300`,
       params
     );
-    res.json({ communications: result.rows });
+    let unifiedRows = [];
+    if (!lead_id) {
+      const unifiedConditions = [];
+      const unifiedParams = [];
+      const addUnified = (value) => {
+        unifiedParams.push(value);
+        return `$${unifiedParams.length}`;
+      };
+      if (scopedProjectKey) {
+        unifiedConditions.push(`COALESCE(u.project_id, (SELECT id FROM bna_projects WHERE project_key = '${DEFAULT_PROJECT_KEY}' LIMIT 1)) = (SELECT id FROM bna_projects WHERE project_key = ${addUnified(scopedProjectKey)} LIMIT 1)`);
+      }
+      if (signup_id) unifiedConditions.push(`u.signup_id = ${addUnified(signup_id)}`);
+      if (student_id) unifiedConditions.push(`u.student_id = ${addUnified(student_id)}`);
+      if (contact_type === 'signup') unifiedConditions.push(`u.signup_id IS NOT NULL`);
+      if (contact_type === 'student') unifiedConditions.push(`u.student_id IS NOT NULL`);
+      const unifiedWhere = unifiedConditions.length ? `WHERE ${unifiedConditions.join(' AND ')}` : '';
+      unifiedRows = (await pool.query(
+        `SELECT
+           ('u-' || u.id)::text AS id,
+           CASE
+             WHEN u.student_id IS NOT NULL THEN 'student'
+             WHEN u.signup_id IS NOT NULL THEN 'signup'
+             ELSE 'general'
+           END AS contact_type,
+           NULL::integer AS lead_id,
+           u.signup_id,
+           u.student_id,
+           u.channel,
+           CASE WHEN u.direction = 'internal' THEN 'internal_note' ELSE u.direction END AS direction,
+           COALESCE(u.subject, u.communication_type, 'Communication') AS summary,
+           COALESCE(u.body_text, regexp_replace(COALESCE(u.body_html, ''), '<[^>]+>', ' ', 'g')) AS body,
+           FALSE AS follow_up_required,
+           u.occurred_at,
+           COALESCE(u.from_name, u.provider, 'system') AS created_by,
+           COALESCE(u.provider, 'communications') AS source,
+           jsonb_build_object(
+             'unified_communication_id', u.id,
+             'from_address', u.from_address,
+             'to_address', u.to_address,
+             'status', u.status,
+             'external_message_id', u.external_message_id
+           ) AS source_context,
+           COALESCE(u.metadata, '{}'::jsonb) AS metadata,
+           u.created_at,
+           u.created_at AS updated_at,
+           NULL::text AS lead_parent_name,
+           NULL::text AS lead_type,
+           NULL::text AS lead_status,
+           NULL::text AS lead_interest_level,
+           s.parent_name AS signup_parent_name,
+           s.student_name AS signup_student_name,
+           st.name AS student_name
+         FROM bna_communications u
+         LEFT JOIN signups s ON s.id = u.signup_id
+         LEFT JOIN bna_students st ON st.id = u.student_id
+         ${unifiedWhere}
+         ORDER BY u.occurred_at DESC, u.id DESC
+         LIMIT 300`,
+        unifiedParams
+      )).rows;
+    }
+    const communications = [...result.rows, ...unifiedRows]
+      .sort((a, b) => Date.parse(b.occurred_at || b.created_at || 0) - Date.parse(a.occurred_at || a.created_at || 0))
+      .slice(0, 500);
+    res.json({ communications });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -25101,6 +29038,126 @@ app.post('/api/parent-portal/request-link', async (req, res) => {
   res.json({ success: true, sent: Boolean(link?.email_sent) });
 });
 
+app.post('/api/bna/auth/request-login-link', async (req, res) => {
+  const parentEmail = normalizeEmail((req.body || {}).parent_email || (req.body || {}).email);
+  if (!parentEmail) return res.status(400).json({ error: 'email is required' });
+  try {
+    const link = await createParentMagicLink({
+      parentEmail,
+      req,
+      requestedBy: 'bna_auth_request_login_link',
+      metadata: { source: 'bna_auth_api' },
+      sendEmail: true,
+    });
+    res.json({
+      success: true,
+      sent: Boolean(link.email_sent),
+      email_error: link.email_error || null,
+      expires_at: link.expires_at,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/auth/setup-password', async (req, res) => {
+  const token = String((req.body || {}).token || '').trim();
+  const password = String((req.body || {}).password || '');
+  if (!token) return res.status(400).json({ error: 'token is required' });
+  try {
+    const result = await setParentPasswordFromResetToken({ token, password });
+    const sessionId = await issueParentSession(result.parent_email);
+    setParentSessionCookie(res, sessionId);
+    res.json({ success: true, role: 'parent' });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/auth/login', async (req, res) => {
+  const parentEmail = normalizeEmail((req.body || {}).parent_email || (req.body || {}).email);
+  const password = String((req.body || {}).password || '');
+  if (!parentEmail || !password) return res.status(400).json({ error: 'email and password are required' });
+  const client = await pool.connect();
+  try {
+    const account = (await client.query(
+      `SELECT parent_email, password_hash
+       FROM bna_parent_password_accounts
+       WHERE lower(parent_email) = $1
+       LIMIT 1`,
+      [parentEmail]
+    )).rows[0];
+    if (!account || !verifyParentPassword(password, account.password_hash)) {
+      return res.status(401).json({ error: 'Invalid email or password' });
+    }
+    const records = await findParentAccessRecords(parentEmail, client);
+    if (!parentAccessEligible(records)) {
+      return res.status(404).json({ error: 'No active student or signup is linked to this email' });
+    }
+    const sessionId = await issueParentSession(parentEmail, client);
+    await client.query(
+      `UPDATE bna_parent_password_accounts
+       SET last_login_at = NOW(),
+           updated_at = NOW()
+       WHERE lower(parent_email) = $1`,
+      [parentEmail]
+    );
+    setParentSessionCookie(res, sessionId);
+    res.json({ success: true, role: 'parent' });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/bna/auth/logout', async (req, res) => {
+  const cookies = parseCookies(req);
+  await clearParentSession(cookies[PARENT_SESSION_COOKIE_NAME]).catch(() => {});
+  clearParentSessionCookie(res);
+  res.json({ success: true });
+});
+
+app.get('/api/bna/auth/me', async (req, res) => {
+  try {
+    const admin = await identifyAdminRequest(req).catch(() => null);
+    if (admin) {
+      return res.json(await buildBnaIdentityPayload({ identity: admin, req, actor: 'admin' }));
+    }
+    const cookies = parseCookies(req);
+    const parentSession = await getValidParentSession(cookies[PARENT_SESSION_COOKIE_NAME]).catch(() => null);
+    if (parentSession) {
+      const household = await getCurrentHouseholdForParentEmail(parentSession.parentEmail).catch(() => null);
+      return res.json({
+        success: true,
+        authenticated: true,
+        role: 'parent',
+        email: parentSession.parentEmail,
+        person: household?.parent_person ? canonicalPersonView(household.parent_person) : null,
+        activeWorkspace: household?.workspace ? workspaceProjectView(household.workspace) : null,
+        active_workspace: household?.workspace ? workspaceProjectView(household.workspace) : null,
+        household: household?.household ? householdView(household.household, household.members || []) : null,
+        memberships: household?.memberships || [],
+        allowedViews: ['overview', 'children', 'goals', 'attendance', 'providers', 'setup', 'assistant'],
+      });
+    }
+    const providerSession = await getValidProviderSession(cookies[PROVIDER_SESSION_COOKIE_NAME]).catch(() => null);
+    if (providerSession) {
+      return res.json({
+        success: true,
+        authenticated: true,
+        role: 'service_provider',
+        provider_id: providerSession.providerId,
+        provider_name: providerSession.providerName || null,
+        allowedViews: ['overview', 'profile', 'services', 'media', 'comments', 'communications', 'google_business', 'upgrade'],
+      });
+    }
+    res.json({ success: false, authenticated: false });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 app.get('/api/parent-portal/session', async (req, res) => {
   const token = String(req.query.token || '').trim();
   if (!token) return res.status(400).json({ error: 'Magic link token is required' });
@@ -25163,6 +29220,450 @@ app.get('/api/parent-portal', async (req, res) => {
     res.json(await buildParentPortalPayload(session.parentEmail));
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/households/current', async (req, res) => {
+  try {
+    const context = await requireHouseholdContext(req);
+    res.json({
+      success: true,
+      workspace: workspaceProjectView(context.workspace),
+      household: householdView(context.household, context.members || []),
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/households/:id', async (req, res) => {
+  try {
+    const context = await requireHouseholdContext(req);
+    if (Number(context.household.id) !== Number(req.params.id)) return res.status(404).json({ error: 'Household was not found for this session' });
+    const body = req.body || {};
+    const updates = [];
+    const values = [];
+    if (body.household_name || body.name) {
+      values.push(limitText(body.household_name || body.name, 180));
+      updates.push(`household_name = $${values.length}`);
+    }
+    if (body.status) {
+      values.push(['active', 'setup', 'paused', 'archived'].includes(String(body.status)) ? String(body.status) : context.household.status);
+      updates.push(`status = $${values.length}`);
+    }
+    if (body.notes || body.metadata) {
+      values.push(JSON.stringify({ notes: limitText(body.notes, 1200) || undefined, ...(body.metadata && typeof body.metadata === 'object' ? body.metadata : {}) }));
+      updates.push(`metadata = COALESCE(metadata, '{}'::jsonb) || $${values.length}::jsonb`);
+    }
+    if (!updates.length) return res.status(400).json({ error: 'No supported household fields supplied' });
+    values.push(context.household.id);
+    const updated = (await pool.query(
+      `UPDATE bna_households
+       SET ${updates.join(', ')},
+           updated_at = NOW()
+       WHERE id = $${values.length}
+       RETURNING *`,
+      values
+    )).rows[0];
+    res.json({ success: true, household: householdView(updated, context.members || []) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/households/:id/members', async (req, res) => {
+  try {
+    const context = await requireHouseholdContext(req);
+    if (Number(context.household.id) !== Number(req.params.id)) return res.status(404).json({ error: 'Household was not found for this session' });
+    res.json({ success: true, members: context.members || [] });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/households/:id/members', async (req, res) => {
+  try {
+    const context = await requireHouseholdContext(req);
+    if (Number(context.household.id) !== Number(req.params.id)) return res.status(404).json({ error: 'Household was not found for this session' });
+    const body = req.body || {};
+    const preferredName = limitText(body.preferred_name || body.name || body.child_name, 180);
+    if (!preferredName) return res.status(400).json({ error: 'Member name is required' });
+    const person = await upsertCanonicalPerson({
+      preferred_name: preferredName,
+      full_name: body.full_name || preferredName,
+      email: body.email || '',
+      phone: body.phone || '',
+      primary_language: normalizeLanguage(body.primary_language || body.language || 'en'),
+      metadata: { source: 'parent_household_member', parent_added: true },
+    });
+    const role = ['parent', 'child', 'caregiver', 'viewer'].includes(String(body.role || 'child')) ? String(body.role || 'child') : 'child';
+    await ensureWorkspaceMembership(context.workspace, person, {
+      role: role === 'caregiver' ? 'parent' : role === 'viewer' ? 'viewer' : role,
+      access_level: role === 'parent' ? 'owner' : 'member',
+      relationship_to_owner: body.relationship || '',
+      tags: normalizeTextArray(body.tags),
+      metadata: { source: 'parent_portal' },
+    });
+    const member = await ensureHouseholdMember(context.household, person, {
+      role,
+      relationship: body.relationship || '',
+      tags: normalizeTextArray(body.tags),
+      metadata: { source: 'parent_portal' },
+    });
+    res.json({ success: true, member, person: canonicalPersonView(person) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/households/:id/members/:memberId', async (req, res) => {
+  try {
+    const context = await requireHouseholdContext(req);
+    if (Number(context.household.id) !== Number(req.params.id)) return res.status(404).json({ error: 'Household was not found for this session' });
+    const body = req.body || {};
+    const result = await pool.query(
+      `UPDATE bna_household_members
+       SET relationship = COALESCE($3, relationship),
+           tags = CASE WHEN $4::text[] IS NULL THEN tags ELSE $4::text[] END,
+           metadata = COALESCE(metadata, '{}'::jsonb) || $5::jsonb,
+           active = COALESCE($6, active),
+           updated_at = NOW()
+       WHERE id = $1
+         AND household_id = $2
+       RETURNING *`,
+      [
+        req.params.memberId,
+        context.household.id,
+        body.relationship ? limitText(body.relationship, 120) : null,
+        body.tags ? normalizeTextArray(body.tags) : null,
+        JSON.stringify(body.metadata && typeof body.metadata === 'object' ? body.metadata : {}),
+        typeof body.active === 'boolean' ? body.active : null,
+      ]
+    );
+    if (!result.rows[0]) return res.status(404).json({ error: 'Household member was not found' });
+    res.json({ success: true, member: result.rows[0] });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+function filterSetupPayload(context) {
+  const household = context.household || {};
+  return {
+    status: household.filter_setup_status || 'not_started',
+    setup_code: household.filter_setup_code || null,
+    notes: household.filter_setup_notes || null,
+    instructions_sent: ['instructions_sent', 'waiting_for_parent', 'submitted', 'verified', 'blocked'].includes(household.filter_setup_status),
+    remote_control_enabled: false,
+    safe_mode: 'guided_checklist_parent_submits_status',
+    allowed_steps: [
+      'Install or open the parent-approved BNA app on the tablet.',
+      'Confirm the household and child profile you are setting up.',
+      'Follow your chosen filter/provider setup screen and paste the resulting setup code or status here.',
+      'Request help if setup is blocked.',
+    ],
+  };
+}
+
+app.get('/api/household/filter-setup', async (req, res) => {
+  try {
+    const context = await requireHouseholdContext(req);
+    res.json({ success: true, household: householdView(context.household, context.members || []), setup: filterSetupPayload(context) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/household/filter-setup/start', async (req, res) => {
+  try {
+    const context = await requireHouseholdContext(req);
+    const body = req.body || {};
+    const updated = (await pool.query(
+      `UPDATE bna_households
+       SET filter_setup_status = 'instructions_sent',
+           filter_setup_notes = COALESCE($2, filter_setup_notes),
+           metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb,
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [
+        context.household.id,
+        limitText(body.notes || body.target_device_label || body.device_label || '', 1200) || null,
+        JSON.stringify({
+          filter_setup_started_at: new Date().toISOString(),
+          target_device_label: limitText(body.target_device_label || body.device_label || '', 120) || null,
+          remote_control_enabled: false,
+        }),
+      ]
+    )).rows[0];
+    res.json({ success: true, setup: filterSetupPayload({ ...context, household: updated }), household: householdView(updated, context.members || []) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/household/filter-setup/submit-code', async (req, res) => {
+  try {
+    const context = await requireHouseholdContext(req);
+    const body = req.body || {};
+    const code = limitText(body.setup_code || body.code || body.status_code || '', 240);
+    const notes = limitText(body.notes || body.status || '', 1600);
+    if (!code && !notes) return res.status(400).json({ error: 'A setup code or status note is required' });
+    const updated = (await pool.query(
+      `UPDATE bna_households
+       SET filter_setup_status = 'submitted',
+           filter_setup_code = COALESCE(NULLIF($2, ''), filter_setup_code),
+           filter_setup_notes = COALESCE(NULLIF($3, ''), filter_setup_notes),
+           metadata = COALESCE(metadata, '{}'::jsonb) || $4::jsonb,
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [
+        context.household.id,
+        code || '',
+        notes || '',
+        JSON.stringify({ filter_setup_submitted_at: new Date().toISOString(), remote_control_enabled: false }),
+      ]
+    )).rows[0];
+    res.json({ success: true, setup: filterSetupPayload({ ...context, household: updated }), household: householdView(updated, context.members || []) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/household/filter-setup/verify', async (req, res) => {
+  try {
+    const admin = await identifyAdminRequest(req).catch(() => null);
+    const context = await requireHouseholdContext(req);
+    const canVerify = Boolean(admin?.scope?.type === 'all');
+    const status = canVerify ? 'verified' : 'submitted';
+    const updated = (await pool.query(
+      `UPDATE bna_households
+       SET filter_setup_status = $2,
+           metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb,
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [
+        context.household.id,
+        status,
+        JSON.stringify({
+          filter_setup_verified_at: canVerify ? new Date().toISOString() : null,
+          verified_by: canVerify ? (admin.username || 'super_admin') : null,
+          parent_requested_verification_at: canVerify ? null : new Date().toISOString(),
+        }),
+      ]
+    )).rows[0];
+    res.json({ success: true, verified: canVerify, setup: filterSetupPayload({ ...context, household: updated }), household: householdView(updated, context.members || []) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/household/filter-setup/help-ticket', async (req, res) => {
+  try {
+    const context = await requireHouseholdContext(req);
+    const body = req.body || {};
+    const message = limitText(body.message || body.body || body.notes || 'Parent needs help with tablet/filter setup.', 3000);
+    const project = context.workspace || await getProjectByKey(DEFAULT_PROJECT_KEY);
+    const ticket = (await pool.query(
+      `INSERT INTO bna_support_tickets (
+         project_id, workspace_id, household_id, person_id, title, description,
+         severity, priority, status, category, reporter_name, reporter_role,
+         assigned_to, source, source_context, created_by
+       ) VALUES (
+         $1, $2, $3, $4, $5, $6,
+         'normal', 'normal', 'open', 'link', $7, 'parent',
+         'Shloimie', 'api', $8::jsonb, 'parent_portal'
+       )
+       RETURNING *`,
+      [
+        project.id,
+        context.workspace?.id || null,
+        context.household.id,
+        context.parent_person?.id || null,
+        'Parent tablet/filter setup help',
+        message,
+        context.parent_person?.preferred_name || 'Parent',
+        JSON.stringify({ source: 'filter_setup_help', household_id: context.household.id }),
+      ]
+    )).rows[0];
+    const updated = (await pool.query(
+      `UPDATE bna_households
+       SET filter_setup_status = 'blocked',
+           metadata = COALESCE(metadata, '{}'::jsonb) || $2::jsonb,
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [context.household.id, JSON.stringify({ filter_setup_help_ticket_id: ticket.id, filter_setup_blocked_at: new Date().toISOString() })]
+    )).rows[0];
+    res.json({ success: true, ticket: supportTicketView(ticket), setup: filterSetupPayload({ ...context, household: updated }) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/parent/overview', async (req, res) => {
+  const cookies = parseCookies(req);
+  try {
+    const session = await getValidParentSession(cookies[PARENT_SESSION_COOKIE_NAME]);
+    if (!session) return res.status(401).json({ error: 'Parent session is required' });
+    res.json({ success: true, ...(await buildParentPortalPayload(session.parentEmail)) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/parent/children', async (req, res) => {
+  const cookies = parseCookies(req);
+  try {
+    const session = await getValidParentSession(cookies[PARENT_SESSION_COOKIE_NAME]);
+    if (!session) return res.status(401).json({ error: 'Parent session is required' });
+    const payload = await buildParentPortalPayload(session.parentEmail);
+    res.json({ success: true, children: payload.students || [], household: payload.household || null });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/parent/goals', async (req, res) => {
+  const cookies = parseCookies(req);
+  try {
+    const session = await getValidParentSession(cookies[PARENT_SESSION_COOKIE_NAME]);
+    if (!session) return res.status(401).json({ error: 'Parent session is required' });
+    const payload = await buildParentPortalPayload(session.parentEmail);
+    const goals = (payload.students || []).flatMap((studentPayload) => (studentPayload.goals || []).map((goal) => ({
+      ...goal,
+      child: studentPayload.student,
+    })));
+    res.json({ success: true, goals });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/parent/goals', async (req, res) => {
+  try {
+    const context = await requireHouseholdContext(req);
+    const body = req.body || {};
+    const title = limitText(body.title || body.goal || body.text || '', 220);
+    if (!title) return res.status(400).json({ error: 'Goal title is required' });
+    const childName = limitText(body.child_name || body.child || body.student_name || '', 180);
+    const childMember = childName
+      ? (context.members || []).find((member) => personLookupName(member.person?.preferred_name || '') === personLookupName(childName))
+      : (context.members || []).find((member) => member.role === 'child');
+    const student = childMember?.person_id
+      ? (await pool.query('SELECT * FROM bna_students WHERE person_id = $1 ORDER BY id ASC LIMIT 1', [childMember.person_id])).rows[0] || null
+      : null;
+    const event = (await pool.query(
+      `INSERT INTO bna_accountability_events (
+         workspace_id, household_id, person_id, student_id, student_name,
+         event_type, title, notes, topic, goal_target_value, goal_unit,
+         next_check_in_date, follow_up_required, metadata, source
+       ) VALUES (
+         $1, $2, $3, $4, $5,
+         'student_goal', $6, $7, $8, $9, $10,
+         $11, TRUE, $12::jsonb, 'manual'
+       )
+       RETURNING *`,
+      [
+        context.workspace?.id || null,
+        context.household.id,
+        childMember?.person_id || null,
+        student?.id || null,
+        childMember?.person?.preferred_name || childName || null,
+        title,
+        limitText(body.notes || '', 1600) || null,
+        limitText(body.topic || 'family_goal', 120) || 'family_goal',
+        numericOrNull(body.target_value || body.target),
+        limitText(body.goal_unit || body.unit || 'checkoff', 40) || 'checkoff',
+        body.next_check_in_date || body.check_in_date || null,
+        JSON.stringify({ source: 'parent_portal', natural_language: body.natural_language || body.prompt || null }),
+      ]
+    )).rows[0];
+    res.json({ success: true, goal: event });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/parent/checkins', async (req, res) => {
+  try {
+    const context = await requireHouseholdContext(req);
+    const body = req.body || {};
+    const title = limitText(body.title || body.summary || body.text || 'Parent check-in', 220);
+    const childName = limitText(body.child_name || body.child || body.student_name || '', 180);
+    const childMember = childName
+      ? (context.members || []).find((member) => personLookupName(member.person?.preferred_name || '') === personLookupName(childName))
+      : (context.members || []).find((member) => member.role === 'child');
+    const event = (await pool.query(
+      `INSERT INTO bna_accountability_events (
+         workspace_id, household_id, person_id, student_name,
+         event_type, title, notes, attendance_status, progress_percent,
+         follow_up_required, metadata, source
+       ) VALUES (
+         $1, $2, $3, $4,
+         'learning_note', $5, $6, $7, $8,
+         $9, $10::jsonb, 'manual'
+       )
+       RETURNING *`,
+      [
+        context.workspace?.id || null,
+        context.household.id,
+        childMember?.person_id || null,
+        childMember?.person?.preferred_name || childName || null,
+        title,
+        limitText(body.notes || body.body || '', 1600) || null,
+        limitText(body.attendance_status || body.status || '', 80) || null,
+        Number.isFinite(Number(body.progress_percent)) ? Number(body.progress_percent) : null,
+        Boolean(body.follow_up_required),
+        JSON.stringify({ source: 'parent_portal_checkin', natural_language: body.natural_language || body.prompt || null }),
+      ]
+    )).rows[0];
+    res.json({ success: true, checkin: event });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/parent/setup', async (req, res) => {
+  try {
+    const context = await requireHouseholdContext(req);
+    res.json({ success: true, setup: filterSetupPayload(context), household: householdView(context.household, context.members || []) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/parent/setup/filter', async (req, res) => {
+  try {
+    const context = await requireHouseholdContext(req);
+    const body = req.body || {};
+    const code = limitText(body.setup_code || body.code || body.status_code || '', 240);
+    const notes = limitText(body.notes || body.status || '', 1600);
+    const status = ['not_started', 'instructions_sent', 'waiting_for_parent', 'submitted', 'verified', 'blocked'].includes(String(body.filter_setup_status || body.status_key || ''))
+      ? String(body.filter_setup_status || body.status_key)
+      : (code || notes ? 'submitted' : 'waiting_for_parent');
+    const updated = (await pool.query(
+      `UPDATE bna_households
+       SET filter_setup_status = $2,
+           filter_setup_code = COALESCE(NULLIF($3, ''), filter_setup_code),
+           filter_setup_notes = COALESCE(NULLIF($4, ''), filter_setup_notes),
+           metadata = COALESCE(metadata, '{}'::jsonb) || $5::jsonb,
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [
+        context.household.id,
+        status,
+        code || '',
+        notes || '',
+        JSON.stringify({ parent_setup_filter_updated_at: new Date().toISOString(), remote_control_enabled: false }),
+      ]
+    )).rows[0];
+    res.json({ success: true, setup: filterSetupPayload({ ...context, household: updated }), household: householdView(updated, context.members || []) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -25279,12 +29780,24 @@ app.post('/api/parent-portal/help', async (req, res) => {
           '',
           message,
         ].filter(Boolean).join('\n');
-        const result = await sendGmailMessage({
+        const result = await sendEmail({
           to: PARENT_HELP_EMAIL,
           subject: 'BNA parent problem report',
           text: emailText,
           html: emailText.replace(/\n/g, '<br>'),
-        }).then((gmailResult) => ({ ok: true, id: gmailResult.data?.id || '' }))
+        }).then(async (mailResult) => {
+          await logEmail({
+            emailType: 'parent_problem_report',
+            to: PARENT_HELP_EMAIL,
+            subject: 'BNA parent problem report',
+            text: emailText,
+            html: emailText.replace(/\n/g, '<br>'),
+            providerMessageId: mailResult.data?.id || null,
+            provider: mailResult.provider,
+            metadata: { communication_id: communication.id, support_ticket_id: ticket.id },
+          });
+          return { ok: true, id: mailResult.data?.id || '' };
+        })
           .catch((error) => ({ ok: false, error: error instanceof Error ? error.message : String(error) }));
         emailSent = Boolean(result.ok);
         emailError = result.error || '';
@@ -25350,12 +29863,24 @@ app.post('/api/parent-portal/help', async (req, res) => {
         '',
         message,
       ].filter(Boolean).join('\n');
-      const result = await sendGmailMessage({
+      const result = await sendEmail({
         to: PARENT_HELP_EMAIL,
         subject: `BNA parent help: ${category}`,
         text: emailText,
         html: emailText.replace(/\n/g, '<br>'),
-      }).then((gmailResult) => ({ ok: true, id: gmailResult.data?.id || '' }))
+      }).then(async (mailResult) => {
+        await logEmail({
+          emailType: 'parent_help_request',
+          to: PARENT_HELP_EMAIL,
+          subject: `BNA parent help: ${category}`,
+          text: emailText,
+          html: emailText.replace(/\n/g, '<br>'),
+          providerMessageId: mailResult.data?.id || null,
+          provider: mailResult.provider,
+          metadata: { communication_id: communication.id, task_id: task.id },
+        });
+        return { ok: true, id: mailResult.data?.id || '' };
+      })
         .catch((error) => ({ ok: false, error: error instanceof Error ? error.message : String(error) }));
       emailSent = Boolean(result.ok);
       emailError = result.error || '';
@@ -25371,6 +29896,133 @@ app.post('/api/parent-portal/help', async (req, res) => {
       tags,
     });
   } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/parent-accountability/onboarding', async (req, res) => {
+  const body = req.body || {};
+  const parentName = limitText(body.parent_name || body.parentName || body.name, 160);
+  const parentEmail = normalizeEmail(body.parent_email || body.parentEmail || body.email);
+  const childName = limitText(body.child_name || body.childName || body.student_name || body.studentName, 160);
+  const childAge = limitText(body.child_age || body.childAge || body.age, 80);
+  const childStruggles = limitText(body.child_struggles || body.childStruggles || body.struggles, 1200);
+  const goals = limitText(body.goals || body.child_goals || body.childGoals, 1200);
+  const importantToChild = limitText(body.important_to_child || body.importantToChild || body.motivators, 1200);
+  const chores = limitText(body.chores || body.responsibilities, 1200);
+  const mealPreferences = limitText(body.meal_preferences || body.mealPreferences || body.food_preferences || body.foodPreferences, 1200);
+  const recordingContext = limitText(body.recording_context || body.recordingContext || body.recordings, 1200);
+  const setupContext = limitText(body.setup_context || body.setupContext || body.setup, 1200);
+  const rawIntake = limitText(body.raw_intake || body.rawIntake || body.intake_text || body.intakeText, 4000);
+  const language = normalizeLanguage(body.language || '') || 'en';
+  const sourceRoute = limitText(body.route || body.path || '', 300);
+  const sourceViewport = body.viewport && typeof body.viewport === 'object'
+    ? {
+        width: Number(body.viewport.width || 0) || null,
+        height: Number(body.viewport.height || 0) || null,
+        device_scale_factor: Number(body.viewport.deviceScaleFactor || body.viewport.device_scale_factor || 0) || null,
+      }
+    : {};
+
+  const description = limitText([
+    'Parent accountability setup request from public conversational onboarding.',
+    parentName ? `Parent name: ${parentName}` : '',
+    parentEmail ? `Parent email: ${parentEmail}` : '',
+    childName ? `Child: ${childName}` : '',
+    childAge ? `Child age/stage: ${childAge}` : '',
+    childStruggles ? `What the child is struggling with: ${childStruggles}` : '',
+    goals ? `Goals: ${goals}` : '',
+    importantToChild ? `Important motivators/interests: ${importantToChild}` : '',
+    chores ? `Chores/responsibilities: ${chores}` : '',
+    mealPreferences ? `Meal/eating preferences: ${mealPreferences}` : '',
+    recordingContext ? `Recording/upload context: ${recordingContext}` : '',
+    setupContext ? `Setup context: ${setupContext}` : '',
+    rawIntake ? `Raw intake:\n${rawIntake}` : '',
+  ].filter(Boolean).join('\n'), 4000);
+
+  if (!description || (!parentName && !parentEmail && !childName && !rawIntake)) {
+    return res.status(400).json({ error: 'Parent name, email, child name, or intake details are required' });
+  }
+
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const bnaProject = await upsertProject({
+      projectKey: DEFAULT_PROJECT_KEY,
+      name: 'BNA',
+      shortName: 'BNA',
+      description: 'Bnei Neviim Academy operations, students, content, contacts, and accounting.',
+    }, client);
+    const sourceContext = {
+      source: 'parent_accountability_onboarding',
+      route: sourceRoute || null,
+      viewport: sourceViewport,
+      language,
+      parent_email: parentEmail || null,
+      parent_name: parentName || null,
+      child_name: childName || null,
+      review_before_student_visibility: true,
+      self_governance_onboarding: true,
+    };
+    const title = limitText(`Parent accountability setup: ${childName || parentName || parentEmail || 'new family'}`, 180);
+    const ticket = (await client.query(
+      `INSERT INTO bna_support_tickets (
+         project_id, title, description, severity, status, category,
+         reporter_name, reporter_role, assigned_to, source, source_context, created_by
+       )
+       VALUES ($1, $2, $3, 'normal', 'open', 'student_parent_data',
+         $4, 'parent', 'Shloimie', 'api', $5::jsonb, 'parent_onboarding')
+       RETURNING *`,
+      [
+        bnaProject.id,
+        title,
+        description,
+        parentName || parentEmail || 'Parent onboarding',
+        JSON.stringify(sourceContext),
+      ]
+    )).rows[0];
+
+    const communication = (await client.query(
+      `INSERT INTO bna_contact_communications (
+         contact_type, channel, direction, summary, body,
+         follow_up_required, occurred_at, created_by, source, source_context, metadata
+       ) VALUES (
+         'general', 'email', 'inbound', $1, $2,
+         TRUE, NOW(), 'parent_onboarding', 'dashboard', $3::jsonb, $4::jsonb
+       )
+       RETURNING *`,
+      [
+        title,
+        description,
+        JSON.stringify({ ...sourceContext, support_ticket_id: ticket.id }),
+        JSON.stringify({
+          parent_email: parentEmail || null,
+          parent_name: parentName || null,
+          child_name: childName || null,
+          child_age: childAge || null,
+          child_struggles: childStruggles || null,
+          goals: goals || null,
+          important_to_child: importantToChild || null,
+          chores: chores || null,
+          meal_preferences: mealPreferences || null,
+          recording_context: recordingContext || null,
+          setup_context: setupContext || null,
+          internal_tags: ['parent_accountability_onboarding', 'self_governance_setup', 'needs_review'],
+        }),
+      ]
+    )).rows[0];
+
+    await client.query('COMMIT');
+    res.json({
+      success: true,
+      message: 'Parent accountability setup received. BNA will review it and follow up before anything is shown to a child.',
+      ticket: supportTicketView(ticket),
+      communication_id: communication.id,
+    });
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
     res.status(err.statusCode || 500).json({ error: err.message });
   } finally {
     client.release();
@@ -28841,6 +33493,10 @@ app.post('/api/bna/payments', requireAdmin, async (req, res) => {
          WHERE id = $3`,
         [amount, method, signup_id, DEFAULT_PAYMENT_INTERVAL_DAYS]
       );
+      await markCheckoutAttemptsPaidForSignup(signup_id, {
+        processor: method || 'admin_payment',
+        metadata: { source: 'api_bna_payments', payment_id: result.rows[0]?.id || null },
+      }).catch((error) => console.warn('Checkout paid update failed:', error.message));
     }
 
     res.json({ success: true, payment: result.rows[0] });
@@ -29857,6 +34513,147 @@ async function runWapiMessageSync({ req, body = {} } = {}) {
   }
 }
 
+function normalizeWhatsappImportMessage(raw = {}) {
+  const externalMessageId = String(raw.external_message_id || raw.message_id || raw.id || '').trim()
+    || sha256Hex(JSON.stringify(raw).slice(0, 2000));
+  const direction = String(raw.direction || (raw.from_me || raw.fromMe ? 'outbound' : 'inbound')).toLowerCase() === 'outbound'
+    ? 'outbound'
+    : 'inbound';
+  const fromPhone = String(raw.from_phone || raw.from || raw.sender || '').trim();
+  const toPhone = String(raw.to_phone || raw.to || raw.recipient || '').trim();
+  const phoneForContact = normalizePhoneDigits(direction === 'outbound' ? toPhone : fromPhone);
+  const occurredAt = raw.occurred_at || raw.timestamp || raw.time || raw.created_at || new Date().toISOString();
+  return {
+    provider: String(raw.provider || 'manual_import').trim() || 'manual_import',
+    externalMessageId,
+    externalChatId: String(raw.external_chat_id || raw.chat_id || raw.chatId || phoneForContact || '').trim(),
+    direction,
+    fromPhone,
+    toPhone,
+    fromName: limitText(raw.from_name || raw.push_name || raw.name || '', 180),
+    bodyText: limitText(raw.body_text || raw.body || raw.text || raw.message || '', 8000),
+    occurredAt,
+    phoneForContact,
+    rawPayload: raw,
+  };
+}
+
+async function findOrCreateWhatsappContact(normalized = {}, { workspaceId = null } = {}, db = pool) {
+  const phone = normalizePhoneDigits(normalized.phoneForContact);
+  if (!phone) return null;
+  let contact = (await db.query(
+    `SELECT c.*
+     FROM bna_contacts c
+     JOIN bna_contact_identities i ON i.contact_id = c.id
+     WHERE i.identity_type IN ('phone', 'whatsapp')
+       AND i.normalized_value = $1
+     LIMIT 1`,
+    [phone]
+  )).rows[0] || null;
+  if (!contact) {
+    contact = (await db.query(
+      `INSERT INTO bna_contacts (
+         workspace_id, full_name, primary_phone, status, source, tags, metadata
+       ) VALUES ($1, $2, $3, 'lead', 'whatsapp_import', $4, $5::jsonb)
+       RETURNING *`,
+      [
+        workspaceId,
+        normalized.fromName || 'WhatsApp lead',
+        normalized.fromPhone || normalized.toPhone || phone,
+        ['whatsapp', 'lead'],
+        JSON.stringify({ source: 'whatsapp_import', external_chat_id: normalized.externalChatId || null }),
+      ]
+    )).rows[0];
+    await db.query(
+      `INSERT INTO bna_contact_pipeline_events (
+         workspace_id, contact_id, event_type, pipeline_status, summary, source, metadata
+       ) VALUES ($1, $2, 'created_from_whatsapp', 'new_lead', $3, 'whatsapp_import', $4::jsonb)`,
+      [
+        workspaceId,
+        contact.id,
+        'Created lead/contact from imported WhatsApp conversation.',
+        JSON.stringify({ external_chat_id: normalized.externalChatId || null }),
+      ]
+    );
+  }
+  await upsertContactIdentity({ contactId: contact.id, identityType: 'phone', identityValue: normalized.fromPhone || normalized.toPhone || phone, metadata: { source: 'whatsapp_import' } }, db);
+  await upsertContactIdentity({ contactId: contact.id, identityType: 'whatsapp', identityValue: normalized.fromPhone || normalized.toPhone || phone, metadata: { source: 'whatsapp_import' } }, db);
+  return contact;
+}
+
+async function importWhatsappMessages({ messages = [], workspaceKey = 'bna', dryRun = false } = {}, db = pool) {
+  const normalizedWorkspaceKey = normalizeWorkspaceKey(workspaceKey) || 'bna';
+  const workspaceRow = (await db.query('SELECT id FROM bna_workspace_settings WHERE workspace_key = $1 LIMIT 1', [normalizedWorkspaceKey])).rows[0] || null;
+  const workspaceId = workspaceRow?.id || null;
+  const imported = [];
+  const failed = [];
+  for (const raw of Array.isArray(messages) ? messages : []) {
+    try {
+      const normalized = normalizeWhatsappImportMessage(raw);
+      if (!normalized.bodyText && !normalized.externalMessageId) throw new Error('message body or id is required');
+      const contact = await findOrCreateWhatsappContact(normalized, { workspaceId }, db);
+      if (dryRun) {
+        imported.push({ dry_run: true, normalized, contact_id: contact?.id || null });
+        continue;
+      }
+      const message = (await db.query(
+        `INSERT INTO bna_whatsapp_messages (
+           workspace_id, contact_id, provider, external_message_id, external_chat_id,
+           direction, from_phone, to_phone, from_name, body_text, occurred_at, raw_payload
+         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, COALESCE($11::timestamp, NOW()), $12::jsonb)
+         ON CONFLICT (provider, external_message_id) DO UPDATE SET
+           contact_id = COALESCE(bna_whatsapp_messages.contact_id, EXCLUDED.contact_id),
+           body_text = COALESCE(NULLIF(EXCLUDED.body_text, ''), bna_whatsapp_messages.body_text),
+           raw_payload = bna_whatsapp_messages.raw_payload || EXCLUDED.raw_payload
+         RETURNING *`,
+        [
+          workspaceId,
+          contact?.id || null,
+          normalized.provider,
+          normalized.externalMessageId,
+          normalized.externalChatId || null,
+          normalized.direction,
+          normalized.fromPhone || null,
+          normalized.toPhone || null,
+          normalized.fromName || null,
+          normalized.bodyText || null,
+          normalized.occurredAt || null,
+          JSON.stringify(normalized.rawPayload || {}),
+        ]
+      )).rows[0];
+      const communication = await logCommunication({
+        workspaceId,
+        contactId: contact?.id || null,
+        channel: 'whatsapp',
+        direction: normalized.direction,
+        communicationType: 'whatsapp_import',
+        fromName: normalized.fromName || null,
+        fromAddress: normalized.fromPhone || null,
+        toAddress: normalized.toPhone || null,
+        bodyText: normalized.bodyText || null,
+        externalMessageId: normalized.externalMessageId,
+        threadKey: normalized.externalChatId || null,
+        provider: normalized.provider,
+        status: 'imported',
+        metadata: { whatsapp_message_id: message.id, source: 'manual_import' },
+        occurredAt: normalized.occurredAt || null,
+      });
+      imported.push({ message, contact, communication });
+    } catch (error) {
+      failed.push({ error: error instanceof Error ? error.message : String(error), raw });
+    }
+  }
+  return {
+    success: failed.length === 0,
+    dry_run: dryRun,
+    imported_count: dryRun ? 0 : imported.length,
+    preview_count: dryRun ? imported.length : 0,
+    failed_count: failed.length,
+    imported,
+    failed,
+  };
+}
+
 app.get('/api/webhooks/wapi', (req, res) => {
   res.json({
     success: true,
@@ -30022,6 +34819,159 @@ app.post('/api/bna/wapi/sync', requireAdmin, async (req, res) => {
       sync_run: err.syncRun || null,
       wapi_response: err.wapiResponse || null,
     });
+  }
+});
+
+app.post('/api/bna/whatsapp/sync', requireAdmin, async (req, res) => {
+  if (!WAPI_API_TOKEN) {
+    return res.status(503).json({
+      success: false,
+      configured: false,
+      error: 'WAPI_API_TOKEN or WHAPI_API_TOKEN is not configured',
+      fallback: 'Use POST /api/bna/whatsapp/import with exported JSON/CSV-shaped messages. No WhatsApp messages are sent by import.',
+    });
+  }
+  const days = Math.max(1, Math.min(Number(req.query.days || req.body?.days || 21), 90));
+  try {
+    const result = await runWapiMessageSync({
+      req,
+      body: {
+        ...(req.body || {}),
+        since_hours: days * 24,
+        count: req.body?.count || req.body?.limit || 100,
+      },
+    });
+    res.json({ ...result, provider: 'wapi', days });
+  } catch (err) {
+    const statusCode = Number(err.statusCode || 500);
+    res.status(statusCode >= 400 && statusCode < 600 ? statusCode : 500).json({
+      success: false,
+      error: err.message,
+      sync_run: err.syncRun || null,
+      wapi_response: err.wapiResponse || null,
+    });
+  }
+});
+
+app.get('/api/bna/whatsapp/messages', requireAdmin, async (req, res) => {
+  const limit = Math.min(Math.max(Number(req.query.limit || 200), 1), 500);
+  try {
+    const result = await pool.query(
+      `SELECT m.*,
+              c.full_name AS contact_name,
+              c.primary_email AS contact_email,
+              c.status AS contact_status
+       FROM bna_whatsapp_messages m
+       LEFT JOIN bna_contacts c ON c.id = m.contact_id
+       ORDER BY COALESCE(m.occurred_at, m.imported_at) DESC, m.id DESC
+       LIMIT $1`,
+      [limit]
+    );
+    res.json({ messages: result.rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/whatsapp/intake', requireAdmin, async (req, res) => {
+  try {
+    const latest = (await pool.query(
+      `SELECT MAX(imported_at) AS last_imported_at,
+              COUNT(*)::int AS imported_conversations,
+              COUNT(DISTINCT contact_id)::int AS matched_contacts
+       FROM bna_whatsapp_messages`
+    )).rows[0] || {};
+    const needsReview = (await pool.query(
+      `SELECT c.*,
+              MAX(m.occurred_at) AS last_message_at,
+              COUNT(m.id)::int AS message_count
+       FROM bna_contacts c
+       JOIN bna_whatsapp_messages m ON m.contact_id = c.id
+       WHERE c.source = 'whatsapp_import'
+         AND COALESCE(c.status, 'lead') IN ('lead', 'new', 'needs_review')
+       GROUP BY c.id
+       ORDER BY MAX(m.occurred_at) DESC NULLS LAST, c.id DESC
+       LIMIT 100`
+    )).rows;
+    res.json({
+      success: true,
+      last_sync: latest.last_imported_at || null,
+      imported_conversations: Number(latest.imported_conversations || 0),
+      matched_existing_contacts: Number(latest.matched_contacts || 0),
+      needs_review: needsReview,
+      auto_sending: false,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/whatsapp/import', requireAdmin, async (req, res) => {
+  try {
+    const messages = Array.isArray(req.body?.messages)
+      ? req.body.messages
+      : Array.isArray(req.body)
+        ? req.body
+        : [];
+    if (!messages.length) return res.status(400).json({ error: 'messages array is required' });
+    const result = await importWhatsappMessages({
+      messages,
+      workspaceKey: req.body?.workspace_key || req.body?.workspace || (opsScopeProjectKey(req) ? defaultWorkspaceKeyForRequest(req) : 'bna'),
+      dryRun: Boolean(req.body?.dry_run || req.body?.dryRun),
+    });
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/whatsapp/:id/convert-to-contact', requireAdmin, async (req, res) => {
+  try {
+    const message = (await pool.query('SELECT * FROM bna_whatsapp_messages WHERE id = $1 LIMIT 1', [req.params.id])).rows[0];
+    if (!message) return res.status(404).json({ error: 'WhatsApp message not found' });
+    const normalized = normalizeWhatsappImportMessage({
+      provider: message.provider,
+      external_message_id: message.external_message_id,
+      external_chat_id: message.external_chat_id,
+      direction: message.direction,
+      from_phone: message.from_phone,
+      to_phone: message.to_phone,
+      from_name: req.body?.full_name || message.from_name,
+      body_text: message.body_text,
+      occurred_at: message.occurred_at,
+    });
+    const contact = await findOrCreateWhatsappContact(normalized, { workspaceId: message.workspace_id });
+    await pool.query('UPDATE bna_whatsapp_messages SET contact_id = $2 WHERE id = $1', [message.id, contact?.id || null]);
+    res.json({ success: true, contact });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/whatsapp/:id/create-ticket', requireAdmin, async (req, res) => {
+  try {
+    const message = (await pool.query('SELECT * FROM bna_whatsapp_messages WHERE id = $1 LIMIT 1', [req.params.id])).rows[0];
+    if (!message) return res.status(404).json({ error: 'WhatsApp message not found' });
+    const project = await getProjectByKey(opsScopeProjectKey(req) || DEFAULT_PROJECT_KEY);
+    const result = await pool.query(
+      `INSERT INTO bna_support_tickets (
+         project_id, title, description, severity, status, category,
+         reporter_name, reporter_role, assigned_to, source, source_context, created_by
+       ) VALUES ($1, $2, $3, $4, 'triage', 'other', $5, 'parent', 'Shloimie', 'dashboard', $6::jsonb, $7)
+       RETURNING *`,
+      [
+        project.id,
+        limitText(req.body?.title || 'WhatsApp conversation needs review', 220),
+        limitText(req.body?.summary || message.body_text || 'Imported WhatsApp message needs review.', 4000),
+        safeSupportTicketSeverity(req.body?.severity || 'normal'),
+        message.from_name || message.from_phone || 'WhatsApp contact',
+        JSON.stringify({ whatsapp_message_id: message.id, external_chat_id: message.external_chat_id || null }),
+        req.opsUser || 'admin',
+      ]
+    );
+    res.json({ success: true, ticket: supportTicketView(result.rows[0]) });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -30388,15 +35338,13 @@ app.post('/api/bna/ops-access-links', requireAdmin, async (req, res) => {
 });
 
 // Task API
-app.get('/api/bna/auth/me', requireAdmin, (req, res) => {
-  const identity = req.opsIdentity || identifyOpsUser(req.opsUser || OPS_USERNAME);
-  res.json({
-    success: true,
-    user: identity?.username || req.opsUser || null,
-    role: identity?.role || 'admin',
-    scope: identity?.scope || { type: 'all', projectKey: null },
-    allowedViews: identity?.allowedViews || ['dashboard', 'pipelines', 'tasks', 'students', 'contacts', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'api_usage', 'admin', 'settings'],
-  });
+app.get('/api/bna/auth/me', requireAdmin, async (req, res) => {
+  try {
+    const identity = req.opsIdentity || identifyOpsUser(req.opsUser || OPS_USERNAME);
+    res.json(await buildBnaIdentityPayload({ identity, req, actor: 'admin' }));
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
 });
 
 app.get('/api/bna/agent-fleet/status', requireAdmin, async (req, res) => {
@@ -30583,8 +35531,129 @@ app.get('/api/bna/projects', requireAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/bna/me', requireAdmin, async (req, res) => {
+  try {
+    const identity = req.opsIdentity || identifyOpsUser(req.opsUser || OPS_USERNAME);
+    res.json(await buildBnaIdentityPayload({ identity, req, actor: 'admin' }));
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/workspaces', requireAdmin, async (req, res) => {
+  try {
+    await ensurePersonalWorkspacesAndPeople();
+    const scopedProjectKey = opsScopeProjectKey(req);
+    const params = [];
+    let query = `SELECT * FROM bna_projects WHERE status <> 'archived'`;
+    if (scopedProjectKey) {
+      params.push(scopedProjectKey);
+      query += ` AND project_key = $${params.length}`;
+    }
+    query += `
+      ORDER BY
+        CASE project_key
+          WHEN 'super_admin' THEN 1
+          WHEN 'bna' THEN 2
+          WHEN 'dratler_family' THEN 3
+          WHEN 'one_time_mishnah_class' THEN 4
+          ELSE 5
+        END,
+        name ASC`;
+    const workspaces = (await pool.query(query, params)).rows.map(workspaceProjectView);
+    const identity = await buildBnaIdentityPayload({ identity: req.opsIdentity || identifyOpsUser(req.opsUser || OPS_USERNAME), req, actor: 'admin' });
+    res.json({
+      success: true,
+      workspaces,
+      activeWorkspace: identity.activeWorkspace,
+      active_workspace: identity.active_workspace,
+      memberships: identity.memberships,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/workspaces/:key', requireAdmin, async (req, res) => {
+  try {
+    await ensurePersonalWorkspacesAndPeople();
+    const key = normalizeWorkspaceKey(req.params.key);
+    assertWorkspaceAccess(req, key);
+    const workspace = await getWorkspaceProjectByKey(key);
+    if (!workspace) return res.status(404).json({ error: 'Workspace was not found' });
+    const memberRows = (await pool.query(
+      `SELECT wm.*,
+              p.project_key,
+              p.name AS workspace_name,
+              p.workspace_type,
+              people.preferred_name AS person_name
+       FROM bna_workspace_memberships wm
+       JOIN bna_projects p ON p.id = wm.workspace_id
+       JOIN bna_people people ON people.id = wm.person_id
+       WHERE wm.workspace_id = $1
+         AND wm.active = TRUE
+       ORDER BY
+         CASE wm.access_level WHEN 'owner' THEN 1 WHEN 'admin' THEN 2 WHEN 'manager' THEN 3 WHEN 'member' THEN 4 ELSE 5 END,
+         people.preferred_name ASC`,
+      [workspace.id]
+    )).rows;
+    res.json({
+      success: true,
+      workspace: workspaceProjectView(workspace),
+      memberships: memberRows.map(workspaceMembershipView),
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/session/workspace', requireAdmin, async (req, res) => {
+  try {
+    const key = normalizeWorkspaceKey(req.body?.workspace_key || req.body?.workspace || req.body?.key);
+    if (!key) return res.status(400).json({ error: 'workspace_key is required' });
+    assertWorkspaceAccess(req, key);
+    const workspace = await getWorkspaceProjectByKey(key);
+    if (!workspace) return res.status(404).json({ error: 'Workspace was not found' });
+    setActiveWorkspaceCookie(res, workspaceKeyForProject(workspace.project_key));
+    res.json({ success: true, activeWorkspace: workspaceProjectView(workspace), active_workspace: workspaceProjectView(workspace) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
 app.get('/api/bna/people', requireAdmin, async (req, res) => {
   try {
+    if (String(req.query.canonical || req.query.mode || '').toLowerCase() === 'canonical') {
+      const result = await pool.query(
+        `SELECT p.*,
+                COALESCE(json_agg(
+                  json_build_object(
+                    'workspace_id', w.id,
+                    'workspace_key', w.project_key,
+                    'workspace_type', w.workspace_type,
+                    'role', wm.role,
+                    'access_level', wm.access_level,
+                    'relationship_to_owner', wm.relationship_to_owner,
+                    'tags', wm.tags
+                  )
+                  ORDER BY w.project_key, wm.role
+                ) FILTER (WHERE wm.id IS NOT NULL), '[]'::json) AS memberships
+         FROM bna_people p
+         LEFT JOIN bna_workspace_memberships wm ON wm.person_id = p.id AND wm.active = TRUE
+         LEFT JOIN bna_projects w ON w.id = wm.workspace_id
+         WHERE p.status <> 'archived'
+         GROUP BY p.id
+         ORDER BY p.preferred_name ASC
+         LIMIT 300`
+      );
+      return res.json({
+        success: true,
+        people: result.rows.map((row) => ({
+          ...canonicalPersonView(row),
+          memberships: Array.isArray(row.memberships) ? row.memberships : [],
+        })),
+      });
+    }
     const scopedProjectKey = opsScopeProjectKey(req);
     const params = [];
     let query = `
@@ -30675,7 +35744,7 @@ app.get('/api/bna/workspace-platform', requireAdmin, async (req, res) => {
       params.push(workspaceFilter);
       workspaceQuery += ` AND workspace_key = $${params.length}`;
     }
-    workspaceQuery += ` ORDER BY CASE workspace_key WHEN 'platform' THEN 1 WHEN 'bna' THEN 2 WHEN 'rabbi_sheller_provider' THEN 3 ELSE 4 END, display_name ASC`;
+    workspaceQuery += ` ORDER BY CASE workspace_type WHEN 'platform' THEN 1 WHEN 'super_admin' THEN 1 WHEN 'school' THEN 2 WHEN 'service_provider' THEN 3 WHEN 'provider' THEN 3 WHEN 'family' THEN 4 WHEN 'household' THEN 5 WHEN 'community' THEN 6 WHEN 'project' THEN 7 ELSE 8 END, display_name ASC`;
     const workspaces = (await pool.query(workspaceQuery, params)).rows.map(workspaceView);
 
     const connectorParams = [];
@@ -31400,7 +36469,7 @@ async function insertAssistantMessage({ threadId, authorType, authorRole, body, 
 
 function assistantIntroForRole(actor = {}) {
   if (actor.type === 'super_admin') {
-    return 'Hi Shloimie. I can help with BNA state, contacts, students, tasks, content, settings, tickets, OpenAI responses, and tracked Codex/system work.';
+    return 'Hi Shloimie. I can help with BNA state, contacts, students, tasks, content, settings, tickets, hosted AI replies, and tracked Codex/system work.';
   }
   if (actor.type === 'parent') {
     return "Hi, I'm the BNA helper. I can help you ask about your son's progress, attendance, school updates, messages, or login issues.";
@@ -31531,100 +36600,670 @@ async function createAssistantCodexTask({ actor, message, thread, body, db = poo
   return task;
 }
 
-async function maybeOpenAiAssistantReply({ actor, message, contextSummary }) {
-  if (!actor.canUseCodex) return null;
-  const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) return null;
-  const response = await fetch(`${(process.env.OPENAI_BASE_URL || 'https://api.openai.com/v1').replace(/\/+$/, '')}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model: process.env.OPENAI_MODEL || 'gpt-4.1-mini',
-      temperature: 0.2,
-      messages: [
-        {
-          role: 'system',
-          content: [
-            'You are the BNA web assistant for Shloimie/super-admin.',
-            'Use the provided BNA context summary and brand-kit guardrails.',
-            'Do not reveal secrets or claim code/deploy work was performed.',
-          ].join('\n'),
-        },
-        {
-          role: 'user',
-          content: JSON.stringify({
-            message,
-            context: contextSummary.summary_text,
-            counts: contextSummary.counts,
-          }),
-        },
-      ],
-    }),
+async function recordAssistantToolCall({
+  thread,
+  threadId,
+  toolName,
+  actor,
+  allowed = false,
+  status = 'requested',
+  resultSummary = '',
+  metadata = {},
+  db = pool,
+}) {
+  await db.query(
+    `INSERT INTO bna_assistant_tool_calls (
+       thread_id, tool_name, requested_by_role, allowed, status, result_summary, metadata
+     ) VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb)`,
+    [
+      thread?.id || threadId,
+      limitText(toolName, 120),
+      limitText(actor?.role || actor?.type || 'anonymous', 80),
+      Boolean(allowed),
+      status,
+      limitText(resultSummary, 500) || null,
+      JSON.stringify(metadata || {}),
+    ]
+  );
+}
+
+function assistantActionWorkspaceForActor(actor = {}, body = {}) {
+  const requested = String(body.workspace_id || body.workspace || body.workspace_key || body.workspaceKey || '').trim();
+  if (actor.canUseCodex && requested) return requested;
+  const surface = normalizeAssistantSurface(body.surface || body.page || body.context?.surface);
+  if (surface === 'provider_workspace' || actor.type === 'service_provider') return WORKSPACES.RABBI_SHELLER_PROVIDER;
+  if (actor.type === 'super_admin' && /super_admin|platform|operations/i.test(requested || surface)) return WORKSPACES.PLATFORM;
+  return WORKSPACES.BNA;
+}
+
+function assistantActionRoleForActor(actor = {}) {
+  if (actor.canUseCodex || actor.type === 'super_admin') return 'super_admin';
+  if (actor.type === 'service_provider') return 'provider_admin';
+  if (actor.type === 'parent') return 'parent';
+  if (actor.type === 'student') return 'student';
+  if (actor.type === 'rabbi' || actor.type === 'staff' || actor.type === 'admin') return 'bna_admin';
+  return actor.role || actor.type || 'participant';
+}
+
+function assistantActionActor(actor = {}, body = {}) {
+  return {
+    user_id: limitText(actor.id || actor.email || actor.name || actor.type || 'web_assistant', 120),
+    role: assistantActionRoleForActor(actor),
+    workspace_id: assistantActionWorkspaceForActor(actor, body),
+  };
+}
+
+function assistantVisibleActionCatalog(actor = {}, body = {}) {
+  const actionActor = assistantActionActor(actor, body);
+  return visibleActionsForActor(listActions(), actionActor).map((item) => ({
+    action_id: item.action_id,
+    label: item.label,
+    description: item.description,
+    category: item.category,
+    required_inputs: item.required_inputs || [],
+    optional_inputs: item.optional_inputs || [],
+    approval_required: Boolean(item.approval_required),
+  }));
+}
+
+function assistantToolCatalogSummary(catalog = []) {
+  return catalog
+    .slice(0, 24)
+    .map((item) => [
+      item.action_id,
+      item.label,
+      item.approval_required ? 'approval_required' : 'direct',
+      item.required_inputs?.length ? `required:${item.required_inputs.join(',')}` : '',
+    ].filter(Boolean).join(' | '))
+    .join('\n');
+}
+
+function assistantShouldUseWebSearch(message) {
+  return /\b(latest|current|currently|today|yesterday|tomorrow|recent|recently|newest|up[-\s]?to[-\s]?date|look\s+up|search\s+(?:the\s+)?web|web\s+search|research\s+online|google\s+it|find\s+online|verify\s+online|what'?s\s+new|as\s+of\s+now|2026|API docs?|pricing|release notes?|status page|approval requirements?|OAuth|Business Profile|Google Business Profile)\b/i.test(String(message || ''));
+}
+
+function assistantExplicitTicketRequest(message) {
+  return /\b(create|open|file|make|send|submit)\b.{0,50}\b(ticket|support request|issue|bug report)\b/i.test(String(message || ''))
+    || /\b(ticket|support request)\s*:/i.test(String(message || ''));
+}
+
+function assistantExplicitDecisionRequest(message) {
+  return /\b(create|open|file|make|save)\b.{0,50}\b(decision|approval|choice)\b/i.test(String(message || ''))
+    || /\b(needs?|need)\b.{0,30}\b(decision|approval)\b/i.test(String(message || ''));
+}
+
+function assistantExplicitTaskRequest(message) {
+  return /\b(create|open|file|make|add|save|capture|put)\b.{0,60}\b(task|todo|to-do|follow[-\s]?up)\b/i.test(String(message || ''))
+    || /\b(task|todo|to-do)\s*:/i.test(String(message || ''));
+}
+
+function assistantShouldUseHostedReply(actor = {}, message = '') {
+  if (!actor.canUseCodex) return false;
+  return /\b(state|summarize|summary|what is happening|brand|memory|tasks|explain|why|how|status|tools?|actions?|provider|fallback|assistant|bot|search)\b/i.test(message)
+    || !assistantMessageLooksLikeCodexRequest(message);
+}
+
+function assistantAdaptiveIntent({ actor = {}, message = '', body = {}, mode = 'safe' }) {
+  const text = String(message || '');
+  if (assistantShouldUseWebSearch(text)) return { kind: 'web_search' };
+  if (assistantExplicitTicketRequest(text)) return { kind: 'action', action_id: 'create_ticket' };
+  if (actor.canUseCodex && (mode === 'codex' || /^\s*codex\s*:/i.test(text) || assistantMessageLooksLikeCodexRequest(text))) {
+    return { kind: 'codex_task' };
+  }
+  if (actor.canUseCodex && assistantExplicitDecisionRequest(text)) return { kind: 'action', action_id: 'create_decision' };
+  if (actor.canUseCodex && assistantExplicitTaskRequest(text)) return { kind: 'action', action_id: 'create_task' };
+  if (actor.type === 'service_provider' && /\b(question|post|ask)\b/i.test(text)) return { kind: 'action', action_id: 'create_provider_question_post' };
+  if (!actor.canUseCodex && assistantMessageLooksLikeCodexRequest(text)) return { kind: 'denied_codex_ticket' };
+  if (assistantShouldCreateTicket(actor, text)) return { kind: 'action', action_id: 'create_ticket' };
+  if (assistantShouldUseHostedReply(actor, text) || mode === 'hosted') return { kind: 'hosted_reply' };
+  return { kind: 'basic_reply' };
+}
+
+function assistantFirstLine(message, fallback = 'Assistant request') {
+  const firstLine = String(message || '').replace(/^\s*(ticket|task|todo|decision|codex)\s*:\s*/i, '').split(/\r?\n/).map((line) => line.trim()).find(Boolean);
+  return limitText(firstLine || fallback, 220);
+}
+
+function assistantInputsForAction(actionId, message, actor = {}, body = {}) {
+  const title = assistantFirstLine(message, 'Web assistant request');
+  if (actionId === 'create_task') {
+    return {
+      title,
+      notes: [
+        'Created by the adaptive web assistant.',
+        body.page_path || body.path ? `Page: ${body.page_path || body.path}` : '',
+        '',
+        message,
+      ].filter(Boolean).join('\n'),
+      category: assistantMessageLooksLikeCodexRequest(message) ? 'technology' : 'operations',
+      urgency: /\b(urgent|today|asap|right now|blocking)\b/i.test(message) ? 'today' : 'this_week',
+      source: 'web',
+      assigned_to: /\b(codex|deploy|code|server|bug|fix|test)\b/i.test(message) ? 'Codex' : null,
+      raw_text: message,
+    };
+  }
+  if (actionId === 'create_decision') {
+    return {
+      title,
+      question: String(message || '').trim(),
+      context: [
+        `Actor: ${actor.name || actor.email || actor.type || 'web assistant user'}`,
+        body.page_path || body.path ? `Page: ${body.page_path || body.path}` : '',
+      ].filter(Boolean).join('\n'),
+    };
+  }
+  if (actionId === 'create_provider_question_post') {
+    return {
+      body: String(message || '').trim(),
+      visibility: body.visibility || 'provider',
+    };
+  }
+  return {
+    title,
+    message: String(message || '').trim(),
+    category: assistantTicketCategory(message),
+    severity: /\b(urgent|blocking|broken|down|critical|right now)\b/i.test(message) ? 'blocking' : 'normal',
+    route: actor.canUseCodex && assistantMessageLooksLikeCodexRequest(message) ? 'codex_review' : 'support',
+    related_type: body.related_type || body.relatedType || null,
+    related_id: body.related_id || body.relatedId || null,
+    reporter_name: actor.name || actor.email || actor.type || null,
+    source: 'web_assistant',
+  };
+}
+
+function assistantActionResultSummary(actionId, result = {}) {
+  if (!result.success) return result.error || 'Action was not completed.';
+  if (result.approval_required || result.dry_run) return `${result.action?.label || actionId} prepared for approval.`;
+  const payload = result.result || {};
+  if (payload.task?.id) return `Created task #${payload.task.id}`;
+  if (payload.ticket?.id) return `Created ticket #${payload.ticket.id}`;
+  if (payload.decision?.id) return `Created decision #${payload.decision.id}`;
+  if (payload.post?.id) return `Created provider post #${payload.post.id}`;
+  return result.message || `${result.action?.label || actionId} completed.`;
+}
+
+function assistantReplyForActionResult(actionId, result = {}) {
+  if (!result.success) {
+    if (result.permission && result.error) {
+      return `I cannot run that action from this workspace. I kept the request in this assistant thread instead.`;
+    }
+    return `I could not complete that action: ${result.error || result.message || 'missing required information'}.`;
+  }
+  if (result.approval_required || result.dry_run) {
+    return `${result.action?.label || 'Action'} is prepared for approval. I did not execute it yet because this action requires an approval step.`;
+  }
+  const payload = result.result || {};
+  if (payload.task?.id) return `Created task #${payload.task.id}: ${payload.task.title || assistantFirstLine(payload.task.notes, 'Task')}.`;
+  if (payload.ticket?.id) return `Created ticket #${payload.ticket.id}: ${payload.ticket.title || 'Support ticket'}.`;
+  if (payload.decision?.id) return `Created decision #${payload.decision.id}: ${payload.decision.title || 'Decision'}.`;
+  if (payload.post?.id) return `Created provider post #${payload.post.id}.`;
+  return result.message || 'Done.';
+}
+
+async function assistantRunActionTool({ actor, message, thread, body, actionId, db = pool }) {
+  const actionActor = assistantActionActor(actor, body);
+  const catalog = assistantVisibleActionCatalog(actor, body);
+  const allowedActionIds = new Set(catalog.map((item) => item.action_id));
+  if (!allowedActionIds.has(actionId)) {
+    await recordAssistantToolCall({
+      thread,
+      toolName: actionId,
+      actor,
+      allowed: false,
+      status: 'denied',
+      resultSummary: `Denied ${actionId} for ${actionActor.role} in ${actionActor.workspace_id}`,
+      metadata: { action_id: actionId, actor: actionActor },
+      db,
+    });
+    return {
+      success: false,
+      denied: true,
+      permission: { allowed: false },
+      error: `Role ${actionActor.role} cannot run ${actionId} in ${actionActor.workspace_id}.`,
+    };
+  }
+  const inputs = assistantInputsForAction(actionId, message, actor, body);
+  const result = await runAction({
+    action_id: actionId,
+    inputs,
+    source: 'web_assistant',
+    workspace_id: actionActor.workspace_id,
+  }, {
+    actor: actionActor,
+    source: 'web_assistant',
+    db,
   });
-  const text = await response.text();
-  if (!response.ok) throw new Error(`OpenAI assistant failed ${response.status}: ${text.slice(0, 300)}`);
-  return JSON.parse(text)?.choices?.[0]?.message?.content || null;
+  const relatedTask = result.result?.task || result.result?.decision || null;
+  if (relatedTask?.id) {
+    await db.query(
+      'UPDATE bna_assistant_threads SET related_task_id = $2, status = $3, updated_at = NOW() WHERE id = $1',
+      [thread.id, relatedTask.id, result.dry_run ? 'open' : 'in_progress']
+    );
+  }
+  if (result.result?.ticket?.id) {
+    await db.query(
+      'UPDATE bna_assistant_threads SET related_ticket_id = $2, status = $3, updated_at = NOW() WHERE id = $1',
+      [thread.id, result.result.ticket.id, result.dry_run ? 'open' : 'waiting']
+    );
+  }
+  await recordAssistantToolCall({
+    thread,
+    toolName: actionId,
+    actor,
+    allowed: Boolean(result.success),
+    status: result.success ? (result.dry_run ? 'allowed' : 'completed') : 'failed',
+    resultSummary: assistantActionResultSummary(actionId, result),
+    metadata: {
+      action_id: actionId,
+      actor: actionActor,
+      inputs: {
+        title: inputs.title || null,
+        category: inputs.category || null,
+        severity: inputs.severity || null,
+        visibility: inputs.visibility || null,
+      },
+      executed: Boolean(result.executed),
+      dry_run: Boolean(result.dry_run),
+      approval_required: Boolean(result.approval_required),
+      audit_log_id: result.audit_log?.id || null,
+      related_ids: {
+        task_id: result.result?.task?.id || null,
+        ticket_id: result.result?.ticket?.id || null,
+        decision_id: result.result?.decision?.id || null,
+        post_id: result.result?.post?.id || null,
+      },
+    },
+    db,
+  });
+  return result;
+}
+
+function extractAssistantWebSearchText(data = {}) {
+  if (data.output_text) return String(data.output_text || '').trim();
+  const output = Array.isArray(data.output) ? data.output : [];
+  return output
+    .flatMap((item) => Array.isArray(item.content) ? item.content : [])
+    .map((content) => content.text || content.output_text || '')
+    .filter(Boolean)
+    .join('\n')
+    .trim();
+}
+
+function extractAssistantWebSearchSources(data = {}) {
+  const sources = [];
+  const pushSource = (source = {}) => {
+    const url = source.url || source.uri || source.link;
+    if (!url) return;
+    sources.push({
+      title: limitText(source.title || source.name || url, 180),
+      url: limitText(url, 500),
+    });
+  };
+  for (const item of Array.isArray(data.output) ? data.output : []) {
+    for (const source of Array.isArray(item.action?.sources) ? item.action.sources : []) pushSource(source);
+    for (const content of Array.isArray(item.content) ? item.content : []) {
+      for (const annotation of Array.isArray(content.annotations) ? content.annotations : []) pushSource(annotation);
+    }
+  }
+  return sources.slice(0, 8);
+}
+
+async function fetchOpenAiAssistantWebSearch({ actor, message, contextSummary }) {
+  if (!OPENAI_API_KEY) {
+    throw new Error('web_search_provider_not_configured');
+  }
+  const controller = new AbortController();
+  const timeoutMs = Number(process.env.OPENAI_WEB_SEARCH_TIMEOUT_MS || 45000);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    const response = await fetch(`${OPENAI_BASE_URL.replace(/\/+$/, '')}/responses`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${OPENAI_API_KEY}`,
+      },
+      signal: controller.signal,
+      body: JSON.stringify({
+        model: OPENAI_RESEARCH_MODEL,
+        input: [
+          {
+            role: 'system',
+            content: [
+              'You are the BNA assistant using live public web search.',
+              'Use web search for current facts and cite useful sources in concise plain language.',
+              'Do not reveal secrets, API keys, provider credentials, or private BNA records.',
+              'Do not claim any internal BNA action was performed.',
+              actor?.canUseCodex ? 'The user is the super-admin; technical implementation context is allowed.' : 'The user is not the super-admin; answer only with public information and general BNA-safe guidance.',
+              contextSummary?.summary_text ? `Internal context summary for scope only:\n${contextSummary.summary_text}` : '',
+            ].filter(Boolean).join('\n'),
+          },
+          {
+            role: 'user',
+            content: String(message || '').trim(),
+          },
+        ],
+        tools: [{ type: 'web_search' }],
+        include: ['web_search_call.action.sources'],
+      }),
+    });
+    const raw = await response.text();
+    if (!response.ok) {
+      throw new Error(`web_search_failed:${response.status}:${raw.slice(0, 220)}`);
+    }
+    const data = JSON.parse(raw);
+    const text = extractAssistantWebSearchText(data);
+    if (!text) throw new Error('web_search_empty_response');
+    return {
+      body: text,
+      sources: extractAssistantWebSearchSources(data),
+    };
+  } catch (error) {
+    if (error?.name === 'AbortError') {
+      throw new Error(`web_search_timeout:${Math.round(timeoutMs / 1000)}s`);
+    }
+    throw error;
+  } finally {
+    clearTimeout(timeout);
+  }
+}
+
+function hostedAssistantProviderConfigs() {
+  const providers = [];
+  if (OPENAI_API_KEY) {
+    providers.push({
+      provider: 'openai',
+      apiKey: OPENAI_API_KEY,
+      baseUrl: OPENAI_BASE_URL,
+      model: OPENAI_MODEL,
+    });
+  }
+  if (KIMI_API_KEY) {
+    providers.push({
+      provider: 'kimi',
+      apiKey: KIMI_API_KEY,
+      baseUrl: KIMI_BASE_URL,
+      model: KIMI_MODEL,
+    });
+  }
+  return providers.sort((left, right) => {
+    if (left.provider === AI_PRIMARY_PROVIDER) return -1;
+    if (right.provider === AI_PRIMARY_PROVIDER) return 1;
+    return left.provider.localeCompare(right.provider);
+  });
+}
+
+function hostedAssistantErrorForUser() {
+  return 'The hosted assistant is temporarily unavailable. I can still create a task or support ticket if you tell me what needs to happen.';
+}
+
+function hostedAssistantErrorForLog(error) {
+  return String(error?.message || error || 'Hosted assistant provider failed').replace(/\s+/g, ' ').slice(0, 220);
+}
+
+async function maybeHostedAssistantReply({ actor, message, contextSummary, toolCatalog = [], webSearchUnavailable = false }) {
+  if (!actor.canUseCodex) return null;
+  const providerConfigs = hostedAssistantProviderConfigs();
+  if (!providerConfigs.length) return null;
+  const toolSummary = assistantToolCatalogSummary(toolCatalog);
+  const messages = [
+    {
+      role: 'system',
+      content: [
+        'You are the BNA web assistant for Shloimie/super-admin.',
+        'Use the provided BNA context summary and brand-kit guardrails.',
+        'The browser UI is intentionally one chat interface. Do not ask the user to click mode buttons; infer the next step from the text.',
+        'Available server-side actions are listed below. Never claim an action was executed unless the server response already says it executed.',
+        toolSummary ? `Available actions:\n${toolSummary}` : 'No server-side actions are visible to this actor.',
+        webSearchUnavailable ? 'Live web search was requested but is not available from this server response. Do not claim that you searched the web or verified current facts.' : '',
+        'Do not reveal secrets, provider credentials, or internal key status.',
+        'Do not claim code/deploy work was performed.',
+        'Do not mention the underlying hosted AI provider unless the user explicitly asks as the super-admin.',
+      ].join('\n'),
+    },
+    {
+      role: 'user',
+      content: JSON.stringify({
+        message,
+        context: contextSummary.summary_text,
+        counts: contextSummary.counts,
+      }),
+    },
+  ];
+  const failures = [];
+  for (const providerConfig of providerConfigs) {
+    try {
+      const body = String(await fetchChatCompletionText({
+        provider: providerConfig.provider,
+        baseUrl: providerConfig.baseUrl,
+        apiKey: providerConfig.apiKey,
+        timeoutMs: 45000,
+        payload: {
+          model: providerConfig.model,
+          temperature: providerConfig.provider === 'kimi' ? 1 : 0.2,
+          messages,
+        },
+      })).trim();
+      if (body) {
+        return {
+          body,
+          provider: providerConfig.provider,
+          fallback_used: failures.length > 0,
+          failures,
+        };
+      }
+      failures.push({ provider: providerConfig.provider, error: 'empty_response' });
+    } catch (error) {
+      failures.push({ provider: providerConfig.provider, error: hostedAssistantErrorForLog(error) });
+      if (providerConfigs.length > failures.length) {
+        console.warn('[assistant-ai] Hosted AI provider failed; trying fallback.');
+      }
+    }
+  }
+  const error = new Error(hostedAssistantErrorForUser());
+  error.failures = failures;
+  throw error;
 }
 
 async function buildAssistantReply({ actor, message, thread, project, body, db = pool }) {
   const requestedMode = String(body.mode || 'auto').toLowerCase();
-  const mode = actor.canUseCodex ? (requestedMode === 'ai' ? 'openai' : requestedMode) : 'safe';
-  if (actor.canUseCodex && (mode === 'codex' || /^\s*codex\s*:/i.test(message))) {
+  const mode = actor.canUseCodex ? (requestedMode === 'ai' ? 'hosted' : requestedMode) : 'safe';
+  const toolCatalog = assistantVisibleActionCatalog(actor, body);
+  const intent = assistantAdaptiveIntent({ actor, message, body, mode });
+
+  if (intent.kind === 'web_search') {
+    const contextSummary = actor.canUseCodex ? buildBnaAiContextSummary({ repoRoot: __dirname }) : null;
+    try {
+      const webSearchReply = await fetchOpenAiAssistantWebSearch({ actor, message, contextSummary });
+      await recordAssistantToolCall({
+        thread,
+        toolName: 'web_search',
+        actor,
+        allowed: true,
+        status: 'completed',
+        resultSummary: 'Live web search completed',
+        metadata: {
+          model: OPENAI_RESEARCH_MODEL,
+          source_count: webSearchReply.sources.length,
+          sources: webSearchReply.sources,
+        },
+        db,
+      });
+      return {
+        body: webSearchReply.body,
+        metadata: {
+          intent: 'web_search',
+          web_search: true,
+          provider: 'openai',
+          source_count: webSearchReply.sources.length,
+          sources: webSearchReply.sources,
+          context_counts: contextSummary?.counts || null,
+        },
+      };
+    } catch (error) {
+      await recordAssistantToolCall({
+        thread,
+        toolName: 'web_search',
+        actor,
+        allowed: Boolean(OPENAI_API_KEY),
+        status: 'failed',
+        resultSummary: 'Live web search unavailable',
+        metadata: { error: hostedAssistantErrorForLog(error), model: OPENAI_RESEARCH_MODEL },
+        db,
+      });
+      if (actor.canUseCodex) {
+        try {
+          const hostedReply = await maybeHostedAssistantReply({
+            actor,
+            message,
+            contextSummary,
+            toolCatalog,
+            webSearchUnavailable: true,
+          });
+          if (hostedReply?.body) {
+            return {
+              body: hostedReply.body,
+              metadata: {
+                intent: 'web_search_fallback_hosted_ai',
+                hosted_ai: true,
+                web_search: false,
+                provider: hostedReply.provider,
+                fallback_used: Boolean(hostedReply.fallback_used),
+                failures: hostedReply.failures || [],
+                web_search_error: hostedAssistantErrorForLog(error),
+                context_counts: contextSummary?.counts || null,
+              },
+            };
+          }
+        } catch (hostedError) {
+          return {
+            body: 'I cannot verify live web results from this server right now. I can still create a tracked task, ticket, or decision if you tell me what to file.',
+            metadata: {
+              intent: 'web_search_unavailable',
+              hosted_ai: false,
+              web_search: false,
+              error: hostedAssistantErrorForLog(error),
+              hosted_error: hostedAssistantErrorForLog(hostedError),
+              failures: hostedError.failures || [],
+              context_counts: contextSummary?.counts || null,
+            },
+          };
+        }
+      }
+      return {
+        body: `${assistantIntroForRole(actor)} I cannot verify live web results from this server right now. I can still route your message to the right BNA channel.`,
+        metadata: {
+          intent: 'web_search_unavailable',
+          hosted_ai: false,
+          web_search: false,
+          error: hostedAssistantErrorForLog(error),
+        },
+      };
+    }
+  }
+
+  if (intent.kind === 'codex_task') {
     const task = await createAssistantCodexTask({ actor, message, thread, body, db });
     return {
       body: `Queued this for Codex as tracked task #${task.id}. It will stay in the task/ledger flow instead of running untracked CLI from the browser.`,
       metadata: { intent: 'admin_codex_task', task_id: task.id },
     };
   }
-  if (actor.canUseCodex && (mode === 'openai' || /\b(state|summarize|summary|what is happening|brand|memory|tasks)\b/i.test(message))) {
-    const contextSummary = buildBnaAiContextSummary({ repoRoot: __dirname });
-    try {
-      const openAiReply = await maybeOpenAiAssistantReply({ actor, message, contextSummary });
-      if (openAiReply) return { body: openAiReply, metadata: { intent: 'admin_openai_query', openai: true, context_counts: contextSummary.counts } };
-    } catch (error) {
-      return {
-        body: `I loaded the BNA context and brand kit, but OpenAI was not available for this web reply: ${error.message}`,
-        metadata: { intent: 'admin_openai_query', openai: false, error: error.message, context_counts: contextSummary.counts },
-      };
-    }
-    return {
-      body: `I loaded the BNA context and brand kit. Core files: ${contextSummary.counts.core_files}; brand-kit files: ${contextSummary.counts.brand_kit_files}; latest handoffs: ${contextSummary.counts.newest_handoffs}. OpenAI is not configured for this server reply right now.`,
-      metadata: { intent: 'admin_openai_query', openai: false, context_counts: contextSummary.counts },
-    };
-  }
-  if (!actor.canUseCodex && assistantMessageLooksLikeCodexRequest(message)) {
+
+  if (intent.kind === 'denied_codex_ticket') {
     const ticket = await createAssistantSupportTicket({ actor, message, thread, project, body, db });
-    await db.query(
-      `INSERT INTO bna_assistant_tool_calls (
-         thread_id, tool_name, requested_by_role, allowed, status, result_summary, metadata
-       ) VALUES ($1, 'queue_codex_task', $2, FALSE, 'denied', $3, $4::jsonb)`,
-      [
-        thread.id,
-        actor.role || actor.type,
-        'Non-admin Codex/CLI request converted to support ticket',
-        JSON.stringify({ ticket_id: ticket.id }),
-      ]
-    );
+    await recordAssistantToolCall({
+      thread,
+      toolName: 'queue_codex_task',
+      actor,
+      allowed: false,
+      status: 'denied',
+      resultSummary: 'Non-admin Codex/CLI request converted to support ticket',
+      metadata: { ticket_id: ticket.id },
+      db,
+    });
     return {
       body: `I sent this to Shloimie as support ticket #${ticket.id}. Web assistant users cannot invoke Codex or CLI directly.`,
       metadata: { intent: 'non_admin_codex_denied', ticket_id: ticket.id },
     };
   }
-  if (assistantShouldCreateTicket(actor, message)) {
-    const ticket = await createAssistantSupportTicket({ actor, message, thread, project, body, db });
+
+  if (intent.kind === 'action') {
+    if (intent.action_id === 'create_ticket' && actor.type === 'anonymous') {
+      const ticket = await createAssistantSupportTicket({ actor, message, thread, project, body, db });
+      return {
+        body: `I sent this to the office as ticket #${ticket.id}.`,
+        metadata: { intent: 'open_ticket', ticket_id: ticket.id, action_id: intent.action_id },
+      };
+    }
+    const actionResult = await assistantRunActionTool({
+      actor,
+      message,
+      thread,
+      body,
+      actionId: intent.action_id,
+      db,
+    });
     return {
-      body: actor.type === 'anonymous'
-        ? `I sent this to the office as ticket #${ticket.id}.`
-        : `I saved this for Shloimie/admin as ticket #${ticket.id}.`,
-      metadata: { intent: 'open_ticket', ticket_id: ticket.id },
+      body: assistantReplyForActionResult(intent.action_id, actionResult),
+      metadata: {
+        intent: 'assistant_action',
+        action_id: intent.action_id,
+        success: Boolean(actionResult.success),
+        executed: Boolean(actionResult.executed),
+        dry_run: Boolean(actionResult.dry_run),
+        approval_required: Boolean(actionResult.approval_required),
+        audit_log_id: actionResult.audit_log?.id || null,
+        related_ids: {
+          task_id: actionResult.result?.task?.id || null,
+          ticket_id: actionResult.result?.ticket?.id || null,
+          decision_id: actionResult.result?.decision?.id || null,
+          post_id: actionResult.result?.post?.id || null,
+        },
+      },
     };
   }
+
+  if (intent.kind === 'hosted_reply') {
+    const contextSummary = buildBnaAiContextSummary({ repoRoot: __dirname });
+    try {
+      const hostedReply = await maybeHostedAssistantReply({ actor, message, contextSummary, toolCatalog });
+      if (hostedReply?.body) {
+        return {
+          body: hostedReply.body,
+          metadata: {
+            intent: 'admin_hosted_ai_query',
+            hosted_ai: true,
+            provider: hostedReply.provider,
+            fallback_used: Boolean(hostedReply.fallback_used),
+            failures: hostedReply.failures || [],
+            context_counts: contextSummary.counts,
+          },
+        };
+      }
+    } catch (error) {
+      return {
+        body: hostedAssistantErrorForUser(),
+        metadata: {
+          intent: 'admin_hosted_ai_query',
+          hosted_ai: false,
+          error: hostedAssistantErrorForLog(error),
+          failures: error.failures || [],
+          context_counts: contextSummary.counts,
+        },
+      };
+    }
+    return {
+      body: `I loaded the BNA context and brand kit. Core files: ${contextSummary.counts.core_files}; brand-kit files: ${contextSummary.counts.brand_kit_files}; latest handoffs: ${contextSummary.counts.newest_handoffs}. Hosted chat is not configured on this server, but I can still create tracked tasks or tickets.`,
+      metadata: { intent: 'admin_hosted_ai_query', hosted_ai: false, context_counts: contextSummary.counts },
+    };
+  }
+
   return {
-    body: `${assistantIntroForRole(actor)} You can ask a basic question here, or send a message and I will route it to the right BNA channel.`,
-    metadata: { intent: 'public_basic_answer' },
+    body: `${assistantIntroForRole(actor)} Type what you want to set up, fix, ask, or record, and I will choose the allowed BNA action for this workspace.`,
+    metadata: {
+      intent: 'public_basic_answer',
+      visible_action_count: toolCatalog.length,
+    },
   };
 }
 
@@ -31751,6 +37390,367 @@ app.get('/api/bna/assistant/threads/:id', async (req, res) => {
       thread: assistantThreadView(thread),
       messages: messages.map(assistantMessageView),
     });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/assistant/context', async (req, res) => {
+  try {
+    const actor = await resolveAssistantActor(req);
+    res.json({
+      success: true,
+      actor: {
+        type: actor.type,
+        role: actor.role,
+        name: actor.name,
+        email: actor.email || null,
+        can_use_codex: Boolean(actor.canUseCodex),
+      },
+      greeting: assistantIntroForRole(actor),
+      actions: actor.canUseCodex ? supportedBotActions() : [],
+      language: normalizeLanguage(req.query.language || actor.language || 'en'),
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/assistant/threads', async (req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const actor = await resolveAssistantActor(req, client);
+    const { thread } = await ensureAssistantThread({ actor, body: req.body || {}, db: client });
+    await client.query('COMMIT');
+    res.json({ success: true, thread: assistantThreadView(thread) });
+  } catch (err) {
+    try { await client.query('ROLLBACK'); } catch {}
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.get('/api/bna/assistant/threads/:id/messages', async (req, res) => {
+  try {
+    const actor = await resolveAssistantActor(req);
+    const thread = await getAssistantThreadForActor(req.params.id, actor);
+    if (!thread) return res.status(404).json({ error: 'Assistant thread not found' });
+    const messages = (await pool.query(
+      `SELECT *
+       FROM bna_assistant_messages
+       WHERE thread_id = $1
+       ORDER BY created_at ASC, id ASC`,
+      [thread.id]
+    )).rows;
+    res.json({ success: true, messages: messages.map(assistantMessageView) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/assistant/threads/:id/messages', async (req, res) => {
+  const body = req.body || {};
+  const messageText = limitText(body.message || body.body || body.text || '', 8000);
+  if (!messageText) return res.status(400).json({ error: 'message is required' });
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const actor = await resolveAssistantActor(req, client);
+    const thread = await getAssistantThreadForActor(req.params.id, actor, client);
+    if (!thread) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Assistant thread not found' });
+    }
+    const userMessage = await insertAssistantMessage({
+      threadId: thread.id,
+      authorType: 'user',
+      authorRole: actor.role || actor.type,
+      body: messageText,
+      metadata: { page_path: body.page_path || body.path || null },
+      db: client,
+    });
+    const project = await getProjectByKey(thread.project_key || DEFAULT_PROJECT_KEY, client).catch(() => null);
+    const reply = await buildAssistantReply({ actor, message: messageText, thread, project, body, db: client });
+    const assistantMessage = await insertAssistantMessage({
+      threadId: thread.id,
+      authorType: 'assistant',
+      authorRole: actor.canUseCodex ? 'super_admin_assistant' : 'safe_assistant',
+      body: reply.body,
+      metadata: reply.metadata,
+      db: client,
+    });
+    await client.query('COMMIT');
+    res.json({
+      success: true,
+      messages: [assistantMessageView(userMessage), assistantMessageView(assistantMessage)],
+    });
+  } catch (err) {
+    try { await client.query('ROLLBACK'); } catch {}
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/bna/assistant/actions/:action', requireAdmin, async (req, res) => {
+  try {
+    const body = req.body || {};
+    const workspaceKey = assertWorkspaceAccess(req, body.workspace_key || body.workspace || defaultWorkspaceKeyForRequest(req));
+    const result = await runAction({
+      action_id: req.params.action,
+      inputs: body.inputs || body.payload || {},
+      source: body.source || 'assistant_action',
+      dry_run: body.dry_run !== false && body.dryRun !== false,
+      approved: Boolean(body.approved || body.confirm === 'APPROVE_TYPED_ACTION'),
+      actor: {
+        user_id: req.opsUser || 'admin',
+        role: body.actor_role || req.opsIdentity?.role || 'admin',
+        workspace_id: workspaceKey,
+      },
+    }, actionRunnerContext(req, body.source || 'assistant_action'));
+    res.status(result.success ? 200 : 400).json(result);
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/assistant/threads', async (req, res) => {
+  try {
+    const actor = await resolveAssistantActor(req);
+    const params = [];
+    let whereClause = '';
+    if (!actor.canUseCodex) {
+      params.push(safeAssistantActorType(actor.type));
+      params.push(actor.id || actor.anonymousId || '');
+      params.push(actor.email || '');
+      whereClause = `WHERE actor_type = $1 AND ((actor_id <> '' AND actor_id = $2) OR (actor_email <> '' AND lower(actor_email) = lower($3)))`;
+    }
+    const result = await pool.query(
+      `SELECT *
+       FROM bna_assistant_threads
+       ${whereClause}
+       ORDER BY updated_at DESC, id DESC
+       LIMIT 30`,
+      params
+    );
+    res.json({ success: true, actor: { type: actor.type, role: actor.role, can_use_codex: Boolean(actor.canUseCodex) }, threads: result.rows.map(assistantThreadView) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/assistant/threads', async (req, res) => {
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const actor = await resolveAssistantActor(req, client);
+    const { thread } = await ensureAssistantThread({ actor, body: req.body || {}, db: client });
+    await client.query('COMMIT');
+    res.json({ success: true, thread: assistantThreadView(thread) });
+  } catch (err) {
+    try { await client.query('ROLLBACK'); } catch {}
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.get('/api/assistant/threads/:id/messages', async (req, res) => {
+  try {
+    const actor = await resolveAssistantActor(req);
+    const thread = await getAssistantThreadForActor(req.params.id, actor);
+    if (!thread) return res.status(404).json({ error: 'Assistant thread not found' });
+    const messages = (await pool.query(
+      `SELECT *
+       FROM bna_assistant_messages
+       WHERE thread_id = $1
+       ORDER BY created_at ASC, id ASC`,
+      [thread.id]
+    )).rows;
+    res.json({ success: true, thread: assistantThreadView(thread), messages: messages.map(assistantMessageView) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/assistant/threads/:id/messages', async (req, res) => {
+  const body = req.body || {};
+  const messageText = limitText(body.message || body.body || body.text || '', 8000);
+  if (!messageText) return res.status(400).json({ error: 'message is required' });
+  const client = await pool.connect();
+  try {
+    await client.query('BEGIN');
+    const actor = await resolveAssistantActor(req, client);
+    const thread = await getAssistantThreadForActor(req.params.id, actor, client);
+    if (!thread) {
+      await client.query('ROLLBACK');
+      return res.status(404).json({ error: 'Assistant thread not found' });
+    }
+    const userMessage = await insertAssistantMessage({
+      threadId: thread.id,
+      authorType: 'user',
+      authorRole: actor.role || actor.type,
+      body: messageText,
+      metadata: { page_path: body.page_path || body.path || null, route_alias: '/api/assistant' },
+      db: client,
+    });
+    const project = await getProjectByKey(DEFAULT_PROJECT_KEY, client).catch(() => null);
+    const reply = await buildAssistantReply({ actor, message: messageText, thread, project, body, db: client });
+    const assistantMessage = await insertAssistantMessage({
+      threadId: thread.id,
+      authorType: 'assistant',
+      authorRole: actor.canUseCodex ? 'super_admin_assistant' : 'safe_assistant',
+      body: reply.body,
+      metadata: reply.metadata,
+      db: client,
+    });
+    await client.query('COMMIT');
+    res.json({ success: true, messages: [assistantMessageView(userMessage), assistantMessageView(assistantMessage)] });
+  } catch (err) {
+    try { await client.query('ROLLBACK'); } catch {}
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    client.release();
+  }
+});
+
+app.post('/api/assistant/action', async (req, res) => {
+  try {
+    const actor = await resolveAssistantActor(req);
+    const action = String(req.body?.action || req.body?.action_id || '').trim();
+    if (!action) return res.status(400).json({ error: 'action is required' });
+    if (actor.canUseCodex && req.body?.run_bna_action) {
+      const result = await runAction({
+        action_id: action,
+        inputs: req.body.inputs || req.body.payload || {},
+        source: 'assistant_action',
+        dry_run: req.body.dry_run !== false,
+        approved: Boolean(req.body.approved || req.body.confirm === 'APPROVE_TYPED_ACTION'),
+        actor: { user_id: actor.name || 'super_admin', role: actor.role || 'super_admin', workspace_id: req.body.workspace_key || 'super_admin' },
+      }, actionRunnerContext(req, 'assistant_action'));
+      return res.status(result.success ? 200 : 400).json(result);
+    }
+    if (['create_ticket', 'ticket', 'support_ticket'].includes(action)) {
+      const project = await getProjectByKey(DEFAULT_PROJECT_KEY);
+      const thread = (await ensureAssistantThread({ actor, body: req.body || {} })).thread;
+      const ticket = await createAssistantSupportTicket({
+        actor,
+        message: req.body?.body || req.body?.message || req.body?.title || 'Assistant-created support ticket',
+        thread,
+        project,
+        body: req.body || {},
+      });
+      return res.json({ success: true, action, ticket, created_actions: [{ type: 'ticket', id: ticket.id }] });
+    }
+    res.status(403).json({ error: 'This assistant action is not available for this role yet' });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/tickets', async (req, res) => {
+  try {
+    const actor = await resolveAssistantActor(req);
+    const params = [];
+    let where = `WHERE t.status <> 'closed'`;
+    if (!actor.canUseCodex) {
+      params.push(actor.email || '');
+      params.push(actor.id || '');
+      where += ` AND (
+        lower(COALESCE(t.source_context->>'actor_email', '')) = lower($${params.length - 1})
+        OR COALESCE(t.source_context->>'actor_id', '') = $${params.length}
+        OR lower(COALESCE(t.reporter_name, '')) = lower($${params.length - 1})
+      )`;
+    }
+    const result = await pool.query(
+      `SELECT t.*, p.project_key, p.name AS project_name
+       FROM bna_support_tickets t
+       LEFT JOIN bna_projects p ON p.id = t.project_id
+       ${where}
+       ORDER BY t.created_at DESC, t.id DESC
+       LIMIT 120`,
+      params
+    );
+    res.json({ success: true, tickets: result.rows.map(supportTicketView) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/tickets', async (req, res) => {
+  try {
+    const actor = await resolveAssistantActor(req);
+    const body = req.body || {};
+    const title = limitText(body.title || body.subject || body.message || body.body || '', 180);
+    const description = limitText(body.body || body.description || body.message || title, 4000);
+    if (!title) return res.status(400).json({ error: 'Ticket title is required' });
+    const project = await getProjectByKey(body.project_key || DEFAULT_PROJECT_KEY);
+    const ticket = (await pool.query(
+      `INSERT INTO bna_support_tickets (
+         project_id, title, description, severity, priority, status, category,
+         reporter_name, reporter_role, assigned_to, source, source_context, created_by
+       ) VALUES (
+         $1, $2, $3, $4, $5, 'open', $6,
+         $7, $8, 'Shloimie', $9, $10::jsonb, $11
+       )
+       RETURNING *`,
+      [
+        project.id,
+        title,
+        description,
+        safeSupportTicketSeverity(body.severity || body.priority || 'normal'),
+        ['low', 'normal', 'high', 'urgent'].includes(String(body.priority || '')) ? String(body.priority) : 'normal',
+        safeSupportTicketCategory(body.category || 'other'),
+        limitText(body.reporter_name || actor.name || actor.email || actor.type, 180),
+        limitText(body.reporter_role || actor.role || actor.type, 120),
+        safeSupportTicketSource(body.source || 'api'),
+        JSON.stringify({ ...(body.metadata && typeof body.metadata === 'object' ? body.metadata : {}), actor_type: actor.type, actor_id: actor.id || null, actor_email: actor.email || null }),
+        actor.name || actor.email || 'api',
+      ]
+    )).rows[0];
+    res.json({ success: true, ticket: supportTicketView(ticket) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/tickets/:id', requireAdmin, async (req, res) => {
+  try {
+    const body = req.body || {};
+    const fields = [];
+    const values = [];
+    if (body.status) {
+      const mapped = String(body.status) === 'done' ? 'resolved' : body.status;
+      values.push(safeSupportTicketStatus(mapped));
+      fields.push(`status = $${values.length}`);
+      fields.push(`resolved_at = CASE WHEN $${values.length} IN ('resolved', 'closed') THEN COALESCE(resolved_at, NOW()) ELSE resolved_at END`);
+    }
+    if (body.priority) {
+      values.push(['low', 'normal', 'high', 'urgent'].includes(String(body.priority)) ? String(body.priority) : 'normal');
+      fields.push(`priority = $${values.length}`);
+    }
+    if (body.assigned_to !== undefined) {
+      values.push(limitText(body.assigned_to, 120) || null);
+      fields.push(`assigned_to = $${values.length}`);
+    }
+    if (body.description || body.body) {
+      values.push(limitText(body.description || body.body, 4000));
+      fields.push(`description = $${values.length}`);
+    }
+    if (!fields.length) return res.status(400).json({ error: 'No supported ticket fields supplied' });
+    values.push(req.params.id);
+    const updated = (await pool.query(
+      `UPDATE bna_support_tickets
+       SET ${fields.join(', ')},
+           updated_at = NOW()
+       WHERE id = $${values.length}
+       RETURNING *`,
+      values
+    )).rows[0];
+    if (!updated) return res.status(404).json({ error: 'Ticket was not found' });
+    res.json({ success: true, ticket: supportTicketView(updated) });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
   }
@@ -32433,6 +38433,7 @@ app.post('/api/bna/bot-actions/execute', requireAdmin, async (req, res) => {
 
 function safeSupportTicketSeverity(value) {
   const normalized = String(value || '').trim().toLowerCase();
+  if (normalized === 'critical') return 'blocking';
   return ['low', 'normal', 'high', 'blocking'].includes(normalized) ? normalized : 'normal';
 }
 
@@ -32731,6 +38732,455 @@ app.post('/api/bna/support-tickets/:id/comments', requireAdmin, async (req, res)
     res.json({ success: true, comment: result.rows[0] });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/tickets', requireAdmin, async (req, res) => {
+  const { status, severity, category } = req.query;
+  const conditions = [];
+  const params = [];
+  appendScopeCondition(req, conditions, params, 'st.project_id');
+  if (status && status !== 'all') {
+    params.push(safeSupportTicketStatus(status));
+    conditions.push(`st.status = $${params.length}`);
+  }
+  if (severity && severity !== 'all') {
+    params.push(safeSupportTicketSeverity(severity));
+    conditions.push(`st.severity = $${params.length}`);
+  }
+  if (category && category !== 'all') {
+    params.push(safeSupportTicketCategory(category));
+    conditions.push(`st.category = $${params.length}`);
+  }
+  try {
+    const result = await pool.query(
+      `SELECT st.*,
+              p.project_key,
+              p.name AS project_name,
+              p.short_name AS project_short_name
+       FROM bna_support_tickets st
+       LEFT JOIN bna_projects p ON p.id = st.project_id
+       ${conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''}
+       ORDER BY st.created_at DESC
+       LIMIT 300`,
+      params
+    );
+    res.json({ tickets: result.rows.map(supportTicketView) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/tickets', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const title = String(body.title || '').trim();
+  const description = String(body.summary || body.description || body.body || '').trim();
+  if (!title && !description) return res.status(400).json({ error: 'title or summary is required' });
+  try {
+    const project = await resolveProjectForScopedWrite(req, body);
+    const result = await pool.query(
+      `INSERT INTO bna_support_tickets (
+         project_id, title, description, severity, status, category,
+         reporter_name, reporter_role, assigned_to, source, source_context, created_by
+       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, 'web_assistant', $10::jsonb, $11)
+       RETURNING *`,
+      [
+        project.id,
+        title || description.slice(0, 160),
+        description || null,
+        safeSupportTicketSeverity(body.severity),
+        safeSupportTicketStatus(body.status || 'open'),
+        safeSupportTicketCategory(body.category),
+        body.reporter_name || body.author_name || req.opsUser || null,
+        body.reporter_role || body.role || req.opsIdentity?.role || null,
+        body.assigned_to || 'Shloimie',
+        JSON.stringify({
+          page_url: body.page_url || null,
+          user_agent: body.user_agent || req.headers?.['user-agent'] || null,
+          screenshot_url: body.screenshot_url || null,
+          reproduction_steps: body.reproduction_steps || null,
+          expected_behavior: body.expected_behavior || null,
+          actual_behavior: body.actual_behavior || null,
+          ...(body.metadata && typeof body.metadata === 'object' ? body.metadata : {}),
+        }),
+        req.opsUser || 'assistant',
+      ]
+    );
+    res.json({ success: true, ticket: supportTicketView(result.rows[0]) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/tickets/:id', requireAdmin, async (req, res) => {
+  try {
+    await assertSupportTicketAccess(req, req.params.id);
+    const ticket = (await pool.query('SELECT * FROM bna_support_tickets WHERE id = $1 LIMIT 1', [req.params.id])).rows[0];
+    if (!ticket) return res.status(404).json({ error: 'Ticket not found' });
+    res.json({ ticket: supportTicketView(ticket) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/bna/tickets/:id', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const fields = [];
+  const values = [];
+  const addField = (field, value) => {
+    values.push(value === undefined || value === '' ? null : value);
+    fields.push(`${field} = $${values.length}`);
+  };
+  if (body.title !== undefined) addField('title', body.title);
+  if (body.summary !== undefined || body.description !== undefined) addField('description', body.summary || body.description);
+  if (body.status !== undefined) addField('status', safeSupportTicketStatus(body.status));
+  if (body.severity !== undefined) addField('severity', safeSupportTicketSeverity(body.severity));
+  if (body.category !== undefined) addField('category', safeSupportTicketCategory(body.category));
+  if (body.assigned_to !== undefined) addField('assigned_to', body.assigned_to);
+  if (!fields.length) return res.status(400).json({ error: 'No supported ticket fields supplied' });
+  values.push(req.params.id);
+  try {
+    await assertSupportTicketAccess(req, req.params.id);
+    const result = await pool.query(
+      `UPDATE bna_support_tickets
+       SET ${fields.join(', ')},
+           updated_at = NOW()
+       WHERE id = $${values.length}
+       RETURNING *`,
+      values
+    );
+    res.json({ success: true, ticket: supportTicketView(result.rows[0]) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/tickets/:id/comments', requireAdmin, async (req, res) => {
+  try {
+    await assertSupportTicketAccess(req, req.params.id);
+    const result = await pool.query(
+      'SELECT * FROM bna_support_ticket_comments WHERE ticket_id = $1 ORDER BY created_at ASC',
+      [req.params.id]
+    );
+    res.json({ comments: result.rows });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/tickets/:id/comments', requireAdmin, async (req, res) => {
+  const bodyText = String(req.body?.body || req.body?.comment || '').trim();
+  if (!bodyText) return res.status(400).json({ error: 'Comment body is required' });
+  try {
+    await assertSupportTicketAccess(req, req.params.id);
+    const result = await pool.query(
+      `INSERT INTO bna_support_ticket_comments (ticket_id, author, body, visibility, source, source_context)
+       VALUES ($1, $2, $3, 'project', 'web_assistant', $4::jsonb)
+       RETURNING *`,
+      [
+        req.params.id,
+        String(req.body?.author_name || req.body?.author || req.opsUser || 'assistant').slice(0, 120),
+        bodyText,
+        JSON.stringify(req.body?.metadata || {}),
+      ]
+    );
+    res.json({ success: true, comment: result.rows[0] });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/communities', requireAdmin, async (req, res) => {
+  try {
+    const workspaceKey = req.query.workspace_key || req.query.workspace || (opsScopeProjectKey(req) ? defaultWorkspaceKeyForRequest(req) : 'bna');
+    const workspaceId = await getWorkspaceIdForProjectKey(workspaceProjectKey(workspaceKey) || DEFAULT_PROJECT_KEY);
+    const params = [];
+    const conditions = [];
+    if (workspaceId) {
+      params.push(workspaceId);
+      conditions.push(`workspace_id = $${params.length}`);
+    }
+    const result = await pool.query(
+      `SELECT *
+       FROM bna_communities
+       ${conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''}
+       ORDER BY created_at DESC
+       LIMIT 200`,
+      params
+    );
+    res.json({ communities: result.rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/communities', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const name = limitText(body.name || body.title || '', 180);
+  if (!name) return res.status(400).json({ error: 'name is required' });
+  try {
+    const workspaceKey = body.workspace_key || body.workspace || (opsScopeProjectKey(req) ? defaultWorkspaceKeyForRequest(req) : 'bna');
+    const workspaceId = await getWorkspaceIdForProjectKey(workspaceProjectKey(workspaceKey) || DEFAULT_PROJECT_KEY);
+    const result = await pool.query(
+      `INSERT INTO bna_communities (
+         workspace_id, name, description, owner_account_id, status, metadata
+       ) VALUES ($1, $2, $3, $4, $5, $6::jsonb)
+       RETURNING *`,
+      [
+        workspaceId,
+        name,
+        limitText(body.description || '', 1600) || null,
+        body.owner_account_id || null,
+        ['active', 'paused', 'archived'].includes(String(body.status || '')) ? String(body.status) : 'active',
+        JSON.stringify(body.metadata || {}),
+      ]
+    );
+    res.json({ success: true, community: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/classes', requireAdmin, async (req, res) => {
+  try {
+    const params = [];
+    const conditions = [];
+    if (req.query.community_id) {
+      params.push(Number(req.query.community_id));
+      conditions.push(`c.community_id = $${params.length}`);
+    }
+    if (req.query.status) {
+      params.push(String(req.query.status));
+      conditions.push(`c.status = $${params.length}`);
+    }
+    const result = await pool.query(
+      `SELECT c.*,
+              cm.name AS community_name
+       FROM bna_classes c
+       LEFT JOIN bna_communities cm ON cm.id = c.community_id
+       ${conditions.length ? `WHERE ${conditions.join(' AND ')}` : ''}
+       ORDER BY c.starts_at ASC NULLS LAST, c.created_at DESC
+       LIMIT 300`,
+      params
+    );
+    res.json({ classes: result.rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/classes', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const title = limitText(body.title || body.name || '', 220);
+  if (!title) return res.status(400).json({ error: 'title is required' });
+  try {
+    const workspaceKey = body.workspace_key || body.workspace || (opsScopeProjectKey(req) ? defaultWorkspaceKeyForRequest(req) : 'bna');
+    const workspaceId = await getWorkspaceIdForProjectKey(workspaceProjectKey(workspaceKey) || DEFAULT_PROJECT_KEY);
+    const result = await pool.query(
+      `INSERT INTO bna_classes (
+         workspace_id, community_id, provider_account_id, title, description,
+         class_type, starts_at, ends_at, recurrence_rule, location_type,
+         meeting_url, recording_url, material_file_id, status, metadata
+       ) VALUES (
+         $1, $2, $3, $4, $5,
+         $6, $7, $8, $9, $10,
+         $11, $12, $13, $14, $15::jsonb
+       )
+       RETURNING *`,
+      [
+        workspaceId,
+        body.community_id || null,
+        body.provider_account_id || null,
+        title,
+        limitText(body.description || '', 2400) || null,
+        body.class_type || null,
+        body.starts_at || null,
+        body.ends_at || null,
+        body.recurrence_rule || null,
+        body.location_type || null,
+        body.meeting_url || null,
+        body.recording_url || null,
+        body.material_file_id || null,
+        body.status || 'scheduled',
+        JSON.stringify(body.metadata || {}),
+      ]
+    );
+    res.json({ success: true, class: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/bna/classes/:id', requireAdmin, async (req, res) => {
+  const allowed = ['title', 'description', 'class_type', 'starts_at', 'ends_at', 'recurrence_rule', 'location_type', 'meeting_url', 'recording_url', 'material_file_id', 'status'];
+  const fields = [];
+  const values = [];
+  for (const field of allowed) {
+    if (!Object.prototype.hasOwnProperty.call(req.body || {}, field)) continue;
+    values.push(req.body[field] === '' ? null : req.body[field]);
+    fields.push(`${field} = $${values.length}`);
+  }
+  if (!fields.length) return res.status(400).json({ error: 'No supported class fields supplied' });
+  values.push(req.params.id);
+  try {
+    const result = await pool.query(
+      `UPDATE bna_classes
+       SET ${fields.join(', ')},
+           updated_at = NOW()
+       WHERE id = $${values.length}
+       RETURNING *`,
+      values
+    );
+    if (!result.rows[0]) return res.status(404).json({ error: 'Class not found' });
+    res.json({ success: true, class: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/classes/:id/attendance', requireAdmin, async (req, res) => {
+  const classId = Number(req.params.id);
+  const studentId = Number(req.body?.student_id || req.body?.studentId);
+  if (!Number.isFinite(classId) || !Number.isFinite(studentId)) return res.status(400).json({ error: 'class id and student_id are required' });
+  const status = ['present', 'late', 'absent', 'excused', 'unknown'].includes(String(req.body?.status || '')) ? String(req.body.status) : 'present';
+  try {
+    const result = await pool.query(
+      `INSERT INTO bna_class_attendance (
+         class_id, student_id, attendance_date, status, notes
+       ) VALUES ($1, $2, COALESCE($3::date, CURRENT_DATE), $4, $5)
+       ON CONFLICT (class_id, student_id, attendance_date) DO UPDATE SET
+         status = EXCLUDED.status,
+         notes = EXCLUDED.notes,
+         updated_at = NOW()
+       RETURNING *`,
+      [classId, studentId, req.body?.attendance_date || null, status, req.body?.notes || null]
+    );
+    res.json({ success: true, attendance: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/classes/:id/attendance', requireAdmin, async (req, res) => {
+  try {
+    const result = await pool.query(
+      `SELECT a.*, s.name AS student_name
+       FROM bna_class_attendance a
+       LEFT JOIN bna_students s ON s.id = a.student_id
+       WHERE a.class_id = $1
+       ORDER BY a.attendance_date DESC, s.name ASC`,
+      [req.params.id]
+    );
+    res.json({ attendance: result.rows });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/classes/import', requireAdmin, async (req, res) => {
+  const rows = Array.isArray(req.body?.classes) ? req.body.classes : [];
+  if (!rows.length) return res.status(400).json({ error: 'classes array is required' });
+  try {
+    const created = [];
+    for (const row of rows.slice(0, 200)) {
+      const title = limitText(row.title || row.name || '', 220);
+      if (!title) continue;
+      const workspaceId = await getWorkspaceIdForProjectKey(row.project_key || DEFAULT_PROJECT_KEY);
+      const result = await pool.query(
+        `INSERT INTO bna_classes (
+           workspace_id, community_id, title, description, class_type, starts_at, ends_at, recurrence_rule, status, metadata
+         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, COALESCE($9, 'scheduled'), $10::jsonb)
+         RETURNING *`,
+        [
+          workspaceId,
+          row.community_id || null,
+          title,
+          row.description || null,
+          row.class_type || null,
+          row.starts_at || null,
+          row.ends_at || null,
+          row.recurrence_rule || null,
+          row.status || null,
+          JSON.stringify({ source: 'classes_import', ...(row.metadata || {}) }),
+        ]
+      );
+      created.push(result.rows[0]);
+    }
+    res.json({ success: true, imported: created.length, classes: created });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/files/intake', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const filename = limitText(body.original_filename || body.filename || body.name || '', 260);
+  if (!filename && !body.storage_path && !body.file_url) return res.status(400).json({ error: 'filename or storage_path is required' });
+  try {
+    const workspaceKey = body.workspace_key || body.workspace || (opsScopeProjectKey(req) ? defaultWorkspaceKeyForRequest(req) : 'bna');
+    const workspaceId = await getWorkspaceIdForProjectKey(workspaceProjectKey(workspaceKey) || DEFAULT_PROJECT_KEY);
+    const result = await pool.query(
+      `INSERT INTO bna_uploaded_files (
+         workspace_id, uploader_account_id, original_filename, mime_type,
+         storage_path, source, status, parse_status, parse_json
+       ) VALUES ($1, $2, $3, $4, $5, $6, 'uploaded', $7, $8::jsonb)
+       RETURNING *`,
+      [
+        workspaceId,
+        body.uploader_account_id || null,
+        filename || null,
+        body.mime_type || body.content_type || null,
+        body.storage_path || body.file_url || null,
+        body.source || 'portal',
+        body.parse_status || 'pending',
+        JSON.stringify(body.parse_json || {
+          preview_required: true,
+          note: 'Uploaded file reference stored. Bulk assignments/classes/tasks require explicit confirmation before writes.',
+        }),
+      ]
+    );
+    res.json({ success: true, file: result.rows[0] });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/assistant/threads/:id/files', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  try {
+    const thread = (await pool.query('SELECT * FROM bna_assistant_threads WHERE id = $1 LIMIT 1', [req.params.id])).rows[0];
+    if (!thread) return res.status(404).json({ error: 'Assistant thread not found' });
+    const workspaceId = await getWorkspaceIdForProjectKey(body.project_key || DEFAULT_PROJECT_KEY);
+    const file = (await pool.query(
+      `INSERT INTO bna_uploaded_files (
+         workspace_id, uploader_account_id, original_filename, mime_type,
+         storage_path, source, status, parse_status, parse_json
+       ) VALUES ($1, $2, $3, $4, $5, 'assistant', 'uploaded', 'pending', $6::jsonb)
+       RETURNING *`,
+      [
+        workspaceId,
+        body.uploader_account_id || null,
+        body.original_filename || body.filename || null,
+        body.mime_type || null,
+        body.storage_path || body.file_url || null,
+        JSON.stringify({
+          thread_id: thread.id,
+          preview_required: true,
+          requested_action: body.requested_action || null,
+          original_prompt: body.prompt || null,
+        }),
+      ]
+    )).rows[0];
+    const message = await insertAssistantMessage({
+      threadId: thread.id,
+      authorType: 'system',
+      authorRole: 'file_intake',
+      body: `File intake saved: ${file.original_filename || file.storage_path || `file #${file.id}`}. Bulk writes require preview and confirmation.`,
+      metadata: { uploaded_file_id: file.id },
+    });
+    res.json({ success: true, file, message: assistantMessageView(message) });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
 });
 
@@ -33648,6 +40098,8 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
     await pool.query(MIGRATION_SQL);
     await pool.query(createProjectsSQL);
     await pool.query(createProjectMembersSQL);
+    await pool.query(createWorkspacePlatformSQL);
+    await pool.query(createWorkspaceAccountsSQL);
     await pool.query(createStudentsSQL);
     await pool.query(createStudentBotSettingsSQL);
     await pool.query(createTaskCommentsSQL);
@@ -33741,12 +40193,17 @@ app.get(['/parent', '/parent/login'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'parent.html'));
 });
 
+app.get(['/family', '/household'], (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, 'public', 'parent.html'));
+});
+
 app.get(['/provider', '/provider/login', '/provider-dashboard'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'public', 'provider.html'));
 });
 
-app.get(['/service-providers', '/providers'], (req, res) => {
+app.get(['/service-providers', '/providers', '/community'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'public', 'service-providers.html'));
 });
@@ -33763,6 +40220,11 @@ function sendProviderJoinPage(req, res) {
 
 app.get('/providers/join', sendProviderJoinPage);
 app.get('/become-service-provider', sendProviderJoinPage);
+
+app.get('/providers/:slug', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, 'public', 'provider-profile.html'));
+});
 
 // Operations dashboard - with login redirect
 app.get('/operations', requireAdmin, (req, res) => {

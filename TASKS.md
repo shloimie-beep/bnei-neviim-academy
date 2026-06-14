@@ -6,6 +6,51 @@ not authorize active GHL runtime paths.
 
 ## Now
 
+- [x] Deploy and live-smoke the assistant/portal/communications foundation:
+  sender identity is centralized and normalizes away `Office P`, Resend is a
+  configured connector with Gmail fallback, unified communications and checkout
+  attempt tables/APIs are bootstrapped, credit signups now create first-party
+  checkout attempts and parent access setup state, abandoned-checkout sweep is
+  dry-run/approval gated, WhatsApp import is first-party and no-send by
+  default, ticket/community/class/file/review readiness APIs exist, and the
+  assistant drawer is keyboard-aware on mobile. Verified with `npm test`
+  323/323, local assistant keyboard smoke at 390/393/430 widths, local
+  Operations mobile smoke, Railway deployment
+  `0cca77e2-d718-47b6-bc28-6824125597f3`, Railway doctor, live app smoke
+  `ops/live-smokes/2026-06-14T09-32-40-859Z-live-app-smoke.md`, and focused
+  live read/dry-run smoke
+  `ops/live-smokes/2026-06-14T09-33-21-093Z-assistant-portal-focused-live-smoke.json`.
+  Handoff:
+  `tasks-pending/2026-06-14-assistant-portal-communications.md`.
+- [ ] Build the bilingual natural-language onboarding layer for parents,
+  students, and service providers: the assistant should welcome each user in
+  English or Hebrew, explain how to use the app, walk through recording upload,
+  collect child/provider/profile goals and prompt preferences conversationally,
+  and teach the self-governance/responsibility model before turning inputs into
+  scoped durable records. Website provider and parent/accountability links
+  should open these bot-style intakes first: provider join explains review,
+  students/homeschoolers/alternative education, index/funnel direction, and asks
+  listing questions step by step; parent intake asks child struggles, goals,
+  motivators, chores, meals/eating preferences, recordings, and setup context.
+  Handoff:
+  `tasks-pending/2026-06-14-workspace-person-household-provider-architecture.md`.
+- [x] Make Operations workspace navigation official and scalable: Super Admin
+  should see a multi-workspace directory/switcher with filters for school,
+  service providers, family/home accountability, parent households, community/
+  project, and platform workspaces instead of a hard-coded Rabbi Sheller
+  workspace label. Completed 2026-06-14: Operations side panel now has a
+  Workspace Directory switcher with type filters, neutral One Time provider
+  naming, parent-household directory support, type-aware sidebar profiles, and
+  grouped Admin Workspaces cards. Verified with `npm test` 334/334, local
+  Playwright
+  `ops/playwright-smokes/2026-06-14-operations-workspace-directory-local/report.md`,
+  Railway deployment `129a0092-f58e-47fe-ad1a-78529134e9c9`, Railway doctor,
+  live app smoke
+  `ops/live-smokes/2026-06-14T12-29-12-447Z-live-app-smoke.md`, and live
+  Playwright
+  `ops/playwright-smokes/2026-06-14-operations-workspace-directory-live/report.md`.
+  Handoff:
+  `tasks-pending/2026-06-14-workspace-person-household-provider-architecture.md`.
 - [x] Deploy and live-smoke the workspace task system cleanup for Rabbi
   Scheller / One Time: local work now makes Decisions, Pending, Tasks, Calendar,
   Done, and Activity the active Operations task structure; Pending is
@@ -72,10 +117,11 @@ not authorize active GHL runtime paths.
   database, and the changed app bundle is deployed with Railway doctor/live
   smoke. Handoff:
   `tasks-pending/2026-06-13-universal-helper-tagging-settings-hebrew.md`.
-- [ ] One Time: collect Rabbi Scheller contact email, WhatsApp/contact phone,
-  and scoped login username, then send the Drive folder/WhatsApp and login
-  last. Live task #506 completed the Drive/social ingestion setup but remains
-  blocked on missing contact fields; handoff:
+- [x] One Time: collect Rabbi Scheller contact email, WhatsApp/contact phone,
+  and scoped login username, then send the task-manager login handoff last.
+  Completed 2026-06-14: live provider/project records were updated, Gmail sent
+  the One Time task-manager access handoff, and WhatsApp delivery was confirmed;
+  handoff:
   `tasks-pending/2026-06-12-scheller-drive-social-login-brief.md`.
 - [ ] Collect missing Weber/Fober parent contact details before portal link or
   WhatsApp send: Green Invoice webhook log is empty, and no email/phone exists

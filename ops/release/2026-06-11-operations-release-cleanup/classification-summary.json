@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-06-11T14:18:36.073Z",
+  "gitStatusEntries": 353,
+  "individualUntrackedFiles": 1774,
+  "individualFileEntriesClassified": 1957,
+  "patchFileCount": 62,
+  "statusCounts": {
+    "A": 22,
+    "E": 137,
+    "D": 79,
+    "C": 2,
+    "F": 100,
+    "B": 13
+  },
+  "untrackedCounts": {
+    "E": 803,
+    "D": 186,
+    "A": 24,
+    "B": 30,
+    "C": 731
+  },
+  "individualCounts": {
+    "A": 32,
+    "E": 842,
+    "D": 221,
+    "C": 732,
+    "F": 100,
+    "B": 30
+  },
+  "relevantIndividualCount": 62,
+  "unrelatedIndividualCount": 1163,
+  "generatedIndividualCount": 732,
+  "unsafeIndividualCount": 100
+}

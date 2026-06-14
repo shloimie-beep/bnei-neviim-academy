@@ -1,0 +1,40 @@
+export const en = {
+  workspace: {
+    superAdmin: 'Super Admin',
+    school: 'BNA School',
+    family: 'Family Accountability',
+    household: 'Household',
+    serviceProvider: 'Service Provider',
+  },
+  portal: {
+    overview: 'Overview',
+    goals: 'Goals',
+    attendance: 'Attendance',
+    assignments: 'Assignments',
+    notes: 'Notes',
+    providers: 'Service Providers',
+    setup: 'Setup',
+    assistant: 'Assistant',
+  },
+  setup: {
+    installOnTablet: 'Install on tablet',
+    filterSetup: 'Tablet and filter setup',
+    notStarted: 'Not started',
+    instructionsSent: 'Instructions sent',
+    waitingForParent: 'Waiting for parent',
+    submitted: 'Code submitted',
+    verified: 'Verified',
+    blocked: 'Blocked',
+  },
+  provider: {
+    profile: 'Profile',
+    services: 'Services',
+    gallery: 'Gallery',
+    comments: 'Comments',
+    googleBusiness: 'Google Business Profile',
+    upgradeNotConfigured: 'Upgrade is not configured yet.',
+  },
+  assistant: {
+    greeting: "I'm your assistant. You can tell me what you want to set up or change.",
+  },
+};

@@ -21,6 +21,24 @@ test('temporary Kimi-primary hosted AI override is wired across runtime and smok
   assert.match(smoke, /temperature: config\.aiProvider === 'kimi' \? 1 : 0/);
 });
 
+test('hosted chat fallbacks do not expose provider failures to chat users', () => {
+  assert.match(server, /function hostedAssistantProviderConfigs/);
+  assert.match(server, /function hostedAssistantErrorForUser/);
+  assert.match(server, /fallback_used/);
+  assert.match(bridge, /\{ text: 'Assistant' \}/);
+  assert.match(bridge, /Mode set to Assistant chat/);
+  assert.match(bridge, /Assistant diagnostics/);
+  assert.doesNotMatch(server, /OpenAI was not available for this web reply/);
+  assert.doesNotMatch(server, /OpenAI is not configured for this server reply/);
+  assert.doesNotMatch(bridge, /By the way, this is Kimi fallback/);
+  assert.doesNotMatch(bridge, /OpenAI API was unavailable for this reply/);
+  assert.doesNotMatch(bridge, /OpenAI API mode is selected/);
+  assert.doesNotMatch(bridge, /text: 'OpenAI API'/);
+  assert.doesNotMatch(bridge, /Plain messages use OpenAI API/);
+  assert.doesNotMatch(bridge, /Press the bottom buttons to switch between OpenAI API and Codex/);
+  assert.doesNotMatch(bridge, /OpenAI default reply failed/);
+});
+
 test('docs keep Kimi as provider override, not a Codex replacement', () => {
   assert.match(agents, /Kimi-primary mode/);
   assert.match(agents, /Kimi is never the task owner/);

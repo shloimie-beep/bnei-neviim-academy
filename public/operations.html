@@ -5089,6 +5089,49 @@
             gap: 6px;
         }
 
+        .workspace-directory-summary {
+            border: 1px solid rgba(17, 17, 17, 0.1);
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.84), rgba(214, 169, 45, 0.1));
+            color: var(--bna-muted);
+            display: grid;
+            gap: 3px;
+            font-size: 11px;
+            font-weight: 750;
+            padding: 8px 10px;
+        }
+
+        .workspace-directory-summary strong {
+            color: var(--bna-ink);
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .workspace-kind-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .workspace-kind-filter {
+            border: 1px solid rgba(17, 17, 17, 0.12);
+            border-radius: 999px;
+            background: #ffffff;
+            color: var(--bna-muted);
+            cursor: pointer;
+            font: inherit;
+            font-size: 10px;
+            font-weight: 900;
+            padding: 5px 8px;
+        }
+
+        .workspace-kind-filter.active,
+        .workspace-kind-filter:hover {
+            border-color: rgba(214, 169, 45, 0.78);
+            background: rgba(214, 169, 45, 0.16);
+            color: var(--bna-blue-dark);
+        }
+
         .workspace-group-label {
             color: var(--bna-muted);
             font-size: 10px;
@@ -5164,6 +5207,40 @@
 
         .workspace-option[aria-disabled="true"] {
             opacity: 0.62;
+        }
+
+        .workspace-option[hidden],
+        .workspace-option-group[hidden],
+        .workspace-empty-state[hidden] {
+            display: none !important;
+        }
+
+        .workspace-option-main {
+            display: grid;
+            gap: 2px;
+            min-width: 0;
+        }
+
+        .workspace-option-main strong,
+        .workspace-option-main small {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .workspace-option-main small {
+            color: var(--bna-muted);
+            font-size: 10px;
+            font-weight: 750;
+            line-height: 1.25;
+        }
+
+        .workspace-empty-state {
+            border: 1px dashed rgba(17, 17, 17, 0.16);
+            border-radius: 8px;
+            color: var(--bna-muted);
+            font-size: 11px;
+            font-weight: 800;
+            padding: 10px;
         }
 
         .workspace-switcher-search {
@@ -6135,6 +6212,7 @@
         let navDrawerOpen = false;
         let sidebarMode = initialParams.get('nav') === 'modules' ? 'modules' : 'sections';
         let currentWorkspaceId = normalizeWorkspaceKey(initialWorkspace || '');
+        let workspaceDirectoryFilter = 'all';
         const normalizedInitialDashboardSection = initialSection || 'overview';
         let dashboardSection = ['overview', 'activity', 'alerts', 'today', 'updates'].includes(normalizedInitialDashboardSection)
             ? normalizedInitialDashboardSection
@@ -6465,7 +6543,7 @@
         const SERVICE_PROVIDER_SUBTABS = [
             { id: 'overview', label: 'Overview' },
             { id: 'directory', label: 'Directory / Index' },
-            { id: 'workspaces', label: 'Provider Workspaces' },
+            { id: 'workspaces', label: 'Service Provider Workspaces' },
             { id: 'commercial', label: 'Commercial Model' },
             { id: 'plans', label: 'Plans / Entitlements' },
             { id: 'onboarding', label: 'Onboarding' },
@@ -6684,9 +6762,39 @@
         ];
 
         const WORKSPACE_FALLBACKS = [
+            { id: 'super_admin', workspace_key: 'super_admin', display_name: 'Super Admin', workspace_type: 'super_admin', description: 'Shloimie global operator and admin control center.' },
             { id: 'platform', workspace_key: 'platform', display_name: 'Platform / Super Admin', workspace_type: 'platform', description: 'Control layer across BNA, providers, integrations, tasks, and platform settings.' },
             { id: 'bna', workspace_key: 'bna', display_name: 'BNA School Workspace', workspace_type: 'school', description: 'The Bnei Neviim Academy micro-school workspace.' },
-            { id: 'rabbi_sheller_provider', workspace_key: 'rabbi_sheller_provider', display_name: 'Rabbi Sheller Provider Workspace', workspace_type: 'provider', description: 'Provider workspace for the Mishnayos Membership and 7:00 class.' }
+            { id: 'dratler_family', workspace_key: 'dratler_family', display_name: 'Family Accountability', workspace_type: 'family', description: 'Private family accountability workspace for Shloimie household accountability.' },
+            { id: 'parent_households', workspace_key: 'parent_households', display_name: 'Parent Household Workspaces', workspace_type: 'household', description: 'Directory for parent logins, household accountability setup, and child goal onboarding.' },
+            { id: 'rabbi_sheller_provider', workspace_key: 'rabbi_sheller_provider', display_name: 'One Time Mishnayos Provider Workspace', workspace_type: 'service_provider', description: 'Service provider workspace for the Mishnayos Membership and 7:00 class.' }
+        ];
+
+        const WORKSPACE_TYPE_LABELS = {
+            platform: 'Super Admin',
+            super_admin: 'Super Admin',
+            school: 'School',
+            family: 'Home Accountability',
+            household: 'Parent Household',
+            service_provider: 'Service Provider',
+            provider: 'Service Provider',
+            community: 'Community',
+            project: 'Project',
+            workspace: 'Workspace'
+        };
+
+        const WORKSPACE_DIRECTORY_GROUPS = [
+            { id: 'platform', label: 'Super Admin', types: ['platform', 'super_admin'] },
+            { id: 'school', label: 'Schools', types: ['school'] },
+            { id: 'service_provider', label: 'Service Providers', types: ['service_provider', 'provider'] },
+            { id: 'family', label: 'Home Accountability', types: ['family'] },
+            { id: 'household', label: 'Parent Households', types: ['household'] },
+            { id: 'community', label: 'Community / Projects', types: ['community', 'project'] }
+        ];
+
+        const WORKSPACE_DIRECTORY_FILTERS = [
+            { id: 'all', label: 'All', types: [] },
+            ...WORKSPACE_DIRECTORY_GROUPS
         ];
 
         const TASK_ASSIGNEES = [
@@ -6826,48 +6934,139 @@
             `).join('');
         }
 
+        function workspaceRecordKey(workspace = {}) {
+            return normalizeWorkspaceKey(workspace.workspace_key || workspace.project_key || workspace.id || workspace.key || workspace.slug || workspace.display_name || workspace.name || '');
+        }
+
+        function normalizeWorkspaceType(type = '', workspaceKey = '') {
+            const key = normalizeWorkspaceKey(workspaceKey || '');
+            const rawType = String(type || '')
+                .trim()
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, '_')
+                .replace(/^_+|_+$/g, '');
+            if (['platform', 'super_admin'].includes(key) || ['platform', 'super_admin'].includes(rawType)) return key === 'super_admin' ? 'super_admin' : (rawType || 'platform');
+            if (key === 'bna' || rawType === 'school') return 'school';
+            if (key === 'dratler_family' || rawType === 'family') return 'family';
+            if (rawType === 'household' || key.includes('household')) return 'household';
+            if (['provider', 'service_provider'].includes(rawType) || /provider|one_time|mishn/.test(key)) return 'service_provider';
+            if (rawType === 'community') return 'community';
+            if (rawType === 'project') return 'project';
+            return rawType || 'workspace';
+        }
+
+        function workspaceTypeLabel(type = '') {
+            const normalizedType = normalizeWorkspaceType(type);
+            return WORKSPACE_TYPE_LABELS[normalizedType] || normalizedType.replace(/_/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase()) || 'Workspace';
+        }
+
+        function workspaceDirectoryRecords() {
+            const records = new Map();
+            const addRecord = (workspace = {}) => {
+                const key = workspaceRecordKey(workspace);
+                if (!key) return;
+                const existing = records.get(key) || {};
+                const fallback = WORKSPACE_FALLBACKS.find(item => workspaceRecordKey(item) === key) || {};
+                const displayName = workspace.display_name || workspace.workspace_name || workspace.name || fallback.display_name || key.replace(/_/g, ' ').replace(/\b\w/g, letter => letter.toUpperCase());
+                const workspaceType = normalizeWorkspaceType(workspace.workspace_type || workspace.type || fallback.workspace_type, key);
+                records.set(key, {
+                    ...fallback,
+                    ...existing,
+                    ...workspace,
+                    id: key,
+                    workspace_key: key,
+                    display_name: displayName,
+                    workspace_type: workspaceType,
+                    description: workspace.description || fallback.description || 'Workspace configuration is backed by workspace settings.'
+                });
+            };
+            WORKSPACE_FALLBACKS.forEach(addRecord);
+            workspaceSettings.forEach(addRecord);
+            return Array.from(records.values()).sort((a, b) => {
+                const aGroup = WORKSPACE_DIRECTORY_GROUPS.findIndex(group => group.types.includes(normalizeWorkspaceType(a.workspace_type, a.workspace_key)));
+                const bGroup = WORKSPACE_DIRECTORY_GROUPS.findIndex(group => group.types.includes(normalizeWorkspaceType(b.workspace_type, b.workspace_key)));
+                const aWeight = aGroup < 0 ? 99 : aGroup;
+                const bWeight = bGroup < 0 ? 99 : bGroup;
+                if (aWeight !== bWeight) return aWeight - bWeight;
+                return String(a.display_name || '').localeCompare(String(b.display_name || ''));
+            });
+        }
+
+        function workspaceTypeForKey(workspaceKey = currentWorkspaceKey()) {
+            const key = normalizeWorkspaceKey(workspaceKey);
+            const record = workspaceDirectoryRecords().find(workspace => workspaceRecordKey(workspace) === key);
+            return normalizeWorkspaceType(record?.workspace_type, key);
+        }
+
+        function isProviderWorkspace(workspaceKey = currentWorkspaceKey()) {
+            return workspaceTypeForKey(workspaceKey) === 'service_provider';
+        }
+
+        function workspaceDirectoryOptions() {
+            const active = currentWorkspaceKey();
+            return workspaceDirectoryRecords().map(workspace => {
+                const id = workspaceRecordKey(workspace);
+                const type = normalizeWorkspaceType(workspace.workspace_type, id);
+                return {
+                    ...workspace,
+                    id,
+                    label: workspace.display_name || id,
+                    type,
+                    typeLabel: workspaceTypeLabel(type),
+                    enabled: !opsMe?.scope || opsMe.scope.type !== 'project' || id === active
+                };
+            });
+        }
+
         function renderWorkspaceSwitcher() {
             const active = currentWorkspaceKey();
             const roleLabel = currentWorkspaceRoleLabel();
             const current = currentWorkspaceRecord();
-            const options = WORKSPACE_FALLBACKS.map(workspace => ({
-                id: workspace.id,
-                label: workspace.display_name,
-                type: workspace.workspace_type,
-                enabled: !opsMe?.scope || opsMe.scope.type !== 'project' || workspace.id === active
-            }));
-            const grouped = [
-                { label: 'Platform', items: options.filter(option => option.id === 'platform') },
-                { label: 'BNA School Workspace', items: options.filter(option => option.id === 'bna') },
-                { label: 'Provider Workspaces', items: options.filter(option => !['platform', 'bna'].includes(option.id)) }
-            ].filter(group => group.items.length);
+            const options = workspaceDirectoryOptions();
+            const grouped = WORKSPACE_DIRECTORY_GROUPS.map(group => ({
+                ...group,
+                items: options.filter(option => group.types.includes(option.type))
+            })).filter(group => group.items.length);
             return `
                 <div class="workspace-switcher" aria-label="Workspace switcher">
                     <details class="workspace-menu">
                         <summary class="workspace-current-card">
                             <span>
-                                <span class="workspace-switcher-label">Current Workspace</span>
+                                <span class="workspace-switcher-label">Workspace Directory</span>
                                 <strong>${escapeHtml(current.display_name || current.id || 'Workspace')}</strong>
-                                <span>${escapeHtml(current.workspace_type || current.workspace_type_label || 'workspace')} / ${escapeHtml(roleLabel)}</span>
+                                <span>${escapeHtml(workspaceTypeLabel(current.workspace_type))} / ${escapeHtml(roleLabel)}</span>
                             </span>
                             <span class="workspace-status">Switch</span>
                         </summary>
                         <div class="workspace-menu-panel">
+                            <div class="workspace-directory-summary">
+                                <strong>${escapeHtml(options.length)} workspaces loaded</strong>
+                                <span>Filter by platform, school, provider, home accountability, parent household, or community/project.</span>
+                            </div>
                             <input id="workspace-search" class="workspace-switcher-search" type="search" placeholder="Search workspaces" aria-label="Search workspaces" oninput="filterWorkspaceOptions(this.value)">
+                            <div class="workspace-kind-filters" aria-label="Workspace type filters">
+                                ${WORKSPACE_DIRECTORY_FILTERS.map(filter => `
+                                    <button type="button" class="workspace-kind-filter ${workspaceDirectoryFilter === filter.id ? 'active' : ''}" data-workspace-kind-filter="${escapeHtml(filter.id)}" onclick="setWorkspaceDirectoryFilter('${escapeHtml(filter.id)}')">${escapeHtml(filter.label)}</button>
+                                `).join('')}
+                            </div>
                             ${grouped.map(group => `
                                 <div class="workspace-option-group" data-workspace-group>
                                     <div class="workspace-group-label">${escapeHtml(group.label)}</div>
                                     ${group.items.map(option => `
-                                        <button type="button" class="workspace-option ${active === option.id ? 'active' : ''}" data-workspace-option data-workspace-label="${escapeHtml(`${option.label} ${option.type || ''}`)}" ${option.enabled ? `onclick="switchWorkspace('${option.id}')"` : `onclick="showNotConfigured('This login cannot switch into ${escapeHtml(option.label)}')" aria-disabled="true"`}>
-                                            <span>${escapeHtml(option.label)}</span>
-                                            <span class="workspace-status">${active === option.id ? 'Active' : escapeHtml(option.type || 'workspace')}</span>
+                                        <button type="button" class="workspace-option ${active === option.id ? 'active' : ''}" data-workspace-option data-workspace-kind="${escapeHtml(option.type)}" data-workspace-label="${escapeHtml(`${option.label} ${option.typeLabel} ${option.description || ''}`)}" ${option.enabled ? `onclick="switchWorkspace('${option.id}')"` : `onclick="showNotConfigured('This login cannot switch into ${escapeHtml(option.label)}')" aria-disabled="true"`}>
+                                            <span class="workspace-option-main">
+                                                <strong>${escapeHtml(option.label)}</strong>
+                                                <small>${escapeHtml(option.description || option.workspace_key || option.id)}</small>
+                                            </span>
+                                            <span class="workspace-status">${active === option.id ? 'Active' : escapeHtml(option.typeLabel)}</span>
                                         </button>
                                     `).join('')}
                                 </div>
                             `).join('')}
+                            <div class="workspace-empty-state" data-workspace-empty hidden>No workspaces match this filter yet.</div>
                             <div class="workspace-menu-actions">
                                 <button type="button" class="ops-sidebar-mini" onclick="switchView('settings')">Open workspace settings</button>
-                                ${active === 'platform' ? '<button type="button" class="ops-sidebar-mini" onclick="switchView(\'admin\'); setCurrentSection(\'workspaces\')">Create provider workspace</button>' : ''}
+                                ${active === 'platform' ? '<button type="button" class="ops-sidebar-mini" onclick="switchView(\'admin\'); setCurrentSection(\'workspaces\')">Manage workspace directory</button>' : ''}
                             </div>
                         </div>
                     </details>
@@ -6877,17 +7076,33 @@
 
         function filterWorkspaceOptions(value = '') {
             const query = String(value || '').trim().toLowerCase();
+            const filter = WORKSPACE_DIRECTORY_FILTERS.find(item => item.id === workspaceDirectoryFilter) || WORKSPACE_DIRECTORY_FILTERS[0];
             document.querySelectorAll('[data-workspace-option]').forEach(button => {
                 const label = String(button.dataset.workspaceLabel || button.textContent || '').toLowerCase();
-                button.hidden = Boolean(query && !label.includes(query));
+                const matchesQuery = !query || label.includes(query);
+                const matchesType = !filter.types.length || filter.types.includes(button.dataset.workspaceKind);
+                button.hidden = !(matchesQuery && matchesType);
             });
+            document.querySelectorAll('[data-workspace-group]').forEach(group => {
+                group.hidden = !group.querySelector('[data-workspace-option]:not([hidden])');
+            });
+            document.querySelectorAll('[data-workspace-kind-filter]').forEach(button => {
+                button.classList.toggle('active', button.dataset.workspaceKindFilter === workspaceDirectoryFilter);
+            });
+            const empty = document.querySelector('[data-workspace-empty]');
+            if (empty) empty.hidden = Boolean(document.querySelector('[data-workspace-option]:not([hidden])'));
+        }
+
+        function setWorkspaceDirectoryFilter(filterId = 'all') {
+            workspaceDirectoryFilter = WORKSPACE_DIRECTORY_FILTERS.some(filter => filter.id === filterId) ? filterId : 'all';
+            filterWorkspaceOptions(document.getElementById('workspace-search')?.value || '');
         }
 
         function switchWorkspace(workspaceId) {
             currentWorkspaceId = normalizeWorkspaceKey(workspaceId) || 'platform';
             normalizeCurrentRouteForWorkspace();
             if (!workspaceNavViewIds(currentWorkspaceId).includes(currentView) || !allowedViews().has(currentView)) currentView = 'dashboard';
-            if (currentWorkspaceId === 'rabbi_sheller_provider' && currentView === 'dashboard') dashboardSection = 'overview';
+            if (isProviderWorkspace(currentWorkspaceId) && currentView === 'dashboard') dashboardSection = 'overview';
             sidebarMode = 'sections';
             navDrawerOpen = false;
             syncOperationsUrl();
@@ -6896,7 +7111,7 @@
         }
 
         function currentSubnavConfig() {
-            const providerWorkspace = currentWorkspaceKey() === 'rabbi_sheller_provider';
+            const providerWorkspace = isProviderWorkspace();
             const configs = {
                 dashboard: { tabs: DASHBOARD_SUBTABS, active: dashboardSection, countSource: dashboardSectionCounts(), label: 'Dashboard' },
                 pipelines: { tabs: PIPELINE_SUBTABS, active: pipelineSection, countSource: pipelineSubnavCounts(), label: 'Pipelines' },
@@ -6996,11 +7211,11 @@
             if (currentView === 'pipelines') return '<button class="primary-button" onclick="createPipelineCardPrompt()">New Pipeline Card</button>';
             if (currentView === 'tasks') return '<button class="primary-button" onclick="openTaskModal()">New Task</button>';
             if (currentView === 'students') return '<button class="primary-button" onclick="setStudentSection(\'list\')">Add / Open Student</button>';
-            if (currentView === 'contacts' && currentWorkspaceKey() === 'rabbi_sheller_provider') return '<button class="primary-button" onclick="setCurrentSection(\'participants\')">Open Members</button>';
+            if (currentView === 'contacts' && isProviderWorkspace()) return '<button class="primary-button" onclick="setCurrentSection(\'participants\')">Open Members</button>';
             if (currentView === 'contacts') return '<button class="primary-button" onclick="addInterestedParentLead(event)">New Lead</button>';
             if (currentView === 'content') return '<button class="primary-button" onclick="createManualContentJob()">New Content</button>';
             if (currentView === 'calendar') return '<button class="primary-button" onclick="createCalendarEventPrompt()">New Event</button>';
-            if (currentView === 'service_providers' && currentWorkspaceKey() === 'rabbi_sheller_provider') return '<button class="primary-button" onclick="setCurrentSection(\'schedule\')">Open Schedule</button>';
+            if (currentView === 'service_providers' && isProviderWorkspace()) return '<button class="primary-button" onclick="setCurrentSection(\'schedule\')">Open Schedule</button>';
             if (currentView === 'service_providers') return '<button class="primary-button" onclick="createServiceProviderPrompt()">Add Provider</button>';
             if (currentView === 'communications') return '<button class="primary-button" onclick="createCommunicationNotePrompt()">New Message</button>';
             if (currentView === 'internal_dialogue') return '<button class="primary-button" onclick="createInternalDialogueNotePrompt()">Add Note</button>';
@@ -7021,9 +7236,9 @@
             if (currentView === 'tasks') return TASK_SUBTABS.find(tab => tab.id === taskFocus)?.label || 'Overview';
             if (currentView === 'students') return STUDENT_SUBTABS.find(tab => tab.id === studentSection)?.label || 'Overview';
             if (currentView === 'content') return CONTENT_SUBTABS.find(tab => tab.id === contentSection)?.label || 'Library';
-            if (currentView === 'contacts') return (currentWorkspaceKey() === 'rabbi_sheller_provider' ? PROVIDER_PARTICIPANT_SUBTABS : CONTACT_SUBTABS).find(tab => tab.id === contactSection)?.label || 'Parents';
-            if (currentView === 'calendar') return (currentWorkspaceKey() === 'rabbi_sheller_provider' ? PROVIDER_CALENDAR_SUBTABS : CALENDAR_SUBTABS).find(tab => tab.id === calendarSection)?.label || 'Overview';
-            if (currentView === 'service_providers') return (currentWorkspaceKey() === 'rabbi_sheller_provider' ? PROVIDER_PROGRAM_SUBTABS : SERVICE_PROVIDER_SUBTABS).find(tab => tab.id === serviceProviderSection)?.label || 'Overview';
+            if (currentView === 'contacts') return (isProviderWorkspace() ? PROVIDER_PARTICIPANT_SUBTABS : CONTACT_SUBTABS).find(tab => tab.id === contactSection)?.label || 'Parents';
+            if (currentView === 'calendar') return (isProviderWorkspace() ? PROVIDER_CALENDAR_SUBTABS : CALENDAR_SUBTABS).find(tab => tab.id === calendarSection)?.label || 'Overview';
+            if (currentView === 'service_providers') return (isProviderWorkspace() ? PROVIDER_PROGRAM_SUBTABS : SERVICE_PROVIDER_SUBTABS).find(tab => tab.id === serviceProviderSection)?.label || 'Overview';
             if (currentView === 'communications') return COMMUNICATIONS_SUBTABS.find(tab => tab.id === communicationsSection)?.label || 'Overview';
             if (currentView === 'internal_dialogue') return INTERNAL_DIALOGUE_SUBTABS.find(tab => tab.id === dialogueSection)?.label || 'Overview';
             if (currentView === 'accounting') return ACCOUNTING_SUBTABS.find(tab => tab.id === accountingSection)?.label || 'Overview';
@@ -8887,7 +9102,7 @@
         }
 
         function renderContacts() {
-            if (currentWorkspaceKey() === 'rabbi_sheller_provider') return renderProviderParticipantsPage();
+            if (isProviderWorkspace()) return renderProviderParticipantsPage();
             const contactMeta = contactSectionMeta(contactSection);
             const sectionCounts = CONTACT_SUBTABS.reduce((counts, tab) => {
                 if (tab.id === 'people') {
@@ -10339,7 +10554,7 @@
 
         function renderServiceProviders() {
             const providers = Array.isArray(serviceProviders) ? serviceProviders : [];
-            if (currentWorkspaceKey() === 'rabbi_sheller_provider') return renderProviderProgramWorkspace(providers);
+            if (isProviderWorkspace()) return renderProviderProgramWorkspace(providers);
             const serviceCount = providers.reduce((sum, provider) => sum + (Array.isArray(provider.services) ? provider.services.length : 0), 0);
             const section = serviceProviderSection;
             return `
@@ -10408,8 +10623,8 @@
                     <div class="page-heading saas-page-heading">
                         <div>
                             <div class="page-kicker">Provider Workspace</div>
-                            <h2>Rabbi Sheller Provider Workspace</h2>
-                            <p>Rabbi Sheller is a service provider and revenue-share partner. Members are participants, not BNA students, and this workspace does not expose BNA accountability data.</p>
+                            <h2>One Time Mishnayos Provider Workspace</h2>
+                            <p>Rabbi Sheller is the current service provider and revenue-share partner for this workspace. Members are participants, not BNA students, and this workspace does not expose BNA accountability data.</p>
                         </div>
                     </div>
                     ${section === 'overview' ? `
@@ -11033,8 +11248,8 @@
                     ` : ''}
                     ${['overview', 'today', 'week', 'month', 'list', 'classes', 'students', 'provider', 'worksheets', 'questions'].includes(calendarSection) ? `
                         <section class="focus-panel">
-                            <div class="task-section-header"><h3>${escapeHtml((currentWorkspaceKey() === 'rabbi_sheller_provider' ? PROVIDER_CALENDAR_SUBTABS : CALENDAR_SUBTABS).find(tab => tab.id === calendarSection)?.label || 'Calendar')}</h3><span>${events.length} items</span></div>
-                            <p class="settings-disabled-note">${currentWorkspaceKey() === 'rabbi_sheller_provider' ? 'Provider schedule only. No BNA goals/check-ins or private school data are included.' : 'Internal calendar loads without Google connected. Visibility badges show admin, parent, student, or provider scope.'}</p>
+                            <div class="task-section-header"><h3>${escapeHtml((isProviderWorkspace() ? PROVIDER_CALENDAR_SUBTABS : CALENDAR_SUBTABS).find(tab => tab.id === calendarSection)?.label || 'Calendar')}</h3><span>${events.length} items</span></div>
+                            <p class="settings-disabled-note">${isProviderWorkspace() ? 'Provider schedule only. No BNA goals/check-ins or private school data are included.' : 'Internal calendar loads without Google connected. Visibility badges show admin, parent, student, or provider scope.'}</p>
                             <div class="calendar-event-list">
                                 ${events.length ? events.map(renderCalendarEventRow).join('') : '<div class="empty-state">No events match this calendar lane.</div>'}
                             </div>
@@ -11048,7 +11263,7 @@
         }
 
         function calendarEventsForSection(section = 'overview') {
-            let events = currentWorkspaceKey() === 'rabbi_sheller_provider' ? providerScheduleEvents() : derivedCalendarEvents(section === 'week' ? 'week' : section === 'month' ? 'month' : '');
+            let events = isProviderWorkspace() ? providerScheduleEvents() : derivedCalendarEvents(section === 'week' ? 'week' : section === 'month' ? 'month' : '');
             if (section === 'today') events = events.filter(event => formatDate(event.start_at) === formatDate(new Date().toISOString()));
             if (section === 'classes') events = events.filter(event => event.source === 'class_session' || event.related_type === 'class_session');
             if (section === 'students') events = events.filter(event => ['assignment', 'student_schedule'].includes(event.source) || event.visibility === 'student');
@@ -11357,13 +11572,21 @@
         }
 
         function renderAdminWorkspacesPanel() {
-            const workspaces = workspaceSettings.length ? workspaceSettings : WORKSPACE_FALLBACKS;
+            const workspaces = workspaceDirectoryRecords();
+            const groups = WORKSPACE_DIRECTORY_GROUPS.map(group => ({
+                ...group,
+                items: workspaces.filter(workspace => group.types.includes(normalizeWorkspaceType(workspace.workspace_type, workspace.workspace_key)))
+            })).filter(group => group.items.length);
             return `
                 <section class="focus-panel">
-                    <div class="task-section-header"><h3>Workspaces</h3><span>${workspaces.length} records</span></div>
-                    <div class="content-section-grid">
-                        ${workspaces.map(workspace => `<article class="content-card"><div class="content-card-title">${escapeHtml(workspace.display_name || workspace.name || workspace.workspace_key || workspace.id)}</div><div class="content-card-meta">${escapeHtml(workspace.workspace_type || workspace.project_key || 'workspace')}</div><p class="event-meta">${escapeHtml(workspace.description || 'Workspace configuration is backed by workspace settings.')}</p></article>`).join('')}
-                    </div>
+                    <div class="task-section-header"><h3>Workspace Directory</h3><span>${workspaces.length} records</span></div>
+                    <p class="settings-disabled-note">Super Admin can organize platform, school, provider, home-accountability, parent-household, and community/project workspaces from one directory. Each card remains scoped by workspace type and role.</p>
+                    ${groups.map(group => `
+                        <div class="task-section-header compact"><h3>${escapeHtml(group.label)}</h3><span>${group.items.length} records</span></div>
+                        <div class="content-section-grid">
+                            ${group.items.map(workspace => `<article class="content-card"><div class="content-card-title">${escapeHtml(workspace.display_name || workspace.name || workspace.workspace_key || workspace.id)}</div><div class="content-card-meta">${escapeHtml(workspaceTypeLabel(workspace.workspace_type))} / ${escapeHtml(workspace.workspace_key || workspace.id || 'workspace')}</div><p class="event-meta">${escapeHtml(workspace.description || 'Workspace configuration is backed by workspace settings.')}</p></article>`).join('')}
+                        </div>
+                    `).join('')}
                 </section>
             `;
         }
@@ -11472,7 +11695,7 @@
                 bot_permissions: [
                     ['Student bot enabled', 'Policy ready', 'Allowed context: student profile, student-visible calendar, goals, assignments, questions, documents, and permitted notes.', 'Guarded'],
                     ['Parent bot enabled', 'Policy ready', 'Allowed context: own children, parent-visible calendar, assignments/questions/documents, messages/help, provider index, and account help.', 'Guarded'],
-                    ['Provider helper enabled', currentWorkspaceKey() === 'rabbi_sheller_provider' ? 'Scoped to provider program' : 'Provider-scoped', 'Provider helper cannot read BNA private student data or BNA school admin notes.', 'Guarded'],
+                    ['Provider helper enabled', isProviderWorkspace() ? 'Scoped to provider program' : 'Provider-scoped', 'Provider helper cannot read BNA private student data or BNA school admin notes.', 'Guarded'],
                     ['Private notes', 'Excluded by default', 'Admin-only notes, other students/families, provider credentials, and private terms are excluded unless an admin-only preview is opened.', 'Policy'],
                     ['Prompt/context preview', 'Admin only', 'Parents and students never see raw prompts. Admin can inspect context assembly here after backend preview persistence is available.', 'Admin-only'],
                     ['Audit log', `${botActionLogs.length} recent logs`, 'Typed bot actions are logged by workspace, role, page, and action key.', 'Persisted']
@@ -11878,7 +12101,7 @@
                     title: title.trim(),
                     start_at: date.replace(' ', 'T'),
                     meeting_url: meetingUrl.trim(),
-                    visibility: currentWorkspaceKey() === 'rabbi_sheller_provider' ? 'provider' : 'internal',
+                    visibility: isProviderWorkspace() ? 'provider' : 'internal',
                     source: 'internal'
                 });
                 await loadData();
@@ -11905,8 +12128,8 @@
                 await api.createInternalMessage({
                     workspace_key: currentWorkspaceKey() === 'platform' ? 'rabbi_sheller_provider' : currentWorkspaceKey(),
                     thread_id: threadId || undefined,
-                    thread_key: currentWorkspaceKey() === 'rabbi_sheller_provider' ? 'shloimie-rabbi-operations' : 'bna-operations',
-                    thread_title: currentWorkspaceKey() === 'rabbi_sheller_provider' ? 'Shloimie / Rabbi Sheller operations thread' : 'BNA school operations thread',
+                    thread_key: isProviderWorkspace() ? 'shloimie-rabbi-operations' : 'bna-operations',
+                    thread_title: isProviderWorkspace() ? 'Shloimie / Rabbi Sheller operations thread' : 'BNA school operations thread',
                     body: body.trim(),
                     message_type: type,
                     metadata: { source: 'operations_prompt' }
@@ -17525,26 +17748,43 @@
 
         function currentWorkspaceRecord() {
             const key = currentWorkspaceKey();
-            return workspaceSettings.find(workspace => normalizeWorkspaceKey(workspace.workspace_key || workspace.id) === key)
-                || WORKSPACE_FALLBACKS.find(workspace => workspace.id === key)
+            return workspaceDirectoryRecords().find(workspace => workspaceRecordKey(workspace) === key)
+                || workspaceDirectoryRecords().find(workspace => workspaceRecordKey(workspace) === 'platform')
                 || WORKSPACE_FALLBACKS[0];
         }
 
         function currentWorkspaceRoleLabel() {
             const key = currentWorkspaceKey();
-            if (key === 'platform') return 'Super Admin';
-            if (key === 'rabbi_sheller_provider') return opsMe?.role === 'one_time_admin' ? 'Provider Admin' : 'Provider Workspace Admin';
+            const type = workspaceTypeForKey(key);
+            if (['platform', 'super_admin'].includes(type) || key === 'platform') return 'Super Admin';
+            if (type === 'service_provider') return opsMe?.role === 'one_time_admin' ? 'Provider Admin' : 'Provider Workspace Admin';
+            if (type === 'family') return 'Home Accountability Owner';
+            if (type === 'household') return 'Parent Household Admin';
+            if (type === 'school') return 'BNA Admin';
             return 'BNA Admin';
         }
 
-        function workspaceNavViewIds(workspaceKey = currentWorkspaceKey()) {
+        function workspaceNavProfile(workspaceKey = currentWorkspaceKey()) {
             const key = normalizeWorkspaceKey(workspaceKey) || 'platform';
+            const type = workspaceTypeForKey(key);
+            if (key === 'platform' || ['platform', 'super_admin'].includes(type)) return 'platform';
+            if (type === 'school' || key === 'bna') return 'bna';
+            if (type === 'service_provider') return 'service_provider';
+            if (type === 'family') return 'family';
+            if (type === 'household') return 'household';
+            return 'platform';
+        }
+
+        function workspaceNavViewIds(workspaceKey = currentWorkspaceKey()) {
+            const profile = workspaceNavProfile(workspaceKey);
             const nav = {
                 platform: ['dashboard', 'admin', 'tasks', 'service_providers', 'communications', 'pipelines', 'api_usage', 'settings'],
                 bna: ['dashboard', 'tasks', 'students', 'contacts', 'content', 'calendar', 'communications', 'service_providers', 'accounting', 'settings'],
-                rabbi_sheller_provider: ['dashboard', 'service_providers', 'contacts', 'content', 'calendar', 'communications', 'tasks', 'api_usage', 'settings']
+                service_provider: ['dashboard', 'service_providers', 'contacts', 'content', 'calendar', 'communications', 'tasks', 'api_usage', 'settings'],
+                family: ['dashboard', 'contacts', 'tasks', 'calendar', 'communications', 'service_providers', 'settings'],
+                household: ['dashboard', 'contacts', 'tasks', 'calendar', 'communications', 'service_providers', 'settings']
             };
-            return nav[key] || nav.platform;
+            return nav[profile] || nav.platform;
         }
 
         function workspaceNavItems(workspaceKey = currentWorkspaceKey()) {
@@ -17572,7 +17812,7 @@
                     accounting: { label: 'Accounting', marker: 'AC' },
                     settings: { label: 'Settings', marker: 'SE' },
                 },
-                rabbi_sheller_provider: {
+                service_provider: {
                     dashboard: { label: 'Dashboard', marker: 'DB' },
                     service_providers: { label: 'Program', marker: 'PG' },
                     contacts: { label: 'Members', marker: 'MB' },
@@ -17582,10 +17822,28 @@
                     tasks: { label: 'Tasks', marker: 'TS' },
                     api_usage: { label: 'Reporting', marker: 'RP' },
                     settings: { label: 'Settings', marker: 'SE' },
+                },
+                family: {
+                    dashboard: { label: 'Home Accountability', marker: 'HA' },
+                    contacts: { label: 'Family People', marker: 'FP' },
+                    tasks: { label: 'Goals / Actions', marker: 'GA' },
+                    calendar: { label: 'Check-ins', marker: 'CI' },
+                    communications: { label: 'Messages', marker: 'MS' },
+                    service_providers: { label: 'Provider Index', marker: 'PR' },
+                    settings: { label: 'Setup', marker: 'SE' },
+                },
+                household: {
+                    dashboard: { label: 'Household Dashboard', marker: 'HD' },
+                    contacts: { label: 'Parents / Children', marker: 'PC' },
+                    tasks: { label: 'Goals / Setup', marker: 'GS' },
+                    calendar: { label: 'Check-ins', marker: 'CI' },
+                    communications: { label: 'Messages', marker: 'MS' },
+                    service_providers: { label: 'Provider Index', marker: 'PR' },
+                    settings: { label: 'Setup', marker: 'SE' },
                 }
             };
             return workspaceNavViewIds(workspaceKey)
-                .map(id => ({ ...(base.get(id) || { id, label: id.replace(/_/g, ' '), marker: id.slice(0, 2).toUpperCase() }), ...(overrides[normalizeWorkspaceKey(workspaceKey) || 'platform']?.[id] || {}) }))
+                .map(id => ({ ...(base.get(id) || { id, label: id.replace(/_/g, ' '), marker: id.slice(0, 2).toUpperCase() }), ...(overrides[workspaceNavProfile(workspaceKey)]?.[id] || {}) }))
                 .filter(item => allowedViews().has(item.id));
         }
 
@@ -17597,11 +17855,14 @@
 
         function normalizeCurrentRouteForWorkspace() {
             const key = currentWorkspaceKey();
+            const type = workspaceTypeForKey(key);
+            const providerWorkspace = type === 'service_provider';
+            const householdWorkspace = ['family', 'household'].includes(type);
             if (currentView === 'internal_dialogue') {
                 currentView = 'communications';
                 communicationsSection = 'internal';
             }
-            if (key === 'rabbi_sheller_provider') {
+            if (providerWorkspace) {
                 if (currentView === 'students') {
                     currentView = 'contacts';
                     contactSection = 'participants';
@@ -17613,6 +17874,15 @@
                 if (currentView === 'api_usage' && apiUsageSection === 'student') apiUsageSection = 'provider';
                 if (currentView === 'settings' && settingsSection === 'student_portal') settingsSection = 'provider_portal';
                 if (currentView === 'service_providers' && !PROVIDER_PROGRAM_SUBTABS.some(tab => tab.id === serviceProviderSection)) serviceProviderSection = 'overview';
+            }
+            if (householdWorkspace) {
+                if (currentView === 'students') {
+                    currentView = 'contacts';
+                    selectedStudentId = null;
+                }
+                if (currentView === 'content' || currentView === 'accounting' || currentView === 'api_usage' || currentView === 'pipelines' || currentView === 'admin') currentView = 'dashboard';
+                if (currentView === 'contacts' && contactSection === 'students') contactSection = 'people';
+                if (currentView === 'service_providers' && !SERVICE_PROVIDER_SUBTABS.some(tab => tab.id === serviceProviderSection)) serviceProviderSection = 'overview';
             }
             if (!viewAllowed(currentView)) currentView = 'dashboard';
         }
@@ -18078,15 +18348,15 @@
             if (currentView === 'students') studentSection = STUDENT_SUBTABS.some(tab => tab.id === section) ? section : 'overview';
             if (currentView === 'content') contentSection = CONTENT_SUBTABS.some(tab => tab.id === section) ? section : 'library';
             if (currentView === 'contacts') {
-                const tabs = currentWorkspaceKey() === 'rabbi_sheller_provider' ? PROVIDER_PARTICIPANT_SUBTABS : CONTACT_SUBTABS;
+                const tabs = isProviderWorkspace() ? PROVIDER_PARTICIPANT_SUBTABS : CONTACT_SUBTABS;
                 contactSection = tabs.some(tab => tab.id === section) ? section : 'overview';
             }
             if (currentView === 'calendar') {
-                const tabs = currentWorkspaceKey() === 'rabbi_sheller_provider' ? PROVIDER_CALENDAR_SUBTABS : CALENDAR_SUBTABS;
+                const tabs = isProviderWorkspace() ? PROVIDER_CALENDAR_SUBTABS : CALENDAR_SUBTABS;
                 calendarSection = tabs.some(tab => tab.id === section) ? section : 'overview';
             }
             if (currentView === 'service_providers') {
-                const tabs = currentWorkspaceKey() === 'rabbi_sheller_provider' ? PROVIDER_PROGRAM_SUBTABS : SERVICE_PROVIDER_SUBTABS;
+                const tabs = isProviderWorkspace() ? PROVIDER_PROGRAM_SUBTABS : SERVICE_PROVIDER_SUBTABS;
                 serviceProviderSection = tabs.some(tab => tab.id === section) ? section : 'overview';
             }
             if (currentView === 'communications') communicationsSection = COMMUNICATIONS_SUBTABS.some(tab => tab.id === section) ? section : 'overview';

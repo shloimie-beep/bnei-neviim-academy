@@ -1,0 +1,70 @@
+{
+  "generated_at": "2026-06-10T11:42:07.804Z",
+  "baseUrl": "http://127.0.0.1:8096",
+  "outDir": "ops/playwright-smokes/task-402-brand-shell-2026-06-10T11-40-56-966Z",
+  "results": [
+    {
+      "surface": "operations-desktop",
+      "screenshot": "ops/playwright-smokes/task-402-brand-shell-2026-06-10T11-40-56-966Z/operations-desktop.png"
+    },
+    {
+      "surface": "operations-desktop-metrics",
+      "bodyClass": "bna-shell bna-ops-shell-page",
+      "workspaceChip": "BNA Academy Workspace",
+      "topbarVisible": true,
+      "sidebarBg": "rgba(255, 255, 255, 0.94)",
+      "focusPanelBg": "rgb(255, 255, 255)",
+      "dropdownButtons": 9,
+      "nativeSelectVisible": false
+    },
+    {
+      "surface": "operations-dropdown",
+      "screenshot": "ops/playwright-smokes/task-402-brand-shell-2026-06-10T11-40-56-966Z/operations-dropdown.png"
+    },
+    {
+      "surface": "operations-mobile",
+      "screenshot": "ops/playwright-smokes/task-402-brand-shell-2026-06-10T11-40-56-966Z/operations-mobile.png"
+    },
+    {
+      "surface": "operations-mobile-drawer",
+      "screenshot": "ops/playwright-smokes/task-402-brand-shell-2026-06-10T11-40-56-966Z/operations-mobile-drawer.png"
+    },
+    {
+      "surface": "parent-provider-desktop",
+      "screenshot": "ops/playwright-smokes/task-402-brand-shell-2026-06-10T11-40-56-966Z/parent-provider-desktop.png"
+    },
+    {
+      "surface": "parent-provider-metrics",
+      "bodyClass": "bna-shell bna-portal-page bna-parent-page",
+      "sectionControlSticky": "sticky",
+      "selectEnhanced": 6,
+      "providersVisible": true
+    },
+    {
+      "surface": "parent-provider-mobile",
+      "screenshot": "ops/playwright-smokes/task-402-brand-shell-2026-06-10T11-40-56-966Z/parent-provider-mobile.png"
+    },
+    {
+      "surface": "parent-mobile-menu",
+      "screenshot": "ops/playwright-smokes/task-402-brand-shell-2026-06-10T11-40-56-966Z/parent-mobile-menu.png"
+    },
+    {
+      "surface": "student-desktop",
+      "screenshot": "ops/playwright-smokes/task-402-brand-shell-2026-06-10T11-40-56-966Z/student-desktop.png"
+    },
+    {
+      "surface": "student-metrics",
+      "bodyClass": "bna-shell bna-portal-page bna-student-page",
+      "selectEnhanced": 1,
+      "mobileMenuExists": true
+    },
+    {
+      "surface": "student-mobile",
+      "screenshot": "ops/playwright-smokes/task-402-brand-shell-2026-06-10T11-40-56-966Z/student-mobile.png"
+    },
+    {
+      "surface": "student-mobile-menu",
+      "screenshot": "ops/playwright-smokes/task-402-brand-shell-2026-06-10T11-40-56-966Z/student-mobile-menu.png"
+    }
+  ]
+}

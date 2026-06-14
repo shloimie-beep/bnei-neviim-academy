@@ -1,0 +1,32 @@
+{
+  "generated_at": "2026-06-10T12:05:58.894Z",
+  "baseUrl": "https://bneineviimacademy.org",
+  "deployment": "56747aa2-6dd8-41ad-96a8-2846097e46d8",
+  "outDir": "ops/playwright-smokes/queue-rescue-final-live-2026-06-10T12-05-40-057Z",
+  "results": [
+    {
+      "surface": "operations-providers-desktop",
+      "screenshot": "ops/playwright-smokes/queue-rescue-final-live-2026-06-10T12-05-40-057Z/operations-providers-desktop.png",
+      "topbarText": "BNA Bnei Neviim Academy Tasks / Overview Operations Command Center / BNA Academy Workspace Wed 10 Jun"
+    },
+    {
+      "surface": "provider-desktop",
+      "screenshot": "ops/playwright-smokes/queue-rescue-final-live-2026-06-10T12-05-40-057Z/provider-desktop.png"
+    },
+    {
+      "surface": "parent-mobile",
+      "screenshot": "ops/playwright-smokes/queue-rescue-final-live-2026-06-10T12-05-40-057Z/parent-mobile.png",
+      "topbarText": "BNA Bnei Neviim Academy Parent portal"
+    },
+    {
+      "surface": "student-mobile",
+      "screenshot": "ops/playwright-smokes/queue-rescue-final-live-2026-06-10T12-05-40-057Z/student-mobile.png",
+      "topbarText": "BNA Bnei Neviim Academy Student goal board"
+    },
+    {
+      "surface": "provider-mobile",
+      "screenshot": "ops/playwright-smokes/queue-rescue-final-live-2026-06-10T12-05-40-057Z/provider-mobile.png",
+      "topbarText": "BNA Bnei Neviim Academy Provider portal"
+    }
+  ]
+}

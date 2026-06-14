@@ -1079,13 +1079,19 @@
     <script src="/js/app-select.js"></script>
     <script src="/js/signup-documents.js"></script>
     <script>
-        function buildThankYouUrl(paymentMethod, paymentLink) {
+        function buildThankYouUrl(paymentMethod, paymentLink, checkoutAttemptId = '', checkoutAttemptToken = '') {
             const params = new URLSearchParams({
                 payment: paymentMethod
             });
 
             if (paymentLink) {
                 params.set('paymentLink', paymentLink);
+            }
+            if (checkoutAttemptId) {
+                params.set('checkoutAttemptId', checkoutAttemptId);
+            }
+            if (checkoutAttemptToken) {
+                params.set('checkoutAttemptToken', checkoutAttemptToken);
             }
 
             return `/signup-thank-you.html?${params.toString()}`;
@@ -1220,7 +1226,12 @@
                         // Redirect to thank-you page and then payment
                         messageDiv.textContent = 'Thank you! Your registration has been submitted. Taking you to the next step...';
                         document.getElementById('signupForm').reset();
-                        window.location.href = buildThankYouUrl('credit', result.paymentLink || '');
+                        window.location.href = buildThankYouUrl(
+                            'credit',
+                            result.paymentLink || '',
+                            result.checkoutAttemptId || '',
+                            result.checkoutAttemptToken || ''
+                        );
                     }
                 } else {
                     throw new Error(result.error || 'Failed to submit');

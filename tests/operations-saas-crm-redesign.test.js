@@ -30,10 +30,13 @@ test('Operations uses the SaaS shell with global nav, workspace switcher, and ne
   assert.match(operations, /function renderWorkspaceSwitcher/);
   assert.match(operations, /function switchWorkspace/);
   assert.match(operations, /function workspaceNavViewIds/);
-  assert.match(operations, /Current Workspace/);
+  assert.match(operations, /Workspace Directory/);
   assert.match(operations, /Platform \/ Super Admin/);
   assert.match(operations, /BNA School Workspace/);
-  assert.match(operations, /Rabbi Sheller Provider Workspace/);
+  assert.match(operations, /One Time Mishnayos Provider Workspace/);
+  assert.match(operations, /Parent Household Workspaces/);
+  assert.match(operations, /\{ id: 'household', label: 'Parent Households'/);
+  assert.match(operations, /data-workspace-kind-filter="\$\{escapeHtml\(filter\.id\)\}"/);
   assert.match(operations, /function renderSidebarSubnav/);
   assert.match(operations, /function currentSubnavConfig/);
   assert.match(operations, /class="ops-sidebar-drilldown ops-nested-subnav"/);
@@ -59,7 +62,7 @@ test('Operations exposes provider, communications, API usage, settings, and disa
   assert.match(operations, /Estimated Cost/);
   assert.match(operations, /Detailed token, model, cost, budget, and export controls need backend metering/);
   assert.match(operations, /Website Import/);
-  assert.match(operations, /Provider Workspace/);
+  assert.match(operations, /Service Provider Workspaces/);
   assert.match(operations, /Email Identities/);
   assert.match(operations, /Google Classroom/);
   assert.match(operations, /WhatsApp/);

@@ -66,7 +66,7 @@ test('signup permissions also write a normalized parent permission profile', () 
   assert.match(server, /await upsertParentPermissionProfileFromSignup\(signup, student\)/);
 });
 
-test('universal sliding assistant uses server-side chat, history, and safe action/ticket routing', () => {
+test('universal sliding assistant uses one server-side chat panel and safe action/ticket routing', () => {
   assert.match(server, /visibleActionsForActor/);
   assert.match(server, /app\.get\('\/api\/portal-bot\/actions'/);
   assert.match(server, /app\.post\('\/api\/portal-bot\/actions\/preview'/);
@@ -78,6 +78,11 @@ test('universal sliding assistant uses server-side chat, history, and safe actio
   assert.match(server, /app\.get\('\/api\/bna\/assistant\/threads'/);
   assert.match(server, /queue_codex_task/);
   assert.match(server, /Non-admin Codex\/CLI request converted to support ticket/);
+  assert.match(server, /assistantAdaptiveIntent/);
+  assert.match(server, /assistantVisibleActionCatalog/);
+  assert.match(server, /assistantRunActionTool/);
+  assert.match(server, /function assistantShouldUseWebSearch/);
+  assert.match(server, /tools: \[\{ type: 'web_search' \}\]/);
   for (const html of [homeHtml, parentHtml, studentHtml, providerHtml]) {
     assert.match(html, /\/js\/bna-bot-widget\.js/);
   }
@@ -85,7 +90,11 @@ test('universal sliding assistant uses server-side chat, history, and safe actio
   assert.match(botWidgetJs, /api\/bna\/assistant\/chat/);
   assert.match(botWidgetJs, /api\/bna\/assistant\/threads/);
   assert.match(botWidgetJs, /bna-bot-typing/);
-  assert.match(botWidgetJs, /data-mode="codex"/);
+  assert.match(botWidgetJs, /mode: 'safe'/);
+  assert.match(botWidgetJs, /data-history-toggle/);
+  assert.match(botWidgetJs, /bna-bot-history-toggle/);
+  assert.match(botWidgetJs, /Continue chat/);
+  assert.doesNotMatch(botWidgetJs, /data-agent-prompt|data-mode=/);
   assert.doesNotMatch(botWidgetJs, /openai|chat\/completions|responses\.create/i);
 });
 

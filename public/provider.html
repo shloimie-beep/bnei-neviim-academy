@@ -20,6 +20,12 @@
 
         * { box-sizing: border-box; }
 
+        html,
+        body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
         body {
             margin: 0;
             min-height: 100vh;
@@ -476,6 +482,39 @@
                 </section>
             </div>
 
+            <section class="panel provider-section" data-provider-section="media">
+                <h2>Profile Media</h2>
+                <div class="notice">Free provider profiles can show a profile image and up to 3 gallery images. Use approved image URLs only.</div>
+                <div id="providerMedia" class="service-list" style="margin-top:12px;"></div>
+                <form id="mediaForm" class="panel" style="box-shadow:none; margin-top:14px;">
+                    <h3>Add image</h3>
+                    <div class="field-grid">
+                        <label>Type
+                            <select name="media_type">
+                                <option value="gallery">Gallery</option>
+                                <option value="profile">Profile</option>
+                                <option value="document">Document</option>
+                            </select>
+                        </label>
+                        <label>Image URL
+                            <input name="url" type="url" required>
+                        </label>
+                    </div>
+                    <label>Alt text
+                        <input name="alt_text">
+                    </label>
+                    <div class="button-row">
+                        <button class="btn primary" type="submit">Add Media</button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="comments">
+                <h2>Comments / Reviews</h2>
+                <div class="notice">Hide comments instead of deleting them. Parents and public visitors see only visible comments.</div>
+                <div id="providerComments" class="service-list" style="margin-top:12px;"></div>
+            </section>
+
             <section class="panel provider-section" data-provider-section="website_import">
                 <h2>Website Import</h2>
                 <div class="notice">Coming soon: website import will be available after BNA reviews the crawler policy, source URL fields, and approval workflow.</div>
@@ -490,6 +529,22 @@
                 <h2>Plan / Entitlements</h2>
                 <div class="notice">Entitlements are controlled by BNA. Upgrade-only features stay disabled until your provider plan changes.</div>
                 <div id="entitlementList" class="service-list"></div>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="google_business">
+                <h2>Google Business Profile</h2>
+                <div id="googleBusinessStatus" class="service-list"></div>
+                <div class="button-row">
+                    <button id="googleBusinessConnect" class="btn primary" type="button">Request Google Connection</button>
+                </div>
+            </section>
+
+            <section class="panel provider-section" data-provider-section="upgrade">
+                <h2>Upgrade</h2>
+                <div id="providerUpgrade" class="service-list"></div>
+                <div class="button-row">
+                    <button id="upgradeButton" class="btn primary" type="button">Request Upgrade</button>
+                </div>
             </section>
 
             <section class="panel provider-section" data-provider-section="integrations">
@@ -568,8 +623,12 @@
                 { id: 'overview', label: 'Overview' },
                 { id: 'profile', label: 'Profile / Listing' },
                 { id: 'services', label: 'Services' },
+                { id: 'media', label: 'Media' },
+                { id: 'comments', label: 'Comments' },
                 { id: 'commercial', label: 'Commercial Model' },
                 { id: 'entitlements', label: 'Entitlements' },
+                { id: 'google_business', label: 'Google Business' },
+                { id: 'upgrade', label: 'Upgrade' },
             ];
             if (portalEntitlementEnabled('landing_page_funnel') || portalEntitlementEnabled('content_video_workflow')) {
                 sections.push({ id: 'website_import', label: 'Website Import' });
@@ -633,6 +692,11 @@
             const integrations = Array.isArray(data.integrations) ? data.integrations : [];
             const accessChecklist = Array.isArray(data.access_checklist) ? data.access_checklist : [];
             const messages = Array.isArray(data.messages) ? data.messages : [];
+            const profile = data.profile || {};
+            const media = Array.isArray(data.media) ? data.media : [];
+            const comments = Array.isArray(data.comments) ? data.comments : [];
+            const googleBusiness = data.google_business || {};
+            const upgrade = data.upgrade || {};
             const plan = provider.plan || {};
             document.getElementById('loginPanel').classList.add('hidden');
             document.getElementById('portalPanel').classList.remove('hidden');
@@ -729,6 +793,68 @@
                     </article>
                 `).join('')
                 : '<p class="small">No provider messages yet.</p>';
+            document.getElementById('providerMedia').innerHTML = media.length
+                ? media.map(item => `
+                    <article class="service-card">
+                        <div class="service-head">
+                            <div>
+                                <h3>${escapeHtml(item.media_type || 'media')}</h3>
+                                <p class="small">${escapeHtml(item.alt_text || item.url || '')}</p>
+                            </div>
+                            <span class="status-pill">${escapeHtml(item.status || 'active')}</span>
+                        </div>
+                        ${item.url ? `<p class="small"><a href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.url)}</a></p>` : ''}
+                    </article>
+                `).join('')
+                : '<p class="small">No media yet.</p>';
+            const hiddenCommentCount = comments.filter(item => item.visibility === 'hidden').length;
+            document.getElementById('providerComments').innerHTML = comments.length
+                ? `
+                    ${hiddenCommentCount ? `<div class="notice">${hiddenCommentCount} hidden comment${hiddenCommentCount === 1 ? '' : 's'} kept for audit history.</div>` : ''}
+                    ${comments.map(item => `
+                        <article class="service-card">
+                            <div class="service-head">
+                                <div>
+                                    <h3>${escapeHtml(item.rating ? `${item.rating}/5` : 'Comment')}</h3>
+                                    <p class="small">${escapeHtml([item.source, item.visibility].filter(Boolean).join(' / '))}</p>
+                                </div>
+                                ${item.visibility !== 'hidden' ? `<button class="btn" type="button" data-hide-comment="${Number(item.id)}">Hide</button>` : '<span class="status-pill">Hidden</span>'}
+                            </div>
+                            <p class="small">${escapeHtml(item.body || '')}</p>
+                            ${item.provider_reply ? `<p class="small"><strong>Reply:</strong> ${escapeHtml(item.provider_reply)}</p>` : ''}
+                        </article>
+                    `).join('')}
+                `
+                : '<p class="small">No public comments yet.</p>';
+            document.getElementById('googleBusinessStatus').innerHTML = `
+                <article class="service-card">
+                    <div class="service-head">
+                        <div>
+                            <h3>${escapeHtml(friendlyStatus(googleBusiness.status || 'not_connected'))}</h3>
+                            <p class="small">${escapeHtml(googleBusiness.fallback || 'Google Business Profile is not connected yet.')}</p>
+                        </div>
+                        <span class="status-pill">${googleBusiness.reviews_live ? 'Live reviews' : 'Manual fallback'}</span>
+                    </div>
+                    <div class="service-meta">
+                        <span class="status-pill">${googleBusiness.oauth_configured ? 'OAuth configured' : 'OAuth not configured'}</span>
+                        <span class="status-pill">${googleBusiness.maps_key_configured ? 'Maps key configured' : 'Maps key missing'}</span>
+                        ${googleBusiness.manual_profile_url ? `<a class="status-pill" href="${escapeHtml(googleBusiness.manual_profile_url)}" target="_blank" rel="noopener noreferrer">Manual profile</a>` : ''}
+                    </div>
+                </article>
+            `;
+            document.getElementById('providerUpgrade').innerHTML = `
+                <article class="service-card">
+                    <div class="service-head">
+                        <div>
+                            <h3>${escapeHtml(upgrade.configured ? 'Upgrade available' : 'Upgrade not configured yet')}</h3>
+                            <p class="small">${escapeHtml(upgrade.message || 'Paid provider features are not enabled until BNA configures Stripe links.')}</p>
+                        </div>
+                        <span class="status-pill">${escapeHtml(plan.label || provider.entitlement_plan || 'Free listing')}</span>
+                    </div>
+                </article>
+            `;
+            document.getElementById('googleBusinessConnect').dataset.providerProfileId = profile.id || '';
+            document.getElementById('upgradeButton').dataset.providerProfileId = profile.id || '';
             document.getElementById('providerActivity').innerHTML = `
                 <article class="service-card">
                     <div class="service-head">
@@ -835,6 +961,24 @@
             }
         });
 
+        document.getElementById('mediaForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const button = event.submitter;
+            const profileId = portalState?.profile?.id;
+            if (!profileId) return;
+            button.disabled = true;
+            try {
+                await api(`/api/providers/${encodeURIComponent(profileId)}/media`, {
+                    method: 'POST',
+                    body: JSON.stringify(formObject(event.currentTarget))
+                });
+                renderPortal(await api('/api/provider-portal/session'));
+                event.currentTarget.reset();
+            } finally {
+                button.disabled = false;
+            }
+        });
+
         document.getElementById('portalPanel').addEventListener('submit', async (event) => {
             const form = event.target.closest('[data-provider-reply-form]');
             if (!form) return;
@@ -851,8 +995,57 @@
             }
         });
 
+        document.getElementById('portalPanel').addEventListener('click', async (event) => {
+            const hideButton = event.target.closest('[data-hide-comment]');
+            if (hideButton) {
+                const profileId = portalState?.profile?.id;
+                if (!profileId) return;
+                hideButton.disabled = true;
+                try {
+                    await api(`/api/providers/${encodeURIComponent(profileId)}/comments/${encodeURIComponent(hideButton.dataset.hideComment)}`, {
+                        method: 'PATCH',
+                        body: JSON.stringify({ visibility: 'hidden' })
+                    });
+                    renderPortal(await api('/api/provider-portal/session'));
+                } finally {
+                    hideButton.disabled = false;
+                }
+                return;
+            }
+
+            if (event.target.closest('#upgradeButton')) {
+                const button = event.target.closest('#upgradeButton');
+                const profileId = button.dataset.providerProfileId || portalState?.profile?.id;
+                if (!profileId) return;
+                button.disabled = true;
+                try {
+                    const result = await api(`/api/providers/${encodeURIComponent(profileId)}/upgrade-intent`, { method: 'POST', body: JSON.stringify({}) });
+                    if (result.url) window.open(result.url, '_blank', 'noopener');
+                    else alert(result.message || 'Upgrade is not configured yet.');
+                } finally {
+                    button.disabled = false;
+                }
+                return;
+            }
+
+            if (event.target.closest('#googleBusinessConnect')) {
+                const button = event.target.closest('#googleBusinessConnect');
+                const profileId = button.dataset.providerProfileId || portalState?.profile?.id;
+                if (!profileId) return;
+                button.disabled = true;
+                try {
+                    const result = await api(`/api/providers/${encodeURIComponent(profileId)}/google-business/connect`, { method: 'POST', body: JSON.stringify({}) });
+                    alert(result.fallback || result.blocker || 'Google connection request saved.');
+                    renderPortal(await api('/api/provider-portal/session'));
+                } finally {
+                    button.disabled = false;
+                }
+            }
+        });
+
         loadSession();
     </script>
+    <script src="/js/app-select.js"></script>
     <script src="/js/bna-bot-widget.js"></script>
 </body>
 </html>

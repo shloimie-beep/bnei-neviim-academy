@@ -5,7 +5,7 @@
 - Live Operations task: #506, `Set up Rabbi Scheller scoped Drive/social ingestion and send login last`.
 - Operator priority: parents first; Rabbi Scheller login should be done last.
 - Background setup completed and verified on 2026-06-12 at 16:16 +03:00.
-- Do not send Rabbi Scheller login details until contact details and the login username are collected/stored.
+- 2026-06-14 update: contact details and scoped login username were collected/stored, then the One Time task-manager access handoff was sent by email and WhatsApp.
 
 ## Completed Setup
 
@@ -23,10 +23,10 @@
 
 ## Known Gaps
 
-- Rabbi Scheller provider record exists, but contact email, WhatsApp/contact phone, and scoped login username still need confirmation or generation.
-- Send WhatsApp only after a valid Rabbi phone exists.
-- WhatsApp message should ask for his email and include the Drive folder link for dropping videos.
-- Login handoff stays held until the contact fields are collected.
+- The original login handoff blocker is cleared: Rabbi Scheller's provider/project member records now have contact email, WhatsApp/contact phone, and scoped login username.
+- Gmail handoff was sent successfully on 2026-06-14.
+- WhatsApp handoff was delivered successfully on 2026-06-14 after retrying the communication log as `general`.
+- Password-change/personal password setup for the scoped One Time Operations account is not yet a finished user-facing flow; the handoff used the current scoped Operations task-manager credentials plus a short-lived access link.
 
 ## Attempt 2 Verification
 
@@ -41,10 +41,19 @@
 
 ## Intended Flow
 
-1. Confirm or collect Rabbi Scheller email and WhatsApp/contact phone.
-2. Confirm or generate the scoped provider login username.
-3. Send the Drive folder link and instructions for video drop-off.
-4. Send Rabbi Scheller login information last.
+1. Done 2026-06-14: Confirmed/stored Rabbi Scheller email and WhatsApp/contact phone.
+2. Done 2026-06-14: Confirmed/stored the scoped One Time login username.
+3. Still relevant: send Drive folder/video drop-off instructions again when the content intake workflow is ready for real uploads.
+4. Done 2026-06-14: Sent Rabbi Scheller task-manager login information last.
+
+## 2026-06-14 Login Handoff Verification
+
+- Provider record updated with confirmed contact email, WhatsApp/contact phone, and scoped login username.
+- Project member metadata updated with confirmed contact email/phone and scoped login username.
+- Gmail sent `One Time task manager access` to Rabbi Scheller's confirmed email.
+- WhatsApp sent and delivery readback showed delivered for communication `#1160`.
+- Live Operations task `#506` was marked done with verification notes and a workspace comment.
+- Message copy told Rabbi that the task manager is working now, while the rest of the workspace/social/content setup is still being configured.
 
 ## Parent Work Already Prioritized
 

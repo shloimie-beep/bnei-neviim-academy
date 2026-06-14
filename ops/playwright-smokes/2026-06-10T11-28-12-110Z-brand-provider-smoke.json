@@ -1,0 +1,39 @@
+{
+  "ok": false,
+  "base": "https://bneineviimacademy.org",
+  "results": [
+    {
+      "name": "operations-login-mobile",
+      "file": "ops/playwright-smokes/2026-06-10T11-28-12-110Z-operations-login-mobile.png",
+      "hasBrand": 0,
+      "errors": [
+        "Failed to load resource: the server responded with a status of 401 ()"
+      ]
+    },
+    {
+      "name": "operations-desktop",
+      "file": "ops/playwright-smokes/2026-06-10T11-28-12-110Z-operations-desktop.png",
+      "hasBrand": 1,
+      "brandVisible": true,
+      "hasProviders": 0,
+      "bodyText": "BNA Operations\nTelegram and Drive inputs routed into focused work lanes.\nTasks\nT\nStudents\nS\nContent\nC\nContacts\nP\nAccounting\n$\nSupport\n!\nRoadmap\nR\nBNA\nBnei Neviim Academy\nTasks / Overview\nOperations Command Center\nWed 10 Jun\nWORK QUEUE\nTasks\n\nDecisions wait for your call. My Tasks are human work. Cha",
+      "errors": [
+        "Failed to load resource: the server responded with a status of 401 ()"
+      ]
+    },
+    {
+      "name": "parent-portal-public-mobile",
+      "file": "ops/playwright-smokes/2026-06-10T11-28-12-110Z-parent-portal-public-mobile.png",
+      "hasBrand": 1,
+      "errors": [
+        "Failed to load resource: the server responded with a status of 401 ()"
+      ]
+    },
+    {
+      "name": "student-portal-public-mobile",
+      "file": "ops/playwright-smokes/2026-06-10T11-28-12-110Z-student-portal-public-mobile.png",
+      "hasBrand": 1,
+      "errors": []
+    }
+  ]
+}

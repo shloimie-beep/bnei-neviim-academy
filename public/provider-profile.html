@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BNA Provider Profile</title>
+    <style>
+        :root {
+            --ink: #151515;
+            --muted: #626262;
+            --paper: #f7f7f4;
+            --panel: #ffffff;
+            --line: rgba(21, 21, 21, 0.14);
+            --gold: #d6a92d;
+            --green: #2f6f5e;
+            --shadow: 0 18px 44px rgba(0, 0, 0, 0.08);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            color: var(--ink);
+            font-family: "Trebuchet MS", Verdana, sans-serif;
+            background: linear-gradient(180deg, #fff 0%, var(--paper) 100%);
+        }
+
+        a { color: inherit; }
+
+        .topbar {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            border-bottom: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.94);
+            padding: 12px max(14px, calc((100vw - 1040px) / 2));
+            backdrop-filter: blur(16px);
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .mark {
+            display: grid;
+            place-items: center;
+            width: 38px;
+            height: 38px;
+            border-radius: 8px;
+            background: #111;
+            color: #fff;
+            font-weight: 900;
+        }
+
+        main {
+            width: min(1040px, calc(100% - 28px));
+            margin: 0 auto;
+            padding: 30px 0 54px;
+        }
+
+        .profile-hero,
+        .panel {
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.94);
+            box-shadow: var(--shadow);
+            padding: 18px;
+        }
+
+        .profile-hero {
+            display: grid;
+            grid-template-columns: 128px minmax(0, 1fr);
+            gap: 18px;
+            align-items: start;
+            margin-bottom: 14px;
+        }
+
+        .avatar {
+            display: grid;
+            place-items: center;
+            width: 128px;
+            aspect-ratio: 1;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: linear-gradient(135deg, rgba(214, 169, 45, 0.22), rgba(47, 111, 94, 0.12));
+            overflow: hidden;
+            font-size: 30px;
+            font-weight: 900;
+        }
+
+        .avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        h1, h2, h3, p { margin-top: 0; letter-spacing: 0; }
+        h1 { margin-bottom: 8px; font-size: clamp(34px, 6vw, 56px); line-height: 0.98; }
+        .muted, .small { color: var(--muted); font-size: 13px; font-weight: 700; line-height: 1.45; }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+            gap: 14px;
+        }
+
+        .stack { display: grid; gap: 14px; }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            background: #fff;
+            padding: 6px 9px;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-top: 10px;
+        }
+
+        .button,
+        button {
+            min-height: 40px;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            background: #fff;
+            color: var(--ink);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font: inherit;
+            font-weight: 900;
+            padding: 9px 12px;
+            text-decoration: none;
+            white-space: nowrap;
+        }
+
+        .primary {
+            border-color: var(--gold);
+            background: var(--gold);
+        }
+
+        input,
+        textarea {
+            width: 100%;
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            font: inherit;
+            padding: 10px 12px;
+        }
+
+        textarea { min-height: 96px; resize: vertical; }
+        label { display: grid; gap: 6px; font-size: 12px; font-weight: 900; }
+        .notice { border: 1px solid rgba(214, 169, 45, 0.36); border-radius: 8px; background: #fffaf0; padding: 12px; font-weight: 800; }
+        .hidden { display: none !important; }
+
+        @media (max-width: 700px) {
+            .topbar,
+            .profile-hero { grid-template-columns: 1fr; }
+            .avatar { width: 96px; }
+        }
+    </style>
+</head>
+<body>
+    <header class="topbar">
+        <div class="brand">
+            <span class="mark">BNA</span>
+            <div>
+                <strong>Bnei Neviim Academy</strong>
+                <div class="small">Service provider profile</div>
+            </div>
+        </div>
+        <a class="button" href="/service-providers">Provider Index</a>
+    </header>
+
+    <main class="stack">
+        <section id="status" class="panel">Loading provider...</section>
+        <section id="profile" class="profile-hero hidden"></section>
+        <section id="services" class="grid hidden"></section>
+        <section id="gallery" class="grid hidden"></section>
+        <section id="google" class="panel hidden"></section>
+        <section id="comments" class="panel stack hidden"></section>
+        <section id="contact" class="panel stack hidden">
+            <div>
+                <h2>Ask a question</h2>
+                <p class="small">Your message is logged for the provider and BNA review. No private school or household data is shown here.</p>
+            </div>
+            <form id="questionForm" class="stack">
+                <label>Email
+                    <input name="email" type="email">
+                </label>
+                <label>Question
+                    <textarea name="message" required maxlength="3000"></textarea>
+                </label>
+                <button class="primary" type="submit">Send Question</button>
+                <span id="questionStatus" class="small"></span>
+            </form>
+        </section>
+    </main>
+
+    <script>
+        const slug = decodeURIComponent(window.location.pathname.split('/').filter(Boolean).pop() || '');
+        const els = {
+            status: document.getElementById('status'),
+            profile: document.getElementById('profile'),
+            services: document.getElementById('services'),
+            gallery: document.getElementById('gallery'),
+            google: document.getElementById('google'),
+            comments: document.getElementById('comments'),
+            contact: document.getElementById('contact'),
+            questionForm: document.getElementById('questionForm'),
+            questionStatus: document.getElementById('questionStatus'),
+        };
+        let provider = null;
+
+        function escapeHtml(value) {
+            return String(value ?? '').replace(/[&<>"']/g, (char) => ({
+                '&': '&amp;',
+                '<': '&lt;',
+                '>': '&gt;',
+                '"': '&quot;',
+                "'": '&#039;',
+            })[char]);
+        }
+
+        function initials(name = '') {
+            return String(name || 'BNA').split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase() || 'BNA';
+        }
+
+        function formObject(form) {
+            return Object.fromEntries(new FormData(form).entries());
+        }
+
+        async function api(path, options = {}) {
+            const response = await fetch(path, {
+                credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/json', ...(options.headers || {}) },
+                ...options,
+            });
+            const data = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(data.error || 'Request failed');
+            return data;
+        }
+
+        function render() {
+            const name = provider.display_name || 'Provider';
+            els.status.classList.add('hidden');
+            els.profile.classList.remove('hidden');
+            els.services.classList.remove('hidden');
+            els.gallery.classList.toggle('hidden', !(provider.media || []).length);
+            els.google.classList.remove('hidden');
+            els.comments.classList.remove('hidden');
+            els.contact.classList.remove('hidden');
+
+            els.profile.innerHTML = `
+                <div class="avatar">${provider.profile_photo_url ? `<img src="${escapeHtml(provider.profile_photo_url)}" alt="${escapeHtml(name)}">` : escapeHtml(initials(name))}</div>
+                <div>
+                    <h1>${escapeHtml(name)}</h1>
+                    <p class="muted">${escapeHtml([provider.headline, provider.service_area].filter(Boolean).join(' / ') || 'BNA service provider')}</p>
+                    ${provider.bio ? `<p>${escapeHtml(provider.bio)}</p>` : ''}
+                    <div class="pills">
+                        ${(provider.service_categories || []).map(item => `<span class="pill">${escapeHtml(item)}</span>`).join('')}
+                        ${(provider.languages || []).map(item => `<span class="pill">${escapeHtml(item)}</span>`).join('')}
+                    </div>
+                    <div class="pills">
+                        ${provider.website_url ? `<a class="button" href="${escapeHtml(provider.website_url)}" target="_blank" rel="noopener noreferrer">Website</a>` : ''}
+                        ${provider.whatsapp_phone ? `<a class="button" href="https://wa.me/${escapeHtml(String(provider.whatsapp_phone).replace(/\D/g, ''))}" target="_blank" rel="noopener noreferrer">WhatsApp</a>` : ''}
+                    </div>
+                </div>
+            `;
+            els.services.innerHTML = (provider.services || []).length
+                ? provider.services.map(service => `
+                    <article class="panel">
+                        <h2>${escapeHtml(service.title || 'Service')}</h2>
+                        <p class="small">${escapeHtml([service.service_type, service.city, service.price_amount ? `${service.currency || 'ILS'} ${service.price_amount}` : 'Price pending'].filter(Boolean).join(' / '))}</p>
+                        ${service.description ? `<p>${escapeHtml(service.description)}</p>` : ''}
+                    </article>
+                `).join('')
+                : '<article class="panel"><h2>Services</h2><p class="small">Service details are pending BNA review.</p></article>';
+            els.gallery.innerHTML = (provider.media || []).filter(item => item.media_type !== 'profile').map(item => `
+                <article class="panel">
+                    <img src="${escapeHtml(item.url)}" alt="${escapeHtml(item.alt_text || name)}" style="width:100%;border-radius:8px;border:1px solid var(--line);">
+                    ${item.alt_text ? `<p class="small">${escapeHtml(item.alt_text)}</p>` : ''}
+                </article>
+            `).join('');
+            const google = provider.google_business || {};
+            els.google.innerHTML = `
+                <h2>Google Business Profile</h2>
+                <div class="notice">${escapeHtml(google.fallback || 'Google live feed is not connected yet.')}</div>
+                <div class="pills">
+                    <span class="pill">${escapeHtml(String(google.status || 'not_connected').replace(/_/g, ' '))}</span>
+                    <span class="pill">${google.reviews_live ? 'Live reviews connected' : 'Manual fallback'}</span>
+                    ${google.manual_profile_url ? `<a class="pill" href="${escapeHtml(google.manual_profile_url)}" target="_blank" rel="noopener noreferrer">Manual Google profile</a>` : ''}
+                </div>
+            `;
+            els.comments.innerHTML = `
+                <h2>Comments</h2>
+                ${(provider.comments || []).length ? provider.comments.map(item => `
+                    <article class="panel" style="box-shadow:none;">
+                        <strong>${escapeHtml(item.rating ? `${item.rating}/5` : 'Comment')}</strong>
+                        <p>${escapeHtml(item.body || '')}</p>
+                        ${item.provider_reply ? `<p class="small"><strong>Provider reply:</strong> ${escapeHtml(item.provider_reply)}</p>` : ''}
+                    </article>
+                `).join('') : '<p class="small">No visible comments yet.</p>'}
+            `;
+        }
+
+        async function load() {
+            try {
+                const data = await api(`/api/providers/${encodeURIComponent(slug)}`);
+                provider = data.provider;
+                render();
+            } catch (error) {
+                els.status.textContent = error.message || 'Provider profile was not found.';
+            }
+        }
+
+        els.questionForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            els.questionStatus.textContent = 'Sending...';
+            try {
+                await api(`/api/providers/${encodeURIComponent(provider.id)}/questions`, {
+                    method: 'POST',
+                    body: JSON.stringify(formObject(event.currentTarget)),
+                });
+                event.currentTarget.reset();
+                els.questionStatus.textContent = 'Question sent.';
+            } catch (error) {
+                els.questionStatus.textContent = error.message || 'Could not send question.';
+            }
+        });
+
+        load();
+    </script>
+</body>
+</html>

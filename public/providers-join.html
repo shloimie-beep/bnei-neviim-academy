@@ -275,6 +275,70 @@
         .status.ok { background: #e8f7ee; color: #14532d; }
         .status.error { background: #fff1f2; color: #9f1239; }
 
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .onboarding-chat {
+            display: grid;
+            gap: 14px;
+        }
+
+        .chat-log {
+            display: grid;
+            gap: 10px;
+            max-height: min(540px, 62vh);
+            overflow: auto;
+            padding: 2px 2px 6px;
+        }
+
+        .chat-bubble {
+            width: fit-content;
+            max-width: min(100%, 34rem);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 11px 12px;
+            line-height: 1.45;
+            font-size: 14px;
+            white-space: pre-wrap;
+        }
+
+        .chat-bubble.bot {
+            justify-self: start;
+            background: #fffef7;
+        }
+
+        .chat-bubble.user {
+            justify-self: end;
+            background: #eef7f3;
+            border-color: rgba(47, 111, 94, 0.24);
+        }
+
+        .chat-composer {
+            display: grid;
+            gap: 9px;
+            border-top: 1px solid var(--line);
+            padding-top: 12px;
+        }
+
+        .chat-composer textarea {
+            min-height: 76px;
+        }
+
+        .chat-progress {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 800;
+        }
+
         @media (max-width: 860px) {
             .hero,
             .free-listing-grid,
@@ -329,10 +393,20 @@
                     </article>
                 </div>
             </div>
-            <aside class="panel">
-                <h2>Provider signup</h2>
-                <p class="muted">This creates a draft provider record and an internal BNA review task. It does not publish a listing or send messages.</p>
-                <form id="providerJoinForm">
+            <aside class="panel onboarding-chat" data-provider-onboarding-bot>
+                <h2 id="providerOnboardingTitle">Provider onboarding assistant</h2>
+                <p class="muted">One question at a time. This creates a reviewed provider application; it does not publish your listing automatically.</p>
+                <div id="providerOnboardingLog" class="chat-log" aria-live="polite"></div>
+                <form id="providerOnboardingChatForm" class="chat-composer">
+                    <label class="sr-only" for="providerOnboardingInput">Your answer</label>
+                    <textarea id="providerOnboardingInput" placeholder="Type your answer here"></textarea>
+                    <div class="button-row">
+                        <button class="btn primary" id="providerOnboardingSend" type="submit">Send</button>
+                        <span id="providerOnboardingProgress" class="chat-progress"></span>
+                    </div>
+                </form>
+                <div id="providerJoinStatus" class="status"></div>
+                <form id="providerJoinForm" hidden aria-hidden="true">
                     <input type="hidden" name="interested_in" value="free_listing">
                     <div class="grid">
                         <label>Business / provider name
@@ -399,11 +473,6 @@
                         <textarea name="notes" placeholder="Anything BNA should know before review"></textarea>
                     </label>
                     <div class="notice">This is a free listing application only. BNA reviews listings before publishing. Booking and payment stay on the provider's own website, phone, WhatsApp, email, or custom CTA.</div>
-                    <div id="providerJoinStatus" class="status"></div>
-                    <div class="button-row">
-                        <button class="btn primary" type="submit">Submit For Review</button>
-                        <a class="btn" href="/">Back to BNA</a>
-                    </div>
                 </form>
             </aside>
         </section>
@@ -419,7 +488,162 @@
 
     <script>
         const form = document.getElementById('providerJoinForm');
+        const chatForm = document.getElementById('providerOnboardingChatForm');
+        const chatLog = document.getElementById('providerOnboardingLog');
+        const chatInput = document.getElementById('providerOnboardingInput');
+        const sendButton = document.getElementById('providerOnboardingSend');
+        const progressEl = document.getElementById('providerOnboardingProgress');
         const statusEl = document.getElementById('providerJoinStatus');
+        const providerAnswers = {};
+        let providerStepIndex = 0;
+        let providerSubmitted = false;
+
+        const providerSteps = [
+            {
+                key: 'provider_name',
+                label: 'Business / provider name',
+                prompt: 'What should the provider listing be called?',
+                help: 'Use the name parents should recognize in the BNA index.',
+                required: true,
+                placeholder: 'Example: Rabbi Cohen Math Tutoring'
+            },
+            {
+                key: 'contact_name',
+                label: 'Contact name',
+                prompt: 'Who should BNA contact during review?',
+                help: 'This is internal review contact information, not a public promise.',
+                required: true,
+                placeholder: 'Your name'
+            },
+            {
+                key: 'email',
+                label: 'Email',
+                prompt: 'What email should BNA use for this application?',
+                help: 'BNA uses this for review follow-up and future login setup.',
+                required: true,
+                placeholder: 'you@example.com'
+            },
+            {
+                key: 'phone',
+                label: 'Phone / WhatsApp',
+                prompt: 'What phone or WhatsApp number should parents or BNA use?',
+                help: 'If approved, this can become part of your public contact path.',
+                required: false,
+                placeholder: '+972...'
+            },
+            {
+                key: 'category',
+                label: 'Category',
+                prompt: 'What category best describes your service?',
+                help: 'BNA works with students, homeschoolers, and alternative education families, so categories help parents find the right support.',
+                required: false,
+                placeholder: 'Torah class, tutoring, therapy, coaching, evaluation'
+            },
+            {
+                key: 'location',
+                label: 'City / service area',
+                prompt: 'Where do you serve families?',
+                help: 'Include city, neighborhood, online, in-person, or hybrid.',
+                required: false,
+                placeholder: 'Beit Shemesh, Jerusalem, online, both'
+            },
+            {
+                key: 'language',
+                label: 'Language',
+                prompt: 'What languages can you serve families in?',
+                help: 'This helps English- and Hebrew-speaking families find the right match.',
+                required: false,
+                placeholder: 'English, Hebrew'
+            },
+            {
+                key: 'age_range',
+                label: 'Ages served',
+                prompt: 'What ages or stages do you usually work with?',
+                help: 'Parents need to know whether your service fits their child.',
+                required: false,
+                placeholder: '8-16, teens, parents, all ages'
+            },
+            {
+                key: 'program_description',
+                label: 'Short description',
+                prompt: 'Give a short explanation of what you do.',
+                help: 'This is the main description BNA reviews before a listing can go public.',
+                required: true,
+                placeholder: 'A few sentences about the service and who it helps.'
+            },
+            {
+                key: 'services_offered',
+                label: 'Services offered',
+                prompt: 'What specific services do you offer?',
+                help: 'List classes, tutoring, coaching, therapy, evaluations, groups, or programs.',
+                required: false,
+                placeholder: 'Tutoring, weekly group, parent coaching...'
+            },
+            {
+                key: 'website',
+                label: 'Website',
+                prompt: 'Do you have a website or information link?',
+                help: 'Parents can use your own site or intake path when approved.',
+                required: false,
+                placeholder: 'https://...'
+            },
+            {
+                key: 'profile_image_url',
+                label: 'Image or logo URL',
+                prompt: 'Do you have an image or logo URL for the listing?',
+                help: 'You can skip this for now; a profile image can be added later in the provider portal.',
+                required: false,
+                placeholder: 'https://...'
+            },
+            {
+                key: 'cta_preference',
+                label: 'Preferred CTA',
+                prompt: 'How should parents contact you if the listing is approved?',
+                help: 'Type website, phone, WhatsApp, email, or custom URL.',
+                required: false,
+                placeholder: 'Website'
+            },
+            {
+                key: 'custom_cta_url',
+                label: 'Custom CTA URL',
+                prompt: 'If you have a custom booking or intake link, paste it here.',
+                help: 'Skip if website, phone, WhatsApp, or email is enough.',
+                required: false,
+                placeholder: 'https://...'
+            },
+            {
+                key: 'pricing_structure',
+                label: 'Pricing summary',
+                prompt: 'What should BNA know about pricing?',
+                help: 'A short summary is enough. It can stay internal during review.',
+                required: false,
+                placeholder: 'Per session, monthly, package, custom...'
+            },
+            {
+                key: 'community_affiliation',
+                label: 'Community / rabbi affiliation',
+                prompt: 'Any community, school, or rabbi affiliation BNA should know?',
+                help: 'This helps BNA review trust context and fit.',
+                required: false,
+                placeholder: 'Optional'
+            },
+            {
+                key: 'discounts_group_options',
+                label: 'Discount / group option',
+                prompt: 'Do you offer group options or BNA/community discounts?',
+                help: 'This is optional and can be adjusted later.',
+                required: false,
+                placeholder: 'Optional'
+            },
+            {
+                key: 'notes',
+                label: 'Notes for Shloimie approval',
+                prompt: 'Anything else Shloimie should know before review?',
+                help: 'This stays in the internal review context.',
+                required: false,
+                placeholder: 'Optional notes'
+            }
+        ];
 
         function formObject(formEl) {
             return Object.fromEntries(new FormData(formEl).entries());
@@ -430,29 +654,115 @@
             statusEl.className = `status show ${kind}`;
         }
 
-        form.addEventListener('submit', async (event) => {
-            event.preventDefault();
-            const button = form.querySelector('button[type="submit"]');
-            button.disabled = true;
-            button.textContent = 'Submitting...';
+        function appendChat(role, text) {
+            const node = document.createElement('div');
+            node.className = `chat-bubble ${role}`;
+            node.textContent = text;
+            chatLog.appendChild(node);
+            chatLog.scrollTop = chatLog.scrollHeight;
+        }
+
+        function currentProviderStep() {
+            return providerSteps[providerStepIndex];
+        }
+
+        function askProviderStep() {
+            const step = currentProviderStep();
+            if (!step) return submitProviderOnboarding();
+            progressEl.textContent = `Question ${providerStepIndex + 1} of ${providerSteps.length}`;
+            chatInput.placeholder = step.placeholder || 'Type your answer here';
+            appendChat('bot', `${step.prompt}\n${step.help}`);
+            chatInput.focus();
+        }
+
+        function normalizeCta(value) {
+            const normalized = String(value || '').toLowerCase();
+            if (normalized.includes('whatsapp')) return 'whatsapp';
+            if (normalized.includes('phone') || normalized.includes('call')) return 'phone';
+            if (normalized.includes('email')) return 'email';
+            if (normalized.includes('custom')) return 'custom_url';
+            return 'website';
+        }
+
+        function providerTranscript() {
+            return providerSteps
+                .filter(step => providerAnswers[step.key])
+                .map(step => `${step.label}: ${providerAnswers[step.key]}`)
+                .join('\n');
+        }
+
+        function providerPayload() {
+            return {
+                ...providerAnswers,
+                cta_preference: normalizeCta(providerAnswers.cta_preference),
+                raw_intake: [
+                    'Conversational provider onboarding intake.',
+                    'The applicant was told that this is a BNA review process, not automatic publishing.',
+                    'BNA works with students, homeschoolers, and alternative education families.',
+                    'Approved providers can be listed in the BNA index and later connected to family-intake funnel paths.',
+                    '',
+                    providerTranscript()
+                ].join('\n')
+            };
+        }
+
+        async function submitProviderOnboarding() {
+            if (providerSubmitted) return;
+            providerSubmitted = true;
+            sendButton.disabled = true;
+            progressEl.textContent = 'Sending review application...';
             showStatus('', '');
             try {
                 const response = await fetch('/api/provider-onboarding', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(formObject(form))
+                    body: JSON.stringify(providerPayload())
                 });
                 const data = await response.json().catch(() => ({}));
                 if (!response.ok) throw new Error(data.error || 'Could not submit provider signup');
+                appendChat('bot', data.message || 'Provider onboarding received. BNA will review it before publishing.');
                 showStatus(data.message || 'Provider onboarding received. BNA will review it before publishing.', 'ok');
                 form.reset();
             } catch (error) {
+                providerSubmitted = false;
+                appendChat('bot', error.message || 'Could not submit provider signup');
                 showStatus(error.message || 'Could not submit provider signup', 'error');
             } finally {
-                button.disabled = false;
-                button.textContent = 'Submit For Review';
+                sendButton.disabled = providerSubmitted;
+                progressEl.textContent = providerSubmitted ? 'Review application received' : 'Please try again';
             }
+        }
+
+        chatForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            if (providerSubmitted) return;
+            const step = currentProviderStep();
+            const value = String(chatInput.value || '').trim();
+            if (!step) return submitProviderOnboarding();
+            if (!value && step.required) {
+                appendChat('bot', 'I need this answer before I can create the review application.');
+                return;
+            }
+            providerAnswers[step.key] = value;
+            const mirror = form.elements[step.key];
+            if (mirror) mirror.value = value;
+            appendChat('user', value || 'Skip');
+            chatInput.value = '';
+            providerStepIndex += 1;
+            if (providerStepIndex >= providerSteps.length) {
+                appendChat('bot', 'Thank you. I have enough to create the BNA review application now.');
+                await submitProviderOnboarding();
+                return;
+            }
+            askProviderStep();
         });
+
+        appendChat('bot', 'Thank you for getting started. BNA works with students, homeschoolers, and alternative education families. This is a review process: your listing is not public until BNA reviews and approves it. If it is a fit, BNA can list your service in the provider index and later connect it to family-intake funnel paths. I will ask the listing questions one at a time.');
+        askProviderStep();
+
+        if (new URLSearchParams(window.location.search).get('onboard') === 'provider') {
+            document.querySelector('[data-provider-onboarding-bot]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
     </script>
     <script src="/js/app-select.js"></script>
 </body>

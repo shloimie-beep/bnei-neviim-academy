@@ -29,18 +29,22 @@ Drive root: [One Time Mishnah Class - Rabbi Elie Scheller](https://drive.google.
 
 ## Login Release Guard
 
-- Status: hold_login_until_drive_social_ready_and_contact_confirmed
+- Status: task_manager_login_handoff_sent_2026_06_14
+- Sent: 2026-06-14T14:45:06+03:00
 - Required before sending login: Drive root and content/media intake folders confirmed
 - Required before sending login: Video-drop, ingestion, and social-output folders mapped in backend settings
 - Required before sending login: Shloimie reviews platform destinations for Facebook, LinkedIn, YouTube, Instagram, and WhatsApp Status
 - Required before sending login: Rabbi email collected and stored on the provider/project member record
 - Required before sending login: Rabbi WhatsApp/contact phone confirmed and stored before any login link is sent
 - Required before sending login: Scoped username confirmed on the One Time project member/provider record
-- Current blocker: Provider record lacks Rabbi contact email
-- Current blocker: Provider record lacks Rabbi WhatsApp/contact phone
-- Current blocker: Provider record lacks provider login username
+- Current blocker: Personal password setup/change for the scoped One Time Operations account is not yet a finished user-facing flow
 
 ## WhatsApp Copy
 
-Hi Rabbi Elie, before I send the scoped One Time login, can you please send the best email address to attach to your account? I am finishing the Drive and social setup first so the login only goes out after the workspace is ready.
+Hi Rabbi Elie, this is Shloimie. Here is your One Time task manager access. Right now the task manager is working. We have not configured everything else yet, so the rest of the workspace/social/content setup is still in progress.
 
+## Handoff Verification
+
+- Provider/project records have confirmed contact email, WhatsApp/contact phone, and scoped login username.
+- Gmail sent One Time task manager access on 2026-06-14.
+- WhatsApp delivered One Time task manager access on communication #1160.

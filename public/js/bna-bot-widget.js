@@ -3,6 +3,8 @@
   window.BNABotWidgetLoaded = true;
 
   const path = window.location.pathname;
+  const query = new URLSearchParams(window.location.search);
+  if (/^\/parent/.test(path) && query.get('onboard') === 'accountability') return;
   const isParent = /^\/parent/.test(path);
   const isStudent = /^\/student/.test(path);
   const isProvider = /^\/provider/.test(path);
@@ -20,9 +22,14 @@
             ? 'signup'
             : 'public';
   const storagePrefix = `bnaAssistant:${surface}`;
+  const PUBLIC_ASSISTANT_AUTOPROMPT_DELAY_MS = 2600;
+  const PUBLIC_ASSISTANT_FOLLOWUP_DELAY_MS = 5600;
+  const PUBLIC_ASSISTANT_TYPING_DELAY_MS = 900;
   const direction = () => document.documentElement.dir === 'rtl' ? 'rtl' : 'ltr';
   const language = () => document.documentElement.lang || (direction() === 'rtl' ? 'he' : 'en');
+  const isHebrew = () => /^he\b/i.test(language()) || direction() === 'rtl';
   const studentAccessCode = () => new URLSearchParams(window.location.search).get('code') || localStorage.getItem('bnaStudentAccessCode') || '';
+  const isPublicLeadSurface = () => ['public', 'signup'].includes(surface);
 
   function getOrCreateAnonymousId() {
     const existing = localStorage.getItem('bnaAssistantAnonymousId');
@@ -33,15 +40,204 @@
   }
 
   function introCopy() {
-    if (isOperations) return 'Hi Shloimie. I can help with BNA state, contacts, students, tasks, content, settings, tickets, hosted AI responses, and tracked Codex/system work.';
-    if (isParent) return "Hi, I'm the BNA helper. I can help you check your son's progress, ask about attendance or questions, send Shloimie a message, report a login issue, or ask about school updates.";
-    if (isStudent) return "Hi, I'm the BNA helper. I can help you understand your schedule, your goals, and how to send a message to your rebbi or Shloimie.";
-    if (isProvider) return "Hi, I'm the BNA helper. I can help with scoped provider messages and support tickets.";
-    return "Hi, I'm the BNA helper. I can answer basic questions or help you send a message to the office.";
+    return surfaceConfig().intro;
+  }
+
+  function surfaceConfig() {
+    const he = isHebrew();
+    const base = he ? {
+      helperTitle: 'מסייע BNA',
+      close: 'סגירה',
+      history: 'היסטוריה',
+      modeLabel: 'מצב מסייע',
+      autoMode: 'אוטומטי',
+      hostedMode: 'שיחה',
+      codexMode: 'Codex',
+      thinking: 'חושב...',
+      placeholder: 'כתוב הודעה',
+      send: 'שליחה',
+      saved: 'נשמר.',
+      unavailable: 'המסייע אינו זמין כרגע.',
+      historyLoading: 'טוען היסטוריה...',
+      historyEmpty: 'אין שיחות קודמות עדיין',
+      historyUnavailable: 'ההיסטוריה אינה זמינה',
+      boxKicker: 'מסייע אישי',
+      boxTitle: 'איך אפשר לעזור עכשיו',
+      guardrail: 'המסייע שומר על ההרשאות של החשבון הזה. הוא לא יציג משפחות, תלמידים או ספקים שאין לך גישה אליהם.',
+    } : {
+      helperTitle: 'BNA Helper',
+      close: 'Close',
+      history: 'Chat history',
+      modeLabel: 'Assistant mode',
+      autoMode: 'Auto',
+      hostedMode: 'Chat',
+      codexMode: 'Codex',
+      thinking: 'Thinking...',
+      placeholder: 'Write a message',
+      send: 'Send',
+      saved: 'Saved.',
+      unavailable: 'Assistant unavailable.',
+      historyTitle: 'Previous chats',
+      historyLoading: 'Loading previous chats...',
+      historyEmpty: 'No previous chats yet',
+      historyUnavailable: 'Previous chats are unavailable right now',
+      continueChat: 'Continue chat',
+      boxKicker: 'Personal assistant',
+      boxTitle: 'How I can help now',
+      guardrail: 'The assistant follows this account permissions. It will not show families, students, providers, or admin data you cannot access.',
+    };
+
+    if (isOperations) {
+      return {
+        ...base,
+        surfaceLabel: he ? 'מסייע ניהול' : 'Admin assistant',
+        intro: he
+          ? 'שלום שלוימי. אני יכול לעזור עם מצב המערכת, אנשי קשר, תלמידים, משימות, תוכן, הגדרות, כרטיסי תמיכה ועבודת Codex מתועדת.'
+          : 'Hi Shloimie. I can help with BNA state, contacts, students, tasks, content, settings, tickets, hosted AI responses, and tracked Codex/system work.',
+        cards: he
+          ? [
+            ['מצב עבודה', 'בדיקת משימות, חסימות, תוצאות Codex ועבודת מערכת.'],
+            ['נתוני BNA', 'עזרה עם תלמידים, ספקים, הרשמות, תשלומים ותוכן.'],
+            ['כרטיסים והחלטות', 'יצירת כרטיס ברור או החלטה בלי לערבב בין Pending לעבודת סוכן.'],
+          ]
+          : [
+            ['Work status', 'Inspect tasks, blockers, Codex results, and system work.'],
+            ['BNA data', 'Help with students, providers, signups, payments, and content.'],
+            ['Tickets and decisions', 'Create a clear ticket or decision without mixing Pending with agent work.'],
+          ],
+        prompts: he
+          ? ['מה חסום עכשיו?', 'הראה לי את מרחבי העבודה שלי.', 'צור כרטיס: צריך לבדוק את המסך בעברית.']
+          : ['What is blocked right now?', 'Show my current workspaces.', 'Create a ticket: the Hebrew screen needs review.'],
+      };
+    }
+    if (isParent) {
+      return {
+        ...base,
+        surfaceLabel: he ? 'פורטל הורים' : 'Parent portal',
+        intro: he
+          ? 'שלום, אני מסייע ההורים של BNA. אפשר לבקש ממני יעדים, התקדמות, צ׳ק-אין, התקנת טאבלט, שאלות לספקים וכרטיסי תמיכה.'
+          : "Hi, I'm the BNA parent assistant. I can help with goals, progress, check-ins, tablet setup, provider questions, and support tickets.",
+        cards: he
+          ? [
+            ['ילדים ויעדים', 'הוספת יעד, סימון התקדמות או בדיקת מה נשאר לשבוע.'],
+            ['התקנה וסינון', 'פתיחת תהליך התקנת טאבלט והדבקת קוד/סטטוס לבדיקה.'],
+            ['ספקים ותמיכה', 'שאלה לספק, שיחה קיימת או כרטיס תמיכה לצוות.'],
+          ]
+          : [
+            ['Children and goals', 'Add a goal, log progress, or check what remains this week.'],
+            ['Setup and filtering', 'Start tablet setup and paste back the setup code or status for review.'],
+            ['Providers and support', 'Ask a provider, continue a conversation, or create a staff ticket.'],
+          ],
+        prompts: he
+          ? ['הוסף יעד קריאה למנחם השבוע.', 'מנחם סיים את היעד היום.', 'אני צריך עזרה בהתקנת הטאבלט.']
+          : ['Add a reading goal for Menachem this week.', 'Menachem finished his goal today.', 'I need help setting up the tablet.'],
+      };
+    }
+    if (isStudent) {
+      return {
+        ...base,
+        surfaceLabel: he ? 'פורטל תלמיד' : 'Student portal',
+        intro: he
+          ? 'שלום, אני מסייע הלמידה של BNA. אפשר לשאול על סדר היום, יעדים, הבנה, ושאלות לרב או לשלוימי.'
+          : "Hi, I'm the BNA learning helper. I can help you understand your schedule, goals, learning, and how to message your rebbi or Shloimie.",
+        cards: he
+          ? [
+            ['היום שלי', 'בדיקת לוח זמנים, צ׳ק-אין ויעדים פתוחים.'],
+            ['למידה', 'עזרה לחשוב על שאלה או להבין משימה.'],
+            ['הודעה', 'ניסוח הודעה לרב או לשלוימי בצורה ברורה.'],
+          ]
+          : [
+            ['My day', 'Check schedule, check-ins, and open goals.'],
+            ['Learning', 'Think through a question or understand an assignment.'],
+            ['Message', 'Draft a clear note to your rebbi or Shloimie.'],
+          ],
+        prompts: he
+          ? ['מה אני צריך לעשות היום?', 'עזור לי להבין את היעד שלי.', 'אני רוצה לשלוח שאלה לרב.']
+          : ['What do I need to do today?', 'Help me understand my goal.', 'I want to send a question to my rebbi.'],
+      };
+    }
+    if (isProvider) {
+      return {
+        ...base,
+        surfaceLabel: he ? 'מרחב ספק' : 'Provider workspace',
+        intro: he
+          ? 'שלום, אני מסייע הספקים של BNA. אפשר לעדכן פרופיל, שירותים, תמונות, שאלות מהורים, Google וחסימות שדרוג.'
+          : "Hi, I'm the BNA provider assistant. I can help with your profile, services, pictures, parent questions, Google status, and upgrade blockers.",
+        cards: he
+          ? [
+            ['פרופיל ציבורי', 'כותרת, תיאור, שירותים, תמונות ואזור שירות.'],
+            ['שיחות הורים', 'שאלות נכנסות, תגובות וכרטיסי תמיכה.'],
+            ['חיבורים ושדרוג', 'Google Business, מגבלות מסלול וקישור שדרוג כשיהיה מוגדר.'],
+          ]
+          : [
+            ['Public profile', 'Headline, bio, services, pictures, and service area.'],
+            ['Parent conversations', 'Inbound questions, replies, and support tickets.'],
+            ['Connections and upgrade', 'Google Business, plan limits, and upgrade link status.'],
+          ],
+        prompts: he
+          ? ['עדכן את תיאור הפרופיל שלי.', 'מה חסר כדי לחבר Google Business?', 'אני רוצה להוסיף תמונה לפרופיל.']
+          : ['Update my profile description.', 'What is missing for Google Business?', 'I want to add a profile picture.'],
+      };
+    }
+    if (isSignup) {
+      return {
+        ...base,
+        surfaceLabel: he ? 'עזרת הרשמה' : 'Registration help',
+        intro: he
+          ? 'שלום, אני מסייע ההרשמה של BNA. אפשר לשאול על הטופס, הרשאות הורים, תשלום או שליחה.'
+          : "Hi, I'm the BNA registration helper. I can help with the form, parent permissions, payment, or submission questions.",
+        cards: he
+          ? [
+            ['טופס', 'עזרה בשדות חסרים או בהבנת הרשאות.'],
+            ['תשלום', 'הסבר על מצב תשלום בלי להמציא קישור חדש.'],
+            ['שאלה לצוות', 'יצירת הודעה ברורה למשרד.'],
+          ]
+          : [
+            ['Form', 'Help with missing fields or permission wording.'],
+            ['Payment', 'Explain payment state without inventing a new link.'],
+            ['Office question', 'Create a clear note for the office.'],
+          ],
+        prompts: he
+          ? ['מה חסר בטופס?', 'יש לי שאלה על תשלום.', 'אני צריך עזרה עם הרשאות הורים.']
+          : ['What is missing from the form?', 'I have a payment question.', 'I need help with parent permissions.'],
+      };
+    }
+    return {
+      ...base,
+      surfaceLabel: he ? 'עזרה ציבורית' : 'Public help',
+      intro: he
+        ? 'שלום, אני כאן כדי לעזור. אפשר לשאול אותי על BNA, על למידה מתוך אחריות, על שלטון עצמי, או לבקש שאעביר הודעה לשלוימי.'
+        : "Hi, I am here to help. Ask me about BNA, self-governance, accountability, or whether this learning program fits your child.",
+      cards: he
+        ? [
+          ['שלטון עצמי', 'איך ילד לומד לקחת אחריות דרך מטרות, שיקוף וצ׳ק-אין.'],
+          ['תוכנית הלמידה', 'שאלות על BNA, תורה, קהילה, הורים ולמידה עצמאית.'],
+          ['יצירת קשר', 'השארת הודעה לשלוימי בלי לחשוף מידע פרטי.'],
+        ]
+        : [
+          ['Self-governance', 'How a child learns responsibility through goals, reflection, and check-ins.'],
+          ['Learning program', 'Ask about BNA, Torah learning, community, parents, and autonomous learning.'],
+          ['Contact', 'Leave a clear message for Shloimie without exposing private data.'],
+        ],
+      prompts: he
+        ? ['איך יוצרים קשר עם שלוימי?', 'מה זה שלטון עצמי אצל ילד?', 'האם BNA מתאים לבן שלי?']
+        : ['How do I contact Shloimie?', 'What does self-governance mean for a child?', 'Could BNA fit my son?'],
+    };
   }
 
   const style = document.createElement('style');
   style.textContent = `
+    :root {
+      --app-vh: 100dvh;
+      --keyboard-offset: 0px;
+      --assistant-header-height: 56px;
+      --assistant-composer-height: 76px;
+    }
+    html,
+    body {
+      max-width: 100%;
+      overflow-x: hidden;
+    }
     body.bna-universal-assistant-active .parent-assistant-dock,
     body.bna-universal-assistant-active .student-helper-dock {
       display: none !important;
@@ -76,10 +272,11 @@
       top: 0;
       right: 0;
       z-index: 6401;
-      width: min(410px, 100vw);
-      height: 100dvh;
-      display: flex;
-      flex-direction: column;
+      width: min(460px, 100vw);
+      height: var(--app-vh);
+      max-height: var(--app-vh);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto auto;
       background: #fffaf0;
       color: #172019;
       border-left: 1px solid rgba(23, 32, 25, 0.12);
@@ -118,7 +315,7 @@
       align-items: center;
       gap: 0.45rem;
     }
-    .bna-bot-icon-button,
+    .bna-bot-history-toggle,
     .bna-bot-close {
       width: 36px;
       height: 36px;
@@ -129,51 +326,84 @@
       font-size: 1rem;
       cursor: pointer;
     }
+    .bna-bot-history-toggle {
+      display: grid;
+      place-items: center;
+    }
+    .bna-bot-history-toggle svg {
+      width: 18px;
+      height: 18px;
+      display: block;
+    }
     .bna-bot-close { font-size: 1.15rem; }
-    .bna-bot-modes {
-      display: none;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 0.35rem;
-      background: rgba(255,255,255,0.12);
-      padding: 0.25rem;
-      border-radius: 8px;
-    }
-    .bna-bot-modes.is-visible { display: grid; }
-    .bna-bot-mode {
-      border: 0;
-      border-radius: 7px;
-      min-height: 32px;
-      background: transparent;
-      color: rgba(255,255,255,0.82);
-      font: 800 0.78rem "Trebuchet MS", Verdana, sans-serif;
-      cursor: pointer;
-    }
-    .bna-bot-mode.is-active {
-      background: #fffaf0;
-      color: #173f64;
-    }
     .bna-bot-history {
       display: none;
-      border-bottom: 1px solid rgba(23, 32, 25, 0.12);
-      background: #fff;
-      max-height: 180px;
+      border-bottom: 1px solid rgba(23, 32, 25, 0.1);
+      background: #fffdf7;
+      padding: 0.7rem;
+      max-height: min(42vh, 320px);
       overflow: auto;
-      padding: 0.65rem;
     }
-    .bna-bot-history.is-open { display: grid; gap: 0.4rem; }
-    .bna-bot-history button {
-      border: 1px solid rgba(47, 100, 141, 0.18);
-      border-radius: 8px;
-      background: #f7fbff;
+    .bna-bot-history.is-open { display: block; }
+    .bna-bot-history-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.7rem;
+      margin-bottom: 0.45rem;
+      font-size: 0.8rem;
+      font-weight: 800;
       color: #173f64;
-      text-align: start;
+    }
+    .bna-bot-history-list {
+      display: grid;
+      gap: 0.42rem;
+    }
+    .bna-bot-history-item {
+      width: 100%;
+      display: grid;
+      gap: 0.18rem;
+      text-align: left;
+      border: 1px solid rgba(23, 32, 25, 0.1);
+      border-radius: 8px;
+      background: #fffaf0;
+      color: #172019;
       padding: 0.55rem 0.65rem;
       cursor: pointer;
-      font: 800 0.8rem "Trebuchet MS", Verdana, sans-serif;
+      font: inherit;
+    }
+    [dir="rtl"] .bna-bot-history-item { text-align: right; }
+    .bna-bot-history-item:hover,
+    .bna-bot-history-item:focus-visible {
+      outline: 2px solid rgba(23, 63, 100, 0.28);
+      border-color: rgba(23, 63, 100, 0.28);
+    }
+    .bna-bot-history-item.is-active {
+      border-color: #173f64;
+      background: #eef6ff;
+    }
+    .bna-bot-history-name {
+      font-size: 0.84rem;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+    .bna-bot-history-meta {
+      color: #667085;
+      font-size: 0.72rem;
+      overflow-wrap: anywhere;
+    }
+    .bna-bot-history-state {
+      padding: 0.65rem;
+      color: #667085;
+      font-size: 0.82rem;
+      border: 1px dashed rgba(23, 32, 25, 0.14);
+      border-radius: 8px;
+      background: #ffffff;
     }
     .bna-bot-thread {
-      flex: 1 1 auto;
+      min-height: 0;
       overflow: auto;
+      overscroll-behavior: contain;
       padding: 1rem;
       display: flex;
       flex-direction: column;
@@ -224,7 +454,7 @@
       display: grid;
       grid-template-columns: 1fr auto;
       gap: 0.55rem;
-      padding: 0.75rem;
+      padding: 0.75rem 0.75rem max(0.75rem, env(safe-area-inset-bottom));
       border-top: 1px solid rgba(23, 32, 25, 0.12);
       background: #fff;
     }
@@ -262,47 +492,52 @@
         left: 0;
         right: auto;
         width: 100vw;
+        height: var(--app-vh);
+        max-height: var(--app-vh);
       }
     }
   `;
   document.head.appendChild(style);
   document.body.classList.add('bna-universal-assistant-active');
+  const copy = surfaceConfig();
 
   const launcher = document.createElement('button');
   launcher.type = 'button';
   launcher.className = 'bna-bot-launcher';
   launcher.setAttribute('aria-expanded', 'false');
   launcher.setAttribute('aria-controls', 'bnaBotPanel');
-  launcher.innerHTML = '<span class="bna-bot-launcher-dot"></span><span>BNA Helper</span>';
+  launcher.innerHTML = `<span class="bna-bot-launcher-dot"></span><span>${escapeHtml(copy.helperTitle)}</span>`;
 
   const panel = document.createElement('aside');
-  panel.className = 'bna-bot-panel';
+  panel.className = 'bna-bot-panel assistant-shell';
   panel.id = 'bnaBotPanel';
-  panel.setAttribute('aria-label', 'BNA Helper');
-  const hostedAiMode = 'ai';
-  const hostedAiLabel = 'Open' + 'AI';
+  panel.setAttribute('aria-label', copy.helperTitle);
 
   panel.innerHTML = `
     <div class="bna-bot-head">
       <div class="bna-bot-head-top">
-        <div><strong>BNA Helper</strong><span data-bot-subtitle>${escapeHtml(surfaceLabel())}</span></div>
+        <div><strong>${escapeHtml(copy.helperTitle)}</strong><span data-bot-subtitle>${escapeHtml(surfaceLabel())}</span></div>
         <div class="bna-bot-head-actions">
-          <button class="bna-bot-icon-button" type="button" data-history-toggle aria-label="Chat history">H</button>
-          <button class="bna-bot-close" type="button" aria-label="Close">x</button>
+          <button class="bna-bot-history-toggle" type="button" data-history-toggle aria-label="${escapeAttr(copy.history)}" title="${escapeAttr(copy.history)}" aria-expanded="false">
+            <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M3 12a9 9 0 1 0 3-6.7" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M3 4v5h5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+              <path d="M12 7v5l3 2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path>
+            </svg>
+          </button>
+          <button class="bna-bot-close" type="button" aria-label="${escapeAttr(copy.close)}">x</button>
         </div>
       </div>
-      <div class="bna-bot-modes" data-mode-list aria-label="Assistant mode">
-        <button class="bna-bot-mode is-active" type="button" data-mode="auto">Auto</button>
-        <button class="bna-bot-mode" type="button" data-mode="${hostedAiMode}">${hostedAiLabel}</button>
-        <button class="bna-bot-mode" type="button" data-mode="codex">Codex</button>
-      </div>
     </div>
-    <div class="bna-bot-history" data-history-list></div>
-    <div class="bna-bot-thread" data-thread></div>
-    <div class="bna-bot-typing" data-typing><span class="bna-bot-spinner"></span><span>Thinking...</span></div>
-    <form class="bna-bot-form" data-chat-form>
-      <textarea class="bna-bot-input" name="message" rows="1" maxlength="4000" placeholder="Write a message"></textarea>
-      <button class="bna-bot-send" type="submit" aria-label="Send">Send</button>
+    <div class="bna-bot-history" data-history-panel>
+      <div class="bna-bot-history-head"><span>${escapeHtml(historyTitleCopy())}</span></div>
+      <div class="bna-bot-history-list" data-history-list></div>
+    </div>
+    <div class="bna-bot-thread assistant-messages" data-thread></div>
+    <div class="bna-bot-typing" data-typing><span class="bna-bot-spinner"></span><span>${escapeHtml(copy.thinking)}</span></div>
+    <form class="bna-bot-form assistant-composer" data-chat-form>
+      <textarea class="bna-bot-input" name="message" rows="1" maxlength="4000" placeholder="${escapeAttr(copy.placeholder)}"></textarea>
+      <button class="bna-bot-send" type="submit" aria-label="${escapeAttr(copy.send)}">${escapeHtml(copy.send)}</button>
     </form>
   `;
 
@@ -311,49 +546,121 @@
 
   const closeButton = panel.querySelector('.bna-bot-close');
   const historyToggle = panel.querySelector('[data-history-toggle]');
+  const historyPanel = panel.querySelector('[data-history-panel]');
   const historyList = panel.querySelector('[data-history-list]');
   const threadEl = panel.querySelector('[data-thread]');
   const typingEl = panel.querySelector('[data-typing]');
   const form = panel.querySelector('[data-chat-form]');
   const input = form.elements.message;
   const sendButton = form.querySelector('.bna-bot-send');
-  const modeList = panel.querySelector('[data-mode-list]');
-  const modeButtons = Array.from(panel.querySelectorAll('[data-mode]'));
-  let mode = localStorage.getItem(`${storagePrefix}:mode`) || 'auto';
   let threadId = localStorage.getItem(`${storagePrefix}:threadId`) || '';
-  let canUseCodex = false;
+  let historyLoaded = false;
+  let publicAutoPromptTimer = null;
+  let publicFollowupTimer = null;
+  let publicTypingTimer = null;
+  let dismissedPublicPrompt = sessionStorage.getItem(`${storagePrefix}:publicPromptDismissed`) === '1';
 
-  setActiveMode(mode);
+  function syncVisualViewportHeight() {
+    const height = window.visualViewport?.height || window.innerHeight || document.documentElement.clientHeight;
+    const keyboardOffset = Math.max(0, (window.innerHeight || height) - height - (window.visualViewport?.offsetTop || 0));
+    document.documentElement.style.setProperty('--app-vh', `${Math.max(320, Math.round(height))}px`);
+    document.documentElement.style.setProperty('--keyboard-offset', `${Math.round(keyboardOffset)}px`);
+  }
+
+  window.visualViewport?.addEventListener('resize', syncVisualViewportHeight);
+  window.visualViewport?.addEventListener('scroll', syncVisualViewportHeight);
+  window.addEventListener('resize', syncVisualViewportHeight);
+  syncVisualViewportHeight();
+
   appendMessage('assistant', introCopy());
 
   function surfaceLabel() {
-    if (isOperations) return 'Admin assistant';
-    if (isParent) return 'Parent portal';
-    if (isStudent) return 'Student portal';
-    if (isProvider) return 'Provider workspace';
-    if (isSignup) return 'Registration help';
-    return 'Public help';
+    return surfaceConfig().surfaceLabel;
   }
 
-  function setOpen(open) {
+  function historyTitleCopy() {
+    return isHebrew() ? 'שיחות קודמות' : (copy.historyTitle || 'Previous chats');
+  }
+
+  function historyLoadingCopy() {
+    return isHebrew() ? 'טוען שיחות קודמות...' : (copy.historyLoading || 'Loading previous chats...');
+  }
+
+  function historyEmptyCopy() {
+    return isHebrew() ? 'אין שיחות קודמות עדיין' : (copy.historyEmpty || 'No previous chats yet');
+  }
+
+  function historyUnavailableCopy() {
+    return isHebrew() ? 'אי אפשר לטעון שיחות קודמות כרגע' : (copy.historyUnavailable || 'Previous chats are unavailable right now');
+  }
+
+  function continueChatCopy() {
+    return isHebrew() ? 'המשך שיחה' : (copy.continueChat || 'Continue chat');
+  }
+
+  function publicFollowupCopy() {
+    return isHebrew()
+      ? 'אני עדיין כאן אם תרצו לשאול על שלטון עצמי, על התוכנית, או להשאיר פרטים כדי ששלוימי יחזור אליכם.'
+      : "I'm still here if you want to ask about self-governance, the learning program, or leave details so Shloimie can follow up.";
+  }
+
+  function clearPublicFollowup() {
+    if (publicAutoPromptTimer) clearTimeout(publicAutoPromptTimer);
+    if (publicFollowupTimer) clearTimeout(publicFollowupTimer);
+    if (publicTypingTimer) clearTimeout(publicTypingTimer);
+    publicAutoPromptTimer = null;
+    publicFollowupTimer = null;
+    publicTypingTimer = null;
+    typingEl.classList.remove('is-visible');
+  }
+
+  function dismissPublicPromptForSession() {
+    if (!isPublicLeadSurface()) return;
+    dismissedPublicPrompt = true;
+    sessionStorage.setItem(`${storagePrefix}:publicPromptDismissed`, '1');
+    clearPublicFollowup();
+  }
+
+  function schedulePublicFollowup() {
+    if (!isPublicLeadSurface() || dismissedPublicPrompt) return;
+    if (publicFollowupTimer) return;
+    publicFollowupTimer = setTimeout(() => {
+      publicFollowupTimer = null;
+      if (dismissedPublicPrompt || !panel.classList.contains('is-open')) return;
+      typingEl.classList.add('is-visible');
+      publicTypingTimer = setTimeout(() => {
+        publicTypingTimer = null;
+        if (dismissedPublicPrompt || !panel.classList.contains('is-open')) {
+          typingEl.classList.remove('is-visible');
+          return;
+        }
+        typingEl.classList.remove('is-visible');
+        appendMessage('assistant', publicFollowupCopy());
+      }, PUBLIC_ASSISTANT_TYPING_DELAY_MS);
+    }, PUBLIC_ASSISTANT_FOLLOWUP_DELAY_MS);
+  }
+
+  function setOpen(open, options = {}) {
     panel.classList.toggle('is-open', open);
     launcher.setAttribute('aria-expanded', String(open));
     if (open) {
-      input.focus();
+      syncVisualViewportHeight();
+      if (options.focus !== false) input.focus();
       if (threadId) loadThread(threadId);
+      if (options.autoPrompt) schedulePublicFollowup();
     }
+  }
+
+  function setHistoryOpen(open) {
+    historyPanel.classList.toggle('is-open', open);
+    historyToggle.setAttribute('aria-expanded', String(open));
+    if (open && !historyLoaded) loadHistory();
   }
 
   function setBusy(busy) {
     typingEl.classList.toggle('is-visible', busy);
     input.disabled = busy;
     sendButton.disabled = busy;
-  }
-
-  function setActiveMode(nextMode) {
-    mode = ['auto', hostedAiMode, 'codex'].includes(nextMode) ? nextMode : 'auto';
-    localStorage.setItem(`${storagePrefix}:mode`, mode);
-    modeButtons.forEach((button) => button.classList.toggle('is-active', button.dataset.mode === mode));
   }
 
   function appendMessage(author, body) {
@@ -372,6 +679,61 @@
     }
   }
 
+  function threadDisplayName(thread) {
+    const role = thread.actor_role || thread.actor_type || '';
+    return `${continueChatCopy()} #${thread.id}${role ? ` · ${role}` : ''}`;
+  }
+
+  function formatThreadTime(thread) {
+    const raw = thread.updated_at || thread.created_at;
+    if (!raw) return '';
+    try {
+      return new Intl.DateTimeFormat(language() || 'en', {
+        month: 'short',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+      }).format(new Date(raw));
+    } catch {
+      return String(raw).slice(0, 16);
+    }
+  }
+
+  function renderHistoryState(text) {
+    historyList.innerHTML = `<div class="bna-bot-history-state">${escapeHtml(text)}</div>`;
+  }
+
+  function renderHistory(threads) {
+    historyLoaded = true;
+    historyList.textContent = '';
+    if (!threads.length) {
+      renderHistoryState(historyEmptyCopy());
+      return;
+    }
+    for (const thread of threads) {
+      const item = document.createElement('button');
+      item.type = 'button';
+      item.className = `bna-bot-history-item${String(thread.id) === String(threadId) ? ' is-active' : ''}`;
+      item.dataset.threadId = thread.id;
+      item.setAttribute('aria-label', `${continueChatCopy()} ${thread.id}`);
+      const metaParts = [formatThreadTime(thread), thread.surface || '', thread.page_path || '']
+        .map((part) => String(part || '').trim())
+        .filter(Boolean);
+      item.innerHTML = `
+        <span class="bna-bot-history-name">${escapeHtml(threadDisplayName(thread))}</span>
+        <span class="bna-bot-history-meta">${escapeHtml(metaParts.join(' · '))}</span>
+      `;
+      item.addEventListener('click', () => {
+        threadId = String(thread.id);
+        localStorage.setItem(`${storagePrefix}:threadId`, threadId);
+        setHistoryOpen(false);
+        loadThread(threadId);
+        input.focus();
+      });
+      historyList.appendChild(item);
+    }
+  }
+
   function requestPayload(message) {
     const payload = {
       message,
@@ -380,7 +742,7 @@
       surface,
       page_path: window.location.pathname + window.location.search,
       language: language(),
-      mode: canUseCodex ? mode : 'safe',
+      mode: 'safe',
       user_agent: navigator.userAgent || '',
     };
     if (isStudent) payload.access_code = studentAccessCode();
@@ -406,17 +768,34 @@
       if (result.thread?.id) {
         threadId = String(result.thread.id);
         localStorage.setItem(`${storagePrefix}:threadId`, threadId);
+        historyLoaded = false;
       }
-      canUseCodex = Boolean(result.actor?.can_use_codex);
-      modeList.classList.toggle('is-visible', canUseCodex);
       const assistantMessages = (result.messages || []).filter((item) => item.author_type !== 'user');
-      if (!assistantMessages.length) appendMessage('assistant', 'Saved.');
-      assistantMessages.forEach((item) => appendMessage('assistant', item.body || 'Saved.'));
+      if (!assistantMessages.length) appendMessage('assistant', copy.saved);
+      assistantMessages.forEach((item) => appendMessage('assistant', item.body || copy.saved));
     } catch (error) {
-      appendMessage('assistant', error.message || 'Assistant unavailable.');
+      appendMessage('assistant', copy.unavailable);
     } finally {
       setBusy(false);
       input.focus();
+    }
+  }
+
+  async function loadHistory() {
+    renderHistoryState(historyLoadingCopy());
+    try {
+      const params = new URLSearchParams({ anonymous_id: getOrCreateAnonymousId() });
+      if (isStudent) params.set('access_code', studentAccessCode());
+      const response = await fetch(`/api/bna/assistant/threads?${params.toString()}`, {
+        credentials: 'same-origin',
+      });
+      const result = await response.json();
+      if (!response.ok || !result.success) throw new Error(result.error || historyUnavailableCopy());
+      if (result.anonymous_id) localStorage.setItem('bnaAssistantAnonymousId', result.anonymous_id);
+      renderHistory(Array.isArray(result.threads) ? result.threads : []);
+    } catch {
+      historyLoaded = false;
+      renderHistoryState(historyUnavailableCopy());
     }
   }
 
@@ -433,29 +812,6 @@
     } catch {}
   }
 
-  async function loadHistory() {
-    historyList.classList.toggle('is-open');
-    if (!historyList.classList.contains('is-open')) return;
-    historyList.textContent = 'Loading history...';
-    try {
-      const params = new URLSearchParams({ anonymous_id: getOrCreateAnonymousId() });
-      if (isStudent) params.set('access_code', studentAccessCode());
-      const response = await fetch(`/api/bna/assistant/threads?${params.toString()}`, {
-        credentials: 'same-origin',
-      });
-      const result = await response.json();
-      if (!response.ok || !result.success) throw new Error(result.error || 'History unavailable');
-      canUseCodex = Boolean(result.actor?.can_use_codex);
-      modeList.classList.toggle('is-visible', canUseCodex);
-      const threads = Array.isArray(result.threads) ? result.threads : [];
-      historyList.innerHTML = threads.length
-        ? threads.map((thread) => `<button type="button" data-thread-id="${escapeAttr(thread.id)}">${escapeHtml(thread.surface || 'Assistant')} - ${escapeHtml(new Date(thread.updated_at || thread.created_at).toLocaleString())}</button>`).join('')
-        : '<button type="button" disabled>No previous chats yet</button>';
-    } catch (error) {
-      historyList.innerHTML = `<button type="button" disabled>${escapeHtml(error.message || 'History unavailable')}</button>`;
-    }
-  }
-
   function escapeHtml(value) {
     return String(value || '').replace(/[&<>"']/g, (char) => ({
       '&': '&amp;',
@@ -470,20 +826,21 @@
     return escapeHtml(value).replace(/`/g, '&#96;');
   }
 
+  if (isPublicLeadSurface() && !dismissedPublicPrompt) {
+    publicAutoPromptTimer = setTimeout(() => {
+      publicAutoPromptTimer = null;
+      if (dismissedPublicPrompt || panel.classList.contains('is-open')) return;
+      setOpen(true, { autoPrompt: true, focus: false });
+    }, PUBLIC_ASSISTANT_AUTOPROMPT_DELAY_MS);
+  }
+
   launcher.addEventListener('click', () => setOpen(!panel.classList.contains('is-open')));
-  closeButton.addEventListener('click', () => setOpen(false));
-  historyToggle.addEventListener('click', loadHistory);
-  modeButtons.forEach((button) => {
-    button.addEventListener('click', () => setActiveMode(button.dataset.mode));
+  closeButton.addEventListener('click', () => {
+    setHistoryOpen(false);
+    dismissPublicPromptForSession();
+    setOpen(false);
   });
-  historyList.addEventListener('click', (event) => {
-    const button = event.target.closest('[data-thread-id]');
-    if (!button) return;
-    threadId = String(button.dataset.threadId || '');
-    localStorage.setItem(`${storagePrefix}:threadId`, threadId);
-    historyList.classList.remove('is-open');
-    loadThread(threadId);
-  });
+  historyToggle.addEventListener('click', () => setHistoryOpen(!historyPanel.classList.contains('is-open')));
   form.addEventListener('submit', (event) => {
     event.preventDefault();
     sendMessage(input.value);
@@ -494,7 +851,18 @@
       form.requestSubmit();
     }
   });
+  input.addEventListener('focus', () => {
+    syncVisualViewportHeight();
+    setTimeout(syncVisualViewportHeight, 120);
+    setTimeout(() => {
+      threadEl.scrollTop = threadEl.scrollHeight;
+    }, 160);
+  });
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') setOpen(false);
+    if (event.key === 'Escape') {
+      setHistoryOpen(false);
+      dismissPublicPromptForSession();
+      setOpen(false);
+    }
   });
 })();

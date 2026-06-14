@@ -1,0 +1,13 @@
+{
+  "ok": true,
+  "checks": {
+    "brand": true,
+    "providers": true,
+    "rabbi": true,
+    "mishnah": true
+  },
+  "errors": [],
+  "url": "https://bneineviimacademy.org/operations?view=contacts&section=providers",
+  "text": "BNA Operations\nTelegram and Drive inputs routed into focused work lanes.\nTasks\nT\nStudents\nS\nContent\nC\nContacts\nP\nAccounting\n$\nSupport\n!\nRoadmap\nR\nBNA\nBnei Neviim Academy\nContacts / Approved Providers\nOperations Command Center\nWed 10 Jun\nROSTER\nApproved Providers\n\nApproved external services/classes for BNA families. Billing and discounts stay display-only until explicitly approved.\n\nAdd internal person\nArchive test duplicate\nPeople\n11\nParents\n5\nInterested Parents\n2\nApproved Providers\n1\nCommunicat",
+  "file": "ops/playwright-smokes/2026-06-10T11-29-34-627Z-operations-providers-desktop.png"
+}

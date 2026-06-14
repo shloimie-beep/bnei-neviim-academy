@@ -290,7 +290,7 @@
         <div class="actions">
             <a class="button" href="/parent/login">Parent Login</a>
             <a class="button" href="/student/login">Student Login</a>
-            <a class="button primary" href="/become-service-provider">Become a Service Provider</a>
+            <a class="button primary" href="/become-service-provider?onboard=provider">Become a Service Provider</a>
         </div>
     </header>
 
@@ -383,14 +383,15 @@
                 const name = provider.display_name || provider.provider_name || 'Provider';
                 const serviceArea = [provider.city, provider.neighborhood, provider.service_area].filter(Boolean).join(' / ');
                 const links = [
+                    provider.slug ? `<a class="button primary" href="/providers/${encodeURIComponent(provider.slug)}">Profile</a>` : '',
                     provider.website_url ? `<a class="button" href="${escapeHtml(provider.website_url)}" target="_blank" rel="noopener noreferrer">Website</a>` : '',
-                    provider.google_business_profile_url ? `<a class="button" href="${escapeHtml(provider.google_business_profile_url)}" target="_blank" rel="noopener noreferrer">Google Profile</a>` : '',
+                    (provider.google_business_profile_url || provider.google_business?.manual_profile_url) ? `<a class="button" href="${escapeHtml(provider.google_business_profile_url || provider.google_business.manual_profile_url)}" target="_blank" rel="noopener noreferrer">Google Profile</a>` : '',
                     provider.whatsapp_phone ? `<a class="button" href="https://wa.me/${escapeHtml(String(provider.whatsapp_phone).replace(/\D/g, ''))}" target="_blank" rel="noopener noreferrer">WhatsApp</a>` : '',
-                    `<a class="button primary" href="/parent/login">Parent Message</a>`,
+                    `<a class="button" href="/parent/login">Parent Message</a>`,
                 ].filter(Boolean).join('');
                 return `
                     <article class="listing">
-                        <div class="avatar">${provider.profile_image_url ? `<img src="${escapeHtml(provider.profile_image_url)}" alt="${escapeHtml(name)}">` : escapeHtml(initials(name))}</div>
+                        <div class="avatar">${(provider.profile_image_url || provider.profile_photo_url) ? `<img src="${escapeHtml(provider.profile_image_url || provider.profile_photo_url)}" alt="${escapeHtml(name)}">` : escapeHtml(initials(name))}</div>
                         <div>
                             <div class="listing-head">
                                 <div>
@@ -421,12 +422,24 @@
             els.type.innerHTML = '<option value="">All categories</option>' + types.map(type => `<option value="${escapeHtml(type)}">${escapeHtml(type)}</option>`).join('');
         }
 
+        const PROVIDER_INDEX_ENDPOINTS = ['/api/providers', '/api/service-providers'];
+
         async function loadProviders() {
             try {
-                const response = await fetch('/api/service-providers');
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.error || 'Could not load providers');
-                state.providers = Array.isArray(data.providers) ? data.providers : [];
+                let lastError = null;
+                for (const endpoint of PROVIDER_INDEX_ENDPOINTS) {
+                    try {
+                        const response = await fetch(endpoint);
+                        const data = await response.json();
+                        if (!response.ok) throw new Error(data.error || 'Could not load providers');
+                        state.providers = Array.isArray(data.providers) ? data.providers : [];
+                        lastError = null;
+                        break;
+                    } catch (error) {
+                        lastError = error;
+                    }
+                }
+                if (lastError) throw lastError;
                 refreshTypes();
                 render();
             } catch (error) {

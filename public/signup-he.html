@@ -911,9 +911,11 @@
         const signupDocumentFlow = window.createSignupDocumentFlow({ language: 'he' });
         signupDocumentFlow.init();
 
-        function buildThankYouUrl(paymentMethod, paymentLink) {
+        function buildThankYouUrl(paymentMethod, paymentLink, checkoutAttemptId = '', checkoutAttemptToken = '') {
             const params = new URLSearchParams({ payment: paymentMethod, lang: 'he' });
             if (paymentLink) params.set('paymentLink', paymentLink);
+            if (checkoutAttemptId) params.set('checkoutAttemptId', checkoutAttemptId);
+            if (checkoutAttemptToken) params.set('checkoutAttemptToken', checkoutAttemptToken);
             return `/signup-thank-you.html?${params.toString()}`;
         }
 
@@ -1018,7 +1020,12 @@
                 } else if (result.paymentMethod === 'bank_transfer') {
                     window.location.href = buildThankYouUrl('bank_transfer');
                 } else {
-                    window.location.href = buildThankYouUrl('credit', result.paymentLink || '');
+                    window.location.href = buildThankYouUrl(
+                        'credit',
+                        result.paymentLink || '',
+                        result.checkoutAttemptId || '',
+                        result.checkoutAttemptToken || ''
+                    );
                 }
             } catch (error) {
                 console.error(error);

@@ -1,0 +1,186 @@
+# git diff .env.example
+warning: in the working copy of '.env.example', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index ops/action-registry/actions.json
+warning: in the working copy of 'ops/action-registry/actions.json', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index ops/action-registry/page-action-map.json
+warning: in the working copy of 'ops/action-registry/page-action-map.json', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index ops/action-registry/ui-button-map.md
+warning: in the working copy of 'ops/action-registry/ui-button-map.md', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index ops/qa-runs/2026-06-11-action-registry-telegram-ui-bot.md
+warning: in the working copy of 'ops/qa-runs/2026-06-11-action-registry-telegram-ui-bot.md', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index ops/qa-runs/2026-06-11-final-release-readiness.md
+warning: in the working copy of 'ops/qa-runs/2026-06-11-final-release-readiness.md', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index ops/qa-runs/2026-06-11-master-execution-selected-work.md
+warning: in the working copy of 'ops/qa-runs/2026-06-11-master-execution-selected-work.md', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index ops/qa-runs/2026-06-11-operations-navigation-polish.md
+warning: in the working copy of 'ops/qa-runs/2026-06-11-operations-navigation-polish.md', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index ops/qa-runs/2026-06-11-operations-restructure-implementation.md
+warning: in the working copy of 'ops/qa-runs/2026-06-11-operations-restructure-implementation.md', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index ops/qa-runs/2026-06-11-parent-student-calendar-polish.md
+warning: in the working copy of 'ops/qa-runs/2026-06-11-parent-student-calendar-polish.md', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index ops/qa-runs/2026-06-11-production-ui-parent-student-provider.md
+warning: in the working copy of 'ops/qa-runs/2026-06-11-production-ui-parent-student-provider.md', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index ops/release/2026-06-11-operations-release-cleanup/changed-files-classification.md
+warning: in the working copy of 'ops/release/2026-06-11-operations-release-cleanup/changed-files-classification.md', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index ops/release/2026-06-11-operations-release-cleanup/deployment-blockers.md
+warning: in the working copy of 'ops/release/2026-06-11-operations-release-cleanup/deployment-blockers.md', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index ops/release/2026-06-11-operations-release-cleanup/deployment-readiness.md
+warning: in the working copy of 'ops/release/2026-06-11-operations-release-cleanup/deployment-readiness.md', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index ops/release/2026-06-11-operations-release-cleanup/generated-artifacts.txt
+warning: in the working copy of 'ops/release/2026-06-11-operations-release-cleanup/generated-artifacts.txt', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index ops/release/2026-06-11-operations-release-cleanup/release-cleanup-report.md
+warning: in the working copy of 'ops/release/2026-06-11-operations-release-cleanup/release-cleanup-report.md', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index ops/release/2026-06-11-operations-release-cleanup/release-readiness-checklist.md
+warning: in the working copy of 'ops/release/2026-06-11-operations-release-cleanup/release-readiness-checklist.md', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index ops/release/2026-06-11-operations-release-cleanup/relevant-files.txt
+warning: in the working copy of 'ops/release/2026-06-11-operations-release-cleanup/relevant-files.txt', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index ops/release/2026-06-11-operations-release-cleanup/screenshot-index.md
+warning: in the working copy of 'ops/release/2026-06-11-operations-release-cleanup/screenshot-index.md', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index ops/release/2026-06-11-operations-release-cleanup/shloimie-visual-corrections.md
+warning: in the working copy of 'ops/release/2026-06-11-operations-release-cleanup/shloimie-visual-corrections.md', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index ops/release/2026-06-11-operations-release-cleanup/unrelated-dirty-files.txt
+warning: in the working copy of 'ops/release/2026-06-11-operations-release-cleanup/unrelated-dirty-files.txt', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index public/css/bna-app-shell.css
+warning: in the working copy of 'public/css/bna-app-shell.css', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index public/js/app-select.js
+warning: in the working copy of 'public/js/app-select.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff public/operations-login.html
+warning: in the working copy of 'public/operations-login.html', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index public/operations-manifest.json
+warning: in the working copy of 'public/operations-manifest.json', LF will be replaced by CRLF the next time Git touches it
+
+# git diff public/operations.html
+warning: in the working copy of 'public/operations.html', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index public/parent.html
+warning: in the working copy of 'public/parent.html', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index public/provider-participant.html
+warning: in the working copy of 'public/provider-participant.html', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index public/provider.html
+warning: in the working copy of 'public/provider.html', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index public/providers-join.html
+warning: in the working copy of 'public/providers-join.html', LF will be replaced by CRLF the next time Git touches it
+
+# git diff public/student.html
+warning: in the working copy of 'public/student.html', LF will be replaced by CRLF the next time Git touches it
+
+# git diff scripts/smoke-live-app.mjs
+warning: in the working copy of 'scripts/smoke-live-app.mjs', LF will be replaced by CRLF the next time Git touches it
+
+# git diff scripts/telegram-kimi-bridge.mjs
+warning: in the working copy of 'scripts/telegram-kimi-bridge.mjs', LF will be replaced by CRLF the next time Git touches it
+
+# git diff server.js
+warning: in the working copy of 'server.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index src/lib/actions/actions/operations.js
+warning: in the working copy of 'src/lib/actions/actions/operations.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index src/lib/actions/audit-log.js
+warning: in the working copy of 'src/lib/actions/audit-log.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index src/lib/actions/page-action-map.js
+warning: in the working copy of 'src/lib/actions/page-action-map.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index src/lib/actions/permissions.js
+warning: in the working copy of 'src/lib/actions/permissions.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index src/lib/actions/registry.js
+warning: in the working copy of 'src/lib/actions/registry.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index src/lib/actions/runner.js
+warning: in the working copy of 'src/lib/actions/runner.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index src/lib/actions/types.js
+warning: in the working copy of 'src/lib/actions/types.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index src/lib/bna/google-integrations.js
+warning: in the working copy of 'src/lib/bna/google-integrations.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index src/lib/bna/student-match.js
+warning: in the working copy of 'src/lib/bna/student-match.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index src/lib/bna/telegram-accountability-parser.js
+warning: in the working copy of 'src/lib/bna/telegram-accountability-parser.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index src/lib/bna/telegram-action-router.js
+warning: in the working copy of 'src/lib/bna/telegram-action-router.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index src/lib/bna/telegram-agent-intent.js
+warning: in the working copy of 'src/lib/bna/telegram-agent-intent.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index src/lib/bna/telegram-contact-lead-capture.js
+warning: in the working copy of 'src/lib/bna/telegram-contact-lead-capture.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff src/lib/bna/telegram-content-intent.js
+warning: in the working copy of 'src/lib/bna/telegram-content-intent.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index src/lib/bna/telegram-planning-intent.js
+warning: in the working copy of 'src/lib/bna/telegram-planning-intent.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index tasks-pending/2026-06-11-action-registry-telegram-ui-bot.md
+warning: in the working copy of 'tasks-pending/2026-06-11-action-registry-telegram-ui-bot.md', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index tasks-pending/2026-06-11-production-ui-qa-fix-loop.md
+warning: in the working copy of 'tasks-pending/2026-06-11-production-ui-qa-fix-loop.md', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index tests/action-registry-telegram-ui-bot.test.js
+warning: in the working copy of 'tests/action-registry-telegram-ui-bot.test.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index tests/app-select-dropdown.test.js
+warning: in the working copy of 'tests/app-select-dropdown.test.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index tests/app-wide-brand-shell.test.js
+warning: in the working copy of 'tests/app-wide-brand-shell.test.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index tests/bna-brand-shell.test.js
+warning: in the working copy of 'tests/bna-brand-shell.test.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index tests/google-assignment-system.test.js
+warning: in the working copy of 'tests/google-assignment-system.test.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index tests/operations-saas-crm-redesign.test.js
+warning: in the working copy of 'tests/operations-saas-crm-redesign.test.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index tests/operations-student-navigation.test.js
+warning: in the working copy of 'tests/operations-student-navigation.test.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index tests/parent-student-polish-contract.test.js
+warning: in the working copy of 'tests/parent-student-polish-contract.test.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index tests/parent-student-portal-contract.test.js
+warning: in the working copy of 'tests/parent-student-portal-contract.test.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index tests/service-provider-directory.test.js
+warning: in the working copy of 'tests/service-provider-directory.test.js', LF will be replaced by CRLF the next time Git touches it
+
+# git diff --no-index tests/student-bot-settings.test.js
+warning: in the working copy of 'tests/student-bot-settings.test.js', LF will be replaced by CRLF the next time Git touches it
+

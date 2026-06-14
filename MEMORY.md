@@ -84,6 +84,11 @@
   Workspace is the first provider workspace for the One Time Mishnayos
   Membership and 7:00 class. Provider participants/members should not be called
   BNA students unless they are actually enrolled in BNA.
+- Operations should present workspaces as an official multi-workspace directory,
+  not as a hard-coded single Rabbi Sheller workspace. Super Admin should see
+  school, service-provider, family/home-accountability, parent-household,
+  community/project, and platform workspaces through a switcher/filter pattern
+  that can scale as real people and households are added.
 - Provider public signup is free-listing-only. The data model may keep
   admin-only/future commercial fields, but the public UI must not advertise paid
   plans, paid placement, checkout, paid automation, or approval guarantees.
@@ -109,6 +114,11 @@
   free-listing application. Rabbi Sheller is the first external provider/
   partner workspace and remains separate from BNA Academy parents/students
   unless explicit enrollment links them.
+- Public website provider join links should open a conversational onboarding
+  flow first, not a form wall. The flow should thank the provider, explain the
+  BNA review process, explain BNA's student/homeschooler/alternative-education
+  audience and provider-index/funnel direction, then ask the required listing
+  questions one at a time before creating the reviewed application.
 - Provider intake should collect enough review context before BNA publishes a
   listing: provider/contact details, category, city/service area, languages,
   ages served, short description, services offered, website/phone/WhatsApp/
@@ -349,22 +359,23 @@
   background queues for ordinary chat; mention capture only when a real task,
   student note, payment item, content item, or decision was created or needs
   action.
-- Telegram should keep persistent bottom buttons for `OpenAI API` and `Codex`.
-  `OpenAI API` means hosted API chat mode: OpenAI when healthy, or Kimi during
-  approved temporary Kimi-primary mode. Clear repo/code/database/bridge/deploy/
-  test/programming requests still route to Codex automatically. Pressing
-  `Codex` forces Codex replies until API chat mode is selected again.
+- Telegram should keep persistent bottom buttons for `Assistant` and `Codex`.
+  `Assistant` means provider-neutral hosted chat mode for normal users: OpenAI
+  when healthy, or Kimi during approved temporary Kimi-primary mode/fallback.
+  Clear repo/code/database/bridge/deploy/test/programming requests still route
+  to Codex automatically. Pressing `Codex` forces Codex replies until Assistant
+  chat mode is selected again.
 - Prompt-building requests for Codex or ChatGPT should stay in visible
   planning/refinement mode first: show the prompt/brief draft in Telegram,
   preserve the raw operator input as provenance, and only implement after
   Shloimie explicitly says to build, apply, run, test, or implement.
-- OpenAI sidekick capability must be verified by a real smoke test, not
+- Telegram Assistant capability must be verified by a real smoke test, not
   assumed. Use `npm run openai:smoke -- --telegram` locally, or Telegram
-  `/smoke_openai`, to confirm OpenAI can read repo memory/task files, transcript
-  exports, protected BNA app APIs, Drive folder metadata, live task/student/
-  payment/Torah data, and send a Telegram summary. The smoke report writes to
-  `ops/openai-smokes/`.
-- Telegram OpenAI mode should use OpenAI Responses `web_search` for research,
+  `/smoke_assistant`, to confirm the hosted assistant can read repo memory/task
+  files, transcript exports, protected BNA app APIs, Drive folder metadata,
+  live task/student/payment/Torah data, and send a Telegram summary. The smoke
+  report writes to `ops/openai-smokes/`.
+- Telegram Assistant mode should use hosted web research when available for
   current-information, API/framework, YouTube/research-tooling, SEO/AEO/GEO, and
   similar questions where live outside information matters. It should combine
   web results with BNA repo/app/Drive context, not replace local context.
@@ -843,6 +854,19 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 - Parent portal should allow parent-specific natural-language parser
   instructions for each child. Parent uploads and parent chat are
   accountability-only inputs and must not create marketing/content jobs.
+- Parent, student, and service-provider portals should be natural-language
+  first in English and Hebrew: the assistant welcomes the user, explains what
+  the app does, walks through setup, guides recording uploads, captures goals
+  and prompt/instruction preferences, and turns the conversation into durable
+  scoped records.
+- Parent/family onboarding should teach the BNA self-governance model:
+  children take responsibility through clear goals, check-ins, reflection,
+  parent/Rabbi review, and ownership of commitments rather than hidden control
+  or punishment-only automation.
+- Public website parent/accountability links should also support a
+  conversational pre-login intake that asks what the child is struggling with,
+  goals, motivators/interests, chores/responsibilities, meal/eating preferences,
+  recording/setup context, and saves a durable setup request for review.
 - Hebrew-speaking parent portal records are identified by Hebrew signup
   language or tags such as `hebrew_form`, `hebrew_speaking`, `ivrit`, and
   `parent_portal_hebrew`; those records should default the parent portal to

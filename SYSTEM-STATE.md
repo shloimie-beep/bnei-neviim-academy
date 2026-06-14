@@ -2,7 +2,7 @@
 
 Last updated: 2026-06-14
 
-2026-06-14 workspace/community/provider/bot cleanup in progress:
+2026-06-14 workspace/community/provider/bot cleanup current state:
 - BNA does not use GHL, GoHighLevel, LeadConnector, or LeadConnectorHQ as active
   runtime. Active code must not use GHL env vars, MCP tools, API clients,
   dashboard controls, Telegram actions, smoke checks, docs, routes, prompts, or
@@ -30,13 +30,19 @@ Last updated: 2026-06-14
   is unresolved. Use `BNA_AI_PRIMARY_PROVIDER=kimi` to make server content AI,
   Telegram API chat, and the historical `npm run openai:smoke` script select
   Kimi first. Codex remains the development/task owner.
+- 2026-06-14 assistant/portal/communications foundation is deployed in Railway
+  deployment `0cca77e2-d718-47b6-bc28-6824125597f3`. Active generated email
+  paths use `Bnei Neviim Academy Office` and normalize away `Office P`;
+  Resend is connector-ready but unconfigured, Gmail remains fallback, unified
+  communications and checkout-attempt APIs exist, abandoned-checkout sends are
+  approval gated, WhatsApp import is first-party/no-send by default, and the
+  assistant drawer passed mobile keyboard smoke at 390/393/430 widths.
 - Public, parent, and Operations PWA manifests are split so public/parent
   installs do not launch private Operations.
-- Local cleanup verification has begun on
-  `cleanup/bna-workspace-community-provider-bot-no-ghl`. Completion remains
-  blocked until full tests, selected hosted-AI smoke, Railway doctor/live smoke,
-  deploy, and live post-deploy smoke pass, or a real external blocker is proven and
-  recorded.
+- Current live verification includes `npm test` 323/323, Railway doctor, live
+  app smoke `ops/live-smokes/2026-06-14T09-32-40-859Z-live-app-smoke.md`, and
+  focused live read/dry-run smoke
+  `ops/live-smokes/2026-06-14T09-33-21-093Z-assistant-portal-focused-live-smoke.json`.
 
 2026-06-12 Registration/provider/student-security pass deployed:
 - Public signup now shows the four visible required documents: Handbook,

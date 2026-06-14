@@ -39,9 +39,15 @@ Hi Rabbi Elie, before I send the scoped One Time login, can you please send the 
 
 ## Remaining Blocker
 
-Current provider/project records still lack Rabbi email, WhatsApp/contact phone,
-and provider login username. Login information should remain held until those
-fields are collected and stored.
+Cleared on 2026-06-14 for the task-manager handoff: Rabbi email,
+WhatsApp/contact phone, and scoped login username were stored on the live
+provider/project records, then the access handoff was sent by Gmail and
+delivered by WhatsApp.
+
+Still open as a future hardening item: the scoped One Time Operations account
+does not yet have a user-facing personal password setup/change flow. The
+handoff used the current scoped Operations credentials plus a short-lived
+access link.
 
 ## Verification
 

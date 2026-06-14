@@ -1,0 +1,82 @@
+{
+  "created_at": "2026-06-14T07:24:04.853Z",
+  "baseUrl": "http://127.0.0.1:8099",
+  "viewport": {
+    "width": 390,
+    "height": 844
+  },
+  "checks": [
+    {
+      "url": "http://127.0.0.1:8099/operations?view=tasks&cb=1781421638365&section=tasks&workspace=platform",
+      "documentScrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "clientWidth": 390,
+      "overflowX": false,
+      "taskRows": 40,
+      "taskCards": 40,
+      "calendarCells": 0,
+      "calendarItems": 0,
+      "calendarText": false,
+      "errors": []
+    },
+    {
+      "url": "http://127.0.0.1:8099/operations?view=tasks&project=one_time_mishnah_class&cb=1781421638365&section=tasks&workspace=platform",
+      "documentScrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "clientWidth": 390,
+      "overflowX": false,
+      "taskRows": 24,
+      "taskCards": 24,
+      "calendarCells": 0,
+      "calendarItems": 0,
+      "calendarText": false,
+      "errors": []
+    },
+    {
+      "url": "http://127.0.0.1:8099/operations?view=tasks&section=schedule&project=one_time_mishnah_class&cb=1781421638365&workspace=platform&calendar_mode=month&date=2026-06-14",
+      "documentScrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "clientWidth": 390,
+      "overflowX": false,
+      "taskRows": 0,
+      "taskCards": 29,
+      "calendarCells": 42,
+      "calendarItems": 29,
+      "calendarText": true,
+      "errors": []
+    },
+    {
+      "url": "http://127.0.0.1:8099/operations?view=dashboard&cb=1781421638365&section=overview&workspace=platform",
+      "documentScrollWidth": 390,
+      "bodyScrollWidth": 390,
+      "clientWidth": 390,
+      "overflowX": false,
+      "taskRows": 0,
+      "taskCards": 0,
+      "calendarCells": 0,
+      "calendarItems": 0,
+      "calendarText": false,
+      "errors": []
+    }
+  ],
+  "detail": {
+    "open": true,
+    "hasOverlay": true,
+    "hasSheet": true,
+    "hasDecisionAction": true,
+    "hasComments": true
+  },
+  "consoleMessages": [
+    "error: Failed to load resource: the server responded with a status of 401 (Unauthorized)"
+  ],
+  "pageErrors": [],
+  "screenshots": [
+    "debug-detail.png",
+    "debug-tasks-all.png",
+    "global-calendar-one-time.png",
+    "task-detail-open.png",
+    "tasks-all.png",
+    "tasks-calendar-one-time.png",
+    "tasks-one-time.png"
+  ]
+}

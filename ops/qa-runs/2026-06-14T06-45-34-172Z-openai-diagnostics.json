@@ -1,0 +1,80 @@
+{
+  "generated_at": "2026-06-14T06:45:30.408Z",
+  "ok": false,
+  "selected_source": ".secrets/openai-api-key.txt",
+  "sources": [
+    {
+      "source": "process.env:OPENAI_API_KEY",
+      "present": false,
+      "length": 0,
+      "normalized_length": 0,
+      "fingerprint": "",
+      "surrounding_quotes": false,
+      "newline": false,
+      "carriage_return": false,
+      "bom": false,
+      "normalization_changed_value": false
+    },
+    {
+      "source": ".secrets/openai-api-key.txt",
+      "present": true,
+      "length": 165,
+      "normalized_length": 164,
+      "fingerprint": "02079c0b5ca1",
+      "surrounding_quotes": false,
+      "newline": false,
+      "carriage_return": false,
+      "bom": true,
+      "normalization_changed_value": true
+    },
+    {
+      "source": ".env.local:OPENAI_API_KEY",
+      "present": true,
+      "length": 164,
+      "normalized_length": 164,
+      "fingerprint": "df69acc2e029",
+      "surrounding_quotes": false,
+      "newline": false,
+      "carriage_return": false,
+      "bom": false,
+      "normalization_changed_value": false
+    }
+  ],
+  "env_file_equality": false,
+  "openai_base_url_present": true,
+  "openai_org_present": false,
+  "openai_project_present": false,
+  "railway": {
+    "ok": true,
+    "attempted": true,
+    "service": "skillful-motivation",
+    "environment": "production",
+    "openai_api_key": {
+      "source": "railway:OPENAI_API_KEY",
+      "present": true,
+      "length": 164,
+      "normalized_length": 164,
+      "fingerprint": "02079c0b5ca1",
+      "surrounding_quotes": false,
+      "newline": false,
+      "carriage_return": false,
+      "bom": false,
+      "normalization_changed_value": false
+    },
+    "openai_base_url_present": false,
+    "openai_org_present": false,
+    "openai_project_present": false
+  },
+  "models": {
+    "status": 401,
+    "ok": false,
+    "x_request_id": "504fcba2-abfd-4103-9dd5-eaa5f135a0c4",
+    "error_type": "invalid_request_error",
+    "error_code": "invalid_api_key",
+    "error_message": "Incorrect API key provided: sk-proj-********************************************************************************************************************************************************2DsA. You can find your API key at https://platform.openai.com/account/api-keys."
+  },
+  "responses": {
+    "status": "skipped",
+    "error_message": "Skipped because /v1/models did not authenticate."
+  }
+}

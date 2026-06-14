@@ -22,6 +22,24 @@
 
         * { box-sizing: border-box; }
 
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        html,
+        body {
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+
         body {
             margin: 0;
             min-height: 100vh;
@@ -287,6 +305,63 @@
 
         .login-panel {
             width: min(620px, 100%);
+        }
+
+        .parent-onboarding-panel {
+            width: min(760px, 100%);
+            display: grid;
+            gap: 14px;
+        }
+
+        .parent-onboarding-chat {
+            display: grid;
+            gap: 10px;
+            max-height: min(520px, 56vh);
+            overflow: auto;
+            padding: 2px 2px 6px;
+        }
+
+        .parent-onboarding-bubble {
+            width: fit-content;
+            max-width: min(100%, 34rem);
+            border: 1px solid rgba(30, 95, 61, 0.14);
+            border-radius: 14px;
+            padding: 11px 12px;
+            color: var(--ink);
+            background: #fffef9;
+            font: 700 14px/1.45 "Trebuchet MS", Verdana, sans-serif;
+            white-space: pre-wrap;
+        }
+
+        .parent-onboarding-bubble.bot {
+            justify-self: start;
+        }
+
+        .parent-onboarding-bubble.user {
+            justify-self: end;
+            background: rgba(30, 95, 61, 0.08);
+            border-color: rgba(30, 95, 61, 0.22);
+        }
+
+        [dir="rtl"] .parent-onboarding-bubble.bot {
+            justify-self: end;
+        }
+
+        [dir="rtl"] .parent-onboarding-bubble.user {
+            justify-self: start;
+        }
+
+        .parent-onboarding-composer {
+            display: grid;
+            gap: 9px;
+            border-top: 1px solid var(--line);
+            padding-top: 12px;
+        }
+
+        .parent-onboarding-progress {
+            color: var(--muted);
+            font-size: 12px;
+            font-weight: 800;
         }
 
         label {
@@ -1140,6 +1215,22 @@
             <div class="status" id="loginStatus"></div>
         </section>
 
+        <section class="panel parent-onboarding-panel hidden" id="parentOnboardingPanel" data-parent-accountability-onboarding>
+            <p class="eyebrow" data-parent-onboarding-eyebrow>Parent Accountability Setup</p>
+            <h2 data-parent-onboarding-title>Accountability onboarding assistant</h2>
+            <p class="small" data-parent-onboarding-copy>This guided intake helps BNA understand what your child is working through before any child-visible goals are created.</p>
+            <div class="parent-onboarding-chat" id="parentOnboardingLog" aria-live="polite"></div>
+            <form class="parent-onboarding-composer" id="parentOnboardingForm" data-parent-onboarding-form>
+                <label class="sr-only" for="parentOnboardingInput">Your answer</label>
+                <textarea id="parentOnboardingInput" placeholder="Type your answer here"></textarea>
+                <div class="button-row">
+                    <button class="btn primary" id="parentOnboardingSend" type="submit" data-parent-onboarding-send>Send</button>
+                    <span class="parent-onboarding-progress" id="parentOnboardingProgress"></span>
+                </div>
+            </form>
+            <div class="status" id="parentOnboardingStatus"></div>
+        </section>
+
         <button class="portal-menu-toggle hidden" id="portalMenuToggle" type="button" aria-controls="parentPortalSidebar" aria-expanded="false">
             <span aria-hidden="true">&#9776;</span>
             <span data-menu-label>Menu</span>
@@ -1154,6 +1245,13 @@
     <script>
         const els = {
             loginPanel: document.getElementById('loginPanel'),
+            parentOnboardingPanel: document.getElementById('parentOnboardingPanel'),
+            parentOnboardingForm: document.getElementById('parentOnboardingForm'),
+            parentOnboardingLog: document.getElementById('parentOnboardingLog'),
+            parentOnboardingInput: document.getElementById('parentOnboardingInput'),
+            parentOnboardingSend: document.getElementById('parentOnboardingSend'),
+            parentOnboardingProgress: document.getElementById('parentOnboardingProgress'),
+            parentOnboardingStatus: document.getElementById('parentOnboardingStatus'),
             portalPanel: document.getElementById('portalPanel'),
             portalMenuToggle: document.getElementById('portalMenuToggle'),
             portalMenuBackdrop: document.getElementById('portalMenuBackdrop'),
@@ -1180,6 +1278,10 @@
         let portalData = null;
         let language = 'en';
         let manualLanguage = false;
+        const parentOnboardingAnswers = {};
+        let parentOnboardingStepIndex = 0;
+        let parentOnboardingStarted = false;
+        let parentOnboardingSubmitted = false;
         const goalFilters = {};
         const providerFilters = {
             city: '',
@@ -1362,6 +1464,16 @@
             account: 'Account',
             settings: 'Settings',
             providerIndex: 'Service Provider Index',
+            parentOnboardingEyebrow: 'Parent Accountability Setup',
+            parentOnboardingTitle: 'Accountability onboarding assistant',
+            parentOnboardingCopy: 'This guided intake helps BNA understand what your child is working through before any child-visible goals are created.',
+            parentOnboardingIntro: 'Welcome. I will walk you through the parent accountability setup one question at a time. The goal is self-governance: clear goals, check-ins, reflection, parent/Rabbi review, and helping your child take responsibility. Nothing from this public intake is shown to a child until BNA reviews it.',
+            parentOnboardingPlaceholder: 'Type your answer here',
+            parentOnboardingSend: 'Send',
+            parentOnboardingRequired: 'I need this answer before I can save the setup request.',
+            parentOnboardingSaving: 'Saving setup request...',
+            parentOnboardingSaved: 'Parent accountability setup received. BNA will review it and follow up before anything is shown to a child.',
+            parentOnboardingQuestionProgress: 'Question {current} of {total}',
             loginEyebrow: 'Parent Access',
             loginTitle: 'Parent login',
             loginCopy: 'Sign in with the parent email and password connected to your child.',
@@ -1508,10 +1620,58 @@
             this_week: 'This week',
             parentAssistant: 'Parent help assistant',
             parentAssistantScope: 'Uses only child overview, parent-visible calendar, assignments, questions, documents, messages, provider index, and account help.',
+            setup: 'Setup',
+            assistant: 'Assistant',
+            familyGoals: 'Family goals',
+            addGoal: 'Add goal',
+            goalTitle: 'Goal title',
+            childName: 'Child name',
+            optional: 'Optional',
+            setupTitle: 'Tablet and filter setup',
+            setupCopy: 'Install the parent app on the tablet, follow your approved filter setup, then paste the setup code or status here.',
+            installOnTablet: 'Install on tablet',
+            setupStatus: 'Setup status',
+            setupCode: 'Setup code or status',
+            startSetup: 'Start setup',
+            submitSetupCode: 'Submit setup status',
+            setupHelp: 'I need setup help',
+            setupSaved: 'Setup status saved.',
+            assistantGreeting: 'I am your assistant. Tell me what you want to set up or change.',
+            assistantPlaceholder: 'Add a reading goal for Menachem this week.',
+            sendAssistant: 'Send to assistant',
             settingsUnavailable: 'Account settings are display-only here. Use the language switcher in the top bar for this browser session.',
         });
 
         Object.assign(strings.he, {
+            parentOnboardingEyebrow: '\u05d4\u05d2\u05d3\u05e8\u05ea \u05d0\u05d7\u05e8\u05d9\u05d5\u05ea \u05dc\u05d4\u05d5\u05e8\u05d9\u05dd',
+            parentOnboardingTitle: '\u05de\u05e1\u05d9\u05d9\u05e2 \u05dc\u05d4\u05d2\u05d3\u05e8\u05ea \u05d0\u05d7\u05e8\u05d9\u05d5\u05ea',
+            parentOnboardingCopy: '\u05d4\u05e9\u05d9\u05d7\u05d4 \u05d4\u05d6\u05d5 \u05e2\u05d5\u05d6\u05e8\u05ea \u05dc-BNA \u05dc\u05d4\u05d1\u05d9\u05df \u05de\u05d4 \u05d4\u05d9\u05dc\u05d3 \u05e2\u05d5\u05d1\u05e8 \u05dc\u05e4\u05e0\u05d9 \u05e9\u05e0\u05d5\u05e6\u05e8\u05d9\u05dd \u05d9\u05e2\u05d3\u05d9\u05dd \u05e9\u05d4\u05d9\u05dc\u05d3 \u05d9\u05e8\u05d0\u05d4.',
+            parentOnboardingIntro: '\u05d1\u05e8\u05d5\u05db\u05d9\u05dd \u05d4\u05d1\u05d0\u05d9\u05dd. \u05d0\u05e0\u05d9 \u05d0\u05dc\u05d5\u05d5\u05d4 \u05d0\u05d5\u05ea\u05db\u05dd \u05d1\u05d4\u05d2\u05d3\u05e8\u05ea \u05d4\u05d0\u05d7\u05e8\u05d9\u05d5\u05ea, \u05e9\u05d0\u05dc\u05d4 \u05d0\u05d7\u05ea \u05d1\u05db\u05dc \u05e4\u05e2\u05dd. \u05d4\u05de\u05d8\u05e8\u05d4 \u05d4\u05d9\u05d0 \u05d0\u05d7\u05e8\u05d9\u05d5\u05ea \u05e2\u05e6\u05de\u05d9\u05ea: \u05d9\u05e2\u05d3\u05d9\u05dd \u05d1\u05e8\u05d5\u05e8\u05d9\u05dd, \u05d1\u05d3\u05d9\u05e7\u05d5\u05ea, \u05e9\u05d9\u05e7\u05d5\u05e3, \u05d1\u05d3\u05d9\u05e7\u05ea \u05d4\u05d5\u05e8\u05d4/\u05e8\u05d1, \u05d5\u05e2\u05d6\u05e8\u05d4 \u05dc\u05d9\u05dc\u05d3 \u05dc\u05e7\u05d7\u05ea \u05d0\u05d7\u05e8\u05d9\u05d5\u05ea. \u05e9\u05d5\u05dd \u05d3\u05d1\u05e8 \u05de\u05d4\u05e7\u05dc\u05d9\u05d8\u05d4 \u05d4\u05e6\u05d9\u05d1\u05d5\u05e8\u05d9\u05ea \u05d4\u05d6\u05d5 \u05dc\u05d0 \u05d9\u05d5\u05e6\u05d2 \u05dc\u05d9\u05dc\u05d3 \u05dc\u05e4\u05e0\u05d9 \u05d1\u05d3\u05d9\u05e7\u05ea BNA.',
+            parentOnboardingPlaceholder: '\u05db\u05ea\u05d1\u05d5 \u05d0\u05ea \u05d4\u05ea\u05e9\u05d5\u05d1\u05d4 \u05db\u05d0\u05df',
+            parentOnboardingSend: '\u05e9\u05dc\u05d9\u05d7\u05d4',
+            parentOnboardingRequired: '\u05e6\u05e8\u05d9\u05da \u05d0\u05ea \u05d4\u05ea\u05e9\u05d5\u05d1\u05d4 \u05d4\u05d6\u05d5 \u05dc\u05e4\u05e0\u05d9 \u05e9\u05e0\u05e9\u05de\u05d5\u05e8 \u05d0\u05ea \u05d1\u05e7\u05e9\u05ea \u05d4\u05d4\u05d2\u05d3\u05e8\u05d4.',
+            parentOnboardingSaving: '\u05e9\u05d5\u05de\u05e8 \u05d1\u05e7\u05e9\u05ea \u05d4\u05d2\u05d3\u05e8\u05d4...',
+            parentOnboardingSaved: '\u05d1\u05e7\u05e9\u05ea \u05d4\u05d2\u05d3\u05e8\u05ea \u05d4\u05d0\u05d7\u05e8\u05d9\u05d5\u05ea \u05d4\u05ea\u05e7\u05d1\u05dc\u05d4. BNA \u05d9\u05d1\u05d3\u05e7\u05d5 \u05d5\u05d9\u05d7\u05d6\u05e8\u05d5 \u05d0\u05dc\u05d9\u05db\u05dd \u05dc\u05e4\u05e0\u05d9 \u05e9\u05de\u05e9\u05d4\u05d5 \u05d9\u05d5\u05e6\u05d2 \u05dc\u05d9\u05dc\u05d3.',
+            parentOnboardingQuestionProgress: '\u05e9\u05d0\u05dc\u05d4 {current} \u05de\u05ea\u05d5\u05da {total}',
+            setup: 'התקנה',
+            assistant: 'מסייע',
+            familyGoals: 'יעדי משפחה',
+            addGoal: 'הוספת יעד',
+            goalTitle: 'כותרת יעד',
+            childName: 'שם הילד',
+            optional: 'רשות',
+            setupTitle: 'התקנת טאבלט וסינון',
+            setupCopy: 'התקינו את אפליקציית ההורים בטאבלט, בצעו את הגדרת הסינון המאושרת, ואז הדביקו כאן קוד או סטטוס.',
+            installOnTablet: 'התקנה בטאבלט',
+            setupStatus: 'סטטוס התקנה',
+            setupCode: 'קוד או סטטוס התקנה',
+            startSetup: 'התחלת התקנה',
+            submitSetupCode: 'שליחת סטטוס התקנה',
+            setupHelp: 'אני צריך עזרה בהתקנה',
+            setupSaved: 'סטטוס ההתקנה נשמר.',
+            assistantGreeting: 'אני המסייע שלך. אפשר לומר לי מה תרצה להגדיר או לשנות.',
+            assistantPlaceholder: 'הוסף יעד קריאה למנחם השבוע.',
+            sendAssistant: 'שליחה למסייע',
             pageTitle: 'פורטל הורים - BNA',
             heroEyebrow: 'אקדמיית בני נביאים',
             heroTitle: 'פורטל הורים',
@@ -1792,6 +1952,17 @@
                 button.classList.toggle('active', button.dataset.language === language);
             });
             updateStaticLabels();
+            if (
+                parentOnboardingStarted &&
+                !parentOnboardingSubmitted &&
+                !Object.keys(parentOnboardingAnswers).length &&
+                els.parentOnboardingLog
+            ) {
+                els.parentOnboardingLog.innerHTML = '';
+                parentOnboardingStarted = false;
+                parentOnboardingStepIndex = 0;
+                startParentOnboarding();
+            }
             if (portalData && rerender) renderPortal(portalData, { keepLanguage: true });
         }
 
@@ -1820,6 +1991,14 @@
             document.querySelector('[data-login-eyebrow]').textContent = t('loginEyebrow');
             document.querySelector('[data-login-title]').textContent = t('loginTitle');
             document.querySelector('[data-login-copy]').textContent = t('loginCopy');
+            const parentOnboardingEyebrow = document.querySelector('[data-parent-onboarding-eyebrow]');
+            const parentOnboardingTitle = document.querySelector('[data-parent-onboarding-title]');
+            const parentOnboardingCopy = document.querySelector('[data-parent-onboarding-copy]');
+            if (parentOnboardingEyebrow) parentOnboardingEyebrow.textContent = t('parentOnboardingEyebrow');
+            if (parentOnboardingTitle) parentOnboardingTitle.textContent = t('parentOnboardingTitle');
+            if (parentOnboardingCopy) parentOnboardingCopy.textContent = t('parentOnboardingCopy');
+            if (els.parentOnboardingInput) els.parentOnboardingInput.placeholder = currentParentOnboardingStep()?.placeholder || t('parentOnboardingPlaceholder');
+            if (els.parentOnboardingSend) els.parentOnboardingSend.textContent = t('parentOnboardingSend');
             document.querySelector('[data-menu-label]').textContent = t('menu');
             els.logoutButton.textContent = t('logout');
             const loginLabels = els.loginPanel.querySelectorAll('label');
@@ -1902,6 +2081,282 @@
             const data = await response.json().catch(() => ({}));
             if (!response.ok) throw new Error(language === 'he' ? t('requestFailed') : (data.error || data.message || t('requestFailed')));
             return data;
+        }
+
+        function formObject(form) {
+            return Object.fromEntries(new FormData(form).entries());
+        }
+
+        function parentOnboardingSteps() {
+            if (language === 'he') {
+                return [
+                    {
+                        key: 'parent_name',
+                        prompt: '\u05de\u05d4 \u05d4\u05e9\u05dd \u05e9\u05dc\u05da?',
+                        help: '\u05d6\u05d4 \u05e2\u05d5\u05d6\u05e8 \u05dc-BNA \u05dc\u05d7\u05d6\u05d5\u05e8 \u05d0\u05dc\u05d9\u05da \u05d1\u05d6\u05de\u05df \u05d4\u05d1\u05d3\u05d9\u05e7\u05d4.',
+                        required: true,
+                        placeholder: '\u05e9\u05dd \u05d4\u05d5\u05e8\u05d4'
+                    },
+                    {
+                        key: 'parent_email',
+                        prompt: '\u05dc\u05d0\u05d9\u05d6\u05d4 \u05d0\u05d9\u05de\u05d9\u05d9\u05dc \u05e0\u05e9\u05dc\u05d7 \u05e2\u05d3\u05db\u05d5\u05df \u05d5\u05e7\u05d9\u05e9\u05d5\u05e8 \u05db\u05e0\u05d9\u05e1\u05d4?',
+                        help: '\u05d6\u05d4 \u05dc\u05d0 \u05de\u05e6\u05d9\u05d2 \u05de\u05d9\u05d3\u05e2 \u05dc\u05d9\u05dc\u05d3. \u05d6\u05d4 \u05e8\u05e7 \u05dc\u05d4\u05de\u05e9\u05da \u05d4\u05d2\u05d3\u05e8\u05d4.',
+                        required: true,
+                        placeholder: 'parent@example.com'
+                    },
+                    {
+                        key: 'child_name',
+                        prompt: '\u05de\u05d4 \u05e9\u05dd \u05d4\u05d9\u05dc\u05d3?',
+                        help: '\u05e0\u05e9\u05de\u05d5\u05e8 \u05d0\u05ea \u05d4\u05d4\u05e7\u05e9\u05e8 \u05db\u05d1\u05e7\u05e9\u05ea \u05d4\u05d2\u05d3\u05e8\u05d4 \u05dc\u05d1\u05d3\u05d9\u05e7\u05d4.',
+                        required: true,
+                        placeholder: '\u05e9\u05dd \u05d4\u05d9\u05dc\u05d3'
+                    },
+                    {
+                        key: 'child_age',
+                        prompt: '\u05d1\u05df \u05db\u05de\u05d4 \u05d4\u05d9\u05dc\u05d3 \u05d0\u05d5 \u05d1\u05d0\u05d9\u05d6\u05d4 \u05e9\u05dc\u05d1 \u05d4\u05d5\u05d0?',
+                        help: '\u05d4\u05de\u05d8\u05e8\u05d5\u05ea \u05e6\u05e8\u05d9\u05db\u05d5\u05ea \u05dc\u05d4\u05ea\u05d0\u05d9\u05dd \u05dc\u05d2\u05d9\u05dc \u05d5\u05dc\u05d1\u05e9\u05dc\u05d5\u05ea.',
+                        required: false,
+                        placeholder: '\u05d2\u05d9\u05dc \u05d0\u05d5 \u05e9\u05dc\u05d1'
+                    },
+                    {
+                        key: 'child_struggles',
+                        prompt: '\u05d1\u05de\u05d4 \u05d4\u05d5\u05d0 \u05de\u05ea\u05de\u05d5\u05d3\u05d3 \u05db\u05e8\u05d2\u05e2?',
+                        help: '\u05d0\u05e4\u05e9\u05e8 \u05dc\u05db\u05ea\u05d5\u05d1 \u05d4\u05ea\u05e2\u05d5\u05e8\u05e8\u05d5\u05ea, \u05de\u05e1\u05db\u05d9\u05dd, \u05dc\u05d9\u05de\u05d5\u05d3, \u05e1\u05d3\u05e8, \u05de\u05d9\u05d3\u05d5\u05ea, \u05d0\u05d5 \u05d0\u05d7\u05e8\u05d9\u05d5\u05ea \u05d1\u05d1\u05d9\u05ea.',
+                        required: true,
+                        placeholder: '\u05de\u05d4 \u05d4\u05e7\u05d5\u05e9\u05d9 \u05d4\u05e2\u05d9\u05e7\u05e8\u05d9?'
+                    },
+                    {
+                        key: 'goals',
+                        prompt: '\u05d0\u05d9\u05dc\u05d5 \u05d9\u05e2\u05d3\u05d9\u05dd \u05d4\u05d9\u05d9\u05ea \u05e8\u05d5\u05e6\u05d4 \u05dc\u05d4\u05d2\u05d3\u05d9\u05e8?',
+                        help: '\u05d9\u05e2\u05d3\u05d9\u05dd \u05d8\u05d5\u05d1\u05d9\u05dd \u05d4\u05dd \u05d1\u05e8\u05d5\u05e8\u05d9\u05dd, \u05e0\u05d9\u05ea\u05e0\u05d9\u05dd \u05dc\u05d1\u05d3\u05d9\u05e7\u05d4, \u05d5\u05e7\u05e9\u05d5\u05e8\u05d9\u05dd \u05dc\u05d0\u05d7\u05e8\u05d9\u05d5\u05ea.',
+                        required: true,
+                        placeholder: '\u05e7\u05e8\u05d9\u05d0\u05d4, \u05e9\u05e2\u05ea \u05e9\u05d9\u05e0\u05d4, \u05e1\u05d3\u05e8 \u05d1\u05d7\u05d3\u05e8...'
+                    },
+                    {
+                        key: 'important_to_child',
+                        prompt: '\u05de\u05d4 \u05d7\u05e9\u05d5\u05d1 \u05dc\u05d5 \u05d0\u05d5 \u05de\u05e0\u05d9\u05e2 \u05d0\u05d5\u05ea\u05d5?',
+                        help: '\u05d6\u05d4 \u05e2\u05d5\u05d6\u05e8 \u05dc\u05d1\u05e0\u05d5\u05ea \u05de\u05d8\u05e8\u05d5\u05ea \u05e9\u05dc\u05d0 \u05de\u05e8\u05d2\u05d9\u05e9\u05d5\u05ea \u05db\u05de\u05dc\u05d7\u05de\u05d4.',
+                        required: false,
+                        placeholder: '\u05ea\u05d7\u05d5\u05de\u05d9 \u05e2\u05e0\u05d9\u05d9\u05df, \u05ea\u05de\u05e8\u05d9\u05e6\u05d9\u05dd, \u05e7\u05e9\u05e8\u05d9\u05dd'
+                    },
+                    {
+                        key: 'chores',
+                        prompt: '\u05d0\u05d9\u05dc\u05d5 \u05de\u05d8\u05dc\u05d5\u05ea \u05d0\u05d5 \u05d0\u05d7\u05e8\u05d9\u05d5\u05d9\u05d5\u05ea \u05d9\u05e9 \u05dc\u05d5 \u05d1\u05d1\u05d9\u05ea?',
+                        help: '\u05de\u05d8\u05dc\u05d5\u05ea \u05d1\u05d1\u05d9\u05ea \u05d4\u05df \u05d3\u05e8\u05da \u05d8\u05d5\u05d1\u05d4 \u05dc\u05de\u05d3\u05d5\u05d3 \u05d0\u05d7\u05e8\u05d9\u05d5\u05ea.',
+                        required: false,
+                        placeholder: '\u05d7\u05d3\u05e8, \u05db\u05dc\u05d9\u05dd, \u05e9\u05e2\u05ea \u05e9\u05d9\u05e0\u05d4...'
+                    },
+                    {
+                        key: 'meal_preferences',
+                        prompt: '\u05de\u05d4 \u05d7\u05e9\u05d5\u05d1 \u05dc\u05d3\u05e2\u05ea \u05e2\u05dc \u05d0\u05d5\u05db\u05dc, \u05d0\u05e8\u05d5\u05d7\u05d5\u05ea \u05d0\u05d5 \u05d4\u05e2\u05d3\u05e4\u05d5\u05ea \u05d0\u05db\u05d9\u05dc\u05d4?',
+                        help: '\u05de\u05d9\u05d3\u05e2 \u05e4\u05e9\u05d5\u05d8 \u05e2\u05dc \u05d0\u05d5\u05db\u05dc \u05d9\u05db\u05d5\u05dc \u05dc\u05d4\u05e9\u05e4\u05d9\u05e2 \u05e2\u05dc \u05e9\u05d2\u05e8\u05d4, \u05e8\u05d9\u05db\u05d5\u05d6, \u05d5\u05d0\u05d7\u05e8\u05d9\u05d5\u05ea.',
+                        required: false,
+                        placeholder: '\u05de\u05d4 \u05d4\u05d5\u05d0 \u05d0\u05d5\u05d4\u05d1 \u05dc\u05d0\u05db\u05d5\u05dc?'
+                    },
+                    {
+                        key: 'recording_context',
+                        prompt: '\u05d9\u05e9 \u05d4\u05e7\u05dc\u05d8\u05d4, \u05e4\u05d2\u05d9\u05e9\u05d4 \u05d0\u05d5 \u05e4\u05ea\u05e7\u05d9\u05dd \u05e9\u05ea\u05e8\u05e6\u05d4 \u05e9\u05e0\u05e0\u05ea\u05d7?',
+                        help: '\u05d1\u05e4\u05d5\u05e8\u05d8\u05dc \u05d4\u05d4\u05d5\u05e8\u05d9\u05dd \u05d0\u05e4\u05e9\u05e8 \u05dc\u05d4\u05e2\u05dc\u05d5\u05ea \u05d4\u05e7\u05dc\u05d8\u05d5\u05ea; BNA \u05de\u05d5\u05e6\u05d9\u05d0\u05d4 \u05de\u05e9\u05dd \u05d9\u05e2\u05d3\u05d9\u05dd \u05dc\u05d1\u05d3\u05d9\u05e7\u05d4.',
+                        required: false,
+                        placeholder: '\u05e7\u05d5\u05d1\u05e5, \u05e4\u05d2\u05d9\u05e9\u05d4, \u05e0\u05d5\u05e9\u05d0 \u05d0\u05d5 \u05d4\u05e2\u05e8\u05d4'
+                    },
+                    {
+                        key: 'setup_context',
+                        prompt: '\u05de\u05d4 \u05e2\u05d3\u05d9\u05d9\u05df \u05e6\u05e8\u05d9\u05da \u05dc\u05d4\u05d2\u05d3\u05d9\u05e8?',
+                        help: '\u05dc\u05d3\u05d5\u05d2\u05de\u05d4: \u05db\u05e0\u05d9\u05e1\u05d4 \u05dc\u05e4\u05d5\u05e8\u05d8\u05dc, \u05d8\u05d0\u05d1\u05dc\u05d8, \u05e1\u05d9\u05e0\u05d5\u05df, \u05d1\u05d3\u05d9\u05e7\u05d5\u05ea, \u05d0\u05d5 \u05d4\u05e2\u05dc\u05d0\u05ea \u05d4\u05e7\u05dc\u05d8\u05d4.',
+                        required: false,
+                        placeholder: '\u05de\u05d4 \u05d4\u05e6\u05e2\u05d3 \u05d4\u05d1\u05d0?'
+                    }
+                ];
+            }
+            return [
+                {
+                    key: 'parent_name',
+                    prompt: 'What is your name?',
+                    help: 'This helps BNA follow up with the right parent during review.',
+                    required: true,
+                    placeholder: 'Parent name'
+                },
+                {
+                    key: 'parent_email',
+                    prompt: 'What email should BNA use for follow-up and portal setup?',
+                    help: 'This does not show anything to your child. It is only for setup and review.',
+                    required: true,
+                    placeholder: 'parent@example.com'
+                },
+                {
+                    key: 'child_name',
+                    prompt: 'What is your child or son\'s name?',
+                    help: 'This keeps the setup request connected to the right child context.',
+                    required: true,
+                    placeholder: 'Child name'
+                },
+                {
+                    key: 'child_age',
+                    prompt: 'How old is he, or what stage is he in?',
+                    help: 'Goals should fit the child\'s age, maturity, and current life stage.',
+                    required: false,
+                    placeholder: 'Age or stage'
+                },
+                {
+                    key: 'child_struggles',
+                    prompt: 'What is he struggling with right now?',
+                    help: 'You can mention sleep, screens, learning, structure, middos, chores, or responsibility at home.',
+                    required: true,
+                    placeholder: 'What is the main struggle?'
+                },
+                {
+                    key: 'goals',
+                    prompt: 'What goals would you like to set up?',
+                    help: 'Good goals are clear, checkable, and connected to responsibility.',
+                    required: true,
+                    placeholder: 'Reading, bedtime, room cleanup, davening...'
+                },
+                {
+                    key: 'important_to_child',
+                    prompt: 'What is important to him, or what motivates him?',
+                    help: 'This helps BNA build goals that do not feel like a fight.',
+                    required: false,
+                    placeholder: 'Interests, privileges, strengths, relationships'
+                },
+                {
+                    key: 'chores',
+                    prompt: 'What chores or responsibilities does he have at home?',
+                    help: 'Home responsibilities are often the best place to practice self-governance.',
+                    required: false,
+                    placeholder: 'Room, dishes, bedtime, helping siblings...'
+                },
+                {
+                    key: 'meal_preferences',
+                    prompt: 'What should BNA know about meals, food, or eating preferences?',
+                    help: 'Food and routine can affect focus, regulation, and accountability.',
+                    required: false,
+                    placeholder: 'What does he like or need around meals?'
+                },
+                {
+                    key: 'recording_context',
+                    prompt: 'Do you have a recording, meeting, or notes you want BNA to parse?',
+                    help: 'In the parent portal you can upload recordings; BNA can extract reviewable goals from them.',
+                    required: false,
+                    placeholder: 'Recording, meeting, topic, or note'
+                },
+                {
+                    key: 'setup_context',
+                    prompt: 'What do you still need help setting up?',
+                    help: 'For example: portal login, tablet install, filter setup, check-ins, or recording upload.',
+                    required: false,
+                    placeholder: 'What is the next setup step?'
+                }
+            ];
+        }
+
+        function currentParentOnboardingStep() {
+            return parentOnboardingSteps()[parentOnboardingStepIndex];
+        }
+
+        function parentOnboardingProgressText() {
+            return t('parentOnboardingQuestionProgress')
+                .replace('{current}', String(Math.min(parentOnboardingStepIndex + 1, parentOnboardingSteps().length)))
+                .replace('{total}', String(parentOnboardingSteps().length));
+        }
+
+        function appendParentOnboardingBubble(role, text) {
+            if (!els.parentOnboardingLog) return;
+            const bubble = document.createElement('div');
+            bubble.className = `parent-onboarding-bubble ${role}`;
+            bubble.textContent = text;
+            els.parentOnboardingLog.appendChild(bubble);
+            els.parentOnboardingLog.scrollTop = els.parentOnboardingLog.scrollHeight;
+        }
+
+        function askParentOnboardingStep() {
+            const step = currentParentOnboardingStep();
+            if (!step) return submitParentOnboarding();
+            els.parentOnboardingProgress.textContent = parentOnboardingProgressText();
+            els.parentOnboardingInput.placeholder = step.placeholder || t('parentOnboardingPlaceholder');
+            appendParentOnboardingBubble('bot', `${step.prompt}\n${step.help}`);
+            els.parentOnboardingInput.focus();
+        }
+
+        function startParentOnboarding() {
+            if (parentOnboardingStarted) return;
+            parentOnboardingStarted = true;
+            appendParentOnboardingBubble('bot', t('parentOnboardingIntro'));
+            askParentOnboardingStep();
+        }
+
+        function parentOnboardingTranscript() {
+            return parentOnboardingSteps()
+                .filter(step => parentOnboardingAnswers[step.key])
+                .map(step => `${step.key}: ${parentOnboardingAnswers[step.key]}`)
+                .join('\n');
+        }
+
+        function parentOnboardingPayload() {
+            return {
+                ...parentOnboardingAnswers,
+                raw_intake: [
+                    'Conversational parent accountability onboarding intake.',
+                    'The parent was told this is reviewed before child-visible goals are created.',
+                    'The model is self-governance through clear goals, check-ins, reflection, parent/Rabbi review, and responsibility.',
+                    '',
+                    parentOnboardingTranscript()
+                ].join('\n'),
+                language,
+                route: `${window.location.pathname}${window.location.search}`,
+                viewport: {
+                    width: window.innerWidth || null,
+                    height: window.innerHeight || null,
+                    deviceScaleFactor: window.devicePixelRatio || null,
+                },
+            };
+        }
+
+        async function submitParentOnboarding() {
+            if (parentOnboardingSubmitted) return;
+            parentOnboardingSubmitted = true;
+            els.parentOnboardingSend.disabled = true;
+            els.parentOnboardingProgress.textContent = t('parentOnboardingSaving');
+            els.parentOnboardingStatus.textContent = '';
+            els.parentOnboardingStatus.className = 'status';
+            try {
+                const result = await api('/api/parent-accountability/onboarding', {
+                    method: 'POST',
+                    body: JSON.stringify(parentOnboardingPayload()),
+                });
+                appendParentOnboardingBubble('bot', result.message || t('parentOnboardingSaved'));
+                els.parentOnboardingStatus.textContent = result.message || t('parentOnboardingSaved');
+                els.parentOnboardingStatus.className = 'status show';
+            } catch (error) {
+                parentOnboardingSubmitted = false;
+                appendParentOnboardingBubble('bot', error.message || t('requestFailed'));
+                els.parentOnboardingStatus.textContent = error.message || t('requestFailed');
+                els.parentOnboardingStatus.className = 'status show error';
+                els.parentOnboardingSend.disabled = false;
+            }
+        }
+
+        async function advanceParentOnboarding() {
+            if (parentOnboardingSubmitted) return;
+            const step = currentParentOnboardingStep();
+            const value = String(els.parentOnboardingInput.value || '').trim();
+            if (!step) return submitParentOnboarding();
+            if (!value && step.required) {
+                appendParentOnboardingBubble('bot', t('parentOnboardingRequired'));
+                return;
+            }
+            parentOnboardingAnswers[step.key] = value;
+            appendParentOnboardingBubble('user', value || (language === 'he' ? '\u05d3\u05dc\u05d2' : 'Skip'));
+            els.parentOnboardingInput.value = '';
+            parentOnboardingStepIndex += 1;
+            if (parentOnboardingStepIndex >= parentOnboardingSteps().length) {
+                appendParentOnboardingBubble('bot', language === 'he'
+                    ? '\u05ea\u05d5\u05d3\u05d4. \u05d9\u05e9 \u05dc\u05d9 \u05de\u05e1\u05e4\u05d9\u05e7 \u05de\u05d9\u05d3\u05e2 \u05db\u05d3\u05d9 \u05dc\u05e9\u05de\u05d5\u05e8 \u05d1\u05e7\u05e9\u05ea \u05d4\u05d2\u05d3\u05e8\u05d4 \u05dc\u05d1\u05d3\u05d9\u05e7\u05d4.'
+                    : 'Thank you. I have enough to save the setup request for review.');
+                await submitParentOnboarding();
+                return;
+            }
+            askParentOnboardingStep();
         }
 
         function closeParentMenu() {
@@ -2174,6 +2629,8 @@
                 providers: providerCount,
                 history: Array.isArray(data?.communications) ? data.communications.length : 0,
                 help: 0,
+                setup: data?.setup && data.setup.filter_setup_status !== 'verified' ? 1 : 0,
+                assistant: 1,
                 account: 0,
                 settings: 0,
             };
@@ -2186,10 +2643,13 @@
             return [
                 { id: 'home', label: t('home'), count: counts.home },
                 { id: 'children', label: childLabel, count: counts.children },
+                { id: 'goals', label: t('goals'), count: counts.goals },
                 { id: 'calendar', label: t('calendar'), count: counts.calendar },
                 { id: 'learning', label: t('learningHub'), count: counts.learning },
                 { id: 'messages', label: t('messagesHelp'), count: counts.messages },
                 ...(hasProviders ? [{ id: 'providers', label: t('providerIndex'), count: counts.providers }] : []),
+                { id: 'setup', label: t('setup'), count: counts.setup },
+                { id: 'assistant', label: t('assistant'), count: counts.assistant },
                 { id: 'account', label: t('account'), count: counts.account },
             ];
         }
@@ -2318,6 +2778,7 @@
 
         function showLogin(message = '', isError = false) {
             els.loginPanel.classList.remove('hidden');
+            els.parentOnboardingPanel.classList.remove('hidden');
             els.requestForm.classList.remove('hidden');
             els.resetRequestForm.classList.add('hidden');
             els.resetPasswordForm.classList.add('hidden');
@@ -2332,10 +2793,16 @@
             document.querySelector('[data-login-copy]').textContent = t('loginCopy');
             els.loginStatus.textContent = message;
             els.loginStatus.classList.toggle('error', Boolean(isError));
+            if (new URLSearchParams(window.location.search).get('onboard') === 'accountability') {
+                window.requestAnimationFrame(() => {
+                    els.parentOnboardingPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+            }
         }
 
         function showPasswordResetRequest(message = '', isError = false) {
             els.loginPanel.classList.remove('hidden');
+            els.parentOnboardingPanel.classList.remove('hidden');
             els.requestForm.classList.add('hidden');
             els.resetRequestForm.classList.remove('hidden');
             els.resetPasswordForm.classList.add('hidden');
@@ -2354,6 +2821,7 @@
 
         function showPasswordResetForm(token, message = '', isError = false) {
             els.loginPanel.classList.remove('hidden');
+            els.parentOnboardingPanel.classList.add('hidden');
             els.requestForm.classList.add('hidden');
             els.resetRequestForm.classList.add('hidden');
             els.resetPasswordForm.classList.remove('hidden');
@@ -3568,14 +4036,110 @@
             `;
         }
 
+        function renderParentGoalsSection(data = portalData) {
+            const students = parentStudents(data);
+            return `
+                <div class="stack">
+                    <section class="panel stack">
+                        <div>
+                            <p class="eyebrow">${escapeHtml(t('goals'))}</p>
+                            <h2>${escapeHtml(t('familyGoals'))}</h2>
+                        </div>
+                        <form class="grid" data-parent-goal-form>
+                            <label>${escapeHtml(t('goalTitle'))}
+                                <input name="title" required maxlength="220">
+                            </label>
+                            <label>${escapeHtml(t('childName'))} <span class="small">${escapeHtml(t('optional'))}</span>
+                                <input name="child_name" list="parentChildNames" maxlength="180">
+                            </label>
+                            <label>${escapeHtml(t('notes'))}
+                                <textarea name="notes" maxlength="1600"></textarea>
+                            </label>
+                            <div class="button-row">
+                                <button class="btn primary" type="submit">${escapeHtml(t('addGoal'))}</button>
+                                <span class="small" data-parent-goal-status></span>
+                            </div>
+                            <datalist id="parentChildNames">
+                                ${students.map(item => `<option value="${escapeHtml(parentStudentDisplayName(item.student || {}))}"></option>`).join('')}
+                            </datalist>
+                        </form>
+                    </section>
+                    ${students.length ? students.map(renderParentStudentGoals).join('') : emptyStudentPanel()}
+                </div>
+            `;
+        }
+
+        function renderParentSetupSection(data = portalData) {
+            const setup = data.setup || {};
+            const status = setup.filter_setup_status || setup.status || 'not_started';
+            return `
+                <section class="panel stack">
+                    <div>
+                        <p class="eyebrow">${escapeHtml(t('setup'))}</p>
+                        <h2>${escapeHtml(t('setupTitle'))}</h2>
+                        <p class="small">${escapeHtml(t('setupCopy'))}</p>
+                    </div>
+                    <div class="grid">
+                        <div class="subsection">
+                            <h3>${escapeHtml(t('installOnTablet'))}</h3>
+                            <p class="small">${escapeHtml((setup.install?.pwa_manifest || '/parent-manifest.json'))}</p>
+                            <div class="notice">${escapeHtml(t('internalCalendarReady'))}</div>
+                        </div>
+                        <div class="subsection">
+                            <h3>${escapeHtml(t('setupStatus'))}</h3>
+                            <span class="status-pill">${escapeHtml(String(status).replace(/_/g, ' '))}</span>
+                            ${setup.filter_setup_notes ? `<p class="small">${escapeHtml(setup.filter_setup_notes)}</p>` : ''}
+                        </div>
+                    </div>
+                    <form class="grid" data-filter-setup-form>
+                        <label>${escapeHtml(t('setupCode'))}
+                            <textarea name="setup_code" maxlength="240" placeholder="${escapeHtml(t('setupCode'))}">${escapeHtml(setup.filter_setup_code || '')}</textarea>
+                        </label>
+                        <label>${escapeHtml(t('notes'))}
+                            <textarea name="notes" maxlength="1600"></textarea>
+                        </label>
+                        <div class="button-row">
+                            <button class="btn" type="button" data-filter-start>${escapeHtml(t('startSetup'))}</button>
+                            <button class="btn primary" type="submit">${escapeHtml(t('submitSetupCode'))}</button>
+                            <button class="btn" type="button" data-filter-help>${escapeHtml(t('setupHelp'))}</button>
+                            <span class="small" data-filter-setup-status></span>
+                        </div>
+                    </form>
+                </section>
+            `;
+        }
+
+        function renderParentAssistantSection(data = portalData) {
+            return `
+                <section class="panel stack">
+                    <div>
+                        <p class="eyebrow">${escapeHtml(t('assistant'))}</p>
+                        <h2>${escapeHtml(t('parentAssistant'))}</h2>
+                        <p class="small">${escapeHtml(t('assistantGreeting'))}</p>
+                    </div>
+                    <form class="stack" data-parent-assistant-form>
+                        <textarea name="message" required maxlength="3000" placeholder="${escapeHtml(t('assistantPlaceholder'))}"></textarea>
+                        <div class="button-row">
+                            <button class="btn primary" type="submit">${escapeHtml(t('sendAssistant'))}</button>
+                            <span class="small" data-parent-assistant-status></span>
+                        </div>
+                    </form>
+                    <div class="timeline" data-parent-assistant-output></div>
+                </section>
+            `;
+        }
+
         function renderParentSectionPanels(data = portalData) {
             const content = {
                 home: renderParentHome(data),
                 children: renderParentChildren(data),
+                goals: renderParentGoalsSection(data),
                 calendar: renderCalendarView(data),
                 learning: renderParentLearning(data),
                 messages: renderParentMessagesIndex(data),
                 providers: renderProviderDirectory(data),
+                setup: renderParentSetupSection(data),
+                assistant: renderParentAssistantSection(data),
                 account: renderParentAccountSection(data),
                 settings: renderParentSettingsSection(data),
             };
@@ -3647,6 +4211,7 @@
             if (!keepLanguage) applyPreferredLanguage(data.parent?.preferred_language || data.parent?.language);
             if (!parentSections(data).some(section => section.id === activeParentSection)) activeParentSection = 'home';
             els.loginPanel.classList.add('hidden');
+            els.parentOnboardingPanel.classList.add('hidden');
             els.portalPanel.classList.remove('hidden');
             els.portalMenuToggle.classList.remove('hidden');
             els.logoutButton.classList.remove('hidden');
@@ -3875,6 +4440,142 @@
             }
         }
 
+        async function submitParentGoal(form) {
+            const status = form.querySelector('[data-parent-goal-status]');
+            const button = form.querySelector('button[type="submit"]');
+            if (button) button.disabled = true;
+            if (status) {
+                status.textContent = t('saving');
+                status.classList.remove('error');
+            }
+            try {
+                await api('/api/parent/goals', {
+                    method: 'POST',
+                    body: JSON.stringify(formObject(form)),
+                });
+                form.reset();
+                if (status) status.textContent = t('saved');
+                await loadPortal();
+                setParentSection('goals', { scroll: false });
+            } catch (error) {
+                if (status) {
+                    status.textContent = error.message || t('requestFailed');
+                    status.classList.add('error');
+                } else {
+                    alert(error.message || t('requestFailed'));
+                }
+            } finally {
+                if (button) button.disabled = false;
+            }
+        }
+
+        async function startFilterSetup(button) {
+            button.disabled = true;
+            const status = document.querySelector('[data-filter-setup-status]');
+            if (status) status.textContent = t('saving');
+            try {
+                await api('/api/household/filter-setup/start', {
+                    method: 'POST',
+                    body: JSON.stringify({ target_device_label: 'Parent tablet' }),
+                });
+                if (status) status.textContent = t('setupSaved');
+                await loadPortal();
+                setParentSection('setup', { scroll: false });
+            } catch (error) {
+                if (status) {
+                    status.textContent = error.message || t('requestFailed');
+                    status.classList.add('error');
+                }
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        async function submitFilterSetup(form) {
+            const status = form.querySelector('[data-filter-setup-status]');
+            const button = form.querySelector('button[type="submit"]');
+            if (button) button.disabled = true;
+            if (status) {
+                status.textContent = t('saving');
+                status.classList.remove('error');
+            }
+            try {
+                await api('/api/household/filter-setup/submit-code', {
+                    method: 'POST',
+                    body: JSON.stringify(formObject(form)),
+                });
+                if (status) status.textContent = t('setupSaved');
+                await loadPortal();
+                setParentSection('setup', { scroll: false });
+            } catch (error) {
+                if (status) {
+                    status.textContent = error.message || t('requestFailed');
+                    status.classList.add('error');
+                }
+            } finally {
+                if (button) button.disabled = false;
+            }
+        }
+
+        async function requestFilterSetupHelp(button) {
+            button.disabled = true;
+            const status = document.querySelector('[data-filter-setup-status]');
+            const notes = document.querySelector('[data-filter-setup-form] [name="notes"]');
+            try {
+                await api('/api/household/filter-setup/help-ticket', {
+                    method: 'POST',
+                    body: JSON.stringify({ message: notes?.value || t('setupHelp') }),
+                });
+                if (status) status.textContent = t('helpSent');
+                await loadPortal();
+                setParentSection('setup', { scroll: false });
+            } catch (error) {
+                if (status) {
+                    status.textContent = error.message || t('helpFailed');
+                    status.classList.add('error');
+                }
+            } finally {
+                button.disabled = false;
+            }
+        }
+
+        async function sendParentAssistant(form) {
+            const status = form.querySelector('[data-parent-assistant-status]');
+            const output = document.querySelector('[data-parent-assistant-output]');
+            const button = form.querySelector('button[type="submit"]');
+            const message = String(form.querySelector('[name="message"]')?.value || '').trim();
+            if (!message) return;
+            if (button) button.disabled = true;
+            if (status) {
+                status.textContent = t('saving');
+                status.classList.remove('error');
+            }
+            try {
+                const result = await api('/api/bna/assistant/chat', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        message,
+                        surface: 'parent_portal',
+                        language,
+                        page_path: `${window.location.pathname}${window.location.search}`,
+                    }),
+                });
+                form.reset();
+                const reply = (result.messages || []).find(item => item.author_type === 'assistant') || {};
+                if (output) {
+                    output.innerHTML = `<div class="timeline-item"><strong>${escapeHtml(t('assistant'))}</strong><br>${escapeHtml(reply.body || t('saved'))}</div>`;
+                }
+                if (status) status.textContent = t('saved');
+            } catch (error) {
+                if (status) {
+                    status.textContent = error.message || t('requestFailed');
+                    status.classList.add('error');
+                }
+            } finally {
+                if (button) button.disabled = false;
+            }
+        }
+
         async function openProviderRequest(button) {
             const providerName = button.dataset.providerCta || 'provider';
             const serviceTitle = button.dataset.providerService || 'program';
@@ -3931,6 +4632,7 @@
 
         async function verifyToken(token) {
             els.loginPanel.classList.remove('hidden');
+            els.parentOnboardingPanel.classList.add('hidden');
             els.requestForm.classList.add('hidden');
             els.portalPanel.classList.add('hidden');
             els.portalMenuToggle.classList.add('hidden');
@@ -4122,6 +4824,18 @@
                 return;
             }
 
+            const filterStartButton = event.target.closest('[data-filter-start]');
+            if (filterStartButton) {
+                startFilterSetup(filterStartButton);
+                return;
+            }
+
+            const filterHelpButton = event.target.closest('[data-filter-help]');
+            if (filterHelpButton) {
+                requestFilterSetupHelp(filterHelpButton);
+                return;
+            }
+
             const button = event.target.closest('[data-parent-response-send]');
             if (!button) return;
             sendParentResponse(button.dataset.parentResponseSend, button);
@@ -4169,6 +4883,27 @@
                 return;
             }
 
+            const goalForm = event.target.closest('[data-parent-goal-form]');
+            if (goalForm) {
+                event.preventDefault();
+                submitParentGoal(goalForm);
+                return;
+            }
+
+            const filterForm = event.target.closest('[data-filter-setup-form]');
+            if (filterForm) {
+                event.preventDefault();
+                submitFilterSetup(filterForm);
+                return;
+            }
+
+            const assistantForm = event.target.closest('[data-parent-assistant-form]');
+            if (assistantForm) {
+                event.preventDefault();
+                sendParentAssistant(assistantForm);
+                return;
+            }
+
             const chatForm = event.target.closest('[data-parent-chat-form]');
             if (chatForm) {
                 event.preventDefault();
@@ -4189,7 +4924,13 @@
             uploadParentMeetingRecording(form);
         });
 
+        els.parentOnboardingForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            advanceParentOnboarding();
+        });
+
         setLanguage('en', { rerender: false });
+        startParentOnboarding();
 
         const params = new URLSearchParams(window.location.search);
         const resetToken = params.get('reset');

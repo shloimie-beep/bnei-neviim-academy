@@ -14755,6 +14755,40 @@ Remaining:
 - worker: Codex
 - handoff: `tasks-pending/2026-06-13-registration-toolbar-permission-live-deploy.md`
 
+## 2026-06-14T15:05:15+03:00 - Conversational website onboarding deployed
+
+- Deployed Railway `052a8c57-a58f-4b01-a7db-a2f742352748`.
+- Replaced the visible provider join form with a one-question provider
+  onboarding assistant while keeping `/api/provider-onboarding` and existing
+  field contracts intact.
+- Added public `/api/parent-accountability/onboarding` and a pre-login parent
+  accountability intake at `/parent/login?onboard=accountability`.
+- Updated public website/provider-index links to open the conversational
+  provider and parent onboarding flows.
+- Suppressed the shared floating assistant only on the public parent onboarding
+  URL so that page has one visible bot-style intake.
+
+Verification:
+- PASS `node --check server.js`
+- PASS `node --check public/js/bna-bot-widget.js`
+- PASS inline script parse checks for edited public pages
+- PASS focused provider/workspace contracts
+- PASS `npm test` 334/334
+- PASS Railway doctor and live app smoke:
+  `ops/live-smokes/2026-06-14T12-03-04-927Z-live-app-smoke.md`
+- PASS local and live Playwright smokes:
+  `ops/playwright-smokes/2026-06-14-conversational-onboarding-local/report.md`
+  and
+  `ops/playwright-smokes/2026-06-14-conversational-onboarding-live/report.md`
+
+Remaining:
+- Student-specific conversational onboarding is still part of the broader
+  natural-language onboarding task.
+
+- source: codex_chat
+- worker: Codex
+- handoff: `tasks-pending/2026-06-14-workspace-person-household-provider-architecture.md`
+
 ## 2026-06-14T00:08:27+03:00 - Operations parent-to-student links locally verified
 
 Updated Operations Contacts so parent records can reliably resolve and open the
@@ -14917,6 +14951,212 @@ Remaining:
 - worker: Codex
 - handoff: `tasks-pending/2026-06-14-workspace-task-dialogue-rabbi-scheller.md`
 
+## 2026-06-14T13:49:03+03:00 - Telegram bot Assistant wording and Kimi fallback cleanup deployed
+
+Corrected the Telegram bot path after the operator clarified "the bot, not the
+box." The persistent Telegram keyboard now shows `Assistant` and `Codex`;
+normal help/status/mode/capabilities/fallback replies use provider-neutral
+Assistant wording; old `OpenAI API`, `/openai_capabilities`, `/smoke_openai`,
+and `/openai_smoke` aliases still work for compatibility. Added explicit
+`/diagnostics` and `/provider_status` commands for Shloimie/admin provider
+visibility while keeping regular user replies provider-neutral.
+
+Verification:
+- PASS `node --check scripts/telegram-kimi-bridge.mjs`
+- PASS `node --test tests/ai-provider-selection.test.js --test-reporter=spec`
+- PASS focused Telegram routing tests
+- PASS `npm test` 331/331
+- PASS `npm run openai:smoke` using Kimi (`kimi-k2.6`):
+  `ops/openai-smokes/2026-06-14T10-45-30-253Z-openai-sidekick-smoke.md`
+- PASS Railway deployment `3de705f9-f00a-4cbd-9627-16ce53b6444d`
+- PASS `npm run app:smoke`:
+  `ops/live-smokes/2026-06-14T10-47-29-026Z-live-app-smoke.md`
+
+Notes:
+- No live Telegram message was sent during verification.
+- OpenAI account/key health remains external; Kimi is the approved hosted
+  assistant fallback/temporary primary path.
+
+- source: codex_chat
+- worker: Codex
+- handoff: `tasks-pending/2026-06-14-workspace-person-household-provider-architecture.md`
+
+## 2026-06-14T14:45:06+03:00 - Rabbi Scheller task-manager access handoff sent
+
+Stored Rabbi Scheller's confirmed email and WhatsApp/contact phone on the live
+One Time provider/project records, confirmed the scoped login username is
+present, created short-lived One Time Operations access links, and sent the
+task-manager access handoff by email and WhatsApp.
+
+Verification:
+- PASS live provider/project readback showed contact email, contact phone, and
+  scoped login username present.
+- PASS Gmail sent `One Time task manager access` to the confirmed email.
+- PASS WhatsApp retry sent through the live WAPI endpoint and communication
+  `#1160` read back as delivered.
+- PASS live Operations task `#506` was marked done with verification notes and
+  a workspace comment.
+
+Notes:
+- The message told Rabbi the task manager is working now and that the rest of
+  the workspace/social/content setup is still in progress.
+- Personal password setup/change for the scoped One Time Operations account is
+  still future hardening; the handoff used the current scoped Operations
+  credentials plus a short-lived access link.
+
+- source: codex_chat
+- worker: Codex
+- handoff: `tasks-pending/2026-06-12-scheller-drive-social-login-brief.md`
+
+## 2026-06-14T14:07:53+03:00 - Single bot widget deployed and Playwright-smoked
+
+Simplified the web assistant widget into one interactive bot interface. Removed
+the visible Super Agent Box, capability cards, prompt chips, history button, and
+mode/Codex buttons from the drawer. The open widget now contains only the chat
+header, close control, message thread, typing state, textarea, and send control.
+
+Verification:
+- PASS `node --check public/js/bna-bot-widget.js`
+- PASS focused assistant/community contract tests
+- PASS local Playwright single-bot widget smoke:
+  `ops/playwright-smokes/2026-06-14-single-bot-widget/report.md`
+- PASS `npm test` 331/331
+- PASS Railway deployment `d0441ccd-1c17-4e61-8633-3d920e20dd49`
+- PASS `npm run app:smoke`:
+  `ops/live-smokes/2026-06-14T10-57-40-365Z-live-app-smoke.md`
+- PASS live Playwright single-bot widget smoke:
+  `ops/playwright-smokes/2026-06-14-single-bot-widget-live/report.md`
+
+Notes:
+- Live Playwright used a mocked assistant response, so no real chat record was
+  created.
+- Logged-in Operations was checked with a real session cookie to avoid
+  unauthenticated redirect churn.
+
+- source: codex_chat
+- worker: Codex
+- handoff: `tasks-pending/2026-06-14-workspace-person-household-provider-architecture.md`
+
+## 2026-06-14T12:55:00+03:00 - Workspace/person/household/provider architecture deployed and live-smoked
+
+Implemented the canonical workspace/accountability foundation for Super Admin,
+BNA School, Family Accountability, parent households, and service-provider
+profiles. `bna_projects` now carries workspace metadata, while canonical people,
+workspace memberships, households, provider profiles/media/comments, integration
+connections, assistant threads/messages, and ticket compatibility tables are
+bootstrapped idempotently. Seed/backfill creates Super Admin, BNA, and
+Dratler/Family workspaces; Shloimie, Menachem, and Esty are canonical people
+with separated family/school memberships. Parent/provider portals gained setup,
+assistant, provider profile, Google fallback, and upgrade-placeholder surfaces,
+and public provider micro pages are route-backed without exposing private data.
+
+Verification:
+- PASS `node --check server.js`
+- PASS inline script parse for edited HTML pages
+- PASS focused workspace/provider/portal contracts
+- PASS `npm test` 329/329
+- PASS local Playwright static smoke at 390, 768, and 1024 px
+- PASS Railway deployment `bb23bbe2-b131-4c5a-9597-bdecddf48b99`
+- PASS `npm run railway:doctor`
+- PASS `npm run app:smoke`:
+  `ops/live-smokes/2026-06-14T09-52-25-833Z-live-app-smoke.md`
+- PASS focused live workspace/provider/Google fallback smoke:
+  `ops/live-smokes/2026-06-14T09-54-58-038Z-workspace-provider-live-smoke.json`
+
+Remaining:
+- Google OAuth/Business Profile approval and API access are still external
+  blockers; live Google review data is not faked.
+- Stripe provider upgrade links are not configured; the app shows the safe
+  not-configured state and creates admin setup work.
+- Deeper natural-language assistant tool execution remains next-stage work
+  beyond the current thread/message/action scaffolding.
+
+- source: codex_chat
+- worker: Codex
+- handoff: `tasks-pending/2026-06-14-workspace-person-household-provider-architecture.md`
+
+## 2026-06-14T13:38:00+03:00 - Hosted AI fallback and Super Agent Box deployed
+
+Fixed the assistant provider fallback path. The web assistant no longer uses an
+OpenAI-only reply helper; it now uses ordered hosted provider selection and will
+fall back to Kimi quietly when available. Telegram normal-chat fallback no
+longer prepends "Kimi fallback" or exposes OpenAI failure details to users.
+Provider details remain in internal metadata/logs for operator debugging.
+
+Also upgraded the shared assistant widget into a thicker Super Agent Box with
+role-aware capability cards, permission guardrail copy, and one-tap prompt chips
+for parent, student, provider, signup/public, and Operations surfaces. Prompt
+chips prefill the composer rather than auto-sending.
+
+Verification:
+- PASS `node --check server.js`
+- PASS `node --check public/js/bna-bot-widget.js`
+- PASS `node --check scripts/telegram-kimi-bridge.mjs`
+- PASS focused assistant/provider/Telegram routing tests
+- PASS `npm test` 331/331
+- PASS local Playwright Super Agent Box smoke at 390, 768, and 1024 px
+- PASS `npm run openai:smoke` using Kimi (`kimi-k2.6`):
+  `ops/openai-smokes/2026-06-14T10-35-32-319Z-openai-sidekick-smoke.md`
+- PASS Railway deployment `740011e1-c0d5-41ba-af7e-8280e2609215`
+- PASS `npm run railway:doctor`
+- PASS `npm run app:smoke`:
+  `ops/live-smokes/2026-06-14T10-36-53-481Z-live-app-smoke.md`
+- PASS focused live assistant fallback smoke:
+  `ops/live-smokes/2026-06-14T10-37-40-872Z-assistant-kimi-fallback-live-smoke.json`
+
+Remaining:
+- OpenAI account/key health remains an external issue, but it no longer blocks
+  normal hosted chat while Kimi is configured.
+- Provider names should stay out of ordinary parent/student/provider UI and
+  Telegram replies unless Shloimie explicitly asks for diagnostics.
+
+- source: codex_chat
+- worker: Codex
+- handoff: `tasks-pending/2026-06-14-workspace-person-household-provider-architecture.md`
+
+## 2026-06-14T12:33:21+03:00 - Assistant portal communications foundation deployed and live-smoked
+
+Shipped the assistant/portal/communications foundation. Email sender identity is
+centralized and active generated emails normalize away `Office P`; Resend is a
+connector with Gmail fallback; full email bodies mirror into first-party
+communications; credit signups create checkout attempts and access setup state;
+abandoned-checkout sweep is dry-run/approval gated; WhatsApp import is
+first-party and no-send by default; ticket/community/class/file/review readiness
+APIs are present; and the assistant drawer is keyboard-aware on mobile.
+
+Verification:
+- PASS `node --check server.js`
+- PASS focused assistant/communications contract test 8/8
+- PASS `npm test` 323/323
+- PASS `npm run app:smoke`
+  `ops/live-smokes/2026-06-14T09-23-27-364Z-live-app-smoke.md`
+- PASS `npm run railway:doctor`
+- FAIL `npm run openai:diagnose`: OpenAI returned `401 invalid_api_key`;
+  Kimi is the approved temporary hosted-AI provider.
+- PASS `npm run screenshot`: no horizontal scroll at 360/390/430/768/1440
+- PARTIAL `npm run lighthouse`: report written to `lighthouse-report.html`,
+  CLI exited on Windows temp cleanup `EPERM`
+- PASS `npm run openai:smoke`: selected provider Kimi (`kimi-k2.6`)
+- PASS local assistant keyboard smoke at 390/393/430 widths:
+  `tmp/qa-runs/assistant-portal-keyboard/assistant-keyboard-smoke.json`
+- PASS local Operations mobile smoke:
+  `tmp/qa-runs/assistant-portal-keyboard/operations-mobile-smoke.json`
+- PASS Railway deployment `0cca77e2-d718-47b6-bc28-6824125597f3`
+- PASS post-deploy Railway doctor and live app smoke:
+  `ops/live-smokes/2026-06-14T09-32-40-859Z-live-app-smoke.md`
+- PASS focused live read/dry-run endpoint smoke:
+  `ops/live-smokes/2026-06-14T09-33-21-093Z-assistant-portal-focused-live-smoke.json`
+
+Remaining:
+- Resend account/API key/domain/DNS are not configured.
+- OpenAI key still fails with `401 invalid_api_key`; use Kimi for now.
+- Google OAuth scope verification, WhatsApp provider/consent, and payment
+  processor/accounting decisions remain human/external blockers.
+
+- source: codex_chat
+- worker: Codex
+- handoff: `tasks-pending/2026-06-14-assistant-portal-communications.md`
+
 ## 2026-06-14T10:00:28+03:00 - Respecting-each-other source-sheet packet produced
 
 Created a class-ready Torah source packet for the current BNA rules/respect
@@ -15004,3 +15244,128 @@ Remaining:
 - source: codex_chat
 - worker: Codex
 - handoff: `tasks-pending/2026-06-14-workspace-task-dialogue-rabbi-scheller.md`
+
+## 2026-06-14T14:28:42+03:00 - Adaptive web bot tools deployed and live-smoked
+
+Kept the web assistant as a single chat interface while making the backend
+adaptive. The assistant now infers web-search, Codex work, task, ticket,
+decision, and provider-question intents server-side; executes permitted actions
+through the shared action registry; logs tool calls; and keeps provider fallback
+details out of ordinary user-facing replies. OpenAI Responses web-search is
+scaffolded behind `tools: [{ type: 'web_search' }]`; if unavailable, the bot
+records the failure internally and falls back to the hosted chat path without
+pretending it searched live web results.
+
+Verification:
+- PASS `node --check server.js`
+- PASS focused assistant/community contracts
+- PASS `npm test` 332/332
+- PASS `npm run openai:smoke`; selected hosted provider was Kimi (`kimi-k2.6`)
+- PASS local Playwright assistant tool-parity smoke:
+  `ops/playwright-smokes/2026-06-14-assistant-tool-parity-local/report.md`
+- PASS Railway deployment `6e236394-e503-4f87-a370-4c969e786db9`
+- PASS `npm run app:smoke`:
+  `ops/live-smokes/2026-06-14T11-26-48-796Z-live-app-smoke.md`
+- PASS live Playwright assistant tool-parity smoke:
+  `ops/playwright-smokes/2026-06-14-assistant-tool-parity-live/report.md`
+
+Remaining:
+- OpenAI account/key health remains the external blocker for actual live OpenAI
+  web-search execution. Kimi remains the approved hosted chat fallback/temporary
+  primary path.
+
+- source: codex_chat
+- worker: Codex
+- handoff: `tasks-pending/2026-06-14-workspace-person-household-provider-architecture.md`
+
+## 2026-06-14T14:41:04+03:00 - Assistant history clock deployed and live-smoked
+
+Restored assistant history as an icon-only clock control. It opens a compact
+previous-chats list inside the same assistant drawer, loads the selected
+assistant thread, and continues future messages on that selected `thread_id`.
+The UI still has no prompt chips, visible mode controls, or Super Agent box.
+
+Verification:
+- PASS `node --check public/js/bna-bot-widget.js`
+- PASS focused assistant/community contracts
+- PASS `npm test` 332/332
+- PASS local Playwright assistant history smoke:
+  `ops/playwright-smokes/2026-06-14-assistant-history-local/report.md`
+- PASS Railway deployment `b8cf4fc0-4025-4e47-8f29-6bf893c02f2f`
+- PASS `npm run app:smoke`:
+  `ops/live-smokes/2026-06-14T11-39-39-227Z-live-app-smoke.md`
+- PASS live Playwright assistant history smoke:
+  `ops/playwright-smokes/2026-06-14-assistant-history-live/report.md`
+
+Notes:
+- Playwright mocked assistant history/chat endpoints so no real assistant
+  records were created during UI smoke testing.
+
+- source: codex_chat
+- worker: Codex
+- handoff: `tasks-pending/2026-06-14-workspace-person-household-provider-architecture.md`
+
+## 2026-06-14T15:00:50+03:00 - OneTime Replit projects exported to separate GitHub repos
+
+Created and verified the separate private GitHub repos requested for Shloimie's
+One Time projects:
+
+- `https://github.com/shloimie-beep/one-time-app`
+- `https://github.com/shloimie-beep/one-time-one-time`
+
+Verification:
+- PASS `one-time-app` default branch `main` at
+  `a3463bc6756ac34d8f304451fa0e5190309b8ae1`
+- PASS `one-time-app` files visible: `package.json`, `app.json`, `client/`,
+  `server/`, `scripts/`, `EXPORT-TO-SHLOIMIE-GITHUB.md`
+- PASS `one-time-one-time` default branch `main` at
+  `050fe2468a3f5601e74e738c219cbe5c1bdf398e`
+- PASS `one-time-one-time` files visible: `package.json`, `client/`,
+  `client/public/`, `server/`, `scripts/`,
+  `EXPORT-TO-SHLOIMIE-GITHUB.md`
+- PASS temporary deploy keys removed from both repos after push
+
+Notes:
+- `OneTime App` preserved the observed Moshe remote
+  `https://github.com/moshehoffman37-prog/kids-hotline.git` and the prior
+  wrong Shloimie remote as export provenance.
+- `OneTimeOneTime` was already connected to
+  `https://github.com/shloimie-beep/bnei-neviim-academy.git`; the export copied
+  it into the correct separate repo. Any cleanup of the mistakenly used BNA repo
+  remains a separate human/product decision.
+
+- source: codex_chat
+- worker: Codex
+
+## 2026-06-14T15:31:00+03:00 - Operations workspace directory deployed and live-smoked
+
+Reworked the Operations side-panel workspace selector into an official
+Workspace Directory with filters for Super Admin, Schools, Service Providers,
+Home Accountability, Parent Households, and Community / Projects. The global
+provider label is now `One Time Mishnayos Provider Workspace`, while the
+underlying `rabbi_sheller_provider` key remains for compatibility. Added the
+`parent_households` workspace seed/default and type-aware sidebar profiles for
+provider, family, and household contexts. Admin > Workspaces now groups records
+by the same official workspace categories.
+
+Verification:
+- PASS `node --check server.js`
+- PASS Operations inline script parse
+- PASS focused Operations/brand/workspace contract tests
+- PASS `npm test` 334/334
+- PASS local Playwright workspace directory smoke:
+  `ops/playwright-smokes/2026-06-14-operations-workspace-directory-local/report.md`
+- PASS Railway deployment `129a0092-f58e-47fe-ad1a-78529134e9c9`
+- PASS `npm run railway:doctor`
+- PASS `npm run app:smoke`:
+  `ops/live-smokes/2026-06-14T12-29-12-447Z-live-app-smoke.md`
+- PASS live Playwright workspace directory smoke:
+  `ops/playwright-smokes/2026-06-14-operations-workspace-directory-live/report.md`
+
+Notes:
+- The directory structure is ready for real parent-household records, parent
+  login management, and additional provider/school workspaces.
+
+- source: codex_chat
+- worker: Codex
+- handoff: `tasks-pending/2026-06-14-workspace-person-household-provider-architecture.md`

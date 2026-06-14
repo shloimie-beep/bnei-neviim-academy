@@ -200,6 +200,8 @@
         const params = new URLSearchParams(window.location.search);
         const payment = (params.get('payment') || 'cash').toLowerCase();
         const paymentLink = params.get('paymentLink') || '';
+        const checkoutAttemptId = params.get('checkoutAttemptId') || '';
+        const checkoutAttemptToken = params.get('checkoutAttemptToken') || '';
         const lang = (params.get('lang') || 'en').toLowerCase();
 
         const headlineEl = document.getElementById('headline');
@@ -209,6 +211,29 @@
         const actionsEl = document.getElementById('actions');
         const smallEl = document.getElementById('small');
         const homeButton = actionsEl.querySelector('.btn-secondary');
+        let checkoutRedirectLogged = false;
+
+        async function markCheckoutRedirected() {
+            if (!checkoutAttemptId || !checkoutAttemptToken || checkoutRedirectLogged) return;
+            checkoutRedirectLogged = true;
+            try {
+                await fetch(`/api/bna/checkout/attempts/${encodeURIComponent(checkoutAttemptId)}`, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        status: 'redirected',
+                        token: checkoutAttemptToken
+                    })
+                });
+            } catch (error) {
+                console.warn('Checkout redirect tracking failed', error);
+            }
+        }
+
+        async function continueToPayment() {
+            await markCheckoutRedirected();
+            window.location.href = paymentLink;
+        }
 
         if (lang === 'he') {
             document.documentElement.lang = 'he';
@@ -234,10 +259,14 @@
                 payButton.className = 'btn btn-primary';
                 payButton.href = paymentLink;
                 payButton.textContent = lang === 'he' ? 'המשך לתשלום' : 'Continue to Payment';
+                payButton.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    continueToPayment();
+                });
                 actionsEl.prepend(payButton);
 
                 setTimeout(() => {
-                    window.location.href = paymentLink;
+                    continueToPayment();
                 }, 1800);
             } else {
                 noteEl.textContent = 'Your registration was received. BNA will send the confirmed credit-card payment link separately.';

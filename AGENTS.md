@@ -118,9 +118,9 @@ Keep `MEMORY.md` compact and curated.
 ## Current AI Setup
 
 - Codex is the primary development agent and visible machine-work owner.
-- OpenAI API is the default Telegram reply engine for ordinary conversation,
-  tone/content refinement, brainstorms, and normal system running when
-  available.
+- `Assistant` is the visible Telegram reply mode for ordinary conversation,
+  tone/content refinement, brainstorms, and normal system running. It uses the
+  hosted AI provider path behind the scenes.
 - Clear repo, code, database, bridge, deploy, test, dashboard, or programming
   requests should route to Codex automatically.
 - OpenAI is the preferred hosted AI provider when available.
@@ -148,7 +148,8 @@ Keep `MEMORY.md` compact and curated.
   - hosted API default chat for ordinary conversation and content/tone refinement
     (OpenAI normally, Kimi during explicit temporary Kimi-primary mode)
   - automatic Codex routing for repo/development work
-  - persistent Telegram bottom buttons for `OpenAI API` and `Codex` mode switching
+  - persistent Telegram bottom buttons for `Assistant` and `Codex` mode switching;
+    `Assistant` is the provider-neutral hosted chat path for normal users
   - `/accounts`, `/blogs`, `/queue`, `/help`, `/status`
   - photo, video, voice, and document intake
   - automatic local asset capture plus Buffer text draft handoff for social posts

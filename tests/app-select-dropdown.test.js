@@ -23,6 +23,7 @@ test('every public page with native select controls loads the in-app select enha
     [
       'public/operations.html',
       'public/parent.html',
+      'public/provider.html',
       'public/providers-join.html',
       'public/service-providers.html',
       'public/signup-he.html',

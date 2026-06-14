@@ -10,6 +10,7 @@ const parent = fs.readFileSync(path.join(repoRoot, 'public', 'parent.html'), 'ut
 const provider = fs.readFileSync(path.join(repoRoot, 'public', 'provider.html'), 'utf8');
 const providerJoin = fs.readFileSync(path.join(repoRoot, 'public', 'providers-join.html'), 'utf8');
 const serviceProviders = fs.readFileSync(path.join(repoRoot, 'public', 'service-providers.html'), 'utf8');
+const indexHtml = fs.readFileSync(path.join(repoRoot, 'public', 'index.html'), 'utf8');
 
 test('service-provider directory schema and guarded APIs are bootstrapped', () => {
   assert.match(server, /CREATE TABLE IF NOT EXISTS bna_service_providers/);
@@ -131,6 +132,19 @@ test('provider onboarding route and page create draft commercial records safely'
   assert.match(providerJoin, /discounts_group_options/);
   assert.match(providerJoin, /\/api\/provider-onboarding/);
   assert.doesNotMatch(providerJoin, /Managed Setup|School Workspace|Partner|AI Max|Paid workspace|lead generation|marketing automation|No checkout yet/);
+});
+
+test('public provider join path is conversational and website-linked', () => {
+  assert.match(indexHtml, /\/become-service-provider\?onboard=provider/);
+  assert.match(serviceProviders, /\/become-service-provider\?onboard=provider/);
+  assert.match(providerJoin, /data-provider-onboarding-bot/);
+  assert.match(providerJoin, /Provider onboarding assistant/);
+  assert.match(providerJoin, /students, homeschoolers, and alternative education families/);
+  assert.match(providerJoin, /review process/);
+  assert.match(providerJoin, /family-intake funnel paths/);
+  assert.match(providerJoin, /providerSteps/);
+  assert.match(providerJoin, /raw_intake/);
+  assert.match(providerJoin, /\/api\/provider-onboarding/);
 });
 
 test('Operations exposes commercial settings, entitlements, access checklist, and audit pages', () => {

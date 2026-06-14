@@ -1,0 +1,49 @@
+{
+  "base": "https://bneineviimacademy.org",
+  "outDir": "ops\\playwright-smokes\\2026-06-09T15-15-13-691Z-live",
+  "operationsDesktop": {
+    "position": "fixed",
+    "zIndex": 5000,
+    "clipped": false,
+    "rect": {
+      "top": 266,
+      "left": 383,
+      "right": 593,
+      "bottom": 476
+    }
+  },
+  "operationsMobile": {
+    "position": "fixed",
+    "zIndex": 5000,
+    "clipped": false,
+    "rect": {
+      "top": 429,
+      "left": 39,
+      "right": 351,
+      "bottom": 639
+    }
+  },
+  "studentPicker": {
+    "hasNativeSelect": false,
+    "optionCount": 5,
+    "position": "fixed"
+  },
+  "studentPortalDesktop": {
+    "historyPoints": 5,
+    "dayButtons": 28,
+    "hasMessageBox": true,
+    "goalCards": 4
+  },
+  "studentPortalMobile": {
+    "historyPoints": 5,
+    "dayButtons": 28,
+    "hasMessageBox": true,
+    "goalCards": 4
+  },
+  "parentPortal": {
+    "hasPasswordInput": false,
+    "goalCards": 5,
+    "dayCells": 35,
+    "urlHasToken": false
+  }
+}

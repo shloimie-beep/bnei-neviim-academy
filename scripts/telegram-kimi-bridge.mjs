@@ -486,8 +486,8 @@ function buildAgentSyncContext(maxCharsPerFile = 2400) {
 
 function buildOpenAiCapabilityContext() {
   return [
-    'Hosted API Telegram sidekick capability contract:',
-    '- The hosted API sidekick is for brainstorming, planning, tone/content drafting, system navigation, and reading summarized live context. OpenAI is normally preferred; Kimi may be the temporary primary provider when OpenAI credentials are unhealthy.',
+    'Hosted API Telegram assistant capability contract:',
+    '- The hosted API assistant is for brainstorming, planning, tone/content drafting, system navigation, and reading summarized live context. The underlying provider is internal routing; do not mention OpenAI/Kimi in ordinary replies unless Shloimie explicitly asks for diagnostics.',
     '- The hosted API provider receives repo context from AGENTS.md, MEMORY.md, TASKS.md, SYSTEM-STATE.md, internal Codex handoff notes, today memory, shared task ledger, and agent changelog.',
     '- The hosted API provider receives live app snapshots for system/navigation/task/student/content/accounting questions and Drive snapshots for Drive/upload/intake questions.',
     '- For Operations/dashboard questions, the live app snapshot is the primary source of truth: sections, subtabs, visible buttons/actions, task lanes, task records/comments, students, content, contacts, accounting, devices, agent fleet status, and recent updates.',
@@ -562,7 +562,7 @@ function buildApiSystemInstructions(config = {}) {
     'Avoid vague headings like "Next" by itself. Use Captured, Already filed, Queued work, and Blocked only if blocked.',
     'If the operator references recent work by phrase, such as "the image slider", first use SYSTEM-STATE.md and the newest tasks-pending handoff before asking what they mean.',
     'If the live snapshot contains a task that was just auto-captured from the same operator message, do not make that capture the main answer unless the operator asked to create or file a task. Answer the actual question first.',
-    'If the operator asks why a Telegram reply was cut off, malformed, or missing, use only the recent Telegram memory included below. Say clearly when OpenAI cannot inspect delivery logs and that Codex must inspect the bridge/logs for a real diagnosis.',
+    'If the operator asks why a Telegram reply was cut off, malformed, or missing, use only the recent Telegram memory included below. Say clearly when the hosted assistant cannot inspect delivery logs and that Codex must inspect the bridge/logs for a real diagnosis.',
   ].join('\n');
 }
 
@@ -1259,7 +1259,7 @@ function buildOperationsUiInventoryContext(sections = new Set(['tasks', 'student
     },
   };
 
-  const lines = ['Operations UI inventory available to OpenAI:'];
+  const lines = ['Operations UI inventory available to the hosted assistant:'];
   for (const key of ['tasks', 'students', 'content', 'contacts', 'accounting', 'support', 'agents']) {
     if (!sections.has(key)) continue;
     const item = ui[key];
@@ -1707,7 +1707,7 @@ async function buildBnaAppSnapshotForMessage(config, text) {
   lines.push('');
   lines.push(scopedProject
     ? 'Use this app snapshot to answer One Time task/status questions directly. If the message is not an explicit task/comment command, summarize and ask before creating new tasks.'
-    : 'Use this app snapshot to answer navigation/status/ordering/audit questions directly. For section ordering, use the live records above and recommend next order. If a write/build/deploy/code edit is needed, route it into tracked Codex work rather than pretending OpenAI performed it. Do not substitute transcript/class-topic content for dashboard/system questions.');
+    : 'Use this app snapshot to answer navigation/status/ordering/audit questions directly. For section ordering, use the live records above and recommend next order. If a write/build/deploy/code edit is needed, route it into tracked Codex work rather than pretending the hosted assistant performed it. Do not substitute transcript/class-topic content for dashboard/system questions.');
   return lines.join('\n');
 }
 
@@ -2009,14 +2009,14 @@ function setTelegramChatMode(chatId, mode) {
 function detectTelegramModeButton(text) {
   const normalized = String(text || '').trim().toLowerCase().replace(/\s+/g, ' ');
   if (normalized === 'codex') return 'codex';
-  if (normalized === 'openai api' || normalized === 'open api' || normalized === 'openai') return 'openai';
+  if (['assistant', 'chat', 'api chat', 'hosted chat', 'openai api', 'open api', 'openai'].includes(normalized)) return 'openai';
   return null;
 }
 
 function telegramModeKeyboard() {
   const row = activeTelegramCodexEnabled
-    ? [{ text: 'OpenAI API' }, { text: 'Codex' }]
-    : [{ text: 'OpenAI API' }];
+    ? [{ text: 'Assistant' }, { text: 'Codex' }]
+    : [{ text: 'Assistant' }];
   return {
     keyboard: [row],
     resize_keyboard: true,
@@ -2670,7 +2670,7 @@ function runOpenAiSidekickSmoke(timeoutMs = 240000) {
     let stderr = '';
     const timer = setTimeout(() => {
       child.kill();
-      reject(new Error(`OpenAI sidekick smoke timed out after ${timeoutMs}ms`));
+      reject(new Error(`Hosted Assistant smoke timed out after ${timeoutMs}ms`));
     }, timeoutMs);
 
     child.stdout.on('data', (chunk) => {
@@ -2689,7 +2689,7 @@ function runOpenAiSidekickSmoke(timeoutMs = 240000) {
         resolve(stdout.trim());
         return;
       }
-      reject(new Error((stderr || stdout || `OpenAI smoke exited ${code}`).trim()));
+      reject(new Error((stderr || stdout || `Hosted Assistant smoke exited ${code}`).trim()));
     });
   });
 }
@@ -3022,14 +3022,7 @@ async function runApiFallback(config, messageText, chatId, messageId) {
         { role: 'system', content: system },
         { role: 'user', content: user },
       ]);
-      const labeledReply = provider.kind === 'kimi' && config.apiPrimaryProvider !== 'kimi'
-        ? [
-            'By the way, this is Kimi fallback. OpenAI API was unavailable for this reply, so Kimi is answering using the BNA repo context files that the bridge passed in.',
-            '',
-            reply,
-          ].join('\n')
-        : reply;
-      return { provider: provider.label, reply: labeledReply, errors };
+      return { provider: provider.label, reply, errors };
     } catch (error) {
       errors.push(`${provider.label}: ${error instanceof Error ? error.message : String(error)}`);
     }
@@ -6739,9 +6732,7 @@ async function reviseContentDraft(config, { output, job, sourceJobs = [], instru
       return {
         provider: provider.label,
         providerKind: provider.kind,
-        body: provider.kind === 'kimi'
-          ? body.replace(/^By the way, this is Kimi fallback\.[\s\S]*?\n\n/i, '').trim()
-          : body,
+        body: String(body || '').trim(),
         errors,
       };
     } catch (error) {
@@ -7136,7 +7127,7 @@ async function handleScopedStructuredTextCommand(config, msg) {
       chatId,
       [
         'One Time bot commands:',
-        '- Plain messages use scoped OpenAI chat for brainstorming and organization',
+        '- Plain messages use scoped Assistant chat for brainstorming and organization',
         '- /status',
         '- /queue',
         '- /ticket bot is not responding...',
@@ -7145,7 +7136,7 @@ async function handleScopedStructuredTextCommand(config, msg) {
         '- comment task #123: add this context...',
         '',
         'Scope: One Time Mishnah Class tasks, comments, support tickets, decisions, shiur ideas, source sheets, Torah class prep, marketing, community, legacy CRM setup, admin, and accounting planning.',
-        'Not available here: BNA Students, Accounting, Devices, broad Content jobs, Drive/legacy CRM posting commands, agent fleet, OpenAI smoke, or Codex repo execution.',
+        'Not available here: BNA Students, Accounting, Devices, broad Content jobs, Drive/legacy CRM posting commands, agent fleet, hosted-assistant smoke, or Codex repo execution.',
       ].join('\n'),
       messageId
     );
@@ -7185,11 +7176,11 @@ async function handleStructuredTextCommand(config, msg, intentPlan = {}) {
       chatId,
       [
         'BNA bot commands:',
-        '- Plain messages use OpenAI API by default; clear repo/development work routes to Codex',
-        '- Press the bottom buttons to switch between OpenAI API and Codex',
+        '- Plain messages use Assistant chat by default; clear repo/development work routes to Codex',
+        '- Press the bottom buttons to switch between Assistant and Codex',
         '- /status',
         '- /capabilities',
-        '- /smoke_openai',
+        '- /smoke_assistant',
         '- /railway_deploy',
         '- /agent_fleet_status',
         '- /agent_fleet_start',
@@ -7214,7 +7205,7 @@ async function handleStructuredTextCommand(config, msg, intentPlan = {}) {
         '- Send a ramble to capture Tasks, Students, Contacts, or Accounting items',
         '- Ask to make/refine a Codex or ChatGPT prompt to enter visible planning mode before implementation',
         '- Upload audio/video/image to create a Content job',
-        '- Reply to a draft or say "edit output #39: make it shorter" to revise saved WhatsApp/Facebook/newsletter/blog drafts through OpenAI',
+        '- Reply to a draft or say "edit output #39: make it shorter" to revise saved WhatsApp/Facebook/newsletter/blog drafts through Assistant',
         '- Reply to a draft with "approve this", "save as final", or "save this as an example" to save it as the approved version',
         '- Ask for "organize all recordings this week" or "make the weekly parent update" to draft from this week\'s transcripts',
         '- Decision points should come back with quick button-style options',
@@ -7233,22 +7224,20 @@ async function handleStructuredTextCommand(config, msg, intentPlan = {}) {
       config.botToken,
       chatId,
       [
-        'OpenAI sidekick capabilities:',
+        'Assistant capabilities:',
         '',
-        `Mode: ${chatMode === 'codex' ? 'Codex forced' : 'OpenAI API default'}`,
-        `OpenAI: ${config.openaiApiKey ? `configured (${config.openaiSummaryModel})` : 'missing'}`,
-        `Kimi fallback: ${config.kimiApiKey ? `configured (${config.kimiApiModel})` : 'missing'}`,
+        `Mode: ${chatMode === 'codex' ? 'Codex forced' : 'Assistant chat default'}`,
         '',
         'Can read/summarize:',
         '- AGENTS, MEMORY, TASKS, SYSTEM-STATE, internal Codex handoff notes',
         '- Today memory, shared agent ledger, and agent changelog tails',
         '- Live BNA app snapshots for task/student/content/accounting/system questions',
         '- Google Drive pipeline snapshots for Drive/upload/intake questions',
-        '- Web research through OpenAI Responses web_search for current/API/framework/research questions',
+        '- Web research through the hosted research path when available',
         '',
         'Can write safely through the bridge:',
         '- Create Tasks, Student accountability items, Accounting/payment intake, Content jobs, Decisions',
-        '- Revise saved WhatsApp, Facebook, newsletter, and blog drafts directly through OpenAI API and save them back to Content outputs',
+        '- Revise saved WhatsApp, Facebook, newsletter, and blog drafts directly through Assistant and save them back to Content outputs',
         '- Approve/save a content draft by plain Telegram text and store approved versions as reusable prompt examples',
         '- Keep Codex/ChatGPT prompt-building requests in visible planning mode until the operator says to build/apply/run/test',
         '- Generate weekly parent updates from all recent transcribed Drive/content jobs, not only one latest file',
@@ -7272,16 +7261,16 @@ async function handleStructuredTextCommand(config, msg, intentPlan = {}) {
     return true;
   }
 
-  if (text === '/smoke_openai' || text === '/openai_smoke') {
+  if (text === '/smoke_openai' || text === '/openai_smoke' || text === '/smoke_assistant' || text === '/assistant_smoke') {
     try {
-      await sendReply(config.botToken, chatId, 'Running OpenAI sidekick smoke test now. This checks repo memory, live Operations APIs, Drive folders, transcript exports, and an actual OpenAI answer from that data.', messageId);
+      await sendReply(config.botToken, chatId, 'Running hosted Assistant smoke test now. This checks repo memory, live Operations APIs, Drive folders, transcript exports, and an actual hosted assistant answer from that data.', messageId);
       const output = await runOpenAiSidekickSmoke();
-      await sendReply(config.botToken, chatId, output || 'OpenAI sidekick smoke completed.', messageId);
+      await sendReply(config.botToken, chatId, output || 'Hosted Assistant smoke completed.', messageId);
     } catch (error) {
       await sendReply(
         config.botToken,
         chatId,
-        `OpenAI sidekick smoke failed: ${error instanceof Error ? error.message : String(error)}`,
+        `Hosted Assistant smoke failed: ${error instanceof Error ? error.message : String(error)}`,
         messageId
       );
     }
@@ -8929,7 +8918,7 @@ async function handleTextMessage(config, msg) {
       await sendReply(
         config.botToken,
         chatId,
-        'Codex mode is not enabled for this scoped bot. One Time chat stays on OpenAI API with scoped task access.',
+        'Codex mode is not enabled for this scoped bot. One Time chat stays on Assistant with scoped task access.',
         messageId
       );
       return;
@@ -8944,7 +8933,24 @@ async function handleTextMessage(config, msg) {
       chatId,
       mode === 'codex'
         ? 'Mode set to Codex. I will use Codex for replies until you switch back.'
-        : `Mode set to API chat. Current API path: ${apiProviderPathLabel(config)}. Development work still routes to Codex automatically.`,
+        : 'Mode set to Assistant chat. Development work still routes to Codex automatically.',
+      messageId
+    );
+    return;
+  }
+
+  if (text === '/diagnostics' || text === '/provider_status') {
+    const chatMode = getTelegramChatMode(chatId, config);
+    await sendReply(
+      config.botToken,
+      chatId,
+      [
+        'Assistant diagnostics:',
+        `Mode: ${chatMode === 'codex' ? 'Codex' : 'Assistant chat'}`,
+        `API path: ${apiProviderPathLabel(config)}`,
+        `API keys: OpenAI ${config.openaiApiKey ? 'configured' : 'missing'}, Kimi ${config.kimiApiKey ? 'configured' : 'missing'}`,
+        `Codex: ${config.codexEnabled ? 'enabled' : 'disabled'}`,
+      ].join('\n'),
       messageId
     );
     return;
@@ -8961,9 +8967,8 @@ async function handleTextMessage(config, msg) {
           'Bridge status: online',
           `Profile: ${config.bridgeProfileLabel}`,
           'Scope: One Time Mishnah Class tasks/comments only',
-          `Telegram mode: ${chatMode === 'codex' ? 'Codex' : 'API chat default'}`,
-          `API path: ${apiProviderPathLabel(config)}`,
-          `API keys: OpenAI ${config.openaiApiKey ? 'configured' : 'missing'}, Kimi ${config.kimiApiKey ? 'configured' : 'missing'}`,
+          `Telegram mode: ${chatMode === 'codex' ? 'Codex' : 'Assistant chat'}`,
+          `Assistant chat: ${apiProviderConfigs(config).length ? 'configured' : 'not configured'}`,
           `Scoped Operations login: ${config.opsUsername && config.opsPassword ? 'configured' : 'missing'}`,
           `Allowed chats: ${config.allowedChatIds.join(',') || 'all'}`,
         ].join('\n'),
@@ -8977,10 +8982,9 @@ async function handleTextMessage(config, msg) {
       [
         'Bridge status: online',
         `Profile: ${config.bridgeProfileLabel}`,
-        `Telegram mode: ${chatMode === 'codex' ? 'Codex' : 'API chat default'}`,
+        `Telegram mode: ${chatMode === 'codex' ? 'Codex' : 'Assistant chat'}`,
         `Codex CLI: ${config.codexCommand}${config.codexModel ? ` (${config.codexModel})` : ''}`,
-        `API path: ${apiProviderPathLabel(config)}`,
-        `API keys: OpenAI ${config.openaiApiKey ? 'configured' : 'missing'}, Kimi ${config.kimiApiKey ? 'configured' : 'missing'}`,
+        `Assistant chat: ${apiProviderConfigs(config).length ? 'configured' : 'not configured'}`,
         'Workspace: BNA v2.0',
         `Drive watcher: every ${Math.round(config.driveWatchIntervalMs / 1000)}s`,
         `Codex queue: ${agentReplyQueue.length} waiting, ${agentReplyRunning ? '1 active' : '0 active'}`,
@@ -9238,7 +9242,7 @@ async function handleTextMessage(config, msg) {
   }
 
   let reply;
-  let replyProvider = replyRouting.mode === 'openai' ? 'OpenAI API' : 'Codex CLI';
+  let replyProvider = replyRouting.mode === 'openai' ? 'Assistant' : 'Codex CLI';
   let autoQueuedCodexWork = null;
   if (replyRouting.mode === 'openai' && trackedCodexTasks.length && config.asyncAgentReplies) {
     autoQueuedCodexWork = enqueueAgentReplyJob({
@@ -9259,25 +9263,17 @@ async function handleTextMessage(config, msg) {
       reply = apiReply.reply;
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
-      log(`OpenAI default reply failed, trying Kimi CLI fallback without Codex: ${message}`);
+      log(`Hosted assistant reply failed, trying CLI fallback without Codex: ${message}`);
       try {
         replyProvider = 'Kimi CLI fallback';
         const kimiReply = await runKimi(buildKimiPrompt(config, text, chatId, messageId), config.kimiModel, config.kimiTimeoutMs);
-        reply = [
-          'By the way, this is Kimi fallback. OpenAI API was unavailable for this reply, so Kimi is answering using the BNA repo context files that the bridge passed in.',
-          '',
-          kimiReply,
-        ].join('\n');
+        reply = kimiReply;
       } catch (fallbackError) {
         const fallbackMessage = fallbackError instanceof Error ? fallbackError.message : String(fallbackError);
         log(`Kimi CLI fallback also failed: ${fallbackMessage}`);
-        replyProvider = 'OpenAI and Kimi unavailable';
+        replyProvider = 'Hosted chat unavailable';
         reply = [
-          'OpenAI API mode is selected, but the bridge could not use OpenAI or Kimi for this chat reply.',
-          '',
-          `OpenAI/API reason: ${message.slice(0, 350)}`,
-          `Kimi reason: ${fallbackMessage.slice(0, 350)}`,
-          '',
+          'The hosted chat engine is temporarily unavailable for this reply.',
           'To keep Telegram fast, I did not fall back to Codex for this normal chat message.',
           'Press Codex or send a clear build/fix/deploy request if you want coding mode.',
         ].join('\n');

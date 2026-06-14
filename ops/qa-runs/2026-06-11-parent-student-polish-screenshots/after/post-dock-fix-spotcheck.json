@@ -1,0 +1,42 @@
+[
+  {
+    "file": "ops/qa-runs/2026-06-11-parent-student-polish-screenshots/after/parent-en-calendar__390x844.png",
+    "label": "BNA Parent Portal",
+    "path": "/parent",
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "horizontalOverflow": false
+  },
+  {
+    "file": "ops/qa-runs/2026-06-11-parent-student-polish-screenshots/after/parent-en-parent-help-assistant-open__390x844.png",
+    "label": "BNA Parent Portal",
+    "path": "/parent",
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "horizontalOverflow": false
+  },
+  {
+    "file": "ops/qa-runs/2026-06-11-parent-student-polish-screenshots/after/student-en-calendar__390x844.png",
+    "label": "BNA Student Goal Board",
+    "path": "/student",
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "horizontalOverflow": false
+  },
+  {
+    "file": "ops/qa-runs/2026-06-11-parent-student-polish-screenshots/after/student-en-ask-helper-open__390x844.png",
+    "label": "BNA Student Goal Board",
+    "path": "/student",
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "horizontalOverflow": false
+  },
+  {
+    "file": "ops/qa-runs/2026-06-11-parent-student-polish-screenshots/after/provider-schedule__390x844.png",
+    "label": "Provider Participant Portal",
+    "path": "/provider-participant",
+    "scrollWidth": 390,
+    "clientWidth": 390,
+    "horizontalOverflow": false
+  }
+]
