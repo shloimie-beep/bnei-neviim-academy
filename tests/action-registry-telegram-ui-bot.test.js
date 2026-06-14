@@ -52,10 +52,15 @@ test('core Telegram/UI operations are present in the registry', () => {
     'draft_parent_response',
     'post_community_message',
     'request_provider_contact',
+    'capture_provider_google_business_link',
     'queue_telegram_report',
     'route_bug_to_codex',
     'send_test_email',
     'sync_google_calendar',
+    'google_drive_find_file_preview',
+    'google_drive_create_doc_preview',
+    'google_drive_create_folder_preview',
+    'google_drive_move_file_preview',
   ]) {
     assert.ok(getAction(actionId), `${actionId} should exist`);
   }
@@ -257,6 +262,12 @@ test('Telegram routes normal operations to typed actions before Codex', () => {
     classifyTelegramActionRequest({ text: 'Create calendar event parent meeting on 2026-06-18 16:00' }).action_id,
     'create_calendar_event',
   );
+  const googleBusinessRoute = classifyTelegramActionRequest({
+    text: 'Attach this Google Business link to provider #42 https://www.google.com/maps/place/BNA/?place_id=ChIJ1234567890abcdef',
+  });
+  assert.equal(googleBusinessRoute.action_id, 'capture_provider_google_business_link');
+  assert.equal(googleBusinessRoute.inputs.provider_id, 42);
+  assert.match(googleBusinessRoute.inputs.google_business_profile_url, /google\.com\/maps/);
 });
 
 test('Telegram routes code/development work to Codex instead of normal operation actions', () => {
@@ -357,7 +368,7 @@ test('calendar event create supports dry-run and mobile-safe internal calendar f
 });
 
 test('sensitive email/send/sync actions require approval and do not send in tests', async () => {
-  for (const action_id of ['send_test_email', 'schedule_email', 'sync_google_calendar']) {
+  for (const action_id of ['send_test_email', 'schedule_email', 'sync_google_calendar', 'google_drive_create_doc_preview']) {
     const inputs = action_id === 'sync_google_calendar'
       ? {}
       : { to: 'test@example.com', subject: 'Test', body: 'Body', scheduled_for: '2026-06-18T09:00:00' };
@@ -372,6 +383,33 @@ test('sensitive email/send/sync actions require approval and do not send in test
     assert.equal(result.approval_required, true);
     assert.equal(result.audit_log.approval_status, 'required');
   }
+});
+
+test('Google Drive preview actions are dry-run only and report missing connection blockers', async () => {
+  const search = await runAction({
+    action_id: 'google_drive_find_file_preview',
+    source: 'telegram',
+    dry_run: true,
+    inputs: { query: 'latest Rabbi Scheller Mishnah video', source_stage: 'one_time_video_drop' },
+    actor: { user_id: 'telegram-local', role: 'operator', workspace_id: 'rabbi_sheller_provider' },
+  });
+  assert.equal(search.success, true);
+  assert.equal(search.executed, false);
+  assert.equal(search.preview.drive_action, 'find_or_list_files');
+  assert.equal(search.preview.external_write_performed, false);
+  assert.equal(search.preview.missing_connection_task_needed, true);
+
+  const move = await runAction({
+    action_id: 'google_drive_move_file_preview',
+    source: 'telegram',
+    dry_run: true,
+    inputs: { file_name: 'selected transcript', target_folder_name: 'One Time folder' },
+    actor: { user_id: 'telegram-local', role: 'operator', workspace_id: 'rabbi_sheller_provider' },
+  });
+  assert.equal(move.success, true);
+  assert.equal(move.preview.drive_action, 'move_or_import_file');
+  assert.equal(move.preview.approval_required_before_external_write, true);
+  assert.equal(move.preview.external_write_performed, false);
 });
 
 test('provider schedule action stays in provider workspace and separate from BNA accountability', async () => {
@@ -390,6 +428,66 @@ test('provider schedule action stays in provider workspace and separate from BNA
   assert.equal(result.preview.preview.source, 'provider_program');
 });
 
+test('provider Google Business link capture is approval-gated and manual-only', async () => {
+  const preview = await runAction({
+    action_id: 'capture_provider_google_business_link',
+    source: 'bot',
+    inputs: {
+      provider_id: 42,
+      google_business_profile_url: 'https://www.google.com/maps/place/Bnei+Neviim+Academy/',
+      notes: 'Provider sent this as the public Google profile link.',
+    },
+    actor: { user_id: 'operator-local', role: 'operator', workspace_id: 'bna' },
+  });
+  assert.equal(preview.success, true);
+  assert.equal(preview.executed, false);
+  assert.equal(preview.approval_required, true);
+  assert.equal(preview.preview.live_google_api_used, false);
+  assert.equal(preview.preview.external_write_performed, false);
+  assert.equal(preview.preview.public_listing_review_needed, true);
+
+  const queries = [];
+  const fakeDb = {
+    async query(sql, params = []) {
+      queries.push({ sql: String(sql), params });
+      if (/FROM bna_service_provider_profiles WHERE id = \$1 LIMIT 1/.test(sql)) {
+        return { rows: [{ id: 42, metadata: { service_provider_id: 77 } }] };
+      }
+      if (/FROM bna_service_providers WHERE id = \$1 LIMIT 1/.test(sql)) {
+        return { rows: [{ id: 77, display_name: 'Rabbi Scheller' }] };
+      }
+      if (/UPDATE bna_service_provider_profiles/.test(sql)) {
+        return { rows: [{ id: 42, google_business_status: 'manual', google_place_id: params[1], metadata: {} }] };
+      }
+      if (/UPDATE bna_service_providers/.test(sql)) {
+        return { rows: [{ id: 77, google_business_profile_url: params[1], google_place_id: params[2] }] };
+      }
+      if (/INSERT INTO bna_bot_action_logs/.test(sql)) {
+        return { rows: [{ id: 1, status: 'executed' }] };
+      }
+      throw new Error(`Unexpected query: ${sql}`);
+    },
+  };
+
+  const executed = await runAction({
+    action_id: 'capture_provider_google_business_link',
+    source: 'bot',
+    approved: true,
+    inputs: {
+      provider_id: 42,
+      google_business_profile_url: 'https://www.google.com/maps/place/Bnei+Neviim+Academy/?place_id=ChIJ1234567890abcdef',
+    },
+    actor: { user_id: 'operator-local', role: 'operator', workspace_id: 'bna' },
+  }, { db: fakeDb });
+  assert.equal(executed.success, true);
+  assert.equal(executed.executed, true);
+  assert.equal(executed.result.provider_google_business_link_captured, true);
+  assert.equal(executed.result.profile_updated, true);
+  assert.equal(executed.result.legacy_provider_updated, true);
+  assert.ok(queries.some((query) => /UPDATE bna_service_provider_profiles/.test(query.sql)));
+  assert.ok(queries.some((query) => /UPDATE bna_service_providers/.test(query.sql)));
+});
+
 test('action registry artifacts are generated for UI button mapping', () => {
   const actionsJson = JSON.parse(fs.readFileSync('ops/action-registry/actions.json', 'utf8'));
   const pageMap = JSON.parse(fs.readFileSync('ops/action-registry/page-action-map.json', 'utf8'));
@@ -398,6 +496,7 @@ test('action registry artifacts are generated for UI button mapping', () => {
   assert.ok(actionsJson.some((action) => action.action_id === 'create_report_problem_ticket'));
   assert.ok(actionsJson.some((action) => action.action_id === 'route_bug_to_codex'));
   assert.ok(actionsJson.some((action) => action.action_id === 'request_provider_contact'));
+  assert.ok(actionsJson.some((action) => action.action_id === 'capture_provider_google_business_link'));
   assert.ok(pageMap.telegram.some((entry) => entry.action_id === 'create_task'));
   assert.match(buttonMap, /refine_newsletter_draft/);
   assert.match(buttonMap, /create_calendar_event/);

@@ -35,6 +35,7 @@ test('Operations login preserves only safe Operations return paths', () => {
   assert.match(loginHtml, /url\.origin !== window\.location\.origin \|\| url\.pathname !== '\/operations'/);
   assert.match(loginHtml, /window\.location\.href = operationsReturnTo\(\)/);
   assert.match(loginHtml, /window\.location\.replace\(operationsReturnTo\(\)\)/);
+  assert.match(loginHtml, /data\.authenticated === true \|\| data\.success === true/);
   assert.match(loginHtml, /redirectIfAlreadySignedIn\(\)/);
 });
 

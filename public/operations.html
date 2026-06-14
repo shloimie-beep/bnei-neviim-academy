@@ -2598,6 +2598,13 @@
             padding: 12px;
         }
 
+        .task-calendar-day-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
         .task-detail-overlay {
             align-items: stretch;
             background: rgba(15, 23, 42, 0.38);
@@ -4916,20 +4923,23 @@
 
         /* BNA app-wide brand polish */
         :root {
-            --bna-blue: #111111;
-            --bna-blue-dark: #050505;
-            --bna-gold: #d6a92d;
-            --bna-orange: #f5d37c;
-            --bna-ink: #111111;
-            --bna-muted: #626262;
-            --bna-paper: #f7f7f4;
+            --bna-blue: #1e3a5f;
+            --bna-blue-dark: #17314f;
+            --bna-blue-2: #2c5282;
+            --bna-gold: #c9a227;
+            --bna-orange: #d8b44a;
+            --bna-soft-blue: #e8f0f8;
+            --bna-parchment: #f7f3e8;
+            --bna-ink: #1f2933;
+            --bna-muted: #4b5563;
+            --bna-paper: #f7f3e8;
             --bna-panel: #ffffff;
-            --bna-line: rgba(17, 17, 17, 0.14);
-            --bna-shadow: 0 18px 44px rgba(0, 0, 0, 0.08);
+            --bna-line: #d7dfec;
+            --bna-shadow: 0 18px 44px rgba(30, 58, 95, 0.11);
         }
 
         body {
-            background: linear-gradient(180deg, #ffffff 0%, #f7f7f4 100%);
+            background: linear-gradient(180deg, #ffffff 0%, var(--bna-soft-blue) 56%, var(--bna-parchment) 100%);
             color: var(--bna-ink);
         }
 
@@ -4939,8 +4949,8 @@
 
         .ops-sidebar {
             border-right: 1px solid var(--bna-line);
-            background: rgba(255, 255, 255, 0.94);
-            box-shadow: 14px 0 40px rgba(0, 0, 0, 0.06);
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(247, 243, 232, 0.94));
+            box-shadow: 14px 0 40px rgba(30, 58, 95, 0.08);
         }
 
         .ops-sidebar-header {
@@ -4973,14 +4983,14 @@
 
         .ops-sidebar-button:hover,
         .ops-sidebar-button.active {
-            background: linear-gradient(135deg, rgba(17, 17, 17, 0.06), rgba(214, 169, 45, 0.14));
-            border-color: rgba(17, 17, 17, 0.16);
+            background: linear-gradient(135deg, rgba(232, 240, 248, 0.92), rgba(246, 232, 184, 0.72));
+            border-color: rgba(44, 82, 130, 0.24);
             color: var(--bna-blue-dark);
         }
 
         .ops-sidebar-button.active .ops-sidebar-marker {
             background: var(--bna-gold);
-            color: #111111;
+            color: var(--bna-ink);
         }
 
         .ops-brand-topbar {
@@ -5012,9 +5022,10 @@
             border-radius: 8px;
             color: #fff;
             background: linear-gradient(135deg, var(--bna-blue), var(--bna-blue-dark));
-            box-shadow: 0 10px 22px rgba(0, 0, 0, 0.16);
+            box-shadow: 0 10px 22px rgba(30, 58, 95, 0.18);
             font-weight: 900;
             letter-spacing: 0;
+            object-fit: cover;
         }
 
         .ops-brand-lockup strong {
@@ -5310,9 +5321,9 @@
 
         .primary-button {
             min-height: 38px;
-            border: 1px solid rgba(17, 17, 17, 0.18);
+            border: 1px solid rgba(30, 58, 95, 0.18);
             border-radius: 8px;
-            background: #111111;
+            background: var(--bna-blue);
             color: #ffffff;
             cursor: pointer;
             font: 900 12px 'Inter', sans-serif;
@@ -5321,7 +5332,56 @@
         }
 
         .primary-button:hover {
-            background: #000000;
+            background: var(--bna-blue-2);
+        }
+
+        .workspace-context-strip {
+            border-bottom: 1px solid var(--bna-line);
+            background: rgba(255, 255, 255, 0.82);
+            padding: 10px clamp(16px, 2vw, 26px);
+        }
+
+        .workspace-context-inner {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 10px;
+            max-width: 1480px;
+            margin: 0 auto;
+        }
+
+        .workspace-context-item {
+            min-width: 0;
+            border-left: 3px solid rgba(201, 162, 39, 0.68);
+            padding-left: 10px;
+        }
+
+        .workspace-context-item span {
+            display: block;
+            color: var(--bna-muted);
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            line-height: 1.2;
+            text-transform: uppercase;
+        }
+
+        .workspace-context-item strong {
+            display: block;
+            color: var(--bna-blue-dark);
+            font-size: 12px;
+            font-weight: 850;
+            line-height: 1.25;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .ops-mobile-mark {
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            object-fit: cover;
+            box-shadow: 0 8px 18px rgba(30, 58, 95, 0.16);
         }
 
         .detail-page-header {
@@ -5817,6 +5877,10 @@
                 display: none;
             }
 
+            .workspace-context-inner {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
             .pipeline-board,
             .connector-grid,
             .action-registry-grid {
@@ -5959,7 +6023,16 @@
                 return this.request('GET', '/contact-communications?' + params.toString());
             },
             createContactCommunication(note) { return this.request('POST', '/contact-communications', note); },
+            getParentAnnouncements(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.workspace) params.set('workspace', filters.workspace);
+                if (filters.limit) params.set('limit', filters.limit);
+                return this.request('GET', '/parent-announcements' + (params.toString() ? '?' + params.toString() : ''));
+            },
+            approveParentAnnouncement(payload = {}) { return this.request('POST', '/parent-announcements', payload); },
             getWapiDiagnostics() { return this.request('GET', '/wapi/diagnostics'); },
+            getWapiPhonebookReport(limit = 100) { return this.request('GET', '/wapi/phonebook-report?limit=' + encodeURIComponent(limit)); },
+            applyWapiPhonebookCorrection(payload = {}) { return this.request('POST', '/wapi/phonebook-corrections', payload); },
             syncWapiLog(payload = {}) { return this.request('POST', '/wapi/sync', payload); },
             sendParentAccessLink(payload) { return this.request('POST', '/parent-access/link', payload); },
             archiveCodexTestParent() { return this.request('POST', '/contacts/archive-codex-test-parent', {}); },
@@ -6017,6 +6090,7 @@
                 return this.request('GET', '/workspace-platform' + (params.toString() ? '?' + params.toString() : ''));
             },
             updateWorkspaceSettings(workspaceKey, payload = {}) { return this.request('PATCH', '/workspace-settings/' + encodeURIComponent(workspaceKey), payload); },
+            getGoogleIntegrationStatus() { return this.request('GET', '/integrations/google/status'); },
             getConnectorSettings(filters = {}) {
                 const params = new URLSearchParams();
                 if (filters.workspace) params.set('workspace', filters.workspace);
@@ -6143,9 +6217,12 @@
         let parentLeads = [];
         let serviceProviders = [];
         let contactCommunications = [];
+        let parentAnnouncements = [];
+        let wapiPhonebookReport = null;
         let workspacePlatform = null;
         let workspaceSettings = [];
         let connectorSettings = [];
+        let googleIntegrationStatus = null;
         let supportedBotActions = [];
         let botActionLogs = [];
         let calendarEvents = [];
@@ -6319,7 +6396,7 @@
         let adminSection = currentView === 'admin' && ['overview', 'users', 'roles', 'workspaces', 'invitations', 'tickets', 'messages', 'settings'].includes(initialSection)
             ? initialSection
             : 'overview';
-        let settingsSection = currentView === 'settings' && ['account', 'workspace_core', 'users_access', 'communications_core', 'learning_portals', 'calendar_classroom', 'bots_ai', 'provider_index_core', 'billing_payments', 'integrations_core', 'advanced', 'profile', 'workspace', 'branding', 'language', 'users_roles', 'email_identities', 'whatsapp', 'social_accounts', 'drive_social_ingestion', 'calendar', 'google_calendar', 'google_classroom', 'parent_portal', 'student_portal', 'provider_portal', 'provider_index', 'provider_plans', 'provider_entitlements', 'provider_onboarding', 'commercial_models', 'bot_permissions', 'api_limits', 'communications', 'integrations', 'payment_links', 'external_apps', 'billing', 'automations', 'danger'].includes(initialSection)
+        let settingsSection = currentView === 'settings' && ['account', 'workspace_core', 'users_access', 'communications_core', 'learning_portals', 'calendar_classroom', 'bots_ai', 'provider_index_core', 'billing_payments', 'integrations_core', 'advanced', 'profile', 'workspace', 'branding', 'language', 'users_roles', 'email_identities', 'whatsapp', 'social_accounts', 'drive_social_ingestion', 'calendar', 'google_workspace', 'google_calendar', 'google_classroom', 'parent_portal', 'student_portal', 'provider_portal', 'provider_index', 'provider_plans', 'provider_entitlements', 'provider_onboarding', 'commercial_models', 'bot_permissions', 'api_limits', 'communications', 'integrations', 'payment_links', 'external_apps', 'billing', 'automations', 'danger'].includes(initialSection)
             ? initialSection
             : 'workspace';
         let studentSection = currentView === 'students' && ['overview', 'group_goal', 'list', 'profile', 'parent_family', 'assignments', 'goal_board', 'tablet_access', 'analysis', 'questions', 'documents', 'portal_links', 'bot_settings', 'activity', 'next_year_login', 'meetings'].includes(initialSection)
@@ -6672,6 +6749,7 @@
             { id: 'social_accounts', label: 'Social Accounts / Publer' },
             { id: 'drive_social_ingestion', label: 'Drive / Social Intake' },
             { id: 'calendar', label: 'Calendar' },
+            { id: 'google_workspace', label: 'Google Workspace' },
             { id: 'google_calendar', label: 'Google Calendar' },
             { id: 'google_classroom', label: 'Google Classroom' },
             { id: 'parent_portal', label: 'Parent Portal' },
@@ -6713,7 +6791,7 @@
             users_access: ['users_roles'],
             communications_core: ['email_identities', 'whatsapp', 'social_accounts', 'drive_social_ingestion', 'communications'],
             learning_portals: ['parent_portal', 'student_portal', 'provider_portal'],
-            calendar_classroom: ['calendar', 'google_calendar', 'google_classroom'],
+            calendar_classroom: ['calendar', 'google_workspace', 'google_calendar', 'google_classroom'],
             bots_ai: ['bot_permissions', 'api_limits'],
             provider_index_core: ['provider_index', 'provider_plans', 'provider_entitlements', 'provider_onboarding', 'commercial_models'],
             billing_payments: ['billing', 'payment_links'],
@@ -6897,6 +6975,7 @@
                     <main class="ops-main">
                         ${renderMobileHeader()}
                         ${renderOpsTopbar()}
+                        ${renderWorkspaceContextStrip()}
                         ${innerHtml}
                     </main>
                 </div>
@@ -7171,7 +7250,7 @@
                 <header class="mobile-app-header">
                     <button type="button" class="menu-button" onclick="openNavDrawer()" aria-label="Open navigation"><span class="hamburger-lines" aria-hidden="true"></span></button>
                     <div class="ops-mobile-brand">
-                        <span class="ops-mobile-mark" aria-hidden="true">BNA</span>
+                        <img class="ops-mobile-mark" src="/icons/icon-192.png" alt="" aria-hidden="true">
                         <div class="mobile-app-title">
                             <strong>Bnei Neviim Academy</strong>
                             <span>${escapeHtml(currentWorkspaceRecord().display_name || 'Workspace')} / ${escapeHtml(label)} / ${escapeHtml(sectionLabel)}</span>
@@ -7189,7 +7268,7 @@
             return `
                 <header class="ops-brand-topbar saas-topbar">
                     <div class="ops-brand-lockup">
-                        <span class="ops-brand-mark" aria-hidden="true">BNA</span>
+                        <img class="ops-brand-mark" src="/icons/icon-192.png" alt="" aria-hidden="true">
                         <div>
                             <span class="breadcrumb-line">Operations / ${escapeHtml(label)} / ${escapeHtml(sectionLabel)}</span>
                             <strong>${escapeHtml(sectionLabel)}</strong>
@@ -7204,6 +7283,35 @@
                         ${primary}
                     </div>
                 </header>
+            `;
+        }
+
+        function currentWorkspaceViewingLabel() {
+            const workspaceKey = currentWorkspaceKey();
+            const type = workspaceTypeForKey(workspaceKey);
+            if (type === 'service_provider') return 'Provider tasks, participants, content, support, and launch work scoped to this provider.';
+            if (workspaceKey === 'bna' || type === 'school') return 'BNA parents, students, class content, school tasks, and approved school records.';
+            if (type === 'family') return 'Family accountability items, parent tasks, child plans, and private household notes.';
+            if (type === 'household') return 'Parent-household setup, parent-visible requests, and household onboarding.';
+            if (type === 'super_admin' || type === 'platform') return 'All workspaces with filters, badges, connector status, and system work.';
+            return 'Workspace-scoped records only.';
+        }
+
+        function renderWorkspaceContextStrip() {
+            const workspace = currentWorkspaceRecord();
+            const label = currentNavItem().label || 'Operations';
+            const sectionLabel = currentSectionLabel();
+            const filters = currentView === 'tasks' ? taskActiveFilterLabels() : [];
+            const activeFilterLabel = filters.length ? filters.join(' / ') : 'Default view';
+            return `
+                <section class="workspace-context-strip" aria-label="Current workspace context">
+                    <div class="workspace-context-inner">
+                        <div class="workspace-context-item"><span>Current workspace</span><strong>${escapeHtml(workspace.display_name || workspace.id || 'Workspace')}</strong></div>
+                        <div class="workspace-context-item"><span>Current role</span><strong>${escapeHtml(currentWorkspaceRoleLabel())}</strong></div>
+                        <div class="workspace-context-item"><span>Viewing</span><strong title="${escapeHtml(currentWorkspaceViewingLabel())}">${escapeHtml(label)} / ${escapeHtml(sectionLabel)}</strong></div>
+                        <div class="workspace-context-item"><span>Active filters</span><strong>${escapeHtml(activeFilterLabel)}</strong></div>
+                    </div>
+                </section>
             `;
         }
 
@@ -7631,6 +7739,7 @@
                 whatsapp: activeWorkspaceConnectorSettings('whatsapp').length,
                 social_accounts: activeWorkspaceConnectorSettings('social').length,
                 calendar: activeWorkspaceConnectorSettings('google_calendar').length,
+                google_workspace: googleIntegrationCardCount(),
                 google_calendar: activeWorkspaceConnectorSettings('google_calendar').length,
                 google_classroom: activeWorkspaceConnectorSettings('google_classroom').length,
                 parent_portal: signups.length,
@@ -8148,7 +8257,7 @@
                 <section class="local-toolbar task-status-toolbar" aria-label="Task status and filters">
                     <div class="local-toolbar-header">
                         <div>
-                            <div class="local-toolbar-kicker">Workspace Bucket</div>
+                            <div class="local-toolbar-kicker">Workspace Status</div>
                             <strong class="local-toolbar-title">${escapeHtml(state.title || 'Tasks')}</strong>
                             <p class="local-toolbar-copy">${Number(focusCount)} visible item${Number(focusCount) === 1 ? '' : 's'}${activeFilters.length ? ` after ${activeFilters.length} filter${activeFilters.length === 1 ? '' : 's'}` : ''}. Agent status is a signal, not a Pending bucket.</p>
                         </div>
@@ -8441,6 +8550,7 @@
         function renderTaskSelectedDayPanel(items = [], groups = taskScheduleGroups(items)) {
             const selectedKey = normalizeDateKey(taskCalendarSelectedDate) || dateKeyFromDate(new Date());
             const tasksForDay = (groups[selectedKey] || []).sort(sortTasks);
+            const selectedTaskAvailable = Number(selectedTaskId || expandedTaskId || 0) > 0;
             return `
                 <section class="task-calendar-day-panel" aria-label="Selected day tasks">
                     <div class="task-section-header">
@@ -8448,7 +8558,11 @@
                             <h3>${escapeHtml(formatDate(selectedKey) || 'Selected day')}</h3>
                             <p>${escapeHtml(formatHebrewDate(selectedKey) || '')}</p>
                         </div>
-                        <span>${tasksForDay.length} item${tasksForDay.length === 1 ? '' : 's'}</span>
+                        <div class="task-calendar-day-actions">
+                            <button class="task-action primary" type="button" onclick="openTaskModalForDate(${attrJson(selectedKey)})">Add task to this date</button>
+                            <button class="task-action" type="button" ${selectedTaskAvailable ? `onclick="moveSelectedTaskToDate(event, ${attrJson(selectedKey)})"` : 'disabled title="Open a task first, then return to the calendar to move it."'}>Move selected task to this date</button>
+                            <span>${tasksForDay.length} item${tasksForDay.length === 1 ? '' : 's'}</span>
+                        </div>
                     </div>
                     ${tasksForDay.length
                         ? `<div class="task-list">${tasksForDay.map(task => renderTaskCard(task, taskColumn(task) || 'schedule')).join('')}</div>`
@@ -8509,15 +8623,20 @@
                             <span class="filter-label">Date</span>
                             ${renderTaskMiniFilter('date', 'all', 'All', taskDateFilter)}
                             ${renderTaskMiniFilter('date', 'today', 'Today', taskDateFilter)}
-                            ${renderTaskMiniFilter('date', 'week', '7 days', taskDateFilter)}
-                            ${renderTaskMiniFilter('date', 'month', '30 days', taskDateFilter)}
+                            ${renderTaskMiniFilter('date', 'week', 'This week', taskDateFilter)}
+                            ${renderTaskMiniFilter('date', 'upcoming', 'Upcoming', taskDateFilter)}
+                            ${renderTaskMiniFilter('date', 'no_date', 'No date', taskDateFilter)}
                         </div>
                         <div class="filter-row">
-                            <span class="filter-label">Project</span>
+                            <span class="filter-label">Workspace</span>
                             ${renderTaskProjectFilters(state.projectCounts)}
                         </div>
                         <div class="filter-row">
-                            <span class="filter-label">Category</span>
+                            <span class="filter-label">Assignee</span>
+                            ${renderTaskSignalFilters(state)}
+                        </div>
+                        <div class="filter-row">
+                            <span class="filter-label">Type</span>
                             ${renderTaskCategoryFilters(state.categoryCounts)}
                         </div>
                         ${renderFilterCountNote(state.filteredTasks.length, state.focusTasks.length, 'task')}
@@ -8591,17 +8710,24 @@
             const labels = [];
             if (taskUrgencyFilter !== 'all') labels.push(`Urgency: ${formatUrgency(taskUrgencyFilter)}`);
             if (taskDateFilter !== 'all') labels.push(`Date: ${taskDateFilterLabel(taskDateFilter)}`);
-            if (taskProjectFilter !== 'all') labels.push(`Project: ${taskProjectLabel({ project_key: taskProjectFilter })}`);
+            if (taskProjectFilter !== 'all') labels.push(`Workspace: ${taskProjectLabel({ project_key: taskProjectFilter })}`);
             if (taskCategoryFilter !== 'all') labels.push(`Category: ${taskCategoryLabel(taskCategoryFilter)}`);
+            if (taskSignalFilter !== 'all') labels.push(`Assignee: ${taskSignalFilterLabel(taskSignalFilter)}`);
             return labels;
         }
 
         function taskDateFilterLabel(filter) {
             return ({
                 today: 'Today',
-                week: 'Last 7 days',
+                week: 'This week',
+                upcoming: 'Upcoming',
+                no_date: 'No date',
                 month: 'Last 30 days'
             })[filter] || 'All';
+        }
+
+        function taskSignalFilterLabel(filter) {
+            return (TASK_SIGNAL_FILTERS.find(item => item.id === filter)?.label || filter || 'All').replace(/_/g, ' ');
         }
 
         function renderTaskMiniFilter(kind, value, label, currentValue) {
@@ -8619,6 +8745,17 @@
             })
             ];
             return renderFilterSelect('setTaskFilter', 'project', taskProjectFilter, options, 'Task project filter');
+        }
+
+        function renderTaskSignalFilters(state = {}) {
+            const focusTasks = state.focusTasks || [];
+            const options = TASK_SIGNAL_FILTERS.map(filter => {
+                const count = filter.id === 'all'
+                    ? focusTasks.length
+                    : focusTasks.filter(task => taskMatchesSignalFilter(task, filter.id)).length;
+                return { value: filter.id, label: `${filter.label} (${count})` };
+            });
+            return renderFilterSelect('setTaskFilter', 'signal', taskSignalFilter, options, 'Task assignee filter');
         }
 
         function renderTaskCategoryFilters(counts = {}) {
@@ -9043,6 +9180,7 @@
                         <div class="task-decision-options">
                             <button class="task-action" onclick="taskAction(event, ${id}, { stage: 'assigned', assigned_to: 'Shloimie', decision_required: false })">Defer</button>
                             <button class="task-action" onclick="taskEndpointAction(event, ${id}, 'convert-to-task', { assigned_to: 'Shloimie' })">Convert to task</button>
+                            <button class="task-action" onclick="taskEndpointAction(event, ${id}, 'needs-more-info', { waiting_on: 'Shloimie' })">Needs more info</button>
                         </div>
                     </div>
                 `;
@@ -9054,6 +9192,7 @@
                     <div class="task-decision-options">
                         <button class="task-action primary" onclick="taskEndpointAction(event, ${id}, 'convert-to-task', { assigned_to: 'Shloimie' })">Convert to task</button>
                         <button class="task-action" onclick="taskEndpointAction(event, ${id}, 'reassign', { assigned_to: 'Shloimie' })">Assign to Shloimie</button>
+                        <button class="task-action" onclick="taskEndpointAction(event, ${id}, 'needs-more-info', { waiting_on: 'Shloimie' })">Needs more info</button>
                         <button class="task-action" onclick="taskEndpointAction(event, ${id}, 'mark-done')">Decision handled</button>
                     </div>
                 </div>
@@ -11453,6 +11592,10 @@
             const latestWapi = items.find(item => String(item.source || '').toLowerCase() === 'wapi');
             const latestLabel = latestWapi ? formatDateTime(latestWapi.occurred_at || latestWapi.created_at) : 'No imported Whapi log yet';
             const importedCount = items.filter(item => String(item.source || '').toLowerCase() === 'wapi').length;
+            const reportSummary = wapiPhonebookReport?.summary || {};
+            const phonebookStatus = wapiPhonebookReport
+                ? `${reportSummary.phonebook_groups || 0} groups / ${reportSummary.manual_correction_candidates || 0} review`
+                : 'Not run';
             return `
                 <section class="focus-panel">
                     <div class="task-section-header">
@@ -11463,8 +11606,65 @@
                         ${renderSettingsControlRow('Latest imported WhatsApp', latestLabel, 'Whapi history imports are stored as contact communications and matched by parent/lead/student phone where possible.', importedCount ? 'Synced' : 'Ready')}
                         ${renderSettingsControlRow('Sync latest 100', 'Pulls recent sent and received messages from Whapi. No WhatsApp messages are sent.', 'Use this after connecting WHAPI_API_TOKEN or WAPI_API_TOKEN.', `<button class="task-action primary" onclick="syncWhapiLog(event)">Sync Now</button>`)}
                         ${renderSettingsControlRow('Dry run', 'Preview latest Whapi records without creating communication rows.', 'Useful for checking token/access before importing.', `<button class="task-action" onclick="syncWhapiLog(event, true)">Preview</button>`)}
+                        ${renderSettingsControlRow('Phonebook grouping', phonebookStatus, 'Builds a read-only grouping report from local Whapi/contact tables. It suggests review tags and never sends WhatsApp messages.', `<button class="task-action" onclick="loadWapiPhonebookReport(event)">Build Report</button>`)}
                     </div>
                 </section>
+                ${renderWapiPhonebookReport()}
+            `;
+        }
+
+        function renderWapiPhonebookReport() {
+            if (!wapiPhonebookReport) return '';
+            const summary = wapiPhonebookReport.summary || {};
+            const candidates = wapiPhonebookReport.manual_correction_candidates || [];
+            const typeRows = Object.entries(summary.recommended_types || {})
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 8)
+                .map(([type, count]) => `<span class="status-chip">${escapeHtml(type.replace(/_/g, ' '))}: ${Number(count || 0)}</span>`)
+                .join('');
+            return `
+                <section class="focus-panel">
+                    <div class="task-section-header">
+                        <h3>Phonebook Grouping Report</h3>
+                        <span>Dry-run / no-send</span>
+                    </div>
+                    <div class="task-overview-grid">
+                        ${renderMetricButton('Phonebook Groups', summary.phonebook_groups || 0, 'Grouped by normalized phone/chat id.', '')}
+                        ${renderMetricButton('Needs Review', summary.manual_correction_candidates || 0, 'Manual correction candidates before tag/stage changes.', '')}
+                        ${renderMetricButton('Corrections Applied', summary.manual_corrections_applied || 0, 'Local manual corrections stored in BNA.', '')}
+                        ${renderMetricButton('WhatsApp Rows', summary.communications_considered || 0, 'Local communications considered.', '')}
+                        ${renderMetricButton('External Writes', 0, 'This report never sends messages or writes contact tags.', '')}
+                    </div>
+                    <div class="task-card-meta">${typeRows || '<span class="status-chip">No grouped types yet</span>'}</div>
+                    ${candidates.length ? `
+                        <div class="content-section-grid">
+                            ${candidates.slice(0, 6).map(renderWapiPhonebookCandidate).join('')}
+                        </div>
+                    ` : '<div class="empty-state">No manual correction candidates in the current report.</div>'}
+                </section>
+            `;
+        }
+
+        function renderWapiPhonebookCandidate(group = {}) {
+            const flags = (group.review_flags || []).slice(0, 4);
+            const actions = (group.recommended_actions || []).slice(0, 2);
+            const applied = group.applied_correction || null;
+            const recommendedType = group.applied_type || group.recommended_type || 'general_contact';
+            return `
+                <article class="content-card">
+                    <div class="content-card-title">${escapeHtml(group.display_name || 'Unknown WhatsApp contact')}</div>
+                    <div class="content-card-meta">${escapeHtml(recommendedType)} / ${escapeHtml(group.confidence_label || 'medium')} confidence</div>
+                    <p class="event-meta">${escapeHtml(limitTextClient(group.reason || group.last_preview || '', 180))}</p>
+                    ${flags.length ? `<div class="task-card-meta">${flags.map(flag => `<span class="status-chip">${escapeHtml(flag.replace(/_/g, ' '))}</span>`).join('')}</div>` : ''}
+                    ${actions.length ? `<p class="settings-disabled-note">${escapeHtml(actions.join(' '))}</p>` : ''}
+                    ${applied ? `<p class="settings-disabled-note">Applied by ${escapeHtml(applied.applied_by || 'admin')} as ${escapeHtml(applied.correction_type || recommendedType)}.</p>` : `
+                        <div class="card-actions">
+                            <button class="task-action primary" data-phonebook-key="${escapeHtml(group.key || '')}" data-correction-type="${escapeHtml(group.recommended_type || 'general_contact')}" onclick="applyWapiPhonebookCorrection(event)">Apply recommended</button>
+                            <button class="task-action" data-phonebook-key="${escapeHtml(group.key || '')}" data-correction-type="friend_non_lead" onclick="applyWapiPhonebookCorrection(event)">Friend/non-lead</button>
+                            <button class="task-action" data-phonebook-key="${escapeHtml(group.key || '')}" data-correction-type="school_interest" onclick="applyWapiPhonebookCorrection(event)">School interest</button>
+                        </div>
+                    `}
+                </article>
             `;
         }
 
@@ -11489,14 +11689,47 @@
         }
 
         function renderAnnouncementPanel() {
+            const latest = parentAnnouncements.find(item => item.approved_for_parent_portal || item.selected_for_parent_portal)
+                || parentAnnouncements[0]
+                || null;
+            const approvedCount = parentAnnouncements.filter(item => item.approved_for_parent_portal || item.selected_for_parent_portal).length;
+            const draftCount = parentAnnouncements.filter(item => String(item.status || '').toLowerCase() === 'draft').length;
             return `
                 <section class="focus-panel">
-                    <div class="task-section-header"><h3>Announcements</h3><span>Approval required</span></div>
+                    <div class="task-section-header">
+                        <h3>Announcements</h3>
+                        <span>Approval required</span>
+                    </div>
+                    <div class="task-overview-grid">
+                        ${renderMetricButton('Parent Readback', latest ? 1 : 0, 'Latest parent-visible announcement stored locally.', '')}
+                        ${renderMetricButton('Approved', approvedCount, 'Selected parent portal updates.', '')}
+                        ${renderMetricButton('Drafts', draftCount, 'Saved weekly update drafts not selected for parents.', '')}
+                        ${renderMetricButton('External Sends', 0, 'Announcements do not send email, WhatsApp, or social posts from this panel.', '')}
+                    </div>
+                    ${latest ? `
+                        <article class="content-card" style="margin-top:14px;">
+                            <div class="content-card-title">${escapeHtml(latest.title || 'Parent announcement')}</div>
+                            <div class="content-card-meta">${escapeHtml([latest.status || 'selected', latest.week_start || latest.created_at ? formatDateTime(latest.week_start || latest.created_at) : 'No date'].filter(Boolean).join(' / '))}</div>
+                            <p class="event-meta">${escapeHtml(limitTextClient(latest.summary || latest.body || '', 280))}</p>
+                            ${latest.video_url ? `<a class="task-action" href="${escapeHtml(latest.video_url)}" target="_blank" rel="noopener">Video</a>` : ''}
+                        </article>
+                    ` : '<div class="empty-state" style="margin-top:14px;">No parent announcement is selected yet.</div>'}
                     <div class="settings-control-grid">
-                        ${renderSettingsControlRow('Parent announcements', 'Draft only', 'No real email, WhatsApp, or social send fires without connector configuration and explicit approval.', 'Guarded')}
+                        ${renderSettingsControlRow('Parent announcements', latest ? 'Selected locally' : 'Draft only', 'No real email, WhatsApp, or social send fires from this panel.', `<button class="task-action primary" onclick="approveParentAnnouncementPrompt(event)">Approve Draft</button>`)}
                         ${renderSettingsControlRow('Student announcements', 'Draft only', 'Student-facing messages must stay scoped to the student workspace and permitted visibility.', 'Guarded')}
                         ${renderSettingsControlRow('Provider announcements', 'Draft only', 'Provider participant announcements stay separate from BNA school communications.', 'Guarded')}
                     </div>
+                    ${parentAnnouncements.length ? `
+                        <div class="content-section-grid" style="margin-top:14px;">
+                            ${parentAnnouncements.slice(0, 6).map(item => `
+                                <article class="content-card">
+                                    <div class="content-card-title">${escapeHtml(item.title || 'Parent announcement')}</div>
+                                    <div class="content-card-meta">${escapeHtml([item.status || 'draft', item.selected_for_parent_portal ? 'parent visible' : 'not selected'].join(' / '))}</div>
+                                    <p class="event-meta">${escapeHtml(limitTextClient(item.summary || item.body || '', 180))}</p>
+                                </article>
+                            `).join('')}
+                        </div>
+                    ` : ''}
                 </section>
             `;
         }
@@ -11727,6 +11960,7 @@
             if (section === 'social_accounts') return renderConnectorSettingsSection(['social'], 'Social Accounts', 'Buffer/Publer-style connectors schedule approved posts for BNA and provider accounts.');
             if (section === 'drive_social_ingestion') return renderDriveSocialIngestionSettings();
             if (section === 'calendar') return renderCalendarPolicySettings();
+            if (section === 'google_workspace') return renderGoogleWorkspaceSettings();
             if (section === 'google_calendar') return renderGoogleCalendarSettings();
             if (section === 'google_classroom') return renderGoogleClassroomSettings();
             if (section === 'integrations') return renderConnectorSettingsSection(['email_identity', 'whatsapp', 'social', 'google_calendar', 'google_classroom', 'payment', 'video_library'], 'Integrations', 'External systems are connectors only; no legacy CRM dependency is required for BNA Operations.');
@@ -11776,6 +12010,7 @@
                 student_portal: 'Student-visible workspace behavior.',
                 provider_portal: 'Provider-scoped portal behavior.',
                 calendar: 'Internal calendar visibility policy.',
+                google_workspace: 'Drive, Calendar, Classroom, and Google Business Profile readiness.',
                 google_calendar: 'Google Calendar connector readiness.',
                 google_classroom: 'Google Classroom connector readiness.',
                 bot_permissions: 'Role-scoped assistant permissions.',
@@ -11828,6 +12063,202 @@
                     </div>
                 </div>
             `;
+        }
+
+        function googleIntegrationCardCount() {
+            const status = googleIntegrationStatus || {};
+            return 4 + (Array.isArray(status.connections) ? status.connections.length : 0);
+        }
+
+        function googleIntegrationConnection(integrationKey) {
+            const connections = Array.isArray(googleIntegrationStatus?.connections) ? googleIntegrationStatus.connections : [];
+            return connections.find(connection => connection.integration === integrationKey) || null;
+        }
+
+        function googleScopeText(scopes) {
+            if (Array.isArray(scopes)) return scopes.filter(Boolean).join(', ') || 'No scopes recorded';
+            return String(scopes || '').trim() || 'No scopes recorded';
+        }
+
+        function googleConnectionStatus(integrationKey, fallback = 'not connected') {
+            const connection = googleIntegrationConnection(integrationKey);
+            return connection?.status || fallback;
+        }
+
+        function renderGoogleWorkspaceSettings() {
+            const status = googleIntegrationStatus || {};
+            const oauth = status.oauth || {};
+            const maps = status.maps || {};
+            const business = status.business_profile || {};
+            const oauthConfigured = Boolean(oauth.configured);
+            const oauthConnection = googleIntegrationConnection('google_oauth') || {};
+            const calendarConnection = googleIntegrationConnection('google_calendar') || {};
+            const classroomConnection = googleIntegrationConnection('google_classroom') || {};
+            const businessConnection = googleIntegrationConnection('google_business_profile') || {};
+            const cards = [
+                {
+                    title: 'Google Drive',
+                    integration: 'google_oauth',
+                    mode: oauthConfigured ? 'Test-user OAuth' : 'No-OAuth / imported links',
+                    status: oauthConfigured ? googleConnectionStatus('google_oauth', 'ready for test users') : 'not configured',
+                    account: oauthConnection.external_account_id || 'No connected account',
+                    scopes: googleScopeText(oauth.required_scopes),
+                    last: oauthConnection.updated_at || 'No test yet',
+                    connectionId: oauthConnection.connection_id || '',
+                    note: 'Use public Drive links, imported owner-connected files, and manual uploads now. File search/import writes need a connected test user or owner pipeline.',
+                    dryRunAction: '',
+                    dryRunActions: [
+                        { id: 'google_drive_find_file_preview', label: 'Find/list', inputs: { query: 'latest Rabbi Scheller Mishnah video', source_stage: 'one_time_video_drop' } },
+                        { id: 'google_drive_create_doc_preview', label: 'Doc preview', inputs: { title: 'Class summary draft', folder_name: 'One Time class summaries' } },
+                        { id: 'google_drive_create_folder_preview', label: 'Folder preview', inputs: { folder_name: 'Provider workspace folder' } },
+                        { id: 'google_drive_move_file_preview', label: 'Move preview', inputs: { file_name: 'selected transcript', target_folder_name: 'One Time folder' } }
+                    ],
+                    testPath: '/api/google/connections/status'
+                },
+                {
+                    title: 'Google Calendar',
+                    integration: 'google_calendar',
+                    mode: oauthConfigured ? 'Test-user OAuth' : 'Internal calendar only',
+                    status: googleConnectionStatus('google_calendar', oauthConfigured ? 'ready for test users' : 'not configured'),
+                    account: calendarConnection.external_account_id || oauthConnection.external_account_id || 'No connected account',
+                    scopes: 'calendar.events, calendar.events.owned, calendar.app.created, calendar.freebusy',
+                    last: calendarConnection.updated_at || oauthConnection.updated_at || 'No test yet',
+                    connectionId: calendarConnection.connection_id || oauthConnection.connection_id || '',
+                    note: 'BNA internal calendar works now. External Calendar writes require dry-run preview, confirmation, and a connected account.',
+                    dryRunAction: 'sync_google_calendar',
+                    testPath: '/api/google/calendar/events'
+                },
+                {
+                    title: 'Google Classroom',
+                    integration: 'google_classroom',
+                    mode: oauthConfigured ? 'Test-user OAuth' : 'Internal assignments only',
+                    status: googleConnectionStatus('google_classroom', oauthConfigured ? 'ready for test users' : 'not configured'),
+                    account: classroomConnection.external_account_id || oauthConnection.external_account_id || 'No connected account',
+                    scopes: 'classroom.courses.readonly, classroom.courseworkmaterials, classroom.coursework.students, classroom.topics',
+                    last: classroomConnection.updated_at || oauthConnection.updated_at || 'No test yet',
+                    connectionId: classroomConnection.connection_id || oauthConnection.connection_id || '',
+                    note: 'Assignment payload previews already work inside BNA. Live Classroom coursework stays approval-gated.',
+                    dryRunAction: 'sync_google_classroom',
+                    testPath: '/api/google/classroom/courses'
+                },
+                {
+                    title: 'Google Business Profile',
+                    integration: 'google_business_profile',
+                    mode: business.approved ? 'Production OAuth' : 'Manual link / later verification',
+                    status: googleConnectionStatus('google_business_profile', business.status || 'not configured'),
+                    account: businessConnection.external_account_id || 'Provider connects their own account later',
+                    scopes: 'business.manage only after provider approval',
+                    last: businessConnection.updated_at || 'No test yet',
+                    connectionId: businessConnection.connection_id || '',
+                    note: business.fallback || 'Manual Google Business links and Place IDs are safe now. Live GBP API access waits for approval.',
+                    dryRunAction: '',
+                    testPath: '/api/integrations/google/business-profile/status'
+                }
+            ];
+            return `
+                <div class="connector-settings-section">
+                    <div class="task-section-header">
+                        <h3>Google Workspace</h3>
+                        <span>${oauthConfigured ? 'OAuth configured' : 'OAuth not configured'}</span>
+                    </div>
+                    <p class="settings-disabled-note">Natural-language Google actions still need the right Google scope. BNA should preview/dry-run now, execute only for connected test users, and prepare public verification later.</p>
+                    <div class="settings-control-grid">
+                        ${renderSettingsControlRow('No-OAuth mode', maps.configured ? 'Maps key configured' : 'Manual/public links', 'Public calendars, Maps links, Place IDs, YouTube/Vimeo links, manual Classroom notes, and imported Drive files can be used without OAuth.', 'Available now')}
+                        ${renderSettingsControlRow('Test-user OAuth', oauthConfigured ? 'Ready to add testers' : 'Needs credentials', 'Add Shloimie, Rabbi, and known testers on the OAuth consent screen before live public approval.', oauthConfigured ? 'Testing' : 'Blocked')}
+                        ${renderSettingsControlRow('Public production OAuth', 'Later', oauth.sensitive_scope_guard || 'Prepare privacy policy, deletion/disconnect, scope matrix, and demo video after behavior is stable.', 'Verification')}
+                    </div>
+                    <div class="connector-grid">
+                        ${cards.map(renderGoogleIntegrationCard).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderGoogleIntegrationCard(card) {
+            const canStartOauth = Boolean(googleIntegrationStatus?.oauth?.configured);
+            const dryRunActions = Array.isArray(card.dryRunActions) && card.dryRunActions.length
+                ? card.dryRunActions
+                : (card.dryRunAction ? [{ id: card.dryRunAction, label: 'Dry-run', inputs: {} }] : []);
+            const dryRunMarkup = dryRunActions.length
+                ? dryRunActions.map(action => `<button class="task-action primary" type="button" onclick="previewGoogleIntegrationAction(${attrJson(action.id)}, ${attrJson(action.inputs || {})})">${escapeHtml(action.label || 'Dry-run')}</button>`).join('')
+                : '<span class="status-pill">Manual preview</span>';
+            return `
+                <article class="connector-card">
+                    <div class="contact-detail-header">
+                        <div>
+                            <div class="contact-detail-name">${escapeHtml(card.title)}</div>
+                            <div class="contact-detail-label">${escapeHtml(card.mode)}</div>
+                        </div>
+                        <span class="status-pill">${escapeHtml(String(card.status || 'not connected').replace(/_/g, ' '))}</span>
+                    </div>
+                    <div class="settings-control-grid compact">
+                        ${renderSettingsControlRow('Account', card.account, 'Connected Google account or current safe fallback.', card.account && !/No connected/i.test(card.account) ? 'Connected' : 'Not connected')}
+                        ${renderSettingsControlRow('Scopes', limitTextClient(card.scopes, 180), 'Use the smallest scopes that support the requested action.', 'Scope plan')}
+                        ${renderSettingsControlRow('Last test', card.last, card.note, card.last && !/^No test/i.test(card.last) ? 'Logged' : 'No test')}
+                    </div>
+                    <div class="task-actions">
+                        ${dryRunMarkup}
+                        <button class="task-action" type="button" onclick="testGoogleIntegrationEndpoint(${attrJson(card.testPath)}, ${attrJson(card.title)})">Test connection</button>
+                        ${canStartOauth ? `<a class="task-action" href="/api/google/oauth/start?role=admin_teacher&features=calendar,classroom,drive_pipeline" target="_blank" rel="noopener noreferrer">Reconnect</a>` : '<span class="status-pill">OAuth credentials needed</span>'}
+                        ${card.connectionId ? `<button class="task-action danger" type="button" onclick="disconnectGoogleConnection(${Number(card.connectionId)}, ${attrJson(card.title)})">Disconnect</button>` : ''}
+                    </div>
+                </article>
+            `;
+        }
+
+        async function previewGoogleIntegrationAction(actionId, extraInputs = {}) {
+            try {
+                const result = await api.runAction({
+                    action_id: actionId,
+                    dry_run: true,
+                    source: 'operations_google_workspace',
+                    inputs: {
+                        workspace_key: currentWorkspaceKey(),
+                        requested_from: 'google_workspace_settings',
+                        ...(extraInputs || {})
+                    }
+                });
+                await loadData({ background: true });
+                alert(result?.message || 'Google dry-run preview was logged.');
+            } catch (error) {
+                alert(error.message || 'Could not preview Google action.');
+            }
+        }
+
+        async function testGoogleIntegrationEndpoint(path, label) {
+            try {
+                const response = await fetch(path, { credentials: 'same-origin' });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.error || `${label} test returned ${response.status}`);
+                await loadData({ background: true });
+                alert(`${label} connection test reached the server. Review the card/error details before enabling live writes.`);
+            } catch (error) {
+                alert(`${label} test blocked: ${error.message || 'connection is not ready yet'}`);
+            }
+        }
+
+        async function disconnectGoogleConnection(connectionId, label) {
+            const id = Number(connectionId || 0);
+            if (!id) return;
+            const confirmed = window.confirm(`Disconnect ${label}? BNA will remove the stored Google refresh token and keep Google actions in preview mode until reconnected.`);
+            if (!confirmed) return;
+            try {
+                const response = await fetch(`/api/google/connections/${encodeURIComponent(String(id))}/disconnect`, {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        confirm: 'DISCONNECT_GOOGLE',
+                        source: 'operations_google_workspace'
+                    })
+                });
+                const data = await response.json().catch(() => ({}));
+                if (!response.ok) throw new Error(data.error || `${label} disconnect returned ${response.status}`);
+                await loadData({ background: true });
+                alert(data.message || `${label} was disconnected.`);
+            } catch (error) {
+                alert(`${label} disconnect blocked: ${error.message || 'connection could not be disconnected'}`);
+            }
         }
 
         function renderCalendarPolicySettings() {
@@ -12184,6 +12615,138 @@
                 }
             } catch (err) {
                 alert('Whapi sync failed: ' + err.message);
+            } finally {
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = originalText;
+                }
+            }
+        }
+
+        async function loadWapiPhonebookReport(event) {
+            event?.preventDefault?.();
+            const button = event?.currentTarget;
+            const originalText = button?.textContent || '';
+            try {
+                if (button) {
+                    button.disabled = true;
+                    button.textContent = 'Building...';
+                }
+                wapiPhonebookReport = await api.getWapiPhonebookReport(100);
+                render();
+            } catch (err) {
+                alert('Whapi phonebook report failed: ' + err.message);
+            } finally {
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = originalText;
+                }
+            }
+        }
+
+        async function applyWapiPhonebookCorrection(event) {
+            event?.preventDefault?.();
+            const button = event?.currentTarget;
+            const key = button?.dataset?.phonebookKey || '';
+            const correctionType = button?.dataset?.correctionType || '';
+            const groups = [
+                ...(wapiPhonebookReport?.manual_correction_candidates || []),
+                ...(wapiPhonebookReport?.phonebook || [])
+            ];
+            const group = groups.find(item => item.key === key);
+            if (!group || !key || !correctionType) {
+                alert('Correction target is missing. Rebuild the phonebook report and try again.');
+                return;
+            }
+            const notes = prompt('Local correction note (optional)', group.reason || '') || '';
+            const originalText = button?.textContent || '';
+            const payload = {
+                phonebook_key: key,
+                correction_type: correctionType,
+                display_name: group.display_name || '',
+                phone_digits: group.phone_digits || '',
+                chat_id: group.chat_id || '',
+                previous_recommended_type: group.recommended_type || '',
+                confidence_label: group.confidence_label || '',
+                notes,
+                group,
+                apply_contact_tags: true
+            };
+            try {
+                if (button) {
+                    button.disabled = true;
+                    button.textContent = 'Previewing...';
+                }
+                const previewResult = await api.applyWapiPhonebookCorrection({
+                    ...payload,
+                    dry_run: true
+                });
+                const crmPreview = previewResult?.crm_write_preview || previewResult?.correction_preview?.crm_write_preview || {};
+                const writeLines = (crmPreview.writes || []).map(write => {
+                    const ids = write.lead_id ? ` #${write.lead_id}` : (write.contact_ids || []).length ? ` #${write.contact_ids.join(', #')}` : '';
+                    return `- ${String(write.action || 'update').replace(/_/g, ' ')} ${write.target || 'local CRM'}${ids}: ${(write.tags || []).slice(0, 5).join(', ')}`;
+                });
+                const skippedLines = (crmPreview.skipped_writes || []).slice(0, 4).map(item => `- Skip ${item.target || 'row'}${item.id ? ` #${item.id}` : ''}: ${item.reason || 'guarded'}`);
+                const previewText = [
+                    `Preview local WAPI correction as "${correctionType.replace(/_/g, ' ')}".`,
+                    '',
+                    writeLines.length ? 'Local contact/tag writes:' : 'Local contact/tag writes: none; only the correction overlay will be stored.',
+                    ...writeLines,
+                    skippedLines.length ? '' : null,
+                    skippedLines.length ? 'Guarded rows:' : null,
+                    ...skippedLines,
+                    '',
+                    'No WhatsApp message, broadcast, or external CRM write will run.',
+                    '',
+                    'Apply this local correction now?'
+                ].filter(line => line !== null).join('\n');
+                if (!confirm(previewText)) return;
+                if (button) button.textContent = 'Applying...';
+                const result = await api.applyWapiPhonebookCorrection({
+                    ...payload,
+                    confirm: 'APPLY_WAPI_CORRECTION'
+                });
+                if (!result?.success) throw new Error(result?.error || 'Correction was not applied');
+                wapiPhonebookReport = await api.getWapiPhonebookReport(100);
+                render();
+                const appliedCount = result?.crm_write_result?.applied_writes?.length || 0;
+                alert(`Local WAPI correction applied${appliedCount ? ` with ${appliedCount} contact/tag write(s)` : ''}. No WhatsApp message was sent.`);
+            } catch (err) {
+                alert('Whapi correction failed: ' + err.message);
+            } finally {
+                if (button) {
+                    button.disabled = false;
+                    button.textContent = originalText;
+                }
+            }
+        }
+
+        async function approveParentAnnouncementPrompt(event) {
+            event?.preventDefault?.();
+            const title = prompt('Parent announcement title', parentAnnouncements[0]?.title || 'This week at BNA');
+            if (!title || !title.trim()) return;
+            const body = prompt('Parent announcement body', parentAnnouncements[0]?.body || parentAnnouncements[0]?.summary || '');
+            if (!body || !body.trim()) return;
+            if (!confirm('Approve this as the parent-visible announcement? No email, WhatsApp, or social post will be sent.')) return;
+            const button = event?.currentTarget;
+            const originalText = button?.textContent || '';
+            try {
+                if (button) {
+                    button.disabled = true;
+                    button.textContent = 'Saving...';
+                }
+                const result = await api.approveParentAnnouncement({
+                    workspace: currentWorkspaceKey(),
+                    title,
+                    body,
+                    summary: limitTextClient(body, 500),
+                    confirm: 'APPROVE_PARENT_ANNOUNCEMENT'
+                });
+                if (!result?.success) throw new Error(result?.error || 'Parent announcement was not saved');
+                await loadData({ background: true });
+                alert('Parent announcement approved locally. No message was sent.');
+            } catch (err) {
+                alert('Parent announcement failed: ' + err.message);
             } finally {
                 if (button) {
                     button.disabled = false;
@@ -17235,15 +17798,14 @@
 
         function taskMatchesDateFilter(task, filter) {
             if (filter === 'all') return true;
+            if (filter === 'no_date') return !task.due_date && !task.planned_at;
+            const dueTime = taskDueTime(task);
+            if (filter === 'today') return taskIsDueToday(task);
+            if (filter === 'week') return taskIsDueWithinDays(task, 7);
+            if (filter === 'upcoming') return Number.isFinite(dueTime) && dueTime >= startOfTodayMs();
             const value = Date.parse(taskRelevantDate(task) || '');
             if (!Number.isFinite(value)) return false;
             const now = Date.now();
-            if (filter === 'today') {
-                const start = new Date();
-                start.setHours(0, 0, 0, 0);
-                return value >= start.getTime();
-            }
-            if (filter === 'week') return value >= now - (7 * 24 * 60 * 60 * 1000);
             if (filter === 'month') return value >= now - (30 * 24 * 60 * 60 * 1000);
             return true;
         }
@@ -18143,7 +18705,8 @@
                 const activeSettingsSection = activeView === 'settings' ? settingsSection : '';
                 const needsDashboardData = activeView === 'dashboard';
                 const needsPlatformData = needsDashboardData || ['pipelines', 'calendar', 'communications', 'internal_dialogue', 'service_providers', 'api_usage', 'admin', 'settings'].includes(activeView);
-                const needsCalendarData = needsDashboardData || activeView === 'calendar' || (activeView === 'settings' && ['calendar', 'google_classroom', 'integrations'].includes(activeSettingsSection));
+                const needsCalendarData = needsDashboardData || activeView === 'calendar' || (activeView === 'settings' && ['calendar', 'google_classroom', 'integrations', 'google_workspace'].includes(activeSettingsSection));
+                const needsGoogleIntegrationData = activeView === 'settings' && ['google_workspace', 'google_calendar', 'google_classroom', 'integrations', 'integrations_core', 'calendar_classroom'].includes(activeSettingsSection);
                 const needsPipelineData = needsDashboardData || ['pipelines', 'tasks', 'service_providers'].includes(activeView);
                 const needsDialogueData = needsDashboardData || ['internal_dialogue', 'communications'].includes(activeView) || (activeView === 'settings' && ['bot_permissions', 'automations'].includes(activeSettingsSection));
                 const needsProjectData = needsDashboardData || ['pipelines', 'service_providers', 'admin'].includes(activeView) || (activeView === 'settings' && ['workspace', 'users_roles'].includes(activeSettingsSection));
@@ -18151,6 +18714,7 @@
                 const needsAgentFleetData = needsDashboardData || ['tasks', 'api_usage', 'admin', 'internal_dialogue'].includes(activeView);
                 const needsPeopleData = needsDashboardData || ['contacts', 'admin'].includes(activeView) || (activeView === 'settings' && activeSettingsSection === 'users_roles');
                 const needsContactData = needsDashboardData || ['contacts', 'communications', 'service_providers', 'api_usage', 'pipelines'].includes(activeView) || (activeView === 'settings' && ['parent_portal', 'communications'].includes(activeSettingsSection));
+                const needsAnnouncementData = needsDashboardData || activeView === 'communications' || (activeView === 'settings' && activeSettingsSection === 'communications');
                 const needsSignupData = needsContactData || activeView === 'students' || activeView === 'accounting' || (activeView === 'settings' && activeSettingsSection === 'parent_portal');
                 const needsAccountingData = needsDashboardData || ['accounting', 'api_usage'].includes(activeView) || (activeView === 'settings' && ['billing', 'api_limits'].includes(activeSettingsSection));
                 const needsContentData = needsDashboardData || ['content', 'service_providers', 'calendar'].includes(activeView);
@@ -18158,7 +18722,7 @@
                 const needsStudentData = needsDashboardData || ['students', 'api_usage', 'calendar'].includes(activeView) || (activeView === 'settings' && activeSettingsSection === 'student_portal');
                 const needsProviderData = needsDashboardData || ['service_providers', 'contacts', 'communications', 'api_usage', 'pipelines'].includes(activeView) || (activeView === 'settings' && ['provider_index', 'provider_portal', 'provider_plans', 'provider_entitlements', 'provider_onboarding', 'commercial_models', 'payment_links', 'external_apps'].includes(activeSettingsSection));
                 const needsSupportData = needsDashboardData || ['admin', 'communications', 'api_usage', 'internal_dialogue', 'pipelines'].includes(activeView) || (activeView === 'settings' && ['automations', 'api_limits', 'bot_permissions'].includes(activeSettingsSection));
-                const [workspacePlatformRes, calendarEventsRes, pipelineCardsRes, internalDialogueRes, projectsRes, peopleRes, tasksRes, agentFleetRes, supportTicketsRes, signupsRes, parentLeadsRes, serviceProvidersRes, contactCommunicationsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, classSessionsRes, projectMeetingsRes, contentPromptsRes, contentBundlesRes, studentsRes, assignmentsRes, assignmentPromptsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes] = await Promise.allSettled([
+                const [workspacePlatformRes, calendarEventsRes, pipelineCardsRes, internalDialogueRes, projectsRes, peopleRes, tasksRes, agentFleetRes, supportTicketsRes, signupsRes, parentLeadsRes, serviceProvidersRes, contactCommunicationsRes, parentAnnouncementsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, classSessionsRes, projectMeetingsRes, contentPromptsRes, contentBundlesRes, studentsRes, assignmentsRes, assignmentPromptsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes, googleIntegrationRes] = await Promise.allSettled([
                     needsPlatformData ? api.getWorkspacePlatform(workspaceFilter ? { workspace: workspaceFilter } : {}) : Promise.resolve({ workspaces: [], connector_settings: [], bot_actions: [], bot_action_logs: [] }),
                     needsCalendarData ? api.getCalendarEvents(workspaceFilter ? { workspace: workspaceFilter } : {}) : Promise.resolve({ events: [] }),
                     needsPipelineData ? api.getPipelineCards(workspaceFilter ? { workspace: workspaceFilter } : {}) : Promise.resolve({ cards: [] }),
@@ -18172,6 +18736,7 @@
                     needsContactData ? api.getParentLeads() : Promise.resolve({ leads: [] }),
                     needsProviderData ? api.getServiceProviders({ approved_only: false }) : Promise.resolve({ providers: [] }),
                     needsContactData ? api.getContactCommunications() : Promise.resolve({ communications: [] }),
+                    needsAnnouncementData ? api.getParentAnnouncements(workspaceFilter ? { workspace: workspaceFilter, limit: 20 } : { limit: 20 }) : Promise.resolve({ announcements: [] }),
                     needsAccountingData ? api.getPayments() : Promise.resolve({ payments: [] }),
                     needsAccountingData ? api.getPaymentIntake() : Promise.resolve({ intake: [] }),
                     needsAccountingData ? api.getPaymentReminderDue() : Promise.resolve(null),
@@ -18187,7 +18752,8 @@
                     needsStudentData ? api.getDeviceAccessRules() : Promise.resolve({ rules: [] }),
                     needsStudentData ? api.getTorahLearning() : Promise.resolve(null),
                     needsStudentData ? api.getAccountability() : Promise.resolve({ events: [] }),
-                    needsStudentData ? api.getGroupGoals() : Promise.resolve({ goals: [] })
+                    needsStudentData ? api.getGroupGoals() : Promise.resolve({ goals: [] }),
+                    needsGoogleIntegrationData ? api.getGoogleIntegrationStatus() : Promise.resolve(null)
                 ]);
 
                 if (workspacePlatformRes.status === 'fulfilled' && workspacePlatformRes.value) {
@@ -18217,6 +18783,7 @@
                 if (parentLeadsRes.status === 'fulfilled' && parentLeadsRes.value?.leads) parentLeads = parentLeadsRes.value.leads;
                 if (serviceProvidersRes.status === 'fulfilled' && serviceProvidersRes.value?.providers) serviceProviders = serviceProvidersRes.value.providers;
                 if (contactCommunicationsRes.status === 'fulfilled' && contactCommunicationsRes.value?.communications) contactCommunications = contactCommunicationsRes.value.communications;
+                if (parentAnnouncementsRes.status === 'fulfilled' && parentAnnouncementsRes.value?.announcements) parentAnnouncements = parentAnnouncementsRes.value.announcements;
                 if (paymentsRes.status === 'fulfilled' && paymentsRes.value?.payments) payments = paymentsRes.value.payments;
                 if (paymentIntakeRes.status === 'fulfilled' && paymentIntakeRes.value?.intake) paymentIntake = paymentIntakeRes.value.intake;
                 if (paymentReminderRes.status === 'fulfilled') paymentReminderPreview = paymentReminderRes.value;
@@ -18233,8 +18800,9 @@
                 if (torahRes.status === 'fulfilled' && torahRes.value) torahSummary = torahRes.value;
                 if (accountabilityRes.status === 'fulfilled' && accountabilityRes.value?.events) accountabilityEvents = accountabilityRes.value.events;
                 if (groupGoalsRes.status === 'fulfilled' && groupGoalsRes.value?.goals) groupGoals = groupGoalsRes.value.goals;
+                if (googleIntegrationRes.status === 'fulfilled' && googleIntegrationRes.value) googleIntegrationStatus = googleIntegrationRes.value;
 
-                const errors = [workspacePlatformRes, calendarEventsRes, pipelineCardsRes, internalDialogueRes, projectsRes, peopleRes, tasksRes, agentFleetRes, supportTicketsRes, signupsRes, parentLeadsRes, serviceProvidersRes, contactCommunicationsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, classSessionsRes, projectMeetingsRes, contentPromptsRes, contentBundlesRes, studentsRes, assignmentsRes, assignmentPromptsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes]
+                const errors = [workspacePlatformRes, calendarEventsRes, pipelineCardsRes, internalDialogueRes, projectsRes, peopleRes, tasksRes, agentFleetRes, supportTicketsRes, signupsRes, parentLeadsRes, serviceProvidersRes, contactCommunicationsRes, parentAnnouncementsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, classSessionsRes, projectMeetingsRes, contentPromptsRes, contentBundlesRes, studentsRes, assignmentsRes, assignmentPromptsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes, googleIntegrationRes]
                     .filter((result) => result.status === 'rejected')
                     .map((result) => result.reason?.message || 'Unknown dashboard error');
 
@@ -19419,6 +19987,13 @@
             document.getElementById('taskModal').classList.add('show');
         }
 
+        function openTaskModalForDate(value) {
+            const key = normalizeDateKey(value);
+            openTaskModal();
+            const dueInput = document.getElementById('taskDueDate');
+            if (dueInput && key) dueInput.value = key;
+        }
+
         function closeTaskModal() {
             document.getElementById('taskModal').classList.remove('show');
             editingTask = null;
@@ -19609,30 +20184,38 @@
             await loadData();
         }
 
+        async function taskEndpointAction(event, taskId, action, payload = {}) {
+            event.stopPropagation();
+            await api.taskAction(taskId, action, payload || {});
+            await loadData();
+        }
+
+        async function moveSelectedTaskToDate(event, value) {
+            event?.stopPropagation?.();
+            const key = normalizeDateKey(value);
+            const taskId = Number(selectedTaskId || expandedTaskId || 0);
+            if (!key) return alert('Choose a valid calendar date first.');
+            if (!taskId) return alert('Open a task first, then return to the calendar to move it.');
+            await api.updateTask(taskId, { due_date: key });
+            taskCalendarSelectedDate = key;
+            await loadData();
+        }
+
         async function taskDecisionAction(event, taskId, option) {
             event.stopPropagation();
             const task = tasks.find(item => Number(item.id) === Number(taskId));
-            const previousNotes = task?.notes || '';
-            const decisionLine = `Decision chosen from dashboard: ${option.label} - ${option.value}`;
             const optionPatch = sanitizeDecisionOptionPatch(option.patch || {});
             const patchNotes = optionPatch.notes || '';
             delete optionPatch.notes;
-            const now = new Date().toISOString();
             const routesToWork = decisionPatchRoutesToWork(optionPatch);
-            const completionPatch = routesToWork
-                ? { stage: 'assigned', assigned_to: 'Codex' }
-                : {
-                    stage: 'done',
-                    assigned_to: task?.assigned_to || 'Shloimie',
-                    completed_at: now,
-                    verified_at: now,
-                    verification_notes: decisionLine,
-                };
-            await api.updateTask(taskId, {
-                ...completionPatch,
-                decision_required: false,
-                ...optionPatch,
-                notes: [previousNotes, decisionLine, patchNotes].filter(Boolean).join('\n\n'),
+            const assignedTo = optionPatch.assigned_to || optionPatch.assignedTo || (routesToWork ? 'Codex' : (task?.assigned_to || 'Shloimie'));
+            await api.chooseTaskDecision(taskId, {
+                option_label: option.label || 'Chosen option',
+                option_value: option.value || '',
+                notes: patchNotes,
+                work_remains: routesToWork,
+                assigned_to: routesToWork ? assignedTo : undefined,
+                agent_executable: routesToWork && taskIsMachine({ assigned_to: assignedTo }),
             });
             await loadData();
         }

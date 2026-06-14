@@ -9,13 +9,14 @@ const parent = fs.readFileSync(path.join(repoRoot, 'public', 'parent.html'), 'ut
 const student = fs.readFileSync(path.join(repoRoot, 'public', 'student.html'), 'utf8');
 const provider = fs.readFileSync(path.join(repoRoot, 'public', 'provider.html'), 'utf8');
 const shellCss = fs.readFileSync(path.join(repoRoot, 'public', 'css', 'bna-app-shell.css'), 'utf8');
+const server = fs.readFileSync(path.join(repoRoot, 'server.js'), 'utf8');
 
 test('Operations uses app-wide BNA brand shell and light SaaS toolbar', () => {
   assert.match(operations, /ops-brand-topbar/);
   assert.match(operations, /Bnei Neviim Academy/);
   assert.match(operations, /BNA School Workspace/);
   assert.match(operations, /Platform \/ Super Admin/);
-  assert.match(shellCss, /--bna-shell-blue: #111111/);
+  assert.match(shellCss, /--bna-shell-blue: #1e3a5f/);
   assert.doesNotMatch(shellCss, /#1f5f8f|#173f64|rgba\(31, 95, 143|rgba\(23, 63, 100/);
   assert.doesNotMatch(operations, /#1f5f8f|#173f64|rgba\(31, 95, 143|rgba\(23, 63, 100/);
   assert.match(shellCss, /body\.bna-ops-shell-page \.ops-brand-topbar/);
@@ -28,4 +29,11 @@ test('parent, student, and provider portals share the BNA static brand bar', () 
     assert.match(html, /Bnei Neviim Academy/);
   }
   assert.doesNotMatch(provider, /#1f5f8f|#173f64|rgba\(31, 95, 143|rgba\(23, 63, 100/);
+});
+
+test('public signup pages have clean no-store aliases for browser smoke', () => {
+  assert.match(server, /app\.get\(\['\/signup', '\/register'\]/);
+  assert.match(server, /signup\.html/);
+  assert.match(server, /app\.get\(\['\/signup-he', '\/he\/signup'\]/);
+  assert.match(server, /signup-he\.html/);
 });

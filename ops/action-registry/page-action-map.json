@@ -1,53 +1,44 @@
 {
-  "admin": [
+  "tasks": [
     {
-      "action_id": "queue_telegram_report",
-      "label": "Queue Telegram report",
-      "category": "communications",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "route_bug_to_codex",
-      "label": "Route bug to Codex",
-      "category": "system",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "technical_agent",
-        "system"
-      ]
-    }
-  ],
-  "assignments": [
-    {
-      "action_id": "generate_student_worksheet",
-      "label": "Generate student worksheet",
-      "category": "student",
+      "action_id": "create_task",
+      "label": "Create task",
+      "category": "tasks",
       "approval_required": false,
       "allowed_roles": [
         "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
         "admin",
         "bna_admin",
         "school_manager",
-        "staff",
-        "parent",
         "operator",
         "system"
       ]
     },
     {
-      "action_id": "sync_google_classroom",
-      "label": "Sync Google Classroom",
-      "category": "calendar",
-      "approval_required": true,
+      "action_id": "create_decision",
+      "label": "Create decision",
+      "category": "tasks",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "update_task_stage",
+      "label": "Update task stage",
+      "category": "tasks",
+      "approval_required": false,
       "allowed_roles": [
         "super_admin",
         "platform_manager",
@@ -61,10 +52,65 @@
       ]
     }
   ],
-  "bot": [
+  "dashboard": [
     {
-      "action_id": "create_decision",
-      "label": "Create decision",
+      "action_id": "create_task",
+      "label": "Create task",
+      "category": "tasks",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    }
+  ],
+  "internal_dialogue": [
+    {
+      "action_id": "create_task",
+      "label": "Create task",
+      "category": "tasks",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "add_timeline_note",
+      "label": "Add timeline note",
+      "category": "communications",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    }
+  ],
+  "telegram": [
+    {
+      "action_id": "create_task",
+      "label": "Create task",
       "category": "tasks",
       "approval_required": false,
       "allowed_roles": [
@@ -101,27 +147,9 @@
       ]
     },
     {
-      "action_id": "draft_parent_response",
-      "label": "Draft parent response",
-      "category": "parent",
-      "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "draft_weekly_update",
-      "label": "Draft weekly update",
-      "category": "newsletter",
+      "action_id": "create_decision",
+      "label": "Create decision",
+      "category": "tasks",
       "approval_required": false,
       "allowed_roles": [
         "super_admin",
@@ -136,379 +164,9 @@
       ]
     },
     {
-      "action_id": "generate_student_worksheet",
-      "label": "Generate student worksheet",
-      "category": "student",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "staff",
-        "parent",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "post_community_message",
-      "label": "Post community message",
-      "category": "communications",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "staff",
-        "provider_admin",
-        "provider_manager",
-        "system"
-      ]
-    },
-    {
-      "action_id": "queue_telegram_report",
-      "label": "Queue Telegram report",
-      "category": "communications",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "request_provider_contact",
-      "label": "Request provider contact",
-      "category": "provider",
-      "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "route_bug_to_codex",
-      "label": "Route bug to Codex",
-      "category": "system",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "technical_agent",
-        "system"
-      ]
-    },
-    {
-      "action_id": "select_weekly_update_hero",
-      "label": "Select weekly update hero",
-      "category": "newsletter",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    }
-  ],
-  "calendar": [
-    {
-      "action_id": "create_calendar_event",
-      "label": "Create calendar event",
-      "category": "calendar",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "create_parent_visible_event",
-      "label": "Create parent-visible event",
-      "category": "parent",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "create_provider_class_session",
-      "label": "Create provider class session",
-      "category": "provider",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "provider_admin",
-        "provider_manager",
-        "system"
-      ]
-    },
-    {
-      "action_id": "create_student_schedule_item",
-      "label": "Create student schedule item",
-      "category": "student",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "delete_calendar_event",
-      "label": "Archive calendar event",
-      "category": "calendar",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "mark_event_admin_only",
-      "label": "Mark event admin-only",
-      "category": "calendar",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "mark_event_parent_visible",
-      "label": "Mark event parent-visible",
-      "category": "calendar",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "mark_event_student_visible",
-      "label": "Mark event student-visible",
-      "category": "calendar",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "open_calendar_event",
-      "label": "Open calendar event",
-      "category": "calendar",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system",
-        "parent",
-        "student",
-        "provider_admin",
-        "participant"
-      ]
-    },
-    {
-      "action_id": "sync_google_calendar",
-      "label": "Sync Google Calendar",
-      "category": "calendar",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "update_calendar_event",
-      "label": "Update calendar event",
-      "category": "calendar",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    }
-  ],
-  "communications": [
-    {
-      "action_id": "approve_email",
-      "label": "Approve email",
-      "category": "email",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "approve_newsletter",
-      "label": "Approve newsletter",
-      "category": "newsletter",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "draft_email",
-      "label": "Draft email",
-      "category": "email",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "draft_email_from_newsletter",
-      "label": "Draft email from newsletter",
-      "category": "email",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "draft_parent_response",
-      "label": "Draft parent response",
-      "category": "parent",
-      "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "draft_weekly_update",
-      "label": "Draft weekly update",
-      "category": "newsletter",
+      "action_id": "update_task_stage",
+      "label": "Update task stage",
+      "category": "tasks",
       "approval_required": false,
       "allowed_roles": [
         "super_admin",
@@ -526,90 +184,6 @@
       "action_id": "find_latest_newsletter_draft",
       "label": "Find latest newsletter draft",
       "category": "newsletter",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "generate_social_posts_from_newsletter",
-      "label": "Generate social posts from newsletter",
-      "category": "social",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "generate_whatsapp_from_newsletter",
-      "label": "Generate WhatsApp from newsletter",
-      "category": "whatsapp",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "pause_scheduled_email",
-      "label": "Pause scheduled email",
-      "category": "email",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "post_community_message",
-      "label": "Post community message",
-      "category": "communications",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "staff",
-        "provider_admin",
-        "provider_manager",
-        "system"
-      ]
-    },
-    {
-      "action_id": "refine_email",
-      "label": "Refine email",
-      "category": "email",
       "approval_required": false,
       "allowed_roles": [
         "super_admin",
@@ -641,117 +215,10 @@
       ]
     },
     {
-      "action_id": "schedule_email",
-      "label": "Schedule email",
-      "category": "email",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "select_weekly_update_hero",
-      "label": "Select weekly update hero",
+      "action_id": "draft_weekly_update",
+      "label": "Draft weekly update",
       "category": "newsletter",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "send_test_email",
-      "label": "Send test email",
-      "category": "email",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "view_email_log",
-      "label": "View email log",
-      "category": "email",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    }
-  ],
-  "community": [
-    {
-      "action_id": "post_community_message",
-      "label": "Post community message",
-      "category": "communications",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "staff",
-        "provider_admin",
-        "provider_manager",
-        "system"
-      ]
-    }
-  ],
-  "contacts": [
-    {
-      "action_id": "move_lead_stage",
-      "label": "Move lead stage",
-      "category": "communications",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    }
-  ],
-  "content": [
-    {
-      "action_id": "approve_newsletter",
-      "label": "Approve newsletter",
-      "category": "newsletter",
-      "approval_required": true,
       "allowed_roles": [
         "super_admin",
         "platform_manager",
@@ -768,6 +235,642 @@
       "action_id": "draft_email_from_newsletter",
       "label": "Draft email from newsletter",
       "category": "email",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "draft_email",
+      "label": "Draft email",
+      "category": "email",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "refine_email",
+      "label": "Refine email",
+      "category": "email",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "create_calendar_event",
+      "label": "Create calendar event",
+      "category": "calendar",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "google_drive_find_file_preview",
+      "label": "Preview Drive file search",
+      "category": "content",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_doc_preview",
+      "label": "Preview Drive Doc creation",
+      "category": "content",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_folder_preview",
+      "label": "Preview Drive folder creation",
+      "category": "content",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "google_drive_move_file_preview",
+      "label": "Preview Drive file move",
+      "category": "content",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "generate_whatsapp_from_newsletter",
+      "label": "Generate WhatsApp from newsletter",
+      "category": "whatsapp",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "draft_parent_response",
+      "label": "Draft parent response",
+      "category": "parent",
+      "approval_required": false,
+      "allowed_roles": [
+        "parent",
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "post_community_message",
+      "label": "Post community message",
+      "category": "communications",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "staff",
+        "provider_admin",
+        "provider_manager",
+        "system"
+      ]
+    },
+    {
+      "action_id": "capture_provider_google_business_link",
+      "label": "Capture provider Google Business link",
+      "category": "provider",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "operator",
+        "provider_admin",
+        "provider_manager",
+        "system"
+      ]
+    },
+    {
+      "action_id": "move_lead_stage",
+      "label": "Move lead stage",
+      "category": "communications",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "queue_telegram_report",
+      "label": "Queue Telegram report",
+      "category": "communications",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "route_bug_to_codex",
+      "label": "Route bug to Codex",
+      "category": "system",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "operator",
+        "technical_agent",
+        "system"
+      ]
+    }
+  ],
+  "support_tickets": [
+    {
+      "action_id": "create_ticket",
+      "label": "Create ticket",
+      "category": "communications",
+      "approval_required": false,
+      "allowed_roles": [
+        "parent",
+        "student",
+        "provider_admin",
+        "provider_manager",
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "create_report_problem_ticket",
+      "label": "Create report-problem ticket",
+      "category": "communications",
+      "approval_required": false,
+      "allowed_roles": [
+        "parent",
+        "student",
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "route_bug_to_codex",
+      "label": "Route bug to Codex",
+      "category": "system",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "operator",
+        "technical_agent",
+        "system"
+      ]
+    }
+  ],
+  "parent_helper": [
+    {
+      "action_id": "create_ticket",
+      "label": "Create ticket",
+      "category": "communications",
+      "approval_required": false,
+      "allowed_roles": [
+        "parent",
+        "student",
+        "provider_admin",
+        "provider_manager",
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "generate_student_worksheet",
+      "label": "Generate student worksheet",
+      "category": "student",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "staff",
+        "parent",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "create_help_request",
+      "label": "Create help request",
+      "category": "communications",
+      "approval_required": false,
+      "allowed_roles": [
+        "parent",
+        "student",
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "create_report_problem_ticket",
+      "label": "Create report-problem ticket",
+      "category": "communications",
+      "approval_required": false,
+      "allowed_roles": [
+        "parent",
+        "student",
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "show_child_calendar",
+      "label": "Show child calendar",
+      "category": "parent",
+      "approval_required": false,
+      "allowed_roles": [
+        "parent",
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "draft_message_to_admin",
+      "label": "Draft message to admin",
+      "category": "parent",
+      "approval_required": false,
+      "allowed_roles": [
+        "parent",
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "draft_parent_response",
+      "label": "Draft parent response",
+      "category": "parent",
+      "approval_required": false,
+      "allowed_roles": [
+        "parent",
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "view_parent_visible_notes",
+      "label": "View parent-visible notes",
+      "category": "parent",
+      "approval_required": false,
+      "allowed_roles": [
+        "parent",
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "request_provider_contact",
+      "label": "Request provider contact",
+      "category": "provider",
+      "approval_required": false,
+      "allowed_roles": [
+        "parent",
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    }
+  ],
+  "provider_workspace": [
+    {
+      "action_id": "create_ticket",
+      "label": "Create ticket",
+      "category": "communications",
+      "approval_required": false,
+      "allowed_roles": [
+        "parent",
+        "student",
+        "provider_admin",
+        "provider_manager",
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "create_provider_class_session",
+      "label": "Create provider class session",
+      "category": "provider",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "operator",
+        "provider_admin",
+        "provider_manager",
+        "system"
+      ]
+    },
+    {
+      "action_id": "google_drive_find_file_preview",
+      "label": "Preview Drive file search",
+      "category": "content",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_folder_preview",
+      "label": "Preview Drive folder creation",
+      "category": "content",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "google_drive_move_file_preview",
+      "label": "Preview Drive file move",
+      "category": "content",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "create_provider_question_post",
+      "label": "Create provider question/post",
+      "category": "provider",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "operator",
+        "provider_admin",
+        "provider_manager",
+        "provider_staff",
+        "participant",
+        "system"
+      ]
+    },
+    {
+      "action_id": "post_community_message",
+      "label": "Post community message",
+      "category": "communications",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "staff",
+        "provider_admin",
+        "provider_manager",
+        "system"
+      ]
+    },
+    {
+      "action_id": "update_provider_profile",
+      "label": "Update provider profile",
+      "category": "provider",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "operator",
+        "provider_admin",
+        "provider_manager",
+        "system"
+      ]
+    },
+    {
+      "action_id": "capture_provider_google_business_link",
+      "label": "Capture provider Google Business link",
+      "category": "provider",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "operator",
+        "provider_admin",
+        "provider_manager",
+        "system"
+      ]
+    }
+  ],
+  "bot": [
+    {
+      "action_id": "create_ticket",
+      "label": "Create ticket",
+      "category": "communications",
+      "approval_required": false,
+      "allowed_roles": [
+        "parent",
+        "student",
+        "provider_admin",
+        "provider_manager",
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "create_decision",
+      "label": "Create decision",
+      "category": "tasks",
       "approval_required": false,
       "allowed_roles": [
         "super_admin",
@@ -799,60 +902,346 @@
       ]
     },
     {
+      "action_id": "select_weekly_update_hero",
+      "label": "Select weekly update hero",
+      "category": "newsletter",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "google_drive_find_file_preview",
+      "label": "Preview Drive file search",
+      "category": "content",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_doc_preview",
+      "label": "Preview Drive Doc creation",
+      "category": "content",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_folder_preview",
+      "label": "Preview Drive folder creation",
+      "category": "content",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "google_drive_move_file_preview",
+      "label": "Preview Drive file move",
+      "category": "content",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "generate_student_worksheet",
+      "label": "Generate student worksheet",
+      "category": "student",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "staff",
+        "parent",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "draft_parent_response",
+      "label": "Draft parent response",
+      "category": "parent",
+      "approval_required": false,
+      "allowed_roles": [
+        "parent",
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "post_community_message",
+      "label": "Post community message",
+      "category": "communications",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "staff",
+        "provider_admin",
+        "provider_manager",
+        "system"
+      ]
+    },
+    {
+      "action_id": "request_provider_contact",
+      "label": "Request provider contact",
+      "category": "provider",
+      "approval_required": false,
+      "allowed_roles": [
+        "parent",
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "capture_provider_google_business_link",
+      "label": "Capture provider Google Business link",
+      "category": "provider",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "operator",
+        "provider_admin",
+        "provider_manager",
+        "system"
+      ]
+    },
+    {
+      "action_id": "queue_telegram_report",
+      "label": "Queue Telegram report",
+      "category": "communications",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "route_bug_to_codex",
+      "label": "Route bug to Codex",
+      "category": "system",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "operator",
+        "technical_agent",
+        "system"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "action_id": "create_decision",
+      "label": "Create decision",
+      "category": "tasks",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    }
+  ],
+  "task_detail": [
+    {
+      "action_id": "update_task_stage",
+      "label": "Update task stage",
+      "category": "tasks",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "add_timeline_note",
+      "label": "Add timeline note",
+      "category": "communications",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    }
+  ],
+  "student_detail": [
+    {
+      "action_id": "add_timeline_note",
+      "label": "Add timeline note",
+      "category": "communications",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "create_student_schedule_item",
+      "label": "Create student schedule item",
+      "category": "student",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "create_parent_visible_event",
+      "label": "Create parent-visible event",
+      "category": "parent",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "generate_student_worksheet",
+      "label": "Generate student worksheet",
+      "category": "student",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "staff",
+        "parent",
+        "operator",
+        "system"
+      ]
+    }
+  ],
+  "provider_detail": [
+    {
+      "action_id": "add_timeline_note",
+      "label": "Add timeline note",
+      "category": "communications",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    }
+  ],
+  "content": [
+    {
       "action_id": "find_latest_newsletter_draft",
       "label": "Find latest newsletter draft",
       "category": "newsletter",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "generate_social_posts_from_newsletter",
-      "label": "Generate social posts from newsletter",
-      "category": "social",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "generate_whatsapp_from_newsletter",
-      "label": "Generate WhatsApp from newsletter",
-      "category": "whatsapp",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "open_content_item_url",
-      "label": "Open content item",
-      "category": "content",
       "approval_required": false,
       "allowed_roles": [
         "super_admin",
@@ -901,6 +1290,40 @@
       ]
     },
     {
+      "action_id": "approve_newsletter",
+      "label": "Approve newsletter",
+      "category": "newsletter",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "draft_weekly_update",
+      "label": "Draft weekly update",
+      "category": "newsletter",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
       "action_id": "select_weekly_update_hero",
       "label": "Select weekly update hero",
       "category": "newsletter",
@@ -916,51 +1339,11 @@
         "operator",
         "system"
       ]
-    }
-  ],
-  "dashboard": [
+    },
     {
-      "action_id": "create_task",
-      "label": "Create task",
-      "category": "tasks",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    }
-  ],
-  "decisions": [
-    {
-      "action_id": "create_decision",
-      "label": "Create decision",
-      "category": "tasks",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    }
-  ],
-  "internal_dialogue": [
-    {
-      "action_id": "add_timeline_note",
-      "label": "Add timeline note",
-      "category": "communications",
+      "action_id": "draft_email_from_newsletter",
+      "label": "Draft email from newsletter",
+      "category": "email",
       "approval_required": false,
       "allowed_roles": [
         "super_admin",
@@ -975,11 +1358,1155 @@
       ]
     },
     {
-      "action_id": "create_task",
-      "label": "Create task",
-      "category": "tasks",
+      "action_id": "google_drive_find_file_preview",
+      "label": "Preview Drive file search",
+      "category": "content",
       "approval_required": false,
       "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_doc_preview",
+      "label": "Preview Drive Doc creation",
+      "category": "content",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_folder_preview",
+      "label": "Preview Drive folder creation",
+      "category": "content",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "google_drive_move_file_preview",
+      "label": "Preview Drive file move",
+      "category": "content",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "generate_whatsapp_from_newsletter",
+      "label": "Generate WhatsApp from newsletter",
+      "category": "whatsapp",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "generate_social_posts_from_newsletter",
+      "label": "Generate social posts from newsletter",
+      "category": "social",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "open_content_item_url",
+      "label": "Open content item",
+      "category": "content",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    }
+  ],
+  "communications": [
+    {
+      "action_id": "find_latest_newsletter_draft",
+      "label": "Find latest newsletter draft",
+      "category": "newsletter",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "refine_newsletter_draft",
+      "label": "Refine newsletter draft",
+      "category": "newsletter",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "approve_newsletter",
+      "label": "Approve newsletter",
+      "category": "newsletter",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "draft_weekly_update",
+      "label": "Draft weekly update",
+      "category": "newsletter",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "select_weekly_update_hero",
+      "label": "Select weekly update hero",
+      "category": "newsletter",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "draft_email_from_newsletter",
+      "label": "Draft email from newsletter",
+      "category": "email",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "draft_email",
+      "label": "Draft email",
+      "category": "email",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "refine_email",
+      "label": "Refine email",
+      "category": "email",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "approve_email",
+      "label": "Approve email",
+      "category": "email",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "schedule_email",
+      "label": "Schedule email",
+      "category": "email",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "send_test_email",
+      "label": "Send test email",
+      "category": "email",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "pause_scheduled_email",
+      "label": "Pause scheduled email",
+      "category": "email",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "view_email_log",
+      "label": "View email log",
+      "category": "email",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "generate_whatsapp_from_newsletter",
+      "label": "Generate WhatsApp from newsletter",
+      "category": "whatsapp",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "generate_social_posts_from_newsletter",
+      "label": "Generate social posts from newsletter",
+      "category": "social",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "draft_parent_response",
+      "label": "Draft parent response",
+      "category": "parent",
+      "approval_required": false,
+      "allowed_roles": [
+        "parent",
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "post_community_message",
+      "label": "Post community message",
+      "category": "communications",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "staff",
+        "provider_admin",
+        "provider_manager",
+        "system"
+      ]
+    }
+  ],
+  "parent_portal": [
+    {
+      "action_id": "draft_weekly_update",
+      "label": "Draft weekly update",
+      "category": "newsletter",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "select_weekly_update_hero",
+      "label": "Select weekly update hero",
+      "category": "newsletter",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "create_calendar_event",
+      "label": "Create calendar event",
+      "category": "calendar",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "create_parent_visible_event",
+      "label": "Create parent-visible event",
+      "category": "parent",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "show_assignments",
+      "label": "Show assignments",
+      "category": "student",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system",
+        "parent",
+        "student"
+      ]
+    },
+    {
+      "action_id": "create_report_problem_ticket",
+      "label": "Create report-problem ticket",
+      "category": "communications",
+      "approval_required": false,
+      "allowed_roles": [
+        "parent",
+        "student",
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "show_child_calendar",
+      "label": "Show child calendar",
+      "category": "parent",
+      "approval_required": false,
+      "allowed_roles": [
+        "parent",
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "view_parent_visible_notes",
+      "label": "View parent-visible notes",
+      "category": "parent",
+      "approval_required": false,
+      "allowed_roles": [
+        "parent",
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "request_provider_contact",
+      "label": "Request provider contact",
+      "category": "provider",
+      "approval_required": false,
+      "allowed_roles": [
+        "parent",
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "action_id": "send_test_email",
+      "label": "Send test email",
+      "category": "email",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "view_email_log",
+      "label": "View email log",
+      "category": "email",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "sync_google_calendar",
+      "label": "Sync Google Calendar",
+      "category": "calendar",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "sync_google_classroom",
+      "label": "Sync Google Classroom",
+      "category": "calendar",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "google_drive_find_file_preview",
+      "label": "Preview Drive file search",
+      "category": "content",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_doc_preview",
+      "label": "Preview Drive Doc creation",
+      "category": "content",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_folder_preview",
+      "label": "Preview Drive folder creation",
+      "category": "content",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "google_drive_move_file_preview",
+      "label": "Preview Drive file move",
+      "category": "content",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "capture_provider_google_business_link",
+      "label": "Capture provider Google Business link",
+      "category": "provider",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "operator",
+        "provider_admin",
+        "provider_manager",
+        "system"
+      ]
+    }
+  ],
+  "calendar": [
+    {
+      "action_id": "create_calendar_event",
+      "label": "Create calendar event",
+      "category": "calendar",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "update_calendar_event",
+      "label": "Update calendar event",
+      "category": "calendar",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "delete_calendar_event",
+      "label": "Archive calendar event",
+      "category": "calendar",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "create_student_schedule_item",
+      "label": "Create student schedule item",
+      "category": "student",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "create_parent_visible_event",
+      "label": "Create parent-visible event",
+      "category": "parent",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "create_provider_class_session",
+      "label": "Create provider class session",
+      "category": "provider",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "operator",
+        "provider_admin",
+        "provider_manager",
+        "system"
+      ]
+    },
+    {
+      "action_id": "sync_google_calendar",
+      "label": "Sync Google Calendar",
+      "category": "calendar",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_doc_preview",
+      "label": "Preview Drive Doc creation",
+      "category": "content",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "open_calendar_event",
+      "label": "Open calendar event",
+      "category": "calendar",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system",
+        "parent",
+        "student",
+        "provider_admin",
+        "participant"
+      ]
+    },
+    {
+      "action_id": "mark_event_parent_visible",
+      "label": "Mark event parent-visible",
+      "category": "calendar",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "mark_event_student_visible",
+      "label": "Mark event student-visible",
+      "category": "calendar",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "mark_event_admin_only",
+      "label": "Mark event admin-only",
+      "category": "calendar",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    }
+  ],
+  "student_portal": [
+    {
+      "action_id": "create_calendar_event",
+      "label": "Create calendar event",
+      "category": "calendar",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "create_student_schedule_item",
+      "label": "Create student schedule item",
+      "category": "student",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "show_today_plan",
+      "label": "Show today plan",
+      "category": "student",
+      "approval_required": false,
+      "allowed_roles": [
+        "student",
+        "bna_admin",
+        "admin",
+        "super_admin",
+        "system"
+      ]
+    },
+    {
+      "action_id": "show_assignments",
+      "label": "Show assignments",
+      "category": "student",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system",
+        "parent",
+        "student"
+      ]
+    },
+    {
+      "action_id": "explain_assignment",
+      "label": "Explain assignment",
+      "category": "student",
+      "approval_required": false,
+      "allowed_roles": [
+        "student",
+        "bna_admin",
+        "admin",
+        "super_admin",
+        "system"
+      ]
+    },
+    {
+      "action_id": "create_report_problem_ticket",
+      "label": "Create report-problem ticket",
+      "category": "communications",
+      "approval_required": false,
+      "allowed_roles": [
+        "parent",
+        "student",
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    }
+  ],
+  "provider_participant": [
+    {
+      "action_id": "create_provider_class_session",
+      "label": "Create provider class session",
+      "category": "provider",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "operator",
+        "provider_admin",
+        "provider_manager",
+        "system"
+      ]
+    },
+    {
+      "action_id": "create_provider_question_post",
+      "label": "Create provider question/post",
+      "category": "provider",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "operator",
+        "provider_admin",
+        "provider_manager",
+        "provider_staff",
+        "participant",
+        "system"
+      ]
+    }
+  ],
+  "assignments": [
+    {
+      "action_id": "sync_google_classroom",
+      "label": "Sync Google Classroom",
+      "category": "calendar",
+      "approval_required": true,
+      "allowed_roles": [
+        "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "generate_student_worksheet",
+      "label": "Generate student worksheet",
+      "category": "student",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "staff",
+        "parent",
+        "operator",
+        "system"
+      ]
+    }
+  ],
+  "student_helper": [
+    {
+      "action_id": "show_today_plan",
+      "label": "Show today plan",
+      "category": "student",
+      "approval_required": false,
+      "allowed_roles": [
+        "student",
+        "bna_admin",
+        "admin",
+        "super_admin",
+        "system"
+      ]
+    },
+    {
+      "action_id": "generate_student_worksheet",
+      "label": "Generate student worksheet",
+      "category": "student",
+      "approval_required": false,
+      "allowed_roles": [
+        "super_admin",
+        "admin",
+        "bna_admin",
+        "school_manager",
+        "staff",
+        "parent",
+        "operator",
+        "system"
+      ]
+    },
+    {
+      "action_id": "explain_assignment",
+      "label": "Explain assignment",
+      "category": "student",
+      "approval_required": false,
+      "allowed_roles": [
+        "student",
+        "bna_admin",
+        "admin",
+        "super_admin",
+        "system"
+      ]
+    },
+    {
+      "action_id": "create_help_request",
+      "label": "Create help request",
+      "category": "communications",
+      "approval_required": false,
+      "allowed_roles": [
+        "parent",
+        "student",
         "super_admin",
         "platform_manager",
         "support_admin",
@@ -1050,106 +2577,11 @@
       ]
     }
   ],
-  "parent_helper": [
+  "community": [
     {
-      "action_id": "create_help_request",
-      "label": "Create help request",
+      "action_id": "post_community_message",
+      "label": "Post community message",
       "category": "communications",
-      "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "create_report_problem_ticket",
-      "label": "Create report-problem ticket",
-      "category": "communications",
-      "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "create_ticket",
-      "label": "Create ticket",
-      "category": "communications",
-      "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
-        "provider_admin",
-        "provider_manager",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "draft_message_to_admin",
-      "label": "Draft message to admin",
-      "category": "parent",
-      "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "draft_parent_response",
-      "label": "Draft parent response",
-      "category": "parent",
-      "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "generate_student_worksheet",
-      "label": "Generate student worksheet",
-      "category": "student",
       "approval_required": false,
       "allowed_roles": [
         "super_admin",
@@ -1157,262 +2589,8 @@
         "bna_admin",
         "school_manager",
         "staff",
-        "parent",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "request_provider_contact",
-      "label": "Request provider contact",
-      "category": "provider",
-      "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "show_child_calendar",
-      "label": "Show child calendar",
-      "category": "parent",
-      "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "view_parent_visible_notes",
-      "label": "View parent-visible notes",
-      "category": "parent",
-      "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    }
-  ],
-  "parent_portal": [
-    {
-      "action_id": "create_calendar_event",
-      "label": "Create calendar event",
-      "category": "calendar",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "create_parent_visible_event",
-      "label": "Create parent-visible event",
-      "category": "parent",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "create_report_problem_ticket",
-      "label": "Create report-problem ticket",
-      "category": "communications",
-      "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "draft_weekly_update",
-      "label": "Draft weekly update",
-      "category": "newsletter",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "request_provider_contact",
-      "label": "Request provider contact",
-      "category": "provider",
-      "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "select_weekly_update_hero",
-      "label": "Select weekly update hero",
-      "category": "newsletter",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "show_assignments",
-      "label": "Show assignments",
-      "category": "student",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system",
-        "parent",
-        "student"
-      ]
-    },
-    {
-      "action_id": "show_child_calendar",
-      "label": "Show child calendar",
-      "category": "parent",
-      "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "view_parent_visible_notes",
-      "label": "View parent-visible notes",
-      "category": "parent",
-      "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    }
-  ],
-  "pipelines": [
-    {
-      "action_id": "move_lead_stage",
-      "label": "Move lead stage",
-      "category": "communications",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    }
-  ],
-  "provider_detail": [
-    {
-      "action_id": "add_timeline_note",
-      "label": "Add timeline note",
-      "category": "communications",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
+        "provider_admin",
+        "provider_manager",
         "system"
       ]
     }
@@ -1449,111 +2627,10 @@
         "provider_manager",
         "system"
       ]
-    }
-  ],
-  "provider_participant": [
-    {
-      "action_id": "create_provider_class_session",
-      "label": "Create provider class session",
-      "category": "provider",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "provider_admin",
-        "provider_manager",
-        "system"
-      ]
     },
     {
-      "action_id": "create_provider_question_post",
-      "label": "Create provider question/post",
-      "category": "provider",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "provider_admin",
-        "provider_manager",
-        "provider_staff",
-        "participant",
-        "system"
-      ]
-    }
-  ],
-  "provider_workspace": [
-    {
-      "action_id": "create_provider_class_session",
-      "label": "Create provider class session",
-      "category": "provider",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "provider_admin",
-        "provider_manager",
-        "system"
-      ]
-    },
-    {
-      "action_id": "create_provider_question_post",
-      "label": "Create provider question/post",
-      "category": "provider",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "provider_admin",
-        "provider_manager",
-        "provider_staff",
-        "participant",
-        "system"
-      ]
-    },
-    {
-      "action_id": "create_ticket",
-      "label": "Create ticket",
-      "category": "communications",
-      "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
-        "provider_admin",
-        "provider_manager",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "post_community_message",
-      "label": "Post community message",
-      "category": "communications",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "staff",
-        "provider_admin",
-        "provider_manager",
-        "system"
-      ]
-    },
-    {
-      "action_id": "update_provider_profile",
-      "label": "Update provider profile",
+      "action_id": "capture_provider_google_business_link",
+      "label": "Capture provider Google Business link",
       "category": "provider",
       "approval_required": true,
       "allowed_roles": [
@@ -1566,628 +2643,23 @@
       ]
     }
   ],
-  "settings": [
+  "google_workspace": [
     {
-      "action_id": "send_test_email",
-      "label": "Send test email",
-      "category": "email",
+      "action_id": "capture_provider_google_business_link",
+      "label": "Capture provider Google Business link",
+      "category": "provider",
       "approval_required": true,
       "allowed_roles": [
         "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
         "admin",
-        "bna_admin",
-        "school_manager",
         "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "sync_google_calendar",
-      "label": "Sync Google Calendar",
-      "category": "calendar",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "sync_google_classroom",
-      "label": "Sync Google Classroom",
-      "category": "calendar",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "view_email_log",
-      "label": "View email log",
-      "category": "email",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    }
-  ],
-  "student_detail": [
-    {
-      "action_id": "add_timeline_note",
-      "label": "Add timeline note",
-      "category": "communications",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "create_parent_visible_event",
-      "label": "Create parent-visible event",
-      "category": "parent",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "create_student_schedule_item",
-      "label": "Create student schedule item",
-      "category": "student",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "generate_student_worksheet",
-      "label": "Generate student worksheet",
-      "category": "student",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "staff",
-        "parent",
-        "operator",
-        "system"
-      ]
-    }
-  ],
-  "student_helper": [
-    {
-      "action_id": "create_help_request",
-      "label": "Create help request",
-      "category": "communications",
-      "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "explain_assignment",
-      "label": "Explain assignment",
-      "category": "student",
-      "approval_required": false,
-      "allowed_roles": [
-        "student",
-        "bna_admin",
-        "admin",
-        "super_admin",
-        "system"
-      ]
-    },
-    {
-      "action_id": "generate_student_worksheet",
-      "label": "Generate student worksheet",
-      "category": "student",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "staff",
-        "parent",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "show_today_plan",
-      "label": "Show today plan",
-      "category": "student",
-      "approval_required": false,
-      "allowed_roles": [
-        "student",
-        "bna_admin",
-        "admin",
-        "super_admin",
-        "system"
-      ]
-    }
-  ],
-  "student_portal": [
-    {
-      "action_id": "create_calendar_event",
-      "label": "Create calendar event",
-      "category": "calendar",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "create_report_problem_ticket",
-      "label": "Create report-problem ticket",
-      "category": "communications",
-      "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "create_student_schedule_item",
-      "label": "Create student schedule item",
-      "category": "student",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "explain_assignment",
-      "label": "Explain assignment",
-      "category": "student",
-      "approval_required": false,
-      "allowed_roles": [
-        "student",
-        "bna_admin",
-        "admin",
-        "super_admin",
-        "system"
-      ]
-    },
-    {
-      "action_id": "show_assignments",
-      "label": "Show assignments",
-      "category": "student",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system",
-        "parent",
-        "student"
-      ]
-    },
-    {
-      "action_id": "show_today_plan",
-      "label": "Show today plan",
-      "category": "student",
-      "approval_required": false,
-      "allowed_roles": [
-        "student",
-        "bna_admin",
-        "admin",
-        "super_admin",
-        "system"
-      ]
-    }
-  ],
-  "support_tickets": [
-    {
-      "action_id": "create_report_problem_ticket",
-      "label": "Create report-problem ticket",
-      "category": "communications",
-      "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "create_ticket",
-      "label": "Create ticket",
-      "category": "communications",
-      "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
         "provider_admin",
         "provider_manager",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "route_bug_to_codex",
-      "label": "Route bug to Codex",
-      "category": "system",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "technical_agent",
         "system"
       ]
     }
   ],
-  "task_detail": [
-    {
-      "action_id": "add_timeline_note",
-      "label": "Add timeline note",
-      "category": "communications",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "update_task_stage",
-      "label": "Update task stage",
-      "category": "tasks",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    }
-  ],
-  "tasks": [
-    {
-      "action_id": "create_decision",
-      "label": "Create decision",
-      "category": "tasks",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "create_task",
-      "label": "Create task",
-      "category": "tasks",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "update_task_stage",
-      "label": "Update task stage",
-      "category": "tasks",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    }
-  ],
-  "telegram": [
-    {
-      "action_id": "create_calendar_event",
-      "label": "Create calendar event",
-      "category": "calendar",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "create_decision",
-      "label": "Create decision",
-      "category": "tasks",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "create_task",
-      "label": "Create task",
-      "category": "tasks",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "create_ticket",
-      "label": "Create ticket",
-      "category": "communications",
-      "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
-        "provider_admin",
-        "provider_manager",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "draft_email",
-      "label": "Draft email",
-      "category": "email",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "draft_email_from_newsletter",
-      "label": "Draft email from newsletter",
-      "category": "email",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "draft_parent_response",
-      "label": "Draft parent response",
-      "category": "parent",
-      "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "draft_weekly_update",
-      "label": "Draft weekly update",
-      "category": "newsletter",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "find_latest_newsletter_draft",
-      "label": "Find latest newsletter draft",
-      "category": "newsletter",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "generate_whatsapp_from_newsletter",
-      "label": "Generate WhatsApp from newsletter",
-      "category": "whatsapp",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
+  "contacts": [
     {
       "action_id": "move_lead_stage",
       "label": "Move lead stage",
@@ -2204,23 +2676,28 @@
         "operator",
         "system"
       ]
-    },
+    }
+  ],
+  "pipelines": [
     {
-      "action_id": "post_community_message",
-      "label": "Post community message",
+      "action_id": "move_lead_stage",
+      "label": "Move lead stage",
       "category": "communications",
       "approval_required": false,
       "allowed_roles": [
         "super_admin",
+        "platform_manager",
+        "support_admin",
+        "technical_agent",
         "admin",
         "bna_admin",
         "school_manager",
-        "staff",
-        "provider_admin",
-        "provider_manager",
+        "operator",
         "system"
       ]
-    },
+    }
+  ],
+  "admin": [
     {
       "action_id": "queue_telegram_report",
       "label": "Queue Telegram report",
@@ -2229,40 +2706,6 @@
       "allowed_roles": [
         "super_admin",
         "admin",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "refine_email",
-      "label": "Refine email",
-      "category": "email",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "refine_newsletter_draft",
-      "label": "Refine newsletter draft",
-      "category": "newsletter",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
         "operator",
         "system"
       ]
@@ -2277,23 +2720,6 @@
         "admin",
         "operator",
         "technical_agent",
-        "system"
-      ]
-    },
-    {
-      "action_id": "update_task_stage",
-      "label": "Update task stage",
-      "category": "tasks",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
         "system"
       ]
     }

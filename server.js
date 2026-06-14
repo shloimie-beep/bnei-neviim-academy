@@ -59,6 +59,17 @@ const {
   worksheetGenerationService,
   videoProcessingService,
 } = require('./src/lib/bna/google-integrations');
+const {
+  buildWapiPhonebookCrmWritePreview,
+  buildWapiPhonebookReport,
+  normalizeWapiPhonebookCorrectionType,
+} = require('./src/lib/bna/wapi-phonebook-report');
+const {
+  parseTelegramNoteToCrm,
+  selectBestTelegramNoteCandidate,
+  suggestTelegramNoteContactRole,
+  telegramNoteRequiresFollowUp,
+} = require('./src/lib/bna/telegram-note-to-crm');
 const { buildBnaAiContextSummary } = require('./src/lib/bna/ai-context');
 const { listActions } = require('./src/lib/actions/registry');
 const { listInMemoryActionRuns } = require('./src/lib/actions/audit-log');
@@ -2509,6 +2520,37 @@ function googleConnectionView(row = {}) {
     updated_at: row.updated_at,
     has_refresh_token: Boolean(row.refresh_token),
   };
+}
+
+function googleIntegrationRowsFromOAuthConnection(row = {}) {
+  const scopes = googleAuthService.parseGoogleScopeList(row.scope_text);
+  const lowerScopes = scopes.map((scope) => scope.toLowerCase());
+  const status = row.status === 'connected' && !row.refresh_token ? 'needs_reauth' : (row.status || 'connected');
+  const base = {
+    integration: 'google_oauth',
+    status,
+    scopes,
+    external_account_id: row.account_email || '',
+    external_location_id: null,
+    created_at: row.connected_at,
+    updated_at: row.updated_at,
+    connection_id: row.id,
+    connection_role: row.connection_role,
+    source: 'google_oauth_connection',
+    has_refresh_token: Boolean(row.refresh_token),
+    metadata: parseJsonMaybe(row.metadata),
+  };
+  const rows = [base];
+  if (lowerScopes.some((scope) => scope.includes('/auth/calendar'))) {
+    rows.push({ ...base, integration: 'google_calendar' });
+  }
+  if (lowerScopes.some((scope) => scope.includes('/auth/classroom.'))) {
+    rows.push({ ...base, integration: 'google_classroom' });
+  }
+  if (lowerScopes.some((scope) => scope.endsWith('/auth/business.manage') || scope === 'business.manage')) {
+    rows.push({ ...base, integration: 'google_business_profile' });
+  }
+  return rows;
 }
 
 async function saveGoogleConnection({ role, tokens = {}, scopes = [], studentId = null, parentEmail = '', metadata = {} } = {}, db = pool) {
@@ -5115,10 +5157,21 @@ async function getStudentPortalPayload(student, { audience = 'student' } = {}, d
   const assignments = await getAssignmentsForStudentPortal(student.id, { audience }, db);
   const calendarEvents = await getCalendarEventsForStudentPortal(student.id, { audience }, db);
   const localizedNames = studentLocalizedNames(student);
+  const safeStudentIdentity = audience === 'parent'
+    ? { ...student }
+    : {
+        id: student.id,
+        name: student.name,
+        name_en: student.name_en,
+        name_he: student.name_he,
+        current_school: student.current_school,
+        tags: student.tags,
+        status: student.status,
+      };
 
   return {
     student: {
-      ...student,
+      ...safeStudentIdentity,
       name_en: localizedNames.en,
       name_he: localizedNames.he,
       localized_names: localizedNames,
@@ -6576,6 +6629,7 @@ function isScopedOpsPathAllowed(req) {
   if (routePath === '/api/bna/provider-onboarding-intakes' && method === 'GET') return true;
   if (routePath === '/api/bna/provider-messages' && method === 'GET') return true;
   if (routePath === '/api/bna/contact-communications' && ['GET', 'POST'].includes(method)) return true;
+  if (routePath === '/api/bna/contact-communications/match-note' && method === 'POST') return true;
   if (/^\/api\/bna\/contact-communications\/\d+\/link$/.test(routePath) && method === 'POST') return true;
   if (routePath === '/api/bna/payments' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/payment-intake' && ['GET', 'POST'].includes(method)) return true;
@@ -8882,6 +8936,39 @@ CREATE TABLE IF NOT EXISTS bna_wapi_sync_runs (
 );
 CREATE INDEX IF NOT EXISTS idx_bna_wapi_sync_runs_started_at ON bna_wapi_sync_runs (started_at DESC);
 CREATE INDEX IF NOT EXISTS idx_bna_wapi_sync_runs_project_id ON bna_wapi_sync_runs (project_id);
+`;
+
+const createWapiPhonebookCorrectionsSQL = `
+CREATE TABLE IF NOT EXISTS bna_wapi_phonebook_corrections (
+  id SERIAL PRIMARY KEY,
+  phonebook_key TEXT NOT NULL UNIQUE,
+  phone_digits TEXT,
+  chat_id TEXT,
+  display_name TEXT,
+  correction_type TEXT NOT NULL CHECK (correction_type IN (
+    'recognized_parent',
+    'recognized_student',
+    'provider',
+    'school_interest',
+    'content_interest',
+    'group_member',
+    'general_contact',
+    'unknown_phone',
+    'friend_non_lead',
+    'spam_irrelevant'
+  )),
+  previous_recommended_type TEXT,
+  confidence_label TEXT,
+  notes TEXT,
+  applied_by TEXT DEFAULT 'admin',
+  applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  source_context JSONB DEFAULT '{}',
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX IF NOT EXISTS idx_bna_wapi_phonebook_corrections_type ON bna_wapi_phonebook_corrections (correction_type);
+CREATE INDEX IF NOT EXISTS idx_bna_wapi_phonebook_corrections_applied_at ON bna_wapi_phonebook_corrections (applied_at DESC);
 `;
 
 const createAccountabilityEventsSQL = `
@@ -14887,6 +14974,7 @@ async function initDb() {
     await pool.query(createGreenInvoiceWebhookLogSQL);
     await pool.query(createWapiWebhookLogSQL);
     await pool.query(createWapiSyncRunsSQL);
+    await pool.query(createWapiPhonebookCorrectionsSQL);
     await pool.query(createAccountabilityEventsSQL);
     await pool.query(createDeviceAccessRulesSQL);
     await pool.query(createDeviceAccessSessionsSQL);
@@ -17924,8 +18012,35 @@ async function membershipRowsForPerson(personId, db = pool) {
   )).rows;
 }
 
+function fallbackWorkspaceProjectRow(workspaceKey) {
+  const key = normalizeWorkspaceKey(workspaceKey) || 'platform';
+  const projectKey = workspaceProjectKey(key) || key || DEFAULT_PROJECT_KEY;
+  const labels = {
+    platform: ['Platform', 'Platform', 'super_admin'],
+    super_admin: ['Super Admin', 'Super Admin', 'super_admin'],
+    bna: ['BNA', 'BNA', 'school'],
+    dratler_family: ['Family Accountability', 'Family', 'family'],
+    rabbi_sheller_provider: ['One Time Mishnah Class', 'One Time', 'service_provider'],
+  };
+  const [name, shortName, workspaceType] = labels[key] || [projectKey.replace(/_/g, ' '), projectKey, 'project'];
+  return {
+    id: null,
+    project_key: projectKey,
+    name,
+    short_name: shortName,
+    description: '',
+    status: 'active',
+    workspace_type: workspaceType,
+    owner_person_id: null,
+    visibility: 'private',
+    language_default: 'en',
+    slug: key,
+    settings: {},
+    metadata: {},
+  };
+}
+
 async function buildBnaIdentityPayload({ identity = null, req = null, actor = 'admin', db = pool } = {}) {
-  const seeded = await ensurePersonalWorkspacesAndPeople(db).catch(() => null);
   const person = actor === 'admin'
     ? await getCanonicalPersonForOpsIdentity(identity, db)
     : null;
@@ -17952,8 +18067,8 @@ async function buildBnaIdentityPayload({ identity = null, req = null, actor = 'a
     : '';
   const activeKey = scopedWorkspace || requested || (memberships[0]?.project_key ? workspaceKeyForProject(memberships[0].project_key) : DEFAULT_PROJECT_KEY);
   const activeWorkspace = await getWorkspaceProjectByKey(activeKey, db)
-    || seeded?.bna
-    || await getProjectByKey(DEFAULT_PROJECT_KEY, db);
+    || await getProjectByKey(DEFAULT_PROJECT_KEY, db).catch(() => null)
+    || fallbackWorkspaceProjectRow(activeKey);
   const role = identity?.role || (memberships.find((item) => item.project_key === activeWorkspace?.project_key)?.role) || actor;
   return {
     success: true,
@@ -22966,20 +23081,154 @@ function googleIntegrationReadinessPayload() {
   };
 }
 
-app.get('/api/integrations/google/status', requireAdmin, async (req, res) => {
+async function sendGoogleIntegrationStatus(req, res) {
   try {
-    const connections = (await pool.query(
-      `SELECT integration, status, scopes, external_account_id, external_location_id, created_at, updated_at
+    const [integrationResult, oauthResult] = await Promise.all([
+      pool.query(
+      `SELECT id, integration, status, scopes, external_account_id, external_location_id, metadata, created_at, updated_at
        FROM bna_integration_connections
        WHERE integration IN ('google_oauth', 'google_business_profile', 'google_calendar', 'google_classroom', 'google_maps')
        ORDER BY updated_at DESC NULLS LAST, created_at DESC
        LIMIT 50`
-    )).rows;
+      ),
+      pool.query(
+      `SELECT id, connection_role, account_email, google_sub, scope_text, refresh_token, status, metadata, connected_at, updated_at
+       FROM bna_google_connections
+       WHERE COALESCE(status, 'connected') <> 'revoked'
+       ORDER BY updated_at DESC NULLS LAST, connected_at DESC NULLS LAST, id DESC
+       LIMIT 50`
+      ),
+    ]);
+    const integrationConnections = integrationResult.rows.map((row) => ({
+      ...row,
+      integration_connection_id: row.id,
+      scopes: Array.isArray(row.scopes) ? row.scopes : [],
+      source: 'integration_connection',
+    }));
+    const oauthConnections = oauthResult.rows.flatMap(googleIntegrationRowsFromOAuthConnection);
+    const connections = [...oauthConnections, ...integrationConnections];
     res.json({ ...googleIntegrationReadinessPayload(), connections });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
   }
-});
+}
+
+app.get('/api/integrations/google/status', requireAdmin, sendGoogleIntegrationStatus);
+app.get('/api/bna/integrations/google/status', requireAdmin, sendGoogleIntegrationStatus);
+
+async function disconnectGoogleConnection(req, res) {
+  const connectionId = Number(req.params.connectionId || req.body?.connection_id || 0);
+  if (!Number.isInteger(connectionId) || connectionId <= 0) {
+    return res.status(400).json({ success: false, error: 'Valid Google connection id is required' });
+  }
+
+  try {
+    const connection = (await pool.query(
+      `SELECT *
+       FROM bna_google_connections
+       WHERE id = $1
+       LIMIT 1`,
+      [connectionId]
+    )).rows[0] || null;
+
+    if (!connection) {
+      return res.status(404).json({ success: false, error: 'Google connection was not found' });
+    }
+
+    const dryRun = req.query.dry_run === 'true' || req.body?.dry_run === true || req.body?.dryRun === true;
+    const confirmed = req.body?.confirm === 'DISCONNECT_GOOGLE';
+    if (dryRun || !confirmed) {
+      return res.status(dryRun ? 200 : 409).json({
+        success: Boolean(dryRun),
+        dry_run: true,
+        requires_confirmation: true,
+        confirmation: 'DISCONNECT_GOOGLE',
+        connection: googleConnectionView(connection),
+        impact: [
+          'Google refresh token will be removed from the BNA database.',
+          'BNA will attempt to revoke the Google token if OAuth credentials are configured.',
+          'Natural-language Google actions will stay in preview/dry-run mode until reconnected.',
+        ],
+      });
+    }
+
+    const revoke = {
+      attempted: false,
+      success: false,
+      error: null,
+    };
+    if (connection.refresh_token) {
+      const oauthConfig = loadGoogleOAuthClient();
+      if (oauthConfig.clientId && oauthConfig.clientSecret) {
+        revoke.attempted = true;
+        try {
+          const oauth2Client = createGoogleOAuthClient(GOOGLE_REDIRECT_URI);
+          await oauth2Client.revokeToken(connection.refresh_token);
+          revoke.success = true;
+        } catch (err) {
+          revoke.error = limitText(err.message || String(err), 220);
+        }
+      } else {
+        revoke.error = 'Google OAuth client is not configured; local token was removed only.';
+      }
+    }
+
+    const disconnectedAt = new Date().toISOString();
+    const updated = (await pool.query(
+      `UPDATE bna_google_connections
+       SET status = 'revoked',
+           refresh_token = NULL,
+           metadata = COALESCE(metadata, '{}'::jsonb) || $2::jsonb,
+           updated_at = CURRENT_TIMESTAMP
+       WHERE id = $1
+       RETURNING *`,
+      [
+        connectionId,
+        JSON.stringify({
+          disconnected_at: disconnectedAt,
+          disconnected_by: 'operations',
+          disconnect_source: limitText(req.body?.source || 'google_workspace_settings', 120),
+          revoke,
+        }),
+      ]
+    )).rows[0];
+
+    const accountEmail = String(connection.account_email || '').trim().toLowerCase();
+    if (accountEmail) {
+      await pool.query(
+        `UPDATE bna_integration_connections
+         SET status = 'not_connected',
+             metadata = COALESCE(metadata, '{}'::jsonb) || $2::jsonb,
+             updated_at = CURRENT_TIMESTAMP
+         WHERE integration IN ('google_oauth', 'google_business_profile', 'google_calendar', 'google_classroom', 'google_maps')
+           AND lower(COALESCE(external_account_id, '')) = $1`,
+        [
+          accountEmail,
+          JSON.stringify({
+            disconnected_at: disconnectedAt,
+            source_connection_id: connectionId,
+            disconnect_source: 'bna_google_connections',
+          }),
+        ]
+      );
+    }
+
+    res.json({
+      success: true,
+      disconnected: true,
+      revoke,
+      connection: googleConnectionView(updated),
+      message: revoke.success
+        ? 'Google connection was disconnected and the token revocation request succeeded.'
+        : 'Google connection was disconnected locally. Reconnect before running live Google actions.',
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ success: false, error: err.message });
+  }
+}
+
+app.post('/api/google/connections/:connectionId/disconnect', requireAdmin, disconnectGoogleConnection);
+app.post('/api/bna/integrations/google/connections/:connectionId/disconnect', requireAdmin, disconnectGoogleConnection);
 
 app.get('/api/integrations/google/oauth/start', requireAdmin, (req, res) => {
   if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
@@ -26232,6 +26481,175 @@ app.post('/api/bna/contact-communications', requireAdmin, async (req, res) => {
     res.json({ success: true, communication: result.rows[0] });
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/contact-communications/match-note', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const parsedFromRaw = body.raw_text || body.text
+    ? parseTelegramNoteToCrm(body.raw_text || body.text)
+    : {};
+  const contactClue = limitText(
+    body.contact_clue || body.contact || body.name || parsedFromRaw.contact_clue || '',
+    160
+  );
+  const noteText = limitText(
+    body.note_text || body.note || body.body || parsedFromRaw.note_text || '',
+    4000
+  );
+  const communicationId = Number(
+    body.communication_id || body.communicationId || parsedFromRaw.communication_id || 0
+  ) || null;
+  const dryRun = body.dry_run === true || body.dryRun === true || /^(?:1|true|yes)$/i.test(String(body.dry_run || body.dryRun || ''));
+
+  if (!noteText) return res.status(400).json({ error: 'note_text is required' });
+  if (!contactClue && !communicationId) {
+    return res.status(400).json({ error: 'contact_clue or communication_id is required' });
+  }
+
+  try {
+    const conditions = [`(c.channel = 'whatsapp' OR c.source = 'wapi')`];
+    const params = [];
+    const scopedProjectKey = opsScopeProjectKey(req);
+    if (scopedProjectKey) {
+      params.push(scopedProjectKey);
+      conditions.push(`COALESCE(c.project_id, l.project_id, s.project_id, st.project_id, (SELECT id FROM bna_projects WHERE project_key = '${DEFAULT_PROJECT_KEY}' LIMIT 1)) = (SELECT id FROM bna_projects WHERE project_key = $${params.length} LIMIT 1)`);
+    }
+
+    let explicitOrder = '';
+    if (communicationId) {
+      params.push(communicationId);
+      explicitOrder = `CASE WHEN c.id = $${params.length} THEN 0 ELSE 1 END,`;
+    }
+    params.push(Math.max(25, Math.min(Number(body.limit || 250), 500)));
+
+    const candidates = (await pool.query(
+      `SELECT c.*,
+              l.parent_name AS lead_parent_name,
+              l.project_id AS lead_project_id,
+              s.parent_name AS signup_parent_name,
+              s.student_name AS signup_student_name,
+              s.project_id AS signup_project_id,
+              st.name AS student_name,
+              st.project_id AS student_project_id
+       FROM bna_contact_communications c
+       LEFT JOIN bna_parent_leads l ON l.id = c.lead_id
+       LEFT JOIN signups s ON s.id = c.signup_id
+       LEFT JOIN bna_students st ON st.id = c.student_id
+       WHERE ${conditions.join(' AND ')}
+       ORDER BY ${explicitOrder} c.occurred_at DESC NULLS LAST, c.id DESC
+       LIMIT $${params.length}`,
+      params
+    )).rows;
+
+    const selection = selectBestTelegramNoteCandidate(candidates, {
+      contact_clue: contactClue,
+      communication_id: communicationId,
+    });
+
+    if (!selection.matched) {
+      return res.json({
+        success: true,
+        matched: false,
+        reason: selection.reason,
+        dry_run: dryRun,
+        no_send: true,
+        external_write_performed: false,
+        local_write_performed: false,
+        candidates_scored: selection.candidates_scored || candidates.length,
+        best: selection.best || null,
+      });
+    }
+
+    const matched = selection.best.candidate;
+    const match = selection.match;
+    const projectId = matched.project_id || matched.lead_project_id || matched.signup_project_id || matched.student_project_id || null;
+    const suggestedRole = suggestTelegramNoteContactRole(noteText);
+    const followUpRequired = body.follow_up_required === undefined
+      ? telegramNoteRequiresFollowUp(noteText)
+      : Boolean(body.follow_up_required);
+    const noteSummary = limitText(`Telegram note linked to WhatsApp #${matched.id}: ${noteText}`, 240);
+    const sourceContext = {
+      note_to_crm: true,
+      source: 'telegram_note_to_crm',
+      matched_communication_id: matched.id,
+      matched_score: selection.best.score,
+      matched_reasons: selection.best.reasons,
+      contact_clue: contactClue,
+      channel: 'whatsapp',
+      telegram_chat_id: body.telegram_chat_id || body.chat_id || null,
+      telegram_message_id: body.telegram_message_id || body.message_id || null,
+      raw_text: limitText(body.raw_text || body.text || '', 1200) || null,
+    };
+    const metadata = {
+      note_to_crm: true,
+      source: 'telegram_note_to_crm',
+      match_confidence: selection.best.confidence,
+      match_reason: selection.best.reasons.join(', '),
+      suggested_contact_role: suggestedRole || null,
+      no_send: true,
+      external_write_performed: false,
+    };
+
+    if (dryRun) {
+      return res.json({
+        success: true,
+        matched: true,
+        created: false,
+        dry_run: true,
+        no_send: true,
+        external_write_performed: false,
+        local_write_performed: false,
+        match,
+        note_preview: {
+          summary: noteSummary,
+          body: noteText,
+          follow_up_required: followUpRequired,
+          metadata,
+          source_context: sourceContext,
+        },
+      });
+    }
+
+    const note = (await pool.query(
+      `INSERT INTO bna_contact_communications (
+        project_id, contact_type, lead_id, signup_id, student_id, channel, direction,
+        summary, body, follow_up_required, occurred_at, created_by, source,
+        source_context, metadata
+      ) VALUES (
+        $1, COALESCE($2, 'general'), $3, $4, $5, 'telegram', 'internal_note',
+        $6, $7, $8, NOW(), $9, 'telegram',
+        $10, $11
+      )
+      RETURNING *`,
+      [
+        projectId,
+        matched.contact_type || 'general',
+        matched.lead_id || null,
+        matched.signup_id || null,
+        matched.student_id || null,
+        noteSummary,
+        noteText,
+        followUpRequired,
+        limitText(body.created_by || req.opsUser || 'Telegram bot', 120),
+        JSON.stringify(sourceContext),
+        JSON.stringify(metadata),
+      ]
+    )).rows[0];
+
+    res.json({
+      success: true,
+      matched: true,
+      created: true,
+      dry_run: false,
+      no_send: true,
+      external_write_performed: false,
+      local_write_performed: true,
+      match,
+      communication: note,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -34807,6 +35225,375 @@ app.get('/api/bna/wapi/diagnostics', requireAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/bna/wapi/phonebook-report', requireAdmin, async (req, res) => {
+  if (req.opsIdentity?.scope?.type !== 'all') {
+    return res.status(403).json({ error: 'Whapi phonebook grouping is account-wide and requires an unscoped Operations admin login.' });
+  }
+  try {
+    const limit = Math.max(1, Math.min(Number(req.query.limit || 100), 500));
+    const report = await buildWapiPhonebookReport({ db: pool, limit });
+    res.json(report);
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+function wapiCorrectionApplyRequested(body = {}) {
+  return body.apply_contact_tags === true
+    || body.applyContactTags === true
+    || body.apply_crm_write === true
+    || body.applyCrmWrite === true
+    || /^(?:1|true|yes)$/i.test(String(body.apply_contact_tags || body.applyContactTags || body.apply_crm_write || body.applyCrmWrite || ''));
+}
+
+async function updateWapiCorrectionContactRecord(write = {}, correctionPreview = {}, { db = pool, req } = {}) {
+  const contactIds = normalizeTextArray(write.contact_ids || write.contactIds)
+    .map((id) => Number(id))
+    .filter((id) => Number.isInteger(id) && id > 0);
+  const phoneDigits = normalizePhoneDigits(write.match_phone_digits || correctionPreview.source_context?.phone_digits || '');
+  const displayName = limitText(write.display_name || correctionPreview.display_name || '', 220);
+  const status = limitText(write.status || 'general', 80);
+  const tags = normalizeTextArray(write.tags);
+  const metadata = {
+    ...(write.metadata_patch || {}),
+    source: 'wapi_phonebook_correction',
+    phonebook_key: correctionPreview.phonebook_key || null,
+    correction_type: correctionPreview.correction_type || null,
+    correction_notes: correctionPreview.notes || null,
+    applied_by: req?.opsUser || 'admin',
+    applied_at: new Date().toISOString(),
+    no_send: true,
+    external_write_performed: false,
+  };
+  const workspaceId = await getWorkspaceIdForProjectKey(DEFAULT_PROJECT_KEY, db).catch(() => null);
+  let targets = contactIds;
+
+  if (!targets.length && phoneDigits) {
+    const existing = (await db.query(
+      `SELECT c.*
+       FROM bna_contacts c
+       LEFT JOIN bna_contact_identities i ON i.contact_id = c.id
+       WHERE regexp_replace(COALESCE(c.primary_phone, ''), '\\D', '', 'g') = $1
+          OR (i.identity_type IN ('phone', 'whatsapp') AND i.normalized_value = $1)
+       ORDER BY c.updated_at DESC NULLS LAST, c.created_at ASC
+       LIMIT 1`,
+      [phoneDigits]
+    )).rows[0] || null;
+    if (existing) {
+      targets = [existing.id];
+    }
+  }
+
+  const applied = [];
+  if (targets.length) {
+    for (const contactId of targets) {
+      const result = await db.query(
+        `UPDATE bna_contacts
+         SET workspace_id = COALESCE(workspace_id, $1),
+             full_name = COALESCE(NULLIF($2, ''), full_name),
+             primary_phone = COALESCE(NULLIF(primary_phone, ''), NULLIF($3, ''), primary_phone),
+             status = CASE
+               WHEN COALESCE(status, '') IN ('signup', 'student', 'parent') THEN status
+               ELSE COALESCE(NULLIF($4, ''), status, 'general')
+             END,
+             source = COALESCE(source, 'wapi_phonebook'),
+             tags = (
+               SELECT ARRAY(
+                 SELECT DISTINCT tag_value
+                 FROM unnest(COALESCE(tags, ARRAY[]::text[]) || $5::text[]) AS tag_values(tag_value)
+                 WHERE trim(tag_value) <> ''
+               )
+             ),
+             metadata = COALESCE(metadata, '{}'::jsonb) || $6::jsonb,
+             updated_at = NOW()
+         WHERE id = $7
+         RETURNING *`,
+        [
+          workspaceId,
+          displayName || '',
+          phoneDigits ? `+${phoneDigits}` : '',
+          status,
+          tags,
+          JSON.stringify(metadata),
+          contactId,
+        ]
+      );
+      const contact = result.rows[0] || null;
+      if (contact) {
+        if (phoneDigits) {
+          await upsertContactIdentity({ contactId: contact.id, identityType: 'phone', identityValue: `+${phoneDigits}`, metadata }, db);
+          await upsertContactIdentity({ contactId: contact.id, identityType: 'whatsapp', identityValue: `+${phoneDigits}`, metadata }, db);
+        }
+        applied.push({ target: 'bna_contacts', action: 'update', id: contact.id, status: contact.status, tags_added: tags });
+      }
+    }
+  } else if (phoneDigits) {
+    const result = await db.query(
+      `INSERT INTO bna_contacts (
+         workspace_id, full_name, primary_phone, status, source, tags, metadata
+       ) VALUES ($1, $2, $3, $4, 'wapi_phonebook', $5, $6::jsonb)
+       RETURNING *`,
+      [
+        workspaceId,
+        displayName || 'WhatsApp contact',
+        `+${phoneDigits}`,
+        status || 'general',
+        tags,
+        JSON.stringify(metadata),
+      ]
+    );
+    const contact = result.rows[0] || null;
+    if (contact) {
+      await upsertContactIdentity({ contactId: contact.id, identityType: 'phone', identityValue: `+${phoneDigits}`, metadata }, db);
+      await upsertContactIdentity({ contactId: contact.id, identityType: 'whatsapp', identityValue: `+${phoneDigits}`, metadata }, db);
+      applied.push({ target: 'bna_contacts', action: 'create', id: contact.id, status: contact.status, tags_added: tags });
+    }
+  }
+
+  for (const item of applied) {
+    await db.query(
+      `INSERT INTO bna_contact_pipeline_events (
+         workspace_id, contact_id, event_type, pipeline_status, summary, source, metadata
+       ) VALUES ($1, $2, 'wapi_phonebook_correction_applied', $3, $4, 'wapi_phonebook', $5::jsonb)`,
+      [
+        workspaceId,
+        item.id,
+        item.status || status,
+        `Applied WAPI phonebook correction as ${String(correctionPreview.correction_type || '').replace(/_/g, ' ')}.`,
+        JSON.stringify(metadata),
+      ]
+    );
+  }
+
+  return applied;
+}
+
+async function updateWapiCorrectionParentLead(write = {}, correctionPreview = {}, { db = pool, req } = {}) {
+  const leadId = Number(write.lead_id || write.leadId || 0);
+  if (!Number.isInteger(leadId) || leadId <= 0) return [];
+  const tags = normalizeTextArray(write.tags);
+  const status = limitText(write.status || '', 80) || null;
+  const leadType = limitText(write.lead_type || write.leadType || '', 80) || null;
+  const metadata = {
+    ...(write.metadata_patch || {}),
+    source: 'wapi_phonebook_correction',
+    phonebook_key: correctionPreview.phonebook_key || null,
+    correction_type: correctionPreview.correction_type || null,
+    correction_notes: correctionPreview.notes || null,
+    applied_by: req?.opsUser || 'admin',
+    applied_at: new Date().toISOString(),
+    no_send: true,
+    external_write_performed: false,
+  };
+  const result = await db.query(
+    `UPDATE bna_parent_leads
+     SET lead_type = CASE
+           WHEN $2::text IN ('school_interest', 'content_interest', 'group_member') THEN $2::text
+           ELSE lead_type
+         END,
+         status = CASE
+           WHEN $3::text = 'not_now' AND COALESCE(status, 'interested') IN ('new', 'lead_candidate', 'interested', 'follow_up') THEN 'not_now'
+           WHEN $3::text = 'not_fit' THEN 'not_fit'
+           WHEN $3::text = 'interested' AND COALESCE(status, 'new') IN ('new', 'lead_candidate') THEN 'interested'
+           ELSE status
+         END,
+         source_detail = COALESCE(source_detail, 'WAPI phonebook correction'),
+         tags = (
+           SELECT ARRAY(
+             SELECT DISTINCT tag_value
+             FROM unnest(COALESCE(tags, '{}'::text[]) || $4::text[]) AS tag_values(tag_value)
+             WHERE trim(tag_value) <> ''
+           )
+         ),
+         metadata = COALESCE(metadata, '{}'::jsonb) || $5::jsonb,
+         updated_at = NOW()
+     WHERE id = $1
+     RETURNING *`,
+    [
+      leadId,
+      leadType,
+      status,
+      tags,
+      JSON.stringify(metadata),
+    ]
+  );
+  const lead = result.rows[0] || null;
+  return lead ? [{ target: 'bna_parent_leads', action: 'update', id: lead.id, status: lead.status, lead_type: lead.lead_type, tags_added: tags }] : [];
+}
+
+async function applyWapiPhonebookCrmWrites(crmWritePreview = {}, correctionPreview = {}, { db = pool, req } = {}) {
+  const appliedWrites = [];
+  for (const write of Array.isArray(crmWritePreview.writes) ? crmWritePreview.writes : []) {
+    if (write.target === 'bna_contacts') {
+      appliedWrites.push(...await updateWapiCorrectionContactRecord(write, correctionPreview, { db, req }));
+    } else if (write.target === 'bna_parent_leads') {
+      appliedWrites.push(...await updateWapiCorrectionParentLead(write, correctionPreview, { db, req }));
+    }
+  }
+  return {
+    success: true,
+    no_send: true,
+    external_write_performed: false,
+    local_crm_write_performed: appliedWrites.length > 0,
+    applied_writes: appliedWrites,
+    skipped_writes: crmWritePreview.skipped_writes || [],
+  };
+}
+
+app.post('/api/bna/wapi/phonebook-corrections', requireAdmin, async (req, res) => {
+  if (req.opsIdentity?.scope?.type !== 'all') {
+    return res.status(403).json({ error: 'Whapi phonebook corrections are account-wide and require an unscoped Operations admin login.' });
+  }
+  const body = req.body || {};
+  const group = body.group && typeof body.group === 'object'
+    ? body.group
+    : body.group_snapshot && typeof body.group_snapshot === 'object'
+      ? body.group_snapshot
+      : {};
+  const phonebookKey = limitText(body.phonebook_key || body.phonebookKey || body.key || group.key || '', 220);
+  const correctionType = normalizeWapiPhonebookCorrectionType(body.correction_type || body.correctionType || body.applied_type || body.type);
+  const dryRun = body.dry_run === true || body.dryRun === true || /^(?:1|true|yes)$/i.test(String(body.dry_run || body.dryRun || ''));
+  const applyContactTags = wapiCorrectionApplyRequested(body);
+  if (!phonebookKey) return res.status(400).json({ error: 'phonebook_key is required' });
+  if (!correctionType) return res.status(400).json({ error: 'Valid correction_type is required' });
+  if (!dryRun && String(body.confirm || '').trim() !== 'APPLY_WAPI_CORRECTION') {
+    return res.status(400).json({
+      error: 'Phonebook corrections require confirm: APPLY_WAPI_CORRECTION',
+      hint: 'This writes only local BNA correction metadata and never sends WhatsApp messages.',
+    });
+  }
+
+  const sourceContext = {
+    source: 'wapi_phonebook_report',
+    phonebook_key: phonebookKey,
+    phone_digits: limitText(body.phone_digits || body.phoneDigits || group.phone_digits || '', 40) || null,
+    chat_id: limitText(body.chat_id || body.chatId || group.chat_id || '', 220) || null,
+    source_rows: Array.isArray(group.source_rows) ? group.source_rows.slice(0, 12) : [],
+    linked_records: Array.isArray(group.linked_records) ? group.linked_records.slice(0, 12) : [],
+  };
+  const metadata = {
+    previous_recommended_type: limitText(body.previous_recommended_type || body.previousRecommendedType || group.recommended_type || '', 80) || null,
+    confidence_label: limitText(body.confidence_label || body.confidenceLabel || group.confidence_label || '', 40) || null,
+    review_flags: Array.isArray(group.review_flags) ? group.review_flags.slice(0, 12) : [],
+    apply_contact_tags: applyContactTags,
+    no_send: true,
+    external_write_performed: false,
+  };
+  const preview = {
+    phonebook_key: phonebookKey,
+    display_name: limitText(body.display_name || body.displayName || group.display_name || '', 220) || null,
+    correction_type: correctionType,
+    previous_recommended_type: metadata.previous_recommended_type,
+    confidence_label: metadata.confidence_label,
+    notes: limitText(body.notes || '', 1200) || null,
+    source_context: sourceContext,
+    metadata,
+  };
+  const crmWritePreview = buildWapiPhonebookCrmWritePreview(group, {
+    ...preview,
+    phonebook_key: phonebookKey,
+    correction_type: correctionType,
+    phone_digits: sourceContext.phone_digits,
+    display_name: preview.display_name,
+  });
+  preview.crm_write_preview = crmWritePreview;
+
+  if (dryRun) {
+    return res.json({
+      success: true,
+      dry_run: true,
+      no_send: true,
+      external_write_performed: false,
+      local_write_performed: false,
+      correction_preview: preview,
+      crm_write_preview: crmWritePreview,
+    });
+  }
+
+  let client;
+  try {
+    client = await pool.connect();
+    await client.query('BEGIN');
+    const metadataForStorage = {
+      ...metadata,
+      crm_write_preview: crmWritePreview,
+    };
+    let crmWriteResult = {
+      success: true,
+      no_send: true,
+      external_write_performed: false,
+      local_crm_write_performed: false,
+      applied_writes: [],
+      skipped_writes: crmWritePreview.skipped_writes || [],
+    };
+    if (applyContactTags) {
+      crmWriteResult = await applyWapiPhonebookCrmWrites(crmWritePreview, preview, { db: client, req });
+    }
+    const result = await client.query(
+      `INSERT INTO bna_wapi_phonebook_corrections (
+        phonebook_key, phone_digits, chat_id, display_name, correction_type,
+        previous_recommended_type, confidence_label, notes, applied_by,
+        applied_at, source_context, metadata
+      ) VALUES (
+        $1, $2, $3, $4, $5,
+        $6, $7, $8, $9,
+        NOW(), $10, $11
+      )
+      ON CONFLICT (phonebook_key) DO UPDATE
+        SET phone_digits = EXCLUDED.phone_digits,
+            chat_id = EXCLUDED.chat_id,
+            display_name = EXCLUDED.display_name,
+            correction_type = EXCLUDED.correction_type,
+            previous_recommended_type = EXCLUDED.previous_recommended_type,
+            confidence_label = EXCLUDED.confidence_label,
+            notes = EXCLUDED.notes,
+            applied_by = EXCLUDED.applied_by,
+            applied_at = NOW(),
+            source_context = EXCLUDED.source_context,
+            metadata = EXCLUDED.metadata,
+            updated_at = NOW()
+      RETURNING *`,
+      [
+        preview.phonebook_key,
+        sourceContext.phone_digits,
+        sourceContext.chat_id,
+        preview.display_name,
+        correctionType,
+        preview.previous_recommended_type,
+        preview.confidence_label,
+        preview.notes,
+        limitText(body.applied_by || body.appliedBy || req.opsUser || 'admin', 120),
+        JSON.stringify(sourceContext),
+        JSON.stringify(metadataForStorage),
+      ]
+    );
+    await client.query('COMMIT');
+    res.json({
+      success: true,
+      dry_run: false,
+      no_send: true,
+      external_write_performed: false,
+      local_write_performed: true,
+      local_crm_write_performed: crmWriteResult.local_crm_write_performed,
+      correction: result.rows[0],
+      correction_preview: preview,
+      crm_write_preview: crmWritePreview,
+      crm_write_result: crmWriteResult,
+    });
+  } catch (err) {
+    if (client) {
+      try {
+        await client.query('ROLLBACK');
+      } catch {
+        // Ignore rollback errors so the original failure is returned.
+      }
+    }
+    res.status(err.statusCode || 500).json({ error: err.message });
+  } finally {
+    if (client) client.release();
+  }
+});
+
 app.post('/api/bna/wapi/sync', requireAdmin, async (req, res) => {
   try {
     const result = await runWapiMessageSync({ req, body: req.body || {} });
@@ -35931,6 +36718,155 @@ app.get('/api/bna/weekly-updates', requireAdmin, async (req, res) => {
   }
 });
 
+function parentAnnouncementView(row = {}) {
+  const update = weeklyUpdateView(row);
+  if (!update) return null;
+  return {
+    ...update,
+    announcement_type: 'parent',
+    approved_for_parent_portal: Boolean(update.selected_for_parent_portal),
+    no_send: true,
+    external_write_performed: false,
+  };
+}
+
+async function getParentAnnouncementRows(workspaceKey, limit = 20, db = pool) {
+  const result = await db.query(
+    `SELECT *
+     FROM bna_weekly_updates
+     WHERE workspace_key = $1
+       AND status <> 'archived'
+     ORDER BY selected_for_parent_portal DESC, week_start DESC NULLS LAST, created_at DESC, id DESC
+     LIMIT $2`,
+    [workspaceKey, Math.max(1, Math.min(Number(limit || 20), 80))]
+  );
+  return result.rows;
+}
+
+app.get('/api/bna/parent-announcements', requireAdmin, async (req, res) => {
+  try {
+    const workspaceKey = assertWorkspaceAccess(req, req.query.workspace || req.query.workspace_key || defaultWorkspaceKeyForRequest(req));
+    const rows = await getParentAnnouncementRows(workspaceKey, req.query.limit || 20);
+    const announcements = rows.map(parentAnnouncementView);
+    res.json({
+      success: true,
+      dry_run: true,
+      no_send: true,
+      external_write_performed: false,
+      local_write_performed: false,
+      latest_announcement: announcements.find((item) => item.approved_for_parent_portal) || announcements[0] || null,
+      announcements,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/parent-announcements', requireAdmin, async (req, res) => {
+  const body = req.body || {};
+  const dryRun = body.dry_run === true || body.dryRun === true || /^(?:1|true|yes)$/i.test(String(body.dry_run || body.dryRun || ''));
+  try {
+    const workspaceKey = assertWorkspaceAccess(req, body.workspace_key || body.workspace || defaultWorkspaceKeyForRequest(req));
+    const title = limitText(body.title || body.subject || '', 220);
+    const summary = limitText(body.summary || body.excerpt || '', 2200) || null;
+    const announcementBody = limitText(body.body || body.content || body.message || '', 12000) || null;
+    if (!title) return res.status(400).json({ error: 'Parent announcement title is required' });
+    if (!summary && !announcementBody) return res.status(400).json({ error: 'Parent announcement summary or body is required' });
+    if (!dryRun && String(body.confirm || '').trim() !== 'APPROVE_PARENT_ANNOUNCEMENT') {
+      return res.status(400).json({
+        error: 'Parent announcements require confirm: APPROVE_PARENT_ANNOUNCEMENT',
+        hint: 'This selects a parent-visible update locally. It does not send email, WhatsApp, or social posts.',
+      });
+    }
+
+    const project = await resolveProjectFromInput({ ...body, workspace_key: workspaceKey });
+    const preview = {
+      workspace_key: workspaceKey,
+      project_id: project.id,
+      title,
+      summary,
+      body: announcementBody,
+      week_start: safeIsoDateInput(body.week_start || body.date) || null,
+      image_url: limitText(body.image_url || body.thumbnail_url || '', 1200) || null,
+      video_url: limitText(body.video_url || body.recording_url || body.youtube_url || '', 1200) || null,
+      selected_for_parent_portal: true,
+      status: 'selected',
+      no_send: true,
+      external_write_performed: false,
+    };
+
+    if (dryRun) {
+      return res.json({
+        success: true,
+        dry_run: true,
+        no_send: true,
+        external_write_performed: false,
+        local_write_performed: false,
+        announcement_preview: preview,
+      });
+    }
+
+    const client = await pool.connect();
+    try {
+      await client.query('BEGIN');
+      await client.query(
+        `UPDATE bna_weekly_updates
+         SET selected_for_parent_portal = FALSE,
+             updated_at = NOW()
+         WHERE workspace_key = $1`,
+        [workspaceKey]
+      );
+      const result = await client.query(
+        `INSERT INTO bna_weekly_updates (
+           workspace_key, project_id, title, summary, body, week_start,
+           image_url, video_url, learned_json, questions_json, worksheets_json,
+           media_json, selected_for_parent_portal, status, metadata_json, created_by
+         ) VALUES (
+           $1, $2, $3, $4, $5, $6::date,
+           $7, $8, '[]'::jsonb, '[]'::jsonb, '[]'::jsonb,
+           $9::jsonb, TRUE, 'selected', $10::jsonb, $11
+         )
+         RETURNING *`,
+        [
+          preview.workspace_key,
+          preview.project_id,
+          preview.title,
+          preview.summary,
+          preview.body,
+          preview.week_start,
+          preview.image_url,
+          preview.video_url,
+          JSON.stringify(body.media && typeof body.media === 'object' ? body.media : {}),
+          JSON.stringify({
+            parent_announcement: true,
+            source: 'operations_announcements',
+            approval: 'APPROVE_PARENT_ANNOUNCEMENT',
+            no_send: true,
+            external_write_performed: false,
+          }),
+          req.opsUser || 'admin',
+        ]
+      );
+      await client.query('COMMIT');
+      res.json({
+        success: true,
+        dry_run: false,
+        no_send: true,
+        external_write_performed: false,
+        local_write_performed: true,
+        announcement: parentAnnouncementView(result.rows[0]),
+      });
+    } catch (err) {
+      await client.query('ROLLBACK').catch(() => {});
+      throw err;
+    } finally {
+      client.release();
+    }
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
 app.post('/api/bna/weekly-updates', requireAdmin, async (req, res) => {
   try {
     const body = req.body || {};
@@ -36487,7 +37423,7 @@ function assistantTicketCategory(message) {
   const text = String(message || '').toLowerCase();
   if (/\b(login|password|access|code|sign ?in)\b/.test(text)) return 'login';
   if (/\b(payment|tuition|invoice|billing|paid)\b/.test(text)) return 'payment';
-  if (/\b(link|button|page|broken|bug|not working|error)\b/.test(text)) return 'link';
+  if (/\b(link|button|page|screen|form|website|portal|broken|bug|not working|doesn'?t work|error|wrong|backwards|sloppy|missing|confusing)\b/.test(text)) return 'link';
   if (/\b(progress|attendance|student|son|goal|schedule|question)\b/.test(text)) return 'student_parent_data';
   if (/\b(bot|assistant|ai|openai|codex)\b/.test(text)) return 'bot_api';
   return 'other';
@@ -36499,7 +37435,9 @@ function assistantMessageLooksLikeCodexRequest(message) {
 
 function assistantShouldCreateTicket(actor, message) {
   if (actor.canUseCodex) return false;
-  if (actor.type === 'anonymous') return /\b(contact|message|office|login|problem|issue|question|help|register|signup|broken|not working)\b/i.test(message);
+  if (actor.type === 'anonymous') {
+    return publicAssistantLeadIntent(message) || Boolean(publicAssistantFeedbackKind(message));
+  }
   return true;
 }
 
@@ -36551,6 +37489,155 @@ async function createAssistantSupportTicket({ actor, message, thread, project, b
     ]
   );
   return supportTicketView(ticket);
+}
+
+async function createAssistantLeadReminder({ actor, message, thread, project, body, db = pool }) {
+  const ticket = await createAssistantSupportTicket({ actor, message, thread, project, body, db });
+  let communication = null;
+  try {
+    communication = (await db.query(
+      `INSERT INTO bna_contact_communications (
+         contact_type, channel, direction, summary, body, follow_up_required,
+         created_by, source, source_context, metadata, project_id
+       ) VALUES (
+         'general', 'internal_note', 'inbound', $1, $2, TRUE,
+         'web_assistant', 'web_assistant', $3::jsonb, $4::jsonb, $5
+       )
+       RETURNING *`,
+      [
+        limitText(`Public assistant lead${ticket?.id ? ` ticket #${ticket.id}` : ''}`, 220),
+        message,
+        JSON.stringify({
+          assistant_thread_id: thread.id,
+          ticket_id: ticket?.id || null,
+          actor_type: actor.type,
+          actor_id: actor.id || null,
+          page_path: body.page_path || body.path || null,
+          surface: body.surface || null,
+        }),
+        JSON.stringify({
+          lead_magnet: true,
+          public_assistant: true,
+          follow_up_owner: 'Shloimie',
+        }),
+        project?.id || null,
+      ]
+    )).rows[0];
+  } catch (error) {
+    await recordAssistantToolCall({
+      thread,
+      toolName: 'create_lead_communication',
+      actor,
+      allowed: true,
+      status: 'failed',
+      resultSummary: 'Lead reminder ticket was created, but communication log failed',
+      metadata: { ticket_id: ticket?.id || null, error: hostedAssistantErrorForLog(error) },
+      db,
+    });
+  }
+  await recordAssistantToolCall({
+    thread,
+    toolName: 'create_public_lead_reminder',
+    actor,
+    allowed: true,
+    status: 'completed',
+    resultSummary: `Created public lead reminder${ticket?.id ? ` ticket #${ticket.id}` : ''}`,
+    metadata: { ticket_id: ticket?.id || null, communication_id: communication?.id || null },
+    db,
+  });
+  return { ticket, communication };
+}
+
+async function createAssistantPublicFeedback({ actor, message, thread, project, body, feedbackKind = 'codex_review', db = pool }) {
+  const ticket = await createAssistantSupportTicket({ actor, message, thread, project, body, db });
+  let task = null;
+  if (feedbackKind === 'decision') {
+    task = await createTaskFromText({
+      title: limitText(`Decision from public assistant feedback: ${assistantFirstLine(message, 'Public assistant suggestion')}`, 220),
+      raw_text: message,
+      notes: [
+        'Captured from the public assistant as a product/design/content suggestion for Shloimie.',
+        `Assistant thread #${thread.id}`,
+        ticket?.id ? `Support ticket #${ticket.id}` : '',
+        body.page_path || body.path ? `Page: ${body.page_path || body.path}` : '',
+        '',
+        message,
+      ].filter(Boolean).join('\n'),
+      item_type: 'decision',
+      decision_required: true,
+      decision_owner: 'Shloimie',
+      decision_prompt: assistantFirstLine(message, 'Review public assistant suggestion'),
+      decision_options: ['Approve and schedule implementation', 'Revise the proposal first', 'Do not implement now'],
+      assigned_to: 'Shloimie',
+      category: 'operations',
+      urgency: 'this_week',
+      source: 'web',
+      source_channel: 'public_assistant',
+      created_by: 'web_assistant',
+      author: actor.name || actor.email || 'website_visitor',
+      ai_parsed: {
+        parser: 'public_assistant_feedback-v1',
+        kind: 'decision',
+        original_text: message,
+        assistant_thread_id: thread.id,
+        support_ticket_id: ticket?.id || null,
+      },
+    }, {}, db);
+  } else {
+    task = await createTaskFromText({
+      title: limitText(`Review public assistant issue: ${assistantFirstLine(message, 'Public assistant issue')}`, 220),
+      raw_text: message,
+      notes: [
+        'Captured from the public assistant as a clear site/app/bot issue for Codex review.',
+        'This queues review only; public users do not receive admin, CLI, deploy, or data access.',
+        `Assistant thread #${thread.id}`,
+        ticket?.id ? `Support ticket #${ticket.id}` : '',
+        body.page_path || body.path ? `Page: ${body.page_path || body.path}` : '',
+        '',
+        message,
+      ].filter(Boolean).join('\n'),
+      assigned_to: 'Codex',
+      agent_executable: true,
+      stage: 'assigned',
+      category: 'technology',
+      urgency: /\b(urgent|blocked|blocking|critical|now|today)\b/i.test(message) ? 'today' : 'this_week',
+      source: 'web',
+      source_channel: 'public_assistant',
+      created_by: 'web_assistant',
+      author: actor.name || actor.email || 'website_visitor',
+      ai_parsed: {
+        parser: 'public_assistant_feedback-v1',
+        kind: 'codex_review',
+        original_text: message,
+        assistant_thread_id: thread.id,
+        support_ticket_id: ticket?.id || null,
+        public_user_has_admin_power: false,
+      },
+    }, {}, db);
+  }
+  if (ticket?.id && task?.id) {
+    await db.query(
+      'UPDATE bna_support_tickets SET related_task_id = $2, updated_at = NOW() WHERE id = $1',
+      [ticket.id, task.id]
+    );
+  }
+  await db.query(
+    'UPDATE bna_assistant_threads SET related_ticket_id = $2, related_task_id = $3, status = $4, updated_at = NOW() WHERE id = $1',
+    [thread.id, ticket?.id || null, task?.id || null, feedbackKind === 'decision' ? 'waiting' : 'in_progress']
+  );
+  await recordAssistantToolCall({
+    thread,
+    toolName: feedbackKind === 'decision' ? 'create_public_decision' : 'queue_public_codex_review',
+    actor,
+    allowed: true,
+    status: 'completed',
+    resultSummary: feedbackKind === 'decision'
+      ? `Created Shloimie decision #${task?.id || ''}`.trim()
+      : `Queued Codex review #${task?.id || ''}`.trim(),
+    metadata: { ticket_id: ticket?.id || null, task_id: task?.id || null, feedback_kind: feedbackKind },
+    db,
+  });
+  return { ticket, task };
 }
 
 async function createAssistantCodexTask({ actor, message, thread, body, db = pool }) {
@@ -36682,6 +37769,167 @@ function assistantShouldUseWebSearch(message) {
   return /\b(latest|current|currently|today|yesterday|tomorrow|recent|recently|newest|up[-\s]?to[-\s]?date|look\s+up|search\s+(?:the\s+)?web|web\s+search|research\s+online|google\s+it|find\s+online|verify\s+online|what'?s\s+new|as\s+of\s+now|2026|API docs?|pricing|release notes?|status page|approval requirements?|OAuth|Business Profile|Google Business Profile)\b/i.test(String(message || ''));
 }
 
+function assistantResponseLanguage(body = {}, actor = {}) {
+  return normalizeLanguage(body.language || body.lang || body.context?.language || actor.language || 'en');
+}
+
+function assistantResponseIsHebrew(body = {}, actor = {}) {
+  return assistantResponseLanguage(body, actor) === 'he';
+}
+
+function publicAssistantLeadIntent(message = '') {
+  const text = String(message || '');
+  const hasContactInfo = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}|\+?\d[\d\s().-]{7,}\d/i.test(text);
+  const englishIntent = /\b(contact|call|phone|email|e-mail|whatsapp|message|speak|talk|reach out|get in touch|follow up|meet|meeting|tour|visit|enroll|register|sign\s*up|signup|application|interested|send me|tell Shloimie|ask Shloimie)\b/i.test(text);
+  const hebrewIntent = /(צור קשר|יצירת קשר|טלפון|מייל|אימייל|וואטסאפ|ווטסאפ|הודעה|לדבר|שיחה|להתקשר|פגישה|סיור|הרשמה|להירשם|מעוניין|מעוניינת|שלוימי|שלומי)/.test(text);
+  return hasContactInfo || englishIntent || hebrewIntent;
+}
+
+function publicAssistantFeedbackKind(message = '') {
+  const text = String(message || '').trim();
+  if (!text) return null;
+  const lower = text.toLowerCase();
+  const mentionsSystemSurface = /\b(site|website|page|screen|form|portal|login|bot|assistant|widget|interface|button|link|hebrew|english|rtl|mobile|tablet|provider|parent section|newsletter|dashboard|app)\b/i.test(text)
+    || /(אתר|עמוד|מסך|טופס|פורטל|כניסה|בוט|מסייע|כפתור|קישור|עברית|אנגלית|נייד|טאבלט|ניוזלטר|אפליקציה)/.test(text);
+  const bugWords = /\b(bug|broken|not working|doesn'?t work|failed|failing|error|wrong|backwards|sloppy|confusing|missing|can'?t|cannot|stuck|fix|repair|load|loading|doesn'?t load|issue|problem)\b/i.test(text)
+    || /(תקלה|לא עובד|שבור|שגיאה|לא נטען|חסר|הפוך|מבלבל|בעיה|לתקן|תיקון)/.test(text);
+  if (mentionsSystemSurface && bugWords) return 'codex_review';
+  const suggestionWords = /\b(feedback|suggestion|suggest|idea|proposal|would be better|should add|should change|i would change|what if|maybe add|make it|improve|format)\b/i.test(text)
+    || /(הצעה|רעיון|כדאי|אולי|לשנות|להוסיף|לשפר|פורמט)/.test(text);
+  if (suggestionWords) return mentionsSystemSurface ? 'codex_review' : 'decision';
+  if (lower.startsWith('i think you should') || lower.startsWith('you should')) return 'decision';
+  return null;
+}
+
+function publicAssistantActionReply(body = {}, actor = {}, result = {}, kind = 'lead') {
+  const he = assistantResponseIsHebrew(body, actor);
+  const ticketId = result.ticket?.id || null;
+  const taskId = result.task?.id || null;
+  if (kind === 'codex_review') {
+    return he
+      ? `קיבלתי. פתחתי כרטיס פנימי${ticketId ? ` #${ticketId}` : ''}${taskId ? ` וגם פריט בדיקת Codex #${taskId}` : ''}. שלוימי יראה את זה בלי שתצטרכו להיכנס להגדרות.`
+      : `Got it. I opened an internal ticket${ticketId ? ` #${ticketId}` : ''}${taskId ? ` and a Codex review item #${taskId}` : ''}. Shloimie will see it without you needing to use settings.`;
+  }
+  if (kind === 'decision') {
+    return he
+      ? `קיבלתי את ההצעה. שמרתי אותה כהחלטה לשלוימי${taskId ? ` #${taskId}` : ''}, כדי שלא תלך לאיבוד בתוך השיחה.`
+      : `I captured that suggestion as a Shloimie decision${taskId ? ` #${taskId}` : ''}, so it does not disappear inside the chat.`;
+  }
+  return he
+    ? `תודה. העברתי את ההודעה לשלוימי${ticketId ? ` בכרטיס #${ticketId}` : ''}. אם תרצו, כתבו שם, טלפון או אימייל כדי שיהיה קל לחזור אליכם.`
+    : `Thank you. I sent this to Shloimie${ticketId ? ` as ticket #${ticketId}` : ''}. If you want a follow-up, share a name, phone, or email so he can reach you.`;
+}
+
+async function buildAssistantConversationMemory({ actor = {}, thread = {}, db = pool } = {}) {
+  if (!actor || !thread) return '';
+  try {
+    const params = [safeAssistantActorType(actor.type), actor.id || actor.anonymousId || '', actor.email || ''];
+    const result = await db.query(
+      `SELECT m.author_type, m.body, m.created_at, t.surface
+       FROM bna_assistant_threads t
+       JOIN bna_assistant_messages m ON m.thread_id = t.id
+       WHERE t.actor_type = $1
+         AND (
+           (t.actor_id <> '' AND t.actor_id = $2)
+           OR (t.actor_email <> '' AND lower(t.actor_email) = lower($3))
+         )
+       ORDER BY m.created_at DESC, m.id DESC
+       LIMIT 16`,
+      params
+    );
+    const rows = result.rows.slice().reverse();
+    if (!rows.length) return '';
+    return [
+      'Recent role-scoped conversation memory:',
+      ...rows.map((row) => {
+        const author = row.author_type === 'user' ? 'User' : 'Assistant';
+        return `- ${author}: ${limitText(String(row.body || '').replace(/\s+/g, ' ').trim(), 260)}`;
+      }),
+    ].join('\n');
+  } catch (error) {
+    return '';
+  }
+}
+
+async function buildPublicAssistantKnowledgeBase({ db = pool } = {}) {
+  const base = [
+    'BNA = Bnei Neviim Academy = Whole Child Torah Learning Community.',
+    'Core public model: Mesorah, Torah learning, relationship, intrinsic motivation, self-governance, and whole-child growth.',
+    'Self-governance means structured freedom with accountability: the child learns to notice internal state, name what is happening, choose a next responsible step, repair when needed, and review progress with a trusted adult.',
+    'The practical loop is: clear goal, child-owned plan, daily or weekly check-in, reflection, parent/Rabbi coaching, visible progress, and responsibility without shaming or fake performance.',
+    'Parents are partners. The goal is not more control; the goal is helping the child become more capable, honest, internally regulated, and connected to Torah and family responsibility.',
+    'Public answers may discuss BNA philosophy, the learning program, homeschooler/alternative education fit, Torah learning, parent partnership, service-provider/community pathways, and how to get in touch.',
+    'Do not use internal tasks, private student records, attendance, payments, operations notes, Codex work, or admin-only implementation details as public knowledge.',
+  ];
+  const excerpts = [];
+  try {
+    const outputTypes = ['blog_draft', 'weekly_newsletter', 'teaching_philosophy_note', 'whatsapp_update', 'parent_email'];
+    const outputs = await db.query(
+      `SELECT o.output_type, o.title, o.body, o.status, COALESCE(o.published_at, o.approved_at, o.created_at) AS sort_date
+       FROM bna_content_outputs o
+       WHERE o.status IN ('approved', 'published')
+         AND o.output_type = ANY($1::text[])
+         AND COALESCE(o.body, '') <> ''
+       ORDER BY sort_date DESC NULLS LAST, o.id DESC
+       LIMIT 8`,
+      [outputTypes]
+    );
+    for (const row of outputs.rows) {
+      const body = sanitizePublicLearningText(row.body, 900);
+      if (!body) continue;
+      excerpts.push(`Public content excerpt (${outputTypeLabel(row.output_type)}${row.title ? `, ${row.title}` : ''}): ${body}`);
+    }
+  } catch (error) {}
+  try {
+    const sessions = await db.query(
+      `SELECT title, summary, topics, discussions, sources, highlights, created_at
+       FROM bna_class_sessions
+       WHERE COALESCE(summary, '') <> ''
+       ORDER BY created_at DESC, id DESC
+       LIMIT 5`
+    );
+    for (const row of sessions.rows) {
+      const summary = sanitizePublicLearningText(row.summary, 520);
+      if (!summary) continue;
+      const topics = toJsonArray(row.topics).map(classContentItemText).filter(Boolean).slice(0, 6).join(', ');
+      excerpts.push(`Class learning note (${row.title || 'BNA class'}): ${summary}${topics ? ` Topics: ${topics}.` : ''}`);
+    }
+  } catch (error) {}
+  return [...base, ...excerpts.slice(0, 10)].join('\n');
+}
+
+async function buildSafeAssistantContextSummary({ actor = {}, message = '', thread = {}, body = {}, db = pool } = {}) {
+  const surface = normalizeAssistantSurface(body.surface || body.page || body.context?.surface || thread.surface);
+  const memory = await buildAssistantConversationMemory({ actor, thread, db });
+  const publicKnowledge = await buildPublicAssistantKnowledgeBase({ db });
+  const roleLines = [];
+  if (actor.type === 'parent') {
+    roleLines.push('Role mode: parent accountability coach. Remember parent goals/interests only inside this parent-scoped actor memory and do not expose other households.');
+  } else if (actor.type === 'student') {
+    roleLines.push('Role mode: student learning coach. Be encouraging, concise, and help the student choose the next responsible step.');
+  } else if (actor.type === 'service_provider') {
+    roleLines.push('Role mode: service-provider assistant. Help with profile, parent questions, onboarding, and support while avoiding private BNA school data.');
+  } else {
+    roleLines.push('Role mode: public website guide and lead-magnet assistant.');
+  }
+  return {
+    summary_text: [
+      `Surface: ${surface}. Actor role: ${actor.role || actor.type || 'anonymous'}.`,
+      ...roleLines,
+      'Assistant style: concise, warm, Shloimie-like, practical, and inspiring. Walk the person through the next step in chat instead of sending them to settings.',
+      'If a person reports a real bug, missing UI, or product suggestion, the server records it as an internal ticket, Codex review item, or Shloimie decision. Do not claim a record was created unless the current server result says so.',
+      '',
+      publicKnowledge,
+      memory ? `\n${memory}` : '',
+    ].filter(Boolean).join('\n').slice(0, 18000),
+    counts: {
+      public_knowledge_chars: publicKnowledge.length,
+      memory_chars: memory.length,
+      surface,
+    },
+  };
+}
+
 function assistantExplicitTicketRequest(message) {
   return /\b(create|open|file|make|send|submit)\b.{0,50}\b(ticket|support request|issue|bug report)\b/i.test(String(message || ''))
     || /\b(ticket|support request)\s*:/i.test(String(message || ''));
@@ -36697,20 +37945,33 @@ function assistantExplicitTaskRequest(message) {
     || /\b(task|todo|to-do)\s*:/i.test(String(message || ''));
 }
 
+function assistantProviderGoogleBusinessLinkRequest(message) {
+  return /\b(attach|capture|save|store|add|put)\b.{0,80}\b(google business|google profile|google maps|maps link|place id)\b/i.test(String(message || ''))
+    || /\b(google business|google profile|google maps|maps link|place id)\b.{0,80}\b(provider|profile|listing)\b/i.test(String(message || ''));
+}
+
 function assistantShouldUseHostedReply(actor = {}, message = '') {
-  if (!actor.canUseCodex) return false;
+  if (!actor.canUseCodex) return true;
   return /\b(state|summarize|summary|what is happening|brand|memory|tasks|explain|why|how|status|tools?|actions?|provider|fallback|assistant|bot|search)\b/i.test(message)
     || !assistantMessageLooksLikeCodexRequest(message);
 }
 
 function assistantAdaptiveIntent({ actor = {}, message = '', body = {}, mode = 'safe' }) {
   const text = String(message || '');
+  if (!actor.canUseCodex) {
+    const feedbackKind = publicAssistantFeedbackKind(text);
+    if (feedbackKind) return { kind: 'public_feedback', feedback_kind: feedbackKind };
+    if (publicAssistantLeadIntent(text)) return { kind: 'public_lead' };
+  }
   if (assistantShouldUseWebSearch(text)) return { kind: 'web_search' };
   if (assistantExplicitTicketRequest(text)) return { kind: 'action', action_id: 'create_ticket' };
   if (actor.canUseCodex && (mode === 'codex' || /^\s*codex\s*:/i.test(text) || assistantMessageLooksLikeCodexRequest(text))) {
     return { kind: 'codex_task' };
   }
   if (actor.canUseCodex && assistantExplicitDecisionRequest(text)) return { kind: 'action', action_id: 'create_decision' };
+  if ((actor.canUseCodex || actor.type === 'service_provider') && assistantProviderGoogleBusinessLinkRequest(text)) {
+    return { kind: 'action', action_id: 'capture_provider_google_business_link' };
+  }
   if (actor.canUseCodex && assistantExplicitTaskRequest(text)) return { kind: 'action', action_id: 'create_task' };
   if (actor.type === 'service_provider' && /\b(question|post|ask)\b/i.test(text)) return { kind: 'action', action_id: 'create_provider_question_post' };
   if (!actor.canUseCodex && assistantMessageLooksLikeCodexRequest(text)) return { kind: 'denied_codex_ticket' };
@@ -36722,6 +37983,29 @@ function assistantAdaptiveIntent({ actor = {}, message = '', body = {}, mode = '
 function assistantFirstLine(message, fallback = 'Assistant request') {
   const firstLine = String(message || '').replace(/^\s*(ticket|task|todo|decision|codex)\s*:\s*/i, '').split(/\r?\n/).map((line) => line.trim()).find(Boolean);
   return limitText(firstLine || fallback, 220);
+}
+
+function assistantExtractProviderId(message = '', body = {}) {
+  const direct = Number(body.provider_id || body.providerId || body.provider_profile_id || body.providerProfileId || 0);
+  if (Number.isFinite(direct) && direct > 0) return direct;
+  const match = String(message || '').match(/\b(?:provider|profile)\s*#?\s*(\d+)\b/i);
+  return match ? Number(match[1]) : null;
+}
+
+function assistantExtractGoogleBusinessUrl(message = '', body = {}) {
+  const direct = body.google_business_profile_url || body.googleBusinessProfileUrl || body.google_maps_url || body.googleMapsUrl || '';
+  if (direct) return limitText(direct, 700);
+  const urls = String(message || '').match(/https?:\/\/[^\s<>"')]+/gi) || [];
+  return limitText(urls.find((url) => /google|maps\.app\.goo\.gl|g\.page|goo\.gl\/maps/i.test(url)) || '', 700);
+}
+
+function assistantExtractGooglePlaceId(message = '', body = {}) {
+  const direct = body.google_place_id || body.googlePlaceId || body.place_id || body.placeId || '';
+  if (direct) return limitText(direct, 220);
+  const explicit = String(message || '').match(/\b(?:place[_\s-]?id|placeid)\s*[:=]\s*([A-Za-z0-9_-]{10,220})/i)?.[1];
+  if (explicit) return limitText(explicit, 220);
+  const queryParam = String(message || '').match(/[?&](?:place_id|placeid)=([^&#\s]+)/i)?.[1];
+  return queryParam ? limitText(decodeURIComponent(queryParam), 220) : '';
 }
 
 function assistantInputsForAction(actionId, message, actor = {}, body = {}) {
@@ -36756,6 +38040,15 @@ function assistantInputsForAction(actionId, message, actor = {}, body = {}) {
     return {
       body: String(message || '').trim(),
       visibility: body.visibility || 'provider',
+    };
+  }
+  if (actionId === 'capture_provider_google_business_link') {
+    return {
+      provider_id: assistantExtractProviderId(message, body),
+      provider_profile_id: body.provider_profile_id || body.providerProfileId || null,
+      google_business_profile_url: assistantExtractGoogleBusinessUrl(message, body),
+      google_place_id: assistantExtractGooglePlaceId(message, body),
+      notes: String(message || '').trim(),
     };
   }
   return {
@@ -37001,24 +38294,37 @@ function hostedAssistantErrorForLog(error) {
 }
 
 async function maybeHostedAssistantReply({ actor, message, contextSummary, toolCatalog = [], webSearchUnavailable = false }) {
-  if (!actor.canUseCodex) return null;
   const providerConfigs = hostedAssistantProviderConfigs();
   if (!providerConfigs.length) return null;
   const toolSummary = assistantToolCatalogSummary(toolCatalog);
+  const privileged = Boolean(actor.canUseCodex);
   const messages = [
     {
       role: 'system',
-      content: [
-        'You are the BNA web assistant for Shloimie/super-admin.',
-        'Use the provided BNA context summary and brand-kit guardrails.',
-        'The browser UI is intentionally one chat interface. Do not ask the user to click mode buttons; infer the next step from the text.',
-        'Available server-side actions are listed below. Never claim an action was executed unless the server response already says it executed.',
-        toolSummary ? `Available actions:\n${toolSummary}` : 'No server-side actions are visible to this actor.',
-        webSearchUnavailable ? 'Live web search was requested but is not available from this server response. Do not claim that you searched the web or verified current facts.' : '',
-        'Do not reveal secrets, provider credentials, or internal key status.',
-        'Do not claim code/deploy work was performed.',
-        'Do not mention the underlying hosted AI provider unless the user explicitly asks as the super-admin.',
-      ].join('\n'),
+      content: privileged
+        ? [
+          'You are the BNA web assistant for Shloimie/super-admin.',
+          'Use the provided BNA context summary and brand-kit guardrails.',
+          'The browser UI is intentionally one chat interface. Do not ask the user to click mode buttons; infer the next step from the text.',
+          'Available server-side actions are listed below. Never claim an action was executed unless the server response already says it executed.',
+          toolSummary ? `Available actions:\n${toolSummary}` : 'No server-side actions are visible to this actor.',
+          webSearchUnavailable ? 'Live web search was requested but is not available from this server response. Do not claim that you searched the web or verified current facts.' : '',
+          'Do not reveal secrets, provider credentials, or internal key status.',
+          'Do not claim code/deploy work was performed.',
+          'Do not mention the underlying hosted AI provider unless the user explicitly asks as the super-admin.',
+        ].join('\n')
+        : [
+          'You are the BNA public and portal assistant.',
+          'Use the provided public BNA self-governance, accountability, Torah-learning, and role-scoped memory context.',
+          'Answer in the user language. If the user writes Hebrew or the context language is Hebrew, answer in Hebrew. Otherwise answer in English.',
+          'Write in Shloimie’s public-facing voice: concise, direct, warm, practical, and inspiring without being flowery.',
+          'Coach through the self-governance modality: clear goals, child ownership, reflection, check-ins, repair, intrinsic motivation, and responsibility without shaming.',
+          'The UI is one chat interface. Do not tell regular people to use settings or admin screens; walk them through the next step in the conversation.',
+          'You may invite the visitor to share name, phone, or email for follow-up, but do not claim you created a ticket/task/decision unless the server response already did that.',
+          webSearchUnavailable ? 'Live web search was requested but is not available from this server response. Do not claim that you searched the live web or verified current facts.' : '',
+          'Do not reveal private student data, parent records, internal tasks, operations notes, Codex work, provider credentials, API keys, model/provider names, or implementation details.',
+          'Do not mention OpenAI, Kimi, Moonshot, fallback providers, API key status, or internal AI routing.',
+        ].filter(Boolean).join('\n'),
     },
     {
       role: 'user',
@@ -37070,8 +38376,43 @@ async function buildAssistantReply({ actor, message, thread, project, body, db =
   const toolCatalog = assistantVisibleActionCatalog(actor, body);
   const intent = assistantAdaptiveIntent({ actor, message, body, mode });
 
+  if (intent.kind === 'public_feedback') {
+    const result = await createAssistantPublicFeedback({
+      actor,
+      message,
+      thread,
+      project,
+      body,
+      feedbackKind: intent.feedback_kind,
+      db,
+    });
+    return {
+      body: publicAssistantActionReply(body, actor, result, intent.feedback_kind),
+      metadata: {
+        intent: 'public_assistant_feedback',
+        feedback_kind: intent.feedback_kind,
+        ticket_id: result.ticket?.id || null,
+        task_id: result.task?.id || null,
+      },
+    };
+  }
+
+  if (intent.kind === 'public_lead') {
+    const result = await createAssistantLeadReminder({ actor, message, thread, project, body, db });
+    return {
+      body: publicAssistantActionReply(body, actor, result, 'lead'),
+      metadata: {
+        intent: 'public_lead_reminder',
+        ticket_id: result.ticket?.id || null,
+        communication_id: result.communication?.id || null,
+      },
+    };
+  }
+
   if (intent.kind === 'web_search') {
-    const contextSummary = actor.canUseCodex ? buildBnaAiContextSummary({ repoRoot: __dirname }) : null;
+    const contextSummary = actor.canUseCodex
+      ? buildBnaAiContextSummary({ repoRoot: __dirname })
+      : await buildSafeAssistantContextSummary({ actor, message, thread, body, db });
     try {
       const webSearchReply = await fetchOpenAiAssistantWebSearch({ actor, message, contextSummary });
       await recordAssistantToolCall({
@@ -37149,8 +38490,36 @@ async function buildAssistantReply({ actor, message, thread, project, body, db =
           };
         }
       }
+      if (!actor.canUseCodex) {
+        try {
+          const hostedReply = await maybeHostedAssistantReply({
+            actor,
+            message,
+            contextSummary,
+            toolCatalog,
+            webSearchUnavailable: true,
+          });
+          if (hostedReply?.body) {
+            return {
+              body: hostedReply.body,
+              metadata: {
+                intent: 'public_web_search_fallback_hosted_ai',
+                hosted_ai: true,
+                web_search: false,
+                provider: hostedReply.provider,
+                fallback_used: Boolean(hostedReply.fallback_used),
+                failures: hostedReply.failures || [],
+                web_search_error: hostedAssistantErrorForLog(error),
+                context_counts: contextSummary?.counts || null,
+              },
+            };
+          }
+        } catch (hostedError) {}
+      }
       return {
-        body: `${assistantIntroForRole(actor)} I cannot verify live web results from this server right now. I can still route your message to the right BNA channel.`,
+        body: assistantResponseIsHebrew(body, actor)
+          ? 'אני לא יכול לאמת תוצאות חיות מהרשת כרגע, אבל אני עדיין יכול לעזור לפי המידע הציבורי של BNA או להעביר הודעה לשלוימי.'
+          : `${assistantIntroForRole(actor)} I cannot verify live web results from this server right now, but I can still help from BNA public context or pass a message to Shloimie.`,
         metadata: {
           intent: 'web_search_unavailable',
           hosted_ai: false,
@@ -37224,14 +38593,16 @@ async function buildAssistantReply({ actor, message, thread, project, body, db =
   }
 
   if (intent.kind === 'hosted_reply') {
-    const contextSummary = buildBnaAiContextSummary({ repoRoot: __dirname });
+    const contextSummary = actor.canUseCodex
+      ? buildBnaAiContextSummary({ repoRoot: __dirname })
+      : await buildSafeAssistantContextSummary({ actor, message, thread, body, db });
     try {
       const hostedReply = await maybeHostedAssistantReply({ actor, message, contextSummary, toolCatalog });
       if (hostedReply?.body) {
         return {
           body: hostedReply.body,
           metadata: {
-            intent: 'admin_hosted_ai_query',
+            intent: actor.canUseCodex ? 'admin_hosted_ai_query' : 'safe_hosted_ai_query',
             hosted_ai: true,
             provider: hostedReply.provider,
             fallback_used: Boolean(hostedReply.fallback_used),
@@ -37242,14 +38613,26 @@ async function buildAssistantReply({ actor, message, thread, project, body, db =
       }
     } catch (error) {
       return {
-        body: hostedAssistantErrorForUser(),
+        body: actor.canUseCodex
+          ? hostedAssistantErrorForUser()
+          : assistantResponseIsHebrew(body, actor)
+            ? 'המסייע אינו זמין כרגע. אפשר עדיין לכתוב הודעה ברורה לשלוימי, והיא תישמר כבקשת המשך.'
+            : 'The assistant is temporarily unavailable. You can still write a clear message for Shloimie and I will save it as a follow-up request.',
         metadata: {
-          intent: 'admin_hosted_ai_query',
+          intent: actor.canUseCodex ? 'admin_hosted_ai_query' : 'safe_hosted_ai_query',
           hosted_ai: false,
           error: hostedAssistantErrorForLog(error),
           failures: error.failures || [],
           context_counts: contextSummary.counts,
         },
+      };
+    }
+    if (!actor.canUseCodex) {
+      return {
+        body: assistantResponseIsHebrew(body, actor)
+          ? 'אני כאן כדי לעזור עם BNA, שלטון עצמי, מטרות, אחריות ויצירת קשר עם שלוימי. כתבו לי מה אתם מנסים להבין או לשנות.'
+          : "I am here to help with BNA, self-governance, goals, accountability, and getting in touch with Shloimie. Tell me what you are trying to understand or change.",
+        metadata: { intent: 'safe_hosted_ai_query', hosted_ai: false, context_counts: contextSummary.counts },
       };
     }
     return {
@@ -39926,6 +41309,37 @@ app.post('/api/bna/tasks/:id/actions/reassign', requireAdmin, async (req, res) =
   });
 });
 
+app.post('/api/bna/tasks/:id/actions/needs-more-info', requireAdmin, async (req, res) => {
+  taskActionResponse(req, res, async () => {
+    const waitingOn = normalizeTaskPerson(req.body?.waiting_on || req.body?.waitingOn || 'Shloimie');
+    const note = String(req.body?.notes || 'Decision needs more information before an option is chosen.').slice(0, 1000);
+    const task = await patchTaskAndReturn(req.params.id, {
+      item_type: 'decision',
+      stage: 'needs_decision',
+      waiting_on: waitingOn,
+      decision_required: true,
+      agent_status: 'none',
+      next_action_label: 'Needs more info',
+      verification_notes: null,
+    }, {
+      actor: req.opsUser || 'dashboard',
+      eventType: 'decision_needs_more_info',
+      eventSummary: note,
+    });
+    await pool.query(
+      `INSERT INTO bna_task_comments (task_id, author, body, visibility, source, source_context)
+       VALUES ($1, $2, $3, 'workspace', 'system', $4::jsonb)`,
+      [
+        req.params.id,
+        req.opsUser || 'dashboard',
+        note,
+        JSON.stringify({ action: 'needs_more_info', waiting_on: waitingOn }),
+      ]
+    );
+    return task;
+  });
+});
+
 app.post('/api/bna/tasks/:id/actions/choose-decision', requireAdmin, async (req, res) => {
   taskActionResponse(req, res, async () => {
     const current = await fetchTaskWithProject(req.params.id);
@@ -40178,6 +41592,16 @@ app.get(['/faq', '/he/faq'], (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'faq.html'));
 });
 
+app.get(['/signup', '/register'], (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, 'public', 'signup.html'));
+});
+
+app.get(['/signup-he', '/he/signup'], (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, 'public', 'signup-he.html'));
+});
+
 app.get(['/blog/:slug', '/he/blog/:slug'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'public', 'blog-post.html'));
@@ -40206,6 +41630,11 @@ app.get(['/provider', '/provider/login', '/provider-dashboard'], (req, res) => {
 app.get(['/service-providers', '/providers', '/community'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'public', 'service-providers.html'));
+});
+
+app.get(['/preview/one-time-mishnah', '/one-time-preview'], (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, 'public', 'one-time-preview.html'));
 });
 
 app.get(['/provider-participant', '/provider/member'], (req, res) => {

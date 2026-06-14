@@ -55,6 +55,10 @@ const {
 const {
   hasDirectReplyInsteadOfCodexIntent,
 } = require('../src/lib/bna/telegram-direct-reply-guard');
+const {
+  hasTelegramNoteToCrmIntent,
+  parseTelegramNoteToCrm,
+} = require('../src/lib/bna/telegram-note-to-crm');
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -3331,6 +3335,59 @@ async function handleWhatsappLinkCommand(config, msg) {
   );
 }
 
+function formatTelegramNoteToCrmReply(result = {}) {
+  if (!result?.success) {
+    return `CRM note match failed: ${result?.error || 'unknown error'}`;
+  }
+  if (!result.matched) {
+    const hint = result.reason === 'ambiguous_match'
+      ? 'I found more than one plausible WhatsApp row.'
+      : 'I could not confidently match a local WhatsApp row.';
+    return [
+      `${hint} No CRM note was saved and no WhatsApp message was sent.`,
+      'Try: /crm_note communication:12 | note: short context',
+      'Or: /crm_note contact:Name | note: short context',
+    ].join('\n');
+  }
+  const matchId = result.match?.communication_id || result.source_communication_id || 'unknown';
+  if (result.dry_run) {
+    return `CRM note preview matched WhatsApp communication #${matchId}. No CRM note was saved and no WhatsApp message was sent.`;
+  }
+  return [
+    `Linked Telegram note to WhatsApp communication #${matchId}.`,
+    `Saved CRM note #${result.communication?.id || 'unknown'}.`,
+    'No WhatsApp message was sent.',
+  ].join('\n');
+}
+
+async function handleTelegramNoteToCrmCommand(config, msg) {
+  const chatId = String(msg.chat.id);
+  const messageId = msg.message_id;
+  const text = getTelegramMessageText(msg);
+  const parsed = parseTelegramNoteToCrm(text);
+  if (!parsed.matched) {
+    await sendReply(
+      config.botToken,
+      chatId,
+      [
+        'Use:',
+        '/crm_note contact:Nati Fries | note: was about carpool, not a school lead',
+        '/crm_note communication:12 | note: follow up next week',
+        'Or: that WhatsApp with Nati Fries was about carpool, not a school lead',
+      ].join('\n'),
+      messageId
+    );
+    return;
+  }
+  const result = await appRequest(config, 'POST', '/api/bna/contact-communications/match-note', {
+    ...parsed,
+    created_by: config.agentDisplayName || 'Telegram bot',
+    telegram_chat_id: chatId,
+    telegram_message_id: messageId,
+  });
+  await sendReply(config.botToken, chatId, formatTelegramNoteToCrmReply(result), messageId);
+}
+
 async function getApprovedOutputExamples(config, outputType, limit = 3) {
   try {
     const data = await appRequest(config, 'GET', '/api/bna/content-jobs');
@@ -3933,6 +3990,74 @@ async function captureContactLeadsToApp(config, text, chatId, messageId) {
   };
 }
 
+async function captureTelegramNoteToCrm(config, text, chatId, messageId) {
+  const empty = {
+    telegramCrmNoteIntent: false,
+    telegramCrmNoteMatched: false,
+    telegramCrmNotesCreated: 0,
+    telegramCrmNoteReason: '',
+    telegramCrmNoteCommunicationId: null,
+    telegramCrmNoteMatchedCommunicationId: null,
+  };
+
+  if (!hasTelegramNoteToCrmIntent(text)) return empty;
+
+  const parsed = parseTelegramNoteToCrm(text);
+  if (!parsed.matched) {
+    return {
+      ...empty,
+      telegramCrmNoteIntent: true,
+      telegramCrmNoteReason: parsed.reason || 'missing_match_fields',
+    };
+  }
+
+  try {
+    const result = await appRequest(config, 'POST', '/api/bna/contact-communications/match-note', {
+      raw_text: text,
+      contact_clue: parsed.contact_clue,
+      note_text: parsed.note_text,
+      communication_id: parsed.communication_id || undefined,
+      telegram_chat_id: chatId,
+      telegram_message_id: messageId,
+      created_by: config.agentDisplayName || 'Telegram bot',
+    });
+
+    const created = Boolean(result?.created && result?.communication?.id);
+    if (created) {
+      appendAgentTaskLedger({
+        event: 'telegram_note_to_crm_captured',
+        source: 'telegram',
+        chat_id: chatId,
+        message_id: messageId,
+        title: 'Captured Telegram note into CRM contact communications',
+        stage: 'done',
+        category: 'communications',
+        assigned_to: 'Codex',
+        notes: `Linked Telegram note to contact communication #${result.match?.communication_id || result.match?.matched_communication_id || 'unknown'} with no external send.`,
+        communication_id: result.communication.id,
+        matched_communication_id: result.match?.communication_id || null,
+      });
+    }
+
+    return {
+      ...empty,
+      telegramCrmNoteIntent: true,
+      telegramCrmNoteMatched: Boolean(result?.matched),
+      telegramCrmNotesCreated: created ? 1 : 0,
+      telegramCrmNoteReason: result?.reason || (result?.matched ? 'matched' : 'not_matched'),
+      telegramCrmNoteCommunicationId: result?.communication?.id || null,
+      telegramCrmNoteMatchedCommunicationId: result?.match?.communication_id || null,
+    };
+  } catch (error) {
+    log(`Telegram note-to-CRM capture skipped: ${error instanceof Error ? error.message : String(error)}`);
+    return {
+      ...empty,
+      telegramCrmNoteIntent: true,
+      telegramCrmNoteReason: 'match_note_endpoint_error',
+    };
+  }
+}
+
 async function captureRambleToApp(config, text, chatId, messageId) {
   if (isScopedProjectBot(config)) {
     return captureScopedProjectToApp(config, text, chatId, messageId);
@@ -3944,6 +4069,23 @@ async function captureRambleToApp(config, text, chatId, messageId) {
 
   if (!config.opsUsername || !config.opsPassword) {
     return { enabled: false, tasksCreated: 0, eventsCreated: 0 };
+  }
+
+  const telegramNoteCapture = await captureTelegramNoteToCrm(config, text, chatId, messageId);
+  if (telegramNoteCapture.telegramCrmNoteIntent) {
+    return {
+      enabled: true,
+      tasksCreated: 0,
+      eventsCreated: 0,
+      studentMatchDecisions: [],
+      paymentIntakeCreated: 0,
+      contactLeadsCreated: 0,
+      contactLeadsUpdated: 0,
+      contactLeadsMatched: 0,
+      contactNotesCreated: 0,
+      contacts: [],
+      ...telegramNoteCapture,
+    };
   }
 
   let paymentIntakeCreated = 0;
@@ -4071,6 +4213,12 @@ async function captureRambleToApp(config, text, chatId, messageId) {
     contactLeadsMatched: contactCapture.contactLeadsMatched,
     contactNotesCreated: contactCapture.contactNotesCreated,
     contacts: contactCapture.contacts,
+    telegramCrmNoteIntent: telegramNoteCapture.telegramCrmNoteIntent,
+    telegramCrmNoteMatched: telegramNoteCapture.telegramCrmNoteMatched,
+    telegramCrmNotesCreated: telegramNoteCapture.telegramCrmNotesCreated,
+    telegramCrmNoteReason: telegramNoteCapture.telegramCrmNoteReason,
+    telegramCrmNoteCommunicationId: telegramNoteCapture.telegramCrmNoteCommunicationId,
+    telegramCrmNoteMatchedCommunicationId: telegramNoteCapture.telegramCrmNoteMatchedCommunicationId,
   };
 }
 
@@ -4440,6 +4588,13 @@ function captureSummaryText(captureSummary = {}) {
     lines.push(`Filed in Contacts: ${leadLabel}; ${Number(captureSummary.contactNotesCreated || 0)} note(s).`);
   }
 
+  if (captureSummary.telegramCrmNotesCreated) {
+    lines.push(`Filed in Contacts: ${captureSummary.telegramCrmNotesCreated} Telegram CRM note(s).`);
+  } else if (captureSummary.telegramCrmNoteIntent) {
+    const reason = String(captureSummary.telegramCrmNoteReason || 'no confident match').replace(/_/g, ' ');
+    lines.push(`Could not safely match that WhatsApp note yet: ${reason}.`);
+  }
+
   if (captureSummary.commentsCreated) {
     lines.push(`Filed in One Time comments: ${captureSummary.commentsCreated} comment(s).`);
   }
@@ -4469,6 +4624,8 @@ function hasStructuredCapture(captureSummary = {}) {
     Number(captureSummary.contactLeadsUpdated || 0) ||
     Number(captureSummary.contactLeadsMatched || 0) ||
     Number(captureSummary.contactNotesCreated || 0) ||
+    Number(captureSummary.telegramCrmNotesCreated || 0) ||
+    Boolean(captureSummary.telegramCrmNoteIntent) ||
     Number(captureSummary.commentsCreated || 0) ||
     Number(captureSummary.supportTicketsCreated || 0) ||
     captureSummary.studentMatchDecisions?.length
@@ -7193,6 +7350,7 @@ async function handleStructuredTextCommand(config, msg, intentPlan = {}) {
         '- /wapi_sync count:100 since_hours:168',
         '- /send_whatsapp signup:123 | message text',
         '- /link_whatsapp communication:12 signup:3',
+        '- /crm_note contact:Name | note: context for latest WhatsApp',
         '- /drive_auth',
         '- /sync_drive_memory',
         '- /pull_drive_memory',
@@ -7395,6 +7553,15 @@ async function handleStructuredTextCommand(config, msg, intentPlan = {}) {
       await handleWhatsappLinkCommand(config, msg);
     } catch (error) {
       await sendReply(config.botToken, chatId, `WhatsApp link failed: ${error instanceof Error ? error.message : String(error)}`, messageId);
+    }
+    return true;
+  }
+
+  if (hasTelegramNoteToCrmIntent(text)) {
+    try {
+      await handleTelegramNoteToCrmCommand(config, msg);
+    } catch (error) {
+      await sendReply(config.botToken, chatId, `CRM note match failed: ${error instanceof Error ? error.message : String(error)}`, messageId);
     }
     return true;
   }

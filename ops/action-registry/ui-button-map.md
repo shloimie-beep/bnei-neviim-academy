@@ -191,6 +191,34 @@ Generated from `src/lib/actions/registry.js`.
 - Buttons: Sync Google Classroom
 - Approval required: yes
 
+## google_drive_find_file_preview
+- Label: Preview Drive file search
+- Category: content
+- Page contexts: settings, content, provider_workspace, telegram, bot
+- Buttons: Preview Drive Search, Find Drive File
+- Approval required: no
+
+## google_drive_create_doc_preview
+- Label: Preview Drive Doc creation
+- Category: content
+- Page contexts: settings, content, calendar, telegram, bot
+- Buttons: Preview Doc Create, Create Google Doc Preview
+- Approval required: yes
+
+## google_drive_create_folder_preview
+- Label: Preview Drive folder creation
+- Category: content
+- Page contexts: settings, content, provider_workspace, telegram, bot
+- Buttons: Preview Folder Create, Create Provider Folder Preview
+- Approval required: yes
+
+## google_drive_move_file_preview
+- Label: Preview Drive file move
+- Category: content
+- Page contexts: settings, content, provider_workspace, telegram, bot
+- Buttons: Preview Drive Move, Put File In Folder Preview
+- Approval required: yes
+
 ## open_calendar_event
 - Label: Open calendar event
 - Category: calendar
@@ -336,6 +364,13 @@ Generated from `src/lib/actions/registry.js`.
 - Category: provider
 - Page contexts: provider_workspace, provider_index
 - Buttons: Save Provider, Publish Provider
+- Approval required: yes
+
+## capture_provider_google_business_link
+- Label: Capture provider Google Business link
+- Category: provider
+- Page contexts: provider_workspace, provider_index, settings, google_workspace, bot, telegram
+- Buttons: Capture Google Business Link, Save Google Profile Link, Store Place ID
 - Approval required: yes
 
 ## move_lead_stage

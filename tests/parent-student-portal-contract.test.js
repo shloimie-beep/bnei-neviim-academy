@@ -276,11 +276,20 @@ test('student checkoffs and parent messages create parent review notifications',
 });
 
 test('portal payloads exclude admin-only analysis and private meeting details', () => {
+  const studentPortalPayloadFunction = server.slice(
+    server.indexOf('async function getStudentPortalPayload'),
+    server.indexOf('async function findParentAccessRecords')
+  );
   assert.match(server, /metadata\.visibility === 'admin_only' \|\| metadata\.kind === 'student_analysis'/);
   assert.match(server, /if \(row\.event_type === 'private_meeting'\) return false/);
   assert.match(server, /safeGoalBoardStudentView/);
   assert.match(server, /SELECT id, name, name_en, name_he, parent_name, parent_email, parent_phone, current_school, tags, status\s+FROM bna_students\s+WHERE student_access_code = \$1/);
-  assert.match(server, /getStudentPortalPayload\(\{\s+id: student\.id,\s+name: student\.name,\s+parent_name: student\.parent_name,\s+parent_email: student\.parent_email,/);
+  assert.match(server, /const safeStudentIdentity = audience === 'parent'/);
+  assert.match(server, /id: student\.id,\s+name: student\.name,\s+name_en: student\.name_en,\s+name_he: student\.name_he,/);
+  assert.doesNotMatch(studentPortalPayloadFunction, /student:\s*\{\s*\.\.\.student,/);
+  assert.match(studentHtml, /const initialAccessCode = new URLSearchParams\(window\.location\.search\)\.get\('code'\) \|\| ''/);
+  assert.match(studentHtml, /if \(!initialAccessCode\) localStorage\.removeItem\(STORAGE_KEY\)/);
+  assert.doesNotMatch(studentHtml, /get\('code'\) \|\| localStorage\.getItem\(STORAGE_KEY\)/);
   assert.doesNotMatch(studentHtml, /Student Analysis/);
   assert.doesNotMatch(parentHtml, /Student Analysis/);
 });

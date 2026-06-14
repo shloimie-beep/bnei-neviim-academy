@@ -45,6 +45,23 @@ function extractDateTime(text = '') {
   return '';
 }
 
+function extractProviderId(text = '') {
+  const match = String(text || '').match(/\b(?:provider|profile)\s*#?\s*(\d+)\b/i);
+  return match ? Number(match[1]) : null;
+}
+
+function extractGoogleBusinessUrl(text = '') {
+  const urls = String(text || '').match(/https?:\/\/[^\s<>"')]+/gi) || [];
+  return urls.find((url) => /google|maps\.app\.goo\.gl|g\.page|goo\.gl\/maps/i.test(url)) || '';
+}
+
+function extractGooglePlaceId(text = '') {
+  const explicit = String(text || '').match(/\b(?:place[_\s-]?id|placeid)\s*[:=]\s*([A-Za-z0-9_-]{10,220})/i)?.[1];
+  if (explicit) return explicit;
+  const queryParam = String(text || '').match(/[?&](?:place_id|placeid)=([^&#\s]+)/i)?.[1];
+  return queryParam ? decodeURIComponent(queryParam) : '';
+}
+
 function titleAfterKeyword(text = '', keywordPattern, fallback = '') {
   const value = compact(text);
   const match = value.match(keywordPattern);
@@ -155,6 +172,24 @@ function classifyTelegramActionRequest(input = {}) {
         lead_name: titleAfterKeyword(text, /\blead\s+([^#\d][^,|]+?)(?:\s+to\s+|\s+into\s+|$)/i, ''),
       },
       reason: 'crm_stage_update',
+    };
+  }
+
+  if (/\b(attach|capture|save|store|add|put)\b.{0,80}\b(google business|google profile|google maps|maps link|place id)\b/.test(value)
+    || /\b(google business|google profile|google maps|maps link|place id)\b.{0,80}\b(provider|profile|listing)\b/.test(value)) {
+    const providerId = extractProviderId(text);
+    return {
+      kind: 'typed_action',
+      action_id: 'capture_provider_google_business_link',
+      confidence: providerId ? 0.9 : 0.72,
+      dry_run: false,
+      inputs: {
+        provider_id: providerId || undefined,
+        google_business_profile_url: extractGoogleBusinessUrl(text) || undefined,
+        google_place_id: extractGooglePlaceId(text) || undefined,
+        notes: text,
+      },
+      reason: providerId ? 'provider_google_business_link_capture' : 'provider_google_business_link_capture_needs_provider_id',
     };
   }
 

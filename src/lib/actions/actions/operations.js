@@ -495,6 +495,81 @@ function connectorGuardedResult(kind, inputs = {}, context = {}) {
   };
 }
 
+function googleDriveConnectorReady(context = {}) {
+  return Boolean(
+    context.connectors?.google_drive?.configured
+    || context.connectors?.google_drive?.test_mode
+    || context.connectors?.google_oauth?.configured
+    || context.connectors?.google_oauth?.test_mode
+  );
+}
+
+function googleDrivePreview(kind, inputs = {}, context = {}) {
+  const workspaceKey = normalizeWorkspace(inputs.workspace_key || inputs.workspace || context.actor?.workspace_id);
+  const connectorReady = googleDriveConnectorReady(context);
+  const query = compactText(inputs.query || inputs.file_name || inputs.title || 'latest Rabbi Scheller Mishnah video', 220);
+  const folderName = compactText(inputs.folder_name || inputs.target_folder_name || inputs.source_stage || 'known BNA Drive folder', 180);
+  const base = {
+    executed: false,
+    connector: 'google_drive',
+    connector_ready: connectorReady,
+    workspace_key: workspaceKey,
+    external_write_performed: false,
+    dry_run_only: true,
+    scope_policy: 'Prefer app-created/file-specific or known-folder access. Do not request broad Drive access until the Drive scope audit is approved.',
+    missing_connection_task_needed: !connectorReady,
+    blocker: connectorReady ? null : 'Google Drive OAuth or owner pipeline is not connected for this workspace.',
+  };
+  if (kind === 'find_file') {
+    return {
+      ...base,
+      drive_action: 'find_or_list_files',
+      query,
+      folder_id: inputs.folder_id || null,
+      folder_name: folderName,
+      mime_type: inputs.mime_type || null,
+      limit: Math.max(1, Math.min(Number(inputs.limit || 10), 25)),
+      planned_result_fields: ['id', 'name', 'mimeType', 'modifiedTime', 'webViewLink'],
+      next_confirmation: 'Connect a test-user or owner Drive pipeline before reading private Drive metadata.',
+    };
+  }
+  if (kind === 'create_doc') {
+    return {
+      ...base,
+      drive_action: 'create_google_doc',
+      title: compactText(inputs.title || 'Class summary draft', 180),
+      body_preview: summarizeBody(inputs.body || 'Use reviewed BNA class notes or transcript text as the source.', 700),
+      folder_id: inputs.folder_id || null,
+      folder_name: folderName,
+      approval_required_before_external_write: true,
+      required_external_inputs: ['connected Google account', 'destination folder policy', 'confirmed source content'],
+    };
+  }
+  if (kind === 'create_folder') {
+    return {
+      ...base,
+      drive_action: 'create_folder',
+      folder_name: folderName === 'known BNA Drive folder' ? compactText(inputs.provider_name || 'Provider workspace folder', 180) : folderName,
+      parent_folder_id: inputs.parent_folder_id || null,
+      provider_id: inputs.provider_id || null,
+      approval_required_before_external_write: true,
+      required_external_inputs: ['connected Google account', 'parent folder ID', 'provider/workspace scope'],
+    };
+  }
+  return {
+    ...base,
+    drive_action: 'move_or_import_file',
+    file_id: inputs.file_id || null,
+    file_name: compactText(inputs.file_name || query || 'selected Drive file', 180),
+    target_folder_id: inputs.target_folder_id || null,
+    target_folder_name: folderName,
+    related_type: inputs.related_type || null,
+    related_id: inputs.related_id || null,
+    approval_required_before_external_write: true,
+    required_external_inputs: ['file ID or selected file', 'target folder ID', 'connected Google account'],
+  };
+}
+
 async function createTicket(inputs = {}, context = {}) {
   const description = String(inputs.message || inputs.description || inputs.body || '').trim();
   if (!description) throw new Error('message is required');
@@ -808,6 +883,168 @@ async function requestProviderContact(inputs = {}, context = {}) {
   return { ...preview, provider_contact_request_saved: true, request: result.rows[0] };
 }
 
+function parseJsonObject(value) {
+  if (!value) return {};
+  if (typeof value === 'object' && !Array.isArray(value)) return value;
+  try {
+    const parsed = JSON.parse(String(value));
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function normalizeGoogleBusinessUrl(value = '') {
+  const raw = compactText(value, 700).replace(/[),.;\]]+$/g, '');
+  if (!raw) return '';
+  let url = null;
+  try {
+    url = new URL(raw);
+  } catch {
+    throw new Error('google_business_profile_url must be a valid Google Maps/Profile URL');
+  }
+  if (!['http:', 'https:'].includes(url.protocol)) {
+    throw new Error('google_business_profile_url must use http or https');
+  }
+  const host = url.hostname.toLowerCase();
+  const allowed = host.includes('google.')
+    || host === 'maps.app.goo.gl'
+    || host === 'g.page'
+    || host.endsWith('.g.page')
+    || host === 'goo.gl'
+    || host.endsWith('.goo.gl');
+  if (!allowed) {
+    throw new Error('google_business_profile_url must be a Google Maps/Profile link');
+  }
+  return url.href;
+}
+
+function extractGooglePlaceId(...values) {
+  const joined = values.map((value) => String(value || '')).join(' ');
+  const explicit = joined.match(/\b(?:place[_\s-]?id|placeid)\s*[:=]\s*([A-Za-z0-9_-]{10,220})/i)?.[1];
+  if (explicit) return compactText(explicit, 220);
+  const queryParam = joined.match(/[?&](?:place_id|placeid)=([^&#\s]+)/i)?.[1];
+  if (queryParam) return compactText(decodeURIComponent(queryParam), 220);
+  const chij = joined.match(/\bChI[A-Za-z0-9_-]{10,220}\b/)?.[0];
+  return chij ? compactText(chij, 220) : '';
+}
+
+async function captureProviderGoogleBusinessLink(inputs = {}, context = {}) {
+  const providerId = Number(inputs.provider_id || inputs.providerId || 0);
+  const providerProfileId = Number(inputs.provider_profile_id || inputs.providerProfileId || 0);
+  if (!providerId && !providerProfileId) throw new Error('provider_id is required');
+
+  const rawGoogleUrl = inputs.google_business_profile_url
+    || inputs.googleBusinessProfileUrl
+    || inputs.google_maps_url
+    || inputs.googleMapsUrl
+    || inputs.google_url
+    || inputs.googleUrl
+    || '';
+  const googleBusinessProfileUrl = normalizeGoogleBusinessUrl(rawGoogleUrl);
+  const googlePlaceId = compactText(inputs.google_place_id || inputs.googlePlaceId || inputs.place_id || inputs.placeId || extractGooglePlaceId(rawGoogleUrl), 220);
+  if (!googleBusinessProfileUrl && !googlePlaceId) {
+    throw new Error('A Google Business/Profile URL or Google Place ID is required');
+  }
+
+  const preview = {
+    provider_google_business_link_captured: false,
+    provider_id: providerId || null,
+    provider_profile_id: providerProfileId || null,
+    google_business_profile_url: googleBusinessProfileUrl || null,
+    google_place_id: googlePlaceId || null,
+    google_business_status: 'manual',
+    live_google_api_used: false,
+    external_write_performed: false,
+    public_listing_review_needed: true,
+    place_id_needs_manual_lookup: Boolean(googleBusinessProfileUrl && !googlePlaceId),
+    note: 'Manual Google Business/Profile fields can be stored now. Live GBP API/review sync still requires provider opt-in, business.manage, and approval.',
+  };
+  if (context.dryRun || !context.db) return preview;
+
+  const targetId = providerProfileId || providerId;
+  let profile = (await context.db.query(
+    'SELECT * FROM bna_service_provider_profiles WHERE id = $1 LIMIT 1',
+    [targetId]
+  )).rows[0] || null;
+  let legacyProvider = null;
+  let legacyProviderId = 0;
+
+  if (profile) {
+    const metadata = parseJsonObject(profile.metadata);
+    legacyProviderId = Number(inputs.legacy_provider_id || inputs.legacyProviderId || metadata.service_provider_id || metadata.legacy_provider_id || 0);
+    if (legacyProviderId) {
+      legacyProvider = (await context.db.query(
+        'SELECT * FROM bna_service_providers WHERE id = $1 LIMIT 1',
+        [legacyProviderId]
+      )).rows[0] || null;
+    }
+  } else {
+    legacyProviderId = providerId;
+    legacyProvider = (await context.db.query(
+      'SELECT * FROM bna_service_providers WHERE id = $1 LIMIT 1',
+      [legacyProviderId]
+    )).rows[0] || null;
+  }
+
+  if (!profile && !legacyProvider) throw new Error('Provider profile was not found');
+
+  const metadataPatch = {
+    manual_google_profile_url: googleBusinessProfileUrl || null,
+    google_business_link_captured_at: new Date().toISOString(),
+    google_business_link_captured_by: context.actor?.user_id || 'action_registry',
+    google_business_link_capture_source: context.source || 'action_registry',
+    google_business_link_notes: compactText(inputs.notes || '', 600) || null,
+    live_feed_enabled: false,
+  };
+
+  let updatedProfile = null;
+  if (profile) {
+    updatedProfile = (await context.db.query(
+      `UPDATE bna_service_provider_profiles
+       SET google_business_status = 'manual',
+           google_place_id = COALESCE($2, google_place_id),
+           metadata = COALESCE(metadata, '{}'::jsonb) || $3::jsonb,
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING *`,
+      [
+        profile.id,
+        googlePlaceId || null,
+        JSON.stringify(metadataPatch),
+      ]
+    )).rows[0] || null;
+  }
+
+  let updatedLegacyProvider = null;
+  if (legacyProvider) {
+    updatedLegacyProvider = (await context.db.query(
+      `UPDATE bna_service_providers
+       SET google_business_profile_url = COALESCE($2, google_business_profile_url),
+           google_place_id = COALESCE($3, google_place_id),
+           updated_at = NOW()
+       WHERE id = $1
+       RETURNING id, display_name, google_business_profile_url, google_place_id`,
+      [
+        legacyProvider.id,
+        googleBusinessProfileUrl || null,
+        googlePlaceId || null,
+      ]
+    )).rows[0] || null;
+  }
+
+  return {
+    ...preview,
+    provider_google_business_link_captured: true,
+    provider_profile_id: updatedProfile?.id || profile?.id || null,
+    legacy_provider_id: updatedLegacyProvider?.id || legacyProvider?.id || null,
+    profile_updated: Boolean(updatedProfile),
+    legacy_provider_updated: Boolean(updatedLegacyProvider),
+    updated_profile: updatedProfile,
+    updated_legacy_provider: updatedLegacyProvider,
+  };
+}
+
 function queueTelegramReport(inputs = {}) {
   const message = compactText(inputs.message || inputs.body || '', 1800);
   if (!message) throw new Error('message is required');
@@ -924,6 +1161,14 @@ async function runOperationsHandler(handler, inputs = {}, context = {}) {
       return connectorGuardedResult('google_calendar', inputs, context);
     case 'calendar.syncGoogleClassroom':
       return connectorGuardedResult('google_classroom', inputs, context);
+    case 'googleDrive.findFilePreview':
+      return googleDrivePreview('find_file', inputs, context);
+    case 'googleDrive.createDocPreview':
+      return googleDrivePreview('create_doc', inputs, context);
+    case 'googleDrive.createFolderPreview':
+      return googleDrivePreview('create_folder', inputs, context);
+    case 'googleDrive.moveFilePreview':
+      return googleDrivePreview('move_file', inputs, context);
     case 'whatsapp.draftFromNewsletter':
       return { draft_created: true, channel: 'whatsapp', body: summarizeBody(inputs.newsletter_body || inputs.body || 'Newsletter WhatsApp draft needs source text.', 900), sent: false };
     case 'social.draftFromNewsletter':
@@ -959,6 +1204,8 @@ async function runOperationsHandler(handler, inputs = {}, context = {}) {
       return requestProviderContact(inputs, context);
     case 'provider.updateProfile':
       return { provider_scope: true, approved_write_required: true, provider_id: inputs.provider_id || null };
+    case 'provider.captureGoogleBusinessLink':
+      return captureProviderGoogleBusinessLink(inputs, context);
     case 'crm.moveLeadStage':
       return { lead_stage_update: !context.dryRun, stage: inputs.stage, lead_id: inputs.lead_id || null, lead_name: inputs.lead_name || null, note: 'CRM stage update is typed and audited; external CRM connector writes remain approval-gated.' };
     case 'telegram.queueReport':

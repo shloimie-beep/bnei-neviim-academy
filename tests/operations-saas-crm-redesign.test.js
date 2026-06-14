@@ -107,6 +107,13 @@ test('Operations platform scope has backend workspace, connector, calendar, pipe
   assert.match(operations, /previewBotActionFromPanel/);
 });
 
+test('Operations auth identity read does not run workspace seeding on every request', () => {
+  const identityPayloadBlock = server.match(/async function buildBnaIdentityPayload[\s\S]*?\r?\n}\r?\n\r?\nfunction can/);
+  assert.ok(identityPayloadBlock, 'missing buildBnaIdentityPayload block');
+  assert.doesNotMatch(identityPayloadBlock[0], /ensurePersonalWorkspacesAndPeople/);
+  assert.match(identityPayloadBlock[0], /fallbackWorkspaceProjectRow\(activeKey\)/);
+});
+
 test('Parent lead reads hide archived records unless archived status is explicitly requested', () => {
   assert.match(server, /app\.get\('\/api\/bna\/parent-leads'/);
   assert.match(server, /if \(status\) \{\s*params\.push\(status\);\s*conditions\.push\(`status = \$\$\{params\.length\}`\);\s*\} else \{\s*conditions\.push\(`COALESCE\(status, 'interested'\) <> 'archived'`\);/);

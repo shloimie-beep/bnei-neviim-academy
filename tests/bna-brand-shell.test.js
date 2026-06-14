@@ -23,7 +23,9 @@ test('live app pages load the shared BNA brand shell', () => {
 
 test('Operations shell includes branded mobile header and scoped workspace label', () => {
   assert.match(operationsHtml, /class="ops-mobile-brand"/);
-  assert.match(operationsHtml, /class="ops-mobile-mark" aria-hidden="true">BNA/);
+  assert.match(operationsHtml, /class="ops-mobile-mark" src="\/icons\/icon-192\.png"/);
+  assert.match(operationsHtml, /class="ops-brand-mark" src="\/icons\/icon-192\.png"/);
+  assert.match(operationsHtml, /function renderWorkspaceContextStrip/);
   assert.match(operationsHtml, /function opsWorkspaceLabel/);
   assert.match(operationsHtml, /Platform \/ Super Admin/);
   assert.match(operationsHtml, /BNA School Workspace/);
@@ -33,10 +35,11 @@ test('Operations shell includes branded mobile header and scoped workspace label
 });
 
 test('shared shell defines light BNA palette, sticky toolbar, side menus, and top filters', () => {
-  assert.match(shellCss, /--bna-shell-blue:\s*#111111/);
-  assert.match(shellCss, /--bna-shell-gold:\s*#d6a92d/);
-  assert.match(shellCss, /--bna-shell-orange:\s*#f5d37c/);
-  assert.doesNotMatch(shellCss, /#1f5f8f|#173f64|rgba\(31, 95, 143|rgba\(23, 63, 100/);
+  assert.match(shellCss, /--bna-shell-blue:\s*#1e3a5f/);
+  assert.match(shellCss, /--bna-shell-gold:\s*#c9a227/);
+  assert.match(shellCss, /--bna-shell-sky:\s*#e8f0f8/);
+  assert.match(shellCss, /--bna-shell-page:\s*#f7f3e8/);
+  assert.doesNotMatch(shellCss, /--bna-shell-blue:\s*#111111|--bna-shell-blue-dark:\s*#050505/);
   assert.match(shellCss, /body\.bna-ops-shell-page \.ops-brand-topbar/);
   assert.match(shellCss, /body\.bna-portal-page \.brand-topbar/);
   assert.match(shellCss, /body\.bna-portal-page \.portal-menu-toggle/);

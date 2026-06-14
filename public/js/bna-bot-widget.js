@@ -1,12 +1,15 @@
 (function () {
   if (window.BNABotWidgetLoaded) return;
-  window.BNABotWidgetLoaded = true;
 
   const path = window.location.pathname;
   const query = new URLSearchParams(window.location.search);
-  if (/^\/parent/.test(path) && query.get('onboard') === 'accountability') return;
   const isParent = /^\/parent/.test(path);
   const isStudent = /^\/student/.test(path);
+  try {
+    if (!isStudent) localStorage.removeItem('bnaStudentAccessCode');
+  } catch {}
+  if (isParent && query.get('onboard') === 'accountability') return;
+  window.BNABotWidgetLoaded = true;
   const isProvider = /^\/provider/.test(path);
   const isOperations = /^\/operations/.test(path);
   const isSignup = /^\/signup/.test(path);
@@ -28,7 +31,7 @@
   const direction = () => document.documentElement.dir === 'rtl' ? 'rtl' : 'ltr';
   const language = () => document.documentElement.lang || (direction() === 'rtl' ? 'he' : 'en');
   const isHebrew = () => /^he\b/i.test(language()) || direction() === 'rtl';
-  const studentAccessCode = () => new URLSearchParams(window.location.search).get('code') || localStorage.getItem('bnaStudentAccessCode') || '';
+  const studentAccessCode = () => isStudent ? (new URLSearchParams(window.location.search).get('code') || '') : '';
   const isPublicLeadSurface = () => ['public', 'signup'].includes(surface);
 
   function getOrCreateAnonymousId() {
@@ -184,8 +187,8 @@
         ...base,
         surfaceLabel: he ? 'עזרת הרשמה' : 'Registration help',
         intro: he
-          ? 'שלום, אני מסייע ההרשמה של BNA. אפשר לשאול על הטופס, הרשאות הורים, תשלום או שליחה.'
-          : "Hi, I'm the BNA registration helper. I can help with the form, parent permissions, payment, or submission questions.",
+          ? 'שלום, אני כאן כדי לעזור. אפשר לשאול אותי על BNA, על שלטון עצמי, על טופס ההרשמה, הרשאות הורים, תשלום או שליחה.'
+          : "Hi, I am here to help. Ask me about BNA, self-governance, the registration form, parent permissions, payment, or submission questions.",
         cards: he
           ? [
             ['טופס', 'עזרה בשדות חסרים או בהבנת הרשאות.'],

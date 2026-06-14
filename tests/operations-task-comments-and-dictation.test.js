@@ -103,9 +103,36 @@ test('Operations moves resolved decisions to Done or actionable Tasks', () => {
   assert.match(operationsHtml, /Decision handled/);
   assert.match(operationsHtml, /chooseTaskDecision/);
   assert.match(server, /actions\/choose-decision/);
+  assert.match(operationsHtml, /function taskEndpointAction/);
+  assert.match(operationsHtml, /api\.chooseTaskDecision\(taskId/);
+  assert.match(operationsHtml, /Needs more info/);
+  assert.match(server, /actions\/needs-more-info/);
+  assert.match(server, /decision_needs_more_info/);
   assert.match(operationsHtml, /function decisionPatchRoutesToWork/);
   assert.match(operationsHtml, /function taskStatusBucket/);
   assert.match(operationsHtml, /if \(task\.completed_at \|\| task\.verified_at \|\| \['done', 'archive'\]\.includes\(stage\)\) return 'done';/);
   assert.match(operationsHtml, /return 'tasks';/);
   assert.match(operationsHtml, /if \(\['assigned', 'in_progress'\]\.includes\(stage\)\) return true;/);
+});
+
+test('Task toolbar uses workspace-aware filters without bucket wording', () => {
+  assert.doesNotMatch(operationsHtml, /Workspace Bucket/);
+  assert.match(operationsHtml, /Workspace Status/);
+  assert.match(operationsHtml, /function renderTaskSignalFilters/);
+  assert.match(operationsHtml, /<span class="filter-label">Workspace<\/span>/);
+  assert.match(operationsHtml, /<span class="filter-label">Assignee<\/span>/);
+  assert.match(operationsHtml, /<span class="filter-label">Type<\/span>/);
+  assert.match(operationsHtml, /Upcoming/);
+  assert.match(operationsHtml, /No date/);
+  assert.match(operationsHtml, /taskSignalFilter !== 'all'/);
+});
+
+test('Task calendar exposes selected-date task actions', () => {
+  assert.match(operationsHtml, /function renderTaskSelectedDayPanel/);
+  assert.match(operationsHtml, /Add task to this date/);
+  assert.match(operationsHtml, /Move selected task to this date/);
+  assert.match(operationsHtml, /function openTaskModalForDate/);
+  assert.match(operationsHtml, /taskDueDate/);
+  assert.match(operationsHtml, /function moveSelectedTaskToDate/);
+  assert.match(operationsHtml, /api\.updateTask\(taskId, \{ due_date: key \}\)/);
 });

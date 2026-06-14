@@ -14,6 +14,7 @@ tmp/
 .env*.local
 !.env.example
 .secrets/
+BNA-Keyholder/
 
 # editor
 .vscode/

@@ -4,6 +4,7 @@ const test = require('node:test');
 
 const server = fs.readFileSync('server.js', 'utf8');
 const homeHtml = fs.readFileSync('public/index.html', 'utf8');
+const operationsHtml = fs.readFileSync('public/operations.html', 'utf8');
 const parentHtml = fs.readFileSync('public/parent.html', 'utf8');
 const studentHtml = fs.readFileSync('public/student.html', 'utf8');
 const providerHtml = fs.readFileSync('public/provider.html', 'utf8');
@@ -44,6 +45,27 @@ test('Operations can administer learning communities and selected weekly updates
   assert.match(server, /app\.post\('\/api\/bna\/weekly-updates', requireAdmin/);
   assert.match(server, /app\.patch\('\/api\/bna\/weekly-updates\/:id', requireAdmin/);
   assert.match(server, /UPDATE bna_weekly_updates[\s\S]*selected_for_parent_portal = FALSE/);
+});
+
+test('parent announcements persist as selected weekly updates without sending', () => {
+  assert.match(server, /app\.get\('\/api\/bna\/parent-announcements', requireAdmin/);
+  assert.match(server, /app\.post\('\/api\/bna\/parent-announcements', requireAdmin/);
+  assert.match(server, /APPROVE_PARENT_ANNOUNCEMENT/);
+  assert.match(server, /latest_announcement/);
+  assert.match(server, /local_write_performed: false/);
+  assert.match(server, /local_write_performed: true/);
+  assert.match(server, /no_send: true/);
+  assert.match(server, /external_write_performed: false/);
+  assert.match(server, /status', 'selected'/);
+  assert.match(server, /source: 'operations_announcements'/);
+  assert.doesNotMatch(server, /parent-announcements[\s\S]{0,1400}SEND_WHATSAPP/);
+  assert.doesNotMatch(server, /parent-announcements[\s\S]{0,1400}sendEmail/);
+  assert.match(operationsHtml, /getParentAnnouncements/);
+  assert.match(operationsHtml, /approveParentAnnouncement/);
+  assert.match(operationsHtml, /function renderAnnouncementPanel/);
+  assert.match(operationsHtml, /Parent Readback/);
+  assert.match(operationsHtml, /approveParentAnnouncementPrompt/);
+  assert.match(operationsHtml, /No email, WhatsApp, or social post will be sent/);
 });
 
 test('parent portal payload and UI can render selected weekly updates', () => {

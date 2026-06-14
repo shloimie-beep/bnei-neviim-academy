@@ -1451,7 +1451,9 @@
         const STORAGE_KEY = 'bnaStudentAccessCode';
         const LANGUAGE_KEY = 'bnaStudentGoalBoardLanguage';
         const FILTERS = ['today', 'upcoming', 'waiting', 'done'];
-        let accessCode = new URLSearchParams(window.location.search).get('code') || localStorage.getItem(STORAGE_KEY) || '';
+        const initialAccessCode = new URLSearchParams(window.location.search).get('code') || '';
+        if (!initialAccessCode) localStorage.removeItem(STORAGE_KEY);
+        let accessCode = initialAccessCode;
         let language = localStorage.getItem(LANGUAGE_KEY) || 'en';
         let currentFilter = 'today';
         let currentSection = 'overview';

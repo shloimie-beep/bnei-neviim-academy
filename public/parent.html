@@ -2776,6 +2776,10 @@
             if (scroll) els.portalPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
 
+        function isParentAccountabilityOnboarding() {
+            return new URLSearchParams(window.location.search).get('onboard') === 'accountability';
+        }
+
         function showLogin(message = '', isError = false) {
             els.loginPanel.classList.remove('hidden');
             els.parentOnboardingPanel.classList.remove('hidden');
@@ -2793,7 +2797,7 @@
             document.querySelector('[data-login-copy]').textContent = t('loginCopy');
             els.loginStatus.textContent = message;
             els.loginStatus.classList.toggle('error', Boolean(isError));
-            if (new URLSearchParams(window.location.search).get('onboard') === 'accountability') {
+            if (isParentAccountabilityOnboarding()) {
                 window.requestAnimationFrame(() => {
                     els.parentOnboardingPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 });
@@ -4937,6 +4941,7 @@
         const token = params.get('token');
         if (token) verifyToken(token);
         else if (resetToken) showPasswordResetForm(resetToken);
+        else if (isParentAccountabilityOnboarding()) showLogin();
         else loadPortal();
     </script>
     <script src="/js/app-select.js"></script>

@@ -163,7 +163,8 @@
                     credentials: 'same-origin',
                     headers: { 'Accept': 'application/json' }
                 });
-                if (response.ok) {
+                const data = await response.json().catch(() => ({}));
+                if (response.ok && (data.authenticated === true || data.success === true)) {
                     window.location.replace(operationsReturnTo());
                 }
             } catch {
