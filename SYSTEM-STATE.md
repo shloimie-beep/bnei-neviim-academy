@@ -2,12 +2,30 @@
 
 Last updated: 2026-06-16
 
-2026-06-16 One Time integrations/access/agent audit in progress:
-- Started cycle `2026-06-16-one-time-integrations-access-agent-audit` after the
-  operator asked to clean/stabilize the dirty multi-agent worktree, make
+2026-06-16 operating goals and UI closeout register update:
+- Added durable operating-goals registers:
+  `ops/operating-goals.md` and `ops/operating-goals.json`.
+- Added the One Time Thursday owner-access checklist at
+  `ops/thursday-access-checklist.md`, including Zoom, GoDaddy/DNS, Vimeo,
+  Resend, Buffer, WAPI/WhatsApp, Stripe, Google Drive, and old One Time app
+  preservation/migration gates.
+- Added UI closeout consolidation at
+  `ops/ui-audits/2026-06-16-ui-closeout.md` with curated screenshot proof under
+  `ops/ui-audits/2026-06-16/`. This consolidates existing UI-01, HELPER-03,
+  INT-05, RABBI-04, and COMMUNITY-06 local proof.
+- This update did not perform external sends, billing, checkout creation,
+  Zoom/Vimeo writes, Buffer publishing/scheduling, WAPI sends, DNS changes,
+  Google writes, account grants, credential copying, or a new live deployment.
+
+2026-06-16 One Time integrations/access/agent audit deployed and verified:
+- Completed cycle `2026-06-16-one-time-integrations-access-agent-audit` after
+  the operator asked to clean/stabilize the dirty multi-agent worktree, make
   natural-language updates/deploys reliable, and audit why requests were not
   reaching honest completion.
-- Built the provider-scoped integration foundation locally: additive
+- Release branch:
+  `codex/one-time-integrations-access-audit-2026-06-16`. Stabilization commit:
+  `35e0571` (`chore: stabilize provider integrations and release state`).
+- Built and deployed the provider-scoped integration foundation: additive
   `bna_provider_integrations` fields, `bna_provider_secret_refs`,
   `bna_provider_integration_audit_log`, expanded DNS task fields/statuses,
   migration `railway-migration-2026-06-16-provider-integrations-secret-storage.sql`,
@@ -28,22 +46,49 @@ Last updated: 2026-06-16
   account/token/upload access and approval are explicit; manual Vimeo upload
   plus paste-URL fallback is available.
 - Created the evidence audit
-  `ops/audits/2026-06-16-agent-work-gap-audit.md`. Current finding: the main
-  failure pattern is local-verified work piling up behind dirty-tree release
+  `ops/audits/2026-06-16-agent-work-gap-audit.md`. Finding: the main failure
+  pattern was local-verified work piling up behind dirty-tree release
   coordination and external blockers, not Codex being unable to see the prompt
   material.
-- Thursday blockers: Zoom Server-to-Server OAuth owner/developer access,
-  GoDaddy Delegate/DNS access, Resend account/domain DNS, Vimeo account/API/
-  upload readiness, Buffer account/channels, WAPI/WhatsApp ownership, and
-  Stripe pricing/payment ownership.
-- External/human-gated actions remain blocked: live sends, charges, checkout
-  creation, Zoom writes, Vimeo uploads, Buffer publishes/schedules, WAPI sends,
-  DNS writes, account grants, credential copying, public/member publishing, and
-  final pricing/legal/payment decisions.
-- Verification so far: syntax checks for changed modules, focused provider/
-  helper/INT-05 tests 20/20, and `npm run integrations:audit` passed. Full
-  `npm test`, secret audit, INT-05 smoke, deploy, Railway doctor, and live
-  smokes are still pending for this cycle.
+- Added the first canonical prompt intake register pass:
+  `npm run prompts:audit`, `scripts/prompts-audit.mjs`,
+  `ops/prompt-intake-register.jsonl`, `ops/prompt-intake-summary.md`,
+  `ops/system-audits/2026-06-16-prompt-intake-register.md`, and
+  `tasks-pending/2026-06-16-prompt-intake-register.md`.
+- Cleaned release hygiene: removed staged runtime PID artifacts, added `*.pid`
+  to `.gitignore`, passed `git diff --cached --check`, and confirmed the
+  worktree was clean before deploy.
+- Deployed Railway production deployment
+  `47da54d6-fda7-495a-84ab-90b51ebdefe1`; Railway doctor reached `SUCCESS`.
+- Verification passed: changed-file syntax checks, focused provider/helper/
+  INT-05 tests 20/20, full `npm test` 654/654, `npm run secrets:audit` with
+  2397 tracked paths checked and 0 tracked secret-risk files found,
+  `npm run integrations:audit`, `npm run smoke:int05-integrations` locally
+  with 15 cards/no mobile overflow, main live app smoke
+  `ops/live-smokes/2026-06-16T14-39-37-521Z-live-app-smoke.md`, public privacy
+  smoke `ops/live-smokes/2026-06-16T14-40-07-226Z-public-route-privacy-smoke.md`,
+  student-auth smoke
+  `ops/live-smokes/2026-06-16T14-40-00-165Z-student-auth-policy-live-smoke.md`,
+  operator setup smoke
+  `ops/live-smokes/2026-06-16T14-40-00-129Z-operator-setup-live-smoke.md`,
+  assistant onboarding intake smoke
+  `ops/live-smokes/2026-06-16T14-40-15-096Z-assistant-onboarding-intake-live-smoke.md`,
+  signup credit email preview smoke
+  `ops/live-smokes/2026-06-16T14-40-15-071Z-signup-credit-email-preview-live-smoke.md`,
+  and WS11 parent-progress smoke
+  `ops/live-smokes/2026-06-16T14-40-15-180Z-ws11-parent-progress-live-smoke.md`.
+- Direct authenticated live read of `/api/bna/integrations/status` returned 15
+  readiness cards from `https://bneineviimacademy.org`, including WAPI/
+  WhatsApp, GoDaddy/DNS, provider-owned integration records, and Vimeo/video
+  hosting; the payload check did not find raw secret patterns.
+- Thursday blockers remain external/human-gated: Zoom Server-to-Server OAuth
+  owner/developer access, GoDaddy Delegate/DNS access, Resend account/domain
+  DNS, Vimeo account/API/upload readiness, Buffer account/channels, WAPI/
+  WhatsApp ownership, and Stripe pricing/payment ownership.
+- Still not approved/performed: live sends, charges, checkout creation, Zoom
+  writes, Vimeo uploads, Buffer publishes/schedules, WAPI sends, DNS writes,
+  account grants, credential copying, public/member publishing, and final
+  pricing/legal/payment decisions.
 
 2026-06-16 UI-01 public/Operations shell cleanup implemented locally:
 - Public site shell strategy now uses the shared `bna-site-nav` navigation and
@@ -68,9 +113,10 @@ Last updated: 2026-06-16
   executable inline-script parsing, focused UI tests 34/34, full `npm test`
   646/646, local authenticated browser screenshots in `screenshots/ui-01/`,
   and 375px no-horizontal-overflow smoke on public and Operations routes.
-- Live deploy/Railway doctor/live smoke remain pending because the shared
-  worktree contains many unrelated local workstreams. Deploy UI-01 only from a
-  clean/approved release path or deliberate accumulated-bundle rollout.
+- Accumulated deploy was later completed in Railway deployment
+  `47da54d6-fda7-495a-84ab-90b51ebdefe1` with Railway doctor and live smoke
+  coverage. UI-specific visual/browser follow-up can still be run as a narrow
+  QA task if more screenshot proof is needed.
 
 2026-06-16 RABBI-04 OneTime Mishnayos product system implemented locally:
 - Added a first-party draft product-system layer for Rabbi Scheller / OneTime
@@ -90,12 +136,14 @@ Last updated: 2026-06-16
   `public/operations.html` and `public/one-time/index.html`, focused
   OneTime/Rabbi/assistant/UI tests 25/25, full `npm test` 646/646, and local
   desktop/mobile screenshot proof in `screenshots/rabbi-04/report.md`.
-- Live deploy/Railway doctor/live smoke remain pending. Final prices, tier
-  names, refund/legal copy, billing provider readiness, launch copy, and any
-  live sends, external writes, checkout, Zoom/Google/Drive/Buffer actions, or
-  member grants still need explicit approval.
+- Accumulated deploy was later completed in Railway deployment
+  `47da54d6-fda7-495a-84ab-90b51ebdefe1` with Railway doctor and live smoke
+  coverage. Final prices, tier names, refund/legal copy, billing provider
+  readiness, launch copy, and any live sends, external writes, checkout,
+  Zoom/Google/Drive/Buffer actions, or member grants still need explicit
+  approval.
 
-2026-06-16 COMMUNITY-06 additive local extension complete, live rollout pending:
+2026-06-16 COMMUNITY-06 additive extension deployed with live follow-up gates:
 - Added first-party One Time Mishnayos assigned course questions and responses
   on top of the deployed WS11 community foundation, including additive schema
   SQL in `server.js` and `railway-migration-2026-06-16-community-06.sql`.
@@ -117,8 +165,10 @@ Last updated: 2026-06-16
   `screenshots/community-06/parent-progress-mobile.png`.
 - Parent screenshot proof remained at the login-gated parent portal because no
   parent password/access code was available locally and no parent credential was
-  created or rotated. Live deploy/Railway smoke is pending a clean/approved
-  release path because the shared worktree contains many unrelated dirty files.
+  created or rotated. Accumulated deploy was later completed in Railway
+  deployment `47da54d6-fda7-495a-84ab-90b51ebdefe1`; WS11 parent-progress live
+  smoke passed. Additional parent visual proof still requires an approved
+  parent credential/session path.
 
 2026-06-16 INT-05 safe integrations closeout implemented locally:
 - Added a protected consolidated integrations readiness/status API and
@@ -153,11 +203,12 @@ Last updated: 2026-06-16
   26/26, Operations inline-script parse, full `npm test` 649/649, tracked
   secret audit, and `npm run smoke:int05-integrations` with desktop/mobile/
   action-gate screenshots.
-- Live completion remains pending until a safe deploy window or isolated
-  release path is approved, followed by Railway doctor and live authenticated
-  Operations readiness smoke. No external sends, publishes, schedules, billing,
-  Zoom/Vimeo writes, Google writes, DNS writes, account grants, active GHL
-  runtime, or credential copying were performed.
+- Accumulated deploy was later completed in Railway deployment
+  `47da54d6-fda7-495a-84ab-90b51ebdefe1`; Railway doctor and live smoke
+  coverage passed, and direct authenticated `/api/bna/integrations/status`
+  readback returned 15 cards. No external sends, publishes, schedules,
+  billing, Zoom/Vimeo writes, Google writes, DNS writes, account grants, active
+  GHL runtime, or credential copying were performed.
 
 2026-06-16 WS11 and Operator Setup targeted live closeout complete:
 - Fixed a live WS11 startup migration gap: `createWs11CommunityGamificationSQL`

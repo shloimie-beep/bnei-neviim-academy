@@ -6,10 +6,12 @@ not authorize active GHL runtime paths.
 
 ## Now
 
-- [ ] Complete cycle `2026-06-16-one-time-integrations-access-agent-audit`:
+- [x] Complete cycle `2026-06-16-one-time-integrations-access-agent-audit`:
   provider-scoped integration records/secret refs, Vimeo manual/API readiness,
-  Thursday blocker cards, agent gap audit, full local verification, approved
-  accumulated deploy, Railway doctor, and live smokes. Handoffs:
+  Thursday blocker cards, agent gap audit, full local verification, accumulated
+  deploy, Railway doctor, live smokes, and direct authenticated live
+  integrations status readback. Deployed Railway production
+  `47da54d6-fda7-495a-84ab-90b51ebdefe1` from commit `35e0571`. Handoffs:
   `tasks-pending/2026-06-16-provider-integrations-secret-storage.md`,
   `tasks-pending/2026-06-16-one-time-thursday-access-session.md`,
   `tasks-pending/2026-06-16-agent-work-gap-audit.md`. Audit:
@@ -17,18 +19,33 @@ not authorize active GHL runtime paths.
 - [ ] Thursday access session: repair/confirm Zoom Server-to-Server OAuth,
   GoDaddy/DNS access, Resend account/domain records, Vimeo account/API/upload
   readiness, Buffer channels/API key, WAPI/WhatsApp ownership, and Stripe
-  payment/pricing ownership. Do not perform live sends, uploads, posts,
-  charges, DNS writes, or account grants without approval gates.
-- [ ] Reconcile stale local-verified workstreams into one release status:
+  payment/pricing ownership. Also preserve/audit the old One Time app before
+  shutdown, redirects, or member-access changes. Checklist:
+  `ops/thursday-access-checklist.md`. Do not perform live sends, uploads,
+  posts, charges, DNS writes, or account grants without approval gates.
+- [x] Reconcile stale local-verified workstreams into one release status:
   `UI-01`, `OPS-02`, `HELPER-03`, `INT-05`, `RABBI-04`, and `COMMUNITY-06`
-  additive work need deploy/live-smoke proof or explicit blocked records, not
-  more vague done labels.
-- [ ] Build a canonical prompt intake scanner/register so Downloads files,
+  additive work now has an accumulated deploy/live-smoke proof path or an
+  explicit remaining human/external blocker recorded, not vague done labels.
+- [x] Build a canonical prompt intake scanner/register so Downloads files,
   Codex attachments, GPT-generated prompt zips, and ramble-router specs map to
-  one visible status path instead of drifting across audits, handoffs, and
-  stale ledger rows. Diagnosis:
+  one visible status path instead of drifting across audits and handoffs.
+  Added `npm run prompts:audit`, `ops/prompt-intake-register.jsonl`,
+  `ops/prompt-intake-summary.md`,
+  `ops/system-audits/2026-06-16-prompt-intake-register.md`, and
+  `tasks-pending/2026-06-16-prompt-intake-register.md`. Stale ledger row
+  cleanup remains a separate queue hygiene task. Diagnosis:
   `ops/system-audits/2026-06-16-prompt-ingestion-execution-gap.md`. Handoff:
   `tasks-pending/2026-06-16-prompt-ingestion-execution-audit.md`.
+- [x] Create durable operating-goals and UI closeout registers for the current
+  broad closeout: `ops/operating-goals.md`,
+  `ops/operating-goals.json`, `ops/thursday-access-checklist.md`, and
+  `ops/ui-audits/2026-06-16-ui-closeout.md` with curated screenshots under
+  `ops/ui-audits/2026-06-16/`.
+- [ ] Use `ops/prompt-intake-summary.md` to close stale ledger-only starts with
+  terminal done/local-verified/deployed-verified/blocked/superseded records,
+  and decide whether prompt intake should remain an explicit command or become
+  an automatic Downloads/attachments watcher.
 - [x] MASTER-07: Coordinate parallel ramble-router workstreams, proof folders,
   blockers, source-of-truth status, and final closeout. Proof:
   `ops/proofs/2026-06-16-ramble-router-parallel-closeout/MASTER-CLOSEOUT.md`.
@@ -51,12 +68,11 @@ not authorize active GHL runtime paths.
   shoutout aliases, privacy-focused contract tests, and screenshots under
   `screenshots/community-06/`. Handoff:
   `tasks-pending/2026-06-16-community-06-mishnayos-community-gamification-parent-progress.md`.
-- [ ] COMMUNITY-06 live rollout follow-up: deploy the additive local extension
-  only from a clean/approved release path, apply
-  `railway-migration-2026-06-16-community-06.sql`, run Railway doctor plus live
-  public/privacy/student-auth/WS11 parent-progress smokes, and then mark this
-  run fully deployed.
-- [ ] INT-05 safe integrations closeout is locally implemented and verified:
+- [x] COMMUNITY-06 live rollout follow-up: the additive extension shipped in
+  the accumulated Railway deployment
+  `47da54d6-fda7-495a-84ab-90b51ebdefe1`; Railway doctor plus live
+  public/privacy, student-auth, and WS11 parent-progress smokes passed.
+- [x] INT-05 safe integrations closeout is deployed and verified:
   redacted readiness/status exists for keyholder/secrets, Google Drive,
   Telegram, Gmail reminders, Resend, Stripe, Green Invoice, Buffer, Zoom,
   Vimeo/video hosting, archived GHL Social, and external-action gates; unsafe
@@ -71,9 +87,15 @@ not authorize active GHL runtime paths.
   Stripe live secret from Downloads was imported into the local BNA keyholder as
   `stripe-secret-key.txt`, removed from Downloads, and verified by
   fingerprint-only diagnostics; it was not copied to `.secrets` or Railway.
-  Live completion still needs a safe deploy window or isolated release path,
-  Railway doctor/live smoke, and provider credential/DNS/account-owner
-  decisions.
+  On 2026-06-16 the accumulated app bundle was deployed as Railway production
+  deployment `47da54d6-fda7-495a-84ab-90b51ebdefe1`; Railway doctor, live app,
+  public privacy, student-auth, operator setup, assistant onboarding, signup
+  credit email preview, and WS11 parent-progress smokes passed. A direct
+  authenticated live read of `/api/bna/integrations/status` returned 15
+  readiness cards including WAPI/WhatsApp, GoDaddy/DNS, provider-owned
+  integration records, and Vimeo/video hosting with no raw secret-pattern
+  match. Provider credential/DNS/account-owner decisions remain Thursday/
+  human-gated.
 - [x] Complete UI-01 local public/Operations shell cleanup: reconciled the
   newer Operations source, standardized the public header/footer/hamburger
   across homepage/blog/FAQ/article/signup/audience pages, added `/school` and
@@ -83,11 +105,11 @@ not authorize active GHL runtime paths.
   screenshots under `screenshots/ui-01/`, and passed full local proof
   (`npm test` 646/646 plus browser/no-overflow smokes). Handoff:
   `tasks-pending/2026-06-16-ui-brand-operations-layout.md`.
-- [ ] UI-01 live rollout follow-up: deploy only from a clean/approved release
-  path or deliberate accumulated-bundle deploy, then run Railway doctor, live
-  homepage smoke, Operations login/session smoke, mobile Operations smoke, and
-  public route privacy smoke before marking the app-visible work fully
-  deployed.
+- [ ] UI-01 additional visual proof follow-up: the accumulated bundle is
+  deployed in Railway deployment `47da54d6-fda7-495a-84ab-90b51ebdefe1` and
+  Railway doctor, live app smoke, Operations login/session coverage, and public
+  route privacy smoke passed. Run a narrow live mobile Operations/browser
+  screenshot pass if UI-specific screenshot proof is needed.
 - [x] Reconcile the full WS01-WS11 closeout prompt and implement
   parent-managed student username/password login: cycle
   `2026-06-16-full-ws-prompt-closeout-parent-student-login`, source prompt

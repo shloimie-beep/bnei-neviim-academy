@@ -69,10 +69,46 @@ safe app-side readiness, status, and checklist surfaces.
 - Do not create live products, prices, checkout links, or account grants until
   pricing/payment ownership is approved.
 
+### Google Drive
+
+- Confirm whether Rabbi will use a provider-owned Drive folder for recordings,
+  source files, worksheets, and class prep.
+- If OAuth is used, store client/refresh-token material only through the
+  keyholder/Railway secret path.
+- Keep the manual upload/drop-folder path available while OAuth is blocked.
+
+### Old One Time App
+
+- Do not shut down, overwrite, redirect, or revoke the existing One Time app,
+  admin path, member library, or member access until content/members/routes are
+  audited and preserved.
+- Export or preserve class content, member/library records, assets, current
+  URLs, live links, and payment/access ownership notes before migration.
+- Plan redirects only after the target BNA/One Time routes, rollback/revoke
+  path, and live smoke proof are ready.
+
 ## Current Status
 
 - Zoom and GoDaddy/DNS are external blockers until Thursday.
 - App-side status cards, DNS task placeholders, and provider-scoped integration
-  setup can be built now.
+  setup are now built and deployed.
 - Any secret transfer must use the BNA keyholder/Railway env path and must not
   appear in chat, tracked files, screenshots, logs, or task titles.
+- Canonical checklist: `ops/thursday-access-checklist.md`.
+
+## 2026-06-16 Closeout
+
+- Stabilization branch:
+  `codex/one-time-integrations-access-audit-2026-06-16`.
+- Stabilization commit: `35e0571`.
+- Railway production deployment:
+  `47da54d6-fda7-495a-84ab-90b51ebdefe1` reached `SUCCESS`.
+- Live verification passed: Railway doctor, main app smoke, public route
+  privacy smoke, student-auth smoke, operator setup smoke, assistant onboarding
+  intake smoke, signup credit email preview smoke, WS11 parent-progress smoke,
+  and direct authenticated `/api/bna/integrations/status` readback with 15
+  readiness cards.
+- Thursday session remains for real account access, DNS values, API keys,
+  ownership decisions, pricing/payment decisions, and explicit approvals only.
+  No live sends, uploads, posts, charges, DNS writes, account grants, or
+  credential copying were performed.

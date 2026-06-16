@@ -114,6 +114,20 @@
   Keep `ops/download-prompt-audit/2026-06-16-actual-ws-prompt-list-map.md` as
   the reference map when future messages say "the real list" or "the prompts I
   gave GPT."
+- BNA now has a durable operating-goals register at
+  `ops/operating-goals.md` and `ops/operating-goals.json`. Use it to keep the
+  long-running goals visible across Telegram rambles, Codex sessions, prompt
+  packets, handoffs, and live-proof blockers.
+- Prompt intake is backed by `npm run prompts:audit`, which scans current repo
+  handoffs/audits/memory plus recent Downloads/Codex attachment prompt sources
+  and prompt zip entries, writes `ops/prompt-intake-register.jsonl`, and
+  summarizes status in `ops/prompt-intake-summary.md`. It must never store raw
+  secret values; it records only secret-risk level and redacted summaries.
+- One Time/Rabbi owner-access blockers are centralized in
+  `ops/thursday-access-checklist.md`. Zoom, GoDaddy/DNS, Vimeo, Resend,
+  Buffer, WAPI/WhatsApp, Stripe, Google Drive, and old One Time app migration
+  remain blocked until account owners, credentials, source data, and explicit
+  approval gates are handled.
 
 ## Workflow Preferences
 

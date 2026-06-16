@@ -1,6 +1,6 @@
 # RABBI-04 - OneTime Mishnayos Product System
 
-**Status:** Local implementation verified; live deploy/product decisions gated
+**Status:** Deployed in accumulated release; product decisions gated
 **Cycle:** `2026-06-16-ramble-router-parallel-chatgpt-to-codex`
 **Source:** uploaded Rabbi Scheller / OneTime Mishnayos Product System goal spec
 **Owner:** Codex
@@ -114,11 +114,15 @@ checkout, account grants, sends, or external writes.
 
 ## Live Follow-Up
 
-- Deploy from a clean/approved release path.
-- Apply the OneTime product-system migration in Railway.
-- Run Railway doctor plus live public `/one-time` and authenticated
-  scoped-Operations smoke checks.
-- Keep the task out of fully deployed/done state until live readback passes.
+- Accumulated Railway deployment
+  `47da54d6-fda7-495a-84ab-90b51ebdefe1` reached `SUCCESS` after this local
+  implementation.
+- Railway doctor and the live smoke suite passed. Product launch remains
+  decision-gated because pricing, billing, legal/refund copy, launch copy, and
+  member access are not approved.
+- If launch-specific proof is needed, run a narrow live public `/one-time` and
+  authenticated scoped-Operations readback smoke after the final product
+  decisions are made.
 
 ## Open Decisions
 

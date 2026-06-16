@@ -33,6 +33,7 @@
     "keyholder:diagnose": "node scripts/keyholder-diagnostics.mjs",
     "secrets:audit": "node scripts/audit-secrets.mjs",
     "integrations:audit": "node scripts/integrations-audit.mjs",
+    "prompts:audit": "node scripts/prompts-audit.mjs",
     "smoke:int05-integrations": "node scripts/smoke-int05-integrations-ui.mjs",
     "openai:diagnose": "node scripts/openai-key-diagnostics.mjs",
     "openai:smoke": "node scripts/smoke-openai-sidekick.mjs",

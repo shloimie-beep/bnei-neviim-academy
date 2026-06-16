@@ -30,6 +30,14 @@ future service-provider workspaces without mixing accounts or exposing secrets.
 - `bna_dns_setup_tasks`: exact DNS checklist rows that can say "copy exact value
   from dashboard on Thursday" until the real dashboard values are known.
 
+Naming note: this cycle keeps the current provider-scoped `bna_provider_*`
+model as canonical instead of creating a second parallel
+`bna_workspace_integrations` / `bna_secret_refs` model. If future DB ciphertext
+storage is required, add it deliberately with a server-held encryption key and
+AES-256-GCM or a platform secret store; do not migrate raw keys into visible
+task text, logs, helper output, screenshots, prompt registers, or tracked
+files.
+
 ## Integration Cards
 
 - Zoom: blocked until Thursday; needs Zoom Server-to-Server OAuth owner setup.
@@ -61,10 +69,41 @@ audited tools. Required or pending tools include:
 
 ## Verification Needed
 
-- Secret redaction tests.
-- API tests proving raw secrets are never returned.
-- Duplicate-key detection by safe fingerprint/HMAC only.
-- Approval-gate tests for sends/posts/uploads/charges/DNS writes.
-- Vimeo manual fallback tests.
-- Zoom/GoDaddy Thursday blocker UI tests.
-- Helper permission/audit tests for integration tools.
+- Secret redaction tests: complete.
+- API tests proving raw secrets are never returned: complete for helper/status
+  surfaces added in this cycle.
+- Duplicate-key detection by safe fingerprint/HMAC only: complete for helper
+  secret-ref handling.
+- Approval-gate tests for sends/posts/uploads/charges/DNS writes: complete for
+  this cycle's preview-first surfaces.
+- Vimeo manual fallback tests: complete.
+- Zoom/GoDaddy Thursday blocker UI/status checks: complete locally and
+  deployed in readiness status.
+- Helper permission/audit tests for integration tools: complete.
+
+## 2026-06-16 Closeout
+
+- Implemented in `server.js`,
+  `src/lib/bna/helper/tool-registry.js`,
+  `src/lib/bna/helper/planner.js`,
+  `src/lib/bna/helper/permissions.js`,
+  `src/lib/bna/helper/redaction.js`,
+  `src/lib/integrations/video-hosting.js`, and
+  `src/lib/integrations/vimeo.js`.
+- Added migration
+  `railway-migration-2026-06-16-provider-integrations-secret-storage.sql` and
+  audit command `npm run integrations:audit`.
+- Stabilization commit: `35e0571`.
+- Railway production deployment:
+  `47da54d6-fda7-495a-84ab-90b51ebdefe1` reached `SUCCESS`.
+- Verification passed: changed-file syntax checks, focused provider/helper/
+  INT-05 tests 20/20, full `npm test` 654/654, `npm run secrets:audit` with
+  2397 tracked paths and 0 tracked secret-risk files, `npm run
+  integrations:audit`, local `npm run smoke:int05-integrations` with 15 cards,
+  Railway doctor, live app/public/privacy/auth/setup/onboarding/signup/WS11
+  smokes, and direct authenticated live
+  `/api/bna/integrations/status` readback with 15 cards.
+- Remaining work is not code plumbing. It is provider/account-owner access and
+  explicit approval: Zoom OAuth owner setup, GoDaddy/DNS delegate access,
+  Resend DNS/domain setup, Vimeo token/upload readiness, Buffer channels/API
+  key, WAPI/WhatsApp ownership, and Stripe pricing/payment ownership.

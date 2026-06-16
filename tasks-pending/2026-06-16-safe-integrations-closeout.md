@@ -107,10 +107,11 @@ Status: `blocked_needs_human_decision_after_local_verification`
 
 ## External Blockers
 
-- Live deploy, Railway doctor, and live Operations smoke were not run from this
-  INT-05 pass because the shared worktree contains many unrelated local
-  workstreams. Deploying now would ship more than INT-05 unless a safe release
-  window or isolated release path is approved.
+- Live deploy and Railway doctor are complete in Railway production deployment
+  `47da54d6-fda7-495a-84ab-90b51ebdefe1`. Direct authenticated live
+  `/api/bna/integrations/status` readback returned 15 readiness cards. The
+  remaining blockers are account-owner/provider decisions and credentials, not
+  the deploy path.
 - Buffer credentials, organization ID, channel IDs, and publish/schedule
   approval phrase.
 - Resend credentials, account owner, sender/domain ownership, complete DNS
@@ -144,9 +145,6 @@ Status: `blocked_needs_human_decision_after_local_verification`
 
 ## Safe Next Step
 
-- Approve a safe deploy window or isolated release path, then deploy this
-  bundle, run Railway doctor, and run a live authenticated Operations readiness
-  smoke.
 - Feed credentials only through the BNA keyholder/Railway secret workflow, then
   rerun readiness checks. Do not paste secrets into chat or tracked files.
 
@@ -173,11 +171,9 @@ Status: `blocked_needs_human_decision_after_local_verification`
 
 ## Current Blocker Audit
 
-- As of 2026-06-16T16:58:19+03:00, the same blocker has repeated across the
-  original INT-05 turn and two goal continuations: app/server/dashboard-visible
-  INT-05 work cannot be marked complete until deploy plus live Railway/readiness
-  smoke pass, but the current shared worktree contains unrelated local
-  workstreams and the available Railway redeploy script bundles the whole
-  workspace.
-- Needed from Shloimie: approve either a clean/isolated INT-05 release path or
-  an intentional accumulated-bundle deploy window.
+- As of 2026-06-16T17:41:58+03:00, the deploy blocker was resolved by the
+  intentional accumulated-bundle deployment
+  `47da54d6-fda7-495a-84ab-90b51ebdefe1`.
+- Needed from Shloimie: Thursday account-owner access and explicit approval for
+  any real external write, send, upload, post, charge, DNS change, account
+  grant, credential copy, or launch decision.

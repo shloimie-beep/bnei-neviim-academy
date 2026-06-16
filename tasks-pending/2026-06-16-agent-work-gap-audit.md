@@ -56,3 +56,23 @@ Also summarize the audit in `SYSTEM-STATE.md`.
 - Learning/community/course/gamification/parent portal proof.
 - Task/ledger/changelog coherence.
 - Local verified versus live deployed status drift.
+
+## 2026-06-16 Closeout
+
+- Created `ops/audits/2026-06-16-agent-work-gap-audit.md`.
+- Finding: the failure mode was not that Codex could not see the prompt
+  material. The larger issue was terminal-state drift: work was locally
+  implemented and tested but left behind a dirty worktree, stale "pending
+  deploy" labels, external account blockers, and no single release closeout.
+- Cleaned and committed the accumulated release on branch
+  `codex/one-time-integrations-access-audit-2026-06-16` as commit `35e0571`.
+- Deployed Railway production deployment
+  `47da54d6-fda7-495a-84ab-90b51ebdefe1`, which reached `SUCCESS`.
+- Verification passed: full `npm test` 654/654, secret audit, integration
+  audit, local INT-05 readiness smoke, Railway doctor, live app smoke, public
+  privacy smoke, student-auth smoke, operator setup smoke, assistant onboarding
+  smoke, signup credit email preview smoke, WS11 parent-progress smoke, and
+  direct authenticated live integration status readback.
+- Keep using this standard: app/server/dashboard-visible work is not complete
+  until it is committed, deployed, live-smoked, and recorded, or explicitly
+  blocked by a named human/external decision.

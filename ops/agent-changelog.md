@@ -21048,3 +21048,81 @@ Recommended next implementation:
 - Build `npm run prompts:audit` and an `ops/prompt-intake/` register to map
   Downloads, Codex attachments, GPT prompt zips, statuses, blockers, and proof
   paths into one visible pipeline.
+
+## 2026-06-16T17:41:58+03:00 - One Time integrations/access stabilization deployed
+
+Cleaned the broad multi-agent worktree into a committed/deployed release point
+for provider-owned integrations, Vimeo readiness, Thursday blockers, and agent
+completion-state auditing.
+
+Changed:
+
+- Added provider-scoped integration records, secret-reference metadata, redacted
+  audit logging, expanded DNS setup tasks, and migration
+  `railway-migration-2026-06-16-provider-integrations-secret-storage.sql`.
+- Added BNA Helper integration tools for status, setup tasks, provider API key
+  refs, rotation requests, readiness tests, DNS task creation, Thursday blocker
+  marking, Vimeo upload preparation, manual Vimeo fallback, and Vimeo URL
+  attach.
+- Added Vimeo adapter/readiness support and provider-neutral video-hosting
+  manual fallback behavior.
+- Added WAPI, GoDaddy/DNS, and provider-owned integration readiness cards to
+  Operations integrations status.
+- Created `ops/audits/2026-06-16-agent-work-gap-audit.md` and reconciled the
+  visible task/source-of-truth status.
+- Added the first prompt intake register command and outputs:
+  `npm run prompts:audit`, `scripts/prompts-audit.mjs`,
+  `ops/prompt-intake-register.jsonl`, `ops/prompt-intake-summary.md`,
+  `ops/system-audits/2026-06-16-prompt-intake-register.md`, and
+  `tasks-pending/2026-06-16-prompt-intake-register.md`.
+- Added `ops/operating-goals.md`, `ops/operating-goals.json`, and
+  `ops/thursday-access-checklist.md` as durable coordination maps for future
+  agent runs.
+- Removed staged runtime PID files and added `*.pid` to `.gitignore` so local
+  server process crumbs do not pollute future commits.
+
+Deployment:
+
+- Branch: `codex/one-time-integrations-access-audit-2026-06-16`
+- Commit: `35e0571`
+- Railway production deployment:
+  `47da54d6-fda7-495a-84ab-90b51ebdefe1`
+- Railway doctor reached `SUCCESS`.
+
+Verification:
+
+- `git diff --cached --check`
+- changed-file syntax checks
+- focused provider/helper/INT-05 tests 20/20
+- full `npm test` 654/654
+- `npm run secrets:audit` passed with 2397 tracked paths and 0 tracked
+  secret-risk files
+- `npm run integrations:audit`
+- `npm run prompts:audit`
+- `npm run smoke:int05-integrations` with 15 readiness cards and no mobile
+  horizontal overflow
+- live app smoke:
+  `ops/live-smokes/2026-06-16T14-39-37-521Z-live-app-smoke.md`
+- live public/privacy smoke:
+  `ops/live-smokes/2026-06-16T14-40-07-226Z-public-route-privacy-smoke.md`
+- live student-auth smoke:
+  `ops/live-smokes/2026-06-16T14-40-00-165Z-student-auth-policy-live-smoke.md`
+- live operator setup smoke:
+  `ops/live-smokes/2026-06-16T14-40-00-129Z-operator-setup-live-smoke.md`
+- live assistant onboarding intake smoke:
+  `ops/live-smokes/2026-06-16T14-40-15-096Z-assistant-onboarding-intake-live-smoke.md`
+- live signup credit email preview smoke:
+  `ops/live-smokes/2026-06-16T14-40-15-071Z-signup-credit-email-preview-live-smoke.md`
+- live WS11 parent-progress smoke:
+  `ops/live-smokes/2026-06-16T14-40-15-180Z-ws11-parent-progress-live-smoke.md`
+- direct authenticated live `/api/bna/integrations/status` readback returned 15
+  cards including WAPI/WhatsApp, GoDaddy/DNS, provider-owned integration
+  records, and Vimeo/video hosting, with no raw secret-pattern match.
+
+Still gated:
+
+- No live sends, charges, checkout creation, Zoom writes, Vimeo uploads, Buffer
+  publishes/schedules, WAPI sends, DNS writes, account grants, credential
+  copying, public/member publishing, or final pricing/legal/payment decisions
+  were performed. Those remain explicit approval/account-owner tasks for the
+  Thursday access session.

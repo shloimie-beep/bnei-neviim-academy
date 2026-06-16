@@ -112,12 +112,12 @@ Status: local_verified_live_rollout_pending
 
 ## Remaining Follow-up / Blocker
 
-- Live deploy and Railway doctor/live smoke were not run from this turn because
-  the shared worktree contains many unrelated local workstreams. Deploying from
-  this state would ship more than UI-01. Use an approved clean release path or
-  a deliberate accumulated-bundle deploy, then run Railway doctor plus public
-  homepage, Operations login/session, mobile Operations, and public route
-  privacy smokes.
+- The accumulated bundle was later deployed to Railway production as
+  `47da54d6-fda7-495a-84ab-90b51ebdefe1`; Railway doctor, live app smoke,
+  Operations login/session coverage, and public route privacy smoke passed.
+- Run a narrow live mobile Operations/browser screenshot pass only if
+  UI-specific visual proof is needed beyond the local screenshots already
+  captured here.
 - No external sends, billing/payment writes, Google writes, Buffer/social
   publishes, Zoom/Vimeo writes, member publishing, provider account grants, or
   parent/student account grants were performed.

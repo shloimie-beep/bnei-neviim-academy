@@ -84,17 +84,18 @@ Queue audit counts:
 
 Blockers:
 
-- Live deploy and live Railway smoke were not performed in this local pass.
+- Accumulated Railway deployment
+  `47da54d6-fda7-495a-84ab-90b51ebdefe1` later reached `SUCCESS`; Railway
+  doctor and live smoke coverage passed.
 - Queue cleanup choices that mutate visible task status or archive duplicates
   still require safe DB/readback planning and approval.
 
 needed_from_shloimie:
 
-- Approve deploy/live-smoke timing and any queue cleanup decisions that affect
-  visible task status, duplicate handling, identity/category merges, or Done
-  proof history.
+- Approve any queue cleanup decisions that affect visible task status,
+  duplicate handling, identity/category merges, or Done proof history.
 
 Safe next step:
 
-- Deploy the current verified bundle, run Railway doctor/live Operations smoke,
-  then decide which read-only audit buckets are safe to clean or reclassify.
+- Decide which read-only audit buckets are safe to clean or reclassify, then
+  run the cleanup with live DB readback and changelog/ledger proof.

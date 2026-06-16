@@ -2,10 +2,10 @@
 
 ## Status
 
-Local implementation and verification are complete. Live rollout is pending a
-clean or explicitly approved release path because the shared worktree contains
-many unrelated dirty files, so deploying now would ship more than this
-COMMUNITY-06 extension.
+Local implementation and verification are complete. The accumulated release was
+deployed to Railway production as
+`47da54d6-fda7-495a-84ab-90b51ebdefe1`; Railway doctor and live public/privacy,
+student-auth, and WS11 parent-progress smokes passed.
 
 ## Implemented
 
@@ -71,12 +71,11 @@ COMMUNITY-06 extension.
 
 ## Remaining
 
-- Deploy from a clean/approved release path.
-- Apply `railway-migration-2026-06-16-community-06.sql` in production.
-- Run Railway doctor plus live app, public privacy, student-auth, and WS11
-  parent-progress smokes after deploy.
 - Decide later whether any public leaderboard/shoutout layer should exist.
   Current implementation keeps public/community recognition approval-gated.
+- Additional parent visual proof still requires an approved parent
+  credential/session path. No parent credential was created or rotated for this
+  handoff.
 
 ## Guardrails
 
