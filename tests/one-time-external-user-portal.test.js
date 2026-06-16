@@ -8,8 +8,8 @@ const driveScript = fs.readFileSync('scripts/setup-one-time-partnership-drive.mj
 const telegramBridge = fs.readFileSync('scripts/telegram-kimi-bridge.mjs', 'utf8');
 
 test('One Time login is promoted to a scoped external admin workspace', () => {
-  assert.match(serverJs, /const platformAllowedViews = \['dashboard', 'pipelines', 'tasks', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'\]/);
-  assert.match(serverJs, /const providerAllowedViews = \['dashboard', 'pipelines', 'tasks', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'\]/);
+  assert.match(serverJs, /const platformAllowedViews = \['dashboard', 'watchdog', 'pipelines', 'tasks', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'\]/);
+  assert.match(serverJs, /const providerAllowedViews = \['dashboard', 'watchdog', 'pipelines', 'tasks', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'\]/);
   assert.match(serverJs, /role: 'project_owner'/);
   assert.match(serverJs, /role: 'project_manager'/);
   assert.match(serverJs, /allowedViews: ownerAllowedViews/);

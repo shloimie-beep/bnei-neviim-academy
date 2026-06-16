@@ -2,6 +2,23 @@
 
 Last updated: 2026-06-16
 
+2026-06-16 ramble watchdog / self-healing operating-system update:
+- Added the repo watchdog rules at `ops/watchdog-rules.md`.
+- Added `npm run watchdog:audit` through `scripts/watchdog-audit.mjs`; reports
+  write to `ops/watchdog-audits/`.
+- Added GOAL-009 in `ops/operating-goals.md` and
+  `ops/operating-goals.json` for ramble watchdog / goal-led work until done.
+- Extended prompt intake records with stable prompt IDs, source type, linked
+  goal IDs, linked decision/pending arrays, and linked proof path aliases.
+- Added a local Operations `Watchdog` module and allowed-view defaults for the
+  control center. This is not deployed or live-smoked yet.
+- Current local report:
+  `ops/watchdog-audits/2026-06-16T15-12-watchdog-audit.md`; severity is high,
+  with stale ledger starts, local-verified prompt groups, proof wording gaps,
+  and external/human blocker cleanup still open.
+- This update did not stage, commit, deploy, send, publish, charge, change DNS,
+  upload video, grant access, copy credentials, or perform external writes.
+
 2026-06-16 operating goals and UI closeout register update:
 - Added durable operating-goals registers:
   `ops/operating-goals.md` and `ops/operating-goals.json`.

@@ -7952,11 +7952,11 @@ function identifyOpsUser(username, password = null) {
   const pass = password === null || password === undefined ? null : String(password || '');
   if (!user) return null;
   const normalizedUser = user.toLowerCase();
-  const platformAllowedViews = ['dashboard', 'pipelines', 'tasks', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
-  const providerAllowedViews = ['dashboard', 'pipelines', 'tasks', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
+  const platformAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
+  const providerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
   // Owner gets full provider view + settings; manager gets provider view without sensitive admin
-  const ownerAllowedViews = ['dashboard', 'pipelines', 'tasks', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
-  const managerAllowedViews = ['dashboard', 'pipelines', 'tasks', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations'];
+  const ownerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
+  const managerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations'];
 
   if (OPS_USERNAME && (normalizedUser === OPS_USERNAME.toLowerCase() || OPS_LOGIN_ALIASES.has(normalizedUser))) {
     if (pass !== null && pass.toLowerCase() !== String(OPS_PASSWORD || '').toLowerCase()) return null;
@@ -28464,7 +28464,7 @@ async function ensureDefaultProjects(db = pool) {
     metadata: {
       account_type: 'external_user',
       project_scope: ONE_TIME_PROJECT_KEY,
-      allowed_views: ['dashboard', 'pipelines', 'tasks', 'community', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'api_usage', 'integrations', 'settings'],
+      allowed_views: ['dashboard', 'watchdog', 'pipelines', 'tasks', 'community', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'api_usage', 'integrations', 'settings'],
     },
   }, db);
 
@@ -31856,7 +31856,7 @@ async function buildBnaIdentityPayload({ identity = null, req = null, actor = 'a
     activeWorkspace: workspaceProjectView(activeWorkspace),
     active_workspace: workspaceProjectView(activeWorkspace),
     memberships: memberships.map(workspaceMembershipView),
-    allowedViews: identity?.allowedViews || ['dashboard', 'pipelines', 'tasks', 'students', 'contacts', 'intake', 'community', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'],
+    allowedViews: identity?.allowedViews || ['dashboard', 'watchdog', 'pipelines', 'tasks', 'students', 'contacts', 'intake', 'community', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'],
   };
 }
 

@@ -8084,7 +8084,7 @@
         };
         const normalizedInitialView = VIEW_ALIASES[initialView] || initialView;
         const initialViewWasInternalDialogue = ['dialogue', 'internal', 'internal_dialogue'].includes(String(initialView || '').toLowerCase());
-        let currentView = ['dashboard', 'pipelines', 'tasks', 'students', 'community', 'content', 'contacts', 'intake', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'].includes(normalizedInitialView) ? normalizedInitialView : 'dashboard';
+        let currentView = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'students', 'community', 'content', 'contacts', 'intake', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'].includes(normalizedInitialView) ? normalizedInitialView : 'dashboard';
         let navDrawerOpen = false;
         let sidebarMode = initialParams.get('nav') === 'modules' ? 'modules' : 'sections';
         let currentWorkspaceId = normalizeWorkspaceKey(initialWorkspace || '');
@@ -8245,6 +8245,7 @@
         ];
         const MAIN_NAV_ITEMS = [
             { id: 'dashboard', label: 'Dashboard', marker: 'DB' },
+            { id: 'watchdog', label: 'Watchdog', marker: 'WG' },
             { id: 'pipelines', label: 'Pipelines', marker: 'PL' },
             { id: 'tasks', label: 'Tasks', marker: 'TS' },
             { id: 'students', label: 'Students', marker: 'ST' },
@@ -9140,6 +9141,7 @@
             const providerWorkspace = isProviderWorkspace();
             const configs = {
                 dashboard: { tabs: DASHBOARD_SUBTABS, active: dashboardSection, countSource: dashboardSectionCounts(), label: 'Dashboard' },
+                watchdog: { tabs: [{ id: 'overview', label: 'Overview' }], active: 'overview', countSource: {}, label: 'Watchdog' },
                 pipelines: { tabs: PIPELINE_SUBTABS, active: pipelineSection, countSource: pipelineSubnavCounts(), label: 'Pipelines' },
                 tasks: { tabs: TASK_SUBTABS, active: taskFocus, countSource: taskViewState().tabCounts, label: 'Tasks' },
                 students: { tabs: STUDENT_SUBTABS, active: studentSection, countSource: studentViewState().tabCounts, label: 'Students' },
@@ -9310,6 +9312,7 @@
 
         function currentPrimaryAction() {
             if (currentView === 'pipelines') return '<button class="primary-button" onclick="createPipelineCardPrompt()">New Pipeline Card</button>';
+            if (currentView === 'watchdog') return '<button class="primary-button" onclick="openCommandTarget(\'tasks\', \'tasks\')">Codex Work</button>';
             if (currentView === 'tasks') return '<button class="primary-button" onclick="openCommandTarget(\'tasks\', \'decisions\')">Decisions</button>';
             if (currentView === 'students') return '<button class="primary-button" onclick="setStudentSection(\'list\')">Add / Open Student</button>';
             if (currentView === 'contacts' && isProviderWorkspace()) return '<button class="primary-button" onclick="setCurrentSection(\'participants\')">Open Members</button>';
@@ -9337,6 +9340,7 @@
 
         function currentSectionLabel() {
             if (currentView === 'dashboard') return DASHBOARD_SUBTABS.find(tab => tab.id === dashboardSection)?.label || 'Overview';
+            if (currentView === 'watchdog') return 'Overview';
             if (currentView === 'pipelines') return PIPELINE_SUBTABS.find(tab => tab.id === pipelineSection)?.label || 'Overview';
             if (currentView === 'tasks') return TASK_SUBTABS.find(tab => tab.id === taskFocus)?.label || 'Overview';
             if (currentView === 'students') return STUDENT_SUBTABS.find(tab => tab.id === studentSection)?.label || 'Overview';
@@ -10058,6 +10062,137 @@
                             </div>
                         </section>
                     ` : ''}
+                </div>
+            `;
+        }
+
+        const WATCHDOG_OPERATING_GOALS = [
+            { id: 'GOAL-001', title: 'Scoped helper everywhere', status: 'Deployed foundation / tool expansion gated', workstream: 'HELPER-03' },
+            { id: 'GOAL-002', title: 'Long ramble intake', status: 'Prompt register active / watcher decision pending', workstream: 'PROMPT-INTAKE' },
+            { id: 'GOAL-004', title: 'Provider integrations and secrets', status: 'Provider model deployed / access pending', workstream: 'INT-05' },
+            { id: 'GOAL-006', title: 'One Time Mishnayos launch', status: 'Draft product ready / launch decisions pending', workstream: 'RABBI-04' },
+            { id: 'GOAL-007', title: 'Product-grade UI', status: 'Deployed foundation / visual QA optional', workstream: 'UI-01' },
+            { id: 'GOAL-009', title: 'Ramble watchdog until done', status: 'Rules, audit, and control center staged locally', workstream: 'WATCHDOG' }
+        ];
+
+        const WATCHDOG_THURSDAY_BLOCKERS = [
+            ['Zoom', 'Owner developer permission or live 2FA session'],
+            ['GoDaddy / DNS', 'Delegate repair or owner 2FA session'],
+            ['Vimeo', 'Primary account, plan, token, upload, private embed check'],
+            ['Resend', 'Provider-owned account/domain/API decision'],
+            ['Buffer', 'Provider Buffer account/channels/API key decision'],
+            ['WAPI / WhatsApp', 'Provider number and connection decision'],
+            ['Stripe', 'Payout, legal, pricing, product/checkout ownership'],
+            ['Old One Time app', 'Export/preserve content, members, and routes before shutdown']
+        ];
+
+        function watchdogTaskMatches(task = {}, pattern) {
+            return pattern.test(`${task.title || ''} ${task.summary || ''} ${task.notes || ''} ${task.next_action || ''} ${task.category || ''} ${task.task_kind || ''} ${task.waiting_on || ''} ${task.assigned_to || ''}`);
+        }
+
+        function watchdogState() {
+            const state = taskViewState();
+            const allTasks = tasks || [];
+            const externalPending = allTasks.filter(task => taskStatusBucket(task) === 'pending' || watchdogTaskMatches(task, /\b(zoom|godaddy|dns|vimeo|resend|buffer|wapi|whatsapp|stripe|oauth|api key|credential|account owner)\b/i));
+            const readyForCodex = allTasks.filter(task => taskStatusBucket(task) === 'tasks' && (taskIsMachine(task) || watchdogTaskMatches(task, /\b(codex|agent|script|audit|watchdog|prompt|helper|ui)\b/i)));
+            const proofGaps = allTasks.filter(task => {
+                const workflow = String(taskWorkflowStatus(task) || '').toLowerCase();
+                const haystack = `${task.title || ''} ${task.notes || ''} ${task.verification_notes || ''} ${task.artifact_path || ''} ${task.report_url || ''}`;
+                return /done_missing|proof missing|needs verification/.test(workflow)
+                    || ((task.completed_at || normalizeTaskStage(task.stage) === 'done') && !/\b(proof|verified|smoke|deployment|screenshot|ops\/|screenshots\/|report)\b/i.test(haystack));
+            });
+            const promptGaps = allTasks.filter(task => watchdogTaskMatches(task, /\b(prompt|ramble|downloads|attachment)\b/i) && !watchdogTaskMatches(task, /\b(proof|audit|register|summary|tasks-pending|ops\/)\b/i));
+            const uiIssues = allTasks.filter(task => watchdogTaskMatches(task, /\b(ui|mobile|overflow|unreadable|duplicate helper|screenshot|visual)\b/i) && taskStatusBucket(task) !== 'done');
+            return {
+                ...state,
+                externalPending,
+                readyForCodex,
+                proofGaps,
+                promptGaps,
+                uiIssues,
+                stale: staleTaskItems(),
+                doneWithProof: state.buckets.done.filter(task => taskTaskHasProof(task)).slice(0, 12)
+            };
+        }
+
+        function taskTaskHasProof(task = {}) {
+            return /\b(proof|verified|smoke|deployment|screenshot|ops\/|screenshots\/|report|railway)\b/i.test(`${task.title || ''} ${task.notes || ''} ${task.verification_notes || ''} ${task.artifact_path || ''} ${task.report_url || ''}`);
+        }
+
+        function renderWatchdogList(label, items = [], emptyText = 'No matching records loaded.') {
+            return `
+                <section class="focus-panel compact-panel" aria-label="${escapeHtml(label)}">
+                    <div class="task-section-header"><h3>${escapeHtml(label)}</h3><span>${items.length}</span></div>
+                    ${items.length ? `<div class="task-list">${items.slice(0, 8).map(task => renderTaskCard(task, taskColumn(task) || 'tasks')).join('')}</div>` : `<div class="empty-state">${escapeHtml(emptyText)}</div>`}
+                </section>
+            `;
+        }
+
+        function renderWatchdogGoalCard(goal) {
+            return `
+                <article class="content-card">
+                    <div class="content-card-title">${escapeHtml(goal.id)} / ${escapeHtml(goal.title)}</div>
+                    <p class="content-card-summary">${escapeHtml(goal.status)}</p>
+                    <div class="tag-list"><span class="tag">${escapeHtml(goal.workstream)}</span></div>
+                </article>
+            `;
+        }
+
+        function renderWatchdogThursdayBlockers() {
+            return `
+                <section class="focus-panel compact-panel" aria-label="Thursday access blockers">
+                    <div class="task-section-header"><h3>Thursday Access</h3><span>${WATCHDOG_THURSDAY_BLOCKERS.length} blockers</span></div>
+                    <div class="settings-control-grid compact">
+                        ${WATCHDOG_THURSDAY_BLOCKERS.map(([label, note]) => renderSettingsControlRow(label, 'Pending', note, 'Blocked')).join('')}
+                    </div>
+                    <div class="task-actions" style="margin-top:12px;">
+                        <button class="task-action" type="button" onclick="openCommandTarget('tasks', 'pending')">Open Pending</button>
+                        <button class="task-action" type="button" onclick="openCommandTarget('integrations', 'readiness')">Integration Readiness</button>
+                    </div>
+                </section>
+            `;
+        }
+
+        function renderWatchdog() {
+            const state = watchdogState();
+            return `
+                <div class="container">
+                    <div class="page-heading saas-page-heading">
+                        <div>
+                            <div class="page-kicker">System Watchdog</div>
+                            <h2>Operating Goals Control Center</h2>
+                            <p>Goal-led view across decisions, pending blockers, Codex work, proof gaps, stale work, and Thursday access.</p>
+                        </div>
+                    </div>
+                    <section class="focus-panel" aria-label="Watchdog overview">
+                        <div class="task-overview-grid">
+                            ${renderMetricButton('Goals', WATCHDOG_OPERATING_GOALS.length, 'Durable operating goals in ops/operating-goals.*.', "switchView('watchdog')")}
+                            ${renderMetricButton('Decisions', state.decisionCount, 'Human choices that unlock the next step.', "openCommandTarget('tasks', 'decisions')")}
+                            ${renderMetricButton('Pending', state.pendingCount, 'Human or external blockers only.', "openCommandTarget('tasks', 'pending')")}
+                            ${renderMetricButton('Codex Work', state.readyForCodex.length, 'Agent/system work that can move.', "openCommandTarget('tasks', 'tasks')")}
+                            ${renderMetricButton('Proof Gaps', state.proofGaps.length, 'Done/local work needing proof or live smoke.', "openCommandTarget('tasks', 'done')")}
+                            ${renderMetricButton('Blocked / Stale', state.stale.length, 'Old, unclear, or blocked records.', "setTaskFilter('signal', 'stale'); openCommandTarget('tasks', 'tasks')")}
+                        </div>
+                    </section>
+                    <section class="focus-panel compact-panel" aria-label="Operating goals">
+                        <div class="task-section-header"><h3>Goals</h3><span>${WATCHDOG_OPERATING_GOALS.length}</span></div>
+                        <div class="content-section-grid">${WATCHDOG_OPERATING_GOALS.map(renderWatchdogGoalCard).join('')}</div>
+                    </section>
+                    ${renderWatchdogThursdayBlockers()}
+                    ${renderWatchdogList('Decisions', state.buckets.decisions, 'No decisions loaded.')}
+                    ${renderWatchdogList('Pending', state.externalPending, 'No external blockers loaded.')}
+                    ${renderWatchdogList('Codex Work', state.readyForCodex, 'No Codex-ready items loaded.')}
+                    ${renderWatchdogList('Prompts Without Proof Path', state.promptGaps, 'Prompt register gaps are audited by npm run watchdog:audit.')}
+                    ${renderWatchdogList('UI Audit Issues', state.uiIssues, 'No open UI audit tasks loaded.')}
+                    ${renderWatchdogList('Done With Proof', state.doneWithProof, 'No verified done records loaded.')}
+                    <section class="focus-panel compact-panel" aria-label="Watchdog reports">
+                        <div class="task-section-header"><h3>Proof</h3><span>repo-backed</span></div>
+                        <div class="settings-control-grid compact">
+                            ${renderSettingsControlRow('Watchdog rules', 'ops/watchdog-rules.md', 'Repeatable rules for ramble intake, done/proof, UI, integrations, secrets, and approval gates.', 'Repo')}
+                            ${renderSettingsControlRow('Audit command', 'npm run watchdog:audit', 'Writes reports to ops/watchdog-audits/YYYY-MM-DDTHH-mm-watchdog-audit.md.', 'Local')}
+                            ${renderSettingsControlRow('Prompt register', 'ops/prompt-intake-register.jsonl', 'Generated by npm run prompts:audit and consumed by the watchdog audit.', 'Repo')}
+                        </div>
+                    </section>
                 </div>
             `;
         }
@@ -26458,7 +26593,7 @@
         }
 
         function allowedViews() {
-            const views = Array.isArray(opsMe?.allowedViews) ? opsMe.allowedViews : ['dashboard', 'pipelines', 'tasks', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
+            const views = Array.isArray(opsMe?.allowedViews) ? opsMe.allowedViews : ['dashboard', 'watchdog', 'pipelines', 'tasks', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
             return new Set(views);
         }
 
@@ -26556,9 +26691,9 @@
         function workspaceNavViewIds(workspaceKey = currentWorkspaceKey()) {
             const profile = workspaceNavProfile(workspaceKey);
             const nav = {
-                platform: ['dashboard', 'admin', 'tasks', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'pipelines', 'accounting', 'automations', 'integrations', 'api_usage', 'settings'],
-                bna: ['dashboard', 'tasks', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'communications', 'service_providers', 'accounting', 'automations', 'integrations', 'settings'],
-                service_provider: ['dashboard', 'service_providers', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'communications', 'tasks', 'automations', 'integrations', 'api_usage', 'settings'],
+                platform: ['dashboard', 'watchdog', 'admin', 'tasks', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'pipelines', 'accounting', 'automations', 'integrations', 'api_usage', 'settings'],
+                bna: ['dashboard', 'watchdog', 'tasks', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'communications', 'service_providers', 'accounting', 'automations', 'integrations', 'settings'],
+                service_provider: ['dashboard', 'watchdog', 'service_providers', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'communications', 'tasks', 'automations', 'integrations', 'api_usage', 'settings'],
                 family: ['dashboard', 'contacts', 'tasks', 'calendar', 'communications', 'service_providers', 'settings'],
                 household: ['dashboard', 'contacts', 'tasks', 'calendar', 'communications', 'service_providers', 'settings']
             };
@@ -26570,6 +26705,7 @@
             const overrides = {
                 platform: {
                     dashboard: { label: 'Platform Dashboard', marker: 'PD' },
+                    watchdog: { label: 'Watchdog', marker: 'WG' },
                     admin: { label: 'Workspaces', marker: 'WS' },
                     tasks: { label: 'Operations', marker: 'OP' },
                     intake: { label: 'Intake Review', marker: 'IR' },
@@ -26584,6 +26720,7 @@
                 },
                 bna: {
                     dashboard: { label: 'Dashboard', marker: 'DB' },
+                    watchdog: { label: 'Watchdog', marker: 'WG' },
                     tasks: { label: 'Work', marker: 'WK' },
                     students: { label: 'Students', marker: 'ST' },
                     contacts: { label: 'Parents', marker: 'PA' },
@@ -26601,6 +26738,7 @@
                 },
                 service_provider: {
                     dashboard: { label: 'Dashboard', marker: 'DB' },
+                    watchdog: { label: 'Watchdog', marker: 'WG' },
                     service_providers: { label: 'Program', marker: 'PG' },
                     contacts: { label: 'Members', marker: 'MB' },
                     intake: { label: 'Intake Review', marker: 'IR' },
@@ -27812,15 +27950,15 @@
                 const activeContentSection = activeView === 'content' ? contentSection : '';
                 const needsLocalClassroomData = activeView === 'students' || (activeView === 'content' && activeContentSection === 'one_time_library');
                 const needsDashboardData = activeView === 'dashboard';
-                const needsPlatformData = needsDashboardData || ['pipelines', 'calendar', 'communications', 'internal_dialogue', 'service_providers', 'api_usage', 'admin', 'integrations', 'settings'].includes(activeView);
+                const needsPlatformData = needsDashboardData || ['watchdog', 'pipelines', 'calendar', 'communications', 'internal_dialogue', 'service_providers', 'api_usage', 'admin', 'integrations', 'settings'].includes(activeView);
                 const needsCalendarData = needsDashboardData || activeView === 'calendar' || (activeView === 'integrations' && ['google', 'connectors'].includes(activeIntegrationsSection)) || (activeView === 'settings' && ['calendar', 'google_classroom', 'integrations', 'google_workspace'].includes(activeSettingsSection));
                 const needsGoogleIntegrationData = (activeView === 'integrations' && activeIntegrationsSection === 'google') || (activeView === 'settings' && ['google_workspace', 'google_calendar', 'google_classroom', 'integrations', 'integrations_core', 'calendar_classroom'].includes(activeSettingsSection));
-                const needsPipelineData = needsDashboardData || ['pipelines', 'tasks', 'service_providers'].includes(activeView);
+                const needsPipelineData = needsDashboardData || ['watchdog', 'pipelines', 'tasks', 'service_providers'].includes(activeView);
                 const needsDialogueData = needsDashboardData || ['internal_dialogue', 'communications'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'automations') || (activeView === 'settings' && ['bot_permissions', 'automations'].includes(activeSettingsSection));
                 const needsProjectData = needsDashboardData || ['pipelines', 'service_providers', 'admin'].includes(activeView) || (activeView === 'settings' && ['workspace', 'users_roles'].includes(activeSettingsSection));
-                const needsTaskData = needsDashboardData || ['tasks', 'pipelines', 'internal_dialogue'].includes(activeView);
-                const needsAgentFleetData = needsDashboardData || ['tasks', 'api_usage', 'admin', 'internal_dialogue'].includes(activeView);
-                const needsQueueHealthData = needsDashboardData || ['tasks', 'admin'].includes(activeView);
+                const needsTaskData = needsDashboardData || ['watchdog', 'tasks', 'pipelines', 'internal_dialogue'].includes(activeView);
+                const needsAgentFleetData = needsDashboardData || ['watchdog', 'tasks', 'api_usage', 'admin', 'internal_dialogue'].includes(activeView);
+                const needsQueueHealthData = needsDashboardData || ['watchdog', 'tasks', 'admin'].includes(activeView);
                 const needsPeopleData = needsDashboardData || ['contacts', 'admin'].includes(activeView) || (activeView === 'settings' && activeSettingsSection === 'users_roles');
                 const needsContactData = needsDashboardData || ['contacts', 'communications', 'service_providers', 'api_usage', 'pipelines'].includes(activeView) || (activeView === 'settings' && ['parent_portal', 'communications'].includes(activeSettingsSection));
                 const needsWapiPhonebookData = activeView === 'communications' && communicationsSection === 'whatsapp';
@@ -27837,7 +27975,7 @@
                 const needsSupportData = needsDashboardData || ['admin', 'communications', 'api_usage', 'internal_dialogue', 'pipelines'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'automations') || (activeView === 'settings' && ['automations', 'api_limits', 'bot_permissions'].includes(activeSettingsSection));
                 const needsNotificationData = needsDashboardData || ['admin', 'communications', 'content', 'contacts', 'service_providers', 'api_usage'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'automations') || (activeView === 'settings' && ['automations', 'bot_permissions'].includes(activeSettingsSection));
                 const needsCommunicationsIntegrationData = needsDashboardData || (activeView === 'integrations' && activeIntegrationsSection === 'communications') || (activeView === 'communications' && ['overview', 'email', 'settings'].includes(communicationsSection)) || (activeView === 'settings' && ['communications', 'email_identities', 'social_accounts', 'integrations'].includes(activeSettingsSection));
-                const needsIntegrationsReadinessData = needsDashboardData || (activeView === 'integrations' && activeIntegrationsSection === 'readiness') || (activeView === 'settings' && ['integrations', 'integrations_core'].includes(activeSettingsSection));
+                const needsIntegrationsReadinessData = needsDashboardData || activeView === 'watchdog' || (activeView === 'integrations' && activeIntegrationsSection === 'readiness') || (activeView === 'settings' && ['integrations', 'integrations_core'].includes(activeSettingsSection));
                 const needsAutomationData = activeView === 'automations';
                 const needsBrandingData = true; // lightweight; always fetch
                 const [workspaceDirectoryRes, workspacePlatformRes, workspaceBrandingRes, calendarEventsRes, pipelineCardsRes, internalDialogueRes, projectsRes, peopleRes, tasksRes, agentFleetRes, queueHealthRes, supportTicketsRes, signupsRes, parentLeadsRes, serviceProvidersRes, contactCommunicationsRes, wapiPhonebookReportRes, parentAnnouncementsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, classSessionsRes, projectMeetingsRes, oneTimeClassesRes, oneTimeClassroomRes, oneTimeQuestionQueueRes, membersRes, liveSessionsRes, contentPromptsRes, contentBundlesRes, studentsRes, assignmentsRes, assignmentPromptsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes, ws11CoursesRes, ws11WorksheetsRes, ws11CourseQuestionsRes, ws11GamificationRes, ws11ShoutoutsRes, googleIntegrationRes, notificationsRes, notificationPreferencesRes, communicationsIntegrationRes, automationsRes, integrationsReadinessRes] = await Promise.allSettled([
@@ -28024,6 +28162,7 @@
 
             switch (currentView) {
                 case 'dashboard': content = renderDashboard(); break;
+                case 'watchdog': content = renderWatchdog(); break;
                 case 'pipelines': content = renderPipelines(); break;
                 case 'tasks': content = renderTasks(); break;
                 case 'students': content = renderStudents(); break;
@@ -28066,6 +28205,7 @@
 
         function currentSectionId() {
             if (currentView === 'dashboard') return dashboardSection;
+            if (currentView === 'watchdog') return 'overview';
             if (currentView === 'pipelines') return pipelineSection;
             if (currentView === 'tasks') return taskFocus;
             if (currentView === 'students') return studentSection;

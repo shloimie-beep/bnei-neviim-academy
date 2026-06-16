@@ -146,3 +146,29 @@ proof and keeps human/external blockers visible.
 - Codex workstreams: FAMILY-CLEANUP, UI-01.
 - Proof required: stale-family docs audit, no active archived runtime edits,
   smoke proving BNA/public/Operations identity remains current.
+
+## GOAL-009 - Ramble Watchdog And Goal-Led Work Until Done
+
+- Scope: long rambles, prompt packets, Downloads files, Codex attachments,
+  Telegram captures, Operations status, prompt register, agent ledger,
+  changelog, tasks-pending handoffs, and live-proof requirements.
+- Definition of done: each ramble/prompt source is captured, deduped, mapped to
+  durable goals, decisions, pending blockers, Codex work, proof requirements,
+  and terminal statuses; watchdog audits catch stale starts, duplicate work,
+  prompt-without-proof gaps, local-only work marked done, UI drift, helper
+  architecture gaps, secret risks, and unresolved Thursday blockers.
+- Current status: watchdog rules, `npm run watchdog:audit`, prompt-register
+  schema aliases, and an Operations Watchdog control-center module are added
+  locally; live deployment and automatic watcher mode are not yet performed.
+- Open decisions: whether the watchdog remains an explicit command or becomes
+  an automatic Downloads/attachments monitor; how much safe auto-fix authority
+  it should get; when staged watchdog helper tools become live helper actions.
+- Pending external actions: Thursday access/account-owner decisions for Zoom,
+  GoDaddy/DNS, Vimeo, Resend, Buffer, WAPI/WhatsApp, Stripe, and old One Time
+  app preservation.
+- Codex workstreams: WATCHDOG, PROMPT-INTAKE, OPS-02, HELPER-03, UI-01,
+  THURSDAY-ACCESS.
+- Proof required: `node --check scripts/watchdog-audit.mjs`,
+  `npm run watchdog:audit`, `npm run prompts:audit`, Operations inline-script
+  parse, source-of-truth updates, and a watchdog audit report under
+  `ops/watchdog-audits/`.

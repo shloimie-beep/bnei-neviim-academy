@@ -56,6 +56,7 @@
     "task:reconcile:apply": "node scripts/task-queue-reconciler.mjs --apply",
     "task:title-cleanup": "node scripts/task-title-cleanup-dry-run.mjs",
     "task:rabbi-flow-audit": "node scripts/rabbi-task-flow-audit.mjs",
+    "watchdog:audit": "node scripts/watchdog-audit.mjs",
     "watchdog:once": "node scripts/agent-fleet-supervisor.mjs --watchdog --once",
     "watchdog:start": "powershell -ExecutionPolicy Bypass -File scripts/start-watchdog.ps1",
     "watchdog:restart": "powershell -ExecutionPolicy Bypass -File scripts/start-watchdog.ps1 -Restart",

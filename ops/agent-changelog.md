@@ -21127,3 +21127,48 @@ Still gated:
   copying, public/member publishing, or final pricing/legal/payment decisions
   were performed. Those remain explicit approval/account-owner tasks for the
   Thursday access session.
+
+## 2026-06-16T18:11:01+03:00 - Ramble watchdog local audit layer
+
+Added the first repo-level ramble watchdog layer:
+
+- Created `ops/watchdog-rules.md`.
+- Added `scripts/watchdog-audit.mjs` and `npm run watchdog:audit`.
+- Added GOAL-009 to `ops/operating-goals.md` and
+  `ops/operating-goals.json`.
+- Extended prompt intake records with stable prompt IDs, source type, linked
+  goal IDs, decision/pending arrays, and linked proof path aliases.
+- Added the local Operations `Watchdog` module and `watchdog` allowed-view
+  defaults.
+- Added source-of-truth updates and handoff:
+  `tasks-pending/2026-06-16-ramble-watchdog-self-healing.md`.
+
+Audit output:
+
+- `ops/watchdog-audits/2026-06-16T15-12-watchdog-audit.md`
+- Current severity: high, with 7 findings across stale ledger starts,
+  local-verified prompt groups, proof/source wording gaps, and external blocker
+  cleanup.
+
+Verification:
+
+- `node --check scripts/watchdog-audit.mjs`
+- `node --check scripts/prompts-audit.mjs`
+- `node --check server.js`
+- `node --check scripts/agent-fleet-supervisor.mjs`
+- `node --check scripts/telegram-kimi-bridge.mjs`
+- focused Operations contract tests passed 41/41
+- `npm run prompts:audit` scanned 216 sources
+- `npm run watchdog:audit` passed and wrote the report above
+- `npm test` passed 654/654
+- `npm run secrets:audit` passed with 2423 tracked paths and 0 tracked
+  secret-risk files
+- `npm run integrations:audit` passed
+
+Blocked/not performed:
+
+- The Operations Watchdog UI is local-only until approved deploy, Railway
+  doctor, and live Operations smoke.
+- No git staging, commit, push, deploy, live sends, posts, uploads, charges,
+  DNS writes, account grants, credential copying, public/member publishing, or
+  external writes were performed.

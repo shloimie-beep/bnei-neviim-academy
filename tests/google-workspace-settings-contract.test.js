@@ -8,7 +8,7 @@ const server = fs.readFileSync('server.js', 'utf8');
 test('Operations exposes Google readiness under the Integrations module', () => {
   assert.match(operations, /getGoogleIntegrationStatus\(\) \{ return this\.request\('GET', '\/integrations\/google\/status'\); \}/);
   assert.match(operations, /integrations: 'integrations'/);
-  assert.match(operations, /let currentView = \['dashboard', 'pipelines', 'tasks', 'students', 'community', 'content', 'contacts', 'intake', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'\]/);
+  assert.match(operations, /let currentView = \['dashboard', 'watchdog', 'pipelines', 'tasks', 'students', 'community', 'content', 'contacts', 'intake', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'\]/);
   assert.match(operations, /const INTEGRATIONS_SUBTABS = \[/);
   assert.match(operations, /Operations > Integrations/);
   assert.match(operations, /case 'integrations': content = renderIntegrations\(\); break;/);
@@ -68,9 +68,9 @@ test('Operations exposes Google readiness under the Integrations module', () => 
 });
 
 test('Operations auth allows the Integrations module for admin and provider workspaces', () => {
-  assert.match(server, /platformAllowedViews = \['dashboard', 'pipelines', 'tasks', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'\]/);
-  assert.match(server, /providerAllowedViews = \['dashboard', 'pipelines', 'tasks', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'\]/);
-  assert.match(server, /allowedViews: identity\?\.allowedViews \|\| \['dashboard', 'pipelines', 'tasks', 'students', 'contacts', 'intake', 'community', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'\]/);
+  assert.match(server, /platformAllowedViews = \['dashboard', 'watchdog', 'pipelines', 'tasks', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'\]/);
+  assert.match(server, /providerAllowedViews = \['dashboard', 'watchdog', 'pipelines', 'tasks', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'\]/);
+  assert.match(server, /allowedViews: identity\?\.allowedViews \|\| \['dashboard', 'watchdog', 'pipelines', 'tasks', 'students', 'contacts', 'intake', 'community', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'\]/);
 });
 
 test('Google integrations status is available through the BNA Operations API namespace', () => {

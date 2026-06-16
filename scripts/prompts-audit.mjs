@@ -26,6 +26,10 @@ const ZIP_ENTRY_LIMIT_BYTES = 1024 * 1024 * 3;
 const RECENT_LOCAL_SOURCE_SINCE = Date.parse(process.env.PROMPT_AUDIT_SINCE || '2026-06-15T00:00:00');
 
 const WORKSTREAM_RULES = [
+  ['WATCHDOG', /ramble watchdog|self[- ]healing operating system|watchdog audit|watchdog-rules|run_watchdog_audit|system watchdog/i],
+  ['PROMPT-INTAKE', /prompt intake|prompt ingestion|prompts?:audit|prompt register|downloads prompt/i],
+  ['OPERATING-GOALS', /operating goals|durable operating|goal register/i],
+  ['THURSDAY-ACCESS', /thursday access|blocked until thursday|owner access session/i],
   ['UI-01', /\bUI[-_ ]?01\b|ui[ -]brand|operations layout|header\/footer|mobile.*ui|public.*operations shell/i],
   ['OPS-02', /\bOPS[-_ ]?02\b|operations workflows|lanes|calendar|task routing|decision lifecycle|pending access/i],
   ['HELPER-03', /\bHELPER[-_ ]?03\b|scoped.*helper|natural[- ]language helper|bna helper/i],
@@ -34,9 +38,6 @@ const WORKSTREAM_RULES = [
   ['COMMUNITY-06', /\bCOMMUNITY[-_ ]?06\b|course|gamification|parent progress|mishnayos community|worksheet/i],
   ['MASTER-07', /\bMASTER[-_ ]?07\b|parallel closeout|orchestrator|source[- ]of[- ]truth closeout/i],
   ['WS01-WS11', /\bWS(?:0[1-9]|1[01])\b|ws01|ws11|full ws closeout|parent-managed student/i],
-  ['PROMPT-INTAKE', /prompt intake|prompt ingestion|prompts?:audit|prompt register|downloads prompt/i],
-  ['OPERATING-GOALS', /operating goals|durable operating|goal register/i],
-  ['THURSDAY-ACCESS', /thursday access|blocked until thursday|owner access session/i],
   ['FAMILY-CLEANUP', /family accountability|legacy family|home accountability/i],
 ];
 
@@ -320,6 +321,17 @@ function loadChangelogHeadings() {
 }
 
 function ledgerWorkstreamKey(row = {}) {
+  const explicit = String(row.workstream_id || '').toUpperCase();
+  if (explicit.includes('WATCHDOG')) return 'WATCHDOG';
+  if (explicit.includes('PROMPT-INTAKE')) return 'PROMPT-INTAKE';
+  if (explicit.includes('OPERATING-GOALS')) return 'OPERATING-GOALS';
+  if (explicit.includes('THURSDAY')) return 'THURSDAY-ACCESS';
+  if (explicit.includes('INT-05')) return 'INT-05';
+  if (explicit.includes('UI-01')) return 'UI-01';
+  if (explicit.includes('OPS-02')) return 'OPS-02';
+  if (explicit.includes('HELPER-03')) return 'HELPER-03';
+  if (explicit.includes('RABBI-04')) return 'RABBI-04';
+  if (explicit.includes('COMMUNITY-06')) return 'COMMUNITY-06';
   return workstreamKey(`${row.workstream_id || ''}\n${row.title || ''}\n${row.summary || ''}\n${row.notes || ''}`, '');
 }
 
@@ -408,8 +420,8 @@ function statusForSource({ text, key, linkedLedger, duplicateStatus }) {
   if (duplicateStatus) return duplicateStatus;
   const lower = String(text || '').toLowerCase();
   const ledgerStage = linkedLedger ? terminalLedgerStage(linkedLedger) : '';
-  if (ledgerStage) return ledgerStage;
   if (/deployed|railway doctor|live smoke|live-smoked|deployment `/.test(lower)) return 'deployed_verified';
+  if (ledgerStage) return ledgerStage;
   if (/local implementation verified|locally implemented|local verification passed|npm test .*pass/.test(lower)) return 'local_verified';
   if (/blocked|blocker|pending credentials|pending access|needs .*access/.test(lower)) return 'blocked';
   if (/mapped|audit completed|diagnosis complete|classified/.test(lower)) return 'mapped';
@@ -429,6 +441,34 @@ function linkedChangelogFor(title, key, headings) {
 
 function taskIdsFromText(text = '') {
   return [...new Set([...String(text || '').matchAll(/\btask\s*#?(\d{1,8})\b/gi)].map((match) => Number(match[1])))];
+}
+
+function sourceTypeForPath(sourcePath = '') {
+  const value = String(sourcePath || '').replace(/\\/g, '/').toLowerCase();
+  if (value.includes('/downloads/')) return 'download';
+  if (value.includes('/.codex/attachments/')) return 'codex_attachment';
+  if (value.includes('/memory/') || value.startsWith('memory/')) return 'repo';
+  if (value.includes('/tasks-pending/') || value.startsWith('tasks-pending/')) return 'repo';
+  if (value.includes('/ops/')) return 'repo';
+  return 'manual';
+}
+
+function goalIdsForWorkstream(key = '') {
+  const map = {
+    WATCHDOG: ['GOAL-009'],
+    'PROMPT-INTAKE': ['GOAL-002', 'GOAL-009'],
+    'OPERATING-GOALS': ['GOAL-009'],
+    'HELPER-03': ['GOAL-001'],
+    'OPS-02': ['GOAL-002', 'GOAL-009'],
+    'INT-05': ['GOAL-004'],
+    'THURSDAY-ACCESS': ['GOAL-004', 'GOAL-006'],
+    'RABBI-04': ['GOAL-006'],
+    'COMMUNITY-06': ['GOAL-003'],
+    'UI-01': ['GOAL-007'],
+    'FAMILY-CLEANUP': ['GOAL-008'],
+    'WS01-WS11': ['GOAL-003'],
+  };
+  return map[String(key || '').toUpperCase()] || [];
 }
 
 function buildRecords() {
@@ -457,19 +497,26 @@ function buildRecords() {
     const title = detectedTitle(text, entry.sourcePath);
     const date = detectedDate(text, entry.sourcePath) || new Date(entry.mtimeMs || Date.now()).toISOString().slice(0, 10);
     const key = workstreamKey(text, entry.sourcePath);
+    const digest = sha256(entry.buffer);
     const linkedLedger = latestLedger.get(key) || null;
     const explicitProofs = extractPathProofs(text);
     const linkedProofFiles = [...new Set([...explicitProofs, ...proofFilesForWorkstream(key)])].slice(0, 18);
     return {
+      prompt_id: `prompt_${digest.slice(0, 16)}`,
       source_path: entry.sourcePath,
-      sha256: sha256(entry.buffer),
+      sha256: digest,
       detected_title: title,
       detected_date: date,
+      source_type: sourceTypeForPath(entry.sourcePath),
       workstream_key: key,
+      summary: rawGoalSummary(text),
       raw_goal_summary: rawGoalSummary(text),
       secret_risk: secretRisk(text),
       status: 'seen',
+      linked_goal_ids: goalIdsForWorkstream(key),
       linked_task_ids: taskIdsFromText(text),
+      linked_decision_ids: [],
+      linked_pending_ids: [],
       linked_ledger_records: linkedLedger ? [{
         recorded_at: linkedLedger.recorded_at || linkedLedger.timestamp || null,
         event: linkedLedger.event || linkedLedger.status || null,
@@ -478,6 +525,7 @@ function buildRecords() {
         title: compactText(linkedLedger.title || '', 220),
       }] : [],
       linked_changelog_records: linkedChangelogFor(title, key, changelogHeadings),
+      linked_proof_paths: linkedProofFiles,
       linked_proof_files: linkedProofFiles,
       blocker: blockerFromText(text),
       next_action: '',

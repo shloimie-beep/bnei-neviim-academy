@@ -78,6 +78,11 @@ Keep `MEMORY.md` compact and curated.
   verification performed, and remaining decisions in the relevant
   `tasks-pending/` handoff, `ops/agent-changelog.md`, and
   `ops/agent-task-ledger.jsonl`.
+- After major ramble-derived closeouts, or when work status feels scattered
+  across prompts/tasks/ledger/proof, run `npm run watchdog:audit` and use the
+  newest `ops/watchdog-audits/*-watchdog-audit.md` report to identify stale
+  records, missing proof, duplicate work, prompt gaps, source-of-truth drift,
+  and unresolved human/external blockers.
 - Operations task buckets are `Decisions`, `Pending`, and `Tasks`, with
   `Calendar` and `Done / Activity` as supporting views. `Pending` means a
   human or external system is blocking progress; it must not mean "waiting for

@@ -123,6 +123,12 @@
   and prompt zip entries, writes `ops/prompt-intake-register.jsonl`, and
   summarizes status in `ops/prompt-intake-summary.md`. It must never store raw
   secret values; it records only secret-risk level and redacted summaries.
+- The ramble watchdog is backed by `npm run watchdog:audit`, which reads
+  operating goals, prompt intake, TASKS, SYSTEM-STATE, MEMORY, the ledger,
+  changelog, tasks-pending handoffs, daily memory, Operations UI, helper
+  architecture, and Thursday blockers, then writes read-only Markdown reports
+  under `ops/watchdog-audits/`. It is currently a manual command and local
+  Operations Watchdog module, not an automatic watcher or live auto-fixer.
 - One Time/Rabbi owner-access blockers are centralized in
   `ops/thursday-access-checklist.md`. Zoom, GoDaddy/DNS, Vimeo, Resend,
   Buffer, WAPI/WhatsApp, Stripe, Google Drive, and old One Time app migration
