@@ -11,7 +11,8 @@ not authorize active GHL runtime paths.
   Thursday blocker cards, agent gap audit, full local verification, accumulated
   deploy, Railway doctor, live smokes, and direct authenticated live
   integrations status readback. Deployed Railway production
-  `47da54d6-fda7-495a-84ab-90b51ebdefe1` from commit `35e0571`. Handoffs:
+  `db7ea5aa-c4cd-49df-9b74-f233c3e53667` from closeout commit `a2d29e6`
+  after code stabilization commit `35e0571`. Handoffs:
   `tasks-pending/2026-06-16-provider-integrations-secret-storage.md`,
   `tasks-pending/2026-06-16-one-time-thursday-access-session.md`,
   `tasks-pending/2026-06-16-agent-work-gap-audit.md`. Audit:
@@ -70,7 +71,7 @@ not authorize active GHL runtime paths.
   `tasks-pending/2026-06-16-community-06-mishnayos-community-gamification-parent-progress.md`.
 - [x] COMMUNITY-06 live rollout follow-up: the additive extension shipped in
   the accumulated Railway deployment
-  `47da54d6-fda7-495a-84ab-90b51ebdefe1`; Railway doctor plus live
+  `db7ea5aa-c4cd-49df-9b74-f233c3e53667`; Railway doctor plus live
   public/privacy, student-auth, and WS11 parent-progress smokes passed.
 - [x] INT-05 safe integrations closeout is deployed and verified:
   redacted readiness/status exists for keyholder/secrets, Google Drive,
@@ -88,7 +89,7 @@ not authorize active GHL runtime paths.
   `stripe-secret-key.txt`, removed from Downloads, and verified by
   fingerprint-only diagnostics; it was not copied to `.secrets` or Railway.
   On 2026-06-16 the accumulated app bundle was deployed as Railway production
-  deployment `47da54d6-fda7-495a-84ab-90b51ebdefe1`; Railway doctor, live app,
+  deployment `db7ea5aa-c4cd-49df-9b74-f233c3e53667`; Railway doctor, live app,
   public privacy, student-auth, operator setup, assistant onboarding, signup
   credit email preview, and WS11 parent-progress smokes passed. A direct
   authenticated live read of `/api/bna/integrations/status` returned 15
@@ -106,7 +107,7 @@ not authorize active GHL runtime paths.
   (`npm test` 646/646 plus browser/no-overflow smokes). Handoff:
   `tasks-pending/2026-06-16-ui-brand-operations-layout.md`.
 - [ ] UI-01 additional visual proof follow-up: the accumulated bundle is
-  deployed in Railway deployment `47da54d6-fda7-495a-84ab-90b51ebdefe1` and
+  deployed in Railway deployment `db7ea5aa-c4cd-49df-9b74-f233c3e53667` and
   Railway doctor, live app smoke, Operations login/session coverage, and public
   route privacy smoke passed. Run a narrow live mobile Operations/browser
   screenshot pass if UI-specific screenshot proof is needed.

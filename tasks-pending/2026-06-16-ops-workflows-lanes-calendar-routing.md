@@ -85,7 +85,7 @@ Queue audit counts:
 Blockers:
 
 - Accumulated Railway deployment
-  `47da54d6-fda7-495a-84ab-90b51ebdefe1` later reached `SUCCESS`; Railway
+  `db7ea5aa-c4cd-49df-9b74-f233c3e53667` later reached `SUCCESS`; Railway
   doctor and live smoke coverage passed.
 - Queue cleanup choices that mutate visible task status or archive duplicates
   still require safe DB/readback planning and approval.

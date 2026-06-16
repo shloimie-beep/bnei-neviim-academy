@@ -4,7 +4,7 @@
 
 Local implementation and verification are complete. The accumulated release was
 deployed to Railway production as
-`47da54d6-fda7-495a-84ab-90b51ebdefe1`; Railway doctor and live public/privacy,
+`db7ea5aa-c4cd-49df-9b74-f233c3e53667`; Railway doctor and live public/privacy,
 student-auth, and WS11 parent-progress smokes passed.
 
 ## Implemented

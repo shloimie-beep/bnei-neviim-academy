@@ -108,7 +108,7 @@ Status: `blocked_needs_human_decision_after_local_verification`
 ## External Blockers
 
 - Live deploy and Railway doctor are complete in Railway production deployment
-  `47da54d6-fda7-495a-84ab-90b51ebdefe1`. Direct authenticated live
+  `db7ea5aa-c4cd-49df-9b74-f233c3e53667`. Direct authenticated live
   `/api/bna/integrations/status` readback returned 15 readiness cards. The
   remaining blockers are account-owner/provider decisions and credentials, not
   the deploy path.
@@ -173,7 +173,7 @@ Status: `blocked_needs_human_decision_after_local_verification`
 
 - As of 2026-06-16T17:41:58+03:00, the deploy blocker was resolved by the
   intentional accumulated-bundle deployment
-  `47da54d6-fda7-495a-84ab-90b51ebdefe1`.
+  `db7ea5aa-c4cd-49df-9b74-f233c3e53667`.
 - Needed from Shloimie: Thursday account-owner access and explicit approval for
   any real external write, send, upload, post, charge, DNS change, account
   grant, credential copy, or launch decision.

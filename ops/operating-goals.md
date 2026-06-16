@@ -15,7 +15,7 @@ proof and keeps human/external blockers visible.
   helper responses and tools are permission-scoped; actions use confirmation
   gates; missing integrations create blockers instead of fake success.
 - Current status: Operations helper and helper tool registry foundation is
-  deployed in Railway `47da54d6-fda7-495a-84ab-90b51ebdefe1`; integration
+  deployed in Railway `db7ea5aa-c4cd-49df-9b74-f233c3e53667`; integration
   status readback passed.
 - Open decisions: final helper names per workspace; which high-risk tools can
   become live after approval.

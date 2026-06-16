@@ -24,7 +24,9 @@ Last updated: 2026-06-16
   reaching honest completion.
 - Release branch:
   `codex/one-time-integrations-access-audit-2026-06-16`. Stabilization commit:
-  `35e0571` (`chore: stabilize provider integrations and release state`).
+  `35e0571` (`chore: stabilize provider integrations and release state`);
+  deployed closeout tip: `a2d29e6`
+  (`docs: record deployment closeout and prompt intake`).
 - Built and deployed the provider-scoped integration foundation: additive
   `bna_provider_integrations` fields, `bna_provider_secret_refs`,
   `bna_provider_integration_audit_log`, expanded DNS task fields/statuses,
@@ -59,24 +61,24 @@ Last updated: 2026-06-16
   to `.gitignore`, passed `git diff --cached --check`, and confirmed the
   worktree was clean before deploy.
 - Deployed Railway production deployment
-  `47da54d6-fda7-495a-84ab-90b51ebdefe1`; Railway doctor reached `SUCCESS`.
+  `db7ea5aa-c4cd-49df-9b74-f233c3e53667`; Railway doctor reached `SUCCESS`.
 - Verification passed: changed-file syntax checks, focused provider/helper/
   INT-05 tests 20/20, full `npm test` 654/654, `npm run secrets:audit` with
   2397 tracked paths checked and 0 tracked secret-risk files found,
   `npm run integrations:audit`, `npm run smoke:int05-integrations` locally
   with 15 cards/no mobile overflow, main live app smoke
-  `ops/live-smokes/2026-06-16T14-39-37-521Z-live-app-smoke.md`, public privacy
-  smoke `ops/live-smokes/2026-06-16T14-40-07-226Z-public-route-privacy-smoke.md`,
+  `ops/live-smokes/2026-06-16T14-58-54-693Z-live-app-smoke.md`, public privacy
+  smoke `ops/live-smokes/2026-06-16T15-00-57-827Z-public-route-privacy-smoke.md`,
   student-auth smoke
-  `ops/live-smokes/2026-06-16T14-40-00-165Z-student-auth-policy-live-smoke.md`,
+  `ops/live-smokes/2026-06-16T15-00-50-386Z-student-auth-policy-live-smoke.md`,
   operator setup smoke
-  `ops/live-smokes/2026-06-16T14-40-00-129Z-operator-setup-live-smoke.md`,
+  `ops/live-smokes/2026-06-16T15-00-50-453Z-operator-setup-live-smoke.md`,
   assistant onboarding intake smoke
-  `ops/live-smokes/2026-06-16T14-40-15-096Z-assistant-onboarding-intake-live-smoke.md`,
+  `ops/live-smokes/2026-06-16T15-01-04-172Z-assistant-onboarding-intake-live-smoke.md`,
   signup credit email preview smoke
-  `ops/live-smokes/2026-06-16T14-40-15-071Z-signup-credit-email-preview-live-smoke.md`,
+  `ops/live-smokes/2026-06-16T15-01-04-150Z-signup-credit-email-preview-live-smoke.md`,
   and WS11 parent-progress smoke
-  `ops/live-smokes/2026-06-16T14-40-15-180Z-ws11-parent-progress-live-smoke.md`.
+  `ops/live-smokes/2026-06-16T15-01-04-286Z-ws11-parent-progress-live-smoke.md`.
 - Direct authenticated live read of `/api/bna/integrations/status` returned 15
   readiness cards from `https://bneineviimacademy.org`, including WAPI/
   WhatsApp, GoDaddy/DNS, provider-owned integration records, and Vimeo/video
@@ -114,7 +116,7 @@ Last updated: 2026-06-16
   646/646, local authenticated browser screenshots in `screenshots/ui-01/`,
   and 375px no-horizontal-overflow smoke on public and Operations routes.
 - Accumulated deploy was later completed in Railway deployment
-  `47da54d6-fda7-495a-84ab-90b51ebdefe1` with Railway doctor and live smoke
+  `db7ea5aa-c4cd-49df-9b74-f233c3e53667` with Railway doctor and live smoke
   coverage. UI-specific visual/browser follow-up can still be run as a narrow
   QA task if more screenshot proof is needed.
 
@@ -137,7 +139,7 @@ Last updated: 2026-06-16
   OneTime/Rabbi/assistant/UI tests 25/25, full `npm test` 646/646, and local
   desktop/mobile screenshot proof in `screenshots/rabbi-04/report.md`.
 - Accumulated deploy was later completed in Railway deployment
-  `47da54d6-fda7-495a-84ab-90b51ebdefe1` with Railway doctor and live smoke
+  `db7ea5aa-c4cd-49df-9b74-f233c3e53667` with Railway doctor and live smoke
   coverage. Final prices, tier names, refund/legal copy, billing provider
   readiness, launch copy, and any live sends, external writes, checkout,
   Zoom/Google/Drive/Buffer actions, or member grants still need explicit
@@ -166,7 +168,7 @@ Last updated: 2026-06-16
 - Parent screenshot proof remained at the login-gated parent portal because no
   parent password/access code was available locally and no parent credential was
   created or rotated. Accumulated deploy was later completed in Railway
-  deployment `47da54d6-fda7-495a-84ab-90b51ebdefe1`; WS11 parent-progress live
+  deployment `db7ea5aa-c4cd-49df-9b74-f233c3e53667`; WS11 parent-progress live
   smoke passed. Additional parent visual proof still requires an approved
   parent credential/session path.
 
@@ -204,7 +206,7 @@ Last updated: 2026-06-16
   secret audit, and `npm run smoke:int05-integrations` with desktop/mobile/
   action-gate screenshots.
 - Accumulated deploy was later completed in Railway deployment
-  `47da54d6-fda7-495a-84ab-90b51ebdefe1`; Railway doctor and live smoke
+  `db7ea5aa-c4cd-49df-9b74-f233c3e53667`; Railway doctor and live smoke
   coverage passed, and direct authenticated `/api/bna/integrations/status`
   readback returned 15 cards. No external sends, publishes, schedules,
   billing, Zoom/Vimeo writes, Google writes, DNS writes, account grants, active

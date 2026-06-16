@@ -101,8 +101,9 @@ safe app-side readiness, status, and checklist surfaces.
 - Stabilization branch:
   `codex/one-time-integrations-access-audit-2026-06-16`.
 - Stabilization commit: `35e0571`.
+- Deployed closeout commit: `a2d29e6`.
 - Railway production deployment:
-  `47da54d6-fda7-495a-84ab-90b51ebdefe1` reached `SUCCESS`.
+  `db7ea5aa-c4cd-49df-9b74-f233c3e53667` reached `SUCCESS`.
 - Live verification passed: Railway doctor, main app smoke, public route
   privacy smoke, student-auth smoke, operator setup smoke, assistant onboarding
   intake smoke, signup credit email preview smoke, WS11 parent-progress smoke,

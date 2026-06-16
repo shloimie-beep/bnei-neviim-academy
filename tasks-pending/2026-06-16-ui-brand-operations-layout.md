@@ -113,7 +113,7 @@ Status: local_verified_live_rollout_pending
 ## Remaining Follow-up / Blocker
 
 - The accumulated bundle was later deployed to Railway production as
-  `47da54d6-fda7-495a-84ab-90b51ebdefe1`; Railway doctor, live app smoke,
+  `db7ea5aa-c4cd-49df-9b74-f233c3e53667`; Railway doctor, live app smoke,
   Operations login/session coverage, and public route privacy smoke passed.
 - Run a narrow live mobile Operations/browser screenshot pass only if
   UI-specific visual proof is needed beyond the local screenshots already

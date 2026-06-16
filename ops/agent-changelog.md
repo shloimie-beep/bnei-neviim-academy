@@ -21084,9 +21084,10 @@ Changed:
 Deployment:
 
 - Branch: `codex/one-time-integrations-access-audit-2026-06-16`
-- Commit: `35e0571`
+- Code stabilization commit: `35e0571`
+- Deployed closeout commit: `a2d29e6`
 - Railway production deployment:
-  `47da54d6-fda7-495a-84ab-90b51ebdefe1`
+  `db7ea5aa-c4cd-49df-9b74-f233c3e53667`
 - Railway doctor reached `SUCCESS`.
 
 Verification:
@@ -21102,19 +21103,19 @@ Verification:
 - `npm run smoke:int05-integrations` with 15 readiness cards and no mobile
   horizontal overflow
 - live app smoke:
-  `ops/live-smokes/2026-06-16T14-39-37-521Z-live-app-smoke.md`
+  `ops/live-smokes/2026-06-16T14-58-54-693Z-live-app-smoke.md`
 - live public/privacy smoke:
-  `ops/live-smokes/2026-06-16T14-40-07-226Z-public-route-privacy-smoke.md`
+  `ops/live-smokes/2026-06-16T15-00-57-827Z-public-route-privacy-smoke.md`
 - live student-auth smoke:
-  `ops/live-smokes/2026-06-16T14-40-00-165Z-student-auth-policy-live-smoke.md`
+  `ops/live-smokes/2026-06-16T15-00-50-386Z-student-auth-policy-live-smoke.md`
 - live operator setup smoke:
-  `ops/live-smokes/2026-06-16T14-40-00-129Z-operator-setup-live-smoke.md`
+  `ops/live-smokes/2026-06-16T15-00-50-453Z-operator-setup-live-smoke.md`
 - live assistant onboarding intake smoke:
-  `ops/live-smokes/2026-06-16T14-40-15-096Z-assistant-onboarding-intake-live-smoke.md`
+  `ops/live-smokes/2026-06-16T15-01-04-172Z-assistant-onboarding-intake-live-smoke.md`
 - live signup credit email preview smoke:
-  `ops/live-smokes/2026-06-16T14-40-15-071Z-signup-credit-email-preview-live-smoke.md`
+  `ops/live-smokes/2026-06-16T15-01-04-150Z-signup-credit-email-preview-live-smoke.md`
 - live WS11 parent-progress smoke:
-  `ops/live-smokes/2026-06-16T14-40-15-180Z-ws11-parent-progress-live-smoke.md`
+  `ops/live-smokes/2026-06-16T15-01-04-286Z-ws11-parent-progress-live-smoke.md`
 - direct authenticated live `/api/bna/integrations/status` readback returned 15
   cards including WAPI/WhatsApp, GoDaddy/DNS, provider-owned integration
   records, and Vimeo/video hosting, with no raw secret-pattern match.

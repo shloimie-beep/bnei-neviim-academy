@@ -94,8 +94,9 @@ audited tools. Required or pending tools include:
   `railway-migration-2026-06-16-provider-integrations-secret-storage.sql` and
   audit command `npm run integrations:audit`.
 - Stabilization commit: `35e0571`.
+- Deployed closeout commit: `a2d29e6`.
 - Railway production deployment:
-  `47da54d6-fda7-495a-84ab-90b51ebdefe1` reached `SUCCESS`.
+  `db7ea5aa-c4cd-49df-9b74-f233c3e53667` reached `SUCCESS`.
 - Verification passed: changed-file syntax checks, focused provider/helper/
   INT-05 tests 20/20, full `npm test` 654/654, `npm run secrets:audit` with
   2397 tracked paths and 0 tracked secret-risk files, `npm run

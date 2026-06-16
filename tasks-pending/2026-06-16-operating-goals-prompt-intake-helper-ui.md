@@ -3,7 +3,7 @@
 Cycle ID: `2026-06-16-operating-goals-prompt-intake-helper-ui-closeout`
 Status: source-of-truth closeout complete. The accumulated app bundle is already
 deployed in Railway production deployment
-`47da54d6-fda7-495a-84ab-90b51ebdefe1`; future app-visible changes still need
+`db7ea5aa-c4cd-49df-9b74-f233c3e53667`; future app-visible changes still need
 their own deploy/live-smoke proof unless covered by that deployment.
 
 ## What Changed
@@ -46,7 +46,7 @@ coverage as completion.
   access decisions.
 - Stale ledger-only starts still need a terminal closeout pass.
 - Any future UI/helper change that is app-visible still needs deploy/live smoke
-  unless already covered by the `47da54d6-fda7-495a-84ab-90b51ebdefe1`
+  unless already covered by the `db7ea5aa-c4cd-49df-9b74-f233c3e53667`
   deployment proof recorded elsewhere.
 
 ## Verification Run

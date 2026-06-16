@@ -115,7 +115,7 @@ checkout, account grants, sends, or external writes.
 ## Live Follow-Up
 
 - Accumulated Railway deployment
-  `47da54d6-fda7-495a-84ab-90b51ebdefe1` reached `SUCCESS` after this local
+  `db7ea5aa-c4cd-49df-9b74-f233c3e53667` reached `SUCCESS` after this local
   implementation.
 - Railway doctor and the live smoke suite passed. Product launch remains
   decision-gated because pricing, billing, legal/refund copy, launch copy, and

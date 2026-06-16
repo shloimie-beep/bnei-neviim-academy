@@ -1,7 +1,7 @@
 # UI Closeout Audit - 2026-06-16
 
 Status: local screenshot proof consolidated; accumulated Railway deployment
-`47da54d6-fda7-495a-84ab-90b51ebdefe1` reached `SUCCESS` and live app/public
+`db7ea5aa-c4cd-49df-9b74-f233c3e53667` reached `SUCCESS` and live app/public
 privacy/Operations login coverage passed. Additional production screenshots are
 optional narrow UI QA, not a deploy blocker.
 

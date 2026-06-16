@@ -65,9 +65,10 @@ Also summarize the audit in `SYSTEM-STATE.md`.
   implemented and tested but left behind a dirty worktree, stale "pending
   deploy" labels, external account blockers, and no single release closeout.
 - Cleaned and committed the accumulated release on branch
-  `codex/one-time-integrations-access-audit-2026-06-16` as commit `35e0571`.
+  `codex/one-time-integrations-access-audit-2026-06-16` as code stabilization
+  commit `35e0571`, then added closeout/source-of-truth commit `a2d29e6`.
 - Deployed Railway production deployment
-  `47da54d6-fda7-495a-84ab-90b51ebdefe1`, which reached `SUCCESS`.
+  `db7ea5aa-c4cd-49df-9b74-f233c3e53667`, which reached `SUCCESS`.
 - Verification passed: full `npm test` 654/654, secret audit, integration
   audit, local INT-05 readiness smoke, Railway doctor, live app smoke, public
   privacy smoke, student-auth smoke, operator setup smoke, assistant onboarding
