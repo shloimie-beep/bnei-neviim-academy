@@ -21172,3 +21172,44 @@ Blocked/not performed:
 - No git staging, commit, push, deploy, live sends, posts, uploads, charges,
   DNS writes, account grants, credential copying, public/member publishing, or
   external writes were performed.
+
+## 2026-06-16T18:24:00+03:00 - Ramble watchdog deployed and live-smoked
+
+Deployed the Watchdog/control-center foundation from commit `3b34755` to
+Railway production deployment `fac52051-3b45-4f41-ab7e-22df8789f32d`.
+
+Verification:
+
+- Railway doctor reached `SUCCESS`.
+- `npm run app:smoke` passed:
+  `ops/live-smokes/2026-06-16T15-18-39-613Z-live-app-smoke.md`.
+- `npm run app:smoke:public-privacy` passed:
+  `ops/live-smokes/2026-06-16T15-18-45-855Z-public-route-privacy-smoke.md`.
+- `npm run app:smoke:student-auth` passed:
+  `ops/live-smokes/2026-06-16T15-18-38-487Z-student-auth-policy-live-smoke.md`.
+- `npm run app:smoke:operator-setup` passed:
+  `ops/live-smokes/2026-06-16T15-18-38-452Z-operator-setup-live-smoke.md`.
+- `npm run app:smoke:onboarding-intake` passed:
+  `ops/live-smokes/2026-06-16T15-19-02-250Z-assistant-onboarding-intake-live-smoke.md`.
+- `npm run app:smoke:signup-credit-email-preview` passed:
+  `ops/live-smokes/2026-06-16T15-19-02-304Z-signup-credit-email-preview-live-smoke.md`.
+- `npm run app:smoke:ws11-parent-progress` passed:
+  `ops/live-smokes/2026-06-16T15-19-02-327Z-ws11-parent-progress-live-smoke.md`.
+- Live Watchdog browser smoke passed:
+  `ops/live-smokes/2026-06-16T15-20-14-711Z-watchdog-live-smoke.md`.
+- Post-deploy Watchdog audit report:
+  `ops/watchdog-audits/2026-06-16T15-26-watchdog-audit.md`.
+- Direct authenticated readback confirmed `allowedViews` includes `watchdog`,
+  integration readiness still returns 15 cards, and no secret-like pattern
+  matched the integration status response.
+
+Still gated:
+
+- Watchdog audit findings remain visible queue-hygiene work: stale ledger
+  starts, local-verified prompt groups, weak proof/source wording, and external
+  blocker classification.
+- Automatic Downloads/attachments watcher mode and safe auto-fix authority need
+  explicit operator decisions.
+- No live sends, posts, uploads, charges, DNS writes, account grants,
+  credential copying, public/member publishing, or other external writes were
+  performed.

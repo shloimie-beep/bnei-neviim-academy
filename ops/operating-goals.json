@@ -226,7 +226,7 @@
       "title": "Ramble watchdog and goal-led work until done",
       "scope": "Long rambles, prompt packets, Downloads files, Codex attachments, Telegram captures, Operations status, prompt register, agent ledger, changelog, tasks-pending handoffs, and live-proof requirements.",
       "definition_of_done": "Each ramble/prompt source is captured, deduped, mapped to durable goals, decisions, pending blockers, Codex work, proof requirements, and terminal statuses; watchdog audits catch stale starts, duplicate work, prompt-without-proof gaps, local-only work marked done, UI drift, helper architecture gaps, secret risks, and unresolved Thursday blockers.",
-      "current_status": "watchdog_rules_audit_script_and_operations_control_center_added_locally_live_deploy_not_performed",
+      "current_status": "watchdog_rules_audit_script_and_operations_control_center_deployed_live_smoked_queue_hygiene_pending",
       "open_decisions": [
         "Explicit command versus automatic Downloads/attachments watcher",
         "Safe auto-fix authority for docs, queue cleanup, and UI/code fixes",
@@ -249,7 +249,10 @@
         "npm run prompts:audit",
         "Operations inline-script parse",
         "Source-of-truth updates",
-        "Audit report under ops/watchdog-audits/"
+        "Audit report under ops/watchdog-audits/",
+        "Railway doctor SUCCESS for fac52051-3b45-4f41-ab7e-22df8789f32d",
+        "Live Watchdog browser smoke ops/live-smokes/2026-06-16T15-20-14-711Z-watchdog-live-smoke.md",
+        "Direct authenticated allowedViews readback includes watchdog"
       ],
       "last_updated": "2026-06-16"
     }

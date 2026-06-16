@@ -127,7 +127,7 @@
   operating goals, prompt intake, TASKS, SYSTEM-STATE, MEMORY, the ledger,
   changelog, tasks-pending handoffs, daily memory, Operations UI, helper
   architecture, and Thursday blockers, then writes read-only Markdown reports
-  under `ops/watchdog-audits/`. It is currently a manual command and local
+  under `ops/watchdog-audits/`. It is currently a manual command and deployed
   Operations Watchdog module, not an automatic watcher or live auto-fixer.
 - One Time/Rabbi owner-access blockers are centralized in
   `ops/thursday-access-checklist.md`. Zoom, GoDaddy/DNS, Vimeo, Resend,

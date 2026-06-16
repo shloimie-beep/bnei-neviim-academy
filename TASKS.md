@@ -43,14 +43,18 @@ not authorize active GHL runtime paths.
   `ops/operating-goals.json`, `ops/thursday-access-checklist.md`, and
   `ops/ui-audits/2026-06-16-ui-closeout.md` with curated screenshots under
   `ops/ui-audits/2026-06-16/`.
-- [ ] Complete the ramble-watchdog/self-healing operating-system rollout:
-  local watchdog rules, `npm run watchdog:audit`, `GOAL-009`, prompt-register
-  aliases, AGENTS rule, source-of-truth trail, and Operations Watchdog module
-  are added. Current report:
-  `ops/watchdog-audits/2026-06-16T15-12-watchdog-audit.md`. Handoff:
-  `tasks-pending/2026-06-16-ramble-watchdog-self-healing.md`. This remains
-  open because the app-visible Watchdog UI has not been deployed/live-smoked
-  and the audit findings still need queue-hygiene closeout.
+- [x] Ship the ramble-watchdog/self-healing operating-system foundation:
+  watchdog rules, `npm run watchdog:audit`, `GOAL-009`, prompt-register
+  aliases, AGENTS rule, source-of-truth trail, and the Operations Watchdog
+  module are deployed in Railway
+  `fac52051-3b45-4f41-ab7e-22df8789f32d`. Current report:
+  `ops/watchdog-audits/2026-06-16T15-26-watchdog-audit.md`. Live proof:
+  `ops/live-smokes/2026-06-16T15-20-14-711Z-watchdog-live-smoke.md`.
+  Handoff: `tasks-pending/2026-06-16-ramble-watchdog-self-healing.md`.
+- [ ] Close the remaining Watchdog audit findings from
+  `ops/watchdog-audits/2026-06-16T15-26-watchdog-audit.md`: stale ledger
+  starts, local-verified prompt groups, weak proof/source wording, and external
+  blocker classification.
 - [ ] Use `ops/prompt-intake-summary.md` to close stale ledger-only starts with
   terminal done/local-verified/deployed-verified/blocked/superseded records,
   and decide whether prompt intake should remain an explicit command or become

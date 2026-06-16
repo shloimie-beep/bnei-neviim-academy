@@ -1,7 +1,6 @@
 # Ramble Watchdog / Self-Healing Operating System
 
-Status: local implementation and first audit report created; live deploy is not
-performed in this turn.
+Status: deployed and live-smoked; queue hygiene and automation decisions remain.
 
 Source prompt:
 
@@ -11,7 +10,7 @@ Cycle ID:
 
 - `2026-06-16-ramble-watchdog-self-healing-operating-system`
 
-## Implemented Locally
+## Implemented And Deployed
 
 - Added `ops/watchdog-rules.md` with source-of-truth, ramble intake, decision,
   pending blocker, done/proof, UI quality, integration/secret, child/student
@@ -31,6 +30,8 @@ Cycle ID:
   `public/operations.html` and `server.js`.
 - Added a stable AGENTS rule to run `npm run watchdog:audit` after major
   ramble-derived closeouts or scattered status states.
+- Deployed commit `3b34755` to Railway production deployment
+  `fac52051-3b45-4f41-ab7e-22df8789f32d`.
 
 ## First Audit Output
 
@@ -40,7 +41,7 @@ Cycle ID:
   - `ops/system-audits/2026-06-16-prompt-intake-register.md`
   - `tasks-pending/2026-06-16-prompt-intake-register.md`
 - `npm run watchdog:audit` wrote:
-  - `ops/watchdog-audits/2026-06-16T15-12-watchdog-audit.md`
+  - `ops/watchdog-audits/2026-06-16T15-26-watchdog-audit.md`
 
 Current watchdog findings from that run:
 
@@ -50,16 +51,32 @@ Current watchdog findings from that run:
 - Findings total: 7.
 - Stale ledger records needing terminal closeout: 69 latest running/in-progress
   groups older than the configured threshold.
-- Local-verified prompt groups needing deploy/live proof: 62.
+- Local-verified prompt groups needing deploy/live proof: 61.
 - TASKS rows with weak proof/source wording remain as queue hygiene work.
 - Thursday/account-owner blockers remain external/human-gated.
 - Operations watchdog control center and helper architecture were found present.
 - No source-of-truth secret-pattern findings were reported.
 
-## Staged / Not Yet Live
+## Live Proof
 
-- The Operations Watchdog module is a local code change only until an approved
-  deploy/live-smoke path runs.
+- Railway doctor reached `SUCCESS` for deployment
+  `fac52051-3b45-4f41-ab7e-22df8789f32d`.
+- Standard live smokes passed:
+  - `ops/live-smokes/2026-06-16T15-18-39-613Z-live-app-smoke.md`
+  - `ops/live-smokes/2026-06-16T15-18-45-855Z-public-route-privacy-smoke.md`
+  - `ops/live-smokes/2026-06-16T15-18-38-487Z-student-auth-policy-live-smoke.md`
+  - `ops/live-smokes/2026-06-16T15-18-38-452Z-operator-setup-live-smoke.md`
+  - `ops/live-smokes/2026-06-16T15-19-02-250Z-assistant-onboarding-intake-live-smoke.md`
+  - `ops/live-smokes/2026-06-16T15-19-02-304Z-signup-credit-email-preview-live-smoke.md`
+  - `ops/live-smokes/2026-06-16T15-19-02-327Z-ws11-parent-progress-live-smoke.md`
+- Watchdog live browser smoke passed:
+  `ops/live-smokes/2026-06-16T15-20-14-711Z-watchdog-live-smoke.md`.
+- Direct authenticated live readback confirmed `allowedViews` includes
+  `watchdog`, integration readiness still returns 15 cards, and no raw
+  secret-like pattern matched the integration status response.
+
+## Staged / Not Yet Automatic
+
 - Watchdog helper tool names are staged in `ops/watchdog-rules.md`; they are
   not yet separate live helper actions beyond the existing scoped helper
   registry/planner/permission/audit/result-link foundation.

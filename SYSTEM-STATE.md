@@ -10,14 +10,25 @@ Last updated: 2026-06-16
   `ops/operating-goals.json` for ramble watchdog / goal-led work until done.
 - Extended prompt intake records with stable prompt IDs, source type, linked
   goal IDs, linked decision/pending arrays, and linked proof path aliases.
-- Added a local Operations `Watchdog` module and allowed-view defaults for the
-  control center. This is not deployed or live-smoked yet.
-- Current local report:
-  `ops/watchdog-audits/2026-06-16T15-12-watchdog-audit.md`; severity is high,
+- Added and deployed the Operations `Watchdog` module and allowed-view
+  defaults for the control center.
+- Current watchdog report:
+  `ops/watchdog-audits/2026-06-16T15-26-watchdog-audit.md`; severity is high,
   with stale ledger starts, local-verified prompt groups, proof wording gaps,
   and external/human blocker cleanup still open.
-- This update did not stage, commit, deploy, send, publish, charge, change DNS,
-  upload video, grant access, copy credentials, or perform external writes.
+- Deployed commit `3b34755` to Railway production deployment
+  `fac52051-3b45-4f41-ab7e-22df8789f32d`; Railway doctor reached `SUCCESS`.
+- Live proof passed: `npm run app:smoke`,
+  `npm run app:smoke:public-privacy`, `npm run app:smoke:student-auth`,
+  `npm run app:smoke:operator-setup`,
+  `npm run app:smoke:onboarding-intake`,
+  `npm run app:smoke:signup-credit-email-preview`,
+  `npm run app:smoke:ws11-parent-progress`, live Watchdog browser smoke
+  `ops/live-smokes/2026-06-16T15-20-14-711Z-watchdog-live-smoke.md`, and
+  direct authenticated readback that `allowedViews` includes `watchdog` and
+  integration status still returns 15 redacted cards.
+- This update did not send, publish, charge, change DNS, upload video, grant
+  access, copy credentials, or perform external writes.
 
 2026-06-16 operating goals and UI closeout register update:
 - Added durable operating-goals registers:
