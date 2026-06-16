@@ -14,7 +14,15 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        html, body { width: 100%; height: 100%; }
+        :root { --login-vh: 100svh; }
+        html { width: 100%; min-height: 100%; }
+        body {
+            width: 100%;
+            min-height: var(--login-vh, 100svh);
+        }
+        @supports (height: 100dvh) {
+            :root { --login-vh: 100dvh; }
+        }
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
             background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
@@ -22,6 +30,8 @@
             align-items: center;
             justify-content: center;
             padding: 20px;
+            overflow-x: hidden;
+            overflow-y: auto;
             -webkit-font-smoothing: antialiased;
         }
         .card {
@@ -113,6 +123,26 @@
             display: none;
         }
         .error.show { display: block; }
+        .login-note {
+            color: #64748b;
+            font-size: 12px;
+            line-height: 1.45;
+            margin: -4px 0 14px;
+        }
+        @media (max-width: 640px) {
+            body {
+                align-items: flex-start;
+                justify-content: flex-start;
+                padding: max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom));
+            }
+            .card {
+                margin: 18px auto 32px;
+                padding: 28px 20px;
+            }
+            input {
+                font-size: 16px;
+            }
+        }
     </style>
     <link rel="stylesheet" href="/css/bna-app-shell.css">
 </head>
@@ -126,13 +156,14 @@
         
         <form id="loginForm">
             <div class="form-group">
-                <label for="username">Username</label>
-                <input type="text" id="username" name="username" required autocomplete="username" placeholder="Enter your username">
+                <label for="username">Operations email or username</label>
+                <input type="text" id="username" name="username" required autocomplete="username" placeholder="Enter your Operations email or username">
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
                 <input type="password" id="password" name="password" required autocomplete="current-password" placeholder="Enter your password">
             </div>
+            <p class="login-note">Use the private Operations credentials. Parent, student, and provider portal passwords stay separate.</p>
             <button type="submit" id="submitBtn">Sign In</button>
         </form>
     </div>
@@ -151,6 +182,26 @@
             }
         }
 
+        function syncLoginViewport() {
+            const height = window.visualViewport?.height || window.innerHeight || document.documentElement.clientHeight || 640;
+            document.documentElement.style.setProperty('--login-vh', `${Math.max(420, Math.round(height))}px`);
+        }
+
+        function loginTextEntryActive() {
+            const active = document.activeElement;
+            if (!active || !active.closest || !active.closest('#loginForm')) return false;
+            return ['INPUT', 'TEXTAREA', 'SELECT'].includes(active.tagName);
+        }
+
+        window.visualViewport?.addEventListener('resize', syncLoginViewport);
+        window.visualViewport?.addEventListener('scroll', syncLoginViewport);
+        window.addEventListener('resize', syncLoginViewport);
+        document.addEventListener('focusin', (event) => {
+            if (event.target?.closest?.('#loginForm')) syncLoginViewport();
+        });
+        document.addEventListener('focusout', () => setTimeout(syncLoginViewport, 120));
+        syncLoginViewport();
+
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations()
                 .then((registrations) => registrations.forEach((registration) => registration.unregister()))
@@ -165,6 +216,7 @@
                 });
                 const data = await response.json().catch(() => ({}));
                 if (response.ok && (data.authenticated === true || data.success === true)) {
+                    if (loginTextEntryActive()) return;
                     window.location.replace(operationsReturnTo());
                 }
             } catch {
@@ -188,7 +240,7 @@
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        username: document.getElementById('username').value,
+                        username: document.getElementById('username').value.trim(),
                         password: document.getElementById('password').value
                     })
                 });
@@ -199,7 +251,7 @@
                     localStorage.setItem('bna_ops_session', data.sessionId || '');
                     window.location.href = operationsReturnTo();
                 } else {
-                    errorEl.textContent = data.error || 'Invalid credentials';
+                    errorEl.textContent = data.error || 'Invalid Operations credentials. Use the Operations admin email or username, not a parent, student, or provider login.';
                     errorEl.classList.add('show');
                 }
             } catch (err) {

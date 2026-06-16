@@ -38,6 +38,7 @@ test('personal workspace seed keeps one person with multiple memberships', () =>
 test('workspace, household, provider, assistant, ticket, and Google APIs are present', () => {
   [
     "app.get('/api/bna/workspaces'",
+    "app.get('/api/bna/workspace-directory'",
     "app.post('/api/bna/session/workspace'",
     "app.get('/api/households/current'",
     "app.get('/api/household/filter-setup'",
@@ -53,13 +54,14 @@ test('workspace, household, provider, assistant, ticket, and Google APIs are pre
   ].forEach((needle) => assert.ok(server.includes(needle), needle));
 });
 
-test('provider profile and Google fallback do not fake live Google data', () => {
+test('provider profile does not expose Google live-feed UI or fake live data', () => {
   assert.match(server, /business_profile_live_feed: false/);
   assert.match(server, /reviews_live: false/);
   assert.match(server, /reviews: \[\]/);
   assert.match(server, /No live reviews are faked/);
-  assert.match(providerProfileHtml, /Google live feed is not connected yet/);
-  assert.match(providerProfileHtml, /Manual fallback/);
+  assert.doesNotMatch(providerProfileHtml, /Google live feed is not connected yet/);
+  assert.doesNotMatch(providerProfileHtml, /Manual fallback/);
+  assert.match(providerProfileHtml, /Basic listing stays free/);
 });
 
 test('parent and provider portals expose new workspace-specific sections', () => {
@@ -71,12 +73,13 @@ test('parent and provider portals expose new workspace-specific sections', () =>
   assert.match(providerHtml, /data-provider-section="comments"/);
   assert.match(providerHtml, /data-provider-section="google_business"/);
   assert.match(providerHtml, /data-provider-section="upgrade"/);
-  assert.match(operationsHtml, /workspace_key: 'super_admin'/);
+  assert.match(operationsHtml, /workspace_key: 'platform'[\s\S]*display_category: 'super_admin'/);
   assert.match(operationsHtml, /workspace_key: 'dratler_family'/);
   assert.match(operationsHtml, /workspace_key: 'parent_households'/);
-  assert.match(operationsHtml, /\{ id: 'household', label: 'Parent Households'/);
+  assert.match(operationsHtml, /\{ id: 'family_home_accountability', label: 'Family App \/ Home Accountability'/);
+  assert.doesNotMatch(operationsHtml, /\{ id: 'household', label: 'Parent Households'/);
   assert.match(operationsHtml, /data-workspace-kind-filter="\$\{escapeHtml\(filter\.id\)\}"/);
-  assert.match(operationsHtml, /One Time Mishnayos Provider Workspace/);
+  assert.match(operationsHtml, /One Time Mishnah Class/);
 });
 
 test('public provider micro landing page is route-backed and private-data safe', () => {
@@ -100,5 +103,6 @@ test('public website exposes conversational parent and provider onboarding', () 
   assert.match(parentHtml, /\/api\/parent-accountability\/onboarding/);
   assert.match(providerJoinHtml, /data-provider-onboarding-bot/);
   assert.match(providerJoinHtml, /Provider onboarding assistant/);
-  assert.match(providerJoinHtml, /family-intake funnel paths/);
+  assert.match(providerJoinHtml, /free provider signup/);
+  assert.match(providerJoinHtml, /BNA reviews before public listing/);
 });

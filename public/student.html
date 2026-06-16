@@ -212,6 +212,14 @@
             gap: 10px;
         }
 
+        .login-divider {
+            display: grid;
+            gap: 8px;
+            margin: 20px 0 4px;
+            padding-top: 16px;
+            border-top: 1px solid var(--line);
+        }
+
         button,
         .button-link {
             border: 0;
@@ -1274,8 +1282,24 @@
 
         <section class="panel login-panel hidden" id="loginPanel">
             <p class="eyebrow">Private Access</p>
-            <h2>Enter your checkoff code</h2>
-            <p class="small">Use the private link your rebbi gave you. This page only opens your own goal checkoff.</p>
+            <h2>Student login</h2>
+            <p class="small">Sign in with the username and password your parent set for you.</p>
+            <form id="studentLoginForm">
+                <div class="field">
+                    <label for="studentUsername">Username</label>
+                    <input id="studentUsername" autocomplete="username" placeholder="username">
+                </div>
+                <div class="field">
+                    <label for="studentPassword">Password</label>
+                    <input id="studentPassword" type="password" autocomplete="current-password">
+                </div>
+                <div class="button-row">
+                    <button id="studentLoginButton" type="submit">Sign in</button>
+                </div>
+            </form>
+            <div class="login-divider">
+                <p class="small" id="accessFallbackCopy">During rollout, your private access-code link still works.</p>
+            </div>
             <form id="codeForm">
                 <div class="field">
                     <label for="accessCode">Access code</label>
@@ -1396,7 +1420,21 @@
                 <span id="questionCount">0 questions</span>
             </div>
             <p class="small" id="questionsHelp">Review the questions you asked, suggested Sefaria sources, and optional follow-up learning.</p>
+            <form class="message-panel" id="studentQuestionForm">
+                <textarea id="studentQuestionText" placeholder="Ask a Mishnah question"></textarea>
+                <button type="submit" id="studentQuestionButton">Ask question</button>
+                <div class="status" id="studentQuestionStatus"></div>
+            </form>
             <div class="question-list" id="questionList"></div>
+        </section>
+
+        <section class="panel question-panel hidden" id="communitySection">
+            <div class="section-title" style="margin-top:0;">
+                <h2 id="communityTitle">Mishnah Community</h2>
+                <span id="communityCount">0 updates</span>
+            </div>
+            <p class="small" id="communityHelp">Your course progress, points, badges, shoutouts, and worksheet submissions appear here.</p>
+            <div class="question-list" id="communityList"></div>
         </section>
 
         <section class="panel question-panel hidden" id="assignmentsSection">
@@ -1442,6 +1480,20 @@
             </div>
             <div class="status" id="messageStatus"></div>
         </section>
+
+        <section class="panel message-panel hidden" id="assistantSection">
+            <div>
+                <p class="eyebrow" id="assistantEyebrow">Assistant</p>
+                <h2 id="assistantTitle">Student assistant</h2>
+                <p class="small" id="assistantHelp">Save a goal, log progress, or create a help ticket for your own board.</p>
+            </div>
+            <textarea id="assistantMessage" maxlength="3000" placeholder="Add a goal, log what changed, or tell me what is stuck"></textarea>
+            <div class="button-row">
+                <button id="sendAssistantButton" type="button">Send to assistant</button>
+            </div>
+            <div class="status" id="assistantStatus"></div>
+            <div class="question-list" id="assistantOutput"></div>
+        </section>
             </div>
         </section>
         <div class="student-helper-dock hidden" id="studentHelperDock"></div>
@@ -1454,6 +1506,7 @@
         const initialAccessCode = new URLSearchParams(window.location.search).get('code') || '';
         if (!initialAccessCode) localStorage.removeItem(STORAGE_KEY);
         let accessCode = initialAccessCode;
+        let studentSessionActive = false;
         let language = localStorage.getItem(LANGUAGE_KEY) || 'en';
         let currentFilter = 'today';
         let currentSection = 'overview';
@@ -1463,6 +1516,8 @@
         let studentCalendarViewMode = window.matchMedia && window.matchMedia('(max-width: 720px)').matches ? 'list' : 'week';
         let studentCalendarOffset = 0;
         let selectedStudentCalendarEventId = '';
+        let studentAssistantMessages = [];
+        let studentAssistantBusy = false;
 
         const labels = {
             en: {
@@ -1472,12 +1527,16 @@
                 intro: 'Open your private link, review your Torah progress, and work through your goals honestly.',
                 portalIntro: 'Your Torah progress is read-only. Your own goals are below it.',
                 privateAccess: 'Private Access',
-                enterCode: 'Enter your Goal Board code',
-                accessHelp: 'Use the private link your rebbi gave you. This page only opens your own board.',
+                enterCode: 'Student login',
+                accessHelp: 'Sign in with the username and password your parent set for you.',
+                studentUsername: 'Username',
+                studentPassword: 'Password',
+                studentLogin: 'Sign in',
+                accessFallback: 'During rollout, your private access-code link still works.',
                 accessCode: 'Access code',
                 codePlaceholder: 'Paste code here',
                 openGoals: 'Open My Board',
-                clearCode: 'Enter access code again',
+                clearCode: 'Log out',
                 menu: 'Menu',
                 opening: 'Opening your board...',
                 torahTitle: 'Torah Trip Progress',
@@ -1538,6 +1597,23 @@
                 questions: 'questions',
                 questionSingular: 'question',
                 noQuestions: 'No questions are linked yet.',
+                askQuestionPlaceholder: 'Ask a Mishnah question',
+                askQuestion: 'Ask question',
+                questionSent: 'Question saved.',
+                communityTitle: 'Mishnah Community',
+                communityHelp: 'Your course progress, points, badges, shoutouts, and worksheet submissions appear here.',
+                community: 'Community',
+                communityUpdates: 'updates',
+                points: 'points',
+                badges: 'badges',
+                shoutouts: 'shoutouts',
+                courses: 'courses',
+                lessons: 'lessons',
+                noCommunity: 'No community progress is linked yet.',
+                assignedQuestions: 'Assigned questions',
+                submitAnswer: 'Submit answer',
+                answerSaved: 'Answer saved.',
+                answerPlaceholder: 'Write your answer',
                 assignmentsTitle: 'My Assignments',
                 assignmentsHelp: 'Review assigned videos, worksheets, schedules, and follow-up work.',
                 calendarTitle: 'My Calendar',
@@ -1613,6 +1689,13 @@
                 noUpcoming: 'No upcoming items this week.',
                 askHelper: 'Ask BNA Helper',
                 helperScope: 'Uses only your profile, visible calendar, goals, assignments, questions, documents, and permitted notes.',
+                assistant: 'Assistant',
+                assistantEyebrow: 'Student Assistant',
+                assistantTitle: 'Student assistant',
+                assistantHelp: 'Save a goal, log progress, or create a help ticket for your own board.',
+                assistantPlaceholder: 'Add a goal, log what changed, or tell me what is stuck',
+                sendAssistant: 'Send to assistant',
+                assistantSent: 'Assistant saved the update.',
                 privateMeeting: 'Private meeting',
                 whatsappRabbi: 'WhatsApp Rabbi Shloimie',
                 useMessageBox: 'Use the message box below for Rabbi Shloimie.',
@@ -1655,12 +1738,16 @@
                 intro: 'פתח את הקישור הפרטי שלך, בדוק את התקדמות התורה, ועבוד על המטרות שלך ביושר.',
                 portalIntro: 'התקדמות התורה לקריאה בלבד. המטרות שלך נמצאות למטה.',
                 privateAccess: 'גישה פרטית',
-                enterCode: 'הכנס קוד ללוח המטרות',
-                accessHelp: 'השתמש בקישור הפרטי שקיבלת מהרב. הדף פותח רק את הלוח שלך.',
+                enterCode: 'Student login',
+                accessHelp: 'Sign in with the username and password your parent set for you.',
+                studentUsername: 'Username',
+                studentPassword: 'Password',
+                studentLogin: 'Sign in',
+                accessFallback: 'During rollout, your private access-code link still works.',
                 accessCode: 'קוד גישה',
                 codePlaceholder: 'הדבק קוד כאן',
                 openGoals: 'פתח את הלוח שלי',
-                clearCode: 'הזן קוד גישה שוב',
+                clearCode: 'Log out',
                 menu: 'תפריט',
                 opening: 'פותח את הלוח...',
                 torahTitle: 'התקדמות מסע התורה',
@@ -1824,6 +1911,23 @@
         };
         labels.he.notGenerated = '\u05d1\u05e7\u05e8\u05d5\u05d1';
         labels.he.worksheetNotGenerated = '\u05d3\u05e3 \u05d4\u05e2\u05d1\u05d5\u05d3\u05d4 \u05d9\u05d5\u05e4\u05d9\u05e2 \u05d1\u05e7\u05e8\u05d5\u05d1.';
+        labels.he.askQuestionPlaceholder = '\u05e9\u05d0\u05dc \u05e9\u05d0\u05dc\u05d4 \u05d1\u05de\u05e9\u05e0\u05d4';
+        labels.he.askQuestion = '\u05e9\u05dc\u05d7 \u05e9\u05d0\u05dc\u05d4';
+        labels.he.questionSent = '\u05d4\u05e9\u05d0\u05dc\u05d4 \u05e0\u05e9\u05de\u05e8\u05d4.';
+        labels.he.communityTitle = '\u05e7\u05d4\u05d9\u05dc\u05ea \u05de\u05e9\u05e0\u05d4';
+        labels.he.communityHelp = '\u05d4\u05ea\u05e7\u05d3\u05de\u05d5\u05ea \u05d1\u05e7\u05d5\u05e8\u05e1, \u05e0\u05e7\u05d5\u05d3\u05d5\u05ea, \u05ea\u05d2\u05d9\u05dd, \u05e4\u05e8\u05d2\u05d5\u05e0\u05d9\u05dd \u05d5\u05d3\u05e4\u05d9 \u05e2\u05d1\u05d5\u05d3\u05d4 \u05de\u05d5\u05e6\u05d2\u05d9\u05dd \u05db\u05d0\u05df.';
+        labels.he.community = '\u05e7\u05d4\u05d9\u05dc\u05d4';
+        labels.he.communityUpdates = '\u05e2\u05d3\u05db\u05d5\u05e0\u05d9\u05dd';
+        labels.he.points = '\u05e0\u05e7\u05d5\u05d3\u05d5\u05ea';
+        labels.he.badges = '\u05ea\u05d2\u05d9\u05dd';
+        labels.he.shoutouts = '\u05e4\u05e8\u05d2\u05d5\u05e0\u05d9\u05dd';
+        labels.he.courses = '\u05e7\u05d5\u05e8\u05e1\u05d9\u05dd';
+        labels.he.lessons = '\u05e9\u05d9\u05e2\u05d5\u05e8\u05d9\u05dd';
+        labels.he.noCommunity = '\u05e2\u05d3\u05d9\u05d9\u05df \u05d0\u05d9\u05df \u05d4\u05ea\u05e7\u05d3\u05de\u05d5\u05ea \u05e7\u05d4\u05d9\u05dc\u05ea\u05d9\u05ea \u05de\u05e7\u05d5\u05e9\u05e8\u05ea.';
+        labels.he.assignedQuestions = '\u05e9\u05d0\u05dc\u05d5\u05ea \u05e9\u05e7\u05d9\u05d1\u05dc\u05ea';
+        labels.he.submitAnswer = '\u05e9\u05dc\u05d7 \u05ea\u05e9\u05d5\u05d1\u05d4';
+        labels.he.answerSaved = '\u05d4\u05ea\u05e9\u05d5\u05d1\u05d4 \u05e0\u05e9\u05de\u05e8\u05d4.';
+        labels.he.answerPlaceholder = '\u05db\u05ea\u05d5\u05d1 \u05d0\u05ea \u05d4\u05ea\u05e9\u05d5\u05d1\u05d4 \u05e9\u05dc\u05da';
         Object.assign(labels.he, {
             title: 'לוח מטרות תלמיד',
             student: 'תלמיד',
@@ -1831,12 +1935,16 @@
             intro: 'פתח את הקישור הפרטי שלך, בדוק את ההתקדמות בתורה, ועבוד על המטרות שלך ביושר.',
             portalIntro: 'התקדמות התורה היא לקריאה בלבד. המטרות האישיות שלך נמצאות למטה.',
             privateAccess: 'גישה אישית',
-            enterCode: 'הכנס קוד גישה',
-            accessHelp: 'השתמש בקישור הפרטי שקיבלת מהרב. הדף פותח רק את הלוח שלך.',
+            enterCode: 'Student login',
+            accessHelp: 'Sign in with the username and password your parent set for you.',
+            studentUsername: 'Username',
+            studentPassword: 'Password',
+            studentLogin: 'Sign in',
+            accessFallback: 'During rollout, your private access-code link still works.',
             accessCode: 'קוד גישה',
             codePlaceholder: 'הדבק קוד כאן',
             openGoals: 'פתח את הלוח שלי',
-            clearCode: 'הזן קוד גישה מחדש',
+            clearCode: 'Log out',
             menu: 'תפריט',
             opening: 'פותח את הלוח...',
             torahTitle: 'התקדמות ליעד הטיול',
@@ -2013,6 +2121,11 @@
             langEnButton: document.getElementById('langEnButton'),
             langHeButton: document.getElementById('langHeButton'),
             loginPanel: document.getElementById('loginPanel'),
+            studentLoginForm: document.getElementById('studentLoginForm'),
+            studentUsername: document.getElementById('studentUsername'),
+            studentPassword: document.getElementById('studentPassword'),
+            studentLoginButton: document.getElementById('studentLoginButton'),
+            accessFallbackCopy: document.getElementById('accessFallbackCopy'),
             codeForm: document.getElementById('codeForm'),
             accessCode: document.getElementById('accessCode'),
             openGoalsButton: document.getElementById('openGoalsButton'),
@@ -2065,6 +2178,15 @@
             questionsHelp: document.getElementById('questionsHelp'),
             questionCount: document.getElementById('questionCount'),
             questionList: document.getElementById('questionList'),
+            studentQuestionForm: document.getElementById('studentQuestionForm'),
+            studentQuestionText: document.getElementById('studentQuestionText'),
+            studentQuestionButton: document.getElementById('studentQuestionButton'),
+            studentQuestionStatus: document.getElementById('studentQuestionStatus'),
+            communitySection: document.getElementById('communitySection'),
+            communityTitle: document.getElementById('communityTitle'),
+            communityHelp: document.getElementById('communityHelp'),
+            communityCount: document.getElementById('communityCount'),
+            communityList: document.getElementById('communityList'),
             assignmentsSection: document.getElementById('assignmentsSection'),
             assignmentsTitle: document.getElementById('assignmentsTitle'),
             assignmentsHelp: document.getElementById('assignmentsHelp'),
@@ -2094,6 +2216,14 @@
             rabbiMessage: document.getElementById('rabbiMessage'),
             sendRabbiMessageButton: document.getElementById('sendRabbiMessageButton'),
             messageStatus: document.getElementById('messageStatus'),
+            assistantSection: document.getElementById('assistantSection'),
+            assistantEyebrow: document.getElementById('assistantEyebrow'),
+            assistantTitle: document.getElementById('assistantTitle'),
+            assistantHelp: document.getElementById('assistantHelp'),
+            assistantMessage: document.getElementById('assistantMessage'),
+            sendAssistantButton: document.getElementById('sendAssistantButton'),
+            assistantStatus: document.getElementById('assistantStatus'),
+            assistantOutput: document.getElementById('assistantOutput'),
         };
 
         function t(key) {
@@ -2161,6 +2291,11 @@
             document.querySelector('#loginPanel .eyebrow').textContent = t('privateAccess');
             document.querySelector('#loginPanel h2').textContent = t('enterCode');
             document.querySelector('#loginPanel .small').textContent = t('accessHelp');
+            document.querySelector('label[for="studentUsername"]').textContent = t('studentUsername');
+            document.querySelector('label[for="studentPassword"]').textContent = t('studentPassword');
+            els.studentUsername.placeholder = t('studentUsername');
+            els.studentLoginButton.textContent = t('studentLogin');
+            els.accessFallbackCopy.textContent = t('accessFallback');
             document.querySelector('label[for="accessCode"]').textContent = t('accessCode');
             els.accessCode.placeholder = t('codePlaceholder');
             els.openGoalsButton.textContent = t('openGoals');
@@ -2179,6 +2314,10 @@
             }
             if (els.questionsTitle) els.questionsTitle.textContent = t('questionsTitle');
             if (els.questionsHelp) els.questionsHelp.textContent = t('questionsHelp');
+            if (els.studentQuestionText) els.studentQuestionText.placeholder = t('askQuestionPlaceholder');
+            if (els.studentQuestionButton) els.studentQuestionButton.textContent = t('askQuestion');
+            if (els.communityTitle) els.communityTitle.textContent = t('communityTitle');
+            if (els.communityHelp) els.communityHelp.textContent = t('communityHelp');
             if (els.assignmentsTitle) els.assignmentsTitle.textContent = t('assignmentsTitle');
             if (els.assignmentsHelp) els.assignmentsHelp.textContent = t('assignmentsHelp');
             if (els.calendarTitle) els.calendarTitle.textContent = t('calendarTitle');
@@ -2195,10 +2334,16 @@
             els.messageHelp.textContent = t('talkHelp');
             els.rabbiMessage.placeholder = t('messagePlaceholder');
             els.sendRabbiMessageButton.textContent = t('sendMessage');
+            els.assistantEyebrow.textContent = t('assistantEyebrow');
+            els.assistantTitle.textContent = t('assistantTitle');
+            els.assistantHelp.textContent = t('assistantHelp');
+            els.assistantMessage.placeholder = t('assistantPlaceholder');
+            els.sendAssistantButton.textContent = t('sendAssistant');
         }
 
         async function apiRequest(path, options = {}) {
             const response = await fetch(path, {
+                credentials: 'same-origin',
                 ...options,
                 headers: {
                     'Content-Type': 'application/json',
@@ -2236,11 +2381,13 @@
             els.studentPanel.classList.add('hidden');
             els.goalsSection.classList.add('hidden');
             els.questionsSection.classList.add('hidden');
+            els.communitySection.classList.add('hidden');
             els.assignmentsSection.classList.add('hidden');
             els.calendarSection.classList.add('hidden');
             els.documentsSection.classList.add('hidden');
             els.parentMessageSection.classList.add('hidden');
             els.messageSection.classList.add('hidden');
+            els.assistantSection.classList.add('hidden');
             els.deviceAccessStrip.classList.add('hidden');
             els.clearCodeButton.classList.add('hidden');
             els.studentHelperDock.classList.add('hidden');
@@ -2252,6 +2399,7 @@
         function handlePortalCredentialError(error) {
             if (![401, 403, 404].includes(Number(error?.status || 0))) return false;
             accessCode = '';
+            studentSessionActive = false;
             localStorage.removeItem(STORAGE_KEY);
             showLogin(error.message || t('couldNotOpenStudentLink'), true);
             return true;
@@ -2343,16 +2491,22 @@
             const goals = Array.isArray(data?.goals) ? data.goals : [];
             const assignments = Array.isArray(data?.assignments) ? data.assignments : [];
             const questions = Array.isArray(data?.questions) ? data.questions : [];
+            const ws11 = data?.ws11 || {};
+            const communityCount = (Array.isArray(ws11?.courses) ? ws11.courses.length : 0)
+                + (Array.isArray(ws11?.gamification?.events) ? ws11.gamification.events.length : 0)
+                + (Array.isArray(ws11?.shoutouts) ? ws11.shoutouts.length : 0);
             const calendarCount = studentCalendarItems(data).length;
             const documentCount = assignments.filter(item => String(item.youtube_url || item.material_url || item.classroom_alternate_link || item.calendar_html_link || item.worksheet_body || '').trim()).length;
             return [
                 { id: 'overview', label: t('home'), count: '' },
                 { id: 'calendar', label: t('calendarTitle'), count: calendarCount },
                 { id: 'goals', label: t('goals'), count: goals.length },
+                { id: 'community', label: t('community'), count: communityCount },
                 { id: 'assignments', label: t('assignments'), count: assignments.length },
                 { id: 'questions', label: t('questions'), count: questions.length },
                 { id: 'documents', label: t('documentsLinks'), count: documentCount },
                 { id: 'bot', label: t('bot'), count: '' },
+                { id: 'assistant', label: t('assistant'), count: '' },
                 { id: 'help_account', label: t('helpAccount'), count: '' },
             ];
         }
@@ -2362,10 +2516,12 @@
                 overview: els.studentPanel,
                 calendar: els.calendarSection,
                 goals: els.goalsSection,
+                community: els.communitySection,
                 assignments: els.assignmentsSection,
                 questions: els.questionsSection,
                 documents: els.documentsSection,
                 bot: els.messageSection,
+                assistant: els.assistantSection,
                 help_account: els.parentMessageSection,
             };
         }
@@ -2404,6 +2560,10 @@
                 <button class="student-helper-button" type="button" onclick="setPortalSection('bot')">
                     <strong>${escapeHtml(t('askHelper'))}</strong>
                     <span>${escapeHtml(t('helperScope'))}</span>
+                </button>
+                <button class="student-helper-button" type="button" onclick="setPortalSection('assistant')">
+                    <strong>${escapeHtml(t('assistant'))}</strong>
+                    <span>${escapeHtml(t('assistantHelp'))}</span>
                 </button>
             `;
             els.studentHelperDock.classList.remove('hidden');
@@ -2541,7 +2701,7 @@
                 ? `${date}${time ? `, ${time}` : ''}${weekday ? ` (${weekday})` : ''}`
                 : (meeting?.label || t('noMeeting'));
             const whatsapp = rabbiContact?.whatsapp_url
-                ? `<a class="button-link blue" href="${escapeHtml(rabbiContact.whatsapp_url)}" target="_blank" rel="noopener noreferrer">WhatsApp Rabbi Shloimie</a>`
+                ? `<a class="button-link blue" href="${escapeHtml(rabbiContact.whatsapp_url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(t('whatsappRabbi'))}</a>`
                 : '';
             els.nextMeetingStrip.innerHTML = `
                 <strong>${escapeHtml(t('nextMeeting'))}:</strong>
@@ -2610,6 +2770,99 @@
             `;
         }
 
+        function renderCommunity(ws11 = {}) {
+            const courses = Array.isArray(ws11?.courses) ? ws11.courses : [];
+            const events = Array.isArray(ws11?.gamification?.events) ? ws11.gamification.events : [];
+            const badges = Array.isArray(ws11?.gamification?.badges) ? ws11.gamification.badges : [];
+            const shoutouts = Array.isArray(ws11?.shoutouts) ? ws11.shoutouts : [];
+            const worksheets = Array.isArray(ws11?.worksheet_submissions) ? ws11.worksheet_submissions : [];
+            const courseQuestions = Array.isArray(ws11?.course_questions) ? ws11.course_questions : [];
+            const summary = ws11?.gamification?.summary || {};
+            const updateCount = courses.length + events.length + shoutouts.length + worksheets.length + courseQuestions.length;
+            if (els.communityCount) els.communityCount.textContent = `${updateCount} ${t('communityUpdates')}`;
+            if (!updateCount && !badges.length) {
+                els.communityList.innerHTML = `<div class="empty-state">${escapeHtml(t('noCommunity'))}</div>`;
+                return;
+            }
+            const pieces = [`
+                <article class="question-card">
+                    <div class="question-card-body">
+                        <div class="goal-badges">
+                            <span class="badge">${Number(summary.total_points || 0)} ${escapeHtml(t('points'))}</span>
+                            <span class="badge">${badges.length} ${escapeHtml(t('badges'))}</span>
+                            <span class="badge">${courses.length} ${escapeHtml(t('courses'))}</span>
+                            <span class="badge">${shoutouts.length} ${escapeHtml(t('shoutouts'))}</span>
+                            <span class="badge">${courseQuestions.length} ${escapeHtml(t('assignedQuestions'))}</span>
+                        </div>
+                    </div>
+                </article>
+            `];
+            courses.slice(0, 6).forEach(course => {
+                const progress = Math.max(0, Math.min(100, Math.round(Number(course.enrollment?.progress_percent || 0))));
+                pieces.push(`
+                    <article class="question-card">
+                        <div class="question-title">
+                            <h3>${escapeHtml(course.title || t('communityTitle'))}</h3>
+                            <span>${escapeHtml(course.primary_teacher || ws11?.community?.primary_teacher || '')}</span>
+                        </div>
+                        <div class="question-card-body">
+                            ${course.description ? `<p class="goal-meta">${escapeHtml(course.description)}</p>` : ''}
+                            <div class="progress-track"><div class="progress-fill" style="--progress:${progress}%;"></div></div>
+                            <div class="goal-badges">
+                                <span class="badge">${Number(course.lesson_count || 0)} ${escapeHtml(t('lessons'))}</span>
+                                <span class="badge">${Number(course.worksheet_count || 0)} ${escapeHtml(t('worksheet'))}</span>
+                            </div>
+                        </div>
+                    </article>
+                `);
+            });
+            courseQuestions.slice(0, 8).forEach(question => {
+                const answered = question.response && question.response.response_text;
+                pieces.push(`
+                    <article class="question-card">
+                        <div class="question-title">
+                            <h3>${escapeHtml(question.title || t('questionSingular'))}</h3>
+                            <span>${Number(question.points || 0)} ${escapeHtml(t('points'))}${question.due_at ? ` &middot; ${escapeHtml(formatDateShort(question.due_at))}` : ''}</span>
+                        </div>
+                        <div class="question-card-body">
+                            <p class="goal-meta">${escapeHtml(question.prompt || '')}</p>
+                            ${answered ? `
+                                <p class="goal-meta"><strong>${escapeHtml(t('answer'))}:</strong> ${escapeHtml(question.response.response_text)}</p>
+                            ` : `
+                                <form onsubmit="submitCourseQuestionAnswer(event, ${Number(question.id)})">
+                                    <textarea id="courseQuestionAnswer${Number(question.id)}" rows="3" placeholder="${escapeHtml(t('answerPlaceholder'))}"></textarea>
+                                    <div class="button-row"><button type="submit">${escapeHtml(t('submitAnswer'))}</button></div>
+                                    <div class="status" id="courseQuestionStatus${Number(question.id)}"></div>
+                                </form>
+                            `}
+                        </div>
+                    </article>
+                `);
+            });
+            shoutouts.slice(0, 6).forEach(item => {
+                pieces.push(`
+                    <article class="question-card">
+                        <div class="question-title">
+                            <h3>${escapeHtml(item.title || t('shoutouts'))}</h3>
+                            <span>${escapeHtml(formatDateShort(item.approved_at || item.created_at))}</span>
+                        </div>
+                        ${item.body ? `<div class="question-card-body"><p class="goal-meta">${escapeHtml(item.body)}</p></div>` : ''}
+                    </article>
+                `);
+            });
+            events.slice(0, 8).forEach(event => {
+                pieces.push(`
+                    <article class="question-card">
+                        <div class="question-title">
+                            <h3>${escapeHtml(event.title || event.event_type || t('community'))}</h3>
+                            <span>${Number(event.points || 0)} ${escapeHtml(t('points'))} &middot; ${escapeHtml(formatDateShort(event.occurred_at || event.created_at))}</span>
+                        </div>
+                    </article>
+                `);
+            });
+            els.communityList.innerHTML = pieces.join('');
+        }
+
         function renderQuestions(questions = []) {
             const list = Array.isArray(questions) ? questions : [];
             els.questionCount.textContent = `${list.length} ${list.length === 1 ? t('questionSingular') : t('questions')}`;
@@ -2617,14 +2870,14 @@
                 ? list.map(question => `
                     <details class="question-card">
                         <summary>
-                            <h3>${escapeHtml(question.title || question.question_text || 'Question')}</h3>
+                            <h3>${escapeHtml(question.title || question.question_text || t('questionSingular'))}</h3>
                             <div class="goal-meta">
                                 ${question.topic ? `${escapeHtml(question.topic)} &middot; ` : ''}${escapeHtml(formatDateShort(question.occurred_at || question.created_at))}
                             </div>
                         </summary>
                         <div class="question-card-body">
                             ${question.question_text ? `<p class="goal-meta">${escapeHtml(question.question_text)}</p>` : ''}
-                            ${question.answer ? `<p class="goal-meta"><strong>Answer:</strong> ${escapeHtml(question.answer)}</p>` : ''}
+                            ${question.answer ? `<p class="goal-meta"><strong>${escapeHtml(t('answer'))}:</strong> ${escapeHtml(question.answer)}</p>` : ''}
                             ${renderQuestionSources(question.sources)}
                             ${renderQuestionAssignments(question.assignments)}
                             ${renderQuestionResponses(question.parent_responses)}
@@ -3210,11 +3463,13 @@
             els.studentPanel.classList.remove('hidden');
             els.goalsSection.classList.remove('hidden');
             els.questionsSection.classList.remove('hidden');
+            els.communitySection.classList.remove('hidden');
             els.assignmentsSection.classList.remove('hidden');
             els.calendarSection.classList.remove('hidden');
             els.documentsSection.classList.remove('hidden');
             els.parentMessageSection.classList.remove('hidden');
             els.messageSection.classList.remove('hidden');
+            els.assistantSection.classList.remove('hidden');
             els.clearCodeButton.classList.remove('hidden');
             els.pageTitle.textContent = studentName;
             els.pageIntro.textContent = t('portalIntro');
@@ -3243,17 +3498,19 @@
             els.goalGrid.innerHTML = visibleGoals.length
                 ? visibleGoals.map(renderGoal).join('')
                 : `<div class="panel empty">${escapeHtml(t('noGoals'))}</div>`;
+            renderCommunity(data?.ws11 || {});
             renderQuestions(data?.questions || []);
             renderAssignments(data?.assignments || []);
             renderStudentCalendar(data);
             renderStudentDocuments(data?.assignments || []);
+            renderStudentAssistantOutput();
             applyPortalSectionVisibility();
         }
 
         async function loadPortal(code = accessCode) {
             const trimmedCode = String(code || '').trim();
             if (!trimmedCode) {
-                showLogin();
+                await loadSessionPortal({ silent: true });
                 return;
             }
 
@@ -3262,18 +3519,66 @@
             try {
                 const data = await apiRequest(`/api/student-portal?code=${encodeURIComponent(trimmedCode)}`);
                 accessCode = trimmedCode;
+                studentSessionActive = false;
                 localStorage.setItem(STORAGE_KEY, accessCode);
                 renderPortal(data);
             } catch (error) {
                 accessCode = '';
+                studentSessionActive = false;
                 localStorage.removeItem(STORAGE_KEY);
                 showLogin(error.message || t('couldNotOpenStudentLink'), true);
             }
         }
 
+        async function loadSessionPortal({ silent = false } = {}) {
+            if (!silent) setLoginState(t('opening'));
+            try {
+                const data = await apiRequest('/api/student-portal/session');
+                accessCode = '';
+                studentSessionActive = true;
+                localStorage.removeItem(STORAGE_KEY);
+                renderPortal(data);
+            } catch (error) {
+                studentSessionActive = false;
+                if (silent && Number(error?.status || 0) === 401) {
+                    showLogin();
+                    return;
+                }
+                showLogin(error.message || t('couldNotOpenStudentLink'), true);
+            }
+        }
+
+        async function loginWithPassword(event) {
+            event.preventDefault();
+            const username = els.studentUsername.value.trim();
+            const password = els.studentPassword.value;
+            if (!username || !password) {
+                setLoginState(t('requestFailed'), true);
+                return;
+            }
+            els.studentLoginButton.disabled = true;
+            setLoginState(t('opening'));
+            try {
+                await apiRequest('/api/student-portal/login', {
+                    method: 'POST',
+                    body: JSON.stringify({ username, password }),
+                });
+                els.studentPassword.value = '';
+                accessCode = '';
+                localStorage.removeItem(STORAGE_KEY);
+                await loadSessionPortal();
+            } catch (error) {
+                setLoginState(error.message || t('couldNotOpenStudentLink'), true);
+            } finally {
+                els.studentLoginButton.disabled = false;
+            }
+        }
+
         async function refreshPortal() {
             try {
-                const data = await apiRequest(`/api/student-portal?code=${encodeURIComponent(accessCode)}`);
+                const data = accessCode
+                    ? await apiRequest(`/api/student-portal?code=${encodeURIComponent(accessCode)}`)
+                    : await apiRequest('/api/student-portal/session');
                 renderPortal(data);
             } catch (error) {
                 if (handlePortalCredentialError(error)) return;
@@ -3381,6 +3686,78 @@
             }
         }
 
+        async function submitStudentQuestion(event) {
+            event.preventDefault();
+            const question = els.studentQuestionText.value.trim();
+            if (!question) {
+                els.studentQuestionStatus.textContent = t('writeMessageFirst');
+                els.studentQuestionStatus.classList.add('error');
+                return;
+            }
+            els.studentQuestionButton.disabled = true;
+            els.studentQuestionStatus.textContent = t('saving');
+            els.studentQuestionStatus.classList.remove('error');
+            try {
+                await apiRequest('/api/student-portal/questions', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        access_code: accessCode,
+                        question_text: question,
+                    }),
+                });
+                els.studentQuestionText.value = '';
+                els.studentQuestionStatus.textContent = t('questionSent');
+                await refreshPortal();
+                setPortalSection('questions', { scroll: false });
+            } catch (error) {
+                if (handlePortalCredentialError(error)) return;
+                els.studentQuestionStatus.textContent = error.message || t('couldNotSendMessage');
+                els.studentQuestionStatus.classList.add('error');
+            } finally {
+                els.studentQuestionButton.disabled = false;
+            }
+        }
+
+        async function submitCourseQuestionAnswer(event, questionId) {
+            event.preventDefault();
+            const answerEl = document.getElementById(`courseQuestionAnswer${Number(questionId)}`);
+            const statusEl = document.getElementById(`courseQuestionStatus${Number(questionId)}`);
+            const answer = answerEl?.value?.trim() || '';
+            if (!answer) {
+                if (statusEl) {
+                    statusEl.textContent = t('writeMessageFirst');
+                    statusEl.classList.add('error');
+                }
+                return;
+            }
+            const button = event.submitter || event.target.querySelector('button[type="submit"]');
+            if (button) button.disabled = true;
+            if (statusEl) {
+                statusEl.textContent = t('saving');
+                statusEl.classList.remove('error');
+            }
+            try {
+                await apiRequest(`/api/student-portal/course-questions/${encodeURIComponent(questionId)}/answer`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        access_code: accessCode,
+                        response_text: answer,
+                    }),
+                });
+                if (statusEl) statusEl.textContent = t('answerSaved');
+                await refreshPortal();
+                setPortalSection('community', { scroll: false });
+            } catch (error) {
+                if (handlePortalCredentialError(error)) return;
+                if (statusEl) {
+                    statusEl.textContent = error.message || t('couldNotSendMessage');
+                    statusEl.classList.add('error');
+                }
+            } finally {
+                if (button) button.disabled = false;
+            }
+        }
+
         async function sendRabbiMessage() {
             const message = els.rabbiMessage.value.trim();
             if (!message) {
@@ -3410,13 +3787,76 @@
             }
         }
 
+        function renderStudentAssistantOutput() {
+            const entries = studentAssistantMessages.slice(-6);
+            els.assistantOutput.innerHTML = entries.length
+                ? entries.map(entry => `
+                    <article class="question-card">
+                        <div class="question-title">${escapeHtml(entry.role)}</div>
+                        <p class="small">${escapeHtml(entry.body || '')}</p>
+                    </article>
+                `).join('')
+                : '';
+        }
+
+        async function sendStudentAssistantMessage() {
+            const message = els.assistantMessage.value.trim();
+            if (!message || studentAssistantBusy) {
+                if (!message) {
+                    els.assistantStatus.textContent = t('writeMessageFirst');
+                    els.assistantStatus.classList.add('error');
+                }
+                return;
+            }
+            studentAssistantBusy = true;
+            els.sendAssistantButton.disabled = true;
+            els.assistantStatus.textContent = t('saving');
+            els.assistantStatus.classList.remove('error');
+            studentAssistantMessages.push({ role: 'You', body: message });
+            renderStudentAssistantOutput();
+            try {
+                const result = await apiRequest('/api/student-portal/assistant/message', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        access_code: accessCode,
+                        message,
+                        language,
+                    }),
+                });
+                studentAssistantMessages.push({
+                    role: t('assistant'),
+                    body: result?.assistant_message?.body || result?.assistant_message?.content || t('assistantSent'),
+                });
+                els.assistantMessage.value = '';
+                els.assistantStatus.textContent = t('assistantSent');
+                renderStudentAssistantOutput();
+                if ((result?.actions || []).some(action => ['create_or_update_student_goal', 'log_check_in_progress'].includes(action.action_type))) {
+                    await refreshPortal();
+                    setPortalSection('assistant', { scroll: false });
+                }
+            } catch (error) {
+                if (handlePortalCredentialError(error)) return;
+                studentAssistantMessages.push({ role: t('assistant'), body: error.message || t('requestFailed') });
+                els.assistantStatus.textContent = error.message || t('requestFailed');
+                els.assistantStatus.classList.add('error');
+                renderStudentAssistantOutput();
+            } finally {
+                studentAssistantBusy = false;
+                els.sendAssistantButton.disabled = false;
+            }
+        }
+
+        els.studentLoginForm.addEventListener('submit', loginWithPassword);
+
         els.codeForm.addEventListener('submit', (event) => {
             event.preventDefault();
             loadPortal(els.accessCode.value);
         });
 
-        els.clearCodeButton.addEventListener('click', () => {
+        els.clearCodeButton.addEventListener('click', async () => {
+            await apiRequest('/api/student-portal/logout', { method: 'POST' }).catch(() => {});
             accessCode = '';
+            studentSessionActive = false;
             portalData = null;
             currentSection = 'overview';
             selectedDayByGoal = {};
@@ -3460,6 +3900,8 @@
 
         els.sendRabbiMessageButton.addEventListener('click', sendRabbiMessage);
         els.sendParentMessageButton.addEventListener('click', sendParentMessage);
+        els.sendAssistantButton.addEventListener('click', sendStudentAssistantMessage);
+        els.studentQuestionForm.addEventListener('submit', submitStudentQuestion);
 
         document.addEventListener('click', (event) => {
             const calendarModeButton = event.target.closest('[data-student-calendar-mode]');

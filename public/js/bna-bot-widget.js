@@ -10,9 +10,15 @@
   } catch {}
   if (isParent && query.get('onboard') === 'accountability') return;
   window.BNABotWidgetLoaded = true;
-  const isProvider = /^\/provider/.test(path);
+  const isProvider = [
+    '/provider',
+    '/provider/',
+    '/provider.html',
+    '/provider/login',
+    '/provider-dashboard',
+  ].includes(path);
   const isOperations = /^\/operations/.test(path);
-  const isSignup = /^\/signup/.test(path);
+  const isSignup = /^\/signup(?:\/|$|-|\.html$)/.test(path);
   const surface = isOperations
     ? 'operations'
     : isParent
@@ -25,11 +31,15 @@
             ? 'signup'
             : 'public';
   const storagePrefix = `bnaAssistant:${surface}`;
-  const PUBLIC_ASSISTANT_AUTOPROMPT_DELAY_MS = 2600;
-  const PUBLIC_ASSISTANT_FOLLOWUP_DELAY_MS = 5600;
+  const HELPER_FIRST_NUDGE_DELAY_MS = 12000;
+  const HELPER_SECOND_NUDGE_DELAY_MS = 45000;
+  const HELPER_DISMISS_SUPPRESS_HOURS = 24;
+  const PUBLIC_ASSISTANT_AUTOPROMPT_DELAY_MS = HELPER_FIRST_NUDGE_DELAY_MS;
+  const PUBLIC_ASSISTANT_FOLLOWUP_DELAY_MS = HELPER_SECOND_NUDGE_DELAY_MS;
   const PUBLIC_ASSISTANT_TYPING_DELAY_MS = 900;
-  const direction = () => document.documentElement.dir === 'rtl' ? 'rtl' : 'ltr';
-  const language = () => document.documentElement.lang || (direction() === 'rtl' ? 'he' : 'en');
+  const isHebrewPath = () => /^\/he(?:\/|$)/i.test(path) || query.get('lang') === 'he';
+  const direction = () => document.documentElement.dir === 'rtl' || isHebrewPath() ? 'rtl' : 'ltr';
+  const language = () => isHebrewPath() ? 'he' : (document.documentElement.lang || (direction() === 'rtl' ? 'he' : 'en'));
   const isHebrew = () => /^he\b/i.test(language()) || direction() === 'rtl';
   const studentAccessCode = () => isStudent ? (new URLSearchParams(window.location.search).get('code') || '') : '';
   const isPublicLeadSurface = () => ['public', 'signup'].includes(surface);
@@ -43,6 +53,7 @@
   }
 
   function introCopy() {
+    if (surface === 'public') return publicHelperData().intro || surfaceConfig().intro;
     return surfaceConfig().intro;
   }
 
@@ -142,7 +153,7 @@
         surfaceLabel: he ? 'פורטל תלמיד' : 'Student portal',
         intro: he
           ? 'שלום, אני מסייע הלמידה של BNA. אפשר לשאול על סדר היום, יעדים, הבנה, ושאלות לרב או לשלוימי.'
-          : "Hi, I'm the BNA learning helper. I can help you understand your schedule, goals, learning, and how to message your rebbi or Shloimie.",
+          : "Hi, I'm the BNA learning helper. I can walk you through Today, goals, daily checkoff, questions, reflection, and how to message your rebbi or Shloimie.",
         cards: he
           ? [
             ['היום שלי', 'בדיקת לוח זמנים, צ׳ק-אין ויעדים פתוחים.'],
@@ -210,7 +221,7 @@
       surfaceLabel: he ? 'עזרה ציבורית' : 'Public help',
       intro: he
         ? 'שלום, אני כאן כדי לעזור. אפשר לשאול אותי על BNA, על למידה מתוך אחריות, על שלטון עצמי, או לבקש שאעביר הודעה לשלוימי.'
-        : "Hi, I am here to help. Ask me about BNA, self-governance, accountability, or whether this learning program fits your child.",
+        : "Hi, I am here to help. Ask me about BNA, the 10-1 program, self-governance, accountability, or whether this learning program fits your child.",
       cards: he
         ? [
           ['שלטון עצמי', 'איך ילד לומד לקחת אחריות דרך מטרות, שיקוף וצ׳ק-אין.'],
@@ -226,6 +237,69 @@
         ? ['איך יוצרים קשר עם שלוימי?', 'מה זה שלטון עצמי אצל ילד?', 'האם BNA מתאים לבן שלי?']
         : ['How do I contact Shloimie?', 'What does self-governance mean for a child?', 'Could BNA fit my son?'],
     };
+  }
+
+  function fallbackPublicHelperData() {
+    if (isHebrew()) {
+      return {
+        intro:
+          '\u05e9\u05dc\u05d5\u05dd - \u05d0\u05e0\u05d9 \u05db\u05d0\u05df \u05dc\u05e2\u05d6\u05d5\u05e8. \u05d0\u05ea\u05dd \u05e8\u05d5\u05e6\u05d9\u05dd \u05dc\u05e8\u05e9\u05d5\u05dd \u05d9\u05dc\u05d3, \u05dc\u05d4\u05d1\u05d9\u05df \u05d0\u05d9\u05da \u05d4\u05ea\u05d5\u05db\u05e0\u05d9\u05ea \u05e2\u05d5\u05d1\u05d3\u05ea, \u05d0\u05d5 \u05dc\u05d4\u05e6\u05d8\u05e8\u05e3 \u05db\u05e0\u05d5\u05ea\u05e0\u05d9 \u05e9\u05d9\u05e8\u05d5\u05ea?',
+        choices: [
+          { id: 'signup', label: '\u05dc\u05e8\u05e9\u05d5\u05dd \u05d9\u05dc\u05d3' },
+          { id: 'learn_bna', label: '\u05dc\u05d4\u05d1\u05d9\u05df \u05e2\u05dc \u05d1\u05e0\u05d9 \u05e0\u05d1\u05d9\u05d0\u05d9\u05dd' },
+          { id: 'student', label: '\u05d0\u05e0\u05d9 \u05ea\u05dc\u05de\u05d9\u05d3' },
+          { id: 'provider', label: '\u05dc\u05d4\u05e6\u05d8\u05e8\u05e3 \u05db\u05e0\u05d5\u05ea\u05df \u05e9\u05d9\u05e8\u05d5\u05ea' },
+          { id: 'self_governance', label: '\u05d0\u05d7\u05e8\u05d9\u05d5\u05ea \u05d0\u05d9\u05e9\u05d9\u05ea' },
+          { id: 'sodas', label: '\u05e2\u05d6\u05e8\u05d4 \u05dc\u05d4\u05d5\u05e8\u05d9\u05dd' },
+          { id: 'question', label: '\u05dc\u05e9\u05d0\u05d5\u05dc \u05e9\u05d0\u05dc\u05d4' },
+        ],
+        nudges: {
+          first: { body: '\u05e6\u05e8\u05d9\u05db\u05d9\u05dd \u05e2\u05d6\u05e8\u05d4 \u05dc\u05de\u05e6\u05d5\u05d0 \u05d0\u05ea \u05d4\u05db\u05d9\u05d5\u05d5\u05df?', actions: [{ type: 'open', label: '\u05dc\u05e4\u05ea\u05d5\u05d7' }] },
+          second: { body: '\u05d0\u05e0\u05d9 \u05d9\u05db\u05d5\u05dc \u05dc\u05e2\u05d6\u05d5\u05e8 \u05e2\u05dd \u05e8\u05d9\u05e9\u05d5\u05dd, \u05de\u05d5\u05d3\u05dc \u05d4\u05dc\u05d9\u05de\u05d5\u05d3, \u05d0\u05d7\u05e8\u05d9\u05d5\u05ea \u05d0\u05d9\u05e9\u05d9\u05ea \u05d0\u05d5 \u05e0\u05d5\u05ea\u05e0\u05d9 \u05e9\u05d9\u05e8\u05d5\u05ea.', actions: [] },
+        },
+        paths: {},
+      };
+    }
+    return {
+      intro:
+        "Hi - I'm here to help. Are you looking to sign up a child, learn how the program works, or join as a service provider?",
+      choices: [
+        { id: 'signup', label: 'Sign up a child' },
+        { id: 'learn_bna', label: 'Learn about BNA' },
+        { id: 'student', label: "I'm a student" },
+        { id: 'provider', label: 'Become a service provider' },
+        { id: 'self_governance', label: 'Ask about self-governance' },
+        { id: 'sodas', label: 'Parenting / SODAS help' },
+        { id: 'question', label: 'Ask a question' },
+      ],
+      nudges: {
+        first: { body: 'Need help finding the right path?', actions: [{ type: 'open', label: 'Open helper' }] },
+        second: {
+          body:
+            'I can help with signup, the school model, self-governance, or becoming a service provider.',
+          actions: [
+            { type: 'path', path: 'signup', label: 'Sign up' },
+            { type: 'path', path: 'provider', label: 'Service provider' },
+            { type: 'path', path: 'learn_bna', label: 'How BNA works' },
+            { type: 'path', path: 'question', label: 'Ask a question' },
+          ],
+        },
+      },
+      paths: {},
+      safety:
+        'This sounds like it may involve safety or urgent harm. Please bring in a trusted adult right now, and contact local emergency support if anyone may be in danger. What adult can be with you or the child now?',
+    };
+  }
+
+  function publicHelperData() {
+    const lang = isHebrew() ? 'he' : 'en';
+    const helper = window.BNAHelperKnowledge;
+    if (helper && typeof helper.get === 'function') {
+      try {
+        return helper.get(lang) || fallbackPublicHelperData();
+      } catch {}
+    }
+    return fallbackPublicHelperData();
   }
 
   const style = document.createElement('style');
@@ -270,10 +344,56 @@
       background: #e3b848;
       box-shadow: 0 0 0 4px rgba(227, 184, 72, 0.22);
     }
+    .bna-bot-nudge {
+      position: fixed;
+      right: 18px;
+      bottom: 78px;
+      z-index: 6399;
+      width: min(330px, calc(100vw - 36px));
+      display: none;
+      gap: 0.65rem;
+      padding: 0.78rem;
+      border: 1px solid rgba(23, 32, 25, 0.14);
+      border-radius: 8px;
+      background: #fffdf7;
+      color: #172019;
+      box-shadow: 0 18px 46px rgba(27, 49, 32, 0.18);
+      font: 0.9rem "Trebuchet MS", Verdana, sans-serif;
+    }
+    .bna-bot-nudge.is-visible {
+      display: grid;
+    }
+    [dir="rtl"] .bna-bot-nudge {
+      right: auto;
+      left: 18px;
+      direction: rtl;
+    }
+    .bna-bot-nudge-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 0.75rem;
+    }
+    .bna-bot-nudge-body {
+      margin: 0;
+      line-height: 1.35;
+      font-weight: 800;
+    }
+    .bna-bot-nudge-close {
+      flex: 0 0 auto;
+      width: 28px;
+      height: 28px;
+      border: 1px solid rgba(23, 32, 25, 0.14);
+      border-radius: 999px;
+      background: #ffffff;
+      color: #172019;
+      cursor: pointer;
+    }
     .bna-bot-panel {
       position: fixed;
       top: 0;
       right: 0;
+      bottom: auto;
       z-index: 6401;
       width: min(460px, 100vw);
       height: var(--app-vh);
@@ -435,6 +555,29 @@
     }
     [dir="rtl"] .bna-bot-message.assistant { align-self: flex-end; }
     [dir="rtl"] .bna-bot-message.user { align-self: flex-start; }
+    .bna-helper-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.42rem;
+      margin-top: 0.58rem;
+      white-space: normal;
+    }
+    .bna-helper-action {
+      border: 1px solid rgba(23, 63, 100, 0.22);
+      border-radius: 8px;
+      background: #eef6ff;
+      color: #173f64;
+      padding: 0.5rem 0.62rem;
+      font: 900 0.78rem "Trebuchet MS", Verdana, sans-serif;
+      cursor: pointer;
+      text-align: start;
+      line-height: 1.15;
+    }
+    .bna-helper-action:hover,
+    .bna-helper-action:focus-visible {
+      outline: 2px solid rgba(23, 63, 100, 0.25);
+      background: #ffffff;
+    }
     .bna-bot-typing {
       display: none;
       align-items: center;
@@ -490,14 +633,40 @@
     @media (max-width: 520px) {
       .bna-bot-launcher { right: 12px; bottom: 12px; }
       [dir="rtl"] .bna-bot-launcher { left: 12px; right: auto; }
+      .bna-bot-nudge {
+        right: 12px;
+        bottom: 70px;
+        width: min(320px, calc(100vw - 24px));
+      }
+      [dir="rtl"] .bna-bot-nudge {
+        right: auto;
+        left: 12px;
+      }
       .bna-bot-panel,
       [dir="rtl"] .bna-bot-panel {
-        left: 0;
-        right: auto;
-        width: 100vw;
-        height: var(--app-vh);
-        max-height: var(--app-vh);
+        top: auto;
+        right: 8px;
+        bottom: max(8px, env(safe-area-inset-bottom));
+        left: 8px;
+        width: auto;
+        height: min(70dvh, calc(var(--app-vh) * 0.7));
+        min-height: min(360px, calc(var(--app-vh) - 24px));
+        max-height: calc(var(--app-vh) - 24px);
+        border: 1px solid rgba(23, 32, 25, 0.12);
+        border-radius: 16px 16px 10px 10px;
+        box-shadow: 0 -18px 52px rgba(27, 49, 32, 0.22);
+        transform: translateY(110%);
       }
+      .bna-bot-panel.is-open,
+      [dir="rtl"] .bna-bot-panel.is-open { transform: translateY(0); }
+      .bna-bot-launcher.is-panel-open {
+        bottom: calc(min(70dvh, calc(var(--app-vh) * 0.7)) + 18px);
+        z-index: 6402;
+      }
+      .bna-bot-head { padding: 0.82rem 0.9rem; }
+      .bna-bot-thread { padding: 0.78rem; }
+      .bna-bot-form { padding: 0.65rem; }
+      .bna-bot-input { font-size: 16px; }
     }
   `;
   document.head.appendChild(style);
@@ -509,7 +678,13 @@
   launcher.className = 'bna-bot-launcher';
   launcher.setAttribute('aria-expanded', 'false');
   launcher.setAttribute('aria-controls', 'bnaBotPanel');
+  launcher.setAttribute('aria-label', copy.helperTitle);
   launcher.innerHTML = `<span class="bna-bot-launcher-dot"></span><span>${escapeHtml(copy.helperTitle)}</span>`;
+
+  const nudge = document.createElement('div');
+  nudge.className = 'bna-bot-nudge';
+  nudge.setAttribute('role', 'status');
+  nudge.setAttribute('aria-live', 'polite');
 
   const panel = document.createElement('aside');
   panel.className = 'bna-bot-panel assistant-shell';
@@ -545,6 +720,7 @@
   `;
 
   document.body.appendChild(launcher);
+  document.body.appendChild(nudge);
   document.body.appendChild(panel);
 
   const closeButton = panel.querySelector('.bna-bot-close');
@@ -561,7 +737,7 @@
   let publicAutoPromptTimer = null;
   let publicFollowupTimer = null;
   let publicTypingTimer = null;
-  let dismissedPublicPrompt = sessionStorage.getItem(`${storagePrefix}:publicPromptDismissed`) === '1';
+  let dismissedPublicPrompt = publicNudgesSuppressed();
 
   function syncVisualViewportHeight() {
     const height = window.visualViewport?.height || window.innerHeight || document.documentElement.clientHeight;
@@ -570,12 +746,27 @@
     document.documentElement.style.setProperty('--keyboard-offset', `${Math.round(keyboardOffset)}px`);
   }
 
+  function isMobileKeyboardSurface() {
+    const coarsePointer = window.matchMedia?.('(pointer: coarse)')?.matches;
+    const viewportWidth = Math.min(window.innerWidth || 9999, document.documentElement.clientWidth || 9999);
+    return Boolean(coarsePointer || viewportWidth < 760);
+  }
+
+  function focusAssistantInput(options = {}) {
+    if (options.force !== true && isMobileKeyboardSurface()) return;
+    try {
+      input.focus({ preventScroll: true });
+    } catch {
+      input.focus();
+    }
+  }
+
   window.visualViewport?.addEventListener('resize', syncVisualViewportHeight);
   window.visualViewport?.addEventListener('scroll', syncVisualViewportHeight);
   window.addEventListener('resize', syncVisualViewportHeight);
   syncVisualViewportHeight();
 
-  appendMessage('assistant', introCopy());
+  appendMessage('assistant', introCopy(), { actions: publicInitialHelperActions() });
 
   function surfaceLabel() {
     return surfaceConfig().surfaceLabel;
@@ -603,8 +794,44 @@
 
   function publicFollowupCopy() {
     return isHebrew()
-      ? 'אני עדיין כאן אם תרצו לשאול על שלטון עצמי, על התוכנית, או להשאיר פרטים כדי ששלוימי יחזור אליכם.'
-      : "I'm still here if you want to ask about self-governance, the learning program, or leave details so Shloimie can follow up.";
+      ? 'אפשר לשאול על תוכנית 10-1, על שלטון עצמי, או לשלוח לשלוימי הודעה קצרה.'
+      : 'Want to ask about the 10-1 program, self-governance, or send Shloimie a quick note?';
+  }
+
+  function publicNudgeSuppressUntilKey() {
+    return `${storagePrefix}:helperNudgeSuppressUntil`;
+  }
+
+  function publicNudgesSuppressed() {
+    try {
+      const until = Number(localStorage.getItem(publicNudgeSuppressUntilKey()) || '0');
+      if (until > Date.now()) return true;
+      if (until) localStorage.removeItem(publicNudgeSuppressUntilKey());
+      return sessionStorage.getItem(`${storagePrefix}:publicPromptDismissed`) === '1';
+    } catch {
+      return false;
+    }
+  }
+
+  function hidePublicNudge() {
+    nudge.classList.remove('is-visible');
+    nudge.textContent = '';
+  }
+
+  function showPublicNudge(stage) {
+    if (!isPublicLeadSurface() || dismissedPublicPrompt || panel.classList.contains('is-open')) return;
+    const data = publicHelperData();
+    const config = stage === 'second' ? data.nudges?.second : data.nudges?.first;
+    if (!config?.body) return;
+    nudge.innerHTML = `
+      <div class="bna-bot-nudge-head">
+        <p class="bna-bot-nudge-body">${escapeHtml(config.body)}</p>
+        <button type="button" class="bna-bot-nudge-close" data-nudge-dismiss aria-label="${escapeAttr(copy.close)}">x</button>
+      </div>
+    `;
+    const actionButtons = renderActionButtons(config.actions || [{ type: 'open', label: 'Open helper' }]);
+    if (actionButtons) nudge.appendChild(actionButtons);
+    nudge.classList.add('is-visible');
   }
 
   function clearPublicFollowup() {
@@ -615,42 +842,46 @@
     publicFollowupTimer = null;
     publicTypingTimer = null;
     typingEl.classList.remove('is-visible');
+    hidePublicNudge();
   }
 
   function dismissPublicPromptForSession() {
     if (!isPublicLeadSurface()) return;
     dismissedPublicPrompt = true;
-    sessionStorage.setItem(`${storagePrefix}:publicPromptDismissed`, '1');
+    try {
+      const suppressMs = HELPER_DISMISS_SUPPRESS_HOURS * 60 * 60 * 1000;
+      localStorage.setItem(publicNudgeSuppressUntilKey(), String(Date.now() + suppressMs));
+      sessionStorage.removeItem(`${storagePrefix}:publicPromptDismissed`);
+    } catch {
+      try {
+        sessionStorage.setItem(`${storagePrefix}:publicPromptDismissed`, '1');
+      } catch {}
+    }
     clearPublicFollowup();
   }
 
   function schedulePublicFollowup() {
     if (!isPublicLeadSurface() || dismissedPublicPrompt) return;
-    if (publicFollowupTimer) return;
-    publicFollowupTimer = setTimeout(() => {
-      publicFollowupTimer = null;
-      if (dismissedPublicPrompt || !panel.classList.contains('is-open')) return;
-      typingEl.classList.add('is-visible');
-      publicTypingTimer = setTimeout(() => {
-        publicTypingTimer = null;
-        if (dismissedPublicPrompt || !panel.classList.contains('is-open')) {
-          typingEl.classList.remove('is-visible');
-          return;
-        }
-        typingEl.classList.remove('is-visible');
-        appendMessage('assistant', publicFollowupCopy());
-      }, PUBLIC_ASSISTANT_TYPING_DELAY_MS);
-    }, PUBLIC_ASSISTANT_FOLLOWUP_DELAY_MS);
+    if (publicAutoPromptTimer || publicFollowupTimer) return;
+    publicAutoPromptTimer = setTimeout(() => {
+      publicAutoPromptTimer = null;
+      showPublicNudge('first');
+      publicFollowupTimer = setTimeout(() => {
+        publicFollowupTimer = null;
+        showPublicNudge('second');
+      }, HELPER_SECOND_NUDGE_DELAY_MS);
+    }, HELPER_FIRST_NUDGE_DELAY_MS);
   }
 
   function setOpen(open, options = {}) {
     panel.classList.toggle('is-open', open);
+    launcher.classList.toggle('is-panel-open', open);
     launcher.setAttribute('aria-expanded', String(open));
     if (open) {
+      clearPublicFollowup();
       syncVisualViewportHeight();
-      if (options.focus !== false) input.focus();
+      if (options.focus !== false) focusAssistantInput();
       if (threadId) loadThread(threadId);
-      if (options.autoPrompt) schedulePublicFollowup();
     }
   }
 
@@ -666,17 +897,119 @@
     sendButton.disabled = busy;
   }
 
-  function appendMessage(author, body) {
+  function publicInitialHelperActions() {
+    if (surface !== 'public') return [];
+    return (publicHelperData().choices || []).map((choice) => ({
+      type: 'path',
+      path: choice.id,
+      label: choice.label,
+    }));
+  }
+
+  function renderActionButtons(actions) {
+    const validActions = (actions || []).filter((action) => action && action.label);
+    if (!validActions.length) return null;
+    const wrap = document.createElement('div');
+    wrap.className = 'bna-helper-actions';
+    for (const action of validActions) {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'bna-helper-action';
+      button.textContent = action.label;
+      button.dataset.helperAction = encodeURIComponent(JSON.stringify(action));
+      wrap.appendChild(button);
+    }
+    return wrap;
+  }
+
+  function readHelperAction(target) {
+    const button = target.closest?.('[data-helper-action]');
+    if (!button) return null;
+    try {
+      return JSON.parse(decodeURIComponent(button.dataset.helperAction || ''));
+    } catch {
+      return null;
+    }
+  }
+
+  function appendMessage(author, body, options = {}) {
     const bubble = document.createElement('div');
     bubble.className = `bna-bot-message ${author === 'user' ? 'user' : 'assistant'}`;
-    bubble.textContent = body;
+    const text = document.createElement('span');
+    text.textContent = body;
+    bubble.appendChild(text);
+    const actions = renderActionButtons(options.actions || []);
+    if (actions) bubble.appendChild(actions);
     threadEl.appendChild(bubble);
     threadEl.scrollTop = threadEl.scrollHeight;
   }
 
+  function renderHelperPath(pathId, userLabel) {
+    const data = publicHelperData();
+    const pathCopy = data.paths?.[pathId];
+    if (userLabel) appendMessage('user', userLabel);
+    if (!pathCopy) {
+      input.value = '';
+      focusAssistantInput({ force: true });
+      return;
+    }
+    const messages = Array.isArray(pathCopy.messages) ? pathCopy.messages : [pathCopy.body];
+    messages.filter(Boolean).forEach((message, index) => {
+      appendMessage('assistant', message, {
+        actions: index === messages.filter(Boolean).length - 1 ? pathCopy.actions || [] : [],
+      });
+    });
+  }
+
+  function handleHelperAction(action) {
+    if (!action) return;
+    if (action.type === 'open') {
+      setOpen(true, { focus: false });
+      return;
+    }
+    if (action.type === 'path') {
+      setOpen(true, { focus: false });
+      renderHelperPath(action.path, action.label);
+      return;
+    }
+    if (action.type === 'link' && action.href) {
+      window.location.href = action.href;
+      return;
+    }
+    if (action.type === 'scroll' && action.target) {
+      const target = document.querySelector(action.target);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      setOpen(false);
+      return;
+    }
+    if (action.type === 'prefill') {
+      setOpen(true, { focus: false });
+      if (action.label) appendMessage('user', action.label);
+      input.value = action.prompt || '';
+      focusAssistantInput({ force: true });
+      return;
+    }
+    if (action.type === 'message' && action.body) {
+      if (action.label) appendMessage('user', action.label);
+      appendMessage('assistant', action.body);
+      return;
+    }
+    if (action.type === 'sodas_option') {
+      if (action.label) appendMessage('user', action.label);
+      const data = publicHelperData();
+      appendMessage('assistant', data.sodas?.nextAfterFeeling || 'What choices were available in that moment?', {
+        actions: data.sodas?.optionButtons || [],
+      });
+    }
+  }
+
+  function looksLikeSafetyIssue(text) {
+    return /\b(suicide|kill myself|kill him|kill her|hurt myself|hurt him|hurt her|abuse|danger|emergency|unsafe|weapon|bleeding)\b/i.test(text);
+  }
+
   function replaceThread(messages) {
     threadEl.textContent = '';
-    if (!messages.length) appendMessage('assistant', introCopy());
+    if (!messages.length) appendMessage('assistant', introCopy(), { actions: publicInitialHelperActions() });
     for (const message of messages) {
       appendMessage(message.author_type === 'user' ? 'user' : 'assistant', message.body || '');
     }
@@ -731,7 +1064,7 @@
         localStorage.setItem(`${storagePrefix}:threadId`, threadId);
         setHistoryOpen(false);
         loadThread(threadId);
-        input.focus();
+        focusAssistantInput();
       });
       historyList.appendChild(item);
     }
@@ -757,6 +1090,10 @@
     if (!text) return;
     appendMessage('user', text);
     input.value = '';
+    if (isPublicLeadSurface() && looksLikeSafetyIssue(text)) {
+      appendMessage('assistant', publicHelperData().safety || copy.unavailable);
+      return;
+    }
     setBusy(true);
     try {
       const response = await fetch('/api/bna/assistant/chat', {
@@ -780,7 +1117,7 @@
       appendMessage('assistant', copy.unavailable);
     } finally {
       setBusy(false);
-      input.focus();
+      focusAssistantInput();
     }
   }
 
@@ -830,14 +1167,30 @@
   }
 
   if (isPublicLeadSurface() && !dismissedPublicPrompt) {
-    publicAutoPromptTimer = setTimeout(() => {
-      publicAutoPromptTimer = null;
-      if (dismissedPublicPrompt || panel.classList.contains('is-open')) return;
-      setOpen(true, { autoPrompt: true, focus: false });
-    }, PUBLIC_ASSISTANT_AUTOPROMPT_DELAY_MS);
+    schedulePublicFollowup();
   }
 
   launcher.addEventListener('click', () => setOpen(!panel.classList.contains('is-open')));
+  threadEl.addEventListener('click', (event) => {
+    const action = readHelperAction(event.target);
+    if (!action) return;
+    event.preventDefault();
+    handleHelperAction(action);
+  });
+  nudge.addEventListener('click', (event) => {
+    if (event.target.closest('[data-nudge-dismiss]')) {
+      dismissPublicPromptForSession();
+      return;
+    }
+    const action = readHelperAction(event.target);
+    if (action) {
+      event.preventDefault();
+      setOpen(true, { focus: false });
+      handleHelperAction(action);
+      return;
+    }
+    if (event.target.closest('.bna-bot-nudge')) setOpen(true, { focus: false });
+  });
   closeButton.addEventListener('click', () => {
     setHistoryOpen(false);
     dismissPublicPromptForSession();
@@ -867,5 +1220,11 @@
       dismissPublicPromptForSession();
       setOpen(false);
     }
+  });
+  document.addEventListener('click', (event) => {
+    const opener = event.target.closest?.('[data-helper-open]');
+    if (!opener) return;
+    event.preventDefault();
+    setOpen(true, { focus: false });
   });
 })();

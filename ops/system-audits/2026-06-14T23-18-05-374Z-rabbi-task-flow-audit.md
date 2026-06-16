@@ -1,0 +1,316 @@
+# Rabbi / One Time Task Flow Audit - 2026-06-14T23:18:05.374Z
+
+Result: read-only report
+
+## Summary
+
+- Scanned tasks: 305
+- Rabbi / One Time related tasks: 102
+- Active Rabbi / One Time tasks: 51
+- Human blocker or decision: 48
+- Codex-ready: 0
+- Private BNA scope review: 6
+- External-write gate review: 32
+- Visible title review: 2
+
+## Stage Counts
+
+- archive: 8
+- assigned: 32
+- done: 43
+- needs_decision: 19
+
+## Assignee Counts
+
+- codex: 49
+- rabbi elie scheller: 15
+- shloimie: 31
+- unassigned: 7
+
+## Guardrails
+
+- This audit is read-only and has no apply mode.
+- Do not move, close, retitle, reassign, or publish Rabbi/One Time tasks from this report alone.
+- Use typed approval-gated actions or explicit task endpoints only after review.
+- Do not expose private BNA student/parent/accountability data in Rabbi/provider task flow.
+- External writes remain blocked behind their existing approval phrases and connector gates.
+
+## Human Blockers / Decisions
+
+- #420 Decide One Time software ownership and revenue split
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #418 Decide One Time platform stack
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #419 Decide One Time parent and student login model
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #337 Decide One Time refund/cancellation policy
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #335 Decide One Time family/device access policy
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #528 Decide analytics and backend strategy for Rabbi Scheller app
+  - Stage: needs_decision; Assignee: unassigned; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #518 Decide Resend account ownership for Rabbi Scheller launch
+  - Stage: needs_decision; Assignee: unassigned; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #280 Decide One Time GHL agent-loop runtime
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #421 Decide Google Workspace and Classroom role
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #381 Decide whether to keep using GHL or replace it with modular internal/API tools
+  - Stage: needs_decision; Assignee: Shloimie; Project: bna
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #340 Decide One Time support threshold/SLA
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #339 Decide One Time payment processor and bank/legal setup
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #338 Decide One Time initial ad budget
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #341 Decide One Time software/IP wording and legal review
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #537 Confirm active launch pricing and update stale docs
+  - Stage: needs_decision; Assignee: unassigned; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #535 Define public launch and ad-start gate
+  - Stage: needs_decision; Assignee: unassigned; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #534 Decide Replit migration path
+  - Stage: needs_decision; Assignee: unassigned; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #533 Decide payment processor and accounting path
+  - Stage: needs_decision; Assignee: unassigned; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #522 Get Replit source app access or export
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #524 Get Drive worksheets and source-sheet folders
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #523 Get email list and past customer/contact exports
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #521 Get Vimeo and video-library access from Rabbi Scheller
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #520 Get GoDaddy, domain, and DNS access from Rabbi Scheller
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #519 Get Resend access from Rabbi Scheller
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #517 Get Stripe access from Rabbi Scheller
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #525 Get social and video channel permissions if needed
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #336 Decide One Time Zoom/access sharing policy
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #342 One Time access/materials: Business/bank/payment processor setup under Rabbi Sheller unless legal/accountin...
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: visible_title_review, external_write_gate_review, human_blocker_or_decision
+- #526 Audit Rabbi Scheller Replit app and create migration plan
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #548 Week 1 launch milestone: access, app audit, source sync, payment/email decisions
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #422 Provide Rabbi software, Vimeo, library, and analytics inventory
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #343 One Time access/materials: Replit, DNS/domain, GHL, payment processor, bank reporting, Drive, YouTube, Meta...
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: visible_title_review, external_write_gate_review, human_blocker_or_decision
+- #527 Sync Rabbi Scheller app code and config map to GitHub workflow
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #543 Configure Resend sender authentication
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #541 Clean and import Rabbi Scheller contacts
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #530 Prepare Resend email sender setup and warm blast plan
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #529 Configure launch payment links after processor decision/access
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #546 Configure payment products and checkout metadata after processor decision
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #542 Prepare warm launch email sequence
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #545 Create email send approval gate
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #544 Send internal test emails only
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #547 Test checkout success, failure, cancel, and access flow
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #531 Build or update Rabbi Scheller landing page and funnel
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #549 Week 2 launch milestone: app migration, funnel, payment links, email setup
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #550 Week 3 launch milestone: community, access, support, and question-flow QA
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #551 Week 4 launch milestone: warm launch readiness and ads gate
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #506 Set up Rabbi Scheller scoped Drive/social ingestion and send login last
+  - Stage: done; Assignee: Codex; Project: bna
+  - Flags: human_blocker_or_decision
+- #536 Decide setup timeline promise to Rabbi Scheller
+  - Stage: needs_decision; Assignee: unassigned; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+
+## Codex-Ready Rabbi Work
+
+- None found.
+
+## Private Scope Review
+
+- #310 Separate parent coaching summaries from student source sheets
+  - Stage: done; Assignee: Codex; Project: one_time_mishnah_class
+  - Flags: private_bna_scope_review
+- #289 Expand Research section to source all class topics
+  - Stage: done; Assignee: Codex; Project: one_time_mishnah_class
+  - Flags: private_bna_scope_review
+- #357 Workflow M: Parent update
+  - Stage: done; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: private_bna_scope_review
+- #356 Workflow L: Question submission
+  - Stage: done; Assignee: Codex; Project: one_time_mishnah_class
+  - Flags: private_bna_scope_review
+- #361 Workflow Q: Organic content upload
+  - Stage: done; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: private_bna_scope_review
+- #360 Workflow P: Testimonial/reputation
+  - Stage: done; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: private_bna_scope_review
+
+## External Write Gate Review
+
+- #420 Decide One Time software ownership and revenue split
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #418 Decide One Time platform stack
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #419 Decide One Time parent and student login model
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #518 Decide Resend account ownership for Rabbi Scheller launch
+  - Stage: needs_decision; Assignee: unassigned; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #280 Decide One Time GHL agent-loop runtime
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #421 Decide Google Workspace and Classroom role
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #381 Decide whether to keep using GHL or replace it with modular internal/API tools
+  - Stage: needs_decision; Assignee: Shloimie; Project: bna
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #339 Decide One Time payment processor and bank/legal setup
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #533 Decide payment processor and accounting path
+  - Stage: needs_decision; Assignee: unassigned; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #524 Get Drive worksheets and source-sheet folders
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #523 Get email list and past customer/contact exports
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #521 Get Vimeo and video-library access from Rabbi Scheller
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #519 Get Resend access from Rabbi Scheller
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #517 Get Stripe access from Rabbi Scheller
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #525 Get social and video channel permissions if needed
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #342 One Time access/materials: Business/bank/payment processor setup under Rabbi Sheller unless legal/accountin...
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: visible_title_review, external_write_gate_review, human_blocker_or_decision
+- #548 Week 1 launch milestone: access, app audit, source sync, payment/email decisions
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #422 Provide Rabbi software, Vimeo, library, and analytics inventory
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #343 One Time access/materials: Replit, DNS/domain, GHL, payment processor, bank reporting, Drive, YouTube, Meta...
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: visible_title_review, external_write_gate_review, human_blocker_or_decision
+- #543 Configure Resend sender authentication
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #541 Clean and import Rabbi Scheller contacts
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #530 Prepare Resend email sender setup and warm blast plan
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #529 Configure launch payment links after processor decision/access
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #546 Configure payment products and checkout metadata after processor decision
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #542 Prepare warm launch email sequence
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #545 Create email send approval gate
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #544 Send internal test emails only
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #547 Test checkout success, failure, cancel, and access flow
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #531 Build or update Rabbi Scheller landing page and funnel
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #549 Week 2 launch milestone: app migration, funnel, payment links, email setup
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #550 Week 3 launch milestone: community, access, support, and question-flow QA
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #551 Week 4 launch milestone: warm launch readiness and ads gate
+  - Stage: assigned; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+
+## Visible Title Review
+
+- #342 One Time access/materials: Business/bank/payment processor setup under Rabbi Sheller unless legal/accountin...
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: visible_title_review, external_write_gate_review, human_blocker_or_decision
+- #343 One Time access/materials: Replit, DNS/domain, GHL, payment processor, bank reporting, Drive, YouTube, Meta...
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: visible_title_review, external_write_gate_review, human_blocker_or_decision

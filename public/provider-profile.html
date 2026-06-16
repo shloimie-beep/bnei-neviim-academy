@@ -4,11 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BNA Provider Profile</title>
+    <meta name="description" content="BNA service provider profile.">
+    <link rel="canonical" href="https://bneineviimacademy.org/providers">
+    <meta property="og:title" content="BNA Provider Profile">
+    <meta property="og:description" content="Approved BNA service provider profile.">
+    <meta property="og:type" content="profile">
     <script>
         try { localStorage.removeItem('bnaStudentAccessCode'); } catch (error) {}
     </script>
     <style>
         :root {
+            --primary-blue: #1e3a5f;
+            --secondary-blue: #2c5282;
             --ink: #151515;
             --muted: #626262;
             --paper: #f7f7f4;
@@ -25,7 +32,7 @@
             margin: 0;
             min-height: 100vh;
             color: var(--ink);
-            font-family: "Trebuchet MS", Verdana, sans-serif;
+            font-family: "Inter", "Segoe UI", system-ui, sans-serif;
             background: linear-gradient(180deg, #fff 0%, var(--paper) 100%);
         }
 
@@ -58,7 +65,7 @@
             width: 38px;
             height: 38px;
             border-radius: 8px;
-            background: #111;
+            background: var(--primary-blue);
             color: #fff;
             font-weight: 900;
         }
@@ -116,6 +123,10 @@
         }
 
         .stack { display: grid; gap: 14px; }
+
+        .provider-index-return {
+            width: fit-content;
+        }
 
         .pill {
             display: inline-flex;
@@ -178,34 +189,30 @@
             .avatar { width: 96px; }
         }
     </style>
+    <link rel="stylesheet" href="/css/bna-site-nav.css">
 </head>
 <body>
-    <header class="topbar">
-        <div class="brand">
-            <span class="mark">BNA</span>
-            <div>
-                <strong>Bnei Neviim Academy</strong>
-                <div class="small">Service provider profile</div>
-            </div>
-        </div>
-        <a class="button" href="/service-providers">Provider Index</a>
-    </header>
+    <div id="siteNavMount" data-bna-site-nav data-nav-context="provider-profile" data-nav-active="service-providers"></div>
+    <script src="/js/bna-site-nav.js"></script>
 
     <main class="stack">
+        <a class="button provider-index-return" href="/service-providers">Provider Index</a>
         <section id="status" class="panel">Loading provider...</section>
         <section id="profile" class="profile-hero hidden"></section>
         <section id="services" class="grid hidden"></section>
         <section id="gallery" class="grid hidden"></section>
-        <section id="google" class="panel hidden"></section>
-        <section id="comments" class="panel stack hidden"></section>
+        <section id="upgrade" class="panel hidden"></section>
         <section id="contact" class="panel stack hidden">
             <div>
                 <h2>Ask a question</h2>
-                <p class="small">Your message is logged for the provider and BNA review. No private school or household data is shown here.</p>
+                <p class="small">Your message is saved for BNA/provider follow-up. No private school or household data is shown here.</p>
             </div>
             <form id="questionForm" class="stack">
                 <label>Email
                     <input name="email" type="email">
+                </label>
+                <label>Phone
+                    <input name="phone" type="tel">
                 </label>
                 <label>Question
                     <textarea name="message" required maxlength="3000"></textarea>
@@ -216,6 +223,8 @@
         </section>
     </main>
 
+    <div id="siteFooterMount" data-bna-site-footer data-nav-active="service-providers"></div>
+
     <script>
         const slug = decodeURIComponent(window.location.pathname.split('/').filter(Boolean).pop() || '');
         const els = {
@@ -223,8 +232,7 @@
             profile: document.getElementById('profile'),
             services: document.getElementById('services'),
             gallery: document.getElementById('gallery'),
-            google: document.getElementById('google'),
-            comments: document.getElementById('comments'),
+            upgrade: document.getElementById('upgrade'),
             contact: document.getElementById('contact'),
             questionForm: document.getElementById('questionForm'),
             questionStatus: document.getElementById('questionStatus'),
@@ -262,64 +270,75 @@
 
         function render() {
             const name = provider.display_name || 'Provider';
+            const description = provider.short_description || provider.about || 'BNA service provider profile.';
+            const canonical = `${window.location.origin}/providers/${encodeURIComponent(provider.slug || slug)}`;
+            document.title = `${name} | BNA Provider Index`;
+            document.querySelector('meta[name="description"]')?.setAttribute('content', description);
+            document.querySelector('link[rel="canonical"]')?.setAttribute('href', canonical);
+            document.querySelector('meta[property="og:title"]')?.setAttribute('content', `${name} | BNA Provider Index`);
+            document.querySelector('meta[property="og:description"]')?.setAttribute('content', description);
+            const jsonLd = document.getElementById('providerJsonLd');
+            if (jsonLd) {
+                jsonLd.textContent = JSON.stringify({
+                    '@context': 'https://schema.org',
+                    '@type': 'LocalBusiness',
+                    name,
+                    url: canonical,
+                    description,
+                    areaServed: provider.location_label || provider.service_area || provider.city || undefined,
+                    image: provider.profile_photo_url || undefined
+                });
+            }
             els.status.classList.add('hidden');
             els.profile.classList.remove('hidden');
             els.services.classList.remove('hidden');
-            els.gallery.classList.toggle('hidden', !(provider.media || []).length);
-            els.google.classList.remove('hidden');
-            els.comments.classList.remove('hidden');
+            els.gallery.classList.toggle('hidden', !(provider.images || []).length);
+            els.upgrade.classList.remove('hidden');
             els.contact.classList.remove('hidden');
 
             els.profile.innerHTML = `
                 <div class="avatar">${provider.profile_photo_url ? `<img src="${escapeHtml(provider.profile_photo_url)}" alt="${escapeHtml(name)}">` : escapeHtml(initials(name))}</div>
                 <div>
                     <h1>${escapeHtml(name)}</h1>
-                    <p class="muted">${escapeHtml([provider.headline, provider.service_area].filter(Boolean).join(' / ') || 'BNA service provider')}</p>
-                    ${provider.bio ? `<p>${escapeHtml(provider.bio)}</p>` : ''}
+                    <p class="muted">${escapeHtml([provider.short_description, provider.location_label || provider.service_area].filter(Boolean).join(' / ') || 'BNA service provider')}</p>
+                    ${provider.about ? `<p>${escapeHtml(provider.about)}</p>` : ''}
                     <div class="pills">
-                        ${(provider.service_categories || []).map(item => `<span class="pill">${escapeHtml(item)}</span>`).join('')}
+                        ${(provider.categories || []).map(item => `<a class="pill" href="/providers/category/${encodeURIComponent(item.slug)}">${escapeHtml(item.name || item.slug)}</a>`).join('')}
                         ${(provider.languages || []).map(item => `<span class="pill">${escapeHtml(item)}</span>`).join('')}
+                        ${(provider.offerings || []).some(item => item.is_free || String(item.offering_type || '').startsWith('free_')) ? '<span class="pill">Free offering</span>' : ''}
                     </div>
                     <div class="pills">
                         ${provider.website_url ? `<a class="button" href="${escapeHtml(provider.website_url)}" target="_blank" rel="noopener noreferrer">Website</a>` : ''}
-                        ${provider.whatsapp_phone ? `<a class="button" href="https://wa.me/${escapeHtml(String(provider.whatsapp_phone).replace(/\D/g, ''))}" target="_blank" rel="noopener noreferrer">WhatsApp</a>` : ''}
+                        ${provider.whatsapp ? `<a class="button" href="https://wa.me/${escapeHtml(String(provider.whatsapp).replace(/\D/g, ''))}" target="_blank" rel="noopener noreferrer">WhatsApp</a>` : ''}
+                        ${provider.email ? `<a class="button" href="mailto:${escapeHtml(provider.email)}">Email</a>` : ''}
                     </div>
                 </div>
             `;
-            els.services.innerHTML = (provider.services || []).length
-                ? provider.services.map(service => `
+            els.services.innerHTML = (provider.offerings || provider.services || []).length
+                ? (provider.offerings || provider.services || []).map(service => `
                     <article class="panel">
                         <h2>${escapeHtml(service.title || 'Service')}</h2>
-                        <p class="small">${escapeHtml([service.service_type, service.city, service.price_amount ? `${service.currency || 'ILS'} ${service.price_amount}` : 'Price pending'].filter(Boolean).join(' / '))}</p>
+                        <p class="small">${escapeHtml([service.offering_type || service.service_type, service.age_range, service.schedule_text, service.is_free ? 'Free' : service.price_text || 'Details by provider'].filter(Boolean).join(' / '))}</p>
                         ${service.description ? `<p>${escapeHtml(service.description)}</p>` : ''}
+                        ${service.signup_url ? `<a class="button" href="${escapeHtml(service.signup_url)}" target="_blank" rel="noopener noreferrer">Open Offering</a>` : ''}
                     </article>
                 `).join('')
                 : '<article class="panel"><h2>Services</h2><p class="small">Service details are pending BNA review.</p></article>';
-            els.gallery.innerHTML = (provider.media || []).filter(item => item.media_type !== 'profile').map(item => `
+            els.gallery.innerHTML = (provider.images || []).map(item => `
                 <article class="panel">
-                    <img src="${escapeHtml(item.url)}" alt="${escapeHtml(item.alt_text || name)}" style="width:100%;border-radius:8px;border:1px solid var(--line);">
+                    <img src="${escapeHtml(item.image_url || item.url)}" alt="${escapeHtml(item.alt_text || name)}" style="width:100%;border-radius:8px;border:1px solid var(--line);">
                     ${item.alt_text ? `<p class="small">${escapeHtml(item.alt_text)}</p>` : ''}
                 </article>
             `).join('');
-            const google = provider.google_business || {};
-            els.google.innerHTML = `
-                <h2>Google Business Profile</h2>
-                <div class="notice">${escapeHtml(google.fallback || 'Google live feed is not connected yet.')}</div>
+            els.upgrade.innerHTML = `
+                <h2>Improve this listing</h2>
+                <p class="small">Providers can ask BNA about marketing help, ads, SEO, improved websites or funnels, and premium listing options. Basic listing stays free.</p>
                 <div class="pills">
-                    <span class="pill">${escapeHtml(String(google.status || 'not_connected').replace(/_/g, ' '))}</span>
-                    <span class="pill">${google.reviews_live ? 'Live reviews connected' : 'Manual fallback'}</span>
-                    ${google.manual_profile_url ? `<a class="pill" href="${escapeHtml(google.manual_profile_url)}" target="_blank" rel="noopener noreferrer">Manual Google profile</a>` : ''}
+                    <button class="button" type="button" onclick="recordUpgradeInterest('marketing_help')">Marketing help</button>
+                    <button class="button" type="button" onclick="recordUpgradeInterest('seo')">SEO</button>
+                    <button class="button" type="button" onclick="recordUpgradeInterest('premium_listing')">Premium listing</button>
                 </div>
-            `;
-            els.comments.innerHTML = `
-                <h2>Comments</h2>
-                ${(provider.comments || []).length ? provider.comments.map(item => `
-                    <article class="panel" style="box-shadow:none;">
-                        <strong>${escapeHtml(item.rating ? `${item.rating}/5` : 'Comment')}</strong>
-                        <p>${escapeHtml(item.body || '')}</p>
-                        ${item.provider_reply ? `<p class="small"><strong>Provider reply:</strong> ${escapeHtml(item.provider_reply)}</p>` : ''}
-                    </article>
-                `).join('') : '<p class="small">No visible comments yet.</p>'}
+                <span id="upgradeStatus" class="small"></span>
             `;
         }
 
@@ -337,7 +356,7 @@
             event.preventDefault();
             els.questionStatus.textContent = 'Sending...';
             try {
-                await api(`/api/providers/${encodeURIComponent(provider.id)}/questions`, {
+                await api(`/api/providers/${encodeURIComponent(provider.slug || slug)}/questions`, {
                     method: 'POST',
                     body: JSON.stringify(formObject(event.currentTarget)),
                 });
@@ -348,7 +367,27 @@
             }
         });
 
+        async function recordUpgradeInterest(type) {
+            const status = document.getElementById('upgradeStatus');
+            if (status) status.textContent = 'Saving interest...';
+            try {
+                const data = await api(`/api/providers/${encodeURIComponent(provider.slug || slug)}/upgrade-interest`, {
+                    method: 'POST',
+                    body: JSON.stringify({ upgrade_type: type })
+                });
+                if (data.url) window.open(data.url, '_blank', 'noopener,noreferrer');
+                if (status) status.textContent = data.message || 'Interest saved.';
+            } catch (error) {
+                if (status) status.textContent = error.message || 'Could not save interest.';
+            }
+        }
+
         load();
     </script>
+    <script type="application/ld+json" id="providerJsonLd">
+        {"@context":"https://schema.org","@type":"LocalBusiness","name":"BNA provider"}
+    </script>
+    <script src="/js/bna-helper-knowledge.js"></script>
+    <script src="/js/bna-bot-widget.js"></script>
 </body>
 </html>

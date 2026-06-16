@@ -1,0 +1,100 @@
+{
+  "started_at": "2026-06-14T20:57:34.141Z",
+  "base_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "operations login",
+      "ok": true,
+      "duration_ms": 691,
+      "data": {
+        "user": "SHLOIMIE",
+        "role": "super_admin"
+      }
+    },
+    {
+      "name": "desktop Google approval packet renders",
+      "ok": true,
+      "duration_ms": 2279,
+      "data": {
+        "url": "https://bneineviimacademy.org/operations?view=settings&section=google_workspace",
+        "viewport": {
+          "width": 1366,
+          "height": 900
+        },
+        "metrics": {
+          "width": 1366,
+          "scrollWidth": 1366,
+          "bodyScrollWidth": 1366,
+          "title": "BNA Operations"
+        },
+        "screenshot": "ops/playwright-smokes/2026-06-14-approval-readiness-live/google-approval-desktop.png"
+      }
+    },
+    {
+      "name": "mobile Google approval packet renders",
+      "ok": true,
+      "duration_ms": 1156,
+      "data": {
+        "url": "https://bneineviimacademy.org/operations?view=settings&section=google_workspace",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "metrics": {
+          "width": 390,
+          "scrollWidth": 390,
+          "bodyScrollWidth": 390,
+          "title": "BNA Operations"
+        },
+        "screenshot": "ops/playwright-smokes/2026-06-14-approval-readiness-live/google-approval-mobile.png"
+      }
+    },
+    {
+      "name": "desktop One Time publishing packet renders",
+      "ok": true,
+      "duration_ms": 1368,
+      "data": {
+        "url": "https://bneineviimacademy.org/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+        "viewport": {
+          "width": 1366,
+          "height": 900
+        },
+        "metrics": {
+          "width": 1366,
+          "scrollWidth": 1366,
+          "bodyScrollWidth": 1366,
+          "title": "BNA Operations"
+        },
+        "screenshot": "ops/playwright-smokes/2026-06-14-approval-readiness-live/one-time-publishing-desktop.png"
+      }
+    },
+    {
+      "name": "mobile One Time publishing packet renders",
+      "ok": true,
+      "duration_ms": 1872,
+      "data": {
+        "url": "https://bneineviimacademy.org/operations?workspace=rabbi_sheller_provider&view=content&section=one_time_library",
+        "viewport": {
+          "width": 390,
+          "height": 844
+        },
+        "metrics": {
+          "width": 390,
+          "scrollWidth": 390,
+          "bodyScrollWidth": 390,
+          "title": "BNA Operations"
+        },
+        "screenshot": "ops/playwright-smokes/2026-06-14-approval-readiness-live/one-time-publishing-mobile.png"
+      }
+    },
+    {
+      "name": "no console errors",
+      "ok": true,
+      "duration_ms": 1,
+      "data": {
+        "warnings": 0
+      }
+    }
+  ],
+  "result": "passed"
+}

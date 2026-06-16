@@ -227,6 +227,34 @@ test('WAPI phonebook CRM apply preview only plans first-party local writes', () 
   assert.ok(preview.writes.some((write) => write.target === 'bna_parent_leads' && String(write.lead_id) === '50'));
   assert.ok(preview.skipped_writes.some((write) => write.target === 'bna_students'));
   assert.ok(preview.skipped_writes.some((write) => write.target === 'bna_service_providers'));
+
+  const unmatched = buildWapiPhonebookCrmWritePreview({
+    key: 'phone:972503333333',
+    phone_digits: '+972503333333',
+    display_name: 'WhatsApp School Prospect',
+    recommended_type: 'school_interest',
+    linked_records: [],
+    last_preview: 'Asked about registration for a son',
+  }, { correction_type: 'school_interest' });
+  assert.ok(unmatched.writes.some((write) =>
+    write.target === 'bna_parent_leads'
+    && write.action === 'create_lead_candidate'
+    && write.status === 'lead_candidate'
+    && write.source === 'whatsapp'
+  ));
+
+  const matchedParent = buildWapiPhonebookCrmWritePreview({
+    key: 'phone:972504444444',
+    phone_digits: '+972504444444',
+    display_name: 'Existing BNA Parent',
+    recommended_type: 'school_interest',
+    linked_records: [{ type: 'signup', id: 12, name: 'Existing BNA Parent' }],
+  }, { correction_type: 'school_interest' });
+  assert.equal(matchedParent.writes.some((write) => write.target === 'bna_parent_leads' && write.action === 'create_lead_candidate'), false);
+  assert.ok(matchedParent.skipped_writes.some((write) =>
+    write.target === 'bna_parent_leads'
+    && /duplicate lead candidate/.test(write.reason)
+  ));
 });
 
 test('WAPI phonebook report is exposed as guarded Operations tooling', () => {
@@ -237,6 +265,8 @@ test('WAPI phonebook report is exposed as guarded Operations tooling', () => {
   assert.match(server, /APPLY_WAPI_CORRECTION/);
   assert.match(server, /account-wide and requires an unscoped Operations admin login/);
   assert.match(server, /applyWapiPhonebookCrmWrites/);
+  assert.match(server, /lead_candidate_created_from_wapi_phonebook/);
+  assert.match(wapiPhonebookLib, /create_lead_candidate/);
   assert.match(wapiPhonebookLib, /Student records are not changed by WAPI phonebook corrections/);
   assert.doesNotMatch(server, /phonebook-report[\s\S]{0,500}SEND_WHATSAPP/);
   assert.doesNotMatch(server, /phonebook-corrections[\s\S]{0,900}SEND_WHATSAPP/);
@@ -248,10 +278,37 @@ test('WAPI phonebook report is exposed as guarded Operations tooling', () => {
   assert.match(operations, /Local contact\/tag writes/);
   assert.match(operations, /Phonebook grouping/);
   assert.match(operations, /Phonebook Grouping Report/);
+  assert.match(operations, /Phonebook Workspace/);
+  assert.match(operations, /wapi-conversation-workspace/);
+  assert.match(operations, /selectWapiPhonebookGroup/);
+  assert.match(operations, /wapiGroupTimelineItems/);
+  assert.match(operations, /addWapiPhonebookNote/);
+  assert.match(operations, /wapi_phonebook_workspace/);
+  assert.match(operations, /needsWapiPhonebookData/);
   assert.match(operations, /Corrections Applied/);
   assert.match(operations, /never sends WhatsApp messages/);
+  assert.match(operations, /No WhatsApp message was sent/);
+  assert.match(operations, /No WhatsApp message, broadcast, or external CRM write/);
 
   assert.match(packageJson, /"wapi:phonebook-report": "node scripts\/wapi-phonebook-report\.mjs"/);
   assert.match(reportScript, /Dry-run only/);
   assert.doesNotMatch(reportScript, /SEND_WHATSAPP|fetch\(/);
+});
+
+test('Operations contact cards render matched local WAPI communication history without sending', () => {
+  assert.match(operations, /function phoneTokenVariantsClient/);
+  assert.match(operations, /function communicationEmailTokens/);
+  assert.match(operations, /function communicationMatchesSignup/);
+  assert.match(operations, /function communicationMatchesLead/);
+  assert.match(operations, /function renderCommunicationHistoryGuardrail/);
+  assert.match(operations, /Read-only local history matched by BNA record ID, normalized phone, email, or WAPI source context/);
+  assert.match(operations, /data-contact-communication-history="signup"/);
+  assert.match(operations, /data-contact-communication-history="lead"/);
+  assert.match(operations, /No Whapi sync, WhatsApp send, broadcast, CRM tag update, or external CRM write/);
+  assert.match(operations, /const communications = signupCommunications\(signup\)/);
+  assert.match(operations, /const communications = leadCommunications\(lead\)/);
+  assert.match(operations, /return phoneTokensFromValues\(\[/);
+  assert.doesNotMatch(operations, /function renderSignupCommunicationList[\s\S]{0,900}SEND_WHATSAPP/);
+  assert.doesNotMatch(operations, /function renderLeadCommunicationList[\s\S]{0,900}SEND_WHATSAPP/);
+  assert.doesNotMatch(operations, /function renderCommunicationHistoryGuardrail[\s\S]{0,500}api\.createContactCommunication/);
 });

@@ -1,0 +1,71 @@
+{
+  "started_at": "2026-06-14T20:14:09.586Z",
+  "app_url": "https://bneineviimacademy.org",
+  "steps": [
+    {
+      "name": "deployed widget source includes mobile sheet rules",
+      "ok": true,
+      "duration_ms": 732,
+      "details": {
+        "bytes": 34976
+      }
+    },
+    {
+      "name": "mobile public helper opens as partial bottom sheet and can minimize",
+      "ok": true,
+      "duration_ms": 4997,
+      "details": {
+        "viewportHeight": 844,
+        "viewportWidth": 390,
+        "panelHeight": 591,
+        "panelTop": 245,
+        "panelBottom": 8,
+        "panelWidth": 374,
+        "launcherAbovePanel": true,
+        "launcherOpenClass": true,
+        "borderRadius": "16px",
+        "bodyScrollWidth": 390,
+        "clientWidth": 390,
+        "hasTenOneCopy": true,
+        "hasOldFollowup": false,
+        "launcherExpanded": "true",
+        "closed": {
+          "expanded": "false",
+          "openClass": false
+        }
+      }
+    },
+    {
+      "name": "desktop public helper remains side panel",
+      "ok": true,
+      "duration_ms": 5157,
+      "details": {
+        "viewportHeight": 900,
+        "panelHeight": 900,
+        "panelTop": 0,
+        "panelRight": 0,
+        "panelWidth": 460,
+        "transform": "matrix(1, 0, 0, 1, 0, 0)",
+        "oldFollowupInSource": false
+      }
+    },
+    {
+      "name": "browser console stayed clean",
+      "ok": true,
+      "duration_ms": 0,
+      "details": {
+        "console_messages": 0
+      }
+    }
+  ],
+  "screenshots": [
+    {
+      "label": "Mobile assistant partial sheet",
+      "path": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-14-assistant-mobile-sheet-live\\mobile-open.png"
+    },
+    {
+      "label": "Desktop assistant side panel",
+      "path": "C:\\Users\\User\\BNA v2.0\\ops\\playwright-smokes\\2026-06-14-assistant-mobile-sheet-live\\desktop-open.png"
+    }
+  ]
+}

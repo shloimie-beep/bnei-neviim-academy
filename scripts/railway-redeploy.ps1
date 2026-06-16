@@ -86,6 +86,16 @@ if (Test-Path (Join-Path $repoRoot "package-lock.json")) {
   Copy-Item -LiteralPath (Join-Path $repoRoot "package-lock.json") -Destination $deployRoot
 }
 Copy-Item -LiteralPath (Join-Path $repoRoot "railway.json") -Destination $deployRoot
+foreach ($topLevelDoc in @("AGENTS.md", "TASKS.md", "SYSTEM-STATE.md", "PROJECT-NOTES.md", "MEMORY.md")) {
+  $docPath = Join-Path $repoRoot $topLevelDoc
+  if (Test-Path $docPath) {
+    Copy-Item -LiteralPath $docPath -Destination $deployRoot
+  }
+}
+Get-ChildItem -LiteralPath $repoRoot -Filter "railway-migration-*.sql" -File |
+  ForEach-Object {
+    Copy-Item -LiteralPath $_.FullName -Destination $deployRoot
+  }
 if (Test-Path (Join-Path $repoRoot "Dockerfile")) {
   Copy-Item -LiteralPath (Join-Path $repoRoot "Dockerfile") -Destination $deployRoot
 }
@@ -162,6 +172,44 @@ if (Test-Path (Join-Path $repoRoot "src")) {
 }
 if (Test-Path (Join-Path $repoRoot "scripts")) {
   Copy-Item -LiteralPath (Join-Path $repoRoot "scripts") -Destination $deployRoot -Recurse
+}
+if (Test-Path (Join-Path $repoRoot "ops")) {
+  $opsDeployRoot = Join-Path $deployRoot "ops"
+  New-Item -ItemType Directory -Path $opsDeployRoot -Force | Out-Null
+  foreach ($opsFile in @("agent-task-ledger.jsonl", "agent-changelog.md")) {
+    $opsFilePath = Join-Path (Join-Path $repoRoot "ops") $opsFile
+    if (Test-Path $opsFilePath) {
+      Copy-Item -LiteralPath $opsFilePath -Destination $opsDeployRoot
+    }
+  }
+  $queueAuditDir = Join-Path (Join-Path $repoRoot "ops") "queue-audits"
+  $latestQueueAudit = Join-Path $queueAuditDir "latest.json"
+  if (Test-Path $latestQueueAudit) {
+    $queueAuditDeployRoot = Join-Path $opsDeployRoot "queue-audits"
+    New-Item -ItemType Directory -Path $queueAuditDeployRoot -Force | Out-Null
+    Copy-Item -LiteralPath $latestQueueAudit -Destination $queueAuditDeployRoot -Force
+    try {
+      $queueAudit = Get-Content -LiteralPath $latestQueueAudit -Raw | ConvertFrom-Json
+      $reportPaths = @()
+      foreach ($item in @($queueAudit.items)) {
+        foreach ($reportPath in @($item.report_paths)) {
+          if ($reportPath -match '^ops/(agent-fleet-runs|openai-smokes|system-audits)/') {
+            $reportPaths += $reportPath
+          }
+        }
+      }
+      foreach ($reportPath in ($reportPaths | Sort-Object -Unique)) {
+        $sourceReport = Join-Path $repoRoot ($reportPath -replace '/', '\')
+        if (Test-Path $sourceReport) {
+          $destReport = Join-Path $deployRoot ($reportPath -replace '/', '\')
+          New-Item -ItemType Directory -Path (Split-Path -Parent $destReport) -Force | Out-Null
+          Copy-Item -LiteralPath $sourceReport -Destination $destReport -Force
+        }
+      }
+    } catch {
+      Write-Host "Could not parse ops/queue-audits/latest.json for referenced report files: $($_.Exception.Message)" -ForegroundColor Yellow
+    }
+  }
 }
 if (Test-Path (Join-Path $repoRoot "tasks-pending")) {
   Copy-Item -LiteralPath (Join-Path $repoRoot "tasks-pending") -Destination $deployRoot -Recurse

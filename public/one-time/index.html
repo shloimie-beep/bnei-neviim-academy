@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>OneTime Mishnayos - Draft Program Preview</title>
+  <link rel="icon" href="/images/one-time-logo-black.png">
+  <style>
+    :root {
+      --ink: #14110f;
+      --paper: #fffaf0;
+      --gold: #f4c542;
+      --gold-dark: #b98500;
+      --blue: #1d4e89;
+      --green: #2f6f5e;
+      --line: rgba(20, 17, 15, 0.16);
+      --muted: #6f675e;
+      --white: #ffffff;
+      --shadow: 0 22px 70px rgba(0, 0, 0, 0.22);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .topbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px clamp(18px, 4vw, 54px);
+      color: var(--white);
+      background: rgba(20, 17, 15, 0.84);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.16);
+      backdrop-filter: blur(14px);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      font-weight: 800;
+    }
+
+    .brand img {
+      width: 34px;
+      height: 34px;
+      object-fit: contain;
+      background: var(--gold);
+      border-radius: 6px;
+      padding: 4px;
+    }
+
+    .brand span {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .topnav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .topnav a,
+    .draft-pill {
+      min-height: 34px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid rgba(255, 255, 255, 0.26);
+      border-radius: 6px;
+      padding: 7px 11px;
+      font-size: 0.86rem;
+      font-weight: 700;
+      color: var(--white);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .draft-pill {
+      color: var(--ink);
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+
+    .hero {
+      min-height: 88vh;
+      display: flex;
+      align-items: flex-end;
+      padding: 112px clamp(22px, 6vw, 78px) 56px;
+      color: var(--white);
+      background:
+        linear-gradient(90deg, rgba(20, 17, 15, 0.9) 0%, rgba(20, 17, 15, 0.66) 44%, rgba(20, 17, 15, 0.24) 100%),
+        url("/images/one-time-existing-site-preview.jpg") center / cover no-repeat;
+    }
+
+    .hero-inner {
+      width: min(850px, 100%);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      margin-bottom: 14px;
+      color: var(--gold);
+      font-size: 0.82rem;
+      font-weight: 900;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 780px;
+      margin: 0;
+      font-size: clamp(3rem, 9vw, 6.8rem);
+      line-height: 0.95;
+      letter-spacing: 0;
+    }
+
+    .hero-copy {
+      max-width: 680px;
+      margin: 20px 0 0;
+      font-size: clamp(1rem, 2.1vw, 1.34rem);
+      color: rgba(255, 255, 255, 0.9);
+    }
+
+    .hero-actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 44px;
+      border-radius: 6px;
+      border: 1px solid var(--ink);
+      padding: 11px 16px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.16);
+    }
+
+    .button.primary {
+      color: var(--ink);
+      background: var(--gold);
+      border-color: var(--gold);
+    }
+
+    .button.secondary {
+      color: var(--white);
+      border-color: rgba(255, 255, 255, 0.42);
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    main {
+      overflow: hidden;
+    }
+
+    section {
+      padding: 54px clamp(18px, 5vw, 70px);
+    }
+
+    .intro-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      padding: 0;
+      background: var(--line);
+    }
+
+    .strip-cell {
+      min-height: 112px;
+      padding: 24px;
+      background: var(--white);
+    }
+
+    .strip-cell strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 1rem;
+    }
+
+    .strip-cell span {
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .section-head {
+      max-width: 780px;
+      margin-bottom: 26px;
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      font-size: clamp(2rem, 4vw, 3.2rem);
+      line-height: 1.02;
+      letter-spacing: 0;
+    }
+
+    .section-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.04rem;
+    }
+
+    .tier-grid,
+    .region-grid,
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 20px;
+      background: var(--white);
+      min-height: 100%;
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 1.22rem;
+      letter-spacing: 0;
+    }
+
+    .card p {
+      margin: 0 0 14px;
+      color: var(--muted);
+    }
+
+    .price-pending {
+      display: inline-flex;
+      align-items: center;
+      min-height: 32px;
+      border-radius: 6px;
+      padding: 5px 10px;
+      color: var(--ink);
+      background: #ffe28a;
+      font-size: 0.9rem;
+      font-weight: 900;
+    }
+
+    .candidate-list {
+      margin: 14px 0 0;
+      padding: 0;
+      list-style: none;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    .candidate-list li + li {
+      margin-top: 7px;
+    }
+
+    .region-band {
+      background: #f5f8fb;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .region-card.active {
+      border-color: var(--blue);
+      box-shadow: inset 0 0 0 2px rgba(29, 78, 137, 0.12);
+    }
+
+    .calendar-card {
+      background: var(--ink);
+      color: var(--white);
+      border-color: rgba(255, 255, 255, 0.16);
+    }
+
+    .calendar-card p {
+      color: rgba(255, 255, 255, 0.74);
+    }
+
+    .artifact-row {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .artifact-row span {
+      border-radius: 6px;
+      padding: 8px;
+      background: rgba(244, 197, 66, 0.14);
+      color: #ffe28a;
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-align: center;
+    }
+
+    .interest {
+      display: grid;
+      grid-template-columns: minmax(0, 0.9fr) minmax(320px, 1.1fr);
+      gap: 28px;
+      align-items: start;
+      background: var(--white);
+    }
+
+    .form-panel {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 20px;
+      background: #fffdf8;
+      box-shadow: var(--shadow);
+    }
+
+    form {
+      display: grid;
+      gap: 12px;
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 0.88rem;
+      font-weight: 800;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 11px 12px;
+      color: var(--ink);
+      background: var(--white);
+      font: inherit;
+    }
+
+    textarea {
+      min-height: 108px;
+      resize: vertical;
+    }
+
+    .two-col {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .checkbox-line {
+      display: flex;
+      align-items: flex-start;
+      gap: 9px;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .checkbox-line input {
+      width: auto;
+      margin-top: 4px;
+    }
+
+    .form-status {
+      min-height: 22px;
+      color: var(--green);
+      font-weight: 800;
+    }
+
+    footer {
+      padding: 26px clamp(18px, 5vw, 70px);
+      color: rgba(255, 255, 255, 0.76);
+      background: var(--ink);
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 860px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .topnav {
+        justify-content: flex-start;
+      }
+
+      .hero {
+        min-height: 84vh;
+        padding-top: 150px;
+        background-position: center;
+      }
+
+      .intro-strip,
+      .tier-grid,
+      .region-grid,
+      .calendar-grid,
+      .interest,
+      .two-col {
+        grid-template-columns: 1fr;
+      }
+
+      .artifact-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 520px) {
+      .topbar {
+        position: absolute;
+      }
+
+      h1 {
+        font-size: clamp(2.6rem, 15vw, 4rem);
+      }
+
+      section {
+        padding: 42px 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="/one-time" aria-label="OneTime Mishnayos home">
+      <img src="/images/one-time-logo-black.png" alt="">
+      <span>OneTime Mishnayos</span>
+    </a>
+    <nav class="topnav" aria-label="OneTime">
+      <span class="draft-pill">Draft / noindex</span>
+      <a href="#tiers">Tiers</a>
+      <a href="#calendar">7 PM Israel</a>
+      <a href="#interest">Interest</a>
+      <a href="/one-time/member-login">Member Login</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-inner">
+        <span class="eyebrow">Rabbi Scheller's Mishnayos class</span>
+        <h1>OneTime Mishnayos</h1>
+        <p class="hero-copy">
+          A draft program preview for families exploring Mishnayos learning with live class structure, replay/library access, and Rabbi-reviewed learning support.
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="#interest">Register interest</a>
+          <a class="button secondary" href="/rabbi-member">Member access</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="intro-strip" aria-label="Program status">
+      <div class="strip-cell">
+        <strong>Launch status</strong>
+        <span>Draft planning surface. Public launch decisions are still pending.</span>
+      </div>
+      <div class="strip-cell">
+        <strong>Pricing</strong>
+        <span>Candidate prices are under review and are not final.</span>
+      </div>
+      <div class="strip-cell">
+        <strong>Schedule</strong>
+        <span>7:00 PM Israel is modeled as the live class option for review.</span>
+      </div>
+      <div class="strip-cell">
+        <strong>Social proof</strong>
+        <span>Testimonials and claims are pending Rabbi/admin approval.</span>
+      </div>
+    </section>
+
+    <section id="tiers">
+      <div class="section-head">
+        <h2>Class Tiers For Review</h2>
+        <p>These are product-planning tiers only. Checkout is intentionally unavailable until final pricing, billing, and public copy are approved.</p>
+      </div>
+      <div class="tier-grid">
+        <article class="card">
+          <h3>Library + Live Replay</h3>
+          <p>Low-touch access to the Mishnayos library, replay path, and class schedule updates.</p>
+          <span class="price-pending">Pricing pending</span>
+          <ul class="candidate-list">
+            <li>Candidate range: $50, $67, $100, or $149</li>
+            <li>Preferred review point: $50</li>
+            <li>No checkout is enabled</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>Interactive Zoom</h3>
+          <p>Live class participation with replay/library access and moderated question flow.</p>
+          <span class="price-pending">Pricing pending</span>
+          <ul class="candidate-list">
+            <li>Candidate range: $149 or $150</li>
+            <li>Requires Zoom and class operations readiness</li>
+            <li>No checkout is enabled</li>
+          </ul>
+        </article>
+        <article class="card">
+          <h3>VIP High-Touch</h3>
+          <p>High-touch Mishnayos support for families who need more direct guidance.</p>
+          <span class="price-pending">Pricing pending</span>
+          <ul class="candidate-list">
+            <li>Candidate range: $300+</li>
+            <li>Requires final scope and availability decision</li>
+            <li>No checkout is enabled</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="region-band" id="regions">
+      <div class="section-head">
+        <h2>Regional Funnel Fit</h2>
+        <p>The same Mishnayos program can be framed differently by timezone while keeping one first-party product system.</p>
+      </div>
+      <div class="region-grid">
+        <article class="card region-card" data-region-card="israel">
+          <h3>Israel</h3>
+          <p>7:00 PM Israel can be positioned as the direct live class option once schedule visibility is approved.</p>
+        </article>
+        <article class="card region-card" data-region-card="uk">
+          <h3>UK</h3>
+          <p>7:00 PM Israel is likely usable for UK families and should be reviewed as a live-friendly funnel.</p>
+        </article>
+        <article class="card region-card" data-region-card="us">
+          <h3>US</h3>
+          <p>Replay/library framing is likely clearer, with live participation described carefully by timezone.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="calendar">
+      <div class="section-head">
+        <h2>7 PM Israel Class Model</h2>
+        <p>Calendar, source sheets, worksheets, and slides stay admin-review first until each class artifact is approved.</p>
+      </div>
+      <div class="calendar-grid">
+        <article class="card calendar-card">
+          <h3>Live class</h3>
+          <p>Rabbi Scheller's draft Mishnayos slot is modeled at 7:00 PM Israel time.</p>
+          <div class="artifact-row">
+            <span>Zoom pending</span>
+            <span>Replay pending</span>
+            <span>Visibility pending</span>
+          </div>
+        </article>
+        <article class="card calendar-card">
+          <h3>Source prep</h3>
+          <p>Source sheets, worksheets, and slides are generated as review drafts before any member publishing.</p>
+          <div class="artifact-row">
+            <span>Sources</span>
+            <span>Worksheet</span>
+            <span>Slides</span>
+          </div>
+        </article>
+        <article class="card calendar-card">
+          <h3>Questions</h3>
+          <p>Student and parent questions should feed a moderated Rabbi/admin review queue.</p>
+          <div class="artifact-row">
+            <span>Moderated</span>
+            <span>Private first</span>
+            <span>Reviewed</span>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="interest" id="interest">
+      <div class="section-head">
+        <h2>Interest Review</h2>
+        <p>This form saves a first-party OneTime interest lead for internal review. It does not create a checkout, send a message, grant access, or write to an external CRM.</p>
+      </div>
+      <div class="form-panel">
+        <form id="interestForm">
+          <div class="two-col">
+            <label>
+              Parent name
+              <input name="parent_name" autocomplete="name" placeholder="Name">
+            </label>
+            <label>
+              Region
+              <select name="region">
+                <option value="worldwide">Worldwide</option>
+                <option value="israel">Israel</option>
+                <option value="uk">UK</option>
+                <option value="us">US</option>
+              </select>
+            </label>
+          </div>
+          <div class="two-col">
+            <label>
+              Email
+              <input name="email" type="email" autocomplete="email" placeholder="email@example.com">
+            </label>
+            <label>
+              Phone or WhatsApp
+              <input name="phone" autocomplete="tel" placeholder="+972...">
+            </label>
+          </div>
+          <div class="two-col">
+            <label>
+              Learner name
+              <input name="student_name" placeholder="Student or learner">
+            </label>
+            <label>
+              Format
+              <select name="preferred_class_format">
+                <option value="not_sure">Not sure yet</option>
+                <option value="library_live_low_touch">Library + replay</option>
+                <option value="interactive_zoom">Interactive Zoom</option>
+                <option value="vip_high_touch">VIP high-touch</option>
+              </select>
+            </label>
+          </div>
+          <label>
+            Notes
+            <textarea name="notes" placeholder="Timezone, age, learning background, or questions"></textarea>
+          </label>
+          <label class="checkbox-line">
+            <input name="consent" type="checkbox">
+            <span>Save this interest note for OneTime review. No payment or external send is approved by this form.</span>
+          </label>
+          <input type="hidden" name="source_landing_page" value="/one-time">
+          <button class="button primary" type="submit">Save interest</button>
+          <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    OneTime Mishnayos draft preview. BNA homepage, parent app, and private Operations app remain separate surfaces.
+  </footer>
+
+  <script>
+    (function () {
+      const region = location.pathname.split('/').filter(Boolean)[1] || 'worldwide';
+      const regionSelect = document.querySelector('select[name="region"]');
+      const source = document.querySelector('input[name="source_landing_page"]');
+      const cards = document.querySelectorAll('[data-region-card]');
+      if (regionSelect && ['israel', 'uk', 'us'].includes(region)) {
+        regionSelect.value = region;
+      }
+      if (source) source.value = location.pathname || '/one-time';
+      cards.forEach((card) => {
+        if (card.getAttribute('data-region-card') === region) card.classList.add('active');
+      });
+
+      const form = document.getElementById('interestForm');
+      const status = document.getElementById('formStatus');
+      if (!form) return;
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const data = Object.fromEntries(new FormData(form).entries());
+        data.consent = Boolean(form.elements.consent && form.elements.consent.checked);
+        data.interested_tiers = data.preferred_class_format && data.preferred_class_format !== 'not_sure'
+          ? [data.preferred_class_format]
+          : ['library_live_low_touch'];
+        status.textContent = 'Saving...';
+        try {
+          const response = await fetch('/api/one-time/interest', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data),
+          });
+          const payload = await response.json();
+          if (!response.ok || !payload.success) throw new Error(payload.error || 'Unable to save interest');
+          status.textContent = 'Saved for internal OneTime review. No checkout, send, or access grant was created.';
+          form.reset();
+          if (regionSelect && ['israel', 'uk', 'us'].includes(region)) regionSelect.value = region;
+          if (source) source.value = location.pathname || '/one-time';
+        } catch (err) {
+          status.textContent = err.message;
+        }
+      });
+    })();
+  </script>
+  <script src="/js/app-select.js"></script>
+</body>
+</html>

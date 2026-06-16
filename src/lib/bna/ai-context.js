@@ -97,6 +97,7 @@ function buildBnaAiContextSummary(options = {}) {
       `Newest handoffs: ${context.newest_task_pending.join(', ') || 'none'}`,
       '',
       'Brand guardrail: use BNA parent messaging and teaching voice; avoid generic AI marketing copy. Do not reveal secrets, private student data, credentials, or unverified claims.',
+      'Source boundary: BNA is currently centered on the 10-1 program. Do not invent school policies or operational facts from generic school knowledge. If a policy is not in the loaded BNA context, say it is not verified and offer to ask Shloimie.',
     ].join('\n'),
     counts: {
       core_files: existingContextFiles.length,

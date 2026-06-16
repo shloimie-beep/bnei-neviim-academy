@@ -46,7 +46,7 @@ test('keyholder diagnostics inspect expected files and never include secret cont
   const report = inspectKeyholder({ keyholderDir, repoRoot });
   const names = KEYHOLDER_FILES.map((file) => file.name);
   assert.deepEqual(
-    ['openai-api-key.txt', 'buffer-api-key.txt', 'resend-api-key.txt', 'railway-token.txt']
+    ['openai-api-key.txt', 'buffer-api-key.txt', 'resend-api-key.txt', 'stripe-secret-key.txt', 'railway-token.txt']
       .every((name) => names.includes(name)),
     true
   );

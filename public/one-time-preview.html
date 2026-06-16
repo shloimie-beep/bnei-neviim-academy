@@ -265,11 +265,147 @@
       object-fit: contain;
     }
 
-    .approval-list {
+    .approval-list,
+    .onboarding-layout {
       display: grid;
       gap: 10px;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       margin-top: 24px;
+    }
+
+    .onboarding-layout {
+      align-items: start;
+      gap: 18px;
+      grid-template-columns: minmax(0, 0.86fr) minmax(320px, 1.14fr);
+    }
+
+    .intake-panel {
+      background: #ffffff;
+      border: 1px solid var(--one-line);
+      border-radius: 8px;
+      box-shadow: 0 16px 40px rgba(30, 58, 95, 0.1);
+      padding: 20px;
+    }
+
+    .intake-form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .field-grid {
+      display: grid;
+      gap: 12px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    .field label,
+    .intent-label,
+    .ack-row {
+      color: var(--one-blue);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .field input,
+    .field textarea {
+      border: 1px solid var(--one-line);
+      border-radius: 8px;
+      color: var(--one-ink);
+      font: inherit;
+      min-height: 44px;
+      padding: 10px 12px;
+      width: 100%;
+    }
+
+    .field textarea {
+      min-height: 112px;
+      resize: vertical;
+    }
+
+    .intent-options {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .intent-option {
+      border: 1px solid var(--one-line);
+      border-radius: 8px;
+      cursor: pointer;
+      display: grid;
+      gap: 6px;
+      padding: 12px;
+    }
+
+    .intent-option input {
+      margin: 0;
+    }
+
+    .intent-option span {
+      color: var(--one-blue);
+      font-weight: 900;
+    }
+
+    .intent-option small {
+      color: var(--one-muted);
+      line-height: 1.35;
+    }
+
+    .ack-row {
+      align-items: start;
+      display: grid;
+      gap: 8px;
+      grid-template-columns: auto minmax(0, 1fr);
+      line-height: 1.4;
+    }
+
+    .intake-submit {
+      background: var(--one-blue);
+      border: 0;
+      border-radius: 8px;
+      color: #ffffff;
+      cursor: pointer;
+      font: inherit;
+      font-weight: 900;
+      min-height: 46px;
+      padding: 0 18px;
+    }
+
+    .intake-submit:hover {
+      background: var(--one-blue-2);
+    }
+
+    .form-status {
+      border-radius: 8px;
+      color: var(--one-blue);
+      display: none;
+      font-weight: 800;
+      line-height: 1.45;
+      padding: 12px;
+    }
+
+    .form-status.visible {
+      display: block;
+    }
+
+    .form-status.success {
+      background: #eaf8ef;
+      border: 1px solid #a8d8b5;
+    }
+
+    .form-status.error {
+      background: #fff1f0;
+      border: 1px solid #f3b4ad;
+      color: #8a1f17;
     }
 
     .note-card {
@@ -317,6 +453,11 @@
       .quiet-link {
         width: 100%;
       }
+
+      .field-grid,
+      .intent-options {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -336,7 +477,7 @@
         <h1>One Time Mishnah: live learning, sharp questions, real growth.</h1>
         <p class="hero-copy">A focused preview for Rabbi Scheller's live Mishnah membership: one offer, one join path, and a quiet video-library fallback for families who are not ready to join live yet.</p>
         <div class="hero-actions">
-          <a class="primary-cta" href="#membership">Join the Mishnah Shiur</a>
+          <a class="primary-cta" href="#one-time-onboarding">Join the Mishnah Shiur</a>
           <a class="quiet-link" href="#library">Preview the Video Library</a>
         </div>
       </div>
@@ -387,6 +528,87 @@
       </div>
     </section>
 
+    <section class="page-band" id="one-time-onboarding">
+      <div class="section-inner">
+        <div class="section-heading">
+          <h2>Join interest review</h2>
+          <p>Share the basics and the One Time team will review the right next step before any payment link, access link, email, WhatsApp, or public automation is sent.</p>
+        </div>
+        <div class="onboarding-layout">
+          <article class="note-card">
+            <span>Preview-safe intake</span>
+            <strong>Scoped One Time follow-up</strong>
+            <p>This creates a local review record for the One Time Mishnah workspace. It does not create checkout, grant member access, or message anyone automatically.</p>
+          </article>
+          <div class="intake-panel">
+            <form class="intake-form" data-one-time-onboarding>
+              <div class="field-grid">
+                <div class="field">
+                  <label for="otParentName">Contact name</label>
+                  <input id="otParentName" name="parent_name" autocomplete="name" required>
+                </div>
+                <div class="field">
+                  <label for="otEmail">Email</label>
+                  <input id="otEmail" name="parent_email" type="email" autocomplete="email">
+                </div>
+                <div class="field">
+                  <label for="otPhone">Phone or WhatsApp</label>
+                  <input id="otPhone" name="parent_phone" autocomplete="tel">
+                </div>
+                <div class="field">
+                  <label for="otLearnerName">Learner/member name</label>
+                  <input id="otLearnerName" name="learner_name">
+                </div>
+                <div class="field">
+                  <label for="otLearnerAge">Age or stage</label>
+                  <input id="otLearnerAge" name="learner_age">
+                </div>
+                <div class="field">
+                  <label for="otLocation">Location/time zone</label>
+                  <input id="otLocation" name="city" autocomplete="address-level2">
+                </div>
+              </div>
+              <div>
+                <div class="intent-label">Interest path</div>
+                <div class="intent-options">
+                  <label class="intent-option">
+                    <input type="radio" name="intent" value="live" checked>
+                    <span>Live membership</span>
+                    <small>Interested in the recurring Mishnah shiur.</small>
+                  </label>
+                  <label class="intent-option">
+                    <input type="radio" name="intent" value="library">
+                    <span>Video library</span>
+                    <small>Not ready for live, wants recordings first.</small>
+                  </label>
+                  <label class="intent-option">
+                    <input type="radio" name="intent" value="future_cohort">
+                    <span>Later cohort</span>
+                    <small>Interested, but timing is not right yet.</small>
+                  </label>
+                  <label class="intent-option">
+                    <input type="radio" name="intent" value="question">
+                    <span>Ask first</span>
+                    <small>Needs a human answer before joining.</small>
+                  </label>
+                </div>
+              </div>
+              <div class="field full">
+                <label for="otGoals">Schedule, goals, or questions</label>
+                <textarea id="otGoals" name="questions"></textarea>
+              </div>
+              <label class="ack-row">
+                <input type="checkbox" name="preview_ack" required>
+                <span>I understand this preview only queues a review. It does not create payment, access, email, WhatsApp, or public posting.</span>
+              </label>
+              <button class="intake-submit" type="submit">Send for review</button>
+              <div class="form-status" data-one-time-onboarding-status></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="page-band">
       <div class="section-inner">
         <div class="section-heading">
@@ -422,6 +644,52 @@
   <footer>
     <strong>Preview route:</strong> /preview/one-time-mishnah. Do not replace the live Rabbi Scheller site until Shloimie approves this direction.
   </footer>
+  <script src="/js/bna-helper-knowledge.js" defer></script>
   <script src="/js/bna-bot-widget.js" defer></script>
+  <script>
+    (() => {
+      const form = document.querySelector('[data-one-time-onboarding]');
+      const status = document.querySelector('[data-one-time-onboarding-status]');
+      if (!form || !status) return;
+
+      function showStatus(type, message) {
+        status.className = `form-status visible ${type}`;
+        status.textContent = message;
+      }
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const data = new FormData(form);
+        if (!data.get('preview_ack')) {
+          showStatus('error', 'Please confirm the preview-only review notice first.');
+          return;
+        }
+        const payload = Object.fromEntries(data.entries());
+        delete payload.preview_ack;
+        payload.route = window.location.pathname;
+        payload.viewport = {
+          width: window.innerWidth,
+          height: window.innerHeight,
+          device_scale_factor: window.devicePixelRatio || 1,
+        };
+        showStatus('success', 'Sending for review...');
+        try {
+          const response = await fetch('/api/one-time/mishnah/onboarding', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok) throw new Error(result.error || 'Could not save this review request.');
+          showStatus('success', 'Received for review. No payment, access, email, WhatsApp, or public posting was created.');
+          form.reset();
+          const liveOption = form.querySelector('input[name="intent"][value="live"]');
+          if (liveOption) liveOption.checked = true;
+        } catch (error) {
+          showStatus('error', error.message || 'Could not save this review request.');
+        }
+      });
+    })();
+  </script>
 </body>
 </html>

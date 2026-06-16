@@ -1,10 +1,13 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createRequire } from 'module';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '..');
+const require = createRequire(import.meta.url);
+const bufferIntegration = require('../src/lib/integrations/buffer-client');
 const envLocalPath = path.join(repoRoot, '.env.local');
 const bufferSecretFilePath = path.join(repoRoot, '.secrets', 'buffer-api-key.txt');
 const BUFFER_API_BASE = 'https://api.buffer.com';
@@ -59,8 +62,9 @@ export function getBufferConfig() {
     : {};
   const secretFile = readEnvBlockFile(bufferSecretFilePath);
   const inlineSecrets = parseEnvBlock(process.env.BUFFER_API_KEY || '');
+  const runtimeConfig = bufferIntegration.getBufferConfig({ repoRoot });
 
-  const token = pickToken(
+  const token = runtimeConfig.apiKey || pickToken(
     process.env.BUFFER_API_KEY || envFile.BUFFER_API_KEY,
     inlineSecrets.BUFFER_API_KEY || envFile.BUFFER_API_KEY,
     secretFile.BUFFER_API_KEY
@@ -71,8 +75,8 @@ export function getBufferConfig() {
 
   cachedBufferConfig = {
     token,
-    apiBase: process.env.BUFFER_API_BASE || envFile.BUFFER_API_BASE || secretFile.BUFFER_API_BASE || BUFFER_API_BASE,
-    organizationId: process.env.BUFFER_ORGANIZATION_ID || envFile.BUFFER_ORGANIZATION_ID || secretFile.BUFFER_ORGANIZATION_ID || '',
+    apiBase: runtimeConfig.apiBase || process.env.BUFFER_API_BASE || envFile.BUFFER_API_BASE || secretFile.BUFFER_API_BASE || BUFFER_API_BASE,
+    organizationId: runtimeConfig.organizationId || process.env.BUFFER_ORGANIZATION_ID || envFile.BUFFER_ORGANIZATION_ID || secretFile.BUFFER_ORGANIZATION_ID || '',
   };
   return cachedBufferConfig;
 }
@@ -183,8 +187,9 @@ export async function createSocialPost({
   if (media.length) {
     throw new Error('Buffer media posting from Telegram needs hosted asset URLs; this bridge currently creates text Buffer drafts only.');
   }
-  const mode = publishNow ? 'shareNow' : 'addToQueue';
-  const saveToDraft = !publishNow;
+  const requestedPublishNow = Boolean(publishNow);
+  const mode = 'addToQueue';
+  const saveToDraft = true;
   const data = await bufferGraphql(`
     mutation CreateBufferPost($text: String!, $channelId: ChannelId!, $saveToDraft: Boolean!) {
       createPost(input: {
@@ -215,7 +220,9 @@ export async function createSocialPost({
       post: {
         _id: data.createPost?.post?.id || '',
         id: data.createPost?.post?.id || '',
-        status: data.createPost?.post?.status || (publishNow ? 'published' : 'draft'),
+        status: data.createPost?.post?.status || 'draft',
+        requested_publish_now: requestedPublishNow,
+        publish_blocked_by_policy: requestedPublishNow,
       },
     },
     provider: 'buffer',

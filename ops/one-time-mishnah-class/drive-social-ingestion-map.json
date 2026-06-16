@@ -134,5 +134,40 @@
       "Gmail sent One Time task manager access on 2026-06-14",
       "WhatsApp delivered One Time task manager access on communication #1160"
     ]
+  },
+  "app_access_readiness": {
+    "status": "blocked_pending_owner_approved_external_app_access",
+    "label": "One Time app/admin/member-library readiness",
+    "ready_for_live_app_write": false,
+    "ready_for_admin_access_reset": false,
+    "ready_for_member_library_publish": false,
+    "required_before_live_access": [
+      "Current One Time admin URL and deployment target confirmed",
+      "Owner-approved admin reset path or Shloimie/admin login confirmed",
+      "Rabbi/member test login confirmed for read-only smoke checks",
+      "Production or staging database URL/source confirmed for the One Time app",
+      "Vimeo/media hosting destination and hosted media URL path confirmed",
+      "Resend sender/domain and approved notification copy confirmed before any email send",
+      "Billing provider, tier mapping, refund/cancellation policy, and rollback/revoke path approved",
+      "APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING present only for the exact one-item publishing smoke"
+    ],
+    "current_blockers": [
+      "Do not invent or store One Time admin/member credentials in BNA docs.",
+      "External One Time app has not been approved as a BNA write target.",
+      "Member-library destination, audience, visibility rules, hosted media URL, and rollback plan are still required before publish.",
+      "Email/WhatsApp/member notifications remain no-send until sender, recipients, copy, and approval are explicit.",
+      "Billing/access grants remain blocked until trusted payment source, tier mapping, and revoke path are approved."
+    ],
+    "no_write_guard": [
+      "no_admin_password_reset",
+      "no_member_access_grant",
+      "no_member_library_publish",
+      "no_drive_or_video_host_write",
+      "no_resend_email",
+      "no_whatsapp_or_sms",
+      "no_checkout_or_billing_write",
+      "no_external_crm_write"
+    ],
+    "audit_source": "ops/rabbi-scheller/2026-06-14-one-time-app-audit.md"
   }
 }

@@ -217,6 +217,7 @@ function buildWapiPhonebookCrmWritePreview(group = {}, correction = {}) {
   const linkedRecords = Array.isArray(group.linked_records) ? group.linked_records : [];
   const linkedLeadIds = uniqueTextArray(linkedRecords.filter((record) => record.type === 'lead').map((record) => record.id));
   const linkedContactIds = uniqueTextArray(linkedRecords.filter((record) => record.type === 'contact').map((record) => record.id));
+  const linkedCurrentFamilyRecords = linkedRecords.filter((record) => ['lead', 'signup', 'student'].includes(record.type));
   const skippedWrites = [];
   const writes = [];
 
@@ -256,6 +257,47 @@ function buildWapiPhonebookCrmWritePreview(group = {}, correction = {}) {
         correction_type: plan.correction_type,
       },
     });
+  }
+
+  if (!linkedLeadIds.length && plan.lead_type && ['school_interest', 'content_interest', 'group_member'].includes(plan.lead_type)) {
+    if (linkedCurrentFamilyRecords.length) {
+      skippedWrites.push({
+        target: 'bna_parent_leads',
+        action: 'create_lead_candidate',
+        reason: 'Existing parent/signup/student match found; review the linked record instead of creating a duplicate lead candidate.',
+      });
+    } else if (phoneDigits || displayName) {
+      writes.push({
+        target: 'bna_parent_leads',
+        action: 'create_lead_candidate',
+        parent_name: displayName || 'WhatsApp lead candidate',
+        parent_phone: phoneDigits ? `+${phoneDigits}` : null,
+        lead_type: plan.lead_type,
+        status: 'lead_candidate',
+        interest_level: 'unknown',
+        source: 'whatsapp',
+        source_detail: 'WAPI phonebook correction',
+        owner: 'Shloimie',
+        tags: plan.tags,
+        notes: [
+          `Created from WAPI phonebook review as ${plan.correction_type.replace(/_/g, ' ')}.`,
+          group.last_preview ? `Last WhatsApp preview: ${compactText(group.last_preview, 500)}` : '',
+        ].filter(Boolean).join('\n'),
+        metadata_patch: {
+          source: 'wapi_phonebook_correction',
+          phonebook_key: group.key || correction.phonebook_key || correction.phonebookKey || null,
+          correction_type: plan.correction_type,
+          no_send: true,
+          external_write_performed: false,
+        },
+      });
+    } else {
+      skippedWrites.push({
+        target: 'bna_parent_leads',
+        action: 'create_lead_candidate',
+        reason: 'No phone digits or display name were available for a review lead candidate.',
+      });
+    }
   }
 
   for (const record of linkedRecords) {

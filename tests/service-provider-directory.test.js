@@ -78,16 +78,16 @@ test('Rabbi provider checklist blocks login until contact and Drive/social setup
   assert.match(server, /Release login only after Drive\/social ingestion is mapped/);
 });
 
-test('parent portal and Operations expose approved provider directory', () => {
+test('parent portal and Operations expose active provider directory', () => {
   assert.match(server, /service_providers: serviceProviders/);
-  assert.match(parent, /providerDirectory: 'Approved Providers'/);
+  assert.match(parent, /providerDirectory: 'Active Providers'/);
   assert.match(parent, /renderProviderDirectory/);
   assert.match(parent, /providerFilters/);
   assert.match(parent, /providerRadiusBlocked/);
   assert.match(parent, /data-provider-filter="city"/);
   assert.match(parent, /data-provider-filter="capacity"/);
   assert.match(operations, /getServiceProviders/);
-  assert.match(operations, /Approved Providers/);
+  assert.match(operations, /Active Providers/);
   assert.match(operations, /renderServiceProviderDirectory/);
 });
 
@@ -104,11 +104,16 @@ test('public parent/provider surfaces use sanitized provider records and safe CT
   assert.match(server, /return 'provider'/);
 });
 
-test('provider onboarding route and page create draft commercial records safely', () => {
+test('provider onboarding route and page create pending free-listing records safely', () => {
   assert.match(server, /app\.post\('\/api\/provider-onboarding'/);
   assert.match(server, /app\.get\('\/providers\/join'/);
+  assert.match(server, /app\.get\('\/provider-signup'/);
   assert.match(server, /provider_onboarding/);
-  assert.match(server, /Review provider onboarding/);
+  assert.match(server, /Provider joined/);
+  assert.match(server, /auto_approved: false/);
+  assert.match(server, /screening_required: true/);
+  assert.match(server, /status: 'pending'/);
+  assert.match(server, /admin_approval_required: true/);
   assert.match(server, /'unknown_pending_access', 'no_access'/);
   assert.match(server, /commercial_model: commercialModel/);
   assert.match(server, /serviceCategory/);
@@ -125,26 +130,34 @@ test('provider onboarding route and page create draft commercial records safely'
   assert.match(server, /ai_max_interest: false/);
   assert.match(providerJoin, /Provider Network/);
   assert.match(providerJoin, /Free Listing/);
-  assert.match(providerJoin, /This is a free listing application only/);
+  assert.match(providerJoin, /This creates a pending free provider listing/);
   assert.match(providerJoin, /Preferred CTA/);
   assert.match(providerJoin, /services_offered/);
   assert.match(providerJoin, /community_affiliation/);
   assert.match(providerJoin, /discounts_group_options/);
-  assert.match(providerJoin, /\/api\/provider-onboarding/);
+  assert.match(providerJoin, /\/api\/provider-signup/);
+  assert.match(providerJoin, /BNA reviews it before public publishing/);
   assert.doesNotMatch(providerJoin, /Managed Setup|School Workspace|Partner|AI Max|Paid workspace|lead generation|marketing automation|No checkout yet/);
 });
 
 test('public provider join path is conversational and website-linked', () => {
   assert.match(indexHtml, /\/become-service-provider\?onboard=provider/);
-  assert.match(serviceProviders, /\/become-service-provider\?onboard=provider/);
+  assert.match(serviceProviders, /\/provider-signup\?onboard=provider/);
   assert.match(providerJoin, /data-provider-onboarding-bot/);
   assert.match(providerJoin, /Provider onboarding assistant/);
   assert.match(providerJoin, /students, homeschoolers, and alternative education families/);
-  assert.match(providerJoin, /review process/);
-  assert.match(providerJoin, /family-intake funnel paths/);
+  assert.match(providerJoin, /I will keep this short/);
+  assert.match(providerJoin, /BNA reviews before public listing/);
+  assert.match(providerJoin, /provider signup/);
+  assert.match(providerJoin, /premium listing/);
   assert.match(providerJoin, /providerSteps/);
   assert.match(providerJoin, /raw_intake/);
-  assert.match(providerJoin, /\/api\/provider-onboarding/);
+  assert.match(providerJoin, /\/api\/provider-signup/);
+  assert.match(providerJoin, /function shouldAvoidProgrammaticFocus\(\)/);
+  assert.match(providerJoin, /function focusProviderChatInput\(\)/);
+  assert.match(providerJoin, /chatInput\.focus\(\{ preventScroll: true \}\)/);
+  assert.match(providerJoin, /window\.requestAnimationFrame\(scrollProviderBotIntoView\)/);
+  assert.ok((providerJoin.match(/key: '/g) || []).length <= 10);
 });
 
 test('Operations exposes commercial settings, entitlements, access checklist, and audit pages', () => {
@@ -167,7 +180,12 @@ test('Operations exposes commercial settings, entitlements, access checklist, an
 test('provider login is scoped and keeps edits in BNA review', () => {
   assert.match(server, /PROVIDER_SESSION_COOKIE_NAME/);
   assert.match(server, /CREATE TABLE IF NOT EXISTS bna_provider_sessions/);
+  assert.match(server, /CREATE TABLE IF NOT EXISTS bna_provider_password_setup_tokens/);
   assert.match(server, /password_hash/);
+  assert.match(server, /provider_password_setup/);
+  assert.match(server, /app\.post\('\/api\/bna\/service-providers\/:id\/setup-email'/);
+  assert.match(server, /app\.get\('\/api\/provider-portal\/setup-token'/);
+  assert.match(server, /app\.post\('\/api\/provider-portal\/setup-password'/);
   assert.match(server, /app\.post\('\/api\/provider-portal\/login'/);
   assert.match(server, /app\.get\('\/api\/provider-portal\/session', requireProviderSession/);
   assert.match(server, /app\.patch\('\/api\/provider-portal\/profile', requireProviderSession/);
@@ -176,6 +194,9 @@ test('provider login is scoped and keeps edits in BNA review', () => {
   assert.match(server, /No live billing, charge, payout, or admin-fee automation is enabled/);
   assert.match(provider, /BNA Provider Portal/);
   assert.match(provider, /Scoped Provider Workspace/);
+  assert.match(provider, /Set password/);
+  assert.match(provider, /\/api\/provider-portal\/setup-token/);
+  assert.match(provider, /\/api\/provider-portal\/setup-password/);
   assert.match(provider, /\/api\/provider-portal\/login/);
   assert.match(provider, /\/api\/provider-portal\/services/);
   assert.match(provider, /function portalEntitlementEnabled/);
@@ -195,7 +216,7 @@ test('provider onboarding integrations foundation exposes intake, public index, 
   assert.match(server, /app\.post\('\/api\/provider-portal\/messages\/:id\/reply'/);
   assert.match(server, /google_business_profile_url/);
   assert.match(server, /google_place_id/);
-  assert.match(serviceProviders, /\/api\/service-providers/);
+  assert.match(serviceProviders, /\/api\/providers/);
   assert.match(serviceProviders, /Become a Service Provider/);
   assert.match(providerJoin, /cta_preference/);
   assert.match(providerJoin, /services_offered/);

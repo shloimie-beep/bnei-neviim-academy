@@ -50,8 +50,8 @@ test('Google Classroom and Calendar payloads use the confirmed API fields', () =
   assert.match(googleIntegrations, /events\.update/);
   assert.match(server, /calendarId: item\.calendarId/);
   assert.match(server, /https:\/\/developers\.google\.com\/calendar\/api\/v3\/reference\/events\/insert/);
-  assert.match(envExample, /classroom\.coursework\.students/);
-  assert.match(envExample, /calendar\.events/);
+  assert.match(envExample, /GOOGLE_SCOPE_EXAMPLE_CLASSROOM_STUDENT_COURSEWORK=.*classroom\.coursework\.students/);
+  assert.match(envExample, /GOOGLE_SCOPE_EXAMPLE_CALENDAR_EVENTS=.*calendar\.events/);
 });
 
 test('Google OAuth is role-scoped and saved through a connection abstraction', () => {
@@ -86,24 +86,33 @@ test('assignments support YouTube metadata, optional yt-dlp jobs, and schedule i
 
 test('Operations exposes assignment creation, prompt patching, student patches, and Google preview', () => {
   assert.match(operations, /getAssignments\(filters = \{\}\)/);
-  assert.match(operations, /\{ id: 'assignments', label: 'Assignments' \}/);
+  assert.match(operations, /\{ id: 'assignments', label: 'Classroom' \}/);
   assert.match(operations, /function renderStudentAssignmentsView/);
   assert.match(operations, /function renderInternalClassroomBoard/);
   assert.match(operations, /function renderAssignmentCalendar/);
   assert.match(operations, /function assignmentScheduleEntries/);
   assert.match(operations, /data-classroom-board/);
+  assert.match(operations, /data-local-classroom-first/);
   assert.match(operations, /data-assignment-calendar/);
   assert.match(operations, /classroom-lanes/);
   assert.match(operations, /assignment-calendar-grid/);
-  assert.match(operations, /Internal Classroom/);
-  assert.match(operations, /Internal schedule/);
+  assert.match(operations, /BNA Classroom/);
+  assert.match(operations, /Stream/);
+  assert.match(operations, /Classwork/);
+  assert.match(operations, /People/);
+  assert.match(operations, /Calendar/);
+  assert.match(operations, /Review/);
+  assert.match(operations, /Local classroom first/);
+  assert.match(operations, /does not require Google Classroom OAuth/);
+  assert.match(operations, /First-party schedule/);
   assert.match(operations, /function focusAssignmentCard/);
   assert.match(operations, /id="assignment-card-\$\{Number\(assignment\.id\)\}"/);
   assert.match(operations, /Worksheet Prompt Patch/);
   assert.match(operations, /Fetch Metadata/);
-  assert.match(operations, /Google Classroom sync/);
-  assert.match(operations, /Google Calendar sync/);
+  assert.match(operations, /Optional Google Classroom sync \(gated\)/);
+  assert.match(operations, /Optional Google Calendar sync \(gated\)/);
   assert.match(operations, /Optional download\/process video/);
+  assert.match(operations, /project_key: currentWorkspaceKey\(\) === 'rabbi_sheller_provider' \? 'one_time_mishnah_class' : 'bna'/);
   assert.match(operations, /assignmentVideoProcessing-/);
   assert.match(operations, /video_processing_requested: videoProcessingRequested/);
   assert.match(operations, /payload\.video_processing_requested = Boolean\(videoToggle\.checked\)/);

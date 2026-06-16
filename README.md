@@ -1,48 +1,111 @@
 # BNA v2.0
 
-BNA v2.0 is the shared operating brain and live Express/static app for Bnei
-Neviim Academy, a Whole Child Torah Learning Community in Beit Shemesh. The
-repo holds durable memory, active tasks, public website code, parent/student/
-provider portals, Operations/admin surfaces, Telegram bridge code, and release
-verification records.
+BNA v2.0 is the live Express/Postgres/Railway operating system for Bnei
+Neviim Academy. The production entrypoint is `server.js`, Railway starts it
+with `node server.js`, and Railway health checks `/api/health`.
+
+The repo also holds the durable operating brain for BNA: memory, tasks,
+Telegram bridge code, Operations tooling, verification records, and internal
+Codex handoffs.
+
+## Quick Local Setup
+
+```powershell
+git clone https://github.com/shloimie-beep/bnei-neviim-academy.git
+cd bnei-neviim-academy
+npm install
+npm run setup:local
+notepad .env.local
+npm run doctor
+npm run smoke:local -- --skip-tests
+npm run dev
+```
+
+Fill these required local values before starting or smoking the app:
+
+- `DATABASE_URL`: Railway/Postgres connection string.
+- `OPS_USERNAME`: Operations login username.
+- `OPS_PASSWORD`: Operations login password.
+- `OPS_LOGIN_ALIASES`: optional comma-separated super-admin Operations login
+  aliases, such as the operator email, that map to `OPS_USERNAME`.
+
+`server.js` loads `.env.local` for local development only when a variable is
+not already set in the shell or hosting environment. Real secrets must stay in
+`.env.local`, `.secrets/`, Railway variables, or the BNA keyholder.
+
+## Local Verification
+
+```powershell
+node --check server.js
+node --check scripts/telegram-kimi-bridge.mjs
+node --check scripts/agent-fleet-supervisor.mjs
+npm test
+npm run doctor
+npm run smoke:local
+```
+
+`npm run smoke:local` is read-oriented by default. It verifies key files,
+package scripts, syntax checks, `npm test`, app startup, login, Operations
+routes, project/task reads, student page, and signup pages. It writes a
+redacted report to `.runtime/smoke-local-latest.json`.
+
+Use `npm run smoke:local -- --skip-tests` when the full test suite already ran.
+Use `npm run smoke:local -- --base-url https://your-app.example` to smoke an
+already running app. Use `--write` only when it is acceptable to create and
+delete a temporary smoke task.
 
 ## Active App Surfaces
 
 - Public website: `/`, `/he`, `/blog`, `/faq`
 - Signup: `/signup`, `/signup.html`, `/signup-he`, `/signup-he.html`
 - Parent portal: `/parent/login`, `/parent`
-- Student portal: `/student/login`, `/student`
+- Student portal: `/student/login`, `/student`, `/student.html`
 - Provider directory and signup: `/service-providers`, `/providers/join`
 - Provider workspace: `/provider/login`, `/provider`
 - Operations/admin: `/operations`
-- Bot/prompt/action center: Operations assistant, prompt/action registry, and
-  role-aware portal assistant widgets
+- Operations login API: `/api/operations/login`
+- Operations app APIs: `/api/bna/*`
 
-The active app entrypoint is `server.js`; public UI files live in `public/`.
+Public UI files live under `public/`. The Operations dashboard is the
+Express/static `public/operations.html` surface, not the archived React
+prototype under `docs/archive/`.
 
-## No-GHL Policy
+## Rabbi Demo Path
 
-BNA no longer uses GHL, GoHighLevel, LeadConnector, or LeadConnectorHQ as an
-active runtime dependency.
+Rabbi Elie Scheller does not need a local install package now. Shloimie's
+laptop setup is developer/operator-only.
 
-All contacts, parents, students, service providers, learning communities,
-provider listings, provider requests, parent/provider messages, newsletters,
-workspace records, bot actions, tasks, tickets, and decisions are first-party
-BNA records.
+The preferred Rabbi path is hosted portal/PWA access plus scoped One Time task
+access and optional bot/ticket intake. Demo-safe URLs:
 
-Buffer may be used for social scheduling if configured. Whapi/WAPI may be used
-for WhatsApp if configured. Gmail/Google APIs may be used for office email,
-Drive, Classroom, Calendar, and Docs if configured. External services are
-connectors only and never the source of truth unless explicitly approved later.
+- `/operations`
+- `/operations?view=tasks`
+- `/student.html`
+- `/signup.html`
+- `/signup-he.html`
 
-Legacy GHL files are archived under `docs/archive/legacy-ghl/` only for
-historical reference. Do not add new GHL code, env vars, tests, docs, routes,
-prompts, MCP tools, smoke checks, or workflows.
+See `docs/demo-rabbi-meeting.md` for the meeting flow and
+`docs/rabbi-use-path.md` for the access decision, PWA install instructions, and
+remaining inputs Shloimie must provide.
+
+## Lightweight Install Package
+
+This pass intentionally does not build a native desktop app. The install/demo
+package is:
+
+- `.env.example`
+- `scripts/local-setup.mjs`
+- `scripts/doctor.mjs`
+- `scripts/smoke-local.mjs`
+- `docs/local-setup.md`
+- `docs/demo-rabbi-meeting.md`
+- `docs/rabbi-use-path.md`
+- `docs/install-package/README.md`
 
 ## Workspace Model
 
-- Platform / Super Admin: Shloimie's control layer for all workspaces, deploy
-  state, tasks, tickets, decisions, prompts, and system routing.
+- Platform / Super Admin: Shloimie's control layer for workspaces, deploy
+  state, tasks, tickets, decisions, prompts, and routing.
 - BNA Academy / School: the live school workspace for parents, students,
   rabbi/rebbe/admin, classes, assignments, newsletters, learning communities,
   approved provider links, and parent/student portals.
@@ -53,106 +116,10 @@ prompts, MCP tools, smoke checks, or workflows.
   from BNA Academy parents/students unless a person is explicitly enrolled in
   both scopes.
 
-## Workspace Task Workflow
-
-Operations task work is organized around three primary human-facing buckets:
-
-- `Decisions`: real human choices with an owner, question, options, impact, and
-  next action.
-- `Pending`: only human or external blockers such as missing Rabbi access,
-  account approval, DNS/payment/email credentials, or legal/accounting input.
-- `Tasks`: actionable work for Shloimie, Rabbi/workspace owners, providers,
-  managers, or Codex/internal agents.
-
-Codex/system work must never sit in human-facing Pending. Executable agent work
-uses `agent_status` and `bna_agent_jobs` (`queued`, `running`, `completed`,
-`failed`, or `blocked_needs_human_decision`). Failures become a clear Decision
-or human/external Pending blocker. Raw Telegram rambles are provenance only;
-visible task titles must be concise and actionable. Task comments are shared
-internal workspace dialogue, not private author-only notes unless an explicit
-visibility value says otherwise.
-
-Detailed maps live in:
-
-- `docs/architecture/no-ghl-policy.md`
-- `docs/architecture/workspace-community-provider-role-map.md`
-- `docs/architecture/community-dialogue-map.md`
-- `docs/architecture/bot-context-and-ticket-routing.md`
-
-## Provider Funnel
-
-Public provider signup is free-listing-only. The public UI must not advertise
-paid plans, checkout, paid placement, or approval guarantees. Provider booking
-stays external through the provider's website, phone, WhatsApp, email, or
-custom CTA. BNA stores first-party review/request records and publishes only
-approved listings.
-
-## AI Provider Mode
-
-OpenAI is the normal preferred hosted AI provider. Kimi is the temporary
-primary provider when `BNA_AI_PRIMARY_PROVIDER=kimi`; this keeps chat/content AI
-working while OpenAI credentials are unhealthy. Codex remains the development
-agent and task owner either way.
-
-Provider variables:
-
-```powershell
-BNA_AI_PRIMARY_PROVIDER=openai   # set to kimi for the temporary Kimi-primary mode
-KIMI_API_KEY=
-KIMI_BASE_URL=https://api.moonshot.ai/v1
-KIMI_MODEL=kimi-k2.6
-```
-
-The historical `npm run openai:smoke` script now smokes the selected hosted AI
-provider. When `BNA_AI_PRIMARY_PROVIDER=kimi`, it uses Kimi chat completions and
-records the provider in the smoke report. `npm run openai:diagnose` remains a
-specific OpenAI-key diagnostic and may still fail while Kimi-primary mode is in
-use.
-
-## OpenAI Key Loading
-
-Local OpenAI diagnostics use `npm run openai:diagnose`. The script checks only
-safe metadata and never prints keys. It compares:
-
-- `process.env.OPENAI_API_KEY`
-- `.secrets/openai-api-key.txt`
-- `.env.local` entry metadata
-- Railway variable metadata when the Railway CLI/token is available
-
-It reports source, length, SHA-256 fingerprint prefix, quote/newline/CR/BOM
-normalization, base URL presence, org/project variable presence, `/v1/models`
-status, and a minimal Responses API smoke.
-
-Expected variables:
-
-```powershell
-OPENAI_API_KEY=
-OPENAI_BASE_URL=https://api.openai.com/v1
-OPENAI_MODEL=gpt-4.1-mini
-OPENAI_PROJECT=
-OPENAI_ORG=
-```
-
-## Local Run
-
-```powershell
-npm install
-node --check server.js
-npm test
-npm start
-```
-
-The normal app runs on the port provided by `PORT` or the app default.
-
-## Connectors
-
-- Railway/Postgres: production hosting and current operations database
-- Buffer: social scheduler connector for Facebook, LinkedIn, and YouTube
-- Whapi/WAPI: WhatsApp connector
-- Gmail/Google APIs: office email, Drive, Classroom, Calendar, Docs/Sheets
-- Green Invoice/payment links: payment reconciliation connector
-- Provider-owned systems: external delivery/booking CTAs unless explicitly
-  integrated
+The canonical One Time database work is
+`railway-migration-2026-06-05-one-time-projects.sql`. Do not create a second
+database, duplicate the Mishnah project, or add new production tables for local
+install/demo readiness.
 
 ## PWA Manifests
 
@@ -160,23 +127,29 @@ The normal app runs on the port provided by `PORT` or the app default.
 - Parent portal: `/parent-manifest.json`
 - Operations/admin: `/operations-manifest.json`
 
-Public and parent installs must not launch private Operations.
+Public and parent installs must not launch private Operations. Operations uses
+`/operations-manifest.json` with start URL `/operations?source=ops-pwa`.
 
-## Release Checklist
+## Connectors
 
-Run before deploy unless the operator explicitly approves a narrower check:
+- Railway/Postgres: production hosting and current Operations database.
+- Buffer: social scheduler connector for Facebook, LinkedIn, and YouTube.
+- Whapi/WAPI: WhatsApp connector.
+- Gmail/Google APIs: office email, Drive, Classroom, Calendar, and Docs/Sheets.
+- Green Invoice/payment links: payment reconciliation connector.
+- Provider-owned systems: external delivery/booking CTAs unless explicitly
+  integrated later.
 
-```powershell
-node --check server.js
-npm test
-npm run openai:diagnose
-npm run openai:smoke
-npm run railway:doctor
-npm run app:smoke
-```
+OpenAI is the preferred hosted AI provider when healthy. Kimi can be the
+temporary hosted chat/content provider through `BNA_AI_PRIMARY_PROVIDER=kimi`.
+Codex remains the development and task owner either way.
 
-After deploy, rerun Railway doctor and live smoke. Do not mark app-visible work
-Done after local verification only.
+## No-GHL Policy
+
+BNA does not use GHL, GoHighLevel, LeadConnector, or LeadConnectorHQ as active
+runtime. Do not add new GHL code, env vars, tests, docs, routes, prompts, MCP
+tools, smoke checks, or workflows. Historical GHL material belongs only under
+`docs/archive/legacy-ghl/`.
 
 ## Source Of Truth
 
@@ -188,3 +161,6 @@ Done after local verification only.
 - `ops/agent-changelog.md`: completed agent work and verification trail
 - `ops/agent-task-ledger.jsonl`: append-only task trail
 - `tasks-pending/*.md`: internal Codex handoff briefs
+
+Legacy household-app setup material from the pre-BNA era is historical only
+unless it is explicitly labeled as an archive and revived in a new task.

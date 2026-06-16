@@ -32,7 +32,8 @@ test('People roster keeps student and parent records linked before applying filt
 
 test('Parent contact detail can resolve and open the linked student record', () => {
   assert.match(operationsHtml, /\{ id: 'linked', label: 'Linked Records' \}/);
-  assert.match(operationsHtml, /const needsStudentRosterData = needsDashboardData \|\| \['students', 'contacts', 'api_usage', 'calendar'\]\.includes\(activeView\)/);
+  assert.match(operationsHtml, /const needsLocalClassroomData = activeView === 'students' \|\| \(activeView === 'content' && activeContentSection === 'one_time_library'\)/);
+  assert.match(operationsHtml, /const needsStudentRosterData = needsDashboardData \|\| needsLocalClassroomData \|\| needsCommunityData \|\| \['contacts', 'api_usage', 'calendar'\]\.includes\(activeView\) \|\| \(activeView === 'settings' && \['parent_portal', 'student_portal'\]\.includes\(activeSettingsSection\)\)/);
   assert.match(operationsHtml, /needsStudentRosterData \? api\.getStudents\(\) : Promise\.resolve\(\{ students: \[\] \}\)/);
   assert.match(operationsHtml, /const linkedStudent = linkedStudentForSignup\(signup\)/);
   assert.match(operationsHtml, /Open linked student/);

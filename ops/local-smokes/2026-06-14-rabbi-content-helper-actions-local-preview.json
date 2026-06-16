@@ -1,0 +1,110 @@
+{
+  "smoke": "rabbi-content-helper-actions-local-preview",
+  "generated_at": "2026-06-14T18:06:45.292Z",
+  "previews": [
+    {
+      "action_id": "create_rabbi_shiur_idea",
+      "success": true,
+      "executed": false,
+      "approval_required": true,
+      "preview": {
+        "action_id": "create_rabbi_shiur_idea",
+        "task_created": false,
+        "title": "Shiur idea: Mishnah Aleph opening question",
+        "topic": "Mishnah Aleph opening question",
+        "notes": "Audience: One Time Mishnayos members\n\nSuggested outline:\n- Opening story\n- Core Mishnah point\n\nSource hints to verify:\n- Mishnah Berachos 1:1\n\nReview policy: internal One Time/Rabbi review only. Do not publish, send, schedule, or present sources as verified until Rabbi/Shloimie approves.",
+        "summary": "Mishnah Aleph opening question",
+        "category": "shiur_ideas",
+        "project_key": "one_time_mishnah_class",
+        "assigned_to": "Rabbi Elie Scheller",
+        "waiting_on": "Rabbi Elie Scheller",
+        "next_action_label": "Rabbi review",
+        "source_context": {
+          "mishnah_ref": null,
+          "audience": "One Time Mishnayos members",
+          "outline_count": 2,
+          "source_hint_count": 1,
+          "source_url": null,
+          "source_content_job_id": null,
+          "class_session_id": null
+        },
+        "no_agent_job_created": true,
+        "no_send": true,
+        "external_write_performed": false,
+        "member_visible": false,
+        "public_visible": false,
+        "approval_required_before_publish": true
+      }
+    },
+    {
+      "action_id": "create_rabbi_source_sheet_task",
+      "success": true,
+      "executed": false,
+      "approval_required": true,
+      "preview": {
+        "action_id": "create_rabbi_source_sheet_task",
+        "task_created": false,
+        "title": "Rabbi source-sheet prep: Mishnah Aleph questions",
+        "topic": "Mishnah Aleph questions",
+        "notes": "Research scope: prepare an internal source-sheet brief for Rabbi/Shloimie review before any member-facing material is published.\n\nRequired output: source title, citation, concise explanation, and direct Sefaria link for each Torah source used where available.\n\nReview policy: flag anything that needs Rabbi/rav review instead of presenting automated research as final psak.\n\nPrivacy policy: do not expose BNA private student/accountability data or One Time member identities in public/member drafts.\n\nSourceable topics:\n- Mishnah wording\n- Rambam comparison\n\nQuestions to answer:\n- Why does the Mishnah start here?\n\nPublishing policy: no Drive write, Sefaria sheet write, website/member-library post, email, WhatsApp, social post, or external CRM write is created by this helper.",
+        "summary": "Mishnah Aleph questions",
+        "category": "source_sheets",
+        "project_key": "one_time_mishnah_class",
+        "assigned_to": "Shloimie",
+        "waiting_on": "Shloimie",
+        "next_action_label": "Approve source-sheet research",
+        "source_context": {
+          "mishnah_ref": null,
+          "sourceable_topic_count": 2,
+          "student_question_count": 1,
+          "source_hint_count": 0,
+          "source_url": null,
+          "source_content_job_id": null,
+          "class_session_id": null,
+          "suggested_codex_requeue": true
+        },
+        "no_agent_job_created": true,
+        "no_send": true,
+        "external_write_performed": false,
+        "member_visible": false,
+        "public_visible": false,
+        "approval_required_before_publish": true
+      }
+    }
+  ],
+  "classifications": [
+    {
+      "text": "Create Rabbi shiur idea about Mishnah Aleph review",
+      "route": {
+        "kind": "typed_action",
+        "action_id": "create_rabbi_shiur_idea",
+        "confidence": 0.84,
+        "dry_run": true,
+        "inputs": {
+          "title": "Mishnah Aleph review",
+          "topic": "Mishnah Aleph review",
+          "summary": "Create Rabbi shiur idea about Mishnah Aleph review"
+        },
+        "reason": "rabbi_shiur_idea_preview"
+      }
+    },
+    {
+      "text": "Create Rabbi source sheet task for Mishnah Aleph questions",
+      "route": {
+        "kind": "typed_action",
+        "action_id": "create_rabbi_source_sheet_task",
+        "confidence": 0.84,
+        "dry_run": true,
+        "inputs": {
+          "title": "Mishnah Aleph questions",
+          "topic": "Mishnah Aleph questions",
+          "summary": "Create Rabbi source sheet task for Mishnah Aleph questions"
+        },
+        "reason": "rabbi_source_sheet_task_preview"
+      }
+    }
+  ],
+  "no_live_writes": true,
+  "no_agent_jobs": true,
+  "no_sends": true
+}

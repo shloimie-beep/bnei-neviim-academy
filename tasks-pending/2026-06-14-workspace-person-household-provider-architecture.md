@@ -386,9 +386,11 @@ Verification:
 
 Remaining:
 
-- The broader natural-language onboarding task is not fully complete until the
-  student portal gets the same role-specific onboarding and deeper action-tool
-  execution for uploads/goals/check-ins.
+- The student portal now has a no-write role-specific onboarding coach. The
+  broader natural-language onboarding task is not fully complete until
+  parent/student/provider assistants can perform approved deeper action-tool
+  execution for uploads, goals, check-ins, profile setup, and scoped record
+  updates.
 
 ## 2026-06-14 Operations Workspace Directory Follow-Up
 
@@ -488,3 +490,51 @@ Remaining:
   only assistant thread memory and public knowledge context.
 - Select or enter the approved BNA weekly newsletter copy/media row so the
   already-built parent hero has content to render.
+
+## 2026-06-15 Student Assistant Onboarding Coach
+
+Status: deployed and live fixture-smoked in Railway deployment
+`6b77f88f-7508-43ac-b107-c713d29c34a3`.
+
+What changed:
+
+- Added a deterministic `assistant_onboarding_coach` path in `server.js` so
+  role-specific setup/help questions are answered before generic support-ticket
+  fallback.
+- Student guidance covers Today, goals, daily checkoff, questions, reflection,
+  and messaging Rabbi/Shloimie.
+- Parent/provider onboarding topics are recognized by the same coach shape, but
+  the shipped smoke target was the student portal.
+- Updated the student assistant intro in `public/js/bna-bot-widget.js`.
+- Added contract coverage in `tests/universal-assistant-contract.test.js` and
+  fixture local/live smoke coverage under
+  `ops/playwright-smokes/2026-06-15-assistant-onboarding-coach-local/` and
+  `ops/playwright-smokes/2026-06-15-assistant-onboarding-coach-live/`.
+
+Verification:
+
+- PASS `node --check server.js`
+- PASS `node --check public/js/bna-bot-widget.js`
+- PASS `node --check tests/universal-assistant-contract.test.js`
+- PASS focused assistant/portal tests 49/49
+- PASS local fixture Playwright smoke:
+  `ops/playwright-smokes/2026-06-15-assistant-onboarding-coach-local/report.md`
+- PASS in-app Browser fixture check
+- PASS full `npm test` 427/427
+- PASS Railway deployment `6b77f88f-7508-43ac-b107-c713d29c34a3`
+- PASS Railway doctor SUCCESS
+- PASS `npm run app:smoke`:
+  `ops/live-smokes/2026-06-15T04-57-22-945Z-live-app-smoke.md`
+- PASS focused live fixture smoke:
+  `ops/playwright-smokes/2026-06-15-assistant-onboarding-coach-live/report.md`
+
+Guardrails:
+
+- No support ticket, durable profile/goal write, real student checkoff/message,
+  email, WhatsApp, Google Drive, Buffer action, external connector write, or
+  external CRM write is performed by the onboarding coach.
+
+Remaining:
+
+- Deeper parent/student/provider goal-store/profile writes and action execution
+  remain open until explicit scoped action rules and approval gates are added.

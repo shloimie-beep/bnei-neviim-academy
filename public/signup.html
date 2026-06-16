@@ -163,6 +163,67 @@
             box-shadow: 0 20px 40px rgba(30, 58, 95, 0.15);
             border: 1px solid rgba(30, 58, 95, 0.1);
         }
+
+        .signup-assistant {
+            border: 1px solid rgba(30, 58, 95, 0.14);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.35rem;
+            background: #f8fafc;
+        }
+
+        .signup-assistant h2 {
+            font-size: 1.05rem;
+            color: var(--primary-blue);
+            margin-bottom: 0.35rem;
+        }
+
+        .signup-assistant p,
+        .signup-assistant-status,
+        .signup-assistant-output {
+            color: var(--text-dark);
+            font-size: 0.92rem;
+            line-height: 1.45;
+        }
+
+        .signup-assistant textarea {
+            width: 100%;
+            min-height: 82px;
+            margin-top: 0.75rem;
+            padding: 0.8rem 0.9rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font: inherit;
+            resize: vertical;
+        }
+
+        .signup-assistant-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .signup-assistant-actions button {
+            border: 1px solid rgba(30, 58, 95, 0.16);
+            border-radius: 8px;
+            padding: 0.55rem 0.75rem;
+            background: #fff;
+            color: var(--primary-blue);
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .signup-assistant-actions button.primary {
+            background: var(--primary-blue);
+            color: #fff;
+        }
+
+        .signup-assistant-output {
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #e2e8f0;
+        }
         
         .form-group {
             margin-bottom: 1.5rem;
@@ -817,6 +878,19 @@
             
             <div class="form-card">
                 <div id="message" class="message"></div>
+
+                <section class="signup-assistant" aria-label="Registration setup assistant">
+                    <h2>Registration Assistant</h2>
+                    <p>Ask a setup question or tell us where you are stuck. If this needs follow-up, the assistant will create a support ticket and show the ticket ID.</p>
+                    <textarea id="signupAssistantMessage" maxlength="2000" placeholder="Example: I'm stuck on the payment step, or I have a question about the documents."></textarea>
+                    <div class="signup-assistant-actions">
+                        <button class="primary" type="button" id="sendSignupAssistantButton">Ask assistant</button>
+                        <button type="button" id="signupAssistantStuckButton">I'm stuck</button>
+                        <button type="button" id="signupAssistantQuestionButton">Setup question</button>
+                    </div>
+                    <div class="signup-assistant-status" id="signupAssistantStatus"></div>
+                    <div class="signup-assistant-output" id="signupAssistantOutput" hidden></div>
+                </section>
                 
                 <form id="signupForm">
                     <input type="hidden" id="form_language" name="form_language" value="en">
@@ -1062,6 +1136,7 @@
         </div>
     </div>
 
+    <div id="siteFooterMount" data-bna-site-footer data-nav-language="en"></div>
     <!-- Footer -->
     <footer>
         <div class="footer-content">
@@ -1128,6 +1203,77 @@
         signupDocumentFlow.init();
 
         initializePaymentUi();
+
+        function escapeSignupAssistantHtml(value) {
+            return String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function signupAssistantContext() {
+            return {
+                surface: 'signup',
+                mode: 'parent',
+                language: 'en',
+                parent_name: document.getElementById('parent1_name')?.value || '',
+                parent_email: document.getElementById('parent1_email')?.value || '',
+                parent_phone: document.getElementById('parent1_phone')?.value || '',
+                student_name: document.getElementById('child_name')?.value || '',
+                payment_method: selectedPaymentMethod(),
+                page_path: `${window.location.pathname}${window.location.search}`
+            };
+        }
+
+        async function sendSignupAssistantMessage(preset = '') {
+            const input = document.getElementById('signupAssistantMessage');
+            const status = document.getElementById('signupAssistantStatus');
+            const output = document.getElementById('signupAssistantOutput');
+            const sendButton = document.getElementById('sendSignupAssistantButton');
+            const message = (preset || input.value || '').trim();
+            if (!message) {
+                status.textContent = 'Write a question or what is stuck first.';
+                return;
+            }
+            status.textContent = 'Sending...';
+            sendButton.disabled = true;
+            try {
+                const context = signupAssistantContext();
+                const response = await fetch('/api/assistant/message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message,
+                        language: 'en',
+                        mode: 'parent',
+                        surface: 'signup',
+                        action: 'create_ticket',
+                        title: message.slice(0, 140),
+                        context,
+                        metadata: context
+                    })
+                });
+                const result = await response.json();
+                if (!response.ok || result.error) throw new Error(result.error || 'Assistant request failed');
+                const reply = result?.assistant_message?.body || result?.assistant_message?.content || 'Saved.';
+                const actionLines = (result.actions || []).map((action) => {
+                    const objectType = action.created_object_type || action.action?.target_type || 'record';
+                    const objectId = action.created_object_id || action.action?.target_id || '';
+                    return `${action.summary || action.action_name || action.action_type}${objectId ? ` (${objectType} #${objectId})` : ''}`;
+                });
+                output.hidden = false;
+                output.innerHTML = `<strong>Assistant</strong><div>${escapeSignupAssistantHtml(reply)}</div>${actionLines.length ? `<ul>${actionLines.map(line => `<li>${escapeSignupAssistantHtml(line)}</li>`).join('')}</ul>` : ''}`;
+                status.textContent = 'Saved by the assistant.';
+                input.value = '';
+            } catch (error) {
+                status.textContent = error.message || 'Could not reach the assistant.';
+                output.hidden = false;
+                output.innerHTML = `<strong>Assistant</strong><div>${escapeSignupAssistantHtml(status.textContent)}</div>`;
+            } finally {
+                sendButton.disabled = false;
+            }
+        }
+
+        document.getElementById('sendSignupAssistantButton')?.addEventListener('click', () => sendSignupAssistantMessage());
+        document.getElementById('signupAssistantStuckButton')?.addEventListener('click', () => sendSignupAssistantMessage("I'm stuck on the registration form. Please help me finish setup."));
+        document.getElementById('signupAssistantQuestionButton')?.addEventListener('click', () => sendSignupAssistantMessage('I have a setup question about BNA registration.'));
 
         function selectedPaymentMethod() {
             return document.querySelector('input[name="payment_method"]:checked')?.value || 'credit';
@@ -1256,6 +1402,7 @@
             navigator.serviceWorker.register('/sw.js').catch(() => {});
         }
     </script>
+    <script src="/js/bna-helper-knowledge.js"></script>
     <script src="/js/bna-bot-widget.js"></script>
 </body>
 </html>

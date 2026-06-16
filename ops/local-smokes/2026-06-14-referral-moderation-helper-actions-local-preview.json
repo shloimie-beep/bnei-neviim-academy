@@ -1,0 +1,65 @@
+{
+  "smoke": "referral-moderation-helper-actions-local-preview",
+  "generated_at": "2026-06-14T18:22:53.985Z",
+  "no_live_writes": true,
+  "no_agent_jobs": true,
+  "no_sends": true,
+  "no_external_writes": true,
+  "no_public_or_member_visibility": true,
+  "results": [
+    {
+      "action_id": "create_referral_ledger_entry",
+      "success": true,
+      "executed": false,
+      "approval_required": true,
+      "audit_status": "previewed",
+      "preview": {
+        "project_key": "one_time_mishnah_class",
+        "no_send": true,
+        "external_write_performed": false,
+        "no_agent_job_created": true,
+        "referral_link_created": false,
+        "reward_created": false,
+        "forum_post_created": false,
+        "public_visible": false,
+        "member_visible": false
+      }
+    },
+    {
+      "action_id": "submit_student_question_for_moderation",
+      "success": true,
+      "executed": false,
+      "approval_required": true,
+      "audit_status": "previewed",
+      "preview": {
+        "project_key": "one_time_mishnah_class",
+        "no_send": true,
+        "external_write_performed": false,
+        "no_agent_job_created": true,
+        "referral_link_created": false,
+        "reward_created": false,
+        "forum_post_created": false,
+        "public_visible": false,
+        "member_visible": false
+      }
+    },
+    {
+      "action_id": "review_moderated_question",
+      "success": true,
+      "executed": false,
+      "approval_required": true,
+      "audit_status": "previewed",
+      "preview": {
+        "project_key": null,
+        "no_send": true,
+        "external_write_performed": false,
+        "no_agent_job_created": true,
+        "referral_link_created": false,
+        "reward_created": false,
+        "forum_post_created": false,
+        "public_visible": false,
+        "member_visible": false
+      }
+    }
+  ]
+}

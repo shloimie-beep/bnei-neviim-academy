@@ -39,6 +39,28 @@ Drive root: [One Time Mishnah Class - Rabbi Elie Scheller](https://drive.google.
 - Required before sending login: Scoped username confirmed on the One Time project member/provider record
 - Current blocker: Personal password setup/change for the scoped One Time Operations account is not yet a finished user-facing flow
 
+## One Time App Access Readiness
+
+- Status: blocked_pending_owner_approved_external_app_access
+- Live app write ready: no
+- Admin access reset ready: no
+- Member-library publish ready: no
+- Required before live access: Current One Time admin URL and deployment target confirmed
+- Required before live access: Owner-approved admin reset path or Shloimie/admin login confirmed
+- Required before live access: Rabbi/member test login confirmed for read-only smoke checks
+- Required before live access: Production or staging database URL/source confirmed for the One Time app
+- Required before live access: Vimeo/media hosting destination and hosted media URL path confirmed
+- Required before live access: Resend sender/domain and approved notification copy confirmed before any email send
+- Required before live access: Billing provider, tier mapping, refund/cancellation policy, and rollback/revoke path approved
+- Required before live access: APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING present only for the exact one-item publishing smoke
+- Current app blocker: Do not invent or store One Time admin/member credentials in BNA docs.
+- Current app blocker: External One Time app has not been approved as a BNA write target.
+- Current app blocker: Member-library destination, audience, visibility rules, hosted media URL, and rollback plan are still required before publish.
+- Current app blocker: Email/WhatsApp/member notifications remain no-send until sender, recipients, copy, and approval are explicit.
+- Current app blocker: Billing/access grants remain blocked until trusted payment source, tier mapping, and revoke path are approved.
+- No-write guard: no_admin_password_reset, no_member_access_grant, no_member_library_publish, no_drive_or_video_host_write, no_resend_email, no_whatsapp_or_sms, no_checkout_or_billing_write, no_external_crm_write
+- Audit source: ops/rabbi-scheller/2026-06-14-one-time-app-audit.md
+
 ## WhatsApp Copy
 
 Hi Rabbi Elie, this is Shloimie. Here is your One Time task manager access. Right now the task manager is working. We have not configured everything else yet, so the rest of the workspace/social/content setup is still in progress.

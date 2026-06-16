@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>One Time Member Library</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #172033;
+      --muted: #667085;
+      --line: #d8dee9;
+      --paper: #f7f9fc;
+      --panel: #ffffff;
+      --accent: #116466;
+      --accent-2: #c94f4f;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--ink);
+      background: var(--paper);
+    }
+
+    header {
+      border-bottom: 1px solid var(--line);
+      background: var(--panel);
+    }
+
+    .topbar,
+    main {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 72px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 24px;
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    .member-meta {
+      color: var(--muted);
+      font-size: 14px;
+      text-align: right;
+    }
+
+    main {
+      padding: 24px 0 44px;
+    }
+
+    .access-panel {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) auto;
+      gap: 10px;
+      align-items: end;
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    label {
+      display: grid;
+      gap: 6px;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    input,
+    button {
+      min-height: 42px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      font: inherit;
+    }
+
+    input {
+      width: 100%;
+      padding: 0 12px;
+      color: var(--ink);
+      background: #fff;
+    }
+
+    button {
+      padding: 0 18px;
+      color: #fff;
+      background: var(--accent);
+      border-color: var(--accent);
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.65;
+    }
+
+    .status {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .classroom-strip {
+      display: none;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 16px;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #eef7f2;
+    }
+
+    .classroom-strip.visible {
+      display: flex;
+    }
+
+    .classroom-strip p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .classroom-strip a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 0 12px;
+      border-radius: 6px;
+      color: #fff;
+      background: var(--accent);
+      text-decoration: none;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .library-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+    }
+
+    .library-card {
+      overflow: hidden;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--panel);
+    }
+
+    .media-frame {
+      display: grid;
+      min-height: 190px;
+      background: #e7edf5;
+      place-items: center;
+    }
+
+    .media-frame img,
+    .media-frame video,
+    .media-frame iframe {
+      display: block;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      border: 0;
+      object-fit: cover;
+    }
+
+    .media-placeholder {
+      padding: 24px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    .card-body {
+      display: grid;
+      gap: 12px;
+      padding: 16px;
+    }
+
+    .card-title {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.25;
+      letter-spacing: 0;
+    }
+
+    .card-description {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .asset-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .asset-list a,
+    .media-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 34px;
+      padding: 0 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      color: var(--accent);
+      background: #fff;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .empty-state {
+      margin-top: 20px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      color: var(--muted);
+      background: var(--panel);
+      text-align: center;
+    }
+
+    .error {
+      color: var(--accent-2);
+    }
+
+    @media (max-width: 680px) {
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 16px 0;
+      }
+
+      .member-meta {
+        text-align: left;
+      }
+
+      .access-panel {
+        grid-template-columns: 1fr;
+      }
+
+      .classroom-strip {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="topbar">
+      <h1>One Time Member Library</h1>
+      <div class="member-meta" id="memberMeta">Access code required</div>
+    </div>
+  </header>
+
+  <main>
+    <form class="access-panel" id="accessForm">
+      <label>
+        Access code
+        <input id="accessCode" name="code" autocomplete="off" spellcheck="false">
+      </label>
+      <button type="submit" id="loadButton">Open Library</button>
+    </form>
+    <div class="status" id="status"></div>
+    <section class="classroom-strip" id="classroomStrip" aria-live="polite"></section>
+    <section class="library-grid" id="libraryGrid" aria-live="polite"></section>
+  </main>
+
+  <script>
+    const form = document.getElementById('accessForm');
+    const codeInput = document.getElementById('accessCode');
+    const loadButton = document.getElementById('loadButton');
+    const statusEl = document.getElementById('status');
+    const grid = document.getElementById('libraryGrid');
+    const memberMeta = document.getElementById('memberMeta');
+    const classroomStrip = document.getElementById('classroomStrip');
+
+    function escapeHtml(value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    function formatDate(value) {
+      if (!value) return '';
+      const date = new Date(value);
+      if (Number.isNaN(date.getTime())) return '';
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function mediaMarkup(item) {
+      const mediaUrl = item.media_url || '';
+      if (item.media_provider === 'vimeo' && item.vimeo_id) {
+        return `<iframe src="https://player.vimeo.com/video/${encodeURIComponent(item.vimeo_id)}" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen title="${escapeHtml(item.title)}"></iframe>`;
+      }
+      if (/\.(mp4|webm)(\?|#|$)/i.test(mediaUrl)) {
+        return `<video controls src="${escapeHtml(mediaUrl)}" poster="${escapeHtml(item.thumbnail_url || '')}"></video>`;
+      }
+      if (item.thumbnail_url) {
+        return `<img src="${escapeHtml(item.thumbnail_url)}" alt="">`;
+      }
+      return '<div class="media-placeholder">Media link available below</div>';
+    }
+
+    function renderLibrary(payload) {
+      const access = payload.member_library?.access || {};
+      const items = payload.member_library?.items || [];
+      const classroom = payload.classroom || {};
+      memberMeta.textContent = access.member_label ? `${access.member_label} | ${String(access.tier || '').replace(/_/g, ' ')}` : 'Member library';
+      classroomStrip.classList.add('visible');
+      classroomStrip.innerHTML = `
+        <p>Classroom: ${Number((classroom.calendar_items || []).length)} calendar item${Number((classroom.calendar_items || []).length) === 1 ? '' : 's'}, ${Number((classroom.threads || []).length)} Rabbi thread${Number((classroom.threads || []).length) === 1 ? '' : 's'}, ${Number((classroom.leaderboard || []).length)} leaderboard row${Number((classroom.leaderboard || []).length) === 1 ? '' : 's'}.</p>
+        <a href="/one-time-classroom?code=${encodeURIComponent(codeInput.value.trim())}">Open Classroom</a>
+      `;
+      if (!items.length) {
+        grid.innerHTML = '<div class="empty-state">No published library items are visible for this access code.</div>';
+        return;
+      }
+      grid.innerHTML = items.map((item) => `
+        <article class="library-card">
+          <div class="media-frame">${mediaMarkup(item)}</div>
+          <div class="card-body">
+            <div>
+              <h2 class="card-title">${escapeHtml(item.title)}</h2>
+              ${item.class_date ? `<div class="status">${escapeHtml(formatDate(item.class_date))}</div>` : ''}
+            </div>
+            ${item.description ? `<p class="card-description">${escapeHtml(item.description)}</p>` : ''}
+            ${item.media_url ? `<a class="media-link" href="${escapeHtml(item.media_url)}" target="_blank" rel="noopener">Open Media</a>` : ''}
+            ${(item.assets || []).length ? `
+              <ul class="asset-list">
+                ${item.assets.map((asset) => `
+                  <li><a href="${escapeHtml(asset.file_url)}" target="_blank" rel="noopener">${escapeHtml(asset.title || asset.asset_type || 'Asset')}</a></li>
+                `).join('')}
+              </ul>
+            ` : ''}
+          </div>
+        </article>
+      `).join('');
+    }
+
+    async function loadLibrary(code) {
+      const trimmed = String(code || '').trim();
+      if (!trimmed) {
+        statusEl.textContent = 'Enter an access code.';
+        statusEl.className = 'status error';
+        return;
+      }
+      loadButton.disabled = true;
+      statusEl.textContent = 'Loading...';
+      statusEl.className = 'status';
+      try {
+        const response = await fetch(`/api/member-library?code=${encodeURIComponent(trimmed)}`, { credentials: 'same-origin' });
+        const payload = await response.json();
+        if (!response.ok) throw new Error(payload.error || 'Could not open library.');
+        localStorage.setItem('one_time_member_library_code', trimmed);
+        statusEl.textContent = '';
+        renderLibrary(payload);
+      } catch (error) {
+        memberMeta.textContent = 'Access code required';
+        grid.innerHTML = '';
+        statusEl.textContent = error.message || 'Could not open library.';
+        statusEl.className = 'status error';
+      } finally {
+        loadButton.disabled = false;
+      }
+    }
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      loadLibrary(codeInput.value);
+    });
+
+    const params = new URLSearchParams(window.location.search);
+    const initialCode = params.get('code') || localStorage.getItem('one_time_member_library_code') || '';
+    if (initialCode) {
+      codeInput.value = initialCode;
+      loadLibrary(initialCode);
+    }
+  </script>
+</body>
+</html>

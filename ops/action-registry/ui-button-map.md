@@ -1,6 +1,4 @@
-# Action Registry UI Button Map
-
-Generated from `src/lib/actions/registry.js`.
+# UI Button Map
 
 ## create_task
 - Label: Create task
@@ -30,12 +28,89 @@ Generated from `src/lib/actions/registry.js`.
 - Buttons: Move Task, Mark Done, Archive
 - Approval required: no
 
+## retitle_task_naturally
+- Label: Retitle task naturally
+- Category: tasks
+- Page contexts: tasks, task_detail, telegram, bot
+- Buttons: Retitle Task, Clean Title
+- Approval required: yes
+
+## add_decision_option
+- Label: Add decision option
+- Category: tasks
+- Page contexts: tasks, task_detail, decisions, telegram, bot
+- Buttons: Add Option, Add Decision Option
+- Approval required: yes
+
+## schedule_task_on_date
+- Label: Schedule task on date
+- Category: tasks
+- Page contexts: tasks, task_detail, calendar, telegram, bot
+- Buttons: Schedule Task, Set Due Date
+- Approval required: yes
+
+## move_task_workspace
+- Label: Move task workspace
+- Category: tasks
+- Page contexts: tasks, task_detail, settings, telegram, bot
+- Buttons: Move Workspace, Move Project
+- Approval required: yes
+
 ## add_timeline_note
 - Label: Add timeline note
 - Category: communications
 - Page contexts: internal_dialogue, task_detail, student_detail, provider_detail
 - Buttons: Add Note, Save Note
 - Approval required: no
+
+## create_one_time_video_library_item
+- Label: Create One Time video library item
+- Category: content
+- Page contexts: content, provider_workspace, telegram, bot
+- Buttons: Create One Time Library Item, Video Library Item
+- Approval required: yes
+
+## preview_one_time_member_library_publish_package
+- Label: Preview One Time member-library publish package
+- Category: content
+- Page contexts: content, provider_workspace, telegram, bot
+- Buttons: Package Preview, Publish Package Preview
+- Approval required: yes
+
+## create_rabbi_shiur_idea
+- Label: Create Rabbi shiur idea
+- Category: content
+- Page contexts: content, provider_workspace, tasks, telegram, bot
+- Buttons: Create Shiur Idea, Rabbi Shiur Idea
+- Approval required: yes
+
+## create_rabbi_source_sheet_task
+- Label: Create Rabbi source-sheet task
+- Category: content
+- Page contexts: content, provider_workspace, tasks, telegram, bot
+- Buttons: Create Source Sheet Task, Rabbi Source Sheet
+- Approval required: yes
+
+## create_referral_ledger_entry
+- Label: Create referral ledger entry
+- Category: communications
+- Page contexts: contacts, communications, provider_workspace, tasks, telegram, bot
+- Buttons: Create Referral Entry, Referral Ledger
+- Approval required: yes
+
+## submit_student_question_for_moderation
+- Label: Submit student question for moderation
+- Category: content
+- Page contexts: content, provider_workspace, tasks, telegram, bot
+- Buttons: Submit Moderated Question, Moderate Question
+- Approval required: yes
+
+## review_moderated_question
+- Label: Review moderated question
+- Category: content
+- Page contexts: content, provider_workspace, tasks, telegram, bot
+- Buttons: Review Moderated Question, Question Review
+- Approval required: yes
 
 ## find_latest_newsletter_draft
 - Label: Find latest newsletter draft
@@ -184,11 +259,25 @@ Generated from `src/lib/actions/registry.js`.
 - Buttons: Sync Google Calendar
 - Approval required: yes
 
+## calendar_batch_launch_plan_preview
+- Label: Preview launch calendar plan
+- Category: calendar
+- Page contexts: settings, calendar, provider_workspace, telegram, bot
+- Buttons: Preview 8-Week Launch Calendar, 8-Week Plan
+- Approval required: yes
+
 ## sync_google_classroom
 - Label: Sync Google Classroom
 - Category: calendar
 - Page contexts: settings, assignments
 - Buttons: Sync Google Classroom
+- Approval required: yes
+
+## classroom_topic_material_preview
+- Label: Preview Classroom topic material
+- Category: calendar
+- Page contexts: settings, assignments, content, provider_workspace, telegram, bot
+- Buttons: Preview Topic Material, Topic/material
 - Approval required: yes
 
 ## google_drive_find_file_preview
@@ -260,6 +349,13 @@ Generated from `src/lib/actions/registry.js`.
 - Page contexts: content, communications
 - Buttons: Make Social Posts
 - Approval required: no
+
+## preview_social_schedule_package
+- Label: Preview social schedule package
+- Category: social
+- Page contexts: content, communications, provider_workspace, telegram, bot
+- Buttons: Preview Social Schedule, Buffer Draft Preview
+- Approval required: yes
 
 ## open_content_item_url
 - Label: Open content item
@@ -372,6 +468,27 @@ Generated from `src/lib/actions/registry.js`.
 - Page contexts: provider_workspace, provider_index, settings, google_workspace, bot, telegram
 - Buttons: Capture Google Business Link, Save Google Profile Link, Store Place ID
 - Approval required: yes
+
+## google_business_place_id_lookup
+- Label: Preview Google Business Place ID lookup
+- Category: provider
+- Page contexts: provider_workspace, provider_index, settings, google_workspace, bot, telegram
+- Buttons: Preview Place ID Lookup, Place ID
+- Approval required: yes
+
+## google_business_list_locations_preview
+- Label: Preview Google Business locations
+- Category: provider
+- Page contexts: provider_workspace, provider_index, settings, google_workspace, bot, telegram
+- Buttons: Preview GBP Locations, Locations
+- Approval required: yes
+
+## show_contact_communication_history
+- Label: Show contact communication history
+- Category: communications
+- Page contexts: contacts, communications, telegram, bot
+- Buttons: Show History, Communication History, WhatsApp History
+- Approval required: no
 
 ## move_lead_stage
 - Label: Move lead stage

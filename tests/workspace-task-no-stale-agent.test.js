@@ -16,7 +16,9 @@ test('workspace task UI exposes primary buckets and signal filters', () => {
 });
 
 test('comments default to shared dialogue without implicit agent requeue', () => {
-  assert.match(operationsHtml, /visibility: 'workspace'/);
+  assert.match(operationsHtml, /function taskCommentDefaultVisibility/);
+  assert.match(operationsHtml, /return taskProjectKey\(task\) === 'one_time_mishnah_class' \? 'project' : 'workspace';/);
+  assert.match(operationsHtml, /visibility: taskCommentDefaultVisibility/);
   assert.match(operationsHtml, /requeue: false/);
   assert.doesNotMatch(operationsHtml, /Add Comment &amp; Requeue|requeue: true/);
   assert.match(server, /function isTaskCommentRequeueRequest/);

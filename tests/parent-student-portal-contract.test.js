@@ -63,7 +63,9 @@ test('transaction-scoped database helpers do not issue parallel client queries',
 
 test('operations can send parent login links by email or confirmed WhatsApp', () => {
   assert.match(server, /app\.post\('\/api\/bna\/parent-access\/link'/);
+  assert.match(server, /app\.post\('\/api\/bna\/parent-access\/password-reset'/);
   assert.match(server, /sendParentMagicLinkWhatsApp/);
+  assert.match(server, /PARENT_PASSWORD_SETUP_CONFIRM/);
   assert.match(server, /sendWhatsapp && String\(body\.confirm \|\| ''\)\.trim\(\) !== 'SEND_WHATSAPP'/);
   assert.match(server, /const WAPI_SEND_TIMEOUT_MS/);
   assert.match(server, /createOutboundWapiCommunicationAttempt/);
@@ -81,9 +83,12 @@ test('operations can send parent login links by email or confirmed WhatsApp', ()
   assert.match(operationsHtml, /function renderCommunicationDeliveryPill/);
   assert.match(operationsHtml, /Latest WhatsApp/);
   assert.match(operationsHtml, /sendParentAccessLink\(event, '\$\{escapeHtml\(contactType\)\}', \$\{id\}, 'open'\)/);
+  assert.match(operationsHtml, /sendParentPasswordSetup\(event, '\$\{escapeHtml\(contactType\)\}', \$\{id\}, true\)/);
+  assert.match(operationsHtml, /sendParentPasswordSetup\(event, '\$\{escapeHtml\(contactType\)\}', \$\{id\}, false\)/);
   assert.match(operationsHtml, /send_whatsapp: channel === 'whatsapp'/);
   assert.match(operationsHtml, /send_email: channel === 'email'/);
   assert.match(operationsHtml, /confirm: 'SEND_WHATSAPP'/);
+  assert.match(operationsHtml, /confirm: 'SEND_PARENT_PASSWORD_SETUP'/);
   assert.match(operationsHtml, /async function tryCopyText/);
   assert.match(operationsHtml, /Parent portal opened in a new tab/);
   assert.match(operationsHtml, /No email was sent/);
@@ -91,6 +96,8 @@ test('operations can send parent login links by email or confirmed WhatsApp', ()
   assert.match(operationsHtml, /The parent can open it directly without typing their email again/);
   assert.match(operationsHtml, /Open Parent Portal/);
   assert.match(operationsHtml, /Email Login Link/);
+  assert.match(operationsHtml, /Preview Password Setup/);
+  assert.match(operationsHtml, /Email Password Setup/);
   assert.match(operationsHtml, /WhatsApp Login Link/);
   assert.doesNotMatch(operationsHtml, /Email Parent Login/);
 });
@@ -118,6 +125,13 @@ test('student portal renders history, next meeting, daily rows, and rabbi messag
   assert.match(studentHtml, /\/api\/student-portal\/goals\/\$\{encodeURIComponent\(goalId\)\}\/day-checkoff/);
   assert.match(studentHtml, /Ask BNA Helper/);
   assert.match(studentHtml, /\/api\/student-portal\/message-rabbi/);
+  assert.match(studentHtml, /id="studentLoginForm"/);
+  assert.match(studentHtml, /id="studentUsername"/);
+  assert.match(studentHtml, /id="studentPassword" type="password"/);
+  assert.match(studentHtml, /\/api\/student-portal\/login/);
+  assert.match(studentHtml, /\/api\/student-portal\/session/);
+  assert.match(studentHtml, /\/api\/student-portal\/logout/);
+  assert.match(studentHtml, /accessFallback/);
 });
 
 test('student portal rejects invalid credentials and clears stored access codes', () => {
@@ -143,6 +157,10 @@ test('parent portal uses login, calendar navigation, help, and scoped visible st
   assert.match(parentHtml, /\/api\/parent-portal\/session\?token=/);
   assert.match(parentHtml, /\/api\/parent-portal/);
   assert.match(parentHtml, /type="password"/i);
+  assert.match(parentHtml, /function shouldAvoidProgrammaticFocus\(\)/);
+  assert.match(parentHtml, /function focusParentOnboardingInput\(\)/);
+  assert.match(parentHtml, /els\.parentOnboardingInput\.focus\(\{ preventScroll: true \}\)/);
+  assert.match(parentHtml, /function scrollParentElementIntoView\(element\)/);
   assert.match(parentHtml, /els\.requestForm\.classList\.add\('hidden'\)/);
   assert.match(parentHtml, /Opening parent portal/);
   assert.match(parentHtml, /renderStudent/);
@@ -178,8 +196,13 @@ test('parent portal uses login, calendar navigation, help, and scoped visible st
   assert.match(parentHtml, /\/api\/parent-portal\/questions\/\$\{encodeURIComponent\(questionId\)\}\/respond/);
   assert.match(parentHtml, /data-parent-help-form/);
   assert.match(parentHtml, /\/api\/parent-portal\/help/);
-  assert.doesNotMatch(parentHtml, /data-student-open="\$\{Number\(student\.id\)\}"/);
-  assert.doesNotMatch(parentHtml, /data-student-reset="\$\{Number\(student\.id\)\}"/);
+  assert.match(parentHtml, /data-student-login-form/);
+  assert.match(parentHtml, /studentLoginSettings/);
+  assert.match(parentHtml, /studentPasswordNeverShown/);
+  assert.match(parentHtml, /studentAccessFallback/);
+  assert.match(parentHtml, /data-student-open="\$\{studentId\}"/);
+  assert.match(parentHtml, /data-student-reset="\$\{studentId\}"/);
+  assert.match(parentHtml, /\/api\/parent-portal\/students\/\$\{encodeURIComponent\(studentId\)\}\/login-account/);
   assert.match(parentHtml, /\/api\/parent-portal\/students\/\$\{encodeURIComponent\(studentId\)\}\/access-code/);
   assert.doesNotMatch(parentHtml, /Questions and sources/);
   assert.doesNotMatch(parentHtml, /source-list/);
@@ -439,11 +462,33 @@ test('July 1 registration renewal flow requires four visible signatures and avoi
 
 test('credit signup confirmation email sends the configured payment link to every parent email', () => {
   assert.match(server, /function signupConfirmationRecipients/);
+  assert.match(server, /function signupParentAccessRecipients/);
+  assert.match(server, /function signupConfirmationResendOptions/);
+  assert.match(server, /function signupConfirmationPreview/);
   assert.match(server, /add\(signup\.parent_email\)/);
   assert.match(server, /add\(signup\.parent2_email\)/);
-  assert.match(server, /extraRecipients: \[parent2_email\]/);
+  assert.match(server, /extraRecipients: \[normalizedParent2Email\]/);
   assert.match(server, /Please complete the ILS \$\{amount\} first tuition payment here: \$\{creditPaymentLink\}/);
   assert.match(server, /paymentLink: normalizedPaymentMethod === 'green_invoice' && !matchedPaymentIntake \? PAYMENT_LINK : ''/);
+  assert.match(server, /app\.post\('\/api\/bna\/signups\/:id\/send-confirmation'/);
+  assert.match(server, /signupConfirmationResendOptions\(signup, req\.body \|\| \{\}\)/);
+  assert.match(server, /signupConfirmationPreview\(signup, resendOptions\)/);
+  assert.match(server, /paymentMethod === 'credit' && !paid \? PAYMENT_LINK : ''/);
+  assert.match(server, /no_send: true/);
+  assert.match(server, /external_write_performed: false/);
   assert.match(server, /payment_link_status: paymentLinkIncluded \? 'included' : 'not_included'/);
   assert.match(server, /confirmationEmailRecipientCount: emailResult\.sent\?\.length \|\| 0/);
+});
+
+test('public signup stores parent 2 and sends portal setup to every parent email', () => {
+  assert.match(server, /parent2_name TEXT/);
+  assert.match(server, /parent2_email TEXT/);
+  assert.match(server, /parent2_phone TEXT/);
+  assert.match(server, /ALTER TABLE signups ADD COLUMN IF NOT EXISTS parent2_email TEXT/);
+  assert.match(server, /UPDATE signups\s+SET parent2_name = COALESCE\(parent2_name/);
+  assert.match(server, /lower\(COALESCE\(parent2_email, ''\)\) = \$1/);
+  assert.match(server, /const parentAccessEmails = signupParentAccessRecipients\(signup/);
+  assert.match(server, /for \(const parentEmail of parentAccessEmails\)/);
+  assert.match(server, /parent_email_role: normalizeEmail\(parentEmail\) === normalizeEmail\(normalizedParentEmail\) \? 'primary' : 'secondary'/);
+  assert.match(server, /loginSetupEmailRecipientCount: loginSetupResults\.length/);
 });

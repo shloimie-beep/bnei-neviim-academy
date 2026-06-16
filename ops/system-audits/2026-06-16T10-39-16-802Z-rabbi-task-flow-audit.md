@@ -1,0 +1,558 @@
+# Rabbi / One Time Task Flow Audit - 2026-06-16T10:39:16.802Z
+
+Result: read-only report
+
+## Summary
+
+- Scanned tasks: 447
+- Rabbi / One Time related tasks: 242
+- Active Rabbi / One Time tasks: 191
+- Human blocker or decision: 188
+- Codex-ready: 0
+- Private BNA scope review: 6
+- External-write gate review: 172
+- Visible title review: 2
+
+## Stage Counts
+
+- archive: 8
+- assigned: 172
+- done: 43
+- needs_decision: 19
+
+## Assignee Counts
+
+- codex: 49
+- rabbi elie scheller: 155
+- shloimie: 31
+- unassigned: 7
+
+## Guardrails
+
+- This audit is read-only and has no apply mode.
+- Do not move, close, retitle, reassign, or publish Rabbi/One Time tasks from this report alone.
+- Use typed approval-gated actions or explicit task endpoints only after review.
+- Do not expose private BNA student/parent/accountability data in Rabbi/provider task flow.
+- External writes remain blocked behind their existing approval phrases and connector gates.
+
+## Human Blockers / Decisions
+
+- #418 Decide One Time platform stack
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #419 Decide One Time parent and student login model
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #420 Decide One Time software ownership and revenue split
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #337 Decide One Time refund/cancellation policy
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #335 Decide One Time family/device access policy
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #528 Decide analytics and backend strategy for Rabbi Scheller app
+  - Stage: needs_decision; Assignee: unassigned; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #518 Decide Resend account ownership for Rabbi Scheller launch
+  - Stage: needs_decision; Assignee: unassigned; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #280 Decide One Time GHL agent-loop runtime
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #421 Decide Google Workspace and Classroom role
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #381 Decide whether to keep using GHL or replace it with modular internal/API tools
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #340 Decide One Time support threshold/SLA
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #339 Decide One Time payment processor and bank/legal setup
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #338 Decide One Time initial ad budget
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #341 Decide One Time software/IP wording and legal review
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #535 Define public launch and ad-start gate
+  - Stage: needs_decision; Assignee: unassigned; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #534 Decide Replit migration path
+  - Stage: needs_decision; Assignee: unassigned; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #533 Decide payment processor and accounting path
+  - Stage: needs_decision; Assignee: unassigned; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #522 Get Replit source app access or export
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #524 Get Drive worksheets and source-sheet folders
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #523 Get email list and past customer/contact exports
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #521 Get Vimeo and video-library access from Rabbi Scheller
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #520 Get GoDaddy, domain, and DNS access from Rabbi Scheller
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: human_blocker_or_decision
+- #519 Get Resend access from Rabbi Scheller
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #517 Get Stripe access from Rabbi Scheller
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #822 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #820 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #819 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #818 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #817 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #815 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #814 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #813 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #812 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #811 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #810 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #809 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #808 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #805 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #804 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #803 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #802 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #800 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #799 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #798 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #797 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #794 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #793 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #792 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #791 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #790 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #789 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #788 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #786 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #785 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #784 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #783 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #782 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #781 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #780 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #779 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #778 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #777 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #775 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #774 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #773 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #772 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #770 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #769 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #768 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #767 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #766 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #764 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #763 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #762 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #761 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #760 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #759 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #758 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #757 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #756 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- 108 additional rows omitted from Markdown; see JSON report.
+
+## Codex-Ready Rabbi Work
+
+- None found.
+
+## Private Scope Review
+
+- #310 Separate parent coaching summaries from student source sheets
+  - Stage: done; Assignee: Codex; Project: one_time_mishnah_class
+  - Flags: private_bna_scope_review
+- #289 Expand Research section to source all class topics
+  - Stage: done; Assignee: Codex; Project: one_time_mishnah_class
+  - Flags: private_bna_scope_review
+- #357 Workflow M: Parent update
+  - Stage: done; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: private_bna_scope_review
+- #356 Workflow L: Question submission
+  - Stage: done; Assignee: Codex; Project: one_time_mishnah_class
+  - Flags: private_bna_scope_review
+- #361 Workflow Q: Organic content upload
+  - Stage: done; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: private_bna_scope_review
+- #360 Workflow P: Testimonial/reputation
+  - Stage: done; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: private_bna_scope_review
+
+## External Write Gate Review
+
+- #418 Decide One Time platform stack
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #419 Decide One Time parent and student login model
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #420 Decide One Time software ownership and revenue split
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #518 Decide Resend account ownership for Rabbi Scheller launch
+  - Stage: needs_decision; Assignee: unassigned; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #280 Decide One Time GHL agent-loop runtime
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #421 Decide Google Workspace and Classroom role
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #381 Decide whether to keep using GHL or replace it with modular internal/API tools
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #339 Decide One Time payment processor and bank/legal setup
+  - Stage: needs_decision; Assignee: Shloimie; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #533 Decide payment processor and accounting path
+  - Stage: needs_decision; Assignee: unassigned; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #524 Get Drive worksheets and source-sheet folders
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #523 Get email list and past customer/contact exports
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #521 Get Vimeo and video-library access from Rabbi Scheller
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #519 Get Resend access from Rabbi Scheller
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #517 Get Stripe access from Rabbi Scheller
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #822 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #820 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #819 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #818 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #817 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #815 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #814 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #813 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #812 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #811 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #810 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #809 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #808 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #805 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #804 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #803 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #802 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #800 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #799 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #798 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #797 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #794 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #793 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #792 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #791 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #790 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #789 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #788 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #786 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #785 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #784 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #783 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #782 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #781 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #780 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #779 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #778 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #777 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #775 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #774 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #773 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #772 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #770 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #769 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #768 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #767 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #766 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #764 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #763 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #762 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #761 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #760 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #759 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #758 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #757 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #756 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #755 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #753 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #751 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #750 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #749 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #748 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #747 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #745 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #744 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- #743 Get website and landing-page assets
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: external_write_gate_review, human_blocker_or_decision
+- 92 additional rows omitted from Markdown; see JSON report.
+
+## Visible Title Review
+
+- #342 One Time access/materials: Business/bank/payment processor setup under Rabbi Sheller unless legal/accountin...
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: visible_title_review, external_write_gate_review, human_blocker_or_decision
+- #343 One Time access/materials: Replit, DNS/domain, GHL, payment processor, bank reporting, Drive, YouTube, Meta...
+  - Stage: assigned; Assignee: Rabbi Elie Scheller; Project: one_time_mishnah_class
+  - Flags: visible_title_review, external_write_gate_review, human_blocker_or_decision

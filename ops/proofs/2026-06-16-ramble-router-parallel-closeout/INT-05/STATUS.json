@@ -1,0 +1,9 @@
+{
+  "workstream_id": "INT-05",
+  "cycle_id": "2026-06-16-ramble-router-parallel-chatgpt-to-codex",
+  "status": "blocked_needs_credentials",
+  "title": "Safe integration readiness for Buffer, Resend, Stripe, Zoom, Vimeo, Telegram",
+  "proof_path": "ops/proofs/2026-06-16-ramble-router-parallel-closeout/INT-05/",
+  "needed_from_shloimie": "Provide/approve safe keyholder or Railway setup for credentials, DNS/account details, channel IDs, and provider ownership decisions.",
+  "notes": "Readiness/dry-run only. No live sends, publishes, billing, Zoom/Vimeo writes, or account grants."
+}

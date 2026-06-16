@@ -4,6 +4,16 @@ Date: 2026-06-05
 
 ## Status
 
+2026-06-16 MASTER-07 supersession note: project/workspace tables, task
+comments, Decision Required, project-aware task APIs, One Time classroom/member
+foundations, scoped access guardrails, and WS11 community/parent progress are
+implemented and proof-backed in newer `SYSTEM-STATE.md`, `TASKS.md`,
+`ops/agent-changelog.md`, and the MASTER-07 proof folder. Treat older "work
+needed" wording below as historical unless it is explicitly listed here as
+still blocked. Remaining active blockers are Rabbi bot allowed chat ID, final
+One Time pricing/provider/account/legal/asset decisions, Rabbi-owned
+email/domain setup, and exact live 7pm class/calendar policy.
+
 Project/workspace model implemented by task #72 and deployed. Rabbi scoped
 Telegram/agent profile implemented by task #110 and included in the deployed
 bundle. On 2026-06-08 the Rabbi-specific local token file was configured and
@@ -213,6 +223,14 @@ implementation.
 
 Rabbi Elie Scheller should eventually have his own Telegram bot/agent using the
 same agentic framework as Shloimie, scoped to One Time Mishnah Class.
+
+## 2026-06-15 WS10 Supersession Note
+
+The project/comment/Decision Required schema gaps below are historical audit
+context only. Current source of truth: One Time project/task/comment/decision
+support exists, the Rabbi checkout/access preview layer exists, and unresolved
+product/payment/legal/email/access/asset decisions are tracked in
+`tasks-pending/2026-06-15-one-time-product-payments-decisions.md`.
 
 ## Historical Repo Reality
 

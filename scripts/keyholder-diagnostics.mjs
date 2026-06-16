@@ -29,6 +29,13 @@ export const KEYHOLDER_FILES = [
     env_name: 'RESEND_API_KEY',
   },
   {
+    name: 'stripe-secret-key.txt',
+    label: 'Stripe secret key',
+    repo_secret: '.secrets/stripe-secret-key.txt',
+    env_name: 'STRIPE_SECRET_KEY',
+    optional: true,
+  },
+  {
     name: 'railway-token.txt',
     label: 'Railway project token',
     repo_secret: '.secrets/railway-token.txt',

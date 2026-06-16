@@ -101,8 +101,32 @@ Local prompt file:
 
 ## Remaining Deployment Gate
 
-- Deploy to Railway only after confirming the dirty worktree scope is safe.
-- Run `npm run railway:doctor`.
-- Run `npm run app:smoke`.
-- Run live browser smoke for public/provider/parent surfaces.
-- Then mark the task complete and append `ops/agent-changelog.md`.
+Completed 2026-06-15T05:14:46+03:00 on current production deployment
+`1a60aabe-b1a7-4adc-a788-de4e71abd0bd`.
+
+Verification passed:
+
+- PASS `node --check server.js`
+- PASS focused provider directory tests 12/12
+- PASS Railway doctor SUCCESS
+- PASS live app smoke:
+  `ops/live-smokes/2026-06-15T02-11-53-759Z-live-app-smoke.md`
+- PASS focused live browser/API smoke:
+  `ops/playwright-smokes/2026-06-15-provider-onboarding-foundation-live/report.md`
+
+The live smoke checked:
+
+- Public `GET /api/service-providers` returns sanitized provider data without
+  password/setup/refresh/access-token fields.
+- `/service-providers` renders the public provider index and parent/provider
+  CTAs on desktop and mobile.
+- `/providers/join` renders the open free-listing flow, services offered, CTA,
+  and community-affiliation fields without presenting a screening queue.
+- `/provider/login` renders the scoped provider portal login shell, setup-token
+  password-flow markup, and Google Business readiness markup.
+- `/parent/login` renders while logged out without exposing private student or
+  provider-message data.
+
+Guardrail verified: no provider signup, provider intake submission,
+parent-provider message, provider reply, email, WhatsApp, billing, Google API
+call, connector write, or external CRM write was executed.

@@ -143,6 +143,69 @@
             border: 1px solid rgba(30, 58, 95, 0.1);
         }
 
+        .signup-assistant {
+            border: 1px solid rgba(30, 58, 95, 0.14);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1.35rem;
+            background: #f8fafc;
+            text-align: right;
+        }
+
+        .signup-assistant h2 {
+            font-size: 1.05rem;
+            color: var(--primary-blue);
+            margin-bottom: 0.35rem;
+        }
+
+        .signup-assistant p,
+        .signup-assistant-status,
+        .signup-assistant-output {
+            color: var(--text-dark);
+            font-size: 0.92rem;
+            line-height: 1.45;
+        }
+
+        .signup-assistant textarea {
+            width: 100%;
+            min-height: 82px;
+            margin-top: 0.75rem;
+            padding: 0.8rem 0.9rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            font: inherit;
+            resize: vertical;
+            direction: rtl;
+        }
+
+        .signup-assistant-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 0.75rem;
+        }
+
+        .signup-assistant-actions button {
+            border: 1px solid rgba(30, 58, 95, 0.16);
+            border-radius: 8px;
+            padding: 0.55rem 0.75rem;
+            background: #fff;
+            color: var(--primary-blue);
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .signup-assistant-actions button.primary {
+            background: var(--primary-blue);
+            color: #fff;
+        }
+
+        .signup-assistant-output {
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
         .section-divider {
             margin: 2rem 0 1.25rem;
             padding-top: 2rem;
@@ -673,6 +736,19 @@
             <div class="form-card">
                 <div id="message" class="message"></div>
 
+                <section class="signup-assistant" aria-label="מסייע הרשמה">
+                    <h2>מסייע הרשמה</h2>
+                    <p>אפשר לשאול שאלת התחלה או לכתוב איפה נתקעתם. אם צריך המשך טיפול, המסייע יפתח כרטיס תמיכה ויציג את מספר הכרטיס.</p>
+                    <textarea id="signupAssistantMessage" maxlength="2000" placeholder="לדוגמה: נתקעתי בשלב התשלום, או יש לי שאלה על המסמכים."></textarea>
+                    <div class="signup-assistant-actions">
+                        <button class="primary" type="button" id="sendSignupAssistantButton">שאל את המסייע</button>
+                        <button type="button" id="signupAssistantStuckButton">נתקעתי</button>
+                        <button type="button" id="signupAssistantQuestionButton">שאלת התחלה</button>
+                    </div>
+                    <div class="signup-assistant-status" id="signupAssistantStatus"></div>
+                    <div class="signup-assistant-output" id="signupAssistantOutput" hidden></div>
+                </section>
+
                 <form id="signupForm">
                     <input type="hidden" id="form_language" name="form_language" value="he">
 
@@ -892,6 +968,7 @@
         </div>
     </div>
 
+    <div id="siteFooterMount" data-bna-site-footer data-nav-language="he"></div>
     <footer>
         <div class="footer-content">
             <strong>רמת בית שמש</strong>
@@ -931,6 +1008,77 @@
         }
 
         initializePaymentUi();
+
+        function escapeSignupAssistantHtml(value) {
+            return String(value || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        function signupAssistantContext() {
+            return {
+                surface: 'signup',
+                mode: 'parent',
+                language: 'he',
+                parent_name: document.getElementById('parent1_name')?.value || '',
+                parent_email: document.getElementById('parent1_email')?.value || '',
+                parent_phone: document.getElementById('parent1_phone')?.value || '',
+                student_name: document.getElementById('child_name')?.value || '',
+                payment_method: selectedPaymentMethod(),
+                page_path: `${window.location.pathname}${window.location.search}`
+            };
+        }
+
+        async function sendSignupAssistantMessage(preset = '') {
+            const input = document.getElementById('signupAssistantMessage');
+            const status = document.getElementById('signupAssistantStatus');
+            const output = document.getElementById('signupAssistantOutput');
+            const sendButton = document.getElementById('sendSignupAssistantButton');
+            const message = (preset || input.value || '').trim();
+            if (!message) {
+                status.textContent = 'כתבו קודם שאלה או איפה נתקעתם.';
+                return;
+            }
+            status.textContent = 'שולח...';
+            sendButton.disabled = true;
+            try {
+                const context = signupAssistantContext();
+                const response = await fetch('/api/assistant/message', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        message,
+                        language: 'he',
+                        mode: 'parent',
+                        surface: 'signup',
+                        action: 'create_ticket',
+                        title: message.slice(0, 140),
+                        context,
+                        metadata: context
+                    })
+                });
+                const result = await response.json();
+                if (!response.ok || result.error) throw new Error(result.error || 'בקשת המסייע נכשלה');
+                const reply = result?.assistant_message?.body || result?.assistant_message?.content || 'נשמר.';
+                const actionLines = (result.actions || []).map((action) => {
+                    const objectType = action.created_object_type || action.action?.target_type || 'record';
+                    const objectId = action.created_object_id || action.action?.target_id || '';
+                    return `${action.summary || action.action_name || action.action_type}${objectId ? ` (${objectType} #${objectId})` : ''}`;
+                });
+                output.hidden = false;
+                output.innerHTML = `<strong>מסייע</strong><div>${escapeSignupAssistantHtml(reply)}</div>${actionLines.length ? `<ul>${actionLines.map(line => `<li>${escapeSignupAssistantHtml(line)}</li>`).join('')}</ul>` : ''}`;
+                status.textContent = 'המסייע שמר את ההודעה.';
+                input.value = '';
+            } catch (error) {
+                status.textContent = error.message || 'לא הצלחנו להגיע למסייע.';
+                output.hidden = false;
+                output.innerHTML = `<strong>מסייע</strong><div>${escapeSignupAssistantHtml(status.textContent)}</div>`;
+            } finally {
+                sendButton.disabled = false;
+            }
+        }
+
+        document.getElementById('sendSignupAssistantButton')?.addEventListener('click', () => sendSignupAssistantMessage());
+        document.getElementById('signupAssistantStuckButton')?.addEventListener('click', () => sendSignupAssistantMessage('נתקעתי בטופס ההרשמה. בבקשה עזרו לי להשלים את ההתחלה.'));
+        document.getElementById('signupAssistantQuestionButton')?.addEventListener('click', () => sendSignupAssistantMessage('יש לי שאלת התחלה על ההרשמה ל-BNA.'));
 
         function selectedPaymentMethod() {
             return document.querySelector('input[name="payment_method"]:checked')?.value || 'credit';
@@ -1041,6 +1189,7 @@
             navigator.serviceWorker.register('/sw.js').catch(() => {});
         }
     </script>
+    <script src="/js/bna-helper-knowledge.js"></script>
     <script src="/js/bna-bot-widget.js"></script>
 </body>
 </html>

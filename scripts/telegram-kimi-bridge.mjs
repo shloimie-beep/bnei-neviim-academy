@@ -1156,7 +1156,7 @@ async function buildDriveContextForMessage(text) {
 
 function shouldAttachAppContext(text) {
   const normalized = String(text || '').toLowerCase();
-  return /\b(system|dashboard|operations|section|sections|buttons?|actions?|task|tasks|queue|queued|pending|waiting|in progress|done|changelog|students?|accountability|torah|learning progress|content|recording|transcript|blog|whatsapp|communications?|team|tickets?|support|facebook|newsletter|payments?|accounting|signup|signups|contacts?|parents?|devices?|tablet|green invoice|projects?|one time|rabbi|what'?s left|what is left|status|updates?|capabilities|capability|can you see|what do you see|order|sort|audit|brainstorm|logistics|scheduling)\b/.test(normalized);
+  return /\b(system|dashboard|operations|section|sections|buttons?|actions?|task|tasks|queue|queued|pending|waiting|in progress|done|changelog|students?|accountability|torah|learning progress|content|recording|transcript|blog|whatsapp|communications?|team|tickets?|support|facebook|newsletter|payments?|accounting|signup|signups|contacts?|parents?|members?|devices?|tablet|green invoice|projects?|one time|rabbi|live|zoom|classes?|session|schedule|link|access|what'?s left|what is left|status|updates?|capabilities|capability|can you see|what do you see|order|sort|audit|brainstorm|logistics|scheduling)\b/.test(normalized);
 }
 
 function wantsWholeSystemSnapshot(text) {
@@ -1175,12 +1175,17 @@ function wantsContentSnapshot(text) {
   return /\b(content|recording|transcript|blog|whatsapp|facebook|newsletter|youtube|media|draft|publish|post|prompt|prompts|bundle|bundles)\b/i.test(String(text || ''));
 }
 
+function wantsLiveClassSnapshot(text) {
+  return /\b(live|zoom|classes?|class sessions?|session|schedule|tonight|link|member access|live access|library access|recordings?)\b/i.test(String(text || ''));
+}
+
 function wantsTaskSnapshot(text) {
   return /\b(task|tasks|queue|queued|pending|waiting|decision|decisions|my work|rabbi|codex|brief|briefs|implementation|changelog|done|order|sort|audit|section)\b/i.test(String(text || ''));
 }
 
 function sanitizeContextText(value, maxChars = 220) {
   const text = String(value ?? '')
+    .replace(/https?:\/\/[^\s<>"']*zoom[^\s<>"']*/gi, '[zoom link redacted]')
     .replace(/\b(?:sk|rk|pat|xoxp|AIza)[A-Za-z0-9_\-]{12,}\b/g, '[redacted]')
     .replace(/\b\d{8,}:[A-Za-z0-9_\-]{20,}\b/g, '[redacted]')
     .replace(/\s+/g, ' ')
@@ -1216,6 +1221,7 @@ function detectRequestedAppSections(text) {
   if (broad || wantsTaskSnapshot(text)) sections.add('tasks');
   if (broad || wantsStudentSnapshot(text)) sections.add('students');
   if (broad || wantsContentSnapshot(text)) sections.add('content');
+  if (broad || wantsLiveClassSnapshot(text)) sections.add('live_classes');
   if (broad || /\bcontacts?|parents?|roster|signup|signups|intake|follow-?up|tags?|communications?|whatsapp\b/.test(normalized)) sections.add('contacts');
   if (broad || wantsAccountingSnapshot(text)) sections.add('accounting');
   if (broad || /\bteam|tickets?|support|rabbi\b/.test(normalized)) sections.add('support');
@@ -1445,6 +1451,35 @@ function compactSupportTicketForContext(ticket) {
   ].filter(Boolean).join(' | ');
 }
 
+function compactLiveSessionForContext(session = {}) {
+  return [
+    `#${session.id}`,
+    sanitizeContextText(session.title || 'Live class', 110),
+    session.start_at ? `start=${compactDateForContext(session.start_at)}` : '',
+    session.status ? `status=${session.status}` : '',
+    session.required_tier ? `tier=${session.required_tier}` : '',
+    session.zoom_meeting_url ? 'zoom=current_link_present' : 'zoom=missing',
+    session.link_version || session.zoom_link_version ? `link_version=${session.link_version || session.zoom_link_version}` : '',
+    session.link_changed_needs_send ? 'needs_resend=true' : '',
+    Number.isFinite(Number(session.eligible_count)) ? `eligible=${session.eligible_count}` : '',
+    Number.isFinite(Number(session.ineligible_count)) ? `skipped=${session.ineligible_count}` : '',
+    session.recording_status ? `recording=${session.recording_status}` : '',
+  ].filter(Boolean).join(' | ');
+}
+
+function compactLiveMemberForContext(member = {}) {
+  return [
+    `#${member.id}`,
+    sanitizeContextText(member.display_name || member.email || 'Member', 90),
+    member.email ? `email=${sanitizeContextText(member.email, 90)}` : 'email=missing',
+    member.phone ? 'phone=present' : 'phone=missing',
+    member.access_tier ? `tier=${member.access_tier}` : '',
+    member.access_status ? `status=${member.access_status}` : '',
+    member.access_enabled === false ? 'enabled=false' : 'enabled=true',
+    member.access_url ? 'portal_link=present' : 'portal_link=missing',
+  ].filter(Boolean).join(' | ');
+}
+
 async function buildBnaAppSnapshotForMessage(config, text) {
   if (!shouldAttachAppContext(text) || !config.opsUsername || !config.opsPassword) return '';
 
@@ -1453,6 +1488,7 @@ async function buildBnaAppSnapshotForMessage(config, text) {
   const includeTasks = requestedSections.has('tasks') || scopedProject;
   const includeStudents = !scopedProject && requestedSections.has('students');
   const includeContent = !scopedProject && requestedSections.has('content');
+  const includeLiveClasses = requestedSections.has('live_classes') || (scopedProject && wantsLiveClassSnapshot(text));
   const asksForScopedContacts = /\b(whatsapp|wa|communications?|contacts?|parents?|provider|rabbi|scheller|sheller)\b/i.test(String(text || ''));
   const includeContacts = requestedSections.has('contacts') && (!scopedProject || asksForScopedContacts);
   const includeProviders = requestedSections.has('contacts') || /\b(provider|rabbi|scheller|sheller|one time|whatsapp)\b/i.test(String(text || ''));
@@ -1473,6 +1509,8 @@ async function buildBnaAppSnapshotForMessage(config, text) {
     includeContent ? ['contentJobs', appRequest(config, 'GET', '/api/bna/content-jobs')] : null,
     includeContent ? ['contentPrompts', appRequest(config, 'GET', '/api/bna/content-prompts')] : null,
     includeContent ? ['contentBundles', appRequest(config, 'GET', '/api/bna/content-bundles')] : null,
+    includeLiveClasses ? ['liveSessions', appRequest(config, 'GET', '/api/bna/live-sessions')] : null,
+    includeLiveClasses ? ['liveMembers', appRequest(config, 'GET', '/api/bna/members')] : null,
     includeProviders ? ['serviceProviders', appRequest(config, 'GET', '/api/bna/service-providers')] : null,
     includeContacts ? ['signups', appRequest(config, 'GET', '/api/bna/signups')] : null,
     includeContacts ? ['contactCommunications', appRequest(config, 'GET', '/api/bna/contact-communications')] : null,
@@ -1665,6 +1703,17 @@ async function buildBnaAppSnapshotForMessage(config, text) {
     }
   }
 
+  if (includeLiveClasses) {
+    const liveSessions = Array.isArray(data.liveSessions?.sessions) ? data.liveSessions.sessions : [];
+    const liveMembers = Array.isArray(data.liveMembers?.members) ? data.liveMembers.members : [];
+    lines.push('');
+    lines.push(`Live classes: sessions=${liveSessions.length}, members=${liveMembers.length}. Zoom URLs are omitted from this general snapshot.`);
+    for (const session of liveSessions.slice(0, 12)) lines.push(`- session ${compactLiveSessionForContext(session)}`);
+    const liveAccessMembers = liveMembers.filter((member) => String(member.access_tier || '') === 'live_plus_library').slice(0, 12);
+    lines.push(`Live access members shown: ${liveAccessMembers.length} of ${liveMembers.filter((member) => String(member.access_tier || '') === 'live_plus_library').length}.`);
+    for (const member of liveAccessMembers) lines.push(`- member ${compactLiveMemberForContext(member)}`);
+  }
+
   if (includeContacts || includeAccounting) {
     const signups = Array.isArray(data.signups?.signups) ? data.signups.signups : [];
     if (includeContacts) {
@@ -1832,8 +1881,16 @@ async function loadLiveTasks(config) {
 
 async function formatLiveTaskQueueReply(config) {
   let tasks = [];
+  let codexQueue = null;
   try {
     tasks = await loadLiveTasks(config);
+    if (!isScopedProjectBot(config)) {
+      try {
+        codexQueue = await appRequest(config, 'GET', '/api/bna/codex-queue/status?limit=12');
+      } catch (error) {
+        log(`Observable Codex queue read skipped: ${error instanceof Error ? error.message : String(error)}`);
+      }
+    }
   } catch (error) {
     const legacyJobs = listPendingJobs(10);
     return [
@@ -1851,16 +1908,28 @@ async function formatLiveTaskQueueReply(config) {
     : /shloimie|operator/i;
   const mine = active.filter((task) => minePattern.test(String(task.assigned_to || task.author || '')));
   const localMediaJobs = listPendingJobs(50);
+  const codexJobs = Array.isArray(codexQueue?.queue?.jobs) ? codexQueue.queue.jobs : [];
 
   const lines = [
     isScopedProjectBot(config) ? 'Live One Time queue:' : 'Live Operations queue:',
-    ...(isScopedProjectBot(config) ? [] : [`- Changelog queue: ${codex.length}`]),
+    ...(isScopedProjectBot(config) ? [] : [`- Codex jobs: ${codexJobs.length || codex.length}`]),
     `- Decisions: ${decisions.length}`,
     isScopedProjectBot(config) ? `- Rabbi/Shloimie tasks: ${mine.length}` : `- My/Operator tasks: ${mine.length}`,
     ...(isScopedProjectBot(config) ? [] : [`- Legacy local media/intake jobs: ${localMediaJobs.length}`]),
   ];
 
-  if (!isScopedProjectBot(config) && codex.length) {
+  if (!isScopedProjectBot(config) && codexJobs.length) {
+    lines.push('');
+    lines.push('Codex job queue:');
+    for (const job of codexJobs.slice(0, 12)) {
+      const ids = [
+        job.ticket_id ? `ticket #${job.ticket_id}` : '',
+        job.task_id ? `task #${job.task_id}` : '',
+        job.id ? `job #${job.id}` : '',
+      ].filter(Boolean).join(' / ');
+      lines.push(`- ${ids || 'job'} [${job.status || 'unknown'}] ${taskSummaryTitle(job, 100)}`);
+    }
+  } else if (!isScopedProjectBot(config) && codex.length) {
     lines.push('');
     lines.push('Changelog queue:');
     for (const task of codex.slice(0, 12)) {
@@ -3111,6 +3180,334 @@ async function appRequest(config, method, endpoint, body = null) {
   return data;
 }
 
+async function parseCanonicalIntakeToApp(config, text, context = {}) {
+  const raw = String(text || '').trim();
+  if (!raw) return null;
+  return appRequest(config, 'POST', '/api/bna/intake/parse', {
+    raw_input: raw,
+    source_type: context.source_type || 'telegram_ramble',
+    source_id: context.source_id || null,
+    source_channel: 'telegram',
+    source_chat_id: context.chat_id || null,
+    source_message_id: context.message_id || null,
+    created_by: config.bridgeProfile || 'telegram_bridge',
+    project_key: context.project_key || config.scopedProjectKey || undefined,
+    dry_run: Boolean(context.dry_run),
+  });
+}
+
+function parseProviderOnboardingTelegramPayload(text = '', msg = {}) {
+  const raw = String(text || '').trim();
+  const isCommand = /^\/provider_onboard\b/i.test(raw);
+  const clearIntent = /\b(service provider|provider|tutor|tutoring|chug|class|shiur|rabbi|rebbe)\b/i.test(raw)
+    && /\b(sign\s*up|signup|join|list|listing|provider index|offer services|free listing)\b/i.test(raw);
+  if (!isCommand && !clearIntent) return null;
+  const commandText = raw.replace(/^\/provider_onboard\b/i, '').trim();
+  const payload = {
+    channel: 'telegram',
+    external_user_id: String(msg?.from?.id || msg?.chat?.id || ''),
+    source_context: {
+      telegram_chat_id: String(msg?.chat?.id || ''),
+      telegram_message_id: msg?.message_id || null,
+      raw_text: raw.slice(0, 4000),
+    },
+    raw_intake: raw,
+  };
+  const tokenText = commandText || raw;
+  const tokenPattern = /\b(provider|name|business|contact|email|phone|whatsapp|category|categories|area|location|language|languages|offering|service|description|website|image)\s*:\s*([^|;\n]+)/gi;
+  let match;
+  while ((match = tokenPattern.exec(tokenText))) {
+    const key = match[1].toLowerCase();
+    const value = match[2].trim();
+    if (!value) continue;
+    if (['provider', 'name', 'business'].includes(key)) payload.provider_name = value;
+    else if (key === 'contact') payload.contact_name = value;
+    else if (key === 'email') payload.email = value;
+    else if (['phone', 'whatsapp'].includes(key)) payload[key] = value;
+    else if (['category', 'categories'].includes(key)) payload.category = value;
+    else if (['area', 'location'].includes(key)) payload.location = value;
+    else if (['language', 'languages'].includes(key)) payload.language = value;
+    else if (['offering', 'service'].includes(key)) payload.services_offered = value;
+    else if (key === 'description') payload.description = value;
+    else if (key === 'website') payload.website = value;
+    else if (key === 'image') payload.profile_photo_url = value;
+  }
+  const parts = commandText.split('|').map((part) => part.trim()).filter(Boolean);
+  if (!payload.provider_name && parts[0] && !/^[a-z_ ]+:/i.test(parts[0])) payload.provider_name = parts[0];
+  if (!payload.email) {
+    const email = raw.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)?.[0] || '';
+    if (email) payload.email = email.toLowerCase();
+  }
+  if (!payload.phone) {
+    const phone = raw.match(/(?:\+?\d[\d\s().-]{6,}\d)/)?.[0] || '';
+    if (phone) payload.phone = phone.replace(/\s+/g, ' ').trim();
+  }
+  if (!payload.category) {
+    if (/rabbi|rebbe|shiur|torah|mishn(a|ah)|gemara/i.test(raw)) payload.category = 'rabbeim-shiurim';
+    else if (/tutor|homework|math|english|academic/i.test(raw)) payload.category = 'tutoring';
+    else if (/coach|executive function/i.test(raw)) payload.category = 'coaching';
+    else if (/therapy|therapist|support/i.test(raw)) payload.category = 'therapy-support';
+    else if (/camp|program/i.test(raw)) payload.category = 'camps-programs';
+    else if (/chug|class|course/i.test(raw)) payload.category = 'chugim-classes';
+  }
+  if (!payload.language) {
+    const languageMatch = raw.match(/\b(English|Hebrew|Yiddish|Ivrit|Lashon Hakodesh)\b/i)?.[0] || '';
+    if (languageMatch) payload.language = languageMatch;
+  }
+  if (!payload.description) payload.description = commandText || raw;
+  if (!payload.services_offered) payload.services_offered = payload.description;
+  return payload;
+}
+
+async function handleProviderOnboardingTelegramCommand(config, msg) {
+  const text = getTelegramMessageText(msg);
+  const payload = parseProviderOnboardingTelegramPayload(text, msg);
+  if (!payload) return false;
+  const chatId = String(msg.chat.id);
+  const messageId = msg.message_id;
+  if (!config.opsUsername || !config.opsPassword) {
+    await sendReply(config.botToken, chatId, 'Provider signup capture needs Operations credentials configured.', messageId);
+    return true;
+  }
+  const missing = [];
+  if (!payload.provider_name) missing.push('provider/name');
+  if (!payload.email && !payload.phone && !payload.whatsapp) missing.push('email or phone');
+  if (!payload.category) missing.push('category');
+  if (!payload.location) missing.push('location/area');
+  if (!payload.language) missing.push('language');
+  if (!payload.services_offered) missing.push('offering/service');
+  if (missing.length) {
+    await sendReply(
+      config.botToken,
+      chatId,
+      [
+        'I can capture a provider signup when these details are present:',
+        missing.map((item) => `- ${item}`).join('\n'),
+        '',
+        'Example:',
+        '/provider_onboard provider: Cohen Tutoring | contact: Rabbi Cohen | phone: +972... | category: tutoring | area: Beit Shemesh | language: English | offering: Free intro math class',
+      ].join('\n'),
+      messageId
+    );
+    return true;
+  }
+  try {
+    const result = await appRequest(config, 'POST', '/api/provider-signup', payload);
+    appendAgentTaskLedger({
+      event: 'provider_signup_captured',
+      source: 'telegram',
+      chat_id: chatId,
+      message_id: messageId,
+      title: `Provider signup captured: ${payload.provider_name}`,
+      stage: 'pending_admin_review',
+      category: 'provider_index',
+      assigned_to: 'Shloimie',
+      provider_id: result?.providerId || null,
+      slug: result?.slug || null,
+    });
+    await sendReply(
+      config.botToken,
+      chatId,
+      [
+        `Provider signup captured: ${payload.provider_name}`,
+        `Status: ${result?.status || 'pending'} - admin approval required before public listing.`,
+        result?.completeness !== undefined ? `Completeness: ${result.completeness}%` : '',
+        result?.slug ? `Profile slug reserved: ${result.slug}` : '',
+      ].filter(Boolean).join('\n'),
+      messageId
+    );
+  } catch (error) {
+    await sendReply(config.botToken, chatId, `Provider signup capture failed: ${error instanceof Error ? error.message : String(error)}`, messageId);
+  }
+  return true;
+}
+
+function redactZoomLinksForTelegram(value = '') {
+  return String(value || '').replace(/https?:\/\/[^\s<>"']*zoom[^\s<>"']*/gi, '[zoom link redacted]');
+}
+
+function extractTelegramUrl(text = '') {
+  const urls = String(text || '').match(/https?:\/\/[^\s<>"')]+/gi) || [];
+  return urls[0] || '';
+}
+
+function extractLiveMemberReference(text = '') {
+  const raw = String(text || '');
+  const idMatch = raw.match(/\b(?:member|m)\s*#?\s*(\d+)\b/i);
+  if (idMatch) return { member_id: Number(idMatch[1]) };
+  const emailMatch = raw.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
+  if (emailMatch) return { email: emailMatch[0].toLowerCase() };
+  return {};
+}
+
+function extractLiveSessionReference(text = '') {
+  const raw = String(text || '');
+  const idMatch = raw.match(/\b(?:session|class)\s*#?\s*(\d+)\b/i);
+  if (idMatch) return { session_id: Number(idMatch[1]) };
+  if (/\b(tonight|today|now|next class|current class)\b/i.test(raw)) return { tonight: true };
+  return {};
+}
+
+async function createLiveClassClarificationTask(config, msg, title, notes) {
+  try {
+    const result = await appRequest(config, 'POST', '/api/bna/tasks', {
+      title,
+      notes: redactZoomLinksForTelegram(notes),
+      stage: 'needs_decision',
+      category: 'communications',
+      urgency: 'today',
+      assigned_to: 'Shloimie',
+      project: 'one_time_mishnah_class',
+      source: 'telegram',
+      created_by: 'telegram_bridge',
+      source_context: {
+        telegram_chat_id: String(msg.chat?.id || ''),
+        telegram_message_id: msg.message_id || null,
+        live_class_clarification: true,
+      },
+    });
+    return result?.task || result || null;
+  } catch (error) {
+    log(`Live class clarification task failed: ${error instanceof Error ? error.message : String(error)}`);
+    return null;
+  }
+}
+
+async function resolveLiveSessionForTelegram(config, text) {
+  const ref = extractLiveSessionReference(text);
+  if (ref.session_id) {
+    const sessions = await appRequest(config, 'GET', '/api/bna/live-sessions');
+    return (sessions?.sessions || []).find((session) => Number(session.id) === Number(ref.session_id)) || null;
+  }
+  if (ref.tonight) {
+    const result = await appRequest(config, 'GET', '/api/bna/live-sessions/tonight');
+    return result?.session || null;
+  }
+  return null;
+}
+
+async function resolveLiveMemberForTelegram(config, text) {
+  const ref = extractLiveMemberReference(text);
+  if (ref.member_id) {
+    const result = await appRequest(config, 'GET', `/api/bna/members?q=${encodeURIComponent(String(ref.member_id))}`);
+    return (result?.members || []).find((member) => Number(member.id) === Number(ref.member_id)) || null;
+  }
+  if (ref.email) {
+    const result = await appRequest(config, 'GET', `/api/bna/members?q=${encodeURIComponent(ref.email)}`);
+    const matches = (result?.members || []).filter((member) => String(member.email || '').toLowerCase() === ref.email);
+    return matches.length === 1 ? matches[0] : null;
+  }
+  return null;
+}
+
+async function handleLiveClassTelegramCommand(config, msg) {
+  const chatId = String(msg.chat.id);
+  const messageId = msg.message_id;
+  const text = getTelegramMessageText(msg);
+  const normalized = String(text || '').toLowerCase();
+  if (!wantsLiveClassSnapshot(text)) return false;
+  if (!config.opsUsername || !config.opsPassword) return false;
+
+  if (/\b(tonight|today|current|next)\b/i.test(text) && /\bzoom\b/i.test(text) && /\blink\b/i.test(text) && /\b(what|show|send me|give me|where)\b/i.test(text)) {
+    try {
+      const result = await appRequest(config, 'GET', '/api/bna/live-sessions/tonight');
+      const session = result?.session;
+      if (!session) throw new Error('No scheduled live session was found.');
+      await sendReply(
+        config.botToken,
+        chatId,
+        [
+          `${session.title || 'Tonight class'}`,
+          `Start: ${compactDateForContext(session.start_at) || 'not set'}`,
+          `Link version: ${session.link_version || session.zoom_link_version || 1}`,
+          session.zoom_meeting_url ? `Zoom: ${session.zoom_meeting_url}` : 'Zoom: not set',
+        ].join('\n'),
+        messageId
+      );
+    } catch (error) {
+      await sendReply(config.botToken, chatId, error.message || 'I could not find tonight\'s Zoom link.', messageId);
+    }
+    return true;
+  }
+
+  if (/\b(who|list|show)\b/i.test(text) && /\blive access\b/i.test(text)) {
+    try {
+      const result = await appRequest(config, 'GET', '/api/bna/members?access_tier=live_plus_library');
+      const members = result?.members || [];
+      const lines = [
+        `Live access members: ${members.length}`,
+        ...members.slice(0, 20).map((member) => `#${member.id} ${member.display_name || member.email || 'Member'} | ${member.access_status || 'status'} | ${member.email || 'no email'}`),
+      ];
+      await sendReply(config.botToken, chatId, lines.join('\n'), messageId);
+    } catch (error) {
+      await sendReply(config.botToken, chatId, error.message || 'I could not load live access members.', messageId);
+    }
+    return true;
+  }
+
+  if (/\b(change|replace|update)\b/i.test(text) && /\b(link|zoom)\b/i.test(text)) {
+    const zoomUrl = extractTelegramUrl(text);
+    const session = await resolveLiveSessionForTelegram(config, text).catch(() => null);
+    if (!zoomUrl || !/zoom/i.test(zoomUrl) || !session?.id) {
+      const task = await createLiveClassClarificationTask(
+        config,
+        msg,
+        'Clarify live class Zoom link change',
+        `Telegram asked to change a live class Zoom link, but the request was missing ${!zoomUrl ? 'the new Zoom URL' : 'a specific session/tonight reference'}.\n\nOriginal message: ${redactZoomLinksForTelegram(text)}`
+      );
+      await sendReply(config.botToken, chatId, task?.id ? `I need the exact session and new Zoom URL. I opened task #${task.id} to clarify it.` : 'I need the exact session and new Zoom URL before changing anything.', messageId);
+      return true;
+    }
+    try {
+      const result = await appRequest(config, 'PATCH', `/api/bna/live-sessions/${session.id}`, {
+        zoom_meeting_url: zoomUrl,
+      });
+      await sendReply(
+        config.botToken,
+        chatId,
+        `Updated ${result?.session?.title || `session #${session.id}`} to link version ${result?.session?.link_version || result?.session?.zoom_link_version || 'new'}. Send the updated link when ready.`,
+        messageId
+      );
+    } catch (error) {
+      await sendReply(config.botToken, chatId, error.message || 'I could not update the Zoom link.', messageId);
+    }
+    return true;
+  }
+
+  if (/\bsend\b/i.test(text) && /\b(member|email|zoom|link)\b/i.test(text) && /\bzoom|link\b/i.test(text)) {
+    const session = await resolveLiveSessionForTelegram(config, text).catch(() => null);
+    const member = await resolveLiveMemberForTelegram(config, text).catch(() => null);
+    if (!session?.id || !member?.id) {
+      const task = await createLiveClassClarificationTask(
+        config,
+        msg,
+        'Clarify live class Zoom send request',
+        `Telegram asked to send a member their Zoom link, but the request did not clearly identify both member and session.\n\nOriginal message: ${redactZoomLinksForTelegram(text)}`
+      );
+      await sendReply(config.botToken, chatId, task?.id ? `I need the exact member and session before sending. I opened task #${task.id} to clarify it.` : 'I need the exact member and session before sending.', messageId);
+      return true;
+    }
+    try {
+      const result = await appRequest(config, 'POST', `/api/bna/live-sessions/${session.id}/send-zoom-link`, {
+        member_id: member.id,
+        dryRun: false,
+      });
+      const summary = result?.summary || {};
+      await sendReply(
+        config.botToken,
+        chatId,
+        `Zoom send attempted for ${member.display_name || member.email || `member #${member.id}`}. Result: ${Object.entries(summary).map(([key, value]) => `${value} ${key}`).join(', ') || 'no recipients'}.`,
+        messageId
+      );
+    } catch (error) {
+      await sendReply(config.botToken, chatId, error.message || 'I could not send the Zoom link.', messageId);
+    }
+    return true;
+  }
+
+  return false;
+}
+
 async function handleTypedOperationsAction(config, msg, intentPlan) {
   const chatId = String(msg.chat.id);
   const text = msg.text?.trim() || '';
@@ -3824,25 +4221,43 @@ async function captureScopedProjectToApp(config, text, chatId, messageId) {
 
   const decisionRequired = hasExplicitScopedDecisionChoice(text);
   const assignee = inferScopedOneTimeAssignee(text) || (decisionRequired ? null : 'Codex');
-  const task = await appRequest(config, 'POST', '/api/bna/tasks', {
-    title: scopedTaskTitleFromText(text),
-    raw_text: text,
-    notes: text,
-    source: 'telegram',
-    created_by: config.bridgeProfile || 'rabbi-elie-scheller',
-    author: config.agentDisplayName || 'Rabbi Elie Scheller',
-    project_key: config.scopedProjectKey || ONE_TIME_PROJECT_KEY,
-    category: inferScopedOneTimeCategory(text),
-    assigned_to: assignee,
-    stage: decisionRequired ? 'needs_decision' : 'assigned',
-    decision_required: decisionRequired,
-    ai_parsed: {
-      parser: 'telegram-scoped-one-time-v1',
-      kind: decisionRequired ? 'decision' : 'task',
-      original_text: text,
-      project: config.scopedProjectKey || ONE_TIME_PROJECT_KEY,
-    },
-  });
+  let intakeResult = null;
+  let task = null;
+  try {
+    intakeResult = await parseCanonicalIntakeToApp(config, text, {
+      source_type: 'telegram_scoped_task',
+      source_id: messageId,
+      chat_id: chatId,
+      message_id: messageId,
+      project_key: config.scopedProjectKey || ONE_TIME_PROJECT_KEY,
+      dry_run: false,
+    });
+    const canonicalTask = intakeResult?.apply?.created?.tasks?.[0] || intakeResult?.tasks?.[0] || null;
+    if (canonicalTask?.id) task = { task: canonicalTask };
+  } catch (error) {
+    log(`Canonical intake capture fell back to direct scoped task create: ${error instanceof Error ? error.message : String(error)}`);
+  }
+  if (!task) {
+    task = await appRequest(config, 'POST', '/api/bna/tasks', {
+      title: scopedTaskTitleFromText(text),
+      raw_text: text,
+      notes: text,
+      source: 'telegram',
+      created_by: config.bridgeProfile || 'rabbi-elie-scheller',
+      author: config.agentDisplayName || 'Rabbi Elie Scheller',
+      project_key: config.scopedProjectKey || ONE_TIME_PROJECT_KEY,
+      category: inferScopedOneTimeCategory(text),
+      assigned_to: assignee,
+      stage: decisionRequired ? 'needs_decision' : 'assigned',
+      decision_required: decisionRequired,
+      ai_parsed: {
+        parser: 'telegram-scoped-one-time-v1',
+        kind: decisionRequired ? 'decision' : 'task',
+        original_text: text,
+        project: config.scopedProjectKey || ONE_TIME_PROJECT_KEY,
+      },
+    });
+  }
   const createdTask = task?.task || task;
   if (createdTask?.id) {
     appendAgentTaskLedger({
@@ -3856,6 +4271,7 @@ async function captureScopedProjectToApp(config, text, chatId, messageId) {
       stage: createdTask.stage,
       category: createdTask.category,
       assigned_to: createdTask.assigned_to || null,
+      intake_parse_run_id: intakeResult?.parse_run?.id || intakeResult?.apply?.parse_run?.id || null,
       project_key: createdTask.project_key || config.scopedProjectKey || ONE_TIME_PROJECT_KEY,
     });
   }
@@ -4179,9 +4595,13 @@ async function captureRambleToApp(config, text, chatId, messageId) {
     ? ''
     : taskRamble || (singleSentenceSystemTask && !hasPromptPlanningIntent(text) ? text : '');
   if (taskRambleInput && !isExploratoryQuestionWithoutTaskIntent(text)) {
-    taskResult = await appRequest(config, 'POST', '/api/bna/tasks', {
-      ramble: taskRambleInput,
+    taskResult = await appRequest(config, 'POST', '/api/bna/bot/capture', {
+      text: taskRambleInput,
       source: 'telegram',
+      source_channel: 'telegram',
+      source_chat_id: chatId,
+      source_message_id: messageId,
+      message_type: 'text',
       created_by: 'telegram',
     });
     for (const task of taskResult?.tasks || []) {
@@ -4203,8 +4623,12 @@ async function captureRambleToApp(config, text, chatId, messageId) {
 
   return {
     enabled: true,
-    tasksCreated: Number(taskResult?.tasks_created || (taskResult?.task ? 1 : 0)),
+    tasksCreated: Number(taskResult?.tasks_created || taskResult?.tasks?.length || (taskResult?.task ? 1 : 0)),
     tasks: taskResult?.tasks || (taskResult?.task ? [taskResult.task] : []),
+    observableTicket: taskResult?.ticket || null,
+    observableTicketsCreated: taskResult?.ticket?.id ? 1 : 0,
+    agentJobs: taskResult?.agent_jobs || (taskResult?.agent_job ? [taskResult.agent_job] : []),
+    agentJobsCreated: Number(taskResult?.agent_jobs?.length || (taskResult?.agent_job ? 1 : 0)),
     eventsCreated,
     studentMatchDecisions,
     paymentIntakeCreated,
@@ -4567,6 +4991,23 @@ function captureSummaryText(captureSummary = {}) {
     lines.push(`Filed in Tasks: ${captureSummary.tasksCreated} task(s).`);
   }
 
+  if (captureSummary.observableTicket?.id) {
+    lines.push(`Created ticket #${captureSummary.observableTicket.id}.`);
+  }
+
+  const visibleAgentJobs = (captureSummary.agentJobs || [])
+    .filter((job) => job?.id || job?.job_id)
+    .slice(0, 3);
+  if (visibleAgentJobs.length) {
+    for (const job of visibleAgentJobs) {
+      const jobId = job.id || job.job_id;
+      const taskId = job.task_id ? `, task #${job.task_id}` : '';
+      lines.push(`Queued for Codex: job #${jobId}${taskId}.`);
+    }
+  } else if (captureSummary.agentJobsCreated) {
+    lines.push(`Queued for Codex: ${captureSummary.agentJobsCreated} job(s).`);
+  }
+
   if (captureSummary.eventsCreated) {
     lines.push(`Filed in Students: ${captureSummary.eventsCreated} accountability item(s).`);
   }
@@ -4628,6 +5069,8 @@ function hasStructuredCapture(captureSummary = {}) {
     Boolean(captureSummary.telegramCrmNoteIntent) ||
     Number(captureSummary.commentsCreated || 0) ||
     Number(captureSummary.supportTicketsCreated || 0) ||
+    Number(captureSummary.observableTicketsCreated || 0) ||
+    Number(captureSummary.agentJobsCreated || 0) ||
     captureSummary.studentMatchDecisions?.length
   );
 }
@@ -7351,6 +7794,7 @@ async function handleStructuredTextCommand(config, msg, intentPlan = {}) {
         '- /send_whatsapp signup:123 | message text',
         '- /link_whatsapp communication:12 signup:3',
         '- /crm_note contact:Name | note: context for latest WhatsApp',
+        '- /provider_onboard provider: Name | phone: +972... | category: tutoring | area: Beit Shemesh | language: English | offering: Free intro class',
         '- /drive_auth',
         '- /sync_drive_memory',
         '- /pull_drive_memory',
@@ -7368,8 +7812,8 @@ async function handleStructuredTextCommand(config, msg, intentPlan = {}) {
         '- Ask for "organize all recordings this week" or "make the weekly parent update" to draft from this week\'s transcripts',
         '- Decision points should come back with quick button-style options',
         '- publish draft <target ...> | your caption',
-        '- publish now <target ...> | your caption',
-        'Upload a photo, video, or document with a publish command in the caption and I will save the asset, then queue the social draft. Buffer media publishing needs a hosted media URL.',
+        '- schedule/commit social copy after approval; Buffer scheduling still requires explicit confirmation in Operations',
+        'Upload a photo, video, or document with a publish command in the caption and I will save the asset, then queue the social draft. Buffer media attachment needs a hosted media URL.',
       ].join('\n'),
       messageId
     );
@@ -7498,8 +7942,25 @@ async function handleStructuredTextCommand(config, msg, intentPlan = {}) {
   }
 
   if (text === '/accounts') {
-    const accounts = await listSocialAccounts(true);
-    await sendReply(config.botToken, chatId, formatAccountsReply(accounts), messageId);
+    try {
+      const health = await appRequest(config, 'GET', '/api/bna/integrations/buffer/health');
+      if (health && health.ok === false) {
+        await sendReply(config.botToken, chatId, `Buffer setup blocker: ${health.blocker || 'Buffer is not ready.'}`, messageId);
+        return true;
+      }
+      const channelResult = await appRequest(config, 'GET', '/api/bna/integrations/buffer/channels');
+      const accounts = (channelResult?.channels || []).map((channel) => ({
+        id: channel.id,
+        originId: channel.id,
+        platform: channel.service || channel.platform,
+        name: channel.displayName || channel.name || channel.service,
+        provider: 'buffer',
+      }));
+      await sendReply(config.botToken, chatId, formatAccountsReply(accounts), messageId);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      await sendReply(config.botToken, chatId, `Buffer accounts unavailable: ${message}`, messageId);
+    }
     return true;
   }
 
@@ -9169,6 +9630,22 @@ async function handleTextMessage(config, msg) {
 
   if (/^\/(?:ingest_website_images|website_images|ingest_images)\b/i.test(text)) {
     await handleWebsiteImageIngestCommand(config, msg);
+    return;
+  }
+
+  if (await handleLiveClassTelegramCommand(config, msg)) {
+    appendMemoryEntry('Telegram Live Class Action', redactZoomLinksForTelegram(text), {
+      chat_id: chatId,
+      message_id: messageId,
+    });
+    return;
+  }
+
+  if (await handleProviderOnboardingTelegramCommand(config, msg)) {
+    appendMemoryEntry('Telegram Provider Signup Capture', text, {
+      chat_id: chatId,
+      message_id: messageId,
+    });
     return;
   }
 

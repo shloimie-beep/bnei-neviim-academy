@@ -111,6 +111,10 @@
   function renderNav(mountId = "navMount") {
     const mount = document.getElementById(mountId);
     if (!mount) return;
+    if (mount.hasAttribute("data-bna-site-nav") && window.BNASiteNav?.render) {
+      window.BNASiteNav.render(mount);
+      return;
+    }
     const lang = language();
     const otherLang = lang === "he" ? "en" : "he";
     const labels =
@@ -215,6 +219,10 @@
   function renderFooter(mountId = "footerMount") {
     const mount = document.getElementById(mountId);
     if (!mount) return;
+    if (mount.hasAttribute("data-bna-site-footer") && window.BNASiteNav?.renderFooter) {
+      window.BNASiteNav.renderFooter(mount);
+      return;
+    }
     const lang = language();
     const location = lang === "he" ? "רמת בית שמש" : "Ramat Beit Shemesh";
     const nonprofit =

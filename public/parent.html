@@ -1559,6 +1559,17 @@
             accessCodeReady: 'Student access link is ready.',
             accessCodeReset: 'Student access code was reset.',
             childAccess: 'Child access',
+            studentLoginSettings: 'Student login settings',
+            studentLoginStatus: 'Student login',
+            studentUsername: 'Student username',
+            studentPassword: 'New student password',
+            saveStudentLogin: 'Save student login',
+            studentLoginNotSet: 'No username/password login is set yet.',
+            studentLoginReady: 'Username/password login is active.',
+            studentLoginSaved: 'Student login saved.',
+            studentLoginPasswordMismatch: 'Passwords do not match.',
+            studentPasswordNeverShown: 'Saved passwords are never displayed after set/reset.',
+            studentAccessFallback: 'Access-code fallback',
             helpTitle: 'Need help?',
             helpCopy: 'For technology or portal issues, send this form. For questions about your child, use WhatsApp Rabbi Shloimie.',
             helpCategory: 'Help topic',
@@ -1581,7 +1592,7 @@
             studentTrip: 'Student trip',
             visibleGoals: 'Visible goals',
             checkoffsAndMessages: 'Checkoffs and messages',
-            providerDirectory: 'Approved Providers',
+            providerDirectory: 'Active Providers',
             provider: 'Provider',
             approvedService: 'Approved service',
             session: 'Session',
@@ -1589,7 +1600,7 @@
             ageRangePending: 'Age range pending',
             capacityPending: 'Capacity pending',
             ages: 'Ages',
-            noProviders: 'No approved providers are listed yet.',
+            noProviders: 'No active providers are listed yet.',
             providerDirectoryCopy: 'BNA-approved outside services and classes. Billing and discounts are display-only until BNA confirms the payment path.',
             providerFilters: 'Provider filters',
             providerCity: 'City',
@@ -1603,7 +1614,7 @@
             allTypes: 'All types',
             discountEligibility: 'Discount eligibility',
             noLiveBilling: 'No live billing or payout automation is enabled here.',
-            noProviderMatches: 'No approved providers match these filters.',
+            noProviderMatches: 'No active providers match these filters.',
             providerRequestQueued: 'Provider message saved. The thread is visible in your communication history.',
             loginFailed: 'Could not sign in.',
             resetFailed: 'Could not reset this password.',
@@ -1620,6 +1631,9 @@
             this_week: 'This week',
             parentAssistant: 'Parent help assistant',
             parentAssistantScope: 'Uses only child overview, parent-visible calendar, assignments, questions, documents, messages, provider index, and account help.',
+            classroomSafety: 'Classroom safety',
+            classroomSafetyEmpty: 'No classroom responses are held for parent review.',
+            classroomBotPolicy: 'One Time bot answers only from approved classroom sources.',
             setup: 'Setup',
             assistant: 'Assistant',
             familyGoals: 'Family goals',
@@ -1933,6 +1947,20 @@
             parentAssistantScope: 'משתמש רק בסקירת הילד, לוח שנה גלוי להורה, משימות, שאלות, מסמכים, הודעות, אינדקס ספקים ועזרת חשבון.',
             noProviderMatches: 'אין ספקים מאושרים שמתאימים למסננים האלה.',
             settingsUnavailable: 'הגדרות החשבון מוצגות כאן לקריאה בלבד. אפשר לשנות שפה מהפס העליון בדפדפן הזה.',
+        });
+
+        Object.assign(strings.he, {
+            studentLoginSettings: 'Student login settings',
+            studentLoginStatus: 'Student login',
+            studentUsername: 'Student username',
+            studentPassword: 'New student password',
+            saveStudentLogin: 'Save student login',
+            studentLoginNotSet: 'No username/password login is set yet.',
+            studentLoginReady: 'Username/password login is active.',
+            studentLoginSaved: 'Student login saved.',
+            studentLoginPasswordMismatch: 'Passwords do not match.',
+            studentPasswordNeverShown: 'Saved passwords are never displayed after set/reset.',
+            studentAccessFallback: 'Access-code fallback',
         });
 
         function t(key) {
@@ -2269,13 +2297,43 @@
             els.parentOnboardingLog.scrollTop = els.parentOnboardingLog.scrollHeight;
         }
 
+        function shouldAvoidProgrammaticFocus() {
+            const coarsePointer = window.matchMedia?.('(pointer: coarse)')?.matches;
+            const viewportWidth = Math.min(window.innerWidth || 9999, document.documentElement.clientWidth || 9999);
+            return Boolean(coarsePointer || viewportWidth < 760);
+        }
+
+        function textEntryActive() {
+            const active = document.activeElement;
+            if (!active || active === document.body) return false;
+            if (active.isContentEditable) return true;
+            return ['INPUT', 'TEXTAREA', 'SELECT'].includes(active.tagName);
+        }
+
+        function focusParentOnboardingInput() {
+            if (shouldAvoidProgrammaticFocus()) return;
+            try {
+                els.parentOnboardingInput.focus({ preventScroll: true });
+            } catch {
+                els.parentOnboardingInput.focus();
+            }
+        }
+
+        function scrollParentElementIntoView(element) {
+            if (!element || textEntryActive()) return;
+            element.scrollIntoView({
+                behavior: shouldAvoidProgrammaticFocus() ? 'auto' : 'smooth',
+                block: 'start'
+            });
+        }
+
         function askParentOnboardingStep() {
             const step = currentParentOnboardingStep();
             if (!step) return submitParentOnboarding();
             els.parentOnboardingProgress.textContent = parentOnboardingProgressText();
             els.parentOnboardingInput.placeholder = step.placeholder || t('parentOnboardingPlaceholder');
             appendParentOnboardingBubble('bot', `${step.prompt}\n${step.help}`);
-            els.parentOnboardingInput.focus();
+            focusParentOnboardingInput();
         }
 
         function startParentOnboarding() {
@@ -2773,7 +2831,7 @@
             activeParentSection = valid ? section : 'home';
             applyParentSectionVisibility();
             closeParentMenu();
-            if (scroll) els.portalPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            if (scroll) scrollParentElementIntoView(els.portalPanel);
         }
 
         function isParentAccountabilityOnboarding() {
@@ -2799,7 +2857,7 @@
             els.loginStatus.classList.toggle('error', Boolean(isError));
             if (isParentAccountabilityOnboarding()) {
                 window.requestAnimationFrame(() => {
-                    els.parentOnboardingPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    scrollParentElementIntoView(els.parentOnboardingPanel);
                 });
             }
         }
@@ -2877,6 +2935,24 @@
                     <strong>${escapeHtml(date || label || t('notScheduled'))}</strong>
                     <p class="small">${escapeHtml(label || t('weeklyMeetingSlotMissing'))}</p>
                     <p class="small">${escapeHtml(t('messagesGoToBna'))}</p>
+                </article>
+            `;
+        }
+
+        function renderParentWs11Progress(ws11 = {}) {
+            const courses = Array.isArray(ws11.courses) ? ws11.courses : [];
+            const points = Number(ws11.gamification?.summary?.points_total || ws11.gamification?.summary?.total_points || 0);
+            const reports = Array.isArray(ws11.parent_progress?.reports) ? ws11.parent_progress.reports : [];
+            const worksheets = Array.isArray(ws11.worksheet_submissions) ? ws11.worksheet_submissions : [];
+            const questions = Array.isArray(ws11.course_questions) ? ws11.course_questions : [];
+            const shoutouts = Array.isArray(ws11.shoutouts) ? ws11.shoutouts : [];
+            const latestQuestion = questions.find(item => item.response?.response_text);
+            return `
+                <article class="summary-card" data-ws11-parent-progress>
+                    <span class="badge">WS11</span>
+                    <strong>${escapeHtml(ws11.community?.short_name || ws11.community?.name || 'Mishnah Community')}</strong>
+                    <p class="small">${escapeHtml([`${courses.length} courses`, `${points} points`, `${worksheets.length} worksheets`, `${questions.length} questions`, `${shoutouts.length} shoutouts`, `${reports.length} reports`].join(' / '))}</p>
+                    ${latestQuestion ? `<p class="small"><strong>${escapeHtml(latestQuestion.title || 'Question')}:</strong> ${escapeHtml(latestQuestion.response.response_text || '')}</p>` : ''}
                 </article>
             `;
         }
@@ -3303,6 +3379,7 @@
                     <div class="progress-track"><div class="progress-fill" style="--progress:${trip}%;"></div></div>
                     <div class="metric-row">
                         ${renderMeetingSummary(studentPayload)}
+                        ${renderParentWs11Progress(studentPayload.ws11 || {})}
                         ${renderAttendanceSummary(studentPayload.attendance_summary || {})}
                         ${renderFinancialSummary(studentPayload.financial || {})}
                     </div>
@@ -3568,6 +3645,7 @@
                     <div class="progress-track"><div class="progress-fill" style="--progress:${trip}%;"></div></div>
                     <div class="metric-row">
                         ${renderMeetingSummary(studentPayload)}
+                        ${renderParentWs11Progress(studentPayload.ws11 || {})}
                         ${renderAttendanceSummary(studentPayload.attendance_summary || {})}
                         ${renderFinancialSummary(studentPayload.financial || {})}
                     </div>
@@ -4000,8 +4078,51 @@
             `;
         }
 
+        function renderStudentLoginSettings(studentPayload = {}) {
+            const student = studentPayload.student || {};
+            const login = studentPayload.student_login || {};
+            const studentId = Number(student.id);
+            const hasAccount = Boolean(login.has_account);
+            const username = login.username || '';
+            const loginStatus = hasAccount ? t('studentLoginReady') : t('studentLoginNotSet');
+            return `
+                <div class="subsection stack" data-student-login-settings="${studentId}">
+                    <div>
+                        <h3>${escapeHtml(parentStudentDisplayName(student))}</h3>
+                        <p class="small">
+                            <strong>${escapeHtml(t('studentLoginStatus'))}:</strong>
+                            ${escapeHtml(username || loginStatus)}
+                        </p>
+                    </div>
+                    <form class="grid" data-student-login-form data-student-id="${studentId}">
+                        <label>
+                            ${escapeHtml(t('studentUsername'))}
+                            <input name="username" autocomplete="username" value="${escapeHtml(username)}" required maxlength="80">
+                        </label>
+                        <label>
+                            ${escapeHtml(t('studentPassword'))}
+                            <input name="password" type="password" autocomplete="new-password" required minlength="8" maxlength="200">
+                        </label>
+                        <label>
+                            ${escapeHtml(t('confirmPassword'))}
+                            <input name="confirm_password" type="password" autocomplete="new-password" required minlength="8" maxlength="200">
+                        </label>
+                        <div class="button-row">
+                            <button class="btn primary" type="submit">${escapeHtml(t('saveStudentLogin'))}</button>
+                            <button class="btn" type="button" data-student-open="${studentId}">${escapeHtml(t('openChildPortal'))}</button>
+                            <button class="btn" type="button" data-student-reset="${studentId}">${escapeHtml(t('resetStudentAccess'))}</button>
+                            <span class="small" data-student-login-status></span>
+                        </div>
+                    </form>
+                    <p class="small">${escapeHtml(t('studentPasswordNeverShown'))}</p>
+                    <p class="small"><strong>${escapeHtml(t('studentAccessFallback'))}:</strong> ${escapeHtml(t('accessCodeReady'))}</p>
+                </div>
+            `;
+        }
+
         function renderParentAccountSection(data = portalData) {
             const parent = data.parent || {};
+            const students = parentStudents(data);
             return `
                 <section class="panel stack">
                     <div>
@@ -4018,6 +4139,10 @@
                             <h3>${escapeHtml(t('childAccess'))}</h3>
                             <p class="small">${escapeHtml(t('accessCodeReady'))}</p>
                         </div>
+                    </div>
+                    <div class="subsection stack">
+                        <h3>${escapeHtml(t('studentLoginSettings'))}</h3>
+                        ${students.length ? students.map(renderStudentLoginSettings).join('') : `<p class="small">${escapeHtml(t('noActiveStudent'))}</p>`}
                     </div>
                 </section>
             `;
@@ -4113,6 +4238,29 @@
             `;
         }
 
+        function renderParentClassroomSafety(data = portalData) {
+            const rows = parentStudents(data).flatMap(studentPayload => {
+                const studentName = parentStudentDisplayName(studentPayload.student || {});
+                return (studentPayload.classroom_safety?.held_responses || []).map(item => ({ ...item, studentName }));
+            });
+            return `
+                <div class="stack">
+                    <div>
+                        <h3>${escapeHtml(t('classroomSafety'))}</h3>
+                        <p class="small">${escapeHtml(t('classroomBotPolicy'))}</p>
+                    </div>
+                    ${rows.length ? rows.map(item => `
+                        <div class="timeline-item">
+                            <strong>${escapeHtml(item.studentName || item.author_name || t('student'))}</strong>
+                            <div class="small">${escapeHtml([item.thread_title || item.class_title || t('assignments'), item.moderation_status || 'held_for_parent_review', item.parent_escalation_status || 'flagged'].filter(Boolean).join(' / '))}</div>
+                            <p>${escapeHtml(item.body_preview || '')}</p>
+                            ${item.created_at ? `<div class="small">${formatDate(item.created_at)}</div>` : ''}
+                        </div>
+                    `).join('') : `<div class="timeline-item">${escapeHtml(t('classroomSafetyEmpty'))}</div>`}
+                </div>
+            `;
+        }
+
         function renderParentAssistantSection(data = portalData) {
             return `
                 <section class="panel stack">
@@ -4129,6 +4277,7 @@
                         </div>
                     </form>
                     <div class="timeline" data-parent-assistant-output></div>
+                    ${renderParentClassroomSafety(data)}
                 </section>
             `;
         }
@@ -4405,6 +4554,53 @@
             }
         }
 
+        async function saveStudentLogin(form) {
+            const studentId = form.dataset.studentId;
+            const status = form.querySelector('[data-student-login-status]');
+            const button = form.querySelector('button[type="submit"]');
+            const username = String(form.querySelector('[name="username"]')?.value || '').trim();
+            const passwordInput = form.querySelector('[name="password"]');
+            const confirmInput = form.querySelector('[name="confirm_password"]');
+            const password = String(passwordInput?.value || '');
+            const confirmPassword = String(confirmInput?.value || '');
+            if (status) {
+                status.textContent = t('saving');
+                status.classList.remove('error');
+            }
+            if (password !== confirmPassword) {
+                if (status) {
+                    status.textContent = t('studentLoginPasswordMismatch');
+                    status.classList.add('error');
+                }
+                return;
+            }
+            if (button) button.disabled = true;
+            try {
+                await api(`/api/parent-portal/students/${encodeURIComponent(studentId)}/login-account`, {
+                    method: 'POST',
+                    body: JSON.stringify({ username, password }),
+                });
+                if (passwordInput) passwordInput.value = '';
+                if (confirmInput) confirmInput.value = '';
+                await loadPortal();
+                setParentSection('account', { scroll: false });
+                window.requestAnimationFrame(() => {
+                    const nextStatus = document.querySelector(`[data-student-login-settings="${Number(studentId)}"] [data-student-login-status]`);
+                    if (nextStatus) {
+                        nextStatus.textContent = t('studentLoginSaved');
+                        nextStatus.classList.remove('error');
+                    }
+                });
+            } catch (error) {
+                if (status) {
+                    status.textContent = error.message || t('requestFailed');
+                    status.classList.add('error');
+                }
+            } finally {
+                if (button) button.disabled = false;
+            }
+        }
+
         async function sendParentHelp(form) {
             const status = form.querySelector('[data-parent-help-status]');
             const button = form.querySelector('button[type="submit"]');
@@ -4555,19 +4751,23 @@
                 status.classList.remove('error');
             }
             try {
-                const result = await api('/api/bna/assistant/chat', {
+                const result = await api('/api/parent/assistant', {
                     method: 'POST',
                     body: JSON.stringify({
                         message,
-                        surface: 'parent_portal',
-                        language,
-                        page_path: `${window.location.pathname}${window.location.search}`,
+                        apply: true,
                     }),
                 });
                 form.reset();
-                const reply = (result.messages || []).find(item => item.author_type === 'assistant') || {};
                 if (output) {
-                    output.innerHTML = `<div class="timeline-item"><strong>${escapeHtml(t('assistant'))}</strong><br>${escapeHtml(reply.body || t('saved'))}</div>`;
+                    const actions = Array.isArray(result.actions) ? result.actions : [];
+                    const items = Array.isArray(result.items) ? result.items : [];
+                    const actionText = result.applied
+                        ? `${t('saved')}: ${items.map(item => item.title || item.section_key || 'item').join(', ')}`
+                        : result.needs_review
+                            ? `${t('requestFailed')}: ${result.reason || 'needs review'}`
+                            : actions.map(action => `${action.type}: ${action.title || action.section_key}`).join(', ');
+                    output.innerHTML = `<div class="timeline-item"><strong>${escapeHtml(t('assistant'))}</strong><br>${escapeHtml(actionText || t('saved'))}</div>`;
                 }
                 if (status) status.textContent = t('saved');
             } catch (error) {
@@ -4581,6 +4781,7 @@
         }
 
         async function openProviderRequest(button) {
+            const legacyProviderMessagesEndpoint = '/api/parent-portal/provider-messages';
             const providerName = button.dataset.providerCta || 'provider';
             const serviceTitle = button.dataset.providerService || 'program';
             const actionLabel = button.dataset.providerCtaLabel || 'Request Info';
@@ -4590,13 +4791,12 @@
             if (providerId) {
                 button.disabled = true;
                 try {
-                    await api('/api/parent-portal/provider-messages', {
+                    await api('/api/parent/provider-questions', {
                         method: 'POST',
                         body: JSON.stringify({
-                            provider_id: providerId,
+                            service_provider_id: providerId,
                             service_id: serviceId || null,
-                            subject: `${actionLabel}: ${providerName}`,
-                            body: messageBody,
+                            question: messageBody,
                         }),
                     });
                     await loadPortal({ keepLanguage: true });
@@ -4880,6 +5080,13 @@
         });
 
         els.portalPanel.addEventListener('submit', (event) => {
+            const studentLoginForm = event.target.closest('[data-student-login-form]');
+            if (studentLoginForm) {
+                event.preventDefault();
+                saveStudentLogin(studentLoginForm);
+                return;
+            }
+
             const helpForm = event.target.closest('[data-parent-help-form]');
             if (helpForm) {
                 event.preventDefault();

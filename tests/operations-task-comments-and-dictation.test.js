@@ -7,6 +7,10 @@ const operationsHtml = fs.readFileSync('public/operations.html', 'utf8');
 const server = fs.readFileSync('server.js', 'utf8');
 const agentFleet = fs.readFileSync('scripts/agent-fleet-supervisor.mjs', 'utf8');
 
+test('task creation SQL casts nullable decision placeholders for live Postgres', () => {
+  assert.match(server, /\$43::text, \$44::text, CASE WHEN \$43::text IS NOT NULL THEN NOW\(\) ELSE NULL END/);
+});
+
 function loadCommentRequeueHelper() {
   const start = server.indexOf('function isTaskCommentRequeueOptOut');
   const end = server.indexOf("app.post('/api/bna/tasks/:id/comments'", start);
@@ -23,7 +27,9 @@ test('Operations expanded task details can add comments inline', () => {
   assert.match(operationsHtml, /onsubmit="addInlineTaskComment\(event, \$\{id\}\)"/);
   assert.match(operationsHtml, /function addInlineTaskComment/);
   assert.match(operationsHtml, /api\.addTaskComment\(id/);
-  assert.match(operationsHtml, /visibility: 'workspace'/);
+  assert.match(operationsHtml, /function taskCommentDefaultVisibility/);
+  assert.match(operationsHtml, /return taskProjectKey\(task\) === 'one_time_mishnah_class' \? 'project' : 'workspace';/);
+  assert.match(operationsHtml, /visibility: taskCommentDefaultVisibility\(tasks\.find\(task => Number\(task\.id\) === id\) \|\| \{\}\)/);
   assert.match(operationsHtml, /requeue: false/);
   assert.match(operationsHtml, /\.\.\.\(saved\?\.task \|\| \{\}\)/);
   assert.match(operationsHtml, /expandedTaskComments = \{[\s\S]*\.\.\.expandedTaskComments[\s\S]*\[id\]: comments/);
@@ -40,7 +46,7 @@ test('Human task comments are shared dialogue; explicit requeue creates agent wo
   assert.match(server, /item_type = 'task'[\s\S]*waiting_on = NULL/);
   assert.match(server, /next_action_label = 'Agent working'/);
   assert.match(server, /started_at = NULL[\s\S]*completed_at = NULL[\s\S]*verified_at = NULL/);
-  assert.match(server, /res\.json\(\{ success: true, comment: result\.rows\[0\], requeued: Boolean\(task\), task \}\)/);
+  assert.match(server, /res\.json\(\{ success: true, comment, requeued: Boolean\(task\), task, decision_event \}\)/);
   assert.match(operationsHtml, /Add comment/);
   assert.match(operationsHtml, /source: 'dashboard',[\s\S]*requeue: false/);
   assert.doesNotMatch(operationsHtml, /Add Comment &amp; Requeue/);
@@ -89,7 +95,8 @@ test('Operations defers full re-renders while dictation or text entry is active'
   assert.match(operationsHtml, /if \(!options\.force && renderShouldWaitForTextEntry\(\)\)/);
   assert.match(operationsHtml, /document\.addEventListener\('compositionstart'/);
   assert.match(operationsHtml, /document\.addEventListener\('compositionend'/);
-  assert.match(operationsHtml, /setInterval\(\(\) => loadData\(\{ background: true \}\), 30000\)/);
+  assert.match(operationsHtml, /function backgroundRefreshCanRun/);
+  assert.match(operationsHtml, /setInterval\(\(\) => \{[\s\S]*if \(!backgroundRefreshCanRun\(\)\) return;[\s\S]*loadData\(\{ background: true \}\);[\s\S]*\}, 30000\)/);
 });
 
 test('Operations moves resolved decisions to Done or actionable Tasks', () => {
@@ -100,12 +107,12 @@ test('Operations moves resolved decisions to Done or actionable Tasks', () => {
   assert.match(operationsHtml, /tasks: \[\]/);
   assert.match(operationsHtml, /done: buckets\.done/);
   assert.match(operationsHtml, /tasks: buckets\.tasks/);
-  assert.match(operationsHtml, /Decision handled/);
+  assert.match(server, /Decision outcome saved/);
   assert.match(operationsHtml, /chooseTaskDecision/);
   assert.match(server, /actions\/choose-decision/);
   assert.match(operationsHtml, /function taskEndpointAction/);
-  assert.match(operationsHtml, /api\.chooseTaskDecision\(taskId/);
-  assert.match(operationsHtml, /Needs more info/);
+  assert.match(operationsHtml, /api\.decisionAction\(id, request\)/);
+  assert.match(operationsHtml, /Wait External|Block/);
   assert.match(server, /actions\/needs-more-info/);
   assert.match(server, /decision_needs_more_info/);
   assert.match(operationsHtml, /function decisionPatchRoutesToWork/);
@@ -113,6 +120,26 @@ test('Operations moves resolved decisions to Done or actionable Tasks', () => {
   assert.match(operationsHtml, /if \(task\.completed_at \|\| task\.verified_at \|\| \['done', 'archive'\]\.includes\(stage\)\) return 'done';/);
   assert.match(operationsHtml, /return 'tasks';/);
   assert.match(operationsHtml, /if \(\['assigned', 'in_progress'\]\.includes\(stage\)\) return true;/);
+});
+
+test('Decision cards expose Phase 8 choice context and comments', () => {
+  assert.match(operationsHtml, /function decisionQuestionText/);
+  assert.match(operationsHtml, /What should the \$\{cleaned\} be\?/);
+  assert.match(operationsHtml, /function decisionDetailModel/);
+  assert.match(operationsHtml, /workspace: taskProjectLabel\(task\)/);
+  assert.match(operationsHtml, /task-decision-option-key/);
+  assert.match(operationsHtml, /keyLabel: `Option \$\{String\.fromCharCode\(65 \+ index\)\}`/);
+  assert.match(operationsHtml, /Consequences/);
+  assert.match(operationsHtml, /No consequence captured yet/);
+  assert.match(operationsHtml, /workspace: taskProjectLabel\(task\)/);
+  assert.match(operationsHtml, /<div class="task-inline-label">\$\{escapeHtml\(label\)\}<\/div>/);
+  assert.match(operationsHtml, /function renderTaskDecisionContextCommentForm/);
+  assert.match(operationsHtml, /taskDecisionComment-\$\{id\}/);
+  assert.match(operationsHtml, /Add Decision Comment/);
+  assert.match(operationsHtml, /function addDecisionContextComment/);
+  assert.match(operationsHtml, /visibility: taskCommentDefaultVisibility\(tasks\.find\(task => Number\(task\.id\) === id\) \|\| \{\}\)/);
+  assert.match(operationsHtml, /source: 'dashboard'/);
+  assert.match(operationsHtml, /requeue: false/);
 });
 
 test('Task toolbar uses workspace-aware filters without bucket wording', () => {
@@ -129,10 +156,18 @@ test('Task toolbar uses workspace-aware filters without bucket wording', () => {
 
 test('Task calendar exposes selected-date task actions', () => {
   assert.match(operationsHtml, /function renderTaskSelectedDayPanel/);
+  assert.match(operationsHtml, /Selected: \$\{escapeHtml\(selectedLabel\)\}/);
+  assert.match(operationsHtml, /function selectedTaskCalendarLabel/);
   assert.match(operationsHtml, /Add task to this date/);
   assert.match(operationsHtml, /Move selected task to this date/);
   assert.match(operationsHtml, /function openTaskModalForDate/);
   assert.match(operationsHtml, /taskDueDate/);
   assert.match(operationsHtml, /function moveSelectedTaskToDate/);
   assert.match(operationsHtml, /api\.updateTask\(taskId, \{ due_date: key \}\)/);
+  assert.match(operationsHtml, /Google dry-run/);
+  assert.match(operationsHtml, /function previewSelectedDateGoogleCalendarDryRun/);
+  assert.match(operationsHtml, /action_id: 'sync_google_calendar'/);
+  assert.match(operationsHtml, /source: 'operations_task_calendar_selected_day'/);
+  assert.match(operationsHtml, /no_google_calendar_write: true/);
+  assert.match(operationsHtml, /dry_run: true/);
 });

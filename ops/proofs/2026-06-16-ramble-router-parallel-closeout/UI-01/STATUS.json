@@ -1,0 +1,9 @@
+{
+  "workstream_id": "UI-01",
+  "cycle_id": "2026-06-16-ramble-router-parallel-chatgpt-to-codex",
+  "status": "requeued_for_followup",
+  "title": "UI/header/footer/mobile standardization",
+  "proof_path": "ops/proofs/2026-06-16-ramble-router-parallel-closeout/UI-01/",
+  "needed_from_shloimie": "Approve continuation/deploy scope if UI-01 needs to ship with other dirty worktree changes.",
+  "notes": "Started and handoff exists. Final screenshot-driven UI proof remains open."
+}

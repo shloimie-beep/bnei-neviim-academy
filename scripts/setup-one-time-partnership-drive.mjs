@@ -182,6 +182,42 @@ const LOGIN_RELEASE_GUARD = {
   whatsappRequestCopy: 'Hi Rabbi Elie, before I send the scoped One Time login, can you please send the best email address to attach to your account? I am finishing the Drive and social setup first so the login only goes out after the workspace is ready.',
 };
 
+const ONE_TIME_APP_ACCESS_READINESS = {
+  status: 'blocked_pending_owner_approved_external_app_access',
+  label: 'One Time app/admin/member-library readiness',
+  ready_for_live_app_write: false,
+  ready_for_admin_access_reset: false,
+  ready_for_member_library_publish: false,
+  required_before_live_access: [
+    'Current One Time admin URL and deployment target confirmed',
+    'Owner-approved admin reset path or Shloimie/admin login confirmed',
+    'Rabbi/member test login confirmed for read-only smoke checks',
+    'Production or staging database URL/source confirmed for the One Time app',
+    'Vimeo/media hosting destination and hosted media URL path confirmed',
+    'Resend sender/domain and approved notification copy confirmed before any email send',
+    'Billing provider, tier mapping, refund/cancellation policy, and rollback/revoke path approved',
+    'APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING present only for the exact one-item publishing smoke',
+  ],
+  current_blockers: [
+    'Do not invent or store One Time admin/member credentials in BNA docs.',
+    'External One Time app has not been approved as a BNA write target.',
+    'Member-library destination, audience, visibility rules, hosted media URL, and rollback plan are still required before publish.',
+    'Email/WhatsApp/member notifications remain no-send until sender, recipients, copy, and approval are explicit.',
+    'Billing/access grants remain blocked until trusted payment source, tier mapping, and revoke path are approved.',
+  ],
+  no_write_guard: [
+    'no_admin_password_reset',
+    'no_member_access_grant',
+    'no_member_library_publish',
+    'no_drive_or_video_host_write',
+    'no_resend_email',
+    'no_whatsapp_or_sms',
+    'no_checkout_or_billing_write',
+    'no_external_crm_write',
+  ],
+  audit_source: 'ops/rabbi-scheller/2026-06-14-one-time-app-audit.md',
+};
+
 const ROADMAP_PHASES = [
   {
     weeks: '1-2',
@@ -1372,6 +1408,7 @@ const WORKFLOW_MAP = [
       'Blocking linked repair tasks are urgent; high linked repair tasks are today urgency.',
       'Payment tickets hand off as accounting tasks; other linked repair tasks hand off as technology tasks.',
       'High and blocking tickets notify the operator through the configured Telegram notification path.',
+      'Resolving or closing a ticket creates a local processed-notification draft in bna_contact_communications and an internal ticket comment; no email, WhatsApp, SMS, Telegram, or portal message is sent automatically.',
       'Ticket comments default to project visibility so Rabbi-facing progress can stay on the ticket without exposing unrelated internal notes.',
     ],
     trackingFields: [
@@ -1387,6 +1424,7 @@ const WORKFLOW_MAP = [
       'source_context.bridge_profile',
       'related_task_id',
       'resolved_at',
+      'processed notification draft communication id and no-send delivery flags when a ticket reaches resolved or closed',
       'ticket_counts by status on the One Time internal workflow readback',
     ],
     currentStateChecklist: [
@@ -1394,6 +1432,7 @@ const WORKFLOW_MAP = [
       'Support ticket API routes support list, create, detail, patch status/fields, and comments.',
       'Scoped One Time access allows Team tickets, task schedule, and support-ticket API routes without a separate Roadmap view.',
       'Operations Support view can open tickets, filter open/blocking/resolved tickets, and move tickets through triage, in progress, and resolved.',
+      'Resolved or closed tickets create a local Contacts > Communications processed-notification draft plus an internal comment, with external_write_performed=false.',
       'Rabbi Telegram bridge support-ticket parsing and API handoff are implemented, but live Rabbi bot startup still needs the confirmed allowed chat id and hosted bridge runtime.',
       'Roadmap endpoint returns Workflow N metadata and support ticket counts by status.',
     ],
@@ -1401,6 +1440,7 @@ const WORKFLOW_MAP = [
     smokeTests: [
       'Read-only roadmap/API smoke shows Workflow N with required ticket fields, intake channels, support categories, lifecycle, routing rules, approval gate, and task card link.',
       'Support API read smoke verifies /api/bna/support-tickets is reachable for the scoped workspace and internal workflow readback returns ticket_counts for owner/admin review.',
+      'Resolution smoke moves one ticket to resolved and verifies notification_draft, bna_contact_communications no-send metadata, and the internal ticket comment without sending an external message.',
       'Dashboard smoke opens the Support view and verifies the Open Ticket path is present without exposing internal handoff briefs.',
       'Post-runtime Telegram smoke sends an approved /ticket message from Rabbi after the allowed chat id and hosted bridge exist, then verifies the ticket, ledger record, and linked task behavior for high/blocking categories.',
     ],
@@ -2507,6 +2547,7 @@ function driveSocialIngestionMap(context) {
     },
     social_platforms: SOCIAL_PLATFORM_SETUP,
     login_release_guard: LOGIN_RELEASE_GUARD,
+    app_access_readiness: ONE_TIME_APP_ACCESS_READINESS,
   };
 }
 
@@ -2543,6 +2584,17 @@ function driveSocialIngestionMarkdown(map) {
     `- Status: ${map.login_release_guard.status}`,
     ...map.login_release_guard.requiredBeforeSendingLogin.map((item) => `- Required before sending login: ${item}`),
     ...map.login_release_guard.currentKnownBlockers.map((item) => `- Current blocker: ${item}`),
+    '',
+    '## One Time App Access Readiness',
+    '',
+    `- Status: ${map.app_access_readiness.status}`,
+    `- Live app write ready: ${map.app_access_readiness.ready_for_live_app_write ? 'yes' : 'no'}`,
+    `- Admin access reset ready: ${map.app_access_readiness.ready_for_admin_access_reset ? 'yes' : 'no'}`,
+    `- Member-library publish ready: ${map.app_access_readiness.ready_for_member_library_publish ? 'yes' : 'no'}`,
+    ...map.app_access_readiness.required_before_live_access.map((item) => `- Required before live access: ${item}`),
+    ...map.app_access_readiness.current_blockers.map((item) => `- Current app blocker: ${item}`),
+    `- No-write guard: ${map.app_access_readiness.no_write_guard.join(', ')}`,
+    `- Audit source: ${map.app_access_readiness.audit_source}`,
     '',
     '## WhatsApp Copy',
     '',

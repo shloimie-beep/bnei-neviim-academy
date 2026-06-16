@@ -375,6 +375,27 @@
             </form>
         </section>
 
+        <section id="setupPanel" class="panel login-panel hidden">
+            <h1>Set password</h1>
+            <p id="setupIntro" class="small">Set your BNA provider workspace password.</p>
+            <div id="setupError" class="error"></div>
+            <form id="setupForm">
+                <label>Username
+                    <input id="setupUsername" autocomplete="username" readonly>
+                </label>
+                <label>New password
+                    <input id="setupPassword" type="password" autocomplete="new-password" required minlength="8">
+                </label>
+                <label>Confirm password
+                    <input id="setupPasswordConfirm" type="password" autocomplete="new-password" required minlength="8">
+                </label>
+                <div class="button-row">
+                    <button id="setupButton" class="btn primary" type="submit">Set Password</button>
+                    <a class="btn" href="/provider">Use Existing Login</a>
+                </div>
+            </form>
+        </section>
+
         <section id="portalPanel" class="hidden">
             <div class="hero">
                 <div>
@@ -482,6 +503,70 @@
                 </section>
             </div>
 
+            <section class="panel provider-section" data-provider-section="class_media">
+                <h2>Class Media</h2>
+                <div class="notice">Manual hosted URLs only. This creates internal One Time review records; it does not upload files, publish to a member library, send messages, or grant access.</div>
+                <div id="classMediaStatus" class="notice" style="display:none; margin-top:12px;"></div>
+                <div id="classMediaList" class="service-list" style="margin-top:12px;"></div>
+                <form id="classMediaForm" class="panel" style="box-shadow:none; margin-top:14px;">
+                    <h3>Add class recording</h3>
+                    <div class="field-grid">
+                        <label>Class title
+                            <input name="title" required placeholder="Mishnah class recording">
+                        </label>
+                        <label>Program / service
+                            <select name="service_id" id="classMediaServiceSelect">
+                                <option value="">No service selected</option>
+                            </select>
+                        </label>
+                        <label>Session
+                            <select name="session_id" id="classMediaSessionSelect">
+                                <option value="">No session selected</option>
+                            </select>
+                        </label>
+                        <label>Media type
+                            <select name="media_type">
+                                <option value="video">Video</option>
+                                <option value="audio">Audio</option>
+                                <option value="document">Document</option>
+                                <option value="link">Link</option>
+                            </select>
+                        </label>
+                        <label>Class date
+                            <input name="class_date" type="date">
+                        </label>
+                        <label>Class time
+                            <input name="class_time" type="time">
+                        </label>
+                        <label>Hosted media URL
+                            <input name="hosted_media_url" type="url" required placeholder="https://...">
+                        </label>
+                        <label>Thumbnail URL
+                            <input name="thumbnail_url" type="url" placeholder="https://...">
+                        </label>
+                    </div>
+                    <label>Summary
+                        <textarea name="summary" placeholder="What is covered in this class?"></textarea>
+                    </label>
+                    <label>Transcript text or transcript notes
+                        <textarea name="transcript_text"></textarea>
+                    </label>
+                    <label>Thumbnail brief
+                        <textarea name="thumbnail_brief"></textarea>
+                    </label>
+                    <label>Worksheet / source-sheet notes
+                        <textarea name="worksheet_notes"></textarea>
+                    </label>
+                    <label>Internal notes
+                        <textarea name="notes"></textarea>
+                    </label>
+                    <div class="button-row">
+                        <button class="btn" type="submit" data-class-media-dry-run="true">Preview No-Write</button>
+                        <button class="btn primary" type="submit">Submit For Review</button>
+                    </div>
+                </form>
+            </section>
+
             <section class="panel provider-section" data-provider-section="media">
                 <h2>Profile Media</h2>
                 <div class="notice">Free provider profiles can show a profile image and up to 3 gallery images. Use approved image URLs only.</div>
@@ -578,6 +663,7 @@
     <script>
         let portalState = null;
         let activeProviderSection = 'overview';
+        const setupToken = new URLSearchParams(window.location.search).get('setup') || '';
 
         function escapeHtml(value) {
             return String(value ?? '').replace(/[&<>"']/g, (char) => ({
@@ -587,6 +673,74 @@
                 '"': '&quot;',
                 "'": '&#039;'
             })[char]);
+        }
+
+        function parseJsonField(value) {
+            if (!value) return {};
+            if (typeof value === 'object') return value;
+            try { return JSON.parse(value); } catch (_) { return {}; }
+        }
+
+        function shortText(value, limit = 140) {
+            const text = String(value || '').replace(/\s+/g, ' ').trim();
+            return text.length > limit ? `${text.slice(0, limit - 3)}...` : text;
+        }
+
+        function classMediaServiceOptions(services = []) {
+            return ['<option value="">No service selected</option>']
+                .concat(services.map(service => `<option value="${Number(service.id)}">${escapeHtml(service.title || `Service #${Number(service.id)}`)}</option>`))
+                .join('');
+        }
+
+        function classMediaSessionOptions(services = []) {
+            const rows = [];
+            services.forEach(service => {
+                (Array.isArray(service.sessions) ? service.sessions : []).forEach(session => {
+                    rows.push(`<option value="${Number(session.id)}">${escapeHtml(`${service.title || 'Service'} / ${session.title || `Session #${Number(session.id)}`}`)}</option>`);
+                });
+            });
+            return ['<option value="">No session selected</option>'].concat(rows).join('');
+        }
+
+        function classMediaOutputStatus(job = {}, outputType = '') {
+            const outputs = Array.isArray(job.outputs) ? job.outputs : [];
+            const found = outputs.find(output => output.output_type === outputType);
+            return found ? String(found.status || 'draft').replace(/_/g, ' ') : 'missing';
+        }
+
+        function renderClassMediaList(items = []) {
+            if (!items.length) return '<p class="small">No class media has been submitted yet.</p>';
+            return items.map(item => {
+                const meta = parseJsonField(item.parse_json);
+                return `
+                    <article class="service-card">
+                        <div class="service-head">
+                            <div>
+                                <h3>${escapeHtml(item.title || 'Class media')}</h3>
+                                <p class="small">${escapeHtml(shortText(item.caption || meta.summary || item.notes || 'Internal One Time review item.'))}</p>
+                            </div>
+                            <span class="status-pill">${escapeHtml(String(item.status || 'needs_approval').replace(/_/g, ' '))}</span>
+                        </div>
+                        <div class="service-meta">
+                            <span class="status-pill">Submitted from Rabbi portal</span>
+                            <span class="status-pill">${escapeHtml(meta.service_title || 'No service')}</span>
+                            <span class="status-pill">${escapeHtml(meta.session_title || 'No session')}</span>
+                            <span class="status-pill">${escapeHtml(meta.class_date || 'date tbd')}</span>
+                            <span class="status-pill">Library: ${escapeHtml(classMediaOutputStatus(item, 'video_library_item'))}</span>
+                            <span class="status-pill">Transcript: ${escapeHtml(classMediaOutputStatus(item, 'transcript_review'))}</span>
+                        </div>
+                        ${item.media_url ? `<p class="small"><a href="${escapeHtml(item.media_url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.media_url)}</a></p>` : ''}
+                    </article>
+                `;
+            }).join('');
+        }
+
+        function setClassMediaStatus(message = '', isError = false) {
+            const el = document.getElementById('classMediaStatus');
+            if (!el) return;
+            el.style.display = message ? 'block' : 'none';
+            el.style.borderColor = isError ? 'rgba(180, 35, 24, 0.35)' : 'rgba(17, 17, 17, 0.14)';
+            el.textContent = message;
         }
 
         async function api(path, options = {}) {
@@ -602,8 +756,18 @@
 
         function showLogin(error = '') {
             document.getElementById('loginPanel').classList.remove('hidden');
+            document.getElementById('setupPanel').classList.add('hidden');
             document.getElementById('portalPanel').classList.add('hidden');
             const errorEl = document.getElementById('loginError');
+            errorEl.textContent = error;
+            errorEl.classList.toggle('show', Boolean(error));
+        }
+
+        function showSetup(error = '') {
+            document.getElementById('loginPanel').classList.add('hidden');
+            document.getElementById('setupPanel').classList.remove('hidden');
+            document.getElementById('portalPanel').classList.add('hidden');
+            const errorEl = document.getElementById('setupError');
             errorEl.textContent = error;
             errorEl.classList.toggle('show', Boolean(error));
         }
@@ -623,6 +787,7 @@
                 { id: 'overview', label: 'Overview' },
                 { id: 'profile', label: 'Profile / Listing' },
                 { id: 'services', label: 'Services' },
+                ...(portalState?.one_time_class_media_enabled ? [{ id: 'class_media', label: 'Class Media' }] : []),
                 { id: 'media', label: 'Media' },
                 { id: 'comments', label: 'Comments' },
                 { id: 'commercial', label: 'Commercial Model' },
@@ -688,6 +853,7 @@
             portalState = data;
             const provider = data.provider || {};
             const services = Array.isArray(data.services) ? data.services : [];
+            const classMedia = Array.isArray(data.one_time_class_media) ? data.one_time_class_media : [];
             const entitlements = Array.isArray(data.entitlements) ? data.entitlements : [];
             const integrations = Array.isArray(data.integrations) ? data.integrations : [];
             const accessChecklist = Array.isArray(data.access_checklist) ? data.access_checklist : [];
@@ -699,6 +865,7 @@
             const upgrade = data.upgrade || {};
             const plan = provider.plan || {};
             document.getElementById('loginPanel').classList.add('hidden');
+            document.getElementById('setupPanel').classList.add('hidden');
             document.getElementById('portalPanel').classList.remove('hidden');
             document.getElementById('providerTitle').textContent = provider.provider_name || 'Provider portal';
             document.getElementById('providerSubtitle').textContent = `${plan.label || friendlyStatus(provider.entitlement_plan, 'Provider')} / ${friendlyStatus(provider.status || 'review')} workspace`;
@@ -890,15 +1057,37 @@
                     </article>
                 `).join('')
                 : '<p class="small">No services yet.</p>';
+            document.getElementById('classMediaServiceSelect').innerHTML = classMediaServiceOptions(services);
+            document.getElementById('classMediaSessionSelect').innerHTML = classMediaSessionOptions(services);
+            document.getElementById('classMediaList').innerHTML = data.one_time_class_media_enabled
+                ? renderClassMediaList(classMedia)
+                : '<p class="small">Class Media is available only in the Rabbi Sheller / One Time provider workspace.</p>';
             renderProviderNav();
             setProviderSection(activeProviderSection);
         }
 
         async function loadSession() {
+            if (setupToken) {
+                await loadSetupToken();
+                return;
+            }
             try {
                 renderPortal(await api('/api/provider-portal/session'));
             } catch {
                 showLogin();
+            }
+        }
+
+        async function loadSetupToken() {
+            showSetup();
+            try {
+                const data = await api(`/api/provider-portal/setup-token?token=${encodeURIComponent(setupToken)}`);
+                const provider = data.provider || {};
+                document.getElementById('setupIntro').textContent = `Create a password for ${provider.provider_name || 'your provider workspace'}.`;
+                document.getElementById('setupUsername').value = provider.login_username || '';
+            } catch (error) {
+                showSetup(error.message);
+                document.getElementById('setupButton').disabled = true;
             }
         }
 
@@ -917,6 +1106,30 @@
                 renderPortal(data);
             } catch (error) {
                 showLogin(error.message);
+            } finally {
+                button.disabled = false;
+            }
+        });
+
+        document.getElementById('setupForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const button = document.getElementById('setupButton');
+            const password = document.getElementById('setupPassword').value;
+            const confirm = document.getElementById('setupPasswordConfirm').value;
+            if (password !== confirm) {
+                showSetup('Passwords do not match');
+                return;
+            }
+            button.disabled = true;
+            try {
+                const data = await api('/api/provider-portal/setup-password', {
+                    method: 'POST',
+                    body: JSON.stringify({ token: setupToken, password })
+                });
+                window.history.replaceState(null, '', '/provider');
+                renderPortal(data);
+            } catch (error) {
+                showSetup(error.message);
             } finally {
                 button.disabled = false;
             }
@@ -956,6 +1169,35 @@
                     body: JSON.stringify(formObject(event.currentTarget))
                 }));
                 event.currentTarget.reset();
+            } finally {
+                button.disabled = false;
+            }
+        });
+
+        document.getElementById('classMediaForm').addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const button = event.submitter;
+            const form = event.currentTarget;
+            const payload = formObject(form);
+            const dryRun = button?.dataset?.classMediaDryRun === 'true';
+            if (dryRun) payload.dry_run = true;
+            button.disabled = true;
+            setClassMediaStatus(dryRun ? 'Previewing class media without writing...' : 'Submitting class media for internal review...');
+            try {
+                const result = await api('/api/provider-portal/one-time/class-media', {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                if (dryRun) {
+                    const planned = result.preview?.planned_outputs?.length || 0;
+                    setClassMediaStatus(`Preview ready: ${planned} internal review lanes would be created. No upload, publish, send, checkout/access, Drive/video-host, Buffer/social, or external write ran.`);
+                } else {
+                    renderPortal(result);
+                    form.reset();
+                    setClassMediaStatus('Class media submitted for internal One Time review. Nothing was published or sent.');
+                }
+            } catch (error) {
+                setClassMediaStatus(error.message || 'Could not submit class media.', true);
             } finally {
                 button.disabled = false;
             }

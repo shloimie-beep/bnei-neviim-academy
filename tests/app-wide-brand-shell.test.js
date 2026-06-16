@@ -14,8 +14,8 @@ const server = fs.readFileSync(path.join(repoRoot, 'server.js'), 'utf8');
 test('Operations uses app-wide BNA brand shell and light SaaS toolbar', () => {
   assert.match(operations, /ops-brand-topbar/);
   assert.match(operations, /Bnei Neviim Academy/);
-  assert.match(operations, /BNA School Workspace/);
-  assert.match(operations, /Platform \/ Super Admin/);
+  assert.match(operations, /BNA/);
+  assert.match(operations, /All Operations/);
   assert.match(shellCss, /--bna-shell-blue: #1e3a5f/);
   assert.doesNotMatch(shellCss, /#1f5f8f|#173f64|rgba\(31, 95, 143|rgba\(23, 63, 100/);
   assert.doesNotMatch(operations, /#1f5f8f|#173f64|rgba\(31, 95, 143|rgba\(23, 63, 100/);

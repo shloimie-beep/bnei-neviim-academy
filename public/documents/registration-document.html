@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registration Document | Bnei Neviim Academy</title>
     <meta name="robots" content="noindex">
+    <script>
+        try { localStorage.removeItem('bnaStudentAccessCode'); } catch (error) {}
+    </script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Noto+Serif+Hebrew:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -360,7 +363,11 @@
         </section>
     </main>
 
+    <div id="siteFooterMount" data-bna-site-footer></div>
+
     <script src="/js/signup-documents.js"></script>
     <script src="/js/registration-document-page.js"></script>
+    <script src="/js/bna-helper-knowledge.js"></script>
+    <script src="/js/bna-bot-widget.js"></script>
 </body>
 </html>

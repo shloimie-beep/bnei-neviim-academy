@@ -466,6 +466,147 @@ body.bna-portal-page .secondary {
   background: var(--bna-shell-sky);
 }
 
+/* WS01 Operations readability closeout */
+html,
+body.bna-ops-shell-page {
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body.bna-ops-shell-page .ops-main,
+body.bna-ops-shell-page .container,
+body.bna-ops-shell-page .ops-brand-lockup,
+body.bna-ops-shell-page .workspace-context-inner,
+body.bna-ops-shell-page .task-card,
+body.bna-ops-shell-page .task-row,
+body.bna-ops-shell-page .task-inline-detail,
+body.bna-ops-shell-page .detail-main-panel,
+body.bna-ops-shell-page .detail-section,
+body.bna-ops-shell-page .modal,
+body.bna-ops-shell-page .modal-body {
+  min-width: 0;
+}
+
+body.bna-ops-shell-page .task-actions,
+body.bna-ops-shell-page .task-row-actions,
+body.bna-ops-shell-page .modal-footer,
+body.bna-ops-shell-page .ops-brand-actions {
+  flex-wrap: wrap;
+}
+
+body.bna-ops-shell-page .task-action,
+body.bna-ops-shell-page .btn,
+body.bna-ops-shell-page .modal-footer .btn,
+body.bna-ops-shell-page .option-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+  text-align: center;
+  white-space: normal;
+}
+
+body.bna-ops-shell-page .modal-overlay {
+  background: rgba(15, 23, 42, 0.32);
+  padding: clamp(12px, 3vw, 22px);
+}
+
+body.bna-ops-shell-page .modal {
+  width: min(100%, 560px);
+  max-height: min(90dvh, 720px);
+  border: 1px solid var(--bna-shell-line);
+  border-radius: 8px;
+  color: var(--bna-shell-ink);
+  background: #ffffff;
+  box-shadow: 0 24px 64px rgba(30, 58, 95, 0.2);
+  overflow: hidden;
+}
+
+body.bna-ops-shell-page .modal-header,
+body.bna-ops-shell-page .modal-body,
+body.bna-ops-shell-page .modal-footer {
+  border-color: var(--bna-shell-line);
+  color: var(--bna-shell-ink);
+  background: #ffffff;
+}
+
+body.bna-ops-shell-page .modal-body {
+  max-height: calc(min(90dvh, 720px) - 132px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+body.bna-ops-shell-page .modal-header h2,
+body.bna-ops-shell-page .modal-close {
+  color: var(--bna-shell-blue-dark);
+}
+
+body.bna-ops-shell-page .modal-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 40px;
+  min-height: 40px;
+  border: 1px solid rgba(17, 17, 17, 0.14);
+  border-radius: 8px;
+  background: #ffffff;
+  font-size: 15px;
+}
+
+body.bna-ops-shell-page .form-group label,
+body.bna-ops-shell-page .task-inline-label,
+body.bna-ops-shell-page .task-decision-title,
+body.bna-ops-shell-page .task-comment-meta {
+  color: var(--bna-shell-muted);
+}
+
+body.bna-ops-shell-page .form-group input,
+body.bna-ops-shell-page .form-group select,
+body.bna-ops-shell-page .form-group textarea,
+body.bna-ops-shell-page .option-btn {
+  min-height: 42px;
+  border: 1px solid rgba(17, 17, 17, 0.18);
+  border-radius: 8px;
+  color: var(--bna-shell-ink);
+  background: #ffffff;
+}
+
+body.bna-ops-shell-page .option-btn:hover,
+body.bna-ops-shell-page .option-btn.active {
+  border-color: var(--bna-shell-line-strong);
+  color: var(--bna-shell-blue-dark);
+  background: linear-gradient(135deg, var(--bna-shell-gold-soft), var(--bna-shell-orange-soft));
+}
+
+body.bna-ops-shell-page .task-inline-item,
+body.bna-ops-shell-page .automation-toolbar,
+body.bna-ops-shell-page .automation-detail-panel,
+body.bna-ops-shell-page .queue-audit-table,
+body.bna-ops-shell-page .queue-audit-row {
+  border: 1px solid var(--bna-shell-line);
+  border-radius: 8px;
+  color: var(--bna-shell-ink);
+  background: #ffffff;
+}
+
+body.bna-ops-shell-page .automation-toolbar,
+body.bna-ops-shell-page .automation-detail-panel,
+body.bna-ops-shell-page .task-inline-item {
+  box-shadow: var(--bna-shell-shadow-soft);
+}
+
+body.bna-ops-shell-page .queue-audit-table {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+body.bna-ops-shell-page .queue-audit-row.header {
+  color: var(--bna-shell-blue-dark);
+  background: var(--bna-shell-sky);
+}
+
 body.bna-ops-shell-page .task-action.danger {
   color: #8b1e1e;
   background: #fff1f1;
@@ -831,6 +972,32 @@ body.bna-login-shell input:focus {
   body.bna-ops-shell-page .ops-app-shell.drawer-open .ops-main,
   body.bna-ops-shell-page .ops-app-shell.drawer-open .ops-drawer-backdrop {
     display: none !important;
+  }
+
+  body.bna-ops-shell-page .task-row {
+    grid-template-columns: 1fr;
+  }
+
+  body.bna-ops-shell-page .task-row-actions {
+    min-width: 0;
+    width: 100%;
+  }
+
+  body.bna-ops-shell-page .modal {
+    width: 100%;
+    max-height: calc(100dvh - 24px);
+  }
+
+  body.bna-ops-shell-page .modal-header,
+  body.bna-ops-shell-page .modal-body,
+  body.bna-ops-shell-page .modal-footer {
+    padding: 14px;
+  }
+
+  body.bna-ops-shell-page .form-group input,
+  body.bna-ops-shell-page .form-group select,
+  body.bna-ops-shell-page .form-group textarea {
+    font-size: 16px;
   }
 
   body.bna-ops-shell-page .ops-drawer-backdrop {

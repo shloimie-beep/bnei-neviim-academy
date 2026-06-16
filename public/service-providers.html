@@ -4,13 +4,19 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BNA Service Provider Index</title>
+    <meta name="description" content="Find approved BNA service providers, khugim, tutoring, shiurim, classes, programs, and family support options.">
+    <link rel="canonical" href="https://bneineviimacademy.org/providers">
+    <meta property="og:title" content="BNA Service Provider Index">
+    <meta property="og:description" content="Approved provider and khugim directory for BNA families.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://bneineviimacademy.org/providers">
     <script>
         try { localStorage.removeItem('bnaStudentAccessCode'); } catch (error) {}
     </script>
     <style>
         :root {
-            --primary-blue: #111111;
-            --secondary-blue: #2f6f5e;
+            --primary-blue: #1e3a5f;
+            --secondary-blue: #2c5282;
             --light-blue: #e8f0f8;
             --accent-gold: #c9a227;
             --ink: #1a202c;
@@ -86,6 +92,10 @@
             flex-wrap: wrap;
             gap: 8px;
             justify-content: flex-end;
+        }
+
+        .public-provider-actions {
+            align-self: end;
         }
 
         .button,
@@ -280,43 +290,36 @@
             }
         }
     </style>
+    <link rel="stylesheet" href="/css/bna-site-nav.css">
 </head>
 <body>
-    <header class="topbar">
-        <div class="brand">
-            <span class="mark">BNA</span>
-            <div>
-                <strong>Bnei Neviim Academy</strong>
-                <span>Service provider index</span>
-            </div>
-        </div>
-        <div class="actions">
-            <a class="button" href="/parent/login">Parent Login</a>
-            <a class="button" href="/student/login">Student Login</a>
-            <a class="button primary" href="/become-service-provider?onboard=provider">Become a Service Provider</a>
-        </div>
-    </header>
+    <div id="siteNavMount" data-bna-site-nav data-nav-context="provider-directory" data-nav-active="service-providers"></div>
+    <script src="/js/bna-site-nav.js"></script>
 
     <main>
         <section class="intro">
             <div>
-                <h1>Approved service providers</h1>
-                <p class="muted">A practical index of reviewed outside classes, tutors, and programs BNA can point families toward. Listings are free and reviewed; booking stays with the provider's own website, phone, WhatsApp, email, or custom CTA.</p>
+                <h1>Active service providers</h1>
+                <p class="muted">A practical index of approved outside classes, tutors, shiurim, programs, and family services BNA families can discover. Providers can apply for a free listing; BNA reviews profiles before public publishing.</p>
             </div>
-            <a class="button primary" href="/parent/login">Message From Parent Portal</a>
+            <div class="actions public-provider-actions">
+                <a class="button primary" href="/provider-signup?onboard=provider">Become a Service Provider</a>
+                <a class="button" href="/parent/login">Message From Parent Portal</a>
+            </div>
         </section>
 
         <section class="toolbar" aria-label="Provider filters">
             <input id="q" placeholder="Search provider or service">
-            <input id="city" placeholder="City or service area">
-            <select id="type"><option value="">All categories</option></select>
-            <input id="age" type="number" min="0" placeholder="Child age">
+            <input id="location" placeholder="City or service area">
+            <select id="category"><option value="">All categories</option></select>
+            <input id="language" placeholder="Language">
         </section>
 
         <section id="status" class="empty">Loading providers...</section>
         <section id="list" class="list" aria-live="polite"></section>
     </main>
 
+    <div id="siteFooterMount" data-bna-site-footer data-nav-active="service-providers"></div>
     <footer class="site-footer">
         <div class="site-footer-content">
             <strong>Bnei Neviim Academy</strong>
@@ -326,12 +329,12 @@
     </footer>
 
     <script>
-        const state = { providers: [] };
+        const state = { providers: [], categories: [] };
         const els = {
             q: document.getElementById('q'),
-            city: document.getElementById('city'),
-            type: document.getElementById('type'),
-            age: document.getElementById('age'),
+            location: document.getElementById('location'),
+            category: document.getElementById('category'),
+            language: document.getElementById('language'),
             list: document.getElementById('list'),
             status: document.getElementById('status'),
         };
@@ -350,68 +353,91 @@
             return String(name || 'BNA').split(/\s+/).filter(Boolean).slice(0, 2).map(part => part[0]).join('').toUpperCase() || 'BNA';
         }
 
-        function serviceMatches(service = {}, provider = {}) {
+        function providerMatches(provider = {}) {
             const q = els.q.value.trim().toLowerCase();
-            const city = els.city.value.trim().toLowerCase();
-            const type = els.type.value;
-            const age = els.age.value === '' ? null : Number(els.age.value);
+            const location = els.location.value.trim().toLowerCase();
+            const category = els.category.value;
+            const language = els.language.value.trim().toLowerCase();
+            const categories = provider.categories || [];
+            const offerings = provider.offerings || provider.services || [];
             const haystack = [
                 provider.display_name,
                 provider.provider_name,
-                provider.category,
                 provider.short_description,
-                service.title,
-                service.service_type,
-                service.description,
-                service.city,
+                provider.about,
+                provider.location_label,
+                provider.service_area,
+                ...categories.map(item => `${item.name || ''} ${item.slug || ''}`),
+                ...offerings.map(item => `${item.title || ''} ${item.offering_type || item.service_type || ''} ${item.description || ''}`),
             ].filter(Boolean).join(' ').toLowerCase();
             if (q && !haystack.includes(q)) return false;
-            if (city && !String(service.city || provider.city || provider.service_area || '').toLowerCase().includes(city)) return false;
-            if (type && String(service.service_type || provider.category || '') !== type) return false;
-            if (Number.isFinite(age)) {
-                if (service.age_min && Number(service.age_min) > age) return false;
-                if (service.age_max && Number(service.age_max) < age) return false;
-            }
+            if (location && !String(provider.location_label || provider.service_area || provider.city || '').toLowerCase().includes(location)) return false;
+            if (category && !categories.some(item => item.slug === category)) return false;
+            if (language && !(provider.languages || []).some(item => String(item || '').toLowerCase().includes(language))) return false;
+            return true;
+        }
+
+        function offeringMatches(offering = {}, provider = {}) {
+            const q = els.q.value.trim().toLowerCase();
+            const haystack = [
+                provider.display_name,
+                provider.short_description,
+                offering.title,
+                offering.offering_type || offering.service_type,
+                offering.description,
+                offering.location_label,
+                offering.age_range,
+                offering.language,
+            ].filter(Boolean).join(' ').toLowerCase();
+            if (q && !haystack.includes(q)) return false;
             return true;
         }
 
         function render() {
-            const filtered = state.providers.map(provider => ({
-                ...provider,
-                services: (provider.services || []).filter(service => serviceMatches(service, provider)),
-            })).filter(provider => provider.services.length || serviceMatches({}, provider));
+            const filtered = state.providers
+                .filter(providerMatches)
+                .map(provider => ({
+                    ...provider,
+                    offerings: (provider.offerings || provider.services || []).filter(offering => offeringMatches(offering, provider)),
+                }));
             els.status.style.display = filtered.length ? 'none' : 'block';
-            els.status.textContent = state.providers.length ? 'No approved providers match these filters.' : 'No approved providers are listed yet.';
+            els.status.textContent = state.providers.length ? 'No active providers match these filters.' : 'No active providers are listed yet.';
             els.list.innerHTML = filtered.map(provider => {
                 const name = provider.display_name || provider.provider_name || 'Provider';
-                const serviceArea = [provider.city, provider.neighborhood, provider.service_area].filter(Boolean).join(' / ');
+                const serviceArea = [provider.location_label, provider.city, provider.neighborhood, provider.service_area].filter(Boolean).join(' / ');
+                const categories = provider.categories || [];
+                const offerings = provider.offerings || provider.services || [];
                 const links = [
                     provider.slug ? `<a class="button primary" href="/providers/${encodeURIComponent(provider.slug)}">Profile</a>` : '',
                     provider.website_url ? `<a class="button" href="${escapeHtml(provider.website_url)}" target="_blank" rel="noopener noreferrer">Website</a>` : '',
-                    (provider.google_business_profile_url || provider.google_business?.manual_profile_url) ? `<a class="button" href="${escapeHtml(provider.google_business_profile_url || provider.google_business.manual_profile_url)}" target="_blank" rel="noopener noreferrer">Google Profile</a>` : '',
-                    provider.whatsapp_phone ? `<a class="button" href="https://wa.me/${escapeHtml(String(provider.whatsapp_phone).replace(/\D/g, ''))}" target="_blank" rel="noopener noreferrer">WhatsApp</a>` : '',
+                    provider.whatsapp ? `<a class="button" href="https://wa.me/${escapeHtml(String(provider.whatsapp).replace(/\D/g, ''))}" target="_blank" rel="noopener noreferrer">WhatsApp</a>` : '',
                     `<a class="button" href="/parent/login">Parent Message</a>`,
                 ].filter(Boolean).join('');
                 return `
                     <article class="listing">
-                        <div class="avatar">${(provider.profile_image_url || provider.profile_photo_url) ? `<img src="${escapeHtml(provider.profile_image_url || provider.profile_photo_url)}" alt="${escapeHtml(name)}">` : escapeHtml(initials(name))}</div>
+                        <div class="avatar">${provider.profile_photo_url ? `<img src="${escapeHtml(provider.profile_photo_url)}" alt="${escapeHtml(name)}">` : escapeHtml(initials(name))}</div>
                         <div>
                             <div class="listing-head">
                                 <div>
                                     <h2>${escapeHtml(name)}</h2>
-                                    <p class="meta">${escapeHtml([provider.category, serviceArea].filter(Boolean).join(' / ') || 'Approved provider')}</p>
+                                    <p class="meta">${escapeHtml([categories.map(item => item.name).join(', '), serviceArea].filter(Boolean).join(' / ') || 'Approved provider')}</p>
                                 </div>
-                                <span class="pill">Reviewed listing</span>
+                                <span class="pill">${provider.is_featured ? 'Featured' : 'Approved'}</span>
                             </div>
-                            ${provider.short_description || provider.public_notes ? `<p>${escapeHtml(provider.short_description || provider.public_notes)}</p>` : ''}
+                            ${provider.short_description || provider.about ? `<p>${escapeHtml(provider.short_description || provider.about)}</p>` : ''}
+                            <div class="pills">
+                                ${categories.map(item => `<a class="pill" href="/providers/category/${encodeURIComponent(item.slug)}">${escapeHtml(item.name)}</a>`).join('')}
+                                ${(provider.languages || []).map(item => `<span class="pill">${escapeHtml(item)}</span>`).join('')}
+                                ${offerings.some(item => item.is_free || String(item.offering_type || '').startsWith('free_')) ? '<span class="pill">Free offering</span>' : ''}
+                            </div>
                             <div class="service-grid">
-                                ${(provider.services || []).map(service => `
+                                ${offerings.map(service => `
                                     <div class="service">
                                         <strong>${escapeHtml(service.title || 'Service')}</strong>
-                                        <p class="meta">${escapeHtml([service.service_type, service.city, service.price_amount ? `${service.currency || 'ILS'} ${service.price_amount}` : 'Price pending'].filter(Boolean).join(' / '))}</p>
+                                        <p class="meta">${escapeHtml([service.offering_type || service.service_type, service.age_range, service.schedule_text, service.is_free ? 'Free' : service.price_text || 'Price/details by provider'].filter(Boolean).join(' / '))}</p>
                                         ${service.description ? `<p>${escapeHtml(service.description)}</p>` : ''}
                                     </div>
-                                `).join('') || '<div class="service"><strong>Profile listing</strong><p class="meta">Service details pending BNA review.</p></div>'}
+                                `).join('') || '<div class="service"><strong>Profile listing</strong><p class="meta">Service details can be added later.</p></div>'}
                             </div>
                             <div class="actions" style="justify-content:flex-start;margin-top:12px;">${links}</div>
                         </div>
@@ -421,29 +447,26 @@
         }
 
         function refreshTypes() {
-            const types = [...new Set(state.providers.flatMap(provider => (provider.services || []).map(service => service.service_type || provider.category).filter(Boolean)))].sort();
-            els.type.innerHTML = '<option value="">All categories</option>' + types.map(type => `<option value="${escapeHtml(type)}">${escapeHtml(type)}</option>`).join('');
+            els.category.innerHTML = '<option value="">All categories</option>' + state.categories.map(category => `<option value="${escapeHtml(category.slug)}">${escapeHtml(category.name)}</option>`).join('');
         }
-
-        const PROVIDER_INDEX_ENDPOINTS = ['/api/providers', '/api/service-providers'];
 
         async function loadProviders() {
             try {
-                let lastError = null;
-                for (const endpoint of PROVIDER_INDEX_ENDPOINTS) {
-                    try {
-                        const response = await fetch(endpoint);
-                        const data = await response.json();
-                        if (!response.ok) throw new Error(data.error || 'Could not load providers');
-                        state.providers = Array.isArray(data.providers) ? data.providers : [];
-                        lastError = null;
-                        break;
-                    } catch (error) {
-                        lastError = error;
-                    }
-                }
-                if (lastError) throw lastError;
+                const pathParts = window.location.pathname.split('/').filter(Boolean);
+                const categoryFromPath = pathParts[0] === 'providers' && pathParts[1] === 'category' ? decodeURIComponent(pathParts[2] || '') : '';
+                if (categoryFromPath) els.category.value = categoryFromPath;
+                const [categoryResponse, providerResponse] = await Promise.all([
+                    fetch('/api/provider-categories'),
+                    fetch('/api/providers' + (categoryFromPath ? `?category=${encodeURIComponent(categoryFromPath)}` : '')),
+                ]);
+                const categoryData = await categoryResponse.json();
+                const providerData = await providerResponse.json();
+                if (!categoryResponse.ok) throw new Error(categoryData.error || 'Could not load categories');
+                if (!providerResponse.ok) throw new Error(providerData.error || 'Could not load providers');
+                state.categories = Array.isArray(categoryData.categories) ? categoryData.categories : [];
+                state.providers = Array.isArray(providerData.providers) ? providerData.providers : [];
                 refreshTypes();
+                if (categoryFromPath) els.category.value = categoryFromPath;
                 render();
             } catch (error) {
                 els.status.style.display = 'block';
@@ -451,9 +474,14 @@
             }
         }
 
-        [els.q, els.city, els.type, els.age].forEach(input => input.addEventListener('input', render));
+        [els.q, els.location, els.category, els.language].forEach(input => input.addEventListener('input', render));
         loadProviders();
     </script>
+    <script type="application/ld+json">
+        {"@context":"https://schema.org","@type":"ItemList","name":"BNA Service Provider Index","url":"https://bneineviimacademy.org/providers"}
+    </script>
+    <script src="/js/bna-helper-knowledge.js"></script>
+    <script src="/js/bna-bot-widget.js"></script>
     <script src="/js/app-select.js"></script>
 </body>
 </html>

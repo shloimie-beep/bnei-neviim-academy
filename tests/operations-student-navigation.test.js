@@ -22,7 +22,7 @@ test('Student detail side panel keeps section navigation and an explicit Back ac
   assert.match(operations, /onclick="openStudentList\(\)">Back to student list/);
   assert.match(operations, /STUDENT_DETAIL_SECTIONS/);
   assert.match(operations, /Profile/);
-  assert.match(operations, /Assignments/);
+  assert.match(operations, /Classroom/);
   assert.match(operations, /Calendar/);
   assert.match(operations, /Meetings/);
   assert.match(operations, /Portal Links/);

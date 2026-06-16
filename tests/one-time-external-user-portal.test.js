@@ -8,10 +8,14 @@ const driveScript = fs.readFileSync('scripts/setup-one-time-partnership-drive.mj
 const telegramBridge = fs.readFileSync('scripts/telegram-kimi-bridge.mjs', 'utf8');
 
 test('One Time login is promoted to a scoped external admin workspace', () => {
-  assert.match(serverJs, /const platformAllowedViews = \['dashboard', 'pipelines', 'tasks', 'students', 'contacts', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'api_usage', 'admin', 'settings'\]/);
-  assert.match(serverJs, /role: 'one_time_admin'/);
-  assert.match(serverJs, /const providerAllowedViews = \['dashboard', 'pipelines', 'tasks', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'api_usage', 'settings'\]/);
-  assert.match(serverJs, /allowedViews: providerAllowedViews/);
+  assert.match(serverJs, /const platformAllowedViews = \['dashboard', 'pipelines', 'tasks', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'\]/);
+  assert.match(serverJs, /const providerAllowedViews = \['dashboard', 'pipelines', 'tasks', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'\]/);
+  assert.match(serverJs, /role: 'project_owner'/);
+  assert.match(serverJs, /role: 'project_manager'/);
+  assert.match(serverJs, /allowedViews: ownerAllowedViews/);
+  assert.match(serverJs, /allowedViews: managerAllowedViews/);
+  assert.match(serverJs, /const ONE_TIME_OPS_USERNAME/);
+  assert.match(serverJs, /old ONE_TIME_OPS_USERNAME maps to manager role/);
   assert.match(serverJs, /role: 'external account admin'/);
   assert.match(serverJs, /account_type: 'external_user'/);
   assert.match(serverJs, /access_level: 'manager'/);
@@ -31,6 +35,20 @@ test('One Time admin can receive a short-lived one-click Operations access link'
   assert.match(serverJs, /redeemOpsAccessLink/);
   assert.match(serverJs, /used_at = NOW\(\)/);
   assert.match(serverJs, /setSessionCookie\(res, redeemed\.sessionId\)/);
+});
+
+test('One Time external admin appears in super-admin user management without parent-account mixing', () => {
+  assert.match(serverJs, /account_type: 'external_user'/);
+  assert.match(serverJs, /role: 'external account admin'/);
+  assert.match(serverJs, /ONE_TIME_OWNER_USERNAME/);
+  assert.match(serverJs, /ONE_TIME_MANAGER_USERNAME/);
+  assert.match(serverJs, /login_username: ONE_TIME_OPS_USERNAME \|\| null/);
+  assert.match(operationsHtml, /data-super-admin-user-management/);
+  assert.match(operationsHtml, /adminExternalUserRows/);
+  assert.match(operationsHtml, /one_time_mishnah_class/);
+  assert.match(operationsHtml, /External provider\/Rabbi users are project members or Operations identities, not parent portal accounts/);
+  assert.match(operationsHtml, /This panel manages BNA Operations access only\. It does not create Rabbi-owned app\/admin\/member credentials/);
+  assert.doesNotMatch(operationsHtml, /parent portal account for Rabbi/i);
 });
 
 test('One Time scoped routes include team tickets and project-owned record APIs without roadmap access', () => {
@@ -381,7 +399,7 @@ test('Workflow Q organic content upload card documents Rabbi source material bef
   assert.match(serverJs, /intake_channels: \[[\s\S]*Drive 04 Content and Media Intake[\s\S]*Rabbi video prompt patch library[\s\S]*Operations Content outputs can generate Facebook/);
   assert.match(serverJs, /routing_rules: \[[\s\S]*Organic posts use only reviewed public-safe source material[\s\S]*Text-only Buffer drafts are still external scheduler writes[\s\S]*Organic winner metrics can suggest Workflow R/);
   assert.match(serverJs, /tracking_fields: \[[\s\S]*'organic_content_id'[\s\S]*'prompt_stack_id'[\s\S]*'buffer_post_id'/);
-  assert.match(serverJs, /current_state_checklist: \[[\s\S]*Workflow Q was previously only a placeholder[\s\S]*rabbi-video-prompt-library\.mjs[\s\S]*Buffer media posting still needs hosted media URL support/);
+  assert.match(serverJs, /current_state_checklist: \[[\s\S]*Workflow Q was previously only a placeholder[\s\S]*rabbi-video-prompt-library\.mjs[\s\S]*can attach direct hosted image\/video URLs through Buffer assets/);
   assert.match(serverJs, /approval_gate: 'No Buffer\/social post or draft, Buffer social post\/scheduler write/);
   assert.match(serverJs, /smoke_tests: \[[\s\S]*Read-only roadmap\/API smoke shows Workflow Q[\s\S]*Prompt-library smoke composes one one-time-vertical-short[\s\S]*Dry-run organic package maps one Rabbi video\/source-sheet sample/);
   assert.match(serverJs, /'workflow-q'/);
@@ -408,13 +426,21 @@ test('One Time Drive/social ingestion map is backend-scoped and login-gated', ()
   assert.match(driveScript, /drive-social-ingestion-map\.json/);
   assert.match(serverJs, /ONE_TIME_DRIVE_SOCIAL_INGESTION_MAP_PATH/);
   assert.match(serverJs, /function oneTimeDriveSocialIngestionMap\(\)/);
+  assert.match(serverJs, /function oneTimeAppAccessReadinessPayload\(\)/);
   assert.match(serverJs, /drive_social_ingestion: oneTimeDriveSocialMap/);
   assert.match(serverJs, /app\.get\('\/api\/bna\/one-time\/drive-social-ingestion'/);
+  assert.match(serverJs, /app\.get\('\/api\/bna\/one-time\/app-access-readiness'/);
+  assert.match(serverJs, /ready_for_member_library_publish: false/);
+  assert.match(serverJs, /no_admin_password_reset/);
   assert.match(serverJs, /Provider record lacks Rabbi contact email/);
   assert.match(operationsHtml, /Drive \/ Social Intake/);
   assert.match(operationsHtml, /function renderDriveSocialIngestionSettings/);
+  assert.match(operationsHtml, /function renderOneTimeAppAccessReadinessCard/);
+  assert.match(operationsHtml, /Check App Access/);
   assert.match(operationsHtml, /prepareSocialPlatformConnector/);
   assert.match(operationsHtml, /Login Release Guard/);
+  assert.match(driveScript, /ONE_TIME_APP_ACCESS_READINESS = \{/);
+  assert.match(driveScript, /app_access_readiness: ONE_TIME_APP_ACCESS_READINESS/);
 });
 
 test('Workflow R organic winner to paid ad card documents approval-gated ad promotion before spend', () => {
@@ -447,8 +473,9 @@ test('Workflow N support ticket card documents quick reporting, triage, approval
   assert.match(serverJs, /support_categories: \[[\s\S]*'bot_api'[\s\S]*'task_manager'[\s\S]*'student_parent_data'/);
   assert.match(serverJs, /ticket_lifecycle: \[[\s\S]*open: newly reported[\s\S]*triage:[\s\S]*resolved:/);
   assert.match(serverJs, /routing_rules: \[[\s\S]*automatically create a linked Codex repair task[\s\S]*High and blocking tickets notify/);
+  assert.match(serverJs, /Resolving or closing a ticket creates a local processed-notification draft[\s\S]*no email, WhatsApp, SMS, Telegram, or portal message is sent automatically/);
   assert.match(serverJs, /approval_gate: 'No new notification destination, auto-fix behavior, ticket auto-close rule/);
-  assert.match(serverJs, /smoke_tests: \[[\s\S]*Read-only roadmap\/API smoke shows Workflow N[\s\S]*Support API read smoke verifies \/api\/bna\/support-tickets/);
+  assert.match(serverJs, /smoke_tests: \[[\s\S]*Read-only roadmap\/API smoke shows Workflow N[\s\S]*Support API read smoke verifies \/api\/bna\/support-tickets[\s\S]*Resolution smoke moves one ticket to resolved/);
   assert.match(serverJs, /\['workflow-d', 'workflow-e', 'workflow-f', 'workflow-h', 'workflow-i', 'workflow-j', 'workflow-k', 'workflow-l', 'workflow-n', 'workflow-p', 'workflow-q', 'workflow-s', 'workflow-t'\]\.includes\(task\.key\)/);
   assert.match(serverJs, /existing\.ai_parsed->>'seed_key' = \$8/);
   assert.match(operationsHtml, /Intake Channels/);
@@ -458,9 +485,22 @@ test('Workflow N support ticket card documents quick reporting, triage, approval
   assert.match(driveScript, /intakeChannels: \[[\s\S]*Operations Support tab[\s\S]*Rabbi scoped Telegram bot/);
   assert.match(driveScript, /supportCategories: \[[\s\S]*'bot_api'[\s\S]*'task_manager'/);
   assert.match(driveScript, /ticketLifecycle: \[[\s\S]*open: newly reported[\s\S]*closed:/);
+  assert.match(driveScript, /Resolving or closing a ticket creates a local processed-notification draft[\s\S]*no email, WhatsApp, SMS, Telegram, or portal message is sent automatically/);
   assert.match(driveScript, /Intake channels: \$\{workflow\.intakeChannels\.join/);
   assert.match(driveScript, /Support categories: \$\{workflow\.supportCategories\.join/);
   assert.match(driveScript, /Ticket lifecycle: \$\{workflow\.ticketLifecycle\.join/);
+});
+
+test('support ticket resolution creates a first-party no-send processed notification draft', () => {
+  assert.match(serverJs, /const SUPPORT_TICKET_PROCESSED_STATUSES = new Set\(\['resolved', 'closed'\]\)/);
+  assert.match(serverJs, /async function maybeCreateSupportTicketProcessedNotification/);
+  assert.match(serverJs, /source_context->>'support_ticket_id'/);
+  assert.match(serverJs, /INSERT INTO bna_contact_communications \([\s\S]*VALUES \(\$1, 'general', 'internal_note', 'internal_note'/);
+  assert.match(serverJs, /ticket_processed_notification: true/);
+  assert.match(serverJs, /external_write_performed: false/);
+  assert.match(serverJs, /No email, WhatsApp, SMS, Telegram, or portal message was sent automatically/);
+  assert.match(serverJs, /notification_draft: notificationDraft/);
+  assert.match(operationsHtml, /result\?\.notification_draft[\s\S]*No email was sent/);
 });
 
 test('Workflow S monthly financial report card documents revenue, expenses, split, approval gate, and smoke tests', () => {

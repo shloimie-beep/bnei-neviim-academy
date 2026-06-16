@@ -5,16 +5,13 @@
       "label": "Create task",
       "category": "tasks",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Create Task",
+        "Add Task",
+        "Save Task"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
       ]
     },
     {
@@ -22,16 +19,13 @@
       "label": "Create decision",
       "category": "tasks",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Create Decision",
+        "Needs Decision"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines&section=decisions",
+        "/operations?view=tasks"
       ]
     },
     {
@@ -39,16 +33,139 @@
       "label": "Update task stage",
       "category": "tasks",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Move Task",
+        "Mark Done",
+        "Archive"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "retitle_task_naturally",
+      "label": "Retitle task naturally",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Retitle Task",
+        "Clean Title"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "add_decision_option",
+      "label": "Add decision option",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Add Option",
+        "Add Decision Option"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines&section=decisions",
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "schedule_task_on_date",
+      "label": "Schedule task on date",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Schedule Task",
+        "Set Due Date"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "move_task_workspace",
+      "label": "Move task workspace",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Move Workspace",
+        "Move Project"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=settings"
+      ]
+    },
+    {
+      "action_id": "create_rabbi_shiur_idea",
+      "label": "Create Rabbi shiur idea",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Shiur Idea",
+        "Rabbi Shiur Idea"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "create_rabbi_source_sheet_task",
+      "label": "Create Rabbi source-sheet task",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Source Sheet Task",
+        "Rabbi Source Sheet"
+      ],
+      "related_routes": [
+        "/operations?view=content&section=research",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "create_referral_ledger_entry",
+      "label": "Create referral ledger entry",
+      "category": "communications",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Referral Entry",
+        "Referral Ledger"
+      ],
+      "related_routes": [
+        "/operations?view=contacts",
+        "/operations?view=communications",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "submit_student_question_for_moderation",
+      "label": "Submit student question for moderation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Submit Moderated Question",
+        "Moderate Question"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "review_moderated_question",
+      "label": "Review moderated question",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Review Moderated Question",
+        "Question Review"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
       ]
     }
   ],
@@ -58,16 +175,13 @@
       "label": "Create task",
       "category": "tasks",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Create Task",
+        "Add Task",
+        "Save Task"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
       ]
     }
   ],
@@ -77,16 +191,13 @@
       "label": "Create task",
       "category": "tasks",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Create Task",
+        "Add Task",
+        "Save Task"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
       ]
     },
     {
@@ -94,16 +205,12 @@
       "label": "Add timeline note",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Add Note",
+        "Save Note"
+      ],
+      "related_routes": [
+        "/operations?view=internal_dialogue"
       ]
     }
   ],
@@ -113,16 +220,13 @@
       "label": "Create task",
       "category": "tasks",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Create Task",
+        "Add Task",
+        "Save Task"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
       ]
     },
     {
@@ -130,20 +234,14 @@
       "label": "Create ticket",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
-        "provider_admin",
-        "provider_manager",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Create Ticket",
+        "Report Issue"
+      ],
+      "related_routes": [
+        "/operations?view=admin&section=support_tickets",
+        "/parent",
+        "/provider"
       ]
     },
     {
@@ -151,16 +249,13 @@
       "label": "Create decision",
       "category": "tasks",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Create Decision",
+        "Needs Decision"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines&section=decisions",
+        "/operations?view=tasks"
       ]
     },
     {
@@ -168,16 +263,166 @@
       "label": "Update task stage",
       "category": "tasks",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Move Task",
+        "Mark Done",
+        "Archive"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "retitle_task_naturally",
+      "label": "Retitle task naturally",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Retitle Task",
+        "Clean Title"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "add_decision_option",
+      "label": "Add decision option",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Add Option",
+        "Add Decision Option"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines&section=decisions",
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "schedule_task_on_date",
+      "label": "Schedule task on date",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Schedule Task",
+        "Set Due Date"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "move_task_workspace",
+      "label": "Move task workspace",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Move Workspace",
+        "Move Project"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=settings"
+      ]
+    },
+    {
+      "action_id": "create_one_time_video_library_item",
+      "label": "Create One Time video library item",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create One Time Library Item",
+        "Video Library Item"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/one-time-preview#one-time-onboarding"
+      ]
+    },
+    {
+      "action_id": "preview_one_time_member_library_publish_package",
+      "label": "Preview One Time member-library publish package",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Package Preview",
+        "Publish Package Preview"
+      ],
+      "related_routes": [
+        "/operations?view=content&section=one_time_library"
+      ]
+    },
+    {
+      "action_id": "create_rabbi_shiur_idea",
+      "label": "Create Rabbi shiur idea",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Shiur Idea",
+        "Rabbi Shiur Idea"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "create_rabbi_source_sheet_task",
+      "label": "Create Rabbi source-sheet task",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Source Sheet Task",
+        "Rabbi Source Sheet"
+      ],
+      "related_routes": [
+        "/operations?view=content&section=research",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "create_referral_ledger_entry",
+      "label": "Create referral ledger entry",
+      "category": "communications",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Referral Entry",
+        "Referral Ledger"
+      ],
+      "related_routes": [
+        "/operations?view=contacts",
+        "/operations?view=communications",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "submit_student_question_for_moderation",
+      "label": "Submit student question for moderation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Submit Moderated Question",
+        "Moderate Question"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "review_moderated_question",
+      "label": "Review moderated question",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Review Moderated Question",
+        "Question Review"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
       ]
     },
     {
@@ -185,16 +430,12 @@
       "label": "Find latest newsletter draft",
       "category": "newsletter",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Latest Newsletter",
+        "Open Draft"
+      ],
+      "related_routes": [
+        "/operations?view=content"
       ]
     },
     {
@@ -202,16 +443,12 @@
       "label": "Refine newsletter draft",
       "category": "newsletter",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Refine Newsletter",
+        "Save Revision"
+      ],
+      "related_routes": [
+        "/operations?view=content"
       ]
     },
     {
@@ -219,16 +456,12 @@
       "label": "Draft weekly update",
       "category": "newsletter",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Draft Weekly Update"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=communications"
       ]
     },
     {
@@ -236,16 +469,12 @@
       "label": "Draft email from newsletter",
       "category": "email",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Draft Email",
+        "Email This"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
       ]
     },
     {
@@ -253,16 +482,12 @@
       "label": "Draft email",
       "category": "email",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Draft Email",
+        "Create Email Draft"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
       ]
     },
     {
@@ -270,16 +495,11 @@
       "label": "Refine email",
       "category": "email",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Refine Email"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
       ]
     },
     {
@@ -287,16 +507,41 @@
       "label": "Create calendar event",
       "category": "calendar",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "New Event",
+        "Create Event"
+      ],
+      "related_routes": [
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "calendar_batch_launch_plan_preview",
+      "label": "Preview launch calendar plan",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview 8-Week Launch Calendar",
+        "8-Week Plan"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "classroom_topic_material_preview",
+      "label": "Preview Classroom topic material",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Topic Material",
+        "Topic/material"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=assignments",
+        "/operations?view=content"
       ]
     },
     {
@@ -304,16 +549,13 @@
       "label": "Preview Drive file search",
       "category": "content",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Preview Drive Search",
+        "Find Drive File"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
       ]
     },
     {
@@ -321,16 +563,13 @@
       "label": "Preview Drive Doc creation",
       "category": "content",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Preview Doc Create",
+        "Create Google Doc Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
       ]
     },
     {
@@ -338,16 +577,13 @@
       "label": "Preview Drive folder creation",
       "category": "content",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Preview Folder Create",
+        "Create Provider Folder Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=service_providers"
       ]
     },
     {
@@ -355,16 +591,13 @@
       "label": "Preview Drive file move",
       "category": "content",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Preview Drive Move",
+        "Put File In Folder Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
       ]
     },
     {
@@ -372,16 +605,25 @@
       "label": "Generate WhatsApp from newsletter",
       "category": "whatsapp",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Draft WhatsApp"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "preview_social_schedule_package",
+      "label": "Preview social schedule package",
+      "category": "social",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Social Schedule",
+        "Buffer Draft Preview"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=communications"
       ]
     },
     {
@@ -389,17 +631,12 @@
       "label": "Draft parent response",
       "category": "parent",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Draft Parent Response"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=communications"
       ]
     },
     {
@@ -407,15 +644,13 @@
       "label": "Post community message",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "staff",
-        "provider_admin",
-        "provider_manager",
-        "system"
+      "ui_button_labels": [
+        "Post Community Message"
+      ],
+      "related_routes": [
+        "/operations?view=communications",
+        "/parent",
+        "/provider"
       ]
     },
     {
@@ -423,13 +658,57 @@
       "label": "Capture provider Google Business link",
       "category": "provider",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "provider_admin",
-        "provider_manager",
-        "system"
+      "ui_button_labels": [
+        "Capture Google Business Link",
+        "Save Google Profile Link",
+        "Store Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_place_id_lookup",
+      "label": "Preview Google Business Place ID lookup",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Place ID Lookup",
+        "Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_list_locations_preview",
+      "label": "Preview Google Business locations",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview GBP Locations",
+        "Locations"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "show_contact_communication_history",
+      "label": "Show contact communication history",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Show History",
+        "Communication History",
+        "WhatsApp History"
+      ],
+      "related_routes": [
+        "/operations?view=contacts",
+        "/operations?view=communications"
       ]
     },
     {
@@ -437,16 +716,13 @@
       "label": "Move lead stage",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Move Lead",
+        "Payment Pending"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines",
+        "/operations?view=contacts"
       ]
     },
     {
@@ -454,11 +730,11 @@
       "label": "Queue Telegram report",
       "category": "communications",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Queue Telegram Report"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
       ]
     },
     {
@@ -466,12 +742,12 @@
       "label": "Route bug to Codex",
       "category": "system",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "technical_agent",
-        "system"
+      "ui_button_labels": [
+        "Route To Codex"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=admin&section=support_tickets"
       ]
     }
   ],
@@ -481,20 +757,14 @@
       "label": "Create ticket",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
-        "provider_admin",
-        "provider_manager",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Create Ticket",
+        "Report Issue"
+      ],
+      "related_routes": [
+        "/operations?view=admin&section=support_tickets",
+        "/parent",
+        "/provider"
       ]
     },
     {
@@ -502,18 +772,16 @@
       "label": "Create report-problem ticket",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Report problem",
+        "Send feedback",
+        "Report a bug",
+        "Report a suggestion"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=admin&section=support_tickets"
       ]
     },
     {
@@ -521,12 +789,12 @@
       "label": "Route bug to Codex",
       "category": "system",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "technical_agent",
-        "system"
+      "ui_button_labels": [
+        "Route To Codex"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=admin&section=support_tickets"
       ]
     }
   ],
@@ -536,20 +804,14 @@
       "label": "Create ticket",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
-        "provider_admin",
-        "provider_manager",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Create Ticket",
+        "Report Issue"
+      ],
+      "related_routes": [
+        "/operations?view=admin&section=support_tickets",
+        "/parent",
+        "/provider"
       ]
     },
     {
@@ -557,15 +819,13 @@
       "label": "Generate student worksheet",
       "category": "student",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "staff",
-        "parent",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Generate Worksheet",
+        "Regenerate Worksheet"
+      ],
+      "related_routes": [
+        "/operations?view=calendar&section=worksheets",
+        "/student"
       ]
     },
     {
@@ -573,18 +833,15 @@
       "label": "Create help request",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Ask for help",
+        "Ask BNA Helper",
+        "Parent Help"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=communications"
       ]
     },
     {
@@ -592,18 +849,16 @@
       "label": "Create report-problem ticket",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Report problem",
+        "Send feedback",
+        "Report a bug",
+        "Report a suggestion"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=admin&section=support_tickets"
       ]
     },
     {
@@ -611,17 +866,12 @@
       "label": "Show child calendar",
       "category": "parent",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Calendar",
+        "Show Calendar"
+      ],
+      "related_routes": [
+        "/parent"
       ]
     },
     {
@@ -629,17 +879,11 @@
       "label": "Draft message to admin",
       "category": "parent",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Draft Message"
+      ],
+      "related_routes": [
+        "/parent"
       ]
     },
     {
@@ -647,17 +891,12 @@
       "label": "Draft parent response",
       "category": "parent",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Draft Parent Response"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=communications"
       ]
     },
     {
@@ -665,17 +904,11 @@
       "label": "View parent-visible notes",
       "category": "parent",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Visible Notes"
+      ],
+      "related_routes": [
+        "/parent"
       ]
     },
     {
@@ -683,17 +916,12 @@
       "label": "Request provider contact",
       "category": "provider",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Request Provider Contact"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=service_providers"
       ]
     }
   ],
@@ -703,20 +931,112 @@
       "label": "Create ticket",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
-        "provider_admin",
-        "provider_manager",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Create Ticket",
+        "Report Issue"
+      ],
+      "related_routes": [
+        "/operations?view=admin&section=support_tickets",
+        "/parent",
+        "/provider"
+      ]
+    },
+    {
+      "action_id": "create_one_time_video_library_item",
+      "label": "Create One Time video library item",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create One Time Library Item",
+        "Video Library Item"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/one-time-preview#one-time-onboarding"
+      ]
+    },
+    {
+      "action_id": "preview_one_time_member_library_publish_package",
+      "label": "Preview One Time member-library publish package",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Package Preview",
+        "Publish Package Preview"
+      ],
+      "related_routes": [
+        "/operations?view=content&section=one_time_library"
+      ]
+    },
+    {
+      "action_id": "create_rabbi_shiur_idea",
+      "label": "Create Rabbi shiur idea",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Shiur Idea",
+        "Rabbi Shiur Idea"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "create_rabbi_source_sheet_task",
+      "label": "Create Rabbi source-sheet task",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Source Sheet Task",
+        "Rabbi Source Sheet"
+      ],
+      "related_routes": [
+        "/operations?view=content&section=research",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "create_referral_ledger_entry",
+      "label": "Create referral ledger entry",
+      "category": "communications",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Referral Entry",
+        "Referral Ledger"
+      ],
+      "related_routes": [
+        "/operations?view=contacts",
+        "/operations?view=communications",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "submit_student_question_for_moderation",
+      "label": "Submit student question for moderation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Submit Moderated Question",
+        "Moderate Question"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "review_moderated_question",
+      "label": "Review moderated question",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Review Moderated Question",
+        "Question Review"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
       ]
     },
     {
@@ -724,13 +1044,41 @@
       "label": "Create provider class session",
       "category": "provider",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "provider_admin",
-        "provider_manager",
-        "system"
+      "ui_button_labels": [
+        "New Class Session"
+      ],
+      "related_routes": [
+        "/provider-participant",
+        "/operations?workspace=rabbi_sheller_provider&view=calendar"
+      ]
+    },
+    {
+      "action_id": "calendar_batch_launch_plan_preview",
+      "label": "Preview launch calendar plan",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview 8-Week Launch Calendar",
+        "8-Week Plan"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "classroom_topic_material_preview",
+      "label": "Preview Classroom topic material",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Topic Material",
+        "Topic/material"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=assignments",
+        "/operations?view=content"
       ]
     },
     {
@@ -738,16 +1086,13 @@
       "label": "Preview Drive file search",
       "category": "content",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Preview Drive Search",
+        "Find Drive File"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
       ]
     },
     {
@@ -755,16 +1100,13 @@
       "label": "Preview Drive folder creation",
       "category": "content",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Preview Folder Create",
+        "Create Provider Folder Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=service_providers"
       ]
     },
     {
@@ -772,16 +1114,27 @@
       "label": "Preview Drive file move",
       "category": "content",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Preview Drive Move",
+        "Put File In Folder Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "preview_social_schedule_package",
+      "label": "Preview social schedule package",
+      "category": "social",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Social Schedule",
+        "Buffer Draft Preview"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=communications"
       ]
     },
     {
@@ -789,15 +1142,12 @@
       "label": "Create provider question/post",
       "category": "provider",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "provider_admin",
-        "provider_manager",
-        "provider_staff",
-        "participant",
-        "system"
+      "ui_button_labels": [
+        "Post Question",
+        "Save Post"
+      ],
+      "related_routes": [
+        "/provider-participant"
       ]
     },
     {
@@ -805,15 +1155,13 @@
       "label": "Post community message",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "staff",
-        "provider_admin",
-        "provider_manager",
-        "system"
+      "ui_button_labels": [
+        "Post Community Message"
+      ],
+      "related_routes": [
+        "/operations?view=communications",
+        "/parent",
+        "/provider"
       ]
     },
     {
@@ -821,13 +1169,12 @@
       "label": "Update provider profile",
       "category": "provider",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "provider_admin",
-        "provider_manager",
-        "system"
+      "ui_button_labels": [
+        "Save Provider",
+        "Publish Provider"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers"
       ]
     },
     {
@@ -835,13 +1182,42 @@
       "label": "Capture provider Google Business link",
       "category": "provider",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "provider_admin",
-        "provider_manager",
-        "system"
+      "ui_button_labels": [
+        "Capture Google Business Link",
+        "Save Google Profile Link",
+        "Store Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_place_id_lookup",
+      "label": "Preview Google Business Place ID lookup",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Place ID Lookup",
+        "Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_list_locations_preview",
+      "label": "Preview Google Business locations",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview GBP Locations",
+        "Locations"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
       ]
     }
   ],
@@ -851,20 +1227,14 @@
       "label": "Create ticket",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
-        "provider_admin",
-        "provider_manager",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Create Ticket",
+        "Report Issue"
+      ],
+      "related_routes": [
+        "/operations?view=admin&section=support_tickets",
+        "/parent",
+        "/provider"
       ]
     },
     {
@@ -872,16 +1242,166 @@
       "label": "Create decision",
       "category": "tasks",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Create Decision",
+        "Needs Decision"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines&section=decisions",
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "retitle_task_naturally",
+      "label": "Retitle task naturally",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Retitle Task",
+        "Clean Title"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "add_decision_option",
+      "label": "Add decision option",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Add Option",
+        "Add Decision Option"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines&section=decisions",
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "schedule_task_on_date",
+      "label": "Schedule task on date",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Schedule Task",
+        "Set Due Date"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "move_task_workspace",
+      "label": "Move task workspace",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Move Workspace",
+        "Move Project"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=settings"
+      ]
+    },
+    {
+      "action_id": "create_one_time_video_library_item",
+      "label": "Create One Time video library item",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create One Time Library Item",
+        "Video Library Item"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/one-time-preview#one-time-onboarding"
+      ]
+    },
+    {
+      "action_id": "preview_one_time_member_library_publish_package",
+      "label": "Preview One Time member-library publish package",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Package Preview",
+        "Publish Package Preview"
+      ],
+      "related_routes": [
+        "/operations?view=content&section=one_time_library"
+      ]
+    },
+    {
+      "action_id": "create_rabbi_shiur_idea",
+      "label": "Create Rabbi shiur idea",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Shiur Idea",
+        "Rabbi Shiur Idea"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "create_rabbi_source_sheet_task",
+      "label": "Create Rabbi source-sheet task",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Source Sheet Task",
+        "Rabbi Source Sheet"
+      ],
+      "related_routes": [
+        "/operations?view=content&section=research",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "create_referral_ledger_entry",
+      "label": "Create referral ledger entry",
+      "category": "communications",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Referral Entry",
+        "Referral Ledger"
+      ],
+      "related_routes": [
+        "/operations?view=contacts",
+        "/operations?view=communications",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "submit_student_question_for_moderation",
+      "label": "Submit student question for moderation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Submit Moderated Question",
+        "Moderate Question"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "review_moderated_question",
+      "label": "Review moderated question",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Review Moderated Question",
+        "Question Review"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
       ]
     },
     {
@@ -889,16 +1409,12 @@
       "label": "Draft weekly update",
       "category": "newsletter",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Draft Weekly Update"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=communications"
       ]
     },
     {
@@ -906,16 +1422,41 @@
       "label": "Select weekly update hero",
       "category": "newsletter",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Select Hero Update"
+      ],
+      "related_routes": [
+        "/operations?view=communications",
+        "/parent"
+      ]
+    },
+    {
+      "action_id": "calendar_batch_launch_plan_preview",
+      "label": "Preview launch calendar plan",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview 8-Week Launch Calendar",
+        "8-Week Plan"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "classroom_topic_material_preview",
+      "label": "Preview Classroom topic material",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Topic Material",
+        "Topic/material"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=assignments",
+        "/operations?view=content"
       ]
     },
     {
@@ -923,16 +1464,13 @@
       "label": "Preview Drive file search",
       "category": "content",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Preview Drive Search",
+        "Find Drive File"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
       ]
     },
     {
@@ -940,16 +1478,13 @@
       "label": "Preview Drive Doc creation",
       "category": "content",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Preview Doc Create",
+        "Create Google Doc Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
       ]
     },
     {
@@ -957,16 +1492,13 @@
       "label": "Preview Drive folder creation",
       "category": "content",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Preview Folder Create",
+        "Create Provider Folder Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=service_providers"
       ]
     },
     {
@@ -974,16 +1506,27 @@
       "label": "Preview Drive file move",
       "category": "content",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Preview Drive Move",
+        "Put File In Folder Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "preview_social_schedule_package",
+      "label": "Preview social schedule package",
+      "category": "social",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Social Schedule",
+        "Buffer Draft Preview"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=communications"
       ]
     },
     {
@@ -991,15 +1534,13 @@
       "label": "Generate student worksheet",
       "category": "student",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "staff",
-        "parent",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Generate Worksheet",
+        "Regenerate Worksheet"
+      ],
+      "related_routes": [
+        "/operations?view=calendar&section=worksheets",
+        "/student"
       ]
     },
     {
@@ -1007,17 +1548,12 @@
       "label": "Draft parent response",
       "category": "parent",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Draft Parent Response"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=communications"
       ]
     },
     {
@@ -1025,15 +1561,13 @@
       "label": "Post community message",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "staff",
-        "provider_admin",
-        "provider_manager",
-        "system"
+      "ui_button_labels": [
+        "Post Community Message"
+      ],
+      "related_routes": [
+        "/operations?view=communications",
+        "/parent",
+        "/provider"
       ]
     },
     {
@@ -1041,17 +1575,12 @@
       "label": "Request provider contact",
       "category": "provider",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Request Provider Contact"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=service_providers"
       ]
     },
     {
@@ -1059,13 +1588,57 @@
       "label": "Capture provider Google Business link",
       "category": "provider",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "provider_admin",
-        "provider_manager",
-        "system"
+      "ui_button_labels": [
+        "Capture Google Business Link",
+        "Save Google Profile Link",
+        "Store Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_place_id_lookup",
+      "label": "Preview Google Business Place ID lookup",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Place ID Lookup",
+        "Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_list_locations_preview",
+      "label": "Preview Google Business locations",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview GBP Locations",
+        "Locations"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "show_contact_communication_history",
+      "label": "Show contact communication history",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Show History",
+        "Communication History",
+        "WhatsApp History"
+      ],
+      "related_routes": [
+        "/operations?view=contacts",
+        "/operations?view=communications"
       ]
     },
     {
@@ -1073,11 +1646,11 @@
       "label": "Queue Telegram report",
       "category": "communications",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Queue Telegram Report"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
       ]
     },
     {
@@ -1085,12 +1658,12 @@
       "label": "Route bug to Codex",
       "category": "system",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "technical_agent",
-        "system"
+      "ui_button_labels": [
+        "Route To Codex"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=admin&section=support_tickets"
       ]
     }
   ],
@@ -1100,16 +1673,27 @@
       "label": "Create decision",
       "category": "tasks",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Create Decision",
+        "Needs Decision"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines&section=decisions",
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "add_decision_option",
+      "label": "Add decision option",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Add Option",
+        "Add Decision Option"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines&section=decisions",
+        "/operations?view=tasks"
       ]
     }
   ],
@@ -1119,16 +1703,68 @@
       "label": "Update task stage",
       "category": "tasks",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Move Task",
+        "Mark Done",
+        "Archive"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "retitle_task_naturally",
+      "label": "Retitle task naturally",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Retitle Task",
+        "Clean Title"
+      ],
+      "related_routes": [
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "add_decision_option",
+      "label": "Add decision option",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Add Option",
+        "Add Decision Option"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines&section=decisions",
+        "/operations?view=tasks"
+      ]
+    },
+    {
+      "action_id": "schedule_task_on_date",
+      "label": "Schedule task on date",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Schedule Task",
+        "Set Due Date"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "move_task_workspace",
+      "label": "Move task workspace",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Move Workspace",
+        "Move Project"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=settings"
       ]
     },
     {
@@ -1136,16 +1772,376 @@
       "label": "Add timeline note",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Add Note",
+        "Save Note"
+      ],
+      "related_routes": [
+        "/operations?view=internal_dialogue"
+      ]
+    }
+  ],
+  "calendar": [
+    {
+      "action_id": "schedule_task_on_date",
+      "label": "Schedule task on date",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Schedule Task",
+        "Set Due Date"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_calendar_event",
+      "label": "Create calendar event",
+      "category": "calendar",
+      "approval_required": false,
+      "ui_button_labels": [
+        "New Event",
+        "Create Event"
+      ],
+      "related_routes": [
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "update_calendar_event",
+      "label": "Update calendar event",
+      "category": "calendar",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Edit Event"
+      ],
+      "related_routes": [
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "delete_calendar_event",
+      "label": "Archive calendar event",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Archive Event",
+        "Delete Event"
+      ],
+      "related_routes": [
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_student_schedule_item",
+      "label": "Create student schedule item",
+      "category": "student",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Add Student Event"
+      ],
+      "related_routes": [
+        "/student",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_parent_visible_event",
+      "label": "Create parent-visible event",
+      "category": "parent",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Add Parent Event"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "create_provider_class_session",
+      "label": "Create provider class session",
+      "category": "provider",
+      "approval_required": false,
+      "ui_button_labels": [
+        "New Class Session"
+      ],
+      "related_routes": [
+        "/provider-participant",
+        "/operations?workspace=rabbi_sheller_provider&view=calendar"
+      ]
+    },
+    {
+      "action_id": "sync_google_calendar",
+      "label": "Sync Google Calendar",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Sync Google Calendar"
+      ],
+      "related_routes": []
+    },
+    {
+      "action_id": "calendar_batch_launch_plan_preview",
+      "label": "Preview launch calendar plan",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview 8-Week Launch Calendar",
+        "8-Week Plan"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_doc_preview",
+      "label": "Preview Drive Doc creation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Doc Create",
+        "Create Google Doc Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "open_calendar_event",
+      "label": "Open calendar event",
+      "category": "calendar",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Open Event"
+      ],
+      "related_routes": [
+        "/operations?view=calendar",
+        "/parent",
+        "/student",
+        "/provider-participant"
+      ]
+    },
+    {
+      "action_id": "mark_event_parent_visible",
+      "label": "Mark event parent-visible",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Parent Visible"
+      ],
+      "related_routes": []
+    },
+    {
+      "action_id": "mark_event_student_visible",
+      "label": "Mark event student-visible",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Student Visible"
+      ],
+      "related_routes": []
+    },
+    {
+      "action_id": "mark_event_admin_only",
+      "label": "Mark event admin-only",
+      "category": "calendar",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Admin Only"
+      ],
+      "related_routes": []
+    }
+  ],
+  "settings": [
+    {
+      "action_id": "move_task_workspace",
+      "label": "Move task workspace",
+      "category": "tasks",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Move Workspace",
+        "Move Project"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=settings"
+      ]
+    },
+    {
+      "action_id": "send_test_email",
+      "label": "Send test email",
+      "category": "email",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Send Test Email"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=email"
+      ]
+    },
+    {
+      "action_id": "view_email_log",
+      "label": "View email log",
+      "category": "email",
+      "approval_required": false,
+      "ui_button_labels": [
+        "View Email Log"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "sync_google_calendar",
+      "label": "Sync Google Calendar",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Sync Google Calendar"
+      ],
+      "related_routes": []
+    },
+    {
+      "action_id": "calendar_batch_launch_plan_preview",
+      "label": "Preview launch calendar plan",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview 8-Week Launch Calendar",
+        "8-Week Plan"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=calendar"
+      ]
+    },
+    {
+      "action_id": "sync_google_classroom",
+      "label": "Sync Google Classroom",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Sync Google Classroom"
+      ],
+      "related_routes": []
+    },
+    {
+      "action_id": "classroom_topic_material_preview",
+      "label": "Preview Classroom topic material",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Topic Material",
+        "Topic/material"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=assignments",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "google_drive_find_file_preview",
+      "label": "Preview Drive file search",
+      "category": "content",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Preview Drive Search",
+        "Find Drive File"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_doc_preview",
+      "label": "Preview Drive Doc creation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Doc Create",
+        "Create Google Doc Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "google_drive_create_folder_preview",
+      "label": "Preview Drive folder creation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Folder Create",
+        "Create Provider Folder Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=service_providers"
+      ]
+    },
+    {
+      "action_id": "google_drive_move_file_preview",
+      "label": "Preview Drive file move",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Drive Move",
+        "Put File In Folder Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "capture_provider_google_business_link",
+      "label": "Capture provider Google Business link",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Capture Google Business Link",
+        "Save Google Profile Link",
+        "Store Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_place_id_lookup",
+      "label": "Preview Google Business Place ID lookup",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Place ID Lookup",
+        "Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_list_locations_preview",
+      "label": "Preview Google Business locations",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview GBP Locations",
+        "Locations"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
       ]
     }
   ],
@@ -1155,16 +2151,12 @@
       "label": "Add timeline note",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Add Note",
+        "Save Note"
+      ],
+      "related_routes": [
+        "/operations?view=internal_dialogue"
       ]
     },
     {
@@ -1172,16 +2164,12 @@
       "label": "Create student schedule item",
       "category": "student",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Add Student Event"
+      ],
+      "related_routes": [
+        "/student",
+        "/operations?view=calendar"
       ]
     },
     {
@@ -1189,16 +2177,12 @@
       "label": "Create parent-visible event",
       "category": "parent",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Add Parent Event"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=calendar"
       ]
     },
     {
@@ -1206,15 +2190,13 @@
       "label": "Generate student worksheet",
       "category": "student",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "staff",
-        "parent",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Generate Worksheet",
+        "Regenerate Worksheet"
+      ],
+      "related_routes": [
+        "/operations?view=calendar&section=worksheets",
+        "/student"
       ]
     }
   ],
@@ -1224,35 +2206,110 @@
       "label": "Add timeline note",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Add Note",
+        "Save Note"
+      ],
+      "related_routes": [
+        "/operations?view=internal_dialogue"
       ]
     }
   ],
   "content": [
     {
+      "action_id": "create_one_time_video_library_item",
+      "label": "Create One Time video library item",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create One Time Library Item",
+        "Video Library Item"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/one-time-preview#one-time-onboarding"
+      ]
+    },
+    {
+      "action_id": "preview_one_time_member_library_publish_package",
+      "label": "Preview One Time member-library publish package",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Package Preview",
+        "Publish Package Preview"
+      ],
+      "related_routes": [
+        "/operations?view=content&section=one_time_library"
+      ]
+    },
+    {
+      "action_id": "create_rabbi_shiur_idea",
+      "label": "Create Rabbi shiur idea",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Shiur Idea",
+        "Rabbi Shiur Idea"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "create_rabbi_source_sheet_task",
+      "label": "Create Rabbi source-sheet task",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Source Sheet Task",
+        "Rabbi Source Sheet"
+      ],
+      "related_routes": [
+        "/operations?view=content&section=research",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "submit_student_question_for_moderation",
+      "label": "Submit student question for moderation",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Submit Moderated Question",
+        "Moderate Question"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "review_moderated_question",
+      "label": "Review moderated question",
+      "category": "content",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Review Moderated Question",
+        "Question Review"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
       "action_id": "find_latest_newsletter_draft",
       "label": "Find latest newsletter draft",
       "category": "newsletter",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Latest Newsletter",
+        "Open Draft"
+      ],
+      "related_routes": [
+        "/operations?view=content"
       ]
     },
     {
@@ -1260,16 +2317,12 @@
       "label": "Refine newsletter draft",
       "category": "newsletter",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Refine Newsletter",
+        "Save Revision"
+      ],
+      "related_routes": [
+        "/operations?view=content"
       ]
     },
     {
@@ -1277,16 +2330,11 @@
       "label": "Save newsletter revision",
       "category": "newsletter",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Save Revision"
+      ],
+      "related_routes": [
+        "/operations?view=content"
       ]
     },
     {
@@ -1294,16 +2342,11 @@
       "label": "Approve newsletter",
       "category": "newsletter",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Approve Newsletter"
+      ],
+      "related_routes": [
+        "/operations?view=content"
       ]
     },
     {
@@ -1311,16 +2354,12 @@
       "label": "Draft weekly update",
       "category": "newsletter",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Draft Weekly Update"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=communications"
       ]
     },
     {
@@ -1328,16 +2367,12 @@
       "label": "Select weekly update hero",
       "category": "newsletter",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Select Hero Update"
+      ],
+      "related_routes": [
+        "/operations?view=communications",
+        "/parent"
       ]
     },
     {
@@ -1345,16 +2380,27 @@
       "label": "Draft email from newsletter",
       "category": "email",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Draft Email",
+        "Email This"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "classroom_topic_material_preview",
+      "label": "Preview Classroom topic material",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Topic Material",
+        "Topic/material"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=assignments",
+        "/operations?view=content"
       ]
     },
     {
@@ -1362,16 +2408,13 @@
       "label": "Preview Drive file search",
       "category": "content",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Preview Drive Search",
+        "Find Drive File"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
       ]
     },
     {
@@ -1379,16 +2422,13 @@
       "label": "Preview Drive Doc creation",
       "category": "content",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Preview Doc Create",
+        "Create Google Doc Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
       ]
     },
     {
@@ -1396,16 +2436,13 @@
       "label": "Preview Drive folder creation",
       "category": "content",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Preview Folder Create",
+        "Create Provider Folder Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=service_providers"
       ]
     },
     {
@@ -1413,16 +2450,13 @@
       "label": "Preview Drive file move",
       "category": "content",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Preview Drive Move",
+        "Put File In Folder Preview"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=content"
       ]
     },
     {
@@ -1430,16 +2464,11 @@
       "label": "Generate WhatsApp from newsletter",
       "category": "whatsapp",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Draft WhatsApp"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
       ]
     },
     {
@@ -1447,16 +2476,25 @@
       "label": "Generate social posts from newsletter",
       "category": "social",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Make Social Posts"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "preview_social_schedule_package",
+      "label": "Preview social schedule package",
+      "category": "social",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Social Schedule",
+        "Buffer Draft Preview"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=communications"
       ]
     },
     {
@@ -1464,35 +2502,87 @@
       "label": "Open content item",
       "category": "content",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Open in UI"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    }
+  ],
+  "contacts": [
+    {
+      "action_id": "create_referral_ledger_entry",
+      "label": "Create referral ledger entry",
+      "category": "communications",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Referral Entry",
+        "Referral Ledger"
+      ],
+      "related_routes": [
+        "/operations?view=contacts",
+        "/operations?view=communications",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
+      "action_id": "show_contact_communication_history",
+      "label": "Show contact communication history",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Show History",
+        "Communication History",
+        "WhatsApp History"
+      ],
+      "related_routes": [
+        "/operations?view=contacts",
+        "/operations?view=communications"
+      ]
+    },
+    {
+      "action_id": "move_lead_stage",
+      "label": "Move lead stage",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Move Lead",
+        "Payment Pending"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines",
+        "/operations?view=contacts"
       ]
     }
   ],
   "communications": [
     {
+      "action_id": "create_referral_ledger_entry",
+      "label": "Create referral ledger entry",
+      "category": "communications",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Create Referral Entry",
+        "Referral Ledger"
+      ],
+      "related_routes": [
+        "/operations?view=contacts",
+        "/operations?view=communications",
+        "/operations?view=tasks&project_key=one_time_mishnah_class"
+      ]
+    },
+    {
       "action_id": "find_latest_newsletter_draft",
       "label": "Find latest newsletter draft",
       "category": "newsletter",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Latest Newsletter",
+        "Open Draft"
+      ],
+      "related_routes": [
+        "/operations?view=content"
       ]
     },
     {
@@ -1500,16 +2590,12 @@
       "label": "Refine newsletter draft",
       "category": "newsletter",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Refine Newsletter",
+        "Save Revision"
+      ],
+      "related_routes": [
+        "/operations?view=content"
       ]
     },
     {
@@ -1517,16 +2603,11 @@
       "label": "Approve newsletter",
       "category": "newsletter",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Approve Newsletter"
+      ],
+      "related_routes": [
+        "/operations?view=content"
       ]
     },
     {
@@ -1534,16 +2615,12 @@
       "label": "Draft weekly update",
       "category": "newsletter",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Draft Weekly Update"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=communications"
       ]
     },
     {
@@ -1551,16 +2628,12 @@
       "label": "Select weekly update hero",
       "category": "newsletter",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Select Hero Update"
+      ],
+      "related_routes": [
+        "/operations?view=communications",
+        "/parent"
       ]
     },
     {
@@ -1568,16 +2641,12 @@
       "label": "Draft email from newsletter",
       "category": "email",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Draft Email",
+        "Email This"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
       ]
     },
     {
@@ -1585,16 +2654,12 @@
       "label": "Draft email",
       "category": "email",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Draft Email",
+        "Create Email Draft"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
       ]
     },
     {
@@ -1602,16 +2667,11 @@
       "label": "Refine email",
       "category": "email",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Refine Email"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
       ]
     },
     {
@@ -1619,16 +2679,11 @@
       "label": "Approve email",
       "category": "email",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Approve Email"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
       ]
     },
     {
@@ -1636,16 +2691,11 @@
       "label": "Schedule email",
       "category": "email",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Schedule Email"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
       ]
     },
     {
@@ -1653,16 +2703,11 @@
       "label": "Send test email",
       "category": "email",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Send Test Email"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=email"
       ]
     },
     {
@@ -1670,33 +2715,21 @@
       "label": "Pause scheduled email",
       "category": "email",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
+      "ui_button_labels": [
+        "Pause Email"
+      ],
+      "related_routes": []
     },
     {
       "action_id": "view_email_log",
       "label": "View email log",
       "category": "email",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "View Email Log"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
       ]
     },
     {
@@ -1704,16 +2737,11 @@
       "label": "Generate WhatsApp from newsletter",
       "category": "whatsapp",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Draft WhatsApp"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
       ]
     },
     {
@@ -1721,16 +2749,25 @@
       "label": "Generate social posts from newsletter",
       "category": "social",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Make Social Posts"
+      ],
+      "related_routes": [
+        "/operations?view=content"
+      ]
+    },
+    {
+      "action_id": "preview_social_schedule_package",
+      "label": "Preview social schedule package",
+      "category": "social",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Social Schedule",
+        "Buffer Draft Preview"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=communications"
       ]
     },
     {
@@ -1738,17 +2775,12 @@
       "label": "Draft parent response",
       "category": "parent",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Draft Parent Response"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=communications"
       ]
     },
     {
@@ -1756,15 +2788,28 @@
       "label": "Post community message",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "staff",
-        "provider_admin",
-        "provider_manager",
-        "system"
+      "ui_button_labels": [
+        "Post Community Message"
+      ],
+      "related_routes": [
+        "/operations?view=communications",
+        "/parent",
+        "/provider"
+      ]
+    },
+    {
+      "action_id": "show_contact_communication_history",
+      "label": "Show contact communication history",
+      "category": "communications",
+      "approval_required": false,
+      "ui_button_labels": [
+        "Show History",
+        "Communication History",
+        "WhatsApp History"
+      ],
+      "related_routes": [
+        "/operations?view=contacts",
+        "/operations?view=communications"
       ]
     }
   ],
@@ -1774,16 +2819,12 @@
       "label": "Draft weekly update",
       "category": "newsletter",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Draft Weekly Update"
+      ],
+      "related_routes": [
+        "/operations?view=content",
+        "/operations?view=communications"
       ]
     },
     {
@@ -1791,16 +2832,12 @@
       "label": "Select weekly update hero",
       "category": "newsletter",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Select Hero Update"
+      ],
+      "related_routes": [
+        "/operations?view=communications",
+        "/parent"
       ]
     },
     {
@@ -1808,16 +2845,12 @@
       "label": "Create calendar event",
       "category": "calendar",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "New Event",
+        "Create Event"
+      ],
+      "related_routes": [
+        "/operations?view=calendar"
       ]
     },
     {
@@ -1825,16 +2858,12 @@
       "label": "Create parent-visible event",
       "category": "parent",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Add Parent Event"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=calendar"
       ]
     },
     {
@@ -1842,18 +2871,12 @@
       "label": "Show assignments",
       "category": "student",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system",
-        "parent",
-        "student"
+      "ui_button_labels": [
+        "Assignments"
+      ],
+      "related_routes": [
+        "/student",
+        "/parent"
       ]
     },
     {
@@ -1861,18 +2884,16 @@
       "label": "Create report-problem ticket",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Report problem",
+        "Send feedback",
+        "Report a bug",
+        "Report a suggestion"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=admin&section=support_tickets"
       ]
     },
     {
@@ -1880,17 +2901,12 @@
       "label": "Show child calendar",
       "category": "parent",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Calendar",
+        "Show Calendar"
+      ],
+      "related_routes": [
+        "/parent"
       ]
     },
     {
@@ -1898,17 +2914,11 @@
       "label": "View parent-visible notes",
       "category": "parent",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Visible Notes"
+      ],
+      "related_routes": [
+        "/parent"
       ]
     },
     {
@@ -1916,376 +2926,12 @@
       "label": "Request provider contact",
       "category": "provider",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    }
-  ],
-  "settings": [
-    {
-      "action_id": "send_test_email",
-      "label": "Send test email",
-      "category": "email",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "view_email_log",
-      "label": "View email log",
-      "category": "email",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "sync_google_calendar",
-      "label": "Sync Google Calendar",
-      "category": "calendar",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "sync_google_classroom",
-      "label": "Sync Google Classroom",
-      "category": "calendar",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "google_drive_find_file_preview",
-      "label": "Preview Drive file search",
-      "category": "content",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "google_drive_create_doc_preview",
-      "label": "Preview Drive Doc creation",
-      "category": "content",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "google_drive_create_folder_preview",
-      "label": "Preview Drive folder creation",
-      "category": "content",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "google_drive_move_file_preview",
-      "label": "Preview Drive file move",
-      "category": "content",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "capture_provider_google_business_link",
-      "label": "Capture provider Google Business link",
-      "category": "provider",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "provider_admin",
-        "provider_manager",
-        "system"
-      ]
-    }
-  ],
-  "calendar": [
-    {
-      "action_id": "create_calendar_event",
-      "label": "Create calendar event",
-      "category": "calendar",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "update_calendar_event",
-      "label": "Update calendar event",
-      "category": "calendar",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "delete_calendar_event",
-      "label": "Archive calendar event",
-      "category": "calendar",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "create_student_schedule_item",
-      "label": "Create student schedule item",
-      "category": "student",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "create_parent_visible_event",
-      "label": "Create parent-visible event",
-      "category": "parent",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "create_provider_class_session",
-      "label": "Create provider class session",
-      "category": "provider",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "provider_admin",
-        "provider_manager",
-        "system"
-      ]
-    },
-    {
-      "action_id": "sync_google_calendar",
-      "label": "Sync Google Calendar",
-      "category": "calendar",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "google_drive_create_doc_preview",
-      "label": "Preview Drive Doc creation",
-      "category": "content",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "open_calendar_event",
-      "label": "Open calendar event",
-      "category": "calendar",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system",
-        "parent",
-        "student",
-        "provider_admin",
-        "participant"
-      ]
-    },
-    {
-      "action_id": "mark_event_parent_visible",
-      "label": "Mark event parent-visible",
-      "category": "calendar",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "mark_event_student_visible",
-      "label": "Mark event student-visible",
-      "category": "calendar",
-      "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
-      ]
-    },
-    {
-      "action_id": "mark_event_admin_only",
-      "label": "Mark event admin-only",
-      "category": "calendar",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Request Provider Contact"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=service_providers"
       ]
     }
   ],
@@ -2295,16 +2941,12 @@
       "label": "Create calendar event",
       "category": "calendar",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "New Event",
+        "Create Event"
+      ],
+      "related_routes": [
+        "/operations?view=calendar"
       ]
     },
     {
@@ -2312,16 +2954,12 @@
       "label": "Create student schedule item",
       "category": "student",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Add Student Event"
+      ],
+      "related_routes": [
+        "/student",
+        "/operations?view=calendar"
       ]
     },
     {
@@ -2329,12 +2967,12 @@
       "label": "Show today plan",
       "category": "student",
       "approval_required": false,
-      "allowed_roles": [
-        "student",
-        "bna_admin",
-        "admin",
-        "super_admin",
-        "system"
+      "ui_button_labels": [
+        "Today Plan",
+        "Ask BNA Helper"
+      ],
+      "related_routes": [
+        "/student"
       ]
     },
     {
@@ -2342,18 +2980,12 @@
       "label": "Show assignments",
       "category": "student",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system",
-        "parent",
-        "student"
+      "ui_button_labels": [
+        "Assignments"
+      ],
+      "related_routes": [
+        "/student",
+        "/parent"
       ]
     },
     {
@@ -2361,12 +2993,11 @@
       "label": "Explain assignment",
       "category": "student",
       "approval_required": false,
-      "allowed_roles": [
-        "student",
-        "bna_admin",
-        "admin",
-        "super_admin",
-        "system"
+      "ui_button_labels": [
+        "Explain"
+      ],
+      "related_routes": [
+        "/student"
       ]
     },
     {
@@ -2374,18 +3005,16 @@
       "label": "Create report-problem ticket",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Report problem",
+        "Send feedback",
+        "Report a bug",
+        "Report a suggestion"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=admin&section=support_tickets"
       ]
     }
   ],
@@ -2395,13 +3024,12 @@
       "label": "Create provider class session",
       "category": "provider",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "provider_admin",
-        "provider_manager",
-        "system"
+      "ui_button_labels": [
+        "New Class Session"
+      ],
+      "related_routes": [
+        "/provider-participant",
+        "/operations?workspace=rabbi_sheller_provider&view=calendar"
       ]
     },
     {
@@ -2409,15 +3037,12 @@
       "label": "Create provider question/post",
       "category": "provider",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "provider_admin",
-        "provider_manager",
-        "provider_staff",
-        "participant",
-        "system"
+      "ui_button_labels": [
+        "Post Question",
+        "Save Post"
+      ],
+      "related_routes": [
+        "/provider-participant"
       ]
     }
   ],
@@ -2427,16 +3052,24 @@
       "label": "Sync Google Classroom",
       "category": "calendar",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Sync Google Classroom"
+      ],
+      "related_routes": []
+    },
+    {
+      "action_id": "classroom_topic_material_preview",
+      "label": "Preview Classroom topic material",
+      "category": "calendar",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Topic Material",
+        "Topic/material"
+      ],
+      "related_routes": [
+        "/operations?view=settings&section=google_workspace",
+        "/operations?view=assignments",
+        "/operations?view=content"
       ]
     },
     {
@@ -2444,15 +3077,13 @@
       "label": "Generate student worksheet",
       "category": "student",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "staff",
-        "parent",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Generate Worksheet",
+        "Regenerate Worksheet"
+      ],
+      "related_routes": [
+        "/operations?view=calendar&section=worksheets",
+        "/student"
       ]
     }
   ],
@@ -2462,12 +3093,12 @@
       "label": "Show today plan",
       "category": "student",
       "approval_required": false,
-      "allowed_roles": [
-        "student",
-        "bna_admin",
-        "admin",
-        "super_admin",
-        "system"
+      "ui_button_labels": [
+        "Today Plan",
+        "Ask BNA Helper"
+      ],
+      "related_routes": [
+        "/student"
       ]
     },
     {
@@ -2475,15 +3106,13 @@
       "label": "Generate student worksheet",
       "category": "student",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "staff",
-        "parent",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Generate Worksheet",
+        "Regenerate Worksheet"
+      ],
+      "related_routes": [
+        "/operations?view=calendar&section=worksheets",
+        "/student"
       ]
     },
     {
@@ -2491,12 +3120,11 @@
       "label": "Explain assignment",
       "category": "student",
       "approval_required": false,
-      "allowed_roles": [
-        "student",
-        "bna_admin",
-        "admin",
-        "super_admin",
-        "system"
+      "ui_button_labels": [
+        "Explain"
+      ],
+      "related_routes": [
+        "/student"
       ]
     },
     {
@@ -2504,18 +3132,15 @@
       "label": "Create help request",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Ask for help",
+        "Ask BNA Helper",
+        "Parent Help"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=communications"
       ]
     }
   ],
@@ -2525,18 +3150,15 @@
       "label": "Create help request",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Ask for help",
+        "Ask BNA Helper",
+        "Parent Help"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=communications"
       ]
     },
     {
@@ -2544,18 +3166,16 @@
       "label": "Create report-problem ticket",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "student",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Report problem",
+        "Send feedback",
+        "Report a bug",
+        "Report a suggestion"
+      ],
+      "related_routes": [
+        "/parent",
+        "/student",
+        "/operations?view=admin&section=support_tickets"
       ]
     },
     {
@@ -2563,17 +3183,11 @@
       "label": "Draft message to admin",
       "category": "parent",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Draft Message"
+      ],
+      "related_routes": [
+        "/parent"
       ]
     }
   ],
@@ -2583,15 +3197,13 @@
       "label": "Post community message",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "staff",
-        "provider_admin",
-        "provider_manager",
-        "system"
+      "ui_button_labels": [
+        "Post Community Message"
+      ],
+      "related_routes": [
+        "/operations?view=communications",
+        "/parent",
+        "/provider"
       ]
     }
   ],
@@ -2601,17 +3213,12 @@
       "label": "Request provider contact",
       "category": "provider",
       "approval_required": false,
-      "allowed_roles": [
-        "parent",
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Request Provider Contact"
+      ],
+      "related_routes": [
+        "/parent",
+        "/operations?view=service_providers"
       ]
     },
     {
@@ -2619,13 +3226,12 @@
       "label": "Update provider profile",
       "category": "provider",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "provider_admin",
-        "provider_manager",
-        "system"
+      "ui_button_labels": [
+        "Save Provider",
+        "Publish Provider"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers"
       ]
     },
     {
@@ -2633,13 +3239,42 @@
       "label": "Capture provider Google Business link",
       "category": "provider",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "provider_admin",
-        "provider_manager",
-        "system"
+      "ui_button_labels": [
+        "Capture Google Business Link",
+        "Save Google Profile Link",
+        "Store Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_place_id_lookup",
+      "label": "Preview Google Business Place ID lookup",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Place ID Lookup",
+        "Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_list_locations_preview",
+      "label": "Preview Google Business locations",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview GBP Locations",
+        "Locations"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
       ]
     }
   ],
@@ -2649,32 +3284,42 @@
       "label": "Capture provider Google Business link",
       "category": "provider",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "provider_admin",
-        "provider_manager",
-        "system"
+      "ui_button_labels": [
+        "Capture Google Business Link",
+        "Save Google Profile Link",
+        "Store Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
       ]
-    }
-  ],
-  "contacts": [
+    },
     {
-      "action_id": "move_lead_stage",
-      "label": "Move lead stage",
-      "category": "communications",
-      "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "action_id": "google_business_place_id_lookup",
+      "label": "Preview Google Business Place ID lookup",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview Place ID Lookup",
+        "Place ID"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
+      ]
+    },
+    {
+      "action_id": "google_business_list_locations_preview",
+      "label": "Preview Google Business locations",
+      "category": "provider",
+      "approval_required": true,
+      "ui_button_labels": [
+        "Preview GBP Locations",
+        "Locations"
+      ],
+      "related_routes": [
+        "/operations?view=service_providers",
+        "/operations?view=settings&section=google_workspace"
       ]
     }
   ],
@@ -2684,16 +3329,13 @@
       "label": "Move lead stage",
       "category": "communications",
       "approval_required": false,
-      "allowed_roles": [
-        "super_admin",
-        "platform_manager",
-        "support_admin",
-        "technical_agent",
-        "admin",
-        "bna_admin",
-        "school_manager",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Move Lead",
+        "Payment Pending"
+      ],
+      "related_routes": [
+        "/operations?view=pipelines",
+        "/operations?view=contacts"
       ]
     }
   ],
@@ -2703,11 +3345,11 @@
       "label": "Queue Telegram report",
       "category": "communications",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "system"
+      "ui_button_labels": [
+        "Queue Telegram Report"
+      ],
+      "related_routes": [
+        "/operations?view=communications"
       ]
     },
     {
@@ -2715,12 +3357,12 @@
       "label": "Route bug to Codex",
       "category": "system",
       "approval_required": true,
-      "allowed_roles": [
-        "super_admin",
-        "admin",
-        "operator",
-        "technical_agent",
-        "system"
+      "ui_button_labels": [
+        "Route To Codex"
+      ],
+      "related_routes": [
+        "/operations?view=tasks",
+        "/operations?view=admin&section=support_tickets"
       ]
     }
   ]

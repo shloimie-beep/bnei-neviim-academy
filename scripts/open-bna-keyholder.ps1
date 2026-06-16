@@ -17,6 +17,7 @@ $secretFiles = @(
   "openai-api-key.txt",
   "buffer-api-key.txt",
   "resend-api-key.txt",
+  "stripe-secret-key.txt",
   "railway-token.txt",
   "kimi-api-key.txt"
 )
@@ -41,6 +42,7 @@ Files:
 - openai-api-key.txt
 - buffer-api-key.txt
 - resend-api-key.txt
+- stripe-secret-key.txt
 - railway-token.txt
 - kimi-api-key.txt
 

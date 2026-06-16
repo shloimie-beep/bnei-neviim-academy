@@ -6,6 +6,418 @@ not authorize active GHL runtime paths.
 
 ## Now
 
+- [ ] Complete cycle `2026-06-16-one-time-integrations-access-agent-audit`:
+  provider-scoped integration records/secret refs, Vimeo manual/API readiness,
+  Thursday blocker cards, agent gap audit, full local verification, approved
+  accumulated deploy, Railway doctor, and live smokes. Handoffs:
+  `tasks-pending/2026-06-16-provider-integrations-secret-storage.md`,
+  `tasks-pending/2026-06-16-one-time-thursday-access-session.md`,
+  `tasks-pending/2026-06-16-agent-work-gap-audit.md`. Audit:
+  `ops/audits/2026-06-16-agent-work-gap-audit.md`.
+- [ ] Thursday access session: repair/confirm Zoom Server-to-Server OAuth,
+  GoDaddy/DNS access, Resend account/domain records, Vimeo account/API/upload
+  readiness, Buffer channels/API key, WAPI/WhatsApp ownership, and Stripe
+  payment/pricing ownership. Do not perform live sends, uploads, posts,
+  charges, DNS writes, or account grants without approval gates.
+- [ ] Reconcile stale local-verified workstreams into one release status:
+  `UI-01`, `OPS-02`, `HELPER-03`, `INT-05`, `RABBI-04`, and `COMMUNITY-06`
+  additive work need deploy/live-smoke proof or explicit blocked records, not
+  more vague done labels.
+- [ ] Build a canonical prompt intake scanner/register so Downloads files,
+  Codex attachments, GPT-generated prompt zips, and ramble-router specs map to
+  one visible status path instead of drifting across audits, handoffs, and
+  stale ledger rows. Diagnosis:
+  `ops/system-audits/2026-06-16-prompt-ingestion-execution-gap.md`. Handoff:
+  `tasks-pending/2026-06-16-prompt-ingestion-execution-audit.md`.
+- [x] MASTER-07: Coordinate parallel ramble-router workstreams, proof folders,
+  blockers, source-of-truth status, and final closeout. Proof:
+  `ops/proofs/2026-06-16-ramble-router-parallel-closeout/MASTER-CLOSEOUT.md`.
+- [x] COMMUNITY-06: Build first Mishnayos community/course/progress foundation
+  with privacy-safe parent/student visibility, reusing the existing One Time
+  Mishnah Class/WS11 foundation instead of creating a duplicate Mishnah silo.
+- [x] COMMUNITY-06: Add or verify gamification event ledger, worksheet/question
+  submission flow, shoutout/reference approval, course library/admin surfaces,
+  and scoped parent progress reports.
+- [x] COMMUNITY-06: Prove parent cannot see another student and student cannot
+  update another student's work/progress; keep unapproved shoutouts/references
+  hidden from parents. Proof: Railway deployment
+  `7c8c7010-497c-41c7-a127-6370cca049eb`, WS11 parent-progress live smoke
+  `ops/live-smokes/2026-06-16T11-00-29-396Z-ws11-parent-progress-live-smoke.md`,
+  and public/privacy/student-auth smokes recorded in
+  `tasks-pending/2026-06-15-gamification-community-parent-progress.md`.
+- [x] COMMUNITY-06 additive local extension: added assigned course
+  questions/responses, worksheet due-date support, Operations Community module,
+  student portal answer flow, parent progress/activity/worksheet/question/
+  shoutout aliases, privacy-focused contract tests, and screenshots under
+  `screenshots/community-06/`. Handoff:
+  `tasks-pending/2026-06-16-community-06-mishnayos-community-gamification-parent-progress.md`.
+- [ ] COMMUNITY-06 live rollout follow-up: deploy the additive local extension
+  only from a clean/approved release path, apply
+  `railway-migration-2026-06-16-community-06.sql`, run Railway doctor plus live
+  public/privacy/student-auth/WS11 parent-progress smokes, and then mark this
+  run fully deployed.
+- [ ] INT-05 safe integrations closeout is locally implemented and verified:
+  redacted readiness/status exists for keyholder/secrets, Google Drive,
+  Telegram, Gmail reminders, Resend, Stripe, Green Invoice, Buffer, Zoom,
+  Vimeo/video hosting, archived GHL Social, and external-action gates; unsafe
+  scheduled live sends are disabled by default; Buffer/Resend/Stripe/Zoom/
+  Vimeo/Google/GHL writes stay preview-first and approval-gated, including
+  exact Resend send confirmation and integration namespace aliases. Local
+  proof: focused integration/redaction tests 26/26, `npm test` 649/649,
+  `npm run secrets:audit`, `npm run smoke:int05-integrations`, and screenshots
+  `screenshots/int-05-integrations-desktop.png` /
+  `screenshots/int-05-integrations-mobile.png` /
+  `screenshots/int-05-action-gate-preview.png`. On 2026-06-16, the loose
+  Stripe live secret from Downloads was imported into the local BNA keyholder as
+  `stripe-secret-key.txt`, removed from Downloads, and verified by
+  fingerprint-only diagnostics; it was not copied to `.secrets` or Railway.
+  Live completion still needs a safe deploy window or isolated release path,
+  Railway doctor/live smoke, and provider credential/DNS/account-owner
+  decisions.
+- [x] Complete UI-01 local public/Operations shell cleanup: reconciled the
+  newer Operations source, standardized the public header/footer/hamburger
+  across homepage/blog/FAQ/article/signup/audience pages, added `/school` and
+  `/parents` while preserving `/service-providers`, compacted Operations
+  status chips/helper entry, exposed Calendar in the platform workspace,
+  removed the duplicate public helper launcher from Operations, saved
+  screenshots under `screenshots/ui-01/`, and passed full local proof
+  (`npm test` 646/646 plus browser/no-overflow smokes). Handoff:
+  `tasks-pending/2026-06-16-ui-brand-operations-layout.md`.
+- [ ] UI-01 live rollout follow-up: deploy only from a clean/approved release
+  path or deliberate accumulated-bundle deploy, then run Railway doctor, live
+  homepage smoke, Operations login/session smoke, mobile Operations smoke, and
+  public route privacy smoke before marking the app-visible work fully
+  deployed.
+- [x] Reconcile the full WS01-WS11 closeout prompt and implement
+  parent-managed student username/password login: cycle
+  `2026-06-16-full-ws-prompt-closeout-parent-student-login`, source prompt
+  `C:\Users\User\Downloads\2026-06-16-full-ws-closeout-parent-student-login-codex-prompt.md`,
+  authoritative attachment
+  `C:\Users\User\.codex\attachments\a1e0641b-6e96-450e-b6ea-fb46b5ef62c1\pasted-text.txt`,
+  and handoff
+  `tasks-pending/2026-06-16-full-ws-closeout-parent-student-login.md`.
+  Required local scope is student password-account/session/audit schema,
+  parent reset UI/API, student username/password login plus access-code
+  fallback, focused tests, screenshots/proof artifacts, and an evidence-based
+  WS01-WS11 status matrix. Deployed to Railway production as
+  `dfbc65fa-fec4-4633-b45f-93adce342cc4`; live app, public privacy, and
+  student-auth smokes passed. External sends/publishes/billing/account grants
+  stay blocked unless explicitly approved.
+- [ ] Finish the Downloads prompt implementation audit: reconcile the active
+  BNA/Rabbi/WS/Kimi Markdown prompt packet from Downloads against current repo
+  state, patch remaining true gaps, and keep
+  `ops/download-prompt-audit/2026-06-15-downloads-prompt-status.md` as the
+  status map, with file coverage in
+  `ops/download-prompt-audit/2026-06-16-downloads-file-coverage-index.md` and
+  requirement evidence in
+  `ops/download-prompt-audit/2026-06-16-requirement-evidence-ledger.md`.
+  Shloimie's actual WS01-WS11 attachment map is now recorded at
+  `ops/download-prompt-audit/2026-06-16-actual-ws-prompt-list-map.md`. WS01
+  Operations UI/mobile/readability is locally patched and verified, and the
+  2026-06-16 resumed pass patched a public website/signup/provider BNA Helper
+  consistency gap. The accumulated app bundle was deployed to Railway on
+  2026-06-16 as deployment `81912f69-e43f-4131-96f1-a6b26bb95166`, with full
+  local tests 617/617 and production Railway/app/privacy/auth/onboarding/
+  signup/AI/email-dry-run smokes passing. A follow-up WS11 migration/readback
+  fix and targeted Operator Setup live smoke were deployed/verified in Railway
+  deployment `7c8c7010-497c-41c7-a127-6370cca049eb`. Remaining closeouts are
+  now the narrower items that require local `DATABASE_URL`, credentials/DNS/
+  account access, queue cleanup decisions, or human launch/legal/billing/
+  product decisions.
+- [ ] Complete HELPER-03 scoped BNA Helper: consolidate to one Operations helper
+  entry point, add the newer server-side helper context/message/confirm/run API
+  contract on top of the existing helper tool registry, harden role/workspace
+  permission checks, redacted audit, confirmation gates, integration readiness,
+  result links, focused tests, and desktop/mobile browser proof. Handoff:
+  `tasks-pending/2026-06-16-helper-03-scoped-bna-helper.md`. External sends,
+  publishes, billing/account grants, Google writes, Zoom/Vimeo writes, and
+  member publishing remain approval-gated. The local implementation and proof
+  pass are complete as of 2026-06-16 with helper screenshots in
+  `ops/proofs/helper-03-2026-06-16/`; the remaining closeout is a safe
+  deploy/live-reconcile window to verify any live duplicate-helper mismatch
+  against the current production UI before marking the work done.
+- [x] Implement WS11 gamification, Mishnah community course library, student
+  participation, approved shoutouts, and parent progress locally: added
+  additive schema/bootstrap, backend helpers, admin/student/parent APIs,
+  student portal community rendering, Operations student controls, and focused
+  privacy/model tests. Verification passed syntax checks, focused WS11 tests
+  12/12, full `npm test` 611/611, and diff hygiene. Handoff:
+  `tasks-pending/2026-06-15-gamification-community-parent-progress.md`.
+- [x] Complete WS11-specific live privacy/readback closeout: fixed the startup
+  migration gap so `createWs11CommunityGamificationSQL` runs before
+  `ensureWs11CommunityFoundation`, deployed Railway production
+  `7c8c7010-497c-41c7-a127-6370cca049eb`, read back live WS11 tables and seed
+  rows, and verified parent WS11 progress hides temporary unapproved
+  gamification, shoutout, worksheet draft, and parent-report rows. Report:
+  `ops/live-smokes/2026-06-16T11-00-29-396Z-ws11-parent-progress-live-smoke.md`.
+- [x] Complete secure Operator Setup live smoke: local implementation is
+  complete for Super Admin-only short-lived laptop bootstrap packages,
+  one-time encrypted secret exports, secure-download storage, stronger
+  Operations headers/cookies/session IDs, and login rate limiting. Verified on
+  Railway deployment `7c8c7010-497c-41c7-a127-6370cca049eb` with an
+  authenticated Super Admin live smoke that created a safe no-secret package,
+  downloaded it once, verified sensitive env values were blank, and confirmed a
+  second redemption returned 404. Report:
+  `ops/live-smokes/2026-06-16T11-00-45-574Z-operator-setup-live-smoke.md`.
+  Handoff:
+  `tasks-pending/2026-06-15-secure-operator-bootstrap.md`.
+- [x] Deploy local Classroom-first Operations flow and Buffer draft-only social
+  guardrail: Operations now presents BNA Classroom with Stream, Classwork,
+  People, Calendar, and Review lanes without requiring Google Classroom/OAuth;
+  Rabbi Elie Scheller / One Time has a local classroom/content handoff panel for
+  sessions, materials, source sheets, worksheets, recordings, questions, and
+  review-gated outputs; approved social outputs create Buffer drafts only and
+  record draft metadata/publish-block policy. Email remains manual/current path;
+  Resend/mass campaigns are non-blocking/out of scope. Verification passed:
+  focused classroom/social tests, full `npm test` 578/578, Railway deployment
+  `1fefad7b-38a2-463f-86bd-ec43df529f2b` SUCCESS, live app smoke
+  `ops/live-smokes/2026-06-15T14-50-29-888Z-live-app-smoke.md`, and targeted
+  live classroom smoke
+  `ops/playwright-smokes/2026-06-15-local-classroom-buffer-draft-live/report.md`.
+- [x] Implement WS06 safe Buffer/Resend communications integrations locally:
+  added env/keyholder/.secrets secret loading, Buffer readiness/channels,
+  local social drafts, explicit Buffer schedule preview/confirm, Resend
+  readiness/domains/verify, local email drafts, verified-domain/fallback-gated
+  send, first-party DNS setup tasks, Operations Communications integration UI,
+  Telegram `/accounts` readiness, and draft-only Buffer script behavior.
+  Verification passed: syntax checks, focused communications tests, and full
+  `npm test` 578/578. Handoff:
+  `tasks-pending/2026-06-15-buffer-resend-communications.md`.
+- [ ] Activate WS06 live communications integrations only after server-side
+  credentials and DNS are complete: install Buffer/Resend keys through the BNA
+  keyholder/Railway env path, confirm Buffer organization/channel IDs, copy the
+  complete Resend DNS records from the Resend dashboard, deploy, run Railway
+  doctor, and run live Buffer/Resend readiness smokes. Do not use truncated
+  screenshot DNS values.
+- [x] Reconcile WS10 One Time product/payment decision state: created the
+  canonical decision handoff at
+  `tasks-pending/2026-06-15-one-time-product-payments-decisions.md`, captured
+  the current preview/gated checkout reality, preserved US Stripe and Israeli
+  GreenInvoice directions, separated app ownership from business/bank/payment
+  account ownership, and kept live checkout, legal/accounting, email, access,
+  and landing-page decisions blocked until owner approval.
+- [ ] Resolve One Time launch decisions before any live checkout or public
+  launch: approve pricing/currencies, provider of record, business/bank/payment
+  account owner, software/revenue terms, parent/student/member login model,
+  materials/access rules, Rabbi email/Resend sender, and final website assets.
+  Handoff:
+  `tasks-pending/2026-06-15-one-time-product-payments-decisions.md`.
+- [x] Build One Time Classroom, calendar, moderated Rabbi threads, approved
+  participation leaderboard, and source-grounded Mishnah bot: first target is
+  Rabbi Elie / One Time, using reusable BNA classroom foundations. Scope covers
+  six-Sedarim curriculum organization, natural-language video assignment
+  scheduling through BNA's internal calendar, class/video threads with AI
+  moderation before visibility, parent/admin safety readback, member-facing
+  classroom readback, and source-only bot behavior. Handoff:
+  `tasks-pending/2026-06-15-one-time-classroom-calendar-community-bot.md`.
+  Verification passed: `node --check server.js`, Operations/member/classroom/
+  parent inline script parse, focused classroom/member-library/assignment/
+  community/assistant/parent tests 55/55, full `npm test` 605/605, local
+  in-app Browser smokes for `/one-time-classroom`, `/member-library`,
+  Operations One Time Classroom console, and parent assistant safety/WS11 hooks,
+  Railway deployment `5650e674-7717-4a10-b306-f64eb4a72698` SUCCESS, Railway
+  doctor, live app smoke
+  `ops/live-smokes/2026-06-15T15-07-00-013Z-live-app-smoke.md`, focused live
+  classroom/member/admin preview/member-access rollback smoke, and public
+  privacy smoke
+  `ops/live-smokes/2026-06-15T15-07-51-743Z-public-route-privacy-smoke.md`.
+- [x] Deploy public helper bot, service-provider ecosystem section,
+  self-governance knowledge, and SODAS parenting flow: refactored the public
+  helper widget into deterministic parent/student/provider/BNA/self-governance
+  and SODAS paths, added delayed non-corny nudges with 24-hour localStorage
+  suppression, added a reusable public helper knowledge module, and added the
+  "A Learning Ecosystem, Not Just a Morning Program" homepage section with
+  parent/provider/helper CTAs and English/Hebrew copy. Verification passed:
+  `node --check public/js/bna-bot-widget.js`,
+  `node --check public/js/bna-helper-knowledge.js`, focused helper/assistant
+  tests 16/16, full `npm test` 529/529, `npm run screenshot`, local Browser
+  desktop/mobile/Hebrew smoke, Railway deployment
+  `a96f5825-43eb-4027-8bf9-070029af75af` SUCCESS, Railway doctor SUCCESS,
+  live app smoke
+  `ops/live-smokes/2026-06-15T12-28-14-117Z-live-app-smoke.md`, and live
+  Browser desktop plus Hebrew mobile helper smoke on
+  `https://bneineviimacademy.org`.
+- [x] Deploy curated helper knowledge into the hosted public assistant context:
+  the backend now reads the same `public/js/bna-helper-knowledge.js` module in
+  a sandbox, injects sanitized signup/BNA/provider/self-governance/student/SODAS
+  context into `buildPublicAssistantKnowledgeBase`, and keeps the source
+  boundary explicit that this is curated public helper context, not transcript
+  RAG. Verification passed: `node --check server.js`, focused
+  helper/assistant tests 17/17, full `npm test` 530/530, Railway deployment
+  `a7f78fc9-e0f6-401f-9ee3-289a45ccab2e` SUCCESS, Railway doctor SUCCESS,
+  live app smoke
+  `ops/live-smokes/2026-06-15T12-39-02-000Z-live-app-smoke.md`, and targeted
+  public assistant smoke
+  `ops/live-smokes/2026-06-15T12-39-23-967Z-public-helper-knowledge-live-smoke.md`.
+- [x] Deploy file-backed public helper retrieval: added
+  `src/lib/bna/public-helper-retrieval.js` and wired it into
+  `buildPublicAssistantKnowledgeBase` so hosted public assistant answers now
+  retrieve bounded, query-scored snippets from `public/js/bna-content.js`,
+  brand-kit files, safe-status transcript markdown, curated helper paths, and
+  existing approved/published DB content outputs. The source boundary remains
+  explicit: this is bounded retrieval, not exhaustive transcript training.
+  Verification passed: `node --check server.js`,
+  `node --check src/lib/bna/public-helper-retrieval.js`, focused
+  retrieval/helper/assistant tests 21/21, full `npm test` 534/534, Railway
+  deployment `08a1bef5-b9b7-41fc-ac4f-574a73a16731` SUCCESS, Railway doctor
+  SUCCESS, live app smoke
+  `ops/live-smokes/2026-06-15T12-48-55-011Z-live-app-smoke.md`, and targeted
+  live public assistant retrieval smoke
+  `ops/live-smokes/2026-06-15T12-50-35-267Z-public-helper-retrieval-live-smoke.md`.
+- [ ] Optional future helper retrieval upgrade: add vector indexing, admin
+  source curation controls, or richer retrieval diagnostics if the bounded
+  file/DB retriever is not enough after real visitor use. Do not describe the
+  helper as trained on the entire transcript library; safe transcript snippets
+  are query-scored and capped.
+- [x] Deploy assistant onboarding intake capture: added durable
+  `bna_assistant_onboarding_intakes` drafts for explicit parent, student, and
+  service-provider onboarding capture language, with role-scoped field
+  extraction, open review questions, `no_send:true`, and no durable profile,
+  child-visible, provider-public, external connector, or send action. The
+  assistant now routes explicit role intake capture before anonymous public
+  lead reminders. Added `scripts/smoke-assistant-onboarding-intake-live.mjs`
+  and `npm run app:smoke:onboarding-intake`; final verification passed focused
+  assistant/workspace/portal tests 53/53, full `npm test` 523/523, Railway
+  deployment `39012fde-d811-4c8d-853f-8b52da7eb2b8`, Railway doctor SUCCESS,
+  live app smoke
+  `ops/live-smokes/2026-06-15T11-50-12-417Z-live-app-smoke.md`, and targeted
+  live onboarding smoke
+  `ops/live-smokes/2026-06-15T11-50-42-993Z-assistant-onboarding-intake-live-smoke.md`.
+- [x] Correct Ahuva Dratler parent portal email to
+  `ahuvadratler@gmail.com`, fix the parent-access target, and resend the
+  parent portal login/onboarding email: Ahuva Dratler is Menachem Mendel
+  Dratler's mother and parent portal contact. Menachem student #2800 plus
+  signups #8 and #12 use the corrected Ahuva email where applicable. Ahuva was
+  cleared from Esti Dratler external-accountability student #53986
+  parent-login fields. Internal audit notes #1219 and #1222 document the
+  correction. Final fresh parent portal email sent successfully with no
+  WhatsApp send; live communication readback confirmed outbound email #1223
+  linked to Menachem student #2800, expiring 2026-06-15T06:45:14+03:00.
+- [x] Deploy public homepage Torah progress privacy hotfix: replaced named
+  public Torah trip fallback cards with aggregate class progress, anonymous
+  range, and trip-status cards; changed `/api/torah-learning/public-summary`
+  to return aggregate `metrics` plus `students: []`; added
+  `tests/public-homepage-privacy.test.js`; updated live app smoke to enforce
+  the aggregate-only public contract. Verification passed: homepage inline JS
+  parse, focused privacy/Torah tests 25/25, full `npm test` 435/435, Railway
+  deployment `0562f80d-b24d-463b-bef4-7f027fdad077`, Railway doctor SUCCESS,
+  live app smoke
+  `ops/live-smokes/2026-06-15T05-46-52-317Z-live-app-smoke.md`, and focused
+  live privacy readback
+  `ops/live-smokes/2026-06-15T05-47-38-650Z-public-homepage-privacy-live-smoke.md`.
+- [x] Add repeatable Phase 1 unauthenticated route privacy smoke: added
+  `scripts/smoke-public-route-privacy.mjs`,
+  `npm run app:smoke:public-privacy`, and
+  `tests/public-route-privacy-contract.test.js` to cover the brief's public,
+  parent, student, signup, provider, Operations, and parent/student portal API
+  route list. Live smoke passed with anonymous shells for public routes,
+  `/operations` redirecting to Operations login, `/api/parent-portal` returning
+  401, `/api/parent-portal/session` returning 400 without a token, and
+  `/api/student-portal` returning 401. Verification passed:
+  `node --check scripts/smoke-public-route-privacy.mjs`, focused tests 50/50,
+  full `npm test` 439/439, and
+  `ops/live-smokes/2026-06-15T05-55-49-944Z-public-route-privacy-smoke.md`.
+  No deployment was required because this was test/smoke tooling and live audit
+  evidence only.
+- [x] Add External Access persistence workflow readiness packet: documented the
+  approval-gated Admin Users / External Access create-edit target at
+  `ops/access/external-access-persistence-workflow.md`, added
+  `APPROVE_EXTERNAL_ACCESS_PERSISTENCE_WORKFLOW` to the owner approval pack,
+  and covered the current read-only/no-write runtime guard in
+  `tests/external-access-persistence-workflow.test.js`. Verification passed:
+  focused external-access/owner-pack tests 5/5 and full `npm test` 455/455.
+  No deployment was required because this was docs/test coverage only.
+- [x] Deploy External Access create/edit dry-run preview: added a platform-admin
+  `POST /api/bna/admin/external-access` preview endpoint and Operations Admin >
+  Users readback form for external Operations access planning. The endpoint is
+  no-write in production: `dry_run:true` returns person/workspace/access-link
+  preview details and required readback, while `dry_run:false` is rejected until
+  the explicit workflow approval phrase is approved. Verification passed:
+  `node --check server.js`, focused external-access/Admin Users tests 44/44,
+  full `npm test` 534/534, Railway deployment
+  `937f5cf9-d824-43ed-93c1-fd532e94864f` SUCCESS, Railway doctor SUCCESS,
+  live app smoke
+  `ops/live-smokes/2026-06-15T13-02-14-730Z-live-app-smoke.md`, and targeted
+  live endpoint smoke
+  `ops/live-smokes/2026-06-15T13-03-12-297Z-external-access-preview-live-smoke.md`.
+- [x] Deploy read-only owner approval gateboard: added Operations Settings >
+  Advanced > Approval Gates as the single readback surface for remaining
+  Google, One Time publishing, billing/refund, Buffer/social, Rabbi live app,
+  External Access, and Google public OAuth approval phrases and required
+  fields. The gateboard copies phrases only and performs no approval, send,
+  publish, bill, access grant, connector call, or external write. Verification
+  passed: focused Operations/matrix/owner-pack tests 15/15, full `npm test`
+  536/536, Railway deployment `6ff9c6f2-4a5c-4cfb-aecd-13d6fa88ecb2`
+  SUCCESS, Railway doctor SUCCESS, live app smoke
+  `ops/live-smokes/2026-06-15T13-11-58-594Z-live-app-smoke.md`, targeted
+  authenticated gateboard readback, and browser unauthenticated redirect smoke
+  `ops/live-smokes/2026-06-15T13-14-03-396Z-owner-approval-gateboard-live-smoke.md`.
+- [x] Deploy private One Time question digest preview: extended
+  `GET /api/bna/one-time/question-moderation` with a read-only
+  `digest_preview` payload and added Operations Content > One Time Library
+  `Private Question Digest Preview` for Rabbi-facing review sections, duplicate
+  grouping candidates, next steps, and guardrails. The digest omits submitter
+  identities and performs no forum post, member-visible answer, notification,
+  connector call, or external write. Verification passed: focused One Time
+  moderation/forum/action tests 42/42, full `npm test` 536/536, Railway
+  deployment `b43bdbf2-1526-4cab-86e8-a527f6e76b42` SUCCESS, Railway doctor
+  SUCCESS, live app smoke
+  `ops/live-smokes/2026-06-15T13-21-40-918Z-live-app-smoke.md`, and targeted
+  live digest readback
+  `ops/live-smokes/2026-06-15T13-22-30-000Z-one-time-question-digest-live-smoke.md`.
+- [x] Deploy One Time question public/member approval gate: added
+  `APPROVE_ONE_TIME_QUESTION_PUBLIC_SURFACE` to the owner approval pack and
+  Operations Settings > Advanced > Approval Gates so the private digest cannot
+  be confused with permission to publish a public/member answer, forum post,
+  reward, leaderboard, student identity, or notification. Verification passed:
+  focused gateboard/pack/matrix/One Time tests 22/22, full `npm test` 537/537,
+  Railway deployment `020a76c5-7a86-4bf0-b6ea-719417bcc211` SUCCESS, Railway
+  doctor SUCCESS, live app smoke
+  `ops/live-smokes/2026-06-15T13-30-27-504Z-live-app-smoke.md`, and targeted
+  live gateboard/digest guardrail readback
+  `ops/live-smokes/2026-06-15T13-31-15-000Z-one-time-question-public-surface-gate-live-smoke.md`.
+- [x] Add Google public OAuth verification packet: documented Phase 2 Mode C
+  at `ops/google-integrations/google-public-oauth-verification-packet.md`,
+  anchored it to official Google OAuth/User Data Policy/demo-video sources,
+  added `APPROVE_GOOGLE_PUBLIC_OAUTH_VERIFICATION_PACKET` to the owner pack,
+  and covered it with `tests/google-public-oauth-verification-packet.test.js`.
+  Verification passed: focused Google/owner-pack tests 6/6 and full
+  `npm test` 459/459. No deployment was required because this was docs/test
+  coverage only.
+- [x] Deploy Google test-user OAuth scope guard: runtime defaults now use
+  identity-only `GOOGLE_SCOPES`, bare OAuth start no longer implies configured
+  broad scopes or Drive-pipeline setup, role defaults are identity-only,
+  Classroom manage avoids roster/profile-email scopes by default, `.env.example`
+  teaches per-smoke scope examples, and the OAuth callback redacts refresh
+  tokens. Verification passed: focused Google OAuth/scope tests 18/18, full
+  `npm test` 463/463, Railway deployment
+  `8a02f9fb-6044-48ee-bfeb-747bfeecee2f`, Railway doctor SUCCESS, live app
+  smoke `ops/live-smokes/2026-06-15T06-58-03-600Z-live-app-smoke.md`, and
+  targeted live Google readiness readback with identity-only default/required
+  scopes. Follow-up production config cleanup is also complete: Railway
+  `GOOGLE_SCOPES` was narrowed to identity-only, deployment
+  `16920b4a-751a-4ee3-8534-9193a2739a7c` reached SUCCESS, live smoke
+  `ops/live-smokes/2026-06-15T07-09-09-425Z-live-app-smoke.md` passed, and
+  targeted live readback now shows configured/default/required scopes all
+  identity-only with zero configured-scope warnings.
+- [x] Deploy Rabbi/One Time task manager internal dialogue board:
+  `server.js` now normalizes One Time raw/bot task intake into clean
+  `task_kind`, `display_title`, `why_exists`, `next_action`, raw/cleaned
+  capture fields, bot-created labels, project-visible comments, activity
+  history, and observable agent-job state. `public/operations.html` renders
+  the One Time workspace as four columns only: Decisions, Pending/access,
+  Tasks, and Done/history. Added
+  `railway-migration-2026-06-15-rabbi-task-dialogue.sql` and
+  `tests/rabbi-task-dialogue.test.js`. Verification passed: syntax checks,
+  focused task/agent/Rabbi bundle 54/54, full `npm test` 455/455, Railway
+  deployment `57d70c58-b659-4165-9da1-469137b2a568`, Railway doctor SUCCESS,
+  live app smoke
+  `ops/live-smokes/2026-06-15T06-40-02-550Z-live-app-smoke.md`, and focused
+  live Rabbi dialogue API smoke
+  `ops/live-smokes/2026-06-15T06-41-04-215Z-rabbi-task-dialogue-live-smoke.md`.
+  Remaining external blockers are represented as Pending/access cards for
+  Stripe/payment processor, Vimeo/posting rules, website/content assets,
+  Zoom/manual links, and Resend/email settings.
 - [ ] Continue the Rabbi Scheller / One Time white-label onboarding, Google,
   content, and CRM follow-up imported from the 2026-06-14 superprompt. Dirty
   worktree preservation is complete via
@@ -18,11 +430,535 @@ not authorize active GHL runtime paths.
   SUCCESS, and live provider/privacy smoke passed at
   `ops/playwright-smokes/2026-06-14-rabbi-whitelabel-provider-privacy-live/report.md`.
   Telegram note-to-CRM and WAPI manual correction apply UI are already
-  deployed separately. Parent announcement draft persistence/readback and the
-  task-title cleanup dry-run script are also complete. Immediate next work is
-  Rabbi Mishnayos parent/member onboarding flow, One Time content-library
-  skeleton, and the full WAPI phonebook conversation workspace. Handoff:
+  deployed separately. Parent announcement draft persistence/readback, the
+  task-title cleanup dry-run script, Rabbi Mishnayos parent/member onboarding
+  lead capture, `retitle_task_naturally`, and the One Time video-library item
+  helper are also complete. The One Time content library review surface is
+  deployed and live-smoked. Operations > Integrations > Google is now the
+  canonical deployed and live-smoked Google readiness module; Settings >
+  Google Workspace remains a compatibility mirror. The surface includes a
+  read-only Google Action Audit over Google, Drive, Calendar, Classroom, and
+  Google Business Profile preview/execution action logs. The public helper
+  mobile UX slice is also deployed and
+  live-smoked: phone-width public pages now open the helper as a partial bottom
+  sheet, keep the launcher reachable for minimize, and use concise 10-1
+  program copy without the old follow-up nudge. The helper source-boundary
+  guard is also deployed and live-smoked: public allergy/medical policy
+  questions now return a verified-content boundary reply instead of allowing a
+  generic policy hallucination, and hosted assistant prompts now carry explicit
+  source-scope rules. The task/decision helper bundle
+  (`add_decision_option`, `schedule_task_on_date`, and `move_task_workspace`)
+  is deployed and live preview-smoked. Rabbi shiur/source-sheet helper actions
+  are deployed and live preview-smoked. Referral/moderation helper actions are
+  also deployed and live preview-smoked. The full WAPI phonebook conversation
+  workspace is now deployed and live-smoked. The
+  `show_contact_communication_history` helper action is also deployed and
+  live-smoked as a dry-run/read-only local history preview for helper and
+  Telegram requests; it reads `bna_contact_communications` only and performs no
+  send, sync, tag update, broadcast, Google/Drive, Buffer/social, or external
+  CRM write. Support ticket processed notifications are also deployed and
+  live-smoked: resolving or closing a
+  ticket now creates a local `bna_contact_communications` no-send draft plus
+  an internal ticket comment, and the API returns `notification_draft`; no
+  email, WhatsApp, SMS, Telegram, portal message, or external CRM write is
+  sent automatically. Immediate next work is one approved One Time
+  member-library publish/smoke or deeper media hosting after destination,
+  visibility, hosted-media, smoke-item, and rollback approval, plus live
+  Google/Drive adapters after OAuth/scope approval. Google live-adapter and One
+  Time member-library publishing
+  approval-readiness packets are also deployed and live-smoked in Operations,
+  with exact confirmation phrases and no external writes. The One Time
+  member-library publish-package preview is also deployed and live-smoked as a
+  dry-run/no-write helper under the One Time Library. The Rabbi/One Time
+  8-week launch-calendar preview action is also deployed and live-smoked as a
+  dry-run/no-write helper under Google Calendar settings. The Google Classroom
+  topic/material preview action and Google Business/Profile Place ID/location
+  preview helpers are also deployed and live-smoked as dry-run/no-write
+  helpers under Operations > Integrations > Google, with the old Settings >
+  Google Workspace mirror kept for compatibility. The local read-only Rabbi/One
+  Time task-flow audit script/report is also complete: `npm run task:rabbi-flow-audit`
+  generated
+  `ops/system-audits/2026-06-14T23-18-05-374Z-rabbi-task-flow-audit.md`
+  after scanning 305 tasks and identifying 102 Rabbi/One Time related records.
+  It performed no task patch, external write, send, publish, access grant, or
+  workspace move; full `npm test` passed 392/392 and no deployment was needed.
+  The private One Time question moderation queue is also deployed and
+  live-smoked: question submissions now persist to
+  `bna_one_time_question_reviews`, Operations Content > One Time Library shows
+  a private read-only review queue, and
+  `GET /api/bna/one-time/question-moderation` returns no-send/no-public-forum
+  flags. No forum post, member-visible answer, send, Codex job, or external
+  write is created automatically. Operations Settings > Automations now also
+  has a deployed and live-smoked read-only Automation Library / Prompt Browser
+  with 8 guarded workflow cards, prompt/policy readback, dry-run preview
+  affordances, and disabled enable controls; it performs no external send,
+  publish, billing/access change, Google write, Drive/video-host write, or
+  external CRM write. The current dirty worktree is also classified into
+  curated commit groups at
+  `ops/worktree-snapshots/2026-06-15T03-38-00-goalmode-current-commit-groups.md`;
+  nothing was staged or reverted by that safety pass. The exact Rabbi/One Time
+  app access/backend audit at
+  `ops/one-time-mishnah/rabbi-app-access-and-backend-audit.md` is now refreshed
+  with live/Replit unknowns, login/role notes, credential source names only,
+  BNA readiness surfaces, safe bootstrap/reset guidance, and no-write gates;
+  focused audit-doc coverage passed 3/3 and no deployment was required. Phase
+  11 now also has a local One Time forum/gamification moderation readiness plan
+  at `ops/one-time-mishnah/forum-gamification-moderation-plan.md`, covering
+  authenticated-only participation, AI moderation, temporary holds instead of
+  auto-bans, quality rewards/badges, no public shame, no leaderboard without
+  explicit approval, audit trail, and no-send/no-public-feed gates; focused
+  coverage passed 4/4 and adjacent One Time workflow tests passed 42/42. Phase
+  12 provider-login / Grabify bug audit is also current at
+  `ops/provider-intake/provider-login-phase12-audit.md`: active provider login
+  routes/session/setup/password flows, generic failed-login messaging, prior
+  live provider-portal smoke, and the fresh live credential smoke checklist are
+  documented; focused Phase 12 coverage passed 4/4 and adjacent provider tests
+  passed 16/16 with no deployment required. Phase 14 Buffer/social scheduling
+  now has a deployed and live-smoked preview-only typed action,
+  `preview_social_schedule_package`, that plans channels, schedule slots,
+  blockers, and the `APPROVE_BUFFER_SOCIAL_DRAFT` phrase for requests such as
+  "Schedule this Facebook post" or "Make 3 posts from this video"; it performs
+  no Buffer draft write, media upload, publish, send, local content write, or
+  external write. Parent/accountability onboarding now also writes real
+  first-party `accountability_interest` parent leads plus support ticket,
+  lead-linked communication, and private in-app notification records, with a
+  dry-run/no-write smoke path and no external send, child-visible goal, or
+  external CRM write. The older provider onboarding/integrations foundation
+  deployment gate is also closed on current production: sanitized public
+  provider API/index, provider join, provider login/setup shell, and parent
+  login smoke passed without live writes. The student-facing Hebrew/RTL audit
+  is also complete and deployed: the student portal now uses localized labels
+  for the answer prefix and Rabbi WhatsApp CTA, and the fixture-backed
+  production Playwright audit passed with mobile/desktop Hebrew screenshots,
+  RTL checks, no mojibake, no horizontal overflow, Hebrew source refs, and no
+  private sentinel leakage. Operations Communications > Announcements now also
+  has a deployed parent weekly update approval workspace with candidate
+  loading, title/body/image/video URL readback, a no-write preview button, and
+  typed `APPROVE_PARENT_ANNOUNCEMENT` local approval. Verified with full tests,
+  Railway deployment `a298a146-8e34-408c-9a1f-f6e26e38dd0c`, live app smoke,
+  and focused live Playwright smoke. Official weekly copy/media selection
+  remains open until the operator chooses the parent-visible update. Weekly
+  recipient preview is now also deployed: Operations Communications >
+  Announcements has `Preview Recipients No-Send`, backed by
+  `GET /api/bna/parent-announcements/recipients`, with current-parent counts,
+  signup-only review candidates, second-parent/spouse policy candidates,
+  missing-email and external-accountability exclusions, and no-send/no-write
+  flags. Verified with full `npm test` 415/415, Railway deployment
+  `f03ccc1f-a64d-43db-8907-70f6c62d46b7`, live app smoke
+  `ops/live-smokes/2026-06-15T03-31-36-029Z-live-app-smoke.md`, and focused
+  live Playwright smoke
+  `ops/playwright-smokes/2026-06-15-parent-announcement-recipient-preview-live/report.md`.
+  Actual test-send/live-send remains disabled behind recipient policy, copy,
+  media, rollback/no-send rules, and `APPROVE_PARENT_WEEKLY_UPDATE_SEND`.
+  Workspace/role clarity also advanced: Admin > Roles now has a deployed
+  read-only role/access policy matrix covering Super Admin, BNA School
+  Admin/Rabbi, Parent primary contact, Second Parent/Spouse, Student, Service
+  Provider/Rabbi Sheller, Community Member, and Codex/Agent lifecycle. It names
+  approval gates without creating invitations, login tokens, resets, sends,
+  access grants, billing changes, or connector writes. Verified with full
+  `npm test` 416/416, Railway deployment
+  `8098d014-5857-44b0-bffa-c94458917802`, live app smoke
+  `ops/live-smokes/2026-06-15T03-41-18-298Z-live-app-smoke.md`, and focused
+  live Playwright smoke
+  `ops/playwright-smokes/2026-06-15-admin-role-policy-live/report.md`.
+  Parent/
+  student onboarding/reset email work now has a deployed first slice too:
+  Operations Students > Next Year Login exposes a rollout packet plus
+  per-family `Preview Password Setup` and `Email Password Setup` buttons backed
+  by `POST /api/bna/parent-access/password-reset`. Preview is no-write/no-send
+  with `dry_run: true`; real email requires the single-family action and
+  `SEND_PARENT_PASSWORD_SETUP`. Verified with full `npm test` 415/415, Railway
+  deployment `990a677c-a6a5-4b2d-97d7-13f1cf83c862`, live app smoke
+  `ops/live-smokes/2026-06-15T03-17-11-309Z-live-app-smoke.md`, and focused
+  live Playwright smoke
+  `ops/playwright-smokes/2026-06-15-next-year-password-setup-preview-live/report.md`.
+  Student assistant onboarding coaching is now deployed too: role-specific
+  help/setup questions are answered in chat before generic ticket fallback,
+  covering Today, goals, daily checkoff, questions, reflection, and messaging
+  Rabbi/Shloimie with no support ticket, profile/goal write, send, or external
+  connector write. Verified with full `npm test` 427/427, Railway deployment
+  `6b77f88f-7508-43ac-b107-c713d29c34a3`, live app smoke
+  `ops/live-smokes/2026-06-15T04-57-22-945Z-live-app-smoke.md`, and focused
+  live fixture smoke
+  `ops/playwright-smokes/2026-06-15-assistant-onboarding-coach-live/report.md`.
+  Handoff:
   `tasks-pending/2026-06-14-rabbi-sheller-whitelabel-onboarding-google-content.md`.
+- [x] Deploy and live-smoke parent/accountability onboarding lead capture.
+  `POST /api/parent-accountability/onboarding` now creates or updates
+  `bna_parent_leads` with `lead_type = 'accountability_interest'`, links the
+  support ticket, communication note, and in-app notification to that lead, and
+  exposes the category in Operations Contacts > Interested Parents. Verified
+  with syntax checks, inline script parse, focused tests 22/22, full `npm test`
+  414/414 before deploy, local no-write dry-run smoke
+  `ops/local-smokes/2026-06-15-parent-accountability-onboarding-local.md`,
+  Railway deployment `59ec51a1-56b2-4e0d-854a-ee3f8aab5558`, Railway doctor
+  SUCCESS, live app smoke
+  `ops/live-smokes/2026-06-15T01-38-34-614Z-live-app-smoke.md`, and focused
+  live dry-run/parent/Operations smoke
+  `ops/live-smokes/2026-06-15T01-39-30-000Z-parent-accountability-onboarding-live-smoke.md`.
+  Guardrail: dry-run performs no DB write, and real submissions perform no
+  email/WhatsApp/Telegram send, child-visible goal creation, or external CRM
+  write.
+- [x] Deploy and live-smoke canonical Operations > Integrations > Google module.
+  Operations now exposes Integrations as a first-class workspace module and
+  routes `Operations > Integrations > Google` to the Google readiness surface
+  for Drive, Calendar, Classroom, Google Business Profile, approval packets,
+  and the read-only Google Action Audit. Settings > Google Workspace remains a
+  compatibility mirror. Verified with `node --check server.js`, Operations
+  inline script parse, focused tests 46/46, full `npm test` 415/415, local
+  Playwright smoke
+  `ops/playwright-smokes/2026-06-15-google-integrations-module-local/report.md`,
+  Railway deployment `1a60aabe-b1a7-4adc-a788-de4e71abd0bd`, Railway doctor
+  SUCCESS, live app smoke
+  `ops/live-smokes/2026-06-15T01-59-10-544Z-live-app-smoke.md`, and focused
+  live Playwright smoke
+  `ops/playwright-smokes/2026-06-15-google-integrations-module-live/report.md`.
+  Guardrail: the page performs no Google API read/write, connector write,
+  send, publish, access grant, or external CRM write.
+- [x] Deploy and live-smoke the Phase 14 Buffer/social schedule preview helper.
+  Added `preview_social_schedule_package` in the action registry and
+  operations handler, Telegram routing for scheduling/Buffer/multi-post social
+  requests, regenerated action-registry artifacts, and focused regression
+  coverage. Verified with syntax checks, Operations inline script parse,
+  focused action/Telegram tests 31/31, adjacent social/content/automation
+  tests 53/53, full `npm test` 409/409, local action-runner smoke
+  `ops/local-smokes/2026-06-15-social-schedule-preview-local.md`, Railway
+  deployment `cc96c44c-303f-4dab-ada0-e6dd62738d3b`, Railway doctor SUCCESS,
+  live app smoke
+  `ops/live-smokes/2026-06-15T01-02-48-717Z-live-app-smoke.md`, and live API
+  smoke
+  `ops/live-smokes/2026-06-15T01-03-38-576Z-social-schedule-preview-live-smoke.md`.
+  Guardrail: no Buffer draft write, media upload, publish, send, local content
+  write, or external write is performed by the preview.
+- [x] Document and verify the Phase 12 provider-login / Grabify bug current
+  state. Added `ops/provider-intake/provider-login-phase12-audit.md` and
+  `tests/provider-login-phase12-audit.test.js`. The audit confirms active
+  provider login/setup/session/profile/service routes, scoped provider access,
+  generic failed-login messages, no active Grabify reference in inspected
+  provider login surfaces, and prior live provider portal smoke evidence. It
+  keeps a fresh live credential smoke checklist for the next approved test
+  provider or reported current failure. Verified with `node --check
+  tests/provider-login-phase12-audit.test.js`, focused test 4/4, and adjacent
+  provider-directory tests 16/16. No deployment was required because this is
+  local documentation/test coverage only.
+- [x] Document the One Time forum/gamification moderation readiness plan for
+  Phase 11. Added
+  `ops/one-time-mishnah/forum-gamification-moderation-plan.md` and
+  `tests/one-time-forum-gamification-plan.test.js`. The plan requires
+  authenticated participants, AI-first moderation, human review, temporary
+  holds pending admin review instead of automatic bans, quality rewards/badges
+  only after Rabbi/admin approval, no public shame, no leaderboard without
+  explicit approval, moderation audit logging, no-send notification gates, and
+  launch smokes before any member-visible surface. Verified with `node --check
+  tests/one-time-forum-gamification-plan.test.js`, focused test 4/4, and
+  adjacent One Time tests 42/42. No deployment was required because this is
+  local documentation/test coverage only.
+- [x] Refresh the exact Rabbi/One Time app access/backend audit requested by
+  the source brief. Updated
+  `ops/one-time-mishnah/rabbi-app-access-and-backend-audit.md` with repo/live
+  URL status, login routes, roles, Shloimie access path, credential source
+  names only, missing credentials, analytics/billing/Resend/media inventory,
+  BNA reuse/separation/integration guidance, risks, and a safe bootstrap/reset
+  plan. Added focused coverage in `tests/rabbi-scheller-audit-docs.test.js`.
+  Verified with `node --check tests/rabbi-scheller-audit-docs.test.js` and
+  `node --test tests/rabbi-scheller-audit-docs.test.js` 3/3. No deployment was
+  required because this is local documentation/test coverage only.
+- [x] Deploy and live-smoke the Operations Automation Library / Prompt
+  Browser: Settings > Automations now lists service-provider onboarding,
+  parent accountability lead follow-up, ticket processed acknowledgement,
+  parent weekly update approval, One Time question review, One Time 8-week
+  nurture, Google live-adapter gate, and Rabbi content review workflows with
+  trigger, audience, channel, prompt/template, status, last/next evidence,
+  linked records, dry-run preview buttons, and disabled approval-required
+  enable controls. Verified with Operations inline script parse, focused
+  adjacent tests 45/45, full `npm test` 396/396, local Browser/UI smoke
+  `ops/playwright-smokes/2026-06-15-automation-library-local/report.json`,
+  Railway deployment `5d21c82c-d77e-4d5d-a8c2-c1b1129c17a8`, Railway doctor
+  SUCCESS, live app smoke
+  `ops/live-smokes/2026-06-14T23-58-42-116Z-live-app-smoke.md`, and live
+  Browser/UI smoke
+  `ops/playwright-smokes/2026-06-15-automation-library-live/report.json`.
+- [x] Deploy and live-smoke the private One Time question moderation queue:
+  `submit_student_question_for_moderation` now creates a scoped
+  `bna_one_time_question_reviews` row, `review_moderated_question` updates the
+  private review row alongside the task/comment, and Operations Content > One
+  Time Library renders `Private Question Moderation Queue` as a read-only,
+  no-send/no-forum/no-member-visible surface. Verified with syntax checks,
+  focused action/One Time tests 68/68, full `npm test` 393/393 before deploy,
+  local API and Browser/UI smoke
+  `ops/playwright-smokes/2026-06-15-one-time-question-moderation-local/report.json`,
+  Railway deployment `afff8d91-e0aa-426b-94f8-f128b8f57822`, Railway doctor
+  SUCCESS, live app smoke
+  `ops/live-smokes/2026-06-14T23-42-19-692Z-live-app-smoke.md`, live API smoke
+  `ops/live-smokes/2026-06-14T23-42-54-513Z-one-time-question-moderation-live-smoke.md`,
+  and live Browser/UI smoke
+  `ops/playwright-smokes/2026-06-15-one-time-question-moderation-live/report.json`.
+- [x] Add a local admin review script/report for Rabbi/One Time task-flow
+  cleanup without silently moving records. Added
+  `scripts/rabbi-task-flow-audit.mjs`, package command
+  `task:rabbi-flow-audit`, focused coverage in
+  `tests/rabbi-task-flow-audit.test.js`, and generated the live read-only
+  report `ops/system-audits/2026-06-14T23-18-05-374Z-rabbi-task-flow-audit.md`.
+  Verified with syntax checks, focused task/Telegram tests 41/41, live
+  read-only audit readback, and full `npm test` 392/392. No app-visible
+  deployment was required.
+- [x] Deploy and live-smoke the One Time member-library publish-package
+  preview: `preview_one_time_member_library_publish_package` assembles package
+  fields and blockers for a scoped One Time content job without publishing,
+  sending, changing member visibility, writing Drive/video hosts, creating
+  Buffer/social/email/WhatsApp sends, granting checkout/access, writing
+  external CRM, or updating content records. Operations One Time Library cards
+  can expose `Package Preview`, and Telegram routes content-job publish-package
+  requests. Verified with syntax checks, Operations inline script parse,
+  focused tests 34/34, full `npm test` 387/387, local browser smoke
+  `ops/playwright-smokes/2026-06-15-one-time-publish-package-preview-local/report.md`,
+  Railway deployment `32573f44-f7a6-4cbd-baa2-432cf6b1e0a6`, Railway doctor
+  SUCCESS, live app smoke
+  `ops/live-smokes/2026-06-14T22-41-22-482Z-live-app-smoke.md`, and focused
+  live browser smoke
+  `ops/playwright-smokes/2026-06-15-one-time-publish-package-preview-live/report.md`.
+- [x] Deploy and live-smoke Google Business/Profile preview helpers:
+  Operations Settings > Google Workspace > Google Business Profile now has
+  `Place ID` and `Locations` dry-run buttons wired to
+  `google_business_place_id_lookup` and
+  `google_business_list_locations_preview`, and Telegram routing recognizes
+  natural-language Google Business Place ID/location requests. The previews
+  perform no Maps lookup, Google Business Profile API call, external read,
+  external write, send, or live Google API call. Verified with syntax checks,
+  Operations inline script parse, focused action/Google settings tests 32/32,
+  full `npm test` 386/386, local browser smoke
+  `ops/playwright-smokes/2026-06-15-google-business-preview-local/report.md`,
+  Railway deployment `89294419-27aa-4527-ba8d-c7edcfddf394`, Railway doctor
+  SUCCESS, live app smoke
+  `ops/live-smokes/2026-06-14T22-22-55-796Z-live-app-smoke.md`, and focused
+  live browser smoke
+  `ops/playwright-smokes/2026-06-15-google-business-preview-live/report.md`.
+- [x] Deploy and live-smoke the Rabbi/One Time 8-week launch-calendar preview
+  action. Operations Settings > Google Workspace > Google Calendar now has an
+  `8-week plan` dry-run button wired to
+  `calendar_batch_launch_plan_preview`, and Telegram routing recognizes
+  natural-language requests such as "Create the 8-week Rabbi Scheller launch
+  calendar starting 2026-06-21." The preview generates a One Time launch plan
+  only when a start date is supplied and otherwise returns a `start_date`
+  blocker. It performs no internal calendar write, Google Calendar write,
+  external write, send, or Google OAuth action. Verified with syntax checks,
+  Operations inline script parse, focused action/Google settings tests 30/30,
+  full `npm test` 384/384, local browser smoke
+  `ops/playwright-smokes/2026-06-15-calendar-launch-preview-local/report.md`,
+  Railway deployment `f8951767-ca5f-4c58-a8c5-696015f9d3b9`, Railway doctor
+  SUCCESS, live app smoke
+  `ops/live-smokes/2026-06-14T21-51-39-727Z-live-app-smoke.md`, and focused
+  live browser smoke
+  `ops/playwright-smokes/2026-06-15-calendar-launch-preview-live/report.md`.
+- [x] Deploy and live-smoke local approval decision preview controls for the
+  two remaining gated lanes: both approval packets now have a `Preview
+  Decision Draft` button that calls the typed `create_decision` action with
+  `dry_run: true`. The action response proves `executed: false` and
+  `preview.decision_created: false`, so no decision task, Google read/write,
+  publishing, send, checkout, member visibility, Drive/video-host,
+  Buffer/social, or external CRM write is created by the preview. Verified
+  with Operations inline script parse, focused tests 7/7, full `npm test`
+  383/383, local browser smoke
+  `ops/playwright-smokes/2026-06-15-approval-decision-preview-local/report.md`,
+  Railway deployment `475c598d-e9c3-4a5b-990c-e00f2ef1f070`, Railway doctor
+  SUCCESS, live app smoke
+  `ops/live-smokes/2026-06-14T21-27-02-855Z-live-app-smoke.md`, and focused
+  live browser smoke
+  `ops/playwright-smokes/2026-06-15-approval-decision-preview-live/report.md`.
+- [x] Deploy and live-smoke approval-readiness packets for the two remaining
+  approval-gated lanes: Operations Settings > Google Workspace now shows a
+  Google Live Adapter Approval Packet with the exact
+  `APPROVE_GOOGLE_LIVE_ADAPTER_TEST` phrase, and Operations Content > One
+  Time Library shows a One Time Publishing Approval Packet with
+  `APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING`. Both panels explain the
+  required checklist and explicitly perform no Google read/write, no
+  Buffer/social, email, WhatsApp, Drive/video-host, checkout, member
+  visibility, or external CRM write. Verified with Operations inline script
+  parse, focused tests 7/7, full `npm test` 383/383, `git diff --check`,
+  local browser smoke
+  `ops/playwright-smokes/2026-06-14-approval-readiness-local/report.md`,
+  Railway deployment `cdb127bb-0f27-4e9b-b9a1-7adb93d64f19`, Railway doctor
+  SUCCESS, live app smoke
+  `ops/live-smokes/2026-06-14T20-56-48-950Z-live-app-smoke.md`, and focused
+  live browser smoke
+  `ops/playwright-smokes/2026-06-14-approval-readiness-live/report.md`.
+- [x] Deploy and live-smoke support ticket processed-notification drafts:
+  resolving or closing a ticket now writes a first-party
+  `bna_contact_communications` draft with
+  `ticket_processed_notification`, `no_send`, and
+  `external_write_performed: false` metadata, adds an internal ticket comment,
+  and returns `notification_draft` to Operations so the operator sees that no
+  automatic email was sent. This does not send email, WhatsApp, SMS, Telegram,
+  portal messages, or external CRM writes. Verified with `node --check
+  server.js`, `node --check scripts/setup-one-time-partnership-drive.mjs`,
+  Operations inline script parse, focused tests 48/48, full `npm test`
+  383/383, local API smoke
+  `ops/live-smokes/2026-06-14T20-39-16-327Z-support-ticket-notification-local-smoke.md`,
+  Railway deployment `f64213ae-1cc1-4b2e-a762-a06c3e81f3b1`, Railway doctor
+  SUCCESS, live app smoke
+  `ops/live-smokes/2026-06-14T20-40-31-601Z-live-app-smoke.md`, and focused
+  live API/DB smoke
+  `ops/live-smokes/2026-06-14T20-42-38-426Z-support-ticket-notification-live-smoke.md`.
+- [x] Build and deploy the One Time content library surface from the existing
+  scoped video-library helper into a usable internal review workspace:
+  searchable One Time tab, hosted media URL support, transcript/worksheet lanes,
+  internal approval queue, member-library guardrails, and reporting. Live
+  Operations task #610 is marked done in the app for this review-surface slice;
+  deeper member-library publishing/media hosting remains blocked on explicit
+  approval and connector decisions. Verified with focused tests 7/7, full
+  `npm test` 382/382, local browser/API smoke
+  `ops/playwright-smokes/2026-06-14-one-time-content-library-local/report.md`,
+  Railway deployment `4a77ab03-a394-4663-b4b7-55957655c6b0`, Railway doctor,
+  live app smoke `ops/live-smokes/2026-06-14T19-20-41-625Z-live-app-smoke.md`,
+  and live focused smoke
+  `ops/playwright-smokes/2026-06-14-one-time-content-library-live/report.md`.
+  Handoff: `tasks-pending/2026-06-14-one-time-content-library-build.md`.
+- [x] Fix login/input screen blinking on mobile/PWA surfaces: Operations login
+  now uses a keyboard-aware viewport variable, phone-width 16px inputs,
+  horizontal-overflow protection, and no active-field auth redirect; Operations
+  background refresh skips while text entry/dictation is active; parent/provider
+  onboarding and the shared assistant stop stealing focus on narrow/touch
+  screens. Verified with focused tests 51/51, inline script parse, full
+  `npm test` 382/382, in-app browser typing smoke, forced mobile local smoke
+  `ops/playwright-smokes/2026-06-14-login-stability-local/report.md`,
+  Railway deployment `68b459e7-0e98-4395-a905-d67353dd4f20`, Railway doctor,
+  live app smoke `ops/live-smokes/2026-06-14T19-18-03-287Z-live-app-smoke.md`,
+  and live mobile smoke
+  `ops/playwright-smokes/2026-06-14-login-stability-live/report.md`.
+- [x] Check Ahuva Dratler parent access and resend the parent portal
+  onboarding/login email: live data shows Ahuva attached to the Dratler parent
+  records, with Esti Dratler as an external-accountability record and Menachem
+  Mendel Dratler as the internal BNA student/accountability record. Sent a
+  fresh parent portal magic link email through `/api/bna/parent-access/link`;
+  the app returned `email_sent: true`, no email error, no WhatsApp send, expiry
+  2026-06-14T22:53:39+03:00, and live communication readback confirmed outbound
+  communication #1212.
+- [x] Deploy and live-smoke provider setup email plus the shorter provider
+  join flow: public provider signup and `/api/provider-onboarding` now send a
+  provider portal setup email after the active free listing is committed,
+  `/provider?setup=...` lets providers set their password and enter the portal,
+  Operations provider cards can resend setup email, and `/providers/join` asks
+  only 10 conversational questions. Verified with `node --check server.js`,
+  focused provider tests 12/12, nearby parent/provider/One Time tests 39/39,
+  local browser smoke
+  `ops/playwright-smokes/2026-06-14-provider-setup-email-local/report.md`,
+  full `npm test` 376/376, Railway deployment
+  `f8e8a7bb-52f5-4427-bc50-2f6e70e8d40e`, Railway doctor, live app smoke
+  `ops/live-smokes/2026-06-14T18-57-24-784Z-live-app-smoke.md`, and live
+  provider readback
+  `ops/live-smokes/2026-06-14T18-58-10-provider-setup-email-live-readback.md`.
+- [x] Deploy and live-smoke the WAPI phonebook-first conversation workspace:
+  Operations Communications > WhatsApp now opens a phonebook-first workspace
+  over the WAPI grouping report. The UI combines a phonebook/contact list,
+  selected conversation timeline, and details/notes/related records panel;
+  timeline readback includes matched WhatsApp/WAPI communications, Telegram/CRM
+  notes, related tasks, and support tickets where linked. The Add Internal Note
+  action writes only local first-party `bna_contact_communications` notes with
+  `wapi_phonebook_workspace`, `no_send`, and
+  `external_write_performed: false` metadata. No WhatsApp message, broadcast,
+  or external CRM write is sent. Verified with syntax checks, Operations inline
+  parse, focused WAPI/communications/CRM tests 19/19, full `npm test` 376/376,
+  local browser smoke
+  `ops/playwright-smokes/2026-06-14-wapi-phonebook-workspace-local/report.md`,
+  Railway deployment `6c9f06bc-6c1b-47b9-980a-4e8baca73eae`, Railway doctor
+  SUCCESS, live app smoke
+  `ops/live-smokes/2026-06-14T18-51-33-221Z-live-app-smoke.md`, and live
+  browser smoke
+  `ops/playwright-smokes/2026-06-14-wapi-phonebook-workspace-live/report.md`.
+- [x] Deploy and live-smoke referral/moderation helper actions:
+  added `create_referral_ledger_entry`,
+  `submit_student_question_for_moderation`, and `review_moderated_question` to
+  the action registry, action runner, Telegram router, generated
+  action-registry artifacts, and focused action tests. All three are
+  approval-gated and preview-first. Approved referral execution creates only a
+  scoped One Time `bna_parent_leads` referral candidate, an internal
+  `bna_contact_communications` ledger note, and a local review task; it does
+  not send referral asks, mint referral links, create rewards, or write any
+  external CRM. Approved question execution creates/updates only private One
+  Time review tasks/comments; it does not publish a forum post, send a
+  response, expose member/student identity, or start Codex automatically.
+  Verified with syntax checks, focused action suite 26/26, full `npm test`
+  376/376, local preview smoke
+  `ops/local-smokes/2026-06-14-referral-moderation-helper-actions-local-preview.json`,
+  Railway deployment `e54244e1-41dd-40ae-a313-31cc0c49d6e2`, Railway doctor,
+  live app smoke `ops/live-smokes/2026-06-14T18-25-56-841Z-live-app-smoke.md`,
+  and live preview-only action smoke
+  `ops/live-smokes/2026-06-14T18-26-48-024Z-referral-moderation-helper-actions-live-preview.json`.
+- [x] Deploy and live-smoke Rabbi shiur/source-sheet helper actions:
+  added `create_rabbi_shiur_idea` and `create_rabbi_source_sheet_task` to the
+  action registry, action runner, Telegram router, generated action-registry
+  artifacts, and focused action tests. Both are approval-gated and
+  preview-first. Approved execution creates only scoped One Time local
+  `bna_tasks` review tasks under project `one_time_mishnah_class`; no Codex
+  job, Drive/Sefaria/member-library write, email/WhatsApp/social send, public
+  visibility, or external CRM record is created. Verified with syntax checks,
+  focused action suite 25/25, full `npm test` 375/375, local preview smoke
+  `ops/local-smokes/2026-06-14-rabbi-content-helper-actions-local-preview.json`,
+  Railway deployment `0dd6f6ec-26ca-4fa1-8520-6e8d76790246`, Railway doctor,
+  live app smoke `ops/live-smokes/2026-06-14T18-08-35-649Z-live-app-smoke.md`,
+  and live preview-only action smoke
+  `ops/live-smokes/2026-06-14T18-09-23-665Z-rabbi-content-helper-actions-live-preview.json`.
+- [x] Deploy and live-smoke the task/decision helper action bundle:
+  added `add_decision_option`, `schedule_task_on_date`, and
+  `move_task_workspace` to the action registry, action runner, Telegram router,
+  generated action-registry artifacts, and focused action tests. All three are
+  approval-gated and preview-first. Approved writes only update local
+  `bna_tasks`/`bna_task_comments` fields for decision options, due/planned
+  dates, or project/workspace scope; they do not create Codex jobs, connector
+  writes, WhatsApp/email/social sends, or external CRM records. Verified with
+  syntax checks, focused action suite 24/24, full `npm test` 374/374, local
+  preview smoke
+  `ops/local-smokes/2026-06-14-task-decision-helper-actions-local-preview.json`,
+  Railway deployment `85c15479-f581-45d3-bb53-695fb99f8ac7`, Railway doctor,
+  live app smoke `ops/live-smokes/2026-06-14T17-54-55-156Z-live-app-smoke.md`,
+  and live preview-only action smoke
+  `ops/live-smokes/2026-06-14T17-55-44-901Z-task-decision-helper-actions-live-preview.json`.
+- [x] Deploy and live-smoke the One Time video-library item helper action:
+  added `create_one_time_video_library_item` to the action registry, Telegram
+  router, action runner, content output schema, generated action-registry
+  artifacts, Operations output labels, and focused tests. The action is
+  approval-gated and preview-first; approved execution creates only scoped
+  first-party One Time `bna_content_jobs` plus internal `bna_content_outputs`
+  draft states for library card, transcript review, thumbnail brief,
+  worksheet/source-sheet plan, social copy plan, and newsletter plan. It does
+  not create member/public visibility, Buffer/social drafts, email/WhatsApp
+  sends, video-host writes, Drive writes, checkout, or external CRM records.
+  Verified with syntax checks, focused action/One Time tests 58/58, full
+  `npm test` 373/373, local preview smoke
+  `ops/local-smokes/2026-06-14-one-time-video-library-action-local-preview.json`,
+  Railway deployment `e93d2da8-4852-4d82-a260-39b1be5960b2`, Railway doctor,
+  live app smoke `ops/live-smokes/2026-06-14T17-36-34-282Z-live-app-smoke.md`,
+  and live preview-only action smoke
+  `ops/live-smokes/2026-06-14T17-40-27-one-time-video-library-live-preview.json`.
+- [x] Deploy and live-smoke the `retitle_task_naturally` helper typed action:
+  added action-registry metadata, action-runner implementation, Telegram
+  routing for "retitle task #... to ...", regenerated action-registry artifacts,
+  and focused coverage. The action is approval-gated, previews by default,
+  rejects raw ramble-looking replacement titles, preserves previous-title
+  provenance as a truncated preview, and does not create agent jobs. Verified
+  with syntax checks, focused action/task/watchdog tests 44/44, full
+  `npm test` 372/372, Railway deployment
+  `67ba8b4b-2072-4367-b12c-181cfe156424`, Railway doctor, live app smoke
+  `ops/live-smokes/2026-06-14T17-18-12-469Z-live-app-smoke.md`, and live
+  preview-only action smoke
+  `ops/live-smokes/2026-06-14T17-18-55-172Z-retitle-task-action-live-preview.md`.
+- [x] Deploy and live-smoke Rabbi Mishnayos parent/member onboarding lead
+  capture for the One Time preview funnel: `/one-time-preview` now routes the
+  primary CTA to a guided intake form and `POST /api/one-time/mishnah/onboarding`
+  creates scoped first-party review records for the One Time workspace only:
+  parent lead, provider-workspace contact, internal communication transcript,
+  support ticket, and Shloimie/Rabbi follow-up task. Dry-runs write nothing and
+  all responses stay `no_send: true` with no checkout, access grant, email,
+  WhatsApp, social post, or external CRM write. Verified with
+  `node --check server.js`, inline preview script parse, focused onboarding/provider/workspace
+  tests 23/23, full `npm test` 370/370, local endpoint smoke
+  `ops/live-smokes/2026-06-14T-one-time-onboarding-local-smoke.json`, local
+  browser smoke
+  `ops/playwright-smokes/2026-06-14-one-time-onboarding-local/report.md`,
+  Railway deployment `8e55d3c5-b958-42b2-b176-ae74df5bfdb8`, Railway doctor,
+  live app smoke `ops/live-smokes/2026-06-14T17-05-14-786Z-live-app-smoke.md`,
+  and live dry-run smoke
+  `ops/live-smokes/2026-06-14T17-06-57-397Z-one-time-onboarding-live-dry-run.md`.
 - [x] Add task-title cleanup dry-run for the Google/onboarding/CRM follow-up:
   added `scripts/task-title-cleanup-dry-run.mjs` plus
   `npm run task:title-cleanup`. The command is dry-run by default, skips
@@ -235,8 +1171,11 @@ not authorize active GHL runtime paths.
   listing questions step by step; parent intake asks child struggles, goals,
   motivators, chores, meals/eating preferences, recordings, and setup context.
   Public assistant thread memory and public knowledge grounding are now shipped;
-  remaining work is deeper parent/student/provider goal-store coaching and
-  action execution against scoped records.
+  student assistant onboarding coaching is now deployed and live-smoked as a
+  no-ticket/no-write deterministic role guide for Today, goals, daily
+  checkoff, questions, reflection, and Rabbi/Shloimie messages. Remaining work
+  is deeper parent/student/provider goal-store/profile writes and action
+  execution against scoped records after explicit action rules.
   Handoff:
   `tasks-pending/2026-06-14-workspace-person-household-provider-architecture.md`.
 - [x] Make Operations workspace navigation official and scalable: Super Admin
@@ -268,6 +1207,32 @@ not authorize active GHL runtime paths.
   `ops/live-smokes/2026-06-14T07-56-50-529Z-live-app-smoke.md`, live task API
   readback, and live mobile Playwright smoke
   `ops/playwright-smokes/2026-06-14-workspace-task-system-live/2026-06-14T07-58-30-461Z-report.md`.
+  2026-06-15 follow-up: Tasks > Calendar selected-day view now shows an
+  explicit `Selected: Monday, June 22, 2026`-style label, Hebrew date/item
+  context, Add Task, Move Selected Task, and an adjacent Google Calendar
+  dry-run control wired to `sync_google_calendar` with `dry_run: true` and
+  `no_google_calendar_write: true`. Verified with Operations inline script
+  parse, focused task/action/Google tests 45/45, full `npm test` 427/427,
+  local in-app Browser check, local Playwright smoke
+  `ops/playwright-smokes/2026-06-15-task-calendar-selected-day-local/report.md`,
+  Railway deployment `84bd450e-d5e9-409c-8126-29a147ab51cd`, Railway doctor
+  SUCCESS, live app smoke
+  `ops/live-smokes/2026-06-15T05-14-42-829Z-live-app-smoke.md`, and focused
+  live smoke
+  `ops/playwright-smokes/2026-06-15-task-calendar-selected-day-live/report.md`.
+  2026-06-15 follow-up: Decision detail cards now render clearer
+  question-style prompts, workspace/owner/due context, Option A/B/C cards with
+  pros, cons, consequences, recommendation, `Needs more info`, and an inline
+  decision comment box that writes only workspace comments with `requeue:
+  false`. Verified with Operations inline script parse, focused
+  task/action-registry tests 42/42, full `npm test` 433/433, `git diff --check`
+  with only LF/CRLF warnings, local in-app Browser readback before
+  the browser reload policy blocked further local browser use, Railway
+  deployment `03ad6a70-0f58-40c1-abb4-f2a6bfe4e3a5`, Railway doctor SUCCESS,
+  live app smoke
+  `ops/live-smokes/2026-06-15T05-28-00-126Z-live-app-smoke.md`, and focused
+  live HTTP readback
+  `ops/live-smokes/2026-06-15T05-30-30-413Z-operations-decision-card-ui-live-smoke.md`.
   Handoff:
   `tasks-pending/2026-06-14-workspace-task-dialogue-rabbi-scheller.md`.
 - [x] Finish BNA workspace/community/provider/bot no-GHL release on
@@ -288,12 +1253,15 @@ not authorize active GHL runtime paths.
 - [ ] Deploy and live-smoke the signup credit payment-link email fix: manual
   resend for signup #12 succeeded to both recorded parent emails, and local code
   now includes the configured credit `PAYMENT_LINK` in confirmation emails sent
-  to Parent 1 plus Parent 2. Local syntax and focused signup tests passed; the
-  latest full-suite rerun belongs with the current no-GHL cleanup branch.
-  Future-signup behavior is not live because this checkout has a very large
-  unrelated dirty worktree. Do not mark done until a safe deploy scope is
-  chosen, Railway doctor passes, and a live credit signup/email-log smoke proves
-  both parent emails receive the payment link. Handoff:
+  to Parent 1 plus Parent 2. Follow-up deployed Railway deployment
+  `c9c861e4-4e1e-4f2e-9fed-7db972d9b1ab` with an admin no-send preview path on
+  `/api/bna/signups/:id/send-confirmation`; live preview smoke
+  `ops/live-smokes/2026-06-15T07-26-34-821Z-signup-credit-email-preview-live-smoke.md`
+  proved an unpaid credit signup composes to both parent recipients and includes
+  the configured payment link without sending or writing rows. Do not mark done
+  until an approved live credit signup/email-log smoke sends only to approved
+  test recipients and proves both parent emails receive the payment link.
+  Handoff:
   `tasks-pending/2026-06-13-signup-credit-link-email-live-deploy.md`.
 - [x] Deploy and live-smoke the registration toolbar/parent-permission notice
   fix: the shared public-site toolbar, no-checkbox parent responsibility
@@ -372,7 +1340,15 @@ not authorize active GHL runtime paths.
   model: parent/student/provider foundations exist; spouse/rabbi/community
   access still needs audit and completion.
 - [ ] Add onboarding and reset emails for parent and student access.
-- [ ] Complete Hebrew and RTL audit for student-facing pages.
+- [x] Complete Hebrew and RTL audit for student-facing pages: localized the
+  student portal question answer prefix and Rabbi WhatsApp meeting CTA, added
+  contract coverage, added a reusable fixture-backed Playwright audit, and
+  deployed Railway `8a2d1967-7573-499d-955f-a21f90a990c0`. Verified with
+  focused assistant/student-polish tests 12/12, full `npm test` 415/415,
+  Railway doctor SUCCESS, live app smoke
+  `ops/live-smokes/2026-06-15T02-41-35-249Z-live-app-smoke.md`, and live
+  Hebrew/RTL audit
+  `ops/playwright-smokes/2026-06-15-student-hebrew-rtl-audit-live/report.md`.
 - [x] Build learning community roles and membership model: live backend now has
   BNA-scoped learning communities, memberships, default `bna-main`, and admin
   APIs.
@@ -390,14 +1366,27 @@ not authorize active GHL runtime paths.
   media: weekly-update data model/admin API and parent hero are live; 2026-06-14
   trace confirmed the deployed parent section only renders when an update row is
   `selected`/`published` and selected for parent portal. Approved copy/media
-  selection is the missing follow-up, not the hero infrastructure.
+  selection is the missing follow-up, not the hero infrastructure. 2026-06-15
+  follow-up deployed the in-page Operations approval workspace with candidate
+  loading, image/video URL readback, dry-run preview, typed approval, local/live
+  smokes, and no-send guardrails.
 - [x] Add email smoke tests and send controlled test email to
   `sdratler@gmail.com` only when authorized: guarded dry-run smoke script is
   live; no real email was sent without explicit approval.
-- [ ] Add mobile screenshot smoke tests for homepage, forms, documents, login,
-  parent, student, and bot: homepage, signup permissions, parent newsletter,
-  and bot drawer screenshots were captured; full login/student/document matrix
-  remains.
+- [x] Add mobile screenshot smoke tests for homepage, forms, documents, login,
+  parent, student, and bot: deployed registration-document stale student-code
+  clearing and added a reusable 390px live Playwright matrix covering `/`,
+  public helper open state, English/Hebrew signup, all four required
+  registration document pages, parent login/accountability onboarding, student
+  login, and provider login. Verified with focused tests 15/15, full
+  `npm test` 415/415, Railway deployment
+  `e7c5c182-70ff-49cd-b786-ca76de01efc2`, Railway doctor SUCCESS, live app
+  smoke `ops/live-smokes/2026-06-15T02-24-39-914Z-live-app-smoke.md`, and live
+  matrix report
+  `ops/playwright-smokes/2026-06-15-mobile-public-login-document-matrix-live/report.md`.
+  Guardrail: no form submission, login, assistant send, email, WhatsApp,
+  billing, Google API call, connector write, or external CRM write was
+  executed.
 - [x] Deploy, smoke live routes, update changelog, ledger, memory, and task
   statuses: latest master-brief deployment
   `6b1e8b3a-c325-4fb1-ab73-80e6f0e6918d` reached SUCCESS and live smoke
@@ -419,9 +1408,28 @@ not authorize active GHL runtime paths.
   list/detail states, provider separation, and no horizontal overflow. Report:
   `ops/qa-runs/2026-06-11-final-release-readiness.md`.
 - [ ] Build Content Library v2 normalized knowledge library: add taxonomy, segment, claim, source, claim-source, and research-task records; seed controlled Torah/ADHD/nutrition/parenting/education/operations/repurposing terms; add parser v2, backend filters, Operations review queues, and a safe backfill path without breaking existing content jobs, outputs, Prompt Studio, bundles, or publishing workflows. Handoff: `tasks-pending/2026-06-11-content-library-v2-build-brief.md`.
-- [ ] Deploy and live-smoke the provider onboarding/integrations foundation: local work adds sanitized public provider index routes/API, provider profile Google/Profile fields, natural-language provider intake records/parser, parent-provider messages, provider replies, provider join form fields, public nav links, and credential-example cleanup. Local tests/browser smoke passed; remaining gate is Railway deploy, doctor, app smoke, and live public/provider/parent smoke. Handoff: `tasks-pending/2026-06-11-provider-onboarding-integrations.md`.
+- [x] Deploy and live-smoke the provider onboarding/integrations foundation:
+  local work added sanitized public provider index routes/API, provider profile
+  Google/Profile fields, natural-language provider intake records/parser,
+  parent-provider messages, provider replies, provider join form fields, public
+  nav links, and credential-example cleanup. The current production deployment
+  `1a60aabe-b1a7-4adc-a788-de4e71abd0bd` includes the bundle. Verified with
+  `node --check server.js`, focused provider directory tests 12/12, Railway
+  doctor SUCCESS, live app smoke
+  `ops/live-smokes/2026-06-15T02-11-53-759Z-live-app-smoke.md`, and focused
+  no-write live browser/API smoke
+  `ops/playwright-smokes/2026-06-15-provider-onboarding-foundation-live/report.md`.
+  Guardrail: no provider signup, provider intake submission, parent-provider
+  message, provider reply, email, WhatsApp, billing, Google API call, connector
+  write, or external CRM write was executed.
 - [x] Deploy and live-smoke the registration/provider/student-security pass: public signup now shows four visible required docs, shared BNA UI/token guidance is in place, provider intake/AI Max application fields are expanded without checkout, student portal invalid-code handling is hardened, and the Rabbi/One Time video workflow is briefed. Railway deployment `d4f0be3c-1890-4f4a-9364-41ef6d57df58` reached SUCCESS; Railway doctor, live app smoke, and targeted production signup/provider/student security smoke passed. Handoff: `tasks-pending/2026-06-12-registration-provider-security-rabbi-video.md`.
-- [ ] Decide the final student portal auth model: keep private access code only, or add code plus PIN/password; once chosen, add persistent server-side rate-limit/audit policy as needed.
+- [x] Decide the final student portal auth model: superseded the 2026-06-15
+  private-code-only decision. Parent-managed student username/password login is
+  now the approved model, documented at
+  `ops/access/student-portal-auth-policy.md`; access-code fallback remains
+  available and audited with the earlier `bna_student_portal_auth_attempts`
+  guardrails. Active implementation/verification is tracked in
+  `tasks-pending/2026-06-16-full-ws-closeout-parent-student-login.md`.
 - [ ] Confirm AI Max pricing, payment, and delivery terms before enabling any checkout, paid automation, ad launch, or billing flow.
 - [x] Fix Torah/public content contamination from backend/task remarks: public content generation now applies shared source-separation guardrails, filters operational/admin/task/accountability lines before draft generation, persists the guardrails into saved public prompt rows on startup, refuses meta disclaimers like "technical/admin remarks were excluded," and routes corrupted Torah-section task notes to the Operations topic instead of Torah. Verified with `node --check server.js`, `node --check tests/public-content-contamination-guard.test.js`, focused content/routing tests 43/43, `npm test` 237/237, Railway deployment `d7f7fe38-207d-401b-b4ee-3ea9e49f34cb` SUCCESS, Railway doctor, live app smoke `ops/live-smokes/2026-06-11T08-12-52-256Z-live-app-smoke.md`, and live `/api/bna/content-prompts` readback confirming guardrails on all 6 public prompts.
 - [x] Add per-card Content Library research/source links and student questions: every Content Library item now exposes student questions, sourceable topics, Sefaria search/direct source links, and a source-sheet task action while task/decision captures stay out of Content. Verified with `node --check server.js`, Operations script parse, focused Content tests 7/7, `npm test` 230/230, local card smoke `tmp/qa-runs/content-card-research-links/local-content-card-research-links-smoke.json`, Railway deployment `6b375c1d-ce49-4d2b-8582-b86825baa483` SUCCESS, Railway doctor, live app smoke `ops/live-smokes/2026-06-11T07-36-26-862Z-live-app-smoke.md`, and production card smoke `tmp/qa-runs/content-card-research-links/production-content-card-research-links-smoke.json`.
@@ -479,6 +1487,7 @@ not authorize active GHL runtime paths.
 - [x] Add repeatable OpenAI sidekick smoke test for repo, app API, Drive, transcripts, and Telegram access
 - [x] Expand Telegram OpenAI sidekick live Operations context so it can answer dashboard section/button/task/accountability/content/contact/accounting/system questions from protected app data instead of only transcripts
 - [x] Build autonomous Codex agent fleet supervisor for queued machine work and verifier smokes
+- [x] Deploy observable Telegram/bot -> ticket -> task -> Codex job lifecycle with queue APIs, status replies, stale detection, Operations job visibility, and live agent-fleet readback; 2026-06-15 follow-up canonicalized `bna_agent_jobs.status` to `queued`, `running`, `completed`, `failed`, and `blocked_needs_human_decision`, strengthened `tests/observable-codex-queue.test.js`, redeployed Railway deployment `bee86ce8-747b-4287-90e3-bfa86f7077ab`, and live-read `/api/bna/codex-queue/status` with 5 sampled canonical queued jobs.
 - [x] Clean Content routing so goals, tasks, and accountability leave Content while class topics and sources stay visible
 - [x] Build automatic student accountability tablet-access MVP: bedtime/wake-up agreement fields, self-checkoff auto-approved access sessions, missed-goal lock/accountability review, Operations filters, and student portal access-rule display
 - [x] Build project-scoped task collaboration for BNA and One Time Mishnah Class
@@ -539,11 +1548,90 @@ not authorize active GHL runtime paths.
 - [x] Run the first operator-directed plain-English Remotion video edit from an available source clip and verify the rendered MP4 output; fallback source used because no fresh non-generated clip was present
 - [ ] Build BNA Organic Clip Factory: ingest Drive/local image and video folders, auto-inventory assets, generate 22-second vertical Remotion clips with 2-second image chunks, captions/transcript overlays, transitions, background music, and a final flyer/update card, plus a CapCut handoff pack/prompt for manual finishing
 - [ ] Produce first BNA `Set your son free` daily-video intro clip: use the 4K Downloader audio segment from 1:10-1:27, 4-5 slow-motion boy clips from local/Drive sources such as drums and cooking, pan/zoom transitions, top title overlay, and a roughly 15-second intro render
-- [ ] One Time: map first-party BNA Operations capability for the Rabbi Sheller platform before external writes: contacts, tags, pipelines/opportunities, calendars/classes, payments/access, workflows, community/membership support, social/content posting through Buffer, and browser-only gaps in Rabbi-owned systems
-- [ ] One Time: turn the partnership proposal into a drafting pack for Claude or another writing assistant: cleaner agreement draft, values checklist, refund/cancellation policy, family/device and Zoom/access rules, landing-page copy, launch emails, and reactivation copy
-- [ ] One Time: design the Rabbi content/media intake workflow from Drive drops into recordings, source sheets, worksheets, question digests, organic clips, ad candidates, approval, posting, and reporting
+- [x] One Time: map first-party BNA Operations capability for the Rabbi Sheller
+  platform before external writes: completed
+  `ops/one-time-mishnah/first-party-capability-map.md` covering contacts, tags,
+  pipelines/opportunities, calendars/classes, payments/access, workflows,
+  community/membership support, social/content posting through Buffer,
+  WhatsApp/WAPI, no-GHL policy, browser-only Rabbi-owned gaps, and external-write
+  acceptance gates. Verified with focused One Time/audit tests 41/41, full
+  `npm test` 420/420, and `git diff --check`; no deployment required.
+- [x] One Time: turn the partnership proposal into a drafting pack for Claude
+  or another writing assistant: completed
+  `ops/one-time-mishnah/partnership-drafting-pack.md` and
+  `tests/one-time-partnership-drafting-pack.test.js` covering a cleaner
+  agreement draft, values checklist, refund/cancellation policy options,
+  family/device/Zoom/access rules, landing-page copy, launch emails, and
+  reactivation copy. Verified with focused One Time/drafting tests 48/48, full
+  `npm test` 424/424, and `git diff --check` with only existing LF/CRLF
+  warnings; no deployment required because this is local documentation/test
+  coverage only.
+- [x] One Time: convert the Green Invoice vs Stripe and refund/cancellation
+  blocker into an approval-ready billing policy packet: expanded
+  `ops/rabbi-scheller/green-invoice-billing-options.md` with provider-of-record
+  rules, Green Invoice/Stripe/manual-bridge options, required billing
+  decisions, refund/cancellation options, exact approval phrases, and no-live
+  write guardrails. Updated `tests/rabbi-scheller-audit-docs.test.js` to lock
+  the packet. Verified `node --check tests/rabbi-scheller-audit-docs.test.js`,
+  focused doc tests 4/4, and full `npm test` 444/444. No deployment required;
+  actual checkout/access implementation remains blocked until Shloimie chooses
+  provider, prices, policy, access start, failed-payment handling, and rollback.
+- [x] Goal-mode follow-up: add the phase-by-phase completion/blocker matrix at
+  `ops/goalmode/2026-06-15-goal-completion-blocker-matrix.md`, covering
+  phases 0-16 from the original 2026-06-14 brief, status labels, evidence,
+  owner/connector blockers, and approval phrases for Google live adapters, One
+  Time member-library publishing, One Time billing/provider policy, and Buffer
+  social drafts. Added `tests/goalmode-completion-matrix.test.js`; verified
+  focused matrix tests 2/2 and full `npm test` 444/444. No deployment required.
+- [x] Goal-mode follow-up: add the owner approval unblocker pack at
+  `ops/goalmode/2026-06-15-owner-approval-unblocker-pack.md`, collecting
+  copy-paste templates and required fields for Google live adapter smoke, One
+  Time member-library publishing smoke, One Time billing/refund policy,
+  Buffer/social draft or publish, and Rabbi live app access confirmation.
+  Added `tests/goalmode-owner-approval-unblocker-pack.test.js`; focused pack
+  tests passed 2/2. No deployment required and no live writes performed.
+- [x] One Time: design the Rabbi content/media intake workflow from Drive drops
+  into recordings, source sheets, worksheets, question digests, organic clips,
+  ad candidates, approval, posting, and reporting: completed
+  `ops/one-time-mishnah/content-media-intake-workflow.md` and
+  `tests/one-time-content-media-intake-workflow.test.js`. Verified with
+  focused One Time/content tests 46/46, full `npm test` 422/422, and
+  `git diff --check` with only existing LF/CRLF warnings; no deployment
+  required because this is local documentation/test coverage only.
+- [x] One Time: deploy Rabbi-facing Class Media intake with manual hosted URLs:
+  corrected Rabbi Elie Scheller provider scoping to
+  `one_time_mishnah_class`, added provider-portal `Class Media`, added
+  provider-authenticated POST/PATCH class-media APIs with dry-run support,
+  persisted real submissions to One Time `bna_content_jobs` and internal output
+  lanes, wired class-session readback and Operations provenance/readiness
+  labels, and kept upload/publish/send/access/external writes blocked. Verified
+  with focused tests 25/25, full `npm test` 432/432, local API/browser smoke,
+  Railway deployment `2d58bd61-d3a7-477b-adee-b8eac5fd9599`, Railway doctor
+  SUCCESS, live app smoke
+  `ops/live-smokes/2026-06-15T05-32-09-348Z-live-app-smoke.md`, and live
+  dry-run endpoint smoke
+  `ops/live-smokes/2026-06-15T05-34-00-000Z-one-time-class-media-intake-live-smoke.md`.
 - [x] One Time: ship first-pass external Rabbi portal/ticketing: generated scoped One Time Operations login, deployed `one_time_admin` project scope, Team tickets and Tasks > Schedule instead of a separate Roadmap section, project-scoped task/comment/parent/student/support-ticket APIs, final proposal task scheduling/workflow metadata seeding, and scoped Telegram support-ticket capture. Railway deployment `35707ab0-1069-44e3-a34d-0a062ca7833c`, Railway doctor, live smoke `ops/live-smokes/2026-06-10T13-03-37-257Z-live-app-smoke.md`, OpenAI smoke `ops/openai-smokes/2026-06-10T13-04-44-064Z-openai-sidekick-smoke.md`, and focused One Time live visual smoke passed.
-- [ ] One Time: finish broader Users/account management UI under Shloimie super admin, beyond the first scoped Rabbi login, so future external users can be managed cleanly without treating them as parents
+- [x] Add self-serve provider portal credential setup for public provider join:
+  created safe provider usernames, provider setup tokens, setup email delivery,
+  `/provider?setup=...` password setup, provider session entry, and Operations
+  resend setup email. Deployed Railway
+  `f8e8a7bb-52f5-4427-bc50-2f6e70e8d40e`; focused tests, full `npm test`
+  376/376, Railway doctor, live app smoke, and live provider readback passed.
+- [x] One Time: finish broader Users/account management UI under Shloimie
+  super admin, beyond the first scoped Rabbi login: deployed Admin > Users /
+  External Access with external users separated from parent accounts, guarded
+  short-lived Operations access-link creation for configured login usernames,
+  and explicit no-send/no-billing/no-member-library/no-external-write
+  guardrails. New external-user creation/editing remains disabled until a
+  dedicated persistence workflow is approved. Verified with Operations inline
+  script parse, focused Operations/One Time tests 41/41, full `npm test`
+  426/426, local browser smoke
+  `ops/playwright-smokes/2026-06-15-admin-users-local/report.md`, Railway
+  deployment `8d87ea87-8034-4533-85f7-71b70e99ccb5`, Railway doctor SUCCESS,
+  live app smoke `ops/live-smokes/2026-06-15T04-38-14-284Z-live-app-smoke.md`,
+  and focused live smoke
+  `ops/playwright-smokes/2026-06-15-admin-users-live/report.md`.
 - [ ] One Time: finish live Rabbi bot runtime by collecting the confirmed Rabbi chat ID, setting `TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER`, choosing/starting the hosted bridge worker for `npm run telegram:rabbi`, and smoking `/status`, task/comment, and ticket creation; scoped One Time username/password are now installed locally and on Railway
 - [x] Live task #260: Fix parent access link and polish parent/student dashboards; direct parent links, student daily/source display polish, weekly private meeting slots, parent financial/attendance dashboard, July registration-renewal safeguards, deployment, Railway doctor, live app smoke, and targeted production portal smoke passed
 - [x] Fix Operations parent-login link handoff so the emailed parent portal link opens directly for the parent email on file without requiring the parent to type the email again; keep email copy, make clipboard failure non-blocking, and verify parent session creation. Deployed Railway `ccd3c5a4-5776-4382-b2e1-a365a459c960`; live smoke and targeted parent/student HTML checks passed.
@@ -558,15 +1646,57 @@ not authorize active GHL runtime paths.
 - [x] Add richer weekly newsletter review/edit workflow after bundle generation is reliable; live dashboard now supports review bundles, source lists, draft edit/save, regenerate, approve/example, and archive without sending email
 - [ ] Add guarded weekly newsletter recipient preview, test-send, and typed-confirmation live send after parent recipient list/approval rules are confirmed
 - [ ] Rotate/renew the Buffer `BNAv2` API key before it expires on 2026-07-09 and update Railway/local secrets without committing the key
-- [ ] After the next intentional Railway deploy, verify the latest deployment record no longer points at stale bad deployment `47f8d5d1-c425-4a79-8e31-ec4cb71f5dcc`; live app is healthy, but CLI `railway:doctor` still sees that stale `INITIALIZING` record
+- [x] After the next intentional Railway deploy, verify the latest deployment
+  record no longer points at stale bad deployment
+  `47f8d5d1-c425-4a79-8e31-ec4cb71f5dcc`: verified 2026-06-15 with
+  `npm run railway:doctor`. Railway now reports service `skillful-motivation`,
+  deployment `988985c6-f310-4f84-b169-85878aa16d3c`, status `SUCCESS`, and the
+  doctor passed for production.
 - [ ] Call Hillel's rabbi about whether to keep his learning approach inspiration/connection-first before moving him into text-based learning (live task #172)
 - [ ] Set up updated payment links: new signups immediate charge then first-of-month 12-payment schedule; existing credit-card parents first-of-month link with no immediate charge (live task #173)
 - [ ] Update `www.bneineviimacademy.org` DNS/Railway custom-domain setup so the www address gets a valid certificate or redirects cleanly (live task #194)
 - [x] Build first-pass Contacts `Interested Parents` CRM lane with BNA-owned lead status, lead category, interest level, tags, notes, next follow-up, historical legacy CRM linkage fields, and a separate Communications log; seeded Adina Block and Sari Kaplan as school-interest leads
-- [ ] Add hosted-media URL support for Buffer social posts so Telegram/Content photos and videos can attach to Buffer drafts instead of creating text-only drafts
-- [ ] Build WAPI/Whapi WhatsApp lead-candidate review importer: audit recent WhatsApp contacts into reviewable first-party candidates, match current parents first, and avoid any external CRM writes
-- [ ] Build WAPI/Whapi WhatsApp conversation history sync for Contacts cards: match by normalized phone/first-party contact, store safe conversation/message history, and render recent parent/lead WhatsApp messages inside the matching expanded card
-- [ ] Confirm whether the intended Wappy product is `wappy.chat` or `wappy.ai`, and verify number portability, WhatsApp Business API access, webhooks/API export, Zapier/Pipedrive timing, AI automation, and data ownership before choosing any future WhatsApp connector
+- [x] Add hosted-media URL support for Buffer social posts so Telegram/Content
+  photos and videos can attach to Buffer drafts instead of creating text-only
+  drafts: deployed Railway `a6c7b3a4-0e2c-456a-9a26-f93af982f2fa`.
+  Buffer `createPost` now sends direct hosted image/video URLs through the
+  current ordered `assets` array, records media attachment metadata, rejects
+  local paths and Drive/Dropbox preview links before a Buffer write, and keeps
+  binary hosting/upload out of BNA. Verified with focused Buffer/One Time/Google
+  tests, full `npm test` 484/484, Railway doctor, live app smoke
+  `ops/live-smokes/2026-06-15T07-40-12-729Z-live-app-smoke.md`, and no-write
+  hosted-media preview smoke
+  `ops/live-smokes/2026-06-15T07-41-24-838Z-buffer-hosted-media-preview-live-smoke.md`.
+  Actual Buffer draft/publish still requires approved source, channel/account,
+  schedule, rollback/no-post policy, stable hosted media, and
+  `APPROVE_BUFFER_SOCIAL_DRAFT`.
+- [x] Build WAPI/Whapi WhatsApp lead-candidate review importer: audit recent
+  WhatsApp contacts into reviewable first-party candidates, match current
+  parents first, and avoid any external CRM writes. Deployed Railway
+  `988985c6-f310-4f84-b169-85878aa16d3c`: WAPI phonebook correction preview
+  now plans a local `bna_parent_leads` `create_lead_candidate` write only for
+  unmatched school/content/group-interest WhatsApp contacts; existing
+  lead/signup/student matches are skipped to avoid duplicates. Confirmed apply
+  remains gated by `APPLY_WAPI_CORRECTION`, writes only first-party BNA rows,
+  and never sends WhatsApp or writes an external CRM. Verified with focused
+  WAPI/Whapi tests 13/13, full `npm test` 488/488, Railway doctor, live app
+  smoke `ops/live-smokes/2026-06-15T07-48-33-953Z-live-app-smoke.md`, and
+  no-write WAPI lead-candidate preview smoke
+  `ops/live-smokes/2026-06-15T07-49-22-656Z-wapi-lead-candidate-preview-live-smoke.md`.
+- [x] Build WAPI/Whapi WhatsApp conversation history sync for Contacts cards: expanded parent and interested-parent cards now render safe local contact communication history matched by record ID, normalized phone variants, email, and WAPI source context, using the existing first-party communications/Whapi import path. Deployed Railway `7a866693-367d-4c1d-81d2-f6e8c60f4288`; full `npm test` 417/417, live app smoke `ops/live-smokes/2026-06-15T03-54-38-056Z-live-app-smoke.md`, and focused live smoke `ops/playwright-smokes/2026-06-15-contact-wapi-history-live/report.md` passed with zero write/send requests.
+- [x] Confirm whether the intended Wappy product is `wappy.chat` or `wappy.ai`,
+  and verify number portability, WhatsApp Business API access, webhooks/API
+  export, Zapier/Pipedrive timing, AI automation, and data ownership before
+  choosing any future WhatsApp connector: completed local no-write decision
+  packet at `ops/communications/wappy-connector-decision-packet.md`.
+  Current decision is not to select Wappy yet. `wappy.chat` publicly reads as a
+  website WhatsApp widget with an AI Chat add-on; `wappy.ai` publicly reads as
+  an AI-agent WhatsApp workflow product, but neither has enough public API,
+  export, number-model, compliance, ownership, or rollback evidence to become a
+  BNA runtime connector. Active BNA WhatsApp work remains Whapi/WAPI
+  import/readback/correction preview only. No Wappy env vars, API client,
+  webhook route, dashboard control, Telegram command, send, broadcast, external
+  CRM write, or connector switch was added.
 - [x] Redesign Operations section top controls into compact subcategory count buttons plus open date/status/category/tag filters, removing duplicate large count cards across Tasks, Students, Content, Contacts, and Accounting
 - [x] Implement Drive Raw Intake website-image watcher from `tasks-pending/2026-06-03-website-moments-and-parser-routing.md`
 - [x] Archive stale family-accountability docs and dormant Next/Supabase code paths; retained legacy files now live under `docs/archive/` and are marked historical reference only
@@ -595,6 +1725,24 @@ not authorize active GHL runtime paths.
 
 ## Recent Wins
 
+- [x] Deployed One Time member-library publishing slice: Operations Content >
+  One Time Library now has a Class Package Manager for `bna_class_sessions`,
+  Vimeo/manual hosted URLs, linked worksheets/source sheets, explicit
+  visibility/tier publishing, rollback, and smoke. Public `/member-library`
+  reads only active-code, tier-visible, published safe fields. Railway
+  deployment `16920b4a-751a-4ee3-8534-9193a2739a7c`, full `npm test` 470/470,
+  live app smoke
+  `ops/live-smokes/2026-06-15T07-09-28-789Z-live-app-smoke.md`, and focused
+  member-library smoke
+  `ops/live-smokes/2026-06-15T07-10-48-018Z-one-time-member-library-live-smoke.md`
+  passed. No real Vimeo upload/API, Drive/video-host write, email, WhatsApp,
+  Buffer/social, checkout/billing, external CRM, public forum, or student
+  goal-checkoff merge was added.
+- [x] Deployed One Time thumbnail preview UI: Operations Content > One Time Library cards now show a `Thumbnail Preview` panel from `thumbnail_brief` metadata, parsed metadata, or job thumbnail/image URL fields, with an `Open Thumbnail` link and a missing-thumbnail state. Railway deployment `85107895-5677-4580-b3f6-7d91c1e70025`, doctor, full `npm test` 409/409 before deploy, live app smoke `ops/live-smokes/2026-06-15T01-24-36-196Z-live-app-smoke.md`, and renderer-based live Playwright smoke `ops/playwright-smokes/2026-06-15-one-time-thumbnail-preview-live/report.md` passed. This is display-only and performs no thumbnail generation/upload, member-library publish, send, access grant, Drive/video-host write, Buffer action, or external CRM write.
+- [x] Deployed the private Operations in-app notification center: `bna_in_app_notifications` and no-send notification preferences now back Dashboard > Alerts, with read/unread/archive controls and hooks for onboarding, support tickets, ticket processed drafts, Rabbi content review, and One Time question moderation. Railway deployment `a3c49708-8c22-462a-bb88-60b43abd94c2`, doctor, full `npm test` 399/399, live app smoke `ops/live-smokes/2026-06-15T00-27-55-812Z-live-app-smoke.md`, and focused live notification smoke `ops/live-smokes/2026-06-15T00-30-00-000Z-notification-center-live-smoke.md` passed. External sends/writes remain locked behind future explicit approval.
+- [x] Deployed One Time app/admin/member-library access readiness: Operations Settings > Drive / Social Intake now shows `One Time App Readiness`, and `GET /api/bna/one-time/app-access-readiness` returns read-only blockers with no-write flags. Railway deployment `55102a5c-f6a6-4866-aacf-d0086ba6b909`, doctor, full `npm test` 388/388, live app smoke `ops/live-smokes/2026-06-14T23-05-50-938Z-live-app-smoke.md`, and live Playwright smoke `ops/playwright-smokes/2026-06-15-one-time-app-access-readiness-live/report.md` passed. Actual One Time admin/app/member-library writes remain blocked until owner-approved access, destination, media, billing/access, rollback, and `APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING` are explicit.
+- [x] Deployed Google Classroom topic/material preview: Operations Settings > Google Workspace > Google Classroom now has a `Topic/material` dry-run button wired to `classroom_topic_material_preview`, and Telegram routes Classroom material/topic requests. Railway deployment `72a371b8-50b7-48c8-8cf7-f3efa7b1f8a4`, doctor, full `npm test` 385/385, live app smoke `ops/live-smokes/2026-06-14T22-09-44-742Z-live-app-smoke.md`, and live Playwright smoke `ops/playwright-smokes/2026-06-15-classroom-topic-material-preview-live/report.md` passed. The action performs no Classroom read/write, internal write, send, external write, or live Google API call.
+- [x] Deployed open service-provider join: `/providers/join` and provider signup APIs now create active free listings and provider workspaces immediately, with an approved default service row for directory visibility. BNA can pause/reject/archive later; no checkout, billing, payout, email, WhatsApp, or social automation is enabled by provider join. Railway deployment `9333f378-1565-475f-a938-3cefd96a3e0b`, doctor, live app smoke, and live provider-join HTML check passed.
 - [x] Create the full UX click-map audit package without redesigning the app: captured and organized 2,237 live screenshots across desktop, laptop, tablet, mobile, and small-mobile; generated `manifest.json`, `screenshots.csv`, `actions.csv`, `routes.csv`, `flows.csv`, `issues.csv`, navigation map, role/workspace matrix, context-clarity failures, button/action audit, mobile audit, top findings, implementation backlog, and screenshot index at `ops/ux-audit-runs/2026-06-11-click-map/`; mirrored the folder to Google Drive `BNA UX Audit / 2026-06-11 Click Map` with 2,273 uploaded files and 0 upload failures.
 - [x] Deployed parent-driven accountability and Hebrew parent portal defaults: parent chat/meeting uploads can create parent-visible, student-hidden pending-review Goal Board items with sections/subsections/checklists/agreements/consequences/incentives; parent portal has Hebrew/English toggle, Hebrew/RTL default from Hebrew tags, goal section/status filters, parent parser instructions, and multi-file/folder meeting upload. Live Menachem goal #81, Esti external record #53986, and Amitai Kosofsky Hebrew tags were verified. Railway deployment `b086984f-904f-458f-8a2e-759a1dd4db3a`, Railway doctor, and live app smoke passed.
 - [x] Restored the installed phone/PWA app so it opens Operations while normal browser visits to `/` still show the public website; deployed Railway `9033bcc2-b822-472b-bcae-087becc6140e`, Railway doctor, live app smoke, live manifest/redirect checks, and live mobile Playwright Operations smoke passed.
@@ -703,3 +1851,105 @@ not authorize active GHL runtime paths.
 - `tasks-pending/2026-05-27-content-repurposing-pipeline.md`
 - `tasks-pending/2026-05-27-bna-telegram-accountability-audit.md`
 - `memory/2026-05-26.md`
+
+## 2026-06-15 — One Time Two-Login + White-Label + Scoped Parsing
+
+**Status:** In Progress (local complete, deploy pending)
+**Source:** `kimi-one-time-rabbi-whatsapp-workspace-handoff.md`
+**Worker:** Kimi (implementation); Codex (deploy owner)
+
+### Completed
+- [x] Create `bna_workspace_integrations` table for WhatsApp ownership tracking
+- [x] Create `bna_project_branding` table for white-label theming
+- [x] Create `bna_contact_identity_audit` table for name resolution audit trail
+- [x] Create `bna_workspace_notes` + `bna_workspace_note_items` tables for scoped meeting notes
+- [x] Add `ONE_TIME_OWNER_USERNAME`/`ONE_TIME_OWNER_PASSWORD` env vars (Rabbi)
+- [x] Add `ONE_TIME_MANAGER_USERNAME`/`ONE_TIME_MANAGER_PASSWORD` env vars (Shloimie)
+- [x] Backward compatibility: old `ONE_TIME_OPS_USERNAME` → manager role
+- [x] `identifyOpsUser()` returns `project_owner` / `project_manager` with correct `allowedViews`
+- [x] `isScopedOpsPathAllowed()` blocks manager from admin-only paths
+- [x] `actualContactNameFromSources()` with correct precedence and placeholder rejection
+- [x] `inferProjectKeyFromTranscript()` and `inferParticipantsFromTranscript()` helpers
+- [x] Update parser system prompt with workspace scoping rules
+- [x] Add `GET /api/bna/workspace-settings/:key/branding` endpoint
+- [x] Update `operations.html` sidebar, topbar, mobile header for white-label branding
+- [x] Update `currentWorkspaceRoleLabel()` for owner/manager display
+- [x] Update `.env.example` with new vars and documentation
+- [x] `node --check server.js` PASS
+
+### Pending / Needs Shloimie
+- [ ] Set Railway env vars for owner and manager credentials
+- [ ] Rabbi confirms WhatsApp phone number for `bna_workspace_integrations`
+- [ ] Decide exact One Time brand colors and logo URL (currently placeholder `#1E3A5F` / `#F5A623`)
+- [ ] Codex deploy when clean worktree window available
+- [ ] Live smoke test of scoped login (owner sees settings, manager does not)
+- [ ] Live smoke test of branding API readback
+- [ ] Seed `bna_workspace_integrations` with Rabbi's WhatsApp as owner
+- [ ] Seed `bna_project_branding` with final brand assets
+
+### Decisions Needed
+- Exact hex colors for One Time brand
+- Logo image URL or upload path
+- Rabbi's confirmed WhatsApp phone number
+- Whether manager (Shloimie) should ever have `settings` access on One Time workspace
+
+## 2026-06-16 - OPS-02 Operations Workflow Correctness
+
+**Status:** Local implementation verified; live deploy/data cleanup follow-up
+remains gated
+**Source:** ramble-router uploaded Operations workflow prompt
+
+### Active
+- [x] Reconcile the active Operations source of truth against the newer repo UI
+  and record whether Service Providers/sidebar/Calendar are rendered from
+  `public/operations.html` and `server.js`.
+- [x] Verify generic signups/leads stay under BNA enrollment,
+  Contacts/Communications, or Funnel/Pipelines, while provider-specific leads
+  are clearly scoped as provider acquisition/participants.
+- [x] Tighten decision comment feedback so Add Decision Comment visibly reports
+  saved/reprocess/Codex-routing state.
+- [x] Verify pending/access actions, duplicate archive behavior, Done/history
+  proof links, and `npm run ops:audit-queue` output.
+- [x] Keep SDDraftler and Menachem identity dedupe review-only unless database
+  evidence or operator approval proves the merge/category.
+- [ ] Deploy the verified Operations bundle, run the Railway doctor/live smoke,
+  and perform any approved safe queue/data cleanup. Local proof:
+  `tasks-pending/2026-06-16-ops-workflows-lanes-calendar-routing.md`,
+  `ops/playwright-smokes/2026-06-16-ops-02-local/report.md`, and
+  `ops/queue-audits/2026-06-16T12-42-41-531Z-queue-audit.md`.
+
+### Guardrails
+- [x] Do not change pricing, payment ownership, legal/accounting ownership,
+  login model, public copy, external sends, account grants, Google writes,
+  Buffer publishes, billing actions, or ambiguous identity merges in OPS-02.
+
+## 2026-06-16 - RABBI-04 OneTime Mishnayos Product System
+
+**Status:** Local implementation verified; live deploy/product decisions remain
+gated
+**Source:** ramble-router uploaded Rabbi Scheller / OneTime product spec
+
+### Active
+- [x] Add a first-party OneTime product system for draft tiers, regional
+  funnels, interest leads, 7pm Israel schedules, calendar views, and
+  source-prep jobs.
+- [x] Add draft/noindex `/one-time` public funnel pages with pricing clearly
+  marked decision-pending and no checkout or account-grant path.
+- [x] Surface OneTime product decisions, candidate pricing, leads, calendar,
+  and source-prep status in the scoped Operations workspace.
+- [x] Verify backend routes, public pages, Operations UI, and screenshots at
+  desktop and mobile widths. Local proof:
+  `tasks-pending/2026-06-16-rabbi-04-onetime-product-system.md`,
+  `screenshots/rabbi-04/report.md`, focused OneTime/Rabbi/assistant/UI tests
+  25/25, and full `npm test` 646/646.
+- [ ] Deploy the verified OneTime product-system bundle from a clean/approved
+  release path, run Railway doctor plus live public/Operations smokes, and only
+  then mark the app-visible work fully deployed.
+
+### Decisions Needed
+- [ ] Approve final OneTime tier names, prices, refund/legal copy, and billing
+  provider readiness before any checkout button or live payment path is shown.
+- [ ] Provide or ingest the June 15 Rabbi Scheller / OneTime meeting transcript
+  or source artifact before treating meeting-specific claims as grounded.
+- [ ] Approve any live sends, Zoom writes, Google/Drive writes, Buffer posts,
+  member account grants, or external integrations separately.

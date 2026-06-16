@@ -9,8 +9,8 @@ Date: 2026-06-14
 - BNA is not using GHL, GoHighLevel, LeadConnector, or LeadConnectorHQ as an
   active CRM runtime.
 - Communications data belongs in first-party BNA Operations tables and APIs.
-- Existing task backlog already includes WAPI/Whapi lead-candidate review and
-  conversation history sync work.
+- The WAPI/Whapi lead-candidate review importer and conversation history
+  readback are now deployed as first-party BNA CRM flows.
 
 ## What Exists
 
@@ -20,6 +20,9 @@ Date: 2026-06-14
   - API: `/api/bna/wapi/phonebook-report`
   - Operations: Communications > WhatsApp > Phonebook grouping
 - `contactCommunications` feed stores contact notes and message-like records.
+- Operations Contacts parent and interested-parent cards now read from local
+  `contactCommunications` history, matching by direct IDs, normalized phone
+  variants, email, and WAPI source context.
 - Communications UI has sections for parents, students, providers, internal,
   WhatsApp, email, bots, announcements, templates, support threads, and
   settings.
@@ -29,15 +32,13 @@ Date: 2026-06-14
 
 ## Main Gaps
 
-1. Contact grouping has a first dry-run phonebook report, but not a full
-   three-pane phonebook-first workspace yet.
-2. WhatsApp messages/calls need a full phonebook-first conversation view.
-3. Contact role/tag inference now has report confidence/review flags and a
-   local manual correction apply/readback path, but not the full three-pane
-   conversation workspace yet.
-4. Telegram notes like "that WhatsApp with X was about Y" now have a deployed
-   local matcher, but the full phonebook-first conversation workspace still
-   needs to show those notes beside messages.
+1. Contact grouping has a dry-run phonebook report and deployed three-pane
+   phonebook-first workspace.
+2. WhatsApp/WAPI messages now have a phonebook-first conversation view.
+3. Contact role/tag inference has report confidence/review flags, local manual
+   correction apply/readback, and the full workspace details panel.
+4. Telegram notes like "that WhatsApp with X was about Y" have a deployed local
+   matcher and can appear in the workspace timeline beside matched messages.
 5. Parent announcements now have a durable "last approved parent announcement"
    record and Operations UI readback through the weekly updates table.
 
@@ -101,17 +102,36 @@ When the operator leaves a Telegram note:
 
 1. DONE: Add WAPI contact grouping report script: dry-run first.
 2. DONE: Add normalized phone/contact matching and confidence values.
-3. PARTIAL: Render phonebook-first Communications readback while preserving
+3. DONE: Render phonebook-first Communications readback while preserving
    existing data.
 4. DONE: Add manual local correction and "friend/non-lead" apply path.
 5. DONE: Add Telegram note-to-CRM parser/matcher.
 6. DONE: Add durable parent announcement approval/readback.
-7. Add tests for grouping, Nati cleanup, timeline readback, and note matching.
+7. DONE: Add tests for grouping, Nati cleanup, timeline readback, and note
+   matching.
+8. DONE: Render matched local WAPI/communication history inside expanded
+   Contacts parent and lead cards without adding a send/sync/write path.
+9. DONE: Add first-party WAPI lead-candidate review importer for unmatched
+   school/content/group-interest WhatsApp contacts.
 
 ## No-Send Guard
 
 The CRM repair work must not send WhatsApp messages or create broadcasts.
 Message sending remains explicit-confirmation only.
+
+## Wappy Connector Decision
+
+The current Wappy/WAPI connector decision packet lives at
+`ops/communications/wappy-connector-decision-packet.md`.
+
+Current decision: do not select Wappy yet. `wappy.chat` appears to be primarily
+a website WhatsApp widget with an AI Chat add-on, while `wappy.ai` appears to be
+an AI-agent WhatsApp workflow product without enough public API, export,
+number-model, pricing, or compliance detail to become a BNA runtime connector.
+The active path remains Whapi/WAPI import/readback/correction preview only.
+
+Do not add `WAPPY_*` env vars, API clients, webhook routes, dashboard controls,
+Telegram commands, or live sends until the packet's acceptance gate is met.
 
 ## 2026-06-14 Deployed Slice
 
@@ -198,3 +218,74 @@ Message sending remains explicit-confirmation only.
   `ops/live-smokes/2026-06-14T16-28-27-990Z-parent-announcement-live-smoke.md`.
 - Live UI smoke:
   `ops/playwright-smokes/2026-06-14-parent-announcements-live/report.md`.
+
+## 2026-06-14 WAPI Phonebook Workspace Deployed Slice
+
+- Added a phonebook-first workspace to Operations Communications > WhatsApp.
+- The workspace renders three panes:
+  - phonebook/contact list from the WAPI grouping report
+  - selected conversation timeline
+  - details, linked records, local note action, related tasks, and support
+    tickets
+- Timeline readback combines matched WhatsApp/WAPI communication rows,
+  Telegram/internal CRM notes, related tasks, and support tickets when the
+  selected group links by phone/chat/source-row or first-party record ids.
+- The Add Internal Note action creates only a local
+  `bna_contact_communications` internal note with
+  `wapi_phonebook_workspace`, `no_send`, and
+  `external_write_performed: false` metadata.
+- The workspace does not send WhatsApp messages, create broadcasts, or write
+  external CRM records. Correction buttons continue to use the existing
+  preview/confirm route.
+- Deployed in Railway deployment
+  `6c9f06bc-6c1b-47b9-980a-4e8baca73eae`.
+- Verification passed: focused WAPI/communications/CRM tests 19/19, full
+  `npm test` 376/376, local browser smoke
+  `ops/playwright-smokes/2026-06-14-wapi-phonebook-workspace-local/report.md`,
+  live app smoke
+  `ops/live-smokes/2026-06-14T18-51-33-221Z-live-app-smoke.md`, and live
+  browser smoke
+  `ops/playwright-smokes/2026-06-14-wapi-phonebook-workspace-live/report.md`.
+
+## 2026-06-15 Contacts WAPI History Deployed Slice
+
+- Expanded Operations Contacts parent cards and Interested Parent cards now
+  render matched local `contactCommunications` rows in their Communication
+  tabs.
+- Matching uses direct signup/lead/student IDs, normalized phone variants such
+  as `050...` and `97250...`, email tokens, and WAPI `source_context`.
+- The card-level history is read-only. It does not sync Whapi, send WhatsApp,
+  create broadcasts, update local contact/lead tags, send email, or write
+  external CRM records.
+- Deployed in Railway deployment
+  `7a866693-367d-4c1d-81d2-f6e8c60f4288`.
+- Verification passed: focused WAPI/CRM tests 12/12, full `npm test` 417/417,
+  local browser smoke
+  `ops/playwright-smokes/2026-06-15-contact-wapi-history-local/report.md`,
+  live app smoke
+  `ops/live-smokes/2026-06-15T03-54-38-056Z-live-app-smoke.md`, and live
+  browser smoke
+  `ops/playwright-smokes/2026-06-15-contact-wapi-history-live/report.md`.
+
+## 2026-06-15 WAPI Lead-Candidate Importer Deployed Slice
+
+- WAPI phonebook correction preview now plans a local
+  `bna_parent_leads` `create_lead_candidate` write for unmatched WhatsApp
+  school/content/group-interest contacts.
+- Existing linked `lead`, `signup`, or `student` records are treated as
+  current-family matches and skip duplicate candidate creation.
+- Confirmed apply remains gated by `APPLY_WAPI_CORRECTION` and writes only
+  first-party BNA contact/lead rows.
+- The route continues to return `no_send: true` and
+  `external_write_performed: false`; no WhatsApp send, broadcast, or external
+  CRM write is introduced.
+- Deployed in Railway deployment
+  `988985c6-f310-4f84-b169-85878aa16d3c`.
+- Verification passed: focused WAPI/Whapi/Telegram note tests 13/13, full
+  `npm test` 488/488, Railway doctor SUCCESS, live app smoke
+  `ops/live-smokes/2026-06-15T07-48-33-953Z-live-app-smoke.md`, and no-write
+  WAPI lead-candidate preview smoke
+  `ops/live-smokes/2026-06-15T07-49-22-656Z-wapi-lead-candidate-preview-live-smoke.md`.
+- Guardrail: the targeted live smoke used `dry_run:true`; it performed no
+  local row write, WhatsApp send, broadcast, external CRM write, Buffer/social,
+  Google, billing, member-library, or Rabbi live-site write.

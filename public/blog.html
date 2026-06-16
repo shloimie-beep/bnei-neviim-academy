@@ -29,9 +29,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&family=Noto+Serif+Hebrew:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/css/bna-pages.css">
+  <link rel="stylesheet" href="/css/bna-site-nav.css">
 </head>
 <body>
-  <div id="navMount"></div>
+  <div id="navMount" data-bna-site-nav data-nav-active="blog"></div>
 
   <header class="page-hero">
     <div class="page-hero__content">
@@ -47,9 +48,10 @@
     <section class="blog-grid" id="blogGrid" aria-live="polite"></section>
   </main>
 
-  <div id="footerMount"></div>
+  <div id="footerMount" data-bna-site-footer></div>
 
   <script src="/js/bna-content.js"></script>
+  <script src="/js/bna-site-nav.js"></script>
   <script src="/js/bna-pages.js"></script>
   <script>
     const lang = BNAPages.language();
@@ -160,5 +162,7 @@
       });
     }
   </script>
+  <script src="/js/bna-helper-knowledge.js"></script>
+  <script src="/js/bna-bot-widget.js"></script>
 </body>
 </html>

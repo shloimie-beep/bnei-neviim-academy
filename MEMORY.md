@@ -41,6 +41,41 @@
   YouTube. Buffer API credentials live in Railway and local `.secrets`; never
   commit or display the API key. The current key appears to be named `BNAv2`,
   created 2026-06-09, and expires 2026-07-09.
+- Current social posture: Buffer is draft-only first. Approved BNA and Rabbi/
+  One Time content outputs may create Buffer drafts with exact source, channel,
+  copy, hosted media URL when applicable, and rollback/no-post policy recorded;
+  no auto-publish or mass scheduling by default.
+- Current classroom posture: BNA is building its own first-party
+  Google-Classroom-style Classroom experience. Google Classroom remains
+  optional/secondary and approval-gated; classroom work must not require Google
+  OAuth.
+- Current email posture: keep low-volume/manual Gmail-style email paths for
+  now. Resend readiness can remain visible, but do not build warm email
+  campaigns or mass email automation unless explicitly requested later.
+- Provider-owned integrations are the default for BNA, Rabbi Scheller / One
+  Time, and future service-provider workspaces. Resend, Buffer, WAPI/WhatsApp,
+  Vimeo, Zoom, Stripe, GoDaddy/DNS, Google Drive, and similar accounts should
+  be stored as workspace/provider-scoped integration records and secret
+  references. Do not silently reuse Shloimie's/BNA credentials for Rabbi or a
+  service provider unless a managed-service exception is explicitly approved.
+- Vimeo remains the default researched video-host candidate until account plan,
+  primary-owner access, API app/token, upload access, private/domain embed
+  behavior, and filtered-device playback prove it cannot support the workflow.
+  Build manual Vimeo upload + paste-URL fallback before API upload is trusted.
+- Stripe: a live Stripe secret key is stored only in the local BNA keyholder as
+  `stripe-secret-key.txt` as of 2026-06-16. It is visible to the local
+  keyholder-aware Stripe loader by fingerprint/status only. It has not been
+  copied into `.secrets` or Railway, and live billing/checkout remains blocked
+  until the exact target, account owner, product/price setup, webhook, rollback,
+  and approval phrase are explicit.
+- Rabbi Elie Scheller / One Time should use the same first-party classroom and
+  content parsing/review pipeline as BNA, scoped to the One Time workspace.
+- One Time Mishnayos community/course progress belongs in first-party WS11/BNA
+  Operations tables and portal APIs, not an external forum. Student access-code
+  fallback must keep working during rollout; parent-visible progress must be
+  scoped through explicit parent-student access and approved parent-visible
+  rows only; shoutouts, references, question responses, and public-facing
+  recognition stay hidden until approved.
 - **No-GHL policy**: BNA does not use GHL, GoHighLevel, LeadConnector, or
   LeadConnectorHQ as active runtime. Do not add new GHL code, MCP tools, env
   vars, smoke checks, dashboard promises, docs, routes, prompts, or Telegram
@@ -51,6 +86,9 @@
   logs use WAPI/Whapi credentials; Operations also has an explicit admin-only
   Whapi log sync that imports recent sent/received message history into
   `bna_contact_communications` with sync-run audit records.
+- Zoom Server-to-Server OAuth and GoDaddy Delegate/DNS access are Thursday
+  owner-access blockers for One Time. Do not substitute a Zoom Webhook Only app
+  or guess DNS record values from screenshots.
 - **Railway**: Hosting plus current production Postgres/database source of truth
 - **Supabase**: Not currently used for BNA operations data unless explicitly reintroduced
 - **BNA Keyholder**: Local key updates should go through
@@ -58,8 +96,24 @@
   to open/create it and `npm run keyholder:diagnose` to report only metadata
   and SHA-256 fingerprints. Do not print or commit secret values; copying a key
   into `.secrets` or Railway requires an explicit operator request.
+- Operator laptop bootstrap/setup packages belong behind Operations Super Admin
+  access in Team/Admin > Operator Setup. Safe packages may include blank env
+  templates, setup commands, and fingerprints only. Secret-bearing packages
+  must be encrypted, short-lived, one-time download links, protected by an
+  explicit approval phrase plus a strong passphrase, and must never expose raw
+  values in chat, task titles, screenshots, logs, or tracked files.
 - Shared repo files should be the canonical brain for both terminal and future
   Telegram bridge use
+- The Downloads Markdown prompt pile is tracked through the 2026-06-15 prompt
+  implementation audit. Current BNA/Rabbi/WS/Kimi prompt files are valid
+  implementation source material; old WebCraft, GHL, LeadConnector, and
+  unrelated-client prompt files are legacy/out of scope unless a current BNA
+  prompt safely imports a requirement without active GHL runtime.
+- The actual WS01-WS11 prompt pack Shloimie meant for the Downloads audit is
+  `C:\Users\User\.codex\attachments\7e3bb822-96a8-43ff-b206-aa750f56a73a\pasted-text.txt`.
+  Keep `ops/download-prompt-audit/2026-06-16-actual-ws-prompt-list-map.md` as
+  the reference map when future messages say "the real list" or "the prompts I
+  gave GPT."
 
 ## Workflow Preferences
 
@@ -75,12 +129,50 @@
 - Operations uses a professional SaaS shell: global sidebar, workspace switcher,
   nested left subnav, top bar/breadcrumbs, and a main content region. Primary
   horizontal section tabs should not be reintroduced as the main IA.
+- Public BNA website pages should use the shared `bna-site-nav` shell for
+  header, hamburger, active nav, and footer. The current top public taxonomy is
+  `School`, `Parents / Families / Parent App`, and `Service Providers`; `/school`,
+  `/parents`, `/families`, `/parent-app`, and `/service-providers` should stay
+  aligned with that taxonomy unless Shloimie changes the site model.
+- Operations should not mount the public `bna-bot-widget.js` launcher. The
+  private Operations helper entry belongs in the topbar/mobile header and opens
+  the scoped Operations helper drawer. Super Admin platform navigation includes
+  Calendar as a real module.
+- Login, portal, onboarding, and assistant surfaces must be mobile-keyboard
+  stable. Avoid fixed-height login shells, avoid automatic focus/scroll on
+  narrow or coarse-pointer touch screens, keep input font sizes at least 16px
+  on phone breakpoints, and skip background dashboard refresh while text entry
+  or dictation/composition is active.
+- BNA Helper answers must stay inside the source boundary for the current
+  actor: public BNA content for public users, parent/student/provider-scoped
+  portal context only after valid auth, and Operations context only for
+  permitted admins. The helper must not invent school policies, medical/allergy
+  rules, tuition/refund details, discipline rules, transportation, food, or
+  other operational facts from generic school knowledge; if not verified in the
+  loaded BNA context, it should say so and offer to ask Shloimie.
+- Public homepage Torah progress must stay aggregate-only. The public page and
+  `/api/torah-learning/public-summary` may show class progress, anonymous
+  low-to-high range, status, and aggregate counts, but must not expose full
+  student names, parent names/emails, private daily progress, goal minutes,
+  notes, access codes, or per-student records. Individual Torah progress stays
+  in authenticated parent/student/admin contexts only.
+- After public route, portal, student-code, or privacy-sensitive changes, run
+  `npm run app:smoke:public-privacy` against the live app or intended smoke
+  base in addition to focused tests. That smoke is the repeatable Phase 1
+  unauthenticated route audit for public, parent, student, signup, provider,
+  Operations, and parent/student portal API boundaries.
 - BNA Operations is the canonical internal-first operating system for CRM,
   tasks, workflows, provider platform, communications, calendar, settings, and
   bot action/audit context. External systems such as Google Calendar/Classroom,
   WhatsApp APIs, email providers, social schedulers, Vimeo, Green Invoice, and
   provider-owned class apps are connectors only unless explicitly promoted by a
   later decision.
+- Support-ticket processed notifications are first-party/no-send by default:
+  when a ticket is resolved or closed, the app should log a local
+  `bna_contact_communications` internal-note draft and an internal ticket
+  comment with `no_send` and `external_write_performed: false`; it must not send
+  email, WhatsApp, SMS, Telegram, portal messages, or external CRM writes unless
+  a later explicit approval adds a sender.
 - BNA is one school workspace. Rabbi/service-provider work belongs in separate
   provider/project workspaces and should not mix with BNA school parents or
   students.
@@ -115,26 +207,53 @@
   external delivery system until inspected. BNA Operations owns CRM, lead
   pipeline, automations, content workflow, reporting, launch tasks, access
   checklist, and integration audit around that external delivery system.
-- Public provider onboarding is at `/providers/join` and creates a reviewed
-  free-listing application. Rabbi Sheller is the first external provider/
-  partner workspace and remains separate from BNA Academy parents/students
-  unless explicit enrollment links them.
+- Public provider onboarding is at `/providers/join` and uses open admission:
+  if a provider knows about it, they can join now. The signup creates an active
+  free listing and provider workspace immediately; BNA can pause, reject, hide,
+  or archive the provider later if needed. Rabbi Sheller is the first external
+  provider/partner workspace and remains separate from BNA Academy
+  parents/students unless explicit enrollment links them.
 - Public website provider join links should open a conversational onboarding
   flow first, not a form wall. The flow should thank the provider, explain the
-  BNA review process, explain BNA's student/homeschooler/alternative-education
+  open-join policy, explain BNA's student/homeschooler/alternative-education
   audience and provider-index/funnel direction, then ask the required listing
-  questions one at a time before creating the reviewed application.
-- Provider intake should collect enough review context before BNA publishes a
-  listing: provider/contact details, category, city/service area, languages,
+  questions one at a time before creating the active listing.
+- Provider intake should collect enough listing context before publishing:
+  provider/contact details, category, city/service area, languages,
   ages served, short description, services offered, website/phone/WhatsApp/
   email/custom CTA preference, image/logo URL, optional pricing summary,
-  optional discount/group option, community/rabbi affiliation, notes, and
-  Shloimie approval notes.
+  optional discount/group option, community/rabbi affiliation, and BNA notes.
 - The first internal-first CRM backend primitives are persisted in the app:
   workspace settings, connector settings, internal calendar events, pipeline
   cards, internal dialogue threads/messages, and bot action logs. Missing live
   integrations should be shown as disabled/not configured/test/manual-mode
   controls, never faked as active.
+- Operations Settings > Google Workspace includes a read-only Google Action
+  Audit that filters local bot action logs for Google/Drive/Calendar/Classroom/
+  Google Business Profile previews and executions. It is evidence/readback
+  only and must not be treated as approval for live Google writes; live Google
+  adapters still require OAuth/test-user setup, scope approval, and explicit
+  external-write confirmation.
+- The One Time/Rabbi launch calendar helper is
+  `calendar_batch_launch_plan_preview`. It may preview an 8-week plan for
+  `rabbi_sheller_provider`, but it must not create internal calendar events,
+  write Google Calendar events, send messages, or run live Google sync. Turning
+  the preview into real events requires a reviewed `start_date`; Google
+  Calendar sync remains a separate OAuth/scope and explicit external-write
+  approval path.
+- Remaining live connector/publishing gates should be made explicit in
+  Operations with checklist-style approval packets before execution. The
+  current required phrases are `APPROVE_GOOGLE_LIVE_ADAPTER_TEST` for live
+  Google adapter testing and `APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING` for
+  One Time member-library publishing; showing those packets is readiness only,
+  not permission to perform external writes, sends, checkout/access, member
+  visibility changes, or connector publishing.
+- Approval packets may preview a local Shloimie decision draft through the
+  typed `create_decision` action only as `dry_run: true`. That preview may log
+  a local action-audit row, but it must return `executed: false` and
+  `preview.decision_created: false`; it must not create a decision task or run
+  Google, Drive/video-host, Buffer/social, email, WhatsApp, checkout/access,
+  member visibility, publishing, or external CRM writes.
 - Member/community work should use the product term `learning communities`, not
   generic groups. As of 2026-06-12, the live app has BNA learning-community,
   membership, thread, and message tables/APIs, with default community
@@ -177,12 +296,29 @@
   across BNA surfaces. Avoid scattered helper buttons, duplicate parent/student
   text boxes, or static quick-action widgets that bypass the shared assistant,
   action registry, task ledger, and memory trail.
+- Public website, signup/registration, One Time preview, and public provider
+  pages should load the public helper knowledge bundle before the BNA Helper
+  widget when the widget is mounted. Public `/providers` and `/provider-signup`
+  routes are public lead/onboarding surfaces and must not be scoped as the
+  private provider workspace.
+- Role-specific onboarding/help requests from parent, student, and provider
+  portal assistants should be coached in chat before the generic support-ticket
+  fallback. The deployed `assistant_onboarding_coach` path returns English/
+  Hebrew role guidance for student Today/goals/daily checkoff/questions,
+  parent recording/goals/device setup, and provider profile/media/Google
+  readiness while creating no support ticket, durable profile/goal write, send,
+  or external connector write.
 - The public website assistant is a lead-magnet guide, not a settings panel:
   it should open proactively after a short delay, speak Hebrew on Hebrew/RTL
   pages and English on English pages, use Shloimie's public self-governance/
   accountability/learning-program knowledge, and avoid internal tasks, private
   records, provider names, API/provider failures, or admin implementation
   details.
+- On phone-width public pages, the shared BNA Helper should behave like a
+  partial bottom sheet rather than a full-screen takeover: it should leave the
+  page visible, keep the launcher reachable for minimize, avoid mobile
+  auto-focus jank, and use concise 10-1 program copy without "I'm still here"
+  style nudges.
 - Public assistant contact requests should create an internal Shloimie
   follow-up reminder/ticket/communication. Public bug or UX feedback should
   become a support ticket plus a Codex review queue item when it is a clear
@@ -209,6 +345,51 @@
   may show draft copy, TBD ILS/USD pricing, and a secondary video-library
   fallback, but must not activate checkout or replace Rabbi Scheller's live site
   without approval.
+- One Time video-library item creation is now a first-party, review-only helper
+  action: `create_one_time_video_library_item` creates a scoped
+  `bna_content_jobs` record plus internal content-output draft states for the
+  library card, transcript, thumbnail, worksheet/source sheet, social copy plan,
+  and newsletter plan. These records are not member/public visible and must not
+  trigger Buffer/social drafts, email/WhatsApp sends, Drive/video-host writes,
+  checkout/access, or external CRM writes without a later approved publishing
+  path.
+- Operations Content > One Time Library is the internal review surface for those
+  scoped One Time video-library records. It may track hosted media URLs,
+  transcript/thumbnail/worksheet/social/newsletter review lanes, report status,
+  and internal approvals. Its first-party Class Package Manager can publish
+  `bna_class_sessions` packages to the One Time member library only when the
+  destination is `member_library`, visibility/audience tier are explicit, and
+  the exact `APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING` phrase is supplied.
+  It still must not send email/WhatsApp/social posts, create checkout/billing,
+  perform real Vimeo upload/API or Drive/video-host writes, write external CRM,
+  or merge into the BNA student goal-checkoff portal.
+- Public One Time member-library access is separate from BNA student/parent
+  portals: `/member-library` and `GET /api/member-library?code=...` may show
+  only active-code, tier-visible, `published` item fields. They must hide
+  approval flags, rollback metadata, private transcript notes, and unrelated
+  BNA student/accounting data. Rollback archives a library item so member
+  readback no longer shows it.
+- Task/decision helper actions now include `add_decision_option`,
+  `schedule_task_on_date`, and `move_task_workspace`. They are approval-gated
+  and preview-first; approved execution may only update local task fields,
+  task comments, due/planned dates, or first-party project/workspace scope. They
+  must not create Codex jobs, connector writes, email/WhatsApp/social sends, or
+  external CRM records.
+- Rabbi/One Time content helper actions now include `create_rabbi_shiur_idea`
+  and `create_rabbi_source_sheet_task`. They are approval-gated and
+  preview-first; approved execution creates only scoped local One Time review
+  tasks. They must not create Codex jobs automatically, Drive/Sefaria/member
+  library writes, email/WhatsApp/social sends, public visibility, or external
+  CRM records.
+- One Time referral/moderation helper actions now include
+  `create_referral_ledger_entry`, `submit_student_question_for_moderation`, and
+  `review_moderated_question`. They are approval-gated and preview-first.
+  Approved referral execution may create only first-party One Time referral
+  candidate/ledger/review-task records. Approved question moderation may create
+  or update only private local review tasks/comments. These helpers must not
+  create Codex jobs automatically, referral links, rewards/coupons, sends,
+  forum posts, public/member visibility, Drive/Sefaria/member-library writes,
+  or external CRM records.
 - Hebrew menus must be RTL-native, open from the right, and avoid overlapping
   sticky controls on mobile.
 - The parent dashboard treats the approved weekly newsletter/update as a
@@ -216,6 +397,20 @@
   media and optional talking-head video, plus navigation to prior updates. The
   admin weekly-update data model is live, but actual approved copy/media still
   needs operator selection before the first official update appears.
+- Operations Communications > Announcements is the approval workspace for
+  parent-visible weekly updates. It should use the in-page candidate/form flow
+  with title/body/image URL/video URL readback, `Preview No-Write`, and typed
+  `APPROVE_PARENT_ANNOUNCEMENT` local approval. Do not restore native browser
+  prompt approval. Preview and smoke paths must use `dry_run: true`; approval
+  selects only a local weekly update and must not send email, WhatsApp, social
+  posts, Buffer drafts, or external CRM writes.
+- Weekly update recipient review is preview-only until Shloimie approves
+  recipient policy and send rules. `GET /api/bna/parent-announcements/recipients`
+  may show current BNA student parent recipients, signup-only review
+  candidates, second-parent/spouse policy candidates, missing-email records,
+  and external-accountability exclusions. It must return no-send/no-write flags
+  and keep test-send/live-send disabled behind
+  `APPROVE_PARENT_WEEKLY_UPDATE_SEND`.
 - API Usage may show real available communication/support/activity counts, but
   token, cost, budget, and rate-limit data must stay clearly disabled/not
   configured until a real metering backend exists.
@@ -228,17 +423,38 @@
   no-visible-TODO, no-overflow, dry-run connector, and role/privacy checks from
   that report.
 - Contacts should distinguish current/signed-up parents from separate lead
-  categories: `school_interest`, `content_interest`, and `group_member`.
-  School-interest leads are BNA-owned CRM records with lead status, interest
-  level, source, notes, next follow-up, and optional historical
-  `legacy_crm_*` linkage only. First-party BNA Operations remains the canonical
-  CRM.
+  categories: `school_interest`, `content_interest`, `group_member`, and
+  `accountability_interest`. School-interest and accountability leads are
+  BNA-owned CRM records with lead status, interest level, source, notes, next
+  follow-up, and optional historical `legacy_crm_*` linkage only. First-party
+  BNA Operations remains the canonical CRM.
+- Admin > Roles is the read-only policy matrix for workspace access. It should
+  keep Super Admin, BNA School Admin/Rabbi, Parent primary contact,
+  second-parent/spouse, Student, Service Provider/Rabbi Sheller, Community
+  Member, and Codex/Agent lifecycle access states visible without creating
+  invitations, login tokens, password resets, sends, access grants, billing
+  changes, or connector writes. Second-parent/spouse and community-member
+  access remain policy-gated until Shloimie explicitly approves the rules.
+- Parent/accountability onboarding at `/parent/login?onboard=accountability`
+  writes first-party `bna_parent_leads` rows with
+  `lead_type = 'accountability_interest'`, plus a support ticket, lead-linked
+  `bna_contact_communications` inbound note, and private in-app Operations
+  notification. Its `dry_run` mode is no-write; it must not send email,
+  WhatsApp, Telegram, portal messages, create child-visible goals, or write
+  external CRM.
 - Contacts parent records should expand inside the clicked card itself, not in a
   separate detail panel under/next to the list. Tag filtering and tag assignment
   should use compact dropdowns rather than large piles of buttons. Future
   WhatsApp/WAPI conversation sync should display recent conversation history
   inside the matching parent/lead card after message storage is explicitly
   built.
+- Contacts WAPI/local communication history readback is now available both in
+  the expanded parent/interested-parent cards and through the
+  `show_contact_communication_history` helper action. It matches local
+  `bna_contact_communications` by direct first-party IDs, normalized phone
+  variants, email/source-address tokens, contact names, and WAPI source context.
+  It is read-only/no-send: no Whapi sync, WhatsApp send, broadcast, contact/tag
+  write, Google/Drive action, Buffer/social action, or external CRM write.
 - UI redesign work must preserve existing data, backend fields, business logic,
   and functionality unless Shloimie explicitly says to remove/change them.
 - Operations app sections should show subcategory counts only once, in the
@@ -250,17 +466,26 @@
   instead of long scattered chip rows. This applies to tags, category, project,
   status, payment, source, method, media type, interest level, and
   accountability state. Fixed date choices may remain as compact date controls.
-- Student checkoff links are private access-code portals at `/student.html`;
-  public Torah displays must show cumulative 30-unit trip progress, not daily
-  completion or private goal minutes/types.
+- Student portal access uses parent-managed student username/password login as
+  the primary model, with the existing private access-code link retained as
+  fallback/recovery. Student self-reset is out of scope; parents create/reset
+  student credentials from the parent portal.
 - Student portal data must not load without a valid server-side student access
-  credential. Invalid, expired, missing, or revoked codes should return
-  401/403-style errors, clear browser-stored codes, and return the child to
-  login. The final long-term student auth model is still undecided; decide
-  whether private code alone is enough or whether to add code plus PIN/password.
+  credential or valid student session. Invalid, expired, missing, or revoked
+  credentials should return generic 401/403-style errors, clear browser-stored
+  access codes, and return the child to login. Public Torah displays must show
+  cumulative 30-unit trip progress, not daily completion or private goal
+  minutes/types.
 - Parent portal access is passwordless through short-lived hashed magic links
   at `/parent.html`; Operations can send those links by email or confirmed
   WhatsApp, and the app should not introduce plaintext parent passwords.
+- Operations Students > Next Year Login is the governed parent/student rollout
+  workspace. Student links may be prepared in bulk, but parent login links,
+  parent password setup/reset emails, and WhatsApp login links must stay
+  explicit per family. Parent password setup preview uses
+  `POST /api/bna/parent-access/password-reset` with `dry_run: true`; real email
+  requires the single-family action plus `SEND_PARENT_PASSWORD_SETUP` and must
+  not create a bulk onboarding campaign or external CRM/Google/Buffer write.
 - Cumulative Torah trip progress counts actual daily completion fractions:
   full daily goal = 1 unit, half = 0.5, two-thirds = about 0.6667. Do not flatten
   multiple students to one uniform completed-unit value unless Shloimie
@@ -348,6 +573,41 @@
   student, Rabbi/admin, meeting, task, assignment, calendar, and messaging
   interfaces. Rabbi Elie already has video/library/statistics tooling, so a
   legacy CRM community or course-builder UI is not assumed necessary.
+- One Time first-party capability map lives at
+  `ops/one-time-mishnah/first-party-capability-map.md`. BNA Operations can
+  safely own scoped contacts, tags, pipelines/opportunities, calendars/classes,
+  payment/access readiness, workflow previews, private community/membership
+  support, content/media review, Buffer/social previews, and WAPI/local
+  communication readback. Rabbi-owned live app, Replit, Vimeo/media host,
+  billing, Resend/email, DNS, Google live adapters, Buffer publishing, and
+  WhatsApp/Wappy outbound automation remain external/browser-only targets until
+  access, approval phrase, rollback, and focused smoke are explicit.
+- One Time content/media intake workflow lives at
+  `ops/one-time-mishnah/content-media-intake-workflow.md`. The internal-first
+  path is Drive drops -> recording/session record -> transcript/source notes ->
+  source sheets -> worksheets -> question digests -> organic clips -> ad
+  candidates -> approval package -> posting/reporting. It uses first-party BNA
+  Operations records until explicit approval; no raw recording, source sheet,
+  worksheet, question digest, clip, ad, newsletter, social post, member-library
+  item, Google/Drive write, video-host write, Buffer draft/publish action,
+  WhatsApp/email send, access grant, or external CRM write should run
+  automatically.
+- One Time partnership drafting pack lives at
+  `ops/one-time-mishnah/partnership-drafting-pack.md`. It is the local
+  draft-only handoff for Claude or another writing assistant to produce a
+  cleaner agreement memo, values checklist, refund/cancellation options,
+  family/device/Zoom/access rules, landing-page copy, launch emails, and
+  reactivation copy. Outputs stay in human review; no Drive upload, live page,
+  campaign, billing, access, Zoom, Buffer/social, Google, WhatsApp/email,
+  member-library, or external CRM action is approved by the pack.
+- Operations Admin > Users / External Access is the super-admin surface for
+  external project users such as Rabbi/One Time admins. It separates external
+  provider/Rabbi users from parent accounts, shows workspace/role/login context,
+  and can create a short-lived BNA Operations access link only for configured
+  login usernames after an explicit click. It does not create parent accounts,
+  Rabbi-owned app credentials, emails, WhatsApp sends, password resets,
+  billing links, member-library access, Google/Drive/Buffer writes, or external
+  CRM writes.
 - One Time meeting recordings should be handled as Content > Meeting Drops:
   structure the relevant Drive/content job into a meeting summary, decision
   list, linked tasks, source-media provenance, and project-scoped follow-up
@@ -370,6 +630,11 @@
 - Google Drive Raw Media Intake is also allowed to feed website updates: single dropped images should be candidates for the public website image/learning-moments lane, and uploaded recordings/videos can be candidates for website blog generation after approval.
 - Operations task buckets are Decisions, Pending, and Tasks, with Calendar and
   Done / Activity as supporting views.
+- Operations Tasks > Calendar selected-day view should show an exact
+  `Selected: Weekday, Month Day, Year` label, Hebrew date/item context, and
+  Add Task / Move Selected Task actions. The adjacent Google Calendar control
+  is preview-only through `sync_google_calendar` with `dry_run: true` and must
+  not create internal calendar events or Google Calendar writes.
 - Pending means blocked by a human or external system, such as Rabbi access,
   account approval, payment/email/domain credentials, or legal/accounting
   choice. Pending must not be used for Codex/system work.
@@ -793,6 +1058,10 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   The script is dry-run by default, skips closed tasks unless explicitly
   included, excludes full raw operator wording from reports, and requires
   `--apply --confirm APPLY_TASK_TITLE_CLEANUP` before patching live tasks.
+- Single task retitles can use the typed helper action
+  `retitle_task_naturally`. It is approval-gated, requires a specific task id
+  and clean replacement title, rejects raw ramble-looking replacement titles,
+  and preserves the previous title only as a truncated provenance preview.
 
 ## Remotion Video Editing Workflow
 
@@ -890,6 +1159,11 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   the app does, walks through setup, guides recording uploads, captures goals
   and prompt/instruction preferences, and turns the conversation into durable
   scoped records.
+- The first deployed student onboarding layer is coaching-only: student
+  help/setup questions explain Today, goals, daily checkoff, questions,
+  reflection, and Rabbi/Shloimie messages before generic ticket fallback, but
+  they do not create support tickets, profile/goal rows, checkoffs, messages,
+  sends, or external connector writes.
 - Parent/family onboarding should teach the BNA self-governance model:
   children take responsibility through clear goals, check-ins, reflection,
   parent/Rabbi review, and ownership of commitments rather than hidden control
@@ -910,13 +1184,15 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 - Menachem Mendel Dratler is an internal BNA school student/accountability
   record.
 - Ahuva Dratler is Menachem's mother and parent-portal contact. As of
-  2026-06-09, the live Menachem signup/student records use
-  `hahuvadratler@gmail.com` for Ahuva parent access, while the previous Shloimie
-  signup contact is preserved in the notes.
+  2026-06-15, the corrected live Ahuva parent portal email is
+  `ahuvadratler@gmail.com`. The older `hahuvadratler@gmail.com` spelling was
+  corrected in live Dratler parent access records; the previous Shloimie
+  signup contact remains preserved in notes.
 - Esti Dratler is a separate external accountability person, not a BNA
   school-enrolled student. Her record is tagged `external-accountability`,
   `external`, `dratler`, `girl`, and `not-bna-school`; her email is stored as
-  `estidratler@gmail.com`.
+  `estidratler@gmail.com`. As of 2026-06-15, Ahuva was cleared from Esti's
+  parent-login fields so Ahuva's parent portal links resolve through Menachem.
 - Menachem live Goal Board item #81 is `Floor cleanup and bed by 10:00 PM`,
   section `personal_home`, subsection `Chores and bedtime`, parent-visible and
   student-hidden pending Rabbi/admin review. Checklist: clean up the floor
@@ -983,6 +1259,22 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   offer copy, pricing, checkout/payment links, and public replacement require
   Shloimie approval before going live. The video library supports the live
   Mishnayos/community offer but should not replace the main membership CTA.
+- One Time billing must use exactly one provider of record per live product/
+  plan. As of 2026-06-15 the provider is still undecided, with Green Invoice,
+  Stripe, and a short manual bridge documented as options in
+  `ops/rabbi-scheller/green-invoice-billing-options.md`. Checkout, payment
+  links, refunds/cancellations, subscription status, member access, and rollback
+  must not be implemented until Shloimie approves the provider, price/currency,
+  first-cycle rule, subscription anchor, refund policy, access-start rule,
+  failed-payment grace policy, support owner, and rollback/revoke owner.
+- The BNA preview funnel has a scoped One Time Mishnah onboarding intake at
+  `/one-time-preview#one-time-onboarding` and
+  `POST /api/one-time/mishnah/onboarding`. It may create only first-party,
+  One Time scoped review records: parent lead, Rabbi provider-workspace
+  contact, internal transcript/note, support ticket, and Shloimie/Rabbi
+  follow-up task. It must not create checkout, grant access, send email,
+  send WhatsApp, post publicly, or write to an external CRM without a later
+  explicit approval path.
 - One Time content intake should support Drive/upload to transcript, library
   card, worksheet/source-sheet draft, newsletter/social drafts, approval queue,
   and workspace-scoped publishing.
@@ -1014,6 +1306,27 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
   next implementation prompt: screenshots, routes, actions, flows, issues,
   role/workspace matrix, bot-placement audit, and prioritized backlog.
 
+## Provider Join / Portal
+
+- Service providers can self-join without screening for now. Public provider
+  signup creates an active free listing and provider workspace immediately; BNA
+  can pause, reject, hide, or archive providers later.
+- Public provider join should stay short. The current conversational intake asks
+  10 questions and leaves languages, ages, pricing, images, discounts, and
+  other polish for the provider portal.
+- Provider join sends a provider portal setup email after the provider record is
+  committed. Provider setup links use `bna_provider_password_setup_tokens`,
+  land on `/provider?setup=...`, set `bna_service_providers.password_hash`, and
+  sign the provider into the scoped provider portal.
+- Operations provider workspace cards can resend a setup email through
+  `POST /api/bna/service-providers/:id/setup-email`. Do not expose raw setup
+  tokens in chat, tracked files, screenshots, task titles, or logs.
+- The provider onboarding/integrations foundation is live-smoked on production:
+  public `/api/service-providers` must stay sanitized, `/service-providers`
+  and `/providers/join` remain public onboarding surfaces, and `/provider/login`
+  remains the scoped provider portal entry. Verification must stay no-write
+  unless explicitly testing provider signup or messaging.
+
 ## Public / Portal Privacy Rules
 
 - Public and unauthenticated routes must never hydrate real parent/student
@@ -1027,18 +1340,220 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 - Non-student public/parent/provider/signup pages should clear saved student
   access codes so a previous student session cannot influence public assistant
   or page context.
+- Public registration document pages under `/documents/registration-document`
+  are non-student public pages and must clear stale `bnaStudentAccessCode`
+  values before rendering.
 - Student-audience portal payloads should not include parent email, parent
   phone, or other parent contact fields. Parent-audience portal payloads may
   include scoped parent/student fields after parent authentication.
+- Student portal Hebrew/RTL behavior is fixture-smoked on production with
+  screenshots. Student-facing answer prefixes, Rabbi WhatsApp CTAs, calendar
+  labels, helper text, and source labels should use the student i18n label map
+  instead of hardcoded English when the portal is in Hebrew.
 
 ## Google Integration Rules
 
 - Natural-language Google commands still require OAuth scopes for execution.
   BNA should preview/dry-run Google actions now, run them only for connected
   test users where configured, and prepare public verification later.
-- Operations Settings > Google Workspace is the canonical readiness surface for
-  Drive, Calendar, Classroom, and Google Business Profile. It must distinguish
-  no-OAuth/manual links, test-user OAuth, and public production OAuth.
+- Google OAuth must default to least privilege: identity-only
+  `https://www.googleapis.com/auth/userinfo.email` unless a specific
+  Calendar, Classroom, Drive, or Google Business Profile test-user smoke has
+  an explicit feature/scope/setup request and owner-approved target/rollback.
+  Do not reintroduce Gmail, broad Drive, Classroom roster, guardian, grade, or
+  profile-email scopes as defaults.
+- Operations > Integrations > Google is the canonical Google readiness surface
+  for Drive, Calendar, Classroom, and Google Business Profile. Settings >
+  Google Workspace is only a compatibility mirror. The surface previews and
+  dry-runs only until OAuth/test-user/scope approvals are explicit; no Google
+  API read/write/send or external connector action runs from the page.
+- Classroom material/topic placement is available only as the preview action
+  `classroom_topic_material_preview` until Google Classroom OAuth/test-user
+  scopes, topic policy, and explicit external-write approval are complete.
 - Manual Google Business links and Place IDs are allowed now. Live Google
   Business Profile API actions require provider opt-in, `business.manage`, and
   approval/verification planning.
+- Google Business Place ID/location helpers are preview-only
+  (`google_business_place_id_lookup`, `google_business_list_locations_preview`)
+  until provider opt-in, `business.manage` OAuth/API approval, and explicit
+  external-read/write approval are complete.
+
+## WAPI Phonebook Workspace
+
+- Operations Communications > WhatsApp has a deployed phonebook-first WAPI
+  workspace as of Railway deployment `6c9f06bc-6c1b-47b9-980a-4e8baca73eae`.
+- The workspace is read-first and no-send: phonebook/contact list, selected
+  timeline, details, local internal notes, related tasks, support tickets, and
+  linked records all stay in first-party BNA Operations.
+- Adding a WAPI workspace note writes only a local
+  `bna_contact_communications` internal note with no-send/external-write false
+  metadata. It must not send WhatsApp messages, broadcasts, or external CRM
+  writes.
+- Manual phonebook corrections remain preview/confirm-gated and require
+  `APPLY_WAPI_CORRECTION` for local contact/lead tag writes.
+- Operations Contacts parent and interested-parent expanded cards now show
+  local WAPI/Whapi/contact communication history directly in their
+  Communication tabs. Matching is conservative: first-party record IDs,
+  normalized phone variants such as `050...` / `97250...`, email addresses,
+  and WAPI source context. The card is read-only and must not trigger Whapi
+  sync, WhatsApp sends, broadcasts, contact/tag writes, or external CRM writes.
+  Deployed in Railway `7a866693-367d-4c1d-81d2-f6e8c60f4288`.
+
+## Social Scheduling / Buffer
+
+- Buffer is the active social scheduler for Facebook, LinkedIn, and YouTube
+  text drafts/posts, but BNA helper/social scheduling must preview packages
+  before connector writes.
+- The typed helper action `preview_social_schedule_package` may plan channels,
+  schedule slots, blockers, and the `APPROVE_BUFFER_SOCIAL_DRAFT` approval
+  phrase. It must not write Buffer drafts, upload media, publish, send, or
+  write external systems.
+- Actual Buffer draft creation remains a separate approval path after source
+  material, channel/account, copy, schedule window, media-hosting, and
+  rollback/no-post policy are explicit.
+
+## Automation / Prompt Library
+
+- Operations Settings > Automations is the canonical read-only automation map
+  for current BNA/provider/One Time workflow planning.
+- The library may show triggers, audiences, channels, prompt/template families,
+  statuses, first-party linked records, dry-run preview affordances, and
+  disabled enable controls.
+- The Automation Library is not an execution surface. It must not run external
+  sends, publish content, change billing/access/member visibility, write
+  Google/Drive/video hosts, create checkout/access grants, or write external
+  CRM systems without a separate typed approval path and connector/sender.
+- Prompt Browser rows in the library are review/readback pointers to content
+  prompts, assignment prompts, helper policies, and no-send/no-external-write
+  guardrails. Editable prompt work still belongs in the scoped prompt/content
+  surfaces.
+
+## One Time App / Member-Library Access
+
+- Operations Settings > Drive / Social Intake now includes a deployed
+  `One Time App Readiness` card and
+  `GET /api/bna/one-time/app-access-readiness`.
+- Rabbi Elie Scheller's provider workspace is scoped to
+  `one_time_mishnah_class` with workspace key `rabbi_sheller_provider`.
+- The Rabbi/One Time provider portal now has a deployed `Class Media` intake
+  for manual hosted URL submissions only. It creates/reviews first-party One
+  Time content jobs, internal output lanes, class-session readback, and local
+  in-app review notifications; it must not upload files, publish to the member
+  library, send email/WhatsApp, grant access, create checkout, write Drive or a
+  video host, trigger Buffer, or write external CRM systems without a future
+  explicit approval path.
+- This readiness surface is read-only and no-write. It must not reset One Time
+  admin credentials, grant member access, publish to the member library, write
+  Drive/video hosts, send Resend/email/WhatsApp/SMS, create checkout/billing
+  writes, or write external CRM.
+- Operations Content > One Time Library shows display-only thumbnail previews
+  from `thumbnail_brief` metadata, parsed metadata, or job thumbnail/image URL
+  fields when an HTTP(S) thumbnail URL exists, plus a missing-thumbnail state.
+  This preview is review UI only and must not generate thumbnails, upload
+  media, publish, send, grant access, or write external systems.
+- Live One Time app/admin/member-library integration remains blocked until the
+  owner-approved admin URL/access path, Rabbi/member test login, DB/source,
+  media host, Resend/domain/copy, billing/access policy, rollback/revoke path,
+  and `APPROVE_ONE_TIME_MEMBER_LIBRARY_PUBLISHING` are explicit.
+
+## One Time Question Moderation
+
+- One Time student/member questions must flow through first-party private
+  moderation before any public/member-facing answer surface exists.
+- Question intake uses `submit_student_question_for_moderation`, which creates
+  a private task plus `bna_one_time_question_reviews` row; review uses
+  `review_moderated_question`, which updates the private review row and task
+  comment only.
+- Operations Content > One Time Library includes `Private Question Moderation
+  Queue`, backed by `GET /api/bna/one-time/question-moderation`.
+- The queue is read-only/no-send/no-forum/no-member-visible. It must not create
+  forum posts, member-visible answers, email/WhatsApp/SMS/portal sends, Codex
+  jobs, checkout/access changes, Drive/video-host writes, or external CRM
+  writes without a later explicit approval path.
+- One Time forum/gamification policy is private-first: authenticated
+  participants only, AI moderation before human review, temporary holds pending
+  admin review instead of automatic bans, quality rewards/badges only after
+  Rabbi/admin approval, no public shame, and no leaderboard unless Shloimie
+  explicitly approves the audience, scoring, privacy format, opt-out path, and
+  smoke test.
+- One Time Classroom is the approved first implementation target for the
+  reusable BNA classroom/community design. The classroom should organize Rabbi
+  Elie's Mishnah videos under the six Sedarim, show live/daily video context,
+  schedule video assignments through BNA's internal calendar, and reuse the
+  same model later for BNA school communities.
+- One Time classroom discussion is Rabbi-thread based, not open student chat.
+  Students/members may submit responses to Rabbi/admin posts or class/video
+  threads, but AI screening and Rabbi/admin approval must happen before any
+  response becomes classroom-visible. Held or inappropriate responses should
+  create staff/parent safety context where appropriate.
+- One Time participation leaderboard is approved-participation only: approved
+  questions, approved responses, Rabbi-featured items, and assignment
+  participation may count. Raw private discussion, unreviewed student text, and
+  student-to-student chat must not be exposed.
+- One Time student/member bot answers must be source-grounded only: approved
+  class transcripts, source sheets/assets, assignments, calendar/live-session
+  records, access records, Zoom-link eligibility, and critical-thinking
+  questions. If no approved source supports an answer, the bot should refuse or
+  route to Rabbi/moderation rather than invent Torah content or citations.
+
+## Operations Decisions
+
+- Operations decision cards should read like real human decisions: a
+  question-style prompt, context, why it matters, workspace, owner, due date,
+  Option A/B/C choice cards, pros, cons, consequences, recommendation when
+  known, `Needs more info`, and a workspace comment box.
+- Decision comments are shared workspace context only by default. They must use
+  `requeue: false` and must not create agent jobs, choose options, send email
+  or WhatsApp, write Google/Buffer, or touch external CRM systems unless a
+  separate explicit action/approval path is used.
+
+## Operations Agent Lifecycle
+
+- Telegram/bot-to-Codex machine work now uses the observable first-party
+  lifecycle: `bna_tickets` -> `bna_tasks` -> `bna_agent_jobs` ->
+  `bna_agent_job_events`.
+- `bna_agent_jobs` is the canonical machine lifecycle table with statuses
+  `queued`, `running`, `completed`, `failed`, and
+  `blocked_needs_human_decision`; `bna_tasks.agent_status` mirrors those values
+  for the human-facing task UI, while `bna_tickets.status` may use
+  operator-friendly ticket labels such as `queued_for_codex`, `in_progress`,
+  `done`, and `needs_decision`.
+- Use `/api/bna/bot/capture` or `captureIncomingBotMessage()` for idempotent
+  bot captures. It stores source channel/chat/message IDs, raw message,
+  ticket/task/job IDs, owner, status, blocker, and reply hints.
+- The agent fleet should claim `/api/bna/agent-jobs` rows before falling back
+  to old Codex-owned task selection, and it must complete/block the job plus
+  report back to the source Telegram chat when available.
+
+## Live Closeout Proofs
+
+- WS11 gamification/parent progress is production-migrated and live-smoked as
+  of Railway deployment `7c8c7010-497c-41c7-a127-6370cca049eb`. Startup must
+  run `createWs11CommunityGamificationSQL` before
+  `ensureWs11CommunityFoundation`.
+- The repeatable WS11 live proof command is
+  `npm run app:smoke:ws11-parent-progress`; it uses temporary synthetic
+  parent-link/session and hidden WS11 rows, then cleans them up.
+- The repeatable secure Operator Setup proof command is
+  `npm run app:smoke:operator-setup`; safe packages must remain no-secret by
+  default, one-time, short-lived, and blank for sensitive env template values.
+
+## Rabbi / One Time Task Hygiene
+
+- Use `npm run task:rabbi-flow-audit` before reviewing Rabbi/One Time task-flow
+  cleanup. The script is read-only, has no apply mode, writes reports under
+  `ops/system-audits/`, redacts private BNA title-preview terms, and must not
+  be treated as permission to move, close, retitle, reassign, publish, send, or
+  grant access from the report alone.
+- One Time Mishnayos product launch work is draft/decision-ready until Shloimie
+  approves final pricing, public copy, checkout/billing, member access, account
+  grants, and external writes. Candidate prices may be stored for review only:
+  low-touch/library-live around `$50`/`$67`/`$100`/`$149`, interactive Zoom
+  around `$149` or `$150`, and VIP/high-touch at `$300+`.
+- Rabbi Scheller's 7pm Israel class time should be represented as first-party
+  One Time schedule/calendar data and can drive regional funnel review for
+  Israel, UK, US, and worldwide audiences.
+- One Time public launch pages should remain noindex/draft and avoid final
+  pricing, checkout buttons, unverified claims, account grants, billing actions,
+  sends, Google/Drive writes, Zoom writes, Buffer publishing, and external CRM
+  writes until the relevant human decisions are approved.

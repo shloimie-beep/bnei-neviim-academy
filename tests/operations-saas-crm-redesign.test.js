@@ -31,11 +31,15 @@ test('Operations uses the SaaS shell with global nav, workspace switcher, and ne
   assert.match(operations, /function switchWorkspace/);
   assert.match(operations, /function workspaceNavViewIds/);
   assert.match(operations, /Workspace Directory/);
-  assert.match(operations, /Platform \/ Super Admin/);
-  assert.match(operations, /BNA School Workspace/);
-  assert.match(operations, /One Time Mishnayos Provider Workspace/);
-  assert.match(operations, /Parent Household Workspaces/);
-  assert.match(operations, /\{ id: 'household', label: 'Parent Households'/);
+  assert.match(operations, /All Operations/);
+  assert.match(operations, /BNA/);
+  assert.match(operations, /One Time Mishnah Class/);
+  assert.match(operations, /\{ id: 'super_admin', label: 'Super Admin'/);
+  assert.match(operations, /\{ id: 'school', label: 'School'/);
+  assert.match(operations, /\{ id: 'service_providers', label: 'Service Providers'/);
+  assert.match(operations, /\{ id: 'family_home_accountability', label: 'Family App \/ Home Accountability'/);
+  assert.doesNotMatch(operations, /\{ id: 'household', label: 'Parent Households'/);
+  assert.doesNotMatch(operations, /\{ id: 'community', label: 'Community \/ Projects'/);
   assert.match(operations, /data-workspace-kind-filter="\$\{escapeHtml\(filter\.id\)\}"/);
   assert.match(operations, /function renderSidebarSubnav/);
   assert.match(operations, /function currentSubnavConfig/);
@@ -68,7 +72,11 @@ test('Operations exposes provider, communications, API usage, settings, and disa
   assert.match(operations, /WhatsApp/);
   assert.match(operations, /Social Accounts/);
   assert.match(server, /allowedViews: platformAllowedViews/);
-  assert.match(server, /allowedViews: providerAllowedViews/);
+  assert.match(server, /const providerAllowedViews = \[/);
+  assert.match(server, /allowedViews: ownerAllowedViews/);
+  assert.match(server, /allowedViews: managerAllowedViews/);
+  assert.match(server, /role: 'project_owner'/);
+  assert.match(server, /role: 'project_manager'/);
 });
 
 test('Operations platform scope has backend workspace, connector, calendar, pipeline, dialogue, and bot action APIs', () => {

@@ -165,7 +165,7 @@
     <link rel="stylesheet" href="/css/bna-site-nav.css">
 </head>
 <body>
-    <div id="siteNavMount" data-bna-site-nav></div>
+    <div id="siteNavMount" data-bna-site-nav data-nav-active="signup"></div>
     <script src="/js/bna-site-nav.js"></script>
 
     <main class="thank-you-shell">
@@ -195,6 +195,8 @@
         </section>
     </article>
     </main>
+
+    <div id="siteFooterMount" data-bna-site-footer></div>
 
     <script>
         const params = new URLSearchParams(window.location.search);
@@ -288,5 +290,7 @@
                 : 'If you have any questions, please be in touch.';
         }
     </script>
+    <script src="/js/bna-helper-knowledge.js"></script>
+    <script src="/js/bna-bot-widget.js"></script>
 </body>
 </html>

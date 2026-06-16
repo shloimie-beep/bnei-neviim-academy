@@ -115,20 +115,37 @@ function countBy(items, key) {
 }
 
 function summarizeTorahPublic(data) {
-  const students = Array.isArray(data.students) ? data.students : [];
-  const percentages = students.map((student) => Number(student.percentage || 0));
-  const average = percentages.length
-    ? Math.round((percentages.reduce((sum, value) => sum + Math.min(100, Math.max(0, value)), 0) / percentages.length) * 10) / 10
-    : 0;
+  const publicRecords = Array.isArray(data.students) ? data.students : [];
+  const metrics = data.metrics && typeof data.metrics === 'object' ? data.metrics : {};
   const groupPercentage = Number(data.group?.percentage ?? data.group?.groupPercentage ?? data.group?.group_percentage ?? 0);
   const tripUnlocked = Boolean(data.group?.trip_unlocked ?? data.group?.tripUnlocked ?? false);
-  assert(Math.abs(groupPercentage - average) <= 0.51, `Torah group percentage ${groupPercentage} does not match student average ${average}`);
-  assert(tripUnlocked === percentages.every((value) => value >= 100), 'Torah trip unlock flag does not match student totals');
+  const minPercentage = metrics.minPercentage === null || metrics.minPercentage === undefined ? null : Number(metrics.minPercentage);
+  const maxPercentage = metrics.maxPercentage === null || metrics.maxPercentage === undefined ? null : Number(metrics.maxPercentage);
+  const activeStudentCount = Number(metrics.activeStudentCount ?? data.group?.activeStudentCount ?? 0);
+  const serialized = JSON.stringify(data);
+
+  assert(publicRecords.length === 0, 'Public Torah summary must not expose per-student records');
+  assert(Number.isFinite(groupPercentage) && groupPercentage >= 0 && groupPercentage <= 100, `Invalid public Torah group percentage: ${groupPercentage}`);
+  assert(Number.isFinite(activeStudentCount) && activeStudentCount >= 0, `Invalid public Torah active count: ${activeStudentCount}`);
+  for (const forbidden of ['Huda Weber', 'Hillel Baraka', 'Menachem Mendel Dratler', 'Eitan Chaim Golombo', 'Amitai Kosofsky']) {
+    assert(!serialized.includes(forbidden), `Public Torah summary exposed ${forbidden}`);
+  }
+  for (const forbiddenField of ['parent_name', 'parent_email', 'goal_minutes', 'student_access_code']) {
+    assert(!serialized.includes(forbiddenField), `Public Torah summary exposed ${forbiddenField}`);
+  }
+  if (minPercentage !== null || maxPercentage !== null) {
+    assert(Number.isFinite(minPercentage) && Number.isFinite(maxPercentage), 'Torah public range metrics must be numeric when present');
+    assert(minPercentage >= 0 && minPercentage <= 100, `Invalid public Torah min percentage: ${minPercentage}`);
+    assert(maxPercentage >= 0 && maxPercentage <= 100, `Invalid public Torah max percentage: ${maxPercentage}`);
+    assert(minPercentage <= maxPercentage, `Torah public range is inverted: ${minPercentage}-${maxPercentage}`);
+    assert(tripUnlocked === minPercentage >= 100, 'Torah trip unlock flag does not match aggregate range');
+  }
   return {
     group_percentage: groupPercentage,
     trip_unlocked: tripUnlocked,
-    student_count: students.length,
-    students: students.map((student) => `${student.name}:${student.percentage}`),
+    active_student_count: activeStudentCount,
+    public_range: minPercentage === null || maxPercentage === null ? null : `${minPercentage}-${maxPercentage}`,
+    per_student_records: publicRecords.length,
   };
 }
 

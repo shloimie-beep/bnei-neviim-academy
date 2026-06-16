@@ -42,6 +42,10 @@ test('student workspace has localized Hebrew labels and agenda-first calendar co
   assert.match(studentHtml, /data-student-calendar-event/);
   assert.match(studentHtml, /calendar-drawer/);
   assert.match(studentHtml, /googleSetupChecklist/);
+  assert.match(studentHtml, /rel="noopener noreferrer">\$\{escapeHtml\(t\('whatsappRabbi'\)\)\}<\/a>/);
+  assert.match(studentHtml, /<strong>\$\{escapeHtml\(t\('answer'\)\)\}:<\/strong>/);
+  assert.doesNotMatch(studentHtml, /<strong>Answer:<\/strong>/);
+  assert.doesNotMatch(studentHtml, />WhatsApp Rabbi Shloimie<\/a>/);
 });
 
 test('provider participant portal stays separate from BNA school accountability nav', () => {

@@ -49,23 +49,48 @@ test('Operations can administer learning communities and selected weekly updates
 
 test('parent announcements persist as selected weekly updates without sending', () => {
   assert.match(server, /app\.get\('\/api\/bna\/parent-announcements', requireAdmin/);
+  assert.match(server, /app\.get\('\/api\/bna\/parent-announcements\/recipients', requireAdmin/);
+  assert.match(server, /buildParentAnnouncementRecipientPreview/);
   assert.match(server, /app\.post\('\/api\/bna\/parent-announcements', requireAdmin/);
   assert.match(server, /APPROVE_PARENT_ANNOUNCEMENT/);
+  assert.match(server, /APPROVE_PARENT_WEEKLY_UPDATE_SEND/);
   assert.match(server, /latest_announcement/);
   assert.match(server, /local_write_performed: false/);
   assert.match(server, /local_write_performed: true/);
   assert.match(server, /no_send: true/);
   assert.match(server, /external_write_performed: false/);
+  assert.match(server, /send_enabled: false/);
+  assert.match(server, /spouse_policy_review_candidates/);
+  assert.match(server, /excluded_external_students/);
   assert.match(server, /status', 'selected'/);
   assert.match(server, /source: 'operations_announcements'/);
   assert.doesNotMatch(server, /parent-announcements[\s\S]{0,1400}SEND_WHATSAPP/);
   assert.doesNotMatch(server, /parent-announcements[\s\S]{0,1400}sendEmail/);
   assert.match(operationsHtml, /getParentAnnouncements/);
+  assert.match(operationsHtml, /getParentAnnouncementRecipients/);
   assert.match(operationsHtml, /approveParentAnnouncement/);
   assert.match(operationsHtml, /function renderAnnouncementPanel/);
   assert.match(operationsHtml, /Parent Readback/);
-  assert.match(operationsHtml, /approveParentAnnouncementPrompt/);
+  assert.match(operationsHtml, /Recipient Preview/);
+  assert.match(operationsHtml, /data-parent-announcement-form/);
+  assert.match(operationsHtml, /function renderParentAnnouncementApprovalForm/);
+  assert.match(operationsHtml, /function renderParentAnnouncementRecipientPreview/);
+  assert.match(operationsHtml, /function renderParentAnnouncementCandidate/);
+  assert.match(operationsHtml, /function previewParentAnnouncementForm/);
+  assert.match(operationsHtml, /function previewParentAnnouncementRecipients/);
+  assert.match(operationsHtml, /function approveParentAnnouncementForm/);
+  assert.match(operationsHtml, /Preview No-Write/);
+  assert.match(operationsHtml, /Preview Recipients No-Send/);
+  assert.match(operationsHtml, /parentAnnouncementImageUrl/);
+  assert.match(operationsHtml, /parentAnnouncementVideoUrl/);
+  assert.match(operationsHtml, /image_url: imageUrl/);
+  assert.match(operationsHtml, /video_url: videoUrl/);
+  assert.match(operationsHtml, /dry_run: dryRun/);
+  assert.match(operationsHtml, /No email, WhatsApp, portal message, communication log, Buffer\/social action, Google\/Drive action, or external CRM write was performed/);
   assert.match(operationsHtml, /No email, WhatsApp, or social post will be sent/);
+  assert.doesNotMatch(operationsHtml, /approveParentAnnouncementPrompt/);
+  assert.doesNotMatch(operationsHtml, /prompt\('Parent announcement/);
+  assert.doesNotMatch(operationsHtml, /confirm\('Approve this as the parent-visible announcement/);
 });
 
 test('parent portal payload and UI can render selected weekly updates', () => {

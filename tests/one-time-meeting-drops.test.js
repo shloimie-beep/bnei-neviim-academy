@@ -14,6 +14,12 @@ test('One Time meeting drops have a durable backend artifact and scoped API', ()
   assert.match(server, /app\.post\('\/api\/bna\/project-meetings'/);
   assert.match(server, /appendScopeCondition\(req, conditions, params, 'm\.project_id'\)/);
   assert.match(server, /'bna_project_meetings'/);
+  assert.match(server, /video_library_item/);
+  assert.match(server, /thumbnail_brief/);
+  assert.match(server, /transcript_review/);
+  assert.match(server, /worksheet_draft/);
+  assert.match(server, /social_copy_plan/);
+  assert.match(server, /newsletter_plan/);
 });
 
 test('content jobs can be structured into One Time meeting summaries and decision tasks', () => {

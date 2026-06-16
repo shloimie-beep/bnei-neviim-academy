@@ -60,9 +60,36 @@ Google actions before public OAuth verification.
 - Action logs include actor, workspace, role, action, dry-run result, approval
   status, success/failure, and related record.
 
+## 2026-06-15 Scope Guard Update
+
+Completed and deployed:
+
+- Default server `GOOGLE_SCOPES` is now identity-only:
+  `https://www.googleapis.com/auth/userinfo.email`.
+- `.env.example` now teaches identity-only setup plus commented per-smoke
+  examples instead of Gmail, broad Drive, Classroom roster, or profile-email
+  scopes by default.
+- A bare `/api/google/oauth/start` no longer requests the configured/broad
+  scope set or Drive-pipeline setup implicitly.
+- Broader scopes require an explicit feature/scope/setup request, such as
+  Calendar, Classroom, Drive-pipeline, or Business Profile, and still require
+  the owner approval packet before live external execution.
+- The OAuth callback page no longer displays refresh-token values. Tokens are
+  written only to ignored `.secrets/` files; the browser page shows redacted
+  metadata.
+- Added `tests/google-oauth-scope-guard.test.js` to keep this posture durable.
+- Railway deployment `8a02f9fb-6044-48ee-bfeb-747bfeecee2f` reached SUCCESS,
+  live smoke passed, and live Google readiness readback confirmed
+  identity-only `default_scopes` and `required_scopes`.
+- Follow-up completed on 2026-06-15: Railway production `GOOGLE_SCOPES` was
+  narrowed to `https://www.googleapis.com/auth/userinfo.email`, the app was
+  redeployed as `16920b4a-751a-4ee3-8534-9193a2739a7c`, live smoke passed, and
+  the live Google readiness payload now reports identity-only
+  `configured_scopes`, `default_scopes`, and `required_scopes` with zero
+  configured-scope warnings.
+
 ## Current Blockers
 
-- Confirm deployed Google OAuth env vars.
 - Confirm test-user email addresses.
 - Confirm Drive scope policy before expanding preview-only Drive actions beyond
   existing owner pipeline.

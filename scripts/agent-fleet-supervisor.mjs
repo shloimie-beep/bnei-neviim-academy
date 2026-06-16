@@ -5,6 +5,7 @@ import path from 'path';
 import crypto from 'crypto';
 import { spawn } from 'child_process';
 import { fileURLToPath } from 'url';
+import { buildQueueAudit, summarizeQueueHealthForStatus } from './lib/ops-queue-reconciler.mjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -201,6 +202,7 @@ function loadConfig() {
     deployCommand: env.AGENT_FLEET_DEPLOY_COMMAND || 'npm run railway:redeploy',
     deployDoctorCommand: env.AGENT_FLEET_DEPLOY_DOCTOR_COMMAND || 'npm run railway:doctor',
     deployTimeoutMs: Number(env.AGENT_FLEET_DEPLOY_TIMEOUT_MS || 15 * 60 * 1000),
+    heartbeatMs: Number(env.AGENT_FLEET_HEARTBEAT_MS || 45 * 1000),
     telegramToken: readSecret('telegram-bot-token.txt') || env.TELEGRAM_BOT_TOKEN_BNA || env.TELEGRAM_BOT_TOKEN || '',
     telegramChatId: env.TELEGRAM_CHAT_ID_BNA || env.TELEGRAM_CHAT_ID || '',
     watchdogPollMs: Number(env.WATCHDOG_POLL_MS || env.AGENT_FLEET_WATCHDOG_POLL_MS || 60 * 1000),
@@ -275,6 +277,11 @@ async function appRequest(config, method, endpoint, body = null) {
 
 async function sendTelegram(config, text) {
   if (!config.telegramToken || !config.telegramChatId) return false;
+  return sendTelegramToChat(config, config.telegramChatId, text);
+}
+
+async function sendTelegramToChat(config, chatId, text) {
+  if (!config.telegramToken || !chatId) return false;
   const chunks = [];
   let remaining = String(text || '').trim();
   while (remaining.length > 3500) {
@@ -288,7 +295,7 @@ async function sendTelegram(config, text) {
     const response = await fetch(`https://api.telegram.org/bot${config.telegramToken}/sendMessage`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ chat_id: config.telegramChatId, text: chunk }),
+      body: JSON.stringify({ chat_id: chatId, text: chunk }),
     });
     const body = await response.json();
     if (!response.ok || !body.ok) {
@@ -382,6 +389,38 @@ async function loadTasks(config) {
   return Array.isArray(data.tasks) ? data.tasks : [];
 }
 
+async function loadAgentJobs(config, { status = 'queued', limit = 12 } = {}) {
+  const params = new URLSearchParams();
+  if (status) params.set('status', status);
+  if (limit) params.set('limit', String(limit));
+  const data = await appRequest(config, 'GET', `/api/bna/agent-jobs?${params.toString()}`);
+  return Array.isArray(data.jobs) ? data.jobs : [];
+}
+
+async function claimAgentJob(config, job) {
+  return appRequest(config, 'POST', `/api/bna/agent-jobs/${job.id || job.job_id}/claim`, {
+    owner: 'Codex',
+  });
+}
+
+async function heartbeatAgentJob(config, job, metadata = {}) {
+  if (!job?.id && !job?.job_id) return null;
+  return appRequest(config, 'POST', `/api/bna/agent-jobs/${job.id || job.job_id}/heartbeat`, {
+    summary: 'Codex fleet heartbeat.',
+    metadata,
+  });
+}
+
+async function completeAgentJob(config, job, payload = {}) {
+  if (!job?.id && !job?.job_id) return null;
+  return appRequest(config, 'POST', `/api/bna/agent-jobs/${job.id || job.job_id}/complete`, payload);
+}
+
+async function blockAgentJob(config, job, payload = {}) {
+  if (!job?.id && !job?.job_id) return null;
+  return appRequest(config, 'POST', `/api/bna/agent-jobs/${job.id || job.job_id}/block`, payload);
+}
+
 async function loadTaskComments(config, taskId, limit = 10) {
   const data = await appRequest(config, 'GET', `/api/bna/tasks/${taskId}/comments`);
   const comments = Array.isArray(data.comments) ? data.comments : [];
@@ -430,18 +469,40 @@ function taskLockPath(taskId) {
 function taskLockIsFresh(taskId, maxAgeMs) {
   const lock = readJson(taskLockPath(taskId), null);
   if (!lock) return false;
-  if (lock.pid && processIsAlive(lock.pid)) return true;
-  const ageMs = Date.now() - Date.parse(lock.started_at || 0);
+  const signalAt = lock.heartbeat_at || lock.started_at || 0;
+  const ageMs = Date.now() - Date.parse(signalAt);
+  if (lock.pid && processIsAlive(lock.pid) && Number.isFinite(ageMs) && ageMs >= 0 && ageMs < maxAgeMs) return true;
   return Number.isFinite(ageMs) && ageMs >= 0 && ageMs < maxAgeMs;
 }
 
-function acquireTaskLock(task) {
+function acquireTaskLock(task, runId) {
+  const stamp = nowIso();
   writeJson(taskLockPath(task.id), {
     task_id: task.id,
+    run_id: runId,
     pid: process.pid,
-    started_at: nowIso(),
+    started_at: stamp,
+    heartbeat_at: stamp,
     title: taskTitle(task),
   });
+}
+
+function refreshTaskLockHeartbeat(taskId, runId, details = {}) {
+  const lockPath = taskLockPath(taskId);
+  const lock = readJson(lockPath, null);
+  if (!lock || Number(lock.pid) !== process.pid) return false;
+  writeJson(lockPath, {
+    ...lock,
+    task_id: lock.task_id || taskId,
+    run_id: lock.run_id || runId,
+    pid: process.pid,
+    heartbeat_at: nowIso(),
+    heartbeat_details: {
+      ...(lock.heartbeat_details || {}),
+      ...details,
+    },
+  });
+  return true;
 }
 
 function releaseTaskLock(taskId) {
@@ -451,7 +512,7 @@ function releaseTaskLock(taskId) {
 }
 
 function selectNextTasks(tasks, state, config, maxTasks = 1) {
-  const freshMs = Math.max(config.taskTimeoutMs * 2, 30 * 60 * 1000);
+  const freshMs = Math.max(config.taskTimeoutMs * 2, 45 * 60 * 1000);
   return tasks
     .filter((task) => isActiveStage(task.stage))
     .filter(isAgentOwnedTask)
@@ -1035,8 +1096,9 @@ function appendChangelog(task, outcome, reportPaths) {
 }
 
 function appendLedger(task, outcome, reportPaths) {
+  const recordedAt = localStamp();
   appendJsonl(ledgerPath, {
-    recorded_at: localStamp(),
+    recorded_at: recordedAt,
     event: outcome.ok ? 'agent_fleet_task_verified' : 'agent_fleet_task_blocked',
     source: 'agent_fleet',
     task_id: task.id,
@@ -1046,9 +1108,23 @@ function appendLedger(task, outcome, reportPaths) {
     category: task.category || 'operations',
     assigned_to: 'Codex',
   });
+  appendJsonl(ledgerPath, {
+    recorded_at: recordedAt,
+    event: outcome.ok ? 'done' : 'blocked',
+    source: 'agent_fleet',
+    task_id: task.id,
+    run_id: outcome.run_id || null,
+    title: taskReportTitle(task),
+    stage: outcome.ok ? 'done' : 'needs_decision',
+    assigned_to: 'Codex',
+    report_path: relative(reportPaths.mdPath),
+    blocker: outcome.ok ? null : (outcome.codex_error || 'Verification, Codex, or deployment gate failed.'),
+    summary: outcome.ok ? 'Completed and verified by agent fleet.' : 'Blocked or failed by agent fleet.',
+  });
 }
 
 async function processTask(config, task, state, options) {
+  const agentJob = options.agentJob || task.agent_job || null;
   const record = state.tasks[task.id] || { attempts: 0 };
   record.attempts = Number(record.attempts || 0) + 1;
   record.last_started_at = nowIso();
@@ -1064,17 +1140,44 @@ async function processTask(config, task, state, options) {
     };
   }
 
-  acquireTaskLock(task);
+  const runId = `task-${task.id}-${nowIso().replace(/[:.]/g, '-')}-${crypto.randomBytes(3).toString('hex')}`;
+  let heartbeatTimer = null;
+  acquireTaskLock(task, runId);
   try {
   const startedAt = nowIso();
   const claimNote = `Agent fleet claimed this task at ${startedAt}. Attempt ${record.attempts}.`;
   console.log(claimNote);
+  appendJsonl(ledgerPath, {
+    recorded_at: startedAt,
+    event: 'started',
+    source: 'agent_fleet',
+    task_id: task.id,
+    run_id: runId,
+    title: taskReportTitle(task),
+    stage: 'in_progress',
+    assigned_to: 'Codex',
+  });
   await patchTask(config, task.id, {
     stage: 'in_progress',
     started_at: task.started_at || startedAt,
     assigned_to: 'Codex',
   });
   await addTaskComment(config, task.id, claimNote);
+  if (agentJob) {
+    try {
+      await heartbeatAgentJob(config, agentJob, { phase: 'task_claimed', task_id: task.id });
+    } catch (error) {
+      console.error(`Could not heartbeat agent job #${agentJob.id || agentJob.job_id}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+  heartbeatTimer = setInterval(() => {
+    refreshTaskLockHeartbeat(task.id, runId, { phase: 'running' });
+    if (agentJob) {
+      heartbeatAgentJob(config, agentJob, { phase: 'running', task_id: task.id, run_id: runId })
+        .catch((error) => console.error(`Could not heartbeat agent job #${agentJob.id || agentJob.job_id}: ${error instanceof Error ? error.message : String(error)}`));
+    }
+  }, Math.max(30 * 1000, Number(config.heartbeatMs || 45 * 1000)));
+  heartbeatTimer.unref?.();
 
   let codexResult = null;
   let codexError = null;
@@ -1116,6 +1219,7 @@ async function processTask(config, task, state, options) {
   const outcome = {
     generated_at: nowIso(),
     task_id: task.id,
+    run_id: runId,
     ok,
     codex_exit_code: codexResult?.code ?? null,
     codex_final: codexResult?.lastMessage || codexResult?.stdout || '',
@@ -1136,33 +1240,86 @@ async function processTask(config, task, state, options) {
   saveState(state);
 
   if (ok) {
+    const reportPath = relative(reportPaths.mdPath);
+    const now = nowIso();
+    const proofLinks = [
+      {
+        label: 'Agent fleet report',
+        kind: 'report',
+        type: 'repo_path',
+        repo_path: reportPath,
+        path: reportPath,
+        source: 'agent_fleet',
+        status: 'valid',
+        added_at: now,
+        verified_at: now,
+      },
+      {
+        label: 'Agent task ledger',
+        kind: 'verification',
+        type: 'repo_path',
+        repo_path: 'ops/agent-task-ledger.jsonl',
+        path: 'ops/agent-task-ledger.jsonl',
+        source: 'agent_fleet',
+        status: 'valid',
+        added_at: now,
+        verified_at: now,
+      },
+      {
+        label: 'Agent changelog',
+        kind: 'verification',
+        type: 'repo_path',
+        repo_path: 'ops/agent-changelog.md',
+        path: 'ops/agent-changelog.md',
+        source: 'agent_fleet',
+        status: 'valid',
+        added_at: now,
+        verified_at: now,
+      },
+    ];
     const verificationNotes = [
       'Agent fleet completed, verified, and passed the deployment gate for this task.',
       summarizeVerification(verificationResults),
       summarizeDeployment(deploymentResult),
-      `Report: ${relative(reportPaths.mdPath)}`,
+      `Report: ${reportPath}`,
     ].join('\n');
     await patchTask(config, task.id, {
       stage: 'done',
-      completed_at: nowIso(),
-      verified_at: nowIso(),
+      completed_at: now,
+      verified_at: now,
       verification_notes: verificationNotes.slice(0, 4000),
+      workflow_status: 'done_with_report',
+      status_detail: 'done_with_report',
+      artifact_links: proofLinks,
+      proof_links_json: proofLinks,
+      done_link_status: 'done_with_report',
+      proof_status: 'valid',
+      done_link_checked_at: now,
+      proof_checked_at: now,
     });
     await addTaskComment(config, task.id, verificationNotes);
+    if (agentJob) {
+      await completeAgentJob(config, agentJob, {
+        summary: verificationNotes.slice(0, 4000),
+        report_path: relative(reportPaths.mdPath),
+        ledger_ref: 'ops/agent-task-ledger.jsonl',
+        changelog_ref: 'ops/agent-changelog.md',
+        result_payload: outcome,
+      });
+    }
     if (!options.noTelegram) {
-      await sendTelegram(
-        config,
-        [
-          `Agent fleet completed task #${task.id}.`,
-          taskReportTitle(task),
-          '',
-          summarizeVerification(verificationResults),
-          '',
-          summarizeDeployment(deploymentResult),
-          '',
-          `Report: ${relative(reportPaths.mdPath)}`,
-        ].join('\n')
-      );
+      const message = [
+        `Codex completed task #${task.id}${agentJob?.id || agentJob?.job_id ? ` / job #${agentJob.id || agentJob.job_id}` : ''}.`,
+        taskReportTitle(task),
+        '',
+        summarizeVerification(verificationResults),
+        '',
+        summarizeDeployment(deploymentResult),
+        '',
+        `Report: ${relative(reportPaths.mdPath)}`,
+      ].join('\n');
+      if (agentJob?.source_chat_id) await sendTelegramToChat(config, agentJob.source_chat_id, message);
+      else await sendTelegram(config, message);
     }
   } else {
     const exhausted = record.attempts >= config.maxRetries;
@@ -1186,11 +1343,27 @@ async function processTask(config, task, state, options) {
         verification_notes: blockerNote.slice(0, 4000),
       });
     await addTaskComment(config, task.id, blockerNote);
-    if (!options.noTelegram) await sendTelegram(config, blockerNote);
+    if (agentJob) {
+      await blockAgentJob(config, agentJob, {
+        status: exhausted ? 'blocked_needs_human_decision' : 'failed',
+        blocker: blockerNote.slice(0, 4000),
+        summary: blockerNote.slice(0, 4000),
+        report_path: relative(reportPaths.mdPath),
+        ledger_ref: 'ops/agent-task-ledger.jsonl',
+        changelog_ref: 'ops/agent-changelog.md',
+        result_payload: outcome,
+      });
+    }
+    if (!options.noTelegram) {
+      if (agentJob?.source_chat_id) await sendTelegramToChat(config, agentJob.source_chat_id, blockerNote);
+      else await sendTelegram(config, blockerNote);
+    }
   }
 
   return outcome;
   } finally {
+    if (heartbeatTimer) clearInterval(heartbeatTimer);
+    refreshTaskLockHeartbeat(task.id, runId, { phase: 'finished' });
     releaseTaskLock(task.id);
   }
 }
@@ -2740,23 +2913,95 @@ async function runTaskQueueReconcilerBeforeClaim(config, args) {
   return result;
 }
 
+async function processAgentJob(config, job, state, args) {
+  if (args.dryRun) {
+    return {
+      ok: true,
+      dry_run: true,
+      message: `Would claim job #${job.id || job.job_id}${job.task_id ? ` for task #${job.task_id}` : ''}`,
+    };
+  }
+
+  const claimed = await claimAgentJob(config, job);
+  const claimedJob = claimed.job || job;
+  const task = claimed.task || (claimedJob.task_id ? (await loadTasks(config)).find((item) => Number(item.id) === Number(claimedJob.task_id)) : null);
+  if (!task?.id) {
+    const blocker = `Codex job #${claimedJob.id || claimedJob.job_id} is missing a linked task, so the fleet cannot execute it.`;
+    await blockAgentJob(config, claimedJob, {
+      status: 'blocked_needs_human_decision',
+      blocker,
+      summary: blocker,
+    });
+    if (!args.noTelegram) {
+      if (claimedJob.source_chat_id) await sendTelegramToChat(config, claimedJob.source_chat_id, blocker);
+      else await sendTelegram(config, blocker);
+    }
+    return { ok: false, blocked: true, message: blocker };
+  }
+
+  if (!args.noTelegram) {
+    const started = [
+      `Codex started job #${claimedJob.id || claimedJob.job_id}${claimedJob.ticket_id ? ` for ticket #${claimedJob.ticket_id}` : ''}.`,
+      `Task #${task.id}: ${taskReportTitle(task)}`,
+    ].join('\n');
+    if (claimedJob.source_chat_id) await sendTelegramToChat(config, claimedJob.source_chat_id, started);
+    else await sendTelegram(config, started);
+  }
+
+  return processTask(config, { ...task, agent_job_id: claimedJob.id || claimedJob.job_id }, state, {
+    ...args,
+    agentJob: claimedJob,
+  });
+}
+
 async function status(config) {
   const tasks = await loadTasks(config);
   const state = loadState();
   const queue = selectNextTasks(tasks, state, config, 12);
   const active = tasks.filter((task) => isActiveStage(task.stage));
   const codex = active.filter(isAgentOwnedTask);
+  const auditStaleMinutes = Math.ceil(Math.max(config.taskTimeoutMs * 2, 45 * 60 * 1000) / 60000);
+  let queueAudit = null;
+  try {
+    queueAudit = buildQueueAudit({
+      repoRoot,
+      liveTasks: tasks,
+      staleThresholdMinutes: auditStaleMinutes,
+    });
+  } catch (error) {
+    queueAudit = {
+      warnings: [error instanceof Error ? error.message : String(error)],
+      counts: {},
+    };
+  }
+  const normalizedCounts = summarizeQueueHealthForStatus(queueAudit);
+  let observableQueue = null;
+  try {
+    observableQueue = await appRequest(config, 'GET', '/api/bna/codex-queue/status?limit=12');
+  } catch (error) {
+    observableQueue = { error: error instanceof Error ? error.message : String(error), queue: { jobs: [] } };
+  }
+  const observableJobs = Array.isArray(observableQueue?.queue?.jobs) ? observableQueue.queue.jobs : [];
   const lock = readJson(supervisorLockPath, null);
   const lines = [
     'Agent fleet status:',
     `- Supervisor: ${lock?.pid && processIsAlive(lock.pid) ? `running PID ${lock.pid}` : 'not running'}`,
-    `- Active Codex queue: ${codex.length}`,
-    `- Ready to claim: ${queue.length}`,
+    `- Observable Codex jobs: ${observableJobs.length}`,
+    `- Active Codex task fallback: ${codex.length}`,
+    `- Ready to claim: ${observableJobs.length || queue.length}`,
+    `- Queue health: fresh ${normalizedCounts.active_fresh}, stale ${normalizedCounts.active_stale}, blocked ${normalizedCounts.blocked}, unknown ${normalizedCounts.abandoned_unknown}, do-not-redo ${normalizedCounts.do_not_redo}`,
     `- Max retries: ${config.maxRetries}`,
     `- Baseline smoke: ${config.openAiSmoke ? 'enabled' : 'disabled'}`,
     `- Auto deploy gate: ${config.autoDeploy ? 'enabled' : 'disabled'}`,
   ];
-  if (queue.length) {
+  if (observableQueue?.error) lines.push(`- Observable queue read: ${observableQueue.error}`);
+  if (queueAudit?.warnings?.length) lines.push(`- Queue audit warnings: ${queueAudit.warnings.slice(0, 2).join('; ')}`);
+  if (observableJobs.length) {
+    lines.push('', 'Next observable jobs:');
+    for (const job of observableJobs.slice(0, 8)) {
+      lines.push(`- job #${job.id || job.job_id}${job.ticket_id ? ` / ticket #${job.ticket_id}` : ''}${job.task_id ? ` / task #${job.task_id}` : ''} [${job.status}] ${String(job.title || job.task_title || '').slice(0, 110)}`);
+    }
+  } else if (queue.length) {
     lines.push('', 'Next tasks:');
     for (const task of queue.slice(0, 8)) lines.push(`- ${taskStatusLine(task)}`);
   }
@@ -2768,37 +3013,61 @@ async function runOnce(config, args) {
   const state = loadState();
   const tasks = await loadTasks(config);
   const maxTasks = args.maxTasks && args.maxTasks > 0 ? args.maxTasks : 1;
+  let selectedJobs = [];
+  try {
+    selectedJobs = (await loadAgentJobs(config, { status: 'queued', limit: maxTasks })).slice(0, maxTasks);
+  } catch (error) {
+    console.error(`Observable agent job queue unavailable; falling back to task queue: ${error instanceof Error ? error.message : String(error)}`);
+  }
   const selected = selectNextTasks(tasks, state, config, maxTasks);
   await reportRuntimeStatus(config, {
     status: 'running',
     mode: args.watch ? 'watch' : 'once',
     tasks,
-    selected,
-    currentTaskId: selected[0]?.id || null,
+    selected: selectedJobs.length ? selectedJobs : selected,
+    currentTaskId: selectedJobs[0]?.task_id || selected[0]?.id || null,
     details: {
       dry_run: Boolean(args.dryRun),
       no_smoke: Boolean(args.noSmoke),
       no_deploy: Boolean(args.noDeploy),
+      observable_agent_jobs: selectedJobs.length,
     },
   });
-  if (!selected.length) {
+  if (!selectedJobs.length && !selected.length) {
     console.log('Agent fleet: no Codex-owned tasks ready to claim.');
     return [];
   }
   const outcomes = [];
-  for (const task of selected) {
-    // Tasks are intentionally serial to avoid competing edits in the same repo.
-    // eslint-disable-next-line no-await-in-loop
-    await reportRuntimeStatus(config, {
-      status: 'running',
-      mode: args.watch ? 'watch' : 'once',
-      tasks,
-      selected,
-      currentTaskId: task.id,
-      details: { phase: 'processing' },
-    });
-    // eslint-disable-next-line no-await-in-loop
-    outcomes.push(await processTask(config, task, state, args));
+  if (selectedJobs.length) {
+    for (const job of selectedJobs) {
+      // Jobs are intentionally serial to avoid competing edits in the same repo.
+      // eslint-disable-next-line no-await-in-loop
+      await reportRuntimeStatus(config, {
+        status: 'running',
+        mode: args.watch ? 'watch' : 'once',
+        tasks,
+        selected: selectedJobs,
+        currentTaskId: job.task_id || null,
+        details: { phase: 'processing_observable_job', agent_job_id: job.id || job.job_id },
+      });
+      // eslint-disable-next-line no-await-in-loop
+      outcomes.push(await processAgentJob(config, job, state, args));
+    }
+  } else {
+    for (const task of selected) {
+      // Tasks are intentionally serial to avoid competing edits in the same repo.
+      // eslint-disable-next-line no-await-in-loop
+      await reportRuntimeStatus(config, {
+        status: 'running',
+        mode: args.watch ? 'watch' : 'once',
+        tasks,
+        selected,
+        currentTaskId: task.id,
+        details: { phase: 'processing' },
+      });
+      // eslint-disable-next-line no-await-in-loop
+      outcomes.push(await processTask(config, task, state, args));
+    }
   }
   await reportRuntimeStatus(config, {
     status: 'running',

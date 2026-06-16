@@ -8,6 +8,8 @@ const GOOGLE_CONNECTION_ROLES = Object.freeze({
 
 const GOOGLE_SCOPE_REGISTRY = Object.freeze({
   drive: 'https://www.googleapis.com/auth/drive',
+  drive_file: 'https://www.googleapis.com/auth/drive.file',
+  drive_metadata_readonly: 'https://www.googleapis.com/auth/drive.metadata.readonly',
   gmail_send: 'https://www.googleapis.com/auth/gmail.send',
   documents: 'https://www.googleapis.com/auth/documents',
   spreadsheets: 'https://www.googleapis.com/auth/spreadsheets',
@@ -20,8 +22,12 @@ const GOOGLE_SCOPE_REGISTRY = Object.freeze({
   classroom_topics: 'https://www.googleapis.com/auth/classroom.topics',
   calendar: 'https://www.googleapis.com/auth/calendar',
   calendar_readonly: 'https://www.googleapis.com/auth/calendar.readonly',
+  calendar_app_created: 'https://www.googleapis.com/auth/calendar.app.created',
   calendar_events: 'https://www.googleapis.com/auth/calendar.events',
+  calendar_events_owned: 'https://www.googleapis.com/auth/calendar.events.owned',
   calendar_events_readonly: 'https://www.googleapis.com/auth/calendar.events.readonly',
+  calendar_freebusy: 'https://www.googleapis.com/auth/calendar.freebusy',
+  business_manage: 'https://www.googleapis.com/auth/business.manage',
   userinfo_email: 'https://www.googleapis.com/auth/userinfo.email',
 });
 
@@ -36,29 +42,29 @@ const GOOGLE_SCOPE_FEATURES = Object.freeze({
   classroom_manage: [
     GOOGLE_SCOPE_REGISTRY.classroom_courses_readonly,
     GOOGLE_SCOPE_REGISTRY.classroom_coursework_students,
-    GOOGLE_SCOPE_REGISTRY.classroom_coursework_students_readonly,
     GOOGLE_SCOPE_REGISTRY.classroom_courseworkmaterials,
-    GOOGLE_SCOPE_REGISTRY.classroom_rosters_readonly,
-    GOOGLE_SCOPE_REGISTRY.classroom_profile_emails,
     GOOGLE_SCOPE_REGISTRY.classroom_topics,
   ],
   classroom_read: [
     GOOGLE_SCOPE_REGISTRY.classroom_courses_readonly,
-    GOOGLE_SCOPE_REGISTRY.classroom_coursework_students_readonly,
+  ],
+  classroom_roster_read: [
     GOOGLE_SCOPE_REGISTRY.classroom_rosters_readonly,
     GOOGLE_SCOPE_REGISTRY.classroom_profile_emails,
   ],
   calendar_read: [
-    GOOGLE_SCOPE_REGISTRY.calendar_readonly,
-    GOOGLE_SCOPE_REGISTRY.calendar_events_readonly,
+    GOOGLE_SCOPE_REGISTRY.calendar_freebusy,
   ],
   calendar_write: [GOOGLE_SCOPE_REGISTRY.calendar_events],
+  calendar_app_created: [GOOGLE_SCOPE_REGISTRY.calendar_app_created],
+  calendar_owned: [GOOGLE_SCOPE_REGISTRY.calendar_events_owned],
+  business_profile_manage: [GOOGLE_SCOPE_REGISTRY.business_manage],
 });
 
 const GOOGLE_ROLE_DEFAULT_FEATURES = Object.freeze({
-  [GOOGLE_CONNECTION_ROLES.ADMIN_TEACHER]: ['identity', 'classroom_manage', 'calendar_write'],
-  [GOOGLE_CONNECTION_ROLES.STUDENT]: ['identity', 'classroom_read', 'calendar_read'],
-  [GOOGLE_CONNECTION_ROLES.PARENT]: ['identity', 'calendar_write'],
+  [GOOGLE_CONNECTION_ROLES.ADMIN_TEACHER]: ['identity'],
+  [GOOGLE_CONNECTION_ROLES.STUDENT]: ['identity'],
+  [GOOGLE_CONNECTION_ROLES.PARENT]: ['identity'],
 });
 
 const GOOGLE_ALLOWED_SCOPES_BY_ROLE = Object.freeze({
@@ -67,15 +73,13 @@ const GOOGLE_ALLOWED_SCOPES_BY_ROLE = Object.freeze({
     GOOGLE_SCOPE_REGISTRY.userinfo_email,
     GOOGLE_SCOPE_REGISTRY.classroom_courses_readonly,
     GOOGLE_SCOPE_REGISTRY.classroom_coursework_students_readonly,
-    GOOGLE_SCOPE_REGISTRY.classroom_rosters_readonly,
-    GOOGLE_SCOPE_REGISTRY.classroom_profile_emails,
-    GOOGLE_SCOPE_REGISTRY.calendar_readonly,
+    GOOGLE_SCOPE_REGISTRY.calendar_freebusy,
     GOOGLE_SCOPE_REGISTRY.calendar_events_readonly,
     GOOGLE_SCOPE_REGISTRY.calendar_events,
   ]),
   [GOOGLE_CONNECTION_ROLES.PARENT]: new Set([
     GOOGLE_SCOPE_REGISTRY.userinfo_email,
-    GOOGLE_SCOPE_REGISTRY.calendar_readonly,
+    GOOGLE_SCOPE_REGISTRY.calendar_freebusy,
     GOOGLE_SCOPE_REGISTRY.calendar_events_readonly,
     GOOGLE_SCOPE_REGISTRY.calendar_events,
   ]),

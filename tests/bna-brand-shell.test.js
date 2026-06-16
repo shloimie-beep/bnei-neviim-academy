@@ -23,15 +23,17 @@ test('live app pages load the shared BNA brand shell', () => {
 
 test('Operations shell includes branded mobile header and scoped workspace label', () => {
   assert.match(operationsHtml, /class="ops-mobile-brand"/);
-  assert.match(operationsHtml, /class="ops-mobile-mark" src="\/icons\/icon-192\.png"/);
-  assert.match(operationsHtml, /class="ops-brand-mark" src="\/icons\/icon-192\.png"/);
+  assert.match(operationsHtml, /const logoUrl = workspaceBranding\?\.logo_url \|\| '\/icons\/icon-192\.png'/);
+  assert.match(operationsHtml, /class="ops-mobile-mark" src="\$\{escapeHtml\(logoUrl\)\}"/);
+  assert.match(operationsHtml, /class="ops-brand-mark" src="\$\{escapeHtml\(logoUrl\)\}"/);
+  assert.match(operationsHtml, /onerror="this\.src='\/icons\/icon-192\.png'"/);
   assert.match(operationsHtml, /function renderWorkspaceContextStrip/);
   assert.match(operationsHtml, /function opsWorkspaceLabel/);
-  assert.match(operationsHtml, /Platform \/ Super Admin/);
-  assert.match(operationsHtml, /BNA School Workspace/);
+  assert.match(operationsHtml, /All Operations/);
+  assert.match(operationsHtml, /BNA/);
   assert.match(operationsHtml, /Workspace Directory/);
-  assert.match(operationsHtml, /One Time Mishnayos Provider Workspace/);
-  assert.match(operationsHtml, /Parent Household Workspaces/);
+  assert.match(operationsHtml, /One Time Mishnah Class/);
+  assert.match(operationsHtml, /Family App \/ Home Accountability/);
 });
 
 test('shared shell defines light BNA palette, sticky toolbar, side menus, and top filters', () => {

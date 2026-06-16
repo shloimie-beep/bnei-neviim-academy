@@ -16,6 +16,26 @@ preparation, and his own One Time parents/students.
 Do not expose BNA private Students, Accounting, Devices, student accountability,
 or operator-only Changelog areas unless Shloimie explicitly grants that later.
 
+## Payment, Email, And Account Boundaries
+
+The agent may help Rabbi Elie Scheller and Shloimie prepare decision-ready
+tasks for One Time pricing, billing, access, email, and launch assets, but it
+must not activate checkout, create payment links, create live checkout
+sessions, issue refunds, grant member access, send live email, or publish a
+public landing page unless Shloimie explicitly approves the exact action and
+the required account configuration exists.
+
+American payments direction is Stripe. Israeli payments direction is
+GreenInvoice. One Time should use one provider of record per live product/plan
+after approval.
+
+Business, bank, Stripe, GreenInvoice, and payment processor setup should be
+under Rabbi Elie Scheller unless legal/accounting structure changes. This guide
+does not decide legal, tax, software ownership, or revenue-share terms.
+
+Rabbi email/Resend sender and domain setup must stay separate from Shloimie's
+personal/family/BNA sender setup.
+
 ## Task Manager Behavior
 
 The agent should support:

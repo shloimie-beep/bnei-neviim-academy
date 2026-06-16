@@ -13,6 +13,8 @@ tmp/
 .env.local
 .env*.local
 !.env.example
+keyholder/
+.keyholder/
 .secrets/
 BNA-Keyholder/
 
@@ -24,7 +26,12 @@ Thumbs.db
 
 # logs
 *.log
+*.pid
 npm-debug.log*
+*.secret
+*.secrets
+*api-key*.txt
+*token*.txt
 
 # local media intake
 media-drop/
