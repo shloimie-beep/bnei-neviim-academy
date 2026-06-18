@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-18T22:55:30+03:00
+Updated: 2026-06-18T23:08:45+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -23,24 +23,25 @@ Latest completed local batches:
 - REQ-20260618-143: Community/Contacts now loads signups through an explicit workspace project filter, returns workspace labels, and displays the active/contact workspace context in Operations.
 - REQ-20260618-144: Content/class-session extraction now filters task, meeting, accountability, progress, timer, and parser-review material so reusable Content stays teaching/research oriented.
 - REQ-20260618-145: Content jobs now return scoped workspace/project metadata, transcript/parse/output/approval/provenance fields, and Operations cards visibly render workspace, source, transcript, output, approval, and provenance details.
+- REQ-20260618-146: Drive intake/routing now resolves workspace-specific folder config, rejects known folder/workspace mismatches, scopes content bundles by workspace, and blocks mixed-workspace combined outputs.
 
 Exact next requirement:
 
-- REQ-20260618-146 / BNA-CONTENT-003: Workspace-specific Drive intake/routing.
+- REQ-20260618-147 / BNA-CLASS-001: Workspace-scoped live classes.
 
 Exact next command:
 
 ```powershell
 npm run bna:run:status
-rg -n "drive|Drive|drive_file_id|drive_folder_id|drive_stage|google_drive|content-jobs|content_jobs|workspace_id|workspace|project|selectedProjectFilter|contentWorkspace" server.js public\operations.html tests
+rg -n "class-sessions|class_sessions|live class|Live Classes|class_date|workspace_id|workspace|project|selectedProjectFilter|content_job_id|render.*Class|classSessions|getClassSessions" server.js public\operations.html tests
 ```
 
-Then inspect Drive intake and content job creation/update paths so each workspace uses the correct intake folder/routing and does not show another workspace's material.
+Then inspect live-class/class-session API and Operations rendering so classes only appear for the relevant workspace, with BNA empty when none are offered.
 
 Still open after this batch:
 
 - REQ-20260618-124 remains `in_progress` until broader workspace-owned entity API filtering, release approval, deploy, and live smoke are complete.
-- REQ-20260618-125 through REQ-20260618-145 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-125 through REQ-20260618-146 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 
 No deployment or production-data mutation is approved.

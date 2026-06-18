@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-18T22:55:30+03:00
+Updated: 2026-06-18T23:08:45+03:00
 
 Status counts:
 
@@ -8,8 +8,8 @@ Status counts:
 - done: 4
 - already_satisfied: 1
 - blocked: 3
-- needs_verification: 27
-- not_started: 23
+- needs_verification: 28
+- not_started: 22
 - needs_operator_decision: 1
 
 Closed/already satisfied IDs:
@@ -61,6 +61,7 @@ Open non-blocked IDs begin with:
 - REQ-20260618-143 BNA-COMMUNITY-001: Workspace-scoped communities (needs_verification)
 - REQ-20260618-144 BNA-CONTENT-001: Teaching/research content separated from meetings/tasks/accountability (needs_verification)
 - REQ-20260618-145 BNA-CONTENT-002: Content metadata and provenance (needs_verification)
+- REQ-20260618-146 BNA-CONTENT-003: Workspace-specific Drive intake/routing (needs_verification)
 
 Blocked / operator-decision IDs:
 
@@ -69,6 +70,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current implementation batch: REQ-20260618-145 has local Content metadata/provenance implementation plus focused tests. Next implementation target is REQ-20260618-146.
+Current implementation batch: REQ-20260618-146 has local workspace-specific Drive intake/routing implementation plus focused tests. Next implementation target is REQ-20260618-147.
 
 No deployment or production-data mutation is approved in this run.

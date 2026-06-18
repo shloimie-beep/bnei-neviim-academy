@@ -3542,3 +3542,36 @@ Verification:
 Status: local `needs_verification`; no deployment, production migration,
 production-data mutation, audit crawl, watch loop, or agent-fleet loop was
 performed. Resume at `REQ-20260618-146`.
+
+## 2026-06-18T23:08:45+03:00 - Content Drive Workspace Routing
+
+Completed the local workspace-specific Drive intake/routing batch for
+`REQ-20260618-146`.
+
+- Added config-driven Drive folder resolution from
+  `GOOGLE_DRIVE_PIPELINE_CONFIG` or `.secrets/google-drive-pipeline.json`.
+- Added per-workspace Drive config support for BNA and One Time Mishnah Class in
+  the existing Google Drive setup helper and generated config shape.
+- Made content job creation and Drive metadata edits resolve workspace routing
+  before writes, including rejecting known Drive-folder/project mismatches.
+- Added row-level workspace access checks to direct content job/output actions.
+- Scoped Content bundles by selected workspace in both API and Operations UI.
+- Added visible workspace labels to newsletter bundle cards.
+- Blocked mixed-workspace content jobs from being combined into bundle or
+  multi-select generated outputs.
+- Documented the expected per-workspace Drive config shape in `.env.example`.
+- Added focused coverage in `tests/content-drive-routing.test.js`.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/content-drive-routing.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/content-drive-routing.test.js
+  tests/content-metadata-provenance.test.js tests/community-workspace-scope.test.js
+  tests/workspace-schema.test.js` 13/13.
+- PASS `npm test` 138/138.
+
+Status: local `needs_verification`; no deployment, production migration,
+production-data mutation, Drive setup route, live Drive mutation, audit crawl,
+watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-147`.

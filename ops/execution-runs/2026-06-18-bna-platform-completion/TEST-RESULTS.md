@@ -204,3 +204,11 @@ Content metadata and provenance (2026-06-18T22:55:30+03:00):
 - PASS Operations HTML script parse via `vm.Script` (2 script blocks).
 - PASS `node --test tests/content-metadata-provenance.test.js tests/content-boundary.test.js tests/community-workspace-scope.test.js` 7/7.
 - PASS `npm test` 134/134.
+
+Workspace-specific Drive intake/routing (2026-06-18T23:08:45+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/content-drive-routing.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/content-drive-routing.test.js tests/content-metadata-provenance.test.js tests/community-workspace-scope.test.js tests/workspace-schema.test.js` 13/13.
+- PASS `npm test` 138/138.

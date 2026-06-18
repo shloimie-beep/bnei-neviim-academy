@@ -900,6 +900,12 @@ async function ensureBnaDrivePipeline(auth) {
   const approved = await ensureDriveFolder(drive, '30 Approved Website Assets', root.id);
   const failed = await ensureDriveFolder(drive, '90 Failed - Needs Review', root.id);
   const legacy = await ensureDriveFolder(drive, '_Archive - Legacy Pipeline Folders', root.id);
+  const oneTimeRoot = await ensureDriveFolder(drive, 'Workspace - One Time Mishnah Class', root.id);
+  const oneTimeRawIntake = await ensureDriveFolder(drive, '00 Upload Here - One Time Mishnah Intake', oneTimeRoot.id);
+  const oneTimeProcessing = await ensureDriveFolder(drive, '10 One Time Processing - Temporary', oneTimeRoot.id);
+  const oneTimeProcessed = await ensureDriveFolder(drive, '20 One Time Processed Recordings - Source Media', oneTimeRoot.id);
+  const oneTimeApproved = await ensureDriveFolder(drive, '30 One Time Approved Assets', oneTimeRoot.id);
+  const oneTimeFailed = await ensureDriveFolder(drive, '90 One Time Failed - Needs Review', oneTimeRoot.id);
 
   const folders = {
     '01 Raw Intake': rawIntake,
@@ -914,6 +920,25 @@ async function ensureBnaDrivePipeline(auth) {
     '10 Approved': approved,
     '11 Published': approved,
     '99 Failed': failed,
+  };
+  const workspaceFolders = {
+    [DEFAULT_WORKSPACE_KEY]: {
+      root,
+      rawIntake,
+      websiteImages: websiteMomentsIntake,
+      processing,
+      processedRecordings: processed,
+      approvedAssets: approved,
+      failedNeedsReview: failed,
+    },
+    [ONE_TIME_WORKSPACE_KEY]: {
+      root: oneTimeRoot,
+      rawIntake: oneTimeRawIntake,
+      processing: oneTimeProcessing,
+      processedRecordings: oneTimeProcessed,
+      approvedAssets: oneTimeApproved,
+      failedNeedsReview: oneTimeFailed,
+    },
   };
 
   const brandKit = await ensureDriveFolder(drive, 'GitHub Canonical - Drive Brand Mirror (Deprecated)', legacy.id);
@@ -948,6 +973,7 @@ async function ensureBnaDrivePipeline(auth) {
     root,
     websiteMomentsIntake,
     folders,
+    workspaceFolders,
     legacy,
     brandKit,
     brandDocs,
@@ -5224,7 +5250,209 @@ async function projectKeyForWorkspaceId(workspaceId, fallback = DEFAULT_PROJECT_
      LIMIT 1`,
     [workspaceId]
   );
-  return normalizeProjectKey(result.rows[0]?.project_key) || fallback;
+  const rawProjectKey = result.rows[0]?.project_key;
+  return rawProjectKey ? normalizeProjectKey(rawProjectKey) : fallback;
+}
+
+function readGoogleDrivePipelineConfig() {
+  const inlineConfig = String(process.env.GOOGLE_DRIVE_PIPELINE_CONFIG || '').trim();
+  if (inlineConfig) {
+    try {
+      return JSON.parse(inlineConfig);
+    } catch {
+      return {};
+    }
+  }
+  return readJsonFile(path.join(__dirname, '.secrets', 'google-drive-pipeline.json'), {});
+}
+
+function driveStageConfigKey(stage = '') {
+  const normalized = normalizeLooseText(stage || 'raw intake');
+  if (normalized.includes('website') || normalized.includes('image') || normalized.includes('moment')) return 'websiteImages';
+  if (normalized.includes('approved') || normalized.includes('published')) return 'approvedAssets';
+  if (normalized.includes('failed') || normalized.includes('review')) return 'failedNeedsReview';
+  if (normalized.includes('parsed') || normalized.includes('processed') || normalized.includes('recording')) return 'processedRecordings';
+  if (normalized.includes('processing') || normalized.includes('ingesting') || normalized.includes('transcrib')) return 'processing';
+  return 'rawIntake';
+}
+
+function driveStageLabelForKey(stageKey) {
+  return {
+    rawIntake: '01 Raw Intake',
+    websiteImages: '00 Website Images',
+    processing: '02 Ingesting',
+    processedRecordings: '04 Parsed',
+    approvedAssets: '10 Approved',
+    failedNeedsReview: '99 Failed',
+  }[stageKey] || '01 Raw Intake';
+}
+
+function driveFolderCandidateKeys(stageKey) {
+  const common = ['folderId', 'folder_id', 'driveFolderId', 'drive_folder_id'];
+  return {
+    rawIntake: ['rawIntake', 'raw_intake', 'rawIntakeFolderId', 'intakeFolderId', 'intake_folder_id', ...common],
+    websiteImages: ['websiteImages', 'website_images', 'websiteMomentsIntake', 'websiteMomentsFolderId', ...common],
+    processing: ['processing', 'ingesting', 'processingFolderId', ...common],
+    processedRecordings: ['processedRecordings', 'processed_recordings', 'parsed', 'processed', 'parsedFolderId', ...common],
+    approvedAssets: ['approvedAssets', 'approved_assets', 'approved', 'published', 'approvedFolderId', ...common],
+    failedNeedsReview: ['failedNeedsReview', 'failed_needs_review', 'failed', 'review', 'failedFolderId', ...common],
+  }[stageKey] || common;
+}
+
+function pickConfiguredDriveId(source = {}, keys = []) {
+  if (!source || typeof source !== 'object') return '';
+  for (const key of keys) {
+    const value = source[key];
+    if (typeof value === 'string' && value.trim()) return value.trim();
+    if (value && typeof value === 'object' && typeof value.id === 'string' && value.id.trim()) return value.id.trim();
+  }
+  return '';
+}
+
+function driveWorkspaceConfig(config = {}, workspaceKey = DEFAULT_PROJECT_KEY) {
+  const key = normalizeProjectKey(workspaceKey || DEFAULT_PROJECT_KEY);
+  return config.workspaces?.[key]
+    || config.workspaceFolders?.[key]
+    || config.workspace_folders?.[key]
+    || config.projects?.[key]
+    || {};
+}
+
+function configuredDriveFolderId(config = {}, workspaceKey = DEFAULT_PROJECT_KEY, stage = '01 Raw Intake') {
+  const key = normalizeProjectKey(workspaceKey || DEFAULT_PROJECT_KEY);
+  const stageKey = driveStageConfigKey(stage);
+  const keys = driveFolderCandidateKeys(stageKey);
+  const workspaceConfig = driveWorkspaceConfig(config, key);
+  const workspaceFolder = pickConfiguredDriveId(workspaceConfig, keys)
+    || pickConfiguredDriveId(workspaceConfig.folders, keys)
+    || pickConfiguredDriveId(workspaceConfig.simplifiedFolders, keys)
+    || pickConfiguredDriveId(workspaceConfig.stages, [driveStageLabelForKey(stageKey), stageKey, ...keys]);
+  if (workspaceFolder) return workspaceFolder;
+
+  if (key !== DEFAULT_PROJECT_KEY) return '';
+  return pickConfiguredDriveId(config.simplifiedFolders, keys)
+    || pickConfiguredDriveId(config.folders, keys)
+    || pickConfiguredDriveId(config.stages, [driveStageLabelForKey(stageKey), stageKey, ...keys])
+    || '';
+}
+
+function collectConfiguredDriveIds(value, ids = new Set()) {
+  if (!value) return ids;
+  if (typeof value === 'string' && value.trim()) {
+    ids.add(value.trim());
+    return ids;
+  }
+  if (Array.isArray(value)) {
+    value.forEach((item) => collectConfiguredDriveIds(item, ids));
+    return ids;
+  }
+  if (typeof value === 'object') {
+    Object.values(value).forEach((item) => collectConfiguredDriveIds(item, ids));
+  }
+  return ids;
+}
+
+function workspaceKeyForDriveFolderId(folderId, config = readGoogleDrivePipelineConfig()) {
+  const target = String(folderId || '').trim();
+  if (!target) return '';
+  const workspaceSources = {
+    ...(config.workspaces || {}),
+    ...(config.workspaceFolders || {}),
+    ...(config.workspace_folders || {}),
+    ...(config.projects || {}),
+  };
+  for (const [workspaceKey, workspaceConfig] of Object.entries(workspaceSources)) {
+    if (collectConfiguredDriveIds(workspaceConfig).has(target)) return normalizeProjectKey(workspaceKey);
+  }
+  if (collectConfiguredDriveIds(config.simplifiedFolders || {}).has(target)) return DEFAULT_PROJECT_KEY;
+  return '';
+}
+
+async function resolveContentWorkspaceRouting(req, input = {}, db = pool) {
+  const driveConfig = readGoogleDrivePipelineConfig();
+  const folderProjectKey = workspaceKeyForDriveFolderId(input.drive_folder_id || input.driveFolderId, driveConfig);
+  const requestedWorkspaceId = Number(input.workspace_id || input.workspaceId || 0) || null;
+  const requestedWorkspaceProjectKey = requestedWorkspaceId
+    ? await projectKeyForWorkspaceId(requestedWorkspaceId, '', db)
+    : '';
+  const projectHint = input.project
+    || input.project_key
+    || input.projectName
+    || input.project_name
+    || requestedWorkspaceProjectKey
+    || folderProjectKey;
+  const normalizedProjectHint = projectHint ? normalizeProjectKey(projectHint) : '';
+  const project = await getProjectByKey(
+    normalizedProjectHint ||
+      inferProjectKeyFromText(`${input.title || ''}\n${input.caption || ''}\n${input.notes || ''}\n${input.transcript_text || ''}`),
+    db
+  );
+  assertProjectAccess(req, project);
+
+  if (folderProjectKey && normalizeProjectKey(project.project_key) !== folderProjectKey) {
+    const error = new Error('Drive folder belongs to a different workspace.');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  if (requestedWorkspaceId && project.workspace_id && Number(project.workspace_id) !== requestedWorkspaceId) {
+    const error = new Error('Requested workspace does not match the resolved content project.');
+    error.statusCode = 400;
+    throw error;
+  }
+
+  const defaultWorkspace = await getDefaultSchoolWorkspace(db);
+  const workspaceId = project.workspace_id || requestedWorkspaceId || defaultWorkspace.id;
+  const stage = input.drive_stage || input.driveStage || '01 Raw Intake';
+  const configuredFolderId = configuredDriveFolderId(driveConfig, project.project_key, stage);
+  return {
+    project,
+    workspaceId,
+    driveFolderId: String(input.drive_folder_id || input.driveFolderId || configuredFolderId || '').trim() || null,
+    driveStage: stage,
+    driveConfigWorkspaceKey: normalizeProjectKey(project.project_key),
+    driveRoutingConfigured: Boolean(configuredFolderId),
+  };
+}
+
+async function assertContentJobAccess(req, jobId, db = pool) {
+  const result = await db.query(
+    `SELECT j.id, j.workspace_id, p.project_key, w.workspace_key
+     FROM bna_content_jobs j
+     LEFT JOIN bna_workspaces w ON w.id = j.workspace_id
+     LEFT JOIN LATERAL (
+       SELECT project_key
+       FROM bna_projects p
+       WHERE p.workspace_id = j.workspace_id
+       ORDER BY p.id ASC
+       LIMIT 1
+     ) p ON TRUE
+     WHERE j.id = $1`,
+    [jobId]
+  );
+  const job = result.rows[0];
+  if (!job) return null;
+  const scopedProjectKey = opsScopeProjectKey(req);
+  if (scopedProjectKey && normalizeProjectKey(job.project_key || job.workspace_key) !== scopedProjectKey) {
+    const error = new Error('This login can only access its scoped workspace content.');
+    error.statusCode = 403;
+    throw error;
+  }
+  return job;
+}
+
+function assertContentJobsSingleWorkspace(jobs = []) {
+  const workspaceIds = [...new Set(
+    jobs
+      .map((job) => (job?.workspace_id ? String(job.workspace_id) : ''))
+      .filter(Boolean)
+  )];
+  if (workspaceIds.length > 1) {
+    const error = new Error('Content jobs from different workspaces cannot be combined.');
+    error.statusCode = 400;
+    throw error;
+  }
+  return workspaceIds[0] ? Number(workspaceIds[0]) : null;
 }
 
 async function resolveProjectFromInput(input = {}, db = pool) {
@@ -6848,6 +7076,15 @@ app.get('/api/google/oauth/callback', async (req, res) => {
         failedNeedsReview: pipeline.folders['99 Failed'].id,
         legacyArchive: pipeline.legacy?.id || null,
       },
+      workspaces: Object.fromEntries(Object.entries(pipeline.workspaceFolders).map(([workspaceKey, folders]) => [workspaceKey, {
+        root: folders.root?.id || null,
+        rawIntake: folders.rawIntake?.id || null,
+        websiteImages: folders.websiteImages?.id || null,
+        processing: folders.processing?.id || null,
+        processedRecordings: folders.processedRecordings?.id || null,
+        approvedAssets: folders.approvedAssets?.id || null,
+        failedNeedsReview: folders.failedNeedsReview?.id || null,
+      }])),
       brandKit: pipeline.brandKit.id,
       brandDocs: Object.fromEntries(Object.entries(pipeline.brandDocs).map(([name, file]) => [name, file.id])),
       platformMemory: pipeline.platformMemory.id,
@@ -6898,6 +7135,7 @@ app.post('/api/google/drive/setup', requireAdmin, async (req, res) => {
       root: pipeline.root,
       websiteMomentsIntake: pipeline.websiteMomentsIntake,
       folders: pipeline.folders,
+      workspaceFolders: pipeline.workspaceFolders,
       legacy: pipeline.legacy,
       brandKit: pipeline.brandKit,
       brandDocs: pipeline.brandDocs,
@@ -6905,7 +7143,7 @@ app.post('/api/google/drive/setup', requireAdmin, async (req, res) => {
       platformDocs: pipeline.platformDocs,
     });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -6919,7 +7157,7 @@ app.post('/api/bna/email/send', requireAdmin, async (req, res) => {
     const result = await sendGmailMessage({ to, subject, text, html });
     res.json({ success: true, id: result.data.id });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -6949,7 +7187,7 @@ app.post('/api/bna/email/signup-link', requireAdmin, async (req, res) => {
     });
     res.json({ success: true, id: result.data.id, signupUrl });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -6969,7 +7207,7 @@ app.get('/api/bna/email-log', requireAdmin, async (req, res) => {
     );
     res.json({ emails: result.rows });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -9840,9 +10078,28 @@ app.post('/api/bna/content-prompts/:platform/examples', requireAdmin, async (req
 });
 
 app.get('/api/bna/content-bundles', requireAdmin, async (req, res) => {
+  const { project } = req.query;
+  const scopedProjectKey = opsScopeProjectKey(req);
+  const requestedProjectKey = project && project !== 'all' ? normalizeProjectKey(project) : '';
+  const projectKey = scopedProjectKey || requestedProjectKey;
+  const params = [];
+  const conditions = ["b.status <> 'archived'"];
+
+  if (projectKey) {
+    params.push(projectKey);
+    conditions.push(`COALESCE(p.project_key, w.workspace_key, '') = $${params.length}`);
+  }
+
   try {
+    await ensureDefaultProjects();
     const result = await pool.query(
       `SELECT b.*,
+        p.project_key,
+        p.name AS project_name,
+        p.short_name AS project_short_name,
+        w.workspace_key,
+        w.workspace_type,
+        w.name AS workspace_name,
         COALESCE((
           SELECT json_agg(
             json_build_object(
@@ -9872,9 +10129,18 @@ app.get('/api/bna/content-bundles', requireAdmin, async (req, res) => {
             AND o.status <> 'archived'
         ), '[]'::json) AS outputs
        FROM bna_content_bundles b
-       WHERE b.status <> 'archived'
+       LEFT JOIN bna_workspaces w ON w.id = b.workspace_id
+       LEFT JOIN LATERAL (
+         SELECT p.project_key, p.name, p.short_name
+         FROM bna_projects p
+         WHERE p.workspace_id = b.workspace_id
+         ORDER BY p.id ASC
+         LIMIT 1
+       ) p ON TRUE
+       WHERE ${conditions.join(' AND ')}
        ORDER BY b.created_at DESC
-       LIMIT 20`
+       LIMIT 20`,
+      params
     );
     res.json({ bundles: result.rows });
   } catch (err) {
@@ -9922,13 +10188,20 @@ app.post('/api/bna/content-bundles', requireAdmin, async (req, res) => {
     await client.query('BEGIN');
     const ids = job_ids.map(Number).filter(Boolean);
     const defaultWorkspace = await getDefaultSchoolWorkspace(client);
-    const firstJob = ids.length
+    const selectedJobs = ids.length
       ? (await client.query(
-          'SELECT workspace_id FROM bna_content_jobs WHERE id = ANY($1::int[]) ORDER BY created_at ASC LIMIT 1',
+          'SELECT id, workspace_id FROM bna_content_jobs WHERE id = ANY($1::int[]) ORDER BY created_at ASC',
           [ids]
-        )).rows[0]
-      : null;
-    const workspaceId = req.body?.workspace_id || req.body?.workspaceId || firstJob?.workspace_id || defaultWorkspace.id;
+        )).rows
+      : [];
+    const selectedWorkspaceId = assertContentJobsSingleWorkspace(selectedJobs);
+    const requestedWorkspaceId = Number(req.body?.workspace_id || req.body?.workspaceId || 0) || null;
+    if (requestedWorkspaceId && selectedWorkspaceId && requestedWorkspaceId !== selectedWorkspaceId) {
+      const error = new Error('Requested bundle workspace does not match selected content jobs.');
+      error.statusCode = 400;
+      throw error;
+    }
+    const workspaceId = requestedWorkspaceId || selectedWorkspaceId || defaultWorkspace.id;
     const bundle = (await client.query(
       `INSERT INTO bna_content_bundles (workspace_id, title, start_date, end_date, notes)
        VALUES ($1, $2, $3, $4, $5)
@@ -9947,7 +10220,7 @@ app.post('/api/bna/content-bundles', requireAdmin, async (req, res) => {
     res.json({ success: true, bundle });
   } catch (err) {
     await client.query('ROLLBACK');
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   } finally {
     client.release();
   }
@@ -9968,6 +10241,7 @@ app.post('/api/bna/content-bundles/:id/generate', requireAdmin, async (req, res)
       [id]
     )).rows;
     if (!jobs.length) return res.status(400).json({ error: 'Bundle has no content items' });
+    assertContentJobsSingleWorkspace(jobs);
 
     const { prompt, examples } = await getPromptBundle('weekly_newsletter');
     const draft = await generateDraftWithPrompt({ outputType: 'weekly_newsletter', prompt, examples, jobs, instruction });
@@ -9994,7 +10268,7 @@ app.post('/api/bna/content-bundles/:id/generate', requireAdmin, async (req, res)
     await pool.query("UPDATE bna_content_bundles SET status = 'generated', updated_at = NOW() WHERE id = $1", [id]);
     res.json({ success: true, output, prompt });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -10026,8 +10300,15 @@ app.post('/api/bna/content-jobs', requireAdmin, async (req, res) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
-    const defaultWorkspace = await getDefaultSchoolWorkspace(client);
-    const workspaceId = req.body?.workspace_id || req.body?.workspaceId || defaultWorkspace.id;
+    const driveRouting = await resolveContentWorkspaceRouting(req, {
+      ...req.body,
+      title,
+      caption,
+      notes,
+      transcript_text,
+      drive_folder_id,
+      drive_stage,
+    }, client);
     const jobResult = await client.query(
       `INSERT INTO bna_content_jobs (
         workspace_id, title, source_type, source_message_id, source_chat_id, local_path, media_url,
@@ -10036,7 +10317,7 @@ app.post('/api/bna/content-jobs', requireAdmin, async (req, res) => {
       ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
       RETURNING *`,
       [
-        workspaceId,
+        driveRouting.workspaceId,
         title,
         source_type,
         source_message_id || null,
@@ -10044,8 +10325,8 @@ app.post('/api/bna/content-jobs', requireAdmin, async (req, res) => {
         local_path || null,
         media_url || null,
         drive_file_id || null,
-        drive_folder_id || null,
-        drive_stage || null,
+        driveRouting.driveFolderId,
+        driveRouting.driveStage,
         mime_type || null,
         caption || null,
         status,
@@ -10081,7 +10362,7 @@ app.post('/api/bna/content-jobs', requireAdmin, async (req, res) => {
     res.json({ success: true, job, outputs: createdOutputs });
   } catch (err) {
     await client.query('ROLLBACK');
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   } finally {
     client.release();
   }
@@ -10089,33 +10370,45 @@ app.post('/api/bna/content-jobs', requireAdmin, async (req, res) => {
 
 app.patch('/api/bna/content-jobs/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
-  const allowedFields = [
-    'title',
-    'status',
-    'transcript_text',
-    'transcript_json',
-    'parse_json',
-    'drive_file_id',
-    'drive_folder_id',
-    'drive_stage',
-    'notes',
-  ];
-  const fields = [];
-  const values = [];
-
-  for (const [key, value] of Object.entries(req.body || {})) {
-    if (!allowedFields.includes(key)) continue;
-    values.push(['transcript_json', 'parse_json'].includes(key) && value ? JSON.stringify(value) : value);
-    fields.push(`${key} = $${values.length}`);
-  }
-
-  if (!fields.length) {
-    return res.status(400).json({ error: 'No valid content job fields provided' });
-  }
-
-  values.push(id);
-
   try {
+    const existingJobContext = await assertContentJobAccess(req, id);
+    if (!existingJobContext) return res.status(404).json({ error: 'Content job not found' });
+    const allowedFields = [
+      'title',
+      'status',
+      'transcript_text',
+      'transcript_json',
+      'parse_json',
+      'drive_file_id',
+      'drive_folder_id',
+      'drive_stage',
+      'notes',
+    ];
+    const fields = [];
+    const values = [];
+    const body = { ...(req.body || {}) };
+
+    if (Object.prototype.hasOwnProperty.call(body, 'drive_folder_id') || Object.prototype.hasOwnProperty.call(body, 'drive_stage')) {
+      const driveRouting = await resolveContentWorkspaceRouting(req, {
+        ...body,
+        project: existingJobContext.project_key || existingJobContext.workspace_key,
+        workspace_id: existingJobContext.workspace_id,
+      }, pool);
+      if (Object.prototype.hasOwnProperty.call(body, 'drive_folder_id')) body.drive_folder_id = driveRouting.driveFolderId;
+      if (Object.prototype.hasOwnProperty.call(body, 'drive_stage')) body.drive_stage = driveRouting.driveStage;
+    }
+
+    for (const [key, value] of Object.entries(body)) {
+      if (!allowedFields.includes(key)) continue;
+      values.push(['transcript_json', 'parse_json'].includes(key) && value ? JSON.stringify(value) : value);
+      fields.push(`${key} = $${values.length}`);
+    }
+
+    if (!fields.length) {
+      return res.status(400).json({ error: 'No valid content job fields provided' });
+    }
+
+    values.push(id);
     const result = await pool.query(
       `UPDATE bna_content_jobs
        SET ${fields.join(', ')}, updated_at = NOW()
@@ -10126,7 +10419,7 @@ app.patch('/api/bna/content-jobs/:id', requireAdmin, async (req, res) => {
     await upsertClassSessionFromContentJob(pool, result.rows[0]);
     res.json({ success: true, job: result.rows[0] });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -10152,6 +10445,7 @@ app.post('/api/bna/content-jobs/bulk-generate', requireAdmin, async (req, res) =
       [ids]
     )).rows;
     if (!jobs.length) return res.status(404).json({ error: 'No matching content items found' });
+    assertContentJobsSingleWorkspace(jobs);
 
     const { prompt, examples } = await getPromptBundle(targetType);
     const body = await generateDraftWithPrompt({
@@ -10226,6 +10520,7 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
   try {
     const job = (await pool.query('SELECT * FROM bna_content_jobs WHERE id = $1', [id])).rows[0];
     if (!job) return res.status(404).json({ error: 'Content job not found' });
+    await assertContentJobAccess(req, id);
     if (!String(job.transcript_text || '').trim()) {
       return res.status(400).json({ error: 'Content job does not have a transcript yet' });
     }
@@ -10592,6 +10887,7 @@ app.post('/api/bna/content-jobs/:id/outputs', requireAdmin, async (req, res) => 
   }
 
   try {
+    await assertContentJobAccess(req, id);
     const job = (await pool.query('SELECT workspace_id FROM bna_content_jobs WHERE id = $1', [id])).rows[0];
     if (!job) return res.status(404).json({ error: 'Content job not found' });
     const result = await pool.query(
@@ -10601,7 +10897,7 @@ app.post('/api/bna/content-jobs/:id/outputs', requireAdmin, async (req, res) => 
     );
     res.json({ success: true, output: result.rows[0] });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -10627,6 +10923,9 @@ app.patch('/api/bna/content-outputs/:id', requireAdmin, async (req, res) => {
   values.push(id);
 
   try {
+    const outputContext = (await pool.query('SELECT job_id FROM bna_content_outputs WHERE id = $1', [id])).rows[0];
+    if (!outputContext) return res.status(404).json({ error: 'Content output not found' });
+    await assertContentJobAccess(req, outputContext.job_id);
     const result = await pool.query(
       `UPDATE bna_content_outputs
        SET ${fields.join(', ')}, updated_at = NOW()
@@ -10639,7 +10938,7 @@ app.patch('/api/bna/content-outputs/:id', requireAdmin, async (req, res) => {
     }
     res.json({ success: true, output: result.rows[0] });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -10650,6 +10949,7 @@ app.post('/api/bna/content-outputs/:id/actions', requireAdmin, async (req, res) 
   try {
     const output = (await pool.query('SELECT * FROM bna_content_outputs WHERE id = $1', [id])).rows[0];
     if (!output) return res.status(404).json({ error: 'Content output not found' });
+    await assertContentJobAccess(req, output.job_id);
     const job = (await pool.query('SELECT * FROM bna_content_jobs WHERE id = $1', [output.job_id])).rows[0];
 
     if (action === 'approve_publish') {
@@ -10796,6 +11096,7 @@ app.post('/api/bna/content-jobs/:id/actions', requireAdmin, async (req, res) => 
     const jobResult = await pool.query('SELECT * FROM bna_content_jobs WHERE id = $1', [id]);
     const job = jobResult.rows[0];
     if (!job) return res.status(404).json({ error: 'Content job not found' });
+    await assertContentJobAccess(req, id);
 
     const outputsResult = await pool.query(
       `SELECT * FROM bna_content_outputs
