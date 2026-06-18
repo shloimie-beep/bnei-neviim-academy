@@ -3706,3 +3706,40 @@ Verification:
 Status: local `needs_verification`; no deployment, production migration,
 production-data mutation, invitation send, account mutation, audit crawl, watch
 loop, or agent-fleet loop was performed. Resume at `REQ-20260618-151`.
+
+## 2026-06-18T23:58:00+03:00 - Accounting Scope and Safe Actions
+
+Completed the local workspace payment/accounting scoping batch for
+`REQ-20260618-151`.
+
+- Added workspace/project filters and returned workspace labels on payment logs,
+  payment intake, payment reminders, and Green Invoice webhook audit APIs.
+- Added confirmation-gated accounting mutations for payment logging, payment
+  intake capture/update/delete/reconcile, live payment reminders, and Green
+  Invoice webhook reprocess.
+- Added server-side record checks so signup, intake, and webhook mutations must
+  match the selected/scoped accounting workspace before writes run.
+- Constrained Green Invoice contact matching and unmatched-intake reuse to the
+  default BNA school workspace.
+- Wired Operations Accounting reads/actions to `selectedProjectFilter`, cleared
+  accounting state on workspace switch, and sent confirmation tokens from UI
+  actions.
+- Rejected legacy GHL payment-intake sync before external mutation and kept
+  intake first-party BNA-only.
+- Added focused coverage in `tests/accounting-scope.test.js` and updated
+  workspace auth tests for scoped accounting users.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/accounting-scope.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/accounting-scope.test.js tests/workspace-auth.test.js
+  tests/workspace-http-isolation.test.js tests/operations-workspace-selector.test.js`
+  19/19.
+- PASS `npm test` 156/156.
+
+Status: local `needs_verification`; no deployment, production migration,
+production-data mutation, payment reminder send, Green Invoice reprocess,
+legacy GHL sync, audit crawl, watch loop, or agent-fleet loop was performed.
+Resume at `REQ-20260618-152`.

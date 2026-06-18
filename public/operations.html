@@ -3637,16 +3637,22 @@
             getPayments(filters = {}) {
                 const params = new URLSearchParams();
                 if (filters.signup_id) params.set('signup_id', filters.signup_id);
+                if (filters.project) params.set('project', filters.project);
                 return this.request('GET', '/payments?' + params.toString());
             },
 
             createPayment(payment) { return this.request('POST', '/payments', payment); },
-            getPaymentReminderDue() { return this.request('GET', '/payment-reminders/due'); },
+            getPaymentReminderDue(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.project) params.set('project', filters.project);
+                return this.request('GET', '/payment-reminders/due' + (params.toString() ? '?' + params.toString() : ''));
+            },
             runPaymentReminders(payload = {}) { return this.request('POST', '/payment-reminders/run', payload); },
 
             getPaymentIntake(filters = {}) {
                 const params = new URLSearchParams();
                 if (filters.status) params.set('status', filters.status);
+                if (filters.project) params.set('project', filters.project);
                 return this.request('GET', '/payment-intake?' + params.toString());
             },
             createPaymentIntake(intake) { return this.request('POST', '/payment-intake', intake); },
@@ -3705,12 +3711,13 @@
                 return this.request('GET', '/torah-learning' + (params.toString() ? '?' + params.toString() : ''));
             },
             saveTorahEntry(entry) { return this.request('POST', '/torah-learning/entries', entry); },
-            getGreenInvoiceWebhooks(limit = 50) {
+            getGreenInvoiceWebhooks(filters = {}) {
                 const params = new URLSearchParams();
-                params.set('limit', String(limit));
+                params.set('limit', String(filters.limit || 50));
+                if (filters.project) params.set('project', filters.project);
                 return this.request('GET', '/green-invoice/webhooks?' + params.toString());
             },
-            reprocessGreenInvoiceWebhook(id) { return this.request('POST', '/green-invoice/webhooks/' + id + '/reprocess', {}); },
+            reprocessGreenInvoiceWebhook(id, payload = {}) { return this.request('POST', '/green-invoice/webhooks/' + id + '/reprocess', payload); },
             getAccountability(filters = {}) {
                 const params = new URLSearchParams();
                 if (filters.event_type) params.set('event_type', filters.event_type);
@@ -8409,7 +8416,7 @@
                 ensureActiveWorkspaceProject();
                 ensureCurrentViewAllowed();
 
-                const [projectsRes, tasksRes, calendarRes, automationsRes, integrationsRes, usersRes, invitationsRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes] = await Promise.allSettled([
+                const [projectsRes, tasksRes, calendarRes, automationsRes, integrationsRes, usersRes, invitationsRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, greenInvoiceRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes] = await Promise.allSettled([
                     api.getProjects(),
                     api.getTasks({ project: selectedProjectFilter() || undefined }),
                     viewAllowed('calendar') ? api.getCalendar({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ events: [] }),
@@ -8418,9 +8425,10 @@
                     viewAllowed('users') ? api.getUsers({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ users: [] }),
                     viewAllowed('users') ? api.getInvitations({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ invitations: [] }),
                     viewAllowed('contacts') || viewAllowed('accounting') ? api.getSignups({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ signups: [] }),
-                    viewAllowed('accounting') ? api.getPayments() : Promise.resolve({ payments: [] }),
-                    viewAllowed('accounting') ? api.getPaymentIntake() : Promise.resolve({ intake: [] }),
-                    viewAllowed('accounting') ? api.getPaymentReminderDue() : Promise.resolve(null),
+                    viewAllowed('accounting') ? api.getPayments({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ payments: [] }),
+                    viewAllowed('accounting') ? api.getPaymentIntake({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ intake: [] }),
+                    viewAllowed('accounting') ? api.getPaymentReminderDue({ project: selectedProjectFilter() || undefined }) : Promise.resolve(null),
+                    viewAllowed('accounting') ? api.getGreenInvoiceWebhooks({ limit: 50, project: selectedProjectFilter() || undefined }) : Promise.resolve({ events: [] }),
                     viewAllowed('content') ? api.getContentJobs({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ jobs: [] }),
                     viewAllowed('content') ? api.getContentPrompts() : Promise.resolve({ prompts: [] }),
                     viewAllowed('content') ? api.getContentBundles({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ bundles: [] }),
@@ -8449,6 +8457,7 @@
                 if (paymentsRes.status === 'fulfilled' && paymentsRes.value?.payments) payments = paymentsRes.value.payments;
                 if (paymentIntakeRes.status === 'fulfilled' && paymentIntakeRes.value?.intake) paymentIntake = paymentIntakeRes.value.intake;
                 if (paymentReminderRes.status === 'fulfilled') paymentReminderPreview = paymentReminderRes.value;
+                if (greenInvoiceRes.status === 'fulfilled' && greenInvoiceRes.value?.events) greenInvoiceWebhooks = greenInvoiceRes.value.events;
                 if (contentJobsRes.status === 'fulfilled' && contentJobsRes.value?.jobs) contentJobs = contentJobsRes.value.jobs;
                 if (contentPromptsRes.status === 'fulfilled' && contentPromptsRes.value?.prompts) contentPrompts = contentPromptsRes.value.prompts;
                 if (contentBundlesRes.status === 'fulfilled' && contentBundlesRes.value?.bundles) contentBundles = contentBundlesRes.value.bundles;
@@ -8459,7 +8468,7 @@
                 if (accountabilityRes.status === 'fulfilled' && accountabilityRes.value?.events) accountabilityEvents = accountabilityRes.value.events;
                 if (groupGoalsRes.status === 'fulfilled' && groupGoalsRes.value?.goals) groupGoals = groupGoalsRes.value.goals;
 
-                const errors = [projectsRes, tasksRes, calendarRes, automationsRes, integrationsRes, usersRes, invitationsRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes]
+                const errors = [projectsRes, tasksRes, calendarRes, automationsRes, integrationsRes, usersRes, invitationsRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, greenInvoiceRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes]
                     .filter((result) => result.status === 'rejected')
                     .map((result) => result.reason?.message || 'Unknown dashboard error');
 
@@ -8635,6 +8644,11 @@
             integrationStatuses = [];
             workspaceUsers = [];
             workspaceInvitations = [];
+            signups = [];
+            payments = [];
+            paymentIntake = [];
+            paymentReminderPreview = null;
+            greenInvoiceWebhooks = [];
             contentSection = 'library';
             contentTypeFilter = 'all';
             contentDateFilter = 'all';
@@ -8678,7 +8692,7 @@
             const button = event?.currentTarget;
             if (button) button.disabled = true;
             try {
-                paymentReminderPreview = await api.getPaymentReminderDue();
+                paymentReminderPreview = await api.getPaymentReminderDue({ project: selectedProjectFilter() || undefined });
                 render();
             } catch (error) {
                 alert(error.message);
@@ -8692,7 +8706,10 @@
             const button = event?.currentTarget;
             if (button) button.disabled = true;
             try {
-                paymentReminderPreview = await api.runPaymentReminders({ dryRun: true });
+                paymentReminderPreview = await api.runPaymentReminders({
+                    dryRun: true,
+                    project: selectedProjectFilter() || undefined
+                });
                 alert(`Dry run complete. ${paymentReminderPreview.found || 0} reminder(s) would be sent.`);
                 render();
             } catch (error) {
@@ -8711,7 +8728,8 @@
             try {
                 paymentReminderPreview = await api.runPaymentReminders({
                     dryRun: false,
-                    confirm: 'SEND_REMINDERS'
+                    confirm: 'SEND_REMINDERS',
+                    project: selectedProjectFilter() || undefined
                 });
                 alert(`Sent ${paymentReminderPreview.sent?.length || 0} reminder(s). Failed: ${paymentReminderPreview.failed?.length || 0}.`);
                 await loadData();
@@ -9040,10 +9058,15 @@
 
         async function reprocessGreenInvoiceWebhook(event, id) {
             event?.stopPropagation?.();
+            const typed = prompt('Type REPROCESS_GREEN_INVOICE to reprocess this webhook.');
+            if (typed !== 'REPROCESS_GREEN_INVOICE') return;
             const button = event?.currentTarget;
             if (button) button.disabled = true;
             try {
-                const res = await api.reprocessGreenInvoiceWebhook(id);
+                const res = await api.reprocessGreenInvoiceWebhook(id, {
+                    confirm: 'REPROCESS_GREEN_INVOICE',
+                    project: selectedProjectFilter() || undefined
+                });
                 alert(res?.matched
                     ? `Webhook reprocessed and matched to signup #${res.webhookLog?.matched_signup_id || 'unknown'}.`
                     : 'Webhook reprocessed. It is still unmatched, so check the intake/accounting records.');
@@ -9589,7 +9612,9 @@
                 payment_type: 'registration',
                 status: 'completed',
                 received_by: 'operator',
-                notes: 'Logged via dashboard'
+                notes: 'Logged via dashboard',
+                project: selectedProjectFilter() || undefined,
+                confirm: 'LOG_PAYMENT'
             }).then(() => loadData());
         }
 
@@ -9613,12 +9638,18 @@
                 method,
                 status: 'needs_signup',
                 source: 'manual',
-                notes
+                notes,
+                project: selectedProjectFilter() || undefined,
+                confirm: 'CAPTURE_PAYMENT_INTAKE'
             }).then(() => loadData());
         }
 
         function markIntakeDone(id) {
-            api.updatePaymentIntake(id, { status: 'completed' }).then(() => loadData());
+            api.updatePaymentIntake(id, {
+                status: 'completed',
+                project: selectedProjectFilter() || undefined,
+                confirm: 'UPDATE_PAYMENT_INTAKE'
+            }).then(() => loadData());
         }
 
         function createManualContentJob() {

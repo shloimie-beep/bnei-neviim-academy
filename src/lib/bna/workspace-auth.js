@@ -22,14 +22,39 @@ const SCOPED_SHARED_ROUTE_PATTERNS = [
   { method: 'GET', pattern: /^\/api\/bna\/invitations$/ }
 ];
 
+const SCOPED_ACCOUNTING_ROUTE_PATTERNS = [
+  { method: 'GET', pattern: /^\/api\/bna\/signups$/ },
+  { method: 'GET', pattern: /^\/api\/bna\/payments$/ },
+  { method: 'POST', pattern: /^\/api\/bna\/payments$/ },
+  { method: 'GET', pattern: /^\/api\/bna\/payment-intake$/ },
+  { method: 'POST', pattern: /^\/api\/bna\/payment-intake$/ },
+  { method: 'PATCH', pattern: /^\/api\/bna\/payment-intake\/\d+$/ },
+  { method: 'DELETE', pattern: /^\/api\/bna\/payment-intake\/\d+$/ },
+  { method: 'POST', pattern: /^\/api\/bna\/payment-intake\/reconcile-paid$/ },
+  { method: 'GET', pattern: /^\/api\/bna\/payment-reminders\/due$/ },
+  { method: 'POST', pattern: /^\/api\/bna\/payment-reminders\/run$/ },
+  { method: 'GET', pattern: /^\/api\/bna\/green-invoice\/webhooks$/ },
+  { method: 'POST', pattern: /^\/api\/bna\/green-invoice\/webhooks\/\d+\/reprocess$/ }
+];
+
 function normalizeProjectKey(value) {
   return String(value || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
+}
+
+function scopedViewAllowed(identity, view) {
+  const allowedViews = Array.isArray(identity?.allowedViews) ? identity.allowedViews : [];
+  return allowedViews.includes(view);
 }
 
 function scopedRouteAllowed(identity, { path, method }) {
   if (isGlobalOpsScope(identity?.scope)) return true;
   const routePath = String(path || '');
   const routeMethod = String(method || '').toUpperCase();
+  if (
+    SCOPED_ACCOUNTING_ROUTE_PATTERNS.some((entry) => entry.method === routeMethod && entry.pattern.test(routePath))
+  ) {
+    return scopedViewAllowed(identity, 'accounting');
+  }
   const allowedPatterns = [...SCOPED_SHARED_ROUTE_PATTERNS, ...SCOPED_TASK_ROUTE_PATTERNS];
   return allowedPatterns.some((entry) => entry.method === routeMethod && entry.pattern.test(routePath));
 }

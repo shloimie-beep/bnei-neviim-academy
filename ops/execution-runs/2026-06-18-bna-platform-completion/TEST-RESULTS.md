@@ -260,3 +260,18 @@ Workspace-scoped users, roles, and invitations (2026-06-18T23:54:00+03:00):
 
 No deployment, production-data mutation, invitation send, account mutation,
 audit crawl, watch loop, or agent-fleet loop was performed.
+
+Workspace payment/accounting scoping and safe actions (2026-06-18T23:58:00+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/accounting-scope.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/accounting-scope.test.js tests/workspace-auth.test.js
+  tests/workspace-http-isolation.test.js tests/operations-workspace-selector.test.js`
+  19/19.
+- PASS `npm test` 156/156.
+
+No deployment, production-data mutation, payment reminder send, Green Invoice
+reprocess, production migration, audit crawl, watch loop, or agent-fleet loop
+was performed. Legacy GHL sync from payment intake is now rejected before any
+external mutation.

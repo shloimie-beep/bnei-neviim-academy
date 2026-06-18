@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-18T23:54:00+03:00",
+  "updated_at": "2026-06-18T23:58:00+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -1958,7 +1958,7 @@
       "area": "modules",
       "priority": "P0",
       "current_verdict": "partial",
-      "status": "not_started",
+      "status": "needs_verification",
       "expected_result": "Accounting and payment actions preserve workspace scoping and require safe confirmations where needed.",
       "acceptance_criteria": [
         "Workspace payment/accounting scoping and safe actions is implemented against the canonical Express/static runtime where applicable.",
@@ -1969,12 +1969,37 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "Payment/accounting read APIs now accept scoped/requested workspace project filters and return workspace/project metadata for payments, payment intake, reminders, and Green Invoice webhook audit rows.",
+        "Accounting mutations now require explicit confirmation tokens and verify signup/intake/webhook rows against the selected/scoped workspace before writing.",
+        "Green Invoice webhook matching is constrained to the default BNA school workspace so contact overlap cannot match a provider workspace signup.",
+        "Operations Accounting now passes selectedProjectFilter through payment, intake, reminder, and Green Invoice audit loads/actions and clears accounting state when switching workspace.",
+        "Legacy GHL sync is disabled for BNA payment intake; the route creates only first-party BNA payment intake records unless rejected before external mutation."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check server.js PASS",
+        "node --check tests/accounting-scope.test.js PASS",
+        "Operations HTML script parse via vm.Script PASS (2 script blocks)",
+        "node --test tests/accounting-scope.test.js tests/workspace-auth.test.js tests/workspace-http-isolation.test.js tests/operations-workspace-selector.test.js PASS 19/19",
+        "npm test PASS 156/156"
+      ],
+      "implementation_commits": [
+        "current batch commit: feat: scope accounting actions"
+      ],
+      "files_changed": [
+        "server.js",
+        "public/operations.html",
+        "src/lib/bna/workspace-auth.js",
+        "tests/accounting-scope.test.js",
+        "tests/workspace-auth.test.js",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/STATUS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md"
+      ],
+      "notes": "Local implementation and tests passed. Status remains needs_verification because this item is live_required and still needs release approval, deployment, live smoke, and any production-data/migration approval before closure. No payment sends, Green Invoice reprocess, production data mutation, deployment, audit crawl, watch loop, or agent-fleet loop was run."
     },
     {
       "id": "REQ-20260618-152",

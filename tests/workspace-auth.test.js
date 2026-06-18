@@ -25,6 +25,16 @@ function oneTimeIdentity() {
   });
 }
 
+function accountingIdentity() {
+  return createWorkspaceIdentity({
+    username: 'bookkeeper',
+    workspaceType: 'school',
+    workspaceKey: 'bna',
+    projectKey: 'bna',
+    allowedViews: ['tasks', 'calendar', 'accounting']
+  });
+}
+
 test('super admin can reach scoped and cross-module operation routes intentionally', () => {
   const identity = createSuperAdminIdentity('Shloimie', ['tasks', 'students', 'content']);
 
@@ -70,6 +80,30 @@ test('ordinary workspace users may use only scoped task routes and safe shared c
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/integrations/status', method: 'POST' }), false);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/users', method: 'POST' }), false);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/invitations', method: 'POST' }), false);
+});
+
+test('workspace users with accounting view may use only scoped accounting routes', () => {
+  const identity = accountingIdentity();
+
+  for (const { method, path: pathName } of [
+    { method: 'GET', path: '/api/bna/signups' },
+    { method: 'GET', path: '/api/bna/payments' },
+    { method: 'POST', path: '/api/bna/payments' },
+    { method: 'GET', path: '/api/bna/payment-intake' },
+    { method: 'POST', path: '/api/bna/payment-intake' },
+    { method: 'PATCH', path: '/api/bna/payment-intake/7' },
+    { method: 'DELETE', path: '/api/bna/payment-intake/7' },
+    { method: 'POST', path: '/api/bna/payment-intake/reconcile-paid' },
+    { method: 'GET', path: '/api/bna/payment-reminders/due' },
+    { method: 'POST', path: '/api/bna/payment-reminders/run' },
+    { method: 'GET', path: '/api/bna/green-invoice/webhooks' },
+    { method: 'POST', path: '/api/bna/green-invoice/webhooks/7/reprocess' }
+  ]) {
+    assert.equal(scopedRouteAllowed(identity, { path: pathName, method }), true, `${method} ${pathName}`);
+  }
+
+  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/students', method: 'GET' }), false);
+  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/agent-fleet/status', method: 'GET' }), false);
 });
 
 test('ordinary workspace users cannot access another project task row by changing ID', () => {

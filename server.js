@@ -723,25 +723,46 @@ function paymentReminderEmail(signup) {
   return { subject, text, html: text.replace(/\n/g, '<br>') };
 }
 
-async function getPaymentReminderCandidates({ daysBefore = PAYMENT_REMINDER_DAYS_BEFORE, limit = 100 } = {}) {
+async function getPaymentReminderCandidates({ daysBefore = PAYMENT_REMINDER_DAYS_BEFORE, limit = 100, projectKey = '' } = {}) {
   const today = toDateOnly(new Date());
   const reminderTarget = toDateOnly(addDays(new Date(), Number(daysBefore) || PAYMENT_REMINDER_DAYS_BEFORE));
+  const params = [reminderTarget, today];
+  const conditions = [
+    's.payment_due_date IS NOT NULL',
+    "COALESCE(s.status, 'new') <> 'archived'",
+    's.payment_due_date <= $1::date',
+    "s.payment_status IN ('pending', 'paid', 'partial')",
+    '(s.payment_reminder_sent_at IS NULL OR s.payment_reminder_sent_at::date < $2::date)',
+  ];
+  addAccountingProjectCondition(conditions, params, projectKey, 'proj', 'w');
+  params.push(Math.min(Number(limit) || 100, 500));
   const result = await pool.query(
-    `SELECT *
-     FROM signups
-     WHERE payment_due_date IS NOT NULL
-       AND COALESCE(status, 'new') <> 'archived'
-       AND payment_due_date <= $1::date
-       AND payment_status IN ('pending', 'paid', 'partial')
-       AND (payment_reminder_sent_at IS NULL OR payment_reminder_sent_at::date < $2::date)
-     ORDER BY payment_due_date ASC
-     LIMIT $3`,
-    [reminderTarget, today, Math.min(Number(limit) || 100, 500)]
+    `SELECT s.*,
+            proj.project_key,
+            proj.name AS project_name,
+            proj.short_name AS project_short_name,
+            w.workspace_key,
+            w.workspace_type,
+            w.name AS workspace_name
+     FROM signups s
+     LEFT JOIN bna_workspaces w ON w.id = s.workspace_id
+     LEFT JOIN LATERAL (
+       SELECT p.project_key, p.name, p.short_name
+       FROM bna_projects p
+       WHERE p.workspace_id = s.workspace_id
+       ORDER BY p.id ASC
+       LIMIT 1
+     ) proj ON TRUE
+     WHERE ${conditions.join(' AND ')}
+     ORDER BY s.payment_due_date ASC
+     LIMIT $${params.length}`,
+    params
   );
 
   return {
     today,
     reminderTarget,
+    project: projectKey || 'all',
     candidates: result.rows,
   };
 }
@@ -759,12 +780,17 @@ function summarizePaymentReminderCandidate(signup) {
     payment_due_date: signup.payment_due_date,
     last_payment_at: signup.last_payment_at,
     language: normalizeLanguage(signup.form_language),
+    project_key: signup.project_key || signup.workspace_key || null,
+    project_name: signup.project_name || signup.workspace_name || null,
+    project_short_name: signup.project_short_name || null,
+    workspace_key: signup.workspace_key || null,
+    workspace_name: signup.workspace_name || null,
     subject: email.subject,
   };
 }
 
-async function runPaymentReminderSweep({ dryRun = false, daysBefore = PAYMENT_REMINDER_DAYS_BEFORE } = {}) {
-  const { reminderTarget, candidates } = await getPaymentReminderCandidates({ daysBefore });
+async function runPaymentReminderSweep({ dryRun = false, daysBefore = PAYMENT_REMINDER_DAYS_BEFORE, projectKey = '' } = {}) {
+  const { reminderTarget, candidates, project } = await getPaymentReminderCandidates({ daysBefore, projectKey });
 
   const sent = [];
   const failed = [];
@@ -815,6 +841,7 @@ async function runPaymentReminderSweep({ dryRun = false, daysBefore = PAYMENT_RE
     success: failed.length === 0,
     dryRun,
     reminderTarget,
+    project,
     found: candidates.length,
     sent,
     failed,
@@ -825,7 +852,7 @@ function startPaymentReminderScheduler() {
   if (String(process.env.PAYMENT_REMINDER_SCHEDULER || 'on').toLowerCase() === 'off') return;
   const intervalMs = Number(process.env.PAYMENT_REMINDER_SWEEP_MS || 6 * 60 * 60 * 1000);
   setInterval(() => {
-    runPaymentReminderSweep()
+    runPaymentReminderSweep({ projectKey: DEFAULT_PROJECT_KEY })
       .then((result) => {
         if (result.found || result.failed.length) {
           console.log(`Payment reminder sweep: found=${result.found} sent=${result.sent.length} failed=${result.failed.length}`);
@@ -4020,6 +4047,7 @@ async function upsertGreenInvoiceWebhookLog(normalized, headers = {}, db = pool)
 }
 
 async function findMatchingSignupForGreenInvoice(normalized, db = pool) {
+  const defaultWorkspace = await getDefaultSchoolWorkspace(db);
   const result = await db.query(
     `SELECT *
      FROM signups
@@ -4028,12 +4056,14 @@ async function findMatchingSignupForGreenInvoice(normalized, db = pool) {
        OR ($2 <> '' AND parent_phone IS NOT NULL AND regexp_replace(parent_phone, '\\D', '', 'g') = $2)
        OR ($3 <> '' AND parent_name IS NOT NULL AND lower(parent_name) = lower($3))
      )
+       AND workspace_id IS NOT DISTINCT FROM $4
      ORDER BY created_at DESC
      LIMIT 1`,
     [
       normalized.payerEmail || '',
       normalizeDigits(normalized.payerPhone || ''),
       normalized.payerName || '',
+      defaultWorkspace.id,
     ]
   );
   return result.rows[0] || null;
@@ -4192,9 +4222,10 @@ async function processGreenInvoiceWebhook(rawPayload, headers = {}, options = {}
             `SELECT *
              FROM bna_payment_intake
              WHERE green_invoice_id = $1
+               AND workspace_id IS NOT DISTINCT FROM $2
              ORDER BY received_at DESC
              LIMIT 1`,
-            [greenInvoiceId]
+            [greenInvoiceId, webhookLog.workspace_id || null]
           )
         ).rows[0]
       : null;
@@ -4209,6 +4240,7 @@ async function processGreenInvoiceWebhook(rawPayload, headers = {}, options = {}
              amount = COALESCE($5, amount),
              currency = COALESCE($6, currency),
              green_invoice_url = COALESCE($7, green_invoice_url),
+             workspace_id = COALESCE(workspace_id, $9),
              status = CASE WHEN status = 'completed' THEN status ELSE 'needs_signup' END,
              source = 'green_invoice',
              source_context = $8,
@@ -4223,6 +4255,7 @@ async function processGreenInvoiceWebhook(rawPayload, headers = {}, options = {}
           normalized.currency || 'ILS',
           normalized.greenInvoiceUrl,
           JSON.stringify(normalized.rawPayload || {}),
+          webhookLog.workspace_id || null,
         ]
       );
       processingNotes.push(`Updated existing payment intake ${existingIntake.id}.`);
@@ -4238,6 +4271,7 @@ async function processGreenInvoiceWebhook(rawPayload, headers = {}, options = {}
           payment_type: 'registration',
           green_invoice_id: greenInvoiceId,
           green_invoice_url: normalized.greenInvoiceUrl,
+          workspace_id: webhookLog.workspace_id || null,
           status: 'needs_signup',
           source: 'green_invoice',
           source_context: normalized.rawPayload || {},
@@ -5516,6 +5550,106 @@ function assertProjectAccess(req, project) {
     error.statusCode = 403;
     throw error;
   }
+}
+
+function accountingProjectKeyFromRequest(req, input = {}) {
+  const scopedProjectKey = opsScopeProjectKey(req);
+  if (scopedProjectKey) return normalizeProjectKey(scopedProjectKey);
+  return normalizeProjectKey(
+    req?.query?.project ||
+    req?.query?.project_key ||
+    input.project ||
+    input.project_key ||
+    input.projectName ||
+    input.project_name ||
+    ''
+  );
+}
+
+function addAccountingProjectCondition(conditions, params, projectKey, projectAlias = 'proj', workspaceAlias = 'w') {
+  const normalizedProjectKey = normalizeProjectKey(projectKey);
+  if (!normalizedProjectKey) return;
+  params.push(normalizedProjectKey);
+  conditions.push(`COALESCE(${projectAlias}.project_key, ${workspaceAlias}.workspace_key, '') = $${params.length}`);
+}
+
+function scopedAccountingNotFoundStatus(req) {
+  return opsScopeProjectKey(req) ? 403 : 404;
+}
+
+async function resolveAccountingProjectForWrite(req, input = {}, db = pool) {
+  const projectKey = accountingProjectKeyFromRequest(req, input) || DEFAULT_PROJECT_KEY;
+  const project = await getProjectByKey(projectKey, db);
+  assertProjectAccess(req, project);
+  return project;
+}
+
+async function assertSignupAccountingAccess(req, signupId, projectKey = accountingProjectKeyFromRequest(req), db = pool) {
+  const params = [signupId];
+  const conditions = ['s.id = $1'];
+  addAccountingProjectCondition(conditions, params, projectKey, 'proj', 'w');
+  const result = await db.query(
+    `SELECT s.*,
+            proj.project_key,
+            proj.name AS project_name,
+            proj.short_name AS project_short_name,
+            w.workspace_key,
+            w.workspace_type,
+            w.name AS workspace_name
+     FROM signups s
+     LEFT JOIN bna_workspaces w ON w.id = s.workspace_id
+     LEFT JOIN LATERAL (
+       SELECT p.project_key, p.name, p.short_name
+       FROM bna_projects p
+       WHERE p.workspace_id = s.workspace_id
+       ORDER BY p.id ASC
+       LIMIT 1
+     ) proj ON TRUE
+     WHERE ${conditions.join(' AND ')}
+     LIMIT 1`,
+    params
+  );
+  const signup = result.rows[0];
+  if (!signup) {
+    const error = new Error('Signup is not visible in the selected accounting workspace.');
+    error.statusCode = scopedAccountingNotFoundStatus(req);
+    throw error;
+  }
+  return signup;
+}
+
+async function assertPaymentIntakeAccountingAccess(req, intakeId, projectKey = accountingProjectKeyFromRequest(req), db = pool) {
+  const params = [intakeId];
+  const conditions = ['i.id = $1'];
+  addAccountingProjectCondition(conditions, params, projectKey, 'proj', 'w');
+  const result = await db.query(
+    `SELECT i.*,
+            proj.project_key,
+            proj.name AS project_name,
+            proj.short_name AS project_short_name,
+            w.workspace_key,
+            w.workspace_type,
+            w.name AS workspace_name
+     FROM bna_payment_intake i
+     LEFT JOIN bna_workspaces w ON w.id = i.workspace_id
+     LEFT JOIN LATERAL (
+       SELECT p.project_key, p.name, p.short_name
+       FROM bna_projects p
+       WHERE p.workspace_id = i.workspace_id
+       ORDER BY p.id ASC
+       LIMIT 1
+     ) proj ON TRUE
+     WHERE ${conditions.join(' AND ')}
+     LIMIT 1`,
+    params
+  );
+  const intake = result.rows[0];
+  if (!intake) {
+    const error = new Error('Payment intake record is not visible in the selected accounting workspace.');
+    error.statusCode = scopedAccountingNotFoundStatus(req);
+    throw error;
+  }
+  return intake;
 }
 
 async function assertTaskAccess(req, taskId, db = pool) {
@@ -9084,33 +9218,76 @@ app.post('/api/bna/torah-learning/reconcile-trip-progress', requireAdmin, async 
 
 app.get('/api/bna/green-invoice/webhooks', requireAdmin, async (req, res) => {
   const limit = Math.min(Number(req.query.limit) || 50, 200);
+  const projectKey = accountingProjectKeyFromRequest(req);
+  const params = [];
+  const conditions = [];
+  addAccountingProjectCondition(conditions, params, projectKey, 'proj', 'w');
+  params.push(limit);
+  const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
   try {
     const result = await pool.query(
       `SELECT l.*,
               row_to_json(s.*) AS signup,
-              row_to_json(st.*) AS student
+              row_to_json(st.*) AS student,
+              proj.project_key,
+              proj.name AS project_name,
+              proj.short_name AS project_short_name,
+              w.workspace_key,
+              w.workspace_type,
+              w.name AS workspace_name
        FROM bna_green_invoice_webhook_log l
        LEFT JOIN signups s ON s.id = l.matched_signup_id
        LEFT JOIN bna_students st ON st.id = l.matched_student_id
+       LEFT JOIN bna_workspaces w ON w.id = COALESCE(l.workspace_id, s.workspace_id, st.workspace_id)
+       LEFT JOIN LATERAL (
+         SELECT p.project_key, p.name, p.short_name
+         FROM bna_projects p
+         WHERE p.workspace_id = COALESCE(l.workspace_id, s.workspace_id, st.workspace_id)
+         ORDER BY p.id ASC
+         LIMIT 1
+       ) proj ON TRUE
+       ${whereClause}
        ORDER BY l.webhook_received_at DESC, l.id DESC
-       LIMIT $1`,
-      [limit]
+       LIMIT $${params.length}`,
+      params
     );
-    res.json({ events: result.rows });
+    res.json({ events: result.rows, project: projectKey || 'all' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 app.post('/api/bna/green-invoice/webhooks/:id/reprocess', requireAdmin, async (req, res) => {
+  if (String(req.body?.confirm || '') !== 'REPROCESS_GREEN_INVOICE') {
+    return res.status(400).json({
+      error: 'Green Invoice reprocess requires confirm: REPROCESS_GREEN_INVOICE',
+      hint: 'Only reprocess after checking the selected workspace and webhook payload.',
+    });
+  }
+
   try {
+    const projectKey = accountingProjectKeyFromRequest(req, req.body || {});
+    const params = [req.params.id];
+    const conditions = ['l.id = $1'];
+    addAccountingProjectCondition(conditions, params, projectKey, 'proj', 'w');
     const logResult = await pool.query(
-      'SELECT * FROM bna_green_invoice_webhook_log WHERE id = $1 LIMIT 1',
-      [req.params.id]
+      `SELECT l.*
+       FROM bna_green_invoice_webhook_log l
+       LEFT JOIN bna_workspaces w ON w.id = l.workspace_id
+       LEFT JOIN LATERAL (
+         SELECT p.project_key
+         FROM bna_projects p
+         WHERE p.workspace_id = l.workspace_id
+         ORDER BY p.id ASC
+         LIMIT 1
+       ) proj ON TRUE
+       WHERE ${conditions.join(' AND ')}
+       LIMIT 1`,
+      params
     );
     const logRow = logResult.rows[0];
     if (!logRow) {
-      return res.status(404).json({ error: 'Green Invoice webhook log not found' });
+      return res.status(scopedAccountingNotFoundStatus(req)).json({ error: 'Green Invoice webhook log not found in the selected workspace' });
     }
 
     const result = await processGreenInvoiceWebhook(
@@ -9436,36 +9613,65 @@ app.post('/api/bna/group-goals/:id/entries', requireAdmin, async (req, res) => {
 
 // BNA dashboard: payment intake for parents who paid before signup
 app.get('/api/bna/payment-intake', requireAdmin, async (req, res) => {
-  const { status } = req.query;
+  const { status, project } = req.query;
+  const scopedProjectKey = opsScopeProjectKey(req);
+  const requestedProjectKey = project && project !== 'all' ? normalizeProjectKey(project) : '';
+  const projectKey = scopedProjectKey || requestedProjectKey;
   const params = [];
-  let whereClause = '';
+  const conditions = [];
 
   if (status) {
     params.push(status);
-    whereClause = `WHERE i.status = $${params.length}`;
+    conditions.push(`i.status = $${params.length}`);
   }
+
+  addAccountingProjectCondition(conditions, params, projectKey, 'proj', 'w');
+  const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
   try {
     const result = await pool.query(
-      `SELECT i.*, row_to_json(s.*) AS signup
+      `SELECT i.*,
+              row_to_json(s.*) AS signup,
+              proj.project_key,
+              proj.name AS project_name,
+              proj.short_name AS project_short_name,
+              w.workspace_key,
+              w.workspace_type,
+              w.name AS workspace_name
        FROM bna_payment_intake i
        LEFT JOIN signups s ON s.id = i.signup_id
+       LEFT JOIN bna_workspaces w ON w.id = COALESCE(i.workspace_id, s.workspace_id)
+       LEFT JOIN LATERAL (
+         SELECT p.project_key, p.name, p.short_name
+         FROM bna_projects p
+         WHERE p.workspace_id = COALESCE(i.workspace_id, s.workspace_id)
+         ORDER BY p.id ASC
+         LIMIT 1
+       ) proj ON TRUE
        ${whereClause}
        ORDER BY i.received_at DESC, i.created_at DESC
        LIMIT 100`,
       params
     );
-    res.json({ intake: result.rows });
+    res.json({ intake: result.rows, project: projectKey || 'all' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 app.post('/api/bna/payment-intake/reconcile-paid', requireAdmin, async (req, res) => {
+  if (String(req.body?.confirm || '') !== 'RECONCILE_PAID_INTAKE') {
+    return res.status(400).json({
+      error: 'Paid-intake reconciliation requires confirm: RECONCILE_PAID_INTAKE',
+      hint: 'Review the selected workspace and records before creating/updating signups and payment logs.',
+    });
+  }
+
   const records = Array.isArray(req.body?.records) ? req.body.records : [];
   if (!records.length) {
     return res.status(400).json({ error: 'records array is required' });
   }
+  const projectKey = accountingProjectKeyFromRequest(req, req.body || {}) || DEFAULT_PROJECT_KEY;
 
   const client = await pool.connect();
   const results = [];
@@ -9491,27 +9697,40 @@ app.post('/api/bna/payment-intake/reconcile-paid', requireAdmin, async (req, res
         throw new Error('Each record requires intake_id, student_name, parent_name, amount, method, paid_at, and due_date');
       }
 
+      const intakeRecord = await assertPaymentIntakeAccountingAccess(req, intakeId, projectKey, client);
       const student = (await client.query(
-        `SELECT *
-         FROM bna_students
-         WHERE lower(name) = lower($1)
-           AND status <> 'inactive'
-         ORDER BY id DESC
+        `SELECT st.*
+         FROM bna_students st
+         LEFT JOIN bna_workspaces w ON w.id = st.workspace_id
+         LEFT JOIN LATERAL (
+           SELECT p.project_key
+           FROM bna_projects p
+           WHERE p.workspace_id = st.workspace_id
+           ORDER BY p.id ASC
+           LIMIT 1
+         ) proj ON TRUE
+         WHERE lower(st.name) = lower($1)
+           AND st.status <> 'inactive'
+           AND COALESCE(proj.project_key, w.workspace_key, '') = $2
+         ORDER BY st.id DESC
          LIMIT 1`,
-        [studentName]
+        [studentName, projectKey]
       )).rows[0];
 
       if (!student) {
-        throw new Error(`No active student found for ${studentName}`);
+        throw new Error(`No active student found for ${studentName} in the selected accounting workspace`);
       }
       const defaultWorkspace = await getDefaultSchoolWorkspace(client);
-      const workspaceId = student.workspace_id || defaultWorkspace.id;
+      const workspaceId = student.workspace_id || intakeRecord.workspace_id || defaultWorkspace.id;
 
       const existingSignup = student.signup_id
-        ? (await client.query('SELECT * FROM signups WHERE id = $1', [student.signup_id])).rows[0]
+        ? (await client.query(
+            'SELECT * FROM signups WHERE id = $1 AND workspace_id IS NOT DISTINCT FROM $2',
+            [student.signup_id, workspaceId]
+          )).rows[0]
         : (await client.query(
-            'SELECT * FROM signups WHERE lower(student_name) = lower($1) ORDER BY id DESC LIMIT 1',
-            [studentName]
+            'SELECT * FROM signups WHERE lower(student_name) = lower($1) AND workspace_id IS NOT DISTINCT FROM $2 ORDER BY id DESC LIMIT 1',
+            [studentName, workspaceId]
           )).rows[0];
 
       const adminTags = ['parent', 'bna', 'admin_intake'];
@@ -9643,6 +9862,7 @@ app.post('/api/bna/payment-intake/reconcile-paid', requireAdmin, async (req, res
              END,
              updated_at = NOW()
           WHERE id = $10
+            AND (workspace_id IS NULL OR workspace_id IS NOT DISTINCT FROM $11)
           RETURNING id, status, signup_id`,
         [
           signup.id,
@@ -9674,18 +9894,30 @@ app.post('/api/bna/payment-intake/reconcile-paid', requireAdmin, async (req, res
       });
     }
 
+    const remainingParams = [];
+    const remainingConditions = ["i.status = 'needs_signup'"];
+    addAccountingProjectCondition(remainingConditions, remainingParams, projectKey, 'proj', 'w');
     const remainingNeedsSignup = (await client.query(
-      `SELECT id, parent_name, student_name, amount, method
-       FROM bna_payment_intake
-       WHERE status = 'needs_signup'
-       ORDER BY id`
+      `SELECT i.id, i.parent_name, i.student_name, i.amount, i.method
+       FROM bna_payment_intake i
+       LEFT JOIN bna_workspaces w ON w.id = i.workspace_id
+       LEFT JOIN LATERAL (
+         SELECT p.project_key
+         FROM bna_projects p
+         WHERE p.workspace_id = i.workspace_id
+         ORDER BY p.id ASC
+         LIMIT 1
+       ) proj ON TRUE
+       WHERE ${remainingConditions.join(' AND ')}
+       ORDER BY i.id`,
+      remainingParams
     )).rows;
 
     await client.query('COMMIT');
     res.json({ success: true, results, remaining_needs_signup: remainingNeedsSignup });
   } catch (err) {
     await client.query('ROLLBACK');
-    res.status(500).json({ error: err.message, stack: err.stack });
+    res.status(err.statusCode || 500).json({ error: err.message, stack: err.stack });
   } finally {
     client.release();
   }
@@ -9709,30 +9941,28 @@ app.post('/api/bna/payment-intake', requireAdmin, async (req, res) => {
     source_context,
     received_at,
     notes,
+    confirm,
   } = req.body || {};
 
+  if (String(confirm || '') !== 'CAPTURE_PAYMENT_INTAKE') {
+    return res.status(400).json({
+      error: 'Payment intake capture requires confirm: CAPTURE_PAYMENT_INTAKE',
+      hint: 'Review the selected workspace and payment details before creating an intake record.',
+    });
+  }
+
   try {
-    let ghlContactId = null;
-    if (GHL_PIT_TOKEN && (parent_email || parent_phone || parent_name)) {
-      try {
-        const nameParts = String(parent_name || 'BNA Parent').trim().split(/\s+/);
-        const firstName = nameParts.shift() || 'BNA';
-        const lastName = nameParts.join(' ') || 'Parent';
-        ghlContactId = await findOrCreateGHLContact(
-          parent_email || `${String(parent_phone || Date.now()).replace(/\D/g, '')}@bna.payment-intake`,
-          firstName,
-          lastName,
-          parent_phone || '',
-          { tags: ['BNA Parent', 'Payment Intake'] }
-        );
-        await addTagToContact(ghlContactId, 'BNA Parent');
-        await addTagToContact(ghlContactId, 'Payment Intake');
-      } catch (ghlErr) {
-        console.error('Payment intake GHL sync error:', ghlErr);
-      }
+    const project = await resolveAccountingProjectForWrite(req, req.body || {});
+    const signup = signup_id ? await assertSignupAccountingAccess(req, signup_id, project.project_key) : null;
+    if (req.body?.sync_legacy_ghl) {
+      return res.status(400).json({
+        error: 'Legacy GHL sync is disabled for BNA payment intake.',
+        hint: 'Capture the first-party BNA payment record only; do not mutate GHL from Operations.',
+      });
     }
 
     const intake = await createPaymentIntakeRecord({
+      workspace_id: signup?.workspace_id || project.workspace_id,
       signup_id,
       parent_name,
       parent_email,
@@ -9744,7 +9974,7 @@ app.post('/api/bna/payment-intake', requireAdmin, async (req, res) => {
       payment_type,
       green_invoice_id,
       green_invoice_url,
-      ghl_contact_id: ghlContactId,
+      ghl_contact_id: null,
       status,
       source,
       source_context,
@@ -9754,12 +9984,20 @@ app.post('/api/bna/payment-intake', requireAdmin, async (req, res) => {
 
     res.json({ success: true, intake });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
 app.patch('/api/bna/payment-intake/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
+  if (String(req.body?.confirm || '') !== 'UPDATE_PAYMENT_INTAKE') {
+    return res.status(400).json({
+      error: 'Payment intake updates require confirm: UPDATE_PAYMENT_INTAKE',
+      hint: 'Review the selected workspace and update before changing intake status/details.',
+    });
+  }
+
+  const projectKey = accountingProjectKeyFromRequest(req, req.body || {});
   const allowedFields = [
     'signup_id',
     'parent_name',
@@ -9790,30 +10028,55 @@ app.patch('/api/bna/payment-intake/:id', requireAdmin, async (req, res) => {
     return res.status(400).json({ error: 'No valid payment intake fields provided' });
   }
 
+  let existingIntake;
+  try {
+    existingIntake = await assertPaymentIntakeAccountingAccess(req, id, projectKey);
+    if (Object.prototype.hasOwnProperty.call(req.body || {}, 'signup_id') && req.body.signup_id) {
+      await assertSignupAccountingAccess(req, req.body.signup_id, projectKey);
+    }
+  } catch (err) {
+    return res.status(err.statusCode || 500).json({ error: err.message });
+  }
+
   values.push(id);
+  values.push(existingIntake.workspace_id || null);
 
   try {
     const result = await pool.query(
       `UPDATE bna_payment_intake
        SET ${fields.join(', ')}, updated_at = NOW()
-       WHERE id = $${values.length}
+       WHERE id = $${values.length - 1}
+         AND workspace_id IS NOT DISTINCT FROM $${values.length}
        RETURNING *`,
       values
     );
+    if (!result.rows[0]) {
+      return res.status(scopedAccountingNotFoundStatus(req)).json({ error: 'Payment intake record not found in the selected workspace' });
+    }
     res.json({ success: true, intake: result.rows[0] });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
 app.delete('/api/bna/payment-intake/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
+  if (String(req.body?.confirm || '') !== 'DELETE_PAYMENT_INTAKE') {
+    return res.status(400).json({
+      error: 'Payment intake deletes require confirm: DELETE_PAYMENT_INTAKE',
+      hint: 'Deleting accounting intake is permanent enough to require an explicit confirmation.',
+    });
+  }
 
   try {
-    await pool.query('DELETE FROM bna_payment_intake WHERE id = $1', [id]);
+    const existingIntake = await assertPaymentIntakeAccountingAccess(req, id, accountingProjectKeyFromRequest(req, req.body || {}));
+    await pool.query(
+      'DELETE FROM bna_payment_intake WHERE id = $1 AND workspace_id IS NOT DISTINCT FROM $2',
+      [id, existingIntake.workspace_id || null]
+    );
     res.json({ success: true });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -11323,42 +11586,64 @@ app.post('/api/bna/content-jobs/:id/actions', requireAdmin, async (req, res) => 
 
 // BNA dashboard: payments
 app.get('/api/bna/payments', requireAdmin, async (req, res) => {
-  const { signup_id } = req.query;
+  const { signup_id, project } = req.query;
+  const scopedProjectKey = opsScopeProjectKey(req);
+  const requestedProjectKey = project && project !== 'all' ? normalizeProjectKey(project) : '';
+  const projectKey = scopedProjectKey || requestedProjectKey;
   const params = [];
-  let whereClause = '';
+  const conditions = [];
 
   if (signup_id) {
     params.push(signup_id);
-    whereClause = `WHERE p.signup_id = $${params.length}`;
+    conditions.push(`pay.signup_id = $${params.length}`);
   }
+
+  addAccountingProjectCondition(conditions, params, projectKey, 'proj', 'w');
+  const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
   try {
     const result = await pool.query(
       `SELECT
-        p.*,
-        row_to_json(s.*) AS signup
-      FROM bna_payment_log p
-      LEFT JOIN signups s ON s.id = p.signup_id
+        pay.*,
+        row_to_json(s.*) AS signup,
+        proj.project_key,
+        proj.name AS project_name,
+        proj.short_name AS project_short_name,
+        w.workspace_key,
+        w.workspace_type,
+        w.name AS workspace_name
+      FROM bna_payment_log pay
+      LEFT JOIN signups s ON s.id = pay.signup_id
+      LEFT JOIN bna_workspaces w ON w.id = COALESCE(pay.workspace_id, s.workspace_id)
+      LEFT JOIN LATERAL (
+        SELECT p.project_key, p.name, p.short_name
+        FROM bna_projects p
+        WHERE p.workspace_id = COALESCE(pay.workspace_id, s.workspace_id)
+        ORDER BY p.id ASC
+        LIMIT 1
+      ) proj ON TRUE
       ${whereClause}
-      ORDER BY p.created_at DESC
+      ORDER BY pay.created_at DESC
       LIMIT 100`,
       params
     );
-    res.json({ payments: result.rows });
+    res.json({ payments: result.rows, project: projectKey || 'all' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
 app.get('/api/bna/payment-reminders/due', requireAdmin, async (req, res) => {
   try {
     const daysBefore = Number(req.query.days_before || req.query.daysBefore || PAYMENT_REMINDER_DAYS_BEFORE);
-    const { today, reminderTarget, candidates } = await getPaymentReminderCandidates({ daysBefore });
+    const projectKey = accountingProjectKeyFromRequest(req);
+    const { today, reminderTarget, candidates, project } = await getPaymentReminderCandidates({ daysBefore, projectKey });
     res.json({
       success: true,
       today,
       reminderTarget,
       daysBefore,
+      project,
       found: candidates.length,
       reminders: candidates.map(summarizePaymentReminderCandidate),
     });
@@ -11370,6 +11655,7 @@ app.get('/api/bna/payment-reminders/due', requireAdmin, async (req, res) => {
 app.post('/api/bna/payment-reminders/run', requireAdmin, async (req, res) => {
   const dryRun = req.body?.dryRun !== false;
   const confirm = String(req.body?.confirm || '');
+  const projectKey = accountingProjectKeyFromRequest(req, req.body || {});
   if (!dryRun && confirm !== 'SEND_REMINDERS') {
     return res.status(400).json({
       error: 'Live payment reminders require confirm: SEND_REMINDERS',
@@ -11381,6 +11667,7 @@ app.post('/api/bna/payment-reminders/run', requireAdmin, async (req, res) => {
     const result = await runPaymentReminderSweep({
       dryRun,
       daysBefore: Number(req.body?.daysBefore || PAYMENT_REMINDER_DAYS_BEFORE),
+      projectKey,
     });
     res.json(result);
   } catch (err) {
@@ -11397,23 +11684,37 @@ app.post('/api/bna/payments', requireAdmin, async (req, res) => {
     status = 'completed',
     received_by = 'operator',
     notes,
+    confirm,
   } = req.body;
 
   if (!signup_id || !amount || !method) {
     return res.status(400).json({ error: 'signup_id, amount, and method are required' });
   }
 
+  if (status === 'completed' && String(confirm || '') !== 'LOG_PAYMENT') {
+    return res.status(400).json({
+      error: 'Completed payment logs require confirm: LOG_PAYMENT',
+      hint: 'Preview the selected workspace and payment details, then resend with confirm:"LOG_PAYMENT".',
+    });
+  }
+
   try {
+    const projectKey = accountingProjectKeyFromRequest(req, req.body || {});
+    const signup = await assertSignupAccountingAccess(req, signup_id, projectKey);
     const result = await pool.query(
       `INSERT INTO bna_payment_log (
         workspace_id, signup_id, payment_type, amount, method, status, received_by, received_at, notes
       )
-       SELECT workspace_id, id, $2, $3, $4, $5, $6, NOW(), $7
-       FROM signups
-       WHERE id = $1
+       SELECT s.workspace_id, s.id, $2, $3, $4, $5, $6, NOW(), $7
+       FROM signups s
+       WHERE s.id = $1
        RETURNING *`,
       [signup_id, payment_type, amount, method, status, received_by, notes || null]
     );
+    const payment = result.rows[0];
+    if (!payment) {
+      return res.status(404).json({ error: 'Signup not found for payment logging' });
+    }
 
     if (status === 'completed') {
       await pool.query(
@@ -11425,14 +11726,15 @@ app.post('/api/bna/payments', requireAdmin, async (req, res) => {
              payment_due_date = (NOW()::date + COALESCE(payment_interval_days, $4) * INTERVAL '1 day')::date,
              payment_reminder_sent_at = NULL,
              updated_at = NOW()
-         WHERE id = $3`,
-        [amount, method, signup_id, DEFAULT_PAYMENT_INTERVAL_DAYS]
+         WHERE id = $3
+           AND workspace_id IS NOT DISTINCT FROM $5`,
+        [amount, method, signup_id, DEFAULT_PAYMENT_INTERVAL_DAYS, signup.workspace_id || null]
       );
     }
 
-    res.json({ success: true, payment: result.rows[0] });
+    res.json({ success: true, payment });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -11451,7 +11753,8 @@ app.post('/api/cron/payment-reminders', async (req, res) => {
   }
 
   try {
-    const result = await runPaymentReminderSweep({ dryRun });
+    const projectKey = normalizeProjectKey(req.query.project || DEFAULT_PROJECT_KEY) || DEFAULT_PROJECT_KEY;
+    const result = await runPaymentReminderSweep({ dryRun, projectKey });
     res.json(result);
   } catch (err) {
     res.status(500).json({ error: err.message });
