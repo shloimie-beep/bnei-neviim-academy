@@ -1,12 +1,12 @@
 # Status
 
-Updated: 2026-06-19T02:15:30+03:00
+Updated: 2026-06-19T02:30:30+03:00
 
 Status counts:
 
-- not_started: 4
+- not_started: 3
 - in_progress: 13
-- needs_verification: 46
+- needs_verification: 47
 - blocked: 3
 - needs_operator_decision: 1
 - done: 4
@@ -80,7 +80,7 @@ Open non-blocked IDs:
 - REQ-20260618-163 BNA-PUBLIC-001: Remove Operations login from public primary navigation (needs_verification)
 - REQ-20260618-164 BNA-PUBLIC-002: Provider CTA: Advertise your program for free (needs_verification)
 - REQ-20260618-165 BNA-PUBLIC-003: Direct parent signup/self-governance messaging and six-month offer (needs_verification)
-- REQ-20260618-166 BNA-PUBLIC-004: Consistent approved portal headers (not_started)
+- REQ-20260618-166 BNA-PUBLIC-004: Consistent approved portal headers (needs_verification)
 - REQ-20260618-167 BNA-PUBLIC-005: Public/blog/FAQ/signup/portal route and CTA integrity (not_started)
 - REQ-20260618-168 BNA-TEST-001: Isolated repeatable seed and cleanup data (not_started)
 - REQ-20260618-169 BNA-TEST-002: Route, interaction, responsive, helper, workspace, and student Playwright tests (not_started)
@@ -93,6 +93,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current implementation batch: REQ-20260618-165 clarifies direct parent signup/self-governance messaging across the English/Hebrew signup pages, signup thank-you confirmation, and parent PWA manifest. The parent app offer now consistently says six months free and says any paid continuation requires a separate parent decision. Next unblocked implementation target is REQ-20260618-166.
+Current implementation batch: REQ-20260618-166 normalizes the English signup header action wrapper and adds parent/provider portal-header identity coverage across public homepage, signup, parent PWA launch, Student Portal, Operations shell, and Operations login. Next unblocked implementation target is REQ-20260618-167.
 
 No deployment or production-data mutation is approved in this run.

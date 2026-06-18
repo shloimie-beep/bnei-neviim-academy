@@ -9,6 +9,18 @@ function read(file) {
   return fs.readFileSync(path.join(root, file), 'utf8');
 }
 
+function json(file) {
+  return JSON.parse(read(file));
+}
+
+function blockBetween(source, startMarker, endMarker) {
+  const start = source.indexOf(startMarker);
+  const end = source.indexOf(endMarker, start + startMarker.length);
+  assert.notEqual(start, -1, `Missing start marker: ${startMarker}`);
+  assert.notEqual(end, -1, `Missing end marker: ${endMarker}`);
+  return source.slice(start, end);
+}
+
 test('Operations shell uses the approved BNA logo with private Operations identity', () => {
   const operations = read('public/operations.html');
 
@@ -60,4 +72,36 @@ test('Public and signup pages keep public identity separate from Operations', ()
   assert.match(signup, /id="form_language" name="form_language" value="en"/);
   assert.match(signupHe, /<html lang="he" dir="rtl">/);
   assert.match(signupHe, /id="form_language" name="form_language" value="he"/);
+});
+
+test('Parent PWA launches into the public signup header pattern', () => {
+  const parentManifest = json('public/parent-manifest.json');
+  const signup = read('public/signup.html');
+  const signupHe = read('public/signup-he.html');
+
+  assert.equal(parentManifest.name, 'BNA Parent Portal');
+  assert.equal(parentManifest.start_url, '/signup?source=parent-pwa');
+  assert.equal(parentManifest.scope, '/signup');
+
+  for (const html of [signup, signupHe]) {
+    const nav = blockBetween(html, '<nav>', '</nav>');
+    assert.match(nav, /<a href="\/">[\s\S]*?<img src="images\/bna-logo-nobg\.png" alt="Bnei Nevi'im Academy" class="logo">[\s\S]*?<\/a>/);
+    assert.match(nav, /class="nav-actions"/);
+    assert.match(nav, /class="nav-btn"/);
+    assert.doesNotMatch(nav, /style="/);
+    assert.doesNotMatch(nav, /Operations portal|operations-manifest|\/operations/i);
+  }
+});
+
+test('Provider listing stays under the public homepage header', () => {
+  const index = read('public/index.html');
+  const nav = blockBetween(index, '<nav>', '</nav>');
+  const provider = blockBetween(index, '<section class="provider-listing-section" id="providers">', '<!-- CTA Section -->');
+
+  assert.match(nav, /class="nav-brand"/);
+  assert.match(nav, /<img src="images\/bna-logo-nobg\.png" alt="Bnei Nevi'im Academy" class="nav-logo">/);
+  assert.match(nav, /class="lang-toggle"/);
+  assert.match(provider, /For local providers/);
+  assert.match(provider, /Advertise your program for free/);
+  assert.doesNotMatch(provider, /<nav|<header|Operations portal|operations-manifest|\/operations/i);
 });

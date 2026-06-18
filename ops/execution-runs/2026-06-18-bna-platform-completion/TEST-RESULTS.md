@@ -406,3 +406,12 @@ Parent signup/self-governance six-month offer (2026-06-19T02:15:30+03:00):
 - PASS `npm test` 195/195.
 
 No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed.
+
+Portal header identity coverage (2026-06-19T02:30:30+03:00):
+
+- PASS `node --check tests/operations-identity-header.test.js`.
+- PASS portal/header inline script parse via `vm.Script` (6 script blocks across public/signup/Operations/student/login pages).
+- PASS `node --test tests/operations-identity-header.test.js tests/pwa-identity.test.js tests/public-navigation.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js` 21/21.
+- PASS `npm test` 197/197.
+
+No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed.

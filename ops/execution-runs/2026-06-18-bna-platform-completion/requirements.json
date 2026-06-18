@@ -350,7 +350,8 @@
       "evidence": [
         "Public primary navigation and shared public nav scripts are verified not to advertise private Operations login while private Operations routes remain intact.",
         "Homepage provider CTA now says Advertise your program for free and explains free community listing expectations.",
-        "Parent signup pages, signup thank-you, and parent manifest now use direct parent signup, self-governance positioning, and the six months free parent app offer."
+        "Parent signup pages, signup thank-you, and parent manifest now use direct parent signup, self-governance positioning, and the six months free parent app offer.",
+        "Portal header identity coverage now spans public homepage/provider listing, parent PWA signup launch, English/Hebrew signup, Student Portal, Operations shell, and Operations login while preserving manifest separation."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -359,9 +360,11 @@
         "node --test tests/public-provider-cta.test.js tests/public-navigation.test.js tests/pwa-identity.test.js PASS 11/11",
         "npm test PASS 191/191",
         "node --test tests/public-parent-offer.test.js tests/public-provider-cta.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js PASS 19/19",
-        "npm test PASS 195/195"
+        "npm test PASS 195/195",
+        "node --test tests/operations-identity-header.test.js tests/pwa-identity.test.js tests/public-navigation.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js PASS 21/21",
+        "npm test PASS 197/197"
       ],
-      "notes": "Public/copy parent remains in_progress until portal headers, route/CTA integrity, final acceptance, release approval, deploy, and live smoke are complete.",
+      "notes": "Public/copy parent remains in_progress until route/CTA integrity, final acceptance, release approval, deploy, and live smoke are complete.",
       "files_changed": [
         "tests/public-navigation.test.js",
         "public/index.html",
@@ -370,7 +373,8 @@
         "public/signup-he.html",
         "public/signup-thank-you.html",
         "public/parent-manifest.json",
-        "tests/public-parent-offer.test.js"
+        "tests/public-parent-offer.test.js",
+        "tests/operations-identity-header.test.js"
       ]
     },
     {
@@ -2721,8 +2725,8 @@
       "title": "Consistent approved portal headers",
       "area": "public",
       "priority": "P1",
-      "current_verdict": "partial",
-      "status": "not_started",
+      "current_verdict": "local_implemented_pending_release",
+      "status": "needs_verification",
       "expected_result": "Public, parent, student, provider, and Operations login pages share approved logo/header pattern while preserving permissions/manifest identity.",
       "acceptance_criteria": [
         "Consistent approved portal headers is implemented against the canonical Express/static runtime where applicable.",
@@ -2733,12 +2737,34 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "English signup header now uses the shared nav-actions class instead of inline action styling, matching the Hebrew signup header pattern.",
+        "Operations shell and login keep the approved BNA logo with private Operations portal identity and Operations manifest.",
+        "Student portal keeps BNA logo, Student Portal identity, and language controls.",
+        "Parent PWA launches into the public signup header pattern, preserving public manifest separation and excluding Operations links.",
+        "Provider listing stays under the public homepage header and does not introduce a separate provider portal or private Operations header."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check tests/operations-identity-header.test.js PASS",
+        "Portal/header inline script parse PASS 6 script blocks across public/signup/operations/student/login pages",
+        "node --test tests/operations-identity-header.test.js tests/pwa-identity.test.js tests/public-navigation.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js PASS 21/21",
+        "npm test PASS 197/197"
+      ],
+      "implementation_commits": [
+        "current batch commit: fix: align portal header identity"
+      ],
+      "files_changed": [
+        "public/signup.html",
+        "tests/operations-identity-header.test.js",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/STATUS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/REQUIREMENTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md"
+      ],
+      "notes": "Local implementation complete; live-required status remains needs_verification until final acceptance sweep, release approval, deploy, and live smoke. No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
     },
     {
       "id": "REQ-20260618-167",

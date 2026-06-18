@@ -4085,3 +4085,23 @@ Verification:
 - PASS `npm test` 195/195.
 
 Status: local `needs_verification`; no deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-166`.
+
+## 2026-06-19 - Portal header identity coverage
+
+Requirement: `REQ-20260618-166`
+
+Changed:
+
+- Normalized the English signup header to use the shared `nav-actions` wrapper instead of inline action styling.
+- Extended portal identity tests to cover the parent PWA launching into the public signup header pattern.
+- Extended provider-listing tests to prove provider CTAs stay under the public homepage header and do not introduce a private Operations header.
+- Preserved existing coverage for Operations shell/login, Student Portal, public, signup, and manifest separation.
+
+Verification:
+
+- PASS `node --check tests/operations-identity-header.test.js`.
+- PASS portal/header inline script parse via `vm.Script` (6 script blocks across public/signup/Operations/student/login pages).
+- PASS `node --test tests/operations-identity-header.test.js tests/pwa-identity.test.js tests/public-navigation.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js` 21/21.
+- PASS `npm test` 197/197.
+
+Status: local `needs_verification`; no deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-167`.

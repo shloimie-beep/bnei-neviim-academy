@@ -67,7 +67,7 @@
 | REQ-20260618-163 | REQ-20260618-110 | BNA-PUBLIC-001 | needs_verification | local_already_satisfied_pending_release | Remove Operations login from public primary navigation |
 | REQ-20260618-164 | REQ-20260618-110 | BNA-PUBLIC-002 | needs_verification | local_implemented_pending_release | Provider CTA: Advertise your program for free |
 | REQ-20260618-165 | REQ-20260618-110 | BNA-PUBLIC-003 | needs_verification | local_implemented_pending_release | Direct parent signup/self-governance messaging and six-month offer |
-| REQ-20260618-166 | REQ-20260618-110 | BNA-PUBLIC-004 | not_started | partial | Consistent approved portal headers |
+| REQ-20260618-166 | REQ-20260618-110 | BNA-PUBLIC-004 | needs_verification | local_implemented_pending_release | Consistent approved portal headers |
 | REQ-20260618-167 | REQ-20260618-110 | BNA-PUBLIC-005 | not_started | unknown | Public/blog/FAQ/signup/portal route and CTA integrity |
 | REQ-20260618-168 | REQ-20260618-111 | BNA-TEST-001 | not_started | missing | Isolated repeatable seed and cleanup data |
 | REQ-20260618-169 | REQ-20260618-111 | BNA-TEST-002 | not_started | missing | Route, interaction, responsive, helper, workspace, and student Playwright tests |
