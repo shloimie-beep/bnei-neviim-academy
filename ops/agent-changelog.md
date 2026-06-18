@@ -2875,3 +2875,19 @@ Verification:
 
 No audit crawl, watch loop, agent fleet loop, deployment, production data
 mutation, or audit-harness replacement was performed.
+
+## 2026-06-18T19:55:00+03:00 - BNA June 18 Recovery Partial Progress
+
+Created clean recovery branch `codex/2026-06-18-bna-platform-completion` from local `master`, cherry-picked PR #2 and PR #3 as consolidated recovery commits, repaired the active execution run with 11 parent workstreams and 61 child requirements, and removed the incorrect global audit-output blocker from non-visual work.
+
+Implemented locally:
+- Public/Operations/parent PWA identity separation, scoped service workers, no public standalone redirect to Operations, and public homepage no-loader/no-gap CSS guardrail.
+- Workspace taxonomy/auth foundation: workspace types are exactly `school`, `service_provider`, and `family`; `super_admin` is a role/global context; One Time maps to a service-provider workspace while retaining project compatibility.
+
+Verification:
+- PASS `npm run bna:run:validate`.
+- PASS `node --test tests/pwa-identity.test.js` 6/6.
+- PASS `node --test tests/workspace-scope.test.js` 5/5.
+- PASS `npm test` 63/63.
+
+Status: partial; active run must resume at `REQ-20260618-124`. No deployment or production-data mutation was performed.
