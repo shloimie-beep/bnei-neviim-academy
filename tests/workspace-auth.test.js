@@ -21,7 +21,7 @@ function oneTimeIdentity() {
     workspaceType: 'service_provider',
     workspaceKey: 'one_time_mishnah_class',
     projectKey: 'one_time_mishnah_class',
-    allowedViews: ['tasks']
+    allowedViews: ['tasks', 'calendar']
   });
 }
 
@@ -59,6 +59,7 @@ test('ordinary workspace users may use only scoped task routes and safe shared c
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/tasks', method: 'POST' }), true);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/tasks/42', method: 'PATCH' }), true);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/tasks/42/comments', method: 'POST' }), true);
+  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/calendar', method: 'GET' }), true);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/projects', method: 'GET' }), true);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/auth/me', method: 'GET' }), true);
 });

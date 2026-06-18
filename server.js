@@ -1359,7 +1359,7 @@ function identifyOpsUser(username, password = null) {
 
   if (OPS_USERNAME && user.toLowerCase() === OPS_USERNAME.toLowerCase()) {
     if (pass !== null && pass.toLowerCase() !== String(OPS_PASSWORD || '').toLowerCase()) return null;
-    return createSuperAdminIdentity(user, ['tasks', 'students', 'content', 'contacts', 'accounting']);
+    return createSuperAdminIdentity(user, ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting']);
   }
 
   if (
@@ -1374,7 +1374,7 @@ function identifyOpsUser(username, password = null) {
       workspaceType: 'service_provider',
       workspaceKey: ONE_TIME_PROJECT_KEY,
       projectKey: ONE_TIME_PROJECT_KEY,
-      allowedViews: ['tasks'],
+      allowedViews: ['tasks', 'calendar'],
     });
   }
 
@@ -9349,6 +9349,133 @@ app.get('/api/bna/class-sessions', requireAdmin, async (req, res) => {
   }
 });
 
+app.get('/api/bna/calendar', requireAdmin, async (req, res) => {
+  try {
+    await ensureDefaultProjects();
+    const scopedProjectKey = opsScopeProjectKey(req);
+    const requestedProjectKey = req.query?.project && req.query.project !== 'all'
+      ? normalizeProjectKey(req.query.project)
+      : '';
+    const projectKey = scopedProjectKey || requestedProjectKey;
+
+    const projectParams = [];
+    const workspaceParams = [];
+    let taskScopeClause = '';
+    let workspaceScopeClause = '';
+    if (projectKey) {
+      projectParams.push(projectKey);
+      workspaceParams.push(projectKey);
+      taskScopeClause = `AND COALESCE(p.project_key, '') = $${projectParams.length}`;
+      workspaceScopeClause = `AND COALESCE(w.workspace_key, '') = $${workspaceParams.length}`;
+    }
+
+    const [taskRows, classRows, accountabilityRows, groupGoalRows] = await Promise.all([
+      pool.query(
+        `SELECT t.id, t.title, t.notes, t.stage, t.urgency, t.assigned_to, t.due_date, t.planned_at,
+                p.project_key, p.short_name AS project_short_name, p.name AS project_name
+         FROM bna_tasks t
+         LEFT JOIN bna_projects p ON p.id = t.project_id
+         WHERE (t.due_date IS NOT NULL OR t.planned_at IS NOT NULL)
+           AND COALESCE(t.stage, '') <> 'archived'
+           ${taskScopeClause}
+         ORDER BY COALESCE(t.due_date::timestamp, t.planned_at, t.created_at) ASC
+         LIMIT 160`,
+        projectParams
+      ),
+      pool.query(
+        `SELECT cs.id, cs.title, cs.summary, cs.class_date, cs.created_at,
+                w.workspace_key, w.name AS workspace_name
+         FROM bna_class_sessions cs
+         LEFT JOIN bna_workspaces w ON w.id = cs.workspace_id
+         WHERE cs.class_date IS NOT NULL
+           ${workspaceScopeClause}
+         ORDER BY cs.class_date ASC, cs.created_at ASC
+         LIMIT 120`,
+        workspaceParams
+      ),
+      pool.query(
+        `SELECT a.id, a.event_type, a.title, a.topic, a.student_name, a.next_check_in_date,
+                a.follow_up_required, a.occurred_at, a.created_at, s.name AS linked_student_name,
+                w.workspace_key, w.name AS workspace_name
+         FROM bna_accountability_events a
+         LEFT JOIN bna_students s ON s.id = a.student_id
+         LEFT JOIN bna_workspaces w ON w.id = COALESCE(a.workspace_id, s.workspace_id)
+         WHERE (a.next_check_in_date IS NOT NULL OR a.occurred_at IS NOT NULL)
+           ${workspaceScopeClause}
+         ORDER BY COALESCE(a.next_check_in_date::timestamp, a.occurred_at, a.created_at) ASC
+         LIMIT 160`,
+        workspaceParams
+      ),
+      pool.query(
+        `SELECT g.id, g.title, g.description, g.due_date, g.status,
+                w.workspace_key, w.name AS workspace_name
+         FROM bna_group_goals g
+         LEFT JOIN bna_workspaces w ON w.id = g.workspace_id
+         WHERE g.due_date IS NOT NULL
+           AND COALESCE(g.status, 'active') <> 'archived'
+           ${workspaceScopeClause}
+         ORDER BY g.due_date ASC, g.created_at ASC
+         LIMIT 80`,
+        workspaceParams
+      ),
+    ]);
+
+    const events = [
+      ...taskRows.rows.map((task) => ({
+        id: `task:${task.id}`,
+        source_type: 'task',
+        title: task.title,
+        subtitle: task.assigned_to ? `Owner: ${task.assigned_to}` : 'Task',
+        starts_at: task.due_date || task.planned_at,
+        status: task.stage || 'ready',
+        urgency: task.urgency || 'this_week',
+        project_key: task.project_key || null,
+        workspace_label: task.project_short_name || task.project_name || task.project_key || null,
+        href: '/operations?view=tasks',
+      })),
+      ...classRows.rows.map((session) => ({
+        id: `class:${session.id}`,
+        source_type: 'class_session',
+        title: session.title || 'Class session',
+        subtitle: session.summary || 'Class session',
+        starts_at: session.class_date,
+        status: 'scheduled',
+        workspace_key: session.workspace_key || null,
+        workspace_label: session.workspace_name || session.workspace_key || null,
+        href: '/operations?view=content',
+      })),
+      ...accountabilityRows.rows.map((event) => ({
+        id: `accountability:${event.id}`,
+        source_type: event.next_check_in_date ? 'check_in' : 'accountability_event',
+        title: event.next_check_in_date
+          ? `Check in: ${event.student_name || event.linked_student_name || event.title || 'student'}`
+          : event.title || event.topic || 'Student event',
+        subtitle: event.topic || event.event_type || 'Student accountability',
+        starts_at: event.next_check_in_date || event.occurred_at || event.created_at,
+        status: event.follow_up_required ? 'follow_up' : event.event_type || 'event',
+        workspace_key: event.workspace_key || null,
+        workspace_label: event.workspace_name || event.workspace_key || null,
+        href: '/operations?view=students',
+      })),
+      ...groupGoalRows.rows.map((goal) => ({
+        id: `group_goal:${goal.id}`,
+        source_type: 'group_goal',
+        title: goal.title || 'Group goal',
+        subtitle: goal.description || 'Group goal due date',
+        starts_at: goal.due_date,
+        status: goal.status || 'active',
+        workspace_key: goal.workspace_key || null,
+        workspace_label: goal.workspace_name || goal.workspace_key || null,
+        href: '/operations?view=students&section=group_goal',
+      })),
+    ].sort((a, b) => Date.parse(a.starts_at || 0) - Date.parse(b.starts_at || 0));
+
+    res.json({ events, project: projectKey || 'all' });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
 app.get('/api/bna/content-prompts', requireAdmin, async (req, res) => {
   try {
     await ensureDefaultContentPrompts();
@@ -10935,7 +11062,7 @@ app.get('/api/bna/auth/me', requireAdmin, (req, res) => {
     user: identity?.username || req.opsUser || null,
     role: identity?.role || 'super_admin',
     scope: identity?.scope || { type: 'global', workspaceType: null, workspaceKey: null, projectKey: null },
-    allowedViews: identity?.allowedViews || ['tasks', 'students', 'content', 'contacts', 'accounting'],
+    allowedViews: identity?.allowedViews || ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting'],
   });
 });
 

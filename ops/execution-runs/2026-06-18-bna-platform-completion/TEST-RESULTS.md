@@ -149,3 +149,12 @@ Task intake auto-routing and Decisions merge (2026-06-18T21:25:30+03:00):
 - PASS Operations HTML script parse via `vm.Script` (2 script blocks).
 - PASS `node --test tests/task-intake-routing.test.js tests/task-state-model.test.js tests/task-metadata-provenance.test.js` 9/9.
 - PASS `npm test` 116/116.
+
+Internal scoped Operations calendar (2026-06-18T21:38:10+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check src/lib/bna/workspace-auth.js`.
+- PASS `node --check tests/operations-calendar.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/operations-calendar.test.js tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js tests/workspace-auth.test.js` 17/17.
+- PASS `npm test` 119/119.

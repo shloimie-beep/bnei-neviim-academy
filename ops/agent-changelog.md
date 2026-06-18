@@ -3328,3 +3328,37 @@ Verification:
 Status: local `needs_verification`; no deployment, production migration,
 production-data mutation, audit crawl, watch loop, or agent-fleet loop was
 performed. Resume at `REQ-20260618-139`.
+
+## 2026-06-18T21:38:10+03:00 - Scoped Operations Calendar
+
+Completed the local internal calendar batch for `REQ-20260618-139`.
+
+- Added read-only `GET /api/bna/calendar` as a scoped aggregate endpoint.
+- Calendar events include task due/planned dates, class sessions, accountability
+  check-ins/events, and group goal due dates.
+- Allowed ordinary scoped workspace users to read only the aggregate calendar
+  endpoint while keeping raw students, class-sessions, content, and accounting
+  enumeration blocked.
+- Added Calendar to the Operations toolbar and loaded it with the active
+  workspace selector.
+- Rendered overdue, today, upcoming, and recently logged groups in the
+  Operations Calendar module.
+- Avoided Google Calendar or broken external sync controls.
+- Added focused coverage in `tests/operations-calendar.test.js` and updated the
+  module-toolbar/workspace-auth expectations.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check src/lib/bna/workspace-auth.js`.
+- PASS `node --check tests/operations-calendar.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/operations-calendar.test.js
+  tests/operations-module-toolbar.test.js
+  tests/operations-workspace-selector.test.js
+  tests/workspace-auth.test.js` 17/17.
+- PASS `npm test` 119/119.
+
+Status: local `needs_verification`; no deployment, production migration,
+production-data mutation, audit crawl, watch loop, or agent-fleet loop was
+performed. Resume at `REQ-20260618-140`.

@@ -3683,6 +3683,11 @@
             getAuthMe() { return this.request('GET', '/auth/me'); },
             getAgentFleetStatus() { return this.request('GET', '/agent-fleet/status'); },
             getProjects() { return this.request('GET', '/projects'); },
+            getCalendar(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.project) params.set('project', filters.project);
+                return this.request('GET', '/calendar' + (params.toString() ? '?' + params.toString() : ''));
+            },
             createTask(task) { return this.request('POST', '/tasks', task); },
             createFromRamble(ramble) { return this.request('POST', '/tasks', { ramble, source: 'web', created_by: 'operator' }); },
             updateTask(id, task) { return this.request('PATCH', '/tasks/' + id, task); },
@@ -3788,6 +3793,7 @@
         // State
         let opsMe = null;
         let tasks = [];
+        let calendarEvents = [];
         let agentFleetStatus = null;
         let projects = [];
         let signups = [];
@@ -3815,12 +3821,13 @@
         const VIEW_ALIASES = {
             pipeline: 'tasks',
             ramble: 'tasks',
+            schedule: 'calendar',
             signups: 'contacts',
             billing: 'accounting',
             accountability: 'students'
         };
         const normalizedInitialView = VIEW_ALIASES[initialView] || initialView;
-        let currentView = ['tasks', 'students', 'content', 'contacts', 'accounting'].includes(normalizedInitialView) ? normalizedInitialView : 'tasks';
+        let currentView = ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting'].includes(normalizedInitialView) ? normalizedInitialView : 'tasks';
         let navDrawerOpen = false;
         const TASK_FOCUS_ALIASES = { codex: 'changelog', done: 'changelog', rabbi: 'mine', pending: 'changelog', queue: 'changelog' };
         const normalizedInitialTaskSection = TASK_FOCUS_ALIASES[initialSection] || initialSection;
@@ -3863,6 +3870,7 @@
 
         const MAIN_NAV_ITEMS = [
             { id: 'tasks', label: 'Tasks', marker: 'T' },
+            { id: 'calendar', label: 'Calendar', marker: 'CAL' },
             { id: 'students', label: 'Students', marker: 'S' },
             { id: 'content', label: 'Content', marker: 'C' },
             { id: 'contacts', label: 'Contacts', marker: 'P' },
@@ -4408,6 +4416,111 @@
                     <summary>Agent queue status</summary>
                     <p>${queued} queued, ${inProgress} in progress. ${escapeHtml(heartbeat)}</p>
                 </details>
+            `;
+        }
+
+        function renderCalendar() {
+            const groups = calendarEventGroups();
+            const total = groups.overdue.length + groups.today.length + groups.upcoming.length + groups.recent.length;
+            return `
+                <div class="container">
+                    <div class="page-heading">
+                        <div>
+                            <div class="page-kicker">Internal Calendar</div>
+                            <h2>Calendar</h2>
+                            <p>Tasks, classes, check-ins, student events, and group goals appear here from the current workspace.</p>
+                        </div>
+                        <div class="page-heading-actions">
+                            <span class="page-status-pill">${groups.today.length} today</span>
+                            <span class="page-status-pill">${groups.upcoming.length} upcoming</span>
+                        </div>
+                    </div>
+                    <section class="focus-panel" aria-label="Internal calendar">
+                        <div class="focused-grid">
+                            ${renderSummaryCard('Calendar Items', total, 'dated work and events')}
+                            ${renderSummaryCard('Due Today', groups.today.length, 'items dated today')}
+                            ${renderSummaryCard('Overdue', groups.overdue.length, 'past open items')}
+                        </div>
+                        <div class="content-section-grid">
+                            ${renderCalendarList('Overdue / Past Due', groups.overdue, 'No overdue dated work is visible.')}
+                            ${renderCalendarList('Today', groups.today, 'Nothing dated today.')}
+                            ${renderCalendarList('Upcoming', groups.upcoming, 'No upcoming dated work is visible.')}
+                            ${renderCalendarList('Recently Logged', groups.recent, 'No recent dated events are visible.')}
+                        </div>
+                    </section>
+                </div>
+            `;
+        }
+
+        function calendarEventGroups() {
+            const startToday = new Date();
+            startToday.setHours(0, 0, 0, 0);
+            const endToday = new Date(startToday);
+            endToday.setDate(endToday.getDate() + 1);
+            const startRecent = new Date(startToday);
+            startRecent.setDate(startRecent.getDate() - 14);
+            const endUpcoming = new Date(startToday);
+            endUpcoming.setDate(endUpcoming.getDate() + 45);
+
+            const sorted = (Array.isArray(calendarEvents) ? calendarEvents : [])
+                .map(event => ({ ...event, dateValue: Date.parse(calendarEventDate(event) || '') }))
+                .filter(event => Number.isFinite(event.dateValue))
+                .sort((a, b) => a.dateValue - b.dateValue);
+
+            return {
+                overdue: sorted.filter(event => calendarEventOpen(event) && event.dateValue < startToday.getTime()).slice(0, 8),
+                today: sorted.filter(event => event.dateValue >= startToday.getTime() && event.dateValue < endToday.getTime()).slice(0, 10),
+                upcoming: sorted.filter(event => event.dateValue >= endToday.getTime() && event.dateValue <= endUpcoming.getTime()).slice(0, 16),
+                recent: sorted.filter(event => event.dateValue >= startRecent.getTime() && event.dateValue < startToday.getTime() && !calendarEventOpen(event)).reverse().slice(0, 8),
+            };
+        }
+
+        function calendarEventDate(event = {}) {
+            return event.starts_at || event.due_date || event.planned_at || event.class_date || event.next_check_in_date || event.occurred_at || event.created_at;
+        }
+
+        function calendarEventOpen(event = {}) {
+            const status = String(event.status || '').toLowerCase();
+            return !['done', 'archived', 'completed', 'published'].includes(status);
+        }
+
+        function calendarEventTypeLabel(type) {
+            return ({
+                task: 'Task',
+                class_session: 'Class',
+                check_in: 'Check-in',
+                accountability_event: 'Student Event',
+                group_goal: 'Group Goal',
+            })[type] || String(type || 'Event').replace(/_/g, ' ');
+        }
+
+        function renderCalendarList(label, items, emptyText) {
+            return `
+                <div class="event-card">
+                    <div class="event-type">${escapeHtml(label)}</div>
+                    ${items.length ? `
+                        <div class="mini-list">
+                            ${items.map(renderCalendarItem).join('')}
+                        </div>
+                    ` : `<p class="payment-muted">${escapeHtml(emptyText)}</p>`}
+                </div>
+            `;
+        }
+
+        function renderCalendarItem(event) {
+            const eventDate = calendarEventDate(event);
+            const workspace = event.workspace_label || event.project_key || event.workspace_key || activeWorkspaceProjectLabel();
+            return `
+                <a class="mini-list-item" href="${escapeHtml(event.href || '/operations?view=tasks')}">
+                    <span>
+                        ${escapeHtml(event.title || 'Untitled event')}
+                        <small style="display:block; color:#94a3b8; font-size:11px; margin-top:3px;">
+                            ${escapeHtml(calendarEventTypeLabel(event.source_type))} &middot; ${escapeHtml(workspace || 'Workspace')}
+                            ${event.subtitle ? ` &middot; ${escapeHtml(String(event.subtitle).slice(0, 80))}` : ''}
+                        </small>
+                    </span>
+                    <strong>${eventDate ? escapeHtml(formatDate(eventDate)) : 'No date'}</strong>
+                </a>
             `;
         }
 
@@ -8033,9 +8146,10 @@
                 ensureActiveWorkspaceProject();
                 ensureCurrentViewAllowed();
 
-                const [projectsRes, tasksRes, agentFleetRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes] = await Promise.allSettled([
+                const [projectsRes, tasksRes, calendarRes, agentFleetRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes] = await Promise.allSettled([
                     api.getProjects(),
                     api.getTasks({ project: selectedProjectFilter() || undefined }),
+                    viewAllowed('calendar') ? api.getCalendar({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ events: [] }),
                     isGlobalOpsUser() ? api.getAgentFleetStatus() : Promise.resolve(null),
                     viewAllowed('contacts') || viewAllowed('accounting') ? api.getSignups() : Promise.resolve({ signups: [] }),
                     viewAllowed('accounting') ? api.getPayments() : Promise.resolve({ payments: [] }),
@@ -8055,6 +8169,7 @@
                 if (projectsRes.status === 'fulfilled' && projectsRes.value?.projects) projects = projectsRes.value.projects;
                 ensureActiveWorkspaceProject();
                 if (tasksRes.status === 'fulfilled' && tasksRes.value?.tasks) tasks = tasksRes.value.tasks;
+                if (calendarRes.status === 'fulfilled' && calendarRes.value?.events) calendarEvents = calendarRes.value.events;
                 if (agentFleetRes.status === 'fulfilled' && agentFleetRes.value) agentFleetStatus = agentFleetRes.value;
                 else if (!isGlobalOpsUser()) agentFleetStatus = null;
                 if (signupsRes.status === 'fulfilled' && signupsRes.value?.signups) {
@@ -8076,7 +8191,7 @@
                 if (accountabilityRes.status === 'fulfilled' && accountabilityRes.value?.events) accountabilityEvents = accountabilityRes.value.events;
                 if (groupGoalsRes.status === 'fulfilled' && groupGoalsRes.value?.goals) groupGoals = groupGoalsRes.value.goals;
 
-                const errors = [projectsRes, tasksRes, agentFleetRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes]
+                const errors = [projectsRes, tasksRes, calendarRes, agentFleetRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes]
                     .filter((result) => result.status === 'rejected')
                     .map((result) => result.reason?.message || 'Unknown dashboard error');
 
@@ -8093,6 +8208,7 @@
 
             switch (currentView) {
                 case 'tasks': content = renderTasks(); break;
+                case 'calendar': content = renderCalendar(); break;
                 case 'students': content = renderStudents(); break;
                 case 'content': content = renderContent(); break;
                 case 'contacts': content = renderContacts(); break;
@@ -8114,6 +8230,7 @@
             const url = new URL(window.location.href);
             url.searchParams.set('view', currentView);
             if (currentView === 'tasks') url.searchParams.set('section', taskFocus);
+            else if (currentView === 'calendar') url.searchParams.delete('section');
             else if (currentView === 'students') url.searchParams.set('section', studentSection);
             else if (currentView === 'content') url.searchParams.set('section', contentSection);
             else if (currentView === 'contacts') url.searchParams.set('section', contactSection);
@@ -8139,6 +8256,7 @@
             const url = new URL(window.location.href);
             url.searchParams.set('view', currentView);
             if (currentView === 'tasks') url.searchParams.set('section', taskFocus);
+            else if (currentView === 'calendar') url.searchParams.delete('section');
             else if (currentView === 'students') url.searchParams.set('section', studentSection);
             else if (currentView === 'content') url.searchParams.set('section', contentSection);
             else if (currentView === 'contacts') url.searchParams.set('section', contactSection);
@@ -8227,6 +8345,7 @@
             taskUrgencyFilter = 'all';
             taskDateFilter = 'all';
             taskProjectFilter = 'all';
+            calendarEvents = [];
             contentSection = 'library';
             contentTypeFilter = 'all';
             contentDateFilter = 'all';

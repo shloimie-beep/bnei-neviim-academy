@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-18T21:25:30+03:00
+Updated: 2026-06-18T21:38:10+03:00
 
 Status counts:
 
@@ -8,8 +8,8 @@ Status counts:
 - done: 4
 - already_satisfied: 1
 - blocked: 3
-- needs_verification: 20
-- not_started: 30
+- needs_verification: 21
+- not_started: 29
 - needs_operator_decision: 1
 
 Closed/already satisfied IDs:
@@ -54,6 +54,7 @@ Open non-blocked IDs begin with:
 - REQ-20260618-136 BNA-TASKS-001: Canonical task state model (needs_verification)
 - REQ-20260618-137 BNA-TASKS-002: Separate owner/status/urgency/due/blocker/provenance (needs_verification)
 - REQ-20260618-138 BNA-TASKS-003: Merge Intake Review/Review Queue into auto-routing and Decisions (needs_verification)
+- REQ-20260618-139 BNA-TASKS-004: Internal calendar connected to tasks/classes/check-ins/events (needs_verification)
 
 Blocked / operator-decision IDs:
 
@@ -62,6 +63,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current implementation batch: REQ-20260618-138 has local high-confidence auto-file and low-confidence Decision routing plus focused tests. Next implementation target is REQ-20260618-139.
+Current implementation batch: REQ-20260618-139 has local scoped internal calendar aggregation and Operations Calendar UI plus focused tests. Next implementation target is REQ-20260618-140.
 
 No deployment or production-data mutation is approved in this run.

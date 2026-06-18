@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-18T21:25:30+03:00
+Updated: 2026-06-18T21:38:10+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -16,24 +16,25 @@ Latest completed local batches:
 - REQ-20260618-136: canonical task states are implemented across schema/migration, API create/filter/update paths, queue filters, and Operations UI with legacy alias compatibility.
 - REQ-20260618-137: task cards and modal now separate owner/status/urgency/due/blocker/provenance from visible titles, with blocker_reason stored in the task schema/API.
 - REQ-20260618-138: high-confidence task intake auto-files, low-confidence task-like intake becomes a Decision with routing choices, and no separate visible Review Queue lane was introduced.
+- REQ-20260618-139: internal scoped Calendar aggregates task due/planned dates, class sessions, accountability check-ins/events, and group goal due dates without external sync controls.
 
 Exact next requirement:
 
-- REQ-20260618-139 / BNA-TASKS-004: Internal calendar connected to tasks/classes/check-ins/events.
+- REQ-20260618-140 / BNA-TASKS-005: Remove stale diagnostic concepts from main task UI.
 
 Exact next command:
 
 ```powershell
 npm run bna:run:status
-rg -n "calendar|planned_at|due_date|class_date|check-in|check_in|occurred_at|bna_class_sessions|accountability_events|events|Google sync|google calendar|taskMatchesDateFilter|render.*Calendar" server.js public\operations.html tests
+rg -n "Queue Health|Track Agent Work|Handoff Files|Do Not Restart|proof-gap|proof gap|worker diagnostics|agent queue status|Changelog Queue Visibility|pending briefs|stale|diagnostic" public\operations.html server.js tests ops\action-registry* ops\route-registry.json
 ```
 
-Then inspect task due/planned dates, class sessions, accountability/check-in events, and any existing calendar UI/API placeholders. Implement an internal scoped calendar without broken Google sync UI.
+Then inspect the main task UI and remove stale diagnostic concepts from operator-facing Tasks while preserving actual agent status evidence in the changelog/run files.
 
 Still open after this batch:
 
 - REQ-20260618-124 remains `in_progress` until broader workspace-owned entity API filtering, release approval, deploy, and live smoke are complete.
-- REQ-20260618-125 through REQ-20260618-138 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-125 through REQ-20260618-139 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 
 No deployment or production-data mutation is approved.
