@@ -7217,7 +7217,8 @@
             if (!text.trim()) return false;
             return (
                 /\b(codex|kimi|kimmy|dashboard|telegram|bot|bridge|railway|ghl|green invoice|webhook|parser|routing|database|deploy|task|tasks|my task|for me|app build|coding|content card|content section cleanup)\b/.test(text) ||
-                /\b(accountability|private meeting|check-?in|follow-?up|attendance|engagement|goals?|student goal|student goals|personal goal|personal goals|fitness|exercise|workout|diet goal|work goal|job goal|torah goal|learning goal|group goal|daily completion|progress percent|percentage|points?|camping trip|student ownership|daily follow-?through|work responsibility)\b/.test(text)
+                /\b(accountability|private meeting|check-?in|follow-?up|attendance|engagement|goals?|student goal|student goals|personal goal|personal goals|fitness|exercise|workout|diet goal|work goal|job goal|torah goal|learning goal|group goal|daily completion|progress percent|percentage|points?|camping trip|student ownership|daily follow-?through|work responsibility)\b/.test(text) ||
+                /\b(torah progress|student progress|progress update|timer update|torah timer|parser fallback|fallback parse|review accountability notes)\b/.test(text)
             );
         }
 

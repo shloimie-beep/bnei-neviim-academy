@@ -3481,3 +3481,34 @@ Verification:
 Status: local `needs_verification`; no deployment, production migration,
 production-data mutation, audit crawl, watch loop, or agent-fleet loop was
 performed. Resume at `REQ-20260618-144`.
+
+## 2026-06-18T22:50:05+03:00 - Content Boundary Cleanup
+
+Completed the local reusable Content boundary batch for `REQ-20260618-144`.
+
+- Expanded server-side non-content filtering for class/session extraction to
+  reject student progress, Torah timer, parser fallback, and accountability
+  review wording.
+- Changed class-session creation so raw `class_notes` presence alone is not
+  enough to create reusable Content; it now requires structured reusable class
+  material or a clean academic title signal.
+- Stopped deterministic mixed-recording fallback from manufacturing
+  `class_notes` out of task/student review output.
+- Mirrored the expanded non-content filtering in the Operations Content
+  renderer so cards do not show progress/timer/parser-review material as
+  teaching topics.
+- Added focused coverage in `tests/content-boundary.test.js`.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/content-boundary.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/content-boundary.test.js
+  tests/telegram-content-intent.test.js tests/mixed-recording-idempotency.test.js`
+  11/11.
+- PASS `npm test` 132/132.
+
+Status: local `needs_verification`; no deployment, production migration,
+production-data mutation, audit crawl, watch loop, or agent-fleet loop was
+performed. Resume at `REQ-20260618-145`.

@@ -188,3 +188,11 @@ Community workspace scoping (2026-06-18T22:35:15+03:00):
 - PASS Operations HTML script parse via `vm.Script` (2 script blocks).
 - PASS `node --test tests/community-workspace-scope.test.js tests/operations-workspace-selector.test.js tests/workspace-auth.test.js` 13/13.
 - PASS `npm test` 129/129.
+
+Content/class-session boundary (2026-06-18T22:50:05+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/content-boundary.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/content-boundary.test.js tests/telegram-content-intent.test.js tests/mixed-recording-idempotency.test.js` 11/11.
+- PASS `npm test` 132/132.

@@ -2474,7 +2474,8 @@ function isNonContentClassText(value) {
   if (!text.trim()) return false;
   return (
     /\b(codex|kimi|kimmy|dashboard|telegram|bot|bridge|railway|ghl|green invoice|webhook|parser|routing|database|deploy|task|tasks|my task|for me|app build|coding)\b/.test(text) ||
-    /\b(accountability|private meeting|check-?in|follow-?up|attendance|engagement|goals?|student goal|student goals|personal goal|personal goals|fitness|exercise|workout|diet goal|work goal|job goal|torah goal|learning goal|group goal|daily completion|progress percent|percentage|points?|camping trip|student ownership|daily follow-?through|work responsibility)\b/.test(text)
+    /\b(accountability|private meeting|check-?in|follow-?up|attendance|engagement|goals?|student goal|student goals|personal goal|personal goals|fitness|exercise|workout|diet goal|work goal|job goal|torah goal|learning goal|group goal|daily completion|progress percent|percentage|points?|camping trip|student ownership|daily follow-?through|work responsibility)\b/.test(text) ||
+    /\b(torah progress|student progress|progress update|timer update|torah timer|parser fallback|fallback parse|review accountability notes)\b/.test(text)
   );
 }
 
@@ -2550,12 +2551,15 @@ async function upsertClassSessionFromContentJob(db, job) {
     return null;
   }
 
-  const looksLikeClass = fields.classNotes.length
+  const hasStructuredClassContent = Boolean(fields.summary
     || fields.topics.length
     || fields.discussions.length
     || fields.sources.length
-    || /class|torah|shiur|lesson|newsletter|mishna|mishnah|pasuk|verse|source/i.test(`${job.title || ''} ${job.caption || ''}`);
-  if (!looksLikeClass) return null;
+    || fields.studentQuestions.length
+    || fields.highlights.length);
+  const titleLooksLikeClass = /class|torah|shiur|lesson|newsletter|mishna|mishnah|pasuk|verse|source/i.test(`${job.title || ''} ${job.caption || ''}`)
+    && !isNonContentClassText(`${job.title || ''} ${job.caption || ''}`);
+  if (!hasStructuredClassContent && !titleLooksLikeClass) return null;
 
   const result = await db.query(
     `INSERT INTO bna_class_sessions (
@@ -6386,13 +6390,7 @@ function basicMixedRecordingParse({ job, students, error }) {
     accountability_events: accountabilityEvents.slice(0, 20),
     group_goal_entries: groupEntries,
     daily_torah_updates: dailyTorahUpdates,
-    class_notes: [{
-      title: job?.title || 'Mixed recording',
-      summary: 'AI parse timed out, so this recording was filed with a conservative fallback parse for review.',
-      topics: ['Tasks', 'Student accountability', 'Torah progress'].filter((topic) => text.toLowerCase().includes(topic.toLowerCase().split(' ')[0])),
-      discussions: [],
-      sources: [],
-    }],
+    class_notes: [],
     report: {
       summary: 'The AI parser did not finish the long mixed-recording parse in time. A conservative fallback extracted obvious tasks, student mentions, percentage shorthand, and obvious daily Torah completion for review.',
       needs_review: ['Review this recording manually in Operations before relying on every extracted item.'],

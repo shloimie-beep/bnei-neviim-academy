@@ -223,19 +223,23 @@
       "live_required": true,
       "blocker": null,
       "evidence": [
-        "Community/Contacts now use workspace-scoped signup filtering, workspace metadata labels, and explicit super-admin workspace context in Operations."
+        "Community/Contacts now use workspace-scoped signup filtering, workspace metadata labels, and explicit super-admin workspace context in Operations.",
+        "Content/class-session extraction now filters task, meeting, accountability, progress, timer, and parser-review material so reusable Content remains teaching/research oriented."
       ],
       "deployment_evidence": [],
       "verification": [
         "node --test tests/community-workspace-scope.test.js tests/operations-workspace-selector.test.js tests/workspace-auth.test.js PASS 13/13",
-        "npm test PASS 129/129"
+        "npm test PASS 129/129",
+        "node --test tests/content-boundary.test.js tests/telegram-content-intent.test.js tests/mixed-recording-idempotency.test.js PASS 11/11",
+        "npm test PASS 132/132"
       ],
-      "notes": "Scoped modules parent remains in_progress until Content, Accounting, Automations, Integrations, Users, Live Classes, and remaining module children have terminal statuses.",
-      "updated_at": "2026-06-18T22:35:15+03:00",
+      "notes": "Scoped modules parent remains in_progress until Content metadata, Accounting, Automations, Integrations, Users, Live Classes, and remaining module children have terminal statuses.",
+      "updated_at": "2026-06-18T22:50:05+03:00",
       "files_changed": [
         "server.js",
         "public/operations.html",
-        "tests/community-workspace-scope.test.js"
+        "tests/community-workspace-scope.test.js",
+        "tests/content-boundary.test.js"
       ]
     },
     {
@@ -1617,8 +1621,8 @@
       "title": "Teaching/research content separated from meetings/tasks/accountability",
       "area": "modules",
       "priority": "P1",
-      "current_verdict": "partial",
-      "status": "not_started",
+      "current_verdict": "local_complete_pending_release",
+      "status": "needs_verification",
       "expected_result": "Reusable Content contains teaching/class/research material, not private meetings, operator tasks, or student accountability notes.",
       "acceptance_criteria": [
         "Teaching/research content separated from meetings/tasks/accountability is implemented against the canonical Express/static runtime where applicable.",
@@ -1629,12 +1633,31 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "server.js expanded isNonContentClassText to filter Torah progress, student progress, timer update, parser fallback, fallback parse, and accountability-review wording from class/content fields.",
+        "upsertClassSessionFromContentJob now requires structured reusable class content or an academic title signal instead of treating raw class_notes presence as enough to create/update bna_class_sessions.",
+        "basicMixedRecordingParse no longer manufactures class_notes from deterministic task/student fallback output.",
+        "public/operations.html mirrors the expanded non-content filtering so Content cards do not display task/accountability/progress/timer/parser-review material as teaching topics.",
+        "tests/content-boundary.test.js covers server class-session storage boundaries, fallback parse behavior, and Operations Content renderer filtering."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check server.js PASS",
+        "node --check tests/content-boundary.test.js PASS",
+        "Operations HTML script parse via vm.Script PASS (2 script blocks)",
+        "node --test tests/content-boundary.test.js tests/telegram-content-intent.test.js tests/mixed-recording-idempotency.test.js PASS 11/11",
+        "npm test PASS 132/132"
+      ],
+      "implementation_commits": [
+        "current batch commit: fix: keep student notes out of content"
+      ],
+      "files_changed": [
+        "server.js",
+        "public/operations.html",
+        "tests/content-boundary.test.js"
+      ],
+      "notes": "Local implementation and tests complete. Live-required closure remains pending release approval, deploy, and live smoke.",
+      "updated_at": "2026-06-18T22:50:05+03:00"
     },
     {
       "id": "REQ-20260618-145",

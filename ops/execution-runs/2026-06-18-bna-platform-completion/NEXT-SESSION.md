@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-18T22:35:15+03:00
+Updated: 2026-06-18T22:50:05+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -21,24 +21,25 @@ Latest completed local batches:
 - REQ-20260618-141: task overview counts now derive from the visible scoped task buckets and blocked counts link to visible blocked records with blocker explanations.
 - REQ-20260618-142: mixed-recording parser records now use deterministic source item keys, workspace-scoped student matching, and upsert behavior so repeated parses do not duplicate tasks, accountability events, group-goal entries, or timer notes.
 - REQ-20260618-143: Community/Contacts now loads signups through an explicit workspace project filter, returns workspace labels, and displays the active/contact workspace context in Operations.
+- REQ-20260618-144: Content/class-session extraction now filters task, meeting, accountability, progress, timer, and parser-review material so reusable Content stays teaching/research oriented.
 
 Exact next requirement:
 
-- REQ-20260618-144 / BNA-CONTENT-001: Teaching/research content separated from meetings/tasks/accountability.
+- REQ-20260618-145 / BNA-CONTENT-002: Content metadata and provenance.
 
 Exact next command:
 
 ```powershell
 npm run bna:run:status
-rg -n "class_notes|classContentFieldsFromParsed|isNonContentClassText|content job|content_jobs|content outputs|accountability|private meeting|tasks_students|routing|parser_only|teaching|research|newsletter|renderContent|parseMixedRecording" server.js public\operations.html tests
+rg -n "contentProject|contentStatusLabel|contentUploadedAt|contentParsedSections|renderContentCard|content-source-meta|drive_stage|transcript|outputs|approval|workspace|project|provenance|source_context|parse_json|content_jobs|content_outputs" server.js public\operations.html tests
 ```
 
-Then inspect content parsing/rendering boundaries so reusable Content contains teaching/class/research material and excludes private meetings, operator tasks, student accountability, and routing work.
+Then inspect Content API/rendering so each item shows workspace/project, title, dates, source, transcript status, topics, sources, questions, outputs, approval state, and provenance.
 
 Still open after this batch:
 
 - REQ-20260618-124 remains `in_progress` until broader workspace-owned entity API filtering, release approval, deploy, and live smoke are complete.
-- REQ-20260618-125 through REQ-20260618-143 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-125 through REQ-20260618-144 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 
 No deployment or production-data mutation is approved.
