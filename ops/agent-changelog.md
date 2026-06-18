@@ -3603,3 +3603,40 @@ Verification:
 Status: local `needs_verification`; no deployment, production migration,
 production-data mutation, audit crawl, watch loop, or agent-fleet loop was
 performed. Resume at `REQ-20260618-148`.
+
+## 2026-06-18T23:30:30+03:00 - Scoped Automations Status
+
+Completed the local scoped automations/status batch for `REQ-20260618-148`.
+
+- Added read-only `GET /api/bna/automations/status`.
+- Scoped automation rows by the active Operations workspace/project filter.
+- Summarized payment reminders, Green Invoice webhooks, content Drive intake,
+  and Codex task automation with owner, status, last run, next run, failure
+  reason, and detail counts.
+- Added the Operations Automations module and wired it to `selectedProjectFilter`.
+- Allowed scoped users to read only the safe automations status route while
+  leaving the old agent-fleet status endpoint global-only and without mutation
+  controls.
+- Added focused coverage in `tests/automations-status.test.js` and updated
+  workspace/module/auth tests.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/automations-status.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/automations-status.test.js tests/workspace-auth.test.js
+  tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js
+  tests/workspace-http-isolation.test.js` 21/21.
+- PASS `node --test tests/operations-calendar.test.js
+  tests/operations-layout-stability.test.js tests/operations-task-diagnostics.test.js
+  tests/operations-design-system.test.js` 12/12.
+- PASS `node --test tests/operations-accessibility.test.js
+  tests/operations-workspace-selector.test.js tests/automations-status.test.js`
+  14/14.
+- PASS `npm test` 144/144.
+
+Status: local `needs_verification`; no deployment, production migration,
+production-data mutation, payment reminder send, Green Invoice reprocess, Drive
+setup route, audit crawl, watch loop, or agent-fleet loop was performed. Resume
+at `REQ-20260618-149`.

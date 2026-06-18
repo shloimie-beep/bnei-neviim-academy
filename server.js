@@ -1385,7 +1385,7 @@ function identifyOpsUser(username, password = null) {
 
   if (OPS_USERNAME && user.toLowerCase() === OPS_USERNAME.toLowerCase()) {
     if (pass !== null && pass.toLowerCase() !== String(OPS_PASSWORD || '').toLowerCase()) return null;
-    return createSuperAdminIdentity(user, ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting']);
+    return createSuperAdminIdentity(user, ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations']);
   }
 
   if (
@@ -11722,8 +11722,304 @@ app.get('/api/bna/auth/me', requireAdmin, (req, res) => {
     user: identity?.username || req.opsUser || null,
     role: identity?.role || 'super_admin',
     scope: identity?.scope || { type: 'global', workspaceType: null, workspaceKey: null, projectKey: null },
-    allowedViews: identity?.allowedViews || ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting'],
+    allowedViews: identity?.allowedViews || ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations'],
   });
+});
+
+function fallbackAutomationScopes(projectKey = '') {
+  const all = [
+    {
+      project_key: DEFAULT_PROJECT_KEY,
+      project_name: 'BNA',
+      project_short_name: 'BNA',
+      workspace_id: null,
+      workspace_key: DEFAULT_WORKSPACE_KEY,
+      workspace_type: 'school',
+      workspace_name: 'BNA',
+      workspace_short_name: 'BNA',
+    },
+    {
+      project_key: ONE_TIME_PROJECT_KEY,
+      project_name: 'One Time Mishnah Class',
+      project_short_name: 'One Time',
+      workspace_id: null,
+      workspace_key: ONE_TIME_WORKSPACE_KEY,
+      workspace_type: 'service_provider',
+      workspace_name: 'One Time Mishnah Class',
+      workspace_short_name: 'One Time',
+    },
+  ];
+  return projectKey ? all.filter((scope) => scope.project_key === projectKey) : all;
+}
+
+async function automationWorkspaceScopes(projectKey = '') {
+  const params = [];
+  let query = `
+    SELECT
+      p.project_key,
+      p.name AS project_name,
+      p.short_name AS project_short_name,
+      p.workspace_id,
+      w.workspace_key,
+      w.workspace_type,
+      w.name AS workspace_name,
+      w.short_name AS workspace_short_name
+    FROM bna_projects p
+    LEFT JOIN bna_workspaces w ON w.id = p.workspace_id
+    WHERE p.status <> 'archived'`;
+  if (projectKey) {
+    params.push(projectKey);
+    query += ` AND p.project_key = $${params.length}`;
+  }
+  query += `
+    ORDER BY CASE p.project_key WHEN 'bna' THEN 1 WHEN 'one_time_mishnah_class' THEN 2 ELSE 3 END, p.name ASC`;
+
+  const result = await pool.query(query, params);
+  const rows = result.rows || [];
+  return rows.length ? rows : fallbackAutomationScopes(projectKey);
+}
+
+function automationWorkspaceLabel(scope = {}) {
+  return scope.workspace_short_name || scope.project_short_name || scope.workspace_name || scope.project_name || scope.project_key || 'Workspace';
+}
+
+function workspacePredicate(alias, workspaceId) {
+  return workspaceId
+    ? `${alias}.workspace_id = $1`
+    : `${alias}.workspace_id IS NULL`;
+}
+
+function automationBase({ scope, automationKey, title, owner, status, lastRunAt = null, nextRunAt = null, failureReason = null, details = {} }) {
+  return {
+    id: `${scope.project_key}:${automationKey}`,
+    automation_key: automationKey,
+    title,
+    owner,
+    status,
+    workspace_id: scope.workspace_id || null,
+    workspace_key: scope.workspace_key || scope.project_key,
+    workspace_label: automationWorkspaceLabel(scope),
+    project_key: scope.project_key,
+    project_name: scope.project_name,
+    project_short_name: scope.project_short_name,
+    last_run_at: lastRunAt,
+    next_run_at: nextRunAt,
+    failure_reason: failureReason,
+    details,
+  };
+}
+
+async function paymentReminderAutomation(scope) {
+  if (scope.project_key !== DEFAULT_PROJECT_KEY) return null;
+  const workspaceId = scope.workspace_id || null;
+  const daysBeforeParam = workspaceId ? '$2' : '$1';
+  const result = await pool.query(
+    `SELECT
+       COUNT(*) FILTER (
+         WHERE payment_due_date IS NOT NULL
+           AND COALESCE(status, 'new') <> 'archived'
+           AND payment_due_date <= (CURRENT_DATE + ${daysBeforeParam}::int)
+           AND payment_status IN ('pending', 'paid', 'partial')
+       )::int AS due_count,
+       MAX(payment_reminder_sent_at) AS last_run_at,
+       MIN(payment_due_date) FILTER (WHERE payment_due_date >= CURRENT_DATE) AS next_due_at
+     FROM signups s
+     WHERE ${workspacePredicate('s', workspaceId)}`,
+    workspaceId ? [workspaceId, Number(PAYMENT_REMINDER_DAYS_BEFORE || 7)] : [Number(PAYMENT_REMINDER_DAYS_BEFORE || 7)]
+  );
+  const row = result.rows[0] || {};
+  const schedulerSetting = String(process.env.PAYMENT_REMINDER_SCHEDULER || '').trim().toLowerCase();
+  const schedulerPaused = schedulerSetting === 'off' || schedulerSetting === 'false' || schedulerSetting === '0';
+  return automationBase({
+    scope,
+    automationKey: 'payment_reminders',
+    title: 'Payment reminders',
+    owner: 'BNA Accounting',
+    status: schedulerPaused ? 'paused' : 'ready',
+    lastRunAt: row.last_run_at || null,
+    nextRunAt: schedulerPaused ? null : getTodayDateInTimeZone(),
+    failureReason: null,
+    details: {
+      due_count: Number(row.due_count || 0),
+      next_due_at: row.next_due_at || null,
+      scheduler: schedulerPaused ? 'paused' : 'enabled',
+    },
+  });
+}
+
+async function greenInvoiceAutomation(scope) {
+  if (scope.project_key !== DEFAULT_PROJECT_KEY) return null;
+  const workspaceId = scope.workspace_id || null;
+  const result = await pool.query(
+    `SELECT
+       MAX(webhook_received_at) AS last_run_at,
+       COUNT(*) FILTER (WHERE status = 'failed')::int AS failed_count,
+       COUNT(*) FILTER (WHERE status = 'received')::int AS pending_count,
+       MAX(COALESCE(processing_notes, error_stack)) FILTER (WHERE status = 'failed') AS latest_failure
+     FROM bna_green_invoice_webhook_log l
+     WHERE ${workspacePredicate('l', workspaceId)}`,
+    workspaceId ? [workspaceId] : []
+  );
+  const row = result.rows[0] || {};
+  const failedCount = Number(row.failed_count || 0);
+  const pendingCount = Number(row.pending_count || 0);
+  return automationBase({
+    scope,
+    automationKey: 'green_invoice_webhooks',
+    title: 'Green Invoice webhooks',
+    owner: 'BNA Accounting',
+    status: failedCount ? 'failed' : pendingCount ? 'attention' : 'ready',
+    lastRunAt: row.last_run_at || null,
+    nextRunAt: null,
+    failureReason: failedCount
+      ? (row.latest_failure || `${failedCount} webhook event${failedCount === 1 ? '' : 's'} failed.`)
+      : null,
+    details: {
+      failed_count: failedCount,
+      pending_count: pendingCount,
+    },
+  });
+}
+
+async function contentDriveAutomation(scope, driveConfig) {
+  const workspaceId = scope.workspace_id || null;
+  const rawFolderId = configuredDriveFolderId(driveConfig, scope.project_key, '01 Raw Intake');
+  const result = await pool.query(
+    `SELECT
+       MAX(created_at) AS last_run_at,
+       COUNT(*) FILTER (WHERE status = 'failed')::int AS failed_count,
+       COUNT(*) FILTER (WHERE status IN ('ingested', 'transcribing', 'transcribed', 'parsing', 'drafting', 'needs_approval'))::int AS active_count
+     FROM bna_content_jobs j
+     WHERE ${workspacePredicate('j', workspaceId)}
+       AND (
+         source_type = 'google_drive'
+         OR drive_file_id IS NOT NULL
+         OR drive_folder_id IS NOT NULL
+       )`,
+    workspaceId ? [workspaceId] : []
+  );
+  const row = result.rows[0] || {};
+  const failedCount = Number(row.failed_count || 0);
+  const hasFolder = Boolean(rawFolderId);
+  return automationBase({
+    scope,
+    automationKey: 'content_drive_intake',
+    title: 'Content Drive intake',
+    owner: 'Content Operations',
+    status: hasFolder ? (failedCount ? 'attention' : 'ready') : 'needs_configuration',
+    lastRunAt: row.last_run_at || null,
+    nextRunAt: null,
+    failureReason: hasFolder ? null : 'Drive raw-intake folder is not configured for this workspace.',
+    details: {
+      raw_folder_configured: hasFolder,
+      failed_count: failedCount,
+      active_count: Number(row.active_count || 0),
+    },
+  });
+}
+
+async function codexRuntimeStatus() {
+  return (await pool.query(
+    `SELECT *,
+            CASE
+              WHEN last_seen_at IS NULL THEN true
+              ELSE last_seen_at < NOW() - (COALESCE(stale_after_ms, 180000) * INTERVAL '1 millisecond')
+            END AS stale
+     FROM bna_agent_runtime_status
+     WHERE agent_key = 'codex-fleet'
+     ORDER BY last_seen_at DESC
+     LIMIT 1`
+  )).rows[0] || null;
+}
+
+async function codexTaskAutomation(scope, runtime) {
+  const result = await pool.query(
+    `WITH machine_tasks AS (
+       SELECT t.*
+       FROM bna_tasks t
+       LEFT JOIN bna_projects p ON p.id = t.project_id
+       LEFT JOIN bna_workspaces w ON w.id = COALESCE(t.workspace_id, p.workspace_id)
+       WHERE COALESCE(p.project_key, w.workspace_key, '') = $1
+         AND (
+           LOWER(COALESCE(t.assigned_to, '')) LIKE '%codex%'
+           OR LOWER(COALESCE(t.assigned_to, '')) LIKE '%kimi%'
+           OR LOWER(COALESCE(t.assigned_to, '')) LIKE '%system%'
+         )
+     )
+     SELECT
+       COUNT(*) FILTER (
+         WHERE COALESCE(stage, '') NOT IN ('done', 'archive', 'archived')
+           AND completed_at IS NULL
+           AND verified_at IS NULL
+       )::int AS open_count,
+       COUNT(*) FILTER (
+         WHERE stage = 'in_progress'
+           AND completed_at IS NULL
+           AND verified_at IS NULL
+       )::int AS in_progress_count,
+       COUNT(*) FILTER (
+         WHERE urgency IN ('urgent', 'today')
+           AND COALESCE(stage, '') NOT IN ('done', 'archive', 'archived')
+           AND completed_at IS NULL
+           AND verified_at IS NULL
+       )::int AS urgent_today_count
+     FROM machine_tasks`,
+    [scope.project_key]
+  );
+  const row = result.rows[0] || {};
+  const runtimeStatus = runtime?.status || 'unknown';
+  const stale = Boolean(runtime?.stale);
+  return automationBase({
+    scope,
+    automationKey: 'codex_task_automation',
+    title: 'Codex task automation',
+    owner: 'Codex',
+    status: stale ? 'stale' : runtimeStatus,
+    lastRunAt: runtime?.last_seen_at || null,
+    nextRunAt: null,
+    failureReason: stale
+      ? 'No recent Codex runtime heartbeat has been recorded.'
+      : runtimeStatus === 'error'
+        ? 'Codex runtime reported an error.'
+        : null,
+    details: {
+      open_count: Number(row.open_count || 0),
+      in_progress_count: Number(row.in_progress_count || 0),
+      urgent_today_count: Number(row.urgent_today_count || 0),
+    },
+  });
+}
+
+app.get('/api/bna/automations/status', requireAdmin, async (req, res) => {
+  try {
+    const scopedProjectKey = opsScopeProjectKey(req);
+    const requestedProjectKey = req.query.project && req.query.project !== 'all'
+      ? normalizeProjectKey(req.query.project)
+      : '';
+    const projectKey = scopedProjectKey || requestedProjectKey;
+    const scopes = await automationWorkspaceScopes(projectKey);
+    const driveConfig = readGoogleDrivePipelineConfig();
+    const runtime = await codexRuntimeStatus();
+    const automations = [];
+
+    for (const scope of scopes) {
+      const payment = await paymentReminderAutomation(scope);
+      if (payment) automations.push(payment);
+      const greenInvoice = await greenInvoiceAutomation(scope);
+      if (greenInvoice) automations.push(greenInvoice);
+      automations.push(await contentDriveAutomation(scope, driveConfig));
+      automations.push(await codexTaskAutomation(scope, runtime));
+    }
+
+    res.json({
+      success: true,
+      project: projectKey || 'all',
+      generated_at: new Date().toISOString(),
+      automations,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
 });
 
 app.get('/api/bna/agent-fleet/status', requireAdmin, async (req, res) => {

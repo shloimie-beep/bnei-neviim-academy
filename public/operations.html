@@ -3595,6 +3595,11 @@
                 if (filters.project) params.set('project', filters.project);
                 return this.request('GET', '/calendar' + (params.toString() ? '?' + params.toString() : ''));
             },
+            getAutomations(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.project) params.set('project', filters.project);
+                return this.request('GET', '/automations/status' + (params.toString() ? '?' + params.toString() : ''));
+            },
             createTask(task) { return this.request('POST', '/tasks', task); },
             createFromRamble(ramble) { return this.request('POST', '/tasks', { ramble, source: 'web', created_by: 'operator' }); },
             updateTask(id, task) { return this.request('PATCH', '/tasks/' + id, task); },
@@ -3707,6 +3712,7 @@
         let opsMe = null;
         let tasks = [];
         let calendarEvents = [];
+        let automationStatuses = [];
         let projects = [];
         let signups = [];
         let payments = [];
@@ -3739,7 +3745,7 @@
             accountability: 'students'
         };
         const normalizedInitialView = VIEW_ALIASES[initialView] || initialView;
-        let currentView = ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting'].includes(normalizedInitialView) ? normalizedInitialView : 'tasks';
+        let currentView = ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations'].includes(normalizedInitialView) ? normalizedInitialView : 'tasks';
         let navDrawerOpen = false;
         const TASK_FOCUS_ALIASES = { codex: 'changelog', done: 'changelog', rabbi: 'mine', pending: 'changelog', queue: 'changelog' };
         const normalizedInitialTaskSection = TASK_FOCUS_ALIASES[initialSection] || initialSection;
@@ -3786,7 +3792,8 @@
             { id: 'students', label: 'Students', marker: 'S' },
             { id: 'content', label: 'Content', marker: 'C' },
             { id: 'contacts', label: 'Contacts', marker: 'P' },
-            { id: 'accounting', label: 'Accounting', marker: '$' }
+            { id: 'accounting', label: 'Accounting', marker: '$' },
+            { id: 'automations', label: 'Automations', marker: 'AUTO' }
         ];
 
         const TASK_SUBTABS = [
@@ -4373,6 +4380,81 @@
                     </span>
                     <strong>${eventDate ? escapeHtml(formatDate(eventDate)) : 'No date'}</strong>
                 </a>
+            `;
+        }
+
+        function renderAutomations() {
+            const items = Array.isArray(automationStatuses) ? automationStatuses : [];
+            const attentionItems = items.filter(item => automationNeedsAttention(item));
+            const readyItems = items.filter(item => !automationNeedsAttention(item));
+            return `
+                <div class="container">
+                    <div class="page-heading">
+                        <div>
+                            <div class="page-kicker">Operational Automation</div>
+                            <h2>Automations</h2>
+                            <p>Workspace-scoped operational jobs with owner, run timing, and exception state.</p>
+                        </div>
+                        <div class="page-heading-actions">
+                            <span class="page-status-pill">${items.length} tracked</span>
+                            <span class="page-status-pill">${attentionItems.length} need attention</span>
+                        </div>
+                    </div>
+                    <section class="focus-panel" aria-label="Automation status">
+                        <div class="focused-grid">
+                            ${renderSummaryCard('Tracked', items.length, 'workspace automation rows')}
+                            ${renderSummaryCard('Ready', readyItems.length, 'running or ready')}
+                            ${renderSummaryCard('Attention', attentionItems.length, 'paused, stale, failed, or missing config')}
+                        </div>
+                        <div class="content-section-grid">
+                            ${items.length
+                                ? items.map(renderAutomationCard).join('')
+                                : '<div class="event-card"><p class="payment-muted">No automation status rows are visible for this workspace.</p></div>'}
+                        </div>
+                    </section>
+                </div>
+            `;
+        }
+
+        function automationNeedsAttention(item = {}) {
+            const status = String(item.status || '').toLowerCase();
+            return Boolean(item.failure_reason) || ['failed', 'error', 'stale', 'paused', 'attention', 'needs_configuration'].includes(status);
+        }
+
+        function automationStatusLabel(status) {
+            return String(status || 'unknown').replace(/_/g, ' ');
+        }
+
+        function automationDetailValue(item, key, fallback = '0') {
+            const value = item?.details && Object.prototype.hasOwnProperty.call(item.details, key) ? item.details[key] : null;
+            if (value === null || value === undefined || value === '') return fallback;
+            return String(value);
+        }
+
+        function renderAutomationCard(item) {
+            const attention = automationNeedsAttention(item);
+            const status = automationStatusLabel(item.status);
+            const lastRun = item.last_run_at ? formatDateTime(item.last_run_at) : 'Not recorded';
+            const nextRun = item.next_run_at ? formatDateTime(item.next_run_at) : 'On demand';
+            const details = [
+                item.automation_key === 'payment_reminders' ? `Due: ${automationDetailValue(item, 'due_count')}` : '',
+                item.automation_key === 'green_invoice_webhooks' ? `Pending: ${automationDetailValue(item, 'pending_count')}` : '',
+                item.automation_key === 'content_drive_intake' ? `Active: ${automationDetailValue(item, 'active_count')}` : '',
+                item.automation_key === 'codex_task_automation' ? `Open: ${automationDetailValue(item, 'open_count')}` : '',
+            ].filter(Boolean).join(' | ');
+            return `
+                <div class="event-card ${attention ? 'urgent' : ''}">
+                    <div class="event-type">${escapeHtml(item.workspace_label || activeWorkspaceProjectLabel())}</div>
+                    <div class="event-title">${escapeHtml(item.title || 'Automation')}</div>
+                    <div class="contact-detail-grid" style="margin-top:12px;">
+                        ${renderContactDetailItem('Owner', item.owner || 'Unassigned')}
+                        ${renderContactDetailItem('Status', status)}
+                        ${renderContactDetailItem('Last Run', lastRun)}
+                        ${renderContactDetailItem('Next Run', nextRun)}
+                    </div>
+                    ${details ? `<p class="payment-muted" style="margin-top:10px;">${escapeHtml(details)}</p>` : ''}
+                    ${item.failure_reason ? `<div class="task-blocker" style="margin-top:10px;">${escapeHtml(item.failure_reason)}</div>` : ''}
+                </div>
             `;
         }
 
@@ -7929,7 +8011,7 @@
         }
 
         function allowedViews() {
-            const views = Array.isArray(opsMe?.allowedViews) ? opsMe.allowedViews : ['tasks', 'students', 'content', 'contacts', 'accounting'];
+            const views = Array.isArray(opsMe?.allowedViews) ? opsMe.allowedViews : ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations'];
             return new Set(views);
         }
 
@@ -8172,10 +8254,11 @@
                 ensureActiveWorkspaceProject();
                 ensureCurrentViewAllowed();
 
-                const [projectsRes, tasksRes, calendarRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes] = await Promise.allSettled([
+                const [projectsRes, tasksRes, calendarRes, automationsRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes] = await Promise.allSettled([
                     api.getProjects(),
                     api.getTasks({ project: selectedProjectFilter() || undefined }),
                     viewAllowed('calendar') ? api.getCalendar({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ events: [] }),
+                    viewAllowed('automations') ? api.getAutomations({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ automations: [] }),
                     viewAllowed('contacts') || viewAllowed('accounting') ? api.getSignups({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ signups: [] }),
                     viewAllowed('accounting') ? api.getPayments() : Promise.resolve({ payments: [] }),
                     viewAllowed('accounting') ? api.getPaymentIntake() : Promise.resolve({ intake: [] }),
@@ -8195,6 +8278,7 @@
                 ensureActiveWorkspaceProject();
                 if (tasksRes.status === 'fulfilled' && tasksRes.value?.tasks) tasks = tasksRes.value.tasks;
                 if (calendarRes.status === 'fulfilled' && calendarRes.value?.events) calendarEvents = calendarRes.value.events;
+                if (automationsRes.status === 'fulfilled' && automationsRes.value?.automations) automationStatuses = automationsRes.value.automations;
                 if (signupsRes.status === 'fulfilled' && signupsRes.value?.signups) {
                     signups = signupsRes.value.signups.map((signup) => ({
                         ...signup,
@@ -8214,7 +8298,7 @@
                 if (accountabilityRes.status === 'fulfilled' && accountabilityRes.value?.events) accountabilityEvents = accountabilityRes.value.events;
                 if (groupGoalsRes.status === 'fulfilled' && groupGoalsRes.value?.goals) groupGoals = groupGoalsRes.value.goals;
 
-                const errors = [projectsRes, tasksRes, calendarRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes]
+                const errors = [projectsRes, tasksRes, calendarRes, automationsRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes]
                     .filter((result) => result.status === 'rejected')
                     .map((result) => result.reason?.message || 'Unknown dashboard error');
 
@@ -8232,6 +8316,7 @@
             switch (currentView) {
                 case 'tasks': content = renderTasks(); break;
                 case 'calendar': content = renderCalendar(); break;
+                case 'automations': content = renderAutomations(); break;
                 case 'students': content = renderStudents(); break;
                 case 'content': content = renderContent(); break;
                 case 'contacts': content = renderContacts(); break;
@@ -8383,6 +8468,7 @@
             taskDateFilter = 'all';
             taskProjectFilter = 'all';
             calendarEvents = [];
+            automationStatuses = [];
             contentSection = 'library';
             contentTypeFilter = 'all';
             contentDateFilter = 'all';

@@ -220,3 +220,17 @@ Workspace-scoped live classes (2026-06-18T23:18:20+03:00):
 - PASS Operations HTML script parse via `vm.Script` (2 script blocks).
 - PASS `node --test tests/class-sessions-scope.test.js tests/operations-calendar.test.js tests/workspace-schema.test.js tests/workspace-auth.test.js` 16/16.
 - PASS `npm test` 140/140.
+
+Scoped automations and operational status (2026-06-18T23:30:30+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/automations-status.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/automations-status.test.js tests/workspace-auth.test.js tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js tests/workspace-http-isolation.test.js` 21/21.
+- PASS `node --test tests/operations-calendar.test.js tests/operations-layout-stability.test.js tests/operations-task-diagnostics.test.js tests/operations-design-system.test.js` 12/12.
+- PASS `node --test tests/operations-accessibility.test.js tests/operations-workspace-selector.test.js tests/automations-status.test.js` 14/14.
+- PASS `npm test` 144/144.
+
+No deployment, production-data mutation, payment reminder send, Green Invoice
+reprocess, Drive setup route, audit crawl, watch loop, or agent-fleet loop was
+performed.

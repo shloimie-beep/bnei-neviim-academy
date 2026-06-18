@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-18T23:18:20+03:00
+Updated: 2026-06-18T23:30:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -25,24 +25,25 @@ Latest completed local batches:
 - REQ-20260618-145: Content jobs now return scoped workspace/project metadata, transcript/parse/output/approval/provenance fields, and Operations cards visibly render workspace, source, transcript, output, approval, and provenance details.
 - REQ-20260618-146: Drive intake/routing now resolves workspace-specific folder config, rejects known folder/workspace mismatches, scopes content bundles by workspace, and blocks mixed-workspace combined outputs.
 - REQ-20260618-147: Class sessions now support direct workspace project filtering and the Calendar class-session feed remains selected-workspace scoped.
+- REQ-20260618-148: Automations now expose workspace-scoped status rows for payment reminders, Green Invoice webhooks, content Drive intake, and Codex task automation, with owner/status/last run/next run/failure reason and an Operations Automations module.
 
 Exact next requirement:
 
-- REQ-20260618-148 / BNA-AUTO-001: Scoped automations and operational status.
+- REQ-20260618-149 / BNA-INTEGRATION-001: Simplified integrations/social accounts states/actions.
 
 Exact next command:
 
 ```powershell
 npm run bna:run:status
-rg -n "automation|Automations|agent-fleet|reminder|cron|last run|last_run|next run|next_run|failure|owner|workspace_id|workspace|project|selectedProjectFilter|status" server.js public\operations.html scripts tests
+rg -n "integration|Integrations|social|Buffer|Facebook|LinkedIn|YouTube|connected|not connected|last check|last_check|account identity|account_identity|needed action|error|status|workspace|project|selectedProjectFilter" server.js public\operations.html scripts tests
 ```
 
-Then inspect automation/status surfaces so automations are workspace-scoped and show owner, status, last run, next run, and failure reason.
+Then inspect integration/social account surfaces so they show Connected, Not connected, Error, account identity, last check, and one clear needed action without mutating external accounts.
 
 Still open after this batch:
 
 - REQ-20260618-124 remains `in_progress` until broader workspace-owned entity API filtering, release approval, deploy, and live smoke are complete.
-- REQ-20260618-125 through REQ-20260618-147 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-125 through REQ-20260618-148 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 
 No deployment or production-data mutation is approved.

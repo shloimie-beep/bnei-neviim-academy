@@ -15,7 +15,7 @@ test('Operations modules are declared in one predictable toolbar order', () => {
 
   assert.ok(navBlock, 'MAIN_NAV_ITEMS should be declared');
   const block = navBlock[1];
-  const orderedIds = ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting'];
+  const orderedIds = ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations'];
   const positions = orderedIds.map((id) => block.indexOf(`id: '${id}'`));
 
   positions.forEach((position, index) => {

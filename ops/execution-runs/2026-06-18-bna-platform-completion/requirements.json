@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-18T21:48:45+03:00",
+  "updated_at": "2026-06-18T23:30:30+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -1811,7 +1811,7 @@
       "area": "modules",
       "priority": "P1",
       "current_verdict": "partial",
-      "status": "not_started",
+      "status": "needs_verification",
       "expected_result": "Automations are workspace-scoped and show clear owner/status/last run/next run/failure reason.",
       "acceptance_criteria": [
         "Scoped automations and operational status is implemented against the canonical Express/static runtime where applicable.",
@@ -1822,12 +1822,36 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "GET /api/bna/automations/status now returns workspace/project-scoped automation status rows for payment reminders, Green Invoice webhooks, content Drive intake, and Codex task automation.",
+        "Automation status rows include owner, workspace label, status, last_run_at, next_run_at, failure_reason, and per-automation detail counts.",
+        "Operations now has an Automations module loaded with selectedProjectFilter and a compact status-only card view.",
+        "Scoped workspace auth allows safe GET /api/bna/automations/status while preserving the old global-only agent-fleet endpoint and no mutation controls were added."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check server.js PASS",
+        "node --check tests/automations-status.test.js PASS",
+        "Operations HTML script parse via vm.Script PASS (2 script blocks)",
+        "node --test tests/automations-status.test.js tests/workspace-auth.test.js tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js tests/workspace-http-isolation.test.js PASS 21/21",
+        "node --test tests/operations-calendar.test.js tests/operations-layout-stability.test.js tests/operations-task-diagnostics.test.js tests/operations-design-system.test.js PASS 12/12",
+        "node --test tests/operations-accessibility.test.js tests/operations-workspace-selector.test.js tests/automations-status.test.js PASS 14/14",
+        "npm test PASS 144/144"
+      ],
+      "implementation_commits": [
+        "current batch commit: feat: surface scoped automations"
+      ],
+      "files_changed": [
+        "server.js",
+        "public/operations.html",
+        "src/lib/bna/workspace-auth.js",
+        "tests/automations-status.test.js",
+        "tests/operations-module-toolbar.test.js",
+        "tests/operations-workspace-selector.test.js",
+        "tests/workspace-auth.test.js",
+        "tests/workspace-http-isolation.test.js"
+      ],
+      "notes": "Local implementation and tests passed. Status remains needs_verification because this live-required Operations/server-visible item still needs release approval, deploy, and live smoke before closure."
     },
     {
       "id": "REQ-20260618-149",

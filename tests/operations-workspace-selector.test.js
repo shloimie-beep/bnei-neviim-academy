@@ -32,6 +32,7 @@ test('Operations workspace selector drives scoped task and calendar API loading'
   assert.match(operations, /window\.localStorage\?\.setItem\('bna_ops_active_project', activeWorkspaceProject\)/);
   assert.match(operations, /api\.getTasks\(\{ project: selectedProjectFilter\(\) \|\| undefined \}\)/);
   assert.match(operations, /viewAllowed\('calendar'\) \? api\.getCalendar\(\{ project: selectedProjectFilter\(\) \|\| undefined \}\) : Promise\.resolve\(\{ events: \[\] \}\)/);
+  assert.match(operations, /viewAllowed\('automations'\) \? api\.getAutomations\(\{ project: selectedProjectFilter\(\) \|\| undefined \}\) : Promise\.resolve\(\{ automations: \[\] \}\)/);
   assert.doesNotMatch(operations, /getAgentFleetStatus/);
 });
 
@@ -52,6 +53,7 @@ test('Changing workspace clears stale module, student, content, and task-modal c
   assert.match(operations, /function resetWorkspaceScopedUiState\(\)/);
   assert.match(operations, /currentView = 'tasks';/);
   assert.match(operations, /taskFocus = 'overview';/);
+  assert.match(operations, /automationStatuses = \[\];/);
   assert.match(operations, /contentSection = 'library';/);
   assert.match(operations, /contactSection = 'parents';/);
   assert.match(operations, /accountingSection = 'overview';/);
