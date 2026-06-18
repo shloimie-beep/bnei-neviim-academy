@@ -209,10 +209,46 @@ function operationsFixture(pathname, url, options = {}) {
     '/api/bna/calendar': {
       events: [
         {
+          id: 'task-due-1',
+          source_type: 'task',
+          title: 'TEST-BNA-SEED Task due',
+          due_date: '2026-06-18',
+          status: 'ready',
+          project_key: workspaceProject,
+          workspace_label: project === 'one_time_mishnah_class' ? 'One Time Mishnah Class' : 'BNA',
+        },
+        {
           id: 'class-1',
           source_type: 'class_session',
           title: 'TEST-BNA-SEED Live class',
           class_date: '2026-06-19',
+          project_key: workspaceProject,
+          workspace_label: project === 'one_time_mishnah_class' ? 'One Time Mishnah Class' : 'BNA',
+        },
+        {
+          id: 'check-in-1',
+          source_type: 'check_in',
+          title: 'TEST-BNA-SEED Student check-in',
+          next_check_in_date: '2026-06-20',
+          status: 'ready',
+          project_key: workspaceProject,
+          workspace_label: project === 'one_time_mishnah_class' ? 'One Time Mishnah Class' : 'BNA',
+        },
+        {
+          id: 'student-event-1',
+          source_type: 'accountability_event',
+          title: 'TEST-BNA-SEED Student event',
+          occurred_at: '2026-06-17T12:00:00+03:00',
+          status: 'completed',
+          project_key: workspaceProject,
+          workspace_label: project === 'one_time_mishnah_class' ? 'One Time Mishnah Class' : 'BNA',
+        },
+        {
+          id: 'group-goal-1',
+          source_type: 'group_goal',
+          title: 'TEST-BNA-SEED Group goal',
+          due_date: '2026-06-21',
+          status: 'active',
           project_key: workspaceProject,
           workspace_label: project === 'one_time_mishnah_class' ? 'One Time Mishnah Class' : 'BNA',
         },
@@ -841,6 +877,31 @@ async function assertOperationsIntakeRoutingDecisions(page, calls) {
   await page.locator('.focus-panel[aria-label="Tasks overview"]').waitFor();
 }
 
+async function assertOperationsCalendarModule(page) {
+  await page.locator('.ops-module-button').filter({ hasText: 'Calendar' }).click();
+  await page.locator('.ops-view-frame[data-current-view="calendar"]').waitFor();
+  await page.locator('.focus-panel[aria-label="Internal calendar"]').waitFor();
+  const calendarState = await page.evaluate(() => {
+    const panel = document.querySelector('.focus-panel[aria-label="Internal calendar"]');
+    return {
+      panelText: panel?.textContent?.replace(/\s+/g, ' ').trim() || '',
+      pageText: document.body.textContent?.replace(/\s+/g, ' ').trim() || '',
+    };
+  });
+  assert.match(calendarState.panelText, /Calendar Items/);
+  assert.match(calendarState.panelText, /TEST-BNA-SEED Task due/);
+  assert.match(calendarState.panelText, /Task/);
+  assert.match(calendarState.panelText, /TEST-BNA-SEED Live class/);
+  assert.match(calendarState.panelText, /Class/);
+  assert.match(calendarState.panelText, /TEST-BNA-SEED Student check-in/);
+  assert.match(calendarState.panelText, /Check-in/);
+  assert.match(calendarState.panelText, /TEST-BNA-SEED Student event/);
+  assert.match(calendarState.panelText, /Student Event/);
+  assert.match(calendarState.panelText, /TEST-BNA-SEED Group goal/);
+  assert.match(calendarState.panelText, /Group Goal/);
+  assert.doesNotMatch(calendarState.pageText, /google calendar|sync calendar|connect calendar/i);
+}
+
 async function assertStudentPortalIdentity(page) {
   const identity = await page.evaluate(() => ({
     hasLogo: Array.from(document.images).some((img) => (
@@ -925,6 +986,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       await assertOperationsTaskStateModel(page);
       await assertOperationsTaskMetadataProvenance(page);
       await assertOperationsIntakeRoutingDecisions(page, calls);
+      await assertOperationsCalendarModule(page);
       await assertOperationsShellStable(page, 'desktop operations shell');
 
       await page.locator('.ops-module-button').filter({ hasText: 'Assistant' }).click();

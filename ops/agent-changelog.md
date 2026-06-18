@@ -4308,6 +4308,30 @@ Verification:
 Status: `needs_verification`; no audit crawl, deployment, production-data
 mutation, watch loop, or agent-fleet loop was performed.
 
+## 2026-06-19 - Internal Calendar browser proof
+
+Requirement: `REQ-20260618-139`
+
+Changed:
+
+- Expanded the Operations browser fixture to include task, class, check-in,
+  student event, and group-goal calendar items.
+- Verified the rendered Calendar module shows every required event family from
+  scoped fixture data.
+- Verified the rendered page has no Google Calendar, sync calendar, or connect
+  calendar controls.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/operations-calendar.test.js tests/task-intake-routing.test.js tests/browser-acceptance.test.js` 9/9.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data
+mutation, watch loop, or agent-fleet loop was performed.
+
 ## 2026-06-19 - Task intake routing browser proof
 
 Requirement: `REQ-20260618-138`

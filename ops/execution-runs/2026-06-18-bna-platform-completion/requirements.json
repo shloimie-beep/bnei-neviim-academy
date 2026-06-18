@@ -1692,7 +1692,7 @@
       "title": "Internal calendar connected to tasks/classes/check-ins/events",
       "area": "tasks",
       "priority": "P1",
-      "current_verdict": "missing",
+      "current_verdict": "local_complete_pending_release",
       "status": "needs_verification",
       "expected_result": "Internal calendar uses scoped task due dates, meetings, check-ins, classes, and workspace events without broken Google sync UI.",
       "acceptance_criteria": [
@@ -1709,7 +1709,9 @@
         "src/lib/bna/workspace-auth.js allows scoped users to read only the aggregate calendar route while raw students/content/accounting endpoints remain blocked.",
         "public/operations.html now includes a Calendar module in the Operations toolbar, loads calendar data with the active workspace filter, and renders overdue/today/upcoming/recent groups.",
         "Calendar implementation has no Google Calendar or broken external sync controls.",
-        "tests/operations-calendar.test.js and updated workspace/module tests cover the endpoint, module, scoped route allowance, and no external sync UI."
+        "tests/operations-calendar.test.js and updated workspace/module tests cover the endpoint, module, scoped route allowance, and no external sync UI.",
+        "Browser acceptance now verifies the rendered Calendar module shows task due dates, class sessions, check-ins, student events, and group goals from the scoped calendar fixture.",
+        "Browser acceptance now verifies the Calendar module has no Google Calendar, sync calendar, or connect calendar controls."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -1718,12 +1720,21 @@
         "PASS node --check tests/operations-calendar.test.js",
         "PASS Operations HTML script parse via vm.Script (2 script blocks)",
         "PASS node --test tests/operations-calendar.test.js tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js tests/workspace-auth.test.js 17/17",
-        "PASS npm test 119/119"
+        "PASS npm test 119/119",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/operations-calendar.test.js tests/task-intake-routing.test.js tests/browser-acceptance.test.js PASS 9/9",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": "Local implementation complete; remains needs_verification until final acceptance sweep, release approval, and any required live smoke.",
-      "updated_at": "2026-06-18T21:38:10+03:00"
+      "implementation_commits": [
+        "current batch commit: test: verify operations calendar in browser"
+      ],
+      "files_changed": [
+        "tests/browser-acceptance.test.js"
+      ],
+      "notes": "Local internal Calendar aggregation now has static/API and browser DOM proof. Requirement remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for app-visible/server-visible changes.",
+      "updated_at": "2026-06-19T06:35:30+03:00"
     },
     {
       "id": "REQ-20260618-140",
