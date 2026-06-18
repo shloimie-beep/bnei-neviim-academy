@@ -9856,13 +9856,45 @@ app.get('/api/bna/content-jobs', requireAdmin, async (req, res) => {
 });
 
 app.get('/api/bna/class-sessions', requireAdmin, async (req, res) => {
+  const { project } = req.query;
+  const scopedProjectKey = opsScopeProjectKey(req);
+  const requestedProjectKey = project && project !== 'all' ? normalizeProjectKey(project) : '';
+  const projectKey = scopedProjectKey || requestedProjectKey;
+  const params = [];
+  const conditions = [];
+
+  if (projectKey) {
+    params.push(projectKey);
+    conditions.push(`COALESCE(p.project_key, w.workspace_key, '') = $${params.length}`);
+  }
+
+  const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+
   try {
+    await ensureDefaultProjects();
     const result = await pool.query(
-      `SELECT cs.*, row_to_json(j.*) AS content_job
+      `SELECT cs.*,
+        row_to_json(j.*) AS content_job,
+        p.project_key,
+        p.name AS project_name,
+        p.short_name AS project_short_name,
+        w.workspace_key,
+        w.workspace_type,
+        w.name AS workspace_name
        FROM bna_class_sessions cs
        LEFT JOIN bna_content_jobs j ON j.id = cs.content_job_id
+       LEFT JOIN bna_workspaces w ON w.id = COALESCE(cs.workspace_id, j.workspace_id)
+       LEFT JOIN LATERAL (
+         SELECT p.project_key, p.name, p.short_name
+         FROM bna_projects p
+         WHERE p.workspace_id = COALESCE(cs.workspace_id, j.workspace_id)
+         ORDER BY p.id ASC
+         LIMIT 1
+       ) p ON TRUE
+       ${whereClause}
        ORDER BY cs.class_date DESC, cs.created_at DESC
-       LIMIT 100`
+       LIMIT 100`,
+      params
     );
     res.json({ sessions: result.rows });
   } catch (err) {

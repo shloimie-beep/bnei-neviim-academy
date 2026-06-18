@@ -3575,3 +3575,31 @@ Verification:
 Status: local `needs_verification`; no deployment, production migration,
 production-data mutation, Drive setup route, live Drive mutation, audit crawl,
 watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-147`.
+
+## 2026-06-18T23:18:20+03:00 - Class Session Workspace Scoping
+
+Completed the local workspace-scoped live/classes batch for
+`REQ-20260618-147`.
+
+- Added explicit `project` filtering to `GET /api/bna/class-sessions`.
+- Applied scoped/requested project filtering through class-session
+  workspace/project metadata.
+- Returned project and workspace labels with each class-session row.
+- Preserved the existing selected-workspace Calendar class-session feed, so BNA
+  calendar views only show BNA class rows and remain empty when no BNA classes
+  are offered.
+- Added focused coverage in `tests/class-sessions-scope.test.js`.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/class-sessions-scope.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/class-sessions-scope.test.js
+  tests/operations-calendar.test.js tests/workspace-schema.test.js
+  tests/workspace-auth.test.js` 16/16.
+- PASS `npm test` 140/140.
+
+Status: local `needs_verification`; no deployment, production migration,
+production-data mutation, audit crawl, watch loop, or agent-fleet loop was
+performed. Resume at `REQ-20260618-148`.

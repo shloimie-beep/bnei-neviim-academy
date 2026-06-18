@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-18T23:08:45+03:00
+Updated: 2026-06-18T23:18:20+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -24,24 +24,25 @@ Latest completed local batches:
 - REQ-20260618-144: Content/class-session extraction now filters task, meeting, accountability, progress, timer, and parser-review material so reusable Content stays teaching/research oriented.
 - REQ-20260618-145: Content jobs now return scoped workspace/project metadata, transcript/parse/output/approval/provenance fields, and Operations cards visibly render workspace, source, transcript, output, approval, and provenance details.
 - REQ-20260618-146: Drive intake/routing now resolves workspace-specific folder config, rejects known folder/workspace mismatches, scopes content bundles by workspace, and blocks mixed-workspace combined outputs.
+- REQ-20260618-147: Class sessions now support direct workspace project filtering and the Calendar class-session feed remains selected-workspace scoped.
 
 Exact next requirement:
 
-- REQ-20260618-147 / BNA-CLASS-001: Workspace-scoped live classes.
+- REQ-20260618-148 / BNA-AUTO-001: Scoped automations and operational status.
 
 Exact next command:
 
 ```powershell
 npm run bna:run:status
-rg -n "class-sessions|class_sessions|live class|Live Classes|class_date|workspace_id|workspace|project|selectedProjectFilter|content_job_id|render.*Class|classSessions|getClassSessions" server.js public\operations.html tests
+rg -n "automation|Automations|agent-fleet|reminder|cron|last run|last_run|next run|next_run|failure|owner|workspace_id|workspace|project|selectedProjectFilter|status" server.js public\operations.html scripts tests
 ```
 
-Then inspect live-class/class-session API and Operations rendering so classes only appear for the relevant workspace, with BNA empty when none are offered.
+Then inspect automation/status surfaces so automations are workspace-scoped and show owner, status, last run, next run, and failure reason.
 
 Still open after this batch:
 
 - REQ-20260618-124 remains `in_progress` until broader workspace-owned entity API filtering, release approval, deploy, and live smoke are complete.
-- REQ-20260618-125 through REQ-20260618-146 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-125 through REQ-20260618-147 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 
 No deployment or production-data mutation is approved.

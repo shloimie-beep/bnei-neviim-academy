@@ -212,3 +212,11 @@ Workspace-specific Drive intake/routing (2026-06-18T23:08:45+03:00):
 - PASS Operations HTML script parse via `vm.Script` (2 script blocks).
 - PASS `node --test tests/content-drive-routing.test.js tests/content-metadata-provenance.test.js tests/community-workspace-scope.test.js tests/workspace-schema.test.js` 13/13.
 - PASS `npm test` 138/138.
+
+Workspace-scoped live classes (2026-06-18T23:18:20+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/class-sessions-scope.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/class-sessions-scope.test.js tests/operations-calendar.test.js tests/workspace-schema.test.js tests/workspace-auth.test.js` 16/16.
+- PASS `npm test` 140/140.
