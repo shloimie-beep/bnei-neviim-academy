@@ -484,3 +484,13 @@ Audit parent blocker rollup (2026-06-19T04:15:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-101 is blocked only by missing authenticated audit package/output. Non-audit/protocol children are closed. No new audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Workspace selector scoped-user browser proof (2026-06-19T04:25:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/browser-acceptance.test.js tests/operations-workspace-selector.test.js tests/workspace-auth.test.js tests/workspace-http-isolation.test.js` 21/21.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-126 now has browser-level local proof that a One Time workspace_member login sees locked workspace context, no global workspace selector, and One Time scoped task/calendar API calls. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

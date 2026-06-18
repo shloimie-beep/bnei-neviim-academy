@@ -4284,3 +4284,26 @@ Verification:
 
 Status: `blocked`; no audit crawl, deployment, production-data mutation, watch
 loop, or agent-fleet loop was performed.
+
+## 2026-06-19 - Workspace selector scoped-user browser proof
+
+Requirement: `REQ-20260618-126`
+
+Changed:
+
+- Added a Playwright acceptance path for a scoped One Time workspace member.
+- Verified the scoped login sees locked workspace context, no global workspace
+  selector, One Time task/calendar API scoping, and mobile overflow safety.
+- Marked the requirement locally complete pending release/deploy/live-smoke
+  verification, not `done`.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/browser-acceptance.test.js tests/operations-workspace-selector.test.js tests/workspace-auth.test.js tests/workspace-http-isolation.test.js` 21/21.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data
+mutation, watch loop, or agent-fleet loop was performed.

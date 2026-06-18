@@ -96,7 +96,9 @@ function fixtureGoal() {
   };
 }
 
-function operationsFixture(pathname, url) {
+function operationsFixture(pathname, url, options = {}) {
+  const authMode = options.authMode || 'super_admin';
+  const scopedOneTime = authMode === 'scoped_one_time';
   const project = projectFrom(url);
   const workspaceProject = project === 'all' ? 'all' : project;
   const student = fixtureStudent();
@@ -105,16 +107,29 @@ function operationsFixture(pathname, url) {
   const routes = {
     '/api/bna/auth/me': {
       success: true,
-      user: 'super-admin-test',
-      role: 'super_admin',
-      scope: { type: 'global', workspaceType: null, workspaceKey: null, projectKey: null },
-      allowedViews: ['tasks', 'assistant', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations', 'integrations', 'users'],
+      user: scopedOneTime ? 'one-time-test' : 'super-admin-test',
+      role: scopedOneTime ? 'workspace_member' : 'super_admin',
+      scope: scopedOneTime
+        ? {
+            type: 'workspace',
+            workspaceType: 'service_provider',
+            workspaceKey: 'one_time_mishnah_class',
+            projectKey: 'one_time_mishnah_class',
+          }
+        : { type: 'global', workspaceType: null, workspaceKey: null, projectKey: null },
+      allowedViews: scopedOneTime
+        ? ['tasks', 'assistant', 'calendar', 'content', 'contacts', 'automations', 'integrations']
+        : ['tasks', 'assistant', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations', 'integrations', 'users'],
     },
     '/api/bna/projects': {
-      projects: [
-        { project_key: 'bna', name: 'BNA', short_name: 'BNA', workspace_type: 'school' },
-        { project_key: 'one_time_mishnah_class', name: 'One Time Mishnah Class', short_name: 'One Time', workspace_type: 'service_provider' },
-      ],
+      projects: scopedOneTime
+        ? [
+            { project_key: 'one_time_mishnah_class', name: 'One Time Mishnah Class', short_name: 'One Time', workspace_type: 'service_provider' },
+          ]
+        : [
+            { project_key: 'bna', name: 'BNA', short_name: 'BNA', workspace_type: 'school' },
+            { project_key: 'one_time_mishnah_class', name: 'One Time Mishnah Class', short_name: 'One Time', workspace_type: 'service_provider' },
+          ],
     },
     '/api/bna/tasks': {
       tasks: [
@@ -263,12 +278,12 @@ function studentPortalFixture() {
   };
 }
 
-async function installFixtureRoutes(context, calls) {
+async function installFixtureRoutes(context, calls, options = {}) {
   await context.route('**/api/bna/**', async (route) => {
     const request = route.request();
     const url = new URL(request.url());
     calls.push({ method: request.method(), pathname: url.pathname, search: url.search, project: projectFrom(url) });
-    const payload = operationsFixture(url.pathname, url);
+    const payload = operationsFixture(url.pathname, url, options);
     if (!payload) {
       await route.fulfill(jsonResponse({ error: `Unhandled test fixture route: ${url.pathname}` }));
       return;
@@ -356,6 +371,47 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       );
       assert.equal(await page.locator('#workspaceProjectSelector').inputValue(), 'one_time_mishnah_class');
       await page.locator('.ops-view-frame[data-current-view="tasks"]').waitFor();
+    } finally {
+      await context.close();
+      await browser.close();
+    }
+  });
+});
+
+test('Playwright Operations scoped user sees locked workspace context without global selector', async () => {
+  await withServer(async (baseUrl) => {
+    const calls = [];
+    const browser = await chromium.launch();
+    const context = await browser.newContext({
+      baseURL: baseUrl,
+      httpCredentials: { username: 'one-time-test', password: 'one-time-secret-test' },
+      serviceWorkers: 'block',
+      viewport: { width: 390, height: 844 },
+      extraHTTPHeaders: {
+        authorization: basicAuth('one-time-test', 'one-time-secret-test'),
+      },
+    });
+    await installFixtureRoutes(context, calls, { authMode: 'scoped_one_time' });
+
+    try {
+      const page = await context.newPage();
+      await page.goto('/operations?view=tasks', { waitUntil: 'domcontentloaded' });
+      await page.locator('.ops-app-shell').waitFor();
+      await page.locator('.workspace-context-control[data-mode="scoped"]').waitFor();
+      await page.getByText('Service provider: One Time Mishnah Class').waitFor();
+      await page.getByText('Scoped login').waitFor();
+      assert.equal(await page.locator('#workspaceProjectSelector').count(), 0);
+      await waitForCall(
+        calls,
+        (call) => call.pathname === '/api/bna/tasks' && call.project === 'one_time_mishnah_class',
+        'scoped user tasks pinned to One Time workspace',
+      );
+      await waitForCall(
+        calls,
+        (call) => call.pathname === '/api/bna/calendar' && call.project === 'one_time_mishnah_class',
+        'scoped user calendar pinned to One Time workspace',
+      );
+      await noHorizontalOverflow(page);
     } finally {
       await context.close();
       await browser.close();

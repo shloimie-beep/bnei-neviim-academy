@@ -57,7 +57,7 @@
         "STATUS.md and EVIDENCE.md show parent rollup and remaining child IDs.",
         "No child requirement is closed without proof and targeted verification."
       ],
-      "current_verdict": "partial",
+      "current_verdict": "local_complete_pending_release",
       "source": "BNA recovery bundle and Appendix A",
       "depends_on_audit_output": true,
       "live_required": true,
@@ -1056,7 +1056,8 @@
         "Super-admin workspace choices include canonical workspace type labels from /api/bna/projects, with BNA as School and One Time Mishnah Class as Service provider.",
         "selectedProjectFilter drives task API loading, URL/localStorage selector persistence, task project filter chips, and task create/edit project locking.",
         "Scoped ordinary users no longer call the global-only agent-fleet status endpoint from loadData, avoiding a global dashboard exposure/error path.",
-        "/api/bna/projects now returns workspace_type, workspace_key, and workspace_name metadata while still narrowing scoped identities to their project."
+        "/api/bna/projects now returns workspace_type, workspace_key, and workspace_name metadata while still narrowing scoped identities to their project.",
+        "tests/browser-acceptance.test.js now simulates a One Time workspace_member login and verifies the locked workspace context, absence of the global selector, One Time task/calendar API scoping, and mobile overflow safety."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -1065,17 +1066,24 @@
         "Operations HTML script parse via vm.Script PASS (2 script blocks)",
         "node --test tests/operations-workspace-selector.test.js tests/workspace-auth.test.js tests/workspace-http-isolation.test.js PASS 13/13",
         "npm test PASS 81/81",
-        "npm test PASS 82/82"
+        "npm test PASS 82/82",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/browser-acceptance.test.js tests/operations-workspace-selector.test.js tests/workspace-auth.test.js tests/workspace-http-isolation.test.js PASS 21/21",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: feat: add operations workspace selector scoping"
+        "current batch commit: feat: add operations workspace selector scoping",
+        "current batch commit: test: cover scoped workspace browser mode"
       ],
       "files_changed": [
         "public/operations.html",
         "server.js",
-        "tests/operations-workspace-selector.test.js"
+        "tests/operations-workspace-selector.test.js",
+        "tests/browser-acceptance.test.js"
       ],
-      "notes": "Local Operations shell selector behavior is implemented and tested. It remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for app-visible changes."
+      "notes": "Local Operations shell selector behavior now has static and Playwright coverage for both super-admin selection and scoped ordinary-user locked context. It remains needs_verification pending release approval, deployment, and live smoke for app-visible changes."
     },
     {
       "id": "REQ-20260618-127",
