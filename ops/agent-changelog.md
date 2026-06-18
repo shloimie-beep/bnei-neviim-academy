@@ -4126,3 +4126,23 @@ Verification:
 - PASS `npm test` 202/202.
 
 Status: local `needs_verification`; no deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-168`.
+
+## 2026-06-19 - Guarded test-data seed lifecycle
+
+Requirement: `REQ-20260618-168`
+
+Changed:
+
+- Added `scripts/bna-test-data.mjs` with plan, seed, seed dry-run, cleanup dry-run, and cleanup commands for isolated `TEST-BNA-SEED` fixture records.
+- Covered workspaces, users, students, tasks, decisions, events, content, communities, accounting, automations, integrations, live classes, Hebrew goals, helper memory, and helper action audit rows.
+- Added package scripts for the test-data lifecycle and `tests/test-data-seed-script.test.js` for safety rails, lane coverage, cleanup ordering, helper-action audit rows, and Hebrew fixture coverage.
+- Kept real mutation guarded by `BNA_TEST_DATA_ALLOW=1`, a provided `DATABASE_URL`, a database name containing `test`, and non-production-looking database targets.
+
+Verification:
+
+- PASS `node --check scripts/bna-test-data.mjs`.
+- PASS `node --check tests/test-data-seed-script.test.js`.
+- PASS `npm run test:data:plan`.
+- PASS `node --test tests/test-data-seed-script.test.js tests/bna-execution-run.test.js` 13/13.
+
+Status: local `done`; no deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-169`.

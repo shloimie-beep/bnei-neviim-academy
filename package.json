@@ -6,6 +6,9 @@
   "scripts": {
     "start": "node server.js",
     "test": "node --test",
+    "test:data:plan": "node scripts/bna-test-data.mjs plan",
+    "test:data:seed": "node scripts/bna-test-data.mjs seed",
+    "test:data:cleanup": "node scripts/bna-test-data.mjs cleanup",
     "bna:run:init": "node scripts/bna-execution-run.mjs init",
     "bna:run:status": "node scripts/bna-execution-run.mjs status",
     "bna:run:validate": "node scripts/bna-execution-run.mjs validate",

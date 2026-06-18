@@ -69,7 +69,7 @@
 | REQ-20260618-165 | REQ-20260618-110 | BNA-PUBLIC-003 | needs_verification | local_implemented_pending_release | Direct parent signup/self-governance messaging and six-month offer |
 | REQ-20260618-166 | REQ-20260618-110 | BNA-PUBLIC-004 | needs_verification | local_implemented_pending_release | Consistent approved portal headers |
 | REQ-20260618-167 | REQ-20260618-110 | BNA-PUBLIC-005 | needs_verification | local_implemented_pending_release | Public/blog/FAQ/signup/portal route and CTA integrity |
-| REQ-20260618-168 | REQ-20260618-111 | BNA-TEST-001 | not_started | missing | Isolated repeatable seed and cleanup data |
+| REQ-20260618-168 | REQ-20260618-111 | BNA-TEST-001 | done | closed_local | Isolated repeatable seed and cleanup data |
 | REQ-20260618-169 | REQ-20260618-111 | BNA-TEST-002 | not_started | missing | Route, interaction, responsive, helper, workspace, and student Playwright tests |
 | REQ-20260618-170 | REQ-20260618-111 | BNA-TEST-003 | needs_verification | partial | Backend/API/RBAC negative tests |
 | REQ-20260618-171 | REQ-20260618-111 | BNA-TEST-004 | done | closed_existing | PWA identity/cache regression tests |

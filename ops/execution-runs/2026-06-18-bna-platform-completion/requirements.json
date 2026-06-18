@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-19T02:00:30+03:00",
+  "updated_at": "2026-06-19T03:00:30+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -2835,8 +2835,8 @@
       "title": "Isolated repeatable seed and cleanup data",
       "area": "tests",
       "priority": "P0",
-      "current_verdict": "missing",
-      "status": "not_started",
+      "current_verdict": "closed_local",
+      "status": "done",
       "expected_result": "Safe seed/cleanup path creates isolated TEST records for workspaces, users, students, tasks, decisions, events, content, communities, automations, integrations, live classes, Hebrew goals, helper conversations/actions.",
       "acceptance_criteria": [
         "Isolated repeatable seed and cleanup data is implemented against the canonical Express/static runtime where applicable.",
@@ -2847,12 +2847,34 @@
       "depends_on_audit_output": false,
       "live_required": false,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "scripts/bna-test-data.mjs defines a guarded TEST-BNA-SEED lifecycle with plan, seed --dry-run, seed, cleanup --dry-run, and cleanup commands.",
+        "The fixture covers workspaces, users, students, tasks, decisions, events, content, communities, accounting, automations, integrations, live classes, Hebrew goals, helper memory, and helper action audit rows.",
+        "Mutating seed/cleanup commands refuse to run unless BNA_TEST_DATA_ALLOW=1 is set, DATABASE_URL is present, the database name contains test, and the host/name does not look production-like.",
+        "Cleanup only targets records carrying the TEST-BNA-SEED marker, deterministic seed keys, or the example.invalid seed email."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check scripts/bna-test-data.mjs PASS",
+        "node --check tests/test-data-seed-script.test.js PASS",
+        "npm run test:data:plan PASS",
+        "node --test tests/test-data-seed-script.test.js tests/bna-execution-run.test.js PASS 13/13"
+      ],
+      "implementation_commits": [
+        "current batch commit: test: add guarded test data seeding"
+      ],
+      "files_changed": [
+        "scripts/bna-test-data.mjs",
+        "tests/test-data-seed-script.test.js",
+        "package.json",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/STATUS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/REQUIREMENTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md"
+      ],
+      "notes": "Local non-live test-data lifecycle complete. Real seed/cleanup mutations were intentionally not run because no local test database was requested/provided and production-data mutation is not approved."
     },
     {
       "id": "REQ-20260618-169",

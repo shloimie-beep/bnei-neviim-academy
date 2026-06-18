@@ -425,3 +425,12 @@ Public route and CTA integrity (2026-06-19T02:45:30+03:00):
 - PASS `npm test` 202/202.
 
 No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed.
+
+Guarded test-data seed lifecycle (2026-06-19T03:00:30+03:00):
+
+- PASS `node --check scripts/bna-test-data.mjs`.
+- PASS `node --check tests/test-data-seed-script.test.js`.
+- PASS `npm run test:data:plan`.
+- PASS `node --test tests/test-data-seed-script.test.js tests/bna-execution-run.test.js` 13/13.
+
+No production-data mutation, deployment, audit crawl, watch loop, or agent-fleet loop was performed. Real `seed` and `cleanup` mutations remain guarded behind `BNA_TEST_DATA_ALLOW=1` and a local test database URL.
