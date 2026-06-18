@@ -222,10 +222,21 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "Community/Contacts now use workspace-scoped signup filtering, workspace metadata labels, and explicit super-admin workspace context in Operations."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "notes": "Parent workstream retained from original active run."
+      "verification": [
+        "node --test tests/community-workspace-scope.test.js tests/operations-workspace-selector.test.js tests/workspace-auth.test.js PASS 13/13",
+        "npm test PASS 129/129"
+      ],
+      "notes": "Scoped modules parent remains in_progress until Content, Accounting, Automations, Integrations, Users, Live Classes, and remaining module children have terminal statuses.",
+      "updated_at": "2026-06-18T22:35:15+03:00",
+      "files_changed": [
+        "server.js",
+        "public/operations.html",
+        "tests/community-workspace-scope.test.js"
+      ]
     },
     {
       "id": "REQ-20260618-108",
@@ -1561,8 +1572,8 @@
       "title": "Workspace-scoped communities",
       "area": "modules",
       "priority": "P1",
-      "current_verdict": "partial",
-      "status": "not_started",
+      "current_verdict": "local_complete_pending_release",
+      "status": "needs_verification",
       "expected_result": "Each workspace sees its own community and super admin uses explicit filtering for cross-workspace views.",
       "acceptance_criteria": [
         "Workspace-scoped communities is implemented against the canonical Express/static runtime where applicable.",
@@ -1573,12 +1584,31 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "GET /api/bna/signups now accepts an explicit project filter, applies scopedProjectKey/requestedProjectKey filtering, and returns project/workspace metadata for each signup community record.",
+        "The signups query now joins bna_workspaces and the workspace project record, so super-admin cross-workspace views can be explicitly filtered and labeled.",
+        "Operations Contacts now passes selectedProjectFilter into api.getSignups and shows the active workspace context in the Contacts header.",
+        "Contact cards and detail panels now display the signup workspace label returned by the scoped API.",
+        "tests/community-workspace-scope.test.js covers the server workspace filter/metadata and the Operations Contacts workspace request/display behavior."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check server.js PASS",
+        "node --check tests/community-workspace-scope.test.js PASS",
+        "Operations HTML script parse via vm.Script PASS (2 script blocks)",
+        "node --test tests/community-workspace-scope.test.js tests/operations-workspace-selector.test.js tests/workspace-auth.test.js PASS 13/13",
+        "npm test PASS 129/129"
+      ],
+      "implementation_commits": [
+        "current batch commit: feat: scope community contacts"
+      ],
+      "files_changed": [
+        "server.js",
+        "public/operations.html",
+        "tests/community-workspace-scope.test.js"
+      ],
+      "notes": "Local implementation and tests complete. Live-required closure remains pending release approval, deploy, and live smoke.",
+      "updated_at": "2026-06-18T22:35:15+03:00"
     },
     {
       "id": "REQ-20260618-144",

@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-18T22:20:45+03:00
+Updated: 2026-06-18T22:35:15+03:00
 
 Status counts:
 
@@ -8,8 +8,8 @@ Status counts:
 - done: 4
 - already_satisfied: 1
 - blocked: 3
-- needs_verification: 24
-- not_started: 26
+- needs_verification: 25
+- not_started: 25
 - needs_operator_decision: 1
 
 Closed/already satisfied IDs:
@@ -58,6 +58,7 @@ Open non-blocked IDs begin with:
 - REQ-20260618-140 BNA-TASKS-005: Remove stale diagnostic concepts from main task UI (needs_verification)
 - REQ-20260618-141 BNA-TASKS-006: Live scoped counts and blocker explanations (needs_verification)
 - REQ-20260618-142 BNA-TASKS-007: Idempotent parser routing to correct modules/workspaces (needs_verification)
+- REQ-20260618-143 BNA-COMMUNITY-001: Workspace-scoped communities (needs_verification)
 
 Blocked / operator-decision IDs:
 
@@ -66,6 +67,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current implementation batch: REQ-20260618-142 has local mixed-recording parser idempotency and workspace routing implementation plus focused tests. Next implementation target is REQ-20260618-143.
+Current implementation batch: REQ-20260618-143 has local workspace-scoped Community/Contacts implementation plus focused tests. Next implementation target is REQ-20260618-144.
 
 No deployment or production-data mutation is approved in this run.

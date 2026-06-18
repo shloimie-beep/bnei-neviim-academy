@@ -7484,25 +7484,54 @@ app.post('/api/payment-complete', requireAdmin, async (req, res) => {
 
 // BNA dashboard: signups
 app.get('/api/bna/signups', requireAdmin, async (req, res) => {
-  const { status, payment_status } = req.query;
+  const { status, payment_status, project } = req.query;
   const conditions = [];
   const params = [];
+  const scopedProjectKey = opsScopeProjectKey(req);
+  const requestedProjectKey = normalizeProjectKey(project);
+  const projectKey = scopedProjectKey || requestedProjectKey;
 
   if (status) {
     params.push(status);
-    conditions.push(`status = $${params.length}`);
+    conditions.push(`s.status = $${params.length}`);
   }
 
   if (payment_status) {
     params.push(payment_status);
-    conditions.push(`payment_status = $${params.length}`);
+    conditions.push(`s.payment_status = $${params.length}`);
+  }
+
+  if (scopedProjectKey && requestedProjectKey && requestedProjectKey !== scopedProjectKey) {
+    return res.status(403).json({ error: 'This login can only access its scoped workspace community.' });
+  }
+
+  if (projectKey) {
+    params.push(projectKey);
+    conditions.push(`COALESCE(p.project_key, w.workspace_key, '') = $${params.length}`);
   }
 
   const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
   try {
     const result = await pool.query(
-      `SELECT * FROM signups ${whereClause} ORDER BY created_at DESC`,
+      `SELECT s.*,
+              p.project_key,
+              p.name AS project_name,
+              p.short_name AS project_short_name,
+              w.workspace_key,
+              w.workspace_type,
+              w.name AS workspace_name
+       FROM signups s
+       LEFT JOIN bna_workspaces w ON w.id = s.workspace_id
+       LEFT JOIN LATERAL (
+         SELECT project_key, name, short_name
+         FROM bna_projects p
+         WHERE p.workspace_id = s.workspace_id
+         ORDER BY p.id ASC
+         LIMIT 1
+       ) p ON TRUE
+       ${whereClause}
+       ORDER BY s.created_at DESC`,
       params
     );
     res.json({ signups: result.rows });

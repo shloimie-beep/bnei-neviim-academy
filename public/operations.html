@@ -3607,6 +3607,7 @@
                 const params = new URLSearchParams();
                 if (filters.status) params.set('status', filters.status);
                 if (filters.payment_status) params.set('payment_status', filters.payment_status);
+                if (filters.project) params.set('project', filters.project);
                 return this.request('GET', '/signups?' + params.toString());
             },
 
@@ -4551,6 +4552,7 @@
             }
             const selectedSignup = visibleSignups.find(signup => contactKey(signup) === selectedContactKey) || null;
             const contactMeta = contactSectionMeta(contactSection);
+            const workspaceLabel = selectedProjectFilter() ? activeWorkspaceProjectLabel() : 'All workspaces';
             return `
                 <div class="container">
                     <div class="page-heading">
@@ -4560,6 +4562,7 @@
                             <p>${escapeHtml(contactMeta.description)}</p>
                         </div>
                         <div class="page-heading-actions">
+                            <span class="page-status-pill">Workspace: ${escapeHtml(workspaceLabel)}</span>
                             <span class="page-status-pill">${visibleSignups.length} visible</span>
                             <span class="page-status-pill">${signups.length} total</span>
                         </div>
@@ -4617,6 +4620,7 @@
             const key = contactKey(signup);
             const paymentStatus = normalizePaymentStatusKey(signup.payment_status);
             const missingContact = !String(signup.parent_email || '').trim() || !String(signup.parent_phone || '').trim();
+            const workspaceLabel = contactWorkspaceLabel(signup);
             return `
                 <button class="contact-card ${key === selectedContactKey ? 'active' : ''}" type="button" onclick="selectContact(${attrJson(key)})">
                     <div class="contact-card-top">
@@ -4634,6 +4638,7 @@
                         <div class="tag-list">
                             ${(signup.tags || []).slice(0, 3).map(tag => `<span class="tag ${escapeHtml(cssToken(tag))}">${escapeHtml(tag)}</span>`).join('') || '<span class="tag">No tags</span>'}
                         </div>
+                        ${workspaceLabel ? `<span class="page-status-pill">${escapeHtml(workspaceLabel)}</span>` : ''}
                         ${missingContact ? '<span class="page-status-pill">Missing contact</span>' : ''}
                     </div>
                 </button>
@@ -4680,6 +4685,7 @@
                         ${linkedStudent ? `<button class="task-action" onclick="selectStudentAndOpen(${Number(linkedStudent.id)}, 'profile')">Open student</button>` : '<button class="task-action" disabled>No linked student</button>'}
                     </div>
                     <div class="contact-detail-grid">
+                        ${renderContactDetailItem('Workspace', contactWorkspaceLabel(signup) || 'Not set')}
                         ${renderContactDetailItem('Parent Email', signup.parent_email || 'Not entered')}
                         ${renderContactDetailItem('Parent Phone', signup.parent_phone || 'Not entered')}
                         ${renderContactDetailItem('Linked Student', signup.student_name || 'Not entered')}
@@ -4721,6 +4727,14 @@
                     <div class="contact-detail-value">${escapeHtml(value || 'Not set')}</div>
                 </div>
             `;
+        }
+
+        function contactWorkspaceLabel(signup) {
+            const project = signup?.project_short_name || signup?.project_name || signup?.workspace_name || signup?.workspace_key || signup?.project_key || '';
+            if (!project) return '';
+            const normalized = normalizeProjectKey(signup?.project_key || signup?.workspace_key || project);
+            if (normalized) return taskProjectLabel({ project_key: normalized, project_name: project, project_short_name: signup?.project_short_name });
+            return project;
         }
 
         function contactKey(signup) {
@@ -7996,7 +8010,7 @@
                     api.getProjects(),
                     api.getTasks({ project: selectedProjectFilter() || undefined }),
                     viewAllowed('calendar') ? api.getCalendar({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ events: [] }),
-                    viewAllowed('contacts') || viewAllowed('accounting') ? api.getSignups() : Promise.resolve({ signups: [] }),
+                    viewAllowed('contacts') || viewAllowed('accounting') ? api.getSignups({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ signups: [] }),
                     viewAllowed('accounting') ? api.getPayments() : Promise.resolve({ payments: [] }),
                     viewAllowed('accounting') ? api.getPaymentIntake() : Promise.resolve({ intake: [] }),
                     viewAllowed('accounting') ? api.getPaymentReminderDue() : Promise.resolve(null),

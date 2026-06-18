@@ -3452,3 +3452,32 @@ Verification:
 Status: local `needs_verification`; no deployment, production migration,
 production-data mutation, audit crawl, watch loop, or agent-fleet loop was
 performed. Resume at `REQ-20260618-143`.
+
+## 2026-06-18T22:35:15+03:00 - Community Workspace Scoping
+
+Completed the local Community/Contacts workspace-scoping batch for
+`REQ-20260618-143`.
+
+- Added explicit `project` filtering to `GET /api/bna/signups`.
+- Applied scoped/requested project filtering through workspace/project metadata
+  instead of returning the full signup roster unconditionally.
+- Returned project and workspace labels with signup community records.
+- Updated Operations Contacts to request signups with the active workspace
+  selector.
+- Added visible workspace context in the Contacts header, contact cards, and
+  contact detail panel.
+- Added focused coverage in `tests/community-workspace-scope.test.js`.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/community-workspace-scope.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/community-workspace-scope.test.js
+  tests/operations-workspace-selector.test.js tests/workspace-auth.test.js`
+  13/13.
+- PASS `npm test` 129/129.
+
+Status: local `needs_verification`; no deployment, production migration,
+production-data mutation, audit crawl, watch loop, or agent-fleet loop was
+performed. Resume at `REQ-20260618-144`.

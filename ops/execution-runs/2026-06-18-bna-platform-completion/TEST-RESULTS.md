@@ -180,3 +180,11 @@ Mixed-recording parser idempotency and workspace routing (2026-06-18T22:20:45+03
 - PASS `node --check tests/mixed-recording-idempotency.test.js`.
 - PASS `node --test tests/mixed-recording-idempotency.test.js tests/task-intake-routing.test.js tests/workspace-schema.test.js tests/workspace-auth.test.js` 18/18.
 - PASS `npm test` 127/127.
+
+Community workspace scoping (2026-06-18T22:35:15+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/community-workspace-scope.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/community-workspace-scope.test.js tests/operations-workspace-selector.test.js tests/workspace-auth.test.js` 13/13.
+- PASS `npm test` 129/129.
