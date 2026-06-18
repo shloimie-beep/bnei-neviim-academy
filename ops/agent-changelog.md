@@ -4308,6 +4308,30 @@ Verification:
 Status: `needs_verification`; no audit crawl, deployment, production-data
 mutation, watch loop, or agent-fleet loop was performed.
 
+## 2026-06-19 - Operations sidebar simplification DOM proof
+
+Requirement: `REQ-20260618-129`
+
+Changed:
+
+- Added browser assertions that the Operations sidebar contains exactly one
+  workspace context control.
+- Verified the sidebar has no duplicate module buttons or sidebar nav.
+- Verified scoped One Time users do not see `All workspaces` / global
+  workspace-directory UI.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/operations-module-toolbar.test.js`.
+- PASS `node --test tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js` 11/11.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data
+mutation, watch loop, or agent-fleet loop was performed.
+
 ## 2026-06-19 - Operations toolbar DOM proof
 
 Requirement: `REQ-20260618-128`

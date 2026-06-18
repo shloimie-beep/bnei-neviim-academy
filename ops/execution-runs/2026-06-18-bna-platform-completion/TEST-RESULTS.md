@@ -516,3 +516,14 @@ Operations module toolbar DOM proof (2026-06-19T04:45:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-128 now has local proof for the ordered horizontal Operations module toolbar in both source/static checks and browser DOM checks: super-admin sees the full expected module order, scoped One Time users see only allowedViews-filtered modules, and responsive overflow remains clean. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Operations sidebar simplification DOM proof (2026-06-19T04:55:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/operations-module-toolbar.test.js`.
+- PASS `node --test tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js` 11/11.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-129 now has browser proof that the sidebar contains one workspace context control, no duplicate module buttons or sidebar nav, and scoped One Time users do not see All workspaces/global workspace-directory UI. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

@@ -313,6 +313,14 @@ async function moduleToolbarLabels(page) {
   ));
 }
 
+async function assertSidebarWorkspaceContextOnly(page) {
+  const sidebar = page.locator('.ops-sidebar');
+  await sidebar.waitFor();
+  assert.equal(await sidebar.locator('.workspace-context-control').count(), 1);
+  assert.equal(await sidebar.locator('.ops-module-button').count(), 0);
+  assert.equal(await sidebar.locator('.ops-sidebar-nav').count(), 0);
+}
+
 async function waitForCall(calls, predicate, label) {
   const deadline = Date.now() + 3000;
   while (Date.now() < deadline) {
@@ -341,6 +349,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       const page = await context.newPage();
       await page.goto('/operations?view=tasks', { waitUntil: 'domcontentloaded' });
       await page.locator('.ops-app-shell').waitFor();
+      await assertSidebarWorkspaceContextOnly(page);
       assert.deepEqual(await moduleToolbarLabels(page), [
         'Tasks',
         'Assistant',
@@ -421,6 +430,8 @@ test('Playwright Operations scoped user sees locked workspace context without gl
       await page.goto('/operations?view=tasks', { waitUntil: 'domcontentloaded' });
       await page.locator('.ops-app-shell').waitFor();
       await page.locator('.workspace-context-control[data-mode="scoped"]').waitFor();
+      await assertSidebarWorkspaceContextOnly(page);
+      assert.doesNotMatch(await page.locator('.ops-sidebar').textContent(), /All workspaces/);
       assert.deepEqual(await moduleToolbarLabels(page), [
         'Tasks',
         'Assistant',
