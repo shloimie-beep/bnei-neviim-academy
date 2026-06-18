@@ -599,3 +599,13 @@ Canonical task state browser proof (2026-06-19T06:05:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-136 now has browser proof that a legacy `needs_decision` task fixture renders in Decisions as canonical `Status: Decision`, shows canonical decision actions, and opens with `taskStage=decision_required`, Decision Required checked, and the canonical stage option set only. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Task metadata/provenance browser proof (2026-06-19T06:15:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/task-metadata-provenance.test.js tests/task-state-model.test.js tests/browser-acceptance.test.js` 9/9.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-137 now has browser proof that structured owner/status/urgency/due/blocker/source metadata renders as labeled badges while the raw operator ramble phrase stays out of visible task title/text, and that the modal keeps concise title/blocker fields separate from Source/Raw ID provenance metadata. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

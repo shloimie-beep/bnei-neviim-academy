@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-19T06:05:30+03:00
+Updated: 2026-06-19T06:15:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -29,10 +29,11 @@ Latest completed local batches:
 - REQ-20260618-134: Operations desktop grids now have static and browser DOM proof for balanced task overview and student profile tracks/cards with collapsed auto-fit tracks excluded from the balance check. It remains needs_verification only for release approval, deploy, and live smoke.
 - REQ-20260618-135: Operations accessibility now has static and browser DOM proof for keyboard task-row activation, modal semantics, accessible labels/descriptions, focus placement, Escape close, focus restoration, pressed/current state, and preserved modal focus after async task-comment re-render. It remains needs_verification only for release approval, deploy, and live smoke.
 - REQ-20260618-136: Canonical task states now have static/backend and browser DOM proof for legacy needs_decision alias normalization, Status: Decision rendering, decision_required modal normalization, checked Decision Required state, and the six canonical stage options. It remains needs_verification only for release approval, deploy, and live smoke.
+- REQ-20260618-137: Task metadata/provenance separation now has static/API and browser DOM proof for labeled owner/status/urgency/due/blocker/source badges, concise titles without raw ramble text, blocker modal editing, and separate Source/Raw ID provenance metadata. It remains needs_verification only for release approval, deploy, and live smoke.
 
 Exact next requirement:
 
-- REQ-20260618-137 / BNA-TASK-002: Separate owner/status/urgency/due/blocker/provenance.
+- REQ-20260618-138 / BNA-TASK-003: Merge Intake Review/Review Queue into auto-routing and Decisions.
 
 Blocked requirement intentionally skipped:
 
@@ -43,15 +44,15 @@ Exact next command:
 
 ```powershell
 npm run bna:run:status
-node --test tests/task-metadata-provenance.test.js tests/task-state-model.test.js tests/browser-acceptance.test.js
+node --test tests/task-intake-routing.test.js tests/task-state-model.test.js tests/browser-acceptance.test.js
 ```
 
-Then inspect whether `REQ-20260618-137` needs only refreshed local evidence or an additional browser/API assertion for owner/status/urgency/due/blocker/provenance separation, concise task titles, blocker editing, and raw-source provenance being visible separately from titles. Do not close live-required task items as `done` without release approval, deployment, and live-smoke evidence.
+Then inspect whether `REQ-20260618-138` needs only refreshed local evidence or an additional browser/API assertion for high-confidence auto-file routing, low-confidence Decision routing, option-specific updates, and absence of visible Review Queue / Intake Review lanes. Do not close live-required task items as `done` without release approval, deployment, and live-smoke evidence.
 
 Still open after this batch:
 
-- REQ-20260618-124 through REQ-20260618-136 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
-- REQ-20260618-137 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-124 through REQ-20260618-137 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
+- REQ-20260618-138 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - REQ-20260618-156 remains `needs_operator_decision` for duplicate-student cleanup approval.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 

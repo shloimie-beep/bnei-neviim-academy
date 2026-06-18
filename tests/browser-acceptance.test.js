@@ -142,8 +142,20 @@ function operationsFixture(pathname, url, options = {}) {
           category: 'operations',
           urgency: 'today',
           assigned_to: 'System Work',
+          blocker_reason: 'Needs operator choice',
           created_at: '2026-06-18T08:00:00+03:00',
-          ai_parsed: { seed_marker: 'TEST-BNA-SEED' },
+          due_date: '2026-06-20',
+          source: 'telegram',
+          source_context: {
+            message_id: 901,
+            raw_id: 'RAW-TEST-001',
+            source: 'telegram',
+          },
+          ai_parsed: {
+            original_text: 'Raw operator ramble should stay out of the visible title.',
+            raw_id: 'RAW-TEST-001',
+            seed_marker: 'TEST-BNA-SEED',
+          },
         },
         {
           id: 202,
@@ -703,6 +715,49 @@ async function assertOperationsTaskStateModel(page) {
   await page.locator('.focus-panel[aria-label="Tasks overview"]').waitFor();
 }
 
+async function assertOperationsTaskMetadataProvenance(page) {
+  await page.locator('.section-tab').filter({ hasText: 'Decisions' }).first().click();
+  const taskRow = page.locator('.task-row').filter({ hasText: 'BNA acceptance task' }).first();
+  await taskRow.waitFor();
+  const rowState = await taskRow.evaluate((node) => ({
+    badges: Object.fromEntries(Array.from(node.querySelectorAll('[data-task-meta]')).map((badge) => [
+      badge.getAttribute('data-task-meta'),
+      badge.textContent.replace(/\s+/g, ' ').trim(),
+    ])),
+    text: node.textContent || '',
+    title: node.querySelector('.task-row-title')?.textContent?.trim() || '',
+  }));
+  assert.equal(rowState.title, 'BNA acceptance task');
+  assert.doesNotMatch(rowState.text, /Raw operator ramble should stay out of the visible title/);
+  assert.match(rowState.badges.owner, /Owner:\s*System Work/);
+  assert.match(rowState.badges.status, /Status:\s*Decision/);
+  assert.match(rowState.badges.urgency, /Urgency:\s*Today/);
+  assert.match(rowState.badges.due, /Due:\s*20 Jun/);
+  assert.match(rowState.badges.blocker, /Blocker:\s*Needs operator choice/);
+  assert.match(rowState.badges.source, /Source:\s*Raw RAW-TEST-001/);
+
+  await taskRow.click({ position: { x: 20, y: 20 } });
+  await page.locator('#taskModal.show').waitFor();
+  const modalState = await page.evaluate(() => {
+    const provenance = document.querySelector('[aria-label="Task provenance"]');
+    return {
+      blockerValue: document.getElementById('taskBlockerReason')?.value || '',
+      provenanceText: provenance?.textContent?.replace(/\s+/g, ' ').trim() || '',
+      titleValue: document.getElementById('taskTitle')?.value || '',
+    };
+  });
+  assert.equal(modalState.titleValue, 'BNA acceptance task');
+  assert.equal(modalState.blockerValue, 'Needs operator choice');
+  assert.match(modalState.provenanceText, /Source:\s*Raw RAW-TEST-001/);
+  assert.match(modalState.provenanceText, /Raw ID:\s*RAW-TEST-001/);
+  assert.doesNotMatch(modalState.titleValue, /Raw operator ramble/);
+
+  await page.locator('#taskModal.show .modal-close').click();
+  await page.waitForFunction(() => !document.querySelector('#taskModal')?.classList.contains('show'));
+  await page.locator('.section-tab').filter({ hasText: 'Overview' }).first().click();
+  await page.locator('.focus-panel[aria-label="Tasks overview"]').waitFor();
+}
+
 async function assertStudentPortalIdentity(page) {
   const identity = await page.evaluate(() => ({
     hasLogo: Array.from(document.images).some((img) => (
@@ -784,6 +839,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       await assertOperationsDesktopGrids(page);
       await assertOperationsAccessibility(page);
       await assertOperationsTaskStateModel(page);
+      await assertOperationsTaskMetadataProvenance(page);
       await assertOperationsShellStable(page, 'desktop operations shell');
 
       await page.locator('.ops-module-button').filter({ hasText: 'Assistant' }).click();

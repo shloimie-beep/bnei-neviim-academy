@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-19T06:05:30+03:00
+Updated: 2026-06-19T06:15:30+03:00
 
 Status counts:
 
@@ -92,6 +92,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current verification batch: REQ-20260618-136 now has static/backend and browser DOM proof for canonical task states, including a legacy needs_decision fixture that renders as Status: Decision, canonical decision actions, decision_required modal normalization, Decision Required checkbox coherence, and the six canonical stage options. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-137.
+Current verification batch: REQ-20260618-137 now has static/API and browser DOM proof for task metadata/provenance separation, including labeled owner/status/urgency/due/blocker/source badges, concise titles without raw ramble text, blocker modal editing, and separate Source/Raw ID provenance metadata. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-138.
 
 No deployment or production-data mutation is approved in this run.

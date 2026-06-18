@@ -1593,7 +1593,7 @@
       "title": "Separate owner/status/urgency/due/blocker/provenance",
       "area": "tasks",
       "priority": "P0",
-      "current_verdict": "partial",
+      "current_verdict": "local_complete_pending_release",
       "status": "needs_verification",
       "expected_result": "Visible tasks have concise titles and structured metadata without raw ramble titles.",
       "acceptance_criteria": [
@@ -1609,7 +1609,9 @@
         "server.js now stores blocker_reason as a first-class bna_tasks field in create-table, protected migration, task creation, and task patch paths.",
         "public/operations.html now renders labeled task metadata badges for Workspace, Owner, Status, Urgency, Due, Blocker, and Source instead of unlabeled mixed badges.",
         "Task modal now edits blocker_reason and shows a separate provenance panel derived from source/source_context/ai_parsed without promoting raw ramble wording into visible titles.",
-        "tests/task-metadata-provenance.test.js covers blocker metadata schema/API support, labeled Operations metadata badges, modal blocker editing, and provenance rendering."
+        "tests/task-metadata-provenance.test.js covers blocker metadata schema/API support, labeled Operations metadata badges, modal blocker editing, and provenance rendering.",
+        "Browser acceptance now verifies a task with structured owner/status/urgency/due/blocker/source metadata renders labeled badges while the raw operator ramble phrase stays out of the visible title/text.",
+        "Browser acceptance now verifies the task modal keeps the concise title and blocker field separate from provenance, and the provenance panel exposes Source and Raw ID as metadata."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -1617,12 +1619,21 @@
         "PASS node --check tests/task-metadata-provenance.test.js",
         "PASS Operations HTML script parse via vm.Script (2 script blocks)",
         "PASS node --test tests/task-metadata-provenance.test.js tests/task-state-model.test.js 6/6",
-        "PASS npm test 113/113"
+        "PASS npm test 113/113",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/task-metadata-provenance.test.js tests/task-state-model.test.js tests/browser-acceptance.test.js PASS 9/9",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": "Local implementation complete; remains needs_verification until final acceptance sweep, release approval, and any required live smoke.",
-      "updated_at": "2026-06-18T21:12:45+03:00"
+      "implementation_commits": [
+        "current batch commit: test: verify task metadata provenance in browser"
+      ],
+      "files_changed": [
+        "tests/browser-acceptance.test.js"
+      ],
+      "notes": "Local task metadata/provenance separation now has static/API and browser DOM proof. Requirement remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for app-visible/server-visible changes.",
+      "updated_at": "2026-06-19T06:15:30+03:00"
     },
     {
       "id": "REQ-20260618-138",

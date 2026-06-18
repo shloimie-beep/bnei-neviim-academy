@@ -4308,6 +4308,30 @@ Verification:
 Status: `needs_verification`; no audit crawl, deployment, production-data
 mutation, watch loop, or agent-fleet loop was performed.
 
+## 2026-06-19 - Task metadata/provenance browser proof
+
+Requirement: `REQ-20260618-137`
+
+Changed:
+
+- Added browser acceptance fixture metadata for blocker, due date, raw ID, source,
+  and raw operator wording.
+- Verified task row badges show labeled Owner/Status/Urgency/Due/Blocker/Source
+  metadata while raw wording stays out of visible title/text.
+- Verified the task modal keeps concise title and blocker fields separate from
+  provenance, with Source and Raw ID shown in the provenance panel.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/task-metadata-provenance.test.js tests/task-state-model.test.js tests/browser-acceptance.test.js` 9/9.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data
+mutation, watch loop, or agent-fleet loop was performed.
+
 ## 2026-06-19 - Canonical task state browser proof
 
 Requirement: `REQ-20260618-136`
