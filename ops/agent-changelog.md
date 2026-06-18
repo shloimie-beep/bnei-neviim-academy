@@ -3296,3 +3296,35 @@ Verification:
 Status: local `needs_verification`; no deployment, production migration,
 production-data mutation, audit crawl, watch loop, or agent-fleet loop was
 performed. Resume at `REQ-20260618-138`.
+
+## 2026-06-18T21:25:30+03:00 - Task Intake Auto-Routing And Decisions
+
+Completed the local intake-routing and Decisions merge batch for
+`REQ-20260618-138`.
+
+- Added deterministic task-intake confidence routing: clear captures auto-file
+  as structured tasks, while task-like low-confidence captures become a single
+  routing Decision.
+- Added low-confidence Decision options for `File as my task`, `Send to Codex`,
+  and `Archive`, stored in `ai_parsed.options` with routing metadata.
+- Persisted the same routing metadata from dashboard ramble capture and
+  Telegram capture paths through `taskCandidateAiParsed`.
+- Updated Operations Decisions so option-specific updates are honored instead
+  of forcing every chosen Decision to Codex.
+- Kept routing review inside the existing Decisions lane; no visible Review
+  Queue or Intake Review lane was introduced.
+- Added focused coverage in `tests/task-intake-routing.test.js`.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/task-intake-routing.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/task-intake-routing.test.js
+  tests/task-state-model.test.js
+  tests/task-metadata-provenance.test.js` 9/9.
+- PASS `npm test` 116/116.
+
+Status: local `needs_verification`; no deployment, production migration,
+production-data mutation, audit crawl, watch loop, or agent-fleet loop was
+performed. Resume at `REQ-20260618-139`.

@@ -141,3 +141,11 @@ Task metadata and provenance separation (2026-06-18T21:12:45+03:00):
 - PASS Operations HTML script parse via `vm.Script` (2 script blocks).
 - PASS `node --test tests/task-metadata-provenance.test.js tests/task-state-model.test.js` 6/6.
 - PASS `npm test` 113/113.
+
+Task intake auto-routing and Decisions merge (2026-06-18T21:25:30+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/task-intake-routing.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/task-intake-routing.test.js tests/task-state-model.test.js tests/task-metadata-provenance.test.js` 9/9.
+- PASS `npm test` 116/116.

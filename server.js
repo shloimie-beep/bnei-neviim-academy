@@ -2736,6 +2736,81 @@ function explainTaskCandidate(line) {
   ].join(' ');
 }
 
+function isLowConfidenceTaskIntake(text) {
+  const normalized = String(text || '').trim().toLowerCase().replace(/\s+/g, ' ');
+  if (!normalized || isPureCapabilityQuestion(normalized)) return false;
+  if (/^(thanks|thank you|ok|okay|yes|no|hi|hello|good morning|good night)\b/.test(normalized)) return false;
+  const hasWorkDomain = /\b(task|tasks|decision|decisions|review|queue|routing|route|parser|telegram|bot|dashboard|operations|student|students|accountability|content|contacts|accounting|calendar|signup|payment|class|goal|website|portal|openai|agent|codex|kimi)\b/.test(normalized);
+  const uncertainty = /\b(maybe|not sure|unclear|figure out|somewhere|whatever|review this|look at this|this thing|something with|where does this go)\b/.test(normalized);
+  const hasLongContext = normalized.split(/\s+/).length >= 9;
+  return hasWorkDomain && (uncertainty || hasLongContext);
+}
+
+function buildLowConfidenceIntakeDecision(text) {
+  const rawText = String(text || '').trim();
+  const category = inferTaskCategory(rawText);
+  const projectKey = inferProjectKeyFromText(rawText);
+  return {
+    title: 'Decide where to route captured intake',
+    notes: [
+      'Low-confidence intake needs an operator routing choice before it becomes work.',
+      'Option A: File as my task',
+      'Option B: Send to Codex',
+      'Option C: Archive as no action',
+    ].join('\n'),
+    stage: 'decision_required',
+    category,
+    urgency: /urgent|asap|right away|immediately|today/i.test(rawText) ? 'today' : 'this_week',
+    assigned_to: null,
+    project_key: projectKey,
+    decision_required: true,
+    original_text: rawText,
+    intake_confidence: 'low',
+    routing: {
+      route: 'decision',
+      confidence: 'low',
+      reason: 'No clear owner/action combination was detected.',
+    },
+    options: [
+      {
+        label: 'File as my task',
+        value: 'Turn this into operator work.',
+        updates: { stage: 'ready', decision_required: false, assigned_to: 'Shloimie', category },
+      },
+      {
+        label: 'Send to Codex',
+        value: 'Turn this into agent implementation work.',
+        updates: { stage: 'ready', decision_required: false, assigned_to: 'Codex', category },
+      },
+      {
+        label: 'Archive',
+        value: 'No task is needed from this capture.',
+        updates: { stage: 'archived', decision_required: false, assigned_to: null },
+      },
+    ],
+  };
+}
+
+function taskCandidateAiParsed(candidate, parser) {
+  return {
+    parser,
+    kind: candidate.decision_required ? 'routing_decision' : 'task_or_decision',
+    display_title: candidate.title,
+    display_note: candidate.intake_confidence === 'low'
+      ? 'Low-confidence intake needs a routing choice before it becomes work.'
+      : undefined,
+    original_text: candidate.original_text,
+    project: candidate.project_key || inferProjectKeyFromText(candidate.original_text),
+    intake_confidence: candidate.intake_confidence || 'high',
+    routing: candidate.routing || {
+      route: 'auto_file',
+      confidence: 'high',
+      reason: 'Clear action/owner signals were detected.',
+    },
+    options: candidate.options || [],
+  };
+}
+
 function parseRambleIntoTaskCandidates(ramble) {
   const text = String(ramble || '').trim();
   if (!text) return [];
@@ -2755,7 +2830,9 @@ function parseRambleIntoTaskCandidates(ramble) {
   );
   const candidates = [...new Set([...actionable, ...decisionable])].slice(0, 8);
 
-  if (!candidates.length) return [];
+  if (!candidates.length) {
+    return isLowConfidenceTaskIntake(text) ? [buildLowConfidenceIntakeDecision(text)] : [];
+  }
 
   return candidates.map((line) => ({
     title: polishTaskCandidateText(line),
@@ -2767,6 +2844,12 @@ function parseRambleIntoTaskCandidates(ramble) {
     project_key: inferProjectKeyFromText(line),
     decision_required: inferTaskStage(line) === 'decision_required',
     original_text: line,
+    intake_confidence: 'high',
+    routing: {
+      route: 'auto_file',
+      confidence: 'high',
+      reason: 'Clear action/owner signals were detected.',
+    },
   }));
 }
 
@@ -11134,16 +11217,10 @@ app.post('/api/bna/tasks', requireAdmin, async (req, res) => {
           assigned_to: candidate.assigned_to,
           project: candidate.project_key || inferProjectKeyFromText(candidate.original_text),
           decision_required: candidate.decision_required,
-          ai_parsed: {
-            parser: 'heuristic-v3',
-            kind: 'task_or_decision',
-            display_title: candidate.title,
-            original_text: candidate.original_text,
-            project: candidate.project_key || inferProjectKeyFromText(candidate.original_text),
-          },
+          ai_parsed: taskCandidateAiParsed(candidate, 'heuristic-v3'),
         },
-          { req }
-        );
+        { req }
+      );
         createdTasks.push(task);
       }
 
@@ -11606,12 +11683,7 @@ async function handleTelegramMessage(msg) {
         assigned_to: candidate.assigned_to,
         project: candidate.project_key || inferProjectKeyFromText(candidate.original_text),
         decision_required: candidate.decision_required,
-        ai_parsed: {
-          parser: 'telegram-webhook-heuristic-v3',
-          display_title: candidate.title,
-          original_text: candidate.original_text,
-          project: candidate.project_key || inferProjectKeyFromText(candidate.original_text),
-        },
+        ai_parsed: taskCandidateAiParsed(candidate, 'telegram-webhook-heuristic-v3'),
       });
     }
   } catch (err) {

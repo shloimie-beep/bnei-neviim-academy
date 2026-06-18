@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-18T21:12:45+03:00",
+  "updated_at": "2026-06-18T21:25:30+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -172,20 +172,21 @@
       "blocker": null,
       "evidence": [
         "Task state model now canonicalizes decision_required, ready, in_progress, blocked, done, and archived across schema, API create/filter/update paths, agent queue filters, and Operations UI actions.",
-        "Task metadata/provenance now separates owner, status, urgency, due, blocker, and source provenance from visible task titles."
+        "Task metadata/provenance now separates owner, status, urgency, due, blocker, and source provenance from visible task titles.",
+        "Task intake now auto-files high-confidence captures and routes low-confidence captures into Decisions with operator choices instead of a separate review queue."
       ],
       "deployment_evidence": [],
       "verification": [
         "node --test tests/task-state-model.test.js tests/operations-accessibility.test.js tests/operations-workspace-selector.test.js PASS 13/13",
         "npm test PASS 110/110"
       ],
-      "notes": "Task manager child REQ-136 and REQ-137 have local implementation and tests. Parent remains in_progress until intake routing, idempotency, Decisions, calendar, and remaining child requirements are complete.",
+      "notes": "Task manager child REQ-136, REQ-137, and REQ-138 have local implementation and tests. Parent remains in_progress until idempotency, calendar, and remaining child requirements are complete.",
       "files_changed": [
         "server.js",
         "public/operations.html",
         "tests/task-state-model.test.js"
       ],
-      "updated_at": "2026-06-18T21:12:45+03:00"
+      "updated_at": "2026-06-18T21:25:30+03:00"
     },
     {
       "id": "REQ-20260618-107",
@@ -1340,7 +1341,7 @@
       "area": "tasks",
       "priority": "P0",
       "current_verdict": "partial",
-      "status": "not_started",
+      "status": "needs_verification",
       "expected_result": "High-confidence intake auto-files; low-confidence intake becomes a Decision with routing choices.",
       "acceptance_criteria": [
         "Merge Intake Review/Review Queue into auto-routing and Decisions is implemented against the canonical Express/static runtime where applicable.",
@@ -1351,12 +1352,25 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "server.js task intake now classifies high-confidence ramble/task captures for auto-file and creates a low-confidence Decision when task-like intake lacks clear action/owner signals.",
+        "Low-confidence routing Decisions include File as my task, Send to Codex, and Archive options in ai_parsed metadata rather than a separate visible Review Queue lane.",
+        "Dashboard and Telegram task creation paths persist candidate routing metadata through taskCandidateAiParsed so the Decisions lane owns ambiguous routing choices.",
+        "public/operations.html Decisions now preserve option-specific updates, including routing to Shloimie, routing to Codex, or archiving the intake with archived_at.",
+        "tests/task-intake-routing.test.js covers high-confidence auto-file routing, low-confidence Decision routing, metadata persistence, and absence of visible Review Queue/Intake Review lanes."
+      ],
       "deployment_evidence": [],
-      "verification": [],
+      "verification": [
+        "PASS node --check server.js",
+        "PASS node --check tests/task-intake-routing.test.js",
+        "PASS Operations HTML script parse via vm.Script (2 script blocks)",
+        "PASS node --test tests/task-intake-routing.test.js tests/task-state-model.test.js tests/task-metadata-provenance.test.js 9/9",
+        "PASS npm test 116/116"
+      ],
       "implementation_commits": [],
       "files_changed": [],
-      "notes": ""
+      "notes": "Local implementation complete; remains needs_verification until final acceptance sweep, release approval, and any required live smoke.",
+      "updated_at": "2026-06-18T21:25:30+03:00"
     },
     {
       "id": "REQ-20260618-139",

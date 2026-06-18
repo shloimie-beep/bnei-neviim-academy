@@ -7775,11 +7775,13 @@
                 ? fromParsed.map((option, index) => ({
                     label: option.label || `Option ${String.fromCharCode(65 + index)}`,
                     value: option.value || option.text || String(option),
+                    updates: option.updates && typeof option.updates === 'object' ? option.updates : null,
                 }))
                 : fromText;
             return options.slice(0, 3).map((option, index) => ({
                 label: option.label || `Option ${String.fromCharCode(65 + index)}`,
                 value: option.value || option.label || '',
+                updates: option.updates || null,
             }));
         }
 
@@ -8753,12 +8755,16 @@
             const task = tasks.find(item => Number(item.id) === Number(taskId));
             const previousNotes = task?.notes || '';
             const decisionLine = `Decision chosen from dashboard: ${option.label} - ${option.value}`;
-            await api.updateTask(taskId, {
+            const routedUpdates = option.updates && typeof option.updates === 'object' ? option.updates : {};
+            const updates = {
                 stage: 'ready',
                 decision_required: false,
                 assigned_to: 'Codex',
+                ...routedUpdates,
                 notes: [previousNotes, decisionLine].filter(Boolean).join('\n\n'),
-            });
+            };
+            if (updates.stage === 'archived' && !updates.archived_at) updates.archived_at = new Date().toISOString();
+            await api.updateTask(taskId, updates);
             await loadData();
         }
 
