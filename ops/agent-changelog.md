@@ -3208,3 +3208,32 @@ Verification:
 Status: local `needs_verification`; no deployment, production-data mutation,
 audit crawl, watch loop, or agent-fleet loop was performed. Resume at
 `REQ-20260618-135`.
+
+## 2026-06-18T20:55:09+03:00 - Operations Accessibility Semantics
+
+Completed the local accessibility labels, focus, semantics, and modal batch for
+`REQ-20260618-135`.
+
+- Added dialog semantics, labelled/described title text, aria-hidden state, and
+  an accessible close label to the task modal.
+- Added explicit labels for task modal fields and task comments.
+- Added modal open state, title-field focus, Escape close, and trigger focus
+  restoration where possible.
+- Added keyboard Enter/Space activation and accessible labels for task rows and
+  content cards.
+- Added pressed/current state to section, task, and content filter controls.
+- Added `sr-only` and disabled-control primitives.
+- Added focused coverage in `tests/operations-accessibility.test.js`.
+
+Verification:
+
+- PASS `node --check tests/operations-accessibility.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/operations-accessibility.test.js
+  tests/operations-design-system.test.js
+  tests/operations-mobile-controls.test.js` 12/12.
+- PASS `npm test` 107/107.
+
+Status: local `needs_verification`; no deployment, production-data mutation,
+audit crawl, watch loop, or agent-fleet loop was performed. Resume at
+`REQ-20260618-136`.

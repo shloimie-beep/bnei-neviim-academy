@@ -3478,6 +3478,26 @@
             color: var(--ops-bg);
         }
 
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        button:disabled,
+        .btn:disabled,
+        .task-action:disabled,
+        .filter-chip:disabled {
+            cursor: not-allowed;
+            opacity: 0.72;
+        }
+
         button:focus-visible,
         a:focus-visible,
         input:focus-visible,
@@ -3825,6 +3845,9 @@
         let studentAccountabilityFilter = 'all';
         let selectedStudentId = initialStudent || null;
         let editingTask = null;
+        let taskModalOpen = false;
+        let taskModalReturnFocus = null;
+        let taskModalReturnFocusSelector = null;
         let taskComments = [];
 
         // Config
@@ -4042,7 +4065,7 @@
                 <nav class="section-nav" aria-label="Section navigation">
                     <div class="section-tab-list">
                         ${tabs.map(tab => `
-                            <button type="button" class="section-tab ${activeId === tab.id ? 'active' : ''}" onclick="${handlerName}('${tab.id}')">
+                            <button type="button" class="section-tab ${activeId === tab.id ? 'active' : ''}" onclick="${handlerName}('${tab.id}')" aria-pressed="${activeId === tab.id ? 'true' : 'false'}" ${activeId === tab.id ? 'aria-current="page"' : ''}>
                                 ${escapeHtml(tab.label)}
                             </button>
                         `).join('')}
@@ -4385,7 +4408,7 @@
 
         function renderTaskFilter(id, label, count) {
             return `
-                <button class="task-filter ${taskFocus === id ? 'active' : ''}" onclick="setTaskFocus('${id}')">
+                <button class="task-filter ${taskFocus === id ? 'active' : ''}" onclick="setTaskFocus('${id}')" aria-pressed="${taskFocus === id ? 'true' : 'false'}">
                     <span>${escapeHtml(label)}</span>
                     <span class="task-filter-count">${count}</span>
                 </button>
@@ -4420,7 +4443,7 @@
 
         function renderTaskOverviewButton(focus, label, value, note) {
             return `
-                <button class="task-overview-card ${taskFocus === focus ? 'active' : ''}" onclick="setTaskFocus('${focus}')">
+                <button class="task-overview-card ${taskFocus === focus ? 'active' : ''}" onclick="setTaskFocus('${focus}')" aria-pressed="${taskFocus === focus ? 'true' : 'false'}">
                     <div class="task-overview-label">${escapeHtml(label)}</div>
                     <div class="task-overview-value">${Number(value || 0)}</div>
                     <div class="task-overview-note">${escapeHtml(note)}</div>
@@ -4447,7 +4470,7 @@
 
         function renderTaskMiniFilter(kind, value, label, currentValue) {
             return `
-                <button class="filter-chip ${currentValue === value ? 'active' : ''}" onclick="setTaskFilter('${kind}', '${value}')">
+                <button class="filter-chip ${currentValue === value ? 'active' : ''}" onclick="setTaskFilter('${kind}', '${value}')" aria-pressed="${currentValue === value ? 'true' : 'false'}">
                     ${escapeHtml(label)}
                 </button>
             `;
@@ -4493,11 +4516,13 @@
 
         function renderTaskCard(task, columnId) {
             const detail = taskDisplayDetail(task, columnId);
+            const taskId = Number(task.id);
+            const taskTitle = taskDisplayTitle(task);
 
             return `
-                <div class="task-row" title="${escapeHtml(task.title || '')}" onclick="editTask(${Number(task.id)})">
+                <div class="task-row" data-task-row-id="${taskId}" role="button" tabindex="0" aria-label="Open task: ${escapeHtml(taskTitle)}" title="${escapeHtml(task.title || '')}" onclick="editTask(${taskId}, event)" onkeydown="activateOnEnterOrSpace(event)">
                     <div class="task-row-main">
-                        <div class="task-row-title">${escapeHtml(taskDisplayTitle(task))}</div>
+                        <div class="task-row-title">${escapeHtml(taskTitle)}</div>
                         ${detail ? `<div class="task-row-detail">${escapeHtml(detail)}</div>` : ''}
                         <div class="task-row-meta primary-only">
                             <span class="badge badge-project-${taskProjectKey(task)}">${escapeHtml(taskProjectLabel(task))}</span>
@@ -5521,7 +5546,7 @@
             const expanded = expandedContentJobIds.has(Number(job.id));
             return `
                 <div class="content-library-card ${expanded ? 'expanded' : ''}" id="content-card-${Number(job.id)}">
-                    <div class="content-card-compact" role="button" tabindex="0" onclick="toggleContentCard(event, ${Number(job.id)})">
+                    <div class="content-card-compact" role="button" tabindex="0" aria-expanded="${expanded ? 'true' : 'false'}" aria-label="${expanded ? 'Collapse' : 'Open'} content item: ${escapeHtml(displayTitle)}" onclick="toggleContentCard(event, ${Number(job.id)})" onkeydown="activateOnEnterOrSpace(event)">
                         <div class="content-card-header">
                             <div class="content-card-main">
                                 <div class="event-type">${escapeHtml(contentStatusLabel(job))}</div>
@@ -6906,30 +6931,32 @@
 
         function renderTaskModal() {
             const isEditing = editingTask !== null;
+            const isModalOpen = taskModalOpen || isEditing;
             const task = isEditing ? editingTask : {};
             const selectedProjectKey = isEditing ? taskProjectKey(task) : (selectedProjectFilter() || taskProjectKey(task));
             const projectOptions = projectChoicesForControls();
             const lockProjectControl = projectControlsLocked();
 
             return `
-                <div class="modal-overlay ${isEditing ? 'show' : ''}" id="taskModal">
-                    <div class="modal">
+                <div class="modal-overlay ${isModalOpen ? 'show' : ''}" id="taskModal" aria-hidden="${isModalOpen ? 'false' : 'true'}" onkeydown="handleTaskModalKeydown(event)">
+                    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="taskModalTitle" aria-describedby="taskModalDescription">
                         <div class="modal-header">
-                            <h2>${isEditing ? 'Task Details' : 'Task Details'}</h2>
-                            <button class="modal-close" onclick="closeTaskModal()">&times;</button>
+                            <h2 id="taskModalTitle">${isEditing ? 'Task Details' : 'Task Details'}</h2>
+                            <button type="button" class="modal-close" aria-label="Close task details" onclick="closeTaskModal()"><span aria-hidden="true">&times;</span></button>
                         </div>
+                        <p id="taskModalDescription" class="sr-only">Review or edit task fields, comments, decision state, due date, assignment, and verification context.</p>
                         <div class="modal-body">
                             <div class="form-group">
-                                <label>Title</label>
+                                <label for="taskTitle">Title</label>
                                 <input type="text" id="taskTitle" value="${escapeHtml(task.title || '')}" placeholder="What needs to be done?">
                             </div>
                             <div class="form-group">
-                                <label>Notes</label>
+                                <label for="taskNotes">Notes</label>
                                 <textarea id="taskNotes" placeholder="Add details...">${escapeHtml(task.notes || '')}</textarea>
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>Project</label>
+                                    <label for="taskProject">Project</label>
                                     <select id="taskProject" ${lockProjectControl ? 'disabled' : ''}>
                                         ${projectOptions.map(project => `
                                             <option value="${escapeHtml(project.project_key)}" ${selectedProjectKey === project.project_key ? 'selected' : ''}>${escapeHtml(project.name || project.short_name || project.project_key)}</option>
@@ -6937,7 +6964,7 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label>Assigned To</label>
+                                    <label for="taskAssignedTo">Assigned To</label>
                                     <select id="taskAssignedTo">
                                         ${TASK_ASSIGNEES.map(person => `
                                             <option value="${escapeHtml(person.value)}" ${(task.assigned_to || '') === person.value ? 'selected' : ''}>${escapeHtml(person.label)}</option>
@@ -6947,7 +6974,7 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>Stage</label>
+                                    <label for="taskStage">Stage</label>
                                     <select id="taskStage">
                                         ${[
                                             { id: 'needs_decision', label: 'Needs Your Decision', marker: '?' },
@@ -6960,7 +6987,7 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label>Category</label>
+                                    <label for="taskCategory">Category</label>
                                     <select id="taskCategory">
                                         ${taskCategoryOptions(selectedProjectKey).map(c => `
                                             <option value="${c.id}" ${task.category === c.id ? 'selected' : ''}>${c.label}</option>
@@ -6970,7 +6997,7 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>Urgency</label>
+                                    <label for="taskUrgency">Urgency</label>
                                     <select id="taskUrgency">
                                         <option value="urgent" ${task.urgency === 'urgent' ? 'selected' : ''}>Urgent</option>
                                         <option value="today" ${task.urgency === 'today' ? 'selected' : ''}>Today</option>
@@ -6979,7 +7006,7 @@
                                     </select>
                                 </div>
                                 <div class="form-group">
-                                    <label>Energy Required</label>
+                                    <label for="taskEnergy">Energy Required</label>
                                     <select id="taskEnergy">
                                         <option value="">--</option>
                                         <option value="high" ${task.energy_required === 'high' ? 'selected' : ''}>High</option>
@@ -6990,11 +7017,11 @@
                             </div>
                             <div class="form-row">
                                 <div class="form-group">
-                                    <label>Due Date</label>
+                                    <label for="taskDueDate">Due Date</label>
                                     <input type="date" id="taskDueDate" value="${task.due_date || ''}">
                                 </div>
                                 <div class="form-group">
-                                    <label>Est. Minutes</label>
+                                    <label for="taskMinutes">Est. Minutes</label>
                                     <input type="number" id="taskMinutes" value="${task.estimated_minutes || ''}" placeholder="e.g. 30">
                                 </div>
                             </div>
@@ -7005,8 +7032,8 @@
                             ${isEditing ? renderTaskComments() : ''}
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-secondary" onclick="closeTaskModal()">Cancel</button>
-                            <button class="btn btn-primary" onclick="saveTask()">${isEditing ? 'Save' : 'Create'}</button>
+                            <button type="button" class="btn btn-secondary" onclick="closeTaskModal()">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="saveTask()">${isEditing ? 'Save' : 'Create'}</button>
                         </div>
                     </div>
                 </div>
@@ -7031,7 +7058,7 @@
                         ` : '<div class="task-empty" style="padding: 16px;">No comments yet.</div>'}
                     </div>
                     <div class="form-group">
-                        <label>Add Comment</label>
+                        <label for="taskNewComment">Add Comment</label>
                         <textarea id="taskNewComment" placeholder="Add a project note, decision context, or handoff..."></textarea>
                     </div>
                     <button class="task-action primary" type="button" onclick="addTaskComment(event)">Add Comment</button>
@@ -7396,7 +7423,7 @@
 
         function renderContentFilterChip(kind, value, label, currentValue) {
             return `
-                <button class="filter-chip ${currentValue === value ? 'active' : ''}" onclick="setContentFilter('${kind}', '${value}')">
+                <button class="filter-chip ${currentValue === value ? 'active' : ''}" onclick="setContentFilter('${kind}', '${value}')" aria-pressed="${currentValue === value ? 'true' : 'false'}">
                     ${escapeHtml(label)}
                 </button>
             `;
@@ -8053,6 +8080,38 @@
             render();
         }
 
+        function activateOnEnterOrSpace(event) {
+            if (event.key !== 'Enter' && event.key !== ' ') return;
+            event.preventDefault();
+            event.currentTarget?.click?.();
+        }
+
+        function rememberTaskModalReturnFocus(event, selector = null) {
+            taskModalReturnFocus = event?.currentTarget || document.activeElement || null;
+            taskModalReturnFocusSelector = selector;
+        }
+
+        function focusTaskModal() {
+            window.setTimeout(() => {
+                document.getElementById('taskTitle')?.focus?.();
+            }, 0);
+        }
+
+        function restoreTaskModalFocus() {
+            const target = (taskModalReturnFocusSelector ? document.querySelector(taskModalReturnFocusSelector) : null) || taskModalReturnFocus;
+            taskModalReturnFocus = null;
+            taskModalReturnFocusSelector = null;
+            if (target && document.contains(target) && typeof target.focus === 'function') {
+                target.focus();
+            }
+        }
+
+        function handleTaskModalKeydown(event) {
+            if (event.key !== 'Escape') return;
+            event.preventDefault();
+            closeTaskModal();
+        }
+
         function setTaskFilter(kind, value) {
             if (kind === 'urgency') taskUrgencyFilter = value;
             if (kind === 'date') taskDateFilter = value;
@@ -8088,6 +8147,9 @@
             expandedContentJobIds = new Set();
             expandedPromptKey = null;
             editingTask = null;
+            taskModalOpen = false;
+            taskModalReturnFocus = null;
+            taskModalReturnFocusSelector = null;
             taskComments = [];
         }
 
@@ -8491,29 +8553,35 @@
         }
 
         // Task Actions
-        function openTaskModal() {
+        function openTaskModal(event) {
+            rememberTaskModalReturnFocus(event);
             editingTask = null;
+            taskModalOpen = true;
+            taskComments = [];
             render();
-            document.getElementById('taskModal').classList.add('show');
+            focusTaskModal();
         }
 
         function closeTaskModal() {
-            document.getElementById('taskModal').classList.remove('show');
+            taskModalOpen = false;
             editingTask = null;
             taskComments = [];
+            render();
+            window.setTimeout(restoreTaskModalFocus, 0);
         }
 
-        async function editTask(id) {
-            editingTask = tasks.find(t => t.id === id);
+        async function editTask(id, event) {
+            rememberTaskModalReturnFocus(event, `[data-task-row-id="${Number(id)}"]`);
+            editingTask = tasks.find(t => Number(t.id) === Number(id));
+            taskModalOpen = true;
             taskComments = [];
             render();
-            document.getElementById('taskModal').classList.add('show');
+            focusTaskModal();
             try {
                 const result = await api.getTaskComments(id);
                 if (editingTask && Number(editingTask.id) === Number(id)) {
                     taskComments = result?.comments || [];
                     render();
-                    document.getElementById('taskModal').classList.add('show');
                 }
             } catch (error) {
                 console.warn('Could not load task comments', error);
@@ -8569,8 +8637,8 @@
                 taskComments = result?.comments || [];
                 await loadData();
                 editingTask = tasks.find(t => Number(t.id) === Number(editingTask.id)) || editingTask;
+                taskModalOpen = true;
                 render();
-                document.getElementById('taskModal').classList.add('show');
             } catch (error) {
                 alert(error.message || 'Could not add comment.');
             } finally {

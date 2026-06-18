@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-18T20:47:53+03:00",
+  "updated_at": "2026-06-18T20:55:09+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -131,7 +131,8 @@
       "evidence": [
         "Operations now has semantic design tokens and shared high-contrast surface/button/type/focus primitives for the canonical shell.",
         "Operations mobile controls now have touch-safe target sizing, horizontal scroll behavior for dense controls, and reachable modal action footers.",
-        "Operations desktop grids now avoid fixed six-column and uneven fractional tracks by using auto-fit minmax card grids and balanced readable minimum widths."
+        "Operations desktop grids now avoid fixed six-column and uneven fractional tracks by using auto-fit minmax card grids and balanced readable minimum widths.",
+        "Operations task modal, filter controls, task rows, and content cards now include targeted accessibility semantics, labels, focus handling, keyboard activation, and disabled-control primitives."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -140,14 +141,17 @@
         "node --test tests/operations-mobile-controls.test.js tests/operations-design-system.test.js tests/operations-layout-stability.test.js PASS 10/10",
         "npm test PASS 99/99",
         "node --test tests/operations-desktop-grids.test.js tests/operations-design-system.test.js tests/operations-layout-stability.test.js tests/operations-mobile-controls.test.js PASS 13/13",
-        "npm test PASS 102/102"
+        "npm test PASS 102/102",
+        "node --test tests/operations-accessibility.test.js tests/operations-design-system.test.js tests/operations-mobile-controls.test.js PASS 12/12",
+        "npm test PASS 107/107"
       ],
-      "notes": "Shared design primitive children REQ-132, REQ-133, and REQ-134 have local implementation and tests. Parent remains in_progress until accessibility/modal child requirements and final acceptance are complete.",
+      "notes": "Shared design/accessibility children REQ-132 through REQ-135 have local implementation and tests. Parent remains in_progress until final acceptance sweep, release approval, deploy, and live smoke where applicable.",
       "files_changed": [
         "public/operations.html",
         "tests/operations-design-system.test.js",
         "tests/operations-mobile-controls.test.js",
-        "tests/operations-desktop-grids.test.js"
+        "tests/operations-desktop-grids.test.js",
+        "tests/operations-accessibility.test.js"
       ]
     },
     {
@@ -1203,7 +1207,7 @@
       "area": "accessibility",
       "priority": "P1",
       "current_verdict": "partial",
-      "status": "not_started",
+      "status": "needs_verification",
       "expected_result": "Interactive controls and modal flows meet accessible labels, focus, semantic, and contrast requirements.",
       "acceptance_criteria": [
         "Accessibility labels, contrast, focus, semantics, and modals is implemented against the canonical Express/static runtime where applicable.",
@@ -1214,12 +1218,27 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "Task modal markup now exposes role=dialog, aria-modal, labelled/described title text, aria-hidden state, an accessible close label, and explicit labels for task fields and comments.",
+        "Task modal open/close flow now tracks modal open state, focuses the title field, supports Escape close, and restores focus to the triggering task row when possible.",
+        "Task rows and content cards now expose role/button semantics, keyboard Enter/Space activation, aria labels, and content-card expanded state; task, content, and section filters expose pressed/current state.",
+        "Operations stylesheet adds sr-only and disabled-control primitives while retaining the shared focus-visible outline."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check tests/operations-accessibility.test.js PASS",
+        "Operations HTML script parse via vm.Script PASS (2 script blocks)",
+        "node --test tests/operations-accessibility.test.js tests/operations-design-system.test.js tests/operations-mobile-controls.test.js PASS 12/12",
+        "npm test PASS 107/107"
+      ],
+      "implementation_commits": [
+        "current batch commit: fix: improve operations accessibility semantics"
+      ],
+      "files_changed": [
+        "public/operations.html",
+        "tests/operations-accessibility.test.js"
+      ],
+      "notes": "Implemented as a local Operations accessibility/static-test batch only; no new baseline crawl, audit harness rebuild, deploy, or production-data mutation was run."
     },
     {
       "id": "REQ-20260618-136",

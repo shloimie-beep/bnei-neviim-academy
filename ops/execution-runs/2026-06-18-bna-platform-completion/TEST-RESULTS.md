@@ -118,3 +118,10 @@ Operations desktop grids (2026-06-18T20:47:53+03:00):
 - PASS Operations HTML script parse via `vm.Script` (2 script blocks).
 - PASS `node --test tests/operations-desktop-grids.test.js tests/operations-design-system.test.js tests/operations-layout-stability.test.js tests/operations-mobile-controls.test.js` 13/13.
 - PASS `npm test` 102/102.
+
+Operations accessibility semantics (2026-06-18T20:55:09+03:00):
+
+- PASS `node --check tests/operations-accessibility.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/operations-accessibility.test.js tests/operations-design-system.test.js tests/operations-mobile-controls.test.js` 12/12.
+- PASS `npm test` 107/107.

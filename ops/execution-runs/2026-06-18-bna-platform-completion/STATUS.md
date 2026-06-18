@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-18T20:47:53+03:00
+Updated: 2026-06-18T20:55:09+03:00
 
 Status counts:
 
@@ -8,8 +8,8 @@ Status counts:
 - done: 4
 - already_satisfied: 1
 - blocked: 3
-- needs_verification: 16
-- not_started: 34
+- needs_verification: 17
+- not_started: 33
 - needs_operator_decision: 1
 
 Closed/already satisfied IDs:
@@ -50,6 +50,7 @@ Open non-blocked IDs begin with:
 - REQ-20260618-132 BNA-DESIGN-001: Shared high-contrast card/spacing/type/button system (needs_verification)
 - REQ-20260618-133 BNA-DESIGN-002: Intentional mobile controls (needs_verification)
 - REQ-20260618-134 BNA-DESIGN-003: Balanced desktop grids (needs_verification)
+- REQ-20260618-135 BNA-A11Y-001: Accessibility labels, contrast, focus, semantics, and modals (needs_verification)
 
 Blocked / operator-decision IDs:
 
@@ -58,6 +59,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current implementation batch: REQ-20260618-134 has local balanced desktop grid fixes plus focused tests. Next implementation target is REQ-20260618-135.
+Current implementation batch: REQ-20260618-135 has local Operations accessibility semantics/focus fixes plus focused tests. Next implementation target is REQ-20260618-136.
 
 No deployment or production-data mutation is approved in this run.
