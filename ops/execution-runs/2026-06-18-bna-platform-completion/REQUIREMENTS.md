@@ -62,7 +62,7 @@
 | REQ-20260618-158 | REQ-20260618-109 | BNA-HELPER-002 | needs_verification | partial | Scope helper memory by user/role/workspace/context |
 | REQ-20260618-159 | REQ-20260618-109 | BNA-HELPER-003 | needs_verification | partial | Permissioned backend action registry |
 | REQ-20260618-160 | REQ-20260618-109 | BNA-HELPER-004 | needs_verification | partial | Confirmation tiers and action audit trail |
-| REQ-20260618-161 | REQ-20260618-109 | BNA-HELPER-005 | not_started | partial | Remove duplicate helper identities and dev language |
+| REQ-20260618-161 | REQ-20260618-109 | BNA-HELPER-005 | needs_verification | local_implemented_pending_release | Remove duplicate helper identities and dev language |
 | REQ-20260618-162 | REQ-20260618-109 | BNA-HELPER-006 | not_started | partial | Prevent public/authenticated memory leakage |
 | REQ-20260618-163 | REQ-20260618-110 | BNA-PUBLIC-001 | not_started | unknown | Remove Operations login from public primary navigation |
 | REQ-20260618-164 | REQ-20260618-110 | BNA-PUBLIC-002 | not_started | unknown | Provider CTA: Advertise your program for free |

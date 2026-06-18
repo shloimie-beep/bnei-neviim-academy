@@ -4014,7 +4014,7 @@
         const TASK_ASSIGNEES = [
             { value: '', label: 'Unassigned' },
             { value: 'Shloimie', label: 'Shloimie' },
-            { value: 'Codex', label: 'Codex' },
+            { value: 'Codex', label: 'System Work' },
             { value: 'Rabbi Elie Scheller', label: 'Rabbi Elie Scheller' }
         ];
 
@@ -4529,8 +4529,8 @@
 
         function assistantProviderLabel(value) {
             return ({
-                openai: 'OpenAI',
-                fallback_configured: 'Fallback configured',
+                openai: 'Connected AI',
+                fallback_configured: 'Backup AI configured',
                 not_configured: 'Not configured',
             })[String(value || '').toLowerCase()] || String(value || 'unknown').replace(/_/g, ' ');
         }
@@ -4542,7 +4542,7 @@
             const actions = Array.isArray(assistantActions?.actions) ? assistantActions.actions : [];
             const actionPreview = actions.slice(0, 8);
             const providerReady = assistant.active_provider === 'openai' && assistant.openai_configured;
-            const statusLabel = providerReady ? 'Ready' : 'Needs OpenAI key';
+            const statusLabel = providerReady ? 'Ready' : 'Needs AI setup';
             const capabilities = Array.isArray(assistant.capabilities) ? assistant.capabilities : [];
             const disabled = Array.isArray(assistant.disabled_until_verified) ? assistant.disabled_until_verified : [];
             return `
@@ -4560,17 +4560,17 @@
                     </div>
                     <section class="focus-panel" aria-label="BNA Assistant shell">
                         <div class="focused-grid">
-                            ${renderSummaryCard('Identity', escapeHtml(assistant.visible_label || 'BNA Assistant'), 'single visible helper')}
-                            ${renderSummaryCard('Provider', escapeHtml(assistantProviderLabel(assistant.active_provider)), 'preferred: OpenAI')}
+                            ${renderSummaryCard('Identity', escapeHtml(assistant.visible_label || 'BNA Assistant'), 'one assistant identity')}
+                            ${renderSummaryCard('Connection', escapeHtml(assistantProviderLabel(assistant.active_provider)), 'assistant service')}
                             ${renderSummaryCard('Scope', escapeHtml(memoryScope.project_key || assistant.workspace_project || selectedProjectFilter() || 'bna'), 'current workspace')}
                         </div>
                         <div class="content-section-grid">
                             <div class="event-card">
-                                <div class="event-type">Assistant Shell</div>
+                                <div class="event-type">Assistant</div>
                                 <div class="event-title">${escapeHtml(assistant.visible_label || 'BNA Assistant')}</div>
                                 <div class="contact-detail-grid" style="margin-top:12px;">
-                                    ${renderContactDetailItem('Provider', assistantProviderLabel(assistant.active_provider))}
-                                    ${renderContactDetailItem('Model', assistant.model || 'Awaiting OpenAI key')}
+                                    ${renderContactDetailItem('Connection', assistantProviderLabel(assistant.active_provider))}
+                                    ${renderContactDetailItem('Setup', assistant.model ? 'Ready' : 'Needs AI setup')}
                                     ${renderContactDetailItem('Workspace', activeWorkspaceProjectLabel())}
                                     ${renderContactDetailItem('Role', assistant.user_role || 'workspace_member')}
                                 </div>
@@ -4616,11 +4616,11 @@
                             </div>
                             <div class="event-card">
                                 <div class="event-type">Guardrails</div>
-                                <div class="event-title">No duplicate helper personas</div>
+                                <div class="event-title">One assistant identity</div>
                                 <div class="mini-list" style="margin-top:12px;">
                                     <div class="mini-list-item"><span>Visible identity</span><strong>BNA Assistant</strong></div>
-                                    <div class="mini-list-item"><span>Public memory</span><strong>not shared</strong></div>
-                                    <div class="mini-list-item"><span>Backend actions</span><strong>disabled</strong></div>
+                                    <div class="mini-list-item"><span>Public context</span><strong>separate</strong></div>
+                                    <div class="mini-list-item"><span>Assistant actions</span><strong>audited</strong></div>
                                     ${disabled.map(item => `<div class="mini-list-item"><span>${escapeHtml(String(item).replace(/_/g, ' '))}</span><strong>pending</strong></div>`).join('')}
                                 </div>
                             </div>
@@ -8409,7 +8409,7 @@
                 return 'Clean raw natural-language wording from the Tasks dashboard';
             }
             if (/(same task file|same page|exact same page|changelog|change log)/.test(lower) && /(kimi|codex|agent|task)/.test(lower)) {
-                return 'Keep Codex work on the shared task and changelog ledger';
+                return 'Keep system work on the shared task and changelog ledger';
             }
             if (/(website|homepage)/.test(lower) && /(page number three|page three|3|three|progress)/.test(lower)) {
                 return 'Update homepage learning progress to 3 of 30 pages';

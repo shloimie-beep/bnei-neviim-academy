@@ -19,7 +19,7 @@ test('Server task intake has high-confidence auto-file and low-confidence decisi
   assert.match(server, /intake_confidence: 'low'/);
   assert.match(server, /route: 'decision'/);
   assert.match(server, /label: 'File as my task'/);
-  assert.match(server, /label: 'Send to Codex'/);
+  assert.match(server, /label: 'Send to System Work'/);
   assert.match(server, /label: 'Archive'/);
   assert.match(server, /return isLowConfidenceTaskIntake\(text\) \? \[buildLowConfidenceIntakeDecision\(text\)\] : \[\];/);
   assert.match(server, /intake_confidence: 'high'/);

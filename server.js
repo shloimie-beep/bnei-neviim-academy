@@ -2922,7 +2922,7 @@ function buildLowConfidenceIntakeDecision(text) {
     notes: [
       'Low-confidence intake needs an operator routing choice before it becomes work.',
       'Option A: File as my task',
-      'Option B: Send to Codex',
+      'Option B: Send to System Work',
       'Option C: Archive as no action',
     ].join('\n'),
     stage: 'decision_required',
@@ -2945,8 +2945,8 @@ function buildLowConfidenceIntakeDecision(text) {
         updates: { stage: 'ready', decision_required: false, assigned_to: 'Shloimie', category },
       },
       {
-        label: 'Send to Codex',
-        value: 'Turn this into agent implementation work.',
+        label: 'Send to System Work',
+        value: 'Turn this into system implementation work.',
         updates: { stage: 'ready', decision_required: false, assigned_to: 'Codex', category },
       },
       {

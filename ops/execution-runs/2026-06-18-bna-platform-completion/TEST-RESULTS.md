@@ -360,3 +360,13 @@ Assistant confirmation tiers and action audit trail (2026-06-19T01:10:30+03:00):
 
 No OpenAI call, live helper action execution, deployment, production-data
 mutation, audit crawl, watch loop, or agent-fleet loop was performed.
+
+Assistant product-language cleanup (2026-06-19T01:20:30+03:00):
+
+- PASS rg duplicate helper/dev-language patterns in public/server product sources with no matches.
+- PASS `node --check server.js`.
+- PASS `node --check tests/assistant-language-cleanup.test.js`.
+- PASS `node --test tests/assistant-language-cleanup.test.js tests/assistant-shell.test.js tests/task-intake-routing.test.js tests/assistant-actions.test.js` 14/14.
+- PASS `npm test` 180/180.
+
+No OpenAI call, helper action execution, deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed.

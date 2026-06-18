@@ -1,16 +1,16 @@
 # Status
 
-Updated: 2026-06-19T01:10:30+03:00
+Updated: 2026-06-19T01:20:30+03:00
 
 Status counts:
 
+- not_started: 8
 - in_progress: 13
+- needs_verification: 42
+- blocked: 3
+- needs_operator_decision: 1
 - done: 4
 - already_satisfied: 1
-- blocked: 3
-- needs_verification: 41
-- not_started: 9
-- needs_operator_decision: 1
 
 Closed/already satisfied IDs:
 
@@ -20,7 +20,7 @@ Closed/already satisfied IDs:
 - REQ-20260618-116 BNA-AUDIT-001: Resume/finish Operations UI audit harness without duplication
 - REQ-20260618-171 BNA-TEST-004: PWA identity/cache regression tests
 
-Open non-blocked IDs begin with:
+Open non-blocked IDs:
 
 - REQ-20260618-101: Audit harness and audit package (in_progress)
 - REQ-20260618-102: PWA public-versus-Operations separation (in_progress)
@@ -51,13 +51,13 @@ Open non-blocked IDs begin with:
 - REQ-20260618-133 BNA-DESIGN-002: Intentional mobile controls (needs_verification)
 - REQ-20260618-134 BNA-DESIGN-003: Balanced desktop grids (needs_verification)
 - REQ-20260618-135 BNA-A11Y-001: Accessibility labels, contrast, focus, semantics, and modals (needs_verification)
-- REQ-20260618-136 BNA-TASKS-001: Canonical task state model (needs_verification)
-- REQ-20260618-137 BNA-TASKS-002: Separate owner/status/urgency/due/blocker/provenance (needs_verification)
-- REQ-20260618-138 BNA-TASKS-003: Merge Intake Review/Review Queue into auto-routing and Decisions (needs_verification)
-- REQ-20260618-139 BNA-TASKS-004: Internal calendar connected to tasks/classes/check-ins/events (needs_verification)
-- REQ-20260618-140 BNA-TASKS-005: Remove stale diagnostic concepts from main task UI (needs_verification)
-- REQ-20260618-141 BNA-TASKS-006: Live scoped counts and blocker explanations (needs_verification)
-- REQ-20260618-142 BNA-TASKS-007: Idempotent parser routing to correct modules/workspaces (needs_verification)
+- REQ-20260618-136 BNA-TASK-001: Canonical task state model (needs_verification)
+- REQ-20260618-137 BNA-TASK-002: Separate owner/status/urgency/due/blocker/provenance (needs_verification)
+- REQ-20260618-138 BNA-TASK-003: Merge Intake Review/Review Queue into auto-routing and Decisions (needs_verification)
+- REQ-20260618-139 BNA-TASK-004: Internal calendar connected to tasks/classes/check-ins/events (needs_verification)
+- REQ-20260618-140 BNA-TASK-005: Remove stale diagnostic concepts from main task UI (needs_verification)
+- REQ-20260618-141 BNA-TASK-006: Live scoped counts and blocker explanations (needs_verification)
+- REQ-20260618-142 BNA-TASK-007: Idempotent parser routing to correct modules/workspaces (needs_verification)
 - REQ-20260618-143 BNA-COMMUNITY-001: Workspace-scoped communities (needs_verification)
 - REQ-20260618-144 BNA-CONTENT-001: Teaching/research content separated from meetings/tasks/accountability (needs_verification)
 - REQ-20260618-145 BNA-CONTENT-002: Content metadata and provenance (needs_verification)
@@ -75,6 +75,16 @@ Open non-blocked IDs begin with:
 - REQ-20260618-158 BNA-HELPER-002: Scope helper memory by user/role/workspace/context (needs_verification)
 - REQ-20260618-159 BNA-HELPER-003: Permissioned backend action registry (needs_verification)
 - REQ-20260618-160 BNA-HELPER-004: Confirmation tiers and action audit trail (needs_verification)
+- REQ-20260618-161 BNA-HELPER-005: Remove duplicate helper identities and dev language (needs_verification)
+- REQ-20260618-162 BNA-HELPER-006: Prevent public/authenticated memory leakage (not_started)
+- REQ-20260618-163 BNA-PUBLIC-001: Remove Operations login from public primary navigation (not_started)
+- REQ-20260618-164 BNA-PUBLIC-002: Provider CTA: Advertise your program for free (not_started)
+- REQ-20260618-165 BNA-PUBLIC-003: Direct parent signup/self-governance messaging and six-month offer (not_started)
+- REQ-20260618-166 BNA-PUBLIC-004: Consistent approved portal headers (not_started)
+- REQ-20260618-167 BNA-PUBLIC-005: Public/blog/FAQ/signup/portal route and CTA integrity (not_started)
+- REQ-20260618-168 BNA-TEST-001: Isolated repeatable seed and cleanup data (not_started)
+- REQ-20260618-169 BNA-TEST-002: Route, interaction, responsive, helper, workspace, and student Playwright tests (not_started)
+- REQ-20260618-170 BNA-TEST-003: Backend/API/RBAC negative tests (needs_verification)
 
 Blocked / operator-decision IDs:
 
@@ -83,6 +93,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current implementation batch: REQ-20260618-160 has local Assistant confirmation tiers, bna_assistant_action_audit schema/migrations, audited action attempts for confirmation_required/denied/executed/failed outcomes, and explicit registered handlers for read-only, task-create, and task-comment actions. REQ-20260618-156 remains needs_operator_decision for production duplicate-student cleanup. Next unblocked implementation target is REQ-20260618-161.
+Current implementation batch: REQ-20260618-161 has local Assistant product-language cleanup, with visible duplicate helper/provider/developer labels removed from Operations Assistant and intake routing while preserving internal Codex owner values for compatibility. REQ-20260618-156 remains needs_operator_decision for production duplicate-student cleanup. Next unblocked implementation target is REQ-20260618-162.
 
 No deployment or production-data mutation is approved in this run.

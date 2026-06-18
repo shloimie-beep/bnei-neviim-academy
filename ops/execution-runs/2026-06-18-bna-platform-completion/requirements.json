@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-19T01:10:30+03:00",
+  "updated_at": "2026-06-19T01:20:30+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -298,7 +298,8 @@
         "GET /api/bna/assistant/memory resolves project access through the shared workspace auth layer and returns only exact-scope memory rows.",
         "GET /api/bna/assistant/actions now exposes a permissioned action registry filtered by role/allowedViews and selected workspace project.",
         "POST /api/bna/assistant/actions/:actionKey now applies confirmation tiers, writes bna_assistant_action_audit rows, and executes only explicit registered handlers for read-only, task-create, and task-comment actions.",
-        "Operations Assistant loads memory and action registry scope through selectedProjectFilter and displays scoped Memory Scope plus Action Registry rows without duplicate helper personas."
+        "Operations Assistant loads memory and action registry scope through selectedProjectFilter and displays scoped Memory Scope plus Action Registry rows without duplicate helper personas.",
+        "Operations-facing Assistant copy now uses one assistant identity and System Work product labels while preserving internal Codex/provider values where operationally required."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -306,9 +307,13 @@
         "node --test tests/assistant-shell.test.js tests/workspace-schema.test.js tests/workspace-auth.test.js tests/operations-workspace-selector.test.js PASS 22/22",
         "node --test tests/assistant-actions.test.js tests/assistant-shell.test.js tests/workspace-auth.test.js tests/operations-workspace-selector.test.js PASS 21/21",
         "node --test tests/assistant-actions.test.js tests/assistant-shell.test.js tests/workspace-schema.test.js tests/workspace-auth.test.js tests/operations-workspace-selector.test.js PASS 27/27",
-        "npm test PASS 178/178"
+        "npm test PASS 178/178",
+        "rg duplicate helper/dev-language patterns in public/server product sources PASS with no matches",
+        "node --check tests/assistant-language-cleanup.test.js PASS",
+        "node --test tests/assistant-language-cleanup.test.js tests/assistant-shell.test.js tests/task-intake-routing.test.js tests/assistant-actions.test.js PASS 14/14",
+        "npm test PASS 180/180"
       ],
-      "notes": "Helper parent remains in_progress until duplicate dev-language cleanup, public/authenticated memory isolation, final acceptance, release approval, deploy, and live smoke are complete.",
+      "notes": "Helper parent remains in_progress until public/authenticated memory isolation, final acceptance, release approval, deploy, and live smoke are complete.",
       "files_changed": [
         "server.js",
         "public/operations.html",
@@ -317,7 +322,9 @@
         "tests/assistant-shell.test.js",
         "tests/operations-module-toolbar.test.js",
         "tests/workspace-auth.test.js",
-        "tests/workspace-schema.test.js"
+        "tests/workspace-schema.test.js",
+        "tests/task-intake-routing.test.js",
+        "tests/assistant-language-cleanup.test.js"
       ]
     },
     {
@@ -2442,8 +2449,8 @@
       "title": "Remove duplicate helper identities and dev language",
       "area": "helper",
       "priority": "P1",
-      "current_verdict": "partial",
-      "status": "not_started",
+      "current_verdict": "local_implemented_pending_release",
+      "status": "needs_verification",
       "expected_result": "UI copy removes duplicate BNA/public/Codex helper identities unless a product reason exists.",
       "acceptance_criteria": [
         "Remove duplicate helper identities and dev language is implemented against the canonical Express/static runtime where applicable.",
@@ -2454,12 +2461,36 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "public/operations.html now renders BNA Assistant as one assistant identity, uses Connection/AI setup product language, and avoids duplicate helper/persona labels in the Assistant module.",
+        "Operations task owner and routing copy now says System Work for user-visible labels while preserving internal Codex owner values for existing machine-owner compatibility.",
+        "server.js low-confidence intake Decisions now offer Send to System Work instead of Send to Codex while preserving assigned_to: Codex internally.",
+        "tests/assistant-language-cleanup.test.js prevents duplicate helper/dev-language labels from returning in Operations Assistant and intake routing surfaces."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "rg duplicate helper/dev-language patterns in public/server product sources PASS with no matches",
+        "node --check server.js PASS",
+        "node --check tests/assistant-language-cleanup.test.js PASS",
+        "node --test tests/assistant-language-cleanup.test.js tests/assistant-shell.test.js tests/task-intake-routing.test.js tests/assistant-actions.test.js PASS 14/14",
+        "npm test PASS 180/180"
+      ],
+      "implementation_commits": [
+        "current batch commit: fix: clean assistant product language"
+      ],
+      "files_changed": [
+        "server.js",
+        "public/operations.html",
+        "tests/task-intake-routing.test.js",
+        "tests/assistant-language-cleanup.test.js",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/STATUS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/REQUIREMENTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md"
+      ],
+      "notes": "Local implementation complete; live-required status remains needs_verification until final acceptance sweep, release approval, deploy, and live smoke. No OpenAI call, deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
     },
     {
       "id": "REQ-20260618-162",

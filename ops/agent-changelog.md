@@ -3981,3 +3981,24 @@ Verification:
 Status: local `needs_verification`; no OpenAI call, live helper action
 execution, deployment, production-data mutation, audit crawl, watch loop, or
 agent-fleet loop was performed. Resume at `REQ-20260618-161`.
+
+## 2026-06-19 - Assistant product-language cleanup
+
+Requirement: `REQ-20260618-161`
+
+Changed:
+
+- Removed duplicate helper/provider/developer language from the visible Operations Assistant module while keeping one BNA Assistant identity.
+- Changed user-facing Codex routing labels to System Work for task ownership and low-confidence intake Decisions.
+- Preserved internal `Codex` owner values and `assigned_to` compatibility for existing machine-work records.
+- Added `tests/assistant-language-cleanup.test.js` to prevent the duplicate helper/dev-language labels from returning.
+
+Verification:
+
+- PASS rg duplicate helper/dev-language patterns in public/server product sources with no matches.
+- PASS `node --check server.js`.
+- PASS `node --check tests/assistant-language-cleanup.test.js`.
+- PASS `node --test tests/assistant-language-cleanup.test.js tests/assistant-shell.test.js tests/task-intake-routing.test.js tests/assistant-actions.test.js` 14/14.
+- PASS `npm test` 180/180.
+
+Status: local `needs_verification`; no OpenAI call, live helper action execution, deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-162`.
