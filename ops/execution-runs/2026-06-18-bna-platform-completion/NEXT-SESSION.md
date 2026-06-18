@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-19T04:25:30+03:00
+Updated: 2026-06-19T04:35:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -19,10 +19,11 @@ Latest completed local batches:
 - REQ-20260618-111: Safe test data and complete acceptance coverage parent rollup is locally closed because REQ-168, REQ-169, REQ-170, and REQ-171 are terminal with evidence and the combined acceptance set passed.
 - REQ-20260618-101: Audit harness/audit package parent is terminally blocked on authenticated audit package/output only; its non-audit/protocol children are closed and this blocker does not pause unrelated local work.
 - REQ-20260618-126: Operations workspace selector behavior has refreshed browser proof for a scoped One Time ordinary user: locked workspace context, no global selector, One Time task/calendar API calls, and mobile overflow safety. It remains needs_verification only for release approval, deploy, and live smoke.
+- REQ-20260618-127: Workspace switching has refreshed static and browser proof for stale module/filter/student/content/helper reset. It remains needs_verification only for release approval, deploy, and live smoke.
 
 Exact next requirement:
 
-- REQ-20260618-127 / BNA-WS-005: Clear stale context on workspace changes.
+- REQ-20260618-128 / BNA-OPS-001: Ordered horizontal Operations module toolbar.
 
 Blocked requirement intentionally skipped:
 
@@ -33,15 +34,15 @@ Exact next command:
 
 ```powershell
 npm run bna:run:status
-node --test tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js
+node --test tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js
 ```
 
-Then inspect whether `REQ-20260618-127` needs only refreshed local evidence or an additional browser/DOM assertion for stale module/filter/student/content/helper context clearing. Do not close live-required workspace items as `done` without release approval, deployment, and live-smoke evidence.
+Then inspect whether `REQ-20260618-128` needs only refreshed local evidence or an additional browser/DOM assertion for toolbar order, single top-level navigation, responsive horizontal scrolling, and allowedViews filtering. Do not close live-required Operations items as `done` without release approval, deployment, and live-smoke evidence.
 
 Still open after this batch:
 
-- REQ-20260618-124 through REQ-20260618-126 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
-- REQ-20260618-127 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-124 through REQ-20260618-127 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
+- REQ-20260618-128 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - REQ-20260618-156 remains `needs_operator_decision` for duplicate-student cleanup approval.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 

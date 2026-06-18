@@ -78,7 +78,7 @@
         "STATUS.md and EVIDENCE.md show parent rollup and remaining child IDs.",
         "No child requirement is closed without proof and targeted verification."
       ],
-      "current_verdict": "partial",
+      "current_verdict": "local_complete_pending_release",
       "source": "BNA recovery bundle and Appendix A",
       "depends_on_audit_output": false,
       "live_required": true,
@@ -1107,7 +1107,9 @@
       "evidence": [
         "setWorkspaceProject resets task and content project filters, persists the active workspace, updates the URL project parameter, and reloads scoped data when a super-admin changes workspace.",
         "resetWorkspaceScopedUiState clears module subsection state, task filters, content filters, selected contact, selected student, student filters, selected/expanded content jobs, expanded prompt context, open task modal state, and task comments.",
-        "setWorkspaceProject routes workspace changes through resetWorkspaceScopedUiState, resets the URL to tasks/overview, removes stale student query state, persists the selected workspace, and reloads scoped data."
+        "setWorkspaceProject routes workspace changes through resetWorkspaceScopedUiState, resets the URL to tasks/overview, removes stale student query state, persists the selected workspace, and reloads scoped data.",
+        "tests/operations-workspace-selector.test.js now explicitly guards assistant status, assistant memory, assistant actions, calendar, content type/date/project filters, and student filters being cleared on workspace switch.",
+        "tests/browser-acceptance.test.js verifies that switching workspace from a student profile returns the Operations shell to Tasks overview, drops the stale student route parameter, removes the student profile panel, and reloads One Time scoped task data."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -1116,17 +1118,25 @@
         "node --check tests/operations-workspace-selector.test.js PASS",
         "Operations HTML script parse via vm.Script PASS (2 script blocks)",
         "node --test tests/operations-workspace-selector.test.js PASS 5/5",
-        "npm test PASS 82/82"
+        "npm test PASS 82/82",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --check tests/operations-workspace-selector.test.js PASS",
+        "node --test tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js PASS 8/8",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
         "current batch commit: feat: add operations workspace selector scoping",
-        "current batch commit: fix: clear workspace switch context"
+        "current batch commit: fix: clear workspace switch context",
+        "current batch commit: test: verify workspace switch reset"
       ],
       "files_changed": [
         "public/operations.html",
-        "tests/operations-workspace-selector.test.js"
+        "tests/operations-workspace-selector.test.js",
+        "tests/browser-acceptance.test.js"
       ],
-      "notes": "Local stale-context cleanup is implemented and tested. Requirement remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for app-visible changes."
+      "notes": "Local stale-context cleanup now has static reset coverage for module/filter/student/content/helper state plus browser proof that a student-profile route is cleared when switching workspaces. Requirement remains needs_verification pending release approval, deploy, and live smoke for app-visible changes."
     },
     {
       "id": "REQ-20260618-128",

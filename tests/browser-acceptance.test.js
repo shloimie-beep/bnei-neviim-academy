@@ -364,6 +364,10 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
 
       await page.locator('#workspaceProjectSelector').selectOption('one_time_mishnah_class');
       await page.waitForFunction(() => new URL(window.location.href).searchParams.get('project') === 'one_time_mishnah_class');
+      const workspaceUrl = new URL(page.url());
+      assert.equal(workspaceUrl.searchParams.get('view'), 'tasks');
+      assert.equal(workspaceUrl.searchParams.get('section'), 'overview');
+      assert.equal(workspaceUrl.searchParams.get('student'), null);
       await waitForCall(
         calls,
         (call) => call.pathname === '/api/bna/tasks' && call.project === 'one_time_mishnah_class',
@@ -371,6 +375,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       );
       assert.equal(await page.locator('#workspaceProjectSelector').inputValue(), 'one_time_mishnah_class');
       await page.locator('.ops-view-frame[data-current-view="tasks"]').waitFor();
+      assert.equal(await page.locator('.student-profile-hero').count(), 0);
     } finally {
       await context.close();
       await browser.close();

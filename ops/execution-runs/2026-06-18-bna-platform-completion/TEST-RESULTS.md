@@ -494,3 +494,14 @@ Workspace selector scoped-user browser proof (2026-06-19T04:25:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-126 now has browser-level local proof that a One Time workspace_member login sees locked workspace context, no global workspace selector, and One Time scoped task/calendar API calls. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Workspace switch stale-context reset proof (2026-06-19T04:35:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/operations-workspace-selector.test.js`.
+- PASS `node --test tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js` 8/8.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-127 now has local proof that workspace switching clears stale assistant/helper, calendar, content filter, student filter, selected-student, selected-content, task-modal, and task-comment state. Browser coverage verifies switching from a student profile returns to Tasks overview, removes the stale student route parameter/profile panel, and reloads One Time scoped task data. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

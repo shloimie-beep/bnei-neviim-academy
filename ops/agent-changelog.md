@@ -4307,3 +4307,28 @@ Verification:
 
 Status: `needs_verification`; no audit crawl, deployment, production-data
 mutation, watch loop, or agent-fleet loop was performed.
+
+## 2026-06-19 - Workspace switch stale-context reset proof
+
+Requirement: `REQ-20260618-127`
+
+Changed:
+
+- Expanded the workspace-switch reset test to explicitly guard calendar,
+  Assistant status, Assistant memory, Assistant actions, content filters, and
+  student filters.
+- Added browser acceptance assertions that switching workspace from a student
+  profile returns to Tasks overview, drops the stale student route parameter,
+  removes the student profile panel, and reloads One Time scoped task data.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/operations-workspace-selector.test.js`.
+- PASS `node --test tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js` 8/8.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data
+mutation, watch loop, or agent-fleet loop was performed.
