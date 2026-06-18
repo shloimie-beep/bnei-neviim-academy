@@ -4146,3 +4146,24 @@ Verification:
 - PASS `node --test tests/test-data-seed-script.test.js tests/bna-execution-run.test.js` 13/13.
 
 Status: local `done`; no deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-169`.
+
+## 2026-06-19 - Focused browser acceptance coverage
+
+Requirement: `REQ-20260618-169`
+
+Changed:
+
+- Added a shared Operations route-state helper so module, workspace, and student route changes write one consistent URL shape.
+- Changed user-triggered module, workspace, task-section, and student navigation to push browser history entries.
+- Added a Back/Forward `popstate` handler that rehydrates Operations route state from the URL and reloads scoped data.
+- Added `tests/browser-acceptance.test.js`, a focused Playwright test that serves the real Express/static runtime and mocks only API JSON responses.
+- Updated `tests/operations-workspace-selector.test.js` to guard the shared route helper and popstate listener.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS Operations HTML inline script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/browser-acceptance.test.js` 2/2.
+- PASS `node --test tests/browser-acceptance.test.js tests/operations-workspace-selector.test.js tests/assistant-shell.test.js tests/student-portal-i18n.test.js` 14/14.
+
+Status: local `done`; no audit harness rebuild, baseline crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-170`.

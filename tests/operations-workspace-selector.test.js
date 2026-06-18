@@ -72,9 +72,10 @@ test('Changing workspace clears stale module, student, content, and task-modal c
   assert.match(operations, /editingTask = null;/);
   assert.match(operations, /taskComments = \[\];/);
   assert.match(operations, /resetWorkspaceScopedUiState\(\);/);
-  assert.match(operations, /url\.searchParams\.set\('view', 'tasks'\);/);
-  assert.match(operations, /url\.searchParams\.set\('section', 'overview'\);/);
-  assert.match(operations, /url\.searchParams\.delete\('student'\);/);
+  assert.match(operations, /function writeOperationsRoute\(mode = 'replace'\)/);
+  assert.match(operations, /writeOperationsRoute\('push'\);/);
+  assert.match(operations, /window\.addEventListener\('popstate', \(\) => \{/);
+  assert.match(operations, /applyOperationsRouteFromLocation\(\);/);
 });
 
 test('Projects API returns canonical workspace metadata for the selector', () => {

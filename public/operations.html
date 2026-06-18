@@ -4012,6 +4012,54 @@
         ];
         const GLOBAL_PROJECT_FILTER_VALUE = 'all';
 
+        function allowedRouteView(value) {
+            const normalized = VIEW_ALIASES[value] || value;
+            return MAIN_NAV_ITEMS.some(item => item.id === normalized) ? normalized : 'tasks';
+        }
+
+        function allowedRouteSection(value, tabs, fallback) {
+            return tabs.some(tab => tab.id === value) ? value : fallback;
+        }
+
+        function applyOperationsRouteFromLocation() {
+            const params = new URLSearchParams(window.location.search);
+            currentView = allowedRouteView(params.get('view'));
+            const routeSection = params.get('section');
+
+            if (currentView === 'tasks') taskFocus = allowedRouteSection(TASK_FOCUS_ALIASES[routeSection] || routeSection, TASK_SUBTABS, 'overview');
+            if (currentView === 'students') studentSection = allowedRouteSection(routeSection, STUDENT_SUBTABS, 'overview');
+            if (currentView === 'content') contentSection = allowedRouteSection(routeSection, CONTENT_SUBTABS, 'library');
+            if (currentView === 'contacts') contactSection = allowedRouteSection(routeSection, CONTACT_SUBTABS, 'parents');
+            if (currentView === 'accounting') accountingSection = allowedRouteSection(routeSection, ACCOUNTING_SUBTABS, 'overview');
+
+            selectedStudentId = currentView === 'students' ? (params.get('student') || null) : null;
+            if (isGlobalOpsUser()) activeWorkspaceProject = params.get('project') || GLOBAL_PROJECT_FILTER_VALUE;
+            else activeWorkspaceProject = scopedProjectKey() || activeWorkspaceProject;
+            ensureActiveWorkspaceProject();
+            ensureCurrentViewAllowed();
+        }
+
+        function writeOperationsRoute(mode = 'replace') {
+            const url = new URL(window.location.href);
+            url.searchParams.set('view', currentView);
+            if (currentView === 'tasks') url.searchParams.set('section', taskFocus);
+            else if (currentView === 'students') url.searchParams.set('section', studentSection);
+            else if (currentView === 'content') url.searchParams.set('section', contentSection);
+            else if (currentView === 'contacts') url.searchParams.set('section', contactSection);
+            else if (currentView === 'accounting') url.searchParams.set('section', accountingSection);
+            else url.searchParams.delete('section');
+
+            if (currentView === 'students' && selectedStudentId) url.searchParams.set('student', selectedStudentId);
+            else url.searchParams.delete('student');
+
+            const project = selectedProjectFilter();
+            if (project) url.searchParams.set('project', project);
+            else url.searchParams.delete('project');
+
+            const method = mode === 'push' ? 'pushState' : 'replaceState';
+            window.history[method]({}, '', url);
+        }
+
         const TASK_ASSIGNEES = [
             { value: '', label: 'Unassigned' },
             { value: 'Shloimie', label: 'Shloimie' },
@@ -8817,19 +8865,7 @@
             currentView = VIEW_ALIASES[view] || view;
             ensureCurrentViewAllowed();
             navDrawerOpen = false;
-            const url = new URL(window.location.href);
-            url.searchParams.set('view', currentView);
-            if (currentView === 'tasks') url.searchParams.set('section', taskFocus);
-            else if (currentView === 'assistant') url.searchParams.delete('section');
-            else if (currentView === 'calendar') url.searchParams.delete('section');
-            else if (currentView === 'students') url.searchParams.set('section', studentSection);
-            else if (currentView === 'content') url.searchParams.set('section', contentSection);
-            else if (currentView === 'contacts') url.searchParams.set('section', contactSection);
-            else if (currentView === 'accounting') url.searchParams.set('section', accountingSection);
-            else url.searchParams.delete('section');
-            if (currentView !== 'students') url.searchParams.delete('student');
-            if (currentView === 'students' && selectedStudentId) url.searchParams.set('student', selectedStudentId);
-            window.history.replaceState({}, '', url);
+            writeOperationsRoute('push');
             render();
         }
 
@@ -8844,18 +8880,7 @@
                 studentSection = focus === 'locked' || focus === 'tablet_access' ? 'tablet_access' : 'list';
                 studentAccountabilityFilter = ACCOUNTABILITY_FILTERS.some(item => item.id === focus) ? focus : 'all';
             }
-            const url = new URL(window.location.href);
-            url.searchParams.set('view', currentView);
-            if (currentView === 'tasks') url.searchParams.set('section', taskFocus);
-            else if (currentView === 'calendar') url.searchParams.delete('section');
-            else if (currentView === 'students') url.searchParams.set('section', studentSection);
-            else if (currentView === 'content') url.searchParams.set('section', contentSection);
-            else if (currentView === 'contacts') url.searchParams.set('section', contactSection);
-            else if (currentView === 'accounting') url.searchParams.set('section', accountingSection);
-            else url.searchParams.delete('section');
-            if (currentView !== 'students') url.searchParams.delete('student');
-            if (currentView === 'students' && selectedStudentId) url.searchParams.set('student', selectedStudentId);
-            window.history.replaceState({}, '', url);
+            writeOperationsRoute('push');
             render();
         }
 
@@ -8863,11 +8888,7 @@
             const normalizedFocus = TASK_FOCUS_ALIASES[focus] || focus;
             taskFocus = TASK_SUBTABS.some(tab => tab.id === normalizedFocus) ? normalizedFocus : 'overview';
             currentView = 'tasks';
-            const url = new URL(window.location.href);
-            url.searchParams.set('view', 'tasks');
-            url.searchParams.set('section', taskFocus);
-            url.searchParams.delete('student');
-            window.history.replaceState({}, '', url);
+            writeOperationsRoute('push');
             render();
         }
 
@@ -8876,11 +8897,7 @@
             taskUrgencyFilter = 'all';
             taskDateFilter = 'all';
             currentView = 'tasks';
-            const url = new URL(window.location.href);
-            url.searchParams.set('view', 'tasks');
-            url.searchParams.set('section', taskFocus);
-            url.searchParams.delete('student');
-            window.history.replaceState({}, '', url);
+            writeOperationsRoute('push');
             render();
         }
 
@@ -8889,11 +8906,7 @@
             taskUrgencyFilter = 'all';
             taskDateFilter = 'all';
             currentView = 'tasks';
-            const url = new URL(window.location.href);
-            url.searchParams.set('view', 'tasks');
-            url.searchParams.set('section', taskFocus);
-            url.searchParams.delete('student');
-            window.history.replaceState({}, '', url);
+            writeOperationsRoute('push');
             render();
             setTimeout(() => document.getElementById('blockedTasksSection')?.scrollIntoView({ block: 'start' }), 0);
         }
@@ -8991,13 +9004,7 @@
             activeWorkspaceProject = nextProject;
             resetWorkspaceScopedUiState();
             window.localStorage?.setItem('bna_ops_active_project', activeWorkspaceProject);
-            const url = new URL(window.location.href);
-            url.searchParams.set('view', 'tasks');
-            url.searchParams.set('section', 'overview');
-            url.searchParams.delete('student');
-            if (activeWorkspaceProject === GLOBAL_PROJECT_FILTER_VALUE) url.searchParams.delete('project');
-            else url.searchParams.set('project', activeWorkspaceProject);
-            window.history.replaceState({}, '', url);
+            writeOperationsRoute('push');
             loadData();
         }
 
@@ -9118,11 +9125,8 @@
 
         function selectStudent(studentId) {
             selectedStudentId = studentId;
-            const url = new URL(window.location.href);
-            url.searchParams.set('view', 'students');
-            url.searchParams.set('section', studentSection);
-            url.searchParams.set('student', studentId);
-            window.history.replaceState({}, '', url);
+            currentView = 'students';
+            writeOperationsRoute('push');
             render();
         }
 
@@ -9130,22 +9134,14 @@
             selectedStudentId = studentId;
             if (section && STUDENT_SUBTABS.some(tab => tab.id === section)) studentSection = section;
             currentView = 'students';
-            const url = new URL(window.location.href);
-            url.searchParams.set('view', 'students');
-            url.searchParams.set('section', studentSection);
-            url.searchParams.set('student', studentId);
-            window.history.replaceState({}, '', url);
+            writeOperationsRoute('push');
             render();
         }
 
         function setStudentSection(section) {
             studentSection = STUDENT_SUBTABS.some(tab => tab.id === section) ? section : 'overview';
             currentView = 'students';
-            const url = new URL(window.location.href);
-            url.searchParams.set('view', 'students');
-            url.searchParams.set('section', studentSection);
-            if (selectedStudentId) url.searchParams.set('student', selectedStudentId);
-            window.history.replaceState({}, '', url);
+            writeOperationsRoute('push');
             render();
         }
 
@@ -9157,11 +9153,7 @@
                 if (firstMatch) selectedStudentId = firstMatch.id;
             }
             currentView = 'students';
-            const url = new URL(window.location.href);
-            url.searchParams.set('view', 'students');
-            url.searchParams.set('section', studentSection);
-            if (selectedStudentId) url.searchParams.set('student', selectedStudentId);
-            window.history.replaceState({}, '', url);
+            writeOperationsRoute('push');
             render();
         }
 
@@ -9173,11 +9165,8 @@
         function setStudentAccountabilityFilter(filter) {
             studentAccountabilityFilter = ACCOUNTABILITY_FILTERS.some(item => item.id === filter) ? filter : 'all';
             studentSection = 'list';
-            const url = new URL(window.location.href);
-            url.searchParams.set('view', 'students');
-            url.searchParams.set('section', studentSection);
-            if (selectedStudentId) url.searchParams.set('student', selectedStudentId);
-            window.history.replaceState({}, '', url);
+            currentView = 'students';
+            writeOperationsRoute('push');
             render();
         }
 
@@ -10001,6 +9990,11 @@
         }
 
         // Init
+        window.addEventListener('popstate', () => {
+            applyOperationsRouteFromLocation();
+            loadData();
+        });
+
         loadData();
         setInterval(loadData, 30000); // Refresh every 30s
 

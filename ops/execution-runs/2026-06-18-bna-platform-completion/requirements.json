@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-19T03:00:30+03:00",
+  "updated_at": "2026-06-19T03:15:30+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -2883,8 +2883,8 @@
       "title": "Route, interaction, responsive, helper, workspace, and student Playwright tests",
       "area": "tests",
       "priority": "P0",
-      "current_verdict": "missing",
-      "status": "not_started",
+      "current_verdict": "closed_local",
+      "status": "done",
       "expected_result": "Acceptance tests cover route/tab/back-forward integrity, responsive viewports, helper context, workspace selection, and student detail.",
       "acceptance_criteria": [
         "Route, interaction, responsive, helper, workspace, and student Playwright tests is implemented against the canonical Express/static runtime where applicable.",
@@ -2895,12 +2895,34 @@
       "depends_on_audit_output": false,
       "live_required": false,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "public/operations.html now centralizes route writing and URL rehydration through writeOperationsRoute and applyOperationsRouteFromLocation.",
+        "Operations module, workspace, and student route changes push browser history entries; popstate reloads scoped data from the URL.",
+        "tests/browser-acceptance.test.js launches Chromium against the real Express/static runtime, mocks only API JSON, checks mobile/desktop overflow, and exercises Operations route/history, workspace selector scoping, Assistant memory/action context, student detail routing, and Student Portal Hebrew RTL.",
+        "tests/operations-workspace-selector.test.js now guards the shared route helper and popstate listener instead of old inline URL mutation."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check tests/browser-acceptance.test.js PASS",
+        "Operations HTML inline script parse PASS 2 script blocks",
+        "node --test tests/browser-acceptance.test.js PASS 2/2",
+        "node --test tests/browser-acceptance.test.js tests/operations-workspace-selector.test.js tests/assistant-shell.test.js tests/student-portal-i18n.test.js PASS 14/14"
+      ],
+      "implementation_commits": [
+        "current batch commit: test: add browser acceptance coverage"
+      ],
+      "files_changed": [
+        "public/operations.html",
+        "tests/browser-acceptance.test.js",
+        "tests/operations-workspace-selector.test.js",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/STATUS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/REQUIREMENTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md"
+      ],
+      "notes": "Local non-live browser acceptance coverage complete. This was a focused Playwright test, not an audit harness rebuild or baseline crawl."
     },
     {
       "id": "REQ-20260618-170",

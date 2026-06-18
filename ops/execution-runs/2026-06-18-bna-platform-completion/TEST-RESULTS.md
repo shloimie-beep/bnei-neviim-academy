@@ -434,3 +434,12 @@ Guarded test-data seed lifecycle (2026-06-19T03:00:30+03:00):
 - PASS `node --test tests/test-data-seed-script.test.js tests/bna-execution-run.test.js` 13/13.
 
 No production-data mutation, deployment, audit crawl, watch loop, or agent-fleet loop was performed. Real `seed` and `cleanup` mutations remain guarded behind `BNA_TEST_DATA_ALLOW=1` and a local test database URL.
+
+Focused browser acceptance coverage (2026-06-19T03:15:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS Operations HTML inline script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/browser-acceptance.test.js` 2/2.
+- PASS `node --test tests/browser-acceptance.test.js tests/operations-workspace-selector.test.js tests/assistant-shell.test.js tests/student-portal-i18n.test.js` 14/14.
+
+No audit harness rebuild, baseline crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
