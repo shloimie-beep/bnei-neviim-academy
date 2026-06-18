@@ -7,22 +7,44 @@
       "id": "REQ-20260618-101",
       "title": "Audit harness and audit package",
       "area": "audit",
-      "status": "in_progress",
+      "status": "blocked",
       "expected_result": "Use PR #2 audit harness, import authenticated audit output when available, and run one post-fix comparison only after implementation.",
       "acceptance_criteria": [
         "All child requirements under this parent have terminal statuses with evidence or exact blockers.",
         "STATUS.md and EVIDENCE.md show parent rollup and remaining child IDs.",
         "No child requirement is closed without proof and targeted verification."
       ],
-      "current_verdict": "partial",
+      "current_verdict": "blocked",
       "source": "BNA recovery bundle and Appendix A",
       "depends_on_audit_output": false,
       "live_required": false,
-      "blocker": null,
-      "evidence": [],
+      "blocker": "Non-audit/protocol children are closed; authenticated audit package/output is missing, so screenshot-specific audit package and post-fix comparison children remain blocked.",
+      "evidence": [
+        "REQ-20260618-112 through REQ-20260618-115 are done with protocol/tooling/source-of-truth evidence.",
+        "REQ-20260618-116 is already_satisfied from the recovered PR #2 audit harness.",
+        "REQ-20260618-117 is blocked because no .runtime/auth/operations-storage-state.json or ops/ui-audits output exists in the recovery worktree.",
+        "REQ-20260618-118 is blocked until local fixes and the authenticated audit package exist for one post-fix comparison."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "notes": "Parent workstream retained from original active run."
+      "verification": [
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
+      ],
+      "implementation_commits": [
+        "current batch commit: chore: mark audit parent blocked on audit package"
+      ],
+      "files_changed": [
+        "ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/STATUS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/REQUIREMENTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md",
+        "ops/execution-runs/latest.json",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md"
+      ],
+      "notes": "Terminalized as blocked because the only remaining audit work is screenshot/audit-package-specific and depends on the missing authenticated audit output. This does not block unrelated local implementation."
     },
     {
       "id": "REQ-20260618-102",
@@ -37,7 +59,7 @@
       ],
       "current_verdict": "partial",
       "source": "BNA recovery bundle and Appendix A",
-      "depends_on_audit_output": false,
+      "depends_on_audit_output": true,
       "live_required": true,
       "blocker": null,
       "evidence": [],

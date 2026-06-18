@@ -2,7 +2,7 @@
 
 | ID | Parent | Canonical | Status | Verdict | Title |
 |---|---|---|---|---|---|
-| REQ-20260618-101 | - | - | in_progress | partial | Audit harness and audit package |
+| REQ-20260618-101 | - | - | blocked | blocked | Audit harness and audit package |
 | REQ-20260618-102 | - | - | in_progress | partial | PWA public-versus-Operations separation |
 | REQ-20260618-103 | - | - | in_progress | partial | Workspace model, RBAC, and isolation |
 | REQ-20260618-104 | - | - | in_progress | partial | Operations shell, workspace selector, and navigation |

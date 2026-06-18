@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-19T04:05:30+03:00
+Updated: 2026-06-19T04:15:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -17,6 +17,7 @@ Latest completed local batches:
 - REQ-20260618-114: Source-of-truth files now describe the active recovery run, audit-only blockers, first-party Operations runtime direction, release gate, and exact resume path.
 - REQ-20260618-124: Workspace-owned entity scoping is locally implemented through schema/backfill/create-path foundations plus hardened content job, bundle, output, prompt-example, mixed-recording, and Operations content write-path project checks.
 - REQ-20260618-111: Safe test data and complete acceptance coverage parent rollup is locally closed because REQ-168, REQ-169, REQ-170, and REQ-171 are terminal with evidence and the combined acceptance set passed.
+- REQ-20260618-101: Audit harness/audit package parent is terminally blocked on authenticated audit package/output only; its non-audit/protocol children are closed and this blocker does not pause unrelated local work.
 
 Exact next requirement:
 
@@ -25,6 +26,7 @@ Exact next requirement:
 Blocked requirement intentionally skipped:
 
 - REQ-20260618-156 / BNA-STUDENT-002 remains `needs_operator_decision` because duplicate Menachem cleanup requires production/student data merge approval after safe local dry-run evidence. Do not mutate production data without explicit operator approval.
+- REQ-20260618-101 / audit parent remains `blocked` until the authenticated audit ZIP/output path is available. Do not start a new baseline crawl.
 
 Exact next command:
 

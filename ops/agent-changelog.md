@@ -4262,3 +4262,25 @@ Verification:
 
 Status: local `done`; no deployment, production-data mutation, audit crawl,
 watch loop, or agent-fleet loop was performed.
+
+## 2026-06-19 - Audit parent blocker rollup
+
+Requirement: `REQ-20260618-101`
+
+Changed:
+
+- Marked the audit harness/package parent as `blocked`, because all
+  non-audit/protocol children are closed and the remaining audit work depends
+  on missing authenticated audit package/output.
+- Corrected `REQ-20260618-118` so the post-fix audit comparison is explicitly
+  audit-output-dependent.
+- Recorded that this blocker is limited to screenshot/audit-package work and
+  must not pause unrelated local implementation.
+
+Verification:
+
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `blocked`; no audit crawl, deployment, production-data mutation, watch
+loop, or agent-fleet loop was performed.

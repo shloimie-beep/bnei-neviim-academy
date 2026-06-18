@@ -1,12 +1,12 @@
 # Status
 
-Updated: 2026-06-19T04:05:30+03:00
+Updated: 2026-06-19T04:15:30+03:00
 
 Status counts:
 
-- in_progress: 10
+- in_progress: 9
 - needs_verification: 48
-- blocked: 3
+- blocked: 4
 - needs_operator_decision: 1
 - done: 9
 - already_satisfied: 1
@@ -26,7 +26,6 @@ Closed/already satisfied IDs:
 
 Open non-blocked IDs:
 
-- REQ-20260618-101: Audit harness and audit package (in_progress)
 - REQ-20260618-102: PWA public-versus-Operations separation (in_progress)
 - REQ-20260618-103: Workspace model, RBAC, and isolation (in_progress)
 - REQ-20260618-104: Operations shell, workspace selector, and navigation (in_progress)
@@ -87,11 +86,12 @@ Open non-blocked IDs:
 
 Blocked / operator-decision IDs:
 
+- REQ-20260618-101: Audit harness and audit package: Non-audit/protocol children are closed; authenticated audit package/output is missing, so screenshot-specific audit package and post-fix comparison children remain blocked.
 - REQ-20260618-117 BNA-AUDIT-002: Produce privacy-safe authenticated audit package: Waiting for user to upload agent-review-package.zip or audit output path
 - REQ-20260618-118 BNA-AUDIT-003: Produce post-fix audit comparison: Requires completed local fix batches and authenticated audit package before comparison.
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current verification batch: REQ-20260618-170 is closed locally based on backend route guard tests, real HTTP middleware isolation tests, users/invitations scoping tests, accounting scoping tests, and the full 209/209 local suite. Next unblocked local verification target is REQ-20260618-119.
+Current verification batch: REQ-20260618-101 is terminalized as blocked on authenticated audit output only. Next unblocked local verification target remains REQ-20260618-126.
 
 No deployment or production-data mutation is approved in this run.
