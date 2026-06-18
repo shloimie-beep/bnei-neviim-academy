@@ -56,7 +56,7 @@
 | REQ-20260618-152 | REQ-20260618-108 | BNA-STUDENT-001 | needs_verification | partial | Workspace-and-student detail/analysis isolation |
 | REQ-20260618-153 | REQ-20260618-108 | BNA-GOAL-001 | needs_verification | partial | Goal Board controls use plain product language |
 | REQ-20260618-154 | REQ-20260618-108 | BNA-GOAL-002 | needs_verification | partial | Separate goals, progress, approvals, and history |
-| REQ-20260618-155 | REQ-20260618-108 | BNA-I18N-001 | not_started | partial | Complete Hebrew localization and RTL behavior |
+| REQ-20260618-155 | REQ-20260618-108 | BNA-I18N-001 | needs_verification | partial | Complete Hebrew localization and RTL behavior |
 | REQ-20260618-156 | REQ-20260618-108 | BNA-STUDENT-002 | needs_operator_decision | blocked | Duplicate Menachem cleanup with audit trail/prevention |
 | REQ-20260618-157 | REQ-20260618-109 | BNA-HELPER-001 | not_started | partial | One visible OpenAI-powered assistant shell |
 | REQ-20260618-158 | REQ-20260618-109 | BNA-HELPER-002 | not_started | partial | Scope helper memory by user/role/workspace/context |

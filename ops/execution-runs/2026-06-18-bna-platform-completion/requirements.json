@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-18T23:58:00+03:00",
+  "updated_at": "2026-06-19T00:24:30+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -2157,7 +2157,7 @@
       "area": "students",
       "priority": "P1",
       "current_verdict": "partial",
-      "status": "not_started",
+      "status": "needs_verification",
       "expected_result": "Student portal Hebrew mode localizes labels, goals, statuses, empty states, dates, and buttons and sets RTL.",
       "acceptance_criteria": [
         "Complete Hebrew localization and RTL behavior is implemented against the canonical Express/static runtime where applicable.",
@@ -2168,12 +2168,24 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "public/student.html Hebrew mode now keeps document lang/dir in sync and adds RTL-specific CSS for text flow, progress bars, Hebrew label tracking, and LTR access-code entry.",
+        "Student portal dynamic goal cards and command cards now route agreement, checkoff, tablet access, Torah/trip, fallback, save, and error copy through the existing localization map.",
+        "Tablet access statuses, due/access dates, minutes, empty states, filters, statuses, and buttons now use localized helper output in Hebrew mode."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --test tests/student-portal-i18n.test.js PASS 3/3",
+        "npm test PASS 169/169"
+      ],
+      "implementation_commits": [
+        "current batch commit: fix: localize student portal hebrew"
+      ],
+      "files_changed": [
+        "public/student.html",
+        "tests/student-portal-i18n.test.js"
+      ],
+      "notes": "Local implementation and tests complete. Live-required item remains needs_verification until release approval, deploy, and live smoke. No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
     },
     {
       "id": "REQ-20260618-156",

@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-19T00:16:30+03:00
+Updated: 2026-06-19T00:24:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -32,24 +32,30 @@ Latest completed local batches:
 - REQ-20260618-152: Student/detail isolation now scopes student, device, Goal Board, accountability, group-goal, and Torah-learning reads/writes by selected/scoped workspace and student ID where applicable.
 - REQ-20260618-153: Goal Board controls now use plain product language for tablet access and goal actions, with horizontal purpose toolbars for setup, progress, review, board, and tablet actions.
 - REQ-20260618-154: Goal Board cards now render in separate Current Goals, Progress / Check-ins, Approvals, and History lanes instead of one mixed list.
+- REQ-20260618-155: Student Portal Hebrew mode now localizes dynamic goal cards, command cards, tablet access statuses, dates, statuses, empty/filter labels, buttons, save/error messages, and applies RTL-specific layout behavior.
 
 Exact next requirement:
 
-- REQ-20260618-155 / BNA-I18N-001: Complete Hebrew localization and RTL behavior.
+- REQ-20260618-157 / BNA-HELPER-001: One visible OpenAI-powered assistant shell.
+
+Blocked requirement intentionally skipped:
+
+- REQ-20260618-156 / BNA-STUDENT-002 remains `needs_operator_decision` because duplicate Menachem cleanup requires production/student data merge approval after safe local dry-run evidence. Do not mutate production data without explicit operator approval.
 
 Exact next command:
 
 ```powershell
 npm run bna:run:status
-rg -n "hebrew|Hebrew|rtl|RTL|dir=|lang=|language|translate|i18n|עברית|English|student portal|portal|goal|status|empty|button|date|format" public\\student.html public\\operations.html public\\signup-he.html tests src\\lib\\bna
+rg -n "assistant|helper|OpenAI|Codex|Kimi|chat|sidekick|memory|permission|confirm|audit|tool|action" server.js public\\operations.html public\\index.html public\\student.html src\\lib\\bna tests .env.example
 ```
 
-Then inspect the student portal Hebrew mode, goal/status labels, empty states, buttons, date formatting, and RTL behavior. Implement remaining localization gaps without changing production data.
+Then inspect current helper/assistant surfaces and backend helper routes. Implement one coherent visible OpenAI-powered assistant shell without exposing duplicate helper/Codex personalities, production secrets, or cross-scope memory.
 
 Still open after this batch:
 
 - REQ-20260618-124 remains `in_progress` until broader workspace-owned entity API filtering, release approval, deploy, and live smoke are complete.
-- REQ-20260618-125 through REQ-20260618-154 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-125 through REQ-20260618-155 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-156 remains `needs_operator_decision` for duplicate-student cleanup approval.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 
 No deployment or production-data mutation is approved.

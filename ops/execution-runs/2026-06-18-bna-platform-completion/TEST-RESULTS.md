@@ -314,3 +314,11 @@ Goal Board lane separation (2026-06-19T00:16:30+03:00):
 
 No deployment, production-data mutation, audit crawl, watch loop, or
 agent-fleet loop was performed.
+
+Student Portal Hebrew localization and RTL behavior (2026-06-19T00:24:30+03:00):
+
+- PASS `node --test tests/student-portal-i18n.test.js` 3/3.
+- PASS `npm test` 169/169.
+
+No deployment, production-data mutation, audit crawl, watch loop, or
+agent-fleet loop was performed.

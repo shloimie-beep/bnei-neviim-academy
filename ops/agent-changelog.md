@@ -3839,3 +3839,30 @@ Verification:
 Status: local `needs_verification`; no deployment, production-data mutation,
 audit crawl, watch loop, or agent-fleet loop was performed. Resume at
 `REQ-20260618-155`.
+
+## 2026-06-19 - Student Portal Hebrew localization and RTL behavior
+
+Requirement: `REQ-20260618-155`
+
+Changed:
+
+- Completed Student Portal Hebrew localization coverage for the dynamic student
+  experience: goal cards, command cards, tablet access summaries, dates,
+  minutes, statuses, filters, empty states, buttons, save confirmations, and
+  fallback errors now route through the localization helpers.
+- Added RTL-specific portal CSS so Hebrew mode flips document direction,
+  progress fills from the right, Hebrew labels avoid uppercase letter tracking,
+  and the private access-code field remains LTR for reliable copy/paste.
+- Added `tests/student-portal-i18n.test.js` to guard complete Hebrew label
+  coverage, RTL hooks, localized dynamic-card rendering, tablet status labels,
+  and localized save/error messages.
+
+Verification:
+
+- PASS `node --test tests/student-portal-i18n.test.js` 3/3.
+- PASS `npm test` 169/169.
+
+Status: local `needs_verification`; no deployment, production-data mutation,
+audit crawl, watch loop, or agent-fleet loop was performed. `REQ-20260618-156`
+remains blocked on operator approval for production duplicate-student cleanup;
+resume at `REQ-20260618-157`.

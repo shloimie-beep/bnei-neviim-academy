@@ -376,6 +376,29 @@
             background: linear-gradient(90deg, var(--forest), var(--gold));
         }
 
+        html[dir="rtl"] body {
+            direction: rtl;
+        }
+
+        html[dir="rtl"] #accessCode {
+            direction: ltr;
+            text-align: left;
+        }
+
+        html[dir="rtl"] .progress-fill {
+            margin-left: auto;
+            background: linear-gradient(270deg, var(--forest), var(--gold));
+        }
+
+        html[dir="rtl"] label,
+        html[dir="rtl"] .eyebrow,
+        html[dir="rtl"] .metric small,
+        html[dir="rtl"] .portal-command-label,
+        html[dir="rtl"] .goal-details summary {
+            letter-spacing: 0;
+            text-transform: none;
+        }
+
         .section-title {
             display: flex;
             gap: 12px;
@@ -785,6 +808,34 @@
                 required: 'Review required',
                 goals: 'goals',
                 goalSingular: 'goal',
+                adminSource: 'Admin',
+                agreement: 'Agreement',
+                inBedBy: 'in bed by',
+                outOfBedBy: 'out of bed by',
+                afterCheckoff: 'After honest checkoff',
+                tabletAccessOpens: 'tablet access opens',
+                minutes: 'minutes',
+                by: 'by',
+                noGoalYet: 'No goal yet',
+                accountabilityOnly: 'Accountability only',
+                setByYourRule: 'Set by your rule',
+                chooseAgreement: 'Choose or review your agreement',
+                askRebbiAgreement: 'Ask your rebbi to add today\'s agreement.',
+                myAgreement: 'My Agreement',
+                checkOff: 'Check Off',
+                useButtonsReady: 'Use the buttons below when you are ready.',
+                tabletAccessCard: 'Tablet Access',
+                afterSuccessfulCheckoff: 'After a successful checkoff, access opens for',
+                whenTabletConfigured: 'when a tablet is configured',
+                torahTrip: 'Torah / Trip',
+                tripLower: 'trip',
+                todayIs: 'Today is',
+                dailySuccessAdds: 'Daily success adds one unit toward the full trip goal.',
+                promiseFallback: 'This is the promise you are checking off honestly.',
+                savedAccessOpened: 'Saved. Tablet access opened for',
+                savedNoDevice: 'Saved. No tablet is configured yet, so access could not open automatically.',
+                couldNotOpenLink: 'Could not open this student link.',
+                couldNotSaveCheckoff: 'Could not save this checkoff.',
                 tabletAccess: 'Tablet access',
                 accessUntil: 'until',
                 assignedOnly: 'Goals, consequences, bedtime rules, and tablet rules are assigned by the rebbi/admin. This page is only for honest checkoff, a short note, and read-only progress/status.',
@@ -814,8 +865,13 @@
                 urgency: 'דחיפות',
                 category: 'קטגוריה',
                 due: 'זמן יעד',
+                bedtime: 'במיטה עד',
+                wakeTime: 'קם עד',
+                accessMinutes: 'דקות גישה אחרי סימון',
+                missedState: 'אם פספסתי',
                 goalPlaceholder: 'הוסף מטרה',
                 categoryPlaceholder: 'שגרה, לימוד, פרויקט',
+                chosenRulePlaceholder: 'לדוגמה: הטאבלט נפתח אחרי סימון ביושר; אם פספסתי, אני נשאר באחריות בלבד ומאפס את התוכנית שלי.',
                 noGoals: 'אין מטרות במסלול הזה.',
                 details: 'פרטים',
                 checkIn: 'פתק בדיקה',
@@ -835,6 +891,59 @@
                 required: 'נדרש אישור',
                 goals: 'מטרות',
                 goalSingular: 'מטרה',
+                adminSource: 'רב/מנהל',
+                agreement: 'הסכמה',
+                inBedBy: 'במיטה עד',
+                outOfBedBy: 'קם עד',
+                chosenRule: 'הכלל שנבחר',
+                afterCheckoff: 'אחרי בדיקה ביושר',
+                tabletAccessOpens: 'הגישה לטאבלט נפתחת',
+                minutes: 'דקות',
+                by: 'עד',
+                noGoalYet: 'עדיין אין מטרה',
+                accountabilityOnly: 'אחריות בלבד',
+                setByYourRule: 'לפי הכלל שלך',
+                chooseAgreement: 'בחר או בדוק את ההסכמה שלך',
+                askRebbiAgreement: 'בקש מהרב להוסיף את ההסכמה של היום.',
+                myAgreement: 'ההסכמה שלי',
+                checkOff: 'סימון ביצוע',
+                useButtonsReady: 'השתמש בכפתורים למטה כשאתה מוכן.',
+                tabletAccessCard: 'גישה לטאבלט',
+                afterSuccessfulCheckoff: 'אחרי סימון מוצלח, הגישה נפתחת למשך',
+                whenTabletConfigured: 'כאשר מוגדר טאבלט',
+                torahTrip: 'תורה / מסע',
+                tripLower: 'מסע',
+                todayIs: 'היום',
+                dailySuccessAdds: 'הצלחה יומית מוסיפה יחידה אחת ליעד המסע המלא.',
+                promiseFallback: 'זו ההבטחה שאתה מסמן ביושר.',
+                savedAccessOpened: 'נשמר. הגישה לטאבלט נפתחה למשך',
+                savedNoDevice: 'נשמר. עדיין לא מוגדר טאבלט, לכן הגישה לא נפתחה אוטומטית.',
+                couldNotOpenLink: 'לא ניתן לפתוח את קישור התלמיד הזה.',
+                couldNotSaveCheckoff: 'לא ניתן לשמור את סימון הביצוע הזה.',
+                tabletAccess: 'גישה לטאבלט',
+                accessUntil: 'עד',
+                assignedOnly: 'מטרות, השלכות, כללי שינה וכללי טאבלט נקבעים על ידי הרב/המנהל. הדף הזה מיועד רק לסימון ביושר, פתק קצר, והתקדמות/מצב לקריאה בלבד.',
+            },
+        };
+
+        const DEVICE_ACCESS_LABELS = {
+            en: {
+                not_configured: 'Not configured',
+                accountability_only: 'Accountability only',
+                checkoff_only: 'Checkoff only',
+                open: 'Open',
+                paused: 'Paused',
+                ended: 'Ended',
+                temporary_open: 'Temporary open',
+            },
+            he: {
+                not_configured: 'לא מוגדר',
+                accountability_only: 'אחריות בלבד',
+                checkoff_only: 'בדיקה בלבד',
+                open: 'פתוח',
+                paused: 'מושהה',
+                ended: 'הסתיים',
+                temporary_open: 'פתוח זמנית',
             },
         };
 
@@ -892,6 +1001,13 @@
 
         function roundedPercent(value) {
             return Math.max(0, Math.min(100, Math.round(asNumber(value, 0))));
+        }
+
+        function normalizeKey(value) {
+            return String(value || '')
+                .trim()
+                .toLowerCase()
+                .replace(/[\s-]+/g, '_');
         }
 
         function setProgressStyle(element, percent) {
@@ -987,6 +1103,10 @@
         }
 
         function formatDue(value) {
+            return formatLocalizedDateTime(value);
+        }
+
+        function formatLocalizedDateTime(value) {
             if (!value) return '';
             const date = new Date(value);
             if (!Number.isFinite(date.getTime())) return '';
@@ -996,6 +1116,28 @@
                 hour: '2-digit',
                 minute: '2-digit',
             });
+        }
+
+        function accessStatusLabel(access) {
+            const rawStatus = normalizeKey(access?.status);
+            const rawLabel = normalizeKey(access?.status_label);
+            const accessKey = rawStatus || rawLabel || 'accountability_only';
+            const labelsForLanguage = DEVICE_ACCESS_LABELS[language] || DEVICE_ACCESS_LABELS.en;
+            if (labelsForLanguage[accessKey]) {
+                return labelsForLanguage[accessKey];
+            }
+            if (rawLabel && labelsForLanguage[rawLabel]) {
+                return labelsForLanguage[rawLabel];
+            }
+            const fallback = access?.status_label || String(access?.status || '').replace(/_/g, ' ');
+            return fallback || t('accountabilityOnly');
+        }
+
+        function minutesText(value) {
+            const minutes = Number(value);
+            return Number.isFinite(minutes) && minutes > 0
+                ? `${minutes} ${t('minutes')}`
+                : t('setByYourRule');
         }
 
         function goalCounts(goals) {
@@ -1042,20 +1184,20 @@
                         <span class="badge">${escapeHtml(statusLabel(goal))}</span>
                     </div>
                     <div class="goal-badges">
-                        <span class="badge">${escapeHtml(goal.source_label || goal.source || 'Admin')}</span>
+                        <span class="badge">${escapeHtml(goal.source_label || goal.source || t('adminSource'))}</span>
                         <span class="badge">${escapeHtml(urgencyLabel(goal.urgency))}</span>
                         ${goal.category ? `<span class="badge">${escapeHtml(goal.category)}</span>` : ''}
                         ${waiting ? `<span class="badge">${escapeHtml(t('required'))}</span>` : ''}
                     </div>
                     ${due ? `<div class="goal-meta">${escapeHtml(t('due'))}: ${escapeHtml(due)}</div>` : ''}
-                    ${agreement.bedtime_time || agreement.wake_time ? `<div class="goal-meta"><strong>Agreement:</strong> in bed by ${escapeHtml(agreement.bedtime_time || '--')}; out of bed by ${escapeHtml(agreement.wake_time || '--')}.</div>` : ''}
+                    ${agreement.bedtime_time || agreement.wake_time ? `<div class="goal-meta"><strong>${escapeHtml(t('agreement'))}:</strong> ${escapeHtml(t('inBedBy'))} ${escapeHtml(agreement.bedtime_time || '--')}; ${escapeHtml(t('outOfBedBy'))} ${escapeHtml(agreement.wake_time || '--')}.</div>` : ''}
                     ${agreement.student_commitment ? `<div class="goal-meta">${escapeHtml(agreement.student_commitment)}</div>` : ''}
                     <div class="progress-track">
                         <div class="progress-fill" style="--progress:${progress}%"></div>
                     </div>
                     <div class="goal-meta"><strong>${progress}%</strong> ${escapeHtml(t('progress'))}${targetText ? ` - ${targetText}` : ''}</div>
-                    ${successAccess ? `<div class="goal-meta"><strong>After honest checkoff:</strong> tablet access opens${successMinutes ? ` for ${Number(successMinutes)} minutes` : ''}.</div>` : ''}
-                    ${chosenConsequence ? `<div class="goal-meta"><strong>Chosen rule:</strong> ${escapeHtml(chosenConsequence)}</div>` : ''}
+                    ${successAccess ? `<div class="goal-meta"><strong>${escapeHtml(t('afterCheckoff'))}:</strong> ${escapeHtml(t('tabletAccessOpens'))}${successMinutes ? ` ${escapeHtml(minutesText(successMinutes))}` : ''}.</div>` : ''}
+                    ${chosenConsequence ? `<div class="goal-meta"><strong>${escapeHtml(t('chosenRule'))}:</strong> ${escapeHtml(chosenConsequence)}</div>` : ''}
                     ${goal.student_summary ? `<div class="goal-meta">${escapeHtml(goal.student_summary)}</div>` : ''}
                     <details class="goal-details">
                         <summary>${escapeHtml(t('details'))}</summary>
@@ -1078,26 +1220,14 @@
             `;
         }
 
-        function formatAccessTime(value) {
-            if (!value) return '';
-            const date = new Date(value);
-            if (!Number.isFinite(date.getTime())) return '';
-            return date.toLocaleString('en-GB', {
-                month: 'short',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit',
-            });
-        }
-
         function renderDeviceAccessSummary(access) {
             const count = Number(access?.device_count || 0);
             if (!access || count <= 0 || access.status === 'not_configured') {
                 els.deviceAccessStrip.classList.add('hidden');
                 return;
             }
-            const statusLabel = access.status_label || String(access.status || '').replace(/_/g, ' ');
-            const expires = formatAccessTime(access.expires_at);
+            const statusLabel = accessStatusLabel(access);
+            const expires = formatLocalizedDateTime(access.expires_at);
             els.deviceAccessState.textContent = statusLabel;
             els.deviceAccessText.textContent = `${t('tabletAccess')}: ${statusLabel}${expires ? ` ${t('accessUntil')} ${expires}` : ''}.`;
             els.deviceAccessStrip.classList.remove('hidden');
@@ -1119,44 +1249,44 @@
             const torahPercent = roundedPercent(data?.torah?.public_trip_percentage);
             const todayPercent = roundedPercent(data?.torah?.daily_completion_percentage);
             const due = formatDue(activeGoal?.due_at);
-            const status = activeGoal ? statusLabel(activeGoal) : 'No goal yet';
-            const accessLabel = access?.status_label || String(access?.status || 'Accountability only').replace(/_/g, ' ');
-            const accessMinutes = consequence?.success_duration_minutes ? `${Number(consequence.success_duration_minutes)} minutes` : 'Set by your rule';
+            const status = activeGoal ? statusLabel(activeGoal) : t('noGoalYet');
+            const accessLabel = accessStatusLabel(access);
+            const accessMinutes = minutesText(consequence?.success_duration_minutes);
             const agreementText = agreement.bedtime_time || agreement.wake_time
-                ? `Bed ${agreement.bedtime_time || '--'} / up ${agreement.wake_time || '--'}`
-                : (activeGoal?.title || 'Choose or review your agreement');
+                ? `${t('bedtime')} ${agreement.bedtime_time || '--'} / ${t('wakeTime')} ${agreement.wake_time || '--'}`
+                : (activeGoal?.title || t('chooseAgreement'));
             const checkoffText = activeGoal
-                ? `${status}${due ? ` by ${due}` : ''}`
-                : 'Ask your rebbi to add today\'s agreement.';
+                ? `${status}${due ? ` ${t('by')} ${due}` : ''}`
+                : t('askRebbiAgreement');
 
             return `
                 <article class="portal-command-card">
                     <div>
-                        <div class="portal-command-label">My Agreement</div>
+                        <div class="portal-command-label">${escapeHtml(t('myAgreement'))}</div>
                         <strong>${escapeHtml(agreementText)}</strong>
                     </div>
-                    <span>${escapeHtml(agreement.student_commitment || agreement.chosen_consequence || 'This is the promise you are checking off honestly.')}</span>
+                    <span>${escapeHtml(agreement.student_commitment || agreement.chosen_consequence || t('promiseFallback'))}</span>
                 </article>
                 <article class="portal-command-card">
                     <div>
-                        <div class="portal-command-label">Check Off</div>
+                        <div class="portal-command-label">${escapeHtml(t('checkOff'))}</div>
                         <strong>${escapeHtml(checkoffText)}</strong>
                     </div>
-                    <span>Use the buttons below when you are ready.</span>
+                    <span>${escapeHtml(t('useButtonsReady'))}</span>
                 </article>
                 <article class="portal-command-card">
                     <div>
-                        <div class="portal-command-label">Tablet Access</div>
+                        <div class="portal-command-label">${escapeHtml(t('tabletAccessCard'))}</div>
                         <strong>${escapeHtml(accessLabel)}</strong>
                     </div>
-                    <span>After a successful checkoff, access opens for ${escapeHtml(accessMinutes)} when a tablet is configured.</span>
+                    <span>${escapeHtml(t('afterSuccessfulCheckoff'))} ${escapeHtml(accessMinutes)} ${escapeHtml(t('whenTabletConfigured'))}.</span>
                 </article>
                 <article class="portal-command-card">
                     <div>
-                        <div class="portal-command-label">Torah / Trip</div>
-                        <strong>${torahPercent}% trip</strong>
+                        <div class="portal-command-label">${escapeHtml(t('torahTrip'))}</div>
+                        <strong>${torahPercent}% ${escapeHtml(t('tripLower'))}</strong>
                     </div>
-                    <span>Today is ${todayPercent}%. Daily success adds one unit toward the full trip goal.</span>
+                    <span>${escapeHtml(t('todayIs'))} ${todayPercent}%. ${escapeHtml(t('dailySuccessAdds'))}</span>
                 </article>
             `;
         }
@@ -1214,7 +1344,7 @@
                 renderPortal(data);
             } catch (error) {
                 localStorage.removeItem(STORAGE_KEY);
-                showLogin(error.message || 'Could not open this student link.', true);
+                showLogin(error.message || t('couldNotOpenLink'), true);
             }
         }
 
@@ -1243,14 +1373,14 @@
                 await refreshPortal();
                 const autoAccess = result?.automatic_device_access;
                 if (autoAccess?.status === 'applied') {
-                    setSaveState(`Saved. Tablet access opened for ${Number(autoAccess.duration_minutes || 0) || 60} minutes.`);
+                    setSaveState(`${t('savedAccessOpened')} ${minutesText(Number(autoAccess.duration_minutes || 0) || 60)}.`);
                 } else if (autoAccess?.status === 'no_device_configured') {
-                    setSaveState('Saved. No tablet is configured yet, so access could not open automatically.', true);
+                    setSaveState(t('savedNoDevice'), true);
                 } else {
                     setSaveState(t('saved'));
                 }
             } catch (error) {
-                setSaveState(error.message || 'Could not save this checkoff.', true);
+                setSaveState(error.message || t('couldNotSaveCheckoff'), true);
             } finally {
                 saving = false;
                 document.querySelectorAll('[data-goal-id], [data-reflection-id]').forEach(button => {
