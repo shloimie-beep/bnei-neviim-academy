@@ -4105,3 +4105,24 @@ Verification:
 - PASS `npm test` 197/197.
 
 Status: local `needs_verification`; no deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-167`.
+
+## 2026-06-19 - Public route and CTA integrity
+
+Requirement: `REQ-20260618-167`
+
+Changed:
+
+- Added clean no-store server aliases for `/signup`, `/signup-he`, `/signup-thank-you`, and `/student` alongside existing blog/FAQ routes.
+- Switched homepage signup CTAs, shared blog signup CTA data, signup language links, thank-you redirects, signup email links, and generated student portal links to clean public routes.
+- Added `/signup` to the sitemap and kept private Operations/student app-shell routes out of public CTA paths.
+- Added `tests/public-route-cta-integrity.test.js` for route aliases, public CTAs, parent PWA launch, signup email links, student portal links, and sitemap coverage.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/public-route-cta-integrity.test.js`.
+- PASS public route inline script parse via `vm.Script` (10 script blocks).
+- PASS `node --test tests/public-route-cta-integrity.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js` 26/26.
+- PASS `npm test` 202/202.
+
+Status: local `needs_verification`; no deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-168`.

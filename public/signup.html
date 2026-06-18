@@ -700,7 +700,7 @@
                 <img src="images/bna-logo-nobg.png" alt="Bnei Nevi'im Academy" class="logo">
             </a>
             <div class="nav-actions">
-                <a href="/signup-he.html" class="nav-btn">עברית</a>
+                <a href="/signup-he" class="nav-btn">עברית</a>
                 <a href="/" class="nav-btn">Back to Home</a>
             </div>
         </div>
@@ -896,7 +896,7 @@
                 params.set('paymentLink', paymentLink);
             }
 
-            return `/signup-thank-you.html?${params.toString()}`;
+            return `/signup-thank-you?${params.toString()}`;
         }
 
         function initializePaymentUi() {

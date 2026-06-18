@@ -2,7 +2,7 @@
   const site = {
     name: "Bnei Neviim Academy",
     whatsapp: "https://wa.me/972534932631",
-    signup: "/signup.html",
+    signup: "/signup",
     location: "Ramat Beit Shemesh",
     author: "Rabbi Shloimie Dratler",
     publisher: "Bnei Neviim Academy",

@@ -6934,7 +6934,7 @@
 
         function studentPortalUrl(student) {
             if (!student?.student_access_code) return '';
-            return `${window.location.origin}/student.html?code=${encodeURIComponent(student.student_access_code)}`;
+            return `${window.location.origin}/student?code=${encodeURIComponent(student.student_access_code)}`;
         }
 
         function renderStudentAccessPanel(student) {

@@ -415,3 +415,13 @@ Portal header identity coverage (2026-06-19T02:30:30+03:00):
 - PASS `npm test` 197/197.
 
 No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed.
+
+Public route and CTA integrity (2026-06-19T02:45:30+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/public-route-cta-integrity.test.js`.
+- PASS public route inline script parse via `vm.Script` (10 script blocks across public/signup/blog/FAQ/student/Operations pages).
+- PASS `node --test tests/public-route-cta-integrity.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js` 26/26.
+- PASS `npm test` 202/202.
+
+No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed.

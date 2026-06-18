@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-19T02:30:30+03:00
+Updated: 2026-06-19T02:45:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -8,13 +8,13 @@ Current branch: `codex/2026-06-18-bna-platform-completion`.
 
 Latest completed local batches:
 
-- REQ-20260618-164: Homepage provider CTA now says Advertise your program for free and explains free community listing expectations.
 - REQ-20260618-165: Signup pages, signup thank-you, and parent manifest now use direct parent signup/self-governance messaging and consistently say parent app access is six months free.
 - REQ-20260618-166: Portal header identity coverage now spans public/provider, parent signup launch, Student Portal, Operations shell, and Operations login while preserving manifest separation.
+- REQ-20260618-167: Public/blog/FAQ/signup/student routes and CTAs now use clean public aliases and stay out of the private Operations shell.
 
 Exact next requirement:
 
-- REQ-20260618-167 / BNA-PUBLIC-005: Public/blog/FAQ/signup/portal route and CTA integrity.
+- REQ-20260618-168 / BNA-TEST-001: Isolated repeatable seed and cleanup data.
 
 Blocked requirement intentionally skipped:
 
@@ -24,17 +24,17 @@ Exact next command:
 
 ```powershell
 npm run bna:run:status
-rg -n "href=|signup|blog|faq|student|portal|cta|manifest|canonical|sitemap|thank-you|operations" public tests server.js
+rg -n "seed|fixture|test data|cleanup|reset|truncate|sample|mock|TEST_|NODE_ENV|dry run|dry-run" scripts tests server.js package.json ops
 ```
 
-Then inspect public/blog/FAQ/signup/student/manifest route and CTA behavior, fix any broken or private route leakage, and add focused regression coverage.
+Then inspect existing test-data setup and add an isolated repeatable seed/cleanup path that cannot mutate production data.
 
 Still open after this batch:
 
 - REQ-20260618-124 remains `in_progress` until broader workspace-owned entity API filtering, release approval, deploy, and live smoke are complete.
-- REQ-20260618-125 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-166 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-125 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - REQ-20260618-156 remains `needs_operator_decision` for duplicate-student cleanup approval.
-- REQ-20260618-167 through REQ-20260618-169 remain open for public route/CTA and acceptance-test coverage.
+- REQ-20260618-168 and REQ-20260618-169 remain open for safe test data and acceptance-test coverage.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 
 No deployment or production-data mutation is approved.

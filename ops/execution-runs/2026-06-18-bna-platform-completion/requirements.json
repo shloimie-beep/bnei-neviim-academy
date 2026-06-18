@@ -351,7 +351,8 @@
         "Public primary navigation and shared public nav scripts are verified not to advertise private Operations login while private Operations routes remain intact.",
         "Homepage provider CTA now says Advertise your program for free and explains free community listing expectations.",
         "Parent signup pages, signup thank-you, and parent manifest now use direct parent signup, self-governance positioning, and the six months free parent app offer.",
-        "Portal header identity coverage now spans public homepage/provider listing, parent PWA signup launch, English/Hebrew signup, Student Portal, Operations shell, and Operations login while preserving manifest separation."
+        "Portal header identity coverage now spans public homepage/provider listing, parent PWA signup launch, English/Hebrew signup, Student Portal, Operations shell, and Operations login while preserving manifest separation.",
+        "Public/blog/FAQ/signup/portal route and CTA integrity now uses clean public aliases, canonical signup/student portal URLs, and focused route regression coverage."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -362,9 +363,11 @@
         "node --test tests/public-parent-offer.test.js tests/public-provider-cta.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js PASS 19/19",
         "npm test PASS 195/195",
         "node --test tests/operations-identity-header.test.js tests/pwa-identity.test.js tests/public-navigation.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js PASS 21/21",
-        "npm test PASS 197/197"
+        "npm test PASS 197/197",
+        "node --test tests/public-route-cta-integrity.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js PASS 26/26",
+        "npm test PASS 202/202"
       ],
-      "notes": "Public/copy parent remains in_progress until route/CTA integrity, final acceptance, release approval, deploy, and live smoke are complete.",
+      "notes": "Public/copy parent remains in_progress until final acceptance, release approval, deploy, and live smoke are complete.",
       "files_changed": [
         "tests/public-navigation.test.js",
         "public/index.html",
@@ -374,7 +377,11 @@
         "public/signup-thank-you.html",
         "public/parent-manifest.json",
         "tests/public-parent-offer.test.js",
-        "tests/operations-identity-header.test.js"
+        "tests/operations-identity-header.test.js",
+        "server.js",
+        "public/js/bna-content.js",
+        "public/sitemap.xml",
+        "tests/public-route-cta-integrity.test.js"
       ]
     },
     {
@@ -2773,8 +2780,8 @@
       "title": "Public/blog/FAQ/signup/portal route and CTA integrity",
       "area": "public",
       "priority": "P1",
-      "current_verdict": "unknown",
-      "status": "not_started",
+      "current_verdict": "local_implemented_pending_release",
+      "status": "needs_verification",
       "expected_result": "Public routes and CTAs resolve to intended pages and do not route into wrong app shell.",
       "acceptance_criteria": [
         "Public/blog/FAQ/signup/portal route and CTA integrity is implemented against the canonical Express/static runtime where applicable.",
@@ -2785,12 +2792,41 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "Server now exposes clean no-store public aliases for /signup, /signup-he, /signup-thank-you, /student, /blog, /faq, and language/blog slug routes.",
+        "Homepage nav/hero/final signup CTAs and shared blog CTA data now use /signup instead of /signup.html and do not route into Operations.",
+        "Parent PWA start_url /signup is backed by the server route, signup language links use /signup and /signup-he, and signup success redirects use /signup-thank-you.",
+        "Signup-link email generation uses clean absolute signup URLs, and generated student portal links use /student?code=... while student APIs remain data-only.",
+        "Sitemap advertises the canonical /signup clean public route and avoids Operations/student private portal URLs."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check server.js PASS",
+        "node --check tests/public-route-cta-integrity.test.js PASS",
+        "Public route inline script parse PASS 10 script blocks across public/signup/blog/FAQ/student/Operations pages",
+        "node --test tests/public-route-cta-integrity.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js PASS 26/26",
+        "npm test PASS 202/202"
+      ],
+      "implementation_commits": [
+        "current batch commit: fix: align public route ctas"
+      ],
+      "files_changed": [
+        "server.js",
+        "public/index.html",
+        "public/js/bna-content.js",
+        "public/operations.html",
+        "public/signup.html",
+        "public/signup-he.html",
+        "public/sitemap.xml",
+        "tests/public-route-cta-integrity.test.js",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/STATUS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/REQUIREMENTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md"
+      ],
+      "notes": "Local implementation complete; live-required status remains needs_verification until final acceptance sweep, release approval, deploy, and live smoke. No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
     },
     {
       "id": "REQ-20260618-168",

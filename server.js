@@ -1043,7 +1043,7 @@ function studentPortalUrl(req, code) {
   const forwardedProto = String(req.get('x-forwarded-proto') || '').split(',')[0].trim();
   const protocol = forwardedProto || req.protocol || 'https';
   const origin = `${protocol}://${req.get('host')}`;
-  return `${origin}/student.html?code=${encodeURIComponent(code)}`;
+  return `${origin}/student?code=${encodeURIComponent(code)}`;
 }
 
 async function ensureStudentAccessCode(studentId, { regenerate = false } = {}, db = pool) {
@@ -7601,8 +7601,8 @@ app.post('/api/bna/email/signup-link', requireAdmin, async (req, res) => {
   }
 
   const signupUrl = lang === 'he'
-    ? 'https://bneineviimacademy.org/signup-he.html'
-    : 'https://bneineviimacademy.org/signup.html';
+    ? 'https://bneineviimacademy.org/signup-he'
+    : 'https://bneineviimacademy.org/signup';
   const subject = lang === 'he'
     ? 'טופס הרשמה ל-Bnei Neviim Academy'
     : 'Bnei Neviim Academy signup form';
@@ -14353,6 +14353,26 @@ app.get(['/blog', '/he/blog'], (req, res) => {
 app.get(['/faq', '/he/faq'], (req, res) => {
   res.setHeader('Cache-Control', 'no-store');
   res.sendFile(path.join(__dirname, 'public', 'faq.html'));
+});
+
+app.get(['/signup'], (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, 'public', 'signup.html'));
+});
+
+app.get(['/signup-he', '/he/signup'], (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, 'public', 'signup-he.html'));
+});
+
+app.get(['/signup-thank-you'], (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, 'public', 'signup-thank-you.html'));
+});
+
+app.get(['/student'], (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.sendFile(path.join(__dirname, 'public', 'student.html'));
 });
 
 app.get(['/blog/:slug', '/he/blog/:slug'], (req, res) => {

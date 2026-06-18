@@ -553,7 +553,7 @@
                 <img src="images/bna-logo-nobg.png" alt="Bnei Nevi'im Academy" class="logo">
             </a>
             <div class="nav-actions">
-                <a href="/signup.html" class="nav-btn">English</a>
+                <a href="/signup" class="nav-btn">English</a>
                 <a href="/" class="nav-btn">חזרה לדף הבית</a>
             </div>
         </div>
@@ -720,7 +720,7 @@
         function buildThankYouUrl(paymentMethod, paymentLink) {
             const params = new URLSearchParams({ payment: paymentMethod, lang: 'he' });
             if (paymentLink) params.set('paymentLink', paymentLink);
-            return `/signup-thank-you.html?${params.toString()}`;
+            return `/signup-thank-you?${params.toString()}`;
         }
 
         function initializePaymentUi() {
