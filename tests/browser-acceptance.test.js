@@ -417,6 +417,113 @@ async function assertOperationsDesignSystem(page) {
   assert.equal(styles.activeMarker.backgroundColor, styles.tokens.gold);
 }
 
+async function assertOperationsMobileControls(page) {
+  const viewport = page.viewportSize();
+  assert.ok(viewport && viewport.width <= 768, JSON.stringify(viewport));
+  await page.locator('.section-tab-list').waitFor();
+  const overviewMetrics = await page.evaluate(() => {
+    function rect(selector) {
+      const node = document.querySelector(selector);
+      if (!node) return null;
+      const box = node.getBoundingClientRect();
+      const computed = getComputedStyle(node);
+      return {
+        height: box.height,
+        width: box.width,
+        clientWidth: node.clientWidth,
+        scrollWidth: node.scrollWidth,
+        display: computed.display,
+        flexWrap: computed.flexWrap,
+        overflowX: computed.overflowX,
+        scrollSnapType: computed.scrollSnapType,
+      };
+    }
+
+    return {
+      moduleRail: rect('.ops-module-list'),
+      moduleButton: rect('.ops-module-button'),
+      sectionRail: rect('.section-tab-list'),
+      sectionTab: rect('.section-tab'),
+    };
+  });
+  assert.equal(overviewMetrics.sectionRail.display, 'flex');
+  assert.equal(overviewMetrics.sectionRail.overflowX, 'auto');
+  assert.match(overviewMetrics.sectionRail.scrollSnapType, /^x( proximity)?$/);
+  assert.equal(overviewMetrics.moduleRail.overflowX, 'auto');
+  assert.ok(overviewMetrics.moduleButton.height >= 44, JSON.stringify(overviewMetrics.moduleButton));
+  assert.ok(overviewMetrics.sectionTab.height >= 44, JSON.stringify(overviewMetrics.sectionTab));
+
+  await page.locator('.section-tab').filter({ hasText: 'Decisions' }).first().click();
+  await page.locator('.task-row').first().waitFor();
+  const laneMetrics = await page.evaluate(() => {
+    function rect(selector) {
+      const node = document.querySelector(selector);
+      if (!node) return null;
+      const box = node.getBoundingClientRect();
+      const computed = getComputedStyle(node);
+      return {
+        height: box.height,
+        flexDirection: computed.flexDirection,
+        flexWrap: computed.flexWrap,
+        overflowX: computed.overflowX,
+      };
+    }
+
+    return {
+      filterChip: rect('.filter-chip'),
+      taskAction: rect('.task-action'),
+      taskRowActions: rect('.task-row-actions'),
+    };
+  });
+  assert.ok(laneMetrics.filterChip.height >= 44, JSON.stringify(laneMetrics.filterChip));
+  assert.ok(laneMetrics.taskAction.height >= 44, JSON.stringify(laneMetrics.taskAction));
+  assert.equal(laneMetrics.taskRowActions.flexDirection, 'row');
+  assert.equal(laneMetrics.taskRowActions.flexWrap, 'nowrap');
+  assert.equal(laneMetrics.taskRowActions.overflowX, 'auto');
+
+  await page.locator('.task-row').first().click({ position: { x: 20, y: 20 } });
+  await page.locator('#taskModal.show .modal-footer').waitFor();
+  const modalMetrics = await page.evaluate(() => {
+    const footer = document.querySelector('#taskModal.show .modal-footer');
+    const button = footer?.querySelector('.btn');
+    const close = document.querySelector('#taskModal.show .modal-close');
+    const footerBox = footer?.getBoundingClientRect();
+    const buttonBox = button?.getBoundingClientRect();
+    const closeBox = close?.getBoundingClientRect();
+    const footerStyle = footer ? getComputedStyle(footer) : null;
+    const footerContentWidth = footerStyle && footerBox
+      ? footerBox.width - parseFloat(footerStyle.paddingLeft || '0') - parseFloat(footerStyle.paddingRight || '0')
+      : 0;
+    return {
+      footer: {
+        bottom: footerStyle?.bottom || '',
+        contentWidth: footerContentWidth,
+        flexDirection: footerStyle?.flexDirection || '',
+        position: footerStyle?.position || '',
+        width: footerBox?.width || 0,
+      },
+      button: {
+        height: buttonBox?.height || 0,
+        width: buttonBox?.width || 0,
+      },
+      close: {
+        height: closeBox?.height || 0,
+      },
+    };
+  });
+  assert.equal(modalMetrics.footer.position, 'sticky');
+  assert.equal(modalMetrics.footer.bottom, '0px');
+  assert.equal(modalMetrics.footer.flexDirection, 'column');
+  assert.ok(modalMetrics.button.height >= 44, JSON.stringify(modalMetrics.button));
+  assert.ok(Math.abs(modalMetrics.button.width - modalMetrics.footer.contentWidth) <= 2, JSON.stringify(modalMetrics));
+  assert.ok(modalMetrics.close.height >= 44, JSON.stringify(modalMetrics.close));
+
+  await page.locator('#taskModal.show .modal-close').click();
+  await page.waitForFunction(() => !document.querySelector('#taskModal')?.classList.contains('show'));
+  await page.locator('.section-tab').filter({ hasText: 'Overview' }).first().click();
+  await page.locator('.focus-panel[aria-label="Tasks overview"]').waitFor();
+}
+
 async function assertStudentPortalIdentity(page) {
   const identity = await page.evaluate(() => ({
     hasLogo: Array.from(document.images).some((img) => (
@@ -491,6 +598,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
         'Integrations',
         'Users',
       ]);
+      await assertOperationsMobileControls(page);
       await assertOperationsShellStable(page, 'initial mobile operations shell');
 
       await page.setViewportSize({ width: 1440, height: 900 });

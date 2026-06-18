@@ -4308,6 +4308,31 @@ Verification:
 Status: `needs_verification`; no audit crawl, deployment, production-data
 mutation, watch loop, or agent-fleet loop was performed.
 
+## 2026-06-19 - Operations mobile controls DOM proof
+
+Requirement: `REQ-20260618-133`
+
+Changed:
+
+- Added browser acceptance assertions for rendered mobile Operations controls.
+- Verified mobile module and section rails are scroll-capable with touch-safe
+  controls.
+- Verified the Decisions lane renders touch-safe filters and nowrap task-row
+  actions.
+- Verified the task modal footer stays sticky, stacks full-width content-box
+  actions on small screens, and keeps the close control touch-safe.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/operations-mobile-controls.test.js tests/operations-design-system.test.js tests/browser-acceptance.test.js` 10/10.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data
+mutation, watch loop, or agent-fleet loop was performed.
+
 ## 2026-06-19 - Operations design-system DOM proof
 
 Requirement: `REQ-20260618-132`

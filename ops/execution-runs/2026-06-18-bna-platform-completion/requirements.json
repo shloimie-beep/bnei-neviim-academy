@@ -1392,7 +1392,7 @@
       "title": "Intentional mobile controls",
       "area": "design",
       "priority": "P1",
-      "current_verdict": "partial",
+      "current_verdict": "local_complete_pending_release",
       "status": "needs_verification",
       "expected_result": "Mobile tabs, filters, and actions are scrollable, aligned, and touch-safe instead of uneven wrapped rectangles.",
       "acceptance_criteria": [
@@ -1407,23 +1407,33 @@
       "evidence": [
         "public/operations.html adds Mobile control safety primitives for 44px handheld touch targets across buttons, task actions, chips, tabs, module buttons, command actions, task filters, reset buttons, and modal close controls.",
         "Dense mobile module, section, task, content, contact, and modal action groups now use horizontal overflow rails with touch scrolling and overscroll containment instead of squeezed wrapping.",
-        "Mobile modal footers remain sticky and become full-width stacked actions on very small screens so save/cancel controls stay reachable."
+        "Mobile modal footers remain sticky and become full-width stacked actions on very small screens so save/cancel controls stay reachable.",
+        "Browser acceptance now verifies rendered mobile Operations module and section rails use scroll-capable flex layouts with touch-safe 44px controls.",
+        "Browser acceptance now verifies rendered Decisions lane filters and task-row actions keep touch-safe heights, nowrap horizontal action rails, and no squeezed wrapping on mobile.",
+        "Browser acceptance now opens the task modal at mobile width and verifies the sticky footer stacks full-width action buttons within the content box while the close control remains touch-safe."
       ],
       "deployment_evidence": [],
       "verification": [
         "node --check tests/operations-mobile-controls.test.js PASS",
         "Operations HTML script parse via vm.Script PASS (2 script blocks)",
         "node --test tests/operations-mobile-controls.test.js tests/operations-design-system.test.js tests/operations-layout-stability.test.js PASS 10/10",
-        "npm test PASS 99/99"
+        "npm test PASS 99/99",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/operations-mobile-controls.test.js tests/operations-design-system.test.js tests/browser-acceptance.test.js PASS 10/10",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: fix: make operations mobile controls touch safe"
+        "current batch commit: fix: make operations mobile controls touch safe",
+        "current batch commit: test: verify operations mobile controls dom"
       ],
       "files_changed": [
         "public/operations.html",
-        "tests/operations-mobile-controls.test.js"
+        "tests/operations-mobile-controls.test.js",
+        "tests/browser-acceptance.test.js"
       ],
-      "notes": "Implemented as a local CSS/static-test batch only; no new baseline crawl, audit harness rebuild, deploy, or production-data mutation was run."
+      "notes": "Local mobile control safety primitives are implemented and now have static plus browser DOM proof. Requirement remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for app-visible changes."
     },
     {
       "id": "REQ-20260618-134",

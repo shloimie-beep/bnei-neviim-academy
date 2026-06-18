@@ -559,3 +559,13 @@ Operations design-system DOM proof (2026-06-19T05:25:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-132 now has browser proof that rendered Operations focus panels and metric/module controls resolve the shared surface, border, text, radius, focus, and gold design tokens; mobile touch target overrides preserve the shared control primitive; and app-shell letter spacing is non-negative. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Operations mobile controls DOM proof (2026-06-19T05:35:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/operations-mobile-controls.test.js tests/operations-design-system.test.js tests/browser-acceptance.test.js` 10/10.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-133 now has browser proof that rendered mobile Operations module/section rails are scroll-capable, module tabs and section tabs meet 44px touch targets, the Decisions lane renders touch-safe filters and nowrap task-row actions, and the task modal uses a sticky stacked footer with full-width content-box actions plus a touch-safe close control. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

@@ -34,7 +34,7 @@
 | REQ-20260618-130 | REQ-20260618-104 | BNA-OPS-003 | needs_verification | local_complete_pending_release | Prevent unexpected page collapse/minimize |
 | REQ-20260618-131 | REQ-20260618-104 | BNA-OPS-004 | needs_verification | local_complete_pending_release | Consistent headers, logo behavior, portal identity, and language controls |
 | REQ-20260618-132 | REQ-20260618-105 | BNA-DESIGN-001 | needs_verification | local_complete_pending_release | Shared high-contrast card/spacing/type/button system |
-| REQ-20260618-133 | REQ-20260618-105 | BNA-DESIGN-002 | needs_verification | partial | Intentional mobile controls |
+| REQ-20260618-133 | REQ-20260618-105 | BNA-DESIGN-002 | needs_verification | local_complete_pending_release | Intentional mobile controls |
 | REQ-20260618-134 | REQ-20260618-105 | BNA-DESIGN-003 | needs_verification | unknown | Balanced desktop grids |
 | REQ-20260618-135 | REQ-20260618-105 | BNA-A11Y-001 | needs_verification | partial | Accessibility labels, contrast, focus, semantics, and modals |
 | REQ-20260618-136 | REQ-20260618-106 | BNA-TASK-001 | needs_verification | partial | Canonical task state model |
