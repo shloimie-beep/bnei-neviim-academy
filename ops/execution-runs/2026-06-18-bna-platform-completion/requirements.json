@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-18T20:43:28+03:00",
+  "updated_at": "2026-06-18T20:47:53+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -130,20 +130,24 @@
       "blocker": null,
       "evidence": [
         "Operations now has semantic design tokens and shared high-contrast surface/button/type/focus primitives for the canonical shell.",
-        "Operations mobile controls now have touch-safe target sizing, horizontal scroll behavior for dense controls, and reachable modal action footers."
+        "Operations mobile controls now have touch-safe target sizing, horizontal scroll behavior for dense controls, and reachable modal action footers.",
+        "Operations desktop grids now avoid fixed six-column and uneven fractional tracks by using auto-fit minmax card grids and balanced readable minimum widths."
       ],
       "deployment_evidence": [],
       "verification": [
         "node --test tests/operations-design-system.test.js tests/operations-layout-stability.test.js tests/operations-module-toolbar.test.js PASS 10/10",
         "npm test PASS 96/96",
         "node --test tests/operations-mobile-controls.test.js tests/operations-design-system.test.js tests/operations-layout-stability.test.js PASS 10/10",
-        "npm test PASS 99/99"
+        "npm test PASS 99/99",
+        "node --test tests/operations-desktop-grids.test.js tests/operations-design-system.test.js tests/operations-layout-stability.test.js tests/operations-mobile-controls.test.js PASS 13/13",
+        "npm test PASS 102/102"
       ],
-      "notes": "Shared design primitive children REQ-132 and REQ-133 have local implementation and tests. Parent remains in_progress until desktop grid, accessibility, and remaining design child requirements are complete.",
+      "notes": "Shared design primitive children REQ-132, REQ-133, and REQ-134 have local implementation and tests. Parent remains in_progress until accessibility/modal child requirements and final acceptance are complete.",
       "files_changed": [
         "public/operations.html",
         "tests/operations-design-system.test.js",
-        "tests/operations-mobile-controls.test.js"
+        "tests/operations-mobile-controls.test.js",
+        "tests/operations-desktop-grids.test.js"
       ]
     },
     {
@@ -1159,7 +1163,7 @@
       "area": "design",
       "priority": "P2",
       "current_verdict": "unknown",
-      "status": "not_started",
+      "status": "needs_verification",
       "expected_result": "Desktop layouts use grid space evenly without large dead areas or uneven rows.",
       "acceptance_criteria": [
         "Balanced desktop grids is implemented against the canonical Express/static runtime where applicable.",
@@ -1170,12 +1174,26 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "public/operations.html replaces fixed six-column command and pipeline desktop grids with auto-fit minmax tracks that fill available space without dead columns.",
+        "Task overview and agent-status desktop tracks now use balanced readable minimum widths instead of uneven 1.35/0.65 and 0.45 fractional mixes.",
+        "Repeated desktop card grids for section KPIs, content sections, student profile KPIs, and student profile sections now use stable readable minimum widths."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check tests/operations-desktop-grids.test.js PASS",
+        "Operations HTML script parse via vm.Script PASS (2 script blocks)",
+        "node --test tests/operations-desktop-grids.test.js tests/operations-design-system.test.js tests/operations-layout-stability.test.js tests/operations-mobile-controls.test.js PASS 13/13",
+        "npm test PASS 102/102"
+      ],
+      "implementation_commits": [
+        "current batch commit: fix: balance operations desktop grids"
+      ],
+      "files_changed": [
+        "public/operations.html",
+        "tests/operations-desktop-grids.test.js"
+      ],
+      "notes": "Implemented as a local CSS/static-test batch only; no new baseline crawl, audit harness rebuild, deploy, or production-data mutation was run."
     },
     {
       "id": "REQ-20260618-135",
