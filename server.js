@@ -41,6 +41,7 @@ const {
   normalizeDurationMinutes,
 } = require('./src/lib/bna/device-control');
 const {
+  assertWorkspaceType,
   createSuperAdminIdentity,
   createWorkspaceIdentity,
   isGlobalOpsScope,
@@ -51,6 +52,8 @@ const PORT = process.env.PORT || 8080;
 
 const DEFAULT_PROJECT_KEY = 'bna';
 const ONE_TIME_PROJECT_KEY = 'one_time_mishnah_class';
+const DEFAULT_WORKSPACE_KEY = DEFAULT_PROJECT_KEY;
+const ONE_TIME_WORKSPACE_KEY = ONE_TIME_PROJECT_KEY;
 const BNA_TASK_CATEGORIES = [
   'admin',
   'marketing',
@@ -550,12 +553,19 @@ async function logEmail({
   error = null,
   metadata = null,
 }) {
+  let workspaceId = null;
+  if (signupId) {
+    const signup = (await pool.query('SELECT workspace_id FROM signups WHERE id = $1 LIMIT 1', [signupId])).rows[0];
+    workspaceId = signup?.workspace_id || null;
+  }
+  if (!workspaceId) workspaceId = (await getDefaultSchoolWorkspace(pool)).id;
   await pool.query(
     `INSERT INTO bna_email_log (
-      signup_id, email_type, recipient_email, subject, language,
+      workspace_id, signup_id, email_type, recipient_email, subject, language,
       provider_message_id, status, error, metadata
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`,
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)`,
     [
+      workspaceId,
       signupId,
       emailType,
       to,
@@ -1273,7 +1283,7 @@ async function applyDeviceAccessAction({
   const duration = normalizeDurationMinutes(durationMinutes);
   const provider = createDeviceControlProvider(device.provider || 'mock');
   let providerResult;
-  const expiresAtSql = 'CASE WHEN $7::int IS NULL THEN NULL ELSE NOW() + ($7::int * INTERVAL \'1 minute\') END';
+  const expiresAtSql = 'CASE WHEN $8::int IS NULL THEN NULL ELSE NOW() + ($8::int * INTERVAL \'1 minute\') END';
   let expiresAtValue = null;
 
   if (normalizedStatus === DEVICE_ACCESS_STATES.LOCKED) {
@@ -1301,14 +1311,15 @@ async function applyDeviceAccessAction({
 
   const sessionResult = await db.query(
     `INSERT INTO bna_device_access_sessions (
-       device_id, student_id, goal_id, rule_id, status, started_at, expires_at,
+       workspace_id, device_id, student_id, goal_id, rule_id, status, started_at, expires_at,
        approved_by, reason, provider, provider_result
-     ) VALUES (
-       $1, $2, $3, $4, $5, NOW(), ${expiresAtSql},
-       $6, $8, 'mock', $9
-     )
-     RETURNING *`,
+      ) VALUES (
+       $1, $2, $3, $4, $5, $6, NOW(), ${expiresAtSql},
+       $7, $9, 'mock', $10
+      )
+      RETURNING *`,
     [
+      device.workspace_id || null,
       device.id,
       device.student_id || null,
       goalId || null,
@@ -1521,6 +1532,7 @@ const pool = new Pool({
 const createSignupsTableSQL = `
 CREATE TABLE IF NOT EXISTS signups (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   parent_name TEXT NOT NULL,
   parent_email TEXT,
   parent_phone TEXT,
@@ -1569,6 +1581,7 @@ CREATE TABLE IF NOT EXISTS signups (
 const createSignupAgreementSignaturesSQL = `
 CREATE TABLE IF NOT EXISTS bna_signup_agreement_signatures (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   signup_id INTEGER NOT NULL REFERENCES signups(id) ON DELETE CASCADE,
   agreement_type TEXT NOT NULL,
   agreement_title TEXT NOT NULL,
@@ -1589,6 +1602,7 @@ CREATE TABLE IF NOT EXISTS bna_signup_agreement_signatures (
 const createTasksTableSQL = `
 CREATE TABLE IF NOT EXISTS bna_tasks (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   title TEXT NOT NULL,
   notes TEXT,
   stage TEXT NOT NULL DEFAULT 'raw_input' CHECK (stage IN ('raw_input', 'needs_decision', 'assigned', 'in_progress', 'done', 'archive')),
@@ -1616,9 +1630,24 @@ CREATE TABLE IF NOT EXISTS bna_tasks (
 );
 `;
 
+const createWorkspacesSQL = `
+CREATE TABLE IF NOT EXISTS bna_workspaces (
+  id SERIAL PRIMARY KEY,
+  workspace_key TEXT NOT NULL UNIQUE,
+  workspace_type TEXT NOT NULL CHECK (workspace_type IN ('school', 'service_provider', 'family')),
+  name TEXT NOT NULL,
+  short_name TEXT,
+  status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'paused', 'archived')),
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+`;
+
 const createProjectsSQL = `
 CREATE TABLE IF NOT EXISTS bna_projects (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   project_key TEXT NOT NULL UNIQUE,
   name TEXT NOT NULL UNIQUE,
   short_name TEXT,
@@ -1633,6 +1662,7 @@ CREATE TABLE IF NOT EXISTS bna_projects (
 const createProjectMembersSQL = `
 CREATE TABLE IF NOT EXISTS bna_project_members (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   project_id INTEGER NOT NULL REFERENCES bna_projects(id) ON DELETE CASCADE,
   person_name TEXT NOT NULL,
   role TEXT DEFAULT 'member',
@@ -1650,6 +1680,7 @@ CREATE TABLE IF NOT EXISTS bna_project_members (
 const createTaskCommentsSQL = `
 CREATE TABLE IF NOT EXISTS bna_task_comments (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   task_id INTEGER NOT NULL REFERENCES bna_tasks(id) ON DELETE CASCADE,
   author TEXT NOT NULL DEFAULT 'system',
   body TEXT NOT NULL,
@@ -1681,6 +1712,7 @@ CREATE TABLE IF NOT EXISTS bna_agent_runtime_status (
 const createPaymentLogSQL = `
 CREATE TABLE IF NOT EXISTS bna_payment_log (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   signup_id INTEGER NOT NULL REFERENCES signups(id) ON DELETE CASCADE,
   payment_type TEXT NOT NULL CHECK (payment_type IN ('registration', 'tuition', 'materials', 'other')),
   amount DECIMAL(10,2) NOT NULL,
@@ -1700,6 +1732,7 @@ CREATE TABLE IF NOT EXISTS bna_payment_log (
 const createEmailLogSQL = `
 CREATE TABLE IF NOT EXISTS bna_email_log (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   signup_id INTEGER REFERENCES signups(id) ON DELETE SET NULL,
   email_type TEXT NOT NULL,
   recipient_email TEXT NOT NULL,
@@ -1717,6 +1750,7 @@ CREATE TABLE IF NOT EXISTS bna_email_log (
 const createPaymentIntakeSQL = `
 CREATE TABLE IF NOT EXISTS bna_payment_intake (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   signup_id INTEGER REFERENCES signups(id) ON DELETE SET NULL,
   parent_name TEXT,
   parent_email TEXT,
@@ -1743,6 +1777,7 @@ CREATE TABLE IF NOT EXISTS bna_payment_intake (
 const createStudentsSQL = `
 CREATE TABLE IF NOT EXISTS bna_students (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   signup_id INTEGER UNIQUE REFERENCES signups(id) ON DELETE SET NULL,
   name TEXT NOT NULL,
   parent_name TEXT,
@@ -1766,6 +1801,7 @@ CREATE TABLE IF NOT EXISTS bna_students (
 const createDevicesSQL = `
 CREATE TABLE IF NOT EXISTS bna_devices (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   student_id INTEGER REFERENCES bna_students(id) ON DELETE SET NULL,
   device_name TEXT NOT NULL,
   platform TEXT NOT NULL DEFAULT 'android' CHECK (platform IN ('android', 'ios', 'web', 'unknown')),
@@ -1783,6 +1819,7 @@ CREATE TABLE IF NOT EXISTS bna_devices (
 const createTorahLearningGoalsSQL = `
 CREATE TABLE IF NOT EXISTS bna_torah_learning_goals (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   student_id INTEGER NOT NULL REFERENCES bna_students(id) ON DELETE CASCADE,
   goal_minutes DECIMAL(10,2) NOT NULL CHECK (goal_minutes > 0),
   goal_type TEXT NOT NULL CHECK (goal_type IN ('LISTENING', 'INSIDE')),
@@ -1797,6 +1834,7 @@ CREATE TABLE IF NOT EXISTS bna_torah_learning_goals (
 const createTorahLearningEntriesSQL = `
 CREATE TABLE IF NOT EXISTS bna_torah_learning_entries (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   student_id INTEGER NOT NULL REFERENCES bna_students(id) ON DELETE CASCADE,
   goal_id INTEGER NOT NULL REFERENCES bna_torah_learning_goals(id) ON DELETE CASCADE,
   date DATE NOT NULL,
@@ -1823,6 +1861,7 @@ CREATE TABLE IF NOT EXISTS bna_torah_learning_entries (
 const createGreenInvoiceWebhookLogSQL = `
 CREATE TABLE IF NOT EXISTS bna_green_invoice_webhook_log (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   event_key TEXT NOT NULL UNIQUE,
   event_type TEXT,
   payment_status TEXT,
@@ -1856,6 +1895,7 @@ CREATE TABLE IF NOT EXISTS bna_green_invoice_webhook_log (
 const createAccountabilityEventsSQL = `
 CREATE TABLE IF NOT EXISTS bna_accountability_events (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   event_type TEXT NOT NULL CHECK (event_type IN ('class_session', 'learning_note', 'question', 'student_goal', 'private_meeting', 'decision')),
   student_id INTEGER REFERENCES bna_students(id) ON DELETE SET NULL,
   student_name TEXT,
@@ -1884,6 +1924,7 @@ CREATE TABLE IF NOT EXISTS bna_accountability_events (
 const createDeviceAccessRulesSQL = `
 CREATE TABLE IF NOT EXISTS bna_device_access_rules (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   student_id INTEGER REFERENCES bna_students(id) ON DELETE CASCADE,
   device_id INTEGER REFERENCES bna_devices(id) ON DELETE CASCADE,
   rule_type TEXT NOT NULL DEFAULT 'goal_approval' CHECK (rule_type IN ('goal_approval', 'schedule', 'manual')),
@@ -1900,6 +1941,7 @@ CREATE TABLE IF NOT EXISTS bna_device_access_rules (
 const createDeviceAccessSessionsSQL = `
 CREATE TABLE IF NOT EXISTS bna_device_access_sessions (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   device_id INTEGER NOT NULL REFERENCES bna_devices(id) ON DELETE CASCADE,
   student_id INTEGER REFERENCES bna_students(id) ON DELETE SET NULL,
   goal_id INTEGER REFERENCES bna_accountability_events(id) ON DELETE SET NULL,
@@ -1920,6 +1962,7 @@ CREATE TABLE IF NOT EXISTS bna_device_access_sessions (
 const createGroupGoalsSQL = `
 CREATE TABLE IF NOT EXISTS bna_group_goals (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   title TEXT NOT NULL,
   description TEXT,
   target_minutes DECIMAL(10,2),
@@ -1936,6 +1979,7 @@ CREATE TABLE IF NOT EXISTS bna_group_goals (
 const createGroupGoalEntriesSQL = `
 CREATE TABLE IF NOT EXISTS bna_group_goal_entries (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   goal_id INTEGER REFERENCES bna_group_goals(id) ON DELETE CASCADE,
   student_id INTEGER REFERENCES bna_students(id) ON DELETE SET NULL,
   student_name TEXT,
@@ -1957,6 +2001,7 @@ CREATE TABLE IF NOT EXISTS bna_group_goal_entries (
 const createContentJobsSQL = `
 CREATE TABLE IF NOT EXISTS bna_content_jobs (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   title TEXT NOT NULL,
   source_type TEXT NOT NULL DEFAULT 'telegram_media' CHECK (source_type IN ('telegram_media', 'telegram_text', 'manual', 'import', 'local_drop', 'google_drive')),
   source_message_id TEXT,
@@ -1981,6 +2026,7 @@ CREATE TABLE IF NOT EXISTS bna_content_jobs (
 const createClassSessionsSQL = `
 CREATE TABLE IF NOT EXISTS bna_class_sessions (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   content_job_id INTEGER UNIQUE REFERENCES bna_content_jobs(id) ON DELETE SET NULL,
   class_date DATE,
   title TEXT NOT NULL,
@@ -2001,6 +2047,7 @@ CREATE TABLE IF NOT EXISTS bna_class_sessions (
 const createContentOutputsSQL = `
 CREATE TABLE IF NOT EXISTS bna_content_outputs (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   job_id INTEGER NOT NULL REFERENCES bna_content_jobs(id) ON DELETE CASCADE,
   output_type TEXT NOT NULL CHECK (output_type IN ('whatsapp_update', 'facebook_post', 'linkedin_post', 'youtube_description', 'google_business_post', 'blog_draft', 'weekly_newsletter', 'daily_report', 'parent_email', 'teaching_philosophy_note', 'short_clip')),
   title TEXT,
@@ -2044,6 +2091,7 @@ CREATE TABLE IF NOT EXISTS bna_content_prompt_versions (
 const createContentPromptExamplesSQL = `
 CREATE TABLE IF NOT EXISTS bna_content_prompt_examples (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   platform TEXT NOT NULL CHECK (platform IN ('whatsapp_update', 'facebook_post', 'weekly_newsletter', 'linkedin_post', 'youtube_description', 'blog_draft')),
   title TEXT NOT NULL,
   body TEXT,
@@ -2058,6 +2106,7 @@ CREATE TABLE IF NOT EXISTS bna_content_prompt_examples (
 const createContentBundlesSQL = `
 CREATE TABLE IF NOT EXISTS bna_content_bundles (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   title TEXT NOT NULL,
   bundle_type TEXT NOT NULL DEFAULT 'weekly_newsletter' CHECK (bundle_type IN ('weekly_newsletter')),
   start_date DATE,
@@ -2072,11 +2121,68 @@ CREATE TABLE IF NOT EXISTS bna_content_bundles (
 const createContentBundleItemsSQL = `
 CREATE TABLE IF NOT EXISTS bna_content_bundle_items (
   id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   bundle_id INTEGER NOT NULL REFERENCES bna_content_bundles(id) ON DELETE CASCADE,
   content_job_id INTEGER NOT NULL REFERENCES bna_content_jobs(id) ON DELETE CASCADE,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE (bundle_id, content_job_id)
 );
+`;
+
+const createWorkspaceScopeMigrationSQL = `
+ALTER TABLE signups ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_signup_agreement_signatures ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_projects ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_project_members ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_task_comments ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_payment_log ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_email_log ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_payment_intake ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_students ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_devices ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_torah_learning_goals ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_torah_learning_entries ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_green_invoice_webhook_log ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_accountability_events ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_device_access_rules ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_device_access_sessions ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_group_goals ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_group_goal_entries ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_content_jobs ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_class_sessions ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_content_outputs ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_content_prompt_examples ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_content_bundles ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_content_bundle_items ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+
+CREATE INDEX IF NOT EXISTS idx_bna_workspaces_workspace_key ON bna_workspaces (workspace_key);
+CREATE INDEX IF NOT EXISTS idx_bna_workspaces_workspace_type ON bna_workspaces (workspace_type);
+CREATE INDEX IF NOT EXISTS idx_signups_workspace_id ON signups (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_signup_agreements_workspace_id ON bna_signup_agreement_signatures (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_tasks_workspace_id ON bna_tasks (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_projects_workspace_id ON bna_projects (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_project_members_workspace_id ON bna_project_members (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_task_comments_workspace_id ON bna_task_comments (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_payment_log_workspace_id ON bna_payment_log (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_email_log_workspace_id ON bna_email_log (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_payment_intake_workspace_id ON bna_payment_intake (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_students_workspace_id ON bna_students (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_devices_workspace_id ON bna_devices (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_torah_goals_workspace_id ON bna_torah_learning_goals (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_torah_entries_workspace_id ON bna_torah_learning_entries (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_green_invoice_workspace_id ON bna_green_invoice_webhook_log (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_accountability_workspace_id ON bna_accountability_events (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_device_rules_workspace_id ON bna_device_access_rules (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_device_sessions_workspace_id ON bna_device_access_sessions (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_group_goals_workspace_id ON bna_group_goals (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_group_entries_workspace_id ON bna_group_goal_entries (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_content_jobs_workspace_id ON bna_content_jobs (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_class_sessions_workspace_id ON bna_class_sessions (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_content_outputs_workspace_id ON bna_content_outputs (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_prompt_examples_workspace_id ON bna_content_prompt_examples (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_content_bundles_workspace_id ON bna_content_bundles (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_bundle_items_workspace_id ON bna_content_bundle_items (workspace_id);
 `;
 
 const createBnaIndexesSQL = `
@@ -2446,10 +2552,11 @@ async function upsertClassSessionFromContentJob(db, job) {
 
   const result = await db.query(
     `INSERT INTO bna_class_sessions (
-      content_job_id, class_date, title, summary, topics, discussions, sources,
+      workspace_id, content_job_id, class_date, title, summary, topics, discussions, sources,
       student_questions, highlights, newsletter_draft, source_media_url, transcript_text
-    ) VALUES ($1, COALESCE($2::date, CURRENT_DATE), $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+    ) VALUES ($1, $2, COALESCE($3::date, CURRENT_DATE), $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)
     ON CONFLICT (content_job_id) DO UPDATE SET
+      workspace_id = COALESCE(EXCLUDED.workspace_id, bna_class_sessions.workspace_id),
       title = EXCLUDED.title,
       summary = EXCLUDED.summary,
       topics = EXCLUDED.topics,
@@ -2463,6 +2570,7 @@ async function upsertClassSessionFromContentJob(db, job) {
       updated_at = NOW()
     RETURNING *`,
     [
+      job.workspace_id || null,
       job.id,
       job.created_at || null,
       job.title,
@@ -2722,12 +2830,13 @@ async function createTaskFromText(input = {}, options = {}, db = pool) {
 
   const result = await db.query(
     `INSERT INTO bna_tasks (
-       title, notes, stage, category, urgency, energy_required, estimated_minutes, due_date,
+       workspace_id, title, notes, stage, category, urgency, energy_required, estimated_minutes, due_date,
        source, source_context, created_by, assigned_to, ai_parsed, project_id, decision_required, author
-     )
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
-     RETURNING *`,
+      )
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+      RETURNING *`,
     [
+      project.workspace_id || null,
       title,
       notes,
       stage,
@@ -2759,10 +2868,11 @@ async function upsertStudentFromSignup(signup) {
 
   const result = await pool.query(
     `INSERT INTO bna_students (
-      signup_id, name, parent_name, parent_email, parent_phone,
+      workspace_id, signup_id, name, parent_name, parent_email, parent_phone,
       age, grade, current_school, ghl_contact_id, tags, notes
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
     ON CONFLICT (signup_id) DO UPDATE SET
+      workspace_id = COALESCE(EXCLUDED.workspace_id, bna_students.workspace_id),
       name = EXCLUDED.name,
       parent_name = EXCLUDED.parent_name,
       parent_email = EXCLUDED.parent_email,
@@ -2776,6 +2886,7 @@ async function upsertStudentFromSignup(signup) {
       updated_at = NOW()
     RETURNING *`,
     [
+      signup.workspace_id || null,
       signup.id,
       signup.student_name,
       signup.parent_name || null,
@@ -2923,12 +3034,14 @@ async function ensureTorahSeedStudents(db = pool) {
       continue;
     }
 
+    const defaultWorkspace = await getDefaultSchoolWorkspace(db);
     const inserted = await db.query(
       `INSERT INTO bna_students (
-        name, parent_name, parent_email, parent_phone, status, tags, notes
-      ) VALUES ($1, $2, $3, $4, 'active', $5, $6)
+        workspace_id, name, parent_name, parent_email, parent_phone, status, tags, notes
+      ) VALUES ($1, $2, $3, $4, $5, 'active', $6, $7)
       RETURNING *`,
       [
+        defaultWorkspace.id,
         seed.name,
         matchingIntake?.parent_name || null,
         null,
@@ -3004,6 +3117,7 @@ async function getLatestTorahGoal(studentId, db = pool) {
 
 async function createTorahGoalForMonth(studentId, dateString, seedConfig, db = pool) {
   const monthStart = firstDayOfMonth(dateString);
+  const student = (await db.query('SELECT workspace_id FROM bna_students WHERE id = $1 LIMIT 1', [studentId])).rows[0] || {};
   const latestGoal = await getLatestTorahGoal(studentId, db);
   let goalMinutes = Number(seedConfig?.goal_minutes || DEFAULT_TORAH_GOAL_MINUTES);
   let goalType = seedConfig?.goal_type || GOAL_TYPES.LISTENING;
@@ -3025,10 +3139,10 @@ async function createTorahGoalForMonth(studentId, dateString, seedConfig, db = p
 
   const inserted = await db.query(
     `INSERT INTO bna_torah_learning_goals (
-      student_id, goal_minutes, goal_type, active, start_date, end_date
-    ) VALUES ($1, $2, $3, TRUE, $4::date, NULL)
+      workspace_id, student_id, goal_minutes, goal_type, active, start_date, end_date
+    ) VALUES ($1, $2, $3, $4, TRUE, $5::date, NULL)
     RETURNING *`,
-    [studentId, goalMinutes, goalType, monthStart]
+    [student.workspace_id || null, studentId, goalMinutes, goalType, monthStart]
   );
   return inserted.rows[0];
 }
@@ -3196,10 +3310,10 @@ async function upsertTorahLearningEntry(input = {}, db = pool) {
     );
     const insertedGoal = await db.query(
       `INSERT INTO bna_torah_learning_goals (
-        student_id, goal_minutes, goal_type, active, start_date, end_date
-      ) VALUES ($1, $2, $3, TRUE, $4::date, NULL)
+        workspace_id, student_id, goal_minutes, goal_type, active, start_date, end_date
+      ) VALUES ($1, $2, $3, $4, TRUE, $5::date, NULL)
       RETURNING *`,
-      [studentId, goalMinutes, goalType, monthStart]
+      [student.workspace_id || null, studentId, goalMinutes, goalType, monthStart]
     );
     goal = insertedGoal.rows[0];
   }
@@ -3245,15 +3359,16 @@ async function upsertTorahLearningEntry(input = {}, db = pool) {
 
   const entryResult = await db.query(
     `INSERT INTO bna_torah_learning_entries (
-      student_id, goal_id, date, engaged_listening_minutes, inside_engaged_minutes,
+      workspace_id, student_id, goal_id, date, engaged_listening_minutes, inside_engaged_minutes,
       listening_without_following_minutes, counted_minutes, individual_percentage,
       individual_complete, daily_completion_percentage, daily_completed_boolean,
       completed_daily_units, carried_over_completed_units, total_completed_units,
       total_required_units, total_trip_progress_percentage, note
     ) VALUES (
-      $1, $2, $3::date, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17
+      $1, $2, $3, $4::date, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18
     )
     ON CONFLICT (student_id, date) DO UPDATE SET
+      workspace_id = COALESCE(EXCLUDED.workspace_id, bna_torah_learning_entries.workspace_id),
       goal_id = EXCLUDED.goal_id,
       engaged_listening_minutes = EXCLUDED.engaged_listening_minutes,
       inside_engaged_minutes = EXCLUDED.inside_engaged_minutes,
@@ -3272,6 +3387,7 @@ async function upsertTorahLearningEntry(input = {}, db = pool) {
       updated_at = NOW()
     RETURNING *`,
     [
+      student.workspace_id || null,
       studentId,
       goal.id,
       date,
@@ -3624,17 +3740,19 @@ function buildGreenInvoiceHeaderSnapshot(headers = {}) {
 }
 
 async function upsertGreenInvoiceWebhookLog(normalized, headers = {}, db = pool) {
+  const defaultWorkspace = await getDefaultSchoolWorkspace(db);
   const result = await db.query(
     `INSERT INTO bna_green_invoice_webhook_log (
-      event_key, event_type, payment_status, document_id, transaction_id,
+      workspace_id, event_key, event_type, payment_status, document_id, transaction_id,
       gateway_transaction_id, payer_name, payer_email, payer_phone, amount, currency,
       webhook_received_at, payload, request_headers
     ) VALUES (
-      $1, $2, $3, $4, $5,
-      $6, $7, $8, $9, $10, $11,
-      NOW(), $12, $13
+      $1, $2, $3, $4, $5, $6,
+      $7, $8, $9, $10, $11, $12,
+      NOW(), $13, $14
     )
     ON CONFLICT (event_key) DO UPDATE SET
+      workspace_id = COALESCE(bna_green_invoice_webhook_log.workspace_id, EXCLUDED.workspace_id),
       event_type = EXCLUDED.event_type,
       payment_status = EXCLUDED.payment_status,
       document_id = EXCLUDED.document_id,
@@ -3652,6 +3770,7 @@ async function upsertGreenInvoiceWebhookLog(normalized, headers = {}, db = pool)
       updated_at = NOW()
     RETURNING *`,
     [
+      defaultWorkspace.id,
       normalized.eventKey,
       normalized.eventType,
       normalized.paymentStatus,
@@ -3765,11 +3884,12 @@ async function processGreenInvoiceWebhook(rawPayload, headers = {}, options = {}
       } else {
         const paymentLogResult = await db.query(
           `INSERT INTO bna_payment_log (
-            signup_id, payment_type, amount, currency, method, green_invoice_id,
+            workspace_id, signup_id, payment_type, amount, currency, method, green_invoice_id,
             green_invoice_url, status, received_by, received_at, notes
-          ) VALUES ($1, 'registration', $2, $3, 'green_invoice', $4, $5, 'completed', 'green_invoice_webhook', NOW(), $6)
+          ) VALUES ($1, $2, 'registration', $3, $4, 'green_invoice', $5, $6, 'completed', 'green_invoice_webhook', NOW(), $7)
           RETURNING *`,
           [
+            signup.workspace_id || null,
             signup.id,
             normalized.amount || 0,
             normalized.currency || 'ILS',
@@ -3801,6 +3921,7 @@ async function processGreenInvoiceWebhook(rawPayload, headers = {}, options = {}
         await db.query(
           `UPDATE bna_green_invoice_webhook_log
            SET status = 'processed',
+               workspace_id = COALESCE($6, workspace_id),
                matched_signup_id = $2,
                matched_student_id = $3,
                payment_log_id = $4,
@@ -3816,10 +3937,11 @@ async function processGreenInvoiceWebhook(rawPayload, headers = {}, options = {}
             webhookLog.id,
             signup.id,
             student?.id || null,
-            paymentLogId,
-            processingNotes.join(' '),
-          ]
-        )
+             paymentLogId,
+             processingNotes.join(' '),
+             signup.workspace_id || student?.workspace_id || null,
+           ]
+         )
       ).rows[0];
 
       return {
@@ -3996,10 +4118,11 @@ async function reconcilePaymentIntakeForSignup(signup) {
 
   await pool.query(
     `INSERT INTO bna_payment_log (
-      signup_id, payment_type, amount, currency, method, green_invoice_id,
+      workspace_id, signup_id, payment_type, amount, currency, method, green_invoice_id,
       green_invoice_url, status, received_by, notes
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, 'completed', $8, $9)`,
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'completed', $9, $10)`,
     [
+      signup.workspace_id || intake.workspace_id || null,
       signup.id,
       intake.payment_type || 'registration',
       intake.amount || 0,
@@ -4141,10 +4264,11 @@ async function ensureDefaultContentPrompts() {
 // Initialize database
 async function initDb() {
   try {
+    await pool.query(createWorkspacesSQL);
     await pool.query(createSignupsTableSQL);
     await pool.query(createSignupAgreementSignaturesSQL);
-    await pool.query(createProjectsSQL);
     await pool.query(createTasksTableSQL);
+    await pool.query(createProjectsSQL);
     await pool.query(createProjectMembersSQL);
     await pool.query(createTaskCommentsSQL);
     await pool.query(createAgentRuntimeStatusSQL);
@@ -4172,6 +4296,7 @@ async function initDb() {
     await pool.query(createContentPromptExamplesSQL);
     await pool.query(createContentBundlesSQL);
     await pool.query(createContentBundleItemsSQL);
+    await pool.query(createWorkspaceScopeMigrationSQL);
     await pool.query(createBnaIndexesSQL);
     await pool.query(createCliBridgeSQL);
     await pool.query(createSessionsSQL);
@@ -4554,29 +4679,86 @@ function inferProjectKeyFromText(text, fallback = DEFAULT_PROJECT_KEY) {
   return fallback || DEFAULT_PROJECT_KEY;
 }
 
-async function upsertProject({ projectKey, name, shortName, description, metadata = {} }, db = pool) {
+async function upsertWorkspace({ workspaceKey, workspaceType, name, shortName, metadata = {} }, db = pool) {
+  const normalizedType = assertWorkspaceType(workspaceType);
   const result = await db.query(
-    `INSERT INTO bna_projects (project_key, name, short_name, description, metadata)
+    `INSERT INTO bna_workspaces (workspace_key, workspace_type, name, short_name, metadata)
      VALUES ($1, $2, $3, $4, $5)
+     ON CONFLICT (workspace_key) DO UPDATE
+       SET workspace_type = EXCLUDED.workspace_type,
+           name = EXCLUDED.name,
+           short_name = EXCLUDED.short_name,
+           metadata = COALESCE(bna_workspaces.metadata, '{}'::jsonb) || EXCLUDED.metadata,
+           status = 'active',
+           updated_at = NOW()
+     RETURNING *`,
+    [workspaceKey, normalizedType, name, shortName || name, JSON.stringify(metadata || {})]
+  );
+  return result.rows[0];
+}
+
+async function ensureDefaultWorkspaces(db = pool) {
+  const bnaWorkspace = await upsertWorkspace({
+    workspaceKey: DEFAULT_WORKSPACE_KEY,
+    workspaceType: 'school',
+    name: 'BNA',
+    shortName: 'BNA',
+    metadata: {
+      canonical: true,
+      default_project_key: DEFAULT_PROJECT_KEY,
+    },
+  }, db);
+
+  const oneTimeWorkspace = await upsertWorkspace({
+    workspaceKey: ONE_TIME_WORKSPACE_KEY,
+    workspaceType: 'service_provider',
+    name: 'One Time Mishnah Class',
+    shortName: 'One Time',
+    metadata: {
+      canonical: true,
+      default_project_key: ONE_TIME_PROJECT_KEY,
+      agent: 'rabbi-elie-scheller',
+    },
+  }, db);
+
+  return { bnaWorkspace, oneTimeWorkspace };
+}
+
+async function getDefaultSchoolWorkspace(db = pool) {
+  const existing = (await db.query(
+    'SELECT * FROM bna_workspaces WHERE workspace_key = $1 LIMIT 1',
+    [DEFAULT_WORKSPACE_KEY]
+  )).rows[0];
+  if (existing) return existing;
+  return (await ensureDefaultWorkspaces(db)).bnaWorkspace;
+}
+
+async function upsertProject({ workspaceId, projectKey, name, shortName, description, metadata = {} }, db = pool) {
+  const result = await db.query(
+    `INSERT INTO bna_projects (workspace_id, project_key, name, short_name, description, metadata)
+     VALUES ($1, $2, $3, $4, $5, $6)
      ON CONFLICT (project_key) DO UPDATE
-       SET name = EXCLUDED.name,
+       SET workspace_id = COALESCE(EXCLUDED.workspace_id, bna_projects.workspace_id),
+           name = EXCLUDED.name,
            short_name = EXCLUDED.short_name,
            description = COALESCE(EXCLUDED.description, bna_projects.description),
            metadata = COALESCE(bna_projects.metadata, '{}'::jsonb) || EXCLUDED.metadata,
            updated_at = NOW()
      RETURNING *`,
-    [projectKey, name, shortName || name, description || null, JSON.stringify(metadata || {})]
+    [workspaceId || null, projectKey, name, shortName || name, description || null, JSON.stringify(metadata || {})]
   );
   return result.rows[0];
 }
 
 async function ensureProjectMember(project, personName, fields = {}, db = pool) {
   if (!project?.id || !personName) return null;
+  const workspaceId = fields.workspace_id || fields.workspaceId || project.workspace_id || null;
   const result = await db.query(
-    `INSERT INTO bna_project_members (project_id, person_name, role, access_level, telegram_chat_id, login_username, metadata)
-     VALUES ($1, $2, $3, $4, $5, $6, $7)
+    `INSERT INTO bna_project_members (workspace_id, project_id, person_name, role, access_level, telegram_chat_id, login_username, metadata)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
      ON CONFLICT (project_id, person_name) DO UPDATE
-       SET role = EXCLUDED.role,
+       SET workspace_id = COALESCE(EXCLUDED.workspace_id, bna_project_members.workspace_id),
+           role = EXCLUDED.role,
            access_level = EXCLUDED.access_level,
            telegram_chat_id = COALESCE(EXCLUDED.telegram_chat_id, bna_project_members.telegram_chat_id),
            login_username = COALESCE(EXCLUDED.login_username, bna_project_members.login_username),
@@ -4585,6 +4767,7 @@ async function ensureProjectMember(project, personName, fields = {}, db = pool) 
            updated_at = NOW()
      RETURNING *`,
     [
+      workspaceId,
       project.id,
       personName,
       fields.role || 'member',
@@ -4597,14 +4780,221 @@ async function ensureProjectMember(project, personName, fields = {}, db = pool) 
   return result.rows[0];
 }
 
+async function backfillWorkspaceScope({ bnaWorkspace, oneTimeWorkspace }, db = pool) {
+  const bnaWorkspaceId = bnaWorkspace?.id;
+  const oneTimeWorkspaceId = oneTimeWorkspace?.id || bnaWorkspaceId;
+  if (!bnaWorkspaceId) return;
+
+  await db.query(
+    `UPDATE bna_projects
+     SET workspace_id = $1, updated_at = NOW()
+     WHERE project_key = $2 AND workspace_id IS DISTINCT FROM $1`,
+    [bnaWorkspaceId, DEFAULT_PROJECT_KEY]
+  );
+  await db.query(
+    `UPDATE bna_projects
+     SET workspace_id = $1, updated_at = NOW()
+     WHERE project_key = $2 AND workspace_id IS DISTINCT FROM $1`,
+    [oneTimeWorkspaceId, ONE_TIME_PROJECT_KEY]
+  );
+  await db.query(
+    `UPDATE bna_project_members pm
+     SET workspace_id = p.workspace_id, updated_at = NOW()
+     FROM bna_projects p
+     WHERE pm.project_id = p.id
+       AND p.workspace_id IS NOT NULL
+       AND pm.workspace_id IS DISTINCT FROM p.workspace_id`
+  );
+  await db.query(
+    `UPDATE bna_tasks t
+     SET workspace_id = p.workspace_id, updated_at = NOW()
+     FROM bna_projects p
+     WHERE t.project_id = p.id
+       AND p.workspace_id IS NOT NULL
+       AND t.workspace_id IS DISTINCT FROM p.workspace_id`
+  );
+  await db.query(
+    `UPDATE bna_task_comments c
+     SET workspace_id = t.workspace_id, updated_at = NOW()
+     FROM bna_tasks t
+     WHERE c.task_id = t.id
+       AND t.workspace_id IS NOT NULL
+       AND c.workspace_id IS DISTINCT FROM t.workspace_id`
+  );
+  await db.query(`UPDATE signups SET workspace_id = $1, updated_at = NOW() WHERE workspace_id IS NULL`, [bnaWorkspaceId]);
+  await db.query(`UPDATE bna_students SET workspace_id = $1, updated_at = NOW() WHERE workspace_id IS NULL`, [bnaWorkspaceId]);
+  await db.query(
+    `UPDATE bna_signup_agreement_signatures a
+     SET workspace_id = s.workspace_id
+     FROM signups s
+     WHERE a.signup_id = s.id
+       AND s.workspace_id IS NOT NULL
+       AND a.workspace_id IS DISTINCT FROM s.workspace_id`
+  );
+  await db.query(
+    `UPDATE bna_payment_log l
+     SET workspace_id = s.workspace_id
+     FROM signups s
+     WHERE l.signup_id = s.id
+       AND s.workspace_id IS NOT NULL
+       AND l.workspace_id IS DISTINCT FROM s.workspace_id`
+  );
+  await db.query(
+    `UPDATE bna_email_log e
+     SET workspace_id = s.workspace_id
+     FROM signups s
+     WHERE e.signup_id = s.id
+       AND s.workspace_id IS NOT NULL
+       AND e.workspace_id IS DISTINCT FROM s.workspace_id`
+  );
+  await db.query(
+    `UPDATE bna_payment_intake p
+     SET workspace_id = s.workspace_id, updated_at = NOW()
+     FROM signups s
+     WHERE p.signup_id = s.id
+       AND s.workspace_id IS NOT NULL
+       AND p.workspace_id IS DISTINCT FROM s.workspace_id`
+  );
+  await db.query(
+    `UPDATE bna_green_invoice_webhook_log g
+     SET workspace_id = s.workspace_id, updated_at = NOW()
+     FROM signups s
+     WHERE g.matched_signup_id = s.id
+       AND s.workspace_id IS NOT NULL
+       AND g.workspace_id IS DISTINCT FROM s.workspace_id`
+  );
+  await db.query(
+    `UPDATE bna_devices d
+     SET workspace_id = s.workspace_id, updated_at = NOW()
+     FROM bna_students s
+     WHERE d.student_id = s.id
+       AND s.workspace_id IS NOT NULL
+       AND d.workspace_id IS DISTINCT FROM s.workspace_id`
+  );
+  await db.query(
+    `UPDATE bna_torah_learning_goals g
+     SET workspace_id = s.workspace_id, updated_at = NOW()
+     FROM bna_students s
+     WHERE g.student_id = s.id
+       AND s.workspace_id IS NOT NULL
+       AND g.workspace_id IS DISTINCT FROM s.workspace_id`
+  );
+  await db.query(
+    `UPDATE bna_torah_learning_entries e
+     SET workspace_id = s.workspace_id, updated_at = NOW()
+     FROM bna_students s
+     WHERE e.student_id = s.id
+       AND s.workspace_id IS NOT NULL
+       AND e.workspace_id IS DISTINCT FROM s.workspace_id`
+  );
+  await db.query(
+    `UPDATE bna_accountability_events e
+     SET workspace_id = s.workspace_id, updated_at = NOW()
+     FROM bna_students s
+     WHERE e.student_id = s.id
+       AND s.workspace_id IS NOT NULL
+       AND e.workspace_id IS DISTINCT FROM s.workspace_id`
+  );
+  await db.query(
+    `UPDATE bna_device_access_rules r
+     SET workspace_id = s.workspace_id, updated_at = NOW()
+     FROM bna_students s
+     WHERE r.student_id = s.id
+       AND s.workspace_id IS NOT NULL
+       AND r.workspace_id IS DISTINCT FROM s.workspace_id`
+  );
+  await db.query(
+    `UPDATE bna_device_access_sessions a
+     SET workspace_id = s.workspace_id, updated_at = NOW()
+     FROM bna_students s
+     WHERE a.student_id = s.id
+       AND s.workspace_id IS NOT NULL
+       AND a.workspace_id IS DISTINCT FROM s.workspace_id`
+  );
+  await db.query(
+    `UPDATE bna_group_goal_entries e
+     SET workspace_id = s.workspace_id, updated_at = NOW()
+     FROM bna_students s
+     WHERE e.student_id = s.id
+       AND s.workspace_id IS NOT NULL
+       AND e.workspace_id IS DISTINCT FROM s.workspace_id`
+  );
+  await db.query(
+    `UPDATE bna_content_jobs
+     SET workspace_id = $1, updated_at = NOW()
+     WHERE workspace_id IS NULL
+       AND lower(COALESCE(title, '') || ' ' || COALESCE(caption, '') || ' ' || COALESCE(transcript_text, '') || ' ' || COALESCE(notes, ''))
+         ~ '(one time|mishnah|mishna|rabbi elie scheller|source sheet|shiur)'`,
+    [oneTimeWorkspaceId]
+  );
+  await db.query(`UPDATE bna_content_jobs SET workspace_id = $1, updated_at = NOW() WHERE workspace_id IS NULL`, [bnaWorkspaceId]);
+  await db.query(
+    `UPDATE bna_class_sessions c
+     SET workspace_id = j.workspace_id, updated_at = NOW()
+     FROM bna_content_jobs j
+     WHERE c.content_job_id = j.id
+       AND j.workspace_id IS NOT NULL
+       AND c.workspace_id IS DISTINCT FROM j.workspace_id`
+  );
+  await db.query(
+    `UPDATE bna_content_outputs o
+     SET workspace_id = j.workspace_id, updated_at = NOW()
+     FROM bna_content_jobs j
+     WHERE o.job_id = j.id
+       AND j.workspace_id IS NOT NULL
+       AND o.workspace_id IS DISTINCT FROM j.workspace_id`
+  );
+  await db.query(
+    `UPDATE bna_content_prompt_examples e
+     SET workspace_id = o.workspace_id, updated_at = NOW()
+     FROM bna_content_outputs o
+     WHERE e.source_output_id = o.id
+       AND o.workspace_id IS NOT NULL
+       AND e.workspace_id IS DISTINCT FROM o.workspace_id`
+  );
+  await db.query(`UPDATE bna_content_bundles SET workspace_id = $1, updated_at = NOW() WHERE workspace_id IS NULL`, [bnaWorkspaceId]);
+  await db.query(
+    `UPDATE bna_content_bundle_items i
+     SET workspace_id = b.workspace_id
+     FROM bna_content_bundles b
+     WHERE i.bundle_id = b.id
+       AND b.workspace_id IS NOT NULL
+       AND i.workspace_id IS DISTINCT FROM b.workspace_id`
+  );
+
+  const defaultSchoolTables = [
+    'bna_payment_intake',
+    'bna_green_invoice_webhook_log',
+    'bna_devices',
+    'bna_torah_learning_goals',
+    'bna_torah_learning_entries',
+    'bna_accountability_events',
+    'bna_device_access_rules',
+    'bna_device_access_sessions',
+    'bna_group_goals',
+    'bna_group_goal_entries',
+    'bna_class_sessions',
+    'bna_content_outputs',
+    'bna_content_prompt_examples',
+    'bna_content_bundles',
+    'bna_content_bundle_items',
+  ];
+  for (const table of defaultSchoolTables) {
+    await db.query(`UPDATE ${table} SET workspace_id = $1 WHERE workspace_id IS NULL`, [bnaWorkspaceId]);
+  }
+}
+
 async function ensureDefaultProjects(db = pool) {
+  const { bnaWorkspace, oneTimeWorkspace } = await ensureDefaultWorkspaces(db);
   const bna = await upsertProject({
+    workspaceId: bnaWorkspace.id,
     projectKey: DEFAULT_PROJECT_KEY,
     name: 'BNA',
     shortName: 'BNA',
     description: 'Bnei Neviim Academy operations, students, content, contacts, and accounting.',
   }, db);
   const oneTime = await upsertProject({
+    workspaceId: oneTimeWorkspace.id,
     projectKey: ONE_TIME_PROJECT_KEY,
     name: 'One Time Mishnah Class',
     shortName: 'One Time',
@@ -4615,9 +5005,10 @@ async function ensureDefaultProjects(db = pool) {
     },
   }, db);
 
-  await ensureProjectMember(bna, 'Shloimie', { role: 'operator', access_level: 'owner' }, db);
-  await ensureProjectMember(oneTime, 'Shloimie', { role: 'project owner', access_level: 'owner' }, db);
+  await ensureProjectMember(bna, 'Shloimie', { workspace_id: bnaWorkspace.id, role: 'operator', access_level: 'owner' }, db);
+  await ensureProjectMember(oneTime, 'Shloimie', { workspace_id: oneTimeWorkspace.id, role: 'project owner', access_level: 'owner' }, db);
   await ensureProjectMember(oneTime, 'Rabbi Elie Scheller', {
+    workspace_id: oneTimeWorkspace.id,
     role: 'collaborator',
     access_level: 'member',
     login_username: ONE_TIME_OPS_USERNAME || null,
@@ -4637,8 +5028,9 @@ async function ensureDefaultProjects(db = pool) {
        OR lower(COALESCE(title, '') || ' ' || COALESCE(notes, '')) ~ '(one time|mishnah|mishna|rabbi elie scheller|source sheet|shiur)'`,
     [oneTime.id]
   );
+  await backfillWorkspaceScope({ bnaWorkspace, oneTimeWorkspace }, db);
 
-  return { bna, oneTime };
+  return { bna, oneTime, bnaWorkspace, oneTimeWorkspace };
 }
 
 async function getProjectByKey(projectKey, db = pool) {
@@ -5334,18 +5726,19 @@ async function insertTorahTimerAccountabilityEvent(client, {
   const notes = buildTorahTimerNote(sourceUpdate.notes || null, mapping, job);
   const inserted = (await client.query(
     `INSERT INTO bna_accountability_events (
-      event_type, student_id, student_name, title, notes, topic,
+      workspace_id, event_type, student_id, student_name, title, notes, topic,
       goal_target_value, goal_actual_value, goal_unit, progress_percent,
       engagement_level, follow_up_required, metadata,
       source, source_message_id, source_media_url, occurred_at
     ) VALUES (
-      'learning_note', $1, $2, $3, $4, 'Torah daily engagement',
-      $5, $6, 'minutes', $7,
-      $8, FALSE, $9,
-      'recording', $10, $11, NOW()
+      $1, 'learning_note', $2, $3, $4, $5, 'Torah daily engagement',
+      $6, $7, 'minutes', $8,
+      $9, FALSE, $10,
+      'recording', $11, $12, NOW()
     )
     RETURNING *`,
     [
+      student.workspace_id || null,
       student.id,
       student.name,
       `Torah timer update for ${student.name}`.slice(0, 240),
@@ -5431,10 +5824,11 @@ async function ensureDefaultGroupGoal(client = pool) {
   if (existing) return existing;
 
   return (await client.query(
-    `INSERT INTO bna_group_goals (title, description, scoring_rule, status)
-     VALUES ($1, $2, $3, 'active')
+    `INSERT INTO bna_group_goals (workspace_id, title, description, scoring_rule, status)
+     VALUES ($1, $2, $3, $4, 'active')
      RETURNING *`,
     [
+      (await getDefaultSchoolWorkspace(client)).id,
       'Inside Learning Group Goal',
       'Group Torah learning goal: minutes following inside count at 100%; minutes only listening count at 50%. The group is only complete when every boy reaches 100%.',
       'following_inside_minutes + (listening_inside_minutes * 0.5); group completion = min(student progress), only 100 when every boy is 100.',
@@ -5916,10 +6310,10 @@ async function saveApprovedOutputAsExample(output) {
     if (existing) return existing;
   }
   const result = await pool.query(
-    `INSERT INTO bna_content_prompt_examples (platform, title, body, source_output_id, status)
-     VALUES ($1, $2, $3, $4, 'active')
+    `INSERT INTO bna_content_prompt_examples (workspace_id, platform, title, body, source_output_id, status)
+     VALUES ($1, $2, $3, $4, $5, 'active')
      RETURNING *`,
-    [platform, output.title || outputTypeLabel(platform), output.body, output.id]
+    [output.workspace_id || null, platform, output.title || outputTypeLabel(platform), output.body, output.id]
   );
   return result.rows[0];
 }
@@ -5969,18 +6363,28 @@ async function addTagToContact(contactId, tag) {
 }
 
 async function createPaymentIntakeRecord(input = {}, db = pool) {
+  let workspaceId = input.workspace_id || input.workspaceId || null;
+  if (!workspaceId && input.signup_id) {
+    const signup = (await db.query('SELECT workspace_id FROM signups WHERE id = $1 LIMIT 1', [input.signup_id])).rows[0];
+    workspaceId = signup?.workspace_id || null;
+  }
+  if (!workspaceId) {
+    workspaceId = (await getDefaultSchoolWorkspace(db)).id;
+  }
+
   const result = await db.query(
     `INSERT INTO bna_payment_intake (
-      signup_id, parent_name, parent_email, parent_phone, student_name,
+      workspace_id, signup_id, parent_name, parent_email, parent_phone, student_name,
       amount, currency, method, payment_type, green_invoice_id, green_invoice_url,
       ghl_contact_id, status, source, source_context, received_at, notes
     ) VALUES (
-      $1, $2, $3, $4, $5,
-      $6, COALESCE($7, 'ILS'), $8, COALESCE($9, 'registration'), $10, $11,
-      $12, COALESCE($13, 'unmatched'), COALESCE($14, 'manual'), $15,
-      COALESCE($16::timestamp, NOW()), $17
+      $1, $2, $3, $4, $5, $6,
+      $7, COALESCE($8, 'ILS'), $9, COALESCE($10, 'registration'), $11, $12,
+      $13, COALESCE($14, 'unmatched'), COALESCE($15, 'manual'), $16,
+      COALESCE($17::timestamp, NOW()), $18
     ) RETURNING *`,
     [
+      workspaceId,
       input.signup_id || null,
       input.parent_name || null,
       input.parent_email || null,
@@ -6462,6 +6866,7 @@ app.post('/api/submit', async (req, res) => {
   }
 
   try {
+    const defaultWorkspace = await getDefaultSchoolWorkspace(pool);
     const registrationTags = ['parent', 'bna', normalizedLanguage === 'he' ? 'hebrew_form' : 'english_form', 'registration_2026_2027'];
     const existingSignup = await findExistingSignupForRegistration({
       parentEmail: normalizedParentEmail,
@@ -6488,6 +6893,7 @@ app.post('/api/submit', async (req, res) => {
       normalizedTuitionClientSignedAt,
       registrationTags,
       notes || null,
+      defaultWorkspace.id,
     ];
 
     let result;
@@ -6521,11 +6927,12 @@ app.post('/api/submit', async (req, res) => {
                SELECT ARRAY(
                  SELECT DISTINCT unnest(COALESCE(tags, ARRAY[]::text[]) || $22::text[])
                )
-             ),
-             notes = trim(BOTH FROM concat_ws(E'\n\n', notes, $23)),
-             updated_at = NOW()
-         WHERE id = $24
-         RETURNING *`,
+              ),
+              notes = trim(BOTH FROM concat_ws(E'\n\n', notes, $23)),
+              workspace_id = COALESCE(workspace_id, $24),
+              updated_at = NOW()
+         WHERE id = $25
+          RETURNING *`,
         [...signupValues, existingSignup.id]
       );
     } else {
@@ -6536,14 +6943,14 @@ app.post('/api/submit', async (req, res) => {
           previous_school, reason_applying, special_needs,
           payment_method, payment_amount, payment_interval_days, payment_due_date,
           form_language, waiver_accepted, waiver_accepted_at, waiver_version,
-          tuition_agreement_accepted, tuition_agreement_accepted_at, tuition_agreement_version,
-          tuition_agreement_signer_name, tuition_agreement_signer_email, tuition_agreement_client_signed_at,
-          tags, notes
-        ) VALUES (
-          $1, $2, $3, $4, $5, $6, $7, $8, $9,
-          $10, $11, $12, $13, $14, $15, NOW(), $16,
-          $17, NOW(), $18, $19, $20, $21, $22, $23
-        ) RETURNING *`,
+           tuition_agreement_accepted, tuition_agreement_accepted_at, tuition_agreement_version,
+           tuition_agreement_signer_name, tuition_agreement_signer_email, tuition_agreement_client_signed_at,
+           tags, notes, workspace_id
+         ) VALUES (
+           $1, $2, $3, $4, $5, $6, $7, $8, $9,
+           $10, $11, $12, $13, $14, $15, NOW(), $16,
+           $17, NOW(), $18, $19, $20, $21, $22, $23, $24
+         ) RETURNING *`,
         signupValues
       );
     }
@@ -6552,12 +6959,13 @@ app.post('/api/submit', async (req, res) => {
     for (const agreement of requiredAgreementRecords) {
       await pool.query(
         `INSERT INTO bna_signup_agreement_signatures (
-           signup_id, agreement_type, agreement_title, agreement_version,
+           workspace_id, signup_id, agreement_type, agreement_title, agreement_version,
            agreement_text, signer_name, signer_email, client_signed_at,
            ip_address, user_agent, metadata
-         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11::jsonb)
-         ON CONFLICT (signup_id, agreement_type, agreement_version) DO UPDATE SET
-           agreement_title = EXCLUDED.agreement_title,
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12::jsonb)
+          ON CONFLICT (signup_id, agreement_type, agreement_version) DO UPDATE SET
+            workspace_id = COALESCE(EXCLUDED.workspace_id, bna_signup_agreement_signatures.workspace_id),
+            agreement_title = EXCLUDED.agreement_title,
            agreement_text = EXCLUDED.agreement_text,
            signer_name = EXCLUDED.signer_name,
            signer_email = EXCLUDED.signer_email,
@@ -6566,6 +6974,7 @@ app.post('/api/submit', async (req, res) => {
            user_agent = EXCLUDED.user_agent,
            metadata = EXCLUDED.metadata`,
         [
+          signup.workspace_id || null,
           signup.id,
           agreement.agreement_type,
           agreement.agreement_title,
@@ -6701,8 +7110,10 @@ app.post('/api/payment-complete', requireAdmin, async (req, res) => {
   try {
     // Create payment log
     await pool.query(
-      `INSERT INTO bna_payment_log (signup_id, payment_type, amount, method, status, received_by, received_at, notes)
-       VALUES ($1, 'registration', $2, $3, 'completed', 'admin', NOW(), $4)`,
+      `INSERT INTO bna_payment_log (workspace_id, signup_id, payment_type, amount, method, status, received_by, received_at, notes)
+       SELECT workspace_id, id, 'registration', $2, $3, 'completed', 'admin', NOW(), $4
+       FROM signups
+       WHERE id = $1`,
       [signup_id, amount, method, notes]
     );
     
@@ -6903,10 +7314,10 @@ app.post('/api/bna/students', requireAdmin, async (req, res) => {
         [parent_name || null, parent_email || null, parent_phone || null, age || null, grade || null, current_school || null, notes || null, tags, status, existing.id]
       )
       : await pool.query(
-        `INSERT INTO bna_students (name, parent_name, parent_email, parent_phone, age, grade, current_school, notes, tags, status)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+        `INSERT INTO bna_students (workspace_id, name, parent_name, parent_email, parent_phone, age, grade, current_school, notes, tags, status)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
          RETURNING *`,
-        [name, parent_name || null, parent_email || null, parent_phone || null, age || null, grade || null, current_school || null, notes || null, tags, status]
+        [(await getDefaultSchoolWorkspace(pool)).id, name, parent_name || null, parent_email || null, parent_phone || null, age || null, grade || null, current_school || null, notes || null, tags, status]
       );
 
     res.json({ success: true, student: result.rows[0], merged_existing: Boolean(existing) });
@@ -7022,7 +7433,7 @@ app.post('/api/bna/students/:id/devices', requireAdmin, async (req, res) => {
 
   try {
     const student = (await pool.query(
-      `SELECT id, name
+      `SELECT id, name, workspace_id
        FROM bna_students
        WHERE id = $1
          AND COALESCE(status, 'active') NOT IN ('inactive', 'archived')
@@ -7034,12 +7445,13 @@ app.post('/api/bna/students/:id/devices', requireAdmin, async (req, res) => {
     const status = normalizeDeviceAccessState((req.body || {}).status || DEVICE_ACCESS_STATES.ACCOUNTABILITY_ONLY);
     const result = await pool.query(
       `INSERT INTO bna_devices (
-         student_id, device_name, platform, provider, provider_device_id, status, notes, metadata
+         workspace_id, student_id, device_name, platform, provider, provider_device_id, status, notes, metadata
        ) VALUES (
-         $1, $2, $3, 'mock', $4, $5, $6, $7
+         $1, $2, $3, $4, 'mock', $5, $6, $7, $8
        )
        RETURNING *`,
       [
+        student.workspace_id || null,
         student.id,
         deviceName,
         safeDevicePlatform((req.body || {}).platform),
@@ -7162,14 +7574,24 @@ app.post('/api/bna/device-access-rules', requireAdmin, async (req, res) => {
     : 'goal_approval';
 
   try {
+    const defaultWorkspace = await getDefaultSchoolWorkspace(pool);
+    const workspace = (await pool.query(
+      `SELECT COALESCE(
+        (SELECT workspace_id FROM bna_students WHERE id = $1),
+        (SELECT workspace_id FROM bna_devices WHERE id = $2),
+        $3
+      ) AS workspace_id`,
+      [(req.body || {}).student_id || null, (req.body || {}).device_id || null, defaultWorkspace.id]
+    )).rows[0];
     const result = await pool.query(
       `INSERT INTO bna_device_access_rules (
-         student_id, device_id, rule_type, required_goal_id, duration_minutes, schedule, enabled, notes
+         workspace_id, student_id, device_id, rule_type, required_goal_id, duration_minutes, schedule, enabled, notes
        ) VALUES (
-         $1, $2, $3, $4, $5, $6, COALESCE($7::boolean, TRUE), $8
+         $1, $2, $3, $4, $5, $6, $7, COALESCE($8::boolean, TRUE), $9
        )
        RETURNING *`,
       [
+        workspace.workspace_id,
         (req.body || {}).student_id || null,
         (req.body || {}).device_id || null,
         ruleType,
@@ -7331,7 +7753,7 @@ app.post('/api/bna/students/:id/goal-board', requireAdmin, async (req, res) => {
 
   try {
     const student = (await pool.query(
-      `SELECT id, name
+      `SELECT id, name, workspace_id
        FROM bna_students
        WHERE id = $1
          AND COALESCE(status, 'active') NOT IN ('inactive', 'archived')
@@ -7358,16 +7780,17 @@ app.post('/api/bna/students/:id/goal-board', requireAdmin, async (req, res) => {
 
     const result = await pool.query(
       `INSERT INTO bna_accountability_events (
-        event_type, student_id, student_name, title, notes, topic,
+        workspace_id, event_type, student_id, student_name, title, notes, topic,
         goal_target_value, goal_actual_value, goal_unit, progress_percent,
         follow_up_required, metadata, source, occurred_at
       ) VALUES (
-        'student_goal', $1, $2, $3, $4, $5,
-        $6, NULL, $7, $8,
-        $9, $10, 'manual', NOW()
+        $1, 'student_goal', $2, $3, $4, $5, $6,
+        $7, NULL, $8, $9,
+        $10, $11, 'manual', NOW()
       )
       RETURNING *`,
       [
+        student.workspace_id || null,
         student.id,
         student.name,
         title,
@@ -7696,16 +8119,17 @@ app.post('/api/student-portal/goals', async (req, res) => {
     const goalBoard = normalizeGoalBoardMetadata(rawGoalBoardMetadata(metadata));
     const result = await pool.query(
       `INSERT INTO bna_accountability_events (
-        event_type, student_id, student_name, title, notes, topic,
+        workspace_id, event_type, student_id, student_name, title, notes, topic,
         goal_target_value, goal_actual_value, goal_unit, progress_percent,
         follow_up_required, metadata, source, occurred_at
       ) VALUES (
-        'student_goal', $1, $2, $3, NULL, $4,
-        $5, NULL, $6, 0,
-        TRUE, $7, 'manual', NOW()
+        $1, 'student_goal', $2, $3, $4, NULL, $5,
+        $6, NULL, $7, 0,
+        TRUE, $8, 'manual', NOW()
       )
       RETURNING *`,
       [
+        student.workspace_id || null,
         student.id,
         student.name,
         title,
@@ -8136,20 +8560,29 @@ app.post('/api/bna/accountability', requireAdmin, async (req, res) => {
   }
 
   try {
+    const defaultWorkspace = await getDefaultSchoolWorkspace(pool);
+    const workspace = (await pool.query(
+      `SELECT COALESCE(
+        (SELECT workspace_id FROM bna_students WHERE id = $1),
+        $2
+      ) AS workspace_id`,
+      [student_id || null, defaultWorkspace.id]
+    )).rows[0];
     const result = await pool.query(
       `INSERT INTO bna_accountability_events (
-        event_type, student_id, student_name, title, notes, topic, question_text,
+        workspace_id, event_type, student_id, student_name, title, notes, topic, question_text,
         goal_target_value, goal_actual_value, goal_unit, progress_percent,
         attendance_status, next_check_in_date, engagement_level, follow_up_required, metadata,
         source, source_message_id, source_media_url, occurred_at
       ) VALUES (
-        $1, $2, $3, $4, $5, $6, $7,
-        $8, $9, $10, $11,
-        $12, $13, $14, $15, $16,
-        $17, $18, $19, COALESCE($20::timestamp, NOW())
+        $1, $2, $3, $4, $5, $6, $7, $8,
+        $9, $10, $11, $12,
+        $13, $14, $15, $16, $17,
+        $18, $19, $20, COALESCE($21::timestamp, NOW())
       )
       RETURNING *`,
       [
+        workspace.workspace_id,
         event_type,
         student_id || null,
         student_name || null,
@@ -8289,11 +8722,12 @@ app.post('/api/bna/group-goals', requireAdmin, async (req, res) => {
   const { title, description, target_minutes, scoring_rule, status = 'active', start_date, due_date, metadata } = req.body || {};
   if (!title) return res.status(400).json({ error: 'title is required' });
   try {
+    const defaultWorkspace = await getDefaultSchoolWorkspace(pool);
     const result = await pool.query(
-      `INSERT INTO bna_group_goals (title, description, target_minutes, scoring_rule, status, start_date, due_date, metadata)
-       VALUES ($1, $2, $3, $4, $5, COALESCE($6::date, CURRENT_DATE), $7, $8)
+      `INSERT INTO bna_group_goals (workspace_id, title, description, target_minutes, scoring_rule, status, start_date, due_date, metadata)
+       VALUES ($1, $2, $3, $4, $5, $6, COALESCE($7::date, CURRENT_DATE), $8, $9)
        RETURNING *`,
-      [title, description || null, target_minutes || null, scoring_rule || null, status, start_date || null, due_date || null, metadata ? JSON.stringify(metadata) : JSON.stringify({})]
+      [req.body?.workspace_id || req.body?.workspaceId || defaultWorkspace.id, title, description || null, target_minutes || null, scoring_rule || null, status, start_date || null, due_date || null, metadata ? JSON.stringify(metadata) : JSON.stringify({})]
     );
     res.json({ success: true, goal: result.rows[0] });
   } catch (err) {
@@ -8326,13 +8760,14 @@ app.post('/api/bna/group-goals/:id/entries', requireAdmin, async (req, res) => {
     });
     const result = await pool.query(
       `INSERT INTO bna_group_goal_entries (
-        goal_id, student_id, student_name, recorded_date, target_minutes,
+        workspace_id, goal_id, student_id, student_name, recorded_date, target_minutes,
         inside_following_minutes, inside_listening_minutes, distracted_minutes, weighted_minutes,
         progress_percent, notes, source_content_job_id, metadata
       )
-       VALUES ($1, $2, $3, COALESCE($4::date, CURRENT_DATE), $5, $6, $7, $8, $9, $10, $11, $12, $13)
+       VALUES ($1, $2, $3, $4, COALESCE($5::date, CURRENT_DATE), $6, $7, $8, $9, $10, $11, $12, $13, $14)
        RETURNING *`,
       [
+        goal.workspace_id || null,
         id,
         student_id || null,
         student_name || null,
@@ -8424,6 +8859,8 @@ app.post('/api/bna/payment-intake/reconcile-paid', requireAdmin, async (req, res
       if (!student) {
         throw new Error(`No active student found for ${studentName}`);
       }
+      const defaultWorkspace = await getDefaultSchoolWorkspace(client);
+      const workspaceId = student.workspace_id || defaultWorkspace.id;
 
       const existingSignup = student.signup_id
         ? (await client.query('SELECT * FROM signups WHERE id = $1', [student.signup_id])).rows[0]
@@ -8454,9 +8891,10 @@ app.post('/api/bna/payment-intake/reconcile-paid', requireAdmin, async (req, res
                tags = (SELECT ARRAY(SELECT DISTINCT unnest(COALESCE(tags, '{}') || $11::text[]))),
                notes = CASE
                  WHEN notes IS NULL OR notes = '' THEN $12
-                 WHEN notes LIKE '%' || $12 || '%' THEN notes
-                 ELSE notes || E'\n' || $12
+                WHEN notes LIKE '%' || $12 || '%' THEN notes
+                ELSE notes || E'\n' || $12
                END,
+               workspace_id = COALESCE(workspace_id, $13),
                updated_at = NOW()
            WHERE id = $1
            RETURNING *`,
@@ -8473,18 +8911,20 @@ app.post('/api/bna/payment-intake/reconcile-paid', requireAdmin, async (req, res
             paidAt,
             adminTags,
             note,
+            workspaceId,
           ]
         )).rows[0];
       } else {
         signup = (await client.query(
           `INSERT INTO signups (
-             parent_name, parent_email, parent_phone, student_name,
+             workspace_id, parent_name, parent_email, parent_phone, student_name,
              payment_method, payment_status, payment_amount, payment_currency,
              payment_interval_days, payment_due_date, last_payment_at,
              status, tags, notes, created_at, updated_at
-           ) VALUES ($1,$2,$3,$4,$5,'paid',$6,'ILS',$7,$8,$9,'new',$10::text[],$11,NOW(),NOW())
+           ) VALUES ($1,$2,$3,$4,$5,$6,'paid',$7,'ILS',$8,$9,$10,'new',$11::text[],$12,NOW(),NOW())
            RETURNING *`,
           [
+            workspaceId,
             parentName,
             parentEmail,
             parentPhone,
@@ -8530,18 +8970,19 @@ app.post('/api/bna/payment-intake/reconcile-paid', requireAdmin, async (req, res
       if (!paymentLogId) {
         paymentLogId = (await client.query(
           `INSERT INTO bna_payment_log (
-             signup_id, payment_type, amount, currency, method,
+             workspace_id, signup_id, payment_type, amount, currency, method,
              received_by, received_at, notes, status
-           ) VALUES ($1,'registration',$2,'ILS',$3,'admin_paid_intake_reconcile',$4,$5,'completed')
+           ) VALUES ($1,$2,'registration',$3,'ILS',$4,'admin_paid_intake_reconcile',$5,$6,'completed')
            RETURNING id`,
-          [signup.id, amount, method, paidAt, note]
+          [workspaceId, signup.id, amount, method, paidAt, note]
         )).rows[0].id;
       }
 
       const intake = (await client.query(
-        `UPDATE bna_payment_intake
-         SET signup_id = $1,
-             parent_name = COALESCE(NULLIF($2, ''), parent_name),
+          `UPDATE bna_payment_intake
+           SET signup_id = $1,
+              workspace_id = COALESCE(workspace_id, $11),
+              parent_name = COALESCE(NULLIF($2, ''), parent_name),
              parent_email = COALESCE($3, parent_email),
              parent_phone = COALESCE($4, parent_phone),
              student_name = $5,
@@ -8556,8 +8997,8 @@ app.post('/api/bna/payment-intake/reconcile-paid', requireAdmin, async (req, res
                ELSE notes || E'\n' || $9
              END,
              updated_at = NOW()
-         WHERE id = $10
-         RETURNING id, status, signup_id`,
+          WHERE id = $10
+          RETURNING id, status, signup_id`,
         [
           signup.id,
           parentName,
@@ -8569,6 +9010,7 @@ app.post('/api/bna/payment-intake/reconcile-paid', requireAdmin, async (req, res
           paidAt,
           note,
           intakeId,
+          workspaceId,
         ]
       )).rows[0];
 
@@ -8844,11 +9286,12 @@ app.post('/api/bna/content-prompts/:platform/examples', requireAdmin, async (req
   if (!title) return res.status(400).json({ error: 'title is required' });
 
   try {
+    const defaultWorkspace = await getDefaultSchoolWorkspace(pool);
     const result = await pool.query(
-      `INSERT INTO bna_content_prompt_examples (platform, title, body, file_url, status)
-       VALUES ($1, $2, $3, $4, 'active')
+      `INSERT INTO bna_content_prompt_examples (workspace_id, platform, title, body, file_url, status)
+       VALUES ($1, $2, $3, $4, $5, 'active')
        RETURNING *`,
-      [platform, title, body || null, file_url || null]
+      [defaultWorkspace.id, platform, title, body || null, file_url || null]
     );
     res.json({ success: true, example: result.rows[0] });
   } catch (err) {
@@ -8937,18 +9380,27 @@ app.post('/api/bna/content-bundles', requireAdmin, async (req, res) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
+    const ids = job_ids.map(Number).filter(Boolean);
+    const defaultWorkspace = await getDefaultSchoolWorkspace(client);
+    const firstJob = ids.length
+      ? (await client.query(
+          'SELECT workspace_id FROM bna_content_jobs WHERE id = ANY($1::int[]) ORDER BY created_at ASC LIMIT 1',
+          [ids]
+        )).rows[0]
+      : null;
+    const workspaceId = req.body?.workspace_id || req.body?.workspaceId || firstJob?.workspace_id || defaultWorkspace.id;
     const bundle = (await client.query(
-      `INSERT INTO bna_content_bundles (title, start_date, end_date, notes)
-       VALUES ($1, $2, $3, $4)
+      `INSERT INTO bna_content_bundles (workspace_id, title, start_date, end_date, notes)
+       VALUES ($1, $2, $3, $4, $5)
        RETURNING *`,
-      [title, start_date || null, end_date || null, notes || null]
+      [workspaceId, title, start_date || null, end_date || null, notes || null]
     )).rows[0];
-    for (const jobId of job_ids.map(Number).filter(Boolean)) {
+    for (const jobId of ids) {
       await client.query(
-        `INSERT INTO bna_content_bundle_items (bundle_id, content_job_id)
-         VALUES ($1, $2)
+        `INSERT INTO bna_content_bundle_items (workspace_id, bundle_id, content_job_id)
+         VALUES ($1, $2, $3)
          ON CONFLICT (bundle_id, content_job_id) DO NOTHING`,
-        [bundle.id, jobId]
+        [workspaceId, bundle.id, jobId]
       );
     }
     await client.query('COMMIT');
@@ -8980,10 +9432,11 @@ app.post('/api/bna/content-bundles/:id/generate', requireAdmin, async (req, res)
     const { prompt, examples } = await getPromptBundle('weekly_newsletter');
     const draft = await generateDraftWithPrompt({ outputType: 'weekly_newsletter', prompt, examples, jobs, instruction });
     const output = (await pool.query(
-      `INSERT INTO bna_content_outputs (job_id, output_type, title, body, platform, status, metadata, prompt_id, prompt_version, bundle_id)
-       VALUES ($1, 'weekly_newsletter', $2, $3, 'email', 'needs_approval', $4, $5, $6, $7)
+      `INSERT INTO bna_content_outputs (workspace_id, job_id, output_type, title, body, platform, status, metadata, prompt_id, prompt_version, bundle_id)
+       VALUES ($1, $2, 'weekly_newsletter', $3, $4, 'email', 'needs_approval', $5, $6, $7, $8)
        RETURNING *`,
       [
+        bundle.workspace_id || jobs[0].workspace_id || null,
         jobs[0].id,
         `${bundle.title} newsletter draft`,
         draft,
@@ -9033,14 +9486,17 @@ app.post('/api/bna/content-jobs', requireAdmin, async (req, res) => {
   const client = await pool.connect();
   try {
     await client.query('BEGIN');
+    const defaultWorkspace = await getDefaultSchoolWorkspace(client);
+    const workspaceId = req.body?.workspace_id || req.body?.workspaceId || defaultWorkspace.id;
     const jobResult = await client.query(
       `INSERT INTO bna_content_jobs (
-        title, source_type, source_message_id, source_chat_id, local_path, media_url,
+        workspace_id, title, source_type, source_message_id, source_chat_id, local_path, media_url,
         drive_file_id, drive_folder_id, drive_stage,
         mime_type, caption, status, transcript_text, transcript_json, parse_json, notes
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16)
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
       RETURNING *`,
       [
+        workspaceId,
         title,
         source_type,
         source_message_id || null,
@@ -9064,9 +9520,10 @@ app.post('/api/bna/content-jobs', requireAdmin, async (req, res) => {
     const createdOutputs = [];
     for (const output of outputs) {
       const outputResult = await client.query(
-        `INSERT INTO bna_content_outputs (job_id, output_type, title, body, platform, status, metadata)
-         VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
+        `INSERT INTO bna_content_outputs (workspace_id, job_id, output_type, title, body, platform, status, metadata)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
         [
+          job.workspace_id || null,
           job.id,
           output.output_type,
           output.title || null,
@@ -9176,10 +9633,11 @@ app.post('/api/bna/content-jobs/bulk-generate', requireAdmin, async (req, res) =
       instruction,
     };
     const output = (await pool.query(
-      `INSERT INTO bna_content_outputs (job_id, output_type, title, body, platform, status, metadata, prompt_id, prompt_version)
-       VALUES ($1, $2, $3, $4, $5, 'needs_approval', $6, $7, $8)
+      `INSERT INTO bna_content_outputs (workspace_id, job_id, output_type, title, body, platform, status, metadata, prompt_id, prompt_version)
+       VALUES ($1, $2, $3, $4, $5, $6, 'needs_approval', $7, $8, $9)
        RETURNING *`,
       [
+        jobs[0].workspace_id || null,
         jobs[0].id,
         targetType,
         title,
@@ -9336,18 +9794,19 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
           : findStudentForParsedName(event.student_name, students);
         const inserted = (await client.query(
           `INSERT INTO bna_accountability_events (
-            event_type, student_id, student_name, title, notes, topic, question_text,
+            workspace_id, event_type, student_id, student_name, title, notes, topic, question_text,
             goal_target_value, goal_actual_value, goal_unit, progress_percent,
             attendance_status, next_check_in_date, engagement_level, follow_up_required, metadata,
             source, source_message_id, source_media_url, occurred_at
           ) VALUES (
-            $1, $2, $3, $4, $5, $6, $7,
-            $8, $9, $10, $11,
-            $12, $13, $14, $15, $16,
-            'recording', $17, $18, NOW()
+            $1, $2, $3, $4, $5, $6, $7, $8,
+            $9, $10, $11, $12,
+            $13, $14, $15, $16, $17,
+            'recording', $18, $19, NOW()
           )
           RETURNING *`,
           [
+            matchedStudent?.workspace_id || job.workspace_id || null,
             safeAccountabilityEventType(event.event_type),
             matchedStudent?.id || null,
             matchedStudent?.name || event.student_name || null,
@@ -9410,13 +9869,14 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
         const progressPercent = explicitProgress !== null ? explicitProgress : computed.progress;
         const inserted = (await client.query(
           `INSERT INTO bna_group_goal_entries (
-            goal_id, student_id, student_name, recorded_date, target_minutes,
+            workspace_id, goal_id, student_id, student_name, recorded_date, target_minutes,
             inside_following_minutes, inside_listening_minutes, distracted_minutes, weighted_minutes,
             progress_percent, notes, source_content_job_id, metadata
           )
-          VALUES ($1, $2, $3, $4::date, $5, $6, $7, $8, $9, $10, $11, $12, $13)
+          VALUES ($1, $2, $3, $4, $5::date, $6, $7, $8, $9, $10, $11, $12, $13, $14)
           RETURNING *`,
           [
+            matchedStudent?.workspace_id || goal.workspace_id || job.workspace_id || null,
             goal.id,
             matchedStudent?.id || null,
             matchedStudent?.name || entry.student_name || null,
@@ -9548,10 +10008,12 @@ app.post('/api/bna/content-jobs/:id/outputs', requireAdmin, async (req, res) => 
   }
 
   try {
+    const job = (await pool.query('SELECT workspace_id FROM bna_content_jobs WHERE id = $1', [id])).rows[0];
+    if (!job) return res.status(404).json({ error: 'Content job not found' });
     const result = await pool.query(
-      `INSERT INTO bna_content_outputs (job_id, output_type, title, body, platform, status, metadata)
-       VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *`,
-      [id, output_type, title || null, body || null, platform || null, status, metadata ? JSON.stringify(metadata) : null]
+      `INSERT INTO bna_content_outputs (workspace_id, job_id, output_type, title, body, platform, status, metadata)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
+      [job.workspace_id || null, id, output_type, title || null, body || null, platform || null, status, metadata ? JSON.stringify(metadata) : null]
     );
     res.json({ success: true, output: result.rows[0] });
   } catch (err) {
@@ -9789,10 +10251,10 @@ app.post('/api/bna/content-jobs/:id/actions', requireAdmin, async (req, res) => 
           [title, body, platformForOutputType(targetType), JSON.stringify(metadata), prompt.id, prompt.version, existing.id]
         )
         : await pool.query(
-          `INSERT INTO bna_content_outputs (job_id, output_type, title, body, platform, status, metadata, prompt_id, prompt_version)
-           VALUES ($1, $2, $3, $4, $5, 'needs_approval', $6, $7, $8)
+          `INSERT INTO bna_content_outputs (workspace_id, job_id, output_type, title, body, platform, status, metadata, prompt_id, prompt_version)
+           VALUES ($1, $2, $3, $4, $5, $6, 'needs_approval', $7, $8, $9)
            RETURNING *`,
-          [job.id, targetType, title, body, platformForOutputType(targetType), JSON.stringify(metadata), prompt.id, prompt.version]
+          [job.workspace_id || null, job.id, targetType, title, body, platformForOutputType(targetType), JSON.stringify(metadata), prompt.id, prompt.version]
         );
 
       await pool.query(
@@ -9993,8 +10455,12 @@ app.post('/api/bna/payments', requireAdmin, async (req, res) => {
   try {
     const result = await pool.query(
       `INSERT INTO bna_payment_log (
-        signup_id, payment_type, amount, method, status, received_by, received_at, notes
-      ) VALUES ($1, $2, $3, $4, $5, $6, NOW(), $7) RETURNING *`,
+        workspace_id, signup_id, payment_type, amount, method, status, received_by, received_at, notes
+      )
+       SELECT workspace_id, id, $2, $3, $4, $5, $6, NOW(), $7
+       FROM signups
+       WHERE id = $1
+       RETURNING *`,
       [signup_id, payment_type, amount, method, status, received_by, notes || null]
     );
 
@@ -10193,9 +10659,9 @@ app.post('/api/webhooks/green-invoice-disabled-normalized-legacy', async (req, r
 
     if (!existingPayment) {
       await pool.query(
-        `INSERT INTO bna_payment_log (signup_id, payment_type, amount, method, green_invoice_id, status, received_at)
-         VALUES ($1, 'registration', $2, 'green_invoice', $3, 'completed', NOW())`,
-        [signup.id, amount, payment_id]
+        `INSERT INTO bna_payment_log (workspace_id, signup_id, payment_type, amount, method, green_invoice_id, status, received_at)
+         VALUES ($1, $2, 'registration', $3, 'green_invoice', $4, 'completed', NOW())`,
+        [signup.workspace_id || null, signup.id, amount, payment_id]
       );
     }
 
@@ -10297,9 +10763,9 @@ app.post('/api/webhooks/green-invoice-disabled-legacy-fallback', async (req, res
     if (status === 'completed') {
       // Create payment log
       await pool.query(
-        `INSERT INTO bna_payment_log (signup_id, payment_type, amount, method, green_invoice_id, status, received_at)
-         VALUES ($1, 'registration', $2, 'green_invoice', $3, 'completed', NOW())`,
-        [signup.id, amount, payment_id]
+        `INSERT INTO bna_payment_log (workspace_id, signup_id, payment_type, amount, method, green_invoice_id, status, received_at)
+         VALUES ($1, $2, 'registration', $3, 'green_invoice', $4, 'completed', NOW())`,
+        [signup.workspace_id || null, signup.id, amount, payment_id]
       );
       
       // Update signup
@@ -10770,9 +11236,22 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
     DROP TABLE IF EXISTS bna_payment_log CASCADE;
     DROP TABLE IF EXISTS bna_tasks CASCADE;
     DROP TABLE IF EXISTS signups CASCADE;
+
+    CREATE TABLE IF NOT EXISTS bna_workspaces (
+      id SERIAL PRIMARY KEY,
+      workspace_key TEXT NOT NULL UNIQUE,
+      workspace_type TEXT NOT NULL CHECK (workspace_type IN ('school', 'service_provider', 'family')),
+      name TEXT NOT NULL,
+      short_name TEXT,
+      status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'paused', 'archived')),
+      metadata JSONB DEFAULT '{}',
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
     
     CREATE TABLE signups (
       id SERIAL PRIMARY KEY,
+      workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
       parent_name TEXT NOT NULL,
       parent_email TEXT,
       parent_phone TEXT,
@@ -10831,6 +11310,7 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
     
     CREATE TABLE bna_tasks (
       id SERIAL PRIMARY KEY,
+      workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
       title TEXT NOT NULL,
       notes TEXT,
       stage TEXT DEFAULT 'raw_input' CHECK (stage IN ('raw_input', 'needs_decision', 'assigned', 'in_progress', 'done', 'archive')),
@@ -10857,6 +11337,7 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
     
     CREATE TABLE bna_payment_log (
       id SERIAL PRIMARY KEY,
+      workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
       signup_id INTEGER REFERENCES signups(id) ON DELETE CASCADE,
       payment_type TEXT DEFAULT 'registration',
       amount DECIMAL(10,2) NOT NULL,
@@ -10877,10 +11358,12 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
   `;
   
   try {
+    await pool.query(createWorkspacesSQL);
     await pool.query(MIGRATION_SQL);
     await pool.query(createProjectsSQL);
     await pool.query(createProjectMembersSQL);
     await pool.query(createTaskCommentsSQL);
+    await pool.query(createWorkspaceScopeMigrationSQL);
     await pool.query(createBnaIndexesSQL);
     await pool.query(normalizeTasksCategoryCheckSQL);
     await pool.query(normalizeTasksStageCheckSQL);

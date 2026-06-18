@@ -1,36 +1,33 @@
 # Next Session
 
-Repository: shloimie-beep/bnei-neviim-academy
-Branch: codex/2026-06-18-bna-platform-completion
-Current HEAD: 283385311ab622c8fc30b33603721ce99f8eceac (before the final handoff/changelog commit; run git rev-parse HEAD for the pushed tip)
-Base branch: master
-Run directory: ops/execution-runs/2026-06-18-bna-platform-completion
-Completed IDs: REQ-20260618-112, REQ-20260618-113, REQ-20260618-115, REQ-20260618-116, REQ-20260618-171
-Remaining IDs: REQ-20260618-101, REQ-20260618-102, REQ-20260618-103, REQ-20260618-104, REQ-20260618-105, REQ-20260618-106, REQ-20260618-107, REQ-20260618-108, REQ-20260618-109, REQ-20260618-110, REQ-20260618-111, REQ-20260618-114, REQ-20260618-117, REQ-20260618-118, REQ-20260618-119, REQ-20260618-120, REQ-20260618-121, REQ-20260618-122, REQ-20260618-123, REQ-20260618-124, REQ-20260618-125, REQ-20260618-126, REQ-20260618-127, REQ-20260618-128, REQ-20260618-129, REQ-20260618-130, REQ-20260618-131, REQ-20260618-132, REQ-20260618-133, REQ-20260618-134, REQ-20260618-135, REQ-20260618-136, REQ-20260618-137, REQ-20260618-138, REQ-20260618-139, REQ-20260618-140, REQ-20260618-141, REQ-20260618-142, REQ-20260618-143, REQ-20260618-144, REQ-20260618-145, REQ-20260618-146, REQ-20260618-147, REQ-20260618-148, REQ-20260618-149, REQ-20260618-150, REQ-20260618-151, REQ-20260618-152, REQ-20260618-153, REQ-20260618-154, REQ-20260618-155, REQ-20260618-156, REQ-20260618-157, REQ-20260618-158, REQ-20260618-159, REQ-20260618-160, REQ-20260618-161, REQ-20260618-162, REQ-20260618-163, REQ-20260618-164, REQ-20260618-165, REQ-20260618-166, REQ-20260618-167, REQ-20260618-168, REQ-20260618-169, REQ-20260618-170, REQ-20260618-172
-Blocked IDs: REQ-20260618-117, REQ-20260618-118, REQ-20260618-156, REQ-20260618-172
-Uncommitted changes: final handoff/changelog commit may be pending; check git status --short
-Migrations: none applied yet
-Deployments: none; deployment requires explicit operator approval
-Tests passed: bna run validation; bna execution-run tests 8/8; PWA identity/homepage tests 6/6; workspace-scope tests 5/5; npm test 63/63; server/public-sw/operations-sw/workspace-scope syntax checks.
-Tests failed: none recorded yet
-Exact next commands:
+Updated: 2026-06-18T19:49:34+03:00
+
+Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
+
+Current branch: `codex/2026-06-18-bna-platform-completion`.
+
+Latest completed local batch:
+
+- REQ-20260618-124 partial implementation: workspace schema, idempotent migration columns/indexes, default workspace seeds, legacy backfills, and primary write-path `workspace_id` inheritance.
+- Verification passed: `node --check server.js`; `node --check tests/workspace-schema.test.js`; `node --test tests/workspace-scope.test.js tests/workspace-schema.test.js` 10/10; `npm test` 68/68; `npm run bna:run:validate` after docs update should be rerun before/after the next commit.
+
+Exact next requirement:
+
+- REQ-20260618-125 / BNA-WS-003: Server-side authorization/RLS and negative cross-tenant tests.
+
+Exact next command:
 
 ```powershell
 npm run bna:run:status
-npm run bna:run:validate
-node --test tests/bna-execution-run.test.js
+node --test tests/workspace-scope.test.js tests/workspace-schema.test.js
 ```
 
-Exact next requirement: REQ-20260618-124 / BNA-WS-002 workspace_id scoping inventory and migration plan, then REQ-20260618-125 authorization negative tests.
+Then implement request filtering helpers and focused negative API tests proving ordinary workspace users cannot enumerate or retrieve other workspace/student/accounting/content/user records by changing IDs or query parameters.
 
-Risks:
+Still open after this batch:
 
-- Do not deploy or mutate production data without explicit operator approval.
-- Do not run a new baseline UI crawl; authenticated audit output is absent in this worktree.
-- Do not merge the dirty original worktree; cherry-picked PR #2/#3 clean commits are already preserved here.
+- REQ-20260618-124 remains `in_progress` until API filters, UI selected-workspace enforcement, release approval, and live smoke are complete.
+- REQ-20260618-125 is not started and is the next dependency for workspace isolation.
+- Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 
-Do-not-repeat notes:
-
-- PR #2 audit harness is incorporated as commit 31fada4.
-- PR #3 protocol run setup is incorporated as commit 9ab3f06.
-- The complete authoritative June 18 source is already preserved in SOURCE.md.
+No deployment or production-data mutation is approved.

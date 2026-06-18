@@ -1,22 +1,18 @@
 # Requirements
 
-The original parent IDs `REQ-20260618-101` through `REQ-20260618-111` are preserved as workstreams. Child requirements `REQ-20260618-112` through `REQ-20260618-172` import the authoritative June 18 clauses with acceptance criteria.
-
-Only audit-package generation and post-fix visual comparison are blocked by missing audit output. All other non-blocked work may proceed in dependency order.
-
-| ID | Parent | Canonical crosswalk | Status | Baseline verdict | Title |
+| ID | Parent | Canonical | Status | Verdict | Title |
 |---|---|---|---|---|---|
-| REQ-20260618-101 | parent | - | in_progress | partial | Audit harness and audit package |
-| REQ-20260618-102 | parent | - | in_progress | partial | PWA public-versus-Operations separation |
-| REQ-20260618-103 | parent | - | in_progress | partial | Workspace model, RBAC, and isolation |
-| REQ-20260618-104 | parent | - | in_progress | partial | Operations shell, workspace selector, and navigation |
-| REQ-20260618-105 | parent | - | in_progress | partial | Shared responsive design system and accessibility |
-| REQ-20260618-106 | parent | - | in_progress | partial | Task manager, Decisions, intake routing, and calendar |
-| REQ-20260618-107 | parent | - | in_progress | partial | Scoped modules and accounting |
-| REQ-20260618-108 | parent | - | in_progress | partial | Students, Goal Board, duplicate cleanup, Hebrew, and RTL |
-| REQ-20260618-109 | parent | - | in_progress | partial | Unified scoped OpenAI helper |
-| REQ-20260618-110 | parent | - | in_progress | partial | Public copy, portal headers, signup routes, and CTAs |
-| REQ-20260618-111 | parent | - | in_progress | partial | Safe test data and complete acceptance coverage |
+| REQ-20260618-101 | - | - | in_progress | partial | Audit harness and audit package |
+| REQ-20260618-102 | - | - | in_progress | partial | PWA public-versus-Operations separation |
+| REQ-20260618-103 | - | - | in_progress | partial | Workspace model, RBAC, and isolation |
+| REQ-20260618-104 | - | - | in_progress | partial | Operations shell, workspace selector, and navigation |
+| REQ-20260618-105 | - | - | in_progress | partial | Shared responsive design system and accessibility |
+| REQ-20260618-106 | - | - | in_progress | partial | Task manager, Decisions, intake routing, and calendar |
+| REQ-20260618-107 | - | - | in_progress | partial | Scoped modules and accounting |
+| REQ-20260618-108 | - | - | in_progress | partial | Students, Goal Board, duplicate cleanup, Hebrew, and RTL |
+| REQ-20260618-109 | - | - | in_progress | partial | Unified scoped OpenAI helper |
+| REQ-20260618-110 | - | - | in_progress | partial | Public copy, portal headers, signup routes, and CTAs |
+| REQ-20260618-111 | - | - | in_progress | partial | Safe test data and complete acceptance coverage |
 | REQ-20260618-112 | REQ-20260618-101 | BNA-PROC-001 | done | closed_existing | Install root start-here and durable ramble-to-done protocol |
 | REQ-20260618-113 | REQ-20260618-101 | BNA-PROC-002 | done | closed_existing | Deterministic execution-run tooling/schema/tests |
 | REQ-20260618-114 | REQ-20260618-101 | BNA-PROC-003 | in_progress | partial | Reconcile AGENTS, MEMORY, TASKS, SYSTEM-STATE, briefs, and ledgers |
@@ -29,7 +25,7 @@ Only audit-package generation and post-fix visual comparison are blocked by miss
 | REQ-20260618-121 | REQ-20260618-102 | BNA-PWA-003 | needs_verification | partial | Enforce public-browser and installed-Operations routing invariants |
 | REQ-20260618-122 | REQ-20260618-102 | BNA-PWA-004 | needs_verification | partial | Remove public loader/checkmark flash and header-to-hero gap |
 | REQ-20260618-123 | REQ-20260618-103 | BNA-WS-001 | needs_verification | partial | Enforce exactly school/service-provider/family workspace types |
-| REQ-20260618-124 | REQ-20260618-103 | BNA-WS-002 | not_started | partial | Scope applicable entities by workspace_id |
+| REQ-20260618-124 | REQ-20260618-103 | BNA-WS-002 | in_progress | partial | Scope applicable entities by workspace_id |
 | REQ-20260618-125 | REQ-20260618-103 | BNA-WS-003 | not_started | missing | Server-side authorization/RLS and negative cross-tenant tests |
 | REQ-20260618-126 | REQ-20260618-103 | BNA-WS-004 | not_started | partial | Clear super-admin selector and ordinary-user behavior |
 | REQ-20260618-127 | REQ-20260618-103 | BNA-WS-005 | not_started | missing | Clear stale context on workspace changes |

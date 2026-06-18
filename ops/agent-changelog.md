@@ -2891,3 +2891,36 @@ Verification:
 - PASS `npm test` 63/63.
 
 Status: partial; active run must resume at `REQ-20260618-124`. No deployment or production-data mutation was performed.
+
+## 2026-06-18T19:49:34+03:00 - Workspace ID Scoping Foundation
+
+Implemented the local workspace-scoping foundation for `REQ-20260618-124`.
+
+- Added canonical `bna_workspaces` schema with exactly `school`,
+  `service_provider`, and `family` workspace types.
+- Added idempotent nullable `workspace_id` migrations and indexes for
+  workspace-owned runtime tables.
+- Seeded BNA as the school workspace and One Time Mishnah Class as the
+  service-provider workspace.
+- Backfilled existing projects, tasks, comments, signups, payment/accounting
+  rows, students, devices, Torah learning, accountability, group goals, content
+  jobs, class sessions, outputs, bundles, and prompt examples into workspace
+  scope.
+- Updated primary create paths so new rows inherit `workspace_id` from project,
+  signup, student, device, group goal, content job/output, or default BNA scope.
+- Added static workspace schema/write-path tests.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/workspace-schema.test.js`.
+- PASS `node --test tests/workspace-scope.test.js tests/workspace-schema.test.js`
+  10/10.
+- PASS `npm test` 68/68.
+- PASS `npm run bna:run:validate`.
+
+Status: partial; `REQ-20260618-124` remains `in_progress` because API
+authorization filters, UI selected-workspace enforcement, negative
+cross-tenant tests, deployment approval, and live smoke remain open. Resume at
+`REQ-20260618-125`. No deployment, production-data mutation, audit crawl,
+watch loop, or agent-fleet loop was performed.

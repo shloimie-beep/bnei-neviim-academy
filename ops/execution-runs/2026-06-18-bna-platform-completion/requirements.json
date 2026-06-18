@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-18T19:55:00+03:00",
+  "updated_at": "2026-06-18T19:49:34+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -695,7 +695,7 @@
       "area": "workspace",
       "priority": "P0",
       "current_verdict": "partial",
-      "status": "not_started",
+      "status": "in_progress",
       "expected_result": "Every workspace-owned entity is scoped by workspace_id at schema, API, and UI layers.",
       "acceptance_criteria": [
         "Scope applicable entities by workspace_id is implemented against the canonical Express/static runtime where applicable.",
@@ -706,12 +706,29 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "server.js defines bna_workspaces and nullable workspace_id foreign keys for workspace-owned runtime tables.",
+        "createWorkspaceScopeMigrationSQL adds safe idempotent workspace_id columns and indexes for existing installs.",
+        "ensureDefaultWorkspaces seeds BNA school and One Time service-provider workspaces without creating a super_admin workspace type.",
+        "backfillWorkspaceScope maps projects, tasks, comments, students, payments, devices, Torah learning, accountability, group goals, content jobs, class sessions, outputs, bundles, and prompt examples into workspace scope.",
+        "Primary create paths now write workspace_id immediately from project, signup, student, device, group goal, content job, output, or default BNA workspace."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check server.js PASS",
+        "node --check tests/workspace-schema.test.js PASS",
+        "node --test tests/workspace-scope.test.js tests/workspace-schema.test.js PASS 10/10",
+        "npm test PASS 68/68",
+        "npm run bna:run:validate PASS before run-file update"
+      ],
+      "implementation_commits": [
+        "current batch commit: feat: add workspace id scoping foundation"
+      ],
+      "files_changed": [
+        "server.js",
+        "tests/workspace-schema.test.js"
+      ],
+      "notes": "Local schema, seed, backfill, and primary write-path foundation is implemented and tested. Requirement remains in_progress because API request filtering, UI selected-workspace enforcement, negative cross-tenant tests, deploy, and live smoke are not complete/approved yet; continue with REQ-20260618-125."
     },
     {
       "id": "REQ-20260618-125",
