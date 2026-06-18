@@ -2986,3 +2986,37 @@ Verification:
 Status: local `needs_verification`; no deployment, production-data mutation,
 audit crawl, watch loop, or agent-fleet loop was performed. Resume at
 `REQ-20260618-126`.
+
+## 2026-06-18T20:14:02+03:00 - Operations Workspace Selector Scoping
+
+Completed the local Operations workspace selector batch for
+`REQ-20260618-126` and partially started `REQ-20260618-127`.
+
+- Added an identity-aware workspace context control in the Operations sidebar.
+- Super-admin/global users now get an explicit workspace selector with
+  canonical workspace type labels from `/api/bna/projects`.
+- Ordinary scoped users now see a locked workspace context instead of a global
+  workspace selector.
+- Selected/scoped workspace now drives task loading, task project filter state,
+  and task create/edit project locking.
+- Scoped users no longer call the global-only agent-fleet status endpoint from
+  `loadData`.
+- `/api/bna/projects` now returns workspace type, key, and name metadata while
+  still narrowing scoped identities to their project.
+- Workspace selector changes now clear task/content project filters and reload
+  scoped data; broader stale student/content/helper context cleanup remains
+  open under `REQ-20260618-127`.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/operations-workspace-selector.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/operations-workspace-selector.test.js
+  tests/workspace-auth.test.js tests/workspace-http-isolation.test.js` 13/13.
+- PASS `npm test` 81/81.
+- PASS `npm run bna:run:validate`.
+
+Status: local `needs_verification` for `REQ-20260618-126`; no deployment,
+production-data mutation, audit crawl, watch loop, or agent-fleet loop was
+performed. Continue `REQ-20260618-127`.

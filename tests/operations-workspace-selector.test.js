@@ -1,0 +1,56 @@
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const test = require('node:test');
+
+const root = path.resolve(__dirname, '..');
+
+function read(file) {
+  return fs.readFileSync(path.join(root, file), 'utf8');
+}
+
+test('Operations shell renders explicit super-admin and scoped workspace modes', () => {
+  const operations = read('public/operations.html');
+
+  assert.match(operations, /function renderWorkspaceContextControl\(\)/);
+  assert.match(operations, /data-mode="super-admin"/);
+  assert.match(operations, /aria-label="Super-admin workspace selector"/);
+  assert.match(operations, /data-mode="scoped"/);
+  assert.match(operations, /aria-label="Scoped workspace context"/);
+  assert.match(operations, />Scoped login</);
+  assert.match(operations, /school: 'School'/);
+  assert.match(operations, /service_provider: 'Service provider'/);
+  assert.match(operations, /return type \? `\$\{type\}: \$\{name\}` : name;/);
+});
+
+test('Operations workspace selector drives task API loading and skips global-only agent status for scoped users', () => {
+  const operations = read('public/operations.html');
+
+  assert.match(operations, /function isGlobalOpsUser\(\)/);
+  assert.match(operations, /function selectedProjectFilter\(\)/);
+  assert.match(operations, /function setWorkspaceProject\(value\)/);
+  assert.match(operations, /window\.localStorage\?\.setItem\('bna_ops_active_project', activeWorkspaceProject\)/);
+  assert.match(operations, /api\.getTasks\(\{ project: selectedProjectFilter\(\) \|\| undefined \}\)/);
+  assert.match(operations, /isGlobalOpsUser\(\) \? api\.getAgentFleetStatus\(\) : Promise\.resolve\(null\)/);
+});
+
+test('Task create and edit controls cannot override a scoped or selected workspace project', () => {
+  const operations = read('public/operations.html');
+
+  assert.match(operations, /function projectControlsLocked\(\)/);
+  assert.match(operations, /const lockProjectControl = projectControlsLocked\(\)/);
+  assert.ok(operations.includes("<select id=\"taskProject\" ${lockProjectControl ? 'disabled' : ''}>"));
+  assert.match(operations, /const taskProject = selectedProjectFilter\(\) \|\| document\.getElementById\('taskProject'\)\.value;/);
+  assert.match(operations, /if \(kind === 'project' && !selectedProjectFilter\(\)\) taskProjectFilter = value;/);
+  assert.match(operations, /Workspace: \$\{escapeHtml\(activeWorkspaceProjectLabel\(\)\)\}/);
+});
+
+test('Projects API returns canonical workspace metadata for the selector', () => {
+  const server = read('server.js');
+
+  assert.match(server, /LEFT JOIN bna_workspaces w ON w\.id = p\.workspace_id/);
+  assert.match(server, /w\.workspace_type/);
+  assert.match(server, /w\.workspace_key/);
+  assert.match(server, /w\.name AS workspace_name/);
+  assert.match(server, /AND p\.project_key = \$1/);
+});

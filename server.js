@@ -10972,12 +10972,20 @@ app.get('/api/bna/projects', requireAdmin, async (req, res) => {
     await ensureDefaultProjects();
     const scopedProjectKey = opsScopeProjectKey(req);
     const params = [];
-    let query = 'SELECT * FROM bna_projects WHERE status <> \'archived\'';
+    let query = `
+      SELECT
+        p.*,
+        w.workspace_type,
+        w.workspace_key,
+        w.name AS workspace_name
+      FROM bna_projects p
+      LEFT JOIN bna_workspaces w ON w.id = p.workspace_id
+      WHERE p.status <> 'archived'`;
     if (scopedProjectKey) {
-      query += ' AND project_key = $1';
+      query += ' AND p.project_key = $1';
       params.push(scopedProjectKey);
     }
-    query += ' ORDER BY CASE project_key WHEN \'bna\' THEN 1 WHEN \'one_time_mishnah_class\' THEN 2 ELSE 3 END, name ASC';
+    query += ' ORDER BY CASE p.project_key WHEN \'bna\' THEN 1 WHEN \'one_time_mishnah_class\' THEN 2 ELSE 3 END, p.name ASC';
     const result = await pool.query(query, params);
     res.json({ projects: result.rows });
   } catch (err) {

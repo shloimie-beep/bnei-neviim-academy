@@ -61,3 +61,11 @@ HTTP workspace isolation coverage (2026-06-18T20:02:08+03:00):
 - PASS `node --check tests/workspace-http-isolation.test.js`.
 - PASS `node --test tests/workspace-auth.test.js tests/workspace-http-isolation.test.js` 9/9.
 - PASS `npm test` 77/77.
+
+Operations workspace selector scoping (2026-06-18T20:14:02+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/operations-workspace-selector.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/operations-workspace-selector.test.js tests/workspace-auth.test.js tests/workspace-http-isolation.test.js` 13/13.
+- PASS `npm test` 81/81.

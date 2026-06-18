@@ -82,10 +82,19 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "Operations shell now includes an identity-aware workspace context control for super-admin selection versus ordinary scoped-user locked context."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "notes": "Parent workstream retained from original active run."
+      "verification": [
+        "node --test tests/operations-workspace-selector.test.js PASS 4/4",
+        "npm test PASS 81/81"
+      ],
+      "notes": "Workspace selector portion is locally implemented. Operations shell/navigation parent remains in_progress until remaining child navigation/header/collapse requirements are complete.",
+      "files_changed": [
+        "public/operations.html",
+        "tests/operations-workspace-selector.test.js"
+      ]
     },
     {
       "id": "REQ-20260618-105",
@@ -711,7 +720,8 @@
         "createWorkspaceScopeMigrationSQL adds safe idempotent workspace_id columns and indexes for existing installs.",
         "ensureDefaultWorkspaces seeds BNA school and One Time service-provider workspaces without creating a super_admin workspace type.",
         "backfillWorkspaceScope maps projects, tasks, comments, students, payments, devices, Torah learning, accountability, group goals, content jobs, class sessions, outputs, bundles, and prompt examples into workspace scope.",
-        "Primary create paths now write workspace_id immediately from project, signup, student, device, group goal, content job, output, or default BNA workspace."
+        "Primary create paths now write workspace_id immediately from project, signup, student, device, group goal, content job, output, or default BNA workspace.",
+        "Operations UI now carries the selected/scoped workspace into task API loading, visible task filter state, and task create/edit project selection."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -719,16 +729,20 @@
         "node --check tests/workspace-schema.test.js PASS",
         "node --test tests/workspace-scope.test.js tests/workspace-schema.test.js PASS 10/10",
         "npm test PASS 68/68",
-        "npm run bna:run:validate PASS before run-file update"
+        "npm run bna:run:validate PASS before run-file update",
+        "node --test tests/operations-workspace-selector.test.js tests/workspace-auth.test.js tests/workspace-http-isolation.test.js PASS 13/13",
+        "npm test PASS 81/81"
       ],
       "implementation_commits": [
         "current batch commit: feat: add workspace id scoping foundation"
       ],
       "files_changed": [
         "server.js",
-        "tests/workspace-schema.test.js"
+        "tests/workspace-schema.test.js",
+        "public/operations.html",
+        "tests/operations-workspace-selector.test.js"
       ],
-      "notes": "Local schema, seed, backfill, and primary write-path foundation is implemented and tested. Requirement remains in_progress because API request filtering, UI selected-workspace enforcement, negative cross-tenant tests, deploy, and live smoke are not complete/approved yet; continue with REQ-20260618-125."
+      "notes": "Local schema, seed, backfill, primary write-path foundation, API route filtering, HTTP isolation, and Operations UI selected-workspace enforcement are implemented and tested. Requirement remains in_progress because broader workspace-owned entity API filtering, release approval, deploy, and live smoke are not complete/approved yet; continue with REQ-20260618-127."
     },
     {
       "id": "REQ-20260618-125",
@@ -785,7 +799,7 @@
       "area": "workspace",
       "priority": "P0",
       "current_verdict": "partial",
-      "status": "not_started",
+      "status": "needs_verification",
       "expected_result": "Super admin intentionally chooses workspace type and workspace; ordinary users see only allowed workspace context.",
       "acceptance_criteria": [
         "Clear super-admin selector and ordinary-user behavior is implemented against the canonical Express/static runtime where applicable.",
@@ -796,12 +810,30 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "public/operations.html now renders an identity-aware workspace context control: super-admin/global scope sees a workspace selector, ordinary scoped users see a locked workspace context label.",
+        "Super-admin workspace choices include canonical workspace type labels from /api/bna/projects, with BNA as School and One Time Mishnah Class as Service provider.",
+        "selectedProjectFilter drives task API loading, URL/localStorage selector persistence, task project filter chips, and task create/edit project locking.",
+        "Scoped ordinary users no longer call the global-only agent-fleet status endpoint from loadData, avoiding a global dashboard exposure/error path.",
+        "/api/bna/projects now returns workspace_type, workspace_key, and workspace_name metadata while still narrowing scoped identities to their project."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check server.js PASS",
+        "node --check tests/operations-workspace-selector.test.js PASS",
+        "Operations HTML script parse via vm.Script PASS (2 script blocks)",
+        "node --test tests/operations-workspace-selector.test.js tests/workspace-auth.test.js tests/workspace-http-isolation.test.js PASS 13/13",
+        "npm test PASS 81/81"
+      ],
+      "implementation_commits": [
+        "current batch commit: feat: add operations workspace selector scoping"
+      ],
+      "files_changed": [
+        "public/operations.html",
+        "server.js",
+        "tests/operations-workspace-selector.test.js"
+      ],
+      "notes": "Local Operations shell selector behavior is implemented and tested. It remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for app-visible changes."
     },
     {
       "id": "REQ-20260618-127",
@@ -810,8 +842,8 @@
       "title": "Clear stale context on workspace changes",
       "area": "workspace",
       "priority": "P1",
-      "current_verdict": "missing",
-      "status": "not_started",
+      "current_verdict": "partial",
+      "status": "in_progress",
       "expected_result": "Switching workspace clears stale module, filter, student, content, and helper context.",
       "acceptance_criteria": [
         "Clear stale context on workspace changes is implemented against the canonical Express/static runtime where applicable.",
@@ -822,12 +854,22 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "setWorkspaceProject resets task and content project filters, persists the active workspace, updates the URL project parameter, and reloads scoped data when a super-admin changes workspace."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --test tests/operations-workspace-selector.test.js PASS 4/4",
+        "npm test PASS 81/81"
+      ],
+      "implementation_commits": [
+        "current batch commit: feat: add operations workspace selector scoping"
+      ],
+      "files_changed": [
+        "public/operations.html",
+        "tests/operations-workspace-selector.test.js"
+      ],
+      "notes": "Partial stale-context cleanup exists for task/content project filters on workspace selector changes. Still open for selected student, content selection/expanded state, module subsection, and helper context resets before closure."
     },
     {
       "id": "REQ-20260618-128",

@@ -76,6 +76,53 @@
             margin-top: 5px;
         }
 
+        .workspace-context-control {
+            display: grid;
+            gap: 6px;
+            margin-top: 12px;
+        }
+
+        .workspace-context-label {
+            color: #94a3b8;
+            font-size: 10px;
+            font-weight: 850;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .workspace-context-select,
+        .workspace-context-locked {
+            width: 100%;
+            border: 1px solid #334155;
+            border-radius: 10px;
+            background: #0f172a;
+            color: #e2e8f0;
+            font: inherit;
+            font-size: 12px;
+        }
+
+        .workspace-context-select {
+            min-height: 38px;
+            padding: 8px 10px;
+        }
+
+        .workspace-context-locked {
+            display: grid;
+            gap: 2px;
+            padding: 9px 10px;
+        }
+
+        .workspace-context-locked strong {
+            color: #f8fafc;
+            font-size: 13px;
+            line-height: 1.2;
+        }
+
+        .workspace-context-locked span:last-child {
+            color: #94a3b8;
+            font-size: 11px;
+        }
+
         .ops-sidebar-nav {
             display: grid;
             gap: 5px;
@@ -2000,6 +2047,10 @@
             color: #f8fafc;
         }
 
+        .filter-chip.locked {
+            cursor: default;
+        }
+
         .content-list {
             display: grid;
             gap: 14px;
@@ -3345,6 +3396,7 @@
         const initialView = initialParams.get('view');
         const initialSection = initialParams.get('section');
         const initialStudent = initialParams.get('student');
+        let activeWorkspaceProject = initialParams.get('project') || window.localStorage?.getItem('bna_ops_active_project') || 'all';
         const VIEW_ALIASES = {
             pipeline: 'tasks',
             ramble: 'tasks',
@@ -3465,9 +3517,10 @@
         ];
 
         const PROJECT_FALLBACKS = [
-            { project_key: 'bna', name: 'BNA', short_name: 'BNA' },
-            { project_key: 'one_time_mishnah_class', name: 'One Time Mishnah Class', short_name: 'One Time' }
+            { project_key: 'bna', name: 'BNA', short_name: 'BNA', workspace_type: 'school' },
+            { project_key: 'one_time_mishnah_class', name: 'One Time Mishnah Class', short_name: 'One Time', workspace_type: 'service_provider' }
         ];
+        const GLOBAL_PROJECT_FILTER_VALUE = 'all';
 
         const TASK_ASSIGNEES = [
             { value: '', label: 'Unassigned' },
@@ -3534,6 +3587,7 @@
                     <div class="ops-sidebar-header">
                         <div class="ops-sidebar-title">BNA Operations</div>
                         <div class="ops-sidebar-copy">Telegram and Drive inputs routed into focused work lanes.</div>
+                        ${renderWorkspaceContextControl()}
                     </div>
                     <nav class="ops-sidebar-nav">
                         ${navItems.map(item => `
@@ -3781,9 +3835,10 @@
             const normalizedFocus = TASK_SUBTABS.some(tab => tab.id === taskFocus) ? taskFocus : 'overview';
             const focusTasks = [...(focusMap[normalizedFocus] || focusMap.decisions)].sort(sortTasks);
             const projectCounts = taskProjectCounts(focusTasks);
+            const activeProjectFilter = selectedProjectFilter();
             const filteredTasks = focusTasks
                 .filter(task => taskUrgencyFilter === 'all' || task.urgency === taskUrgencyFilter)
-                .filter(task => taskProjectFilter === 'all' || taskProjectKey(task) === taskProjectFilter)
+                .filter(task => activeProjectFilter ? taskProjectKey(task) === activeProjectFilter : taskProjectFilter === 'all' || taskProjectKey(task) === taskProjectFilter)
                 .filter(task => taskMatchesDateFilter(task, taskDateFilter));
             const title = ({
                 decisions: 'Decisions',
@@ -3965,7 +4020,8 @@
             const labels = [];
             if (taskUrgencyFilter !== 'all') labels.push(`Urgency: ${formatUrgency(taskUrgencyFilter)}`);
             if (taskDateFilter !== 'all') labels.push(`Date: ${taskDateFilterLabel(taskDateFilter)}`);
-            if (taskProjectFilter !== 'all') labels.push(`Project: ${taskProjectLabel({ project_key: taskProjectFilter })}`);
+            if (selectedProjectFilter()) labels.push(`Workspace: ${activeWorkspaceProjectLabel()}`);
+            else if (taskProjectFilter !== 'all') labels.push(`Project: ${taskProjectLabel({ project_key: taskProjectFilter })}`);
             return labels;
         }
 
@@ -3986,6 +4042,10 @@
         }
 
         function renderTaskProjectFilters(counts = {}) {
+            const lockedProject = selectedProjectFilter();
+            if (lockedProject) {
+                return `<span class="filter-chip active locked" aria-label="Active workspace filter">Workspace: ${escapeHtml(activeWorkspaceProjectLabel())}</span>`;
+            }
             const allCount = Object.values(counts).reduce((sum, count) => sum + Number(count || 0), 0);
             const projectButtons = availableProjects().map(project => {
                 const key = project.project_key;
@@ -6435,7 +6495,9 @@
         function renderTaskModal() {
             const isEditing = editingTask !== null;
             const task = isEditing ? editingTask : {};
-            const selectedProjectKey = taskProjectKey(task);
+            const selectedProjectKey = isEditing ? taskProjectKey(task) : (selectedProjectFilter() || taskProjectKey(task));
+            const projectOptions = projectChoicesForControls();
+            const lockProjectControl = projectControlsLocked();
 
             return `
                 <div class="modal-overlay ${isEditing ? 'show' : ''}" id="taskModal">
@@ -6456,8 +6518,8 @@
                             <div class="form-row">
                                 <div class="form-group">
                                     <label>Project</label>
-                                    <select id="taskProject">
-                                        ${availableProjects().map(project => `
+                                    <select id="taskProject" ${lockProjectControl ? 'disabled' : ''}>
+                                        ${projectOptions.map(project => `
                                             <option value="${escapeHtml(project.project_key)}" ${selectedProjectKey === project.project_key ? 'selected' : ''}>${escapeHtml(project.name || project.short_name || project.project_key)}</option>
                                         `).join('')}
                                     </select>
@@ -7210,6 +7272,16 @@
             return allowedViews().has(view);
         }
 
+        function isGlobalOpsUser() {
+            const scopeType = String(opsMe?.scope?.type || '').toLowerCase();
+            return opsMe?.role === 'super_admin' || scopeType === 'global' || scopeType === 'all';
+        }
+
+        function scopedProjectKey() {
+            if (isGlobalOpsUser()) return '';
+            return normalizeProjectKey(opsMe?.scope?.projectKey || opsMe?.scope?.workspaceKey || '');
+        }
+
         function normalizeProjectKey(value) {
             const key = String(value || '')
                 .trim()
@@ -7224,6 +7296,13 @@
             }
             if (['bnei_neviim', 'bnei_neviim_academy', 'academy'].includes(key)) return 'bna';
             return key;
+        }
+
+        function selectedProjectFilter() {
+            const scopedKey = scopedProjectKey();
+            if (scopedKey) return scopedKey;
+            const key = normalizeProjectKey(activeWorkspaceProject);
+            return key && key !== GLOBAL_PROJECT_FILTER_VALUE ? key : '';
         }
 
         function availableProjects() {
@@ -7248,6 +7327,86 @@
             return availableProjects().find(project => project.project_key === normalized)
                 || PROJECT_FALLBACKS.find(project => project.project_key === normalized)
                 || { project_key: normalized, name: normalized.replace(/_/g, ' '), short_name: normalized.replace(/_/g, ' ') };
+        }
+
+        function projectChoicesForControls() {
+            const selectedFilter = selectedProjectFilter();
+            const choices = availableProjects();
+            if (!selectedFilter) return choices;
+            const scopedChoices = choices.filter(project => project.project_key === selectedFilter);
+            return scopedChoices.length ? scopedChoices : [projectByKey(selectedFilter)];
+        }
+
+        function activeWorkspaceProjectLabel() {
+            const selectedFilter = selectedProjectFilter();
+            if (!selectedFilter) return 'All workspaces';
+            const project = projectByKey(selectedFilter);
+            return projectWorkspaceLabel(project);
+        }
+
+        function workspaceTypeLabel(project = {}) {
+            return ({
+                school: 'School',
+                service_provider: 'Service provider',
+                family: 'Family'
+            })[project.workspace_type] || '';
+        }
+
+        function projectWorkspaceLabel(project = {}) {
+            const name = project.name || project.short_name || project.project_key;
+            const type = workspaceTypeLabel(project);
+            return type ? `${type}: ${name}` : name;
+        }
+
+        function projectControlsLocked() {
+            return Boolean(selectedProjectFilter());
+        }
+
+        function ensureActiveWorkspaceProject() {
+            const scopedKey = scopedProjectKey();
+            if (scopedKey) {
+                activeWorkspaceProject = scopedKey;
+                taskProjectFilter = 'all';
+                contentProjectFilter = 'all';
+                return;
+            }
+            const key = normalizeProjectKey(activeWorkspaceProject);
+            const knownKeys = new Set(availableProjects().map(project => project.project_key));
+            if (!key || (key !== GLOBAL_PROJECT_FILTER_VALUE && !knownKeys.has(key))) {
+                activeWorkspaceProject = GLOBAL_PROJECT_FILTER_VALUE;
+            } else {
+                activeWorkspaceProject = key;
+            }
+        }
+
+        function renderWorkspaceContextControl() {
+            if (isGlobalOpsUser()) {
+                const activeKey = selectedProjectFilter() || GLOBAL_PROJECT_FILTER_VALUE;
+                const options = [
+                    { project_key: GLOBAL_PROJECT_FILTER_VALUE, name: 'All workspaces' },
+                    ...availableProjects()
+                ];
+                return `
+                    <div class="workspace-context-control" data-mode="super-admin">
+                        <label class="workspace-context-label" for="workspaceProjectSelector">Workspace</label>
+                        <select class="workspace-context-select" id="workspaceProjectSelector" aria-label="Super-admin workspace selector" onchange="setWorkspaceProject(this.value)">
+                            ${options.map(project => `
+                                <option value="${escapeHtml(project.project_key)}" ${activeKey === project.project_key ? 'selected' : ''}>${escapeHtml(projectWorkspaceLabel(project))}</option>
+                            `).join('')}
+                        </select>
+                    </div>
+                `;
+            }
+
+            return `
+                <div class="workspace-context-control" data-mode="scoped">
+                    <div class="workspace-context-locked" aria-label="Scoped workspace context">
+                        <span class="workspace-context-label">Workspace</span>
+                        <strong>${escapeHtml(activeWorkspaceProjectLabel())}</strong>
+                        <span>Scoped login</span>
+                    </div>
+                </div>
+            `;
         }
 
         function taskProjectKey(task = {}) {
@@ -7328,12 +7487,13 @@
             try {
                 const authRes = await api.getAuthMe();
                 if (authRes) opsMe = authRes;
+                ensureActiveWorkspaceProject();
                 if (!viewAllowed(currentView)) currentView = 'tasks';
 
                 const [projectsRes, tasksRes, agentFleetRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes] = await Promise.allSettled([
                     api.getProjects(),
-                    api.getTasks(),
-                    api.getAgentFleetStatus(),
+                    api.getTasks({ project: selectedProjectFilter() || undefined }),
+                    isGlobalOpsUser() ? api.getAgentFleetStatus() : Promise.resolve(null),
                     viewAllowed('contacts') || viewAllowed('accounting') ? api.getSignups() : Promise.resolve({ signups: [] }),
                     viewAllowed('accounting') ? api.getPayments() : Promise.resolve({ payments: [] }),
                     viewAllowed('accounting') ? api.getPaymentIntake() : Promise.resolve({ intake: [] }),
@@ -7350,8 +7510,10 @@
                 ]);
 
                 if (projectsRes.status === 'fulfilled' && projectsRes.value?.projects) projects = projectsRes.value.projects;
+                ensureActiveWorkspaceProject();
                 if (tasksRes.status === 'fulfilled' && tasksRes.value?.tasks) tasks = tasksRes.value.tasks;
                 if (agentFleetRes.status === 'fulfilled' && agentFleetRes.value) agentFleetStatus = agentFleetRes.value;
+                else if (!isGlobalOpsUser()) agentFleetStatus = null;
                 if (signupsRes.status === 'fulfilled' && signupsRes.value?.signups) {
                     signups = signupsRes.value.signups.map((signup) => ({
                         ...signup,
@@ -7472,7 +7634,7 @@
         function setTaskFilter(kind, value) {
             if (kind === 'urgency') taskUrgencyFilter = value;
             if (kind === 'date') taskDateFilter = value;
-            if (kind === 'project') taskProjectFilter = value;
+            if (kind === 'project' && !selectedProjectFilter()) taskProjectFilter = value;
             render();
         }
 
@@ -7481,6 +7643,19 @@
             taskDateFilter = 'all';
             taskProjectFilter = 'all';
             render();
+        }
+
+        function setWorkspaceProject(value) {
+            if (!isGlobalOpsUser()) return;
+            activeWorkspaceProject = normalizeProjectKey(value) || GLOBAL_PROJECT_FILTER_VALUE;
+            taskProjectFilter = 'all';
+            contentProjectFilter = 'all';
+            window.localStorage?.setItem('bna_ops_active_project', activeWorkspaceProject);
+            const url = new URL(window.location.href);
+            if (activeWorkspaceProject === GLOBAL_PROJECT_FILTER_VALUE) url.searchParams.delete('project');
+            else url.searchParams.set('project', activeWorkspaceProject);
+            window.history.replaceState({}, '', url);
+            loadData();
         }
 
         async function previewPaymentReminders(event) {
@@ -7896,10 +8071,11 @@
         }
 
         async function saveTask() {
+            const taskProject = selectedProjectFilter() || document.getElementById('taskProject').value;
             const data = {
                 title: document.getElementById('taskTitle').value,
                 notes: document.getElementById('taskNotes').value,
-                project_key: document.getElementById('taskProject').value,
+                project_key: taskProject,
                 assigned_to: document.getElementById('taskAssignedTo').value || null,
                 stage: document.getElementById('taskStage').value,
                 category: document.getElementById('taskCategory').value,
