@@ -6,6 +6,10 @@
   "scripts": {
     "start": "node server.js",
     "test": "node --test",
+    "bna:run:init": "node scripts/bna-execution-run.mjs init",
+    "bna:run:status": "node scripts/bna-execution-run.mjs status",
+    "bna:run:validate": "node scripts/bna-execution-run.mjs validate",
+    "bna:run:resume": "node scripts/bna-execution-run.mjs resume",
     "railway:doctor": "powershell -ExecutionPolicy Bypass -File scripts/railway-doctor.ps1",
     "railway:redeploy": "powershell -ExecutionPolicy Bypass -File scripts/railway-redeploy.ps1",
     "telegram:kimi": "node scripts/telegram-kimi-bridge.mjs",

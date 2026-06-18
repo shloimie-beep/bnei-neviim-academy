@@ -1694,3 +1694,32 @@ Authenticated crawl status:
 
 No deployment, product UI fix, live send, publish, payment, sync, upload,
 external connector write, or real record mutation was performed.
+
+## 2026-06-18T16:41:03+03:00 - Durable Ramble-To-Done Execution Protocol
+
+Added the durable execution-run protocol and resume framework for giant BNA
+rambles and GPT/Codex correction packets.
+
+- Added `BNA-START-HERE.md`, `docs/BNA-RAMBLE-TO-DONE.md`, and fresh-chat /
+  implementation / verification prompt templates.
+- Added `ops/execution-runs/` structure, schema, `latest.json`, and initial run
+  `ops/execution-runs/2026-06-18-bna-platform-completion/`.
+- Added `scripts/bna-execution-run.mjs` plus package scripts
+  `bna:run:init`, `bna:run:status`, `bna:run:validate`, and
+  `bna:run:resume`.
+- Added validator tests for duplicate IDs, invalid statuses, missing closed
+  evidence, missing live evidence, missing `NEXT-SESSION.md`, and stale
+  `latest.json`.
+- Imported the known June 18 remediation areas as blocked, not complete, with
+  blocker `Waiting for user to upload agent-review-package.zip or audit output
+  path`.
+
+Verification:
+
+- PASS `node --check scripts/bna-execution-run.mjs`.
+- PASS `node --test tests/bna-execution-run.test.js` 7/7.
+- PASS `npm test` 778/778.
+- PASS `npm run bna:run:validate`.
+
+No audit crawl, watch loop, agent fleet loop, deployment, production data
+mutation, or audit-harness replacement was performed.

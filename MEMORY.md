@@ -20,6 +20,15 @@
 **Phase 2 (Future):**
 - Student accountability/tracking program (family app repurposed)
 
+## Agentic Goal Memory And Intake
+
+- As of 2026-06-18, broad GPT/Codex correction packets should use the durable
+  execution-run protocol in `BNA-START-HERE.md`,
+  `docs/BNA-RAMBLE-TO-DONE.md`, and `ops/execution-runs/latest.json`.
+  Closed requirement statuses require evidence; live-required closed items
+  require deploy/live evidence; blocked audit-output work should stay blocked
+  until the audit ZIP or output path exists.
+
 ## Tooling Preferences
 
 - **Codex**: Primary coding, development, and visible machine-work owner
