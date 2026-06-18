@@ -26,6 +26,7 @@ function baseRequirement(overrides = {}) {
     title: 'Protocol validator fixture',
     status: 'not_started',
     expected_result: 'Validator fixture remains resumable.',
+    acceptance_criteria: ['Fixture has clear acceptance criteria.'],
     source: 'test',
     depends_on_audit_output: false,
     live_required: false,
@@ -141,6 +142,21 @@ test('closed requirement without evidence fails', () => {
   const result = validate(root);
   assert.notEqual(result.status, 0);
   assert.match(result.stderr, /closed requirement requires evidence/i);
+});
+
+test('closed requirement without acceptance criteria fails', () => {
+  const root = makeRoot({
+    requirements: [
+      baseRequirement({
+        status: 'done',
+        evidence: ['fixture proof'],
+        acceptance_criteria: []
+      })
+    ]
+  });
+  const result = validate(root);
+  assert.notEqual(result.status, 0);
+  assert.match(result.stderr, /closed requirement requires acceptance criteria/i);
 });
 
 test('live-required closed item without deployment evidence fails', () => {

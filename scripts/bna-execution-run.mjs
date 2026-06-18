@@ -186,6 +186,10 @@ function validateRequirement(requirement, index, seenIds, errors) {
     errors.push(`${label}: closed requirement requires evidence.`);
   }
 
+  if (CLOSED_STATUSES.has(requirement.status) && !nonEmptyArray(requirement.acceptance_criteria)) {
+    errors.push(`${label}: closed requirement requires acceptance criteria.`);
+  }
+
   if (
     requirement.live_required &&
     LIVE_CLOSED_STATUSES.has(requirement.status) &&

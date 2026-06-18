@@ -1,17 +1,16 @@
 # Plan
 
-1. Add durable start-here and ramble-to-done protocol docs.
-2. Add reusable fresh-chat, implementation, and verification prompt templates.
-3. Add execution-run structure and validator tooling.
-4. Add validator tests for duplicate IDs, invalid statuses, missing evidence,
-   missing live/deployment proof, missing `NEXT-SESSION.md`, and stale
-   `latest.json`.
-5. Seed the June 18 platform completion run with blocked audit-dependent
-   requirements.
-6. Update repo memory/control files with links to the protocol and active run.
-7. Run deterministic verification only:
-   - `node --check scripts/bna-execution-run.mjs`
-   - targeted execution-run validator tests
-   - `npm test`
-   - `npm run bna:run:validate`
-8. Commit only the protocol/tooling scope.
+Dependency order for this recovery branch:
+
+1. Repair execution-run source, requirements, validator, and evidence.
+2. PWA/public-versus-Operations identity, service-worker/cache, and route guardrails.
+3. Workspace schema/RBAC/negative isolation foundation.
+4. Operations shell/workspace selector/navigation.
+5. Task manager, Decisions, intake idempotency, and internal calendar.
+6. Students, Content, Community, Accounting, Automations, Integrations, Users, Live Classes scoping.
+7. Goal Board, Hebrew/RTL, duplicate-student safe cleanup plan.
+8. Unified scoped helper with actions, confirmations, and audit logs.
+9. Public copy, portal headers, signup routes, CTA corrections.
+10. Shared responsive/accessibility system and complete local acceptance tests.
+11. Post-fix UI audit comparison when auth/audit package exists.
+12. Release-approval gate; no production deploy before approval.

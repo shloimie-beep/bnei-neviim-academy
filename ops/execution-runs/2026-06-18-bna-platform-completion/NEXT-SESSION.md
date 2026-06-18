@@ -1,53 +1,36 @@
 # Next Session
 
-Start here:
+Repository: shloimie-beep/bnei-neviim-academy
+Branch: codex/2026-06-18-bna-platform-completion
+Current HEAD: 9ab3f068edc9d336bf106d904df5ef8532df9135
+Base branch: master
+Run directory: ops/execution-runs/2026-06-18-bna-platform-completion
+Completed IDs: REQ-20260618-112, REQ-20260618-113, REQ-20260618-115, REQ-20260618-116
+Remaining IDs: REQ-20260618-101, REQ-20260618-102, REQ-20260618-103, REQ-20260618-104, REQ-20260618-105, REQ-20260618-106, REQ-20260618-107, REQ-20260618-108, REQ-20260618-109, REQ-20260618-110, REQ-20260618-111, REQ-20260618-114, REQ-20260618-117, REQ-20260618-118, REQ-20260618-119, REQ-20260618-120, REQ-20260618-121, REQ-20260618-122, REQ-20260618-123, REQ-20260618-124, REQ-20260618-125, REQ-20260618-126, REQ-20260618-127, REQ-20260618-128, REQ-20260618-129, REQ-20260618-130, REQ-20260618-131, REQ-20260618-132, REQ-20260618-133, REQ-20260618-134, REQ-20260618-135, REQ-20260618-136, REQ-20260618-137, REQ-20260618-138, REQ-20260618-139, REQ-20260618-140, REQ-20260618-141, REQ-20260618-142, REQ-20260618-143, REQ-20260618-144, REQ-20260618-145, REQ-20260618-146, REQ-20260618-147, REQ-20260618-148, REQ-20260618-149, REQ-20260618-150, REQ-20260618-151, REQ-20260618-152, REQ-20260618-153, REQ-20260618-154, REQ-20260618-155, REQ-20260618-156, REQ-20260618-157, REQ-20260618-158, REQ-20260618-159, REQ-20260618-160, REQ-20260618-161, REQ-20260618-162, REQ-20260618-163, REQ-20260618-164, REQ-20260618-165, REQ-20260618-166, REQ-20260618-167, REQ-20260618-168, REQ-20260618-169, REQ-20260618-170, REQ-20260618-171, REQ-20260618-172
+Blocked IDs: REQ-20260618-117, REQ-20260618-118, REQ-20260618-156, REQ-20260618-172
+Uncommitted changes: run `git status --short`
+Migrations: none applied yet
+Deployments: none; deployment requires explicit operator approval
+Tests passed: carried-forward PR #2/#3 tests; recovery-branch test results are in TEST-RESULTS.md
+Tests failed: none recorded yet
+Exact next commands:
 
-1. Read `BNA-START-HERE.md`.
-2. Read `docs/BNA-RAMBLE-TO-DONE.md`.
-3. Run `npm run bna:run:status`.
-4. Confirm whether `agent-review-package.zip` or an audit output path exists.
-
-Open requirements:
-
-- `REQ-20260618-101` audit harness and audit package
-- `REQ-20260618-102` PWA public-vs-Operations separation
-- `REQ-20260618-103` workspace model and RBAC
-- `REQ-20260618-104` Operations shell and navigation
-- `REQ-20260618-105` design system
-- `REQ-20260618-106` task manager, intake, and calendar
-- `REQ-20260618-107` module scoping
-- `REQ-20260618-108` students, Goal Board, and Hebrew
-- `REQ-20260618-109` unified OpenAI helper
-- `REQ-20260618-110` public copy and portal headers
-- `REQ-20260618-111` test data and acceptance tests
-
-Current blocker for all open audit-dependent remediation:
-
-`Waiting for user to upload agent-review-package.zip or audit output path`
-
-Do not run yet:
-
-- another full `npm run ops:audit` crawl;
-- watch loops;
-- agent fleet loops;
-- deploys;
-- production data mutations.
-
-Prompt after the audit ZIP/output exists:
-
-```text
-The audit output is ready at: [PASTE ZIP PATH OR OUTPUT FOLDER]
-
-Resume the BNA execution run in
-ops/execution-runs/2026-06-18-bna-platform-completion.
-Read BNA-START-HERE.md and docs/BNA-RAMBLE-TO-DONE.md.
-Run npm run bna:run:status and npm run bna:run:validate.
-
-Use the existing audit output as evidence. Do not rebuild the audit harness and
-do not start another full UI crawl unless the audit package is unreadable.
-Parse the audit findings into the existing REQ-20260618-101 through
-REQ-20260618-111 requirements, then implement the next safe batch with
-current-state comparison, tests, evidence updates, ledger/changelog updates,
-and NEXT-SESSION.md handoff. Do not deploy or mutate production data unless I
-explicitly approve that in this session.
+```powershell
+npm run bna:run:status
+npm run bna:run:validate
+node --test tests/bna-execution-run.test.js
 ```
+
+Exact next requirement: REQ-20260618-119 / BNA-PWA-001 unless already completed in the current turn.
+
+Risks:
+
+- Do not deploy or mutate production data without explicit operator approval.
+- Do not run a new baseline UI crawl; authenticated audit output is absent in this worktree.
+- Do not merge the dirty original worktree; cherry-picked PR #2/#3 clean commits are already preserved here.
+
+Do-not-repeat notes:
+
+- PR #2 audit harness is incorporated as commit 31fada4.
+- PR #3 protocol run setup is incorporated as commit 9ab3f06.
+- The complete authoritative June 18 source is already preserved in SOURCE.md.

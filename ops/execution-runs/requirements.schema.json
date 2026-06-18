@@ -35,6 +35,16 @@
           "area": {
             "type": "string"
           },
+          "parent_id": {
+            "type": "string",
+            "pattern": "^REQ-[0-9]{8}-[0-9]{3}$"
+          },
+          "canonical_id": {
+            "type": "string"
+          },
+          "priority": {
+            "type": "string"
+          },
           "status": {
             "type": "string",
             "enum": [
@@ -54,6 +64,25 @@
           "expected_result": {
             "type": "string",
             "minLength": 1
+          },
+          "acceptance_criteria": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "current_verdict": {
+            "type": "string",
+            "enum": [
+              "closed_existing",
+              "already_satisfied",
+              "partial",
+              "missing",
+              "conflicting",
+              "blocked",
+              "unknown"
+            ]
           },
           "source": {
             "type": "string"
@@ -82,6 +111,20 @@
             }
           },
           "verification": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "implementation_commits": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "files_changed": {
             "type": "array",
             "items": {
               "type": "string",
