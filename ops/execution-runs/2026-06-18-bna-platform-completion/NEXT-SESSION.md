@@ -11,7 +11,7 @@ Blocked IDs: REQ-20260618-117, REQ-20260618-118, REQ-20260618-156, REQ-20260618-
 Uncommitted changes: run `git status --short`
 Migrations: none applied yet
 Deployments: none; deployment requires explicit operator approval
-Tests passed: bna run validation; bna execution-run tests 8/8; PWA identity/homepage tests 6/6; npm test 57/57; server/public-sw/operations-sw syntax checks.
+Tests passed: bna run validation; bna execution-run tests 8/8; PWA identity/homepage tests 6/6; workspace-scope tests 5/5; npm test 63/63; server/public-sw/operations-sw/workspace-scope syntax checks.
 Tests failed: none recorded yet
 Exact next commands:
 
@@ -21,7 +21,7 @@ npm run bna:run:validate
 node --test tests/bna-execution-run.test.js
 ```
 
-Exact next requirement: REQ-20260618-123 / BNA-WS-001 workspace taxonomy, followed by REQ-20260618-124 workspace_id scoping inspection.
+Exact next requirement: REQ-20260618-124 / BNA-WS-002 workspace_id scoping inventory and migration plan, then REQ-20260618-125 authorization negative tests.
 
 Risks:
 

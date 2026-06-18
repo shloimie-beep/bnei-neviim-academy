@@ -40,6 +40,11 @@ const {
   normalizeDeviceAccessState,
   normalizeDurationMinutes,
 } = require('./src/lib/bna/device-control');
+const {
+  createSuperAdminIdentity,
+  createWorkspaceIdentity,
+  isGlobalOpsScope,
+} = require('./src/lib/bna/workspace-scope');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -1339,12 +1344,7 @@ function identifyOpsUser(username, password = null) {
 
   if (OPS_USERNAME && user.toLowerCase() === OPS_USERNAME.toLowerCase()) {
     if (pass !== null && pass.toLowerCase() !== String(OPS_PASSWORD || '').toLowerCase()) return null;
-    return {
-      username: user,
-      role: 'admin',
-      scope: { type: 'all', projectKey: null },
-      allowedViews: ['tasks', 'students', 'content', 'contacts', 'accounting'],
-    };
+    return createSuperAdminIdentity(user, ['tasks', 'students', 'content', 'contacts', 'accounting']);
   }
 
   if (
@@ -1353,12 +1353,14 @@ function identifyOpsUser(username, password = null) {
     user.toLowerCase() === ONE_TIME_OPS_USERNAME.toLowerCase()
   ) {
     if (pass !== null && pass !== ONE_TIME_OPS_PASSWORD) return null;
-    return {
+    return createWorkspaceIdentity({
       username: user,
-      role: 'project_member',
-      scope: { type: 'project', projectKey: ONE_TIME_PROJECT_KEY },
+      role: 'workspace_member',
+      workspaceType: 'service_provider',
+      workspaceKey: ONE_TIME_PROJECT_KEY,
+      projectKey: ONE_TIME_PROJECT_KEY,
       allowedViews: ['tasks'],
-    };
+    });
   }
 
   return null;
@@ -1439,7 +1441,7 @@ async function requireAdmin(req, res, next) {
       clearSessionCookie(res);
       return res.status(401).json({ error: 'Session user is no longer allowed' });
     }
-    if (identity.scope.type !== 'all' && !isScopedOpsPathAllowed(req)) {
+    if (!isGlobalOpsScope(identity.scope) && !isScopedOpsPathAllowed(req)) {
       return res.status(403).json({ error: 'This login is scoped to One Time Mishnah Class tasks.' });
     }
     req.opsUser = identity.username;
@@ -1470,7 +1472,7 @@ async function requireAdmin(req, res, next) {
     }
     return res.status(401).json({ error: 'Invalid credentials' });
   }
-  if (identity.scope.type !== 'all' && !isScopedOpsPathAllowed(req)) {
+  if (!isGlobalOpsScope(identity.scope) && !isScopedOpsPathAllowed(req)) {
     return res.status(403).json({ error: 'This login is scoped to One Time Mishnah Class tasks.' });
   }
   req.opsUser = identity.username;
@@ -1483,7 +1485,7 @@ async function identifyAdminRequest(req) {
   const session = await getValidSession(cookies[SESSION_COOKIE_NAME]);
   if (session) {
     const identity = identifyOpsUser(session.username);
-    return identity?.scope?.type === 'all' ? identity : null;
+    return isGlobalOpsScope(identity?.scope) ? identity : null;
   }
 
   const authHeader = req.headers.authorization;
@@ -1492,7 +1494,7 @@ async function identifyAdminRequest(req) {
   const creds = Buffer.from(authHeader.slice(6), 'base64').toString();
   const [user, pass] = creds.split(':');
   const identity = identifyOpsUser(user, pass);
-  return identity?.scope?.type === 'all' ? identity : null;
+  return isGlobalOpsScope(identity?.scope) ? identity : null;
 }
 
 // Middleware
@@ -4661,7 +4663,7 @@ async function resolveProjectFromInput(input = {}, db = pool) {
 }
 
 function opsScopeProjectKey(req) {
-  return req?.opsIdentity?.scope?.type === 'project'
+  return req?.opsIdentity?.scope?.type === 'project' || req?.opsIdentity?.scope?.type === 'workspace'
     ? req.opsIdentity.scope.projectKey
     : '';
 }
@@ -10335,8 +10337,8 @@ app.get('/api/bna/auth/me', requireAdmin, (req, res) => {
   res.json({
     success: true,
     user: identity?.username || req.opsUser || null,
-    role: identity?.role || 'admin',
-    scope: identity?.scope || { type: 'all', projectKey: null },
+    role: identity?.role || 'super_admin',
+    scope: identity?.scope || { type: 'global', workspaceType: null, workspaceKey: null, projectKey: null },
     allowedViews: identity?.allowedViews || ['tasks', 'students', 'content', 'contacts', 'accounting'],
   });
 });

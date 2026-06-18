@@ -30,3 +30,11 @@ Public homepage PWA cleanup (2026-06-18T19:28:00+03:00):
 
 - PASS `node --test tests/pwa-identity.test.js` 6/6.
 - PASS `npm run bna:run:validate`.
+
+Workspace taxonomy/auth foundation (2026-06-18T19:42:00+03:00):
+
+- PASS `node --test tests/workspace-scope.test.js` 5/5.
+- PASS `node --check server.js`.
+- PASS `node --check src/lib/bna/workspace-scope.js`.
+- PASS `npm test` 63/63.
+- PASS `npm run bna:run:validate`.

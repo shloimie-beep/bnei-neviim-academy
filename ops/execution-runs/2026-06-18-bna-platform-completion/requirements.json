@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-18T19:28:00+03:00",
+  "updated_at": "2026-06-18T19:42:00+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -655,8 +655,8 @@
       "title": "Enforce exactly school/service-provider/family workspace types",
       "area": "workspace",
       "priority": "P0",
-      "current_verdict": "missing",
-      "status": "not_started",
+      "current_verdict": "partial",
+      "status": "needs_verification",
       "expected_result": "Workspace type taxonomy excludes super_admin as a workspace type and treats it only as role/context.",
       "acceptance_criteria": [
         "Enforce exactly school/service-provider/family workspace types is implemented against the canonical Express/static runtime where applicable.",
@@ -667,12 +667,25 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "Workspace taxonomy module defines exactly school, service_provider, family.",
+        "server.js uses super_admin global context and service_provider workspace context for One Time login compatibility."
+      ],
       "deployment_evidence": [],
-      "verification": [],
+      "verification": [
+        "node --test tests/workspace-scope.test.js PASS 5/5",
+        "node --check server.js PASS",
+        "node --check src/lib/bna/workspace-scope.js PASS",
+        "npm test PASS 63/63",
+        "npm run bna:run:validate PASS"
+      ],
       "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "files_changed": [
+        "src/lib/bna/workspace-scope.js",
+        "server.js",
+        "tests/workspace-scope.test.js"
+      ],
+      "notes": "Local taxonomy/auth identity foundation is implemented. Requirement remains open because broader workspace migration/deploy/live smoke are not approved yet."
     },
     {
       "id": "REQ-20260618-124",
