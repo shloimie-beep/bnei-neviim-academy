@@ -1393,7 +1393,7 @@ function identifyOpsUser(username, password = null) {
 
   if (OPS_USERNAME && user.toLowerCase() === OPS_USERNAME.toLowerCase()) {
     if (pass !== null && pass.toLowerCase() !== String(OPS_PASSWORD || '').toLowerCase()) return null;
-    return createSuperAdminIdentity(user, ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations', 'integrations']);
+    return createSuperAdminIdentity(user, ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations', 'integrations', 'users']);
   }
 
   if (
@@ -1701,6 +1701,27 @@ CREATE TABLE IF NOT EXISTS bna_project_members (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   UNIQUE (project_id, person_name)
+);
+`;
+
+const createWorkspaceInvitationsSQL = `
+CREATE TABLE IF NOT EXISTS bna_workspace_invitations (
+  id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE CASCADE,
+  email TEXT NOT NULL,
+  person_name TEXT,
+  role TEXT DEFAULT 'member',
+  access_level TEXT NOT NULL DEFAULT 'member' CHECK (access_level IN ('owner', 'manager', 'member', 'viewer')),
+  status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'accepted', 'revoked', 'expired')),
+  invited_by TEXT,
+  invite_token_hash TEXT,
+  expires_at TIMESTAMP,
+  accepted_at TIMESTAMP,
+  revoked_at TIMESTAMP,
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 `;
 
@@ -2162,6 +2183,8 @@ ALTER TABLE bna_signup_agreement_signatures ADD COLUMN IF NOT EXISTS workspace_i
 ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
 ALTER TABLE bna_projects ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
 ALTER TABLE bna_project_members ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_workspace_invitations ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_workspace_invitations ADD COLUMN IF NOT EXISTS project_id INTEGER REFERENCES bna_projects(id) ON DELETE CASCADE;
 ALTER TABLE bna_task_comments ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
 ALTER TABLE bna_payment_log ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
 ALTER TABLE bna_email_log ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
@@ -2190,6 +2213,8 @@ CREATE INDEX IF NOT EXISTS idx_bna_signup_agreements_workspace_id ON bna_signup_
 CREATE INDEX IF NOT EXISTS idx_bna_tasks_workspace_id ON bna_tasks (workspace_id);
 CREATE INDEX IF NOT EXISTS idx_bna_projects_workspace_id ON bna_projects (workspace_id);
 CREATE INDEX IF NOT EXISTS idx_bna_project_members_workspace_id ON bna_project_members (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_workspace_invitations_workspace_id ON bna_workspace_invitations (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_workspace_invitations_project_id ON bna_workspace_invitations (project_id);
 CREATE INDEX IF NOT EXISTS idx_bna_task_comments_workspace_id ON bna_task_comments (workspace_id);
 CREATE INDEX IF NOT EXISTS idx_bna_payment_log_workspace_id ON bna_payment_log (workspace_id);
 CREATE INDEX IF NOT EXISTS idx_bna_email_log_workspace_id ON bna_email_log (workspace_id);
@@ -4475,6 +4500,7 @@ async function initDb() {
     await pool.query(createTasksTableSQL);
     await pool.query(createProjectsSQL);
     await pool.query(createProjectMembersSQL);
+    await pool.query(createWorkspaceInvitationsSQL);
     await pool.query(createTaskCommentsSQL);
     await pool.query(createAgentRuntimeStatusSQL);
     await pool.query(normalizeTasksCategoryCheckSQL);
@@ -11730,7 +11756,7 @@ app.get('/api/bna/auth/me', requireAdmin, (req, res) => {
     user: identity?.username || req.opsUser || null,
     role: identity?.role || 'super_admin',
     scope: identity?.scope || { type: 'global', workspaceType: null, workspaceKey: null, projectKey: null },
-    allowedViews: identity?.allowedViews || ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations', 'integrations'],
+    allowedViews: identity?.allowedViews || ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations', 'integrations', 'users'],
   });
 });
 
@@ -12157,6 +12183,105 @@ app.get('/api/bna/integrations/status', requireAdmin, async (req, res) => {
       generated_at: generatedAt,
       integrations,
     });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/users', requireAdmin, async (req, res) => {
+  const { project } = req.query;
+  const scopedProjectKey = opsScopeProjectKey(req);
+  const requestedProjectKey = project && project !== 'all' ? normalizeProjectKey(project) : '';
+  const projectKey = scopedProjectKey || requestedProjectKey;
+  const params = [];
+  const conditions = [];
+
+  if (projectKey) {
+    params.push(projectKey);
+    conditions.push(`COALESCE(p.project_key, w.workspace_key, '') = $${params.length}`);
+  }
+
+  const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+
+  try {
+    const result = await pool.query(
+      `SELECT
+         pm.id,
+         pm.person_name,
+         pm.role,
+         pm.access_level,
+         pm.telegram_chat_id,
+         pm.login_username,
+         pm.active,
+         pm.created_at,
+         pm.updated_at,
+         p.project_key,
+         p.name AS project_name,
+         p.short_name AS project_short_name,
+         w.workspace_key,
+         w.workspace_type,
+         w.name AS workspace_name
+       FROM bna_project_members pm
+       LEFT JOIN bna_projects p ON p.id = pm.project_id
+       LEFT JOIN bna_workspaces w ON w.id = COALESCE(pm.workspace_id, p.workspace_id)
+       ${whereClause}
+       ORDER BY
+         CASE pm.access_level WHEN 'owner' THEN 1 WHEN 'manager' THEN 2 WHEN 'member' THEN 3 ELSE 4 END,
+         pm.person_name ASC`,
+      params
+    );
+    res.json({ users: result.rows, project: projectKey || 'all' });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.get('/api/bna/invitations', requireAdmin, async (req, res) => {
+  const { project } = req.query;
+  const scopedProjectKey = opsScopeProjectKey(req);
+  const requestedProjectKey = project && project !== 'all' ? normalizeProjectKey(project) : '';
+  const projectKey = scopedProjectKey || requestedProjectKey;
+  const params = [];
+  const conditions = [];
+
+  if (projectKey) {
+    params.push(projectKey);
+    conditions.push(`COALESCE(p.project_key, w.workspace_key, '') = $${params.length}`);
+  }
+
+  const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+
+  try {
+    const result = await pool.query(
+      `SELECT
+         i.id,
+         i.email,
+         i.person_name,
+         i.role,
+         i.access_level,
+         i.status,
+         i.invited_by,
+         i.expires_at,
+         i.accepted_at,
+         i.revoked_at,
+         i.created_at,
+         i.updated_at,
+         p.project_key,
+         p.name AS project_name,
+         p.short_name AS project_short_name,
+         w.workspace_key,
+         w.workspace_type,
+         w.name AS workspace_name
+       FROM bna_workspace_invitations i
+       LEFT JOIN bna_projects p ON p.id = i.project_id
+       LEFT JOIN bna_workspaces w ON w.id = COALESCE(i.workspace_id, p.workspace_id)
+       ${whereClause}
+       ORDER BY
+         CASE i.status WHEN 'pending' THEN 1 WHEN 'accepted' THEN 2 WHEN 'expired' THEN 3 ELSE 4 END,
+         i.created_at DESC`,
+      params
+    );
+    res.json({ invitations: result.rows, project: projectKey || 'all' });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
   }
@@ -12740,6 +12865,7 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
     await pool.query(MIGRATION_SQL);
     await pool.query(createProjectsSQL);
     await pool.query(createProjectMembersSQL);
+    await pool.query(createWorkspaceInvitationsSQL);
     await pool.query(createTaskCommentsSQL);
     await pool.query(createWorkspaceScopeMigrationSQL);
     await pool.query(createBnaIndexesSQL);

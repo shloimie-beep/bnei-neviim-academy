@@ -3673,3 +3673,36 @@ Verification:
 Status: local `needs_verification`; no deployment, production migration,
 production-data mutation, Buffer account mutation, GHL mutation, audit crawl,
 watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-150`.
+
+## 2026-06-18T23:54:00+03:00 - Workspace Users and Invitations
+
+Completed the local workspace-scoped users/roles/invitations batch for
+`REQ-20260618-150`.
+
+- Added the `bna_workspace_invitations` schema with workspace/project, invite
+  status, access level, audit, token-hash, and expiry fields.
+- Added read-only `GET /api/bna/users` scoped by the active Operations
+  workspace/project filter.
+- Added read-only `GET /api/bna/invitations` scoped by the active Operations
+  workspace/project filter.
+- Added the Operations Users module showing project members, roles, access
+  levels, login usernames, invitation state, inviter, and expiry.
+- Allowed scoped users to read only the safe users/invitations routes while
+  denying account and invitation mutations through the scoped route helper.
+- Added focused coverage in `tests/users-scope.test.js` and updated
+  workspace/module/auth tests.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/users-scope.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/users-scope.test.js
+  tests/operations-module-toolbar.test.js
+  tests/operations-workspace-selector.test.js tests/workspace-auth.test.js
+  tests/workspace-schema.test.js` 22/22.
+- PASS `npm test` 151/151.
+
+Status: local `needs_verification`; no deployment, production migration,
+production-data mutation, invitation send, account mutation, audit crawl, watch
+loop, or agent-fleet loop was performed. Resume at `REQ-20260618-151`.

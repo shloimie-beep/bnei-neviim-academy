@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-18T23:42:00+03:00
+Updated: 2026-06-18T23:54:00+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -27,24 +27,25 @@ Latest completed local batches:
 - REQ-20260618-147: Class sessions now support direct workspace project filtering and the Calendar class-session feed remains selected-workspace scoped.
 - REQ-20260618-148: Automations now expose workspace-scoped status rows for payment reminders, Green Invoice webhooks, content Drive intake, and Codex task automation, with owner/status/last run/next run/failure reason and an Operations Automations module.
 - REQ-20260618-149: Integrations now expose Buffer social target statuses for Facebook, LinkedIn, and YouTube with Connected/Not connected/Error state, account identity, last check, needed action, and an Operations Integrations module.
+- REQ-20260618-150: Users now expose scoped project-member user/role rows and workspace invitation records through read-only APIs and an Operations Users module.
 
 Exact next requirement:
 
-- REQ-20260618-150 / BNA-USER-001: Workspace-scoped users/roles/invitations.
+- REQ-20260618-151 / BNA-ACCOUNTING-001: Workspace payment/accounting scoping and safe actions.
 
 Exact next command:
 
 ```powershell
 npm run bna:run:status
-rg -n "users|Users|roles|role|invite|invitation|workspace_member|workspace_id|workspace|project|scopedRouteAllowed|allowedViews|opsIdentity|requireAdmin" server.js public\operations.html scripts tests src\lib\bna
+rg -n "payment|payments|accounting|signups|payment-intake|payment-reminders|green-invoice|workspace_id|workspace|project|selectedProjectFilter|confirm|SEND_REMINDERS|reconcile|safe" server.js public\operations.html scripts tests src\lib\bna
 ```
 
-Then inspect user/role/invitation endpoints and Operations surfaces so workspace users, roles, and invitations are server-side scoped and negatively tested.
+Then inspect accounting/payment endpoints and Operations actions so payment reads/writes preserve workspace scoping and dangerous actions require explicit confirmations.
 
 Still open after this batch:
 
 - REQ-20260618-124 remains `in_progress` until broader workspace-owned entity API filtering, release approval, deploy, and live smoke are complete.
-- REQ-20260618-125 through REQ-20260618-149 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-125 through REQ-20260618-150 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 
 No deployment or production-data mutation is approved.

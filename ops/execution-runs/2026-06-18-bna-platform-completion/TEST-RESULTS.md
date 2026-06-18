@@ -247,3 +247,16 @@ Simplified integrations/social account status (2026-06-18T23:42:00+03:00):
 
 No deployment, production-data mutation, Buffer account mutation, GHL mutation,
 audit crawl, watch loop, or agent-fleet loop was performed.
+
+Workspace-scoped users, roles, and invitations (2026-06-18T23:54:00+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/users-scope.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/users-scope.test.js tests/operations-module-toolbar.test.js
+  tests/operations-workspace-selector.test.js tests/workspace-auth.test.js
+  tests/workspace-schema.test.js` 22/22.
+- PASS `npm test` 151/151.
+
+No deployment, production-data mutation, invitation send, account mutation,
+audit crawl, watch loop, or agent-fleet loop was performed.

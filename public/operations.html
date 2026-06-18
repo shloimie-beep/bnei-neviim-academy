@@ -3605,6 +3605,16 @@
                 if (filters.project) params.set('project', filters.project);
                 return this.request('GET', '/integrations/status' + (params.toString() ? '?' + params.toString() : ''));
             },
+            getUsers(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.project) params.set('project', filters.project);
+                return this.request('GET', '/users' + (params.toString() ? '?' + params.toString() : ''));
+            },
+            getInvitations(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.project) params.set('project', filters.project);
+                return this.request('GET', '/invitations' + (params.toString() ? '?' + params.toString() : ''));
+            },
             createTask(task) { return this.request('POST', '/tasks', task); },
             createFromRamble(ramble) { return this.request('POST', '/tasks', { ramble, source: 'web', created_by: 'operator' }); },
             updateTask(id, task) { return this.request('PATCH', '/tasks/' + id, task); },
@@ -3719,6 +3729,8 @@
         let calendarEvents = [];
         let automationStatuses = [];
         let integrationStatuses = [];
+        let workspaceUsers = [];
+        let workspaceInvitations = [];
         let projects = [];
         let signups = [];
         let payments = [];
@@ -3751,7 +3763,7 @@
             accountability: 'students'
         };
         const normalizedInitialView = VIEW_ALIASES[initialView] || initialView;
-        let currentView = ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations', 'integrations'].includes(normalizedInitialView) ? normalizedInitialView : 'tasks';
+        let currentView = ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations', 'integrations', 'users'].includes(normalizedInitialView) ? normalizedInitialView : 'tasks';
         let navDrawerOpen = false;
         const TASK_FOCUS_ALIASES = { codex: 'changelog', done: 'changelog', rabbi: 'mine', pending: 'changelog', queue: 'changelog' };
         const normalizedInitialTaskSection = TASK_FOCUS_ALIASES[initialSection] || initialSection;
@@ -3800,7 +3812,8 @@
             { id: 'contacts', label: 'Contacts', marker: 'P' },
             { id: 'accounting', label: 'Accounting', marker: '$' },
             { id: 'automations', label: 'Automations', marker: 'AUTO' },
-            { id: 'integrations', label: 'Integrations', marker: 'INT' }
+            { id: 'integrations', label: 'Integrations', marker: 'INT' },
+            { id: 'users', label: 'Users', marker: 'U' }
         ];
 
         const TASK_SUBTABS = [
@@ -4521,6 +4534,81 @@
                         ${renderContactDetailItem('Needed Action', item.needed_action || 'No action listed')}
                     </div>
                     ${item.failure_reason ? `<div class="task-blocker" style="margin-top:10px;">${escapeHtml(item.failure_reason)}</div>` : ''}
+                </div>
+            `;
+        }
+
+        function renderUsers() {
+            const users = Array.isArray(workspaceUsers) ? workspaceUsers : [];
+            const invitations = Array.isArray(workspaceInvitations) ? workspaceInvitations : [];
+            const activeUsers = users.filter(user => user.active !== false);
+            const pendingInvitations = invitations.filter(invite => String(invite.status || '').toLowerCase() === 'pending');
+            return `
+                <div class="container">
+                    <div class="page-heading">
+                        <div>
+                            <div class="page-kicker">Workspace Access</div>
+                            <h2>Users</h2>
+                            <p>Members, roles, access levels, and invitation records for the current workspace.</p>
+                        </div>
+                        <div class="page-heading-actions">
+                            <span class="page-status-pill">${activeUsers.length} active</span>
+                            <span class="page-status-pill">${pendingInvitations.length} pending invites</span>
+                        </div>
+                    </div>
+                    <section class="focus-panel" aria-label="Workspace users and invitations">
+                        <div class="focused-grid">
+                            ${renderSummaryCard('Users', users.length, 'workspace member rows')}
+                            ${renderSummaryCard('Active', activeUsers.length, 'active members')}
+                            ${renderSummaryCard('Invitations', invitations.length, 'tracked invitation rows')}
+                        </div>
+                        <div class="content-section-grid">
+                            <div class="event-card">
+                                <div class="event-type">Members</div>
+                                ${users.length
+                                    ? users.map(renderWorkspaceUserCard).join('')
+                                    : '<p class="payment-muted">No workspace users are visible.</p>'}
+                            </div>
+                            <div class="event-card">
+                                <div class="event-type">Invitations</div>
+                                ${invitations.length
+                                    ? invitations.map(renderWorkspaceInvitationCard).join('')
+                                    : '<p class="payment-muted">No invitation records are visible.</p>'}
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            `;
+        }
+
+        function workspaceAccessWorkspaceLabel(item = {}) {
+            return item.project_short_name || item.project_name || item.workspace_name || item.workspace_key || activeWorkspaceProjectLabel();
+        }
+
+        function renderWorkspaceUserCard(user) {
+            return `
+                <div class="mini-list-item" style="align-items:flex-start;">
+                    <span>
+                        ${escapeHtml(user.person_name || user.login_username || 'Workspace user')}
+                        <small style="display:block; color:#94a3b8; font-size:11px; margin-top:3px;">
+                            ${escapeHtml(workspaceAccessWorkspaceLabel(user))} | ${escapeHtml(user.login_username || 'No login username')}
+                        </small>
+                    </span>
+                    <strong>${escapeHtml(user.access_level || user.role || 'member')}</strong>
+                </div>
+            `;
+        }
+
+        function renderWorkspaceInvitationCard(invite) {
+            return `
+                <div class="mini-list-item" style="align-items:flex-start;">
+                    <span>
+                        ${escapeHtml(invite.person_name || invite.email || 'Invitation')}
+                        <small style="display:block; color:#94a3b8; font-size:11px; margin-top:3px;">
+                            ${escapeHtml(workspaceAccessWorkspaceLabel(invite))} | ${escapeHtml(invite.email || 'No email')}
+                        </small>
+                    </span>
+                    <strong>${escapeHtml(String(invite.status || 'pending').replace(/_/g, ' '))}</strong>
                 </div>
             `;
         }
@@ -8078,7 +8166,7 @@
         }
 
         function allowedViews() {
-            const views = Array.isArray(opsMe?.allowedViews) ? opsMe.allowedViews : ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations', 'integrations'];
+            const views = Array.isArray(opsMe?.allowedViews) ? opsMe.allowedViews : ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations', 'integrations', 'users'];
             return new Set(views);
         }
 
@@ -8321,12 +8409,14 @@
                 ensureActiveWorkspaceProject();
                 ensureCurrentViewAllowed();
 
-                const [projectsRes, tasksRes, calendarRes, automationsRes, integrationsRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes] = await Promise.allSettled([
+                const [projectsRes, tasksRes, calendarRes, automationsRes, integrationsRes, usersRes, invitationsRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes] = await Promise.allSettled([
                     api.getProjects(),
                     api.getTasks({ project: selectedProjectFilter() || undefined }),
                     viewAllowed('calendar') ? api.getCalendar({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ events: [] }),
                     viewAllowed('automations') ? api.getAutomations({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ automations: [] }),
                     viewAllowed('integrations') ? api.getIntegrations({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ integrations: [] }),
+                    viewAllowed('users') ? api.getUsers({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ users: [] }),
+                    viewAllowed('users') ? api.getInvitations({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ invitations: [] }),
                     viewAllowed('contacts') || viewAllowed('accounting') ? api.getSignups({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ signups: [] }),
                     viewAllowed('accounting') ? api.getPayments() : Promise.resolve({ payments: [] }),
                     viewAllowed('accounting') ? api.getPaymentIntake() : Promise.resolve({ intake: [] }),
@@ -8348,6 +8438,8 @@
                 if (calendarRes.status === 'fulfilled' && calendarRes.value?.events) calendarEvents = calendarRes.value.events;
                 if (automationsRes.status === 'fulfilled' && automationsRes.value?.automations) automationStatuses = automationsRes.value.automations;
                 if (integrationsRes.status === 'fulfilled' && integrationsRes.value?.integrations) integrationStatuses = integrationsRes.value.integrations;
+                if (usersRes.status === 'fulfilled' && usersRes.value?.users) workspaceUsers = usersRes.value.users;
+                if (invitationsRes.status === 'fulfilled' && invitationsRes.value?.invitations) workspaceInvitations = invitationsRes.value.invitations;
                 if (signupsRes.status === 'fulfilled' && signupsRes.value?.signups) {
                     signups = signupsRes.value.signups.map((signup) => ({
                         ...signup,
@@ -8367,7 +8459,7 @@
                 if (accountabilityRes.status === 'fulfilled' && accountabilityRes.value?.events) accountabilityEvents = accountabilityRes.value.events;
                 if (groupGoalsRes.status === 'fulfilled' && groupGoalsRes.value?.goals) groupGoals = groupGoalsRes.value.goals;
 
-                const errors = [projectsRes, tasksRes, calendarRes, automationsRes, integrationsRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes]
+                const errors = [projectsRes, tasksRes, calendarRes, automationsRes, integrationsRes, usersRes, invitationsRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes]
                     .filter((result) => result.status === 'rejected')
                     .map((result) => result.reason?.message || 'Unknown dashboard error');
 
@@ -8387,6 +8479,7 @@
                 case 'calendar': content = renderCalendar(); break;
                 case 'automations': content = renderAutomations(); break;
                 case 'integrations': content = renderIntegrations(); break;
+                case 'users': content = renderUsers(); break;
                 case 'students': content = renderStudents(); break;
                 case 'content': content = renderContent(); break;
                 case 'contacts': content = renderContacts(); break;
@@ -8540,6 +8633,8 @@
             calendarEvents = [];
             automationStatuses = [];
             integrationStatuses = [];
+            workspaceUsers = [];
+            workspaceInvitations = [];
             contentSection = 'library';
             contentTypeFilter = 'all';
             contentDateFilter = 'all';

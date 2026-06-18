@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-18T23:42:00+03:00",
+  "updated_at": "2026-06-18T23:54:00+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -1910,7 +1910,7 @@
       "area": "modules",
       "priority": "P0",
       "current_verdict": "missing",
-      "status": "not_started",
+      "status": "needs_verification",
       "expected_result": "Workspace user, role, and invitation endpoints and UI are server-side scoped and negatively tested.",
       "acceptance_criteria": [
         "Workspace-scoped users/roles/invitations is implemented against the canonical Express/static runtime where applicable.",
@@ -1921,12 +1921,34 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "Added canonical bna_workspace_invitations schema with workspace_id, project_id, role, access_level, status, inviter, expiry, and audit timestamps.",
+        "GET /api/bna/users returns project-member user/role rows filtered by scoped/requested workspace project.",
+        "GET /api/bna/invitations returns workspace invitation rows filtered by scoped/requested workspace project.",
+        "Operations now includes a Users module loaded with selectedProjectFilter and renders members, roles, access levels, login usernames, and invitation records.",
+        "Scoped workspace auth allows safe read-only users/invitations routes while denying POST mutations."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check server.js PASS",
+        "node --check tests/users-scope.test.js PASS",
+        "Operations HTML script parse via vm.Script PASS (2 script blocks)",
+        "node --test tests/users-scope.test.js tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js tests/workspace-auth.test.js tests/workspace-schema.test.js PASS 22/22",
+        "npm test PASS 151/151"
+      ],
+      "implementation_commits": [
+        "current batch commit: feat: scope workspace users"
+      ],
+      "files_changed": [
+        "server.js",
+        "public/operations.html",
+        "src/lib/bna/workspace-auth.js",
+        "tests/users-scope.test.js",
+        "tests/operations-module-toolbar.test.js",
+        "tests/operations-workspace-selector.test.js",
+        "tests/workspace-auth.test.js"
+      ],
+      "notes": "Local implementation and tests passed. Status remains needs_verification because this live-required Operations/server-visible item still needs release approval, deploy, and live smoke before closure. No invitation-send or account mutation action was added or run."
     },
     {
       "id": "REQ-20260618-151",
