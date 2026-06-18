@@ -3640,3 +3640,36 @@ Status: local `needs_verification`; no deployment, production migration,
 production-data mutation, payment reminder send, Green Invoice reprocess, Drive
 setup route, audit crawl, watch loop, or agent-fleet loop was performed. Resume
 at `REQ-20260618-149`.
+
+## 2026-06-18T23:42:00+03:00 - Integrations Status
+
+Completed the local simplified integrations/social-account status batch for
+`REQ-20260618-149`.
+
+- Added read-only `GET /api/bna/integrations/status`.
+- Scoped integration rows by the active Operations workspace/project filter.
+- Added Buffer Facebook, LinkedIn, and YouTube target rows with Connected, Not
+  connected, and Error states.
+- Exposed account identity, last check, needed action, failure reason, provider,
+  platform, and workspace labels without exposing tokens.
+- Added the Operations Integrations module and wired it to `selectedProjectFilter`.
+- Replaced visible Operations Facebook approval copy that named GHL as the active
+  social draft provider with connector-neutral wording.
+- Documented Buffer social scheduler profile configuration in `.env.example`
+  without real IDs.
+- Added focused coverage in `tests/integrations-status.test.js` and updated
+  workspace/module/auth tests.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/integrations-status.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/integrations-status.test.js
+  tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js
+  tests/workspace-auth.test.js tests/automations-status.test.js` 22/22.
+- PASS `npm test` 148/148.
+
+Status: local `needs_verification`; no deployment, production migration,
+production-data mutation, Buffer account mutation, GHL mutation, audit crawl,
+watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-150`.

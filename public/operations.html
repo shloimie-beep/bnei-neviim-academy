@@ -3600,6 +3600,11 @@
                 if (filters.project) params.set('project', filters.project);
                 return this.request('GET', '/automations/status' + (params.toString() ? '?' + params.toString() : ''));
             },
+            getIntegrations(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.project) params.set('project', filters.project);
+                return this.request('GET', '/integrations/status' + (params.toString() ? '?' + params.toString() : ''));
+            },
             createTask(task) { return this.request('POST', '/tasks', task); },
             createFromRamble(ramble) { return this.request('POST', '/tasks', { ramble, source: 'web', created_by: 'operator' }); },
             updateTask(id, task) { return this.request('PATCH', '/tasks/' + id, task); },
@@ -3713,6 +3718,7 @@
         let tasks = [];
         let calendarEvents = [];
         let automationStatuses = [];
+        let integrationStatuses = [];
         let projects = [];
         let signups = [];
         let payments = [];
@@ -3745,7 +3751,7 @@
             accountability: 'students'
         };
         const normalizedInitialView = VIEW_ALIASES[initialView] || initialView;
-        let currentView = ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations'].includes(normalizedInitialView) ? normalizedInitialView : 'tasks';
+        let currentView = ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations', 'integrations'].includes(normalizedInitialView) ? normalizedInitialView : 'tasks';
         let navDrawerOpen = false;
         const TASK_FOCUS_ALIASES = { codex: 'changelog', done: 'changelog', rabbi: 'mine', pending: 'changelog', queue: 'changelog' };
         const normalizedInitialTaskSection = TASK_FOCUS_ALIASES[initialSection] || initialSection;
@@ -3793,7 +3799,8 @@
             { id: 'content', label: 'Content', marker: 'C' },
             { id: 'contacts', label: 'Contacts', marker: 'P' },
             { id: 'accounting', label: 'Accounting', marker: '$' },
-            { id: 'automations', label: 'Automations', marker: 'AUTO' }
+            { id: 'automations', label: 'Automations', marker: 'AUTO' },
+            { id: 'integrations', label: 'Integrations', marker: 'INT' }
         ];
 
         const TASK_SUBTABS = [
@@ -3904,9 +3911,9 @@
 
         const CONTENT_OUTPUT_TYPES = [
             { id: 'whatsapp_update', label: 'WhatsApp', action: 'Make WhatsApp', hint: 'Short parent-ready copy with clear bullets.' },
-            { id: 'facebook_post', label: 'Facebook', action: 'Make Facebook Post', hint: 'Warmer public post. Approval creates a GHL draft.' },
+            { id: 'facebook_post', label: 'Facebook', action: 'Make Facebook Post', hint: 'Warmer public post. Approval uses the configured social connector.' },
             { id: 'weekly_newsletter', label: 'Newsletter', action: 'Make Newsletter', hint: 'Can use one item or a selected weekly bundle.' },
-            { id: 'blog_draft', label: 'Website Blog', action: 'Make Website Blog', hint: 'First-party website article. Approval publishes to the BNA website, not GHL.' },
+            { id: 'blog_draft', label: 'Website Blog', action: 'Make Website Blog', hint: 'First-party website article. Approval publishes to the BNA website.' },
             { id: 'linkedin_post', label: 'LinkedIn', action: 'Make LinkedIn Post', hint: 'Professional education-facing reflection.' },
             { id: 'youtube_description', label: 'YouTube', action: 'Make YouTube Description', hint: 'Title/description style copy for upload notes.' }
         ];
@@ -4453,6 +4460,66 @@
                         ${renderContactDetailItem('Next Run', nextRun)}
                     </div>
                     ${details ? `<p class="payment-muted" style="margin-top:10px;">${escapeHtml(details)}</p>` : ''}
+                    ${item.failure_reason ? `<div class="task-blocker" style="margin-top:10px;">${escapeHtml(item.failure_reason)}</div>` : ''}
+                </div>
+            `;
+        }
+
+        function renderIntegrations() {
+            const items = Array.isArray(integrationStatuses) ? integrationStatuses : [];
+            const connectedItems = items.filter(item => String(item.status || '').toLowerCase() === 'connected');
+            const errorItems = items.filter(item => String(item.status || '').toLowerCase() === 'error');
+            return `
+                <div class="container">
+                    <div class="page-heading">
+                        <div>
+                            <div class="page-kicker">External Accounts</div>
+                            <h2>Integrations</h2>
+                            <p>Social account readiness by workspace with one clear next action per target.</p>
+                        </div>
+                        <div class="page-heading-actions">
+                            <span class="page-status-pill">${connectedItems.length} connected</span>
+                            <span class="page-status-pill">${errorItems.length} errors</span>
+                        </div>
+                    </div>
+                    <section class="focus-panel" aria-label="Integration status">
+                        <div class="focused-grid">
+                            ${renderSummaryCard('Targets', items.length, 'configured checks')}
+                            ${renderSummaryCard('Connected', connectedItems.length, 'ready targets')}
+                            ${renderSummaryCard('Errors', errorItems.length, 'needs repair')}
+                        </div>
+                        <div class="content-section-grid">
+                            ${items.length
+                                ? items.map(renderIntegrationCard).join('')
+                                : '<div class="event-card"><p class="payment-muted">No integration targets are visible for this workspace.</p></div>'}
+                        </div>
+                    </section>
+                </div>
+            `;
+        }
+
+        function integrationStatusLabel(status) {
+            return ({
+                connected: 'Connected',
+                not_connected: 'Not connected',
+                error: 'Error'
+            })[String(status || '').toLowerCase()] || automationStatusLabel(status);
+        }
+
+        function renderIntegrationCard(item) {
+            const status = String(item.status || '').toLowerCase();
+            const attention = status !== 'connected' || Boolean(item.failure_reason);
+            const lastCheck = item.last_check_at ? formatDateTime(item.last_check_at) : 'Not checked';
+            return `
+                <div class="event-card ${attention ? 'urgent' : ''}">
+                    <div class="event-type">${escapeHtml(item.workspace_label || activeWorkspaceProjectLabel())}</div>
+                    <div class="event-title">${escapeHtml(`${item.provider || 'Provider'} ${item.platform || 'Account'}`)}</div>
+                    <div class="contact-detail-grid" style="margin-top:12px;">
+                        ${renderContactDetailItem('Status', integrationStatusLabel(item.status))}
+                        ${renderContactDetailItem('Account', item.account_identity || 'Not connected')}
+                        ${renderContactDetailItem('Last Check', lastCheck)}
+                        ${renderContactDetailItem('Needed Action', item.needed_action || 'No action listed')}
+                    </div>
                     ${item.failure_reason ? `<div class="task-blocker" style="margin-top:10px;">${escapeHtml(item.failure_reason)}</div>` : ''}
                 </div>
             `;
@@ -5721,7 +5788,7 @@
                     <div class="task-actions">
                         <button class="task-action primary" onclick="generateContentOutput(event, ${Number(job.id)}, '${type.id}')">${output?.body ? 'Regenerate' : type.action}</button>
                         ${output?.body && draftDisplayBody ? `<button class="task-action" onclick="copyText(event, ${attrJson(draftDisplayBody)})">Copy</button>` : ''}
-                        ${output?.body && draftDisplayBody ? `<button class="task-action primary" onclick="approveContentOutput(event, ${Number(output.id)})">${type.id === 'facebook_post' ? 'Approve + Create GHL Draft' : 'Approve + Save Example'}</button>` : ''}
+                        ${output?.body && draftDisplayBody ? `<button class="task-action primary" onclick="approveContentOutput(event, ${Number(output.id)})">${type.id === 'facebook_post' ? 'Approve + Create Social Draft' : 'Approve + Save Example'}</button>` : ''}
                     </div>
                 </div>
             `;
@@ -8011,7 +8078,7 @@
         }
 
         function allowedViews() {
-            const views = Array.isArray(opsMe?.allowedViews) ? opsMe.allowedViews : ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations'];
+            const views = Array.isArray(opsMe?.allowedViews) ? opsMe.allowedViews : ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations', 'integrations'];
             return new Set(views);
         }
 
@@ -8254,11 +8321,12 @@
                 ensureActiveWorkspaceProject();
                 ensureCurrentViewAllowed();
 
-                const [projectsRes, tasksRes, calendarRes, automationsRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes] = await Promise.allSettled([
+                const [projectsRes, tasksRes, calendarRes, automationsRes, integrationsRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes] = await Promise.allSettled([
                     api.getProjects(),
                     api.getTasks({ project: selectedProjectFilter() || undefined }),
                     viewAllowed('calendar') ? api.getCalendar({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ events: [] }),
                     viewAllowed('automations') ? api.getAutomations({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ automations: [] }),
+                    viewAllowed('integrations') ? api.getIntegrations({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ integrations: [] }),
                     viewAllowed('contacts') || viewAllowed('accounting') ? api.getSignups({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ signups: [] }),
                     viewAllowed('accounting') ? api.getPayments() : Promise.resolve({ payments: [] }),
                     viewAllowed('accounting') ? api.getPaymentIntake() : Promise.resolve({ intake: [] }),
@@ -8279,6 +8347,7 @@
                 if (tasksRes.status === 'fulfilled' && tasksRes.value?.tasks) tasks = tasksRes.value.tasks;
                 if (calendarRes.status === 'fulfilled' && calendarRes.value?.events) calendarEvents = calendarRes.value.events;
                 if (automationsRes.status === 'fulfilled' && automationsRes.value?.automations) automationStatuses = automationsRes.value.automations;
+                if (integrationsRes.status === 'fulfilled' && integrationsRes.value?.integrations) integrationStatuses = integrationsRes.value.integrations;
                 if (signupsRes.status === 'fulfilled' && signupsRes.value?.signups) {
                     signups = signupsRes.value.signups.map((signup) => ({
                         ...signup,
@@ -8298,7 +8367,7 @@
                 if (accountabilityRes.status === 'fulfilled' && accountabilityRes.value?.events) accountabilityEvents = accountabilityRes.value.events;
                 if (groupGoalsRes.status === 'fulfilled' && groupGoalsRes.value?.goals) groupGoals = groupGoalsRes.value.goals;
 
-                const errors = [projectsRes, tasksRes, calendarRes, automationsRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes]
+                const errors = [projectsRes, tasksRes, calendarRes, automationsRes, integrationsRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes]
                     .filter((result) => result.status === 'rejected')
                     .map((result) => result.reason?.message || 'Unknown dashboard error');
 
@@ -8317,6 +8386,7 @@
                 case 'tasks': content = renderTasks(); break;
                 case 'calendar': content = renderCalendar(); break;
                 case 'automations': content = renderAutomations(); break;
+                case 'integrations': content = renderIntegrations(); break;
                 case 'students': content = renderStudents(); break;
                 case 'content': content = renderContent(); break;
                 case 'contacts': content = renderContacts(); break;
@@ -8469,6 +8539,7 @@
             taskProjectFilter = 'all';
             calendarEvents = [];
             automationStatuses = [];
+            integrationStatuses = [];
             contentSection = 'library';
             contentTypeFilter = 'all';
             contentDateFilter = 'all';
@@ -9145,7 +9216,7 @@
                 ...contentBundles.flatMap(bundle => bundle.outputs || [])
             ].find(item => Number(item.id) === Number(outputId));
             const message = output?.output_type === 'facebook_post'
-                ? 'Approve this Facebook draft and create a GHL social draft?'
+                ? 'Approve this Facebook draft and create a social draft?'
                 : output?.output_type === 'blog_draft'
                     ? 'Approve this website blog draft and publish it to the BNA website?'
                     : 'Approve this output and save it as a reusable example?';
@@ -9244,7 +9315,7 @@
                     return;
                 }
                 if (action === 'facebook_draft') {
-                    alert(res?.message || 'Facebook draft created in GHL.');
+                    alert(res?.message || 'Facebook draft action completed.');
                     await loadData();
                     return;
                 }

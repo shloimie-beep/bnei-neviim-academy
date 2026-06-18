@@ -324,6 +324,14 @@ const GHL_DEFAULT_FACEBOOK_ACCOUNT_ID =
   inlineGhlSecrets.GHL_FACEBOOK_ACCOUNT_ID ||
   localGhlSecrets.GHL_FACEBOOK_ACCOUNT_ID ||
   '';
+const BUFFER_ACCESS_TOKEN = String(process.env.BUFFER_ACCESS_TOKEN || process.env.BUFFER_API_TOKEN || '').trim();
+const BUFFER_PROFILE_FACEBOOK_ID = String(process.env.BUFFER_PROFILE_FACEBOOK_ID || process.env.BUFFER_FACEBOOK_PROFILE_ID || '').trim();
+const BUFFER_PROFILE_FACEBOOK_LABEL = String(process.env.BUFFER_PROFILE_FACEBOOK_LABEL || process.env.BUFFER_FACEBOOK_PROFILE_LABEL || '').trim();
+const BUFFER_PROFILE_LINKEDIN_ID = String(process.env.BUFFER_PROFILE_LINKEDIN_ID || process.env.BUFFER_LINKEDIN_PROFILE_ID || '').trim();
+const BUFFER_PROFILE_LINKEDIN_LABEL = String(process.env.BUFFER_PROFILE_LINKEDIN_LABEL || process.env.BUFFER_LINKEDIN_PROFILE_LABEL || '').trim();
+const BUFFER_PROFILE_YOUTUBE_ID = String(process.env.BUFFER_PROFILE_YOUTUBE_ID || process.env.BUFFER_YOUTUBE_PROFILE_ID || '').trim();
+const BUFFER_PROFILE_YOUTUBE_LABEL = String(process.env.BUFFER_PROFILE_YOUTUBE_LABEL || process.env.BUFFER_YOUTUBE_PROFILE_LABEL || '').trim();
+const BUFFER_SOCIAL_LAST_ERROR = String(process.env.BUFFER_SOCIAL_LAST_ERROR || process.env.BUFFER_LAST_ERROR || '').trim();
 const SESSION_COOKIE_NAME = 'bna_ops_session';
 const SESSION_TTL_MS = 1000 * 60 * 60 * 12;
 
@@ -1385,7 +1393,7 @@ function identifyOpsUser(username, password = null) {
 
   if (OPS_USERNAME && user.toLowerCase() === OPS_USERNAME.toLowerCase()) {
     if (pass !== null && pass.toLowerCase() !== String(OPS_PASSWORD || '').toLowerCase()) return null;
-    return createSuperAdminIdentity(user, ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations']);
+    return createSuperAdminIdentity(user, ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations', 'integrations']);
   }
 
   if (
@@ -11722,7 +11730,7 @@ app.get('/api/bna/auth/me', requireAdmin, (req, res) => {
     user: identity?.username || req.opsUser || null,
     role: identity?.role || 'super_admin',
     scope: identity?.scope || { type: 'global', workspaceType: null, workspaceKey: null, projectKey: null },
-    allowedViews: identity?.allowedViews || ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations'],
+    allowedViews: identity?.allowedViews || ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations', 'integrations'],
   });
 });
 
@@ -12016,6 +12024,138 @@ app.get('/api/bna/automations/status', requireAdmin, async (req, res) => {
       project: projectKey || 'all',
       generated_at: new Date().toISOString(),
       automations,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+const SOCIAL_INTEGRATION_TARGETS = [
+  {
+    integrationKey: 'buffer_facebook',
+    provider: 'Buffer',
+    platform: 'Facebook',
+    profileId: () => BUFFER_PROFILE_FACEBOOK_ID,
+    profileLabel: () => BUFFER_PROFILE_FACEBOOK_LABEL,
+  },
+  {
+    integrationKey: 'buffer_linkedin',
+    provider: 'Buffer',
+    platform: 'LinkedIn',
+    profileId: () => BUFFER_PROFILE_LINKEDIN_ID,
+    profileLabel: () => BUFFER_PROFILE_LINKEDIN_LABEL,
+  },
+  {
+    integrationKey: 'buffer_youtube',
+    provider: 'Buffer',
+    platform: 'YouTube',
+    profileId: () => BUFFER_PROFILE_YOUTUBE_ID,
+    profileLabel: () => BUFFER_PROFILE_YOUTUBE_LABEL,
+  },
+];
+
+function maskedIntegrationIdentity(value = '') {
+  const clean = String(value || '').trim();
+  if (!clean) return '';
+  if (clean.length <= 8) return clean;
+  return `${clean.slice(0, 4)}...${clean.slice(-4)}`;
+}
+
+function socialIntegrationStatus(scope, target, generatedAt) {
+  const profileId = target.profileId();
+  const profileLabel = target.profileLabel();
+  const isBnaWorkspace = normalizeProjectKey(scope.project_key) === DEFAULT_PROJECT_KEY;
+  const accountIdentity = profileLabel || maskedIntegrationIdentity(profileId);
+
+  if (!isBnaWorkspace) {
+    return {
+      id: `${scope.project_key}:${target.integrationKey}`,
+      integration_key: target.integrationKey,
+      provider: target.provider,
+      platform: target.platform,
+      status: 'not_connected',
+      account_identity: null,
+      last_check_at: generatedAt,
+      needed_action: 'Connect a workspace-specific Buffer profile before using this social target.',
+      failure_reason: null,
+      workspace_id: scope.workspace_id || null,
+      workspace_key: scope.workspace_key || scope.project_key,
+      workspace_label: automationWorkspaceLabel(scope),
+      project_key: scope.project_key,
+    };
+  }
+
+  if (BUFFER_SOCIAL_LAST_ERROR) {
+    return {
+      id: `${scope.project_key}:${target.integrationKey}`,
+      integration_key: target.integrationKey,
+      provider: target.provider,
+      platform: target.platform,
+      status: 'error',
+      account_identity: accountIdentity || null,
+      last_check_at: generatedAt,
+      needed_action: 'Resolve the Buffer connector error before creating social drafts.',
+      failure_reason: BUFFER_SOCIAL_LAST_ERROR.slice(0, 500),
+      workspace_id: scope.workspace_id || null,
+      workspace_key: scope.workspace_key || scope.project_key,
+      workspace_label: automationWorkspaceLabel(scope),
+      project_key: scope.project_key,
+    };
+  }
+
+  if (!BUFFER_ACCESS_TOKEN || !profileId) {
+    return {
+      id: `${scope.project_key}:${target.integrationKey}`,
+      integration_key: target.integrationKey,
+      provider: target.provider,
+      platform: target.platform,
+      status: 'not_connected',
+      account_identity: accountIdentity || null,
+      last_check_at: generatedAt,
+      needed_action: `Configure BUFFER_ACCESS_TOKEN and the ${target.platform} Buffer profile ID before use.`,
+      failure_reason: null,
+      workspace_id: scope.workspace_id || null,
+      workspace_key: scope.workspace_key || scope.project_key,
+      workspace_label: automationWorkspaceLabel(scope),
+      project_key: scope.project_key,
+    };
+  }
+
+  return {
+    id: `${scope.project_key}:${target.integrationKey}`,
+    integration_key: target.integrationKey,
+    provider: target.provider,
+    platform: target.platform,
+    status: 'connected',
+    account_identity: accountIdentity,
+    last_check_at: generatedAt,
+    needed_action: 'Ready for approved Buffer draft creation.',
+    failure_reason: null,
+    workspace_id: scope.workspace_id || null,
+    workspace_key: scope.workspace_key || scope.project_key,
+    workspace_label: automationWorkspaceLabel(scope),
+    project_key: scope.project_key,
+  };
+}
+
+app.get('/api/bna/integrations/status', requireAdmin, async (req, res) => {
+  try {
+    const scopedProjectKey = opsScopeProjectKey(req);
+    const requestedProjectKey = req.query.project && req.query.project !== 'all'
+      ? normalizeProjectKey(req.query.project)
+      : '';
+    const projectKey = scopedProjectKey || requestedProjectKey;
+    const scopes = await automationWorkspaceScopes(projectKey);
+    const generatedAt = new Date().toISOString();
+    const integrations = scopes.flatMap((scope) =>
+      SOCIAL_INTEGRATION_TARGETS.map((target) => socialIntegrationStatus(scope, target, generatedAt))
+    );
+
+    res.json({
+      success: true,
+      project: projectKey || 'all',
+      generated_at: generatedAt,
+      integrations,
     });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });

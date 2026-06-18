@@ -234,3 +234,16 @@ Scoped automations and operational status (2026-06-18T23:30:30+03:00):
 No deployment, production-data mutation, payment reminder send, Green Invoice
 reprocess, Drive setup route, audit crawl, watch loop, or agent-fleet loop was
 performed.
+
+Simplified integrations/social account status (2026-06-18T23:42:00+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/integrations-status.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/integrations-status.test.js
+  tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js
+  tests/workspace-auth.test.js tests/automations-status.test.js` 22/22.
+- PASS `npm test` 148/148.
+
+No deployment, production-data mutation, Buffer account mutation, GHL mutation,
+audit crawl, watch loop, or agent-fleet loop was performed.

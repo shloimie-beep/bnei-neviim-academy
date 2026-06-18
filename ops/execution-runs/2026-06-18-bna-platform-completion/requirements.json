@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-18T23:30:30+03:00",
+  "updated_at": "2026-06-18T23:42:00+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -1861,7 +1861,7 @@
       "area": "modules",
       "priority": "P1",
       "current_verdict": "partial",
-      "status": "not_started",
+      "status": "needs_verification",
       "expected_result": "Settings and integrations show Connected, Not connected, Error, account identity, last check, and one clear needed action.",
       "acceptance_criteria": [
         "Simplified integrations/social accounts states/actions is implemented against the canonical Express/static runtime where applicable.",
@@ -1872,12 +1872,35 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "GET /api/bna/integrations/status now returns read-only selected/scoped workspace integration rows for Buffer Facebook, LinkedIn, and YouTube targets.",
+        "Integration rows expose Connected/Not connected/Error state, masked or labeled account identity, last_check_at, needed_action, failure_reason, provider, platform, workspace label, and project key.",
+        "Operations now includes an Integrations module loaded with selectedProjectFilter and cards for status, account identity, last check, and needed action.",
+        "Visible Operations Facebook approval copy no longer names GHL as the active social draft provider.",
+        ".env.example documents Buffer social scheduler profile configuration without real IDs."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check server.js PASS",
+        "node --check tests/integrations-status.test.js PASS",
+        "Operations HTML script parse via vm.Script PASS (2 script blocks)",
+        "node --test tests/integrations-status.test.js tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js tests/workspace-auth.test.js tests/automations-status.test.js PASS 22/22",
+        "npm test PASS 148/148"
+      ],
+      "implementation_commits": [
+        "current batch commit: feat: show integration status"
+      ],
+      "files_changed": [
+        "server.js",
+        "public/operations.html",
+        "src/lib/bna/workspace-auth.js",
+        ".env.example",
+        "tests/integrations-status.test.js",
+        "tests/operations-module-toolbar.test.js",
+        "tests/operations-workspace-selector.test.js",
+        "tests/workspace-auth.test.js"
+      ],
+      "notes": "Local implementation and tests passed. Status remains needs_verification because this live-required Operations/server-visible item still needs release approval, deploy, and live smoke before closure. No Buffer, GHL, or other external account mutation was run."
     },
     {
       "id": "REQ-20260618-150",
