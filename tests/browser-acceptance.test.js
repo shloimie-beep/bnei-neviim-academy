@@ -524,6 +524,73 @@ async function assertOperationsMobileControls(page) {
   await page.locator('.focus-panel[aria-label="Tasks overview"]').waitFor();
 }
 
+async function assertOperationsDesktopGrids(page) {
+  const viewport = page.viewportSize();
+  assert.ok(viewport && viewport.width >= 1024, JSON.stringify(viewport));
+  await page.locator('.focus-panel[aria-label="Tasks overview"] .focused-grid').waitFor();
+  const grids = await page.evaluate(() => {
+    function gridMetrics(selector, childSelector) {
+      const node = document.querySelector(selector);
+      if (!node) return null;
+      const computed = getComputedStyle(node);
+      const trackWidths = computed.gridTemplateColumns
+        .split(/\s+/)
+        .map((value) => Number.parseFloat(value))
+        .filter((value) => Number.isFinite(value) && value > 0);
+      const childWidths = Array.from(node.querySelectorAll(childSelector))
+        .map((child) => child.getBoundingClientRect().width)
+        .filter((width) => width > 0);
+      return {
+        childWidths,
+        display: computed.display,
+        gridTemplateColumns: computed.gridTemplateColumns,
+        trackWidths,
+      };
+    }
+
+    return {
+      taskOverview: gridMetrics('.focus-panel[aria-label="Tasks overview"] .focused-grid', '.metric-button'),
+    };
+  });
+
+  for (const [label, grid] of Object.entries(grids)) {
+    assert.equal(grid.display, 'grid', `${label} should render as grid`);
+    assert.ok(grid.trackWidths.length >= 2, `${label} needs multiple desktop tracks: ${JSON.stringify(grid)}`);
+    assert.ok(Math.min(...grid.trackWidths) >= 170, `${label} track too narrow: ${JSON.stringify(grid)}`);
+    assert.ok(
+      Math.max(...grid.trackWidths) - Math.min(...grid.trackWidths) <= 24,
+      `${label} tracks are imbalanced: ${JSON.stringify(grid)}`,
+    );
+    assert.ok(grid.childWidths.length >= 2, `${label} should render multiple cards: ${JSON.stringify(grid)}`);
+    assert.ok(
+      Math.max(...grid.childWidths) - Math.min(...grid.childWidths) <= 24,
+      `${label} cards are imbalanced: ${JSON.stringify(grid)}`,
+    );
+  }
+}
+
+async function assertStudentProfileDesktopGrid(page) {
+  const viewport = page.viewportSize();
+  assert.ok(viewport && viewport.width >= 1024, JSON.stringify(viewport));
+  await page.locator('.student-profile-grid').first().waitFor();
+  const grid = await page.evaluate(() => {
+    const node = document.querySelector('.student-profile-grid');
+    const computed = getComputedStyle(node);
+    return {
+      display: computed.display,
+      gridTemplateColumns: computed.gridTemplateColumns,
+      trackWidths: computed.gridTemplateColumns
+        .split(/\s+/)
+        .map((value) => Number.parseFloat(value))
+        .filter((value) => Number.isFinite(value) && value > 0),
+    };
+  });
+  assert.equal(grid.display, 'grid');
+  assert.equal(grid.trackWidths.length, 2, JSON.stringify(grid));
+  assert.ok(Math.min(...grid.trackWidths) >= 260, JSON.stringify(grid));
+  assert.ok(Math.max(...grid.trackWidths) - Math.min(...grid.trackWidths) <= 24, JSON.stringify(grid));
+}
+
 async function assertStudentPortalIdentity(page) {
   const identity = await page.evaluate(() => ({
     hasLogo: Array.from(document.images).some((img) => (
@@ -602,6 +669,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       await assertOperationsShellStable(page, 'initial mobile operations shell');
 
       await page.setViewportSize({ width: 1440, height: 900 });
+      await assertOperationsDesktopGrids(page);
       await assertOperationsShellStable(page, 'desktop operations shell');
 
       await page.locator('.ops-module-button').filter({ hasText: 'Assistant' }).click();
@@ -619,6 +687,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       assert.match(page.url(), /view=students/);
       assert.match(page.url(), /section=profile/);
       assert.match(page.url(), new RegExp(`student=${TEST_STUDENT_ID}`));
+      await assertStudentProfileDesktopGrid(page);
       await assertOperationsShellStable(page, 'student profile operations shell');
 
       await page.goBack();

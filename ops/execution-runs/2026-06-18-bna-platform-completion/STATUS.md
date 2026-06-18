@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-19T05:35:30+03:00
+Updated: 2026-06-19T05:45:30+03:00
 
 Status counts:
 
@@ -92,6 +92,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current verification batch: REQ-20260618-133 now has static and browser DOM proof for intentional mobile controls, including scroll-capable rails, 44px touch targets, nowrap task-row actions, sticky stacked modal footer actions, and touch-safe modal close control. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-134.
+Current verification batch: REQ-20260618-134 now has static and browser DOM proof for balanced desktop task overview and student profile grids, including non-collapsed readable tracks, balanced card widths, and collapsed auto-fit tracks excluded from the balance check. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-135.
 
 No deployment or production-data mutation is approved in this run.

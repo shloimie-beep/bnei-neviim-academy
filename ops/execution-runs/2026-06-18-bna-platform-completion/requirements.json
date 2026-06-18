@@ -1442,7 +1442,7 @@
       "title": "Balanced desktop grids",
       "area": "design",
       "priority": "P2",
-      "current_verdict": "unknown",
+      "current_verdict": "local_complete_pending_release",
       "status": "needs_verification",
       "expected_result": "Desktop layouts use grid space evenly without large dead areas or uneven rows.",
       "acceptance_criteria": [
@@ -1457,23 +1457,32 @@
       "evidence": [
         "public/operations.html replaces fixed six-column command and pipeline desktop grids with auto-fit minmax tracks that fill available space without dead columns.",
         "Task overview and agent-status desktop tracks now use balanced readable minimum widths instead of uneven 1.35/0.65 and 0.45 fractional mixes.",
-        "Repeated desktop card grids for section KPIs, content sections, student profile KPIs, and student profile sections now use stable readable minimum widths."
+        "Repeated desktop card grids for section KPIs, content sections, student profile KPIs, and student profile sections now use stable readable minimum widths.",
+        "Browser acceptance now verifies the rendered desktop task overview grid resolves to multiple non-collapsed, balanced, readable-width tracks and cards.",
+        "Browser acceptance now verifies the rendered student profile desktop grid resolves to two balanced readable tracks, excluding collapsed auto-fit tracks from the balance calculation."
       ],
       "deployment_evidence": [],
       "verification": [
         "node --check tests/operations-desktop-grids.test.js PASS",
         "Operations HTML script parse via vm.Script PASS (2 script blocks)",
         "node --test tests/operations-desktop-grids.test.js tests/operations-design-system.test.js tests/operations-layout-stability.test.js tests/operations-mobile-controls.test.js PASS 13/13",
-        "npm test PASS 102/102"
+        "npm test PASS 102/102",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/operations-desktop-grids.test.js tests/operations-layout-stability.test.js tests/browser-acceptance.test.js PASS 9/9",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: fix: balance operations desktop grids"
+        "current batch commit: fix: balance operations desktop grids",
+        "current batch commit: test: verify operations desktop grids dom"
       ],
       "files_changed": [
         "public/operations.html",
-        "tests/operations-desktop-grids.test.js"
+        "tests/operations-desktop-grids.test.js",
+        "tests/browser-acceptance.test.js"
       ],
-      "notes": "Implemented as a local CSS/static-test batch only; no new baseline crawl, audit harness rebuild, deploy, or production-data mutation was run."
+      "notes": "Local desktop grid balance primitives are implemented and now have static plus browser DOM proof. Requirement remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for app-visible changes."
     },
     {
       "id": "REQ-20260618-135",

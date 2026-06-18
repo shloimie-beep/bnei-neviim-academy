@@ -569,3 +569,13 @@ Operations mobile controls DOM proof (2026-06-19T05:35:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-133 now has browser proof that rendered mobile Operations module/section rails are scroll-capable, module tabs and section tabs meet 44px touch targets, the Decisions lane renders touch-safe filters and nowrap task-row actions, and the task modal uses a sticky stacked footer with full-width content-box actions plus a touch-safe close control. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Operations desktop grids DOM proof (2026-06-19T05:45:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/operations-desktop-grids.test.js tests/operations-layout-stability.test.js tests/browser-acceptance.test.js` 9/9.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-134 now has browser proof that rendered desktop task overview cards use multiple balanced readable tracks/cards and the rendered student profile grid uses two balanced readable tracks while collapsed auto-fit tracks are ignored. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

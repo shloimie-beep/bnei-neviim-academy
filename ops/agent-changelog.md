@@ -4308,6 +4308,29 @@ Verification:
 Status: `needs_verification`; no audit crawl, deployment, production-data
 mutation, watch loop, or agent-fleet loop was performed.
 
+## 2026-06-19 - Operations desktop grids DOM proof
+
+Requirement: `REQ-20260618-134`
+
+Changed:
+
+- Added browser acceptance assertions for rendered desktop Operations grids.
+- Verified task overview grid tracks and cards are multiple, readable, and
+  balanced at desktop width.
+- Verified the student profile grid resolves to two balanced readable tracks,
+  while collapsed auto-fit tracks are ignored in the balance calculation.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/operations-desktop-grids.test.js tests/operations-layout-stability.test.js tests/browser-acceptance.test.js` 9/9.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data
+mutation, watch loop, or agent-fleet loop was performed.
+
 ## 2026-06-19 - Operations mobile controls DOM proof
 
 Requirement: `REQ-20260618-133`
