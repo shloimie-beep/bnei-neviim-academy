@@ -57,16 +57,20 @@ test('Operations renders a single Assistant module without duplicate persona lab
 
   assert.match(operations, /getAssistantStatus\(filters = \{\}\)/);
   assert.match(operations, /getAssistantMemory\(filters = \{\}\)/);
+  assert.match(operations, /getAssistantActions\(filters = \{\}\)/);
   assert.match(operations, /let assistantStatus = null;/);
   assert.match(operations, /let assistantMemory = null;/);
+  assert.match(operations, /let assistantActions = null;/);
   assert.match(operations, /\{ id: 'assistant', label: 'Assistant', marker: 'AI' \}/);
   assert.match(operations, /case 'assistant': content = renderAssistant\(\); break;/);
   assert.match(operations, /viewAllowed\('assistant'\) \? api\.getAssistantStatus\(\{ project: selectedProjectFilter\(\) \|\| undefined \}\)/);
   assert.match(operations, /viewAllowed\('assistant'\) \? api\.getAssistantMemory\(\{ project: selectedProjectFilter\(\) \|\| undefined, module: 'assistant', subject_type: 'workspace' \}\)/);
+  assert.match(operations, /viewAllowed\('assistant'\) \? api\.getAssistantActions\(\{ project: selectedProjectFilter\(\) \|\| undefined \}\)/);
 
   assert.match(renderBlock, /BNA Assistant/);
   assert.match(renderBlock, /aria-label="BNA Assistant shell"/);
   assert.match(renderBlock, /Memory Scope/);
+  assert.match(renderBlock, /Action Registry/);
   assert.match(renderBlock, /memoryScope\.user_key/);
   assert.doesNotMatch(renderBlock, /\bCodex\b/);
   assert.doesNotMatch(renderBlock, /\bKimi\b/);
@@ -79,8 +83,11 @@ test('workspace auth permits only safe Assistant status reads for scoped users',
 
   assert.ok(workspaceAuth.includes("{ method: 'GET', pattern: /^\\/api\\/bna\\/assistant\\/status$/ }"));
   assert.ok(workspaceAuth.includes("{ method: 'GET', pattern: /^\\/api\\/bna\\/assistant\\/memory$/ }"));
+  assert.ok(workspaceAuth.includes("{ method: 'GET', pattern: /^\\/api\\/bna\\/assistant\\/actions$/ }"));
   assert.match(authTest, /path: '\/api\/bna\/assistant\/status', method: 'GET' \}\), true/);
   assert.match(authTest, /path: '\/api\/bna\/assistant\/memory', method: 'GET' \}\), true/);
+  assert.match(authTest, /path: '\/api\/bna\/assistant\/actions', method: 'GET' \}\), true/);
   assert.match(authTest, /path: '\/api\/bna\/assistant\/status', method: 'POST' \}\), false/);
   assert.match(authTest, /path: '\/api\/bna\/assistant\/memory', method: 'POST' \}\), false/);
+  assert.match(authTest, /path: '\/api\/bna\/assistant\/actions', method: 'POST' \}\), false/);
 });

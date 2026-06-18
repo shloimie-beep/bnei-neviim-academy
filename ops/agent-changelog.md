@@ -3920,3 +3920,33 @@ Verification:
 Status: local `needs_verification`; no OpenAI call, helper action execution,
 deployment, production-data mutation, audit crawl, watch loop, or agent-fleet
 loop was performed. Resume at `REQ-20260618-159`.
+
+## 2026-06-19 - Permissioned Assistant action registry
+
+Requirement: `REQ-20260618-159`
+
+Changed:
+
+- Added `ASSISTANT_ACTION_REGISTRY` for existing read-only and mutating app
+  actions with module view, method/route, risk level, confirmation token where
+  applicable, audit requirement, and execution status.
+- Added `/api/bna/assistant/actions` to return only the registry rows permitted
+  for the current role/workspace view.
+- Added a guarded `/api/bna/assistant/actions/:actionKey` execution route that
+  validates registration and permission but refuses mutation until REQ-160
+  confirmation tiers and action audit logs exist.
+- Wired Operations Assistant to load and render an Action Registry card through
+  the selected workspace filter without adding execution buttons.
+- Added `tests/assistant-actions.test.js` and updated assistant/workspace-auth
+  tests for registry route access, UI load, and the guarded execution rule.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/assistant-actions.test.js`.
+- PASS `node --test tests/assistant-actions.test.js tests/assistant-shell.test.js tests/workspace-auth.test.js tests/operations-workspace-selector.test.js` 21/21.
+- PASS `npm test` 177/177.
+
+Status: local `needs_verification`; no OpenAI call, helper action execution,
+deployment, production-data mutation, audit crawl, watch loop, or agent-fleet
+loop was performed. Resume at `REQ-20260618-160`.

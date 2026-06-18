@@ -12483,14 +12483,216 @@ function operationsAssistantStatus(identity = {}, projectKey = '') {
       'operations_navigation',
       'content_and_task_context_summary',
       'drafting_guidance',
+      'permissioned_action_registry',
     ],
     disabled_until_verified: [
-      'scoped_memory',
-      'backend_actions',
+      'action_execution',
       'confirmation_tiers',
       'action_audit_log',
     ],
   };
+}
+
+const ASSISTANT_ACTION_REGISTRY = Object.freeze([
+  {
+    action_key: 'calendar.read_context',
+    label: 'Read calendar context',
+    module_key: 'calendar',
+    required_view: 'calendar',
+    method: 'GET',
+    route: '/api/bna/calendar',
+    risk_level: 'read_only',
+    confirmation_token: null,
+    audit_required: false,
+    execution_status: 'available',
+  },
+  {
+    action_key: 'tasks.create_task',
+    label: 'Create task or decision',
+    module_key: 'tasks',
+    required_view: 'tasks',
+    method: 'POST',
+    route: '/api/bna/tasks',
+    risk_level: 'low_mutation',
+    confirmation_token: null,
+    audit_required: true,
+    execution_status: 'registered_requires_audit',
+  },
+  {
+    action_key: 'tasks.add_comment',
+    label: 'Add task comment',
+    module_key: 'tasks',
+    required_view: 'tasks',
+    method: 'POST',
+    route: '/api/bna/tasks/:id/comments',
+    risk_level: 'low_mutation',
+    confirmation_token: null,
+    audit_required: true,
+    execution_status: 'registered_requires_audit',
+  },
+  {
+    action_key: 'students.read_context',
+    label: 'Read student context',
+    module_key: 'students',
+    required_view: 'students',
+    method: 'GET',
+    route: '/api/bna/students',
+    risk_level: 'read_only',
+    confirmation_token: null,
+    audit_required: false,
+    execution_status: 'available',
+  },
+  {
+    action_key: 'content.read_jobs',
+    label: 'Read content jobs',
+    module_key: 'content',
+    required_view: 'content',
+    method: 'GET',
+    route: '/api/bna/content-jobs',
+    risk_level: 'read_only',
+    confirmation_token: null,
+    audit_required: false,
+    execution_status: 'available',
+  },
+  {
+    action_key: 'content.generate_draft',
+    label: 'Generate content draft',
+    module_key: 'content',
+    required_view: 'content',
+    method: 'POST',
+    route: '/api/bna/content-jobs/:id/actions',
+    risk_level: 'content_mutation',
+    confirmation_token: null,
+    audit_required: true,
+    execution_status: 'registered_requires_audit',
+  },
+  {
+    action_key: 'content.publish_buffer_post',
+    label: 'Publish approved Buffer post',
+    module_key: 'content',
+    required_view: 'content',
+    method: 'POST',
+    route: '/api/bna/content-outputs/:id/actions',
+    risk_level: 'publishing',
+    confirmation_token: 'PUBLISH_APPROVED_CONTENT',
+    audit_required: true,
+    execution_status: 'registered_requires_confirmation_audit',
+  },
+  {
+    action_key: 'contacts.read_signups',
+    label: 'Read signup/contact context',
+    module_key: 'contacts',
+    required_view: 'contacts',
+    method: 'GET',
+    route: '/api/bna/signups',
+    risk_level: 'read_only',
+    confirmation_token: null,
+    audit_required: false,
+    execution_status: 'available',
+  },
+  {
+    action_key: 'accounting.log_payment',
+    label: 'Log completed payment',
+    module_key: 'accounting',
+    required_view: 'accounting',
+    method: 'POST',
+    route: '/api/bna/payments',
+    risk_level: 'financial',
+    confirmation_token: 'LOG_PAYMENT',
+    audit_required: true,
+    execution_status: 'registered_requires_confirmation_audit',
+  },
+  {
+    action_key: 'accounting.capture_payment_intake',
+    label: 'Capture payment intake',
+    module_key: 'accounting',
+    required_view: 'accounting',
+    method: 'POST',
+    route: '/api/bna/payment-intake',
+    risk_level: 'financial',
+    confirmation_token: 'CAPTURE_PAYMENT_INTAKE',
+    audit_required: true,
+    execution_status: 'registered_requires_confirmation_audit',
+  },
+  {
+    action_key: 'accounting.reprocess_green_invoice',
+    label: 'Reprocess Green Invoice webhook',
+    module_key: 'accounting',
+    required_view: 'accounting',
+    method: 'POST',
+    route: '/api/bna/green-invoice/webhooks/:id/reprocess',
+    risk_level: 'financial',
+    confirmation_token: 'REPROCESS_GREEN_INVOICE',
+    audit_required: true,
+    execution_status: 'registered_requires_confirmation_audit',
+  },
+  {
+    action_key: 'automations.read_status',
+    label: 'Read automation status',
+    module_key: 'automations',
+    required_view: 'automations',
+    method: 'GET',
+    route: '/api/bna/automations/status',
+    risk_level: 'read_only',
+    confirmation_token: null,
+    audit_required: false,
+    execution_status: 'available',
+  },
+  {
+    action_key: 'integrations.read_status',
+    label: 'Read integration status',
+    module_key: 'integrations',
+    required_view: 'integrations',
+    method: 'GET',
+    route: '/api/bna/integrations/status',
+    risk_level: 'read_only',
+    confirmation_token: null,
+    audit_required: false,
+    execution_status: 'available',
+  },
+  {
+    action_key: 'users.read_members',
+    label: 'Read workspace users',
+    module_key: 'users',
+    required_view: 'users',
+    method: 'GET',
+    route: '/api/bna/users',
+    risk_level: 'read_only',
+    confirmation_token: null,
+    audit_required: false,
+    execution_status: 'available',
+  },
+]);
+
+function assistantActionPermitted(action, identity = {}) {
+  if (!action?.required_view) return true;
+  if (identity.role === 'super_admin') return true;
+  const allowedViews = new Set(Array.isArray(identity.allowedViews) ? identity.allowedViews : []);
+  return allowedViews.has(action.required_view);
+}
+
+function assistantActionRuntimeStatus(action = {}) {
+  if (String(action.method || 'GET').toUpperCase() === 'GET') return 'available';
+  return 'blocked_until_confirmation_audit';
+}
+
+function assistantActionsForIdentity(identity = {}, projectKey = '') {
+  return ASSISTANT_ACTION_REGISTRY
+    .filter((action) => assistantActionPermitted(action, identity))
+    .map((action) => {
+      const runtimeStatus = assistantActionRuntimeStatus(action);
+      return {
+        ...action,
+        workspace_project: projectKey || DEFAULT_PROJECT_KEY,
+        enabled: runtimeStatus === 'available',
+        runtime_status: runtimeStatus,
+        confirmation_required: Boolean(action.confirmation_token) || runtimeStatus !== 'available',
+      };
+    });
+}
+
+function findAssistantAction(actionKey = '') {
+  return ASSISTANT_ACTION_REGISTRY.find((action) => action.action_key === String(actionKey || '').trim());
 }
 
 function normalizeAssistantModuleKey(value = 'assistant') {
@@ -12594,6 +12796,39 @@ app.get('/api/bna/assistant/memory', requireAdmin, async (req, res) => {
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
   }
+});
+
+app.get('/api/bna/assistant/actions', requireAdmin, (req, res) => {
+  const scopedProjectKey = opsScopeProjectKey(req);
+  const requestedProjectKey = req.query.project && req.query.project !== 'all'
+    ? normalizeProjectKey(req.query.project)
+    : '';
+  const projectKey = scopedProjectKey || requestedProjectKey || DEFAULT_PROJECT_KEY;
+  const identity = req.opsIdentity || {};
+  res.json({
+    success: true,
+    project: projectKey,
+    actions: assistantActionsForIdentity(identity, projectKey),
+  });
+});
+
+app.post('/api/bna/assistant/actions/:actionKey', requireAdmin, (req, res) => {
+  const action = findAssistantAction(req.params.actionKey);
+  if (!action) return res.status(404).json({ error: 'Assistant action is not registered' });
+  if (!assistantActionPermitted(action, req.opsIdentity || {})) {
+    return res.status(403).json({ error: 'Assistant action is not permitted for this role or workspace view' });
+  }
+  return res.status(409).json({
+    error: 'Assistant action execution requires REQ-20260618-160 confirmation tiers and action audit logs before mutations run.',
+    action: {
+      action_key: action.action_key,
+      method: action.method,
+      route: action.route,
+      risk_level: action.risk_level,
+      confirmation_token: action.confirmation_token,
+      audit_required: action.audit_required,
+    },
+  });
 });
 
 function fallbackAutomationScopes(projectKey = '') {

@@ -60,7 +60,7 @@
 | REQ-20260618-156 | REQ-20260618-108 | BNA-STUDENT-002 | needs_operator_decision | blocked | Duplicate Menachem cleanup with audit trail/prevention |
 | REQ-20260618-157 | REQ-20260618-109 | BNA-HELPER-001 | needs_verification | partial | One visible OpenAI-powered assistant shell |
 | REQ-20260618-158 | REQ-20260618-109 | BNA-HELPER-002 | needs_verification | partial | Scope helper memory by user/role/workspace/context |
-| REQ-20260618-159 | REQ-20260618-109 | BNA-HELPER-003 | not_started | partial | Permissioned backend action registry |
+| REQ-20260618-159 | REQ-20260618-109 | BNA-HELPER-003 | needs_verification | partial | Permissioned backend action registry |
 | REQ-20260618-160 | REQ-20260618-109 | BNA-HELPER-004 | not_started | partial | Confirmation tiers and action audit trail |
 | REQ-20260618-161 | REQ-20260618-109 | BNA-HELPER-005 | not_started | partial | Remove duplicate helper identities and dev language |
 | REQ-20260618-162 | REQ-20260618-109 | BNA-HELPER-006 | not_started | partial | Prevent public/authenticated memory leakage |

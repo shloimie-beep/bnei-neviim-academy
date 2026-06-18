@@ -338,3 +338,15 @@ Scoped Assistant memory context (2026-06-19T00:44:30+03:00):
 
 No OpenAI call, helper action execution, deployment, production-data mutation,
 audit crawl, watch loop, or agent-fleet loop was performed.
+
+Permissioned Assistant action registry (2026-06-19T00:56:30+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/assistant-actions.test.js`.
+- PASS `node --test tests/assistant-actions.test.js tests/assistant-shell.test.js tests/workspace-auth.test.js tests/operations-workspace-selector.test.js` 21/21.
+- PASS `npm test` 177/177.
+
+No OpenAI call, helper action execution, deployment, production-data mutation,
+audit crawl, watch loop, or agent-fleet loop was performed. Mutating helper
+actions remain guarded until REQ-20260618-160 confirmation tiers and action
+audit logs are implemented.
