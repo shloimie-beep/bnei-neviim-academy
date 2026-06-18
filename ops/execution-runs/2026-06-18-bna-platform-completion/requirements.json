@@ -128,10 +128,19 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "Operations now has semantic design tokens and shared high-contrast surface/button/type/focus primitives for the canonical shell."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "notes": "Parent workstream retained from original active run."
+      "verification": [
+        "node --test tests/operations-design-system.test.js tests/operations-layout-stability.test.js tests/operations-module-toolbar.test.js PASS 10/10",
+        "npm test PASS 96/96"
+      ],
+      "notes": "Shared design primitive child REQ-132 has local implementation and tests. Parent remains in_progress until mobile controls and desktop grid child requirements are complete.",
+      "files_changed": [
+        "public/operations.html",
+        "tests/operations-design-system.test.js"
+      ]
     },
     {
       "id": "REQ-20260618-106",
@@ -1065,7 +1074,7 @@
       "area": "design",
       "priority": "P1",
       "current_verdict": "partial",
-      "status": "not_started",
+      "status": "needs_verification",
       "expected_result": "One semantic light-gold/parchment card system with readable text is shared across used surfaces.",
       "acceptance_criteria": [
         "Shared high-contrast card/spacing/type/button system is implemented against the canonical Express/static runtime where applicable.",
@@ -1076,12 +1085,27 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "public/operations.html now declares semantic Operations design tokens for background, surfaces, parchment, border, text, gold, focus, radius, spacing, and shadow.",
+        "Shared Operations design primitives now apply one high-contrast surface treatment to focus panels, task rows, contact cards, content cards, prompt cards, event cards, student cards, KPI cards, table rows, and modals.",
+        "Shared button/control primitives now align radius, minimum height, primary gold treatment, focus-visible outline, and project parchment badges.",
+        "Operations app type guard sets letter-spacing to 0 inside the app shell to prevent negative tracking drift."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check tests/operations-design-system.test.js PASS",
+        "Operations HTML script parse via vm.Script PASS (2 script blocks)",
+        "node --test tests/operations-design-system.test.js tests/operations-layout-stability.test.js tests/operations-module-toolbar.test.js PASS 10/10",
+        "npm test PASS 96/96"
+      ],
+      "implementation_commits": [
+        "current batch commit: feat: add operations design primitives"
+      ],
+      "files_changed": [
+        "public/operations.html",
+        "tests/operations-design-system.test.js"
+      ],
+      "notes": "Local shared design primitive layer is implemented and tested. Requirement remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for app-visible changes."
     },
     {
       "id": "REQ-20260618-133",

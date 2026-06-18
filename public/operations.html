@@ -18,12 +18,36 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --ops-bg: #0b1120;
+            --ops-surface: #1e293b;
+            --ops-surface-raised: #111827;
+            --ops-surface-muted: rgba(15, 23, 42, 0.72);
+            --ops-surface-parchment: #f8f1d5;
+            --ops-border: #334155;
+            --ops-border-soft: rgba(148, 163, 184, 0.22);
+            --ops-text: #f8fafc;
+            --ops-text-muted: #cbd5e1;
+            --ops-text-subtle: #94a3b8;
+            --ops-gold: #c9a227;
+            --ops-focus: #facc15;
+            --ops-danger: #f87171;
+            --ops-success: #34d399;
+            --ops-radius-card: 8px;
+            --ops-radius-control: 8px;
+            --ops-space-1: 4px;
+            --ops-space-2: 8px;
+            --ops-space-3: 12px;
+            --ops-space-4: 16px;
+            --ops-shadow-panel: 0 18px 50px rgba(2, 6, 23, 0.22);
+        }
+
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-            background: #0f172a;
-            color: #e2e8f0;
+            background: var(--ops-bg);
+            color: var(--ops-text-muted);
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
             overflow-x: hidden;
@@ -3371,6 +3395,95 @@
                 flex-basis: 154px;
                 min-height: 112px;
             }
+        }
+
+        /* Shared Operations design primitives */
+        .ops-app-shell,
+        .ops-app-shell * {
+            letter-spacing: 0;
+        }
+
+        .focus-panel,
+        .metric-button,
+        .filter-details,
+        .workflow-details,
+        .student-picker,
+        .task-row,
+        .contact-card,
+        .contact-detail-panel,
+        .contact-empty-card,
+        .accounting-card,
+        .payment-roster,
+        .content-library-card,
+        .prompt-card,
+        .event-card,
+        .student-card,
+        .kpi-card,
+        .table-row,
+        .modal {
+            background: var(--ops-surface);
+            border-color: var(--ops-border);
+            border-radius: var(--ops-radius-card);
+            color: var(--ops-text-muted);
+            box-shadow: var(--ops-shadow-panel);
+        }
+
+        .focus-panel h2,
+        .focus-panel h3,
+        .task-row-title,
+        .contact-card-title,
+        .event-title,
+        .content-card-main h3,
+        .prompt-card h4,
+        .student-card-name,
+        .kpi-value {
+            color: var(--ops-text);
+        }
+
+        .page-heading p,
+        .task-row-detail,
+        .task-row-meta,
+        .contact-card-subtitle,
+        .contact-card-contact,
+        .event-meta,
+        .content-card-summary,
+        .metric-note {
+            color: var(--ops-text-subtle);
+        }
+
+        .btn,
+        .task-action,
+        .filter-chip,
+        .section-tab,
+        .ops-module-button,
+        .metric-button {
+            border-radius: var(--ops-radius-control);
+            min-height: 36px;
+        }
+
+        .btn-primary,
+        .task-action.primary,
+        .ops-command-action,
+        .ops-module-button.active .ops-module-marker {
+            background: var(--ops-gold);
+            border-color: var(--ops-gold);
+            color: var(--ops-bg);
+        }
+
+        .badge-project-bna,
+        .badge-project-one_time_mishnah_class {
+            background: var(--ops-surface-parchment);
+            color: var(--ops-bg);
+        }
+
+        button:focus-visible,
+        a:focus-visible,
+        input:focus-visible,
+        select:focus-visible,
+        textarea:focus-visible,
+        [role="button"]:focus-visible {
+            outline: 3px solid var(--ops-focus);
+            outline-offset: 2px;
         }
     </style>
 </head>

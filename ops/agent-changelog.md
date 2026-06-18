@@ -3127,3 +3127,32 @@ Verification:
 Status: local `needs_verification`; no deployment, production-data mutation,
 audit crawl, watch loop, or agent-fleet loop was performed. Resume at
 `REQ-20260618-132`.
+
+## 2026-06-18T20:37:34+03:00 - Operations Design Primitives
+
+Completed the local shared design primitive batch for `REQ-20260618-132`.
+
+- Added semantic Operations CSS tokens for background, surfaces, parchment,
+  borders, text, gold, focus, radius, spacing, and shadow.
+- Added a shared high-contrast surface primitive for the main Operations cards,
+  panels, task rows, content cards, prompt cards, event cards, student cards,
+  KPI cards, table rows, and modals.
+- Added shared control primitives for button radius, minimum height, primary
+  gold treatment, and focus-visible outlines.
+- Added parchment project badge treatment.
+- Added an Operations-app-local type guard to prevent negative letter-spacing
+  drift.
+- Added focused coverage in `tests/operations-design-system.test.js`.
+
+Verification:
+
+- PASS `node --check tests/operations-design-system.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/operations-design-system.test.js
+  tests/operations-layout-stability.test.js
+  tests/operations-module-toolbar.test.js` 10/10.
+- PASS `npm test` 96/96.
+
+Status: local `needs_verification`; no deployment, production-data mutation,
+audit crawl, watch loop, or agent-fleet loop was performed. Resume at
+`REQ-20260618-133`.

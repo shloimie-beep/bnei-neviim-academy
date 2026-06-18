@@ -97,3 +97,10 @@ Operations identity/header alignment (2026-06-18T20:33:30+03:00):
 - PASS Operations, Operations Login, and Student Portal script parse via `vm.Script`.
 - PASS `node --test tests/operations-identity-header.test.js tests/pwa-identity.test.js` 10/10.
 - PASS `npm test` 92/92.
+
+Operations design primitives (2026-06-18T20:37:34+03:00):
+
+- PASS `node --check tests/operations-design-system.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/operations-design-system.test.js tests/operations-layout-stability.test.js tests/operations-module-toolbar.test.js` 10/10.
+- PASS `npm test` 96/96.

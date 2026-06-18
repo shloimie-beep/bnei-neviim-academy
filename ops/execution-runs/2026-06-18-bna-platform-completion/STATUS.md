@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-18T20:33:30+03:00
+Updated: 2026-06-18T20:37:34+03:00
 
 Status counts:
 
@@ -8,8 +8,8 @@ Status counts:
 - done: 4
 - already_satisfied: 1
 - blocked: 3
-- needs_verification: 13
-- not_started: 37
+- needs_verification: 14
+- not_started: 36
 - needs_operator_decision: 1
 
 Closed/already satisfied IDs:
@@ -47,7 +47,7 @@ Open non-blocked IDs begin with:
 - REQ-20260618-129 BNA-OPS-002: Simplify workspace/sidebar navigation (needs_verification)
 - REQ-20260618-130 BNA-OPS-003: Prevent unexpected page collapse/minimize (needs_verification)
 - REQ-20260618-131 BNA-OPS-004: Consistent headers, logo behavior, portal identity, and language controls (needs_verification)
-- REQ-20260618-132 BNA-DESIGN-001: Shared high-contrast card/spacing/type/button system (not_started)
+- REQ-20260618-132 BNA-DESIGN-001: Shared high-contrast card/spacing/type/button system (needs_verification)
 - REQ-20260618-133 BNA-DESIGN-002: Intentional mobile controls (not_started)
 - REQ-20260618-134 BNA-DESIGN-003: Balanced desktop grids (not_started)
 
@@ -58,6 +58,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current implementation batch: REQ-20260618-131 has local header/logo/portal identity/language-control alignment plus focused tests. Next implementation target is REQ-20260618-132.
+Current implementation batch: REQ-20260618-132 has local shared Operations design primitives plus focused tests. Next implementation target is REQ-20260618-133.
 
 No deployment or production-data mutation is approved in this run.
