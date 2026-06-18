@@ -4308,6 +4308,31 @@ Verification:
 Status: `needs_verification`; no audit crawl, deployment, production-data
 mutation, watch loop, or agent-fleet loop was performed.
 
+## 2026-06-19 - Operations accessibility DOM proof
+
+Requirement: `REQ-20260618-135`
+
+Changed:
+
+- Added browser acceptance assertions for keyboard task-row activation and
+  rendered task-dialog accessibility.
+- Verified role/aria modal metadata, sr-only description, accessible close
+  label, active section tab pressed/current state, and focus restoration after
+  Escape.
+- Fixed task edit modal focus loss after asynchronous task-comment loading
+  re-rendered the dialog.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/operations-accessibility.test.js tests/operations-design-system.test.js tests/browser-acceptance.test.js` 12/12.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data
+mutation, watch loop, or agent-fleet loop was performed.
+
 ## 2026-06-19 - Operations desktop grids DOM proof
 
 Requirement: `REQ-20260618-134`

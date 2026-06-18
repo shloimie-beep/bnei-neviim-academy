@@ -36,7 +36,7 @@
 | REQ-20260618-132 | REQ-20260618-105 | BNA-DESIGN-001 | needs_verification | local_complete_pending_release | Shared high-contrast card/spacing/type/button system |
 | REQ-20260618-133 | REQ-20260618-105 | BNA-DESIGN-002 | needs_verification | local_complete_pending_release | Intentional mobile controls |
 | REQ-20260618-134 | REQ-20260618-105 | BNA-DESIGN-003 | needs_verification | local_complete_pending_release | Balanced desktop grids |
-| REQ-20260618-135 | REQ-20260618-105 | BNA-A11Y-001 | needs_verification | partial | Accessibility labels, contrast, focus, semantics, and modals |
+| REQ-20260618-135 | REQ-20260618-105 | BNA-A11Y-001 | needs_verification | local_complete_pending_release | Accessibility labels, contrast, focus, semantics, and modals |
 | REQ-20260618-136 | REQ-20260618-106 | BNA-TASK-001 | needs_verification | partial | Canonical task state model |
 | REQ-20260618-137 | REQ-20260618-106 | BNA-TASK-002 | needs_verification | partial | Separate owner/status/urgency/due/blocker/provenance |
 | REQ-20260618-138 | REQ-20260618-106 | BNA-TASK-003 | needs_verification | partial | Merge Intake Review/Review Queue into auto-routing and Decisions |

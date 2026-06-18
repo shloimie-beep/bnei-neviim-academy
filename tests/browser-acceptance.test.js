@@ -591,6 +591,69 @@ async function assertStudentProfileDesktopGrid(page) {
   assert.ok(Math.max(...grid.trackWidths) - Math.min(...grid.trackWidths) <= 24, JSON.stringify(grid));
 }
 
+async function assertOperationsAccessibility(page) {
+  await page.locator('.section-tab').filter({ hasText: 'Decisions' }).first().click();
+  const taskRow = page.locator('.task-row').first();
+  await taskRow.waitFor();
+  const taskRowState = await taskRow.evaluate((node) => ({
+    ariaLabel: node.getAttribute('aria-label') || '',
+    role: node.getAttribute('role') || '',
+    tabIndex: node.getAttribute('tabindex') || '',
+  }));
+  assert.equal(taskRowState.role, 'button');
+  assert.equal(taskRowState.tabIndex, '0');
+  assert.match(taskRowState.ariaLabel, /^Open task:/);
+
+  await taskRow.focus();
+  await page.keyboard.press('Enter');
+  await page.locator('#taskModal.show').waitFor();
+  await page.waitForFunction(() => document.activeElement?.id === 'taskTitle');
+  const modalState = await page.evaluate(() => {
+    const modalOverlay = document.querySelector('#taskModal');
+    const dialog = modalOverlay?.querySelector('.modal');
+    const close = modalOverlay?.querySelector('.modal-close');
+    const description = document.querySelector('#taskModalDescription');
+    const activeTab = document.querySelector('.section-tab.active');
+    return {
+      activeElementId: document.activeElement?.id || '',
+      ariaHidden: modalOverlay?.getAttribute('aria-hidden') || '',
+      ariaModal: dialog?.getAttribute('aria-modal') || '',
+      closeLabel: close?.getAttribute('aria-label') || '',
+      describedBy: dialog?.getAttribute('aria-describedby') || '',
+      descriptionHidden: description?.classList.contains('sr-only') || false,
+      descriptionText: description?.textContent?.trim() || '',
+      labelledBy: dialog?.getAttribute('aria-labelledby') || '',
+      role: dialog?.getAttribute('role') || '',
+      tabPressed: activeTab?.getAttribute('aria-pressed') || '',
+      tabCurrent: activeTab?.getAttribute('aria-current') || '',
+    };
+  });
+  assert.equal(modalState.activeElementId, 'taskTitle');
+  assert.equal(modalState.ariaHidden, 'false');
+  assert.equal(modalState.role, 'dialog');
+  assert.equal(modalState.ariaModal, 'true');
+  assert.equal(modalState.labelledBy, 'taskModalTitle');
+  assert.equal(modalState.describedBy, 'taskModalDescription');
+  assert.equal(modalState.closeLabel, 'Close task details');
+  assert.equal(modalState.descriptionHidden, true);
+  assert.match(modalState.descriptionText, /Review or edit task fields/);
+  assert.equal(modalState.tabPressed, 'true');
+  assert.equal(modalState.tabCurrent, 'page');
+
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(() => !document.querySelector('#taskModal')?.classList.contains('show'));
+  await page.waitForFunction(() => document.activeElement?.classList?.contains('task-row'));
+  const restoredFocus = await page.evaluate(() => ({
+    ariaLabel: document.activeElement?.getAttribute('aria-label') || '',
+    rowId: document.activeElement?.getAttribute('data-task-row-id') || '',
+  }));
+  assert.match(restoredFocus.ariaLabel, /^Open task:/);
+  assert.ok(restoredFocus.rowId);
+
+  await page.locator('.section-tab').filter({ hasText: 'Overview' }).first().click();
+  await page.locator('.focus-panel[aria-label="Tasks overview"]').waitFor();
+}
+
 async function assertStudentPortalIdentity(page) {
   const identity = await page.evaluate(() => ({
     hasLogo: Array.from(document.images).some((img) => (
@@ -670,6 +733,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
 
       await page.setViewportSize({ width: 1440, height: 900 });
       await assertOperationsDesktopGrids(page);
+      await assertOperationsAccessibility(page);
       await assertOperationsShellStable(page, 'desktop operations shell');
 
       await page.locator('.ops-module-button').filter({ hasText: 'Assistant' }).click();

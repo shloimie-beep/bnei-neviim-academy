@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-19T05:45:30+03:00
+Updated: 2026-06-19T05:55:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -27,10 +27,11 @@ Latest completed local batches:
 - REQ-20260618-132: Operations shared design primitives now have static and browser DOM proof for high-contrast surfaces, shared type/spacing/radius, button/control primitives, focus-visible styling, mobile touch target overrides, and non-negative app-shell letter spacing. It remains needs_verification only for release approval, deploy, and live smoke.
 - REQ-20260618-133: Operations mobile controls now have static and browser DOM proof for scroll-capable rails, 44px touch targets, nowrap task-row actions, sticky stacked modal footer actions, and touch-safe modal close behavior. It remains needs_verification only for release approval, deploy, and live smoke.
 - REQ-20260618-134: Operations desktop grids now have static and browser DOM proof for balanced task overview and student profile tracks/cards with collapsed auto-fit tracks excluded from the balance check. It remains needs_verification only for release approval, deploy, and live smoke.
+- REQ-20260618-135: Operations accessibility now has static and browser DOM proof for keyboard task-row activation, modal semantics, accessible labels/descriptions, focus placement, Escape close, focus restoration, pressed/current state, and preserved modal focus after async task-comment re-render. It remains needs_verification only for release approval, deploy, and live smoke.
 
 Exact next requirement:
 
-- REQ-20260618-135 / BNA-A11Y-001: Accessibility labels, contrast, focus, semantics, and modals.
+- REQ-20260618-136 / BNA-TASK-001: Canonical task state model.
 
 Blocked requirement intentionally skipped:
 
@@ -41,15 +42,15 @@ Exact next command:
 
 ```powershell
 npm run bna:run:status
-node --test tests/operations-accessibility.test.js tests/operations-design-system.test.js tests/browser-acceptance.test.js
+node --test tests/task-state-model.test.js tests/operations-accessibility.test.js tests/browser-acceptance.test.js
 ```
 
-Then inspect whether `REQ-20260618-135` needs only refreshed local evidence or an additional browser/DOM assertion for modal labels, focus restoration, keyboard activation, pressed/current states, disabled controls, and contrast/focus-visible behavior. Do not close live-required accessibility items as `done` without release approval, deployment, and live-smoke evidence.
+Then inspect whether `REQ-20260618-136` needs only refreshed local evidence or an additional browser/API assertion for canonical task states, legacy alias compatibility, decision_required coherence, and Operations UI action/state labels. Do not close live-required task items as `done` without release approval, deployment, and live-smoke evidence.
 
 Still open after this batch:
 
-- REQ-20260618-124 through REQ-20260618-134 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
-- REQ-20260618-135 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-124 through REQ-20260618-135 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
+- REQ-20260618-136 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - REQ-20260618-156 remains `needs_operator_decision` for duplicate-student cleanup approval.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 

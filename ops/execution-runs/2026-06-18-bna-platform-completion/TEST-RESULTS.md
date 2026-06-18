@@ -579,3 +579,13 @@ Operations desktop grids DOM proof (2026-06-19T05:45:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-134 now has browser proof that rendered desktop task overview cards use multiple balanced readable tracks/cards and the rendered student profile grid uses two balanced readable tracks while collapsed auto-fit tracks are ignored. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Operations accessibility DOM proof (2026-06-19T05:55:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/operations-accessibility.test.js tests/operations-design-system.test.js tests/browser-acceptance.test.js` 12/12.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-135 now has browser proof that a keyboard-activated task row opens an accessible task dialog with role/aria metadata, hidden description, accessible close label, and focus on the title field; Escape closes the dialog and restores focus to the triggering task row. The batch also fixed async task-comment re-render focus loss. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

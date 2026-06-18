@@ -9417,8 +9417,12 @@
             try {
                 const result = await api.getTaskComments(id);
                 if (editingTask && Number(editingTask.id) === Number(id)) {
+                    const activeModalFieldId = document.activeElement?.id || 'taskTitle';
                     taskComments = result?.comments || [];
                     render();
+                    window.setTimeout(() => {
+                        document.getElementById(activeModalFieldId)?.focus?.();
+                    }, 0);
                 }
             } catch (error) {
                 console.warn('Could not load task comments', error);

@@ -1491,7 +1491,7 @@
       "title": "Accessibility labels, contrast, focus, semantics, and modals",
       "area": "accessibility",
       "priority": "P1",
-      "current_verdict": "partial",
+      "current_verdict": "local_complete_pending_release",
       "status": "needs_verification",
       "expected_result": "Interactive controls and modal flows meet accessible labels, focus, semantic, and contrast requirements.",
       "acceptance_criteria": [
@@ -1507,23 +1507,33 @@
         "Task modal markup now exposes role=dialog, aria-modal, labelled/described title text, aria-hidden state, an accessible close label, and explicit labels for task fields and comments.",
         "Task modal open/close flow now tracks modal open state, focuses the title field, supports Escape close, and restores focus to the triggering task row when possible.",
         "Task rows and content cards now expose role/button semantics, keyboard Enter/Space activation, aria labels, and content-card expanded state; task, content, and section filters expose pressed/current state.",
-        "Operations stylesheet adds sr-only and disabled-control primitives while retaining the shared focus-visible outline."
+        "Operations stylesheet adds sr-only and disabled-control primitives while retaining the shared focus-visible outline.",
+        "public/operations.html now preserves/restores the active modal field after asynchronous task-comment loading so the edit dialog does not drop focus after re-render.",
+        "Browser acceptance now verifies a keyboard-activated task row opens the task dialog with role, aria-modal, labelled/described metadata, sr-only description, accessible close label, and taskTitle focus.",
+        "Browser acceptance now verifies Escape closes the task dialog and restores focus to the triggering task row, while active section tabs expose pressed/current state."
       ],
       "deployment_evidence": [],
       "verification": [
         "node --check tests/operations-accessibility.test.js PASS",
         "Operations HTML script parse via vm.Script PASS (2 script blocks)",
         "node --test tests/operations-accessibility.test.js tests/operations-design-system.test.js tests/operations-mobile-controls.test.js PASS 12/12",
-        "npm test PASS 107/107"
+        "npm test PASS 107/107",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/operations-accessibility.test.js tests/operations-design-system.test.js tests/browser-acceptance.test.js PASS 12/12",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: fix: improve operations accessibility semantics"
+        "current batch commit: fix: improve operations accessibility semantics",
+        "current batch commit: fix: verify operations accessibility dom"
       ],
       "files_changed": [
         "public/operations.html",
-        "tests/operations-accessibility.test.js"
+        "tests/operations-accessibility.test.js",
+        "tests/browser-acceptance.test.js"
       ],
-      "notes": "Implemented as a local Operations accessibility/static-test batch only; no new baseline crawl, audit harness rebuild, deploy, or production-data mutation was run."
+      "notes": "Local Operations accessibility semantics now have static and browser DOM proof, including a runtime focus-preservation fix for async task-comment re-render. Requirement remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for app-visible changes."
     },
     {
       "id": "REQ-20260618-136",
