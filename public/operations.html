@@ -3654,6 +3654,11 @@
                 if (filters.project) params.set('project', filters.project);
                 return this.request('GET', '/calendar' + (params.toString() ? '?' + params.toString() : ''));
             },
+            getAssistantStatus(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.project) params.set('project', filters.project);
+                return this.request('GET', '/assistant/status' + (params.toString() ? '?' + params.toString() : ''));
+            },
             getAutomations(filters = {}) {
                 const params = new URLSearchParams();
                 if (filters.project) params.set('project', filters.project);
@@ -3829,6 +3834,7 @@
         let opsMe = null;
         let tasks = [];
         let calendarEvents = [];
+        let assistantStatus = null;
         let automationStatuses = [];
         let integrationStatuses = [];
         let workspaceUsers = [];
@@ -3865,7 +3871,7 @@
             accountability: 'students'
         };
         const normalizedInitialView = VIEW_ALIASES[initialView] || initialView;
-        let currentView = ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations', 'integrations', 'users'].includes(normalizedInitialView) ? normalizedInitialView : 'tasks';
+        let currentView = ['tasks', 'assistant', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations', 'integrations', 'users'].includes(normalizedInitialView) ? normalizedInitialView : 'tasks';
         let navDrawerOpen = false;
         const TASK_FOCUS_ALIASES = { codex: 'changelog', done: 'changelog', rabbi: 'mine', pending: 'changelog', queue: 'changelog' };
         const normalizedInitialTaskSection = TASK_FOCUS_ALIASES[initialSection] || initialSection;
@@ -3908,6 +3914,7 @@
 
         const MAIN_NAV_ITEMS = [
             { id: 'tasks', label: 'Tasks', marker: 'T' },
+            { id: 'assistant', label: 'Assistant', marker: 'AI' },
             { id: 'calendar', label: 'Calendar', marker: 'CAL' },
             { id: 'students', label: 'Students', marker: 'S' },
             { id: 'content', label: 'Content', marker: 'C' },
@@ -4502,6 +4509,71 @@
                     </span>
                     <strong>${eventDate ? escapeHtml(formatDate(eventDate)) : 'No date'}</strong>
                 </a>
+            `;
+        }
+
+        function assistantProviderLabel(value) {
+            return ({
+                openai: 'OpenAI',
+                fallback_configured: 'Fallback configured',
+                not_configured: 'Not configured',
+            })[String(value || '').toLowerCase()] || String(value || 'unknown').replace(/_/g, ' ');
+        }
+
+        function renderAssistant() {
+            const assistant = assistantStatus?.assistant || {};
+            const providerReady = assistant.active_provider === 'openai' && assistant.openai_configured;
+            const statusLabel = providerReady ? 'Ready' : 'Needs OpenAI key';
+            const capabilities = Array.isArray(assistant.capabilities) ? assistant.capabilities : [];
+            const disabled = Array.isArray(assistant.disabled_until_verified) ? assistant.disabled_until_verified : [];
+            return `
+                <div class="container">
+                    <div class="page-heading">
+                        <div>
+                            <div class="page-kicker">BNA Assistant</div>
+                            <h2>Assistant</h2>
+                            <p>One Operations assistant identity for navigation, drafting, and context summaries.</p>
+                        </div>
+                        <div class="page-heading-actions">
+                            <span class="page-status-pill">${escapeHtml(statusLabel)}</span>
+                            <span class="page-status-pill">${escapeHtml(activeWorkspaceProjectLabel())}</span>
+                        </div>
+                    </div>
+                    <section class="focus-panel" aria-label="BNA Assistant shell">
+                        <div class="focused-grid">
+                            ${renderSummaryCard('Identity', escapeHtml(assistant.visible_label || 'BNA Assistant'), 'single visible helper')}
+                            ${renderSummaryCard('Provider', escapeHtml(assistantProviderLabel(assistant.active_provider)), 'preferred: OpenAI')}
+                            ${renderSummaryCard('Scope', escapeHtml(assistant.workspace_project || selectedProjectFilter() || 'all'), 'current workspace')}
+                        </div>
+                        <div class="content-section-grid">
+                            <div class="event-card">
+                                <div class="event-type">Assistant Shell</div>
+                                <div class="event-title">${escapeHtml(assistant.visible_label || 'BNA Assistant')}</div>
+                                <div class="contact-detail-grid" style="margin-top:12px;">
+                                    ${renderContactDetailItem('Provider', assistantProviderLabel(assistant.active_provider))}
+                                    ${renderContactDetailItem('Model', assistant.model || 'Awaiting OpenAI key')}
+                                    ${renderContactDetailItem('Workspace', activeWorkspaceProjectLabel())}
+                                    ${renderContactDetailItem('Role', assistant.user_role || 'workspace_member')}
+                                </div>
+                                <div class="mini-list" style="margin-top:12px;">
+                                    ${capabilities.length
+                                        ? capabilities.map(item => `<div class="mini-list-item"><span>${escapeHtml(String(item).replace(/_/g, ' '))}</span><strong>visible</strong></div>`).join('')
+                                        : '<p class="payment-muted">No assistant capabilities are visible yet.</p>'}
+                                </div>
+                            </div>
+                            <div class="event-card">
+                                <div class="event-type">Guardrails</div>
+                                <div class="event-title">No duplicate helper personas</div>
+                                <div class="mini-list" style="margin-top:12px;">
+                                    <div class="mini-list-item"><span>Visible identity</span><strong>BNA Assistant</strong></div>
+                                    <div class="mini-list-item"><span>Public memory</span><strong>not shared</strong></div>
+                                    <div class="mini-list-item"><span>Backend actions</span><strong>disabled</strong></div>
+                                    ${disabled.map(item => `<div class="mini-list-item"><span>${escapeHtml(String(item).replace(/_/g, ' '))}</span><strong>pending</strong></div>`).join('')}
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
             `;
         }
 
@@ -8350,7 +8422,7 @@
         }
 
         function allowedViews() {
-            const views = Array.isArray(opsMe?.allowedViews) ? opsMe.allowedViews : ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations', 'integrations', 'users'];
+            const views = Array.isArray(opsMe?.allowedViews) ? opsMe.allowedViews : ['tasks', 'assistant', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations', 'integrations', 'users'];
             return new Set(views);
         }
 
@@ -8593,10 +8665,11 @@
                 ensureActiveWorkspaceProject();
                 ensureCurrentViewAllowed();
 
-                const [projectsRes, tasksRes, calendarRes, automationsRes, integrationsRes, usersRes, invitationsRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, greenInvoiceRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes] = await Promise.allSettled([
+                const [projectsRes, tasksRes, calendarRes, assistantRes, automationsRes, integrationsRes, usersRes, invitationsRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, greenInvoiceRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes] = await Promise.allSettled([
                     api.getProjects(),
                     api.getTasks({ project: selectedProjectFilter() || undefined }),
                     viewAllowed('calendar') ? api.getCalendar({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ events: [] }),
+                    viewAllowed('assistant') ? api.getAssistantStatus({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ assistant: null }),
                     viewAllowed('automations') ? api.getAutomations({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ automations: [] }),
                     viewAllowed('integrations') ? api.getIntegrations({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ integrations: [] }),
                     viewAllowed('users') ? api.getUsers({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ users: [] }),
@@ -8621,6 +8694,7 @@
                 ensureActiveWorkspaceProject();
                 if (tasksRes.status === 'fulfilled' && tasksRes.value?.tasks) tasks = tasksRes.value.tasks;
                 if (calendarRes.status === 'fulfilled' && calendarRes.value?.events) calendarEvents = calendarRes.value.events;
+                if (assistantRes.status === 'fulfilled' && assistantRes.value?.assistant) assistantStatus = assistantRes.value;
                 if (automationsRes.status === 'fulfilled' && automationsRes.value?.automations) automationStatuses = automationsRes.value.automations;
                 if (integrationsRes.status === 'fulfilled' && integrationsRes.value?.integrations) integrationStatuses = integrationsRes.value.integrations;
                 if (usersRes.status === 'fulfilled' && usersRes.value?.users) workspaceUsers = usersRes.value.users;
@@ -8645,7 +8719,7 @@
                 if (accountabilityRes.status === 'fulfilled' && accountabilityRes.value?.events) accountabilityEvents = accountabilityRes.value.events;
                 if (groupGoalsRes.status === 'fulfilled' && groupGoalsRes.value?.goals) groupGoals = groupGoalsRes.value.goals;
 
-                const errors = [projectsRes, tasksRes, calendarRes, automationsRes, integrationsRes, usersRes, invitationsRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, greenInvoiceRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes]
+                const errors = [projectsRes, tasksRes, calendarRes, assistantRes, automationsRes, integrationsRes, usersRes, invitationsRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, greenInvoiceRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes]
                     .filter((result) => result.status === 'rejected')
                     .map((result) => result.reason?.message || 'Unknown dashboard error');
 
@@ -8662,6 +8736,7 @@
 
             switch (currentView) {
                 case 'tasks': content = renderTasks(); break;
+                case 'assistant': content = renderAssistant(); break;
                 case 'calendar': content = renderCalendar(); break;
                 case 'automations': content = renderAutomations(); break;
                 case 'integrations': content = renderIntegrations(); break;
@@ -8687,6 +8762,7 @@
             const url = new URL(window.location.href);
             url.searchParams.set('view', currentView);
             if (currentView === 'tasks') url.searchParams.set('section', taskFocus);
+            else if (currentView === 'assistant') url.searchParams.delete('section');
             else if (currentView === 'calendar') url.searchParams.delete('section');
             else if (currentView === 'students') url.searchParams.set('section', studentSection);
             else if (currentView === 'content') url.searchParams.set('section', contentSection);
@@ -8817,6 +8893,7 @@
             taskDateFilter = 'all';
             taskProjectFilter = 'all';
             calendarEvents = [];
+            assistantStatus = null;
             automationStatuses = [];
             integrationStatuses = [];
             workspaceUsers = [];

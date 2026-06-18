@@ -80,12 +80,14 @@ test('ordinary workspace users may use only scoped task routes and safe shared c
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/tasks/42', method: 'PATCH' }), true);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/tasks/42/comments', method: 'POST' }), true);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/calendar', method: 'GET' }), true);
+  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/assistant/status', method: 'GET' }), true);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/automations/status', method: 'GET' }), true);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/integrations/status', method: 'GET' }), true);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/users', method: 'GET' }), true);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/invitations', method: 'GET' }), true);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/projects', method: 'GET' }), true);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/auth/me', method: 'GET' }), true);
+  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/assistant/status', method: 'POST' }), false);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/automations/status', method: 'POST' }), false);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/integrations/status', method: 'POST' }), false);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/users', method: 'POST' }), false);

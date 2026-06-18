@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-19T00:24:30+03:00
+Updated: 2026-06-19T00:34:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -33,10 +33,11 @@ Latest completed local batches:
 - REQ-20260618-153: Goal Board controls now use plain product language for tablet access and goal actions, with horizontal purpose toolbars for setup, progress, review, board, and tablet actions.
 - REQ-20260618-154: Goal Board cards now render in separate Current Goals, Progress / Check-ins, Approvals, and History lanes instead of one mixed list.
 - REQ-20260618-155: Student Portal Hebrew mode now localizes dynamic goal cards, command cards, tablet access statuses, dates, statuses, empty/filter labels, buttons, save/error messages, and applies RTL-specific layout behavior.
+- REQ-20260618-157: Operations now has one BNA Assistant shell/status surface, one Assistant toolbar module, one read-only `/api/bna/assistant/status` route, and scoped GET-only access without duplicate Codex/Kimi/helper visible personas.
 
 Exact next requirement:
 
-- REQ-20260618-157 / BNA-HELPER-001: One visible OpenAI-powered assistant shell.
+- REQ-20260618-158 / BNA-HELPER-002: Scope helper memory by user/role/workspace/context.
 
 Blocked requirement intentionally skipped:
 
@@ -46,16 +47,17 @@ Exact next command:
 
 ```powershell
 npm run bna:run:status
-rg -n "assistant|helper|OpenAI|Codex|Kimi|chat|sidekick|memory|permission|confirm|audit|tool|action" server.js public\\operations.html public\\index.html public\\student.html src\\lib\\bna tests .env.example
+rg -n "assistant|helper|memory|context|workspace|role|scope|student|family|provider|public|authenticated|chat|OpenAI" server.js public\\operations.html src\\lib\\bna tests .env.example
 ```
 
-Then inspect current helper/assistant surfaces and backend helper routes. Implement one coherent visible OpenAI-powered assistant shell without exposing duplicate helper/Codex personalities, production secrets, or cross-scope memory.
+Then inspect the Assistant status shell and any future helper/chat routes. Implement scoped memory/context separation by user, role, workspace, module, and student/family/provider context before adding any helper action execution.
 
 Still open after this batch:
 
 - REQ-20260618-124 remains `in_progress` until broader workspace-owned entity API filtering, release approval, deploy, and live smoke are complete.
-- REQ-20260618-125 through REQ-20260618-155 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-125 through REQ-20260618-155 and REQ-20260618-157 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - REQ-20260618-156 remains `needs_operator_decision` for duplicate-student cleanup approval.
+- REQ-20260618-159 through REQ-20260618-162 remain open for helper action registry, confirmation tiers/audit logs, duplicate dev-language cleanup, and public/authenticated memory-leak prevention.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 
 No deployment or production-data mutation is approved.

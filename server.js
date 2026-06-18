@@ -1420,7 +1420,7 @@ function identifyOpsUser(username, password = null) {
 
   if (OPS_USERNAME && user.toLowerCase() === OPS_USERNAME.toLowerCase()) {
     if (pass !== null && pass.toLowerCase() !== String(OPS_PASSWORD || '').toLowerCase()) return null;
-    return createSuperAdminIdentity(user, ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations', 'integrations', 'users']);
+    return createSuperAdminIdentity(user, ['tasks', 'assistant', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations', 'integrations', 'users']);
   }
 
   if (
@@ -1435,7 +1435,7 @@ function identifyOpsUser(username, password = null) {
       workspaceType: 'service_provider',
       workspaceKey: ONE_TIME_PROJECT_KEY,
       projectKey: ONE_TIME_PROJECT_KEY,
-      allowedViews: ['tasks', 'calendar'],
+      allowedViews: ['tasks', 'assistant', 'calendar'],
     });
   }
 
@@ -12422,7 +12422,56 @@ app.get('/api/bna/auth/me', requireAdmin, (req, res) => {
     user: identity?.username || req.opsUser || null,
     role: identity?.role || 'super_admin',
     scope: identity?.scope || { type: 'global', workspaceType: null, workspaceKey: null, projectKey: null },
-    allowedViews: identity?.allowedViews || ['tasks', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations', 'integrations', 'users'],
+    allowedViews: identity?.allowedViews || ['tasks', 'assistant', 'calendar', 'students', 'content', 'contacts', 'accounting', 'automations', 'integrations', 'users'],
+  });
+});
+
+function operationsAssistantStatus(identity = {}, projectKey = '') {
+  const openaiConfigured = Boolean(OPENAI_API_KEY);
+  const fallbackConfigured = Boolean(KIMI_API_KEY);
+  const activeProvider = openaiConfigured
+    ? 'openai'
+    : fallbackConfigured
+      ? 'fallback_configured'
+      : 'not_configured';
+  return {
+    identity: 'BNA Assistant',
+    visible_label: 'BNA Assistant',
+    surface: 'operations',
+    preferred_provider: 'openai',
+    active_provider: activeProvider,
+    provider_status: openaiConfigured ? 'ready' : 'needs_openai_key',
+    model: openaiConfigured ? OPENAI_MODEL : null,
+    openai_configured: openaiConfigured,
+    fallback_configured: fallbackConfigured,
+    workspace_project: projectKey || 'all',
+    user_role: identity.role || 'workspace_member',
+    scope_type: identity.scope?.type || 'workspace',
+    duplicate_personas: [],
+    capabilities: [
+      'operations_navigation',
+      'content_and_task_context_summary',
+      'drafting_guidance',
+    ],
+    disabled_until_verified: [
+      'scoped_memory',
+      'backend_actions',
+      'confirmation_tiers',
+      'action_audit_log',
+    ],
+  };
+}
+
+app.get('/api/bna/assistant/status', requireAdmin, (req, res) => {
+  const scopedProjectKey = opsScopeProjectKey(req);
+  const requestedProjectKey = req.query.project && req.query.project !== 'all'
+    ? normalizeProjectKey(req.query.project)
+    : '';
+  const projectKey = scopedProjectKey || requestedProjectKey;
+  res.json({
+    success: true,
+    assistant: operationsAssistantStatus(req.opsIdentity || {}, projectKey),
+    generated_at: new Date().toISOString(),
   });
 });
 

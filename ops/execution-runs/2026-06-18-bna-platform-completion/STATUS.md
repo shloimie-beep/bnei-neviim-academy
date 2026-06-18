@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-19T00:24:30+03:00
+Updated: 2026-06-19T00:34:30+03:00
 
 Status counts:
 
@@ -8,8 +8,8 @@ Status counts:
 - done: 4
 - already_satisfied: 1
 - blocked: 3
-- needs_verification: 37
-- not_started: 13
+- needs_verification: 38
+- not_started: 12
 - needs_operator_decision: 1
 
 Closed/already satisfied IDs:
@@ -71,6 +71,7 @@ Open non-blocked IDs begin with:
 - REQ-20260618-153 BNA-GOAL-001: Goal Board controls use plain product language (needs_verification)
 - REQ-20260618-154 BNA-GOAL-002: Separate goals, progress, approvals, and history (needs_verification)
 - REQ-20260618-155 BNA-I18N-001: Complete Hebrew localization and RTL behavior (needs_verification)
+- REQ-20260618-157 BNA-HELPER-001: One visible OpenAI-powered assistant shell (needs_verification)
 
 Blocked / operator-decision IDs:
 
@@ -79,6 +80,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current implementation batch: REQ-20260618-155 has local Student Portal Hebrew localization, RTL behavior, localized dates/status/access copy, and focused tests. REQ-20260618-156 remains needs_operator_decision for production duplicate-student cleanup. Next unblocked implementation target is REQ-20260618-157.
+Current implementation batch: REQ-20260618-157 has one local Operations Assistant shell/status surface with a single BNA Assistant identity, OpenAI provider readiness, scoped read-only status access, and focused tests. REQ-20260618-156 remains needs_operator_decision for production duplicate-student cleanup. Next unblocked implementation target is REQ-20260618-158.
 
 No deployment or production-data mutation is approved in this run.

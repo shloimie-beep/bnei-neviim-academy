@@ -3866,3 +3866,30 @@ Status: local `needs_verification`; no deployment, production-data mutation,
 audit crawl, watch loop, or agent-fleet loop was performed. `REQ-20260618-156`
 remains blocked on operator approval for production duplicate-student cleanup;
 resume at `REQ-20260618-157`.
+
+## 2026-06-19 - Operations Assistant shell
+
+Requirement: `REQ-20260618-157`
+
+Changed:
+
+- Added one read-only `/api/bna/assistant/status` endpoint returning a single
+  `BNA Assistant` identity, OpenAI provider readiness, selected workspace
+  scope, visible capabilities, and disabled-until-verified guardrails without
+  returning secrets.
+- Added one Assistant module to the Operations toolbar and render flow, loaded
+  through the active workspace filter and shown as one `BNA Assistant` shell.
+- Allowed scoped users to read Assistant status while keeping POST/action
+  execution denied for the later helper action, confirmation, and audit-log
+  requirements.
+- Added `tests/assistant-shell.test.js` and updated toolbar/workspace-auth
+  tests to guard the single visible assistant identity and safe read-only route.
+
+Verification:
+
+- PASS `node --test tests/assistant-shell.test.js tests/operations-module-toolbar.test.js tests/workspace-auth.test.js` 14/14.
+- PASS `npm test` 172/172.
+
+Status: local `needs_verification`; no OpenAI call, deployment,
+production-data mutation, audit crawl, watch loop, or agent-fleet loop was
+performed. Resume at `REQ-20260618-158`.
