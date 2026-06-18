@@ -330,3 +330,11 @@ Operations Assistant shell (2026-06-19T00:34:30+03:00):
 
 No OpenAI call, deployment, production-data mutation, audit crawl, watch loop,
 or agent-fleet loop was performed.
+
+Scoped Assistant memory context (2026-06-19T00:44:30+03:00):
+
+- PASS `node --test tests/assistant-shell.test.js tests/workspace-schema.test.js tests/workspace-auth.test.js tests/operations-workspace-selector.test.js` 22/22.
+- PASS `npm test` 173/173.
+
+No OpenAI call, helper action execution, deployment, production-data mutation,
+audit crawl, watch loop, or agent-fleet loop was performed.

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-19T00:34:30+03:00",
+  "updated_at": "2026-06-19T00:44:30+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -292,10 +292,28 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "Operations now has one visible BNA Assistant status shell with OpenAI provider readiness and selected-workspace context.",
+        "Assistant memory now has a scoped bna_assistant_memory table keyed by workspace, project, user key, role, surface, module, subject type, subject ID, and memory key.",
+        "GET /api/bna/assistant/memory resolves project access through the shared workspace auth layer and returns only exact-scope memory rows.",
+        "Operations Assistant now loads memory scope through selectedProjectFilter and displays the active project, user, role, subject, and scoped memory rows without introducing helper actions yet."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "notes": "Parent workstream retained from original active run."
+      "verification": [
+        "node --test tests/assistant-shell.test.js tests/operations-module-toolbar.test.js tests/workspace-auth.test.js PASS 14/14",
+        "node --test tests/assistant-shell.test.js tests/workspace-schema.test.js tests/workspace-auth.test.js tests/operations-workspace-selector.test.js PASS 22/22",
+        "npm test PASS 173/173"
+      ],
+      "notes": "Helper parent remains in_progress until action registry, confirmation/audit logs, duplicate dev-language cleanup, public/authenticated memory isolation, final acceptance, release approval, deploy, and live smoke are complete.",
+      "files_changed": [
+        "server.js",
+        "public/operations.html",
+        "src/lib/bna/workspace-auth.js",
+        "tests/assistant-shell.test.js",
+        "tests/operations-module-toolbar.test.js",
+        "tests/workspace-auth.test.js",
+        "tests/workspace-schema.test.js"
+      ]
     },
     {
       "id": "REQ-20260618-110",
@@ -2263,7 +2281,7 @@
       "area": "helper",
       "priority": "P0",
       "current_verdict": "partial",
-      "status": "not_started",
+      "status": "needs_verification",
       "expected_result": "Helper memory/context is isolated by user, role, workspace, module, and student/family/provider context.",
       "acceptance_criteria": [
         "Scope helper memory by user/role/workspace/context is implemented against the canonical Express/static runtime where applicable.",
@@ -2274,12 +2292,38 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "server.js now defines and initializes bna_assistant_memory with workspace_id, project_id, user_key, user_role, surface, module_key, subject_type, subject_id, memory_key, metadata, and exact-scope uniqueness.",
+        "createWorkspaceScopeMigrationSQL now backfills/migrates assistant memory scope columns and indexes so existing installs can adopt scoped memory safely.",
+        "resolveAssistantMemoryScope derives assistant memory context from selected/scoped project access, authenticated identity, user role, surface, module, and subject context.",
+        "GET /api/bna/assistant/memory is read-only, shared-auth scoped, and filters by exact workspace/project/user/role/surface/module/subject scope before returning memory rows.",
+        "Operations Assistant loads memory with selectedProjectFilter and renders Memory Scope details so user, role, workspace/project, and subject context are visible without exposing cross-context memory."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --test tests/assistant-shell.test.js tests/workspace-schema.test.js tests/workspace-auth.test.js tests/operations-workspace-selector.test.js PASS 22/22",
+        "npm test PASS 173/173",
+        "npm run bna:run:validate PASS after run-file update",
+        "npm run bna:run:status PASS after run-file update"
+      ],
+      "implementation_commits": [
+        "current batch commit: feat: scope assistant memory context"
+      ],
+      "files_changed": [
+        "server.js",
+        "public/operations.html",
+        "src/lib/bna/workspace-auth.js",
+        "tests/assistant-shell.test.js",
+        "tests/workspace-auth.test.js",
+        "tests/workspace-schema.test.js",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/STATUS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/REQUIREMENTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md"
+      ],
+      "notes": "Local implementation and tests complete. Live-required item remains needs_verification until release approval, deploy, and live smoke. Helper action execution, confirmation tiers/audit logs, duplicate dev-language cleanup, and public/authenticated memory-leak prevention remain open under REQ-20260618-159 through REQ-20260618-162. No OpenAI call, deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
     },
     {
       "id": "REQ-20260618-159",

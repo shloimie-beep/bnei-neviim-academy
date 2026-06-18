@@ -27,39 +27,39 @@
 | REQ-20260618-123 | REQ-20260618-103 | BNA-WS-001 | needs_verification | partial | Enforce exactly school/service-provider/family workspace types |
 | REQ-20260618-124 | REQ-20260618-103 | BNA-WS-002 | in_progress | partial | Scope applicable entities by workspace_id |
 | REQ-20260618-125 | REQ-20260618-103 | BNA-WS-003 | needs_verification | partial | Server-side authorization/RLS and negative cross-tenant tests |
-| REQ-20260618-126 | REQ-20260618-103 | BNA-WS-004 | not_started | partial | Clear super-admin selector and ordinary-user behavior |
-| REQ-20260618-127 | REQ-20260618-103 | BNA-WS-005 | not_started | missing | Clear stale context on workspace changes |
-| REQ-20260618-128 | REQ-20260618-104 | BNA-OPS-001 | not_started | partial | Ordered horizontal Operations module toolbar |
-| REQ-20260618-129 | REQ-20260618-104 | BNA-OPS-002 | not_started | partial | Simplify workspace/sidebar navigation |
-| REQ-20260618-130 | REQ-20260618-104 | BNA-OPS-003 | not_started | unknown | Prevent unexpected page collapse/minimize |
-| REQ-20260618-131 | REQ-20260618-104 | BNA-OPS-004 | not_started | partial | Consistent headers, logo behavior, portal identity, and language controls |
-| REQ-20260618-132 | REQ-20260618-105 | BNA-DESIGN-001 | not_started | partial | Shared high-contrast card/spacing/type/button system |
-| REQ-20260618-133 | REQ-20260618-105 | BNA-DESIGN-002 | not_started | partial | Intentional mobile controls |
-| REQ-20260618-134 | REQ-20260618-105 | BNA-DESIGN-003 | not_started | unknown | Balanced desktop grids |
-| REQ-20260618-135 | REQ-20260618-105 | BNA-A11Y-001 | not_started | partial | Accessibility labels, contrast, focus, semantics, and modals |
-| REQ-20260618-136 | REQ-20260618-106 | BNA-TASK-001 | not_started | partial | Canonical task state model |
-| REQ-20260618-137 | REQ-20260618-106 | BNA-TASK-002 | not_started | partial | Separate owner/status/urgency/due/blocker/provenance |
-| REQ-20260618-138 | REQ-20260618-106 | BNA-TASK-003 | not_started | partial | Merge Intake Review/Review Queue into auto-routing and Decisions |
-| REQ-20260618-139 | REQ-20260618-106 | BNA-TASK-004 | not_started | missing | Internal calendar connected to tasks/classes/check-ins/events |
-| REQ-20260618-140 | REQ-20260618-106 | BNA-TASK-005 | not_started | partial | Remove stale diagnostic concepts from main task UI |
-| REQ-20260618-141 | REQ-20260618-106 | BNA-TASK-006 | not_started | partial | Live scoped counts and blocker explanations |
-| REQ-20260618-142 | REQ-20260618-106 | BNA-TASK-007 | not_started | partial | Idempotent parser routing to correct modules/workspaces |
-| REQ-20260618-143 | REQ-20260618-107 | BNA-COMMUNITY-001 | not_started | partial | Workspace-scoped communities |
-| REQ-20260618-144 | REQ-20260618-107 | BNA-CONTENT-001 | not_started | partial | Teaching/research content separated from meetings/tasks/accountability |
-| REQ-20260618-145 | REQ-20260618-107 | BNA-CONTENT-002 | not_started | partial | Content metadata and provenance |
-| REQ-20260618-146 | REQ-20260618-107 | BNA-CONTENT-003 | not_started | partial | Workspace-specific Drive intake/routing |
-| REQ-20260618-147 | REQ-20260618-107 | BNA-CLASS-001 | not_started | partial | Workspace-scoped live classes |
-| REQ-20260618-148 | REQ-20260618-107 | BNA-AUTO-001 | not_started | partial | Scoped automations and operational status |
-| REQ-20260618-149 | REQ-20260618-107 | BNA-INTEGRATION-001 | not_started | partial | Simplified integrations/social accounts states/actions |
-| REQ-20260618-150 | REQ-20260618-107 | BNA-USER-001 | not_started | missing | Workspace-scoped users/roles/invitations |
-| REQ-20260618-151 | REQ-20260618-107 | BNA-ACCOUNTING-001 | not_started | partial | Workspace payment/accounting scoping and safe actions |
+| REQ-20260618-126 | REQ-20260618-103 | BNA-WS-004 | needs_verification | partial | Clear super-admin selector and ordinary-user behavior |
+| REQ-20260618-127 | REQ-20260618-103 | BNA-WS-005 | needs_verification | partial | Clear stale context on workspace changes |
+| REQ-20260618-128 | REQ-20260618-104 | BNA-OPS-001 | needs_verification | partial | Ordered horizontal Operations module toolbar |
+| REQ-20260618-129 | REQ-20260618-104 | BNA-OPS-002 | needs_verification | partial | Simplify workspace/sidebar navigation |
+| REQ-20260618-130 | REQ-20260618-104 | BNA-OPS-003 | needs_verification | partial | Prevent unexpected page collapse/minimize |
+| REQ-20260618-131 | REQ-20260618-104 | BNA-OPS-004 | needs_verification | partial | Consistent headers, logo behavior, portal identity, and language controls |
+| REQ-20260618-132 | REQ-20260618-105 | BNA-DESIGN-001 | needs_verification | partial | Shared high-contrast card/spacing/type/button system |
+| REQ-20260618-133 | REQ-20260618-105 | BNA-DESIGN-002 | needs_verification | partial | Intentional mobile controls |
+| REQ-20260618-134 | REQ-20260618-105 | BNA-DESIGN-003 | needs_verification | unknown | Balanced desktop grids |
+| REQ-20260618-135 | REQ-20260618-105 | BNA-A11Y-001 | needs_verification | partial | Accessibility labels, contrast, focus, semantics, and modals |
+| REQ-20260618-136 | REQ-20260618-106 | BNA-TASK-001 | needs_verification | partial | Canonical task state model |
+| REQ-20260618-137 | REQ-20260618-106 | BNA-TASK-002 | needs_verification | partial | Separate owner/status/urgency/due/blocker/provenance |
+| REQ-20260618-138 | REQ-20260618-106 | BNA-TASK-003 | needs_verification | partial | Merge Intake Review/Review Queue into auto-routing and Decisions |
+| REQ-20260618-139 | REQ-20260618-106 | BNA-TASK-004 | needs_verification | missing | Internal calendar connected to tasks/classes/check-ins/events |
+| REQ-20260618-140 | REQ-20260618-106 | BNA-TASK-005 | needs_verification | partial | Remove stale diagnostic concepts from main task UI |
+| REQ-20260618-141 | REQ-20260618-106 | BNA-TASK-006 | needs_verification | local_complete_pending_release | Live scoped counts and blocker explanations |
+| REQ-20260618-142 | REQ-20260618-106 | BNA-TASK-007 | needs_verification | local_complete_pending_release | Idempotent parser routing to correct modules/workspaces |
+| REQ-20260618-143 | REQ-20260618-107 | BNA-COMMUNITY-001 | needs_verification | local_complete_pending_release | Workspace-scoped communities |
+| REQ-20260618-144 | REQ-20260618-107 | BNA-CONTENT-001 | needs_verification | local_complete_pending_release | Teaching/research content separated from meetings/tasks/accountability |
+| REQ-20260618-145 | REQ-20260618-107 | BNA-CONTENT-002 | needs_verification | local_implemented_pending_release | Content metadata and provenance |
+| REQ-20260618-146 | REQ-20260618-107 | BNA-CONTENT-003 | needs_verification | local_implemented_pending_release | Workspace-specific Drive intake/routing |
+| REQ-20260618-147 | REQ-20260618-107 | BNA-CLASS-001 | needs_verification | local_implemented_pending_release | Workspace-scoped live classes |
+| REQ-20260618-148 | REQ-20260618-107 | BNA-AUTO-001 | needs_verification | partial | Scoped automations and operational status |
+| REQ-20260618-149 | REQ-20260618-107 | BNA-INTEGRATION-001 | needs_verification | partial | Simplified integrations/social accounts states/actions |
+| REQ-20260618-150 | REQ-20260618-107 | BNA-USER-001 | needs_verification | missing | Workspace-scoped users/roles/invitations |
+| REQ-20260618-151 | REQ-20260618-107 | BNA-ACCOUNTING-001 | needs_verification | partial | Workspace payment/accounting scoping and safe actions |
 | REQ-20260618-152 | REQ-20260618-108 | BNA-STUDENT-001 | needs_verification | partial | Workspace-and-student detail/analysis isolation |
 | REQ-20260618-153 | REQ-20260618-108 | BNA-GOAL-001 | needs_verification | partial | Goal Board controls use plain product language |
 | REQ-20260618-154 | REQ-20260618-108 | BNA-GOAL-002 | needs_verification | partial | Separate goals, progress, approvals, and history |
 | REQ-20260618-155 | REQ-20260618-108 | BNA-I18N-001 | needs_verification | partial | Complete Hebrew localization and RTL behavior |
 | REQ-20260618-156 | REQ-20260618-108 | BNA-STUDENT-002 | needs_operator_decision | blocked | Duplicate Menachem cleanup with audit trail/prevention |
 | REQ-20260618-157 | REQ-20260618-109 | BNA-HELPER-001 | needs_verification | partial | One visible OpenAI-powered assistant shell |
-| REQ-20260618-158 | REQ-20260618-109 | BNA-HELPER-002 | not_started | partial | Scope helper memory by user/role/workspace/context |
+| REQ-20260618-158 | REQ-20260618-109 | BNA-HELPER-002 | needs_verification | partial | Scope helper memory by user/role/workspace/context |
 | REQ-20260618-159 | REQ-20260618-109 | BNA-HELPER-003 | not_started | partial | Permissioned backend action registry |
 | REQ-20260618-160 | REQ-20260618-109 | BNA-HELPER-004 | not_started | partial | Confirmation tiers and action audit trail |
 | REQ-20260618-161 | REQ-20260618-109 | BNA-HELPER-005 | not_started | partial | Remove duplicate helper identities and dev language |

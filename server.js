@@ -1766,6 +1766,27 @@ CREATE TABLE IF NOT EXISTS bna_task_comments (
 );
 `;
 
+const createAssistantMemorySQL = `
+CREATE TABLE IF NOT EXISTS bna_assistant_memory (
+  id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
+  user_key TEXT NOT NULL,
+  user_role TEXT NOT NULL DEFAULT 'workspace_member',
+  surface TEXT NOT NULL DEFAULT 'operations' CHECK (surface IN ('operations', 'student_portal', 'public')),
+  module_key TEXT NOT NULL DEFAULT 'assistant',
+  subject_type TEXT NOT NULL DEFAULT 'workspace' CHECK (subject_type IN ('workspace', 'student', 'family', 'provider', 'task', 'content', 'none')),
+  subject_id TEXT NOT NULL DEFAULT '',
+  memory_key TEXT NOT NULL,
+  memory_value TEXT NOT NULL,
+  visibility TEXT NOT NULL DEFAULT 'scoped' CHECK (visibility IN ('scoped', 'user', 'workspace')),
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  UNIQUE (workspace_id, project_id, user_key, user_role, surface, module_key, subject_type, subject_id, memory_key)
+);
+`;
+
 const createAgentRuntimeStatusSQL = `
 CREATE TABLE IF NOT EXISTS bna_agent_runtime_status (
   agent_key TEXT PRIMARY KEY,
@@ -2213,6 +2234,13 @@ ALTER TABLE bna_project_members ADD COLUMN IF NOT EXISTS workspace_id INTEGER RE
 ALTER TABLE bna_workspace_invitations ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
 ALTER TABLE bna_workspace_invitations ADD COLUMN IF NOT EXISTS project_id INTEGER REFERENCES bna_projects(id) ON DELETE CASCADE;
 ALTER TABLE bna_task_comments ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_assistant_memory ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_assistant_memory ADD COLUMN IF NOT EXISTS project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL;
+ALTER TABLE bna_assistant_memory ADD COLUMN IF NOT EXISTS user_role TEXT NOT NULL DEFAULT 'workspace_member';
+ALTER TABLE bna_assistant_memory ADD COLUMN IF NOT EXISTS surface TEXT NOT NULL DEFAULT 'operations';
+ALTER TABLE bna_assistant_memory ADD COLUMN IF NOT EXISTS module_key TEXT NOT NULL DEFAULT 'assistant';
+ALTER TABLE bna_assistant_memory ADD COLUMN IF NOT EXISTS subject_type TEXT NOT NULL DEFAULT 'workspace';
+ALTER TABLE bna_assistant_memory ADD COLUMN IF NOT EXISTS subject_id TEXT NOT NULL DEFAULT '';
 ALTER TABLE bna_payment_log ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
 ALTER TABLE bna_email_log ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
 ALTER TABLE bna_payment_intake ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
@@ -2243,6 +2271,8 @@ CREATE INDEX IF NOT EXISTS idx_bna_project_members_workspace_id ON bna_project_m
 CREATE INDEX IF NOT EXISTS idx_bna_workspace_invitations_workspace_id ON bna_workspace_invitations (workspace_id);
 CREATE INDEX IF NOT EXISTS idx_bna_workspace_invitations_project_id ON bna_workspace_invitations (project_id);
 CREATE INDEX IF NOT EXISTS idx_bna_task_comments_workspace_id ON bna_task_comments (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_assistant_memory_workspace_id ON bna_assistant_memory (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_assistant_memory_scope ON bna_assistant_memory (workspace_id, project_id, user_key, user_role, surface, module_key, subject_type, subject_id);
 CREATE INDEX IF NOT EXISTS idx_bna_payment_log_workspace_id ON bna_payment_log (workspace_id);
 CREATE INDEX IF NOT EXISTS idx_bna_email_log_workspace_id ON bna_email_log (workspace_id);
 CREATE INDEX IF NOT EXISTS idx_bna_payment_intake_workspace_id ON bna_payment_intake (workspace_id);
@@ -4567,6 +4597,7 @@ async function initDb() {
     await pool.query(createProjectMembersSQL);
     await pool.query(createWorkspaceInvitationsSQL);
     await pool.query(createTaskCommentsSQL);
+    await pool.query(createAssistantMemorySQL);
     await pool.query(createAgentRuntimeStatusSQL);
     await pool.query(normalizeTasksCategoryCheckSQL);
     await pool.query(normalizeTasksStageCheckSQL);
@@ -12462,6 +12493,57 @@ function operationsAssistantStatus(identity = {}, projectKey = '') {
   };
 }
 
+function normalizeAssistantModuleKey(value = 'assistant') {
+  const key = String(value || 'assistant')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+  return key || 'assistant';
+}
+
+function normalizeAssistantSubjectType(value = 'workspace') {
+  const type = String(value || 'workspace').trim().toLowerCase().replace(/[^a-z0-9]+/g, '_');
+  return ['workspace', 'student', 'family', 'provider', 'task', 'content', 'none'].includes(type)
+    ? type
+    : 'workspace';
+}
+
+function assistantUserKey(identity = {}) {
+  return String(identity.username || identity.user || 'operations_user')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9@._-]+/g, '_')
+    .slice(0, 160) || 'operations_user';
+}
+
+async function resolveAssistantMemoryScope(req, input = {}, db = pool) {
+  const scopedProjectKey = opsScopeProjectKey(req);
+  const requestedProjectKey = normalizeProjectKey(
+    input.project ||
+    input.project_key ||
+    input.workspace_project ||
+    input.workspace ||
+    ''
+  );
+  const project = await getProjectByKey(scopedProjectKey || requestedProjectKey || DEFAULT_PROJECT_KEY, db);
+  assertProjectAccess(req, project);
+  const identity = req.opsIdentity || {};
+  const subjectType = normalizeAssistantSubjectType(input.subject_type || input.subjectType || 'workspace');
+  return {
+    workspace_id: project.workspace_id || null,
+    project_id: project.id || null,
+    project_key: normalizeProjectKey(project.project_key) || DEFAULT_PROJECT_KEY,
+    workspace_key: normalizeProjectKey(project.workspace_key || project.project_key) || DEFAULT_WORKSPACE_KEY,
+    user_key: assistantUserKey(identity),
+    user_role: identity.role || 'workspace_member',
+    surface: 'operations',
+    module_key: normalizeAssistantModuleKey(input.module || input.module_key || input.view || 'assistant'),
+    subject_type: subjectType,
+    subject_id: String(input.subject_id || input.subjectId || '').trim().slice(0, 120),
+  };
+}
+
 app.get('/api/bna/assistant/status', requireAdmin, (req, res) => {
   const scopedProjectKey = opsScopeProjectKey(req);
   const requestedProjectKey = req.query.project && req.query.project !== 'all'
@@ -12473,6 +12555,45 @@ app.get('/api/bna/assistant/status', requireAdmin, (req, res) => {
     assistant: operationsAssistantStatus(req.opsIdentity || {}, projectKey),
     generated_at: new Date().toISOString(),
   });
+});
+
+app.get('/api/bna/assistant/memory', requireAdmin, async (req, res) => {
+  try {
+    const scope = await resolveAssistantMemoryScope(req, req.query || {});
+    const result = await pool.query(
+      `SELECT
+         id, memory_key, memory_value, visibility, metadata,
+         module_key, subject_type, subject_id, created_at, updated_at
+       FROM bna_assistant_memory
+       WHERE workspace_id IS NOT DISTINCT FROM $1
+         AND project_id IS NOT DISTINCT FROM $2
+         AND user_key = $3
+         AND user_role = $4
+         AND surface = $5
+         AND module_key = $6
+         AND subject_type = $7
+         AND subject_id = $8
+       ORDER BY updated_at DESC, id DESC
+       LIMIT 50`,
+      [
+        scope.workspace_id,
+        scope.project_id,
+        scope.user_key,
+        scope.user_role,
+        scope.surface,
+        scope.module_key,
+        scope.subject_type,
+        scope.subject_id,
+      ]
+    );
+    res.json({
+      success: true,
+      scope,
+      memories: result.rows,
+    });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
 });
 
 function fallbackAutomationScopes(projectKey = '') {
@@ -13582,6 +13703,7 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
     await pool.query(createProjectMembersSQL);
     await pool.query(createWorkspaceInvitationsSQL);
     await pool.query(createTaskCommentsSQL);
+    await pool.query(createAssistantMemorySQL);
     await pool.query(createWorkspaceScopeMigrationSQL);
     await pool.query(createBnaIndexesSQL);
     await pool.query(normalizeTasksCategoryCheckSQL);

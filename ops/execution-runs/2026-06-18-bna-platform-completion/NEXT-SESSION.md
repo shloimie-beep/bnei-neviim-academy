@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-19T00:34:30+03:00
+Updated: 2026-06-19T00:44:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -34,10 +34,11 @@ Latest completed local batches:
 - REQ-20260618-154: Goal Board cards now render in separate Current Goals, Progress / Check-ins, Approvals, and History lanes instead of one mixed list.
 - REQ-20260618-155: Student Portal Hebrew mode now localizes dynamic goal cards, command cards, tablet access statuses, dates, statuses, empty/filter labels, buttons, save/error messages, and applies RTL-specific layout behavior.
 - REQ-20260618-157: Operations now has one BNA Assistant shell/status surface, one Assistant toolbar module, one read-only `/api/bna/assistant/status` route, and scoped GET-only access without duplicate Codex/Kimi/helper visible personas.
+- REQ-20260618-158: Assistant memory now has a scoped `bna_assistant_memory` table, exact workspace/project/user/role/surface/module/subject read API, shared workspace-auth access, and Operations Memory Scope visibility.
 
 Exact next requirement:
 
-- REQ-20260618-158 / BNA-HELPER-002: Scope helper memory by user/role/workspace/context.
+- REQ-20260618-159 / BNA-HELPER-003: Permissioned backend action registry.
 
 Blocked requirement intentionally skipped:
 
@@ -47,15 +48,15 @@ Exact next command:
 
 ```powershell
 npm run bna:run:status
-rg -n "assistant|helper|memory|context|workspace|role|scope|student|family|provider|public|authenticated|chat|OpenAI" server.js public\\operations.html src\\lib\\bna tests .env.example
+rg -n "assistant|helper|action|registry|permission|confirm|audit|tool|POST|mutat|safe|status|memory" server.js public\\operations.html src\\lib\\bna tests .env.example
 ```
 
-Then inspect the Assistant status shell and any future helper/chat routes. Implement scoped memory/context separation by user, role, workspace, module, and student/family/provider context before adding any helper action execution.
+Then inspect the Assistant shell, existing safe-action/accounting confirmation patterns, and route registry expectations. Implement a permissioned backend action registry that lists what the Assistant may call, keeps mutation execution disabled until confirmation/audit requirements are implemented, and does not create duplicate helper identities.
 
 Still open after this batch:
 
 - REQ-20260618-124 remains `in_progress` until broader workspace-owned entity API filtering, release approval, deploy, and live smoke are complete.
-- REQ-20260618-125 through REQ-20260618-155 and REQ-20260618-157 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-125 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-158 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - REQ-20260618-156 remains `needs_operator_decision` for duplicate-student cleanup approval.
 - REQ-20260618-159 through REQ-20260618-162 remain open for helper action registry, confirmation tiers/audit logs, duplicate dev-language cleanup, and public/authenticated memory-leak prevention.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.

@@ -17,6 +17,7 @@ const SCOPED_SHARED_ROUTE_PATTERNS = [
   { method: 'GET', pattern: /^\/api\/bna\/projects$/ },
   { method: 'GET', pattern: /^\/api\/bna\/calendar$/ },
   { method: 'GET', pattern: /^\/api\/bna\/assistant\/status$/ },
+  { method: 'GET', pattern: /^\/api\/bna\/assistant\/memory$/ },
   { method: 'GET', pattern: /^\/api\/bna\/automations\/status$/ },
   { method: 'GET', pattern: /^\/api\/bna\/integrations\/status$/ },
   { method: 'GET', pattern: /^\/api\/bna\/users$/ },

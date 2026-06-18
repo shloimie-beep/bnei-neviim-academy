@@ -3893,3 +3893,30 @@ Verification:
 Status: local `needs_verification`; no OpenAI call, deployment,
 production-data mutation, audit crawl, watch loop, or agent-fleet loop was
 performed. Resume at `REQ-20260618-158`.
+
+## 2026-06-19 - Scoped Assistant memory context
+
+Requirement: `REQ-20260618-158`
+
+Changed:
+
+- Added the scoped `bna_assistant_memory` table and migration coverage for
+  workspace, project, user key, role, surface, module, subject type, subject ID,
+  memory key, metadata, and exact-scope uniqueness.
+- Added a read-only `/api/bna/assistant/memory` route that resolves project
+  access through the shared workspace auth layer and filters memory by the
+  exact assistant context before returning rows.
+- Wired Operations Assistant to load memory through the selected workspace
+  filter and render a Memory Scope panel showing project, user, role, subject,
+  and scoped memory rows.
+- Expanded assistant, workspace schema, and workspace-auth tests to guard the
+  scoped memory table, exact SQL filters, read-only scoped access, and UI load.
+
+Verification:
+
+- PASS `node --test tests/assistant-shell.test.js tests/workspace-schema.test.js tests/workspace-auth.test.js tests/operations-workspace-selector.test.js` 22/22.
+- PASS `npm test` 173/173.
+
+Status: local `needs_verification`; no OpenAI call, helper action execution,
+deployment, production-data mutation, audit crawl, watch loop, or agent-fleet
+loop was performed. Resume at `REQ-20260618-159`.

@@ -3659,6 +3659,14 @@
                 if (filters.project) params.set('project', filters.project);
                 return this.request('GET', '/assistant/status' + (params.toString() ? '?' + params.toString() : ''));
             },
+            getAssistantMemory(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.project) params.set('project', filters.project);
+                if (filters.module) params.set('module', filters.module);
+                if (filters.subject_type) params.set('subject_type', filters.subject_type);
+                if (filters.subject_id) params.set('subject_id', filters.subject_id);
+                return this.request('GET', '/assistant/memory' + (params.toString() ? '?' + params.toString() : ''));
+            },
             getAutomations(filters = {}) {
                 const params = new URLSearchParams();
                 if (filters.project) params.set('project', filters.project);
@@ -3835,6 +3843,7 @@
         let tasks = [];
         let calendarEvents = [];
         let assistantStatus = null;
+        let assistantMemory = null;
         let automationStatuses = [];
         let integrationStatuses = [];
         let workspaceUsers = [];
@@ -4522,6 +4531,8 @@
 
         function renderAssistant() {
             const assistant = assistantStatus?.assistant || {};
+            const memoryScope = assistantMemory?.scope || {};
+            const memories = Array.isArray(assistantMemory?.memories) ? assistantMemory.memories : [];
             const providerReady = assistant.active_provider === 'openai' && assistant.openai_configured;
             const statusLabel = providerReady ? 'Ready' : 'Needs OpenAI key';
             const capabilities = Array.isArray(assistant.capabilities) ? assistant.capabilities : [];
@@ -4543,7 +4554,7 @@
                         <div class="focused-grid">
                             ${renderSummaryCard('Identity', escapeHtml(assistant.visible_label || 'BNA Assistant'), 'single visible helper')}
                             ${renderSummaryCard('Provider', escapeHtml(assistantProviderLabel(assistant.active_provider)), 'preferred: OpenAI')}
-                            ${renderSummaryCard('Scope', escapeHtml(assistant.workspace_project || selectedProjectFilter() || 'all'), 'current workspace')}
+                            ${renderSummaryCard('Scope', escapeHtml(memoryScope.project_key || assistant.workspace_project || selectedProjectFilter() || 'bna'), 'current workspace')}
                         </div>
                         <div class="content-section-grid">
                             <div class="event-card">
@@ -4559,6 +4570,21 @@
                                     ${capabilities.length
                                         ? capabilities.map(item => `<div class="mini-list-item"><span>${escapeHtml(String(item).replace(/_/g, ' '))}</span><strong>visible</strong></div>`).join('')
                                         : '<p class="payment-muted">No assistant capabilities are visible yet.</p>'}
+                                </div>
+                            </div>
+                            <div class="event-card">
+                                <div class="event-type">Memory Scope</div>
+                                <div class="event-title">${escapeHtml(memoryScope.module_key || 'assistant')} / ${escapeHtml(memoryScope.subject_type || 'workspace')}</div>
+                                <div class="contact-detail-grid" style="margin-top:12px;">
+                                    ${renderContactDetailItem('Project', memoryScope.project_key || selectedProjectFilter() || 'bna')}
+                                    ${renderContactDetailItem('User', memoryScope.user_key || 'operations_user')}
+                                    ${renderContactDetailItem('Role', memoryScope.user_role || assistant.user_role || 'workspace_member')}
+                                    ${renderContactDetailItem('Subject', memoryScope.subject_id || memoryScope.subject_type || 'workspace')}
+                                </div>
+                                <div class="mini-list" style="margin-top:12px;">
+                                    ${memories.length
+                                        ? memories.map(item => `<div class="mini-list-item"><span>${escapeHtml(item.memory_key || 'memory')}</span><strong>${escapeHtml(item.visibility || 'scoped')}</strong></div>`).join('')
+                                        : '<p class="payment-muted">No scoped assistant memory records are visible for this context.</p>'}
                                 </div>
                             </div>
                             <div class="event-card">
@@ -8665,11 +8691,12 @@
                 ensureActiveWorkspaceProject();
                 ensureCurrentViewAllowed();
 
-                const [projectsRes, tasksRes, calendarRes, assistantRes, automationsRes, integrationsRes, usersRes, invitationsRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, greenInvoiceRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes] = await Promise.allSettled([
+                const [projectsRes, tasksRes, calendarRes, assistantRes, assistantMemoryRes, automationsRes, integrationsRes, usersRes, invitationsRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, greenInvoiceRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes] = await Promise.allSettled([
                     api.getProjects(),
                     api.getTasks({ project: selectedProjectFilter() || undefined }),
                     viewAllowed('calendar') ? api.getCalendar({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ events: [] }),
                     viewAllowed('assistant') ? api.getAssistantStatus({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ assistant: null }),
+                    viewAllowed('assistant') ? api.getAssistantMemory({ project: selectedProjectFilter() || undefined, module: 'assistant', subject_type: 'workspace' }) : Promise.resolve({ scope: null, memories: [] }),
                     viewAllowed('automations') ? api.getAutomations({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ automations: [] }),
                     viewAllowed('integrations') ? api.getIntegrations({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ integrations: [] }),
                     viewAllowed('users') ? api.getUsers({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ users: [] }),
@@ -8695,6 +8722,7 @@
                 if (tasksRes.status === 'fulfilled' && tasksRes.value?.tasks) tasks = tasksRes.value.tasks;
                 if (calendarRes.status === 'fulfilled' && calendarRes.value?.events) calendarEvents = calendarRes.value.events;
                 if (assistantRes.status === 'fulfilled' && assistantRes.value?.assistant) assistantStatus = assistantRes.value;
+                if (assistantMemoryRes.status === 'fulfilled' && assistantMemoryRes.value?.scope) assistantMemory = assistantMemoryRes.value;
                 if (automationsRes.status === 'fulfilled' && automationsRes.value?.automations) automationStatuses = automationsRes.value.automations;
                 if (integrationsRes.status === 'fulfilled' && integrationsRes.value?.integrations) integrationStatuses = integrationsRes.value.integrations;
                 if (usersRes.status === 'fulfilled' && usersRes.value?.users) workspaceUsers = usersRes.value.users;
@@ -8719,7 +8747,7 @@
                 if (accountabilityRes.status === 'fulfilled' && accountabilityRes.value?.events) accountabilityEvents = accountabilityRes.value.events;
                 if (groupGoalsRes.status === 'fulfilled' && groupGoalsRes.value?.goals) groupGoals = groupGoalsRes.value.goals;
 
-                const errors = [projectsRes, tasksRes, calendarRes, assistantRes, automationsRes, integrationsRes, usersRes, invitationsRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, greenInvoiceRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes]
+                const errors = [projectsRes, tasksRes, calendarRes, assistantRes, assistantMemoryRes, automationsRes, integrationsRes, usersRes, invitationsRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, greenInvoiceRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes]
                     .filter((result) => result.status === 'rejected')
                     .map((result) => result.reason?.message || 'Unknown dashboard error');
 
@@ -8894,6 +8922,7 @@
             taskProjectFilter = 'all';
             calendarEvents = [];
             assistantStatus = null;
+            assistantMemory = null;
             automationStatuses = [];
             integrationStatuses = [];
             workspaceUsers = [];
