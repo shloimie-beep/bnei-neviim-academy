@@ -104,3 +104,10 @@ Operations design primitives (2026-06-18T20:37:34+03:00):
 - PASS Operations HTML script parse via `vm.Script` (2 script blocks).
 - PASS `node --test tests/operations-design-system.test.js tests/operations-layout-stability.test.js tests/operations-module-toolbar.test.js` 10/10.
 - PASS `npm test` 96/96.
+
+Operations mobile controls (2026-06-18T20:43:28+03:00):
+
+- PASS `node --check tests/operations-mobile-controls.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/operations-mobile-controls.test.js tests/operations-design-system.test.js tests/operations-layout-stability.test.js` 10/10.
+- PASS `npm test` 99/99.

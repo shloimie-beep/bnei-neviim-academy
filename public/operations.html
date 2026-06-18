@@ -3485,6 +3485,131 @@
             outline: 3px solid var(--ops-focus);
             outline-offset: 2px;
         }
+
+        /* Mobile control safety primitives */
+        @media (max-width: 768px) {
+            .btn,
+            .task-action,
+            .filter-chip,
+            .section-tab,
+            .ops-module-button,
+            .ops-command-action,
+            .task-filter,
+            .task-reset-button,
+            .modal-close {
+                min-height: 44px;
+                touch-action: manipulation;
+            }
+
+            .ops-module-list,
+            .section-tab-list,
+            .task-actions,
+            .task-row-actions,
+            .content-card-tools,
+            .content-bulk-selected,
+            .contact-action-row,
+            .modal-footer {
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior-x: contain;
+                scrollbar-width: thin;
+            }
+
+            .section-tab-list {
+                display: flex;
+                grid-template-columns: none;
+                gap: 8px;
+                overflow-x: auto;
+                padding-bottom: 4px;
+                scroll-snap-type: x proximity;
+            }
+
+            .section-tab {
+                flex: 0 0 min(164px, 46vw);
+                scroll-snap-align: start;
+                white-space: normal;
+            }
+
+            .filter-chip,
+            .task-action,
+            .btn {
+                align-items: center;
+                display: inline-flex;
+                justify-content: center;
+                line-height: 1.2;
+                text-align: center;
+            }
+
+            .task-actions {
+                align-items: stretch;
+                flex-wrap: nowrap;
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 4px;
+            }
+
+            .task-actions .task-action {
+                flex: 0 0 auto;
+                min-width: max-content;
+            }
+
+            .task-row-actions {
+                align-items: stretch;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                min-width: 0;
+                overflow-x: auto;
+                padding-bottom: 4px;
+            }
+
+            .task-row-actions .task-action {
+                flex: 0 0 min(160px, 46vw);
+                width: auto;
+            }
+
+            .content-card-tools,
+            .contact-action-row {
+                align-items: stretch;
+                flex-direction: row;
+                flex-wrap: nowrap;
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 4px;
+            }
+
+            .content-card-tools > *,
+            .contact-action-row > * {
+                flex: 0 0 auto;
+            }
+
+            .modal-footer {
+                background: var(--ops-surface);
+                bottom: 0;
+                flex-wrap: nowrap;
+                position: sticky;
+            }
+
+            .modal-footer .btn {
+                min-width: 0;
+            }
+        }
+
+        @media (max-width: 460px) {
+            .section-tab {
+                flex-basis: min(148px, 72vw);
+            }
+
+            .task-row-actions .task-action {
+                flex-basis: min(156px, 76vw);
+            }
+
+            .modal-footer {
+                flex-direction: column;
+            }
+
+            .modal-footer .btn {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body>

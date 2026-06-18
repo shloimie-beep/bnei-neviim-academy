@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-18T20:02:08+03:00",
+  "updated_at": "2026-06-18T20:43:28+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -129,17 +129,21 @@
       "live_required": true,
       "blocker": null,
       "evidence": [
-        "Operations now has semantic design tokens and shared high-contrast surface/button/type/focus primitives for the canonical shell."
+        "Operations now has semantic design tokens and shared high-contrast surface/button/type/focus primitives for the canonical shell.",
+        "Operations mobile controls now have touch-safe target sizing, horizontal scroll behavior for dense controls, and reachable modal action footers."
       ],
       "deployment_evidence": [],
       "verification": [
         "node --test tests/operations-design-system.test.js tests/operations-layout-stability.test.js tests/operations-module-toolbar.test.js PASS 10/10",
-        "npm test PASS 96/96"
+        "npm test PASS 96/96",
+        "node --test tests/operations-mobile-controls.test.js tests/operations-design-system.test.js tests/operations-layout-stability.test.js PASS 10/10",
+        "npm test PASS 99/99"
       ],
-      "notes": "Shared design primitive child REQ-132 has local implementation and tests. Parent remains in_progress until mobile controls and desktop grid child requirements are complete.",
+      "notes": "Shared design primitive children REQ-132 and REQ-133 have local implementation and tests. Parent remains in_progress until desktop grid, accessibility, and remaining design child requirements are complete.",
       "files_changed": [
         "public/operations.html",
-        "tests/operations-design-system.test.js"
+        "tests/operations-design-system.test.js",
+        "tests/operations-mobile-controls.test.js"
       ]
     },
     {
@@ -1115,7 +1119,7 @@
       "area": "design",
       "priority": "P1",
       "current_verdict": "partial",
-      "status": "not_started",
+      "status": "needs_verification",
       "expected_result": "Mobile tabs, filters, and actions are scrollable, aligned, and touch-safe instead of uneven wrapped rectangles.",
       "acceptance_criteria": [
         "Intentional mobile controls is implemented against the canonical Express/static runtime where applicable.",
@@ -1126,12 +1130,26 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "public/operations.html adds Mobile control safety primitives for 44px handheld touch targets across buttons, task actions, chips, tabs, module buttons, command actions, task filters, reset buttons, and modal close controls.",
+        "Dense mobile module, section, task, content, contact, and modal action groups now use horizontal overflow rails with touch scrolling and overscroll containment instead of squeezed wrapping.",
+        "Mobile modal footers remain sticky and become full-width stacked actions on very small screens so save/cancel controls stay reachable."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check tests/operations-mobile-controls.test.js PASS",
+        "Operations HTML script parse via vm.Script PASS (2 script blocks)",
+        "node --test tests/operations-mobile-controls.test.js tests/operations-design-system.test.js tests/operations-layout-stability.test.js PASS 10/10",
+        "npm test PASS 99/99"
+      ],
+      "implementation_commits": [
+        "current batch commit: fix: make operations mobile controls touch safe"
+      ],
+      "files_changed": [
+        "public/operations.html",
+        "tests/operations-mobile-controls.test.js"
+      ],
+      "notes": "Implemented as a local CSS/static-test batch only; no new baseline crawl, audit harness rebuild, deploy, or production-data mutation was run."
     },
     {
       "id": "REQ-20260618-134",

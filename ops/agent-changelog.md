@@ -3156,3 +3156,29 @@ Verification:
 Status: local `needs_verification`; no deployment, production-data mutation,
 audit crawl, watch loop, or agent-fleet loop was performed. Resume at
 `REQ-20260618-133`.
+
+## 2026-06-18T20:43:28+03:00 - Operations Mobile Controls
+
+Completed the local intentional mobile controls batch for `REQ-20260618-133`.
+
+- Added handheld touch-target primitives for buttons, task actions, chips,
+  section tabs, module buttons, command actions, task filters, reset buttons,
+  and modal close controls.
+- Added horizontal touch-scroll rails and overscroll containment for dense
+  module, section, task, content, contact, and modal action groups.
+- Kept task-row actions aligned on one mobile rail instead of cramped wrapping.
+- Made task modal footers sticky and stacked full-width on very small screens.
+- Added focused coverage in `tests/operations-mobile-controls.test.js`.
+
+Verification:
+
+- PASS `node --check tests/operations-mobile-controls.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/operations-mobile-controls.test.js
+  tests/operations-design-system.test.js
+  tests/operations-layout-stability.test.js` 10/10.
+- PASS `npm test` 99/99.
+
+Status: local `needs_verification`; no deployment, production-data mutation,
+audit crawl, watch loop, or agent-fleet loop was performed. Resume at
+`REQ-20260618-134`.
