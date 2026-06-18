@@ -307,6 +307,12 @@ async function noHorizontalOverflow(page) {
   assert.ok(metrics.scrollWidth <= metrics.clientWidth + 1, JSON.stringify(metrics));
 }
 
+async function moduleToolbarLabels(page) {
+  return page.locator('.ops-module-toolbar .ops-module-button span:last-child').evaluateAll((nodes) => (
+    nodes.map((node) => node.textContent.trim())
+  ));
+}
+
 async function waitForCall(calls, predicate, label) {
   const deadline = Date.now() + 3000;
   while (Date.now() < deadline) {
@@ -335,6 +341,18 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       const page = await context.newPage();
       await page.goto('/operations?view=tasks', { waitUntil: 'domcontentloaded' });
       await page.locator('.ops-app-shell').waitFor();
+      assert.deepEqual(await moduleToolbarLabels(page), [
+        'Tasks',
+        'Assistant',
+        'Calendar',
+        'Students',
+        'Content',
+        'Contacts',
+        'Accounting',
+        'Automations',
+        'Integrations',
+        'Users',
+      ]);
       await noHorizontalOverflow(page);
 
       await page.setViewportSize({ width: 1440, height: 900 });
@@ -403,6 +421,15 @@ test('Playwright Operations scoped user sees locked workspace context without gl
       await page.goto('/operations?view=tasks', { waitUntil: 'domcontentloaded' });
       await page.locator('.ops-app-shell').waitFor();
       await page.locator('.workspace-context-control[data-mode="scoped"]').waitFor();
+      assert.deepEqual(await moduleToolbarLabels(page), [
+        'Tasks',
+        'Assistant',
+        'Calendar',
+        'Content',
+        'Contacts',
+        'Automations',
+        'Integrations',
+      ]);
       await page.getByText('Service provider: One Time Mishnah Class').waitFor();
       await page.getByText('Scoped login').waitFor();
       assert.equal(await page.locator('#workspaceProjectSelector').count(), 0);

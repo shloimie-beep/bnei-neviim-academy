@@ -505,3 +505,14 @@ Workspace switch stale-context reset proof (2026-06-19T04:35:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-127 now has local proof that workspace switching clears stale assistant/helper, calendar, content filter, student filter, selected-student, selected-content, task-modal, and task-comment state. Browser coverage verifies switching from a student profile returns to Tasks overview, removes the stale student route parameter/profile panel, and reloads One Time scoped task data. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Operations module toolbar DOM proof (2026-06-19T04:45:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/operations-module-toolbar.test.js`.
+- PASS `node --test tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js` 11/11.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-128 now has local proof for the ordered horizontal Operations module toolbar in both source/static checks and browser DOM checks: super-admin sees the full expected module order, scoped One Time users see only allowedViews-filtered modules, and responsive overflow remains clean. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

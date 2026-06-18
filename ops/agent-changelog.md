@@ -4308,6 +4308,29 @@ Verification:
 Status: `needs_verification`; no audit crawl, deployment, production-data
 mutation, watch loop, or agent-fleet loop was performed.
 
+## 2026-06-19 - Operations toolbar DOM proof
+
+Requirement: `REQ-20260618-128`
+
+Changed:
+
+- Added a browser helper that reads visible Operations module toolbar labels.
+- Verified super-admin sees the full expected module order in the DOM.
+- Verified a scoped One Time workspace member sees only allowedViews-filtered
+  toolbar buttons.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/operations-module-toolbar.test.js`.
+- PASS `node --test tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js` 11/11.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data
+mutation, watch loop, or agent-fleet loop was performed.
+
 ## 2026-06-19 - Workspace switch stale-context reset proof
 
 Requirement: `REQ-20260618-127`
