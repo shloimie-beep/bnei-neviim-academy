@@ -589,3 +589,13 @@ Operations accessibility DOM proof (2026-06-19T05:55:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-135 now has browser proof that a keyboard-activated task row opens an accessible task dialog with role/aria metadata, hidden description, accessible close label, and focus on the title field; Escape closes the dialog and restores focus to the triggering task row. The batch also fixed async task-comment re-render focus loss. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Canonical task state browser proof (2026-06-19T06:05:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/task-state-model.test.js tests/operations-accessibility.test.js tests/browser-acceptance.test.js` 11/11.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-136 now has browser proof that a legacy `needs_decision` task fixture renders in Decisions as canonical `Status: Decision`, shows canonical decision actions, and opens with `taskStage=decision_required`, Decision Required checked, and the canonical stage option set only. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

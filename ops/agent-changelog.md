@@ -4308,6 +4308,29 @@ Verification:
 Status: `needs_verification`; no audit crawl, deployment, production-data
 mutation, watch loop, or agent-fleet loop was performed.
 
+## 2026-06-19 - Canonical task state browser proof
+
+Requirement: `REQ-20260618-136`
+
+Changed:
+
+- Added a legacy `needs_decision` task fixture to the browser acceptance flow.
+- Verified the legacy alias renders in Decisions with canonical
+  `Status: Decision` metadata and decision actions.
+- Verified the task modal normalizes the alias to `decision_required`, checks
+  Decision Required, and exposes only the six canonical stage options.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/task-state-model.test.js tests/operations-accessibility.test.js tests/browser-acceptance.test.js` 11/11.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data
+mutation, watch loop, or agent-fleet loop was performed.
+
 ## 2026-06-19 - Operations accessibility DOM proof
 
 Requirement: `REQ-20260618-135`

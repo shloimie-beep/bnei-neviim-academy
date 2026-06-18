@@ -1542,7 +1542,7 @@
       "title": "Canonical task state model",
       "area": "tasks",
       "priority": "P0",
-      "current_verdict": "partial",
+      "current_verdict": "local_complete_pending_release",
       "status": "needs_verification",
       "expected_result": "Task states normalize to decision_required, ready, in_progress, blocked, done, archived with old-value compatibility.",
       "acceptance_criteria": [
@@ -1557,7 +1557,9 @@
       "evidence": [
         "server.js task schema and idempotent migration now use canonical stages decision_required, ready, in_progress, blocked, done, and archived, while mapping raw_input, needs_decision, assigned, and archive forward.",
         "server.js create, query filter, patch, content-task, and agent-queue paths normalize task stage aliases and keep decision_required coherent with the decision_required stage.",
-        "public/operations.html task labels, form options, actions, hiding logic, and bucketing now speak canonical task states while still reading legacy values safely."
+        "public/operations.html task labels, form options, actions, hiding logic, and bucketing now speak canonical task states while still reading legacy values safely.",
+        "Browser acceptance now includes a legacy needs_decision task fixture and verifies Operations renders it in Decisions with canonical Status: Decision metadata and canonical Turn into my task/Hide actions.",
+        "Browser acceptance now verifies the legacy-alias task modal normalizes taskStage to decision_required, checks Decision Required, and exposes exactly decision_required, ready, in_progress, blocked, done, and archived options."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -1565,17 +1567,24 @@
         "node --check tests/task-state-model.test.js PASS",
         "Operations HTML script parse via vm.Script PASS (2 script blocks)",
         "node --test tests/task-state-model.test.js tests/operations-accessibility.test.js tests/operations-workspace-selector.test.js PASS 13/13",
-        "npm test PASS 110/110"
+        "npm test PASS 110/110",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/task-state-model.test.js tests/operations-accessibility.test.js tests/browser-acceptance.test.js PASS 11/11",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: feat: canonicalize task states"
+        "current batch commit: feat: canonicalize task states",
+        "current batch commit: test: verify task state aliases in browser"
       ],
       "files_changed": [
         "server.js",
         "public/operations.html",
-        "tests/task-state-model.test.js"
+        "tests/task-state-model.test.js",
+        "tests/browser-acceptance.test.js"
       ],
-      "notes": "Implemented local canonical task state compatibility only; no production migration endpoint, deploy, live smoke, or production-data mutation was run."
+      "notes": "Local canonical task state compatibility now has static, backend, and browser DOM proof. Requirement remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for app-visible/server-visible changes."
     },
     {
       "id": "REQ-20260618-137",

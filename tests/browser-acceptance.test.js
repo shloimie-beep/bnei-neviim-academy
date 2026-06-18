@@ -145,6 +145,18 @@ function operationsFixture(pathname, url, options = {}) {
           created_at: '2026-06-18T08:00:00+03:00',
           ai_parsed: { seed_marker: 'TEST-BNA-SEED' },
         },
+        {
+          id: 202,
+          workspace_id: project === 'one_time_mishnah_class' ? 2 : 1,
+          project_key: project === 'one_time_mishnah_class' ? 'one_time_mishnah_class' : 'bna',
+          title: `${project === 'one_time_mishnah_class' ? 'One Time' : 'BNA'} legacy alias task`,
+          stage: 'needs_decision',
+          category: 'operations',
+          urgency: 'this_week',
+          assigned_to: 'System Work',
+          created_at: '2026-06-18T09:00:00+03:00',
+          ai_parsed: { seed_marker: 'TEST-BNA-SEED', legacy_stage_alias: 'needs_decision' },
+        },
       ],
     },
     '/api/bna/calendar': {
@@ -654,6 +666,43 @@ async function assertOperationsAccessibility(page) {
   await page.locator('.focus-panel[aria-label="Tasks overview"]').waitFor();
 }
 
+async function assertOperationsTaskStateModel(page) {
+  await page.locator('.section-tab').filter({ hasText: 'Decisions' }).first().click();
+  const legacyRow = page.locator('.task-row').filter({ hasText: 'legacy alias task' }).first();
+  await legacyRow.waitFor();
+  const legacyState = await legacyRow.evaluate((node) => ({
+    actionText: node.querySelector('.task-row-actions')?.textContent || '',
+    text: node.textContent || '',
+  }));
+  assert.match(legacyState.text, /Status:\s*Decision/);
+  assert.match(legacyState.actionText, /Turn into my task/);
+  assert.match(legacyState.actionText, /Hide/);
+
+  await legacyRow.click({ position: { x: 20, y: 20 } });
+  await page.locator('#taskModal.show').waitFor();
+  await page.waitForFunction(() => document.getElementById('taskStage')?.value === 'decision_required');
+  const modalState = await page.evaluate(() => ({
+    decisionRequiredChecked: document.getElementById('taskDecisionRequired')?.checked || false,
+    stageOptions: Array.from(document.querySelectorAll('#taskStage option')).map((option) => option.value),
+    stageValue: document.getElementById('taskStage')?.value || '',
+  }));
+  assert.equal(modalState.stageValue, 'decision_required');
+  assert.equal(modalState.decisionRequiredChecked, true);
+  assert.deepEqual(modalState.stageOptions, [
+    'decision_required',
+    'ready',
+    'in_progress',
+    'blocked',
+    'done',
+    'archived',
+  ]);
+
+  await page.locator('#taskModal.show .modal-close').click();
+  await page.waitForFunction(() => !document.querySelector('#taskModal')?.classList.contains('show'));
+  await page.locator('.section-tab').filter({ hasText: 'Overview' }).first().click();
+  await page.locator('.focus-panel[aria-label="Tasks overview"]').waitFor();
+}
+
 async function assertStudentPortalIdentity(page) {
   const identity = await page.evaluate(() => ({
     hasLogo: Array.from(document.images).some((img) => (
@@ -734,6 +783,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       await page.setViewportSize({ width: 1440, height: 900 });
       await assertOperationsDesktopGrids(page);
       await assertOperationsAccessibility(page);
+      await assertOperationsTaskStateModel(page);
       await assertOperationsShellStable(page, 'desktop operations shell');
 
       await page.locator('.ops-module-button').filter({ hasText: 'Assistant' }).click();
