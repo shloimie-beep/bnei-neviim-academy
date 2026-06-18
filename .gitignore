@@ -5,6 +5,7 @@ build/
 dist/
 .deploy-railway/
 .runtime/
+.runtime/auth/
 .tmp-lighthouse/
 tmp/
 
@@ -68,3 +69,5 @@ ops/system-audits/*.json
 ops/system-audits/*-watchdog.md
 ops/system-audits/*-watchdog-improvements.md
 screenshots/
+ops/ui-audits/runs/
+ops/ui-audits/latest.json

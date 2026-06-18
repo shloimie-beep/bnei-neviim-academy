@@ -21213,3 +21213,30 @@ Still gated:
 - No live sends, posts, uploads, charges, DNS writes, account grants,
   credential copying, public/member publishing, or other external writes were
   performed.
+
+## 2026-06-18T13:15:00+03:00 - Operations UI Audit Harness
+
+Built the Operations UI audit harness on branch
+`codex/operations-ui-audit-harness`: added secure manual Playwright auth,
+safe authenticated crawler tooling, privacy redaction, route/state maps,
+detectors, reports, contact sheets, ZIP packaging, docs, tests, and gitignored
+generated auth/audit artifacts.
+
+Verification:
+- PASS `node --check server.js`.
+- PASS `node --check scripts/telegram-kimi-bridge.mjs`.
+- PASS harness syntax checks for `tools/ops-ui-audit.js` and modules.
+- PASS `npm run ops:audit:help`.
+- PASS `node --test tests/ops-ui-audit-harness.test.js` 7/7.
+- PASS `npm test` 771/771.
+- PASS missing-storage behavior: audit exits with the auth instruction.
+- PASS unauthenticated live login smoke: `npm run ops:audit -- smoke-login`.
+
+Authenticated crawl status:
+- Not run in this Codex environment because
+  `.runtime/auth/operations-storage-state.json` is absent. The first full
+  audit package requires operator-run `npm run ops:audit:auth`, then
+  `npm run ops:audit`.
+
+No deployment, product UI fix, live send, publish, payment, sync, upload,
+external connector write, or real record mutation was performed.
