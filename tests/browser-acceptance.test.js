@@ -329,6 +329,46 @@ async function assertOperationsShellStable(page, label) {
   await noHorizontalOverflow(page);
 }
 
+async function assertOperationsIdentity(page) {
+  const identity = await page.evaluate(() => ({
+    manifest: document.querySelector('link[rel="manifest"]')?.getAttribute('href') || '',
+    hasOpsLogo: Array.from(document.images).some((img) => (
+      img.classList.contains('ops-brand-logo')
+        && img.getAttribute('alt') === "Bnei Nevi'im Academy"
+        && img.getAttribute('src') === '/images/bna-logo-nobg.png'
+    )),
+    hasMobileLogo: Array.from(document.images).some((img) => (
+      img.classList.contains('mobile-brand-logo')
+        && img.getAttribute('alt') === "Bnei Nevi'im Academy"
+        && img.getAttribute('src') === '/images/bna-logo-nobg.png'
+    )),
+    text: document.body.textContent || '',
+  }));
+  assert.equal(identity.manifest, '/operations-manifest.json');
+  assert.ok(identity.hasOpsLogo, JSON.stringify(identity));
+  assert.ok(identity.hasMobileLogo, JSON.stringify(identity));
+  assert.match(identity.text, /BNA Operations/);
+  assert.match(identity.text, /Private Operations portal/);
+  assert.match(identity.text, /EN/);
+}
+
+async function assertStudentPortalIdentity(page) {
+  const identity = await page.evaluate(() => ({
+    hasLogo: Array.from(document.images).some((img) => (
+      img.classList.contains('portal-logo')
+        && img.getAttribute('alt') === "Bnei Nevi'im Academy"
+        && img.getAttribute('src') === '/images/bna-logo-nobg.png'
+    )),
+    brand: document.querySelector('.portal-brand-name')?.textContent?.trim() || '',
+    eyebrow: document.querySelector('.eyebrow')?.textContent?.trim() || '',
+    languageButtons: Array.from(document.querySelectorAll('[data-lang]')).map((node) => node.textContent.trim()),
+  }));
+  assert.ok(identity.hasLogo, JSON.stringify(identity));
+  assert.equal(identity.brand, 'Bnei Neviim Academy');
+  assert.equal(identity.eyebrow, 'Student Portal');
+  assert.deepEqual(identity.languageButtons, ['EN', 'HE']);
+}
+
 async function moduleToolbarLabels(page) {
   return page.locator('.ops-module-toolbar .ops-module-button span:last-child').evaluateAll((nodes) => (
     nodes.map((node) => node.textContent.trim())
@@ -371,6 +411,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       const page = await context.newPage();
       await page.goto('/operations?view=tasks', { waitUntil: 'domcontentloaded' });
       await page.locator('.ops-app-shell').waitFor();
+      await assertOperationsIdentity(page);
       await assertSidebarWorkspaceContextOnly(page);
       assert.deepEqual(await moduleToolbarLabels(page), [
         'Tasks',
@@ -507,6 +548,7 @@ test('Playwright Student Portal acceptance covers private route, Hebrew RTL, and
       const page = await context.newPage();
       await page.goto(`/student?code=${TEST_ACCESS_CODE}`, { waitUntil: 'domcontentloaded' });
       await page.locator('#studentName').waitFor();
+      await assertStudentPortalIdentity(page);
       assert.equal(await page.locator('#studentName').textContent(), TEST_STUDENT_NAME);
       await page.getByText('TEST-BNA-SEED: Finish today honestly').waitFor();
       await noHorizontalOverflow(page);

@@ -4308,6 +4308,29 @@ Verification:
 Status: `needs_verification`; no audit crawl, deployment, production-data
 mutation, watch loop, or agent-fleet loop was performed.
 
+## 2026-06-19 - Portal identity DOM proof
+
+Requirement: `REQ-20260618-131`
+
+Changed:
+
+- Added rendered DOM checks for the Operations shell manifest, approved BNA
+  logo, BNA Operations/private portal identity, and EN language text.
+- Added rendered DOM checks for the Student Portal approved logo, brand,
+  Student Portal identity, and EN/HE language controls.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/operations-identity-header.test.js`.
+- PASS `node --test tests/operations-identity-header.test.js tests/pwa-identity.test.js tests/browser-acceptance.test.js` 15/15.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data
+mutation, watch loop, or agent-fleet loop was performed.
+
 ## 2026-06-19 - Operations shell stability browser proof
 
 Requirement: `REQ-20260618-130`

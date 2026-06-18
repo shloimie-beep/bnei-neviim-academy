@@ -538,3 +538,14 @@ Operations shell stability browser proof (2026-06-19T05:05:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-130 now has browser proof that the Operations shell and view frame stay visible and non-collapsed after mobile/desktop viewport changes, module changes, student-profile navigation, history back/forward, workspace switch, and page reload. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Portal identity DOM proof (2026-06-19T05:15:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/operations-identity-header.test.js`.
+- PASS `node --test tests/operations-identity-header.test.js tests/pwa-identity.test.js tests/browser-acceptance.test.js` 15/15.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-131 now has browser proof that the rendered Operations shell uses the private Operations manifest, approved BNA logo, BNA Operations/private portal identity, and EN language text, and that the rendered Student Portal uses the approved logo, Student Portal identity, and EN/HE controls. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

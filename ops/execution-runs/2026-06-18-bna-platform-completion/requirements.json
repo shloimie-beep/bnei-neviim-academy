@@ -239,7 +239,7 @@
         "STATUS.md and EVIDENCE.md show parent rollup and remaining child IDs.",
         "No child requirement is closed without proof and targeted verification."
       ],
-      "current_verdict": "partial",
+      "current_verdict": "local_complete_pending_release",
       "source": "BNA recovery bundle and Appendix A",
       "depends_on_audit_output": false,
       "live_required": true,
@@ -1306,25 +1306,34 @@
         "Operations shell sidebar and mobile header now use /images/bna-logo-nobg.png with explicit BNA Operations private portal identity and EN language chip.",
         "Operations login now uses the same BNA logo asset, Operations portal identity chip, and EN language chip while retaining operations-manifest.json.",
         "Student portal header now uses the same BNA logo asset with explicit Student Portal identity and keeps EN/HE language controls.",
-        "Public homepage/signup pages retain public manifest identity, BNA logo usage, and English/Hebrew signup language values."
+        "Public homepage/signup pages retain public manifest identity, BNA logo usage, and English/Hebrew signup language values.",
+        "tests/browser-acceptance.test.js now verifies rendered Operations manifest/logo/private identity/EN text and rendered Student Portal logo/brand/identity/EN/HE language controls."
       ],
       "deployment_evidence": [],
       "verification": [
         "node --check tests/operations-identity-header.test.js PASS",
         "Operations, Operations Login, and Student Portal script parse via vm.Script PASS",
         "node --test tests/operations-identity-header.test.js tests/pwa-identity.test.js PASS 10/10",
-        "npm test PASS 92/92"
+        "npm test PASS 92/92",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --check tests/operations-identity-header.test.js PASS",
+        "node --test tests/operations-identity-header.test.js tests/pwa-identity.test.js tests/browser-acceptance.test.js PASS 15/15",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: fix: align operations portal identity headers"
+        "current batch commit: fix: align operations portal identity headers",
+        "current batch commit: test: verify portal identity dom"
       ],
       "files_changed": [
         "public/operations.html",
         "public/operations-login.html",
         "public/student.html",
-        "tests/operations-identity-header.test.js"
+        "tests/operations-identity-header.test.js",
+        "tests/browser-acceptance.test.js"
       ],
-      "notes": "Local header/logo/portal identity/language controls are implemented and tested. Requirement remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for app-visible changes."
+      "notes": "Local header/logo/portal identity/language controls now have static and browser DOM proof for Operations and Student Portal rendered identity. Requirement remains needs_verification pending release approval, deploy, and live smoke for app-visible changes."
     },
     {
       "id": "REQ-20260618-132",
