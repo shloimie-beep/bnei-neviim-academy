@@ -57,6 +57,18 @@ test('public pages do not link or launch the private Operations app shell', () =
   assert.ok(signupHe.includes("serviceWorker.register('/public-sw.js', { scope: '/' })"));
 });
 
+test('public homepage has no Operations loader artifact or header-to-hero gap rule', () => {
+  const index = read('public/index.html');
+
+  assert.ok(!index.includes('Loading BNA Operations'));
+  assert.ok(!index.includes('checkmark'));
+  assert.ok(index.includes('position: sticky;'));
+  assert.ok(index.includes('min-height: 70px;'));
+  assert.ok(index.includes('min-height: 58px;'));
+  assert.match(index, /\.hero \{[\s\S]*?margin-top: 0;/);
+  assert.match(index, /@media \(max-width: 767px\) \{[\s\S]*?\.hero \{[\s\S]*?margin-top: 0;/);
+});
+
 test('Operations pages use the private manifest and Operations service worker', () => {
   const operations = read('public/operations.html');
   const login = read('public/operations-login.html');

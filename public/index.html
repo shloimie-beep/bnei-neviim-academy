@@ -103,9 +103,10 @@
 
         /* ===== NAVIGATION ===== */
         nav {
-            position: fixed;
+            position: sticky;
             top: 0;
             width: 100%;
+            min-height: 70px;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(10px);
             z-index: 1000;
@@ -198,7 +199,7 @@
             height: calc(100vh - 70px);
             min-height: 680px;
             max-height: 820px;
-            margin-top: 70px;
+            margin-top: 0;
             padding: 0;
             display: block;
             overflow: hidden;
@@ -1280,7 +1281,7 @@
             .hero {
                 display: block !important;
                 position: relative;
-                margin-top: 58px;
+                margin-top: 0;
                 height: 620px;
                 min-height: 620px;
                 max-height: none;
@@ -1386,6 +1387,7 @@
             /* Mobile nav */
             nav {
                 padding: 8px 10px;
+                min-height: 58px;
             }
 
             .nav-container {

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-18T19:18:00+03:00",
+  "updated_at": "2026-06-18T19:28:00+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -621,7 +621,7 @@
       "area": "pwa",
       "priority": "P1",
       "current_verdict": "partial",
-      "status": "not_started",
+      "status": "needs_verification",
       "expected_result": "Public homepage renders without Operations loader artifacts and without a header-to-hero gap.",
       "acceptance_criteria": [
         "Remove public loader/checkmark flash and header-to-hero gap is implemented against the canonical Express/static runtime where applicable.",
@@ -632,12 +632,21 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "Public homepage standalone Operations redirect was removed in the prior PWA batch.",
+        "Homepage nav is sticky/in-flow and hero desktop/mobile margin-top is zero."
+      ],
       "deployment_evidence": [],
-      "verification": [],
+      "verification": [
+        "node --test tests/pwa-identity.test.js PASS 6/6",
+        "npm run bna:run:validate PASS"
+      ],
       "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "files_changed": [
+        "public/index.html",
+        "tests/pwa-identity.test.js"
+      ],
+      "notes": "Local static regression passes. Requirement remains open because visual/live confirmation is release-gated and no deployment is approved."
     },
     {
       "id": "REQ-20260618-123",
@@ -1912,7 +1921,8 @@
       "deployment_evidence": [],
       "verification": [
         "node --test tests/pwa-identity.test.js PASS 5/5",
-        "npm test PASS 57/57"
+        "npm test PASS 57/57",
+        "node --test tests/pwa-identity.test.js PASS 6/6"
       ],
       "implementation_commits": [
         "current batch commit: fix: separate public and operations PWA identities"

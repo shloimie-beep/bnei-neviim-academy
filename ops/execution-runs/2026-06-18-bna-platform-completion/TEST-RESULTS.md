@@ -25,3 +25,8 @@ PWA identity/cache guardrail batch (2026-06-18T19:12:00+03:00):
 Full local Node suite after PWA batch (2026-06-18T19:18:00+03:00):
 
 - PASS `npm test` 57/57.
+
+Public homepage PWA cleanup (2026-06-18T19:28:00+03:00):
+
+- PASS `node --test tests/pwa-identity.test.js` 6/6.
+- PASS `npm run bna:run:validate`.
