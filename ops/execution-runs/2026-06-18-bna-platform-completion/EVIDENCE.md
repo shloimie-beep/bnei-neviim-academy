@@ -20,9 +20,9 @@
 | REQ-20260618-116 | already_satisfied | 31fada4 | PR #2 reported node --test tests/ops-ui-audit-harness.test.js PASS 7/7<br>PR #2 reported npm test PASS 771/771 before clean cherry-pick | Commit 31fada4 cherry-picks PR #2 b8baede<br>docs/OPERATIONS-UI-AUDIT.md<br>tests/ops-ui-audit-harness.test.js<br>tools/ops-ui-audit/ | - |
 | REQ-20260618-117 | blocked | - | - | No .runtime/auth/operations-storage-state.json in recovery worktree<br>No ops/ui-audits output folder in recovery worktree | - |
 | REQ-20260618-118 | blocked | - | - | - | - |
-| REQ-20260618-119 | in_progress | - | - | - | Release approval/deploy pending; not closed. |
-| REQ-20260618-120 | in_progress | - | - | - | Release approval/deploy pending; not closed. |
-| REQ-20260618-121 | in_progress | - | - | - | Release approval/deploy pending; not closed. |
+| REQ-20260618-119 | needs_verification | - | node --test tests/pwa-identity.test.js PASS 5/5<br>node --check server.js PASS<br>node --check public/public-sw.js PASS<br>node --check public/operations-sw.js PASS<br>npm test PASS 57/57 | Local PWA guardrail implementation changed public/manifest.json, public/operations-manifest.json, public/parent-manifest.json, public/public-sw.js, public/operations-sw.js, public/icons/operations-icon.svg, public/icons/parent-icon.svg, public/index.html, public/operations.html, public/operations-login.html, public/signup.html, public/signup-he.html, server.js, tests/pwa-identity.test.js | Release approval/deploy pending; not closed. |
+| REQ-20260618-120 | needs_verification | - | node --test tests/pwa-identity.test.js PASS 5/5<br>node --check server.js PASS<br>node --check public/public-sw.js PASS<br>node --check public/operations-sw.js PASS<br>npm test PASS 57/57 | Local PWA guardrail implementation changed public/manifest.json, public/operations-manifest.json, public/parent-manifest.json, public/public-sw.js, public/operations-sw.js, public/icons/operations-icon.svg, public/icons/parent-icon.svg, public/index.html, public/operations.html, public/operations-login.html, public/signup.html, public/signup-he.html, server.js, tests/pwa-identity.test.js | Release approval/deploy pending; not closed. |
+| REQ-20260618-121 | needs_verification | - | node --test tests/pwa-identity.test.js PASS 5/5<br>node --check server.js PASS<br>node --check public/public-sw.js PASS<br>node --check public/operations-sw.js PASS<br>npm test PASS 57/57 | Local PWA guardrail implementation changed public/manifest.json, public/operations-manifest.json, public/parent-manifest.json, public/public-sw.js, public/operations-sw.js, public/icons/operations-icon.svg, public/icons/parent-icon.svg, public/index.html, public/operations.html, public/operations-login.html, public/signup.html, public/signup-he.html, server.js, tests/pwa-identity.test.js | Release approval/deploy pending; not closed. |
 | REQ-20260618-122 | not_started | - | - | - | Release approval/deploy pending; not closed. |
 | REQ-20260618-123 | not_started | - | - | - | Release approval/deploy pending; not closed. |
 | REQ-20260618-124 | not_started | - | - | - | Release approval/deploy pending; not closed. |
@@ -72,7 +72,7 @@
 | REQ-20260618-168 | not_started | - | - | - | - |
 | REQ-20260618-169 | not_started | - | - | - | - |
 | REQ-20260618-170 | not_started | - | - | - | - |
-| REQ-20260618-171 | not_started | - | - | - | - |
+| REQ-20260618-171 | done | current batch commit: fix: separate public and operations PWA identities | node --test tests/pwa-identity.test.js PASS 5/5<br>npm test PASS 57/57 | tests/pwa-identity.test.js asserts manifest IDs, page manifest links, service-worker cache names, and no-store header coverage. | - |
 | REQ-20260618-172 | blocked | - | - | - | - |
 
 Ledger repair evidence:

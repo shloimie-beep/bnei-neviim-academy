@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-18T18:58:00+03:00",
+  "updated_at": "2026-06-18T19:18:00+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -473,8 +473,8 @@
       "title": "Separate public and Operations manifests/app identities",
       "area": "pwa",
       "priority": "P0",
-      "current_verdict": "conflicting",
-      "status": "in_progress",
+      "current_verdict": "partial",
+      "status": "needs_verification",
       "expected_result": "Public, Operations, and parent/student install surfaces use different manifest IDs, names, start URLs, scopes, and icons.",
       "acceptance_criteria": [
         "Public manifest is public-facing and not Operations.",
@@ -485,12 +485,35 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "Local PWA guardrail implementation changed public/manifest.json, public/operations-manifest.json, public/parent-manifest.json, public/public-sw.js, public/operations-sw.js, public/icons/operations-icon.svg, public/icons/parent-icon.svg, public/index.html, public/operations.html, public/operations-login.html, public/signup.html, public/signup-he.html, server.js, tests/pwa-identity.test.js"
+      ],
       "deployment_evidence": [],
-      "verification": [],
+      "verification": [
+        "node --test tests/pwa-identity.test.js PASS 5/5",
+        "node --check server.js PASS",
+        "node --check public/public-sw.js PASS",
+        "node --check public/operations-sw.js PASS",
+        "npm test PASS 57/57"
+      ],
       "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "files_changed": [
+        "public/manifest.json",
+        "public/operations-manifest.json",
+        "public/parent-manifest.json",
+        "public/public-sw.js",
+        "public/operations-sw.js",
+        "public/icons/operations-icon.svg",
+        "public/icons/parent-icon.svg",
+        "public/index.html",
+        "public/operations.html",
+        "public/operations-login.html",
+        "public/signup.html",
+        "public/signup-he.html",
+        "server.js",
+        "tests/pwa-identity.test.js"
+      ],
+      "notes": "Local implementation and focused tests pass. Requirement remains open because it is live-required and deployment/live smoke require explicit operator approval."
     },
     {
       "id": "REQ-20260618-120",
@@ -499,8 +522,8 @@
       "title": "Isolate service workers, caches, scopes, and cache headers",
       "area": "pwa",
       "priority": "P0",
-      "current_verdict": "conflicting",
-      "status": "in_progress",
+      "current_verdict": "partial",
+      "status": "needs_verification",
       "expected_result": "Public and Operations service workers cannot cache or serve each other app shells.",
       "acceptance_criteria": [
         "Operations registers an Operations worker with Operations cache names.",
@@ -511,12 +534,35 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "Local PWA guardrail implementation changed public/manifest.json, public/operations-manifest.json, public/parent-manifest.json, public/public-sw.js, public/operations-sw.js, public/icons/operations-icon.svg, public/icons/parent-icon.svg, public/index.html, public/operations.html, public/operations-login.html, public/signup.html, public/signup-he.html, server.js, tests/pwa-identity.test.js"
+      ],
       "deployment_evidence": [],
-      "verification": [],
+      "verification": [
+        "node --test tests/pwa-identity.test.js PASS 5/5",
+        "node --check server.js PASS",
+        "node --check public/public-sw.js PASS",
+        "node --check public/operations-sw.js PASS",
+        "npm test PASS 57/57"
+      ],
       "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "files_changed": [
+        "public/manifest.json",
+        "public/operations-manifest.json",
+        "public/parent-manifest.json",
+        "public/public-sw.js",
+        "public/operations-sw.js",
+        "public/icons/operations-icon.svg",
+        "public/icons/parent-icon.svg",
+        "public/index.html",
+        "public/operations.html",
+        "public/operations-login.html",
+        "public/signup.html",
+        "public/signup-he.html",
+        "server.js",
+        "tests/pwa-identity.test.js"
+      ],
+      "notes": "Local implementation and focused tests pass. Requirement remains open because it is live-required and deployment/live smoke require explicit operator approval."
     },
     {
       "id": "REQ-20260618-121",
@@ -525,8 +571,8 @@
       "title": "Enforce public-browser and installed-Operations routing invariants",
       "area": "pwa",
       "priority": "P0",
-      "current_verdict": "conflicting",
-      "status": "in_progress",
+      "current_verdict": "partial",
+      "status": "needs_verification",
       "expected_result": "Browser visits to the public site stay public while installed Operations launches Operations.",
       "acceptance_criteria": [
         "Public homepage does not redirect standalone visits to Operations.",
@@ -537,12 +583,35 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "Local PWA guardrail implementation changed public/manifest.json, public/operations-manifest.json, public/parent-manifest.json, public/public-sw.js, public/operations-sw.js, public/icons/operations-icon.svg, public/icons/parent-icon.svg, public/index.html, public/operations.html, public/operations-login.html, public/signup.html, public/signup-he.html, server.js, tests/pwa-identity.test.js"
+      ],
       "deployment_evidence": [],
-      "verification": [],
+      "verification": [
+        "node --test tests/pwa-identity.test.js PASS 5/5",
+        "node --check server.js PASS",
+        "node --check public/public-sw.js PASS",
+        "node --check public/operations-sw.js PASS",
+        "npm test PASS 57/57"
+      ],
       "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "files_changed": [
+        "public/manifest.json",
+        "public/operations-manifest.json",
+        "public/parent-manifest.json",
+        "public/public-sw.js",
+        "public/operations-sw.js",
+        "public/icons/operations-icon.svg",
+        "public/icons/parent-icon.svg",
+        "public/index.html",
+        "public/operations.html",
+        "public/operations-login.html",
+        "public/signup.html",
+        "public/signup-he.html",
+        "server.js",
+        "tests/pwa-identity.test.js"
+      ],
+      "notes": "Local implementation and focused tests pass. Requirement remains open because it is live-required and deployment/live smoke require explicit operator approval."
     },
     {
       "id": "REQ-20260618-122",
@@ -1825,8 +1894,8 @@
       "title": "PWA identity/cache regression tests",
       "area": "tests",
       "priority": "P0",
-      "current_verdict": "missing",
-      "status": "not_started",
+      "current_verdict": "closed_existing",
+      "status": "done",
       "expected_result": "Tests prevent public, Operations, and parent manifest and service-worker identity collisions.",
       "acceptance_criteria": [
         "PWA identity/cache regression tests is implemented against the canonical Express/static runtime where applicable.",
@@ -1837,11 +1906,20 @@
       "depends_on_audit_output": false,
       "live_required": false,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "tests/pwa-identity.test.js asserts manifest IDs, page manifest links, service-worker cache names, and no-store header coverage."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
+      "verification": [
+        "node --test tests/pwa-identity.test.js PASS 5/5",
+        "npm test PASS 57/57"
+      ],
+      "implementation_commits": [
+        "current batch commit: fix: separate public and operations PWA identities"
+      ],
+      "files_changed": [
+        "tests/pwa-identity.test.js"
+      ],
       "notes": ""
     },
     {

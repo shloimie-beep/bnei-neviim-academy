@@ -1,14 +1,15 @@
 # Status
 
-Updated: 2026-06-18T18:58:00+03:00
+Updated: 2026-06-18T19:18:00+03:00
 
 Status counts:
 
-- in_progress: 15
-- done: 3
+- in_progress: 12
+- done: 4
 - already_satisfied: 1
 - blocked: 3
-- not_started: 49
+- needs_verification: 3
+- not_started: 48
 - needs_operator_decision: 1
 
 Closed/already satisfied IDs:
@@ -17,6 +18,7 @@ Closed/already satisfied IDs:
 - REQ-20260618-113 BNA-PROC-002: Deterministic execution-run tooling/schema/tests
 - REQ-20260618-115 BNA-PROC-004: Independent completion-verification workflow
 - REQ-20260618-116 BNA-AUDIT-001: Resume/finish Operations UI audit harness without duplication
+- REQ-20260618-171 BNA-TEST-004: PWA identity/cache regression tests
 
 Open non-blocked IDs begin with:
 
@@ -32,9 +34,9 @@ Open non-blocked IDs begin with:
 - REQ-20260618-110 : Public copy, portal headers, signup routes, and CTAs (in_progress)
 - REQ-20260618-111 : Safe test data and complete acceptance coverage (in_progress)
 - REQ-20260618-114 BNA-PROC-003: Reconcile AGENTS, MEMORY, TASKS, SYSTEM-STATE, briefs, and ledgers (in_progress)
-- REQ-20260618-119 BNA-PWA-001: Separate public and Operations manifests/app identities (in_progress)
-- REQ-20260618-120 BNA-PWA-002: Isolate service workers, caches, scopes, and cache headers (in_progress)
-- REQ-20260618-121 BNA-PWA-003: Enforce public-browser and installed-Operations routing invariants (in_progress)
+- REQ-20260618-119 BNA-PWA-001: Separate public and Operations manifests/app identities (needs_verification)
+- REQ-20260618-120 BNA-PWA-002: Isolate service workers, caches, scopes, and cache headers (needs_verification)
+- REQ-20260618-121 BNA-PWA-003: Enforce public-browser and installed-Operations routing invariants (needs_verification)
 - REQ-20260618-122 BNA-PWA-004: Remove public loader/checkmark flash and header-to-hero gap (not_started)
 - REQ-20260618-123 BNA-WS-001: Enforce exactly school/service-provider/family workspace types (not_started)
 - REQ-20260618-124 BNA-WS-002: Scope applicable entities by workspace_id (not_started)
@@ -53,6 +55,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current implementation batch: PWA public-versus-Operations identity/cache/routing guardrails.
+Current implementation batch: continue PWA visual/public homepage cleanup (REQ-20260618-122), then workspace/RBAC foundation.
 
 No deployment or production-data mutation is approved in this run.

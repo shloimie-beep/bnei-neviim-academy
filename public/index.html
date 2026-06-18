@@ -22,16 +22,6 @@
     <meta name="twitter:description" content="A calm, relationship-based Torah learning environment for boys in Beit Shemesh.">
     <meta name="twitter:image" content="https://bneineviimacademy.org/images/bna-social-preview.png">
     <link rel="canonical" href="https://bneineviimacademy.org/">
-    <script>
-        (function () {
-            var standalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
-            var homePath = window.location.pathname === '/' || window.location.pathname === '/he' || window.location.pathname === '/index.html';
-            var publicBypass = new URLSearchParams(window.location.search).has('public');
-            if (standalone && homePath && !publicBypass) {
-                window.location.replace('/operations');
-            }
-        })();
-    </script>
     <link rel="manifest" href="/manifest.json">
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png">
@@ -3503,7 +3493,7 @@
         initializeHomepage();
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').catch(() => {});
+            navigator.serviceWorker.register('/public-sw.js', { scope: '/' }).catch(() => {});
         }
     </script>
 </body>

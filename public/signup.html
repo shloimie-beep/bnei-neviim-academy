@@ -982,7 +982,7 @@
         });
 
         if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('/sw.js').catch(() => {});
+            navigator.serviceWorker.register('/public-sw.js', { scope: '/' }).catch(() => {});
         }
     </script>
 </body>

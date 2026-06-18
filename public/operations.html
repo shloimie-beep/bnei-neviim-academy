@@ -10,7 +10,7 @@
         }
     </script>
     <meta name="theme-color" content="#1e3a5f">
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="/operations-manifest.json">
     <link rel="icon" href="/favicon.ico" sizes="any">
     <link rel="icon" href="/icons/favicon-32.png" sizes="32x32" type="image/png">
     <link rel="icon" href="/icons/favicon-16.png" sizes="16x16" type="image/png">
@@ -8444,8 +8444,18 @@
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.getRegistrations()
-                .then((registrations) => registrations.forEach((registration) => registration.unregister()))
-                .catch(() => {});
+                .then((registrations) => Promise.all(registrations.map((registration) => {
+                    const worker = registration.active || registration.waiting || registration.installing;
+                    const scriptUrl = worker ? worker.scriptURL : '';
+                    if (scriptUrl.endsWith('/sw.js') || scriptUrl.endsWith('/public-sw.js')) {
+                        return registration.unregister();
+                    }
+                    return Promise.resolve();
+                })))
+                .catch(() => {})
+                .finally(() => {
+                    navigator.serviceWorker.register('/operations-sw.js', { scope: '/operations' }).catch(() => {});
+                });
         }
     </script>
 </body>

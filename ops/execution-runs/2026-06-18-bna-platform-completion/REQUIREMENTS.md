@@ -24,9 +24,9 @@ Only audit-package generation and post-fix visual comparison are blocked by miss
 | REQ-20260618-116 | REQ-20260618-101 | BNA-AUDIT-001 | already_satisfied | already_satisfied | Resume/finish Operations UI audit harness without duplication |
 | REQ-20260618-117 | REQ-20260618-101 | BNA-AUDIT-002 | blocked | blocked | Produce privacy-safe authenticated audit package |
 | REQ-20260618-118 | REQ-20260618-101 | BNA-AUDIT-003 | blocked | blocked | Produce post-fix audit comparison |
-| REQ-20260618-119 | REQ-20260618-102 | BNA-PWA-001 | in_progress | conflicting | Separate public and Operations manifests/app identities |
-| REQ-20260618-120 | REQ-20260618-102 | BNA-PWA-002 | in_progress | conflicting | Isolate service workers, caches, scopes, and cache headers |
-| REQ-20260618-121 | REQ-20260618-102 | BNA-PWA-003 | in_progress | conflicting | Enforce public-browser and installed-Operations routing invariants |
+| REQ-20260618-119 | REQ-20260618-102 | BNA-PWA-001 | needs_verification | partial | Separate public and Operations manifests/app identities |
+| REQ-20260618-120 | REQ-20260618-102 | BNA-PWA-002 | needs_verification | partial | Isolate service workers, caches, scopes, and cache headers |
+| REQ-20260618-121 | REQ-20260618-102 | BNA-PWA-003 | needs_verification | partial | Enforce public-browser and installed-Operations routing invariants |
 | REQ-20260618-122 | REQ-20260618-102 | BNA-PWA-004 | not_started | partial | Remove public loader/checkmark flash and header-to-hero gap |
 | REQ-20260618-123 | REQ-20260618-103 | BNA-WS-001 | not_started | missing | Enforce exactly school/service-provider/family workspace types |
 | REQ-20260618-124 | REQ-20260618-103 | BNA-WS-002 | not_started | partial | Scope applicable entities by workspace_id |
@@ -76,5 +76,5 @@ Only audit-package generation and post-fix visual comparison are blocked by miss
 | REQ-20260618-168 | REQ-20260618-111 | BNA-TEST-001 | not_started | missing | Isolated repeatable seed and cleanup data |
 | REQ-20260618-169 | REQ-20260618-111 | BNA-TEST-002 | not_started | missing | Route, interaction, responsive, helper, workspace, and student Playwright tests |
 | REQ-20260618-170 | REQ-20260618-111 | BNA-TEST-003 | not_started | missing | Backend/API/RBAC negative tests |
-| REQ-20260618-171 | REQ-20260618-111 | BNA-TEST-004 | not_started | missing | PWA identity/cache regression tests |
+| REQ-20260618-171 | REQ-20260618-111 | BNA-TEST-004 | done | closed_existing | PWA identity/cache regression tests |
 | REQ-20260618-172 | REQ-20260618-111 | BNA-TEST-005 | blocked | blocked | Final local and live acceptance gates |

@@ -14,3 +14,14 @@ Recovery branch after ledger repair (2026-06-18T18:58:00+03:00):
 - PASS `npm run bna:run:status` (72 requirements; work remains).
 - PASS `npm run bna:run:validate`.
 - PASS `node --test tests/bna-execution-run.test.js` 8/8.
+
+PWA identity/cache guardrail batch (2026-06-18T19:12:00+03:00):
+
+- PASS `node --test tests/pwa-identity.test.js` 5/5.
+- PASS `node --check server.js`.
+- PASS `node --check public/public-sw.js`.
+- PASS `node --check public/operations-sw.js`.
+
+Full local Node suite after PWA batch (2026-06-18T19:18:00+03:00):
+
+- PASS `npm test` 57/57.

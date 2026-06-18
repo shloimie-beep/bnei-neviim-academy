@@ -1,10 +1,10 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "path": "ops/execution-runs/2026-06-18-bna-platform-completion",
-  "updated_at": "2026-06-18T18:45:00+03:00",
+  "updated_at": "2026-06-18T19:12:00+03:00",
   "branch": "codex/2026-06-18-bna-platform-completion",
   "base_branch": "master",
-  "current_head": "9ab3f068edc9d336bf106d904df5ef8532df9135",
+  "current_head": "db63559926775baafb3b247f6f8bf958083b5114",
   "status": "active",
   "blocked_ids": [
     "REQ-20260618-117",
@@ -24,10 +24,7 @@
     "REQ-20260618-109",
     "REQ-20260618-110",
     "REQ-20260618-111",
-    "REQ-20260618-112",
-    "REQ-20260618-113",
     "REQ-20260618-114",
-    "REQ-20260618-115",
     "REQ-20260618-117",
     "REQ-20260618-118",
     "REQ-20260618-119",
@@ -82,7 +79,6 @@
     "REQ-20260618-168",
     "REQ-20260618-169",
     "REQ-20260618-170",
-    "REQ-20260618-171",
     "REQ-20260618-172"
   ]
 }

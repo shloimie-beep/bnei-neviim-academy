@@ -1500,7 +1500,10 @@ app.use(express.json({ limit: '25mb' }));
 app.use(express.urlencoded({ extended: true, limit: '25mb' }));
 app.use(express.static('public', {
   setHeaders(res, filePath) {
-    if (filePath.endsWith('.html') || filePath.endsWith('sw.js') || filePath.endsWith('manifest.json')) {
+    const isHtml = filePath.endsWith('.html');
+    const isServiceWorker = filePath.endsWith('sw.js');
+    const isManifest = filePath.endsWith('manifest.json');
+    if (isHtml || isServiceWorker || isManifest) {
       res.setHeader('Cache-Control', 'no-store');
     }
   }
