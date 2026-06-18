@@ -175,20 +175,32 @@
         "Task metadata/provenance now separates owner, status, urgency, due, blocker, and source provenance from visible task titles.",
         "Task intake now auto-files high-confidence captures and routes low-confidence captures into Decisions with operator choices instead of a separate review queue.",
         "Internal Calendar now aggregates scoped tasks, classes, check-ins, accountability events, and group-goal due dates without external sync controls.",
-        "Main task UI no longer shows stale agent/worker diagnostic concepts while preserving the Changelog activity lane."
+        "Main task UI no longer shows stale agent/worker diagnostic concepts while preserving the Changelog activity lane.",
+        "Task overview counts now derive from visible scoped task buckets and blocked count links to records with blocker explanations."
       ],
       "deployment_evidence": [],
       "verification": [
         "node --test tests/task-state-model.test.js tests/operations-accessibility.test.js tests/operations-workspace-selector.test.js PASS 13/13",
-        "npm test PASS 110/110"
+        "npm test PASS 110/110",
+        "node --test tests/task-metadata-provenance.test.js tests/task-state-model.test.js PASS 6/6",
+        "npm test PASS 113/113",
+        "node --test tests/task-intake-routing.test.js tests/task-state-model.test.js tests/task-metadata-provenance.test.js PASS 9/9",
+        "npm test PASS 116/116",
+        "node --test tests/operations-calendar.test.js tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js tests/workspace-auth.test.js PASS 17/17",
+        "npm test PASS 119/119",
+        "node --test tests/operations-task-diagnostics.test.js tests/operations-desktop-grids.test.js tests/operations-workspace-selector.test.js PASS 10/10",
+        "npm test PASS 121/121",
+        "node --test tests/operations-live-counts-blockers.test.js tests/task-metadata-provenance.test.js tests/operations-task-diagnostics.test.js PASS 7/7",
+        "npm test PASS 123/123"
       ],
-      "notes": "Task manager child REQ-136 through REQ-140 have local implementation and tests. Parent remains in_progress until live scoped counts/blocker explanations, idempotency, and remaining child requirements are complete.",
+      "notes": "Task manager child REQ-136 through REQ-141 have local implementation and tests. Parent remains in_progress until idempotency and remaining child requirements are complete.",
       "files_changed": [
         "server.js",
         "public/operations.html",
-        "tests/task-state-model.test.js"
+        "tests/task-state-model.test.js",
+        "tests/operations-live-counts-blockers.test.js"
       ],
-      "updated_at": "2026-06-18T21:48:45+03:00"
+      "updated_at": "2026-06-18T22:02:30+03:00"
     },
     {
       "id": "REQ-20260618-107",
@@ -1459,8 +1471,8 @@
       "title": "Live scoped counts and blocker explanations",
       "area": "tasks",
       "priority": "P1",
-      "current_verdict": "partial",
-      "status": "not_started",
+      "current_verdict": "local_complete_pending_release",
+      "status": "needs_verification",
       "expected_result": "Counts derive from live scoped data and link to records explaining blocked/stale state.",
       "acceptance_criteria": [
         "Live scoped counts and blocker explanations is implemented against the canonical Express/static runtime where applicable.",
@@ -1471,12 +1483,28 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "public/operations.html taskViewState now derives urgent, blocked, decision, my-task, and changelog counts from the scoped task buckets returned by /api/bna/tasks.",
+        "Tasks overview now shows a blocked count pill and a Blocked metric linked to a Blocked Work section rendered from the same live scoped task records.",
+        "Blocked cards reuse taskBlockerLabel and blocker_reason/source_context metadata so blocker explanations are visible on the linked records.",
+        "tests/operations-live-counts-blockers.test.js covers live scoped count derivation and blocked-record linkage."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check tests/operations-live-counts-blockers.test.js PASS",
+        "Operations HTML script parse via vm.Script PASS (2 script blocks)",
+        "node --test tests/operations-live-counts-blockers.test.js tests/task-metadata-provenance.test.js tests/operations-task-diagnostics.test.js PASS 7/7",
+        "npm test PASS 123/123"
+      ],
+      "implementation_commits": [
+        "current batch commit: feat: surface blocked task explanations"
+      ],
+      "files_changed": [
+        "public/operations.html",
+        "tests/operations-live-counts-blockers.test.js"
+      ],
+      "notes": "Local implementation and tests complete. Live-required closure remains pending release approval, deploy, and live smoke.",
+      "updated_at": "2026-06-18T22:02:30+03:00"
     },
     {
       "id": "REQ-20260618-142",

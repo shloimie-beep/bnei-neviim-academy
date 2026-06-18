@@ -3391,3 +3391,32 @@ Verification:
 Status: local `needs_verification`; no deployment, production migration,
 production-data mutation, audit crawl, watch loop, or agent-fleet loop was
 performed. Resume at `REQ-20260618-141`.
+
+## 2026-06-18T22:02:30+03:00 - Live Scoped Task Counts And Blockers
+
+Completed the local live scoped counts and blocker explanations batch for
+`REQ-20260618-141`.
+
+- Derived urgent, blocked, decision, my-task, and changelog counts from the
+  current scoped task buckets returned by `/api/bna/tasks`.
+- Added a blocked count pill to the Tasks heading when blocked scoped records
+  exist.
+- Added a Blocked metric in the task overview that scrolls to a Blocked Work
+  section rendered from the same live task records.
+- Reused `taskBlockerLabel`, `blocker_reason`, and source-context blocker
+  metadata so blocked cards display the blocker explanation on the linked
+  records.
+- Added focused coverage in `tests/operations-live-counts-blockers.test.js`.
+
+Verification:
+
+- PASS `node --check tests/operations-live-counts-blockers.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/operations-live-counts-blockers.test.js
+  tests/task-metadata-provenance.test.js
+  tests/operations-task-diagnostics.test.js` 7/7.
+- PASS `npm test` 123/123.
+
+Status: local `needs_verification`; no deployment, production migration,
+production-data mutation, audit crawl, watch loop, or agent-fleet loop was
+performed. Resume at `REQ-20260618-142`.

@@ -4134,7 +4134,10 @@
             const decisionCount = buckets.decisions.length;
             const myTaskCount = buckets.mine.length;
             const changelogCount = buckets.changelog.length;
-            const urgentCount = [...buckets.decisions, ...buckets.mine, ...buckets.changelog].filter(t => ['urgent', 'today'].includes(t.urgency)).length;
+            const visibleTasks = [...buckets.decisions, ...buckets.mine, ...buckets.changelog];
+            const urgentCount = visibleTasks.filter(t => ['urgent', 'today'].includes(t.urgency)).length;
+            const blockedTasks = visibleTasks.filter(task => normalizeTaskStage(task.stage) === 'blocked');
+            const blockedCount = blockedTasks.length;
             const normalizedFocus = TASK_SUBTABS.some(tab => tab.id === taskFocus) ? taskFocus : 'overview';
             const focusTasks = [...(focusMap[normalizedFocus] || focusMap.decisions)].sort(sortTasks);
             const projectCounts = taskProjectCounts(focusTasks);
@@ -4161,6 +4164,8 @@
                 myTaskCount,
                 changelogCount,
                 urgentCount,
+                blockedTasks,
+                blockedCount,
             };
         }
 
@@ -4177,6 +4182,7 @@
                         <div class="page-heading-actions">
                             <span class="page-status-pill">${state.urgentCount} urgent/today</span>
                             <span class="page-status-pill">${state.decisionCount} decisions</span>
+                            ${state.blockedCount ? `<span class="page-status-pill">${state.blockedCount} blocked</span>` : ''}
                         </div>
                     </div>
                     ${renderSectionNav(TASK_SUBTABS, state.focus, 'setTaskFocus')}
@@ -4191,12 +4197,14 @@
                     <div class="focused-grid">
                         ${renderMetricButton('Urgent / Today', state.urgentCount, 'Open personal work that needs attention now.', "openTaskUrgentToday()")}
                         ${renderMetricButton('Decisions', state.decisionCount, 'Choices waiting for your answer.', "setTaskFocus('decisions')")}
+                        ${renderMetricButton('Blocked', state.blockedCount, 'Open blocked records with blocker notes.', "openTaskBlocked()")}
                         ${renderMetricButton('Changelog', state.changelogCount, 'Implementation activity and completed updates.', "setTaskFocus('changelog')")}
                     </div>
                     <details class="workflow-details">
                         <summary>Workflow rule</summary>
                         <p>Telegram is the main input. Decisions stay separate until your answer is needed. Personal operator work goes to My Tasks. Implementation activity lives in Changelog, so there is no hidden pending lane.</p>
                     </details>
+                    ${state.blockedCount ? `<div id="blockedTasksSection">${renderTaskListSection('Blocked Work', state.blockedTasks, 'blocked')}</div>` : ''}
                 </section>
             `;
         }
@@ -8126,6 +8134,20 @@
             url.searchParams.delete('student');
             window.history.replaceState({}, '', url);
             render();
+        }
+
+        function openTaskBlocked() {
+            taskFocus = 'overview';
+            taskUrgencyFilter = 'all';
+            taskDateFilter = 'all';
+            currentView = 'tasks';
+            const url = new URL(window.location.href);
+            url.searchParams.set('view', 'tasks');
+            url.searchParams.set('section', taskFocus);
+            url.searchParams.delete('student');
+            window.history.replaceState({}, '', url);
+            render();
+            setTimeout(() => document.getElementById('blockedTasksSection')?.scrollIntoView({ block: 'start' }), 0);
         }
 
         function activateOnEnterOrSpace(event) {
