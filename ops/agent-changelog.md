@@ -4308,6 +4308,30 @@ Verification:
 Status: `needs_verification`; no audit crawl, deployment, production-data
 mutation, watch loop, or agent-fleet loop was performed.
 
+## 2026-06-19 - Operations shell stability browser proof
+
+Requirement: `REQ-20260618-130`
+
+Changed:
+
+- Added a browser assertion that checks the Operations shell and active view
+  frame stay visible and non-collapsed.
+- Exercised the assertion after mobile/desktop viewport changes, module
+  changes, student-profile navigation, history back/forward, workspace switch,
+  and page reload.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/operations-layout-stability.test.js`.
+- PASS `node --test tests/operations-layout-stability.test.js tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js` 14/14.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data
+mutation, watch loop, or agent-fleet loop was performed.
+
 ## 2026-06-19 - Operations sidebar simplification DOM proof
 
 Requirement: `REQ-20260618-129`

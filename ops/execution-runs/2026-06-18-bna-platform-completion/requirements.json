@@ -187,7 +187,7 @@
         "STATUS.md and EVIDENCE.md show parent rollup and remaining child IDs.",
         "No child requirement is closed without proof and targeted verification."
       ],
-      "current_verdict": "partial",
+      "current_verdict": "local_complete_pending_release",
       "source": "BNA recovery bundle and Appendix A",
       "depends_on_audit_output": false,
       "live_required": true,
@@ -1256,23 +1256,32 @@
       "evidence": [
         "renderAppShell now wraps all module content in ops-view-frame with stable desktop and mobile min-height safeguards.",
         "ops-main, container, section-nav, focus-panel, task-list, and div.empty-state now have non-collapsing dimensions.",
-        "firstAllowedView and ensureCurrentViewAllowed normalize invalid/disallowed route and module state before loadData, render, switchView, and openCommandTarget."
+        "firstAllowedView and ensureCurrentViewAllowed normalize invalid/disallowed route and module state before loadData, render, switchView, and openCommandTarget.",
+        "tests/browser-acceptance.test.js now verifies the Operations shell and view frame stay visible and non-collapsed after mobile/desktop viewport changes, module changes, student-profile navigation, history back/forward, workspace switch, and page reload."
       ],
       "deployment_evidence": [],
       "verification": [
         "node --check tests/operations-layout-stability.test.js PASS",
         "Operations HTML script parse via vm.Script PASS (2 script blocks)",
         "node --test tests/operations-layout-stability.test.js tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js PASS 11/11",
-        "npm test PASS 88/88"
+        "npm test PASS 88/88",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --check tests/operations-layout-stability.test.js PASS",
+        "node --test tests/operations-layout-stability.test.js tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js PASS 14/14",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: fix: stabilize operations shell layout"
+        "current batch commit: fix: stabilize operations shell layout",
+        "current batch commit: test: verify operations shell stability"
       ],
       "files_changed": [
         "public/operations.html",
-        "tests/operations-layout-stability.test.js"
+        "tests/operations-layout-stability.test.js",
+        "tests/browser-acceptance.test.js"
       ],
-      "notes": "Local collapse/minimize guardrails are implemented and tested. Requirement remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for app-visible changes."
+      "notes": "Local collapse/minimize guardrails now have static and browser proof for route, module, history, workspace switch, viewport, and refresh stability. Requirement remains needs_verification pending release approval, deploy, and live smoke for app-visible changes."
     },
     {
       "id": "REQ-20260618-131",

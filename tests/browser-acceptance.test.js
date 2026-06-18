@@ -307,6 +307,28 @@ async function noHorizontalOverflow(page) {
   assert.ok(metrics.scrollWidth <= metrics.clientWidth + 1, JSON.stringify(metrics));
 }
 
+async function assertOperationsShellStable(page, label) {
+  await page.locator('.ops-app-shell').waitFor();
+  await page.locator('.ops-view-frame').waitFor();
+  const metrics = await page.evaluate(() => {
+    const shell = document.querySelector('.ops-app-shell');
+    const frame = document.querySelector('.ops-view-frame');
+    const shellBox = shell?.getBoundingClientRect();
+    const frameBox = frame?.getBoundingClientRect();
+    return {
+      shellHeight: shellBox?.height || 0,
+      frameHeight: frameBox?.height || 0,
+      frameWidth: frameBox?.width || 0,
+      currentView: frame?.getAttribute('data-current-view') || '',
+    };
+  });
+  assert.ok(metrics.shellHeight > 300, `${label} shell collapsed: ${JSON.stringify(metrics)}`);
+  assert.ok(metrics.frameHeight > 180, `${label} frame collapsed: ${JSON.stringify(metrics)}`);
+  assert.ok(metrics.frameWidth > 200, `${label} frame width collapsed: ${JSON.stringify(metrics)}`);
+  assert.ok(metrics.currentView, `${label} missing current view: ${JSON.stringify(metrics)}`);
+  await noHorizontalOverflow(page);
+}
+
 async function moduleToolbarLabels(page) {
   return page.locator('.ops-module-toolbar .ops-module-button span:last-child').evaluateAll((nodes) => (
     nodes.map((node) => node.textContent.trim())
@@ -362,16 +384,17 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
         'Integrations',
         'Users',
       ]);
-      await noHorizontalOverflow(page);
+      await assertOperationsShellStable(page, 'initial mobile operations shell');
 
       await page.setViewportSize({ width: 1440, height: 900 });
-      await noHorizontalOverflow(page);
+      await assertOperationsShellStable(page, 'desktop operations shell');
 
       await page.locator('.ops-module-button').filter({ hasText: 'Assistant' }).click();
       await page.locator('.ops-view-frame[data-current-view="assistant"]').waitFor();
       assert.match(page.url(), /view=assistant/);
       await page.getByText('Memory Scope').waitFor();
       await page.getByText('test_seed_context').waitFor();
+      await assertOperationsShellStable(page, 'assistant module operations shell');
 
       await page.locator('.ops-module-button').filter({ hasText: 'Students' }).click();
       await page.locator('.ops-view-frame[data-current-view="students"]').waitFor();
@@ -381,6 +404,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       assert.match(page.url(), /view=students/);
       assert.match(page.url(), /section=profile/);
       assert.match(page.url(), new RegExp(`student=${TEST_STUDENT_ID}`));
+      await assertOperationsShellStable(page, 'student profile operations shell');
 
       await page.goBack();
       await page.waitForFunction(() => new URL(window.location.href).searchParams.get('section') === 'overview');
@@ -388,6 +412,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       await page.waitForFunction(() => new URL(window.location.href).searchParams.get('view') === 'assistant');
       await page.goForward();
       await page.waitForFunction(() => new URL(window.location.href).searchParams.get('view') === 'students');
+      await assertOperationsShellStable(page, 'history restored operations shell');
 
       await page.locator('#workspaceProjectSelector').selectOption('one_time_mishnah_class');
       await page.waitForFunction(() => new URL(window.location.href).searchParams.get('project') === 'one_time_mishnah_class');
@@ -403,6 +428,11 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       assert.equal(await page.locator('#workspaceProjectSelector').inputValue(), 'one_time_mishnah_class');
       await page.locator('.ops-view-frame[data-current-view="tasks"]').waitFor();
       assert.equal(await page.locator('.student-profile-hero').count(), 0);
+      await assertOperationsShellStable(page, 'workspace switched operations shell');
+
+      await page.reload({ waitUntil: 'domcontentloaded' });
+      await page.locator('.ops-view-frame[data-current-view="tasks"]').waitFor();
+      await assertOperationsShellStable(page, 'refreshed operations shell');
     } finally {
       await context.close();
       await browser.close();

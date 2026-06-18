@@ -31,7 +31,7 @@
 | REQ-20260618-127 | REQ-20260618-103 | BNA-WS-005 | needs_verification | local_complete_pending_release | Clear stale context on workspace changes |
 | REQ-20260618-128 | REQ-20260618-104 | BNA-OPS-001 | needs_verification | local_complete_pending_release | Ordered horizontal Operations module toolbar |
 | REQ-20260618-129 | REQ-20260618-104 | BNA-OPS-002 | needs_verification | local_complete_pending_release | Simplify workspace/sidebar navigation |
-| REQ-20260618-130 | REQ-20260618-104 | BNA-OPS-003 | needs_verification | partial | Prevent unexpected page collapse/minimize |
+| REQ-20260618-130 | REQ-20260618-104 | BNA-OPS-003 | needs_verification | local_complete_pending_release | Prevent unexpected page collapse/minimize |
 | REQ-20260618-131 | REQ-20260618-104 | BNA-OPS-004 | needs_verification | partial | Consistent headers, logo behavior, portal identity, and language controls |
 | REQ-20260618-132 | REQ-20260618-105 | BNA-DESIGN-001 | needs_verification | partial | Shared high-contrast card/spacing/type/button system |
 | REQ-20260618-133 | REQ-20260618-105 | BNA-DESIGN-002 | needs_verification | partial | Intentional mobile controls |

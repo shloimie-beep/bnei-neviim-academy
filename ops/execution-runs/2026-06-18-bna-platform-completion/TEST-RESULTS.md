@@ -527,3 +527,14 @@ Operations sidebar simplification DOM proof (2026-06-19T04:55:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-129 now has browser proof that the sidebar contains one workspace context control, no duplicate module buttons or sidebar nav, and scoped One Time users do not see All workspaces/global workspace-directory UI. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Operations shell stability browser proof (2026-06-19T05:05:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/operations-layout-stability.test.js`.
+- PASS `node --test tests/operations-layout-stability.test.js tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js` 14/14.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-130 now has browser proof that the Operations shell and view frame stay visible and non-collapsed after mobile/desktop viewport changes, module changes, student-profile navigation, history back/forward, workspace switch, and page reload. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

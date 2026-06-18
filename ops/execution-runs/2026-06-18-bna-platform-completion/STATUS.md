@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-19T04:55:30+03:00
+Updated: 2026-06-19T05:05:30+03:00
 
 Status counts:
 
@@ -92,6 +92,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current verification batch: REQ-20260618-129 now has static and browser proof that the sidebar is workspace context only, module navigation is not duplicated there, and scoped users do not see global workspace directory UI. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-130.
+Current verification batch: REQ-20260618-130 now has static and browser proof that the Operations shell remains visible and non-collapsed after viewport, module, history, workspace switch, and refresh changes. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-131.
 
 No deployment or production-data mutation is approved in this run.
