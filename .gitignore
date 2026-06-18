@@ -5,6 +5,7 @@ build/
 dist/
 .deploy-railway/
 .runtime/
+.runtime/auth/
 
 # env
 .env
@@ -45,3 +46,5 @@ public/fallback-*.js
 # misc
 *.tsbuildinfo
 next-env.d.ts
+ops/ui-audits/runs/
+ops/ui-audits/latest.json
