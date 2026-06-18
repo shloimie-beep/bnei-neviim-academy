@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-19T01:35:30+03:00",
+  "updated_at": "2026-06-19T01:45:30+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -347,10 +347,18 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "Public primary navigation and shared public nav scripts are verified not to advertise private Operations login while private Operations routes remain intact."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "notes": "Parent workstream retained from original active run."
+      "verification": [
+        "node --test tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js PASS 13/13",
+        "npm test PASS 189/189"
+      ],
+      "notes": "Public/copy parent remains in_progress until provider CTA, parent offer copy, portal headers, route/CTA integrity, final acceptance, release approval, deploy, and live smoke are complete.",
+      "files_changed": [
+        "tests/public-navigation.test.js"
+      ]
     },
     {
       "id": "REQ-20260618-111",
@@ -2556,8 +2564,8 @@
       "title": "Remove Operations login from public primary navigation",
       "area": "public",
       "priority": "P1",
-      "current_verdict": "unknown",
-      "status": "not_started",
+      "current_verdict": "local_already_satisfied_pending_release",
+      "status": "needs_verification",
       "expected_result": "Public navigation focuses on prospects/families and does not advertise private Operations login.",
       "acceptance_criteria": [
         "Remove Operations login from public primary navigation is implemented against the canonical Express/static runtime where applicable.",
@@ -2568,12 +2576,32 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "Public homepage primary navigation contains Home, Blog, FAQ, Contact Us, and Sign Up, with no Operations login/portal link.",
+        "Shared public pages and nav/content scripts contain no /operations, /operations-login, BNA Operations, Operations portal, or Operations login public links.",
+        "Private /operations and /operations-login.html routes remain intact as private app/login surfaces outside public navigation.",
+        "tests/public-navigation.test.js now guards the public nav and shared public pages against private Operations links returning."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "rg /operations and Operations login strings across public prospect pages PASS with no matches",
+        "node --check tests/public-navigation.test.js PASS",
+        "node --test tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js PASS 13/13",
+        "npm test PASS 189/189"
+      ],
+      "implementation_commits": [
+        "current batch commit: test: guard public navigation privacy"
+      ],
+      "files_changed": [
+        "tests/public-navigation.test.js",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/STATUS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/REQUIREMENTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md"
+      ],
+      "notes": "Public navigation was already clean in the recovered branch; this batch adds durable regression coverage. Live-required status remains needs_verification until final acceptance sweep, release approval, deploy, and live smoke. No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
     },
     {
       "id": "REQ-20260618-164",

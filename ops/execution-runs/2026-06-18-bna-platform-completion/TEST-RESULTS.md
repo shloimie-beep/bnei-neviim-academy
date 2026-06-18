@@ -379,3 +379,12 @@ Assistant public/authenticated memory isolation (2026-06-19T01:35:30+03:00):
 - PASS `npm test` 186/186.
 
 No OpenAI call, live helper action execution, deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed.
+
+Public navigation private Operations-link guard (2026-06-19T01:45:30+03:00):
+
+- PASS rg /operations and Operations login strings across public prospect pages with no matches.
+- PASS `node --check tests/public-navigation.test.js`.
+- PASS `node --test tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js` 13/13.
+- PASS `npm test` 189/189.
+
+No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed.

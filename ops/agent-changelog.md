@@ -4023,3 +4023,23 @@ Verification:
 - PASS `npm test` 186/186.
 
 Status: local `needs_verification`; no OpenAI call, live helper action execution, deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-163`.
+
+## 2026-06-19 - Public navigation private Operations-link guard
+
+Requirement: `REQ-20260618-163`
+
+Changed:
+
+- Verified the public homepage primary navigation does not advertise private Operations login.
+- Verified shared public pages and nav/content scripts contain no private Operations links or Operations login labels.
+- Preserved private `/operations` and `/operations-login.html` routes for the Operations app.
+- Added `tests/public-navigation.test.js` to keep private Operations links out of public navigation and public page sources.
+
+Verification:
+
+- PASS rg /operations and Operations login strings across public prospect pages with no matches.
+- PASS `node --check tests/public-navigation.test.js`.
+- PASS `node --test tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js` 13/13.
+- PASS `npm test` 189/189.
+
+Status: local `needs_verification`; no deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-164`.
