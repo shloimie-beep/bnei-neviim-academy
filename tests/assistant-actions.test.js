@@ -33,13 +33,40 @@ test('server exposes a permissioned Assistant action registry', () => {
   assert.match(server, /app\.get\('\/api\/bna\/assistant\/actions', requireAdmin/);
 });
 
-test('Assistant action execution is guarded until confirmation and audit logs exist', () => {
+test('Assistant action execution uses confirmation tiers and audit logs', () => {
   const server = read('server.js');
 
+  assert.match(server, /CREATE TABLE IF NOT EXISTS bna_assistant_action_audit/);
+  assert.match(server, /requester_key TEXT NOT NULL/);
+  assert.match(server, /workspace_id INTEGER REFERENCES bna_workspaces\(id\) ON DELETE SET NULL/);
+  assert.match(server, /action_key TEXT NOT NULL/);
+  assert.match(server, /before_summary TEXT/);
+  assert.match(server, /after_summary TEXT/);
+  assert.match(server, /result TEXT NOT NULL DEFAULT 'requested'/);
+  assert.match(server, /const ASSISTANT_CONFIRMATION_TIERS = Object\.freeze/);
+  assert.match(server, /financial: \{ tier: 'financial', token: null \}/);
+  assert.match(server, /function assertAssistantActionConfirmation\(action = \{\}, confirmValue = ''\)/);
+  assert.match(server, /Assistant action requires confirm: \$\{token\}/);
+  assert.match(server, /async function writeAssistantActionAudit\(entry = \{\}, db = pool\)/);
   assert.match(server, /app\.post\('\/api\/bna\/assistant\/actions\/:actionKey', requireAdmin/);
-  assert.match(server, /Assistant action execution requires REQ-20260618-160 confirmation tiers and action audit logs before mutations run/);
   assert.match(server, /assistantActionPermitted\(action, req\.opsIdentity \|\| \{\}\)/);
+  assert.match(server, /result: 'confirmation_required'/);
+  assert.match(server, /result: 'executed'/);
+  assert.match(server, /result: 'failed'/);
   assert.match(server, /audit_required: action\.audit_required/);
+});
+
+test('Assistant audited execution is limited to explicit registered handlers', () => {
+  const server = read('server.js');
+
+  assert.match(server, /async function executeAssistantRegisteredAction\(\{ action, req, scope, body = \{\} \}\)/);
+  assert.match(server, /if \(String\(action\.method \|\| 'GET'\)\.toUpperCase\(\) === 'GET'\)/);
+  assert.match(server, /if \(action\.action_key === 'tasks\.create_task'\)/);
+  assert.match(server, /await createTaskFromText\(\{/);
+  assert.match(server, /parser: 'assistant-action-v1'/);
+  assert.match(server, /if \(action\.action_key === 'tasks\.add_comment'\)/);
+  assert.match(server, /INSERT INTO bna_task_comments \(workspace_id, task_id, author, body, visibility, source, source_context\)/);
+  assert.match(server, /Assistant action execution is not implemented for this registered action yet/);
 });
 
 test('Operations Assistant loads and renders the action registry without execution buttons', () => {

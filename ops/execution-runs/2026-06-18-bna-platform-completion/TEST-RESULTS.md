@@ -350,3 +350,13 @@ No OpenAI call, helper action execution, deployment, production-data mutation,
 audit crawl, watch loop, or agent-fleet loop was performed. Mutating helper
 actions remain guarded until REQ-20260618-160 confirmation tiers and action
 audit logs are implemented.
+
+Assistant confirmation tiers and action audit trail (2026-06-19T01:10:30+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/assistant-actions.test.js`.
+- PASS `node --test tests/assistant-actions.test.js tests/assistant-shell.test.js tests/workspace-schema.test.js tests/workspace-auth.test.js tests/operations-workspace-selector.test.js` 27/27.
+- PASS `npm test` 178/178.
+
+No OpenAI call, live helper action execution, deployment, production-data
+mutation, audit crawl, watch loop, or agent-fleet loop was performed.

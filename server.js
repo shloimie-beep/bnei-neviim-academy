@@ -1787,6 +1787,30 @@ CREATE TABLE IF NOT EXISTS bna_assistant_memory (
 );
 `;
 
+const createAssistantActionAuditSQL = `
+CREATE TABLE IF NOT EXISTS bna_assistant_action_audit (
+  id SERIAL PRIMARY KEY,
+  workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
+  project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL,
+  requester_key TEXT NOT NULL,
+  requester_role TEXT NOT NULL DEFAULT 'workspace_member',
+  surface TEXT NOT NULL DEFAULT 'operations',
+  action_key TEXT NOT NULL,
+  action_label TEXT,
+  target_type TEXT NOT NULL DEFAULT 'workspace',
+  target_id TEXT NOT NULL DEFAULT '',
+  risk_level TEXT NOT NULL DEFAULT 'low_mutation',
+  confirmation_tier TEXT NOT NULL DEFAULT 'low',
+  confirmation_token TEXT,
+  before_summary TEXT,
+  after_summary TEXT,
+  result TEXT NOT NULL DEFAULT 'requested' CHECK (result IN ('requested', 'confirmation_required', 'denied', 'executed', 'failed')),
+  result_summary TEXT,
+  metadata JSONB DEFAULT '{}',
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+`;
+
 const createAgentRuntimeStatusSQL = `
 CREATE TABLE IF NOT EXISTS bna_agent_runtime_status (
   agent_key TEXT PRIMARY KEY,
@@ -2241,6 +2265,18 @@ ALTER TABLE bna_assistant_memory ADD COLUMN IF NOT EXISTS surface TEXT NOT NULL 
 ALTER TABLE bna_assistant_memory ADD COLUMN IF NOT EXISTS module_key TEXT NOT NULL DEFAULT 'assistant';
 ALTER TABLE bna_assistant_memory ADD COLUMN IF NOT EXISTS subject_type TEXT NOT NULL DEFAULT 'workspace';
 ALTER TABLE bna_assistant_memory ADD COLUMN IF NOT EXISTS subject_id TEXT NOT NULL DEFAULT '';
+ALTER TABLE bna_assistant_action_audit ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
+ALTER TABLE bna_assistant_action_audit ADD COLUMN IF NOT EXISTS project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL;
+ALTER TABLE bna_assistant_action_audit ADD COLUMN IF NOT EXISTS requester_key TEXT NOT NULL DEFAULT 'operations_user';
+ALTER TABLE bna_assistant_action_audit ADD COLUMN IF NOT EXISTS requester_role TEXT NOT NULL DEFAULT 'workspace_member';
+ALTER TABLE bna_assistant_action_audit ADD COLUMN IF NOT EXISTS surface TEXT NOT NULL DEFAULT 'operations';
+ALTER TABLE bna_assistant_action_audit ADD COLUMN IF NOT EXISTS target_type TEXT NOT NULL DEFAULT 'workspace';
+ALTER TABLE bna_assistant_action_audit ADD COLUMN IF NOT EXISTS target_id TEXT NOT NULL DEFAULT '';
+ALTER TABLE bna_assistant_action_audit ADD COLUMN IF NOT EXISTS confirmation_tier TEXT NOT NULL DEFAULT 'low';
+ALTER TABLE bna_assistant_action_audit ADD COLUMN IF NOT EXISTS confirmation_token TEXT;
+ALTER TABLE bna_assistant_action_audit ADD COLUMN IF NOT EXISTS before_summary TEXT;
+ALTER TABLE bna_assistant_action_audit ADD COLUMN IF NOT EXISTS after_summary TEXT;
+ALTER TABLE bna_assistant_action_audit ADD COLUMN IF NOT EXISTS result_summary TEXT;
 ALTER TABLE bna_payment_log ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
 ALTER TABLE bna_email_log ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
 ALTER TABLE bna_payment_intake ADD COLUMN IF NOT EXISTS workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL;
@@ -2273,6 +2309,8 @@ CREATE INDEX IF NOT EXISTS idx_bna_workspace_invitations_project_id ON bna_works
 CREATE INDEX IF NOT EXISTS idx_bna_task_comments_workspace_id ON bna_task_comments (workspace_id);
 CREATE INDEX IF NOT EXISTS idx_bna_assistant_memory_workspace_id ON bna_assistant_memory (workspace_id);
 CREATE INDEX IF NOT EXISTS idx_bna_assistant_memory_scope ON bna_assistant_memory (workspace_id, project_id, user_key, user_role, surface, module_key, subject_type, subject_id);
+CREATE INDEX IF NOT EXISTS idx_bna_assistant_action_audit_workspace_id ON bna_assistant_action_audit (workspace_id);
+CREATE INDEX IF NOT EXISTS idx_bna_assistant_action_audit_scope ON bna_assistant_action_audit (workspace_id, project_id, requester_key, requester_role, action_key, target_type, target_id);
 CREATE INDEX IF NOT EXISTS idx_bna_payment_log_workspace_id ON bna_payment_log (workspace_id);
 CREATE INDEX IF NOT EXISTS idx_bna_email_log_workspace_id ON bna_email_log (workspace_id);
 CREATE INDEX IF NOT EXISTS idx_bna_payment_intake_workspace_id ON bna_payment_intake (workspace_id);
@@ -4598,6 +4636,7 @@ async function initDb() {
     await pool.query(createWorkspaceInvitationsSQL);
     await pool.query(createTaskCommentsSQL);
     await pool.query(createAssistantMemorySQL);
+    await pool.query(createAssistantActionAuditSQL);
     await pool.query(createAgentRuntimeStatusSQL);
     await pool.query(normalizeTasksCategoryCheckSQL);
     await pool.query(normalizeTasksStageCheckSQL);
@@ -12486,9 +12525,8 @@ function operationsAssistantStatus(identity = {}, projectKey = '') {
       'permissioned_action_registry',
     ],
     disabled_until_verified: [
-      'action_execution',
-      'confirmation_tiers',
-      'action_audit_log',
+      'public_authenticated_memory_isolation',
+      'high_risk_action_handlers',
     ],
   };
 }
@@ -12673,7 +12711,7 @@ function assistantActionPermitted(action, identity = {}) {
 
 function assistantActionRuntimeStatus(action = {}) {
   if (String(action.method || 'GET').toUpperCase() === 'GET') return 'available';
-  return 'blocked_until_confirmation_audit';
+  return action.confirmation_token ? 'requires_explicit_confirmation' : 'requires_confirmation';
 }
 
 function assistantActionsForIdentity(identity = {}, projectKey = '') {
@@ -12693,6 +12731,166 @@ function assistantActionsForIdentity(identity = {}, projectKey = '') {
 
 function findAssistantAction(actionKey = '') {
   return ASSISTANT_ACTION_REGISTRY.find((action) => action.action_key === String(actionKey || '').trim());
+}
+
+const ASSISTANT_CONFIRMATION_TIERS = Object.freeze({
+  read_only: { tier: 'read_only', token: null },
+  low_mutation: { tier: 'low', token: 'RUN_ASSISTANT_ACTION' },
+  content_mutation: { tier: 'content', token: 'RUN_ASSISTANT_ACTION' },
+  publishing: { tier: 'publishing', token: 'PUBLISH_APPROVED_CONTENT' },
+  financial: { tier: 'financial', token: null },
+  permission: { tier: 'permission', token: 'CONFIRM_PERMISSION_CHANGE' },
+  destructive: { tier: 'destructive', token: 'CONFIRM_DESTRUCTIVE_ACTION' },
+});
+
+function assistantConfirmationTier(action = {}) {
+  const riskLevel = String(action.risk_level || '').trim().toLowerCase();
+  const tier = ASSISTANT_CONFIRMATION_TIERS[riskLevel] || ASSISTANT_CONFIRMATION_TIERS.low_mutation;
+  return {
+    tier: tier.tier,
+    token: action.confirmation_token || tier.token,
+  };
+}
+
+function assertAssistantActionConfirmation(action = {}, confirmValue = '') {
+  const method = String(action.method || 'GET').toUpperCase();
+  const { tier, token } = assistantConfirmationTier(action);
+  if (method === 'GET' || !token) return { tier, token: null, confirmed: true };
+  const provided = String(confirmValue || '').trim();
+  if (provided === token) return { tier, token, confirmed: true };
+  const error = new Error(`Assistant action requires confirm: ${token}`);
+  error.statusCode = 409;
+  error.confirmation = { tier, token };
+  throw error;
+}
+
+function assistantActionTargetFromBody(body = {}) {
+  const payload = body.payload && typeof body.payload === 'object' ? body.payload : {};
+  const targetType = String(body.target_type || body.targetType || payload.target_type || payload.targetType || 'workspace')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_]+/g, '_') || 'workspace';
+  const targetId = String(body.target_id || body.targetId || payload.target_id || payload.targetId || payload.id || '').trim().slice(0, 120);
+  return {
+    target_type: targetType,
+    target_id: targetId,
+  };
+}
+
+async function writeAssistantActionAudit(entry = {}, db = pool) {
+  const result = await db.query(
+    `INSERT INTO bna_assistant_action_audit (
+       workspace_id, project_id, requester_key, requester_role, surface,
+       action_key, action_label, target_type, target_id, risk_level,
+       confirmation_tier, confirmation_token, before_summary, after_summary,
+       result, result_summary, metadata
+     )
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17::jsonb)
+     RETURNING id, created_at`,
+    [
+      entry.workspace_id || null,
+      entry.project_id || null,
+      entry.requester_key || 'operations_user',
+      entry.requester_role || 'workspace_member',
+      entry.surface || 'operations',
+      entry.action_key,
+      entry.action_label || null,
+      entry.target_type || 'workspace',
+      entry.target_id || '',
+      entry.risk_level || 'low_mutation',
+      entry.confirmation_tier || 'low',
+      entry.confirmation_token || null,
+      entry.before_summary || null,
+      entry.after_summary || null,
+      entry.result || 'requested',
+      entry.result_summary || null,
+      JSON.stringify(entry.metadata || {}),
+    ]
+  );
+  return result.rows[0];
+}
+
+async function executeAssistantRegisteredAction({ action, req, scope, body = {} }) {
+  const payload = body.payload && typeof body.payload === 'object' ? body.payload : {};
+  if (String(action.method || 'GET').toUpperCase() === 'GET') {
+    return {
+      target_type: 'route',
+      target_id: action.route,
+      before_summary: 'Read-only assistant action requested through the registry.',
+      after_summary: `Read-only action is available through ${action.route}.`,
+      result_summary: 'Read-only registry action acknowledged.',
+      response: { route: action.route, method: action.method },
+    };
+  }
+
+  if (action.action_key === 'tasks.create_task') {
+    const task = await createTaskFromText({
+      ...payload,
+      title: payload.title || body.title || 'Assistant-created task',
+      raw_text: payload.raw_text || payload.rawText || body.raw_text || body.rawText || payload.title || body.title || '',
+      notes: payload.notes || body.notes || 'Created by BNA Assistant action.',
+      project: scope.project_key,
+      source: 'assistant',
+      created_by: 'assistant',
+      author: scope.user_key,
+      ai_parsed: {
+        parser: 'assistant-action-v1',
+        action_key: action.action_key,
+        requested_by: scope.user_key,
+        project: scope.project_key,
+      },
+    }, { req });
+    return {
+      target_type: 'task',
+      target_id: String(task.id || ''),
+      before_summary: 'No task existed for this assistant request.',
+      after_summary: `Created task #${task.id}: ${task.title}`,
+      result_summary: 'Task created through audited Assistant action.',
+      response: { task },
+    };
+  }
+
+  if (action.action_key === 'tasks.add_comment') {
+    const taskId = payload.task_id || body.task_id || body.target_id || body.targetId;
+    const commentBody = String(payload.body || payload.comment || body.body || body.comment || '').trim();
+    if (!taskId) {
+      const error = new Error('task_id is required for assistant task comments');
+      error.statusCode = 400;
+      throw error;
+    }
+    if (!commentBody) {
+      const error = new Error('comment body is required for assistant task comments');
+      error.statusCode = 400;
+      throw error;
+    }
+    await assertTaskAccess(req, taskId);
+    const result = await pool.query(
+      `INSERT INTO bna_task_comments (workspace_id, task_id, author, body, visibility, source, source_context)
+       SELECT COALESCE(t.workspace_id, p.workspace_id), t.id, $2, $3, 'internal', 'assistant', $4
+       FROM bna_tasks t
+       LEFT JOIN bna_projects p ON p.id = t.project_id
+       WHERE t.id = $1
+       RETURNING *`,
+      [
+        taskId,
+        scope.user_key,
+        commentBody,
+        JSON.stringify({ action_key: action.action_key, project: scope.project_key }),
+      ]
+    );
+    return {
+      target_type: 'task',
+      target_id: String(taskId),
+      before_summary: `Task #${taskId} had no assistant comment from this request.`,
+      after_summary: `Added assistant comment to task #${taskId}.`,
+      result_summary: 'Task comment added through audited Assistant action.',
+      response: { comment: result.rows[0] },
+    };
+  }
+
+  const error = new Error('Assistant action execution is not implemented for this registered action yet');
+  error.statusCode = 501;
+  throw error;
 }
 
 function normalizeAssistantModuleKey(value = 'assistant') {
@@ -12812,23 +13010,90 @@ app.get('/api/bna/assistant/actions', requireAdmin, (req, res) => {
   });
 });
 
-app.post('/api/bna/assistant/actions/:actionKey', requireAdmin, (req, res) => {
+app.post('/api/bna/assistant/actions/:actionKey', requireAdmin, async (req, res) => {
   const action = findAssistantAction(req.params.actionKey);
   if (!action) return res.status(404).json({ error: 'Assistant action is not registered' });
-  if (!assistantActionPermitted(action, req.opsIdentity || {})) {
-    return res.status(403).json({ error: 'Assistant action is not permitted for this role or workspace view' });
-  }
-  return res.status(409).json({
-    error: 'Assistant action execution requires REQ-20260618-160 confirmation tiers and action audit logs before mutations run.',
-    action: {
-      action_key: action.action_key,
+  let scope = null;
+  const target = assistantActionTargetFromBody(req.body || {});
+  const confirmation = assistantConfirmationTier(action);
+  const baseAudit = () => ({
+    workspace_id: scope?.workspace_id || null,
+    project_id: scope?.project_id || null,
+    requester_key: scope?.user_key || assistantUserKey(req.opsIdentity || {}),
+    requester_role: scope?.user_role || req.opsIdentity?.role || 'workspace_member',
+    surface: 'operations',
+    action_key: action.action_key,
+    action_label: action.label,
+    target_type: target.target_type,
+    target_id: target.target_id,
+    risk_level: action.risk_level,
+    confirmation_tier: confirmation.tier,
+    confirmation_token: confirmation.token,
+    metadata: {
       method: action.method,
       route: action.route,
-      risk_level: action.risk_level,
-      confirmation_token: action.confirmation_token,
       audit_required: action.audit_required,
+      payload_keys: Object.keys((req.body && req.body.payload) || {}),
     },
   });
+
+  try {
+    scope = await resolveAssistantMemoryScope(req, req.body || {});
+    if (!assistantActionPermitted(action, req.opsIdentity || {})) {
+      await writeAssistantActionAudit({
+        ...baseAudit(),
+        result: 'denied',
+        result_summary: 'Assistant action is not permitted for this role or workspace view.',
+      });
+      return res.status(403).json({ error: 'Assistant action is not permitted for this role or workspace view' });
+    }
+
+    try {
+      assertAssistantActionConfirmation(action, req.body?.confirm);
+    } catch (confirmationError) {
+      const audit = await writeAssistantActionAudit({
+        ...baseAudit(),
+        result: 'confirmation_required',
+        result_summary: confirmationError.message,
+      });
+      return res.status(confirmationError.statusCode || 409).json({
+        error: confirmationError.message,
+        required_confirm: confirmationError.confirmation?.token || null,
+        confirmation_tier: confirmationError.confirmation?.tier || confirmation.tier,
+        audit_id: audit.id,
+      });
+    }
+
+    const execution = await executeAssistantRegisteredAction({ action, req, scope, body: req.body || {} });
+    const audit = await writeAssistantActionAudit({
+      ...baseAudit(),
+      target_type: execution.target_type || target.target_type,
+      target_id: execution.target_id || target.target_id,
+      before_summary: execution.before_summary,
+      after_summary: execution.after_summary,
+      result: 'executed',
+      result_summary: execution.result_summary || 'Assistant action executed.',
+    });
+    return res.json({
+      success: true,
+      action_key: action.action_key,
+      audit_id: audit.id,
+      result: execution.response || {},
+    });
+  } catch (err) {
+    if (scope) {
+      try {
+        await writeAssistantActionAudit({
+          ...baseAudit(),
+          result: 'failed',
+          result_summary: err.message,
+        });
+      } catch (auditErr) {
+        console.error('Assistant action audit failed:', auditErr);
+      }
+    }
+    return res.status(err.statusCode || 500).json({ error: err.message });
+  }
 });
 
 function fallbackAutomationScopes(projectKey = '') {
@@ -13939,6 +14204,7 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
     await pool.query(createWorkspaceInvitationsSQL);
     await pool.query(createTaskCommentsSQL);
     await pool.query(createAssistantMemorySQL);
+    await pool.query(createAssistantActionAuditSQL);
     await pool.query(createWorkspaceScopeMigrationSQL);
     await pool.query(createBnaIndexesSQL);
     await pool.query(normalizeTasksCategoryCheckSQL);

@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-19T00:56:30+03:00
+Updated: 2026-06-19T01:10:30+03:00
 
 Status counts:
 
@@ -8,8 +8,8 @@ Status counts:
 - done: 4
 - already_satisfied: 1
 - blocked: 3
-- needs_verification: 40
-- not_started: 10
+- needs_verification: 41
+- not_started: 9
 - needs_operator_decision: 1
 
 Closed/already satisfied IDs:
@@ -74,6 +74,7 @@ Open non-blocked IDs begin with:
 - REQ-20260618-157 BNA-HELPER-001: One visible OpenAI-powered assistant shell (needs_verification)
 - REQ-20260618-158 BNA-HELPER-002: Scope helper memory by user/role/workspace/context (needs_verification)
 - REQ-20260618-159 BNA-HELPER-003: Permissioned backend action registry (needs_verification)
+- REQ-20260618-160 BNA-HELPER-004: Confirmation tiers and action audit trail (needs_verification)
 
 Blocked / operator-decision IDs:
 
@@ -82,6 +83,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current implementation batch: REQ-20260618-159 has a local permissioned Assistant action registry, scoped read-only registry API, guarded action execution endpoint, Operations Action Registry panel, shared workspace-auth access guard, and focused tests. REQ-20260618-156 remains needs_operator_decision for production duplicate-student cleanup. Next unblocked implementation target is REQ-20260618-160.
+Current implementation batch: REQ-20260618-160 has local Assistant confirmation tiers, bna_assistant_action_audit schema/migrations, audited action attempts for confirmation_required/denied/executed/failed outcomes, and explicit registered handlers for read-only, task-create, and task-comment actions. REQ-20260618-156 remains needs_operator_decision for production duplicate-student cleanup. Next unblocked implementation target is REQ-20260618-161.
 
 No deployment or production-data mutation is approved in this run.

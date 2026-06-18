@@ -14,6 +14,7 @@ const workspaceScopedTables = [
   'bna_project_members',
   'bna_task_comments',
   'bna_assistant_memory',
+  'bna_assistant_action_audit',
   'bna_payment_log',
   'bna_email_log',
   'bna_payment_intake',

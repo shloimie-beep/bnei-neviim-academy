@@ -3950,3 +3950,34 @@ Verification:
 Status: local `needs_verification`; no OpenAI call, helper action execution,
 deployment, production-data mutation, audit crawl, watch loop, or agent-fleet
 loop was performed. Resume at `REQ-20260618-160`.
+
+## 2026-06-19 - Assistant confirmation tiers and action audit trail
+
+Requirement: `REQ-20260618-160`
+
+Changed:
+
+- Added `bna_assistant_action_audit` with workspace/project/requester/action,
+  target, risk, confirmation, before/after summary, result, metadata, and
+  startup/migration/index coverage.
+- Added Assistant confirmation tiers for read-only, low/content mutation,
+  publishing, financial, permission, and destructive action classes.
+- Reworked `/api/bna/assistant/actions/:actionKey` to resolve scoped context,
+  require the right confirmation token, write confirmation-required/denied/
+  executed/failed audit rows, and return audit IDs.
+- Added explicit audited handlers for read-only action acknowledgements,
+  assistant-created tasks, and assistant task comments. Unimplemented registered
+  mutations fail closed with an audit row.
+- Updated action tests and workspace schema tests for confirmation tiers,
+  audit fields, audit writes, and explicit handler boundaries.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/assistant-actions.test.js`.
+- PASS `node --test tests/assistant-actions.test.js tests/assistant-shell.test.js tests/workspace-schema.test.js tests/workspace-auth.test.js tests/operations-workspace-selector.test.js` 27/27.
+- PASS `npm test` 178/178.
+
+Status: local `needs_verification`; no OpenAI call, live helper action
+execution, deployment, production-data mutation, audit crawl, watch loop, or
+agent-fleet loop was performed. Resume at `REQ-20260618-161`.
