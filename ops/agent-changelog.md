@@ -4308,6 +4308,30 @@ Verification:
 Status: `needs_verification`; no audit crawl, deployment, production-data
 mutation, watch loop, or agent-fleet loop was performed.
 
+## 2026-06-19 - Task diagnostics cleanup browser proof
+
+Requirement: `REQ-20260618-140`
+
+Changed:
+
+- Added browser acceptance proof for the rendered main task view.
+- Verified Queue Health, Track Agent Work, Handoff Files, Do Not Restart,
+  proof-gap, agent queue, worker diagnostic, and heartbeat diagnostic concepts
+  are absent from the task surface.
+- Verified the Changelog subtab remains visible and opens as a normal activity
+  trail without worker diagnostic copy.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/operations-task-diagnostics.test.js tests/operations-calendar.test.js tests/browser-acceptance.test.js` 8/8.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data
+mutation, watch loop, or agent-fleet loop was performed.
+
 ## 2026-06-19 - Internal Calendar browser proof
 
 Requirement: `REQ-20260618-139`

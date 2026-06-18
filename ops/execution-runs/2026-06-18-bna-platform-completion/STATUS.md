@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-19T06:35:30+03:00
+Updated: 2026-06-19T06:45:30+03:00
 
 Status counts:
 
@@ -92,6 +92,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current verification batch: REQ-20260618-139 now has static/API and browser DOM proof for the internal Calendar, including scoped task, class, check-in, student event, and group-goal items plus no broken external calendar sync controls. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-140.
+Current verification batch: REQ-20260618-140 now has static and browser DOM proof that the main task UI omits stale Queue Health, Track Agent Work, Handoff Files, Do Not Restart, proof-gap, agent queue, worker diagnostic, and heartbeat concepts while preserving the Changelog activity lane. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-141.
 
 No deployment or production-data mutation is approved in this run.

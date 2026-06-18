@@ -877,6 +877,44 @@ async function assertOperationsIntakeRoutingDecisions(page, calls) {
   await page.locator('.focus-panel[aria-label="Tasks overview"]').waitFor();
 }
 
+async function assertOperationsTaskDiagnosticsClean(page) {
+  await page.locator('.ops-module-button').filter({ hasText: 'Tasks' }).click();
+  await page.locator('.focus-panel[aria-label="Tasks overview"]').waitFor();
+  const overviewState = await page.evaluate(() => {
+    const taskView = document.querySelector('.ops-view-frame[data-current-view="tasks"]');
+    return {
+      text: taskView?.textContent?.replace(/\s+/g, ' ').trim() || '',
+      tabs: Array.from(document.querySelectorAll('.section-tab')).map((node) => node.textContent.trim()),
+    };
+  });
+  for (const forbidden of [
+    /Queue Health/i,
+    /Track Agent Work/i,
+    /Handoff Files/i,
+    /Do Not Restart/i,
+    /proof[- ]gap/i,
+    /worker diagnostics/i,
+    /Changelog Queue Visibility/i,
+    /Agent queue status/i,
+    /Queued Agent Work/i,
+    /No heartbeat recorded/i,
+    /fresh heartbeat/i,
+  ]) {
+    assert.doesNotMatch(overviewState.text, forbidden);
+  }
+  assert.ok(overviewState.tabs.includes('Changelog'), JSON.stringify(overviewState.tabs));
+  assert.match(overviewState.text, /Implementation activity lives in Changelog/);
+
+  await page.locator('.section-tab').filter({ hasText: 'Changelog' }).first().click();
+  await page.locator('.focus-panel[aria-label="Changelog"]').waitFor();
+  const changelogText = await page.locator('.focus-panel[aria-label="Changelog"]').textContent();
+  assert.match(changelogText || '', /Activity trail|Changelog/);
+  assert.doesNotMatch(changelogText || '', /Queue Health|Track Agent Work|Handoff Files|Do Not Restart|worker diagnostics/i);
+
+  await page.locator('.section-tab').filter({ hasText: 'Overview' }).first().click();
+  await page.locator('.focus-panel[aria-label="Tasks overview"]').waitFor();
+}
+
 async function assertOperationsCalendarModule(page) {
   await page.locator('.ops-module-button').filter({ hasText: 'Calendar' }).click();
   await page.locator('.ops-view-frame[data-current-view="calendar"]').waitFor();
@@ -986,6 +1024,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       await assertOperationsTaskStateModel(page);
       await assertOperationsTaskMetadataProvenance(page);
       await assertOperationsIntakeRoutingDecisions(page, calls);
+      await assertOperationsTaskDiagnosticsClean(page);
       await assertOperationsCalendarModule(page);
       await assertOperationsShellStable(page, 'desktop operations shell');
 

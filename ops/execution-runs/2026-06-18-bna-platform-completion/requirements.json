@@ -1743,7 +1743,7 @@
       "title": "Remove stale diagnostic concepts from main task UI",
       "area": "tasks",
       "priority": "P1",
-      "current_verdict": "partial",
+      "current_verdict": "local_complete_pending_release",
       "status": "needs_verification",
       "expected_result": "Main task manager hides Queue Health, Track Agent Work, Handoff Files, Do Not Restart, stale/proof-gap counters, and worker diagnostics.",
       "acceptance_criteria": [
@@ -1759,7 +1759,9 @@
         "public/operations.html removes the agent status/heartbeat panel, agent queue status details block, Changelog Queue metric wording, queued worker counts, and client-side agent-fleet status fetch from the main Operations task UI.",
         "The Changelog lane remains available as a normal activity/completed-work trail without Queue Health, Track Agent Work, Handoff Files, Do Not Restart, proof-gap, stale, or worker diagnostic concepts.",
         "tests/operations-task-diagnostics.test.js asserts the stale diagnostic concepts remain absent while the Changelog lane remains present.",
-        "tests/operations-desktop-grids.test.js and tests/operations-workspace-selector.test.js were updated for the removed diagnostics panel/fetch."
+        "tests/operations-desktop-grids.test.js and tests/operations-workspace-selector.test.js were updated for the removed diagnostics panel/fetch.",
+        "Browser acceptance now verifies the rendered main task view omits Queue Health, Track Agent Work, Handoff Files, Do Not Restart, proof-gap, worker diagnostic, agent queue status, and heartbeat diagnostic concepts.",
+        "Browser acceptance now verifies the Changelog subtab remains visible and opens as a normal activity trail without worker diagnostic copy."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -1767,12 +1769,21 @@
         "PASS node --check tests/operations-task-diagnostics.test.js",
         "PASS Operations HTML script parse via vm.Script (2 script blocks)",
         "PASS node --test tests/operations-task-diagnostics.test.js tests/operations-desktop-grids.test.js tests/operations-workspace-selector.test.js 10/10",
-        "PASS npm test 121/121"
+        "PASS npm test 121/121",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/operations-task-diagnostics.test.js tests/operations-calendar.test.js tests/browser-acceptance.test.js PASS 8/8",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": "Local implementation complete; remains needs_verification until final acceptance sweep, release approval, and any required live smoke.",
-      "updated_at": "2026-06-18T21:48:45+03:00"
+      "implementation_commits": [
+        "current batch commit: test: verify task diagnostics cleanup in browser"
+      ],
+      "files_changed": [
+        "tests/browser-acceptance.test.js"
+      ],
+      "notes": "Local stale task-diagnostics cleanup now has static and browser DOM proof. Requirement remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for app-visible changes.",
+      "updated_at": "2026-06-19T06:45:30+03:00"
     },
     {
       "id": "REQ-20260618-141",

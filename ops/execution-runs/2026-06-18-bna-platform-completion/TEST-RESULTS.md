@@ -629,3 +629,13 @@ Internal Calendar browser proof (2026-06-19T06:35:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-139 now has browser proof that the rendered Calendar module shows task due dates, class sessions, check-ins, student events, and group goals from scoped fixture data, and that it exposes no Google Calendar, sync calendar, or connect calendar controls. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Task diagnostics cleanup browser proof (2026-06-19T06:45:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/operations-task-diagnostics.test.js tests/operations-calendar.test.js tests/browser-acceptance.test.js` 8/8.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-140 now has browser proof that the rendered main task view omits Queue Health, Track Agent Work, Handoff Files, Do Not Restart, proof-gap, agent queue, worker diagnostic, and heartbeat concepts while the Changelog subtab remains visible and opens as a normal activity trail. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
