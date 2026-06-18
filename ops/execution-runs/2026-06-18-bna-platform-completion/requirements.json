@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-19T03:15:30+03:00",
+  "updated_at": "2026-06-19T03:25:30+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -2931,8 +2931,8 @@
       "title": "Backend/API/RBAC negative tests",
       "area": "tests",
       "priority": "P0",
-      "current_verdict": "partial",
-      "status": "needs_verification",
+      "current_verdict": "closed_local",
+      "status": "done",
       "expected_result": "Direct backend/API tests prove ordinary users cannot enumerate or read other workspaces, students, users, or accounting records.",
       "acceptance_criteria": [
         "Backend/API/RBAC negative tests is implemented against the canonical Express/static runtime where applicable.",
@@ -2946,12 +2946,15 @@
       "evidence": [
         "tests/workspace-auth.test.js adds negative backend guard tests for ordinary workspace users on students, signups, accounting/payment, content, internal pending briefs, agent-fleet status, and direct task-ID access.",
         "tests/workspace-http-isolation.test.js exercises the real Express middleware and direct task access with mocked cross-workspace rows.",
-        "HTTP tests prove denied scoped cross-module requests do not touch the database and changed task IDs cannot read another workspace comments."
+        "HTTP tests prove denied scoped cross-module requests do not touch the database and changed task IDs cannot read another workspace comments.",
+        "tests/users-scope.test.js proves users/invitations endpoints are read-only and scoped by workspace/project joins.",
+        "tests/accounting-scope.test.js proves accounting reads accept workspace filters and accounting mutations require confirmations plus scoped record access."
       ],
       "deployment_evidence": [],
       "verification": [
         "node --test tests/workspace-auth.test.js tests/workspace-http-isolation.test.js PASS 9/9",
-        "npm test PASS 77/77"
+        "node --test tests/workspace-auth.test.js tests/workspace-http-isolation.test.js tests/users-scope.test.js tests/accounting-scope.test.js PASS 20/20",
+        "npm test PASS 209/209"
       ],
       "implementation_commits": [
         "current batch commit: test: add HTTP workspace isolation coverage"
@@ -2962,7 +2965,7 @@
         "tests/workspace-http-isolation.test.js",
         "server.js"
       ],
-      "notes": "Local backend/API/RBAC negative tests are implemented for current scoped-user surfaces. Requirement remains needs_verification pending final audit/acceptance sweep."
+      "notes": "Local non-live backend/API/RBAC negative-test requirement is terminal. Live release approval and deployment are not required for this test-only requirement."
     },
     {
       "id": "REQ-20260618-171",

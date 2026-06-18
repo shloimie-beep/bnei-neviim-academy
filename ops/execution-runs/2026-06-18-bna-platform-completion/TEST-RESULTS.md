@@ -443,3 +443,10 @@ Focused browser acceptance coverage (2026-06-19T03:15:30+03:00):
 - PASS `node --test tests/browser-acceptance.test.js tests/operations-workspace-selector.test.js tests/assistant-shell.test.js tests/student-portal-i18n.test.js` 14/14.
 
 No audit harness rebuild, baseline crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Backend/API/RBAC negative-test verification (2026-06-19T03:25:30+03:00):
+
+- PASS `node --test tests/workspace-auth.test.js tests/workspace-http-isolation.test.js tests/users-scope.test.js tests/accounting-scope.test.js` 20/20.
+- PASS `npm test` 209/209.
+
+No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed.

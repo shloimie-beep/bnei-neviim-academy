@@ -4167,3 +4167,19 @@ Verification:
 - PASS `node --test tests/browser-acceptance.test.js tests/operations-workspace-selector.test.js tests/assistant-shell.test.js tests/student-portal-i18n.test.js` 14/14.
 
 Status: local `done`; no audit harness rebuild, baseline crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-170`.
+
+## 2026-06-19 - Backend API RBAC negative-test verification
+
+Requirement: `REQ-20260618-170`
+
+Changed:
+
+- Closed the existing backend/API/RBAC negative-test requirement locally after verifying the current guard coverage.
+- Expanded the recorded evidence to include users/invitations endpoint scoping and accounting read/mutation scoping, in addition to route guard and real HTTP middleware isolation tests.
+
+Verification:
+
+- PASS `node --test tests/workspace-auth.test.js tests/workspace-http-isolation.test.js tests/users-scope.test.js tests/accounting-scope.test.js` 20/20.
+- PASS `npm test` 209/209.
+
+Status: local `done`; no deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-119`.

@@ -71,6 +71,6 @@
 | REQ-20260618-167 | REQ-20260618-110 | BNA-PUBLIC-005 | needs_verification | local_implemented_pending_release | Public/blog/FAQ/signup/portal route and CTA integrity |
 | REQ-20260618-168 | REQ-20260618-111 | BNA-TEST-001 | done | closed_local | Isolated repeatable seed and cleanup data |
 | REQ-20260618-169 | REQ-20260618-111 | BNA-TEST-002 | done | closed_local | Route, interaction, responsive, helper, workspace, and student Playwright tests |
-| REQ-20260618-170 | REQ-20260618-111 | BNA-TEST-003 | needs_verification | partial | Backend/API/RBAC negative tests |
+| REQ-20260618-170 | REQ-20260618-111 | BNA-TEST-003 | done | closed_local | Backend/API/RBAC negative tests |
 | REQ-20260618-171 | REQ-20260618-111 | BNA-TEST-004 | done | closed_existing | PWA identity/cache regression tests |
 | REQ-20260618-172 | REQ-20260618-111 | BNA-TEST-005 | blocked | blocked | Final local and live acceptance gates |

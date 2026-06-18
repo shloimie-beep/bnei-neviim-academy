@@ -1,14 +1,14 @@
 # Status
 
-Updated: 2026-06-19T03:15:30+03:00
+Updated: 2026-06-19T03:25:30+03:00
 
 Status counts:
 
 - in_progress: 13
-- needs_verification: 48
+- needs_verification: 47
 - blocked: 3
 - needs_operator_decision: 1
-- done: 6
+- done: 7
 - already_satisfied: 1
 
 Closed/already satisfied IDs:
@@ -19,6 +19,7 @@ Closed/already satisfied IDs:
 - REQ-20260618-116 BNA-AUDIT-001: Resume/finish Operations UI audit harness without duplication
 - REQ-20260618-168 BNA-TEST-001: Isolated repeatable seed and cleanup data
 - REQ-20260618-169 BNA-TEST-002: Route, interaction, responsive, helper, workspace, and student Playwright tests
+- REQ-20260618-170 BNA-TEST-003: Backend/API/RBAC negative tests
 - REQ-20260618-171 BNA-TEST-004: PWA identity/cache regression tests
 
 Open non-blocked IDs:
@@ -83,7 +84,6 @@ Open non-blocked IDs:
 - REQ-20260618-165 BNA-PUBLIC-003: Direct parent signup/self-governance messaging and six-month offer (needs_verification)
 - REQ-20260618-166 BNA-PUBLIC-004: Consistent approved portal headers (needs_verification)
 - REQ-20260618-167 BNA-PUBLIC-005: Public/blog/FAQ/signup/portal route and CTA integrity (needs_verification)
-- REQ-20260618-170 BNA-TEST-003: Backend/API/RBAC negative tests (needs_verification)
 
 Blocked / operator-decision IDs:
 
@@ -92,6 +92,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current implementation batch: REQ-20260618-169 adds focused Playwright acceptance coverage for Operations route/history, responsive overflow, workspace selector scoping, Assistant context, student detail routing, and Student Portal Hebrew RTL, and repairs Operations browser Back/Forward route state. Next unblocked local verification target is REQ-20260618-170.
+Current verification batch: REQ-20260618-170 is closed locally based on backend route guard tests, real HTTP middleware isolation tests, users/invitations scoping tests, accounting scoping tests, and the full 209/209 local suite. Next unblocked local verification target is REQ-20260618-119.
 
 No deployment or production-data mutation is approved in this run.
