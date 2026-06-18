@@ -5,6 +5,7 @@ build/
 dist/
 .deploy-railway/
 .runtime/
+.runtime/auth/
 
 # env
 .env
@@ -54,3 +55,5 @@ ops/remotion-smokes/
 ops/pending/
 ops/system-audits/*.json
 screenshots/
+ops/ui-audits/runs/
+ops/ui-audits/latest.json
