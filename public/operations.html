@@ -171,6 +171,13 @@
         }
 
         .ops-main {
+            min-height: 100vh;
+            min-width: 0;
+            width: 100%;
+        }
+
+        .ops-view-frame {
+            min-height: calc(100vh - 59px);
             min-width: 0;
             width: 100%;
         }
@@ -322,6 +329,7 @@
             border-radius: 14px;
             background: rgba(17, 24, 39, 0.82);
             margin-bottom: 16px;
+            min-height: 52px;
             padding: 8px;
         }
 
@@ -357,6 +365,7 @@
             border: 1px solid #334155;
             border-radius: 16px;
             box-shadow: 0 18px 50px rgba(2, 6, 23, 0.22);
+            min-height: 180px;
             padding: 16px;
             min-width: 0;
         }
@@ -620,7 +629,9 @@
         .container {
             max-width: 1400px;
             margin: 0 auto;
+            min-width: 0;
             padding: 24px;
+            width: 100%;
         }
 
         .command-center-container {
@@ -1939,6 +1950,7 @@
         .task-list {
             display: grid;
             gap: 10px;
+            min-height: 72px;
         }
 
         .task-row {
@@ -2777,6 +2789,12 @@
             color: #64748b;
         }
 
+        div.empty-state {
+            display: grid;
+            min-height: 180px;
+            place-items: center;
+        }
+
         /* Responsive */
         @media (max-width: 1200px) {
             .pipeline-board {
@@ -2855,8 +2873,13 @@
             }
 
             .ops-main {
+                min-height: 100dvh;
                 width: 100%;
                 overflow-x: hidden;
+            }
+
+            .ops-view-frame {
+                min-height: calc(100dvh - 117px);
             }
 
             .section-nav {
@@ -3653,7 +3676,9 @@
                     <main class="ops-main">
                         ${renderMobileHeader()}
                         ${renderModuleToolbar()}
-                        ${innerHtml}
+                        <div class="ops-view-frame" data-current-view="${escapeHtml(currentView)}">
+                            ${innerHtml}
+                        </div>
                     </main>
                 </div>
             `;
@@ -7358,6 +7383,15 @@
             return allowedViews().has(view);
         }
 
+        function firstAllowedView() {
+            return MAIN_NAV_ITEMS.find(item => viewAllowed(item.id))?.id || 'tasks';
+        }
+
+        function ensureCurrentViewAllowed() {
+            if (!viewAllowed(currentView)) currentView = firstAllowedView();
+            return currentView;
+        }
+
         function isGlobalOpsUser() {
             const scopeType = String(opsMe?.scope?.type || '').toLowerCase();
             return opsMe?.role === 'super_admin' || scopeType === 'global' || scopeType === 'all';
@@ -7574,7 +7608,7 @@
                 const authRes = await api.getAuthMe();
                 if (authRes) opsMe = authRes;
                 ensureActiveWorkspaceProject();
-                if (!viewAllowed(currentView)) currentView = 'tasks';
+                ensureCurrentViewAllowed();
 
                 const [projectsRes, tasksRes, agentFleetRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes] = await Promise.allSettled([
                     api.getProjects(),
@@ -7632,6 +7666,7 @@
         function render(errors = []) {
             const app = document.getElementById('app');
             let content = '';
+            ensureCurrentViewAllowed();
 
             switch (currentView) {
                 case 'tasks': content = renderTasks(); break;
@@ -7651,7 +7686,7 @@
 
         function switchView(view) {
             currentView = VIEW_ALIASES[view] || view;
-            if (!viewAllowed(currentView)) currentView = 'tasks';
+            ensureCurrentViewAllowed();
             navDrawerOpen = false;
             const url = new URL(window.location.href);
             url.searchParams.set('view', currentView);
@@ -7669,7 +7704,7 @@
 
         function openCommandTarget(view, focus = '') {
             currentView = VIEW_ALIASES[view] || view;
-            if (!viewAllowed(currentView)) currentView = 'tasks';
+            ensureCurrentViewAllowed();
             if (currentView === 'tasks' && focus) {
                 const normalizedFocus = TASK_FOCUS_ALIASES[focus] || focus;
                 taskFocus = TASK_SUBTABS.some(tab => tab.id === normalizedFocus) ? normalizedFocus : 'overview';

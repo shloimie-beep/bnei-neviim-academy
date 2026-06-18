@@ -85,7 +85,8 @@
       "evidence": [
         "Operations shell now includes an identity-aware workspace context control for super-admin selection versus ordinary scoped-user locked context.",
         "Workspace changes now reset stale module subsection, student, content selection, prompt expansion, and task-modal context before reloading scoped data.",
-        "Operations now uses one allowedViews-filtered horizontal module toolbar and the sidebar is reduced to workspace context."
+        "Operations now uses one allowedViews-filtered horizontal module toolbar and the sidebar is reduced to workspace context.",
+        "Operations shell now has stable view-frame, panel/list/empty-state min-height, and allowed-view fallback safeguards against collapsed route/module states."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -93,13 +94,16 @@
         "npm test PASS 81/81",
         "npm test PASS 82/82",
         "node --test tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js PASS 8/8",
-        "npm test PASS 85/85"
+        "npm test PASS 85/85",
+        "node --test tests/operations-layout-stability.test.js tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js PASS 11/11",
+        "npm test PASS 88/88"
       ],
-      "notes": "Workspace selector, stale-context reset, ordered module toolbar, and sidebar simplification portions are locally implemented. Operations shell/navigation parent remains in_progress until remaining header/collapse child requirements are complete.",
+      "notes": "Workspace selector, stale-context reset, ordered module toolbar, sidebar simplification, and layout stability portions are locally implemented. Operations shell/navigation parent remains in_progress until remaining header/language child requirements are complete.",
       "files_changed": [
         "public/operations.html",
         "tests/operations-workspace-selector.test.js",
-        "tests/operations-module-toolbar.test.js"
+        "tests/operations-module-toolbar.test.js",
+        "tests/operations-layout-stability.test.js"
       ]
     },
     {
@@ -971,8 +975,8 @@
       "title": "Prevent unexpected page collapse/minimize",
       "area": "operations",
       "priority": "P0",
-      "current_verdict": "unknown",
-      "status": "not_started",
+      "current_verdict": "partial",
+      "status": "needs_verification",
       "expected_result": "Operations shell remains open and stable after route, tab, refresh, and workspace/module changes.",
       "acceptance_criteria": [
         "Prevent unexpected page collapse/minimize is implemented against the canonical Express/static runtime where applicable.",
@@ -983,12 +987,26 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "renderAppShell now wraps all module content in ops-view-frame with stable desktop and mobile min-height safeguards.",
+        "ops-main, container, section-nav, focus-panel, task-list, and div.empty-state now have non-collapsing dimensions.",
+        "firstAllowedView and ensureCurrentViewAllowed normalize invalid/disallowed route and module state before loadData, render, switchView, and openCommandTarget."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check tests/operations-layout-stability.test.js PASS",
+        "Operations HTML script parse via vm.Script PASS (2 script blocks)",
+        "node --test tests/operations-layout-stability.test.js tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js PASS 11/11",
+        "npm test PASS 88/88"
+      ],
+      "implementation_commits": [
+        "current batch commit: fix: stabilize operations shell layout"
+      ],
+      "files_changed": [
+        "public/operations.html",
+        "tests/operations-layout-stability.test.js"
+      ],
+      "notes": "Local collapse/minimize guardrails are implemented and tested. Requirement remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for app-visible changes."
     },
     {
       "id": "REQ-20260618-131",

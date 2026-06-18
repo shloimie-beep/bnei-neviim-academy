@@ -83,3 +83,10 @@ Operations module toolbar/sidebar simplification (2026-06-18T20:24:59+03:00):
 - PASS Operations HTML script parse via `vm.Script` (2 script blocks).
 - PASS `node --test tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js` 8/8.
 - PASS `npm test` 85/85.
+
+Operations shell layout stability (2026-06-18T20:28:55+03:00):
+
+- PASS `node --check tests/operations-layout-stability.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/operations-layout-stability.test.js tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js` 11/11.
+- PASS `npm test` 88/88.

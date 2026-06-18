@@ -3072,3 +3072,30 @@ Verification:
 Status: local `needs_verification`; no deployment, production-data mutation,
 audit crawl, watch loop, or agent-fleet loop was performed. Resume at
 `REQ-20260618-130`.
+
+## 2026-06-18T20:28:55+03:00 - Operations Shell Layout Stability
+
+Completed the local collapse/minimize prevention batch for
+`REQ-20260618-130`.
+
+- Wrapped all module content in a stable `ops-view-frame`.
+- Added desktop and mobile min-height safeguards for the Operations main shell.
+- Added non-collapsing dimensions for containers, section navigation, focus
+  panels, task lists, and div empty states.
+- Added `firstAllowedView` and `ensureCurrentViewAllowed`.
+- Normalized invalid or disallowed view state before `loadData`, `render`,
+  `switchView`, and `openCommandTarget`.
+- Added focused static coverage in `tests/operations-layout-stability.test.js`.
+
+Verification:
+
+- PASS `node --check tests/operations-layout-stability.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/operations-layout-stability.test.js
+  tests/operations-module-toolbar.test.js
+  tests/operations-workspace-selector.test.js` 11/11.
+- PASS `npm test` 88/88.
+
+Status: local `needs_verification`; no deployment, production-data mutation,
+audit crawl, watch loop, or agent-fleet loop was performed. Resume at
+`REQ-20260618-131`.
