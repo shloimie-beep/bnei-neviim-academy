@@ -2009,7 +2009,7 @@
       "area": "students",
       "priority": "P0",
       "current_verdict": "partial",
-      "status": "not_started",
+      "status": "needs_verification",
       "expected_result": "Student detail, analysis, goals, meetings, parent communications, content, and helper context filter by workspace_id and student_id.",
       "acceptance_criteria": [
         "Workspace-and-student detail/analysis isolation is implemented against the canonical Express/static runtime where applicable.",
@@ -2020,12 +2020,39 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "Student read/detail helper layer now resolves project filters from scoped/requested Operations context and asserts student, device, accountability event, and group-goal visibility before direct-ID mutations.",
+        "GET /api/bna/students, /devices, /device-access-rules, /accountability, /group-goals, and /torah-learning now carry selected/scoped project filtering where applicable.",
+        "Student create/update/delete, access-code, merge, mock-device, device-action, device-rule, Goal Board, accountability, group-goal, and Torah-learning write paths now verify selected/scoped student workspace before mutating student-owned records.",
+        "Torah learning returns an empty scoped summary for non-BNA project reads and rejects non-BNA project writes/reconciliation rather than exposing BNA-only progress data.",
+        "Operations student module now passes selectedProjectFilter through student/device/rule/Torah/accountability/group-goal loads and student-adjacent writes.",
+        "src/lib/bna/workspace-auth.js now allows scoped student routes only for identities with the students view and includes student archival/merge, devices, Goal Board, accountability, group-goal, and Torah endpoints."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check server.js PASS",
+        "node --check tests/student-detail-scope.test.js PASS",
+        "node --check tests/workspace-auth.test.js PASS",
+        "Operations HTML script parse via vm.Script PASS (2 script blocks)",
+        "node --test tests/student-detail-scope.test.js tests/workspace-auth.test.js tests/workspace-http-isolation.test.js tests/operations-workspace-selector.test.js tests/goal-board.test.js tests/device-control.test.js tests/torah-learning.test.js PASS 54/54",
+        "npm test PASS 162/162"
+      ],
+      "implementation_commits": [
+        "current batch commit: feat: isolate student detail scope"
+      ],
+      "files_changed": [
+        "server.js",
+        "public/operations.html",
+        "src/lib/bna/workspace-auth.js",
+        "tests/student-detail-scope.test.js",
+        "tests/workspace-auth.test.js",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/STATUS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md"
+      ],
+      "notes": "Local implementation and tests passed. Status remains needs_verification because this item is live_required and still needs final acceptance sweep, release approval, deployment, and live smoke before closure. No production student merge/cleanup, production data mutation, deployment, audit crawl, watch loop, or agent-fleet loop was run."
     },
     {
       "id": "REQ-20260618-153",

@@ -3743,3 +3743,38 @@ Status: local `needs_verification`; no deployment, production migration,
 production-data mutation, payment reminder send, Green Invoice reprocess,
 legacy GHL sync, audit crawl, watch loop, or agent-fleet loop was performed.
 Resume at `REQ-20260618-152`.
+
+## 2026-06-18T23:59:30+03:00 - Student Detail Scope
+
+Completed the local workspace-and-student detail/analysis isolation batch for
+`REQ-20260618-152`.
+
+- Added shared student-scope helpers for selected/scoped project extraction and
+  student, device, accountability event, and group-goal direct-record access.
+- Scoped student, device, device-rule, accountability, group-goal, and Torah
+  read APIs by the active Operations workspace project where applicable.
+- Guarded student create/update/delete/access-code/merge, mock-device,
+  device-action/rule, Goal Board, accountability, group-goal entry, and
+  Torah-learning write paths before mutating student-owned records.
+- Made Torah-learning reads return an empty non-BNA scoped summary and reject
+  non-BNA writes/reconciliation instead of leaking BNA-only progress records.
+- Wired Operations student reads and student-adjacent actions to
+  `selectedProjectFilter`.
+- Added `tests/student-detail-scope.test.js` and expanded workspace-auth route
+  coverage for scoped student users.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/student-detail-scope.test.js`.
+- PASS `node --check tests/workspace-auth.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/student-detail-scope.test.js tests/workspace-auth.test.js
+  tests/workspace-http-isolation.test.js tests/operations-workspace-selector.test.js
+  tests/goal-board.test.js tests/device-control.test.js tests/torah-learning.test.js`
+  54/54.
+- PASS `npm test` 162/162.
+
+Status: local `needs_verification`; no deployment, production migration,
+production student merge/cleanup, production-data mutation, audit crawl, watch
+loop, or agent-fleet loop was performed. Resume at `REQ-20260618-153`.

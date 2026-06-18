@@ -53,7 +53,7 @@
 | REQ-20260618-149 | REQ-20260618-107 | BNA-INTEGRATION-001 | not_started | partial | Simplified integrations/social accounts states/actions |
 | REQ-20260618-150 | REQ-20260618-107 | BNA-USER-001 | not_started | missing | Workspace-scoped users/roles/invitations |
 | REQ-20260618-151 | REQ-20260618-107 | BNA-ACCOUNTING-001 | not_started | partial | Workspace payment/accounting scoping and safe actions |
-| REQ-20260618-152 | REQ-20260618-108 | BNA-STUDENT-001 | not_started | partial | Workspace-and-student detail/analysis isolation |
+| REQ-20260618-152 | REQ-20260618-108 | BNA-STUDENT-001 | needs_verification | partial | Workspace-and-student detail/analysis isolation |
 | REQ-20260618-153 | REQ-20260618-108 | BNA-GOAL-001 | not_started | partial | Goal Board controls use plain product language |
 | REQ-20260618-154 | REQ-20260618-108 | BNA-GOAL-002 | not_started | partial | Separate goals, progress, approvals, and history |
 | REQ-20260618-155 | REQ-20260618-108 | BNA-I18N-001 | not_started | partial | Complete Hebrew localization and RTL behavior |

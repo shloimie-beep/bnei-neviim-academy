@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-18T23:58:00+03:00
+Updated: 2026-06-18T23:59:30+03:00
 
 Status counts:
 
@@ -8,8 +8,8 @@ Status counts:
 - done: 4
 - already_satisfied: 1
 - blocked: 3
-- needs_verification: 33
-- not_started: 17
+- needs_verification: 34
+- not_started: 16
 - needs_operator_decision: 1
 
 Closed/already satisfied IDs:
@@ -67,6 +67,7 @@ Open non-blocked IDs begin with:
 - REQ-20260618-149 BNA-INTEGRATION-001: Simplified integrations/social accounts states/actions (needs_verification)
 - REQ-20260618-150 BNA-USER-001: Workspace-scoped users/roles/invitations (needs_verification)
 - REQ-20260618-151 BNA-ACCOUNTING-001: Workspace payment/accounting scoping and safe actions (needs_verification)
+- REQ-20260618-152 BNA-STUDENT-001: Workspace-and-student detail/analysis isolation (needs_verification)
 
 Blocked / operator-decision IDs:
 
@@ -75,6 +76,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current implementation batch: REQ-20260618-151 has local workspace payment/accounting scoping and safe-action confirmations plus focused tests. Next implementation target is REQ-20260618-152.
+Current implementation batch: REQ-20260618-152 has local workspace-and-student detail/analysis isolation across student, device, Goal Board, accountability, group-goal, and Torah-learning paths plus focused tests. Next implementation target is REQ-20260618-153.
 
 No deployment or production-data mutation is approved in this run.

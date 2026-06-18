@@ -35,6 +35,16 @@ function accountingIdentity() {
   });
 }
 
+function studentIdentity() {
+  return createWorkspaceIdentity({
+    username: 'student-ops',
+    workspaceType: 'school',
+    workspaceKey: 'bna',
+    projectKey: 'bna',
+    allowedViews: ['tasks', 'calendar', 'students']
+  });
+}
+
 test('super admin can reach scoped and cross-module operation routes intentionally', () => {
   const identity = createSuperAdminIdentity('Shloimie', ['tasks', 'students', 'content']);
 
@@ -104,6 +114,44 @@ test('workspace users with accounting view may use only scoped accounting routes
 
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/students', method: 'GET' }), false);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/agent-fleet/status', method: 'GET' }), false);
+});
+
+test('workspace users with students view may use only scoped student routes', () => {
+  const identity = studentIdentity();
+
+  for (const { method, path: pathName } of [
+    { method: 'GET', path: '/api/bna/students' },
+    { method: 'POST', path: '/api/bna/students' },
+    { method: 'PATCH', path: '/api/bna/students/7' },
+    { method: 'DELETE', path: '/api/bna/students/7' },
+    { method: 'POST', path: '/api/bna/students/7/access-code' },
+    { method: 'POST', path: '/api/bna/students/7/merge' },
+    { method: 'GET', path: '/api/bna/devices' },
+    { method: 'POST', path: '/api/bna/students/7/devices' },
+    { method: 'PATCH', path: '/api/bna/devices/7' },
+    { method: 'POST', path: '/api/bna/devices/7/actions' },
+    { method: 'GET', path: '/api/bna/device-access-rules' },
+    { method: 'POST', path: '/api/bna/device-access-rules' },
+    { method: 'PATCH', path: '/api/bna/device-access-rules/7' },
+    { method: 'GET', path: '/api/bna/students/7/goal-board' },
+    { method: 'POST', path: '/api/bna/students/7/goal-board' },
+    { method: 'PATCH', path: '/api/bna/goal-board/7' },
+    { method: 'GET', path: '/api/bna/accountability' },
+    { method: 'POST', path: '/api/bna/accountability' },
+    { method: 'PATCH', path: '/api/bna/accountability/7' },
+    { method: 'DELETE', path: '/api/bna/accountability/7' },
+    { method: 'GET', path: '/api/bna/group-goals' },
+    { method: 'POST', path: '/api/bna/group-goals' },
+    { method: 'POST', path: '/api/bna/group-goals/7/entries' },
+    { method: 'GET', path: '/api/bna/torah-learning' },
+    { method: 'POST', path: '/api/bna/torah-learning/entries' },
+    { method: 'POST', path: '/api/bna/torah-learning/reconcile-trip-progress' }
+  ]) {
+    assert.equal(scopedRouteAllowed(identity, { path: pathName, method }), true, `${method} ${pathName}`);
+  }
+
+  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/payments', method: 'GET' }), false);
+  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/content-jobs', method: 'GET' }), false);
 });
 
 test('ordinary workspace users cannot access another project task row by changing ID', () => {

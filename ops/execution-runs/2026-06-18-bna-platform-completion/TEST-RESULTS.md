@@ -275,3 +275,18 @@ No deployment, production-data mutation, payment reminder send, Green Invoice
 reprocess, production migration, audit crawl, watch loop, or agent-fleet loop
 was performed. Legacy GHL sync from payment intake is now rejected before any
 external mutation.
+
+Workspace-and-student detail/analysis isolation (2026-06-18T23:59:30+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/student-detail-scope.test.js`.
+- PASS `node --check tests/workspace-auth.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/student-detail-scope.test.js tests/workspace-auth.test.js
+  tests/workspace-http-isolation.test.js tests/operations-workspace-selector.test.js
+  tests/goal-board.test.js tests/device-control.test.js tests/torah-learning.test.js`
+  54/54.
+- PASS `npm test` 162/162.
+
+No deployment, production student merge/cleanup, production-data mutation,
+audit crawl, watch loop, or agent-fleet loop was performed.

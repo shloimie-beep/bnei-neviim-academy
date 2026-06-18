@@ -3683,12 +3683,17 @@
             generateContentBundle(id, payload = {}) { return this.request('POST', '/content-bundles/' + id + '/generate', payload); },
             bulkGenerateContent(payload = {}) { return this.request('POST', '/content-jobs/bulk-generate', payload); },
 
-            getStudents() { return this.request('GET', '/students'); },
+            getStudents(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.project) params.set('project', filters.project);
+                return this.request('GET', '/students' + (params.toString() ? '?' + params.toString() : ''));
+            },
             createStudentAccessCode(id, payload = {}) { return this.request('POST', '/students/' + id + '/access-code', payload); },
             getDevices(filters = {}) {
                 const params = new URLSearchParams();
                 if (filters.student_id) params.set('student_id', filters.student_id);
                 if (filters.status) params.set('status', filters.status);
+                if (filters.project) params.set('project', filters.project);
                 return this.request('GET', '/devices' + (params.toString() ? '?' + params.toString() : ''));
             },
             createDevice(studentId, payload = {}) { return this.request('POST', '/students/' + studentId + '/devices', payload); },
@@ -3699,15 +3704,26 @@
                 const params = new URLSearchParams();
                 if (filters.student_id) params.set('student_id', filters.student_id);
                 if (filters.device_id) params.set('device_id', filters.device_id);
+                if (filters.project) params.set('project', filters.project);
                 return this.request('GET', '/device-access-rules' + (params.toString() ? '?' + params.toString() : ''));
             },
-            createDeviceAccessRule(payload = {}) { return this.request('POST', '/device-access-rules', payload); },
-            getGoalBoardItems(studentId) { return this.request('GET', '/students/' + studentId + '/goal-board'); },
+            createDeviceAccessRule(payload = {}) {
+                return this.request('POST', '/device-access-rules', {
+                    ...payload,
+                    project: payload.project || selectedProjectFilter() || undefined
+                });
+            },
+            getGoalBoardItems(studentId, filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.project) params.set('project', filters.project);
+                return this.request('GET', '/students/' + studentId + '/goal-board' + (params.toString() ? '?' + params.toString() : ''));
+            },
             createGoalBoardItem(studentId, payload = {}) { return this.request('POST', '/students/' + studentId + '/goal-board', payload); },
             updateGoalBoardItem(id, payload = {}) { return this.request('PATCH', '/goal-board/' + id, payload); },
-            getTorahLearning(date) {
+            getTorahLearning(date, filters = {}) {
                 const params = new URLSearchParams();
                 if (date) params.set('date', date);
+                if (filters.project) params.set('project', filters.project);
                 return this.request('GET', '/torah-learning' + (params.toString() ? '?' + params.toString() : ''));
             },
             saveTorahEntry(entry) { return this.request('POST', '/torah-learning/entries', entry); },
@@ -3722,12 +3738,32 @@
                 const params = new URLSearchParams();
                 if (filters.event_type) params.set('event_type', filters.event_type);
                 if (filters.student_id) params.set('student_id', filters.student_id);
+                if (filters.project) params.set('project', filters.project);
                 return this.request('GET', '/accountability?' + params.toString());
             },
-            createAccountability(event) { return this.request('POST', '/accountability', event); },
-            updateAccountability(id, updates) { return this.request('PATCH', '/accountability/' + id, updates); },
-            deleteAccountability(id) { return this.request('DELETE', '/accountability/' + id); },
-            getGroupGoals() { return this.request('GET', '/group-goals'); }
+            createAccountability(event = {}) {
+                return this.request('POST', '/accountability', {
+                    ...event,
+                    project: event.project || selectedProjectFilter() || undefined
+                });
+            },
+            updateAccountability(id, updates = {}) {
+                return this.request('PATCH', '/accountability/' + id, {
+                    ...updates,
+                    project: updates.project || selectedProjectFilter() || undefined
+                });
+            },
+            deleteAccountability(id, filters = {}) {
+                const params = new URLSearchParams();
+                const project = filters.project || selectedProjectFilter();
+                if (project) params.set('project', project);
+                return this.request('DELETE', '/accountability/' + id + (params.toString() ? '?' + params.toString() : ''));
+            },
+            getGroupGoals(filters = {}) {
+                const params = new URLSearchParams();
+                if (filters.project) params.set('project', filters.project);
+                return this.request('GET', '/group-goals' + (params.toString() ? '?' + params.toString() : ''));
+            }
         };
 
         // State
@@ -8432,12 +8468,12 @@
                     viewAllowed('content') ? api.getContentJobs({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ jobs: [] }),
                     viewAllowed('content') ? api.getContentPrompts() : Promise.resolve({ prompts: [] }),
                     viewAllowed('content') ? api.getContentBundles({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ bundles: [] }),
-                    viewAllowed('students') ? api.getStudents() : Promise.resolve({ students: [] }),
-                    viewAllowed('students') ? api.getDevices() : Promise.resolve({ devices: [] }),
-                    viewAllowed('students') ? api.getDeviceAccessRules() : Promise.resolve({ rules: [] }),
-                    viewAllowed('students') ? api.getTorahLearning() : Promise.resolve(null),
-                    viewAllowed('students') ? api.getAccountability() : Promise.resolve({ events: [] }),
-                    viewAllowed('students') ? api.getGroupGoals() : Promise.resolve({ goals: [] })
+                    viewAllowed('students') ? api.getStudents({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ students: [] }),
+                    viewAllowed('students') ? api.getDevices({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ devices: [] }),
+                    viewAllowed('students') ? api.getDeviceAccessRules({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ rules: [] }),
+                    viewAllowed('students') ? api.getTorahLearning(null, { project: selectedProjectFilter() || undefined }) : Promise.resolve(null),
+                    viewAllowed('students') ? api.getAccountability({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ events: [] }),
+                    viewAllowed('students') ? api.getGroupGoals({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ goals: [] })
                 ]);
 
                 if (projectsRes.status === 'fulfilled' && projectsRes.value?.projects) projects = projectsRes.value.projects;
@@ -8915,7 +8951,8 @@
                     success_device_access_state: successDeviceState,
                     success_duration_minutes: successDuration ? Number(successDuration) : null,
                     review_reason: reviewReason,
-                    approval_required: approvalRequired
+                    approval_required: approvalRequired,
+                    project: selectedProjectFilter() || undefined
                 });
                 await loadData();
                 studentGoalFilter = approvalRequired ? 'needs_review' : 'due_today';
@@ -8932,7 +8969,10 @@
             const button = event?.currentTarget;
             if (button) button.disabled = true;
             try {
-                await api.updateGoalBoardItem(itemId, updates);
+                await api.updateGoalBoardItem(itemId, {
+                    ...updates,
+                    project: selectedProjectFilter() || undefined
+                });
                 await loadData();
             } catch (error) {
                 alert(error.message || 'Could not update Goal Board item.');
@@ -8960,7 +9000,8 @@
                     platform,
                     provider: 'mock',
                     status: 'accountability_only',
-                    notes
+                    notes,
+                    project: selectedProjectFilter() || undefined
                 });
                 await loadData();
             } catch (error) {
@@ -8987,7 +9028,8 @@
                 await api.deviceAction(deviceId, {
                     status: normalizedStatus,
                     duration_minutes: defaultDuration,
-                    reason
+                    reason,
+                    project: selectedProjectFilter() || undefined
                 });
                 await loadData();
             } catch (error) {
@@ -9018,7 +9060,8 @@
                     action,
                     device_id: deviceId || null,
                     duration_minutes: duration,
-                    reason
+                    reason,
+                    project: selectedProjectFilter() || undefined
                 });
                 await loadData();
             } catch (error) {
@@ -9047,7 +9090,8 @@
                     engaged_listening_minutes: engagedListeningMinutes ? Number(engagedListeningMinutes) : 0,
                     inside_engaged_minutes: insideEngagedMinutes ? Number(insideEngagedMinutes) : 0,
                     listening_without_following_minutes: listeningWithoutFollowingMinutes ? Number(listeningWithoutFollowingMinutes) : 0,
-                    note
+                    note,
+                    project: selectedProjectFilter() || undefined
                 });
                 await loadData();
                 alert('Torah learning entry saved.');
@@ -9550,7 +9594,8 @@
                 topic: topic || null,
                 notes: notes || null,
                 question_text: eventType === 'question' ? title : null,
-                source: 'manual'
+                source: 'manual',
+                project: selectedProjectFilter() || undefined
             });
 
             await loadData();
@@ -9568,7 +9613,10 @@
         async function createStudentAccessLink(event, studentId, regenerate = false) {
             event.stopPropagation();
             try {
-                const result = await api.createStudentAccessCode(studentId, { regenerate });
+                const result = await api.createStudentAccessCode(studentId, {
+                    regenerate,
+                    project: selectedProjectFilter() || undefined
+                });
                 await loadData();
                 if (result?.url) {
                     await navigator.clipboard?.writeText(result.url);

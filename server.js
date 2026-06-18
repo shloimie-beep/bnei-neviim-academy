@@ -3784,9 +3784,31 @@ async function seedTodayTorahLearningSnapshot(db = pool) {
   }
 }
 
-async function getTorahLearningSummary(dateInput, db = pool) {
+function emptyTorahLearningSummary(dateInput, projectKey = DEFAULT_PROJECT_KEY) {
   const dateString = toIsoDateValue(dateInput || getTodayDateInTimeZone());
+  return {
+    date: dateString,
+    group: {
+      groupPercentageRaw: 0,
+      groupPercentage: 0,
+      tripUnlocked: false,
+      activeStudentCount: 0,
+    },
+    students: [],
+    project: normalizeProjectKey(projectKey || DEFAULT_PROJECT_KEY) || DEFAULT_PROJECT_KEY,
+  };
+}
+
+async function getTorahLearningSummary(dateInput, db = pool, options = {}) {
+  const dateString = toIsoDateValue(dateInput || getTodayDateInTimeZone());
+  const projectKey = normalizeProjectKey(options.projectKey || DEFAULT_PROJECT_KEY) || DEFAULT_PROJECT_KEY;
+  if (projectKey !== DEFAULT_PROJECT_KEY) {
+    return emptyTorahLearningSummary(dateString, projectKey);
+  }
   await ensureTorahGoalsForDate(dateString, db);
+  const params = [dateString];
+  const conditions = ["COALESCE(s.status, 'active') NOT IN ('inactive', 'archived')"];
+  addAccountingProjectCondition(conditions, params, projectKey, 'proj', 'w');
 
   const result = await db.query(
     `SELECT
@@ -3823,6 +3845,14 @@ async function getTorahLearningSummary(dateInput, db = pool) {
         e_progress.total_trip_progress_percentage AS progress_total_trip_progress_percentage,
         e_completed.completed_daily_units_count
      FROM bna_students s
+     LEFT JOIN bna_workspaces w ON w.id = s.workspace_id
+     LEFT JOIN LATERAL (
+       SELECT p.project_key
+       FROM bna_projects p
+       WHERE p.workspace_id = s.workspace_id
+       ORDER BY p.id ASC
+       LIMIT 1
+     ) proj ON TRUE
      JOIN LATERAL (
        SELECT *
        FROM bna_torah_learning_goals g
@@ -3869,9 +3899,9 @@ async function getTorahLearningSummary(dateInput, db = pool) {
        WHERE e.student_id = s.id
          AND e.date <= $1::date
      ) e_completed ON TRUE
-     WHERE COALESCE(s.status, 'active') NOT IN ('inactive', 'archived')
+     WHERE ${conditions.join(' AND ')}
      ORDER BY s.name ASC`,
-    [dateString]
+    params
   );
 
   const usedStudentIds = new Set();
@@ -3977,6 +4007,7 @@ async function getTorahLearningSummary(dateInput, db = pool) {
       activeStudentCount: students.length,
     },
     students,
+    project: projectKey,
   };
 }
 
@@ -5652,6 +5683,170 @@ async function assertPaymentIntakeAccountingAccess(req, intakeId, projectKey = a
   return intake;
 }
 
+function studentProjectKeyFromRequest(req, input = {}) {
+  const scopedProjectKey = opsScopeProjectKey(req);
+  if (scopedProjectKey) return normalizeProjectKey(scopedProjectKey);
+  return normalizeProjectKey(
+    req?.query?.project ||
+    req?.query?.project_key ||
+    input.project ||
+    input.project_key ||
+    input.projectName ||
+    input.project_name ||
+    ''
+  );
+}
+
+function scopedStudentNotFoundStatus(req) {
+  return opsScopeProjectKey(req) ? 403 : 404;
+}
+
+async function resolveStudentProjectForWrite(req, input = {}, db = pool) {
+  const projectKey = studentProjectKeyFromRequest(req, input) || DEFAULT_PROJECT_KEY;
+  const project = await getProjectByKey(projectKey, db);
+  assertProjectAccess(req, project);
+  return project;
+}
+
+function assertTorahProjectAccess(projectKey = DEFAULT_PROJECT_KEY) {
+  const normalizedProjectKey = normalizeProjectKey(projectKey || DEFAULT_PROJECT_KEY) || DEFAULT_PROJECT_KEY;
+  if (normalizedProjectKey !== DEFAULT_PROJECT_KEY) {
+    const error = new Error('Torah learning is only available in the BNA workspace.');
+    error.statusCode = 403;
+    throw error;
+  }
+  return normalizedProjectKey;
+}
+
+async function assertStudentAccess(req, studentId, projectKey = studentProjectKeyFromRequest(req), db = pool) {
+  const params = [studentId];
+  const conditions = ['s.id = $1'];
+  addAccountingProjectCondition(conditions, params, projectKey, 'proj', 'w');
+  const result = await db.query(
+    `SELECT s.*,
+            proj.project_key,
+            proj.name AS project_name,
+            proj.short_name AS project_short_name,
+            w.workspace_key,
+            w.workspace_type,
+            w.name AS workspace_name
+     FROM bna_students s
+     LEFT JOIN bna_workspaces w ON w.id = s.workspace_id
+     LEFT JOIN LATERAL (
+       SELECT p.project_key, p.name, p.short_name
+       FROM bna_projects p
+       WHERE p.workspace_id = s.workspace_id
+       ORDER BY p.id ASC
+       LIMIT 1
+     ) proj ON TRUE
+     WHERE ${conditions.join(' AND ')}
+     LIMIT 1`,
+    params
+  );
+  const student = result.rows[0];
+  if (!student) {
+    const error = new Error('Student is not visible in the selected workspace.');
+    error.statusCode = scopedStudentNotFoundStatus(req);
+    throw error;
+  }
+  return student;
+}
+
+async function assertDeviceAccess(req, deviceId, projectKey = studentProjectKeyFromRequest(req), db = pool) {
+  const params = [deviceId];
+  const conditions = ['d.id = $1'];
+  addAccountingProjectCondition(conditions, params, projectKey, 'proj', 'w');
+  const result = await db.query(
+    `SELECT d.*,
+            s.id AS student_id,
+            s.name AS student_name,
+            proj.project_key,
+            w.workspace_key
+     FROM bna_devices d
+     LEFT JOIN bna_students s ON s.id = d.student_id
+     LEFT JOIN bna_workspaces w ON w.id = COALESCE(d.workspace_id, s.workspace_id)
+     LEFT JOIN LATERAL (
+       SELECT p.project_key
+       FROM bna_projects p
+       WHERE p.workspace_id = COALESCE(d.workspace_id, s.workspace_id)
+       ORDER BY p.id ASC
+       LIMIT 1
+     ) proj ON TRUE
+     WHERE ${conditions.join(' AND ')}
+     LIMIT 1`,
+    params
+  );
+  const device = result.rows[0];
+  if (!device) {
+    const error = new Error('Device is not visible in the selected student workspace.');
+    error.statusCode = scopedStudentNotFoundStatus(req);
+    throw error;
+  }
+  return device;
+}
+
+async function assertAccountabilityEventAccess(req, eventId, projectKey = studentProjectKeyFromRequest(req), db = pool) {
+  const params = [eventId];
+  const conditions = ['a.id = $1'];
+  addAccountingProjectCondition(conditions, params, projectKey, 'proj', 'w');
+  const result = await db.query(
+    `SELECT a.*,
+            s.name AS student_name,
+            proj.project_key,
+            w.workspace_key
+     FROM bna_accountability_events a
+     LEFT JOIN bna_students s ON s.id = a.student_id
+     LEFT JOIN bna_workspaces w ON w.id = COALESCE(a.workspace_id, s.workspace_id)
+     LEFT JOIN LATERAL (
+       SELECT p.project_key
+       FROM bna_projects p
+       WHERE p.workspace_id = COALESCE(a.workspace_id, s.workspace_id)
+       ORDER BY p.id ASC
+       LIMIT 1
+     ) proj ON TRUE
+     WHERE ${conditions.join(' AND ')}
+     LIMIT 1`,
+    params
+  );
+  const event = result.rows[0];
+  if (!event) {
+    const error = new Error('Student accountability record is not visible in the selected workspace.');
+    error.statusCode = scopedStudentNotFoundStatus(req);
+    throw error;
+  }
+  return event;
+}
+
+async function assertGroupGoalAccess(req, goalId, projectKey = studentProjectKeyFromRequest(req), db = pool) {
+  const params = [goalId];
+  const conditions = ['g.id = $1'];
+  addAccountingProjectCondition(conditions, params, projectKey, 'proj', 'w');
+  const result = await db.query(
+    `SELECT g.*,
+            proj.project_key,
+            w.workspace_key
+     FROM bna_group_goals g
+     LEFT JOIN bna_workspaces w ON w.id = g.workspace_id
+     LEFT JOIN LATERAL (
+       SELECT p.project_key
+       FROM bna_projects p
+       WHERE p.workspace_id = g.workspace_id
+       ORDER BY p.id ASC
+       LIMIT 1
+     ) proj ON TRUE
+     WHERE ${conditions.join(' AND ')}
+     LIMIT 1`,
+    params
+  );
+  const goal = result.rows[0];
+  if (!goal) {
+    const error = new Error('Group goal is not visible in the selected workspace.');
+    error.statusCode = scopedStudentNotFoundStatus(req);
+    throw error;
+  }
+  return goal;
+}
+
 async function assertTaskAccess(req, taskId, db = pool) {
   const scopedProjectKey = opsScopeProjectKey(req);
   if (!scopedProjectKey) return null;
@@ -6613,7 +6808,7 @@ function taskOwnerFromSentence(sentence) {
 }
 
 function escapeRegExp(value) {
-  return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\$&');
 }
 
 function extractNearbyText(text, index, length, radius = 220) {
@@ -7398,7 +7593,7 @@ function getRequestIp(req) {
 }
 
 function escapeRegExp(value) {
-  return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\$&');
 }
 
 function getRegistrationPackageLanguageBlock(language) {
@@ -7991,10 +8186,22 @@ app.patch('/api/bna/signups/:id', requireAdmin, async (req, res) => {
 
 // BNA dashboard: students and accountability
 app.get('/api/bna/students', requireAdmin, async (req, res) => {
+  const projectKey = studentProjectKeyFromRequest(req);
+  const params = [];
+  const conditions = ["COALESCE(s.status, 'active') NOT IN ('archived', 'inactive')"];
+  addAccountingProjectCondition(conditions, params, projectKey, 'proj', 'w');
+  const whereClause = `WHERE ${conditions.join(' AND ')}`;
+
   try {
     await ensureStudentsFromSignups();
     const result = await pool.query(
       `SELECT s.*,
+        proj.project_key,
+        proj.name AS project_name,
+        proj.short_name AS project_short_name,
+        w.workspace_key,
+        w.workspace_type,
+        w.name AS workspace_name,
         COALESCE(goal_counts.open_goals, 0) AS open_goals,
         COALESCE(question_counts.questions, 0) AS questions,
         COALESCE(progress_counts.avg_progress, 0) AS avg_goal_progress,
@@ -8003,6 +8210,14 @@ app.get('/api/bna/students', requireAdmin, async (req, res) => {
         latest_device.device_name AS latest_device_name,
         next_check.next_check_in_date
        FROM bna_students s
+       LEFT JOIN bna_workspaces w ON w.id = s.workspace_id
+       LEFT JOIN LATERAL (
+         SELECT p.project_key, p.name, p.short_name
+         FROM bna_projects p
+         WHERE p.workspace_id = s.workspace_id
+         ORDER BY p.id ASC
+         LIMIT 1
+       ) proj ON TRUE
        LEFT JOIN (
          SELECT student_id, COUNT(*) AS open_goals
          FROM bna_accountability_events
@@ -8039,10 +8254,11 @@ app.get('/api/bna/students', requireAdmin, async (req, res) => {
          ORDER BY d.updated_at DESC, d.id DESC
          LIMIT 1
        ) latest_device ON TRUE
-       WHERE COALESCE(s.status, 'active') NOT IN ('archived', 'inactive')
-       ORDER BY s.name ASC`
+       ${whereClause}
+       ORDER BY s.name ASC`,
+      params
     );
-    res.json({ students: result.rows });
+    res.json({ students: result.rows, project: projectKey || 'all' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -8065,14 +8281,19 @@ app.post('/api/bna/students', requireAdmin, async (req, res) => {
   if (!name) return res.status(400).json({ error: 'name is required' });
 
   try {
+    const project = await resolveStudentProjectForWrite(req, req.body || {});
+    const workspaceId = project.workspace_id || (await getDefaultSchoolWorkspace(pool)).id;
     const existing = (await pool.query(
       `SELECT *
        FROM bna_students
-       WHERE lower(name) = lower($1)
-          OR lower(regexp_replace(name, '[^a-zA-Z0-9א-ת]+', ' ', 'g')) = lower(regexp_replace($1, '[^a-zA-Z0-9א-ת]+', ' ', 'g'))
+       WHERE workspace_id IS NOT DISTINCT FROM $2
+         AND (
+           lower(name) = lower($1)
+           OR lower(regexp_replace(name, '[^a-zA-Z0-9?-?]+', ' ', 'g')) = lower(regexp_replace($1, '[^a-zA-Z0-9?-?]+', ' ', 'g'))
+         )
        ORDER BY status = 'active' DESC, created_at DESC
        LIMIT 1`,
-      [name]
+      [name, workspaceId]
     )).rows[0];
 
     const result = existing
@@ -8089,19 +8310,20 @@ app.post('/api/bna/students', requireAdmin, async (req, res) => {
              status = $9,
              updated_at = NOW()
          WHERE id = $10
+           AND workspace_id IS NOT DISTINCT FROM $11
          RETURNING *`,
-        [parent_name || null, parent_email || null, parent_phone || null, age || null, grade || null, current_school || null, notes || null, tags, status, existing.id]
+        [parent_name || null, parent_email || null, parent_phone || null, age || null, grade || null, current_school || null, notes || null, tags, status, existing.id, workspaceId]
       )
       : await pool.query(
         `INSERT INTO bna_students (workspace_id, name, parent_name, parent_email, parent_phone, age, grade, current_school, notes, tags, status)
          VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
          RETURNING *`,
-        [(await getDefaultSchoolWorkspace(pool)).id, name, parent_name || null, parent_email || null, parent_phone || null, age || null, grade || null, current_school || null, notes || null, tags, status]
+        [workspaceId, name, parent_name || null, parent_email || null, parent_phone || null, age || null, grade || null, current_school || null, notes || null, tags, status]
       );
 
-    res.json({ success: true, student: result.rows[0], merged_existing: Boolean(existing) });
+    res.json({ success: true, student: result.rows[0], merged_existing: Boolean(existing), project: project.project_key });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -8118,25 +8340,29 @@ app.patch('/api/bna/students/:id', requireAdmin, async (req, res) => {
   }
 
   if (!updates.length) return res.status(400).json({ error: 'No supported fields to update' });
-  values.push(id);
 
   try {
+    const student = await assertStudentAccess(req, id, studentProjectKeyFromRequest(req, req.body || {}));
+    values.push(id);
+    values.push(student.workspace_id || null);
     const result = await pool.query(
       `UPDATE bna_students
        SET ${updates.join(', ')}, updated_at = NOW()
-       WHERE id = $${values.length}
+       WHERE id = $${values.length - 1}
+         AND workspace_id IS NOT DISTINCT FROM $${values.length}
        RETURNING *`,
       values
     );
-    if (!result.rows[0]) return res.status(404).json({ error: 'Student not found' });
+    if (!result.rows[0]) return res.status(scopedStudentNotFoundStatus(req)).json({ error: 'Student not found in selected workspace' });
     res.json({ success: true, student: result.rows[0] });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
 app.post('/api/bna/students/:id/access-code', requireAdmin, async (req, res) => {
   try {
+    await assertStudentAccess(req, req.params.id, studentProjectKeyFromRequest(req, req.body || {}));
     const code = await ensureStudentAccessCode(
       req.params.id,
       { regenerate: Boolean((req.body || {}).regenerate) }
@@ -8147,13 +8373,14 @@ app.post('/api/bna/students/:id/access-code', requireAdmin, async (req, res) => 
       url: studentPortalUrl(req, code),
     });
   } catch (err) {
-    res.status(/not found/i.test(err.message) ? 404 : 500).json({ error: err.message });
+    res.status(err.statusCode || (/not found/i.test(err.message) ? 404 : 500)).json({ error: err.message });
   }
 });
 
 app.get('/api/bna/devices', requireAdmin, async (req, res) => {
   const conditions = [];
   const params = [];
+  const projectKey = studentProjectKeyFromRequest(req);
   if (req.query.student_id) {
     params.push(req.query.student_id);
     conditions.push(`d.student_id = $${params.length}`);
@@ -8162,6 +8389,7 @@ app.get('/api/bna/devices', requireAdmin, async (req, res) => {
     params.push(normalizeDeviceAccessState(req.query.status));
     conditions.push(`d.status = $${params.length}`);
   }
+  addAccountingProjectCondition(conditions, params, projectKey, 'proj', 'w');
   const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
   try {
@@ -8173,6 +8401,14 @@ app.get('/api/bna/devices', requireAdmin, async (req, res) => {
               row_to_json(latest_session.*) AS latest_session
        FROM bna_devices d
        LEFT JOIN bna_students s ON s.id = d.student_id
+       LEFT JOIN bna_workspaces w ON w.id = COALESCE(d.workspace_id, s.workspace_id)
+       LEFT JOIN LATERAL (
+         SELECT p.project_key
+         FROM bna_projects p
+         WHERE p.workspace_id = COALESCE(d.workspace_id, s.workspace_id)
+         ORDER BY p.id ASC
+         LIMIT 1
+       ) proj ON TRUE
        LEFT JOIN LATERAL (
          SELECT *
          FROM bna_device_access_sessions das
@@ -8195,6 +8431,7 @@ app.get('/api/bna/devices', requireAdmin, async (req, res) => {
     res.json({
       provider_mode: 'mock',
       real_device_calls_enabled: false,
+      project: projectKey || 'all',
       devices: result.rows.map(deviceRecordView),
     });
   } catch (err) {
@@ -8211,15 +8448,10 @@ app.post('/api/bna/students/:id/devices', requireAdmin, async (req, res) => {
   }
 
   try {
-    const student = (await pool.query(
-      `SELECT id, name, workspace_id
-       FROM bna_students
-       WHERE id = $1
-         AND COALESCE(status, 'active') NOT IN ('inactive', 'archived')
-       LIMIT 1`,
-      [req.params.id]
-    )).rows[0];
-    if (!student) return res.status(404).json({ error: 'Student not found' });
+    const student = await assertStudentAccess(req, req.params.id, studentProjectKeyFromRequest(req, req.body || {}));
+    if (['inactive', 'archived'].includes(String(student.status || '').toLowerCase())) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
 
     const status = normalizeDeviceAccessState((req.body || {}).status || DEVICE_ACCESS_STATES.ACCOUNTABILITY_ONLY);
     const result = await pool.query(
@@ -8267,18 +8499,20 @@ app.patch('/api/bna/devices/:id', requireAdmin, async (req, res) => {
   values.push(req.params.id);
 
   try {
+    const device = await assertDeviceAccess(req, req.params.id, studentProjectKeyFromRequest(req, req.body || {}));
     const result = await pool.query(
       `UPDATE bna_devices
        SET ${fields.join(', ')},
            updated_at = NOW()
        WHERE id = $${values.length}
+         AND workspace_id IS NOT DISTINCT FROM $${values.length + 1}
        RETURNING *`,
-      values
+      [...values, device.workspace_id || null]
     );
     if (!result.rows[0]) return res.status(404).json({ error: 'Device not found' });
     res.json({ success: true, device: await getDeviceRecord(result.rows[0].id) });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -8302,6 +8536,7 @@ app.post('/api/bna/devices/:id/actions', requireAdmin, async (req, res) => {
   if (!status) return res.status(400).json({ error: 'Unsupported device action' });
 
   try {
+    await assertDeviceAccess(req, req.params.id, studentProjectKeyFromRequest(req, req.body || {}));
     const result = await applyDeviceAccessAction({
       deviceId: req.params.id,
       status,
@@ -8320,6 +8555,7 @@ app.post('/api/bna/devices/:id/actions', requireAdmin, async (req, res) => {
 app.get('/api/bna/device-access-rules', requireAdmin, async (req, res) => {
   const conditions = [];
   const params = [];
+  const projectKey = studentProjectKeyFromRequest(req);
   if (req.query.student_id) {
     params.push(req.query.student_id);
     conditions.push(`r.student_id = $${params.length}`);
@@ -8328,6 +8564,7 @@ app.get('/api/bna/device-access-rules', requireAdmin, async (req, res) => {
     params.push(req.query.device_id);
     conditions.push(`r.device_id = $${params.length}`);
   }
+  addAccountingProjectCondition(conditions, params, projectKey, 'proj', 'w');
   const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
   try {
@@ -8336,13 +8573,21 @@ app.get('/api/bna/device-access-rules', requireAdmin, async (req, res) => {
        FROM bna_device_access_rules r
        LEFT JOIN bna_students s ON s.id = r.student_id
        LEFT JOIN bna_devices d ON d.id = r.device_id
+       LEFT JOIN bna_workspaces w ON w.id = COALESCE(r.workspace_id, s.workspace_id, d.workspace_id)
+       LEFT JOIN LATERAL (
+         SELECT p.project_key
+         FROM bna_projects p
+         WHERE p.workspace_id = COALESCE(r.workspace_id, s.workspace_id, d.workspace_id)
+         ORDER BY p.id ASC
+         LIMIT 1
+       ) proj ON TRUE
        ${whereClause}
        ORDER BY r.enabled DESC, r.created_at DESC`,
       params
     );
-    res.json({ rules: result.rows });
+    res.json({ rules: result.rows, project: projectKey || 'all' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -8353,15 +8598,17 @@ app.post('/api/bna/device-access-rules', requireAdmin, async (req, res) => {
     : 'goal_approval';
 
   try {
-    const defaultWorkspace = await getDefaultSchoolWorkspace(pool);
-    const workspace = (await pool.query(
-      `SELECT COALESCE(
-        (SELECT workspace_id FROM bna_students WHERE id = $1),
-        (SELECT workspace_id FROM bna_devices WHERE id = $2),
-        $3
-      ) AS workspace_id`,
-      [(req.body || {}).student_id || null, (req.body || {}).device_id || null, defaultWorkspace.id]
-    )).rows[0];
+    const project = await resolveStudentProjectForWrite(req, req.body || {});
+    const student = (req.body || {}).student_id
+      ? await assertStudentAccess(req, (req.body || {}).student_id, project.project_key)
+      : null;
+    const device = (req.body || {}).device_id
+      ? await assertDeviceAccess(req, (req.body || {}).device_id, project.project_key)
+      : null;
+    const requiredGoal = (req.body || {}).required_goal_id
+      ? await assertAccountabilityEventAccess(req, (req.body || {}).required_goal_id, project.project_key)
+      : null;
+    const workspaceId = student?.workspace_id || device?.workspace_id || requiredGoal?.workspace_id || project.workspace_id;
     const result = await pool.query(
       `INSERT INTO bna_device_access_rules (
          workspace_id, student_id, device_id, rule_type, required_goal_id, duration_minutes, schedule, enabled, notes
@@ -8370,7 +8617,7 @@ app.post('/api/bna/device-access-rules', requireAdmin, async (req, res) => {
        )
        RETURNING *`,
       [
-        workspace.workspace_id,
+        workspaceId || null,
         (req.body || {}).student_id || null,
         (req.body || {}).device_id || null,
         ruleType,
@@ -8383,7 +8630,7 @@ app.post('/api/bna/device-access-rules', requireAdmin, async (req, res) => {
     );
     res.json({ success: true, rule: result.rows[0] });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -8400,21 +8647,56 @@ app.patch('/api/bna/device-access-rules/:id', requireAdmin, async (req, res) => 
     fields.push(`${key} = $${values.length}`);
   }
   if (!fields.length) return res.status(400).json({ error: 'No supported rule fields supplied' });
-  values.push(req.params.id);
-
   try {
+    const projectKey = studentProjectKeyFromRequest(req, req.body || {});
+    const current = await (async () => {
+      const params = [req.params.id];
+      const conditions = ['r.id = $1'];
+      addAccountingProjectCondition(conditions, params, projectKey, 'proj', 'w');
+      const result = await pool.query(
+        `SELECT r.*
+         FROM bna_device_access_rules r
+         LEFT JOIN bna_students s ON s.id = r.student_id
+         LEFT JOIN bna_devices d ON d.id = r.device_id
+         LEFT JOIN bna_workspaces w ON w.id = COALESCE(r.workspace_id, s.workspace_id, d.workspace_id)
+         LEFT JOIN LATERAL (
+           SELECT p.project_key
+           FROM bna_projects p
+           WHERE p.workspace_id = COALESCE(r.workspace_id, s.workspace_id, d.workspace_id)
+           ORDER BY p.id ASC
+           LIMIT 1
+         ) proj ON TRUE
+         WHERE ${conditions.join(' AND ')}
+         LIMIT 1`,
+        params
+      );
+      return result.rows[0] || null;
+    })();
+    if (!current) return res.status(scopedStudentNotFoundStatus(req)).json({ error: 'Device access rule not found in selected workspace' });
+    if (Object.prototype.hasOwnProperty.call(req.body || {}, 'student_id') && (req.body || {}).student_id) {
+      await assertStudentAccess(req, (req.body || {}).student_id, projectKey);
+    }
+    if (Object.prototype.hasOwnProperty.call(req.body || {}, 'device_id') && (req.body || {}).device_id) {
+      await assertDeviceAccess(req, (req.body || {}).device_id, projectKey);
+    }
+    if (Object.prototype.hasOwnProperty.call(req.body || {}, 'required_goal_id') && (req.body || {}).required_goal_id) {
+      await assertAccountabilityEventAccess(req, (req.body || {}).required_goal_id, projectKey);
+    }
+    values.push(req.params.id);
+    values.push(current.workspace_id || null);
     const result = await pool.query(
       `UPDATE bna_device_access_rules
        SET ${fields.join(', ')},
            updated_at = NOW()
-       WHERE id = $${values.length}
+       WHERE id = $${values.length - 1}
+         AND workspace_id IS NOT DISTINCT FROM $${values.length}
        RETURNING *`,
       values
     );
-    if (!result.rows[0]) return res.status(404).json({ error: 'Device access rule not found' });
+    if (!result.rows[0]) return res.status(scopedStudentNotFoundStatus(req)).json({ error: 'Device access rule not found in selected workspace' });
     res.json({ success: true, rule: result.rows[0] });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -8425,7 +8707,7 @@ app.post('/api/bna/device-access/reviews/:goalId/actions', requireAdmin, async (
   }
 
   try {
-    const current = await getGoalBoardEvent(req.params.goalId);
+    const current = await assertAccountabilityEventAccess(req, req.params.goalId, studentProjectKeyFromRequest(req, req.body || {}));
     if (!current) return res.status(404).json({ error: 'Goal Board review item not found' });
     const goalBoard = normalizeGoalBoardMetadata(rawGoalBoardMetadata(current.metadata), {
       category: current.topic || '',
@@ -8463,6 +8745,7 @@ app.post('/api/bna/device-access/reviews/:goalId/actions', requireAdmin, async (
 
       const deviceId = (req.body || {}).device_id;
       if (!deviceId) return res.status(400).json({ error: 'device_id is required before applying a mock device action' });
+      await assertDeviceAccess(req, deviceId, studentProjectKeyFromRequest(req, req.body || {}));
       const status = action === 'manual_override'
         ? DEVICE_ACCESS_STATES.MANUAL_OVERRIDE
         : (requestedState || DEVICE_ACCESS_STATES.APPROVED_ACCESS);
@@ -8500,15 +8783,10 @@ app.post('/api/bna/device-access/reviews/:goalId/actions', requireAdmin, async (
 
 app.get('/api/bna/students/:id/goal-board', requireAdmin, async (req, res) => {
   try {
-    const student = (await pool.query(
-      `SELECT *
-       FROM bna_students
-       WHERE id = $1
-         AND COALESCE(status, 'active') NOT IN ('inactive', 'archived')
-       LIMIT 1`,
-      [req.params.id]
-    )).rows[0];
-    if (!student) return res.status(404).json({ error: 'Student not found' });
+    const student = await assertStudentAccess(req, req.params.id, studentProjectKeyFromRequest(req));
+    if (['inactive', 'archived'].includes(String(student.status || '').toLowerCase())) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
 
     const result = await pool.query(
       `SELECT a.*, row_to_json(s.*) AS student
@@ -8520,9 +8798,9 @@ app.get('/api/bna/students/:id/goal-board', requireAdmin, async (req, res) => {
                 a.id DESC`,
       [req.params.id]
     );
-    res.json({ student, items: result.rows.map(goalBoardAdminView) });
+    res.json({ student, items: result.rows.map(goalBoardAdminView), project: student.project_key || student.workspace_key || 'all' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -8531,15 +8809,10 @@ app.post('/api/bna/students/:id/goal-board', requireAdmin, async (req, res) => {
   if (!title) return res.status(400).json({ error: 'Goal title is required' });
 
   try {
-    const student = (await pool.query(
-      `SELECT id, name, workspace_id
-       FROM bna_students
-       WHERE id = $1
-         AND COALESCE(status, 'active') NOT IN ('inactive', 'archived')
-       LIMIT 1`,
-      [req.params.id]
-    )).rows[0];
-    if (!student) return res.status(404).json({ error: 'Student not found' });
+    const student = await assertStudentAccess(req, req.params.id, studentProjectKeyFromRequest(req, req.body || {}));
+    if (['inactive', 'archived'].includes(String(student.status || '').toLowerCase())) {
+      return res.status(404).json({ error: 'Student not found' });
+    }
 
     const metadata = goalBoardMetadataFromPayload({
       ...(req.body || {}),
@@ -8584,14 +8857,15 @@ app.post('/api/bna/students/:id/goal-board', requireAdmin, async (req, res) => {
     );
     res.json({ success: true, item: goalBoardAdminView(result.rows[0]) });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
 app.patch('/api/bna/goal-board/:id', requireAdmin, async (req, res) => {
   try {
-    const current = await getGoalBoardEvent(req.params.id);
+    const current = await assertAccountabilityEventAccess(req, req.params.id, studentProjectKeyFromRequest(req, req.body || {}));
     if (!current) return res.status(404).json({ error: 'Goal Board item not found' });
+    if (current.event_type !== 'student_goal') return res.status(404).json({ error: 'Goal Board item not found' });
 
     let metadata = goalBoardMetadataFromPayload(req.body || {}, current.metadata);
     if ((req.body || {}).action === 'approve_consequence') {
@@ -8659,6 +8933,7 @@ app.patch('/api/bna/goal-board/:id', requireAdmin, async (req, res) => {
            metadata = $8,
            updated_at = NOW()
        WHERE id = $1
+         AND workspace_id IS NOT DISTINCT FROM $9
          AND event_type = 'student_goal'
        RETURNING *`,
       [
@@ -8670,11 +8945,13 @@ app.patch('/api/bna/goal-board/:id', requireAdmin, async (req, res) => {
         progressPercent !== undefined && progressPercent !== null ? progressPercent : null,
         targetUnit || null,
         JSON.stringify(metadata),
+        current.workspace_id || null,
       ]
     );
+    if (!result.rows[0]) return res.status(scopedStudentNotFoundStatus(req)).json({ error: 'Goal Board item not found in selected workspace' });
     res.json({ success: true, item: goalBoardAdminView(result.rows[0]) });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -8684,24 +8961,29 @@ app.post('/api/bna/students/:id/merge', requireAdmin, async (req, res) => {
   const client = await pool.connect();
 
   try {
-    const target = (await client.query('SELECT * FROM bna_students WHERE id = $1', [id])).rows[0];
-    if (!target) return res.status(404).json({ error: 'Target student not found' });
+    const projectKey = studentProjectKeyFromRequest(req, req.body || {});
+    const target = await assertStudentAccess(req, id, projectKey, client);
 
     let source = null;
     if (source_student_id) {
-      source = (await client.query('SELECT * FROM bna_students WHERE id = $1', [source_student_id])).rows[0];
+      source = await assertStudentAccess(req, source_student_id, projectKey || target.project_key, client);
     } else if (source_name) {
       source = (await client.query(
         `SELECT * FROM bna_students
-         WHERE id <> $1 AND lower(name) = lower($2)
+         WHERE id <> $1
+           AND workspace_id IS NOT DISTINCT FROM $3
+           AND lower(name) = lower($2)
          ORDER BY created_at DESC
          LIMIT 1`,
-        [id, source_name]
+        [id, source_name, target.workspace_id || null]
       )).rows[0];
     }
 
     if (!source) {
       return res.json({ success: true, target, merged: false, message: 'No duplicate source student found.' });
+    }
+    if (source.workspace_id !== target.workspace_id) {
+      return res.status(400).json({ error: 'Duplicate student merge must stay inside one workspace.' });
     }
 
     await client.query('BEGIN');
@@ -8710,16 +8992,18 @@ app.post('/api/bna/students/:id/merge', requireAdmin, async (req, res) => {
        SET student_id = $1,
            student_name = COALESCE(student_name, $2),
            updated_at = NOW()
-       WHERE student_id = $3`,
-      [id, target.name, source.id]
+       WHERE student_id = $3
+         AND workspace_id IS NOT DISTINCT FROM $4`,
+      [id, target.name, source.id, target.workspace_id || null]
     );
     await client.query(
       `UPDATE bna_group_goal_entries
        SET student_id = $1,
            student_name = COALESCE(student_name, $2),
            updated_at = NOW()
-       WHERE student_id = $3`,
-      [id, target.name, source.id]
+       WHERE student_id = $3
+         AND workspace_id IS NOT DISTINCT FROM $4`,
+      [id, target.name, source.id, target.workspace_id || null]
     );
     if (!target.signup_id && source.signup_id) {
       await client.query(
@@ -8733,8 +9017,9 @@ app.post('/api/bna/students/:id/merge', requireAdmin, async (req, res) => {
         `UPDATE bna_students
          SET signup_id = NULL,
              updated_at = NOW()
-         WHERE id = $1`,
-        [source.id]
+         WHERE id = $1
+           AND workspace_id IS NOT DISTINCT FROM $2`,
+        [source.id, target.workspace_id || null]
       );
       await client.query(
         `UPDATE bna_students
@@ -8744,8 +9029,9 @@ app.post('/api/bna/students/:id/merge', requireAdmin, async (req, res) => {
              parent_phone = COALESCE(parent_phone, $5),
              updated_at = NOW()
          WHERE id = $1
+           AND workspace_id IS NOT DISTINCT FROM $6
            AND signup_id IS NULL`,
-        [id, source.signup_id, source.parent_name, source.parent_email, source.parent_phone]
+        [id, source.signup_id, source.parent_name, source.parent_email, source.parent_phone, target.workspace_id || null]
       );
     }
     await client.query(
@@ -8754,15 +9040,16 @@ app.post('/api/bna/students/:id/merge', requireAdmin, async (req, res) => {
            status = 'inactive',
            notes = CONCAT(COALESCE(notes, ''), CASE WHEN COALESCE(notes, '') = '' THEN '' ELSE E'\n' END, $1::text),
            updated_at = NOW()
-       WHERE id = $2`,
-      [`Merged into ${target.name} (#${target.id}) on ${new Date().toISOString().slice(0, 10)}.`, source.id]
+       WHERE id = $2
+         AND workspace_id IS NOT DISTINCT FROM $3`,
+      [`Merged into ${target.name} (#${target.id}) on ${new Date().toISOString().slice(0, 10)}.`, source.id, target.workspace_id || null]
     );
     await client.query('COMMIT');
 
     res.json({ success: true, target, source, merged: true });
   } catch (err) {
     try { await client.query('ROLLBACK'); } catch {}
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   } finally {
     client.release();
   }
@@ -8770,6 +9057,7 @@ app.post('/api/bna/students/:id/merge', requireAdmin, async (req, res) => {
 
 app.get('/api/bna/accountability', requireAdmin, async (req, res) => {
   const { event_type, student_id, limit = 100 } = req.query;
+  const projectKey = studentProjectKeyFromRequest(req);
   const conditions = [];
   const params = [];
 
@@ -8783,22 +9071,36 @@ app.get('/api/bna/accountability', requireAdmin, async (req, res) => {
     conditions.push(`a.student_id = $${params.length}`);
   }
 
+  addAccountingProjectCondition(conditions, params, projectKey, 'proj', 'w');
   params.push(Math.min(Number(limit) || 100, 250));
   const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
 
   try {
     const result = await pool.query(
-      `SELECT a.*, row_to_json(s.*) AS student
+      `SELECT a.*,
+              row_to_json(s.*) AS student,
+              proj.project_key,
+              w.workspace_key,
+              w.workspace_type,
+              w.name AS workspace_name
        FROM bna_accountability_events a
        LEFT JOIN bna_students s ON s.id = a.student_id
+       LEFT JOIN bna_workspaces w ON w.id = COALESCE(a.workspace_id, s.workspace_id)
+       LEFT JOIN LATERAL (
+         SELECT p.project_key
+         FROM bna_projects p
+         WHERE p.workspace_id = COALESCE(a.workspace_id, s.workspace_id)
+         ORDER BY p.id ASC
+         LIMIT 1
+       ) proj ON TRUE
        ${whereClause}
        ORDER BY a.occurred_at DESC, a.created_at DESC
        LIMIT $${params.length}`,
       params
     );
-    res.json({ events: result.rows });
+    res.json({ events: result.rows, project: projectKey || 'all' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -9037,29 +9339,46 @@ app.post('/api/student-portal/goals/:id/checkoff', async (req, res) => {
 
 app.get('/api/bna/torah-learning', requireAdmin, async (req, res) => {
   try {
-    const summary = await getTorahLearningSummary(req.query.date || getTodayDateInTimeZone());
+    const projectKey = studentProjectKeyFromRequest(req) || DEFAULT_PROJECT_KEY;
+    const summary = await getTorahLearningSummary(
+      req.query.date || getTodayDateInTimeZone(),
+      pool,
+      { projectKey }
+    );
     res.json(summary);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
 app.post('/api/bna/torah-learning/entries', requireAdmin, async (req, res) => {
   try {
+    const projectKey = assertTorahProjectAccess(studentProjectKeyFromRequest(req, req.body || {}) || DEFAULT_PROJECT_KEY);
+    await assertStudentAccess(req, (req.body || {}).student_id, projectKey);
     const saved = await upsertTorahLearningEntry(req.body || {});
-    const summary = await getTorahLearningSummary((req.body || {}).date || getTodayDateInTimeZone());
+    const summary = await getTorahLearningSummary(
+      (req.body || {}).date || getTodayDateInTimeZone(),
+      pool,
+      { projectKey }
+    );
     res.json({
       success: true,
       saved,
       summary,
     });
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    res.status(err.statusCode || 400).json({ error: err.message });
   }
 });
 
 app.post('/api/bna/torah-learning/reconcile-trip-progress', requireAdmin, async (req, res) => {
   const body = req.body || {};
+  let projectKey;
+  try {
+    projectKey = assertTorahProjectAccess(studentProjectKeyFromRequest(req, body) || DEFAULT_PROJECT_KEY);
+  } catch (err) {
+    return res.status(err.statusCode || 403).json({ error: err.message });
+  }
   if (body.confirm !== 'RECONCILE_TORAH_TRIP_PROGRESS') {
     return res.status(400).json({
       error: 'Trip progress reconciliation requires confirm: RECONCILE_TORAH_TRIP_PROGRESS',
@@ -9110,12 +9429,21 @@ app.post('/api/bna/torah-learning/reconcile-trip-progress', requireAdmin, async 
   try {
     await client.query('BEGIN');
     const students = (await client.query(
-      `SELECT id, name
-       FROM bna_students
-       WHERE COALESCE(status, 'active') NOT IN ('inactive', 'archived')
-         AND lower(name) = ANY($1::text[])
+      `SELECT s.id, s.name
+       FROM bna_students s
+       LEFT JOIN bna_workspaces w ON w.id = s.workspace_id
+       LEFT JOIN LATERAL (
+         SELECT p.project_key
+         FROM bna_projects p
+         WHERE p.workspace_id = s.workspace_id
+         ORDER BY p.id ASC
+         LIMIT 1
+       ) proj ON TRUE
+       WHERE COALESCE(s.status, 'active') NOT IN ('inactive', 'archived')
+         AND lower(s.name) = ANY($1::text[])
+         AND COALESCE(proj.project_key, w.workspace_key, '') = $2
        ORDER BY name ASC`,
-      [studentNames.map((name) => name.toLowerCase())]
+      [studentNames.map((name) => name.toLowerCase()), projectKey]
     )).rows;
 
     const updatedRows = [];
@@ -9199,7 +9527,11 @@ app.post('/api/bna/torah-learning/reconcile-trip-progress', requireAdmin, async 
     }
 
     await client.query('COMMIT');
-    const summary = await getTorahLearningSummary(body.date || getTodayDateInTimeZone());
+    const summary = await getTorahLearningSummary(
+      body.date || getTodayDateInTimeZone(),
+      pool,
+      { projectKey }
+    );
     res.json({
       success: true,
       mode: recalculateFromDailyPercentages ? 'recalculate_from_daily_percentages' : 'flat_override',
@@ -9313,27 +9645,25 @@ app.delete('/api/bna/students/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
 
   try {
-    const studentResult = await pool.query('SELECT * FROM bna_students WHERE id = $1', [id]);
-    const student = studentResult.rows[0];
-    if (!student) {
-      return res.status(404).json({ error: 'Student not found' });
-    }
+    const student = await assertStudentAccess(req, id, studentProjectKeyFromRequest(req));
 
     await pool.query(
       `UPDATE bna_accountability_events
        SET student_id = NULL,
            student_name = COALESCE(student_name, $2),
            updated_at = NOW()
-       WHERE student_id = $1`,
-      [id, student.name || null]
+       WHERE student_id = $1
+         AND workspace_id IS NOT DISTINCT FROM $3`,
+      [id, student.name || null, student.workspace_id || null]
     );
 
     await pool.query(
       `UPDATE bna_students
        SET status = 'inactive',
            updated_at = NOW()
-       WHERE id = $1`,
-      [id]
+       WHERE id = $1
+         AND workspace_id IS NOT DISTINCT FROM $2`,
+      [id, student.workspace_id || null]
     );
 
     if (student.signup_id) {
@@ -9349,7 +9679,7 @@ app.delete('/api/bna/students/:id', requireAdmin, async (req, res) => {
 
     res.json({ success: true, student_id: Number(id), archived_signup_id: student.signup_id || null });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -9382,14 +9712,14 @@ app.post('/api/bna/accountability', requireAdmin, async (req, res) => {
   }
 
   try {
-    const defaultWorkspace = await getDefaultSchoolWorkspace(pool);
-    const workspace = (await pool.query(
-      `SELECT COALESCE(
-        (SELECT workspace_id FROM bna_students WHERE id = $1),
-        $2
-      ) AS workspace_id`,
-      [student_id || null, defaultWorkspace.id]
-    )).rows[0];
+    const projectKey = studentProjectKeyFromRequest(req, req.body || {});
+    const student = student_id
+      ? await assertStudentAccess(req, student_id, projectKey)
+      : null;
+    const project = !student
+      ? await resolveStudentProjectForWrite(req, req.body || {})
+      : null;
+    const workspaceId = student?.workspace_id || project?.workspace_id || (await getDefaultSchoolWorkspace(pool)).id;
     const result = await pool.query(
       `INSERT INTO bna_accountability_events (
         workspace_id, event_type, student_id, student_name, title, notes, topic, question_text,
@@ -9404,7 +9734,7 @@ app.post('/api/bna/accountability', requireAdmin, async (req, res) => {
       )
       RETURNING *`,
       [
-        workspace.workspace_id,
+        workspaceId,
         event_type,
         student_id || null,
         student_name || null,
@@ -9428,9 +9758,9 @@ app.post('/api/bna/accountability', requireAdmin, async (req, res) => {
       ]
     );
 
-    res.json({ success: true, event: result.rows[0] });
+    res.json({ success: true, event: result.rows[0], project: student?.project_key || project?.project_key || DEFAULT_PROJECT_KEY });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -9469,22 +9799,31 @@ app.patch('/api/bna/accountability/:id', requireAdmin, async (req, res) => {
     return res.status(400).json({ error: 'No supported fields to update' });
   }
 
-  values.push(id);
-
   try {
+    const projectKey = studentProjectKeyFromRequest(req, req.body || {});
+    const current = await assertAccountabilityEventAccess(req, id, projectKey);
+    if (
+      Object.prototype.hasOwnProperty.call(req.body || {}, 'student_id') &&
+      req.body.student_id
+    ) {
+      await assertStudentAccess(req, req.body.student_id, projectKey || current.project_key);
+    }
+    values.push(id);
+    values.push(current.workspace_id || null);
     const result = await pool.query(
       `UPDATE bna_accountability_events
        SET ${updates.join(', ')}, updated_at = NOW()
-       WHERE id = $${values.length}
+       WHERE id = $${values.length - 1}
+         AND workspace_id IS NOT DISTINCT FROM $${values.length}
        RETURNING *`,
       values
     );
     if (!result.rows[0]) {
-      return res.status(404).json({ error: 'Accountability event not found' });
+      return res.status(scopedStudentNotFoundStatus(req)).json({ error: 'Accountability event not found in selected workspace' });
     }
     res.json({ success: true, event: result.rows[0] });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -9492,16 +9831,25 @@ app.delete('/api/bna/accountability/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
 
   try {
-    await pool.query('DELETE FROM bna_accountability_events WHERE id = $1', [id]);
+    const current = await assertAccountabilityEventAccess(req, id, studentProjectKeyFromRequest(req));
+    await pool.query(
+      'DELETE FROM bna_accountability_events WHERE id = $1 AND workspace_id IS NOT DISTINCT FROM $2',
+      [id, current.workspace_id || null]
+    );
     res.json({ success: true });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
 app.get('/api/bna/group-goals', requireAdmin, async (req, res) => {
   try {
     await ensureDefaultGroupGoal();
+    const projectKey = studentProjectKeyFromRequest(req);
+    const params = [];
+    const conditions = ["g.status <> 'archived'"];
+    addAccountingProjectCondition(conditions, params, projectKey, 'proj', 'w');
+    const whereClause = `WHERE ${conditions.join(' AND ')}`;
     const result = await pool.query(
       `SELECT g.*,
         COALESCE(
@@ -9528,13 +9876,22 @@ app.get('/api/bna/group-goals', requireAdmin, async (req, res) => {
         COUNT(e.id) FILTER (WHERE e.progress_percent >= 100) AS students_complete,
         COUNT(e.id) AS entries_count
        FROM bna_group_goals g
+       LEFT JOIN bna_workspaces w ON w.id = g.workspace_id
+       LEFT JOIN LATERAL (
+         SELECT p.project_key
+         FROM bna_projects p
+         WHERE p.workspace_id = g.workspace_id
+         ORDER BY p.id ASC
+         LIMIT 1
+       ) proj ON TRUE
        LEFT JOIN bna_group_goal_entries e ON e.goal_id = g.id
        LEFT JOIN bna_students s ON s.id = e.student_id
-       WHERE g.status <> 'archived'
+       ${whereClause}
        GROUP BY g.id
-       ORDER BY g.status = 'active' DESC, g.created_at DESC`
+       ORDER BY g.status = 'active' DESC, g.created_at DESC`,
+      params
     );
-    res.json({ goals: result.rows });
+    res.json({ goals: result.rows, project: projectKey || 'all' });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -9544,16 +9901,16 @@ app.post('/api/bna/group-goals', requireAdmin, async (req, res) => {
   const { title, description, target_minutes, scoring_rule, status = 'active', start_date, due_date, metadata } = req.body || {};
   if (!title) return res.status(400).json({ error: 'title is required' });
   try {
-    const defaultWorkspace = await getDefaultSchoolWorkspace(pool);
+    const project = await resolveStudentProjectForWrite(req, req.body || {});
     const result = await pool.query(
       `INSERT INTO bna_group_goals (workspace_id, title, description, target_minutes, scoring_rule, status, start_date, due_date, metadata)
        VALUES ($1, $2, $3, $4, $5, $6, COALESCE($7::date, CURRENT_DATE), $8, $9)
        RETURNING *`,
-      [req.body?.workspace_id || req.body?.workspaceId || defaultWorkspace.id, title, description || null, target_minutes || null, scoring_rule || null, status, start_date || null, due_date || null, metadata ? JSON.stringify(metadata) : JSON.stringify({})]
+      [project.workspace_id, title, description || null, target_minutes || null, scoring_rule || null, status, start_date || null, due_date || null, metadata ? JSON.stringify(metadata) : JSON.stringify({})]
     );
-    res.json({ success: true, goal: result.rows[0] });
+    res.json({ success: true, goal: result.rows[0], project: project.project_key });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -9573,8 +9930,14 @@ app.post('/api/bna/group-goals/:id/entries', requireAdmin, async (req, res) => {
   } = req.body || {};
 
   try {
-    const goal = (await pool.query('SELECT * FROM bna_group_goals WHERE id = $1', [id])).rows[0];
-    if (!goal) return res.status(404).json({ error: 'Group goal not found' });
+    const projectKey = studentProjectKeyFromRequest(req, req.body || {});
+    const goal = await assertGroupGoalAccess(req, id, projectKey);
+    const student = student_id
+      ? await assertStudentAccess(req, student_id, projectKey || goal.project_key)
+      : null;
+    if (student && String(student.workspace_id || '') !== String(goal.workspace_id || '')) {
+      return res.status(400).json({ error: 'Group goal entry student must belong to the same workspace as the goal.' });
+    }
     const computed = calculateWeightedGoal({
       target_minutes: target_minutes || goal.target_minutes,
       inside_following_minutes,
@@ -9607,7 +9970,7 @@ app.post('/api/bna/group-goals/:id/entries', requireAdmin, async (req, res) => {
     );
     res.json({ success: true, entry: result.rows[0] });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
