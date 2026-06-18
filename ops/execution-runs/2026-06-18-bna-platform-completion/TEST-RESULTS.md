@@ -458,3 +458,13 @@ Source-of-truth reconciliation (2026-06-19T03:35:30+03:00):
 - PASS `npm run bna:run:status`.
 
 No app code changed. No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed.
+
+Content workspace scoping hardening (2026-06-19T03:50:30+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/content-drive-routing.test.js`.
+- PASS Operations HTML inline script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/content-drive-routing.test.js tests/workspace-schema.test.js tests/workspace-scope.test.js tests/operations-workspace-selector.test.js tests/workspace-auth.test.js tests/workspace-http-isolation.test.js` 32/32.
+- PASS `npm test` 209/209.
+
+No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed.

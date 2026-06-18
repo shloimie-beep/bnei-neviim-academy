@@ -5584,7 +5584,7 @@ async function resolveContentWorkspaceRouting(req, input = {}, db = pool) {
   };
 }
 
-async function assertContentJobAccess(req, jobId, db = pool) {
+async function assertContentJobAccess(req, jobId, projectKey = contentProjectKeyFromRequest(req), db = pool) {
   const result = await db.query(
     `SELECT j.id, j.workspace_id, p.project_key, w.workspace_key
      FROM bna_content_jobs j
@@ -5601,13 +5601,64 @@ async function assertContentJobAccess(req, jobId, db = pool) {
   );
   const job = result.rows[0];
   if (!job) return null;
-  const scopedProjectKey = opsScopeProjectKey(req);
-  if (scopedProjectKey && normalizeProjectKey(job.project_key || job.workspace_key) !== scopedProjectKey) {
-    const error = new Error('This login can only access its scoped workspace content.');
-    error.statusCode = 403;
-    throw error;
-  }
+  assertContentProjectMatches(req, job, projectKey);
   return job;
+}
+
+function contentProjectKeyFromRequest(req, input = {}) {
+  const scopedProjectKey = opsScopeProjectKey(req);
+  if (scopedProjectKey) return normalizeProjectKey(scopedProjectKey);
+  const projectKey = normalizeProjectKey(
+    req?.query?.project ||
+    req?.query?.project_key ||
+    input.project ||
+    input.project_key ||
+    input.projectName ||
+    input.project_name ||
+    ''
+  );
+  return projectKey === 'all' ? '' : projectKey;
+}
+
+function scopedContentNotFoundStatus(req) {
+  return opsScopeProjectKey(req) ? 403 : 404;
+}
+
+function assertContentProjectMatches(req, row = {}, projectKey = '') {
+  const selectedProjectKey = normalizeProjectKey(projectKey);
+  if (!selectedProjectKey) return;
+  const rowProjectKey = normalizeProjectKey(row.project_key || row.workspace_key);
+  if (rowProjectKey === selectedProjectKey) return;
+  const error = new Error('Content item is not visible in the selected workspace.');
+  error.statusCode = scopedContentNotFoundStatus(req);
+  throw error;
+}
+
+function assertContentRowsProjectAccess(req, rows = [], projectKey = '') {
+  for (const row of rows) {
+    assertContentProjectMatches(req, row, projectKey);
+  }
+}
+
+async function assertContentBundleAccess(req, bundleId, projectKey = contentProjectKeyFromRequest(req), db = pool) {
+  const result = await db.query(
+    `SELECT b.*, p.project_key, w.workspace_key
+     FROM bna_content_bundles b
+     LEFT JOIN bna_workspaces w ON w.id = b.workspace_id
+     LEFT JOIN LATERAL (
+       SELECT project_key
+       FROM bna_projects p
+       WHERE p.workspace_id = b.workspace_id
+       ORDER BY p.id ASC
+       LIMIT 1
+     ) p ON TRUE
+     WHERE b.id = $1`,
+    [bundleId]
+  );
+  const bundle = result.rows[0];
+  if (!bundle) return null;
+  assertContentProjectMatches(req, bundle, projectKey);
+  return bundle;
 }
 
 function assertContentJobsSingleWorkspace(jobs = []) {
@@ -10516,9 +10567,7 @@ app.delete('/api/bna/payment-intake/:id', requireAdmin, async (req, res) => {
 // BNA dashboard: content repurposing pipeline
 app.get('/api/bna/content-jobs', requireAdmin, async (req, res) => {
   const { status, project } = req.query;
-  const scopedProjectKey = opsScopeProjectKey(req);
-  const requestedProjectKey = project && project !== 'all' ? normalizeProjectKey(project) : '';
-  const projectKey = scopedProjectKey || requestedProjectKey;
+  const projectKey = contentProjectKeyFromRequest(req, { project });
   const params = [];
   const conditions = [];
 
@@ -10826,12 +10875,14 @@ app.post('/api/bna/content-prompts/:platform/examples', requireAdmin, async (req
   if (!title) return res.status(400).json({ error: 'title is required' });
 
   try {
+    const project = await getProjectByKey(contentProjectKeyFromRequest(req, req.body || {}) || DEFAULT_PROJECT_KEY, pool);
+    assertProjectAccess(req, project);
     const defaultWorkspace = await getDefaultSchoolWorkspace(pool);
     const result = await pool.query(
       `INSERT INTO bna_content_prompt_examples (workspace_id, platform, title, body, file_url, status)
        VALUES ($1, $2, $3, $4, $5, 'active')
        RETURNING *`,
-      [defaultWorkspace.id, platform, title, body || null, file_url || null]
+      [project.workspace_id || defaultWorkspace.id, platform, title, body || null, file_url || null]
     );
     res.json({ success: true, example: result.rows[0] });
   } catch (err) {
@@ -10841,9 +10892,7 @@ app.post('/api/bna/content-prompts/:platform/examples', requireAdmin, async (req
 
 app.get('/api/bna/content-bundles', requireAdmin, async (req, res) => {
   const { project } = req.query;
-  const scopedProjectKey = opsScopeProjectKey(req);
-  const requestedProjectKey = project && project !== 'all' ? normalizeProjectKey(project) : '';
-  const projectKey = scopedProjectKey || requestedProjectKey;
+  const projectKey = contentProjectKeyFromRequest(req, { project });
   const params = [];
   const conditions = ["b.status <> 'archived'"];
 
@@ -10912,6 +10961,7 @@ app.get('/api/bna/content-bundles', requireAdmin, async (req, res) => {
 
 app.patch('/api/bna/content-bundles/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
+  const projectKey = contentProjectKeyFromRequest(req, req.body || {});
   const allowedFields = ['title', 'notes', 'status', 'start_date', 'end_date'];
   const fields = [];
   const values = [];
@@ -10924,20 +10974,23 @@ app.patch('/api/bna/content-bundles/:id', requireAdmin, async (req, res) => {
   }
 
   if (!fields.length) return res.status(400).json({ error: 'No valid bundle fields provided' });
-  values.push(id);
-
   try {
+    const bundle = await assertContentBundleAccess(req, id, projectKey);
+    if (!bundle) return res.status(404).json({ error: 'Bundle not found' });
+    values.push(id);
+    values.push(bundle.workspace_id || null);
     const result = await pool.query(
       `UPDATE bna_content_bundles
        SET ${fields.join(', ')}, updated_at = NOW()
-       WHERE id = $${values.length}
+       WHERE id = $${values.length - 1}
+         AND workspace_id IS NOT DISTINCT FROM $${values.length}
        RETURNING *`,
       values
     );
     if (!result.rows[0]) return res.status(404).json({ error: 'Bundle not found' });
     res.json({ success: true, bundle: result.rows[0] });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.status(err.statusCode || 500).json({ error: err.message });
   }
 });
 
@@ -10949,21 +11002,44 @@ app.post('/api/bna/content-bundles', requireAdmin, async (req, res) => {
   try {
     await client.query('BEGIN');
     const ids = job_ids.map(Number).filter(Boolean);
+    const projectKey = contentProjectKeyFromRequest(req, req.body || {}) || DEFAULT_PROJECT_KEY;
+    const project = await getProjectByKey(projectKey, client);
+    assertProjectAccess(req, project);
     const defaultWorkspace = await getDefaultSchoolWorkspace(client);
     const selectedJobs = ids.length
       ? (await client.query(
-          'SELECT id, workspace_id FROM bna_content_jobs WHERE id = ANY($1::int[]) ORDER BY created_at ASC',
+          `SELECT j.id, j.workspace_id, p.project_key, w.workspace_key
+           FROM bna_content_jobs j
+           LEFT JOIN bna_workspaces w ON w.id = j.workspace_id
+           LEFT JOIN LATERAL (
+             SELECT project_key
+             FROM bna_projects p
+             WHERE p.workspace_id = j.workspace_id
+             ORDER BY p.id ASC
+             LIMIT 1
+           ) p ON TRUE
+           WHERE j.id = ANY($1::int[])
+           ORDER BY j.created_at ASC`,
           [ids]
         )).rows
       : [];
+    assertContentRowsProjectAccess(req, selectedJobs, projectKey);
     const selectedWorkspaceId = assertContentJobsSingleWorkspace(selectedJobs);
     const requestedWorkspaceId = Number(req.body?.workspace_id || req.body?.workspaceId || 0) || null;
+    const requestedWorkspaceProjectKey = requestedWorkspaceId
+      ? await projectKeyForWorkspaceId(requestedWorkspaceId, '', client)
+      : '';
+    if (requestedWorkspaceProjectKey && projectKey && requestedWorkspaceProjectKey !== projectKey) {
+      const error = new Error('Requested bundle workspace does not match the selected content workspace.');
+      error.statusCode = 400;
+      throw error;
+    }
     if (requestedWorkspaceId && selectedWorkspaceId && requestedWorkspaceId !== selectedWorkspaceId) {
       const error = new Error('Requested bundle workspace does not match selected content jobs.');
       error.statusCode = 400;
       throw error;
     }
-    const workspaceId = requestedWorkspaceId || selectedWorkspaceId || defaultWorkspace.id;
+    const workspaceId = requestedWorkspaceId || selectedWorkspaceId || project.workspace_id || defaultWorkspace.id;
     const bundle = (await client.query(
       `INSERT INTO bna_content_bundles (workspace_id, title, start_date, end_date, notes)
        VALUES ($1, $2, $3, $4, $5)
@@ -10992,17 +11068,27 @@ app.post('/api/bna/content-bundles/:id/generate', requireAdmin, async (req, res)
   const { id } = req.params;
   const { instruction = '' } = req.body || {};
   try {
-    const bundle = (await pool.query('SELECT * FROM bna_content_bundles WHERE id = $1', [id])).rows[0];
+    const projectKey = contentProjectKeyFromRequest(req, req.body || {});
+    const bundle = await assertContentBundleAccess(req, id, projectKey);
     if (!bundle) return res.status(404).json({ error: 'Bundle not found' });
     const jobs = (await pool.query(
-      `SELECT j.*
+      `SELECT j.*, p.project_key, w.workspace_key
        FROM bna_content_bundle_items i
        JOIN bna_content_jobs j ON j.id = i.content_job_id
+       LEFT JOIN bna_workspaces w ON w.id = j.workspace_id
+       LEFT JOIN LATERAL (
+         SELECT project_key
+         FROM bna_projects p
+         WHERE p.workspace_id = j.workspace_id
+         ORDER BY p.id ASC
+         LIMIT 1
+       ) p ON TRUE
        WHERE i.bundle_id = $1
        ORDER BY j.created_at ASC`,
       [id]
     )).rows;
     if (!jobs.length) return res.status(400).json({ error: 'Bundle has no content items' });
+    assertContentRowsProjectAccess(req, jobs, projectKey);
     assertContentJobsSingleWorkspace(jobs);
 
     const { prompt, examples } = await getPromptBundle('weekly_newsletter');
@@ -11027,7 +11113,10 @@ app.post('/api/bna/content-bundles/:id/generate', requireAdmin, async (req, res)
         bundle.id,
       ]
     )).rows[0];
-    await pool.query("UPDATE bna_content_bundles SET status = 'generated', updated_at = NOW() WHERE id = $1", [id]);
+    await pool.query(
+      'UPDATE bna_content_bundles SET status = $1, updated_at = NOW() WHERE id = $2 AND workspace_id IS NOT DISTINCT FROM $3',
+      ['generated', id, bundle.workspace_id || null]
+    );
     res.json({ success: true, output, prompt });
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
@@ -11133,7 +11222,8 @@ app.post('/api/bna/content-jobs', requireAdmin, async (req, res) => {
 app.patch('/api/bna/content-jobs/:id', requireAdmin, async (req, res) => {
   const { id } = req.params;
   try {
-    const existingJobContext = await assertContentJobAccess(req, id);
+    const projectKey = contentProjectKeyFromRequest(req, req.body || {});
+    const existingJobContext = await assertContentJobAccess(req, id, projectKey);
     if (!existingJobContext) return res.status(404).json({ error: 'Content job not found' });
     const allowedFields = [
       'title',
@@ -11171,10 +11261,12 @@ app.patch('/api/bna/content-jobs/:id', requireAdmin, async (req, res) => {
     }
 
     values.push(id);
+    values.push(existingJobContext.workspace_id || null);
     const result = await pool.query(
       `UPDATE bna_content_jobs
        SET ${fields.join(', ')}, updated_at = NOW()
-       WHERE id = $${values.length}
+       WHERE id = $${values.length - 1}
+         AND workspace_id IS NOT DISTINCT FROM $${values.length}
        RETURNING *`,
       values
     );
@@ -11198,15 +11290,25 @@ app.post('/api/bna/content-jobs/bulk-generate', requireAdmin, async (req, res) =
   }
 
   try {
+    const projectKey = contentProjectKeyFromRequest(req, req.body || {});
     const jobs = (await pool.query(
-      `SELECT *
-       FROM bna_content_jobs
-       WHERE id = ANY($1::int[])
-         AND status <> 'archived'
-       ORDER BY created_at ASC`,
+      `SELECT j.*, p.project_key, w.workspace_key
+       FROM bna_content_jobs j
+       LEFT JOIN bna_workspaces w ON w.id = j.workspace_id
+       LEFT JOIN LATERAL (
+         SELECT project_key
+         FROM bna_projects p
+         WHERE p.workspace_id = j.workspace_id
+         ORDER BY p.id ASC
+         LIMIT 1
+       ) p ON TRUE
+       WHERE j.id = ANY($1::int[])
+         AND j.status <> 'archived'
+       ORDER BY j.created_at ASC`,
       [ids]
     )).rows;
     if (!jobs.length) return res.status(404).json({ error: 'No matching content items found' });
+    assertContentRowsProjectAccess(req, jobs, projectKey);
     assertContentJobsSingleWorkspace(jobs);
 
     const { prompt, examples } = await getPromptBundle(targetType);
@@ -11280,9 +11382,10 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
   } = req.body || {};
 
   try {
+    const projectKey = contentProjectKeyFromRequest(req, req.body || {});
     const job = (await pool.query('SELECT * FROM bna_content_jobs WHERE id = $1', [id])).rows[0];
     if (!job) return res.status(404).json({ error: 'Content job not found' });
-    await assertContentJobAccess(req, id);
+    await assertContentJobAccess(req, id, projectKey);
     if (!String(job.transcript_text || '').trim()) {
       return res.status(400).json({ error: 'Content job does not have a transcript yet' });
     }
@@ -11297,8 +11400,9 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
            SET status = 'archived',
                drive_stage = '04 Parsed',
                updated_at = NOW()
-           WHERE id = $1`,
-          [job.id]
+           WHERE id = $1
+             AND workspace_id IS NOT DISTINCT FROM $2`,
+          [job.id, job.workspace_id || null]
         );
       }
       return res.json({
@@ -11598,8 +11702,9 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
              drive_stage = '04 Parsed',
              status = CASE WHEN $3 THEN 'archived' ELSE status END,
              updated_at = NOW()
-         WHERE id = $2`,
-        [JSON.stringify(nextParse), job.id, Boolean(archive_source_after_parse)]
+         WHERE id = $2
+           AND workspace_id IS NOT DISTINCT FROM $4`,
+        [JSON.stringify(nextParse), job.id, Boolean(archive_source_after_parse), job.workspace_id || null]
       );
       await upsertClassSessionFromContentJob(client, {
         ...job,
@@ -11649,7 +11754,8 @@ app.post('/api/bna/content-jobs/:id/outputs', requireAdmin, async (req, res) => 
   }
 
   try {
-    await assertContentJobAccess(req, id);
+    const projectKey = contentProjectKeyFromRequest(req, req.body || {});
+    await assertContentJobAccess(req, id, projectKey);
     const job = (await pool.query('SELECT workspace_id FROM bna_content_jobs WHERE id = $1', [id])).rows[0];
     if (!job) return res.status(404).json({ error: 'Content job not found' });
     const result = await pool.query(
@@ -11685,9 +11791,10 @@ app.patch('/api/bna/content-outputs/:id', requireAdmin, async (req, res) => {
   values.push(id);
 
   try {
+    const projectKey = contentProjectKeyFromRequest(req, req.body || {});
     const outputContext = (await pool.query('SELECT job_id FROM bna_content_outputs WHERE id = $1', [id])).rows[0];
     if (!outputContext) return res.status(404).json({ error: 'Content output not found' });
-    await assertContentJobAccess(req, outputContext.job_id);
+    await assertContentJobAccess(req, outputContext.job_id, projectKey);
     const result = await pool.query(
       `UPDATE bna_content_outputs
        SET ${fields.join(', ')}, updated_at = NOW()
@@ -11711,7 +11818,8 @@ app.post('/api/bna/content-outputs/:id/actions', requireAdmin, async (req, res) 
   try {
     const output = (await pool.query('SELECT * FROM bna_content_outputs WHERE id = $1', [id])).rows[0];
     if (!output) return res.status(404).json({ error: 'Content output not found' });
-    await assertContentJobAccess(req, output.job_id);
+    const projectKey = contentProjectKeyFromRequest(req, req.body || {});
+    await assertContentJobAccess(req, output.job_id, projectKey);
     const job = (await pool.query('SELECT * FROM bna_content_jobs WHERE id = $1', [output.job_id])).rows[0];
 
     if (action === 'approve_publish') {
@@ -11858,7 +11966,8 @@ app.post('/api/bna/content-jobs/:id/actions', requireAdmin, async (req, res) => 
     const jobResult = await pool.query('SELECT * FROM bna_content_jobs WHERE id = $1', [id]);
     const job = jobResult.rows[0];
     if (!job) return res.status(404).json({ error: 'Content job not found' });
-    await assertContentJobAccess(req, id);
+    const projectKey = contentProjectKeyFromRequest(req, req.body || {});
+    await assertContentJobAccess(req, id, projectKey);
 
     const outputsResult = await pool.query(
       `SELECT * FROM bna_content_outputs

@@ -4211,3 +4211,31 @@ Verification:
 Status: local `done`; no app code changed, and no deployment, production-data
 mutation, audit crawl, watch loop, or agent-fleet loop was performed. Resume at
 `REQ-20260618-124`.
+
+## 2026-06-19 - Content workspace scoping hardening
+
+Requirement: `REQ-20260618-124`
+
+Changed:
+
+- Added selected-project content assertions for content jobs, bundles, bulk
+  generation, content outputs, prompt examples, and mixed-recording parse
+  actions.
+- Hardened content job and bundle updates so row writes include workspace
+  predicates after access checks.
+- Threaded the active Operations workspace into content write/generate/approve,
+  bundle create/archive, prompt-example, manual job, status, and parse payloads.
+- Extended `tests/content-drive-routing.test.js` to cover the new server-side
+  content project checks and Operations content payload scoping.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/content-drive-routing.test.js`.
+- PASS Operations HTML inline script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/content-drive-routing.test.js tests/workspace-schema.test.js tests/workspace-scope.test.js tests/operations-workspace-selector.test.js tests/workspace-auth.test.js tests/workspace-http-isolation.test.js` 32/32.
+- PASS `npm test` 209/209.
+
+Status: local `needs_verification`; no deployment, production-data mutation,
+audit crawl, watch loop, or agent-fleet loop was performed. Release approval
+and live smoke are still required before this live-required item can close.

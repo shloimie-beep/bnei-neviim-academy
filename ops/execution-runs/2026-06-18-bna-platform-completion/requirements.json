@@ -889,7 +889,7 @@
       "area": "workspace",
       "priority": "P0",
       "current_verdict": "partial",
-      "status": "in_progress",
+      "status": "needs_verification",
       "expected_result": "Every workspace-owned entity is scoped by workspace_id at schema, API, and UI layers.",
       "acceptance_criteria": [
         "Scope applicable entities by workspace_id is implemented against the canonical Express/static runtime where applicable.",
@@ -906,7 +906,10 @@
         "ensureDefaultWorkspaces seeds BNA school and One Time service-provider workspaces without creating a super_admin workspace type.",
         "backfillWorkspaceScope maps projects, tasks, comments, students, payments, devices, Torah learning, accountability, group goals, content jobs, class sessions, outputs, bundles, and prompt examples into workspace scope.",
         "Primary create paths now write workspace_id immediately from project, signup, student, device, group goal, content job, output, or default BNA workspace.",
-        "Operations UI now carries the selected/scoped workspace into task API loading, visible task filter state, and task create/edit project selection."
+        "Operations UI now carries the selected/scoped workspace into task API loading, visible task filter state, and task create/edit project selection.",
+        "Content job, content bundle, bulk generation, output, prompt-example, and mixed-recording write paths now enforce selected-project workspace checks through contentProjectKeyFromRequest, assertContentProjectMatches, assertContentBundleAccess, and assertContentRowsProjectAccess.",
+        "Operations content write actions now include selectedProjectFilter() in job generation, bulk generation, bundle create/generate/archive, output approval/edit, prompt examples, manual content jobs, status changes, and mixed-recording parse requests.",
+        "Content job and bundle updates now keep workspace_id in the update predicate after access checks."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -917,18 +920,24 @@
         "npm run bna:run:validate PASS before run-file update",
         "node --test tests/operations-workspace-selector.test.js tests/workspace-auth.test.js tests/workspace-http-isolation.test.js PASS 13/13",
         "npm test PASS 81/81",
-        "npm test PASS 82/82"
+        "npm test PASS 82/82",
+        "node --check tests/content-drive-routing.test.js PASS",
+        "Operations HTML inline script parse PASS 2 scripts",
+        "node --test tests/content-drive-routing.test.js tests/workspace-schema.test.js tests/workspace-scope.test.js tests/operations-workspace-selector.test.js tests/workspace-auth.test.js tests/workspace-http-isolation.test.js PASS 32/32",
+        "npm test PASS 209/209"
       ],
       "implementation_commits": [
-        "current batch commit: feat: add workspace id scoping foundation"
+        "current batch commit: feat: add workspace id scoping foundation",
+        "current batch commit: fix: harden content workspace scoping"
       ],
       "files_changed": [
         "server.js",
         "tests/workspace-schema.test.js",
         "public/operations.html",
-        "tests/operations-workspace-selector.test.js"
+        "tests/operations-workspace-selector.test.js",
+        "tests/content-drive-routing.test.js"
       ],
-      "notes": "Local schema, seed, backfill, primary write-path foundation, API route filtering, HTTP isolation, and Operations UI selected-workspace enforcement are implemented and tested. Requirement remains in_progress because broader workspace-owned entity API filtering, release approval, deploy, and live smoke are not complete/approved yet; continue with REQ-20260618-127."
+      "notes": "Local schema, seed, backfill, primary write-path foundation, API route filtering, HTTP isolation, Operations UI selected-workspace enforcement, and content write-path workspace assertions are implemented and tested. Requirement remains needs_verification because it is live-required and release approval, deployment, and live smoke are not complete/approved."
     },
     {
       "id": "REQ-20260618-125",

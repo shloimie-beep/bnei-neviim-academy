@@ -9587,7 +9587,12 @@
             const fileUrl = prompt('Optional file/link URL:', '') || '';
             const body = prompt('Optional example text. If this is just a file reference, leave blank:', '') || '';
             try {
-                await api.addContentPromptExample(outputType, { title, file_url: fileUrl, body });
+                await api.addContentPromptExample(outputType, {
+                    title,
+                    file_url: fileUrl,
+                    body,
+                    project: selectedProjectFilter() || undefined
+                });
                 await loadData();
             } catch (error) {
                 alert(error.message || 'Could not add example.');
@@ -9602,7 +9607,8 @@
             try {
                 const res = await api.contentJobAction(jobId, 'generate_output', {
                     output_type: outputType,
-                    instruction: extraInstruction
+                    instruction: extraInstruction,
+                    project: selectedProjectFilter() || undefined
                 });
                 alert(res?.message || 'Draft generated.');
                 await loadData();
@@ -9625,7 +9631,8 @@
                 const res = await api.bulkGenerateContent({
                     job_ids: ids,
                     output_type: outputType,
-                    instruction
+                    instruction,
+                    project: selectedProjectFilter() || undefined
                 });
                 const firstJobId = Number(res?.output?.job_id || ids[0]);
                 expandedContentJobIds.add(firstJobId);
@@ -9653,7 +9660,9 @@
             const button = event.currentTarget;
             button.disabled = true;
             try {
-                const res = await api.contentOutputAction(outputId, 'approve_publish');
+                const res = await api.contentOutputAction(outputId, 'approve_publish', {
+                    project: selectedProjectFilter() || undefined
+                });
                 alert(res?.message || 'Approved.');
                 await loadData();
             } catch (error) {
@@ -9673,7 +9682,11 @@
             const button = event.currentTarget;
             button.disabled = true;
             try {
-                await api.createContentBundle({ title, job_ids: ids });
+                await api.createContentBundle({
+                    title,
+                    job_ids: ids,
+                    project: selectedProjectFilter() || undefined
+                });
                 selectedContentJobIds = new Set();
                 await loadData();
             } catch (error) {
@@ -9689,7 +9702,10 @@
             const button = event.currentTarget;
             button.disabled = true;
             try {
-                const res = await api.generateContentBundle(bundleId, { instruction });
+                const res = await api.generateContentBundle(bundleId, {
+                    instruction,
+                    project: selectedProjectFilter() || undefined
+                });
                 alert(res?.message || 'Newsletter draft generated from bundle.');
                 await loadData();
             } catch (error) {
@@ -9707,7 +9723,11 @@
             const button = event.currentTarget;
             button.disabled = true;
             try {
-                await api.updateContentOutput(outputId, { body, status: 'needs_approval' });
+                await api.updateContentOutput(outputId, {
+                    body,
+                    status: 'needs_approval',
+                    project: selectedProjectFilter() || undefined
+                });
                 alert('Newsletter draft edits saved. It is still waiting for approval.');
                 await loadData();
             } catch (error) {
@@ -9723,7 +9743,10 @@
             const button = event.currentTarget;
             button.disabled = true;
             try {
-                await api.updateContentBundle(bundleId, { status: 'archived' });
+                await api.updateContentBundle(bundleId, {
+                    status: 'archived',
+                    project: selectedProjectFilter() || undefined
+                });
                 alert('Newsletter bundle archived.');
                 await loadData();
             } catch (error) {
@@ -9736,7 +9759,9 @@
         async function contentAction(event, jobId, action) {
             event.stopPropagation();
             try {
-                const res = await api.contentJobAction(jobId, action);
+                const res = await api.contentJobAction(jobId, action, {
+                    project: selectedProjectFilter() || undefined
+                });
                 if (action === 'whatsapp_copy') {
                     const text = res?.body || '';
                     if (text) await navigator.clipboard?.writeText(text);
@@ -9770,7 +9795,8 @@
             try {
                 const res = await api.parseMixedRecording(jobId, {
                     dry_run: Boolean(dryRun),
-                    instruction
+                    instruction,
+                    project: selectedProjectFilter() || undefined
                 });
                 if (dryRun) {
                     const parsed = res?.parsed || {};
@@ -9977,16 +10003,23 @@
                 source_type: 'manual',
                 caption,
                 status: 'ingested',
-                notes: caption
+                notes: caption,
+                project: selectedProjectFilter() || undefined
             }).then(() => loadData());
         }
 
         function markContentJob(id, status) {
-            api.updateContentJob(id, { status }).then(() => loadData());
+            api.updateContentJob(id, {
+                status,
+                project: selectedProjectFilter() || undefined
+            }).then(() => loadData());
         }
 
         function markContentOutput(id, status) {
-            api.updateContentOutput(id, { status }).then(() => loadData());
+            api.updateContentOutput(id, {
+                status,
+                project: selectedProjectFilter() || undefined
+            }).then(() => loadData());
         }
 
         // Init

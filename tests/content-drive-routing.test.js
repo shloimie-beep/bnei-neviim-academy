@@ -32,7 +32,8 @@ test('content job creation and edits resolve workspace Drive routing before writ
   assert.match(server, /driveRouting\.workspaceId/);
   assert.match(server, /driveRouting\.driveFolderId/);
   assert.match(server, /driveRouting\.driveStage/);
-  assert.match(server, /const existingJobContext = await assertContentJobAccess\(req, id\);/);
+  assert.match(server, /const projectKey = contentProjectKeyFromRequest\(req, req\.body \|\| \{\}\);/);
+  assert.match(server, /const existingJobContext = await assertContentJobAccess\(req, id, projectKey\);/);
   assert.match(server, /project: existingJobContext\.project_key \|\| existingJobContext\.workspace_key/);
   assert.match(server, /body\.drive_folder_id = driveRouting\.driveFolderId/);
   assert.match(server, /body\.drive_stage = driveRouting\.driveStage/);
@@ -49,12 +50,24 @@ test('content bundles and combined outputs are scoped and cannot mix workspaces'
   assert.match(server, /LEFT JOIN bna_workspaces w ON w\.id = b\.workspace_id/);
   assert.match(server, /LEFT JOIN LATERAL \([\s\S]*?FROM bna_projects p[\s\S]*?WHERE p\.workspace_id = b\.workspace_id/);
   assert.match(server, /function assertContentJobsSingleWorkspace\(jobs = \[\]\) \{/);
+  assert.match(server, /function contentProjectKeyFromRequest\(req, input = \{\}\) \{/);
+  assert.match(server, /function assertContentProjectMatches\(req, row = \{\}, projectKey = ''\) \{/);
+  assert.match(server, /async function assertContentBundleAccess\(req, bundleId, projectKey = contentProjectKeyFromRequest\(req\), db = pool\) \{/);
   assert.match(server, /Content jobs from different workspaces cannot be combined/);
+  assert.match(server, /assertContentRowsProjectAccess\(req, selectedJobs, projectKey\);/);
+  assert.match(server, /assertContentRowsProjectAccess\(req, jobs, projectKey\);/);
   assert.match(server, /const selectedWorkspaceId = assertContentJobsSingleWorkspace\(selectedJobs\);/);
   assert.match(server, /assertContentJobsSingleWorkspace\(jobs\);/);
+  assert.match(server, /UPDATE bna_content_bundles[\s\S]*?workspace_id IS NOT DISTINCT FROM/);
+  assert.match(server, /SELECT j\.\*, p\.project_key, w\.workspace_key[\s\S]*?FROM bna_content_jobs j[\s\S]*?WHERE j\.id = ANY\(\$1::int\[\]\)/);
   assert.match(operations, /getContentBundles\(filters = \{\}\) \{/);
   assert.match(operations, /if \(filters\.project\) params\.set\('project', filters\.project\);/);
   assert.match(operations, /api\.getContentBundles\(\{ project: selectedProjectFilter\(\) \|\| undefined \}\)/);
+  assert.match(operations, /api\.bulkGenerateContent\(\{[\s\S]*?project: selectedProjectFilter\(\) \|\| undefined/);
+  assert.match(operations, /api\.createContentBundle\(\{[\s\S]*?project: selectedProjectFilter\(\) \|\| undefined/);
+  assert.match(operations, /api\.generateContentBundle\(bundleId, \{[\s\S]*?project: selectedProjectFilter\(\) \|\| undefined/);
+  assert.match(operations, /api\.contentJobAction\(jobId, 'generate_output', \{[\s\S]*?project: selectedProjectFilter\(\) \|\| undefined/);
+  assert.match(operations, /api\.contentOutputAction\(outputId, 'approve_publish', \{[\s\S]*?project: selectedProjectFilter\(\) \|\| undefined/);
   assert.match(operations, /Workspace: \$\{escapeHtml\(workspaceLabel\)\}/);
 });
 

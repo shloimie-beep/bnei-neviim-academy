@@ -25,7 +25,7 @@
 | REQ-20260618-121 | REQ-20260618-102 | BNA-PWA-003 | needs_verification | partial | Enforce public-browser and installed-Operations routing invariants |
 | REQ-20260618-122 | REQ-20260618-102 | BNA-PWA-004 | needs_verification | partial | Remove public loader/checkmark flash and header-to-hero gap |
 | REQ-20260618-123 | REQ-20260618-103 | BNA-WS-001 | needs_verification | partial | Enforce exactly school/service-provider/family workspace types |
-| REQ-20260618-124 | REQ-20260618-103 | BNA-WS-002 | in_progress | partial | Scope applicable entities by workspace_id |
+| REQ-20260618-124 | REQ-20260618-103 | BNA-WS-002 | needs_verification | partial | Scope applicable entities by workspace_id |
 | REQ-20260618-125 | REQ-20260618-103 | BNA-WS-003 | needs_verification | partial | Server-side authorization/RLS and negative cross-tenant tests |
 | REQ-20260618-126 | REQ-20260618-103 | BNA-WS-004 | needs_verification | partial | Clear super-admin selector and ordinary-user behavior |
 | REQ-20260618-127 | REQ-20260618-103 | BNA-WS-005 | needs_verification | partial | Clear stale context on workspace changes |

@@ -1,11 +1,11 @@
 # Status
 
-Updated: 2026-06-19T03:35:30+03:00
+Updated: 2026-06-19T03:50:30+03:00
 
 Status counts:
 
-- in_progress: 12
-- needs_verification: 47
+- in_progress: 11
+- needs_verification: 48
 - blocked: 3
 - needs_operator_decision: 1
 - done: 8
@@ -41,7 +41,7 @@ Open non-blocked IDs:
 - REQ-20260618-121 BNA-PWA-003: Enforce public-browser and installed-Operations routing invariants (needs_verification)
 - REQ-20260618-122 BNA-PWA-004: Remove public loader/checkmark flash and header-to-hero gap (needs_verification)
 - REQ-20260618-123 BNA-WS-001: Enforce exactly school/service-provider/family workspace types (needs_verification)
-- REQ-20260618-124 BNA-WS-002: Scope applicable entities by workspace_id (in_progress)
+- REQ-20260618-124 BNA-WS-002: Scope applicable entities by workspace_id (needs_verification)
 - REQ-20260618-125 BNA-WS-003: Server-side authorization/RLS and negative cross-tenant tests (needs_verification)
 - REQ-20260618-126 BNA-WS-004: Clear super-admin selector and ordinary-user behavior (needs_verification)
 - REQ-20260618-127 BNA-WS-005: Clear stale context on workspace changes (needs_verification)
