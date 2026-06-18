@@ -388,3 +388,12 @@ Public navigation private Operations-link guard (2026-06-19T01:45:30+03:00):
 - PASS `npm test` 189/189.
 
 No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed.
+
+Provider free-listing CTA (2026-06-19T02:00:30+03:00):
+
+- PASS `node --check tests/public-provider-cta.test.js`.
+- PASS public homepage inline script parse (1 script block).
+- PASS `node --test tests/public-provider-cta.test.js tests/public-navigation.test.js tests/pwa-identity.test.js` 11/11.
+- PASS `npm test` 191/191.
+
+Note: an initial `node --check public/index.html` command was invalid for HTML and was replaced by the inline script parse check. No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed.

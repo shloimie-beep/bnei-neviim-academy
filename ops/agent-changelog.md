@@ -4043,3 +4043,24 @@ Verification:
 - PASS `npm test` 189/189.
 
 Status: local `needs_verification`; no deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-164`.
+
+## 2026-06-19 - Provider free-listing CTA
+
+Requirement: `REQ-20260618-164`
+
+Changed:
+
+- Added a homepage provider section headed "Advertise your program for free" with a matching WhatsApp CTA.
+- Explained that free listings can include Torah classes, chugim, tutoring, mentoring, homeschool support, family resources, and youth services.
+- Clarified what parents see in a listing and that basic community listings are free, while paid promotions/special placements are separate.
+- Added English/Hebrew translation keys and responsive layout styling.
+- Added `tests/public-provider-cta.test.js` for the provider CTA, translation keys, responsive layout, and no private Operations links.
+
+Verification:
+
+- PASS `node --check tests/public-provider-cta.test.js`.
+- PASS public homepage inline script parse (1 script block).
+- PASS `node --test tests/public-provider-cta.test.js tests/public-navigation.test.js tests/pwa-identity.test.js` 11/11.
+- PASS `npm test` 191/191.
+
+Status: local `needs_verification`; no deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-165`.

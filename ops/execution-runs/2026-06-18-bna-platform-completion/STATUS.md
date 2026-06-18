@@ -1,12 +1,12 @@
 # Status
 
-Updated: 2026-06-19T01:45:30+03:00
+Updated: 2026-06-19T02:00:30+03:00
 
 Status counts:
 
-- not_started: 6
+- not_started: 5
 - in_progress: 13
-- needs_verification: 44
+- needs_verification: 45
 - blocked: 3
 - needs_operator_decision: 1
 - done: 4
@@ -78,7 +78,7 @@ Open non-blocked IDs:
 - REQ-20260618-161 BNA-HELPER-005: Remove duplicate helper identities and dev language (needs_verification)
 - REQ-20260618-162 BNA-HELPER-006: Prevent public/authenticated memory leakage (needs_verification)
 - REQ-20260618-163 BNA-PUBLIC-001: Remove Operations login from public primary navigation (needs_verification)
-- REQ-20260618-164 BNA-PUBLIC-002: Provider CTA: Advertise your program for free (not_started)
+- REQ-20260618-164 BNA-PUBLIC-002: Provider CTA: Advertise your program for free (needs_verification)
 - REQ-20260618-165 BNA-PUBLIC-003: Direct parent signup/self-governance messaging and six-month offer (not_started)
 - REQ-20260618-166 BNA-PUBLIC-004: Consistent approved portal headers (not_started)
 - REQ-20260618-167 BNA-PUBLIC-005: Public/blog/FAQ/signup/portal route and CTA integrity (not_started)
@@ -93,6 +93,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current implementation batch: REQ-20260618-163 has local public navigation privacy proof: public primary nav and shared public nav/content scripts do not advertise private Operations login, while private Operations routes remain intact. REQ-20260618-156 remains needs_operator_decision for production duplicate-student cleanup. Next unblocked implementation target is REQ-20260618-164.
+Current implementation batch: REQ-20260618-164 adds the public provider CTA, Advertise your program for free, with free community listing scope, WhatsApp contact action, responsive layout, and English/Hebrew translation coverage. REQ-20260618-156 remains needs_operator_decision for production duplicate-student cleanup. Next unblocked implementation target is REQ-20260618-165.
 
 No deployment or production-data mutation is approved in this run.

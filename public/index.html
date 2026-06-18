@@ -972,6 +972,89 @@
             color: var(--dark-text);
         }
 
+        /* ===== PROVIDER LISTING SECTION ===== */
+        .provider-listing-section {
+            background: #f8fbff;
+            padding: 4.5rem 2rem;
+        }
+
+        .provider-listing-inner {
+            max-width: 1080px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: minmax(0, 1.1fr) minmax(280px, 0.9fr);
+            gap: 2.25rem;
+            align-items: center;
+        }
+
+        .provider-listing-eyebrow {
+            color: var(--secondary-blue);
+            font-weight: 800;
+            letter-spacing: 0.08rem;
+            margin-bottom: 0.75rem;
+            text-transform: uppercase;
+        }
+
+        .provider-listing-copy h2 {
+            color: var(--primary-blue);
+            font-family: 'Cormorant Garamond', serif;
+            font-size: clamp(2rem, 4vw, 3rem);
+            line-height: 1.08;
+            margin-bottom: 1rem;
+        }
+
+        .provider-listing-copy p {
+            color: var(--dark-text);
+            font-size: 1.08rem;
+            line-height: 1.75;
+            margin-bottom: 1.5rem;
+        }
+
+        .provider-listing-button {
+            background: var(--primary-blue);
+            border-radius: 999px;
+            color: var(--white);
+            display: inline-flex;
+            font-weight: 800;
+            justify-content: center;
+            min-height: 48px;
+            padding: 0.9rem 1.4rem;
+            text-decoration: none;
+        }
+
+        .provider-listing-list {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: grid;
+            gap: 1rem;
+        }
+
+        .provider-listing-list li {
+            border-left: 4px solid var(--accent-gold);
+            padding: 0.25rem 0 0.25rem 1rem;
+        }
+
+        html[dir="rtl"] .provider-listing-list li {
+            border-left: 0;
+            border-right: 4px solid var(--accent-gold);
+            padding-left: 0;
+            padding-right: 1rem;
+        }
+
+        .provider-listing-list strong {
+            color: var(--primary-blue);
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .provider-listing-list span {
+            color: var(--muted-text);
+            display: block;
+            line-height: 1.6;
+        }
+
         /* ===== CTA SECTION ===== */
         .cta-section {
             background: linear-gradient(rgba(30, 58, 95, 0.85), rgba(30, 58, 95, 0.9)),
@@ -2147,6 +2230,10 @@
             .home-blog-grid {
                 grid-auto-columns: minmax(270px, calc((100% - 1.15rem) / 2));
             }
+
+            .provider-listing-inner {
+                grid-template-columns: 1fr;
+            }
         }
 
         @media (max-width: 640px) {
@@ -2577,6 +2664,32 @@
         </div>
     </section>
 
+    <!-- Provider Listing Section -->
+    <section class="provider-listing-section" id="providers">
+        <div class="provider-listing-inner fade-in">
+            <div class="provider-listing-copy">
+                <p class="provider-listing-eyebrow" data-i18n="providerEyebrow">For local providers</p>
+                <h2 data-i18n="providerTitle">Advertise your program for free</h2>
+                <p data-i18n="providerLead">If you run a Torah class, chug, tutoring option, homeschool support group, family resource, or youth program in the community, Bnei Neviim can list it for free so parents can find real options.</p>
+                <a href="https://wa.me/972534932631" class="provider-listing-button" target="_blank" rel="noopener noreferrer" data-i18n="providerCta">Advertise your program for free</a>
+            </div>
+            <ul class="provider-listing-list" aria-label="Free provider listing details">
+                <li>
+                    <strong data-i18n="providerListOneTitle">What can be listed</strong>
+                    <span data-i18n="providerListOneText">Classes, chugim, tutoring, mentoring, homeschool support, and family or youth services.</span>
+                </li>
+                <li>
+                    <strong data-i18n="providerListTwoTitle">What parents see</strong>
+                    <span data-i18n="providerListTwoText">A clear name, short description, location, age range, schedule, and contact path.</span>
+                </li>
+                <li>
+                    <strong data-i18n="providerListThreeTitle">What stays free</strong>
+                    <span data-i18n="providerListThreeText">Basic community listings are free. Paid promotions or special placements would be discussed separately.</span>
+                </li>
+            </ul>
+        </div>
+    </section>
+
     <!-- CTA Section -->
     <section class="cta-section" id="contact">
         <h2 class="fade-in" data-i18n="ctaTitle">Ready to Get Started?</h2>
@@ -2928,6 +3041,16 @@
                 homeFaqEyebrow: "Quick Answers",
                 homeFaqTitle: "Frequently Asked Questions",
                 homeFaqSubtitle: "Filter the questions by topic, then open the answers that matter for your family.",
+                providerEyebrow: "For local providers",
+                providerTitle: "Advertise your program for free",
+                providerLead: "If you run a Torah class, chug, tutoring option, homeschool support group, family resource, or youth program in the community, Bnei Neviim can list it for free so parents can find real options.",
+                providerCta: "Advertise your program for free",
+                providerListOneTitle: "What can be listed",
+                providerListOneText: "Classes, chugim, tutoring, mentoring, homeschool support, and family or youth services.",
+                providerListTwoTitle: "What parents see",
+                providerListTwoText: "A clear name, short description, location, age range, schedule, and contact path.",
+                providerListThreeTitle: "What stays free",
+                providerListThreeText: "Basic community listings are free. Paid promotions or special placements would be discussed separately.",
 
                 heroVerseHe: "כי מלאה הארץ דעה את ה׳ כמים לים מכסים",
                 heroVerseEn: '"For the earth will be filled with the knowledge of Hashem as the waters cover the sea."',
@@ -3046,6 +3169,16 @@
                 homeFaqEyebrow: "\u05ea\u05e9\u05d5\u05d1\u05d5\u05ea \u05de\u05d4\u05d9\u05e8\u05d5\u05ea",
                 homeFaqTitle: "\u05e9\u05d0\u05dc\u05d5\u05ea \u05e0\u05e4\u05d5\u05e6\u05d5\u05ea",
                 homeFaqSubtitle: "\u05e1\u05e0\u05e0\u05d5 \u05dc\u05e4\u05d9 \u05e0\u05d5\u05e9\u05d0, \u05d5\u05e4\u05ea\u05d7\u05d5 \u05d0\u05ea \u05d4\u05ea\u05e9\u05d5\u05d1\u05d5\u05ea \u05e9\u05d7\u05e9\u05d5\u05d1\u05d5\u05ea \u05dc\u05de\u05e9\u05e4\u05d7\u05d4 \u05e9\u05dc\u05db\u05dd.",
+                providerEyebrow: "לספקים מקומיים",
+                providerTitle: "פרסמו את התוכנית שלכם בחינם",
+                providerLead: "אם אתם מפעילים שיעור תורה, חוג, שיעורים פרטיים, קבוצת חינוך ביתי, משאב למשפחות או תוכנית לנוער בקהילה, בני נביאים יכולים לפרסם אותה בחינם כדי שהורים ימצאו אפשרויות אמיתיות.",
+                providerCta: "פרסמו את התוכנית שלכם בחינם",
+                providerListOneTitle: "מה אפשר לפרסם",
+                providerListOneText: "שיעורים, חוגים, תגבור לימודי, ליווי אישי, תמיכה בחינוך ביתי ושירותים למשפחות או לנוער.",
+                providerListTwoTitle: "מה ההורים רואים",
+                providerListTwoText: "שם ברור, תיאור קצר, מיקום, גילאים, זמני פעילות ודרך יצירת קשר.",
+                providerListThreeTitle: "מה נשאר בחינם",
+                providerListThreeText: "רישום קהילתי בסיסי הוא בחינם. פרסום בתשלום או מיקום מיוחד יידונו בנפרד.",
 
                 heroVerseHe: "כי מלאה הארץ דעה את ה׳ כמים לים מכסים",
                 heroVerseEn: "",
