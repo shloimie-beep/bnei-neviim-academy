@@ -45,6 +45,29 @@ test('Task create and edit controls cannot override a scoped or selected workspa
   assert.match(operations, /Workspace: \$\{escapeHtml\(activeWorkspaceProjectLabel\(\)\)\}/);
 });
 
+test('Changing workspace clears stale module, student, content, and task-modal context', () => {
+  const operations = read('public/operations.html');
+
+  assert.match(operations, /function resetWorkspaceScopedUiState\(\)/);
+  assert.match(operations, /currentView = 'tasks';/);
+  assert.match(operations, /taskFocus = 'overview';/);
+  assert.match(operations, /contentSection = 'library';/);
+  assert.match(operations, /contactSection = 'parents';/);
+  assert.match(operations, /accountingSection = 'overview';/);
+  assert.match(operations, /studentSection = 'overview';/);
+  assert.match(operations, /selectedStudentId = null;/);
+  assert.match(operations, /selectedContactKey = null;/);
+  assert.match(operations, /selectedContentJobIds = new Set\(\);/);
+  assert.match(operations, /expandedContentJobIds = new Set\(\);/);
+  assert.match(operations, /expandedPromptKey = null;/);
+  assert.match(operations, /editingTask = null;/);
+  assert.match(operations, /taskComments = \[\];/);
+  assert.match(operations, /resetWorkspaceScopedUiState\(\);/);
+  assert.match(operations, /url\.searchParams\.set\('view', 'tasks'\);/);
+  assert.match(operations, /url\.searchParams\.set\('section', 'overview'\);/);
+  assert.match(operations, /url\.searchParams\.delete\('student'\);/);
+});
+
 test('Projects API returns canonical workspace metadata for the selector', () => {
   const server = read('server.js');
 

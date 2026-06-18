@@ -2170,7 +2170,6 @@ Category: mar
 
 Verification:
 
-
 Report: ops/agent-fleet-runs/2026-06-05T12-55-26-838Z-task-100.md
 
 - source: agent_fleet
@@ -2212,7 +2211,6 @@ Category: market
 
 Verification:
 
-
 Report: ops/agent-fleet-runs/2026-06-05T12-56-48-445Z-task-100.md
 
 - source: agent_fleet
@@ -2226,7 +2224,6 @@ Codex result:
 2026-06-05T15:56:39.320466Z  WARN codex_core::shell_snapshot: Failed to create shell snapshot for powershell: Shell snapshot not supported yet for PowerShell
 
 Verification:
-
 
 Report: ops/agent-fleet-runs/2026-06-05T16-01-41-916Z-task-103.md
 
@@ -3020,3 +3017,29 @@ Verification:
 Status: local `needs_verification` for `REQ-20260618-126`; no deployment,
 production-data mutation, audit crawl, watch loop, or agent-fleet loop was
 performed. Continue `REQ-20260618-127`.
+
+## 2026-06-18T20:18:55+03:00 - Workspace Switch Stale Context Cleanup
+
+Completed the local stale-context cleanup batch for `REQ-20260618-127`.
+
+- Added `resetWorkspaceScopedUiState`.
+- Workspace changes now reset the Operations shell back to Tasks / Overview.
+- Cleared stale task filters, content filters, selected contact, selected
+  student, student filters, selected content jobs, expanded content jobs,
+  expanded prompt context, open task modal state, and task comments.
+- Workspace changes now reset the URL to `view=tasks&section=overview`, remove
+  stale `student` query state, persist the selected workspace, and reload
+  scoped data.
+- Added focused static coverage for the reset invariants in
+  `tests/operations-workspace-selector.test.js`.
+
+Verification:
+
+- PASS `node --check tests/operations-workspace-selector.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/operations-workspace-selector.test.js` 5/5.
+- PASS `npm test` 82/82.
+
+Status: local `needs_verification`; no deployment, production-data mutation,
+audit crawl, watch loop, or agent-fleet loop was performed. Resume at
+`REQ-20260618-128`.

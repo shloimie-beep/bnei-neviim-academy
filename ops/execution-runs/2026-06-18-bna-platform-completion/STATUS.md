@@ -1,14 +1,14 @@
 # Status
 
-Updated: 2026-06-18T20:14:02+03:00
+Updated: 2026-06-18T20:18:55+03:00
 
 Status counts:
 
-- in_progress: 14
+- in_progress: 13
 - done: 4
 - already_satisfied: 1
 - blocked: 3
-- needs_verification: 8
+- needs_verification: 9
 - not_started: 41
 - needs_operator_decision: 1
 
@@ -42,7 +42,7 @@ Open non-blocked IDs begin with:
 - REQ-20260618-124 BNA-WS-002: Scope applicable entities by workspace_id (in_progress)
 - REQ-20260618-125 BNA-WS-003: Server-side authorization/RLS and negative cross-tenant tests (needs_verification)
 - REQ-20260618-126 BNA-WS-004: Clear super-admin selector and ordinary-user behavior (needs_verification)
-- REQ-20260618-127 BNA-WS-005: Clear stale context on workspace changes (in_progress)
+- REQ-20260618-127 BNA-WS-005: Clear stale context on workspace changes (needs_verification)
 - REQ-20260618-128 BNA-OPS-001: Ordered horizontal Operations module toolbar (not_started)
 - REQ-20260618-129 BNA-OPS-002: Simplify workspace/sidebar navigation (not_started)
 - REQ-20260618-130 BNA-OPS-003: Prevent unexpected page collapse/minimize (not_started)
@@ -58,6 +58,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current implementation batch: REQ-20260618-126 has local Operations shell workspace selector/scoped-user behavior plus focused tests; REQ-20260618-127 is partially started for task/content filter cleanup. Next implementation target is REQ-20260618-127.
+Current implementation batch: REQ-20260618-127 has local stale-context cleanup for workspace changes plus focused tests. Next implementation target is REQ-20260618-128.
 
 No deployment or production-data mutation is approved in this run.

@@ -69,3 +69,10 @@ Operations workspace selector scoping (2026-06-18T20:14:02+03:00):
 - PASS Operations HTML script parse via `vm.Script` (2 script blocks).
 - PASS `node --test tests/operations-workspace-selector.test.js tests/workspace-auth.test.js tests/workspace-http-isolation.test.js` 13/13.
 - PASS `npm test` 81/81.
+
+Workspace switch stale-context cleanup (2026-06-18T20:18:55+03:00):
+
+- PASS `node --check tests/operations-workspace-selector.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/operations-workspace-selector.test.js` 5/5.
+- PASS `npm test` 82/82.

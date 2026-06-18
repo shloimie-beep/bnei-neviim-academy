@@ -7645,13 +7645,41 @@
             render();
         }
 
+        function resetWorkspaceScopedUiState() {
+            currentView = 'tasks';
+            taskFocus = 'overview';
+            taskUrgencyFilter = 'all';
+            taskDateFilter = 'all';
+            taskProjectFilter = 'all';
+            contentSection = 'library';
+            contentTypeFilter = 'all';
+            contentDateFilter = 'all';
+            contentProjectFilter = 'all';
+            contactSection = 'parents';
+            selectedContactKey = null;
+            accountingSection = 'overview';
+            studentSection = 'overview';
+            studentGoalFilter = 'due_today';
+            studentAccountabilityFilter = 'all';
+            selectedStudentId = null;
+            selectedContentJobIds = new Set();
+            expandedContentJobIds = new Set();
+            expandedPromptKey = null;
+            editingTask = null;
+            taskComments = [];
+        }
+
         function setWorkspaceProject(value) {
             if (!isGlobalOpsUser()) return;
-            activeWorkspaceProject = normalizeProjectKey(value) || GLOBAL_PROJECT_FILTER_VALUE;
-            taskProjectFilter = 'all';
-            contentProjectFilter = 'all';
+            const nextProject = normalizeProjectKey(value) || GLOBAL_PROJECT_FILTER_VALUE;
+            if (nextProject === activeWorkspaceProject) return;
+            activeWorkspaceProject = nextProject;
+            resetWorkspaceScopedUiState();
             window.localStorage?.setItem('bna_ops_active_project', activeWorkspaceProject);
             const url = new URL(window.location.href);
+            url.searchParams.set('view', 'tasks');
+            url.searchParams.set('section', 'overview');
+            url.searchParams.delete('student');
             if (activeWorkspaceProject === GLOBAL_PROJECT_FILTER_VALUE) url.searchParams.delete('project');
             else url.searchParams.set('project', activeWorkspaceProject);
             window.history.replaceState({}, '', url);
