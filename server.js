@@ -1597,7 +1597,7 @@ CREATE TABLE IF NOT EXISTS bna_tasks (
   workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
   title TEXT NOT NULL,
   notes TEXT,
-  stage TEXT NOT NULL DEFAULT 'raw_input' CHECK (stage IN ('raw_input', 'needs_decision', 'assigned', 'in_progress', 'done', 'archive')),
+  stage TEXT NOT NULL DEFAULT 'ready' CHECK (stage IN ('decision_required', 'ready', 'in_progress', 'blocked', 'done', 'archived')),
   category TEXT NOT NULL DEFAULT 'operations' CHECK (category IN ('admin', 'marketing', 'parent_coaching', 'student_operations', 'finance', 'legal', 'communications', 'operations', 'accountability', 'content', 'technology', 'accounting', 'ghl_setup', 'community', 'general', 'torah_class_prep', 'source_sheets', 'shiur_ideas')),
   urgency TEXT NOT NULL DEFAULT 'this_week' CHECK (urgency IN ('urgent', 'today', 'this_week', 'low')),
   energy_required TEXT CHECK (energy_required IN ('high', 'medium', 'low')),
@@ -2372,19 +2372,23 @@ BEGIN
 END $$;
 UPDATE bna_tasks
 SET stage = CASE stage
-  WHEN 'inbox' THEN 'raw_input'
-  WHEN 'clarify' THEN 'needs_decision'
-  WHEN 'plan' THEN 'needs_decision'
+  WHEN 'raw_input' THEN 'ready'
+  WHEN 'inbox' THEN 'ready'
+  WHEN 'needs_decision' THEN 'decision_required'
+  WHEN 'assigned' THEN 'ready'
+  WHEN 'clarify' THEN 'decision_required'
+  WHEN 'plan' THEN 'decision_required'
   WHEN 'execute' THEN 'in_progress'
-  WHEN 'review' THEN 'needs_decision'
+  WHEN 'review' THEN 'decision_required'
   WHEN 'complete' THEN 'done'
+  WHEN 'archive' THEN 'archived'
   ELSE stage
 END
-WHERE stage IN ('inbox', 'clarify', 'plan', 'execute', 'review', 'complete');
-ALTER TABLE bna_tasks ALTER COLUMN stage SET DEFAULT 'raw_input';
+WHERE stage IN ('raw_input', 'inbox', 'needs_decision', 'assigned', 'clarify', 'plan', 'execute', 'review', 'complete', 'archive');
+ALTER TABLE bna_tasks ALTER COLUMN stage SET DEFAULT 'ready';
 ALTER TABLE bna_tasks
   ADD CONSTRAINT bna_tasks_stage_check
-  CHECK (stage IN ('raw_input', 'needs_decision', 'assigned', 'in_progress', 'done', 'archive'));
+  CHECK (stage IN ('decision_required', 'ready', 'in_progress', 'blocked', 'done', 'archived'));
 `;
 
 const normalizeTasksSourceCheckSQL = `
@@ -2620,9 +2624,9 @@ function inferTaskCategory(text) {
 
 function inferTaskStage(text) {
   const normalized = String(text || '').toLowerCase();
-  if (/\b(option|choose|decide|should we|what do you recommend|which one)\b/.test(normalized)) return 'needs_decision';
-  if (/\b(start|build|fix|wire|set up|setup|configure|process|transcribe|deploy|sync|run|finish|verify|mark|make|create|send|update|change|remove|add|do this|parse|route|file|put it|hide|stop showing|stop sending|get rid)\b/.test(normalized)) return 'assigned';
-  return 'raw_input';
+  if (/\b(option|choose|decide|should we|what do you recommend|which one)\b/.test(normalized)) return 'decision_required';
+  if (/\b(start|build|fix|wire|set up|setup|configure|process|transcribe|deploy|sync|run|finish|verify|mark|make|create|send|update|change|remove|add|do this|parse|route|file|put it|hide|stop showing|stop sending|get rid)\b/.test(normalized)) return 'ready';
+  return 'ready';
 }
 
 function inferTaskOwner(text) {
@@ -2759,7 +2763,7 @@ function parseRambleIntoTaskCandidates(ramble) {
     urgency: /urgent|asap|right away|immediately|today/i.test(line) ? 'urgent' : 'this_week',
     assigned_to: inferTaskOwner(line),
     project_key: inferProjectKeyFromText(line),
-    decision_required: inferTaskStage(line) === 'needs_decision',
+    decision_required: inferTaskStage(line) === 'decision_required',
     original_text: line,
   }));
 }
@@ -2799,17 +2803,20 @@ async function createTaskFromText(input = {}, options = {}, db = pool) {
   if (options.req) assertProjectAccess(options.req, project);
 
   const inferredStage = inferTaskStage(`${title}\n${rawText}`);
-  const decisionRequired =
+  const requestedDecisionRequired =
     input.decision_required !== undefined
       ? Boolean(input.decision_required)
-      : Boolean(input.decisionRequired) || inferredStage === 'needs_decision';
+      : Boolean(input.decisionRequired) || inferredStage === 'decision_required';
   const assignedTo = normalizeTaskAssignee(input.assigned_to || input.assignedTo || input.owner);
   const notes = String(input.notes || input.context || input.source_context?.notes || '').trim()
     || (rawText && rawText !== title ? rawText : null);
   const createdBy = String(input.created_by || input.createdBy || input.author || 'telegram').trim();
   const author = String(input.author || createdBy || '').trim() || null;
   const category = safeTaskCategory(input.category || inferTaskCategory(`${title}\n${rawText}`));
-  const stage = String(input.stage || (decisionRequired ? 'needs_decision' : (inferredStage === 'raw_input' ? 'assigned' : inferredStage || 'assigned'))).trim();
+  const stage = normalizeTaskStageValue(input.stage || (requestedDecisionRequired ? 'decision_required' : inferredStage || 'ready'), {
+    decisionRequired: requestedDecisionRequired,
+  });
+  const decisionRequired = taskDecisionRequiredForStage(stage, requestedDecisionRequired);
   const urgency = safeTaskUrgency(input.urgency);
   const source = safeTaskSource(input.source || 'telegram');
   const aiParsed = input.ai_parsed || {
@@ -5784,6 +5791,41 @@ function safeTaskCategory(value) {
 function safeTaskUrgency(value) {
   const allowed = new Set(['urgent', 'today', 'this_week', 'low']);
   return allowed.has(value) ? value : 'this_week';
+}
+
+const CANONICAL_TASK_STAGES = new Set([
+  'decision_required',
+  'ready',
+  'in_progress',
+  'blocked',
+  'done',
+  'archived',
+]);
+
+const TASK_STAGE_ALIASES = {
+  raw_input: 'ready',
+  inbox: 'ready',
+  needs_decision: 'decision_required',
+  assigned: 'ready',
+  clarify: 'decision_required',
+  plan: 'decision_required',
+  execute: 'in_progress',
+  review: 'decision_required',
+  complete: 'done',
+  archive: 'archived',
+};
+
+function normalizeTaskStageValue(stage, options = {}) {
+  const raw = String(stage || '').trim().toLowerCase();
+  const mapped = TASK_STAGE_ALIASES[raw] || raw;
+  if (CANONICAL_TASK_STAGES.has(mapped)) return mapped;
+  return options.decisionRequired ? 'decision_required' : 'ready';
+}
+
+function taskDecisionRequiredForStage(stage, explicitValue) {
+  const normalized = normalizeTaskStageValue(stage);
+  if (explicitValue !== undefined) return Boolean(explicitValue) || normalized === 'decision_required';
+  return normalized === 'decision_required';
 }
 
 function safeTaskSource(value) {
@@ -9770,7 +9812,7 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
           title,
           raw_text: task.original_text || task.source_text || task.notes || title,
           notes: task.notes || `Extracted from content job #${job.id}: ${job.title || 'Untitled recording'}`,
-          stage: 'assigned',
+          stage: 'ready',
           category: safeTaskCategory(task.category || inferTaskCategory(taskText)),
           urgency: safeTaskUrgency(task.urgency),
           source: 'content_job',
@@ -10348,7 +10390,7 @@ app.post('/api/bna/content-jobs/:id/actions', requireAdmin, async (req, res) => 
           job.media_url ? `Drive link: ${job.media_url}` : '',
           job.notes || '',
         ].filter(Boolean).join('\n'),
-        stage: 'assigned',
+        stage: 'ready',
         category: 'operations',
         urgency: 'today',
         source: 'content_job',
@@ -10837,7 +10879,7 @@ app.get('/api/bna/agent-fleet/status', requireAdmin, async (req, res) => {
        SELECT
          COUNT(*) FILTER (
            WHERE is_machine
-             AND COALESCE(stage, '') NOT IN ('done', 'archive')
+             AND COALESCE(stage, '') NOT IN ('done', 'archive', 'archived')
              AND completed_at IS NULL
              AND verified_at IS NULL
          )::int AS pending,
@@ -10850,7 +10892,7 @@ app.get('/api/bna/agent-fleet/status', requireAdmin, async (req, res) => {
          COUNT(*) FILTER (
            WHERE is_machine
              AND urgency IN ('urgent', 'today')
-             AND COALESCE(stage, '') NOT IN ('done', 'archive')
+             AND COALESCE(stage, '') NOT IN ('done', 'archive', 'archived')
              AND completed_at IS NULL
              AND verified_at IS NULL
          )::int AS urgent_today,
@@ -10869,7 +10911,7 @@ app.get('/api/bna/agent-fleet/status', requireAdmin, async (req, res) => {
          OR LOWER(COALESCE(assigned_to, '')) LIKE '%kimi%'
          OR LOWER(COALESCE(assigned_to, '')) LIKE '%system%'
        )
-       AND COALESCE(stage, '') NOT IN ('done', 'archive')
+       AND COALESCE(stage, '') NOT IN ('done', 'archive', 'archived')
        AND completed_at IS NULL
        AND verified_at IS NULL
        ORDER BY
@@ -11039,7 +11081,7 @@ app.get('/api/bna/tasks', requireAdmin, async (req, res) => {
   
   if (stage) {
     query += ` AND t.stage = $${paramIdx++}`;
-    params.push(stage);
+    params.push(normalizeTaskStageValue(stage));
   }
   if (category) {
     query += ` AND t.category = $${paramIdx++}`;
@@ -11211,6 +11253,8 @@ app.patch('/api/bna/tasks/:id', requireAdmin, async (req, res) => {
   ]);
   try {
     await assertTaskAccess(req, id);
+    let normalizedStageUpdate = null;
+    let sawDecisionRequiredUpdate = false;
     for (const [key, value] of Object.entries(updates)) {
       if (key === 'project' || key === 'project_key' || key === 'project_id') {
         const project = await resolveProjectFromInput({ [key]: value }, pool);
@@ -11220,13 +11264,28 @@ app.patch('/api/bna/tasks/:id', requireAdmin, async (req, res) => {
         continue;
       }
       if (!allowedFields.has(key)) continue;
-      const nextValue = key === 'assigned_to'
-        ? normalizeTaskAssignee(value)
-        : key === 'category'
-          ? safeTaskCategory(value)
-          : value;
+      let nextValue = value;
+      if (key === 'assigned_to') nextValue = normalizeTaskAssignee(value);
+      if (key === 'category') nextValue = safeTaskCategory(value);
+      if (key === 'stage') {
+        normalizedStageUpdate = normalizeTaskStageValue(value, {
+          decisionRequired: Boolean(updates.decision_required),
+        });
+        nextValue = normalizedStageUpdate;
+      }
+      if (key === 'decision_required') {
+        sawDecisionRequiredUpdate = true;
+        nextValue = Boolean(value);
+      }
       fields.push(`${key} = $${idx++}`);
       values.push(nextValue);
+    }
+    if (normalizedStageUpdate === 'decision_required' && !sawDecisionRequiredUpdate) {
+      fields.push(`decision_required = $${idx++}`);
+      values.push(true);
+    }
+    if (normalizedStageUpdate === 'archived' && updates.archived_at === undefined) {
+      fields.push('archived_at = NOW()');
     }
     if (!fields.length) return res.status(400).json({ error: 'No allowed task fields supplied' });
     fields.push('updated_at = NOW()');
@@ -11325,7 +11384,7 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
       workspace_id INTEGER REFERENCES bna_workspaces(id) ON DELETE SET NULL,
       title TEXT NOT NULL,
       notes TEXT,
-      stage TEXT DEFAULT 'raw_input' CHECK (stage IN ('raw_input', 'needs_decision', 'assigned', 'in_progress', 'done', 'archive')),
+      stage TEXT DEFAULT 'ready' CHECK (stage IN ('decision_required', 'ready', 'in_progress', 'blocked', 'done', 'archived')),
       category TEXT DEFAULT 'operations' CHECK (category IN ('admin', 'marketing', 'parent_coaching', 'student_operations', 'finance', 'legal', 'communications', 'operations')),
       urgency TEXT DEFAULT 'this_week' CHECK (urgency IN ('urgent', 'today', 'this_week', 'low')),
       energy_required TEXT CHECK (energy_required IN ('high', 'medium', 'low')),
@@ -11366,7 +11425,7 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
     );
     
     INSERT INTO bna_tasks (title, stage, category, urgency, source) 
-    VALUES ('Welcome to BNA Operations. Telegram rambles land here as raw input.', 'raw_input', 'operations', 'this_week', 'manual');
+    VALUES ('Welcome to BNA Operations. Telegram rambles land here as raw input.', 'ready', 'operations', 'this_week', 'manual');
   `;
   
   try {

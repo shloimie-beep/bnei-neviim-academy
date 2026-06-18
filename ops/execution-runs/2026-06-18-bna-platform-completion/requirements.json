@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-18T20:55:09+03:00",
+  "updated_at": "2026-06-18T21:02:35+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -170,10 +170,20 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "Task state model now canonicalizes decision_required, ready, in_progress, blocked, done, and archived across schema, API create/filter/update paths, agent queue filters, and Operations UI actions."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "notes": "Parent workstream retained from original active run."
+      "verification": [
+        "node --test tests/task-state-model.test.js tests/operations-accessibility.test.js tests/operations-workspace-selector.test.js PASS 13/13",
+        "npm test PASS 110/110"
+      ],
+      "notes": "Task manager child REQ-136 has local implementation and tests. Parent remains in_progress until owner/status/provenance, intake routing, idempotency, Decisions, calendar, and remaining child requirements are complete.",
+      "files_changed": [
+        "server.js",
+        "public/operations.html",
+        "tests/task-state-model.test.js"
+      ]
     },
     {
       "id": "REQ-20260618-107",
@@ -1248,7 +1258,7 @@
       "area": "tasks",
       "priority": "P0",
       "current_verdict": "partial",
-      "status": "not_started",
+      "status": "needs_verification",
       "expected_result": "Task states normalize to decision_required, ready, in_progress, blocked, done, archived with old-value compatibility.",
       "acceptance_criteria": [
         "Canonical task state model is implemented against the canonical Express/static runtime where applicable.",
@@ -1259,12 +1269,28 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "server.js task schema and idempotent migration now use canonical stages decision_required, ready, in_progress, blocked, done, and archived, while mapping raw_input, needs_decision, assigned, and archive forward.",
+        "server.js create, query filter, patch, content-task, and agent-queue paths normalize task stage aliases and keep decision_required coherent with the decision_required stage.",
+        "public/operations.html task labels, form options, actions, hiding logic, and bucketing now speak canonical task states while still reading legacy values safely."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check server.js PASS",
+        "node --check tests/task-state-model.test.js PASS",
+        "Operations HTML script parse via vm.Script PASS (2 script blocks)",
+        "node --test tests/task-state-model.test.js tests/operations-accessibility.test.js tests/operations-workspace-selector.test.js PASS 13/13",
+        "npm test PASS 110/110"
+      ],
+      "implementation_commits": [
+        "current batch commit: feat: canonicalize task states"
+      ],
+      "files_changed": [
+        "server.js",
+        "public/operations.html",
+        "tests/task-state-model.test.js"
+      ],
+      "notes": "Implemented local canonical task state compatibility only; no production migration endpoint, deploy, live smoke, or production-data mutation was run."
     },
     {
       "id": "REQ-20260618-137",

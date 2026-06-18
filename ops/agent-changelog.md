@@ -3237,3 +3237,34 @@ Verification:
 Status: local `needs_verification`; no deployment, production-data mutation,
 audit crawl, watch loop, or agent-fleet loop was performed. Resume at
 `REQ-20260618-136`.
+
+## 2026-06-18T21:02:35+03:00 - Canonical Task State Model
+
+Completed the local canonical task state model batch for `REQ-20260618-136`.
+
+- Canonicalized task stages to `decision_required`, `ready`, `in_progress`,
+  `blocked`, `done`, and `archived`.
+- Updated task table creation, idempotent stage migration, and protected
+  migration SQL to use the canonical check/default.
+- Added server-side old-value aliases for `raw_input`, `needs_decision`,
+  `assigned`, `archive`, and older parser values.
+- Normalized create, list filter, patch, content-task creation, and agent queue
+  paths to the canonical states.
+- Updated Operations labels, task modal options, action buttons, hidden capture
+  logic, and task bucketing to use canonical state values while reading old
+  values safely.
+- Added focused coverage in `tests/task-state-model.test.js`.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/task-state-model.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/task-state-model.test.js
+  tests/operations-accessibility.test.js
+  tests/operations-workspace-selector.test.js` 13/13.
+- PASS `npm test` 110/110.
+
+Status: local `needs_verification`; no deployment, production migration,
+production-data mutation, audit crawl, watch loop, or agent-fleet loop was
+performed. Resume at `REQ-20260618-137`.

@@ -4554,8 +4554,8 @@
                     `).join('');
                 }
                 return `
-                    <button class="task-action primary" onclick="taskAction(event, ${id}, { stage: 'assigned', assigned_to: 'Shloimie' })">Turn into my task</button>
-                    <button class="task-action" onclick="taskAction(event, ${id}, { stage: 'archive' })">Hide</button>
+                    <button class="task-action primary" onclick="taskAction(event, ${id}, { stage: 'ready', decision_required: false, assigned_to: 'Shloimie' })">Turn into my task</button>
+                    <button class="task-action" onclick="taskAction(event, ${id}, { stage: 'archived', archived_at: new Date().toISOString() })">Hide</button>
                 `;
             }
             if (columnId === 'mine' || columnId === 'rabbi') {
@@ -4563,10 +4563,12 @@
                 if (stage === 'in_progress') {
                     return `
                         <button class="task-action primary" onclick="taskAction(event, ${id}, { stage: 'done', completed_at: new Date().toISOString(), verified_at: new Date().toISOString() })">Done</button>
+                        <button class="task-action" onclick="taskAction(event, ${id}, { stage: 'blocked' })">Block</button>
                     `;
                 }
                 return `
                     <button class="task-action primary" onclick="taskAction(event, ${id}, { stage: 'in_progress', started_at: new Date().toISOString() })">Start</button>
+                    <button class="task-action" onclick="taskAction(event, ${id}, { stage: 'blocked' })">Block</button>
                     <button class="task-action" onclick="taskAction(event, ${id}, { stage: 'done', completed_at: new Date().toISOString(), verified_at: new Date().toISOString() })">Done</button>
                 `;
             }
@@ -6977,12 +6979,14 @@
                                     <label for="taskStage">Stage</label>
                                     <select id="taskStage">
                                         ${[
-                                            { id: 'needs_decision', label: 'Needs Your Decision', marker: '?' },
-                                            { id: 'assigned', label: 'Task', marker: 'DO' },
+                                            { id: 'decision_required', label: 'Needs Your Decision', marker: '?' },
+                                            { id: 'ready', label: 'Ready', marker: 'DO' },
                                             { id: 'in_progress', label: 'Doing Now', marker: 'GO' },
-                                            { id: 'done', label: 'Done', marker: 'OK' }
+                                            { id: 'blocked', label: 'Blocked', marker: 'WAIT' },
+                                            { id: 'done', label: 'Done', marker: 'OK' },
+                                            { id: 'archived', label: 'Archived', marker: 'ARCH' }
                                         ].map(s => `
-                                            <option value="${s.id}" ${task.stage === s.id ? 'selected' : ''}>${s.marker} ${s.label}</option>
+                                            <option value="${s.id}" ${normalizeTaskStage(task.stage) === s.id ? 'selected' : ''}>${s.marker} ${s.label}</option>
                                         `).join('')}
                                     </select>
                                 </div>
@@ -7026,7 +7030,7 @@
                                 </div>
                             </div>
                             <label class="checkbox-row">
-                                <input type="checkbox" id="taskDecisionRequired" ${task.decision_required || task.stage === 'needs_decision' ? 'checked' : ''}>
+                                <input type="checkbox" id="taskDecisionRequired" ${task.decision_required || normalizeTaskStage(task.stage) === 'decision_required' ? 'checked' : ''}>
                                 <span>Decision required before this can move forward</span>
                             </label>
                             ${isEditing ? renderTaskComments() : ''}
@@ -7564,6 +7568,7 @@
         }
 
         function isHiddenCapture(task) {
+            const rawStage = String(task.stage || '').trim().toLowerCase();
             const stage = normalizeTaskStage(task.stage);
             const source = String(task.source || '').toLowerCase();
             const title = String(task.title || '');
@@ -7571,7 +7576,7 @@
             const owner = String(task.assigned_to || '').trim();
             const rawSource = ['telegram', 'ramble', 'web'].includes(source);
             const longUnclearCapture = rawSource && !owner && title.length > 130 && (!notes || notes.startsWith(title.slice(0, 60)));
-            return stage === 'archive' || stage === 'raw_input' || longUnclearCapture;
+            return stage === 'archived' || rawStage === 'raw_input' || longUnclearCapture;
         }
 
         function taskDisplayTitle(task) {
@@ -7901,14 +7906,20 @@
 
         function normalizeTaskStage(stage) {
             const map = {
-                inbox: 'raw_input',
-                clarify: 'needs_decision',
-                plan: 'needs_decision',
+                raw_input: 'ready',
+                inbox: 'ready',
+                needs_decision: 'decision_required',
+                assigned: 'ready',
+                clarify: 'decision_required',
+                plan: 'decision_required',
                 execute: 'in_progress',
-                review: 'needs_decision',
-                complete: 'done'
+                review: 'decision_required',
+                complete: 'done',
+                archive: 'archived'
             };
-            return map[stage] || stage || 'raw_input';
+            const value = String(stage || '').trim().toLowerCase();
+            const normalized = map[value] || value;
+            return ['decision_required', 'ready', 'in_progress', 'blocked', 'done', 'archived'].includes(normalized) ? normalized : 'ready';
         }
 
         function taskStageLabel(task) {
@@ -7916,8 +7927,10 @@
             if (task.verified_at) return 'Verified';
             if (task.completed_at || stage === 'done') return 'Done';
             if (stage === 'in_progress') return 'In progress';
-            if (stage === 'assigned') return 'Ready';
-            if (stage === 'needs_decision') return 'Decision';
+            if (stage === 'blocked') return 'Blocked';
+            if (stage === 'ready') return 'Ready';
+            if (stage === 'decision_required') return 'Decision';
+            if (stage === 'archived') return 'Archived';
             return String(stage || 'open').replace(/_/g, ' ');
         }
 
@@ -7925,7 +7938,7 @@
             const stage = normalizeTaskStage(task.stage);
             if (isHiddenCapture(task)) return null;
             const isMachine = taskIsMachine(task);
-            if (stage === 'needs_decision') return 'decisions';
+            if (stage === 'decision_required' || task.decision_required) return 'decisions';
             if (isMachine) return 'changelog';
             return 'mine';
         }
@@ -8590,18 +8603,20 @@
 
         async function saveTask() {
             const taskProject = selectedProjectFilter() || document.getElementById('taskProject').value;
+            const decisionRequired = Boolean(document.getElementById('taskDecisionRequired')?.checked);
+            const selectedStage = document.getElementById('taskStage').value;
             const data = {
                 title: document.getElementById('taskTitle').value,
                 notes: document.getElementById('taskNotes').value,
                 project_key: taskProject,
                 assigned_to: document.getElementById('taskAssignedTo').value || null,
-                stage: document.getElementById('taskStage').value,
+                stage: decisionRequired && selectedStage === 'ready' ? 'decision_required' : selectedStage,
                 category: document.getElementById('taskCategory').value,
                 urgency: document.getElementById('taskUrgency').value,
                 energy_required: document.getElementById('taskEnergy').value || null,
                 due_date: document.getElementById('taskDueDate').value || null,
                 estimated_minutes: parseInt(document.getElementById('taskMinutes').value) || null,
-                decision_required: Boolean(document.getElementById('taskDecisionRequired')?.checked)
+                decision_required: decisionRequired
             };
 
             if (!data.title) return alert('Title required');
@@ -8658,7 +8673,8 @@
             const previousNotes = task?.notes || '';
             const decisionLine = `Decision chosen from dashboard: ${option.label} - ${option.value}`;
             await api.updateTask(taskId, {
-                stage: 'assigned',
+                stage: 'ready',
+                decision_required: false,
                 assigned_to: 'Codex',
                 notes: [previousNotes, decisionLine].filter(Boolean).join('\n\n'),
             });

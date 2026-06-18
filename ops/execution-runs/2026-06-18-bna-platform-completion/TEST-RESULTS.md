@@ -125,3 +125,11 @@ Operations accessibility semantics (2026-06-18T20:55:09+03:00):
 - PASS Operations HTML script parse via `vm.Script` (2 script blocks).
 - PASS `node --test tests/operations-accessibility.test.js tests/operations-design-system.test.js tests/operations-mobile-controls.test.js` 12/12.
 - PASS `npm test` 107/107.
+
+Canonical task state model (2026-06-18T21:02:35+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/task-state-model.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/task-state-model.test.js tests/operations-accessibility.test.js tests/operations-workspace-selector.test.js` 13/13.
+- PASS `npm test` 110/110.
