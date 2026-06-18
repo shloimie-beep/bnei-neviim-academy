@@ -1865,81 +1865,6 @@
             margin-top: 6px;
         }
 
-        .agent-status-panel {
-            display: grid;
-            grid-template-columns: minmax(260px, 1.25fr) repeat(3, minmax(150px, 1fr));
-            gap: 12px;
-            align-items: stretch;
-            margin-bottom: 18px;
-            padding: 14px;
-            border: 1px solid rgba(201, 162, 39, 0.32);
-            border-radius: 18px;
-            background:
-                radial-gradient(circle at top left, rgba(201, 162, 39, 0.18), transparent 34%),
-                linear-gradient(135deg, #16233b, #101827);
-            box-shadow: 0 18px 40px rgba(2, 6, 23, 0.22);
-        }
-
-        .agent-status-main {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-        }
-
-        .agent-status-kicker {
-            color: #facc15;
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-        }
-
-        .agent-status-title {
-            color: #f8fafc;
-            font-size: 18px;
-            font-weight: 800;
-            line-height: 1.2;
-        }
-
-        .agent-status-note {
-            color: #cbd5e1;
-            font-size: 12px;
-            line-height: 1.45;
-        }
-
-        .agent-status-stat {
-            display: flex;
-            min-height: 78px;
-            flex-direction: column;
-            justify-content: center;
-            gap: 4px;
-            border-radius: 14px;
-            background: rgba(15, 23, 42, 0.68);
-            border: 1px solid rgba(148, 163, 184, 0.16);
-            padding: 12px;
-        }
-
-        .agent-status-stat strong {
-            color: #f8fafc;
-            font-size: 24px;
-            line-height: 1;
-        }
-
-        .agent-status-stat span {
-            color: #94a3b8;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.04em;
-        }
-
-        .agent-status-panel[data-health="attention"] {
-            border-color: rgba(248, 113, 113, 0.45);
-            background:
-                radial-gradient(circle at top left, rgba(248, 113, 113, 0.16), transparent 34%),
-                linear-gradient(135deg, #271827, #101827);
-        }
-
         .task-focus-grid {
             display: grid;
             gap: 8px;
@@ -3147,23 +3072,6 @@
                 margin-bottom: 12px;
             }
 
-            .agent-status-panel {
-                grid-template-columns: 1fr;
-                gap: 8px;
-                margin-bottom: 12px;
-                padding: 11px;
-                border-radius: 12px;
-            }
-
-            .agent-status-stat {
-                min-height: 58px;
-                padding: 10px;
-            }
-
-            .agent-status-stat strong {
-                font-size: 20px;
-            }
-
             .summary-card {
                 border-radius: 8px;
                 padding: 9px 10px;
@@ -3681,7 +3589,6 @@
             },
 
             getAuthMe() { return this.request('GET', '/auth/me'); },
-            getAgentFleetStatus() { return this.request('GET', '/agent-fleet/status'); },
             getProjects() { return this.request('GET', '/projects'); },
             getCalendar(filters = {}) {
                 const params = new URLSearchParams();
@@ -3794,7 +3701,6 @@
         let opsMe = null;
         let tasks = [];
         let calendarEvents = [];
-        let agentFleetStatus = null;
         let projects = [];
         let signups = [];
         let payments = [];
@@ -4093,18 +3999,18 @@
                 {
                     label: 'Needs Decision',
                     value: metrics.decisions,
-                    note: metrics.decisions ? 'Choices waiting for your call before work continues.' : 'No choices are blocking the queue.',
+                    note: metrics.decisions ? 'Choices waiting for your call before work continues.' : 'No choices are blocking work.',
                     action: 'Open decisions',
                     target: "openCommandTarget('tasks', 'decisions')",
                     tone: metrics.decisions ? 'attention' : 'ok'
                 },
                 {
-                    label: 'Changelog Queue',
-                    value: metrics.codexPending,
-                    note: `${metrics.codexInProgress} in progress. Queued, active, and verified agent work stays in one visible trail.`,
+                    label: 'Changelog',
+                    value: metrics.changelogItems,
+                    note: 'Implementation notes and completed work stay in one visible trail.',
                     action: 'Open changelog',
                     target: "openCommandTarget('tasks', 'changelog')",
-                    tone: metrics.codexPending ? 'active' : 'ok'
+                    tone: metrics.changelogItems ? 'active' : 'ok'
                 },
                 {
                     label: 'Student Accountability',
@@ -4173,7 +4079,6 @@
 
         function operationsCommandMetrics() {
             const { buckets } = getTaskBuckets();
-            const queue = agentFleetStatus?.queue || {};
             const snapshots = students.map(student => studentAccountabilitySnapshot(student));
             const activeSignups = signups.filter(s => !['archived', 'inactive'].includes(String(s.status || '').toLowerCase()));
             const openIntake = paymentIntake.filter(isUnresolvedPaymentIntake);
@@ -4182,8 +4087,7 @@
 
             return {
                 decisions: buckets.decisions.length,
-                codexPending: Number(queue.pending ?? buckets.changelog.filter(task => taskIsMachine(task) && !task.completed_at && !task.verified_at && normalizeTaskStage(task.stage) !== 'done').length ?? 0),
-                codexInProgress: Number(queue.in_progress ?? 0),
+                changelogItems: buckets.changelog.length,
                 accountabilityAttention: snapshots.filter(snapshot => ['needs_setup', 'due_today', 'missed', 'needs_review'].includes(snapshot.status)).length,
                 studentsDueToday: snapshots.filter(snapshot => snapshot.status === 'due_today').length,
                 studentsMissed: snapshots.filter(snapshot => snapshot.status === 'missed').length,
@@ -4220,54 +4124,6 @@
             return { buckets, hiddenCaptures };
         }
 
-        function renderAgentStatusPanel(buckets) {
-            const queue = agentFleetStatus?.queue || {};
-            const fleet = agentFleetStatus?.fleet || {};
-            const changelogQueue = (buckets.changelog || []).filter(task => taskIsMachine(task) && !task.completed_at && !task.verified_at && normalizeTaskStage(task.stage) !== 'done');
-            const queued = Number(queue.pending ?? changelogQueue.length ?? 0);
-            const inProgress = Number(queue.in_progress ?? 0);
-            const urgent = Number(queue.urgent_today ?? 0);
-            const latestTitle = queue.latest_task?.title || changelogQueue[0]?.title || buckets.changelog?.[0]?.title || '';
-            const status = String(fleet.status || 'unknown').toLowerCase();
-            const stale = Boolean(fleet.stale);
-            const healthy = status === 'running' && !stale;
-            const health = healthy || queued === 0 ? 'ok' : 'attention';
-            const statusTitle = healthy
-                ? 'Agent fleet is watching the changelog queue'
-                : queued > 0
-                    ? 'Agent work is queued, but the worker is not reporting a fresh heartbeat'
-                    : 'No queued agent work is waiting right now';
-            const note = latestTitle
-                ? `Next visible item: ${taskDisplayTitle({ title: latestTitle })}`
-                : 'New Telegram tasks assigned to the agent fleet show in Changelog as queued, in progress, or verified.';
-            const heartbeat = fleet.last_seen_at
-                ? `Last seen ${formatDateTime(fleet.last_seen_at)}`
-                : 'No heartbeat recorded yet';
-
-            return `
-                <div class="agent-status-panel" data-health="${health}">
-                    <div class="agent-status-main">
-                        <div class="agent-status-kicker">Changelog Queue Visibility</div>
-                        <div class="agent-status-title">${escapeHtml(statusTitle)}</div>
-                        <div class="agent-status-note">${escapeHtml(note)}</div>
-                        <div class="agent-status-note">${escapeHtml(heartbeat)}</div>
-                    </div>
-                    <div class="agent-status-stat">
-                        <span>Queued Agent Work</span>
-                        <strong>${queued}</strong>
-                    </div>
-                    <div class="agent-status-stat">
-                        <span>In Progress</span>
-                        <strong>${inProgress}</strong>
-                    </div>
-                    <div class="agent-status-stat">
-                        <span>Urgent/Today</span>
-                        <strong>${urgent}</strong>
-                    </div>
-                </div>
-            `;
-        }
-
         function taskViewState() {
             const { buckets } = getTaskBuckets();
             const focusMap = {
@@ -4277,7 +4133,6 @@
             };
             const decisionCount = buckets.decisions.length;
             const myTaskCount = buckets.mine.length;
-            const codexQueueCount = buckets.changelog.filter(task => taskIsMachine(task) && !task.completed_at && !task.verified_at && normalizeTaskStage(task.stage) !== 'done').length;
             const changelogCount = buckets.changelog.length;
             const urgentCount = [...buckets.decisions, ...buckets.mine, ...buckets.changelog].filter(t => ['urgent', 'today'].includes(t.urgency)).length;
             const normalizedFocus = TASK_SUBTABS.some(tab => tab.id === taskFocus) ? taskFocus : 'overview';
@@ -4304,7 +4159,6 @@
                 projectCounts,
                 decisionCount,
                 myTaskCount,
-                codexQueueCount,
                 changelogCount,
                 urgentCount,
             };
@@ -4318,7 +4172,7 @@
                         <div>
                             <div class="page-kicker">Work Queue</div>
                             <h2>Tasks</h2>
-                            <p>Decisions wait for your call. My Tasks are human work. Changelog shows queued, active, and completed agent work in one place.</p>
+                            <p>Decisions wait for your call. My Tasks are human work. Changelog keeps implementation activity and completed updates in one place.</p>
                         </div>
                         <div class="page-heading-actions">
                             <span class="page-status-pill">${state.urgentCount} urgent/today</span>
@@ -4337,11 +4191,11 @@
                     <div class="focused-grid">
                         ${renderMetricButton('Urgent / Today', state.urgentCount, 'Open personal work that needs attention now.', "openTaskUrgentToday()")}
                         ${renderMetricButton('Decisions', state.decisionCount, 'Choices waiting for your answer.', "setTaskFocus('decisions')")}
-                        ${renderMetricButton('Changelog Queue', state.codexQueueCount, 'Queued or active implementation work.', "setTaskFocus('changelog')")}
+                        ${renderMetricButton('Changelog', state.changelogCount, 'Implementation activity and completed updates.', "setTaskFocus('changelog')")}
                     </div>
                     <details class="workflow-details">
                         <summary>Workflow rule</summary>
-                        <p>Telegram is the main input. Decisions stay separate until your answer is needed. Personal operator work goes to My Tasks. Agent implementation work lives in Changelog from queue to verification, so there is no hidden pending lane.</p>
+                        <p>Telegram is the main input. Decisions stay separate until your answer is needed. Personal operator work goes to My Tasks. Implementation activity lives in Changelog, so there is no hidden pending lane.</p>
                     </details>
                 </section>
             `;
@@ -4366,11 +4220,9 @@
                         totalCount: state.focusTasks.length,
                         decisionCount: state.decisionCount,
                         myTaskCount: state.myTaskCount,
-                        codexQueueCount: state.codexQueueCount,
                         changelogCount: state.changelogCount,
                     })}
                     ${renderTaskFilterPanel(state)}
-                    ${state.focus === 'changelog' ? renderCodexStatusDetails(state.buckets) : ''}
                     ${renderTaskListSection(state.title, state.filteredTasks, state.focus)}
                 </section>
             `;
@@ -4401,20 +4253,6 @@
                             ${renderTaskProjectFilters(state.projectCounts)}
                         </div>
                     </div>
-                </details>
-            `;
-        }
-
-        function renderCodexStatusDetails(buckets) {
-            const queue = agentFleetStatus?.queue || {};
-            const fleet = agentFleetStatus?.fleet || {};
-            const queued = Number(queue.pending ?? buckets.changelog.filter(task => taskIsMachine(task) && !task.completed_at && !task.verified_at && normalizeTaskStage(task.stage) !== 'done').length ?? 0);
-            const inProgress = Number(queue.in_progress ?? 0);
-            const heartbeat = fleet.last_seen_at ? `Last seen ${formatDateTime(fleet.last_seen_at)}.` : 'No heartbeat recorded yet.';
-            return `
-                <details class="workflow-details">
-                    <summary>Agent queue status</summary>
-                    <p>${queued} queued, ${inProgress} in progress. ${escapeHtml(heartbeat)}</p>
                 </details>
             `;
         }
@@ -4554,7 +4392,7 @@
                     </div>
                     ${renderTaskOverviewButton('decisions', 'Decisions', state.decisionCount, 'Choices needed')}
                     ${renderTaskOverviewButton('mine', 'My Work', state.myTaskCount, 'Operator tasks')}
-                    ${renderTaskOverviewButton('changelog', 'Changelog', state.changelogCount, `${Number(state.codexQueueCount || 0)} queued`)}
+                    ${renderTaskOverviewButton('changelog', 'Changelog', state.changelogCount, 'Activity trail')}
                 </div>
             `;
         }
@@ -4627,7 +4465,7 @@
             const message = ({
                 decisions: 'No decisions waiting. Good. The bot should only ask when your choice changes the outcome.',
                 mine: 'No personal tasks in this focus.',
-                changelog: 'No agent queue or changelog items shown yet.'
+                changelog: 'No changelog items shown yet.'
             })[columnId] || 'Nothing here right now.';
             return `<div class="task-empty">${escapeHtml(message)}</div>`;
         }
@@ -8146,11 +7984,10 @@
                 ensureActiveWorkspaceProject();
                 ensureCurrentViewAllowed();
 
-                const [projectsRes, tasksRes, calendarRes, agentFleetRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes] = await Promise.allSettled([
+                const [projectsRes, tasksRes, calendarRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes] = await Promise.allSettled([
                     api.getProjects(),
                     api.getTasks({ project: selectedProjectFilter() || undefined }),
                     viewAllowed('calendar') ? api.getCalendar({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ events: [] }),
-                    isGlobalOpsUser() ? api.getAgentFleetStatus() : Promise.resolve(null),
                     viewAllowed('contacts') || viewAllowed('accounting') ? api.getSignups() : Promise.resolve({ signups: [] }),
                     viewAllowed('accounting') ? api.getPayments() : Promise.resolve({ payments: [] }),
                     viewAllowed('accounting') ? api.getPaymentIntake() : Promise.resolve({ intake: [] }),
@@ -8170,8 +8007,6 @@
                 ensureActiveWorkspaceProject();
                 if (tasksRes.status === 'fulfilled' && tasksRes.value?.tasks) tasks = tasksRes.value.tasks;
                 if (calendarRes.status === 'fulfilled' && calendarRes.value?.events) calendarEvents = calendarRes.value.events;
-                if (agentFleetRes.status === 'fulfilled' && agentFleetRes.value) agentFleetStatus = agentFleetRes.value;
-                else if (!isGlobalOpsUser()) agentFleetStatus = null;
                 if (signupsRes.status === 'fulfilled' && signupsRes.value?.signups) {
                     signups = signupsRes.value.signups.map((signup) => ({
                         ...signup,
@@ -8191,7 +8026,7 @@
                 if (accountabilityRes.status === 'fulfilled' && accountabilityRes.value?.events) accountabilityEvents = accountabilityRes.value.events;
                 if (groupGoalsRes.status === 'fulfilled' && groupGoalsRes.value?.goals) groupGoals = groupGoalsRes.value.goals;
 
-                const errors = [projectsRes, tasksRes, calendarRes, agentFleetRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes]
+                const errors = [projectsRes, tasksRes, calendarRes, signupsRes, paymentsRes, paymentIntakeRes, paymentReminderRes, contentJobsRes, contentPromptsRes, contentBundlesRes, studentsRes, devicesRes, deviceRulesRes, torahRes, accountabilityRes, groupGoalsRes]
                     .filter((result) => result.status === 'rejected')
                     .map((result) => result.reason?.message || 'Unknown dashboard error');
 

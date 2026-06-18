@@ -23,7 +23,7 @@ test('Operations shell renders explicit super-admin and scoped workspace modes',
   assert.match(operations, /return type \? `\$\{type\}: \$\{name\}` : name;/);
 });
 
-test('Operations workspace selector drives task API loading and skips global-only agent status for scoped users', () => {
+test('Operations workspace selector drives scoped task and calendar API loading', () => {
   const operations = read('public/operations.html');
 
   assert.match(operations, /function isGlobalOpsUser\(\)/);
@@ -31,7 +31,8 @@ test('Operations workspace selector drives task API loading and skips global-onl
   assert.match(operations, /function setWorkspaceProject\(value\)/);
   assert.match(operations, /window\.localStorage\?\.setItem\('bna_ops_active_project', activeWorkspaceProject\)/);
   assert.match(operations, /api\.getTasks\(\{ project: selectedProjectFilter\(\) \|\| undefined \}\)/);
-  assert.match(operations, /isGlobalOpsUser\(\) \? api\.getAgentFleetStatus\(\) : Promise\.resolve\(null\)/);
+  assert.match(operations, /viewAllowed\('calendar'\) \? api\.getCalendar\(\{ project: selectedProjectFilter\(\) \|\| undefined \}\) : Promise\.resolve\(\{ events: \[\] \}\)/);
+  assert.doesNotMatch(operations, /getAgentFleetStatus/);
 });
 
 test('Task create and edit controls cannot override a scoped or selected workspace project', () => {

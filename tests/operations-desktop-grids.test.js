@@ -28,15 +28,13 @@ test('Operations dashboard and pipeline desktop grids auto-fit instead of fixed 
   assert.doesNotMatch(pipelineBoard, /repeat\(6,/);
 });
 
-test('Operations task and status desktop grids avoid uneven fractional dead space', () => {
+test('Operations task desktop grid avoids uneven fractional dead space', () => {
   const operations = read('public/operations.html');
   const overviewStrip = cssBlock(operations, '.task-overview-strip');
-  const agentStatus = cssBlock(operations, '.agent-status-panel');
 
   assert.match(overviewStrip, /grid-template-columns: repeat\(auto-fit, minmax\(170px, 1fr\)\);/);
-  assert.match(agentStatus, /grid-template-columns: minmax\(260px, 1\.25fr\) repeat\(3, minmax\(150px, 1fr\)\);[\s\S]*?align-items: stretch;/);
   assert.doesNotMatch(overviewStrip, /1\.35fr[\s\S]*?0\.65fr/);
-  assert.doesNotMatch(agentStatus, /0\.45fr/);
+  assert.doesNotMatch(operations, /\.agent-status-panel/);
 });
 
 test('Operations repeated desktop card grids use stable readable minimum widths', () => {

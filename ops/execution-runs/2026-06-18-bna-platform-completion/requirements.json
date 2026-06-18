@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-18T21:38:10+03:00",
+  "updated_at": "2026-06-18T21:48:45+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -174,20 +174,21 @@
         "Task state model now canonicalizes decision_required, ready, in_progress, blocked, done, and archived across schema, API create/filter/update paths, agent queue filters, and Operations UI actions.",
         "Task metadata/provenance now separates owner, status, urgency, due, blocker, and source provenance from visible task titles.",
         "Task intake now auto-files high-confidence captures and routes low-confidence captures into Decisions with operator choices instead of a separate review queue.",
-        "Internal Calendar now aggregates scoped tasks, classes, check-ins, accountability events, and group-goal due dates without external sync controls."
+        "Internal Calendar now aggregates scoped tasks, classes, check-ins, accountability events, and group-goal due dates without external sync controls.",
+        "Main task UI no longer shows stale agent/worker diagnostic concepts while preserving the Changelog activity lane."
       ],
       "deployment_evidence": [],
       "verification": [
         "node --test tests/task-state-model.test.js tests/operations-accessibility.test.js tests/operations-workspace-selector.test.js PASS 13/13",
         "npm test PASS 110/110"
       ],
-      "notes": "Task manager child REQ-136 through REQ-139 have local implementation and tests. Parent remains in_progress until idempotency, stale diagnostic cleanup, and remaining child requirements are complete.",
+      "notes": "Task manager child REQ-136 through REQ-140 have local implementation and tests. Parent remains in_progress until live scoped counts/blocker explanations, idempotency, and remaining child requirements are complete.",
       "files_changed": [
         "server.js",
         "public/operations.html",
         "tests/task-state-model.test.js"
       ],
-      "updated_at": "2026-06-18T21:38:10+03:00"
+      "updated_at": "2026-06-18T21:48:45+03:00"
     },
     {
       "id": "REQ-20260618-107",
@@ -1421,7 +1422,7 @@
       "area": "tasks",
       "priority": "P1",
       "current_verdict": "partial",
-      "status": "not_started",
+      "status": "needs_verification",
       "expected_result": "Main task manager hides Queue Health, Track Agent Work, Handoff Files, Do Not Restart, stale/proof-gap counters, and worker diagnostics.",
       "acceptance_criteria": [
         "Remove stale diagnostic concepts from main task UI is implemented against the canonical Express/static runtime where applicable.",
@@ -1432,12 +1433,24 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "public/operations.html removes the agent status/heartbeat panel, agent queue status details block, Changelog Queue metric wording, queued worker counts, and client-side agent-fleet status fetch from the main Operations task UI.",
+        "The Changelog lane remains available as a normal activity/completed-work trail without Queue Health, Track Agent Work, Handoff Files, Do Not Restart, proof-gap, stale, or worker diagnostic concepts.",
+        "tests/operations-task-diagnostics.test.js asserts the stale diagnostic concepts remain absent while the Changelog lane remains present.",
+        "tests/operations-desktop-grids.test.js and tests/operations-workspace-selector.test.js were updated for the removed diagnostics panel/fetch."
+      ],
       "deployment_evidence": [],
-      "verification": [],
+      "verification": [
+        "PASS node --check server.js",
+        "PASS node --check tests/operations-task-diagnostics.test.js",
+        "PASS Operations HTML script parse via vm.Script (2 script blocks)",
+        "PASS node --test tests/operations-task-diagnostics.test.js tests/operations-desktop-grids.test.js tests/operations-workspace-selector.test.js 10/10",
+        "PASS npm test 121/121"
+      ],
       "implementation_commits": [],
       "files_changed": [],
-      "notes": ""
+      "notes": "Local implementation complete; remains needs_verification until final acceptance sweep, release approval, and any required live smoke.",
+      "updated_at": "2026-06-18T21:48:45+03:00"
     },
     {
       "id": "REQ-20260618-141",

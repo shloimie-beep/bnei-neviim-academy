@@ -3362,3 +3362,32 @@ Verification:
 Status: local `needs_verification`; no deployment, production migration,
 production-data mutation, audit crawl, watch loop, or agent-fleet loop was
 performed. Resume at `REQ-20260618-140`.
+
+## 2026-06-18T21:48:45+03:00 - Main Task UI Diagnostic Cleanup
+
+Completed the local stale diagnostic cleanup batch for `REQ-20260618-140`.
+
+- Removed the agent status/heartbeat panel from the main Operations task UI.
+- Removed the Changelog details block that showed agent queue status,
+  heartbeat, stale worker state, and worker counts.
+- Replaced `Changelog Queue` wording with plain `Changelog` activity wording.
+- Removed queued worker counts and the client-side agent-fleet status fetch
+  from `public/operations.html`.
+- Preserved the Changelog lane as an activity/completed-work trail.
+- Added focused coverage in `tests/operations-task-diagnostics.test.js`.
+- Updated desktop-grid and workspace-selector tests for the intentionally
+  removed diagnostics panel/fetch.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/operations-task-diagnostics.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/operations-task-diagnostics.test.js
+  tests/operations-desktop-grids.test.js
+  tests/operations-workspace-selector.test.js` 10/10.
+- PASS `npm test` 121/121.
+
+Status: local `needs_verification`; no deployment, production migration,
+production-data mutation, audit crawl, watch loop, or agent-fleet loop was
+performed. Resume at `REQ-20260618-141`.

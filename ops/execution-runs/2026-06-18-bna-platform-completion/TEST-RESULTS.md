@@ -158,3 +158,11 @@ Internal scoped Operations calendar (2026-06-18T21:38:10+03:00):
 - PASS Operations HTML script parse via `vm.Script` (2 script blocks).
 - PASS `node --test tests/operations-calendar.test.js tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js tests/workspace-auth.test.js` 17/17.
 - PASS `npm test` 119/119.
+
+Main task UI stale diagnostics cleanup (2026-06-18T21:48:45+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/operations-task-diagnostics.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/operations-task-diagnostics.test.js tests/operations-desktop-grids.test.js tests/operations-workspace-selector.test.js` 10/10.
+- PASS `npm test` 121/121.
