@@ -2295,6 +2295,15 @@ CREATE INDEX IF NOT EXISTS idx_bna_class_sessions_class_date ON bna_class_sessio
 CREATE INDEX IF NOT EXISTS idx_bna_class_sessions_content_job_id ON bna_class_sessions (content_job_id);
 CREATE INDEX IF NOT EXISTS idx_bna_content_outputs_job_id ON bna_content_outputs (job_id);
 CREATE INDEX IF NOT EXISTS idx_bna_content_outputs_status ON bna_content_outputs (status);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_tasks_mixed_parser_item_key_unique
+  ON bna_tasks ((ai_parsed->>'parser_item_key'))
+  WHERE ai_parsed->>'parser' = 'mixed-recording-v1' AND ai_parsed ? 'parser_item_key';
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_accountability_mixed_parser_item_key_unique
+  ON bna_accountability_events ((metadata->>'parser_item_key'))
+  WHERE metadata->>'parser' = 'mixed-recording-v1' AND metadata ? 'parser_item_key';
+CREATE UNIQUE INDEX IF NOT EXISTS idx_bna_group_entries_mixed_parser_item_key_unique
+  ON bna_group_goal_entries ((metadata->>'parser_item_key'))
+  WHERE metadata->>'parser' = 'mixed-recording-v1' AND metadata ? 'parser_item_key';
 CREATE INDEX IF NOT EXISTS idx_bna_content_prompt_examples_platform ON bna_content_prompt_examples (platform);
 CREATE INDEX IF NOT EXISTS idx_bna_content_bundles_status ON bna_content_bundles (status);
 CREATE INDEX IF NOT EXISTS idx_bna_projects_project_key ON bna_projects (project_key);
@@ -2868,6 +2877,37 @@ function sourceContextToText(value) {
   return JSON.stringify(value);
 }
 
+function mixedRecordingParserItemKey(jobId, lane, parts = []) {
+  const source = parts
+    .flatMap((part) => Array.isArray(part) ? part : [part])
+    .map((part) => {
+      if (part === undefined || part === null) return '';
+      if (typeof part === 'object') return JSON.stringify(part);
+      return String(part);
+    })
+    .map((part) => normalizeLooseText(part) || String(part).trim().toLowerCase())
+    .filter(Boolean)
+    .join('|');
+  const fingerprint = crypto
+    .createHash('sha256')
+    .update(source || `${jobId}|${lane}`)
+    .digest('hex')
+    .slice(0, 20);
+  return `mixed-recording:${jobId}:${lane}:${fingerprint}`;
+}
+
+function mixedRecordingParserMetadata(job = {}, lane, parserItemKey, original, extra = {}) {
+  return {
+    parser: 'mixed-recording-v1',
+    source_content_job_id: job.id || null,
+    parser_lane: lane,
+    parser_item_key: parserItemKey,
+    source_workspace_id: job.workspace_id || null,
+    ...extra,
+    original,
+  };
+}
+
 function titleFromRawTaskText(rawText) {
   const text = String(rawText || '').trim();
   if (!text) return '';
@@ -2912,6 +2952,66 @@ async function createTaskFromText(input = {}, options = {}, db = pool) {
     original_text: rawText || title,
     project: project.name,
   };
+  const aiParsedJson = JSON.stringify(aiParsed);
+  const parserItemKey = aiParsed && typeof aiParsed === 'object'
+    ? String(aiParsed.parser_item_key || '').trim()
+    : '';
+  const taskValues = [
+    project.workspace_id || null,
+    title,
+    notes,
+    stage,
+    category,
+    urgency,
+    input.energy_required || null,
+    input.estimated_minutes || null,
+    input.due_date || null,
+    blockerReason,
+    source,
+    sourceContextToText(input.source_context || input.context_metadata || null),
+    createdBy,
+    assignedTo,
+    aiParsedJson,
+    project.id,
+    decisionRequired,
+    author,
+  ];
+
+  if (parserItemKey) {
+    const existing = await db.query(
+      `UPDATE bna_tasks
+       SET workspace_id = $1,
+           title = $2,
+           notes = $3,
+           stage = $4,
+           category = $5,
+           urgency = $6,
+           energy_required = $7,
+           estimated_minutes = $8,
+           due_date = $9,
+           blocker_reason = $10,
+           source = $11,
+           source_context = $12,
+           created_by = COALESCE(created_by, $13),
+           assigned_to = $14,
+           ai_parsed = $15,
+           project_id = $16,
+           decision_required = $17,
+           author = COALESCE($18, author),
+           updated_at = NOW()
+       WHERE ai_parsed->>'parser_item_key' = $19
+       RETURNING *`,
+      [...taskValues, parserItemKey]
+    );
+    if (existing.rows[0]) {
+      return {
+        ...existing.rows[0],
+        project_key: project.project_key,
+        project_name: project.name,
+        project_short_name: project.short_name,
+      };
+    }
+  }
 
   const result = await db.query(
     `INSERT INTO bna_tasks (
@@ -2920,26 +3020,7 @@ async function createTaskFromText(input = {}, options = {}, db = pool) {
       )
       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
       RETURNING *`,
-    [
-      project.workspace_id || null,
-      title,
-      notes,
-      stage,
-      category,
-      urgency,
-      input.energy_required || null,
-      input.estimated_minutes || null,
-      input.due_date || null,
-      blockerReason,
-      source,
-      sourceContextToText(input.source_context || input.context_metadata || null),
-      createdBy,
-      assignedTo,
-      JSON.stringify(aiParsed),
-      project.id,
-      decisionRequired,
-      author,
-    ]
+    taskValues
   );
   return {
     ...result.rows[0],
@@ -5129,6 +5210,19 @@ async function getProjectByKey(projectKey, db = pool) {
   return normalized === ONE_TIME_PROJECT_KEY ? seeded.oneTime : seeded.bna;
 }
 
+async function projectKeyForWorkspaceId(workspaceId, fallback = DEFAULT_PROJECT_KEY, db = pool) {
+  if (!workspaceId) return fallback;
+  const result = await db.query(
+    `SELECT project_key
+     FROM bna_projects
+     WHERE workspace_id = $1
+     ORDER BY id ASC
+     LIMIT 1`,
+    [workspaceId]
+  );
+  return normalizeProjectKey(result.rows[0]?.project_key) || fallback;
+}
+
 async function resolveProjectFromInput(input = {}, db = pool) {
   if (input.project_id) {
     const byId = (await db.query('SELECT * FROM bna_projects WHERE id = $1 LIMIT 1', [input.project_id])).rows[0];
@@ -5809,6 +5903,136 @@ function buildTorahTimerNote(baseNote, mapping = {}, job = {}) {
   ].filter(Boolean).join(' ');
 }
 
+async function upsertMixedRecordingAccountabilityEvent(client, input = {}) {
+  const metadata = input.metadata || {};
+  const parserItemKey = String(metadata.parser_item_key || input.parser_item_key || '').trim();
+  const values = [
+    input.workspace_id || null,
+    safeAccountabilityEventType(input.event_type),
+    input.student_id || null,
+    input.student_name || null,
+    String(input.title || 'Recording note').slice(0, 240),
+    input.notes || null,
+    input.topic || null,
+    input.question_text || null,
+    input.goal_target_value || null,
+    input.goal_actual_value || null,
+    input.goal_unit || null,
+    clampProgressPercent(input.progress_percent),
+    input.attendance_status || null,
+    input.next_check_in_date || null,
+    input.engagement_level || null,
+    Boolean(input.follow_up_required),
+    JSON.stringify(metadata),
+    input.source_message_id || null,
+    input.source_media_url || null,
+  ];
+
+  if (parserItemKey) {
+    const existing = await client.query(
+      `UPDATE bna_accountability_events
+       SET workspace_id = $1,
+           event_type = $2,
+           student_id = $3,
+           student_name = $4,
+           title = $5,
+           notes = $6,
+           topic = $7,
+           question_text = $8,
+           goal_target_value = $9,
+           goal_actual_value = $10,
+           goal_unit = $11,
+           progress_percent = $12,
+           attendance_status = $13,
+           next_check_in_date = $14,
+           engagement_level = $15,
+           follow_up_required = $16,
+           metadata = $17,
+           source = 'recording',
+           source_message_id = $18,
+           source_media_url = $19,
+           updated_at = NOW()
+       WHERE metadata->>'parser_item_key' = $20
+       RETURNING *`,
+      [...values, parserItemKey]
+    );
+    if (existing.rows[0]) return existing.rows[0];
+  }
+
+  return (await client.query(
+    `INSERT INTO bna_accountability_events (
+      workspace_id, event_type, student_id, student_name, title, notes, topic, question_text,
+      goal_target_value, goal_actual_value, goal_unit, progress_percent,
+      attendance_status, next_check_in_date, engagement_level, follow_up_required, metadata,
+      source, source_message_id, source_media_url, occurred_at
+    ) VALUES (
+      $1, $2, $3, $4, $5, $6, $7, $8,
+      $9, $10, $11, $12,
+      $13, $14, $15, $16, $17,
+      'recording', $18, $19, NOW()
+    )
+    RETURNING *`,
+    values
+  )).rows[0];
+}
+
+async function upsertMixedRecordingGroupGoalEntry(client, input = {}) {
+  const metadata = input.metadata || {};
+  const parserItemKey = String(metadata.parser_item_key || input.parser_item_key || '').trim();
+  const values = [
+    input.workspace_id || null,
+    input.goal_id,
+    input.student_id || null,
+    input.student_name || null,
+    input.recorded_date,
+    input.target_minutes || null,
+    input.inside_following_minutes || 0,
+    input.inside_listening_minutes || 0,
+    input.distracted_minutes || 0,
+    input.weighted_minutes || 0,
+    clampProgressPercent(input.progress_percent),
+    input.notes || null,
+    input.source_content_job_id || null,
+    JSON.stringify(metadata),
+  ];
+
+  if (parserItemKey) {
+    const existing = await client.query(
+      `UPDATE bna_group_goal_entries
+       SET workspace_id = $1,
+           goal_id = $2,
+           student_id = $3,
+           student_name = $4,
+           recorded_date = $5::date,
+           target_minutes = $6,
+           inside_following_minutes = $7,
+           inside_listening_minutes = $8,
+           distracted_minutes = $9,
+           weighted_minutes = $10,
+           progress_percent = $11,
+           notes = $12,
+           source_content_job_id = $13,
+           metadata = $14,
+           updated_at = NOW()
+       WHERE metadata->>'parser_item_key' = $15
+       RETURNING *`,
+      [...values, parserItemKey]
+    );
+    if (existing.rows[0]) return existing.rows[0];
+  }
+
+  return (await client.query(
+    `INSERT INTO bna_group_goal_entries (
+      workspace_id, goal_id, student_id, student_name, recorded_date, target_minutes,
+      inside_following_minutes, inside_listening_minutes, distracted_minutes, weighted_minutes,
+      progress_percent, notes, source_content_job_id, metadata
+    )
+    VALUES ($1, $2, $3, $4, $5::date, $6, $7, $8, $9, $10, $11, $12, $13, $14)
+    RETURNING *`,
+    values
+  )).rows[0];
+}
+
 async function insertTorahTimerAccountabilityEvent(client, {
   student,
   job = {},
@@ -5816,45 +6040,37 @@ async function insertTorahTimerAccountabilityEvent(client, {
   torahRecord = null,
   groupGoalEntry = null,
   mapping = {},
+  parserItemKey = '',
 }) {
   if (!student || !mapping.hasTimerBreakdown) return null;
   const notes = buildTorahTimerNote(sourceUpdate.notes || null, mapping, job);
-  const inserted = (await client.query(
-    `INSERT INTO bna_accountability_events (
-      workspace_id, event_type, student_id, student_name, title, notes, topic,
-      goal_target_value, goal_actual_value, goal_unit, progress_percent,
-      engagement_level, follow_up_required, metadata,
-      source, source_message_id, source_media_url, occurred_at
-    ) VALUES (
-      $1, 'learning_note', $2, $3, $4, $5, 'Torah daily engagement',
-      $6, $7, 'minutes', $8,
-      $9, FALSE, $10,
-      'recording', $11, $12, NOW()
-    )
-    RETURNING *`,
-    [
-      student.workspace_id || null,
+  return upsertMixedRecordingAccountabilityEvent(client, {
+    workspace_id: student.workspace_id || job.workspace_id || null,
+    event_type: 'learning_note',
+    student_id: student.id,
+    student_name: student.name,
+    title: `Torah timer update for ${student.name}`.slice(0, 240),
+    notes: notes || null,
+    topic: 'Torah daily engagement',
+    goal_target_value: mapping.goalMinutes,
+    goal_actual_value: mapping.countedMinutes,
+    goal_unit: 'minutes',
+    progress_percent: mapping.progressPercent,
+    engagement_level: mapping.engagementLevel,
+    follow_up_required: false,
+    metadata: mixedRecordingParserMetadata(job, 'torah_timer_event', parserItemKey || mixedRecordingParserItemKey(job.id, 'torah_timer_event', [
       student.id,
-      student.name,
-      `Torah timer update for ${student.name}`.slice(0, 240),
-      notes || null,
-      mapping.goalMinutes,
-      mapping.countedMinutes,
-      mapping.progressPercent,
-      mapping.engagementLevel,
-      JSON.stringify({
-        parser: 'mixed-recording-v1',
-        source_content_job_id: job.id || null,
-        torah_entry_id: torahRecord?.entry?.id || null,
-        group_goal_entry_id: groupGoalEntry?.id || null,
-        timer_mapping: mapping,
-        original: sourceUpdate,
-      }),
-      String(job.id || ''),
-      job.media_url || null,
-    ]
-  )).rows[0];
-  return inserted;
+      torahRecord?.entry?.date,
+      groupGoalEntry?.id,
+      sourceUpdate,
+    ]), sourceUpdate, {
+      torah_entry_id: torahRecord?.entry?.id || null,
+      group_goal_entry_id: groupGoalEntry?.id || null,
+      timer_mapping: mapping,
+    }),
+    source_message_id: String(job.id || ''),
+    source_media_url: job.media_url || null,
+  });
 }
 
 function safeTaskCategory(value) {
@@ -9946,6 +10162,9 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
     if (!String(job.transcript_text || '').trim()) {
       return res.status(400).json({ error: 'Content job does not have a transcript yet' });
     }
+    const defaultSchoolWorkspace = await getDefaultSchoolWorkspace(pool);
+    job.workspace_id = job.workspace_id || defaultSchoolWorkspace.id;
+    const jobProjectKey = await projectKeyForWorkspaceId(job.workspace_id, DEFAULT_PROJECT_KEY, pool);
     const previousParse = typeof job.parse_json === 'string' ? safeJsonParse(job.parse_json) : (job.parse_json || {});
     if (!dry_run && !force && previousParse?.mixed_recording_parse?.parsed_at) {
       if (archive_source_after_parse && job.status !== 'archived') {
@@ -9962,7 +10181,7 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
         success: true,
         skipped: true,
         dry_run: false,
-        message: 'This recording was already parsed. Use force if you intentionally want to reparse and create new records.',
+        message: 'This recording was already parsed. Use force if you intentionally want to reparse and refresh source-linked records.',
         report: previousParse.mixed_recording_parse.report || {},
         counts: previousParse.mixed_recording_parse.counts || {},
       });
@@ -9972,7 +10191,9 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
       `SELECT *
        FROM bna_students
        WHERE COALESCE(status, 'active') NOT IN ('archived', 'inactive')
-       ORDER BY name ASC`
+         AND workspace_id = $1
+       ORDER BY name ASC`,
+      [job.workspace_id]
     )).rows;
 
     const parsed = await generateMixedRecordingParse({
@@ -10022,6 +10243,15 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
           job.title,
           job.caption,
         ].filter(Boolean).join('\n');
+        const parserItemKey = mixedRecordingParserItemKey(job.id, 'task', [
+          title,
+          task.notes,
+          task.original_text,
+          task.source_text,
+          task.project,
+          task.project_key,
+          task.assigned_to,
+        ]);
         const inserted = await createTaskFromText({
           title,
           raw_text: task.original_text || task.source_text || task.notes || title,
@@ -10030,16 +10260,18 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
           category: safeTaskCategory(task.category || inferTaskCategory(taskText)),
           urgency: safeTaskUrgency(task.urgency),
           source: 'content_job',
-          source_context: { content_job_id: job.id },
+          source_context: {
+            content_job_id: job.id,
+            parser: 'mixed-recording-v1',
+            parser_lane: 'task',
+            parser_item_key: parserItemKey,
+            source_workspace_id: job.workspace_id || null,
+          },
           created_by: 'mixed-recording-parser',
           assigned_to: safeTaskOwner(task.assigned_to, task),
-          project: task.project || task.project_key || inferProjectKeyFromText(taskText),
+          project: task.project || task.project_key || inferProjectKeyFromText(taskText, jobProjectKey),
           decision_required: Boolean(task.decision_required),
-          ai_parsed: {
-            parser: 'mixed-recording-v1',
-            source_content_job_id: job.id,
-            original: task,
-          },
+          ai_parsed: mixedRecordingParserMetadata(job, 'task', parserItemKey, task),
         }, {}, client);
         createdTasks.push(inserted);
       }
@@ -10049,41 +10281,39 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
         const matchedStudent = event.student_id
           ? students.find((student) => Number(student.id) === Number(event.student_id))
           : findStudentForParsedName(event.student_name, students);
-        const inserted = (await client.query(
-          `INSERT INTO bna_accountability_events (
-            workspace_id, event_type, student_id, student_name, title, notes, topic, question_text,
-            goal_target_value, goal_actual_value, goal_unit, progress_percent,
-            attendance_status, next_check_in_date, engagement_level, follow_up_required, metadata,
-            source, source_message_id, source_media_url, occurred_at
-          ) VALUES (
-            $1, $2, $3, $4, $5, $6, $7, $8,
-            $9, $10, $11, $12,
-            $13, $14, $15, $16, $17,
-            'recording', $18, $19, NOW()
-          )
-          RETURNING *`,
-          [
-            matchedStudent?.workspace_id || job.workspace_id || null,
-            safeAccountabilityEventType(event.event_type),
-            matchedStudent?.id || null,
-            matchedStudent?.name || event.student_name || null,
-            String(event.title).slice(0, 240),
-            event.notes || null,
-            event.topic || null,
-            event.question_text || null,
-            event.goal_target_value || null,
-            event.goal_actual_value || null,
-            event.goal_unit || null,
-            clampProgressPercent(event.progress_percent),
-            event.attendance_status || null,
-            event.next_check_in_date || null,
-            event.engagement_level || null,
-            Boolean(event.follow_up_required),
-            JSON.stringify({ parser: 'mixed-recording-v1', source_content_job_id: job.id, original: event }),
-            String(job.id),
-            job.media_url || null,
-          ]
-        )).rows[0];
+        const eventType = safeAccountabilityEventType(event.event_type);
+        const title = String(event.title).slice(0, 240);
+        const parserItemKey = mixedRecordingParserItemKey(job.id, 'accountability_event', [
+          eventType,
+          matchedStudent?.id || event.student_id || event.student_name,
+          title,
+          event.notes,
+          event.topic,
+          event.question_text,
+          event.next_check_in_date,
+          event.progress_percent,
+        ]);
+        const inserted = await upsertMixedRecordingAccountabilityEvent(client, {
+          workspace_id: matchedStudent?.workspace_id || job.workspace_id || null,
+          event_type: eventType,
+          student_id: matchedStudent?.id || null,
+          student_name: matchedStudent?.name || event.student_name || null,
+          title,
+          notes: event.notes || null,
+          topic: event.topic || null,
+          question_text: event.question_text || null,
+          goal_target_value: event.goal_target_value || null,
+          goal_actual_value: event.goal_actual_value || null,
+          goal_unit: event.goal_unit || null,
+          progress_percent: event.progress_percent,
+          attendance_status: event.attendance_status || null,
+          next_check_in_date: event.next_check_in_date || null,
+          engagement_level: event.engagement_level || null,
+          follow_up_required: Boolean(event.follow_up_required),
+          metadata: mixedRecordingParserMetadata(job, 'accountability_event', parserItemKey, event),
+          source_message_id: String(job.id),
+          source_media_url: job.media_url || null,
+        });
         createdEvents.push(inserted);
       }
 
@@ -10124,31 +10354,34 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
         });
         const explicitProgress = clampProgressPercent(entry.progress_percent);
         const progressPercent = explicitProgress !== null ? explicitProgress : computed.progress;
-        const inserted = (await client.query(
-          `INSERT INTO bna_group_goal_entries (
-            workspace_id, goal_id, student_id, student_name, recorded_date, target_minutes,
-            inside_following_minutes, inside_listening_minutes, distracted_minutes, weighted_minutes,
-            progress_percent, notes, source_content_job_id, metadata
-          )
-          VALUES ($1, $2, $3, $4, $5::date, $6, $7, $8, $9, $10, $11, $12, $13, $14)
-          RETURNING *`,
-          [
-            matchedStudent?.workspace_id || goal.workspace_id || job.workspace_id || null,
-            goal.id,
-            matchedStudent?.id || null,
-            matchedStudent?.name || entry.student_name || null,
-            entryDate,
-            targetMinutes,
-            storedInsideFollowingMinutes,
-            storedInsideListeningMinutes,
-            mapping.distractedMinutes,
-            computed.weighted,
-            progressPercent,
-            entry.notes || null,
-            job.id,
-            JSON.stringify({ parser: 'mixed-recording-v1', source_content_job_id: job.id, timer_mapping: mapping, original: entry }),
-          ]
-        )).rows[0];
+        const parserItemKey = mixedRecordingParserItemKey(job.id, 'group_goal_entry', [
+          matchedStudent?.id || entry.student_id || entry.student_name,
+          entryDate,
+          targetMinutes,
+          storedInsideFollowingMinutes,
+          storedInsideListeningMinutes,
+          mapping.distractedMinutes,
+          progressPercent,
+          entry.notes,
+        ]);
+        const inserted = await upsertMixedRecordingGroupGoalEntry(client, {
+          workspace_id: matchedStudent?.workspace_id || goal.workspace_id || job.workspace_id || null,
+          goal_id: goal.id,
+          student_id: matchedStudent?.id || null,
+          student_name: matchedStudent?.name || entry.student_name || null,
+          recorded_date: entryDate,
+          target_minutes: targetMinutes,
+          inside_following_minutes: storedInsideFollowingMinutes,
+          inside_listening_minutes: storedInsideListeningMinutes,
+          distracted_minutes: mapping.distractedMinutes,
+          weighted_minutes: computed.weighted,
+          progress_percent: progressPercent,
+          notes: entry.notes || null,
+          source_content_job_id: job.id,
+          metadata: mixedRecordingParserMetadata(job, 'group_goal_entry', parserItemKey, entry, {
+            timer_mapping: mapping,
+          }),
+        });
         createdGroupEntries.push(inserted);
 
         if (matchedStudent && targetMinutes && mapping.hasProgressSignal) {
@@ -10173,12 +10406,33 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
             torahRecord: torahEntry,
             groupGoalEntry: inserted,
             mapping,
+            parserItemKey: mixedRecordingParserItemKey(job.id, 'torah_timer_event', [
+              matchedStudent.id,
+              entryDate,
+              'group_goal_entry',
+              parserItemKey,
+            ]),
           });
           if (timerEvent) createdEvents.push(timerEvent);
         }
       }
 
       for (const update of dailyTorahUpdates) {
+        const updateItemKey = mixedRecordingParserItemKey(job.id, 'daily_torah_update', [
+          update.student_id,
+          update.student_name,
+          update.all_active_students,
+          update.date || getTodayDateInTimeZone(),
+          update.goal_minutes,
+          update.goal_type,
+          update.engaged_listening_minutes,
+          update.inside_engaged_minutes,
+          update.listening_without_following_minutes,
+          update.distracted_minutes,
+          update.daily_completion_percentage,
+          update.completed_daily_units_delta,
+          update.notes,
+        ]);
         const savedUpdates = await upsertParsedDailyTorahUpdate(update, students, job, client);
         createdDailyTorahUpdates.push(...savedUpdates);
         for (const savedUpdate of savedUpdates) {
@@ -10188,6 +10442,12 @@ app.post('/api/bna/content-jobs/:id/parse-mixed-recording', requireAdmin, async 
             sourceUpdate: update,
             torahRecord: savedUpdate,
             mapping: savedUpdate.parser_timer_mapping,
+            parserItemKey: mixedRecordingParserItemKey(job.id, 'torah_timer_event', [
+              savedUpdate.student?.id,
+              savedUpdate.entry?.date,
+              'daily_torah_update',
+              updateItemKey,
+            ]),
           });
           if (timerEvent) createdEvents.push(timerEvent);
         }

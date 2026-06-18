@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-18T22:02:30+03:00
+Updated: 2026-06-18T22:20:45+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -19,24 +19,25 @@ Latest completed local batches:
 - REQ-20260618-139: internal scoped Calendar aggregates task due/planned dates, class sessions, accountability check-ins/events, and group goal due dates without external sync controls.
 - REQ-20260618-140: stale worker/agent diagnostics, heartbeat/status panels, Changelog Queue wording, proof-gap concepts, and client-side agent-fleet status fetches are removed from the main task UI while Changelog remains as an activity lane.
 - REQ-20260618-141: task overview counts now derive from the visible scoped task buckets and blocked counts link to visible blocked records with blocker explanations.
+- REQ-20260618-142: mixed-recording parser records now use deterministic source item keys, workspace-scoped student matching, and upsert behavior so repeated parses do not duplicate tasks, accountability events, group-goal entries, or timer notes.
 
 Exact next requirement:
 
-- REQ-20260618-142 / BNA-TASKS-007: Idempotent parser routing to correct modules/workspaces.
+- REQ-20260618-143 / BNA-COMMUNITY-001: Workspace-scoped communities.
 
 Exact next command:
 
 ```powershell
 npm run bna:run:status
-rg -n "parseMixedRecording|parse-mixed-recording|idempot|ON CONFLICT|source_context|source_content_job_id|content_job_id|createTaskFromText|accountability_events|group_goal_entries|daily_torah_updates|class_notes|workspace_id" server.js tests public\operations.html
+rg -n "community|contacts|contact|signups|parent|provider|workspace_id|opsScopeProjectKey|selectedProjectFilter|renderContacts|loadData|getContacts|/api/bna/(contacts|signups|students|projects)" server.js public\operations.html tests
 ```
 
-Then inspect parser creation paths and idempotency keys so repeated parser runs route to the correct workspace/module without duplicating tasks, content, class notes, accounting, or accountability records.
+Then inspect community/contact/signups surfaces and APIs so each workspace sees only its own community records while super admin uses explicit workspace filtering for cross-workspace views.
 
 Still open after this batch:
 
 - REQ-20260618-124 remains `in_progress` until broader workspace-owned entity API filtering, release approval, deploy, and live smoke are complete.
-- REQ-20260618-125 through REQ-20260618-141 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-125 through REQ-20260618-142 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 
 No deployment or production-data mutation is approved.

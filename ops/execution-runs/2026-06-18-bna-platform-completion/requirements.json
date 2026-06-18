@@ -176,7 +176,8 @@
         "Task intake now auto-files high-confidence captures and routes low-confidence captures into Decisions with operator choices instead of a separate review queue.",
         "Internal Calendar now aggregates scoped tasks, classes, check-ins, accountability events, and group-goal due dates without external sync controls.",
         "Main task UI no longer shows stale agent/worker diagnostic concepts while preserving the Changelog activity lane.",
-        "Task overview counts now derive from visible scoped task buckets and blocked count links to records with blocker explanations."
+        "Task overview counts now derive from visible scoped task buckets and blocked count links to records with blocker explanations.",
+        "Mixed-recording parser records now use deterministic parser item keys, scoped student matching, and upsert behavior to avoid duplicate tasks/accountability/group/timer records on repeated parses."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -191,16 +192,19 @@
         "node --test tests/operations-task-diagnostics.test.js tests/operations-desktop-grids.test.js tests/operations-workspace-selector.test.js PASS 10/10",
         "npm test PASS 121/121",
         "node --test tests/operations-live-counts-blockers.test.js tests/task-metadata-provenance.test.js tests/operations-task-diagnostics.test.js PASS 7/7",
-        "npm test PASS 123/123"
+        "npm test PASS 123/123",
+        "node --test tests/mixed-recording-idempotency.test.js tests/task-intake-routing.test.js tests/workspace-schema.test.js tests/workspace-auth.test.js PASS 18/18",
+        "npm test PASS 127/127"
       ],
-      "notes": "Task manager child REQ-136 through REQ-141 have local implementation and tests. Parent remains in_progress until idempotency and remaining child requirements are complete.",
+      "notes": "Task manager child REQ-136 through REQ-142 have local implementation and tests. Parent remains in_progress until remaining child requirements are complete.",
       "files_changed": [
         "server.js",
         "public/operations.html",
         "tests/task-state-model.test.js",
-        "tests/operations-live-counts-blockers.test.js"
+        "tests/operations-live-counts-blockers.test.js",
+        "tests/mixed-recording-idempotency.test.js"
       ],
-      "updated_at": "2026-06-18T22:02:30+03:00"
+      "updated_at": "2026-06-18T22:20:45+03:00"
     },
     {
       "id": "REQ-20260618-107",
@@ -1513,8 +1517,8 @@
       "title": "Idempotent parser routing to correct modules/workspaces",
       "area": "tasks",
       "priority": "P0",
-      "current_verdict": "partial",
-      "status": "not_started",
+      "current_verdict": "local_complete_pending_release",
+      "status": "needs_verification",
       "expected_result": "Repeated parser runs do not duplicate work and route records to the right workspace/module.",
       "acceptance_criteria": [
         "Idempotent parser routing to correct modules/workspaces is implemented against the canonical Express/static runtime where applicable.",
@@ -1525,12 +1529,30 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "server.js now creates deterministic mixed-recording parser_item_key values and metadata for source-linked tasks, accountability events, group goal entries, and Torah timer events.",
+        "bna_tasks, bna_accountability_events, and bna_group_goal_entries now have partial unique parser_item_key guard indexes for mixed-recording parser records.",
+        "createTaskFromText updates an existing parser-linked task when the same parser_item_key is seen again instead of inserting a duplicate.",
+        "Mixed-recording parser student matching is scoped to the content job workspace, and task project fallback uses the job workspace project when parsed text is ambiguous.",
+        "Accountability events, group goal entries, and Torah timer accountability events now upsert by parser_item_key; class sessions and daily Torah entries retain existing upsert behavior.",
+        "tests/mixed-recording-idempotency.test.js covers parser keys, unique guards, task upsert behavior, workspace-scoped routing, and non-task lane upserts."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check server.js PASS",
+        "node --check tests/mixed-recording-idempotency.test.js PASS",
+        "node --test tests/mixed-recording-idempotency.test.js tests/task-intake-routing.test.js tests/workspace-schema.test.js tests/workspace-auth.test.js PASS 18/18",
+        "npm test PASS 127/127"
+      ],
+      "implementation_commits": [
+        "current batch commit: feat: make mixed parser idempotent"
+      ],
+      "files_changed": [
+        "server.js",
+        "tests/mixed-recording-idempotency.test.js"
+      ],
+      "notes": "Local implementation and tests complete. Live-required closure remains pending release approval, deploy, and live smoke.",
+      "updated_at": "2026-06-18T22:20:45+03:00"
     },
     {
       "id": "REQ-20260618-143",

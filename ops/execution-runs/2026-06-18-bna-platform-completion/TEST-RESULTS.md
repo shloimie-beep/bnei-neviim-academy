@@ -173,3 +173,10 @@ Live scoped task counts and blocker explanations (2026-06-18T22:02:30+03:00):
 - PASS Operations HTML script parse via `vm.Script` (2 script blocks).
 - PASS `node --test tests/operations-live-counts-blockers.test.js tests/task-metadata-provenance.test.js tests/operations-task-diagnostics.test.js` 7/7.
 - PASS `npm test` 123/123.
+
+Mixed-recording parser idempotency and workspace routing (2026-06-18T22:20:45+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/mixed-recording-idempotency.test.js`.
+- PASS `node --test tests/mixed-recording-idempotency.test.js tests/task-intake-routing.test.js tests/workspace-schema.test.js tests/workspace-auth.test.js` 18/18.
+- PASS `npm test` 127/127.

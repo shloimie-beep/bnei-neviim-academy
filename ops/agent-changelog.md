@@ -3420,3 +3420,35 @@ Verification:
 Status: local `needs_verification`; no deployment, production migration,
 production-data mutation, audit crawl, watch loop, or agent-fleet loop was
 performed. Resume at `REQ-20260618-142`.
+
+## 2026-06-18T22:20:45+03:00 - Mixed Parser Idempotency
+
+Completed the local mixed-recording parser idempotency and workspace-routing
+batch for `REQ-20260618-142`.
+
+- Added deterministic mixed-recording `parser_item_key` metadata for tasks,
+  accountability events, group-goal entries, and Torah timer events.
+- Added partial unique guard indexes for mixed-recording parser item keys on
+  `bna_tasks`, `bna_accountability_events`, and `bna_group_goal_entries`.
+- Updated `createTaskFromText` to refresh an existing parser-linked task when
+  the same parser item appears again.
+- Scoped mixed-recording student matching to the content job workspace.
+- Routed ambiguous mixed-recording tasks through the source job workspace
+  project fallback instead of silently defaulting everything to BNA.
+- Converted accountability events, group-goal entries, and Torah timer notes to
+  source-key upserts. Class sessions and daily Torah entries continue using
+  their existing upsert paths.
+- Added focused coverage in `tests/mixed-recording-idempotency.test.js`.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/mixed-recording-idempotency.test.js`.
+- PASS `node --test tests/mixed-recording-idempotency.test.js
+  tests/task-intake-routing.test.js tests/workspace-schema.test.js
+  tests/workspace-auth.test.js` 18/18.
+- PASS `npm test` 127/127.
+
+Status: local `needs_verification`; no deployment, production migration,
+production-data mutation, audit crawl, watch loop, or agent-fleet loop was
+performed. Resume at `REQ-20260618-143`.
