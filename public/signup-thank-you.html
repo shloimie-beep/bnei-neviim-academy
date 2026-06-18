@@ -103,6 +103,16 @@
             line-height: 1.7;
         }
 
+        .parent-access-note {
+            margin-top: 1rem;
+            padding: 1rem 1.1rem;
+            border-radius: 16px;
+            background: #fffdf5;
+            border: 1px solid rgba(201, 162, 39, 0.36);
+            color: #475569;
+            line-height: 1.7;
+        }
+
         .actions {
             display: flex;
             flex-wrap: wrap;
@@ -178,6 +188,10 @@
                 Your registration has been received successfully.
             </div>
 
+            <div class="parent-access-note" id="parentAccessNote">
+                Parent app access is six months free. We will use it for self-governance goals, visible follow-up, and family communication; any paid continuation requires a separate parent decision.
+            </div>
+
             <div class="actions" id="actions">
                 <a class="btn btn-secondary" href="/">Return Home</a>
             </div>
@@ -207,6 +221,7 @@
             headlineEl.textContent = 'תודה על ההרשמה.';
             leadEl.textContent = 'ההרשמה התקבלה.';
             messageEl.textContent = 'תודה על שליחת הטופס.';
+            document.getElementById('parentAccessNote').textContent = 'אפליקציית ההורים בחינם לשישה חודשים. נשתמש בה למעקב אחר יעדים, אחריות אישית וקשר עם הבית; כל המשך בתשלום דורש החלטת הורים נפרדת.';
             homeButton.textContent = 'חזרה לדף הבית';
             smallEl.textContent = '';
         }

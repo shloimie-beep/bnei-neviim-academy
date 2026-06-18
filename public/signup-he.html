@@ -96,6 +96,29 @@
             font-size: 1.15rem;
         }
 
+        .parent-offer {
+            display: grid;
+            gap: 0.65rem;
+            margin: 1.35rem auto 0;
+            max-width: 760px;
+            padding: 1.1rem 1.25rem;
+            border: 1px solid rgba(201, 162, 39, 0.36);
+            border-radius: 16px;
+            background: #fffdf5;
+            color: #334155;
+            text-align: right;
+        }
+
+        .parent-offer strong {
+            color: var(--primary-blue);
+        }
+
+        .parent-offer p {
+            margin: 0;
+            color: #475569;
+            font-size: 0.98rem;
+        }
+
         .form-card {
             background: var(--white);
             padding: clamp(1.5rem, 4vw, 3.25rem);
@@ -496,6 +519,7 @@
         @media (max-width: 768px) {
             .form-row { grid-template-columns: 1fr; }
             .document-signature-list { grid-template-columns: 1fr; }
+            .parent-offer { text-align: right; }
             .form-card { padding: 1.35rem; border-radius: 18px; }
             .nav-container { align-items: flex-start; }
             .nav-actions { flex-wrap: wrap; justify-content: flex-end; }
@@ -541,6 +565,11 @@
                 <h1>Bnei Nevi'im Academy Registration</h1>
                 <p>2026-2027 / תשפ"ז</p>
                 <p>הרשמה לבני נביאים אקדמי<br>לשנת תשפ"ז / 2026-2027</p>
+                <div class="parent-offer" aria-label="הצעת אפליקציית הורים">
+                    <strong>הרשמה ישירה להורי BNA</strong>
+                    <p>כאן מתחילים את תהליך הקבלה ואת פתיחת אפליקציית ההורים. האפליקציה עוזרת במעקב אחר אחריות אישית, יעדים וקשר עם הבית.</p>
+                    <p>אפליקציית ההורים בחינם לשישה חודשים. כל המשך בתשלום דורש החלטת הורים נפרדת.</p>
+                </div>
             </div>
 
             <div class="form-card">

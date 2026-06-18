@@ -113,6 +113,29 @@
             color: var(--secondary-blue);
             font-size: 1.1rem;
         }
+
+        .parent-offer {
+            display: grid;
+            gap: 0.65rem;
+            margin: 1.35rem auto 0;
+            max-width: 760px;
+            padding: 1.1rem 1.25rem;
+            border: 1px solid rgba(201, 162, 39, 0.36);
+            border-radius: 16px;
+            background: #fffdf5;
+            color: #334155;
+            text-align: left;
+        }
+
+        .parent-offer strong {
+            color: var(--primary-blue);
+        }
+
+        .parent-offer p {
+            margin: 0;
+            color: #475569;
+            font-size: 0.98rem;
+        }
         
         .form-card {
             background: var(--white);
@@ -626,6 +649,10 @@
             .form-header h1 {
                 font-size: 2rem;
             }
+
+            .parent-offer {
+                text-align: left;
+            }
             
             .form-card {
                 padding: 1.35rem;
@@ -680,6 +707,11 @@
                 <h1>Bnei Nevi'im Academy Registration</h1>
                 <p>2026-2027 / תשפ"ז</p>
                 <p>הרשמה לבני נביאים אקדמי<br>לשנת תשפ"ז / 2026-2027</p>
+                <div class="parent-offer" aria-label="Parent app offer">
+                    <strong>Direct parent signup for BNA families</strong>
+                    <p>Register here to begin the school intake and parent-app setup. The parent app supports self-governance, goal visibility, and family follow-up.</p>
+                    <p>Parent app access is six months free. Any paid continuation requires a separate parent decision.</p>
+                </div>
             </div>
             
             <div class="form-card">

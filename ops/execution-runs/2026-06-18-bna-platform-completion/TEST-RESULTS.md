@@ -397,3 +397,12 @@ Provider free-listing CTA (2026-06-19T02:00:30+03:00):
 - PASS `npm test` 191/191.
 
 Note: an initial `node --check public/index.html` command was invalid for HTML and was replaced by the inline script parse check. No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed.
+
+Parent signup/self-governance six-month offer (2026-06-19T02:15:30+03:00):
+
+- PASS `node --check tests/public-parent-offer.test.js`.
+- PASS signup and thank-you inline script parse via `vm.Script` (3 script blocks).
+- PASS `node --test tests/public-parent-offer.test.js tests/public-provider-cta.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js` 19/19.
+- PASS `npm test` 195/195.
+
+No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed.

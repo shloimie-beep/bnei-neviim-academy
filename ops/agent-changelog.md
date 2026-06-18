@@ -4064,3 +4064,24 @@ Verification:
 - PASS `npm test` 191/191.
 
 Status: local `needs_verification`; no deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-165`.
+
+## 2026-06-19 - Parent signup six-month offer
+
+Requirement: `REQ-20260618-165`
+
+Changed:
+
+- Added direct parent signup and self-governance copy to the English and Hebrew signup pages.
+- Made the parent app offer consistently say six months free and state that paid continuation requires a separate parent decision.
+- Repeated the parent app offer on the signup thank-you confirmation in English and Hebrew.
+- Updated the parent PWA manifest description to match the direct-signup, self-governance, six-month offer copy.
+- Added `tests/public-parent-offer.test.js` for signup, thank-you, manifest, and one-year-offer drift coverage.
+
+Verification:
+
+- PASS `node --check tests/public-parent-offer.test.js`.
+- PASS signup and thank-you inline script parse via `vm.Script` (3 script blocks).
+- PASS `node --test tests/public-parent-offer.test.js tests/public-provider-cta.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js` 19/19.
+- PASS `npm test` 195/195.
+
+Status: local `needs_verification`; no deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-166`.

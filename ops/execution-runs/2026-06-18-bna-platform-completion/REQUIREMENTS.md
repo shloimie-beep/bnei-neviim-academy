@@ -66,7 +66,7 @@
 | REQ-20260618-162 | REQ-20260618-109 | BNA-HELPER-006 | needs_verification | local_implemented_pending_release | Prevent public/authenticated memory leakage |
 | REQ-20260618-163 | REQ-20260618-110 | BNA-PUBLIC-001 | needs_verification | local_already_satisfied_pending_release | Remove Operations login from public primary navigation |
 | REQ-20260618-164 | REQ-20260618-110 | BNA-PUBLIC-002 | needs_verification | local_implemented_pending_release | Provider CTA: Advertise your program for free |
-| REQ-20260618-165 | REQ-20260618-110 | BNA-PUBLIC-003 | not_started | partial | Direct parent signup/self-governance messaging and six-month offer |
+| REQ-20260618-165 | REQ-20260618-110 | BNA-PUBLIC-003 | needs_verification | local_implemented_pending_release | Direct parent signup/self-governance messaging and six-month offer |
 | REQ-20260618-166 | REQ-20260618-110 | BNA-PUBLIC-004 | not_started | partial | Consistent approved portal headers |
 | REQ-20260618-167 | REQ-20260618-110 | BNA-PUBLIC-005 | not_started | unknown | Public/blog/FAQ/signup/portal route and CTA integrity |
 | REQ-20260618-168 | REQ-20260618-111 | BNA-TEST-001 | not_started | missing | Isolated repeatable seed and cleanup data |

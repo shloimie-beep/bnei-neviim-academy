@@ -1,7 +1,7 @@
 {
   "name": "BNA Parent Portal",
   "short_name": "BNA Parent",
-  "description": "BNA parent and student accountability portal.",
+  "description": "Direct parent signup for BNA self-governance support. Parent app access is six months free.",
   "id": "/parent-portal",
   "start_url": "/signup?source=parent-pwa",
   "scope": "/signup",
