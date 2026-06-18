@@ -84,18 +84,22 @@
       "blocker": null,
       "evidence": [
         "Operations shell now includes an identity-aware workspace context control for super-admin selection versus ordinary scoped-user locked context.",
-        "Workspace changes now reset stale module subsection, student, content selection, prompt expansion, and task-modal context before reloading scoped data."
+        "Workspace changes now reset stale module subsection, student, content selection, prompt expansion, and task-modal context before reloading scoped data.",
+        "Operations now uses one allowedViews-filtered horizontal module toolbar and the sidebar is reduced to workspace context."
       ],
       "deployment_evidence": [],
       "verification": [
         "node --test tests/operations-workspace-selector.test.js PASS 4/4",
         "npm test PASS 81/81",
-        "npm test PASS 82/82"
+        "npm test PASS 82/82",
+        "node --test tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js PASS 8/8",
+        "npm test PASS 85/85"
       ],
-      "notes": "Workspace selector and stale-context reset portions are locally implemented. Operations shell/navigation parent remains in_progress until remaining toolbar/sidebar/header/collapse child requirements are complete.",
+      "notes": "Workspace selector, stale-context reset, ordered module toolbar, and sidebar simplification portions are locally implemented. Operations shell/navigation parent remains in_progress until remaining header/collapse child requirements are complete.",
       "files_changed": [
         "public/operations.html",
-        "tests/operations-workspace-selector.test.js"
+        "tests/operations-workspace-selector.test.js",
+        "tests/operations-module-toolbar.test.js"
       ]
     },
     {
@@ -890,7 +894,7 @@
       "area": "operations",
       "priority": "P0",
       "current_verdict": "partial",
-      "status": "not_started",
+      "status": "needs_verification",
       "expected_result": "Operations uses one compact ordered module toolbar instead of redundant top-level clutter.",
       "acceptance_criteria": [
         "Ordered horizontal Operations module toolbar is implemented against the canonical Express/static runtime where applicable.",
@@ -901,12 +905,27 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "public/operations.html now renders renderModuleToolbar inside the main shell as the single top-level module navigation surface.",
+        "Module order is Tasks, Students, Content, Contacts, Accounting and remains filtered by allowedViews for scoped users.",
+        "The toolbar is compact, sticky, horizontally scrollable on narrow screens, and uses aria-current for the active module.",
+        "The old sidebar module button markup is removed from renderSidebar so module navigation is not duplicated."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check tests/operations-module-toolbar.test.js PASS",
+        "Operations HTML script parse via vm.Script PASS (2 script blocks)",
+        "node --test tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js PASS 8/8",
+        "npm test PASS 85/85"
+      ],
+      "implementation_commits": [
+        "current batch commit: feat: add operations module toolbar"
+      ],
+      "files_changed": [
+        "public/operations.html",
+        "tests/operations-module-toolbar.test.js"
+      ],
+      "notes": "Local compact ordered module toolbar is implemented and tested. Requirement remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for app-visible changes."
     },
     {
       "id": "REQ-20260618-129",
@@ -916,7 +935,7 @@
       "area": "operations",
       "priority": "P0",
       "current_verdict": "partial",
-      "status": "not_started",
+      "status": "needs_verification",
       "expected_result": "Workspace selector and sidebar avoid redundant directory/filter cards and normal-user global workspace UI.",
       "acceptance_criteria": [
         "Simplify workspace/sidebar navigation is implemented against the canonical Express/static runtime where applicable.",
@@ -927,12 +946,23 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "renderSidebar is reduced to BNA Operations workspace context and workspace selector/locked context only; top-level modules live in the single main toolbar.",
+        "Normal scoped users keep locked workspace context and allowedViews-filtered module toolbar instead of global workspace directory UI."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --test tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js PASS 8/8",
+        "npm test PASS 85/85"
+      ],
+      "implementation_commits": [
+        "current batch commit: feat: add operations module toolbar"
+      ],
+      "files_changed": [
+        "public/operations.html",
+        "tests/operations-module-toolbar.test.js"
+      ],
+      "notes": "Local sidebar/module simplification is implemented and tested. Requirement remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for app-visible changes."
     },
     {
       "id": "REQ-20260618-130",

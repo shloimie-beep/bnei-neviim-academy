@@ -76,3 +76,10 @@ Workspace switch stale-context cleanup (2026-06-18T20:18:55+03:00):
 - PASS Operations HTML script parse via `vm.Script` (2 script blocks).
 - PASS `node --test tests/operations-workspace-selector.test.js` 5/5.
 - PASS `npm test` 82/82.
+
+Operations module toolbar/sidebar simplification (2026-06-18T20:24:59+03:00):
+
+- PASS `node --check tests/operations-module-toolbar.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js` 8/8.
+- PASS `npm test` 85/85.

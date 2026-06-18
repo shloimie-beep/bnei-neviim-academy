@@ -3043,3 +3043,32 @@ Verification:
 Status: local `needs_verification`; no deployment, production-data mutation,
 audit crawl, watch loop, or agent-fleet loop was performed. Resume at
 `REQ-20260618-128`.
+
+## 2026-06-18T20:24:59+03:00 - Operations Module Toolbar And Sidebar Simplification
+
+Completed the local toolbar/sidebar batch for `REQ-20260618-128` and
+`REQ-20260618-129`.
+
+- Added `renderModuleToolbar` as the single top-level Operations module
+  navigation surface.
+- Preserved the ordered module sequence: Tasks, Students, Content, Contacts,
+  Accounting.
+- Kept module visibility filtered by `allowedViews` for scoped users.
+- Made the toolbar compact, sticky, and horizontally scrollable on narrow
+  screens.
+- Removed duplicate top-level module buttons from the sidebar.
+- Reduced the sidebar to BNA Operations workspace context plus the
+  super-admin selector or ordinary-user locked workspace context.
+- Added focused static coverage in `tests/operations-module-toolbar.test.js`.
+
+Verification:
+
+- PASS `node --check tests/operations-module-toolbar.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/operations-module-toolbar.test.js
+  tests/operations-workspace-selector.test.js` 8/8.
+- PASS `npm test` 85/85.
+
+Status: local `needs_verification`; no deployment, production-data mutation,
+audit crawl, watch loop, or agent-fleet loop was performed. Resume at
+`REQ-20260618-130`.

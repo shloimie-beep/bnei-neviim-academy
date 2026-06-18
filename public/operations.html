@@ -175,6 +175,69 @@
             width: 100%;
         }
 
+        .ops-module-toolbar {
+            position: sticky;
+            top: 0;
+            z-index: 170;
+            border-bottom: 1px solid #1e293b;
+            background: rgba(15, 23, 42, 0.96);
+            padding: 10px 24px;
+            backdrop-filter: blur(12px);
+        }
+
+        .ops-module-list {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 8px;
+            overflow-x: auto;
+            scrollbar-width: thin;
+        }
+
+        .ops-module-button {
+            border: 1px solid #334155;
+            border-radius: 999px;
+            background: #111827;
+            color: #cbd5e1;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            flex: 0 0 auto;
+            font: inherit;
+            font-size: 13px;
+            font-weight: 800;
+            min-height: 38px;
+            padding: 8px 12px 8px 9px;
+            white-space: nowrap;
+        }
+
+        .ops-module-button:hover,
+        .ops-module-button.active {
+            border-color: rgba(201, 162, 39, 0.45);
+            background: rgba(201, 162, 39, 0.12);
+            color: #f8fafc;
+        }
+
+        .ops-module-marker {
+            align-items: center;
+            background: rgba(148, 163, 184, 0.12);
+            border-radius: 999px;
+            color: #94a3b8;
+            display: inline-flex;
+            font-size: 10px;
+            font-weight: 850;
+            height: 22px;
+            justify-content: center;
+            min-width: 26px;
+            padding: 0 7px;
+        }
+
+        .ops-module-button.active .ops-module-marker {
+            background: #c9a227;
+            color: #0f172a;
+        }
+
         .mobile-app-header {
             display: none;
             position: sticky;
@@ -2776,6 +2839,21 @@
                 display: flex;
             }
 
+            .ops-module-toolbar {
+                top: 59px;
+                padding: 8px 10px;
+            }
+
+            .ops-module-list {
+                gap: 6px;
+            }
+
+            .ops-module-button {
+                justify-content: center;
+                min-width: 96px;
+                padding: 8px 9px;
+            }
+
             .ops-main {
                 width: 100%;
                 overflow-x: hidden;
@@ -3574,6 +3652,7 @@
                     <div class="ops-drawer-backdrop" onclick="closeNavDrawer()" aria-hidden="true"></div>
                     <main class="ops-main">
                         ${renderMobileHeader()}
+                        ${renderModuleToolbar()}
                         ${innerHtml}
                     </main>
                 </div>
@@ -3581,23 +3660,30 @@
         }
 
         function renderSidebar() {
-            const navItems = MAIN_NAV_ITEMS.filter(item => viewAllowed(item.id));
             return `
-                <aside class="ops-sidebar" aria-label="BNA Operations navigation">
+                <aside class="ops-sidebar" aria-label="BNA Operations workspace context">
                     <div class="ops-sidebar-header">
                         <div class="ops-sidebar-title">BNA Operations</div>
                         <div class="ops-sidebar-copy">Telegram and Drive inputs routed into focused work lanes.</div>
                         ${renderWorkspaceContextControl()}
                     </div>
-                    <nav class="ops-sidebar-nav">
+                </aside>
+            `;
+        }
+
+        function renderModuleToolbar() {
+            const navItems = MAIN_NAV_ITEMS.filter(item => viewAllowed(item.id));
+            return `
+                <nav class="ops-module-toolbar" aria-label="Operations module toolbar">
+                    <div class="ops-module-list">
                         ${navItems.map(item => `
-                            <button type="button" class="ops-sidebar-button ${currentView === item.id ? 'active' : ''}" onclick="switchView('${item.id}')">
+                            <button type="button" class="ops-module-button ${currentView === item.id ? 'active' : ''}" onclick="switchView('${item.id}')" ${currentView === item.id ? 'aria-current="page"' : ''}>
+                                <span class="ops-module-marker">${escapeHtml(item.marker)}</span>
                                 <span>${escapeHtml(item.label)}</span>
-                                <span class="ops-sidebar-marker">${escapeHtml(item.marker)}</span>
                             </button>
                         `).join('')}
-                    </nav>
-                </aside>
+                    </div>
+                </nav>
             `;
         }
 
@@ -3606,7 +3692,7 @@
             const sectionLabel = currentSectionLabel();
             return `
                 <header class="mobile-app-header">
-                    <button type="button" class="menu-button" onclick="openNavDrawer()" aria-label="Open navigation"><span class="hamburger-lines" aria-hidden="true"></span></button>
+                    <button type="button" class="menu-button" onclick="openNavDrawer()" aria-label="Open workspace context"><span class="hamburger-lines" aria-hidden="true"></span></button>
                     <div class="mobile-app-title">
                         <strong>${escapeHtml(label)}</strong>
                         <span>${escapeHtml(sectionLabel)}</span>
