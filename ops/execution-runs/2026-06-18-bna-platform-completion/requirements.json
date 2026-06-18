@@ -1642,7 +1642,7 @@
       "title": "Merge Intake Review/Review Queue into auto-routing and Decisions",
       "area": "tasks",
       "priority": "P0",
-      "current_verdict": "partial",
+      "current_verdict": "local_complete_pending_release",
       "status": "needs_verification",
       "expected_result": "High-confidence intake auto-files; low-confidence intake becomes a Decision with routing choices.",
       "acceptance_criteria": [
@@ -1659,7 +1659,9 @@
         "Low-confidence routing Decisions include File as my task, Send to Codex, and Archive options in ai_parsed metadata rather than a separate visible Review Queue lane.",
         "Dashboard and Telegram task creation paths persist candidate routing metadata through taskCandidateAiParsed so the Decisions lane owns ambiguous routing choices.",
         "public/operations.html Decisions now preserve option-specific updates, including routing to Shloimie, routing to Codex, or archiving the intake with archived_at.",
-        "tests/task-intake-routing.test.js covers high-confidence auto-file routing, low-confidence Decision routing, metadata persistence, and absence of visible Review Queue/Intake Review lanes."
+        "tests/task-intake-routing.test.js covers high-confidence auto-file routing, low-confidence Decision routing, metadata persistence, and absence of visible Review Queue/Intake Review lanes.",
+        "Browser acceptance now verifies the rendered Decisions lane shows a low-confidence intake routing card with File as my task, Send to System Work, and Archive actions, with no Review Queue or Intake Review surface.",
+        "Browser acceptance now clicks the Send to System Work routing option and verifies the PATCH payload applies option-specific stage, decision_required, assigned_to, category, and decision-note updates."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -1667,12 +1669,21 @@
         "PASS node --check tests/task-intake-routing.test.js",
         "PASS Operations HTML script parse via vm.Script (2 script blocks)",
         "PASS node --test tests/task-intake-routing.test.js tests/task-state-model.test.js tests/task-metadata-provenance.test.js 9/9",
-        "PASS npm test 116/116"
+        "PASS npm test 116/116",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/task-intake-routing.test.js tests/task-state-model.test.js tests/browser-acceptance.test.js PASS 9/9",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": "Local implementation complete; remains needs_verification until final acceptance sweep, release approval, and any required live smoke.",
-      "updated_at": "2026-06-18T21:25:30+03:00"
+      "implementation_commits": [
+        "current batch commit: test: verify task intake routing in browser"
+      ],
+      "files_changed": [
+        "tests/browser-acceptance.test.js"
+      ],
+      "notes": "Local task intake routing now has static/API and browser DOM/action proof. Requirement remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for app-visible/server-visible changes.",
+      "updated_at": "2026-06-19T06:25:30+03:00"
     },
     {
       "id": "REQ-20260618-139",

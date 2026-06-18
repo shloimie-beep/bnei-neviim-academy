@@ -609,3 +609,13 @@ Task metadata/provenance browser proof (2026-06-19T06:15:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-137 now has browser proof that structured owner/status/urgency/due/blocker/source metadata renders as labeled badges while the raw operator ramble phrase stays out of visible task title/text, and that the modal keeps concise title/blocker fields separate from Source/Raw ID provenance metadata. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Task intake routing browser proof (2026-06-19T06:25:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/task-intake-routing.test.js tests/task-state-model.test.js tests/browser-acceptance.test.js` 9/9.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-138 now has browser proof that the rendered Decisions lane owns low-confidence intake routing with visible File as my task, Send to System Work, and Archive actions; the page exposes no Review Queue or Intake Review lane; and the Send to System Work action sends option-specific stage, decision_required, assigned_to, category, and decision-note updates. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

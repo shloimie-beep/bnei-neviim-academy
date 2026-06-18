@@ -169,6 +169,41 @@ function operationsFixture(pathname, url, options = {}) {
           created_at: '2026-06-18T09:00:00+03:00',
           ai_parsed: { seed_marker: 'TEST-BNA-SEED', legacy_stage_alias: 'needs_decision' },
         },
+        {
+          id: 203,
+          workspace_id: project === 'one_time_mishnah_class' ? 2 : 1,
+          project_key: project === 'one_time_mishnah_class' ? 'one_time_mishnah_class' : 'bna',
+          title: 'Decide where to route captured intake',
+          notes: 'Low-confidence intake needs an operator routing choice before it becomes work.',
+          stage: 'decision_required',
+          category: 'operations',
+          urgency: 'today',
+          assigned_to: 'System Work',
+          created_at: '2026-06-18T10:00:00+03:00',
+          decision_required: true,
+          ai_parsed: {
+            seed_marker: 'TEST-BNA-SEED',
+            intake_confidence: 'low',
+            routing: { route: 'decision', confidence: 0.42 },
+            options: [
+              {
+                label: 'File as my task',
+                value: 'operator_task',
+                updates: { stage: 'ready', decision_required: false, assigned_to: 'Shloimie', category: 'operations' },
+              },
+              {
+                label: 'Send to System Work',
+                value: 'system_work',
+                updates: { stage: 'ready', decision_required: false, assigned_to: 'Codex', category: 'operations' },
+              },
+              {
+                label: 'Archive',
+                value: 'archive',
+                updates: { stage: 'archived', decision_required: false, assigned_to: null },
+              },
+            ],
+          },
+        },
       ],
     },
     '/api/bna/calendar': {
@@ -306,7 +341,21 @@ async function installFixtureRoutes(context, calls, options = {}) {
   await context.route('**/api/bna/**', async (route) => {
     const request = route.request();
     const url = new URL(request.url());
-    calls.push({ method: request.method(), pathname: url.pathname, search: url.search, project: projectFrom(url) });
+    const rawBody = request.postData();
+    let body = null;
+    if (rawBody) {
+      try {
+        body = JSON.parse(rawBody);
+      } catch {
+        body = rawBody;
+      }
+    }
+    calls.push({ body, method: request.method(), pathname: url.pathname, search: url.search, project: projectFrom(url) });
+    if (request.method() === 'PATCH' && /^\/api\/bna\/tasks\/\d+$/.test(url.pathname)) {
+      const taskId = Number(url.pathname.split('/').pop());
+      await route.fulfill(jsonResponse({ success: true, task: { id: taskId, ...(body || {}) } }));
+      return;
+    }
     const payload = operationsFixture(url.pathname, url, options);
     if (!payload) {
       await route.fulfill(jsonResponse({ error: `Unhandled test fixture route: ${url.pathname}` }));
@@ -758,6 +807,40 @@ async function assertOperationsTaskMetadataProvenance(page) {
   await page.locator('.focus-panel[aria-label="Tasks overview"]').waitFor();
 }
 
+async function assertOperationsIntakeRoutingDecisions(page, calls) {
+  await page.locator('.section-tab').filter({ hasText: 'Decisions' }).first().click();
+  const routingRow = page.locator('.task-row').filter({ hasText: 'Decide where to route captured intake' }).first();
+  await routingRow.waitFor();
+  const laneState = await routingRow.evaluate((node) => ({
+    actionText: node.querySelector('.task-row-actions')?.textContent?.replace(/\s+/g, ' ').trim() || '',
+    bodyText: document.body.textContent || '',
+    detail: node.querySelector('.task-row-detail')?.textContent?.trim() || '',
+    title: node.querySelector('.task-row-title')?.textContent?.trim() || '',
+  }));
+  assert.equal(laneState.title, 'Decide where to route captured intake');
+  assert.match(laneState.detail, /Low-confidence intake needs an operator routing choice/);
+  assert.match(laneState.actionText, /File as my task/);
+  assert.match(laneState.actionText, /Send to System Work/);
+  assert.match(laneState.actionText, /Archive/);
+  assert.doesNotMatch(laneState.actionText, /Send to Codex/);
+  assert.doesNotMatch(laneState.bodyText, /Review Queue|Intake Review/);
+
+  await routingRow.locator('.task-action').filter({ hasText: 'Send to System Work' }).click();
+  const routedCall = await waitForCall(
+    calls,
+    (call) => call.method === 'PATCH' && call.pathname === '/api/bna/tasks/203',
+    'routing option task update',
+  );
+  assert.equal(routedCall.body.stage, 'ready');
+  assert.equal(routedCall.body.decision_required, false);
+  assert.equal(routedCall.body.assigned_to, 'Codex');
+  assert.equal(routedCall.body.category, 'operations');
+  assert.match(routedCall.body.notes, /Decision chosen from dashboard: Send to System Work - system_work/);
+
+  await page.locator('.section-tab').filter({ hasText: 'Overview' }).first().click();
+  await page.locator('.focus-panel[aria-label="Tasks overview"]').waitFor();
+}
+
 async function assertStudentPortalIdentity(page) {
   const identity = await page.evaluate(() => ({
     hasLogo: Array.from(document.images).some((img) => (
@@ -792,7 +875,8 @@ async function assertSidebarWorkspaceContextOnly(page) {
 async function waitForCall(calls, predicate, label) {
   const deadline = Date.now() + 3000;
   while (Date.now() < deadline) {
-    if (calls.some(predicate)) return;
+    const call = calls.find(predicate);
+    if (call) return call;
     await new Promise((resolve) => setTimeout(resolve, 50));
   }
   assert.fail(`Timed out waiting for API call: ${label}`);
@@ -840,6 +924,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       await assertOperationsAccessibility(page);
       await assertOperationsTaskStateModel(page);
       await assertOperationsTaskMetadataProvenance(page);
+      await assertOperationsIntakeRoutingDecisions(page, calls);
       await assertOperationsShellStable(page, 'desktop operations shell');
 
       await page.locator('.ops-module-button').filter({ hasText: 'Assistant' }).click();
