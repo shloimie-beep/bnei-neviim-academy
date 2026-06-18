@@ -12909,6 +12909,85 @@ function normalizeAssistantSubjectType(value = 'workspace') {
     : 'workspace';
 }
 
+const ASSISTANT_MEMORY_MODULE_VIEWS = Object.freeze({
+  assistant: 'assistant',
+  tasks: 'tasks',
+  task: 'tasks',
+  calendar: 'calendar',
+  students: 'students',
+  student: 'students',
+  content: 'content',
+  contacts: 'contacts',
+  community: 'contacts',
+  accounting: 'accounting',
+  automations: 'automations',
+  integrations: 'integrations',
+  users: 'users',
+});
+
+const ASSISTANT_MEMORY_SUBJECT_VIEWS = Object.freeze({
+  workspace: null,
+  none: null,
+  task: 'tasks',
+  student: 'students',
+  content: 'content',
+  family: 'contacts',
+  provider: 'contacts',
+});
+
+function assistantMemoryForbidden(message) {
+  const error = new Error(message);
+  error.statusCode = 403;
+  return error;
+}
+
+function assistantMemoryViewAllowed(identity = {}, view = '') {
+  if (!view) return true;
+  if (isGlobalOpsScope(identity.scope)) return true;
+  const allowedViews = new Set(Array.isArray(identity.allowedViews) ? identity.allowedViews : []);
+  return allowedViews.has(view);
+}
+
+function assertAssistantMemoryPermission(identity = {}, scope = {}) {
+  if (scope.surface !== 'operations') {
+    throw assistantMemoryForbidden('Assistant memory is separated by surface and only Operations memory is available here.');
+  }
+  if (!assistantMemoryViewAllowed(identity, 'assistant')) {
+    throw assistantMemoryForbidden('Assistant memory requires the Assistant view for this workspace.');
+  }
+  const moduleView = ASSISTANT_MEMORY_MODULE_VIEWS[scope.module_key];
+  if (!moduleView) {
+    throw assistantMemoryForbidden('Assistant memory module is not registered for this workspace view.');
+  }
+  if (!assistantMemoryViewAllowed(identity, moduleView)) {
+    throw assistantMemoryForbidden(`Assistant memory for ${scope.module_key} requires the ${moduleView} view.`);
+  }
+  const subjectView = ASSISTANT_MEMORY_SUBJECT_VIEWS[scope.subject_type];
+  if (subjectView && !assistantMemoryViewAllowed(identity, subjectView)) {
+    throw assistantMemoryForbidden(`Assistant memory for ${scope.subject_type} context requires the ${subjectView} view.`);
+  }
+}
+
+function assistantMemoryScopeForClient(scope = {}) {
+  return {
+    project_key: scope.project_key,
+    workspace_key: scope.workspace_key,
+    user_scope: 'current_user',
+    user_role: scope.user_role,
+    surface: scope.surface,
+    module_key: scope.module_key,
+    subject_type: scope.subject_type,
+    subject_id: scope.subject_id,
+  };
+}
+
+function assistantPrivateNoStore(req, res, next) {
+  res.setHeader('Cache-Control', 'private, no-store');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  next();
+}
+
 function assistantUserKey(identity = {}) {
   return String(identity.username || identity.user || 'operations_user')
     .trim()
@@ -12930,7 +13009,7 @@ async function resolveAssistantMemoryScope(req, input = {}, db = pool) {
   assertProjectAccess(req, project);
   const identity = req.opsIdentity || {};
   const subjectType = normalizeAssistantSubjectType(input.subject_type || input.subjectType || 'workspace');
-  return {
+  const scope = {
     workspace_id: project.workspace_id || null,
     project_id: project.id || null,
     project_key: normalizeProjectKey(project.project_key) || DEFAULT_PROJECT_KEY,
@@ -12942,9 +13021,11 @@ async function resolveAssistantMemoryScope(req, input = {}, db = pool) {
     subject_type: subjectType,
     subject_id: String(input.subject_id || input.subjectId || '').trim().slice(0, 120),
   };
+  assertAssistantMemoryPermission(identity, scope);
+  return scope;
 }
 
-app.get('/api/bna/assistant/status', requireAdmin, (req, res) => {
+app.get('/api/bna/assistant/status', assistantPrivateNoStore, requireAdmin, (req, res) => {
   const scopedProjectKey = opsScopeProjectKey(req);
   const requestedProjectKey = req.query.project && req.query.project !== 'all'
     ? normalizeProjectKey(req.query.project)
@@ -12957,7 +13038,7 @@ app.get('/api/bna/assistant/status', requireAdmin, (req, res) => {
   });
 });
 
-app.get('/api/bna/assistant/memory', requireAdmin, async (req, res) => {
+app.get('/api/bna/assistant/memory', assistantPrivateNoStore, requireAdmin, async (req, res) => {
   try {
     const scope = await resolveAssistantMemoryScope(req, req.query || {});
     const result = await pool.query(
@@ -12988,7 +13069,7 @@ app.get('/api/bna/assistant/memory', requireAdmin, async (req, res) => {
     );
     res.json({
       success: true,
-      scope,
+      scope: assistantMemoryScopeForClient(scope),
       memories: result.rows,
     });
   } catch (err) {
@@ -12996,7 +13077,7 @@ app.get('/api/bna/assistant/memory', requireAdmin, async (req, res) => {
   }
 });
 
-app.get('/api/bna/assistant/actions', requireAdmin, (req, res) => {
+app.get('/api/bna/assistant/actions', assistantPrivateNoStore, requireAdmin, (req, res) => {
   const scopedProjectKey = opsScopeProjectKey(req);
   const requestedProjectKey = req.query.project && req.query.project !== 'all'
     ? normalizeProjectKey(req.query.project)
@@ -13010,7 +13091,7 @@ app.get('/api/bna/assistant/actions', requireAdmin, (req, res) => {
   });
 });
 
-app.post('/api/bna/assistant/actions/:actionKey', requireAdmin, async (req, res) => {
+app.post('/api/bna/assistant/actions/:actionKey', assistantPrivateNoStore, requireAdmin, async (req, res) => {
   const action = findAssistantAction(req.params.actionKey);
   if (!action) return res.status(404).json({ error: 'Assistant action is not registered' });
   let scope = null;

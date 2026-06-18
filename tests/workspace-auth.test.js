@@ -25,6 +25,16 @@ function oneTimeIdentity() {
   });
 }
 
+function assistantIdentity() {
+  return createWorkspaceIdentity({
+    username: 'assistant-ops',
+    workspaceType: 'service_provider',
+    workspaceKey: 'one_time_mishnah_class',
+    projectKey: 'one_time_mishnah_class',
+    allowedViews: ['tasks', 'assistant', 'calendar']
+  });
+}
+
 function accountingIdentity() {
   return createWorkspaceIdentity({
     username: 'bookkeeper',
@@ -80,22 +90,38 @@ test('ordinary workspace users may use only scoped task routes and safe shared c
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/tasks/42', method: 'PATCH' }), true);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/tasks/42/comments', method: 'POST' }), true);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/calendar', method: 'GET' }), true);
-  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/assistant/status', method: 'GET' }), true);
-  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/assistant/memory', method: 'GET' }), true);
-  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/assistant/actions', method: 'GET' }), true);
-  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/assistant/actions', method: 'POST' }), false);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/automations/status', method: 'GET' }), true);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/integrations/status', method: 'GET' }), true);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/users', method: 'GET' }), true);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/invitations', method: 'GET' }), true);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/projects', method: 'GET' }), true);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/auth/me', method: 'GET' }), true);
-  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/assistant/status', method: 'POST' }), false);
-  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/assistant/memory', method: 'POST' }), false);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/automations/status', method: 'POST' }), false);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/integrations/status', method: 'POST' }), false);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/users', method: 'POST' }), false);
   assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/invitations', method: 'POST' }), false);
+});
+
+test('workspace users without the Assistant view cannot read Assistant routes', () => {
+  const identity = oneTimeIdentity();
+
+  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/assistant/status', method: 'GET' }), false);
+  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/assistant/memory', method: 'GET' }), false);
+  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/assistant/actions', method: 'GET' }), false);
+  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/assistant/status', method: 'POST' }), false);
+  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/assistant/memory', method: 'POST' }), false);
+  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/assistant/actions', method: 'POST' }), false);
+});
+
+test('workspace users with the Assistant view can read Assistant routes', () => {
+  const identity = assistantIdentity();
+
+  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/assistant/status', method: 'GET' }), true);
+  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/assistant/memory', method: 'GET' }), true);
+  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/assistant/actions', method: 'GET' }), true);
+  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/assistant/status', method: 'POST' }), false);
+  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/assistant/memory', method: 'POST' }), false);
+  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/assistant/actions', method: 'POST' }), false);
 });
 
 test('workspace users with accounting view may use only scoped accounting routes', () => {

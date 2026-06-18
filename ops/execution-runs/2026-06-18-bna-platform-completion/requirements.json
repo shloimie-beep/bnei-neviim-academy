@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-19T01:20:30+03:00",
+  "updated_at": "2026-06-19T01:35:30+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -299,7 +299,8 @@
         "GET /api/bna/assistant/actions now exposes a permissioned action registry filtered by role/allowedViews and selected workspace project.",
         "POST /api/bna/assistant/actions/:actionKey now applies confirmation tiers, writes bna_assistant_action_audit rows, and executes only explicit registered handlers for read-only, task-create, and task-comment actions.",
         "Operations Assistant loads memory and action registry scope through selectedProjectFilter and displays scoped Memory Scope plus Action Registry rows without duplicate helper personas.",
-        "Operations-facing Assistant copy now uses one assistant identity and System Work product labels while preserving internal Codex/provider values where operationally required."
+        "Operations-facing Assistant copy now uses one assistant identity and System Work product labels while preserving internal Codex/provider values where operationally required.",
+        "Assistant memory now blocks public/no-auth access, requires Assistant plus module/subject views, redacts raw user keys from client scope, and sets private no-store response headers."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -311,9 +312,11 @@
         "rg duplicate helper/dev-language patterns in public/server product sources PASS with no matches",
         "node --check tests/assistant-language-cleanup.test.js PASS",
         "node --test tests/assistant-language-cleanup.test.js tests/assistant-shell.test.js tests/task-intake-routing.test.js tests/assistant-actions.test.js PASS 14/14",
-        "npm test PASS 180/180"
+        "npm test PASS 180/180",
+        "node --test tests/assistant-memory-isolation.test.js tests/assistant-shell.test.js tests/workspace-auth.test.js tests/assistant-actions.test.js tests/workspace-http-isolation.test.js PASS 26/26",
+        "npm test PASS 186/186"
       ],
-      "notes": "Helper parent remains in_progress until public/authenticated memory isolation, final acceptance, release approval, deploy, and live smoke are complete.",
+      "notes": "Helper parent remains in_progress until final acceptance, release approval, deploy, and live smoke are complete.",
       "files_changed": [
         "server.js",
         "public/operations.html",
@@ -324,7 +327,8 @@
         "tests/workspace-auth.test.js",
         "tests/workspace-schema.test.js",
         "tests/task-intake-routing.test.js",
-        "tests/assistant-language-cleanup.test.js"
+        "tests/assistant-language-cleanup.test.js",
+        "tests/assistant-memory-isolation.test.js"
       ]
     },
     {
@@ -2499,8 +2503,8 @@
       "title": "Prevent public/authenticated memory leakage",
       "area": "helper",
       "priority": "P0",
-      "current_verdict": "partial",
-      "status": "not_started",
+      "current_verdict": "local_implemented_pending_release",
+      "status": "needs_verification",
       "expected_result": "Public helper cannot remember authenticated operator context or leak cross-user/workspace memory.",
       "acceptance_criteria": [
         "Prevent public/authenticated memory leakage is implemented against the canonical Express/static runtime where applicable.",
@@ -2511,12 +2515,39 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "Scoped workspace users now need the Assistant view before they can read Assistant status, memory, or action registry routes.",
+        "resolveAssistantMemoryScope now enforces operations-only memory plus Assistant, module, and subject-specific allowedViews before any bna_assistant_memory query runs.",
+        "Assistant memory responses now redact the raw user_key from client-facing scope and return user_scope: current_user instead.",
+        "Assistant status, memory, action registry, and action execution routes now set private no-store headers before authentication, and Operations API requests use cache: no-store.",
+        "tests/assistant-memory-isolation.test.js proves public unauthenticated memory requests return 401, carry private no-store headers, and do not query the database."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check server.js PASS",
+        "node --check tests/assistant-memory-isolation.test.js PASS",
+        "node --test tests/assistant-memory-isolation.test.js tests/assistant-shell.test.js tests/workspace-auth.test.js tests/assistant-actions.test.js tests/workspace-http-isolation.test.js PASS 26/26",
+        "npm test PASS 186/186"
+      ],
+      "implementation_commits": [
+        "current batch commit: fix: isolate assistant memory access"
+      ],
+      "files_changed": [
+        "server.js",
+        "public/operations.html",
+        "src/lib/bna/workspace-auth.js",
+        "tests/assistant-memory-isolation.test.js",
+        "tests/assistant-actions.test.js",
+        "tests/assistant-shell.test.js",
+        "tests/workspace-auth.test.js",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/STATUS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/REQUIREMENTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md"
+      ],
+      "notes": "Local implementation complete; live-required status remains needs_verification until final acceptance sweep, release approval, deploy, and live smoke. No OpenAI call, live helper action execution, deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
     },
     {
       "id": "REQ-20260618-163",

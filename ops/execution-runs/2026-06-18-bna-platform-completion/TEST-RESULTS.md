@@ -370,3 +370,12 @@ Assistant product-language cleanup (2026-06-19T01:20:30+03:00):
 - PASS `npm test` 180/180.
 
 No OpenAI call, helper action execution, deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed.
+
+Assistant public/authenticated memory isolation (2026-06-19T01:35:30+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/assistant-memory-isolation.test.js`.
+- PASS `node --test tests/assistant-memory-isolation.test.js tests/assistant-shell.test.js tests/workspace-auth.test.js tests/assistant-actions.test.js tests/workspace-http-isolation.test.js` 26/26.
+- PASS `npm test` 186/186.
+
+No OpenAI call, live helper action execution, deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed.

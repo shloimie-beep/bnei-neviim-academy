@@ -3617,6 +3617,7 @@
             async request(method, path, body) {
                 const options = {
                     method,
+                    cache: 'no-store',
                     credentials: 'same-origin',
                     headers: {
                         'Content-Type': 'application/json'
@@ -4585,7 +4586,7 @@
                                 <div class="event-title">${escapeHtml(memoryScope.module_key || 'assistant')} / ${escapeHtml(memoryScope.subject_type || 'workspace')}</div>
                                 <div class="contact-detail-grid" style="margin-top:12px;">
                                     ${renderContactDetailItem('Project', memoryScope.project_key || selectedProjectFilter() || 'bna')}
-                                    ${renderContactDetailItem('User', memoryScope.user_key || 'operations_user')}
+                                    ${renderContactDetailItem('Session', memoryScope.user_scope || 'current_user')}
                                     ${renderContactDetailItem('Role', memoryScope.user_role || assistant.user_role || 'workspace_member')}
                                     ${renderContactDetailItem('Subject', memoryScope.subject_id || memoryScope.subject_type || 'workspace')}
                                 </div>

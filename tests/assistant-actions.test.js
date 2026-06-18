@@ -30,7 +30,7 @@ test('server exposes a permissioned Assistant action registry', () => {
   assert.match(server, /function assistantActionPermitted\(action, identity = \{\}\)/);
   assert.match(server, /allowedViews\.has\(action\.required_view\)/);
   assert.match(server, /function assistantActionsForIdentity\(identity = \{\}, projectKey = ''\)/);
-  assert.match(server, /app\.get\('\/api\/bna\/assistant\/actions', requireAdmin/);
+  assert.match(server, /app\.get\('\/api\/bna\/assistant\/actions', assistantPrivateNoStore, requireAdmin/);
 });
 
 test('Assistant action execution uses confirmation tiers and audit logs', () => {
@@ -48,7 +48,7 @@ test('Assistant action execution uses confirmation tiers and audit logs', () => 
   assert.match(server, /function assertAssistantActionConfirmation\(action = \{\}, confirmValue = ''\)/);
   assert.match(server, /Assistant action requires confirm: \$\{token\}/);
   assert.match(server, /async function writeAssistantActionAudit\(entry = \{\}, db = pool\)/);
-  assert.match(server, /app\.post\('\/api\/bna\/assistant\/actions\/:actionKey', requireAdmin/);
+  assert.match(server, /app\.post\('\/api\/bna\/assistant\/actions\/:actionKey', assistantPrivateNoStore, requireAdmin/);
   assert.match(server, /assistantActionPermitted\(action, req\.opsIdentity \|\| \{\}\)/);
   assert.match(server, /result: 'confirmation_required'/);
   assert.match(server, /result: 'executed'/);

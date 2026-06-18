@@ -16,13 +16,16 @@ const SCOPED_SHARED_ROUTE_PATTERNS = [
   { method: 'GET', pattern: /^\/api\/bna\/auth\/me$/ },
   { method: 'GET', pattern: /^\/api\/bna\/projects$/ },
   { method: 'GET', pattern: /^\/api\/bna\/calendar$/ },
-  { method: 'GET', pattern: /^\/api\/bna\/assistant\/status$/ },
-  { method: 'GET', pattern: /^\/api\/bna\/assistant\/memory$/ },
-  { method: 'GET', pattern: /^\/api\/bna\/assistant\/actions$/ },
   { method: 'GET', pattern: /^\/api\/bna\/automations\/status$/ },
   { method: 'GET', pattern: /^\/api\/bna\/integrations\/status$/ },
   { method: 'GET', pattern: /^\/api\/bna\/users$/ },
   { method: 'GET', pattern: /^\/api\/bna\/invitations$/ }
+];
+
+const SCOPED_ASSISTANT_ROUTE_PATTERNS = [
+  { method: 'GET', pattern: /^\/api\/bna\/assistant\/status$/ },
+  { method: 'GET', pattern: /^\/api\/bna\/assistant\/memory$/ },
+  { method: 'GET', pattern: /^\/api\/bna\/assistant\/actions$/ }
 ];
 
 const SCOPED_ACCOUNTING_ROUTE_PATTERNS = [
@@ -92,6 +95,11 @@ function scopedRouteAllowed(identity, { path, method }) {
     SCOPED_STUDENT_ROUTE_PATTERNS.some((entry) => entry.method === routeMethod && entry.pattern.test(routePath))
   ) {
     return scopedViewAllowed(identity, 'students');
+  }
+  if (
+    SCOPED_ASSISTANT_ROUTE_PATTERNS.some((entry) => entry.method === routeMethod && entry.pattern.test(routePath))
+  ) {
+    return scopedViewAllowed(identity, 'assistant');
   }
   const allowedPatterns = [...SCOPED_SHARED_ROUTE_PATTERNS, ...SCOPED_TASK_ROUTE_PATTERNS];
   return allowedPatterns.some((entry) => entry.method === routeMethod && entry.pattern.test(routePath));

@@ -4002,3 +4002,24 @@ Verification:
 - PASS `npm test` 180/180.
 
 Status: local `needs_verification`; no OpenAI call, live helper action execution, deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-162`.
+
+## 2026-06-19 - Assistant public/authenticated memory isolation
+
+Requirement: `REQ-20260618-162`
+
+Changed:
+
+- Required the Assistant view before scoped users can read Assistant status, memory, or action registry routes.
+- Added Assistant memory permission checks for Operations-only surface plus module and subject-specific views before querying `bna_assistant_memory`.
+- Redacted raw Assistant memory `user_key` from client-facing scope and displayed a current-user session scope in Operations.
+- Added private no-store headers to Assistant routes and no-store fetch behavior to Operations API requests.
+- Added `tests/assistant-memory-isolation.test.js` for permission, redaction, header, and public/no-auth database non-access coverage.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/assistant-memory-isolation.test.js`.
+- PASS `node --test tests/assistant-memory-isolation.test.js tests/assistant-shell.test.js tests/workspace-auth.test.js tests/assistant-actions.test.js tests/workspace-http-isolation.test.js` 26/26.
+- PASS `npm test` 186/186.
+
+Status: local `needs_verification`; no OpenAI call, live helper action execution, deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-163`.
