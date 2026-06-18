@@ -2924,3 +2924,34 @@ authorization filters, UI selected-workspace enforcement, negative
 cross-tenant tests, deployment approval, and live smoke remain open. Resume at
 `REQ-20260618-125`. No deployment, production-data mutation, audit crawl,
 watch loop, or agent-fleet loop was performed.
+
+## 2026-06-18T19:54:44+03:00 - Workspace Authorization Negative Guards
+
+Implemented the first local server-side isolation guard batch for
+`REQ-20260618-125` and partial backend negative-test coverage for
+`REQ-20260618-170`.
+
+- Added `src/lib/bna/workspace-auth.js` for shared scoped route decisions and
+  direct task-row access checks.
+- Wired `requireAdmin` to the shared scoped-route helper.
+- Wired `assertTaskAccess` to the shared direct task-row guard so scoped users
+  cannot access another project task by changing the task ID.
+- Made task comments inherit `workspace_id` from their parent task/project on
+  insert.
+- Added focused negative tests proving scoped ordinary users cannot enumerate
+  students, signups, payment intake, payments, content jobs, class sessions, or
+  content bundles, while still allowing scoped task routes and safe shared
+  context routes.
+
+Verification:
+
+- PASS `node --check src/lib/bna/workspace-auth.js`.
+- PASS `node --check server.js`.
+- PASS `node --test tests/workspace-scope.test.js tests/workspace-schema.test.js
+  tests/workspace-auth.test.js` 16/16.
+- PASS `npm test` 74/74.
+
+Status: partial; continue `REQ-20260618-125` with HTTP/API-level negative tests
+using seeded cross-workspace data and any missing route filters before moving
+to `REQ-20260618-126`. No deployment, production-data mutation, audit crawl,
+watch loop, or agent-fleet loop was performed.

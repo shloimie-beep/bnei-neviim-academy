@@ -46,6 +46,10 @@ const {
   createWorkspaceIdentity,
   isGlobalOpsScope,
 } = require('./src/lib/bna/workspace-scope');
+const {
+  assertScopedTaskAccess,
+  scopedRouteAllowed,
+} = require('./src/lib/bna/workspace-auth');
 
 const app = express();
 const PORT = process.env.PORT || 8080;
@@ -1378,19 +1382,7 @@ function identifyOpsUser(username, password = null) {
 }
 
 function isScopedOpsPathAllowed(req) {
-  const routePath = String(req.path || '');
-  const method = String(req.method || '').toUpperCase();
-  if (routePath === '/operations' && method === 'GET') return true;
-  if (routePath === '/api/bna/auth/me' && method === 'GET') return true;
-  if (routePath === '/api/bna/agent-fleet/status' && ['GET', 'POST'].includes(method)) return true;
-  if (routePath === '/api/bna/projects' && method === 'GET') return true;
-  if (routePath === '/api/bna/pending-briefs' && method === 'GET') return true;
-  if (routePath === '/api/bna/tasks' && ['GET', 'POST'].includes(method)) return true;
-  if (routePath === '/api/bna/tasks/create-from-text' && method === 'POST') return true;
-  if (routePath === '/api/bna/create_task_from_text' && method === 'POST') return true;
-  if (/^\/api\/bna\/tasks\/\d+$/.test(routePath) && ['GET', 'PATCH'].includes(method)) return true;
-  if (/^\/api\/bna\/tasks\/\d+\/comments$/.test(routePath) && ['GET', 'POST'].includes(method)) return true;
-  return false;
+  return scopedRouteAllowed(req.opsIdentity, { path: req.path, method: req.method });
 }
 
 async function issueSession(username) {
@@ -5074,16 +5066,23 @@ async function assertTaskAccess(req, taskId, db = pool) {
   const scopedProjectKey = opsScopeProjectKey(req);
   if (!scopedProjectKey) return null;
   const result = await db.query(
-    `SELECT t.id, p.project_key
+    `SELECT t.id, t.workspace_id, p.project_key, w.workspace_key
      FROM bna_tasks t
      LEFT JOIN bna_projects p ON p.id = t.project_id
+     LEFT JOIN bna_workspaces w ON w.id = COALESCE(t.workspace_id, p.workspace_id)
      WHERE t.id = $1`,
     [taskId]
   );
   const task = result.rows[0];
-  if (!task || normalizeProjectKey(task.project_key) !== scopedProjectKey) {
+  if (!task) {
     const error = new Error('This login can only access One Time Mishnah Class tasks.');
     error.statusCode = 403;
+    throw error;
+  }
+  try {
+    assertScopedTaskAccess(req.opsIdentity, task, 'This login can only access One Time Mishnah Class tasks.');
+  } catch (error) {
+    error.statusCode = error.statusCode || 403;
     throw error;
   }
   return task;
@@ -11152,8 +11151,11 @@ app.post('/api/bna/tasks/:id/comments', requireAdmin, async (req, res) => {
   try {
     await assertTaskAccess(req, req.params.id);
     const result = await pool.query(
-      `INSERT INTO bna_task_comments (task_id, author, body, visibility, source, source_context)
-       VALUES ($1, $2, $3, $4, $5, $6)
+      `INSERT INTO bna_task_comments (workspace_id, task_id, author, body, visibility, source, source_context)
+       SELECT COALESCE(t.workspace_id, p.workspace_id), t.id, $2, $3, $4, $5, $6
+       FROM bna_tasks t
+       LEFT JOIN bna_projects p ON p.id = t.project_id
+       WHERE t.id = $1
        RETURNING *`,
       [
         req.params.id,

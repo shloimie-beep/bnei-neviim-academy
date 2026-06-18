@@ -46,3 +46,10 @@ Workspace workspace_id scoping foundation (2026-06-18T19:49:34+03:00):
 - PASS `node --test tests/workspace-scope.test.js tests/workspace-schema.test.js` 10/10.
 - PASS `npm test` 68/68.
 - PASS `npm run bna:run:validate` before run-file update.
+
+Workspace authorization negative guard tests (2026-06-18T19:54:44+03:00):
+
+- PASS `node --check src/lib/bna/workspace-auth.js`.
+- PASS `node --check server.js`.
+- PASS `node --test tests/workspace-scope.test.js tests/workspace-schema.test.js tests/workspace-auth.test.js` 16/16.
+- PASS `npm test` 74/74.

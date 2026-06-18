@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-18T19:49:34+03:00",
+  "updated_at": "2026-06-18T19:54:44+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -737,8 +737,8 @@
       "title": "Server-side authorization/RLS and negative cross-tenant tests",
       "area": "workspace",
       "priority": "P0",
-      "current_verdict": "missing",
-      "status": "not_started",
+      "current_verdict": "partial",
+      "status": "in_progress",
       "expected_result": "Direct API requests cannot enumerate or retrieve another workspace/student by changing parameters.",
       "acceptance_criteria": [
         "Server-side authorization/RLS and negative cross-tenant tests is implemented against the canonical Express/static runtime where applicable.",
@@ -749,12 +749,29 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "src/lib/bna/workspace-auth.js centralizes scoped route allow/deny decisions and direct task-row access checks.",
+        "server.js requireAdmin now uses scopedRouteAllowed for scoped identities instead of local ad hoc route checks.",
+        "server.js assertTaskAccess now uses assertScopedTaskAccess before comments, updates, and deletes on direct task IDs.",
+        "Task comments now inherit workspace_id from their parent task/project on insert.",
+        "tests/workspace-auth.test.js proves scoped ordinary users cannot enumerate students, signups, payment intake, payments, content jobs, class sessions, or content bundles and cannot access another project task row by changing ID."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check src/lib/bna/workspace-auth.js PASS",
+        "node --check server.js PASS",
+        "node --test tests/workspace-scope.test.js tests/workspace-schema.test.js tests/workspace-auth.test.js PASS 16/16",
+        "npm test PASS 74/74"
+      ],
+      "implementation_commits": [
+        "current batch commit: test: add scoped workspace authorization guards"
+      ],
+      "files_changed": [
+        "server.js",
+        "src/lib/bna/workspace-auth.js",
+        "tests/workspace-auth.test.js"
+      ],
+      "notes": "Local scoped-route and direct task-ID negative tests are implemented. Requirement remains in_progress because full HTTP/API integration tests, selected-workspace filters for future non-task scoped modules, user enumeration coverage, deployment approval, and live smoke remain open."
     },
     {
       "id": "REQ-20260618-126",
@@ -1907,8 +1924,8 @@
       "title": "Backend/API/RBAC negative tests",
       "area": "tests",
       "priority": "P0",
-      "current_verdict": "missing",
-      "status": "not_started",
+      "current_verdict": "partial",
+      "status": "in_progress",
       "expected_result": "Direct backend/API tests prove ordinary users cannot enumerate or read other workspaces, students, users, or accounting records.",
       "acceptance_criteria": [
         "Backend/API/RBAC negative tests is implemented against the canonical Express/static runtime where applicable.",
@@ -1919,12 +1936,24 @@
       "depends_on_audit_output": false,
       "live_required": false,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "tests/workspace-auth.test.js adds negative backend guard tests for ordinary workspace users on students, accounting/payment, content, and direct task-ID access.",
+        "The tests exercise the shared authorization helper now wired into requireAdmin and assertTaskAccess."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --test tests/workspace-scope.test.js tests/workspace-schema.test.js tests/workspace-auth.test.js PASS 16/16",
+        "npm test PASS 74/74"
+      ],
+      "implementation_commits": [
+        "current batch commit: test: add scoped workspace authorization guards"
+      ],
+      "files_changed": [
+        "src/lib/bna/workspace-auth.js",
+        "tests/workspace-auth.test.js",
+        "server.js"
+      ],
+      "notes": "Partial backend isolation coverage is present. Requirement remains in_progress until direct HTTP/API tests cover all affected entities/users/accounting records with seeded cross-workspace data."
     },
     {
       "id": "REQ-20260618-171",

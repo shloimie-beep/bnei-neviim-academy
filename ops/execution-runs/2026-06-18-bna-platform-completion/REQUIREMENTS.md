@@ -26,7 +26,7 @@
 | REQ-20260618-122 | REQ-20260618-102 | BNA-PWA-004 | needs_verification | partial | Remove public loader/checkmark flash and header-to-hero gap |
 | REQ-20260618-123 | REQ-20260618-103 | BNA-WS-001 | needs_verification | partial | Enforce exactly school/service-provider/family workspace types |
 | REQ-20260618-124 | REQ-20260618-103 | BNA-WS-002 | in_progress | partial | Scope applicable entities by workspace_id |
-| REQ-20260618-125 | REQ-20260618-103 | BNA-WS-003 | not_started | missing | Server-side authorization/RLS and negative cross-tenant tests |
+| REQ-20260618-125 | REQ-20260618-103 | BNA-WS-003 | in_progress | partial | Server-side authorization/RLS and negative cross-tenant tests |
 | REQ-20260618-126 | REQ-20260618-103 | BNA-WS-004 | not_started | partial | Clear super-admin selector and ordinary-user behavior |
 | REQ-20260618-127 | REQ-20260618-103 | BNA-WS-005 | not_started | missing | Clear stale context on workspace changes |
 | REQ-20260618-128 | REQ-20260618-104 | BNA-OPS-001 | not_started | partial | Ordered horizontal Operations module toolbar |
@@ -71,6 +71,6 @@
 | REQ-20260618-167 | REQ-20260618-110 | BNA-PUBLIC-005 | not_started | unknown | Public/blog/FAQ/signup/portal route and CTA integrity |
 | REQ-20260618-168 | REQ-20260618-111 | BNA-TEST-001 | not_started | missing | Isolated repeatable seed and cleanup data |
 | REQ-20260618-169 | REQ-20260618-111 | BNA-TEST-002 | not_started | missing | Route, interaction, responsive, helper, workspace, and student Playwright tests |
-| REQ-20260618-170 | REQ-20260618-111 | BNA-TEST-003 | not_started | missing | Backend/API/RBAC negative tests |
+| REQ-20260618-170 | REQ-20260618-111 | BNA-TEST-003 | in_progress | partial | Backend/API/RBAC negative tests |
 | REQ-20260618-171 | REQ-20260618-111 | BNA-TEST-004 | done | closed_existing | PWA identity/cache regression tests |
 | REQ-20260618-172 | REQ-20260618-111 | BNA-TEST-005 | blocked | blocked | Final local and live acceptance gates |
