@@ -3,9 +3,11 @@
 ## Now
 
 - [ ] Resume the active execution run at
-  `ops/execution-runs/2026-06-18-bna-platform-completion/` after the
-  Operations audit ZIP/output path is available. Current imported June 18 UI
-  remediation areas are blocked on audit output, not complete.
+  `ops/execution-runs/2026-06-18-bna-platform-completion/`. Continue the next
+  unblocked local implementation or verification item from `NEXT-SESSION.md`.
+  Only screenshot-specific audit package/comparison items wait for the audit
+  ZIP or output path. Do not deploy or mutate production data until local
+  acceptance passes and Shloimie explicitly approves release.
 - [x] Test the WhatsApp-first content lane with a real long video upload
 - [x] Re-ingest/audit old raw rambles into the new Tasks / Students / Content / Contacts / Accounting model; live audit now shows 0 active tasks and 0 raw-looking task titles
 - [x] Add Telegram student-match decision buttons when accountability capture cannot confidently match a student

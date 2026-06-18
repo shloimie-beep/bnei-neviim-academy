@@ -1,20 +1,21 @@
 # Status
 
-Updated: 2026-06-19T03:25:30+03:00
+Updated: 2026-06-19T03:35:30+03:00
 
 Status counts:
 
-- in_progress: 13
+- in_progress: 12
 - needs_verification: 47
 - blocked: 3
 - needs_operator_decision: 1
-- done: 7
+- done: 8
 - already_satisfied: 1
 
 Closed/already satisfied IDs:
 
 - REQ-20260618-112 BNA-PROC-001: Install root start-here and durable ramble-to-done protocol
 - REQ-20260618-113 BNA-PROC-002: Deterministic execution-run tooling/schema/tests
+- REQ-20260618-114 BNA-PROC-003: Reconcile AGENTS, MEMORY, TASKS, SYSTEM-STATE, briefs, and ledgers
 - REQ-20260618-115 BNA-PROC-004: Independent completion-verification workflow
 - REQ-20260618-116 BNA-AUDIT-001: Resume/finish Operations UI audit harness without duplication
 - REQ-20260618-168 BNA-TEST-001: Isolated repeatable seed and cleanup data
@@ -35,7 +36,6 @@ Open non-blocked IDs:
 - REQ-20260618-109: Unified scoped OpenAI helper (in_progress)
 - REQ-20260618-110: Public copy, portal headers, signup routes, and CTAs (in_progress)
 - REQ-20260618-111: Safe test data and complete acceptance coverage (in_progress)
-- REQ-20260618-114 BNA-PROC-003: Reconcile AGENTS, MEMORY, TASKS, SYSTEM-STATE, briefs, and ledgers (in_progress)
 - REQ-20260618-119 BNA-PWA-001: Separate public and Operations manifests/app identities (needs_verification)
 - REQ-20260618-120 BNA-PWA-002: Isolate service workers, caches, scopes, and cache headers (needs_verification)
 - REQ-20260618-121 BNA-PWA-003: Enforce public-browser and installed-Operations routing invariants (needs_verification)

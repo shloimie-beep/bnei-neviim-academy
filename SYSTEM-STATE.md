@@ -1,6 +1,25 @@
 # BNA Current System State
 
-Last updated: 2026-06-07
+Last updated: 2026-06-19
+
+## 2026-06-19 Active June 18 Recovery Run
+
+- Active run: `ops/execution-runs/2026-06-18-bna-platform-completion/`;
+  `ops/execution-runs/latest.json` points there.
+- Active branch: `codex/2026-06-18-bna-platform-completion`.
+- Current status: local implementation and verification are ongoing. Do not
+  restart the run, create a new plan/register, run a new baseline audit crawl,
+  deploy, or mutate production data without explicit operator approval.
+- Audit output blocks only screenshot-specific audit package and post-fix
+  comparison requirements (`REQ-20260618-117`, `REQ-20260618-118`). It does not
+  block unrelated local implementation or test verification.
+- Live-required items stay `needs_verification` until release approval,
+  deployment, and live smoke evidence exist.
+- Safe local test-data lifecycle exists through `npm run test:data:plan`; real
+  seed/cleanup requires `BNA_TEST_DATA_ALLOW=1` and a local test database URL.
+- Browser acceptance coverage exists in `tests/browser-acceptance.test.js` for
+  Operations routing/history, workspace selector scoping, Assistant context,
+  student detail routing, and the student portal Hebrew RTL view.
 
 2026-06-07 Signup six-document signature flow:
 - Signup now shows six separate required document cards on English and Hebrew

@@ -15,7 +15,7 @@
 | REQ-20260618-111 | - | - | in_progress | partial | Safe test data and complete acceptance coverage |
 | REQ-20260618-112 | REQ-20260618-101 | BNA-PROC-001 | done | closed_existing | Install root start-here and durable ramble-to-done protocol |
 | REQ-20260618-113 | REQ-20260618-101 | BNA-PROC-002 | done | closed_existing | Deterministic execution-run tooling/schema/tests |
-| REQ-20260618-114 | REQ-20260618-101 | BNA-PROC-003 | in_progress | partial | Reconcile AGENTS, MEMORY, TASKS, SYSTEM-STATE, briefs, and ledgers |
+| REQ-20260618-114 | REQ-20260618-101 | BNA-PROC-003 | done | closed_local | Reconcile AGENTS, MEMORY, TASKS, SYSTEM-STATE, briefs, and ledgers |
 | REQ-20260618-115 | REQ-20260618-101 | BNA-PROC-004 | done | closed_existing | Independent completion-verification workflow |
 | REQ-20260618-116 | REQ-20260618-101 | BNA-AUDIT-001 | already_satisfied | already_satisfied | Resume/finish Operations UI audit harness without duplication |
 | REQ-20260618-117 | REQ-20260618-101 | BNA-AUDIT-002 | blocked | blocked | Produce privacy-safe authenticated audit package |

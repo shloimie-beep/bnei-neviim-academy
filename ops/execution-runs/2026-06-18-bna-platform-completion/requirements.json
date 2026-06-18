@@ -486,8 +486,8 @@
       "title": "Reconcile AGENTS, MEMORY, TASKS, SYSTEM-STATE, briefs, and ledgers",
       "area": "protocol",
       "priority": "P1",
-      "current_verdict": "partial",
-      "status": "in_progress",
+      "current_verdict": "closed_local",
+      "status": "done",
       "expected_result": "Repository memory/control files describe the active run, current architecture, and evidence-first closeout.",
       "acceptance_criteria": [
         "Reconcile AGENTS, MEMORY, TASKS, SYSTEM-STATE, briefs, and ledgers is implemented against the canonical Express/static runtime where applicable.",
@@ -498,12 +498,35 @@
       "depends_on_audit_output": false,
       "live_required": false,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "SYSTEM-STATE.md now opens with the active June 18 recovery run, branch, audit-only blockers, live-release gate, guarded test-data lifecycle, and browser acceptance coverage.",
+        "TASKS.md Now item resumes the active run and clarifies that only screenshot-specific audit package/comparison items wait for audit output.",
+        "MEMORY.md current runtime notes supersede historical GHL direction with first-party BNA Operations/Buffer guidance and clarify audit-output gating.",
+        "ops/execution-runs/latest.json was inspected and refreshed to point at the active run/branch with stale closed IDs removed from remaining_ids."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "rg -n \"Audit output blocks only|Only screenshot-specific|Historical GHL/CRM Status|first-party BNA Operations\" SYSTEM-STATE.md TASKS.md MEMORY.md PASS",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
+      ],
+      "implementation_commits": [
+        "current batch commit: chore: reconcile active run source of truth"
+      ],
+      "files_changed": [
+        "SYSTEM-STATE.md",
+        "TASKS.md",
+        "MEMORY.md",
+        "ops/execution-runs/latest.json",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/STATUS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md"
+      ],
+      "notes": "Closed locally as a source-of-truth reconciliation requirement. No app code, deployment, production-data mutation, baseline audit crawl, watch loop, or agent-fleet loop was performed."
     },
     {
       "id": "REQ-20260618-115",

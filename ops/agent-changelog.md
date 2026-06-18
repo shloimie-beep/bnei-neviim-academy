@@ -4183,3 +4183,31 @@ Verification:
 - PASS `npm test` 209/209.
 
 Status: local `done`; no deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed. Resume at `REQ-20260618-119`.
+
+## 2026-06-19 - Active run source-of-truth reconciliation
+
+Requirement: `REQ-20260618-114`
+
+Changed:
+
+- Updated `SYSTEM-STATE.md` to open with the active June 18 recovery run, branch,
+  audit-only blockers, release gate, guarded test-data lifecycle, and browser
+  acceptance coverage.
+- Updated `TASKS.md` so the current top task resumes the active run immediately
+  and no longer says unrelated work waits for the audit ZIP/output path.
+- Updated `MEMORY.md` to supersede old GHL runtime direction with first-party
+  BNA Operations/Buffer guidance and to clarify that audit output blocks only
+  screenshot-specific audit package/comparison requirements.
+- Refreshed `ops/execution-runs/latest.json`, run status, evidence, test
+  results, and next-session notes for the locally closed requirement.
+
+Verification:
+
+- PASS targeted `rg` checks for active-run, audit-only, and first-party runtime
+  language.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: local `done`; no app code changed, and no deployment, production-data
+mutation, audit crawl, watch loop, or agent-fleet loop was performed. Resume at
+`REQ-20260618-124`.

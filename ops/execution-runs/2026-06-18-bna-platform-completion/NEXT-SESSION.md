@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-19T03:25:30+03:00
+Updated: 2026-06-19T03:35:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -14,10 +14,11 @@ Latest completed local batches:
 - REQ-20260618-168: Guarded TEST-BNA-SEED plan/seed/cleanup commands now cover the required isolated fixture lanes with safety rails and tests.
 - REQ-20260618-169: Focused Playwright acceptance coverage now exercises Operations route/history, responsive overflow, workspace selector scoping, Assistant context, student detail routing, and Student Portal Hebrew RTL.
 - REQ-20260618-170: Backend/API/RBAC negative tests are locally terminal with route guard, real HTTP middleware, users, and accounting scope coverage.
+- REQ-20260618-114: Source-of-truth files now describe the active recovery run, audit-only blockers, first-party Operations runtime direction, release gate, and exact resume path.
 
 Exact next requirement:
 
-- REQ-20260618-119 / BNA-PWA-001: Separate public and Operations manifests/app identities.
+- REQ-20260618-124 / BNA-WS-002: Scope applicable entities by workspace_id.
 
 Blocked requirement intentionally skipped:
 
@@ -27,14 +28,15 @@ Exact next command:
 
 ```powershell
 npm run bna:run:status
-node --test tests/pwa-identity.test.js tests/public-navigation.test.js tests/operations-identity-header.test.js
+rg -n "workspace_id|selectedProjectFilter|project_id" server.js public/operations.html tests
+node --test tests/workspace-schema.test.js tests/workspace-scope.test.js tests/operations-workspace-selector.test.js tests/workspace-auth.test.js tests/workspace-http-isolation.test.js
 ```
 
-Then decide whether REQ-20260618-119 through REQ-20260618-122 can stay `needs_verification` because they are app-visible/live-required pending release approval, or whether any local non-live PWA evidence should be terminalized before release approval.
+Then inspect whether any workspace-owned entity routes remain unscoped locally. Do not close live-required workspace items as `done` without release approval, deployment, and live-smoke evidence.
 
 Still open after this batch:
 
-- REQ-20260618-124 remains `in_progress` until broader workspace-owned entity API filtering, release approval, deploy, and live smoke are complete.
+- REQ-20260618-124 remains `in_progress` until broader workspace-owned entity API filtering is inspected and either closed locally where non-live or left live-gated with explicit evidence.
 - REQ-20260618-125 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - REQ-20260618-156 remains `needs_operator_decision` for duplicate-student cleanup approval.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.

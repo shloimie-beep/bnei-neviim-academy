@@ -12,7 +12,10 @@
 
 **Phase 1 (Current): Foundation**
 - New database for BNA operations (NOT using family accountability schema)
-- Marketing system with GHL integration (GHL already has existing infrastructure)
+- First-party BNA Operations tables/APIs for contacts, community, providers,
+  students, tasks, decisions, accounting, automations, and intake. Historical
+  GHL/LeadConnector notes are not current runtime direction unless a task
+  explicitly asks to archive or migrate them.
 - School website for Whole Child Torah Learning Community
 - Telegram bot integration
 - Service provider network setup
@@ -26,8 +29,8 @@
   execution-run protocol in `BNA-START-HERE.md`,
   `docs/BNA-RAMBLE-TO-DONE.md`, and `ops/execution-runs/latest.json`.
   Closed requirement statuses require evidence; live-required closed items
-  require deploy/live evidence; blocked audit-output work should stay blocked
-  until the audit ZIP or output path exists.
+  require deploy/live evidence. Audit output blocks only screenshot-specific
+  audit package/comparison requirements, not unrelated local implementation.
 
 ## Tooling Preferences
 
@@ -37,9 +40,14 @@
   configured
 - **Kimi**: Fallback-only provider/model path for failures or legacy records
 - **Telegram**: Front-end channel for operator communication
-- **GHL (GoHighLevel)**: CRM/marketing automation (ALREADY SET UP)
+- **Buffer**: Active social scheduling connector for Facebook, LinkedIn, and
+  YouTube
+- **GHL / GoHighLevel / LeadConnector**: Historical integration only for this
+  repo unless Shloimie explicitly asks to archive, migrate, or inspect legacy
+  material. Do not add new active GHL runtime behavior.
 - **Supabase**: Database and backend
-- **Railway**: Hosting (pending setup)
+- **Railway**: Hosting/deploy target; this recovery run must not deploy until
+  local acceptance passes and Shloimie explicitly approves release
 - Shared repo files should be the canonical brain for both terminal and future
   Telegram bridge use
 
@@ -157,7 +165,8 @@
 ## My Role (AI Sidekick)
 
 - Run entire repo and database
-- Integrate with existing GHL setup
+- Keep active BNA workflows in first-party Operations unless Shloimie explicitly
+  asks for legacy GHL cleanup or migration work
 - Handle marketing systems
 - Build/manage task managers
 - Build school website
@@ -235,9 +244,13 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 
 **NOT:** Stock photos, corporate polish, bright colors, generic Jewish clipart
 
-## GHL/CRM Status
+## Historical GHL/CRM Status
 
-**Already Exists:**
+This section is historical context. Current BNA runtime work should use
+first-party Operations, not new GHL/LeadConnector clients, routes, prompts,
+schema assumptions, or dashboard controls.
+
+**Already Exists Historically:**
 - Service Provider Registration form (with specific field keys)
 - Learning Community forms
 - Affiliate Business forms
