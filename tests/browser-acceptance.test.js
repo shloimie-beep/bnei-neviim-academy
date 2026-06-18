@@ -352,6 +352,71 @@ async function assertOperationsIdentity(page) {
   assert.match(identity.text, /EN/);
 }
 
+async function assertOperationsDesignSystem(page) {
+  await page.locator('.focus-panel').first().waitFor();
+  await page.locator('.metric-button').first().waitFor();
+  const styles = await page.evaluate(() => {
+    function colorFromToken(name) {
+      const probe = document.createElement('span');
+      probe.style.color = `var(${name})`;
+      document.body.append(probe);
+      const value = getComputedStyle(probe).color;
+      probe.remove();
+      return value;
+    }
+
+    function read(selector) {
+      const node = document.querySelector(selector);
+      if (!node) return null;
+      const computed = getComputedStyle(node);
+      return {
+        backgroundColor: computed.backgroundColor,
+        borderColor: computed.borderColor,
+        borderRadius: computed.borderRadius,
+        color: computed.color,
+        minHeight: computed.minHeight,
+        outlineColor: computed.outlineColor,
+        outlineOffset: computed.outlineOffset,
+        outlineWidth: computed.outlineWidth,
+      };
+    }
+
+    const focusedButton = document.querySelector('.ops-module-button');
+    focusedButton?.focus?.({ preventScroll: true });
+
+    return {
+      tokens: {
+        surface: colorFromToken('--ops-surface'),
+        border: colorFromToken('--ops-border'),
+        textMuted: colorFromToken('--ops-text-muted'),
+        gold: colorFromToken('--ops-gold'),
+        bg: colorFromToken('--ops-bg'),
+        focus: colorFromToken('--ops-focus'),
+      },
+      shellLetterSpacing: getComputedStyle(document.querySelector('.ops-app-shell')).letterSpacing,
+      focusPanel: read('.focus-panel'),
+      metricButton: read('.metric-button'),
+      moduleButton: read('.ops-module-button'),
+      activeMarker: read('.ops-module-button.active .ops-module-marker'),
+    };
+  });
+
+  assert.match(styles.shellLetterSpacing, /^(0px|normal)$/);
+  assert.equal(styles.focusPanel.backgroundColor, styles.tokens.surface);
+  assert.equal(styles.focusPanel.borderColor, styles.tokens.border);
+  assert.equal(styles.focusPanel.borderRadius, '8px');
+  assert.equal(styles.focusPanel.color, styles.tokens.textMuted);
+  assert.equal(styles.metricButton.backgroundColor, styles.tokens.surface);
+  assert.equal(styles.metricButton.borderRadius, '8px');
+  assert.ok(parseFloat(styles.metricButton.minHeight) >= 36, JSON.stringify(styles.metricButton));
+  assert.equal(styles.moduleButton.borderRadius, '8px');
+  assert.ok(parseFloat(styles.moduleButton.minHeight) >= 36, JSON.stringify(styles.moduleButton));
+  assert.equal(styles.moduleButton.outlineColor, styles.tokens.focus);
+  assert.equal(styles.moduleButton.outlineOffset, '2px');
+  assert.equal(styles.moduleButton.outlineWidth, '3px');
+  assert.equal(styles.activeMarker.backgroundColor, styles.tokens.gold);
+}
+
 async function assertStudentPortalIdentity(page) {
   const identity = await page.evaluate(() => ({
     hasLogo: Array.from(document.images).some((img) => (
@@ -412,6 +477,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       await page.goto('/operations?view=tasks', { waitUntil: 'domcontentloaded' });
       await page.locator('.ops-app-shell').waitFor();
       await assertOperationsIdentity(page);
+      await assertOperationsDesignSystem(page);
       await assertSidebarWorkspaceContextOnly(page);
       assert.deepEqual(await moduleToolbarLabels(page), [
         'Tasks',

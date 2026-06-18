@@ -549,3 +549,13 @@ Portal identity DOM proof (2026-06-19T05:15:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-131 now has browser proof that the rendered Operations shell uses the private Operations manifest, approved BNA logo, BNA Operations/private portal identity, and EN language text, and that the rendered Student Portal uses the approved logo, Student Portal identity, and EN/HE controls. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Operations design-system DOM proof (2026-06-19T05:25:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/operations-design-system.test.js tests/operations-layout-stability.test.js tests/browser-acceptance.test.js` 10/10.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-132 now has browser proof that rendered Operations focus panels and metric/module controls resolve the shared surface, border, text, radius, focus, and gold design tokens; mobile touch target overrides preserve the shared control primitive; and app-shell letter spacing is non-negative. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-19T05:15:30+03:00
+Updated: 2026-06-19T05:25:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -24,10 +24,11 @@ Latest completed local batches:
 - REQ-20260618-129: Operations sidebar/workspace navigation now has static and browser DOM proof that the sidebar is workspace context only, module navigation is not duplicated, and scoped users do not see global workspace directory UI. It remains needs_verification only for release approval, deploy, and live smoke.
 - REQ-20260618-130: Operations shell stability now has static and browser proof that the shell/view frame stay non-collapsed after viewport, module, history, workspace switch, and refresh changes. It remains needs_verification only for release approval, deploy, and live smoke.
 - REQ-20260618-131: Portal/header identity now has static and browser DOM proof for Operations private manifest/logo/identity/language and Student Portal logo/identity/language controls. It remains needs_verification only for release approval, deploy, and live smoke.
+- REQ-20260618-132: Operations shared design primitives now have static and browser DOM proof for high-contrast surfaces, shared type/spacing/radius, button/control primitives, focus-visible styling, mobile touch target overrides, and non-negative app-shell letter spacing. It remains needs_verification only for release approval, deploy, and live smoke.
 
 Exact next requirement:
 
-- REQ-20260618-132 / BNA-DESIGN-001: Shared high-contrast card/spacing/type/button system.
+- REQ-20260618-133 / BNA-DESIGN-002: Intentional mobile controls.
 
 Blocked requirement intentionally skipped:
 
@@ -38,15 +39,15 @@ Exact next command:
 
 ```powershell
 npm run bna:run:status
-node --test tests/operations-design-system.test.js tests/operations-layout-stability.test.js tests/browser-acceptance.test.js
+node --test tests/operations-mobile-controls.test.js tests/operations-design-system.test.js tests/browser-acceptance.test.js
 ```
 
-Then inspect whether `REQ-20260618-132` needs only refreshed local evidence or an additional browser/DOM assertion for shared high-contrast surfaces, spacing, type, buttons, and focus states. Do not close live-required design items as `done` without release approval, deployment, and live-smoke evidence.
+Then inspect whether `REQ-20260618-133` needs only refreshed local evidence or an additional browser/DOM assertion for intentional mobile controls, touch targets, horizontal dense-control scrolling, and reachable modal/footer actions. Do not close live-required design items as `done` without release approval, deployment, and live-smoke evidence.
 
 Still open after this batch:
 
-- REQ-20260618-124 through REQ-20260618-131 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
-- REQ-20260618-132 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-124 through REQ-20260618-132 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
+- REQ-20260618-133 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - REQ-20260618-156 remains `needs_operator_decision` for duplicate-student cleanup approval.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 

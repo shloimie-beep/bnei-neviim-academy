@@ -1342,7 +1342,7 @@
       "title": "Shared high-contrast card/spacing/type/button system",
       "area": "design",
       "priority": "P1",
-      "current_verdict": "partial",
+      "current_verdict": "local_complete_pending_release",
       "status": "needs_verification",
       "expected_result": "One semantic light-gold/parchment card system with readable text is shared across used surfaces.",
       "acceptance_criteria": [
@@ -1358,23 +1358,32 @@
         "public/operations.html now declares semantic Operations design tokens for background, surfaces, parchment, border, text, gold, focus, radius, spacing, and shadow.",
         "Shared Operations design primitives now apply one high-contrast surface treatment to focus panels, task rows, contact cards, content cards, prompt cards, event cards, student cards, KPI cards, table rows, and modals.",
         "Shared button/control primitives now align radius, minimum height, primary gold treatment, focus-visible outline, and project parchment badges.",
-        "Operations app type guard sets letter-spacing to 0 inside the app shell to prevent negative tracking drift."
+        "Operations app type guard sets letter-spacing to 0 inside the app shell to prevent negative tracking drift.",
+        "Browser acceptance now verifies rendered Operations focus panels and metric/module controls resolve the shared surface, border, text, radius, and gold design tokens in the live DOM.",
+        "Browser acceptance now verifies rendered controls keep shared radius/minimum-height primitives, mobile touch target overrides, focus-visible token styling, and non-negative app-shell letter spacing."
       ],
       "deployment_evidence": [],
       "verification": [
         "node --check tests/operations-design-system.test.js PASS",
         "Operations HTML script parse via vm.Script PASS (2 script blocks)",
         "node --test tests/operations-design-system.test.js tests/operations-layout-stability.test.js tests/operations-module-toolbar.test.js PASS 10/10",
-        "npm test PASS 96/96"
+        "npm test PASS 96/96",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/operations-design-system.test.js tests/operations-layout-stability.test.js tests/browser-acceptance.test.js PASS 10/10",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: feat: add operations design primitives"
+        "current batch commit: feat: add operations design primitives",
+        "current batch commit: test: verify operations design system dom"
       ],
       "files_changed": [
         "public/operations.html",
-        "tests/operations-design-system.test.js"
+        "tests/operations-design-system.test.js",
+        "tests/browser-acceptance.test.js"
       ],
-      "notes": "Local shared design primitive layer is implemented and tested. Requirement remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for app-visible changes."
+      "notes": "Local shared design primitive layer is implemented and now has static plus browser DOM proof. Requirement remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for app-visible changes."
     },
     {
       "id": "REQ-20260618-133",
