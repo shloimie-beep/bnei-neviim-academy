@@ -9547,26 +9547,66 @@ app.delete('/api/bna/payment-intake/:id', requireAdmin, async (req, res) => {
 
 // BNA dashboard: content repurposing pipeline
 app.get('/api/bna/content-jobs', requireAdmin, async (req, res) => {
-  const { status } = req.query;
+  const { status, project } = req.query;
+  const scopedProjectKey = opsScopeProjectKey(req);
+  const requestedProjectKey = project && project !== 'all' ? normalizeProjectKey(project) : '';
+  const projectKey = scopedProjectKey || requestedProjectKey;
   const params = [];
-  let whereClause = '';
+  const conditions = [];
 
   if (status) {
     params.push(status);
-    whereClause = `WHERE j.status = $${params.length}`;
+    conditions.push(`j.status = $${params.length}`);
   }
 
+  if (projectKey) {
+    params.push(projectKey);
+    conditions.push(`COALESCE(p.project_key, w.workspace_key, '') = $${params.length}`);
+  }
+
+  const whereClause = conditions.length ? `WHERE ${conditions.join(' AND ')}` : '';
+
   try {
+    await ensureDefaultProjects();
     const result = await pool.query(
       `SELECT j.*,
+        p.project_key,
+        p.name AS project_name,
+        p.short_name AS project_short_name,
+        w.workspace_key,
+        w.workspace_type,
+        w.name AS workspace_name,
+        CASE
+          WHEN COALESCE(NULLIF(TRIM(j.transcript_text), ''), '') <> '' THEN 'transcribed'
+          WHEN j.status = 'transcribing' THEN 'transcribing'
+          WHEN j.status = 'ingested' THEN 'not_transcribed'
+          ELSE 'missing_transcript'
+        END AS transcript_status,
+        CASE
+          WHEN j.parse_json IS NOT NULL THEN 'parsed'
+          ELSE 'not_parsed'
+        END AS parse_status,
+        COUNT(o.id)::int AS output_count,
+        COUNT(o.id) FILTER (WHERE o.status = 'needs_approval')::int AS needs_approval_output_count,
+        COUNT(o.id) FILTER (WHERE o.status = 'approved')::int AS approved_output_count,
+        COUNT(o.id) FILTER (WHERE o.status = 'published')::int AS published_output_count,
+        MAX(o.updated_at) AS latest_output_at,
         COALESCE(
-          json_agg(o.* ORDER BY o.created_at ASC) FILTER (WHERE o.id IS NOT NULL),
+          json_agg(to_jsonb(o) ORDER BY o.created_at ASC) FILTER (WHERE o.id IS NOT NULL),
           '[]'
         ) AS outputs
        FROM bna_content_jobs j
        LEFT JOIN bna_content_outputs o ON o.job_id = j.id
+       LEFT JOIN bna_workspaces w ON w.id = j.workspace_id
+       LEFT JOIN LATERAL (
+         SELECT p.project_key, p.name, p.short_name
+         FROM bna_projects p
+         WHERE p.workspace_id = j.workspace_id
+         ORDER BY p.id ASC
+         LIMIT 1
+       ) p ON TRUE
        ${whereClause}
-       GROUP BY j.id
+       GROUP BY j.id, p.project_key, p.name, p.short_name, w.workspace_key, w.workspace_type, w.name
        ORDER BY j.created_at DESC
        LIMIT 100`,
       params

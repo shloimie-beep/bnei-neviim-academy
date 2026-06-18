@@ -196,3 +196,11 @@ Content/class-session boundary (2026-06-18T22:50:05+03:00):
 - PASS Operations HTML script parse via `vm.Script` (2 script blocks).
 - PASS `node --test tests/content-boundary.test.js tests/telegram-content-intent.test.js tests/mixed-recording-idempotency.test.js` 11/11.
 - PASS `npm test` 132/132.
+
+Content metadata and provenance (2026-06-18T22:55:30+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/content-metadata-provenance.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/content-metadata-provenance.test.js tests/content-boundary.test.js tests/community-workspace-scope.test.js` 7/7.
+- PASS `npm test` 134/134.

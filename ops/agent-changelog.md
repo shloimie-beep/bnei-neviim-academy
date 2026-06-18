@@ -3512,3 +3512,33 @@ Verification:
 Status: local `needs_verification`; no deployment, production migration,
 production-data mutation, audit crawl, watch loop, or agent-fleet loop was
 performed. Resume at `REQ-20260618-145`.
+
+## 2026-06-18T22:55:30+03:00 - Content Metadata And Provenance
+
+Completed the local Content metadata/provenance batch for
+`REQ-20260618-145`.
+
+- Added explicit `project` filtering to `GET /api/bna/content-jobs`.
+- Applied scoped/requested project filtering through workspace/project metadata
+  so scoped views do not receive other workspace content rows.
+- Returned project/workspace labels, transcript status, parse status, output
+  counts, approval counts, latest output time, and Drive/source provenance
+  fields with each content job.
+- Updated Operations Content loading to request jobs for the active workspace
+  selector.
+- Updated Content cards to show workspace, source, transcript status, output
+  summary, approval state, dates, and an expanded provenance panel.
+- Added focused coverage in `tests/content-metadata-provenance.test.js`.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/content-metadata-provenance.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/content-metadata-provenance.test.js
+  tests/content-boundary.test.js tests/community-workspace-scope.test.js` 7/7.
+- PASS `npm test` 134/134.
+
+Status: local `needs_verification`; no deployment, production migration,
+production-data mutation, audit crawl, watch loop, or agent-fleet loop was
+performed. Resume at `REQ-20260618-146`.

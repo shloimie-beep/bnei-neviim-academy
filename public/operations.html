@@ -3635,6 +3635,7 @@
             getContentJobs(filters = {}) {
                 const params = new URLSearchParams();
                 if (filters.status) params.set('status', filters.status);
+                if (filters.project) params.set('project', filters.project);
                 return this.request('GET', '/content-jobs?' + params.toString());
             },
             createContentJob(job) { return this.request('POST', '/content-jobs', job); },
@@ -5514,6 +5515,12 @@
             ];
             const mediaType = contentMediaType(job);
             const project = contentProject(job);
+            const workspaceLabel = contentWorkspaceLabel(job);
+            const workspaceShortLabel = contentWorkspaceShortLabel(job);
+            const sourceLabel = contentSourceLabel(job);
+            const transcriptLabel = contentTranscriptStatusLabel(job);
+            const outputSummary = contentOutputSummary(job);
+            const approvalLabel = contentApprovalStateLabel(job);
             const selected = selectedContentJobIds.has(Number(job.id));
             const expanded = expandedContentJobIds.has(Number(job.id));
             return `
@@ -5524,11 +5531,16 @@
                                 <div class="event-type">${escapeHtml(contentStatusLabel(job))}</div>
                                 <div class="content-title-line">
                                     <span class="media-pill ${mediaType}">${escapeHtml(mediaType)}</span>
-                                    <span class="media-pill ${project === 'mishna' ? 'audio' : 'file'}">${escapeHtml(project === 'mishna' ? 'One Time' : 'BNA')}</span>
+                                    <span class="media-pill ${project === 'mishna' ? 'audio' : 'file'}">${escapeHtml(workspaceShortLabel)}</span>
                                     <h3 style="font-size: 16px;">${escapeHtml(displayTitle)}</h3>
                                 </div>
                                 <div class="content-source-meta">
+                                    <span>Workspace: ${escapeHtml(workspaceLabel)}</span>
                                     <span>Uploaded ${formatDateTime(contentUploadedAt(job))}</span>
+                                    <span>Source: ${escapeHtml(sourceLabel)}</span>
+                                    <span>Transcript: ${escapeHtml(transcriptLabel)}</span>
+                                    <span>Outputs: ${escapeHtml(outputSummary)}</span>
+                                    <span>Approval: ${escapeHtml(approvalLabel)}</span>
                                     <span>${compactContentTopics(compactTopics).length || 0} brief topic${compactContentTopics(compactTopics).length === 1 ? '' : 's'}</span>
                                 </div>
                                 ${renderCompactTopicChips(compactTopics)}
@@ -5553,9 +5565,14 @@
                                 <div class="event-type">Source Overview</div>
                                 <div class="event-title">${escapeHtml(displayTitle)}</div>
                                 <div class="content-source-meta">
+                                    <span>Workspace: ${escapeHtml(workspaceLabel)}</span>
                                     <span>Uploaded ${formatDateTime(contentUploadedAt(job))}</span>
+                                    <span>Updated ${formatDateTime(job.updated_at || contentUploadedAt(job))}</span>
                                     <span>Status: ${escapeHtml(contentStatusLabel(job))}</span>
-                                    <span>Project: ${escapeHtml(project === 'mishna' ? 'One Time Mishnah Class' : 'BNA')}</span>
+                                    <span>Source: ${escapeHtml(sourceLabel)}</span>
+                                    <span>Transcript: ${escapeHtml(transcriptLabel)}</span>
+                                    <span>Outputs: ${escapeHtml(outputSummary)}</span>
+                                    <span>Approval: ${escapeHtml(approvalLabel)}</span>
                                 </div>
                                 ${summary ? `<p style="margin-top: 10px; color: #cbd5e1; font-size: 13px;">${escapeHtml(summary)}</p>` : ''}
                             </div>
@@ -5565,6 +5582,7 @@
                                 ${renderContentList('Sources Mentioned', sections.sources, { allowHebrew: true })}
                                 ${renderContentList('Highlights', sections.highlights)}
                             </div>
+                            ${renderContentProvenance(job, parsed)}
                             <div class="prompt-grid">
                                 ${CONTENT_OUTPUT_TYPES.map(type => renderPromptStudioForJob(job, type)).join('')}
                             </div>
@@ -7415,6 +7433,143 @@
                 .sort((a, b) => Date.parse(b.updated_at || b.created_at || 0) - Date.parse(a.updated_at || a.created_at || 0))[0] || null;
         }
 
+        function activeContentOutputs(job) {
+            return (Array.isArray(job?.outputs) ? job.outputs : [])
+                .filter(output => String(output?.status || '').toLowerCase() !== 'archived');
+        }
+
+        function contentWorkspaceShortLabel(job = {}) {
+            const rawKey = job.project_key || job.workspace_key || '';
+            const key = rawKey ? normalizeProjectKey(rawKey) : '';
+            if (key === 'one_time_mishnah_class') return 'One Time';
+            if (key === 'bna') return 'BNA';
+            return job.project_short_name || job.project_name || job.workspace_name || job.workspace_key || 'BNA';
+        }
+
+        function contentWorkspaceLabel(job = {}) {
+            const rawName = job.project_short_name || job.project_name || job.workspace_name || job.workspace_key || job.project_key || '';
+            const rawKey = job.project_key || job.workspace_key || rawName;
+            const key = rawKey ? normalizeProjectKey(rawKey) : '';
+            if (job.project_short_name || job.project_name) return job.project_short_name || job.project_name;
+            if (key) return taskProjectLabel({ project_key: key });
+            return rawName || 'Unscoped workspace';
+        }
+
+        function humanizeContentToken(value) {
+            return String(value || '')
+                .replace(/[_-]+/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim()
+                .replace(/\b\w/g, match => match.toUpperCase());
+        }
+
+        function contentSourceLabel(job = {}) {
+            const sourceType = humanizeContentToken(job.source_type || 'manual');
+            const parts = [];
+            if (job.drive_file_id || job.drive_folder_id || job.drive_stage || job.media_url) parts.push('Drive');
+            else if (job.source_message_id || job.source_chat_id) parts.push('Telegram');
+            else parts.push(sourceType);
+            if (job.drive_stage) parts.push(humanizeContentToken(job.drive_stage));
+            if (job.mime_type) parts.push(String(job.mime_type).split(';')[0]);
+            return parts.filter(Boolean).join(' - ') || sourceType;
+        }
+
+        function contentTranscriptStatusLabel(job = {}) {
+            const status = String(job.transcript_status || '').toLowerCase();
+            if (status === 'transcribed' || String(job.transcript_text || '').trim()) return 'Transcribed';
+            if (status === 'transcribing' || job.status === 'transcribing') return 'Transcribing';
+            if (status === 'missing_transcript') return 'Transcript missing';
+            if (status === 'not_transcribed' || job.status === 'ingested') return 'No transcript yet';
+            return 'No transcript yet';
+        }
+
+        function contentOutputStatusCounts(job = {}) {
+            const outputs = activeContentOutputs(job);
+            return outputs.reduce((counts, output) => {
+                const status = String(output?.status || 'draft').toLowerCase();
+                counts[status] = (counts[status] || 0) + 1;
+                return counts;
+            }, {});
+        }
+
+        function contentOutputSummary(job = {}) {
+            const outputs = activeContentOutputs(job);
+            const total = Number.isFinite(Number(job.output_count)) ? Number(job.output_count) : outputs.length;
+            if (!total) return 'No outputs';
+            const counts = contentOutputStatusCounts(job);
+            const needsApproval = Number(job.needs_approval_output_count || counts.needs_approval || 0);
+            const approved = Number(job.approved_output_count || counts.approved || 0);
+            const published = Number(job.published_output_count || counts.published || 0);
+            const parts = [`${total} output${total === 1 ? '' : 's'}`];
+            if (needsApproval) parts.push(`${needsApproval} need approval`);
+            if (approved) parts.push(`${approved} approved`);
+            if (published) parts.push(`${published} published`);
+            return parts.join(', ');
+        }
+
+        function contentApprovalStateLabel(job = {}) {
+            const counts = contentOutputStatusCounts(job);
+            const needsApproval = Number(job.needs_approval_output_count || counts.needs_approval || 0);
+            if (needsApproval) return `${needsApproval} need approval`;
+            const published = Number(job.published_output_count || counts.published || 0);
+            if (published) return 'Published';
+            const approved = Number(job.approved_output_count || counts.approved || 0);
+            if (approved) return 'Approved';
+            const total = Number.isFinite(Number(job.output_count)) ? Number(job.output_count) : activeContentOutputs(job).length;
+            if (total) return 'Draft in progress';
+            return 'No approval yet';
+        }
+
+        function contentParseStatusLabel(job = {}, parsed = {}) {
+            const parsedAt = parsed?.mixed_recording_parse?.parsed_at || parsed?.parsed_at || parsed?.parsedAt || '';
+            const hasParsedData = job.parse_status === 'parsed' || Object.keys(parsed || {}).length > 0;
+            if (!hasParsedData) return 'Not parsed';
+            return parsedAt ? `Parsed ${formatDateTime(parsedAt)}` : 'Parsed';
+        }
+
+        function contentProvenanceItems(job = {}, parsed = {}) {
+            const items = [
+                ['Workspace', contentWorkspaceLabel(job)],
+                ['Source', contentSourceLabel(job)],
+                ['Transcript', contentTranscriptStatusLabel(job)],
+                ['Parse', contentParseStatusLabel(job, parsed)],
+                ['Outputs', contentOutputSummary(job)],
+                ['Approval', contentApprovalStateLabel(job)],
+                ['Created', formatDateTime(contentUploadedAt(job))],
+                ['Updated', formatDateTime(job.updated_at || contentUploadedAt(job))],
+                ['Latest output', job.latest_output_at ? formatDateTime(job.latest_output_at) : ''],
+                ['Drive stage', job.drive_stage ? humanizeContentToken(job.drive_stage) : ''],
+                ['Drive file', job.drive_file_id || ''],
+                ['Drive folder', job.drive_folder_id || ''],
+                ['Source message', job.source_message_id || ''],
+                ['Source chat', job.source_chat_id || ''],
+                ['MIME type', job.mime_type || ''],
+                ['Media URL', job.media_url || ''],
+                ['Local capture', job.local_path || '']
+            ];
+            return items
+                .map(([label, value]) => ({ label, value: String(value || '').trim() }))
+                .filter(item => item.value);
+        }
+
+        function renderContentProvenance(job = {}, parsed = {}) {
+            const items = contentProvenanceItems(job, parsed);
+            if (!items.length) return '';
+            return `
+                <div class="event-card" aria-label="Content provenance">
+                    <div class="event-type">Provenance</div>
+                    <div class="contact-detail-grid">
+                        ${items.map(item => `
+                            <div class="contact-detail-item">
+                                <span class="contact-detail-label">${escapeHtml(item.label)}</span>
+                                <div class="contact-detail-value">${escapeHtml(item.value)}</div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
         function contentMediaType(job) {
             const mime = String(job.mime_type || '').toLowerCase();
             const path = String(job.local_path || job.media_url || job.title || '').toLowerCase();
@@ -7425,6 +7580,10 @@
         }
 
         function contentProject(job) {
+            const rawMetadataKey = job?.project_key || job?.workspace_key || '';
+            const metadataKey = rawMetadataKey ? normalizeProjectKey(rawMetadataKey) : '';
+            if (metadataKey === 'one_time_mishnah_class') return 'mishna';
+            if (metadataKey === 'bna') return 'bna';
             const haystack = [
                 job.title,
                 job.caption,
@@ -8015,7 +8174,7 @@
                     viewAllowed('accounting') ? api.getPayments() : Promise.resolve({ payments: [] }),
                     viewAllowed('accounting') ? api.getPaymentIntake() : Promise.resolve({ intake: [] }),
                     viewAllowed('accounting') ? api.getPaymentReminderDue() : Promise.resolve(null),
-                    viewAllowed('content') ? api.getContentJobs() : Promise.resolve({ jobs: [] }),
+                    viewAllowed('content') ? api.getContentJobs({ project: selectedProjectFilter() || undefined }) : Promise.resolve({ jobs: [] }),
                     viewAllowed('content') ? api.getContentPrompts() : Promise.resolve({ prompts: [] }),
                     viewAllowed('content') ? api.getContentBundles() : Promise.resolve({ bundles: [] }),
                     viewAllowed('students') ? api.getStudents() : Promise.resolve({ students: [] }),
