@@ -14,6 +14,9 @@ and future automation channels.
 
 Use these files consistently:
 
+- `BNA-START-HERE.md`: first read for every new GitHub-connected BNA session
+- `docs/BNA-RAMBLE-TO-DONE.md`: durable broad-ramble execution protocol
+- `ops/execution-runs/latest.json`: active resumable execution run pointer
 - `AGENTS.md`: operating rules, workflow, and channel behavior
 - `MEMORY.md`: durable facts, decisions, preferences, definitions
 - `TASKS.md`: active work queue, next actions, blockers
