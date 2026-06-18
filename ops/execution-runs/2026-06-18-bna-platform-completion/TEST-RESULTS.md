@@ -290,3 +290,15 @@ Workspace-and-student detail/analysis isolation (2026-06-18T23:59:30+03:00):
 
 No deployment, production student merge/cleanup, production-data mutation,
 audit crawl, watch loop, or agent-fleet loop was performed.
+
+Goal Board plain-language controls (2026-06-19T00:08:30+03:00):
+
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --check tests/goal-board-language.test.js`.
+- PASS `node --test tests/goal-board-language.test.js tests/goal-board.test.js
+  tests/operations-mobile-controls.test.js tests/operations-design-system.test.js`
+  15/15.
+- PASS `npm test` 164/164.
+
+No deployment, production-data mutation, audit crawl, watch loop, or
+agent-fleet loop was performed.

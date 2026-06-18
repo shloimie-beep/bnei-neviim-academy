@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-18T23:59:30+03:00
+Updated: 2026-06-19T00:08:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -30,24 +30,25 @@ Latest completed local batches:
 - REQ-20260618-150: Users now expose scoped project-member user/role rows and workspace invitation records through read-only APIs and an Operations Users module.
 - REQ-20260618-151: Accounting/payment reads now carry workspace project filters, accounting mutations require explicit confirmations and scoped record checks, Green Invoice matching is constrained to BNA school workspace, and Operations Accounting sends the selected workspace through payment/reminder/intake/webhook actions.
 - REQ-20260618-152: Student/detail isolation now scopes student, device, Goal Board, accountability, group-goal, and Torah-learning reads/writes by selected/scoped workspace and student ID where applicable.
+- REQ-20260618-153: Goal Board controls now use plain product language for tablet access and goal actions, with horizontal purpose toolbars for setup, progress, review, board, and tablet actions.
 
 Exact next requirement:
 
-- REQ-20260618-153 / BNA-GOAL-001: Goal Board controls use plain product language.
+- REQ-20260618-154 / BNA-GOAL-002: Separate goals, progress, approvals, and history.
 
 Exact next command:
 
 ```powershell
 npm run bna:run:status
-rg -n "goal board|goal-board|Goal Board|studentGoal|goalBoard|approval|required|review|history|progress|plain|toolbar|implementation|device_access|accountability" server.js public\operations.html tests src\lib\bna
+rg -n "goal board|goal-board|Goal Board|studentGoal|goalBoard|approval|required|review|history|progress|activity|checked_off|missed|waiting|done|occurred_at|updated_at|device_access|accountability" server.js public\operations.html tests src\lib\bna
 ```
 
-Then inspect Goal Board creation, progress, approval/review, status/action labels, and student/admin rendering so controls use plain product language and unclear implementation labels are removed.
+Then inspect Goal Board creation, progress/check-ins, approval/review, status/history, and activity rendering so current goals, progress, decisions/approvals, and history are separated instead of mixed together.
 
 Still open after this batch:
 
 - REQ-20260618-124 remains `in_progress` until broader workspace-owned entity API filtering, release approval, deploy, and live smoke are complete.
-- REQ-20260618-125 through REQ-20260618-152 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-125 through REQ-20260618-153 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 
 No deployment or production-data mutation is approved.

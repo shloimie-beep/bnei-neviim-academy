@@ -2062,7 +2062,7 @@
       "area": "students",
       "priority": "P1",
       "current_verdict": "partial",
-      "status": "not_started",
+      "status": "needs_verification",
       "expected_result": "Goal Board controls are organized into horizontal toolbars and unclear implementation labels are removed.",
       "acceptance_criteria": [
         "Goal Board controls use plain product language is implemented against the canonical Express/static runtime where applicable.",
@@ -2073,12 +2073,34 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "Goal Board tablet access controls now use operator-facing labels such as Pause Access, Checkoff Only, Open 60m, Open Tablet, Keep Closed, Open Temporarily, and End Access instead of raw device-state wording.",
+        "Goal creation form labels now use plain product language: If Goal Is Missed, When Student Checks Off, Open For Minutes, Missed-Goal Duration Minutes, Review before applying a consequence, and Add Goal.",
+        "Goal cards translate stored access states through deviceAccessChangeLabel so badges show After checkoff: Open for 60m and If missed: Checkoff Only instead of stored slugs.",
+        "Goal Board card actions are split into purpose-specific horizontal toolbars for Progress, Review, Board, Tablet setup, and Tablet access actions.",
+        "Tablet record copy no longer exposes mock-provider wording in visible card controls; it describes record-only mode until the classroom device connector is approved.",
+        "tests/goal-board-language.test.js guards against reintroducing unclear visible labels such as Create Goal Board Item, Approve Device State, Deny Device State, Manual Override, Auto after checkoff, and mock tablet phrasing."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "Operations HTML script parse via vm.Script PASS (2 script blocks)",
+        "node --check tests/goal-board-language.test.js PASS",
+        "node --test tests/goal-board-language.test.js tests/goal-board.test.js tests/operations-mobile-controls.test.js tests/operations-design-system.test.js PASS 15/15",
+        "npm test PASS 164/164"
+      ],
+      "implementation_commits": [
+        "current batch commit: fix: clarify goal board controls"
+      ],
+      "files_changed": [
+        "public/operations.html",
+        "tests/goal-board-language.test.js",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/STATUS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md"
+      ],
+      "notes": "Local implementation and tests passed. Status remains needs_verification because this item is live_required and still needs final acceptance sweep, release approval, deployment, and live smoke before closure. No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
     },
     {
       "id": "REQ-20260618-154",

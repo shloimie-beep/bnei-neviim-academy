@@ -2578,6 +2578,22 @@
             gap: 10px;
         }
 
+        .goal-board-toolbar {
+            align-items: center;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .goal-board-toolbar-label {
+            color: #94a3b8;
+            flex: 0 0 100%;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
         .goal-board-card {
             border-left: 3px solid #334155;
         }
@@ -3439,6 +3455,7 @@
             .ops-module-list,
             .section-tab-list,
             .task-actions,
+            .goal-board-toolbar,
             .task-row-actions,
             .content-card-tools,
             .content-bulk-selected,
@@ -3480,6 +3497,17 @@
                 justify-content: flex-start;
                 overflow-x: auto;
                 padding-bottom: 4px;
+            }
+
+            .goal-board-toolbar {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                padding-bottom: 4px;
+            }
+
+            .goal-board-toolbar-label {
+                flex: 0 0 auto;
+                white-space: nowrap;
             }
 
             .task-actions .task-action {
@@ -3958,11 +3986,11 @@
         ];
 
         const DEVICE_ACCESS_STATES = [
-            { id: 'locked', label: 'Locked' },
-            { id: 'accountability_only', label: 'Accountability Only' },
-            { id: 'approved_access', label: 'Approved Access' },
-            { id: 'expired', label: 'Expired' },
-            { id: 'manual_override', label: 'Manual Override' }
+            { id: 'locked', label: 'Paused' },
+            { id: 'accountability_only', label: 'Checkoff Only' },
+            { id: 'approved_access', label: 'Open' },
+            { id: 'expired', label: 'Ended' },
+            { id: 'manual_override', label: 'Temporary Open' }
         ];
 
         const CONTENT_OUTPUT_TYPES = [
@@ -6131,6 +6159,24 @@
             return `<span class="access-state-badge ${escapeHtml(state)}">${escapeHtml(label)}</span>`;
         }
 
+        function deviceAccessChangeLabel(value, durationMinutes = null) {
+            const state = normalizeDeviceAccessState(value);
+            const label = deviceAccessLabel(state);
+            const duration = Number(durationMinutes || 0);
+            return ['approved_access', 'manual_override'].includes(state) && duration
+                ? `${label} for ${duration}m`
+                : label;
+        }
+
+        function goalBoardReviewLabel(value) {
+            return ({
+                pending_review: 'Waiting for review',
+                approved: 'Approved',
+                denied: 'Kept closed',
+                overridden: 'Opened temporarily'
+            })[String(value || '').trim()] || '';
+        }
+
         function studentDevices(student) {
             return (devices || [])
                 .filter(device => String(device.student_id || device.student?.id || '') === String(student.id || ''))
@@ -6701,7 +6747,7 @@
                 <div class="task-actions" style="margin-top:12px;">
                     ${portalUrl ? `<button class="task-action primary" onclick="openStudentPortal(event, ${Number(student.id)})">Open</button>` : ''}
                     <button class="task-action" onclick="createStudentAccessLink(event, ${Number(student.id)}, false)">${portalUrl ? 'Refresh Link' : 'Create Link'}</button>
-                    <button class="task-action" onclick="createStudentAccessLink(event, ${Number(student.id)}, true)">Regenerate</button>
+                    <button class="task-action" onclick="createStudentAccessLink(event, ${Number(student.id)}, true)">Make New Link</button>
                 </div>
             `;
         }
@@ -6714,26 +6760,27 @@
             return `
                 <div class="device-access-panel">
                     <div>
-                        <h4>Tablet Access Accountability</h4>
-                        <div class="event-meta">Q Studio/Qustodio remains the content filter. BNA applies the accountability access state automatically after a successful student checkoff; current provider mode is mock until Headwind/FreeKiosk is verified on a real tablet.</div>
+                        <h4>Tablet Access</h4>
+                        <div class="event-meta">Q Studio/Qustodio remains the content filter. BNA tracks when a student should have tablet access after a successful checkoff or a reviewed recovery step.</div>
                     </div>
                     <div class="device-safe-note">
-                        No real Android calls are enabled yet. These buttons and automatic checkoffs write BNA device, session, review, and mock provider-result records.
+                        Tablet controls record BNA review and access-window records until the classroom device connector is approved.
                     </div>
                     <div class="student-profile-kpis" style="margin-top:0;">
-                        ${renderMiniKpi(activeStatus === 'not_configured' ? 'Not Configured' : deviceAccessLabel(activeStatus), 'Current State')}
-                        ${renderMiniKpi(deviceList.length, 'Devices')}
+                        ${renderMiniKpi(activeStatus === 'not_configured' ? 'Not Configured' : deviceAccessLabel(activeStatus), 'Current Access')}
+                        ${renderMiniKpi(deviceList.length, 'Tablets')}
                         ${renderMiniKpi(reviews.length, 'Pending Reviews')}
-                        ${renderMiniKpi('Mock', 'Provider')}
+                        ${renderMiniKpi('Record Only', 'Mode')}
                     </div>
                     ${activeSession?.expires_at ? `<div class="event-meta">Active window: ${escapeHtml(formatSessionWindow(activeSession))}</div>` : ''}
-                    <div class="task-actions" style="margin-top:0;">
-                        <button class="task-action primary" onclick="createMockDevice(event, ${Number(student.id)})">Add Mock Tablet</button>
+                    <div class="goal-board-toolbar" aria-label="Tablet setup actions" style="margin-top:0;">
+                        <span class="goal-board-toolbar-label">Setup</span>
+                        <button class="task-action primary" onclick="createMockDevice(event, ${Number(student.id)})">Add Tablet Record</button>
                     </div>
                     <div class="device-list">
                         ${deviceList.length ? deviceList.map(device => renderDeviceCard(device)).join('') : `
                             <div class="empty-state" style="padding:18px 12px;">
-                                <p>No tablet record yet. Add a mock tablet before approving device-linked goals.</p>
+                                <p>No tablet record yet. Add a tablet record before approving tablet-linked goals.</p>
                             </div>
                         `}
                     </div>
@@ -6759,21 +6806,22 @@
             const reason = session?.reason || providerResult.reason || '';
             return `
                 <div class="event-card device-card" data-state="${escapeHtml(state)}">
-                    <div class="event-type">Mock Device &middot; ${escapeHtml(device.platform || 'android')}</div>
+                    <div class="event-type">Tablet Record &middot; ${escapeHtml(device.platform || 'android')}</div>
                     <div class="event-title">${escapeHtml(device.device_name || 'Student tablet')} ${deviceAccessBadge(state)}</div>
                     <div class="event-meta">
-                        Provider: ${escapeHtml(device.provider || 'mock')}
-                        ${device.provider_device_id ? ` &middot; Provider ID: ${escapeHtml(device.provider_device_id)}` : ''}
+                        Mode: BNA record only
+                        ${device.provider_device_id ? ` &middot; Connector ID: ${escapeHtml(device.provider_device_id)}` : ''}
                         ${device.last_seen_at ? ` &middot; Last seen ${escapeHtml(formatDateTime(device.last_seen_at))}` : ''}
                     </div>
                     ${session ? `<div class="goal-board-public">Latest session: ${escapeHtml(deviceAccessLabel(session.status))}${formatSessionWindow(session) ? ` &middot; ${escapeHtml(formatSessionWindow(session))}` : ''}</div>` : ''}
                     ${reason ? `<div class="goal-board-private"><strong>Reason:</strong> ${escapeHtml(reason)}</div>` : ''}
-                    <div class="task-actions">
-                        <button class="task-action" onclick="performDeviceAction(event, ${Number(device.id)}, 'locked')">Lock</button>
-                        <button class="task-action" onclick="performDeviceAction(event, ${Number(device.id)}, 'accountability_only')">Accountability Only</button>
-                        <button class="task-action primary" onclick="performDeviceAction(event, ${Number(device.id)}, 'approved_access', 60)">Approve 60m</button>
-                        <button class="task-action" onclick="performDeviceAction(event, ${Number(device.id)}, 'manual_override', 30)">Manual Override</button>
-                        <button class="task-action" onclick="performDeviceAction(event, ${Number(device.id)}, 'expired')">Expire</button>
+                    <div class="goal-board-toolbar" aria-label="Tablet access actions">
+                        <span class="goal-board-toolbar-label">Tablet</span>
+                        <button class="task-action" onclick="performDeviceAction(event, ${Number(device.id)}, 'locked')">Pause Access</button>
+                        <button class="task-action" onclick="performDeviceAction(event, ${Number(device.id)}, 'accountability_only')">Checkoff Only</button>
+                        <button class="task-action primary" onclick="performDeviceAction(event, ${Number(device.id)}, 'approved_access', 60)">Open 60m</button>
+                        <button class="task-action" onclick="performDeviceAction(event, ${Number(device.id)}, 'manual_override', 30)">Open Temporarily</button>
+                        <button class="task-action" onclick="performDeviceAction(event, ${Number(device.id)}, 'expired')">End Access</button>
                     </div>
                 </div>
             `;
@@ -6785,23 +6833,24 @@
             const desiredState = normalizeDeviceAccessState(consequence.device_access_state);
             const duration = consequence.duration_minutes || 60;
             const deviceId = activeDevice?.id || preferredDeviceIdForStudent(item.student_id);
-            const deviceName = activeDevice?.device_name || (deviceId ? 'Selected device' : 'No mock tablet');
+            const deviceName = activeDevice?.device_name || (deviceId ? 'Selected tablet' : 'No tablet record');
             const disableDeviceAction = deviceId ? '' : 'disabled';
             return `
                 <div class="event-card device-card" data-state="${escapeHtml(desiredState)}">
-                    <div class="event-type">Pending Device Review</div>
+                    <div class="event-type">Waiting For Tablet Review</div>
                     <div class="event-title">${escapeHtml(item.title || 'Access review')} ${deviceAccessBadge(desiredState)}</div>
                     <div class="event-meta">
-                        Device: ${escapeHtml(deviceName)}
+                        Tablet: ${escapeHtml(deviceName)}
                         &middot; Duration: ${Number(duration) || 60} minutes
-                        ${consequence.status ? ` &middot; Review: ${escapeHtml(String(consequence.status).replace(/_/g, ' '))}` : ''}
+                        ${consequence.status ? ` &middot; Decision: ${escapeHtml(goalBoardReviewLabel(consequence.status))}` : ''}
                     </div>
                     ${consequence.recovery_path ? `<div class="goal-board-public">Recovery: ${escapeHtml(consequence.recovery_path)}</div>` : ''}
                     ${consequence.review_reason ? `<div class="goal-board-private"><strong>Review reason:</strong> ${escapeHtml(consequence.review_reason)}</div>` : ''}
-                    <div class="task-actions">
-                        <button class="task-action primary" ${disableDeviceAction} onclick="reviewDeviceAccess(event, ${Number(item.id)}, ${Number(deviceId || 0)}, 'approve', ${Number(duration) || 60})">Approve State</button>
-                        <button class="task-action" onclick="reviewDeviceAccess(event, ${Number(item.id)}, ${Number(deviceId || 0)}, 'deny')">Deny</button>
-                        <button class="task-action" ${disableDeviceAction} onclick="reviewDeviceAccess(event, ${Number(item.id)}, ${Number(deviceId || 0)}, 'manual_override', 30)">Manual Override</button>
+                    <div class="goal-board-toolbar" aria-label="Review actions">
+                        <span class="goal-board-toolbar-label">Review</span>
+                        <button class="task-action primary" ${disableDeviceAction} onclick="reviewDeviceAccess(event, ${Number(item.id)}, ${Number(deviceId || 0)}, 'approve', ${Number(duration) || 60})">Open Tablet</button>
+                        <button class="task-action" onclick="reviewDeviceAccess(event, ${Number(item.id)}, ${Number(deviceId || 0)}, 'deny')">Keep Closed</button>
+                        <button class="task-action" ${disableDeviceAction} onclick="reviewDeviceAccess(event, ${Number(item.id)}, ${Number(deviceId || 0)}, 'manual_override', 30)">Open Temporarily</button>
                     </div>
                 </div>
             `;
@@ -6914,34 +6963,34 @@
                                         <input id="goal-recovery-${student.id}" placeholder="Next step if missed">
                                     </div>
                                     <div class="form-group">
-                                        <label for="goal-device-${student.id}">Missed Goal Device State</label>
+                                        <label for="goal-device-${student.id}">If Goal Is Missed</label>
                                         <select id="goal-device-${student.id}">
-                                            <option value="">None</option>
-                                            <option value="locked">Locked</option>
-                                            <option value="accountability_only">Accountability Only</option>
-                                            <option value="approved_access">Approved Access</option>
-                                            <option value="expired">Expired</option>
-                                            <option value="manual_override">Manual Override</option>
+                                            <option value="">No tablet change</option>
+                                            <option value="locked">Pause tablet access</option>
+                                            <option value="accountability_only">Keep checkoff-only access</option>
+                                            <option value="approved_access">Open tablet access</option>
+                                            <option value="expired">End current access</option>
+                                            <option value="manual_override">Open temporarily</option>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="goal-success-device-${student.id}">After Checkoff</label>
+                                        <label for="goal-success-device-${student.id}">When Student Checks Off</label>
                                         <select id="goal-success-device-${student.id}">
-                                            <option value="approved_access" selected>Open Approved Access</option>
-                                            <option value="manual_override">Manual Override</option>
-                                            <option value="">No Automatic Access</option>
+                                            <option value="approved_access" selected>Open tablet access</option>
+                                            <option value="manual_override">Open temporarily</option>
+                                            <option value="">No tablet change</option>
                                         </select>
                                     </div>
                                     <div class="form-group">
-                                        <label for="goal-success-duration-${student.id}">Access Duration Minutes</label>
+                                        <label for="goal-success-duration-${student.id}">Open For Minutes</label>
                                         <input id="goal-success-duration-${student.id}" type="number" min="1" max="1440" step="1" value="60">
                                     </div>
                                 </div>
                                 <div class="form-row">
                                     <div class="form-group">
-                                        <label for="goal-device-duration-${student.id}">Missed State Duration Minutes</label>
+                                        <label for="goal-device-duration-${student.id}">Missed-Goal Duration Minutes</label>
                                         <input id="goal-device-duration-${student.id}" type="number" min="1" max="1440" step="1" value="60">
                                     </div>
                                     <div class="form-group">
@@ -6951,16 +7000,17 @@
                                 </div>
                                 <label class="checkbox-row">
                                     <input type="checkbox" id="goal-approval-${student.id}">
-                                    <span>Needs parent/admin approval</span>
+                                    <span>Review before applying a consequence</span>
                                 </label>
-                                <div class="task-actions" style="margin-top:0;">
-                                    <button class="task-action primary" type="submit">Create Goal Board Item</button>
+                                <div class="goal-board-toolbar" aria-label="Goal form actions" style="margin-top:0;">
+                                    <span class="goal-board-toolbar-label">Goal</span>
+                                    <button class="task-action primary" type="submit">Add Goal</button>
                                 </div>
                             </form>
                         </div>
                     </details>
                     <div class="goal-board-list">
-                        ${filtered.length ? filtered.map(renderGoalBoardAdminCard).join('') : `<div class="empty-state" style="padding:22px 12px;"><p>No ${escapeHtml(activeFilter)} Goal Board items.</p></div>`}
+                        ${filtered.length ? filtered.map(renderGoalBoardAdminCard).join('') : `<div class="empty-state" style="padding:22px 12px;"><p>No ${escapeHtml(activeFilter)} goals.</p></div>`}
                     </div>
                 </div>
             `;
@@ -6985,7 +7035,7 @@
                         &middot; ${escapeHtml(goalBoardUrgencyLabel(meta.urgency))}
                         &middot; ${escapeHtml(goalBoardStatusLabel(item))}
                     </div>
-                    <div class="event-title">${escapeHtml(item.title || 'Goal Board item')}</div>
+                    <div class="event-title">${escapeHtml(item.title || 'Goal')}</div>
                     <div class="event-meta">
                         ${meta.category ? `${escapeHtml(meta.category)} &middot; ` : ''}
                         ${due ? `Due ${escapeHtml(due)} &middot; ` : ''}
@@ -7000,25 +7050,35 @@
                     ${classroomUrl ? `<div class="goal-board-public">Classroom draft: <span style="word-break:break-all;">${escapeHtml(classroomUrl)}</span></div>` : ''}
                     ${consequence.recovery_path ? `<div class="goal-board-public">Recovery: ${escapeHtml(consequence.recovery_path)}</div>` : ''}
                     <div class="task-row-meta" style="margin-top:8px;">
-                        ${consequence.success_device_access_state ? `<span class="badge badge-category-accountability">Auto after checkoff: ${escapeHtml(consequence.success_device_access_state.replace(/_/g, ' '))}${consequence.success_duration_minutes ? ` for ${Number(consequence.success_duration_minutes)}m` : ''}</span>` : ''}
+                        ${consequence.success_device_access_state ? `<span class="badge badge-category-accountability">After checkoff: ${escapeHtml(deviceAccessChangeLabel(consequence.success_device_access_state, consequence.success_duration_minutes))}</span>` : ''}
                         ${consequence.success_applied_at ? `<span class="badge badge-category-accountability">Access opened ${escapeHtml(formatDateTime(consequence.success_applied_at))}</span>` : ''}
-                        ${consequence.device_access_state ? `<span class="badge badge-category-accountability">If missed: ${escapeHtml(consequence.device_access_state.replace(/_/g, ' '))}</span>` : ''}
+                        ${consequence.device_access_state ? `<span class="badge badge-category-accountability">If missed: ${escapeHtml(deviceAccessChangeLabel(consequence.device_access_state, consequence.duration_minutes))}</span>` : ''}
                     </div>
-                    ${consequence.status === 'pending_review' ? `<div class="goal-board-private">Pending review. No device or consequence action has been applied automatically.</div>` : ''}
+                    ${consequence.status === 'pending_review' ? `<div class="goal-board-private">Waiting for review. No tablet or recovery change has been applied yet.</div>` : ''}
                     ${meta.private_note ? `<div class="goal-board-private"><strong>Private admin note:</strong> ${escapeHtml(meta.private_note)}</div>` : ''}
                     ${meta.reflection_note ? `<div class="goal-board-public">Student reflection: ${escapeHtml(meta.reflection_note)}</div>` : ''}
-                    <div class="task-actions">
+                    <div class="goal-board-toolbar" aria-label="Progress actions">
+                        <span class="goal-board-toolbar-label">Progress</span>
                         <button class="task-action" onclick="setGoalProgress(event, ${Number(item.id)}, 0)">Not Yet</button>
                         <button class="task-action" onclick="setGoalProgress(event, ${Number(item.id)}, 50)">Half</button>
                         <button class="task-action primary" onclick="setGoalProgress(event, ${Number(item.id)}, 100)">Done</button>
+                    </div>
                         ${consequence.status === 'pending_review' && consequence.device_access_state ? `
-                            <button class="task-action primary" ${preferredDeviceId ? '' : 'disabled'} onclick="reviewDeviceAccess(event, ${Number(item.id)}, ${Number(preferredDeviceId || 0)}, 'approve', ${Number(consequence.duration_minutes || 60)})">Approve Device State</button>
-                            <button class="task-action" onclick="reviewDeviceAccess(event, ${Number(item.id)}, ${Number(preferredDeviceId || 0)}, 'deny')">Deny Device State</button>
-                            <button class="task-action" ${preferredDeviceId ? '' : 'disabled'} onclick="reviewDeviceAccess(event, ${Number(item.id)}, ${Number(preferredDeviceId || 0)}, 'manual_override', 30)">Manual Override</button>
+                            <div class="goal-board-toolbar" aria-label="Review actions">
+                                <span class="goal-board-toolbar-label">Review</span>
+                                <button class="task-action primary" ${preferredDeviceId ? '' : 'disabled'} onclick="reviewDeviceAccess(event, ${Number(item.id)}, ${Number(preferredDeviceId || 0)}, 'approve', ${Number(consequence.duration_minutes || 60)})">Open Tablet</button>
+                                <button class="task-action" onclick="reviewDeviceAccess(event, ${Number(item.id)}, ${Number(preferredDeviceId || 0)}, 'deny')">Keep Closed</button>
+                                <button class="task-action" ${preferredDeviceId ? '' : 'disabled'} onclick="reviewDeviceAccess(event, ${Number(item.id)}, ${Number(preferredDeviceId || 0)}, 'manual_override', 30)">Open Temporarily</button>
+                            </div>
                         ` : consequence.status === 'pending_review' ? `
-                            <button class="task-action primary" onclick="goalBoardAction(event, ${Number(item.id)}, 'approve_consequence')">Approve Recovery</button>
-                            <button class="task-action" onclick="goalBoardAction(event, ${Number(item.id)}, 'override_consequence')">Override</button>
+                            <div class="goal-board-toolbar" aria-label="Review actions">
+                                <span class="goal-board-toolbar-label">Review</span>
+                                <button class="task-action primary" onclick="goalBoardAction(event, ${Number(item.id)}, 'approve_consequence')">Approve Recovery</button>
+                                <button class="task-action" onclick="goalBoardAction(event, ${Number(item.id)}, 'override_consequence')">Change Recovery</button>
+                            </div>
                         ` : ''}
+                    <div class="goal-board-toolbar" aria-label="Board actions">
+                        <span class="goal-board-toolbar-label">Board</span>
                         <button class="task-action" onclick="updateGoalBoardItem(event, ${Number(item.id)}, { status: 'waiting', approval_required: true, approval_status: 'pending_review' })">Wait</button>
                         <button class="task-action" onclick="updateGoalBoardItem(event, ${Number(item.id)}, { status: 'archived' })">Archive</button>
                     </div>
@@ -8989,10 +9049,10 @@
             event?.preventDefault?.();
             event?.stopPropagation?.();
             const button = event?.currentTarget;
-            const name = prompt('Mock tablet name:', 'Student Tablet');
+            const name = prompt('Tablet name:', 'Student Tablet');
             if (!name || !name.trim()) return;
             const platform = prompt('Platform: android, ios, web, or unknown', 'android') || 'android';
-            const notes = prompt('Notes:', 'Mock-only tablet record for accountability MVP. No real device calls.') || '';
+            const notes = prompt('Notes:', 'Tablet record for BNA accountability. Classroom device connector not enabled yet.') || '';
             if (button) button.disabled = true;
             try {
                 await api.createDevice(studentId, {
@@ -9005,7 +9065,7 @@
                 });
                 await loadData();
             } catch (error) {
-                alert(error.message || 'Could not add mock tablet.');
+                alert(error.message || 'Could not add tablet record.');
             } finally {
                 if (button) button.disabled = false;
             }
@@ -9016,7 +9076,7 @@
             event?.stopPropagation?.();
             const normalizedStatus = normalizeDeviceAccessState(status);
             const needsDuration = ['approved_access', 'manual_override'].includes(normalizedStatus);
-            const reason = prompt('Reason for mock device state change:', deviceAccessLabel(normalizedStatus)) || '';
+            const reason = prompt('Reason for tablet access change:', deviceAccessLabel(normalizedStatus)) || '';
             if (needsDuration) {
                 const durationInput = prompt('Duration in minutes:', String(defaultDuration || 60));
                 if (durationInput === null) return;
@@ -9033,7 +9093,7 @@
                 });
                 await loadData();
             } catch (error) {
-                alert(error.message || 'Could not record mock device action.');
+                alert(error.message || 'Could not record tablet access change.');
             } finally {
                 if (button) button.disabled = false;
             }
@@ -9043,7 +9103,7 @@
             event?.preventDefault?.();
             event?.stopPropagation?.();
             if (action !== 'deny' && !deviceId) {
-                alert('Add a mock tablet before applying a device state.');
+                alert('Add a tablet record before changing tablet access.');
                 return;
             }
             let duration = defaultDuration || 60;
@@ -9052,7 +9112,7 @@
                 if (durationInput === null) return;
                 duration = Math.max(1, Math.min(1440, Math.round(Number(durationInput) || duration)));
             }
-            const reason = prompt('Review note:', action === 'deny' ? 'Denied device state after review' : 'Parent/admin approved mock access state') || '';
+            const reason = prompt('Review note:', action === 'deny' ? 'Kept tablet closed after review' : 'Parent/admin approved tablet access') || '';
             const button = event?.currentTarget;
             if (button) button.disabled = true;
             try {
@@ -9065,7 +9125,7 @@
                 });
                 await loadData();
             } catch (error) {
-                alert(error.message || 'Could not record device access review.');
+                alert(error.message || 'Could not record tablet access review.');
             } finally {
                 if (button) button.disabled = false;
             }

@@ -3778,3 +3778,36 @@ Verification:
 Status: local `needs_verification`; no deployment, production migration,
 production student merge/cleanup, production-data mutation, audit crawl, watch
 loop, or agent-fleet loop was performed. Resume at `REQ-20260618-153`.
+
+## 2026-06-19T00:08:30+03:00 - Goal Board Plain Language
+
+Completed the local Goal Board plain-language controls batch for
+`REQ-20260618-153`.
+
+- Replaced visible tablet-access state wording with product labels such as
+  Pause Access, Checkoff Only, Open, Ended, Temporary Open, Open Tablet, Keep
+  Closed, and Open Temporarily.
+- Replaced Goal Board form labels with plain language for missed-goal behavior,
+  successful checkoff behavior, review requirements, and the Add Goal action.
+- Added `deviceAccessChangeLabel` so stored access states render as readable
+  summaries like `Open for 60m` instead of raw stored values.
+- Grouped Goal Board card controls into horizontal purpose toolbars for Goal,
+  Progress, Review, Board, Tablet setup, and Tablet access actions.
+- Removed visible mock-provider/device-state phrasing from tablet setup,
+  tablet card, review card, prompt, and alert copy while preserving internal
+  API values.
+- Added `tests/goal-board-language.test.js` to prevent unclear labels from
+  returning.
+
+Verification:
+
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --check tests/goal-board-language.test.js`.
+- PASS `node --test tests/goal-board-language.test.js tests/goal-board.test.js
+  tests/operations-mobile-controls.test.js tests/operations-design-system.test.js`
+  15/15.
+- PASS `npm test` 164/164.
+
+Status: local `needs_verification`; no deployment, production-data mutation,
+audit crawl, watch loop, or agent-fleet loop was performed. Resume at
+`REQ-20260618-154`.
