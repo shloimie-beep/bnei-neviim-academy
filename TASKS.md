@@ -6,6 +6,10 @@ not authorize active GHL runtime paths.
 
 ## Now
 
+- [ ] Resume the active execution run at
+  `ops/execution-runs/2026-06-18-bna-platform-completion/` after the
+  Operations audit ZIP/output path is available. Current imported June 18 UI
+  remediation areas are blocked on audit output, not complete.
 - [x] Complete cycle `2026-06-16-one-time-integrations-access-agent-audit`:
   provider-scoped integration records/secret refs, Vimeo manual/API readiness,
   Thursday blocker cards, agent gap audit, full local verification, accumulated

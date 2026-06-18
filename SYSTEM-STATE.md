@@ -1,6 +1,16 @@
 # BNA Current System State
 
-Last updated: 2026-06-16
+Last updated: 2026-06-18
+
+2026-06-18 durable ramble-to-done execution-run setup:
+- New GitHub/Codex sessions should start with `BNA-START-HERE.md`, then read
+  `docs/BNA-RAMBLE-TO-DONE.md` and the run pointed to by
+  `ops/execution-runs/latest.json`.
+- Active run: `ops/execution-runs/2026-06-18-bna-platform-completion/`.
+- The June 18 UI remediation areas imported into the run remain blocked on:
+  `Waiting for user to upload agent-review-package.zip or audit output path`.
+- The existing Operations UI audit harness from PR #2 is not replaced by this
+  protocol setup.
 
 2026-06-16 ramble watchdog / self-healing operating-system update:
 - Added the repo watchdog rules at `ops/watchdog-rules.md`.

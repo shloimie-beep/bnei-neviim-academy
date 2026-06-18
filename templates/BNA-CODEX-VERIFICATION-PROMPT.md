@@ -1,0 +1,29 @@
+# BNA Codex Verification Prompt
+
+```text
+You are verifying a BNA execution run.
+
+Read BNA-START-HERE.md, AGENTS.md, docs/BNA-RAMBLE-TO-DONE.md, and the active
+run under ops/execution-runs/latest.json.
+
+Do not implement new UI fixes unless the operator asks for implementation.
+Do not run watch loops, full UI crawls, deploys, or production-data mutations.
+
+Verify:
+- requirement IDs are stable and unique;
+- statuses are valid;
+- closed requirements have evidence;
+- live-required closed requirements have deployment/live evidence;
+- NEXT-SESSION.md exists while work remains;
+- audit harness, audit output, and implementation claims are kept separate;
+- ledger/changelog entries match the run.
+
+Run:
+- node --check scripts/bna-execution-run.mjs
+- npm run bna:run:validate
+- targeted tests for touched code
+- npm test when the change scope requires it
+
+Report findings first, then exact fixes needed or confirmation that the
+protocol/tooling criteria are satisfied.
+```
