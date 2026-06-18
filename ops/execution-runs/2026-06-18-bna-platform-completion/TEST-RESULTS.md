@@ -53,3 +53,11 @@ Workspace authorization negative guard tests (2026-06-18T19:54:44+03:00):
 - PASS `node --check server.js`.
 - PASS `node --test tests/workspace-scope.test.js tests/workspace-schema.test.js tests/workspace-auth.test.js` 16/16.
 - PASS `npm test` 74/74.
+
+HTTP workspace isolation coverage (2026-06-18T20:02:08+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check src/lib/bna/workspace-auth.js`.
+- PASS `node --check tests/workspace-http-isolation.test.js`.
+- PASS `node --test tests/workspace-auth.test.js tests/workspace-http-isolation.test.js` 9/9.
+- PASS `npm test` 77/77.

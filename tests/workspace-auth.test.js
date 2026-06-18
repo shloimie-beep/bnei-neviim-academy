@@ -43,10 +43,13 @@ test('ordinary workspace users cannot enumerate students accounting content or u
     '/api/bna/payments',
     '/api/bna/content-jobs',
     '/api/bna/class-sessions',
-    '/api/bna/content-bundles'
+    '/api/bna/content-bundles',
+    '/api/bna/pending-briefs',
+    '/api/bna/agent-fleet/status'
   ]) {
     assert.equal(scopedRouteAllowed(identity, { path: pathName, method: 'GET' }), false, pathName);
   }
+  assert.equal(scopedRouteAllowed(identity, { path: '/api/bna/agent-fleet/status', method: 'POST' }), false);
 });
 
 test('ordinary workspace users may use only scoped task routes and safe shared context routes', () => {

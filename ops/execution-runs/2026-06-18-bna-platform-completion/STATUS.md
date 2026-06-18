@@ -1,14 +1,14 @@
 # Status
 
-Updated: 2026-06-18T19:54:44+03:00
+Updated: 2026-06-18T20:02:08+03:00
 
 Status counts:
 
-- in_progress: 15
+- in_progress: 13
 - done: 4
 - already_satisfied: 1
 - blocked: 3
-- needs_verification: 5
+- needs_verification: 7
 - not_started: 43
 - needs_operator_decision: 1
 
@@ -40,7 +40,7 @@ Open non-blocked IDs begin with:
 - REQ-20260618-122 BNA-PWA-004: Remove public loader/checkmark flash and header-to-hero gap (needs_verification)
 - REQ-20260618-123 BNA-WS-001: Enforce exactly school/service-provider/family workspace types (needs_verification)
 - REQ-20260618-124 BNA-WS-002: Scope applicable entities by workspace_id (in_progress)
-- REQ-20260618-125 BNA-WS-003: Server-side authorization/RLS and negative cross-tenant tests (in_progress)
+- REQ-20260618-125 BNA-WS-003: Server-side authorization/RLS and negative cross-tenant tests (needs_verification)
 - REQ-20260618-126 BNA-WS-004: Clear super-admin selector and ordinary-user behavior (not_started)
 - REQ-20260618-127 BNA-WS-005: Clear stale context on workspace changes (not_started)
 - REQ-20260618-128 BNA-OPS-001: Ordered horizontal Operations module toolbar (not_started)
@@ -58,6 +58,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current implementation batch: REQ-20260618-125 now has shared scoped-route/direct-task guards and negative helper tests; continue HTTP-level cross-workspace API tests and any needed per-route filters.
+Current implementation batch: REQ-20260618-125 has local server-side scoped route/task guards plus HTTP API isolation tests; next implementation target is REQ-20260618-126.
 
 No deployment or production-data mutation is approved in this run.

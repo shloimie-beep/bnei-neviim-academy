@@ -14,10 +14,7 @@ const SCOPED_TASK_ROUTE_PATTERNS = [
 const SCOPED_SHARED_ROUTE_PATTERNS = [
   { method: 'GET', pattern: /^\/operations$/ },
   { method: 'GET', pattern: /^\/api\/bna\/auth\/me$/ },
-  { method: 'GET', pattern: /^\/api\/bna\/projects$/ },
-  { method: 'GET', pattern: /^\/api\/bna\/pending-briefs$/ },
-  { method: 'GET', pattern: /^\/api\/bna\/agent-fleet\/status$/ },
-  { method: 'POST', pattern: /^\/api\/bna\/agent-fleet\/status$/ }
+  { method: 'GET', pattern: /^\/api\/bna\/projects$/ }
 ];
 
 function normalizeProjectKey(value) {

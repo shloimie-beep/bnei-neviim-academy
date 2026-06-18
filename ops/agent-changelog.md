@@ -2955,3 +2955,34 @@ Status: partial; continue `REQ-20260618-125` with HTTP/API-level negative tests
 using seeded cross-workspace data and any missing route filters before moving
 to `REQ-20260618-126`. No deployment, production-data mutation, audit crawl,
 watch loop, or agent-fleet loop was performed.
+
+## 2026-06-18T20:02:08+03:00 - HTTP Workspace Isolation Coverage
+
+Completed the local HTTP/API isolation batch for `REQ-20260618-125` and moved
+the backend negative-test item `REQ-20260618-170` to local
+`needs_verification`.
+
+- Made `server.js` importable for tests without starting the listener or
+  running DB initialization; normal `node server.js` startup still initializes
+  and listens.
+- Added HTTP tests against the real Express middleware with mocked DB rows.
+- Proved scoped ordinary workspace users are denied student, signup,
+  accounting/payment, content, pending-brief, and agent-fleet routes before DB
+  access.
+- Proved a scoped user cannot read BNA task comments by changing task ID.
+- Proved a scoped user can still read comments for its own One Time task.
+- Removed scoped ordinary-user access to internal pending-brief and
+  agent-fleet status routes.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check src/lib/bna/workspace-auth.js`.
+- PASS `node --check tests/workspace-http-isolation.test.js`.
+- PASS `node --test tests/workspace-auth.test.js
+  tests/workspace-http-isolation.test.js` 9/9.
+- PASS `npm test` 77/77.
+
+Status: local `needs_verification`; no deployment, production-data mutation,
+audit crawl, watch loop, or agent-fleet loop was performed. Resume at
+`REQ-20260618-126`.

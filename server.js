@@ -260,12 +260,12 @@ const GOOGLE_SCOPES = (process.env.GOOGLE_SCOPES || [
 ].join(' ')).split(/\s+/).filter(Boolean);
 const GOOGLE_DRIVE_PIPELINE_ROOT_NAME = process.env.GOOGLE_DRIVE_PIPELINE_ROOT_NAME || 'BNA V2';
 
-if (!DATABASE_URL) {
+if (!DATABASE_URL && require.main === module) {
   console.error('FATAL: DATABASE_URL not set');
   process.exit(1);
 }
 
-if (!OPS_USERNAME || !OPS_PASSWORD) {
+if ((!OPS_USERNAME || !OPS_PASSWORD) && require.main === module) {
   console.error('FATAL: OPS_USERNAME and OPS_PASSWORD must be set');
   process.exit(1);
 }
@@ -4305,7 +4305,9 @@ async function initDb() {
   }
 }
 
-initDb();
+if (require.main === module) {
+  initDb();
+}
 
 // GHL Helper Functions
 async function ghlRequest(endpoint, options = {}) {
@@ -11595,9 +11597,16 @@ async function sendTelegramMessage(chatId, text) {
   });
 }
 
-// Start server
-app.listen(PORT, () => {
-  console.log(`BNA Server running on port ${PORT}`);
-  startPaymentReminderScheduler();
-});
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`BNA Server running on port ${PORT}`);
+    startPaymentReminderScheduler();
+  });
+}
+
+module.exports = {
+  app,
+  initDb,
+  pool,
+};
 // Deploy timestamp: 2026-05-26T17:02:05Z
