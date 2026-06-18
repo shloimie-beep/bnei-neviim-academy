@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-19T03:50:30+03:00
+Updated: 2026-06-19T04:05:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -16,6 +16,7 @@ Latest completed local batches:
 - REQ-20260618-170: Backend/API/RBAC negative tests are locally terminal with route guard, real HTTP middleware, users, and accounting scope coverage.
 - REQ-20260618-114: Source-of-truth files now describe the active recovery run, audit-only blockers, first-party Operations runtime direction, release gate, and exact resume path.
 - REQ-20260618-124: Workspace-owned entity scoping is locally implemented through schema/backfill/create-path foundations plus hardened content job, bundle, output, prompt-example, mixed-recording, and Operations content write-path project checks.
+- REQ-20260618-111: Safe test data and complete acceptance coverage parent rollup is locally closed because REQ-168, REQ-169, REQ-170, and REQ-171 are terminal with evidence and the combined acceptance set passed.
 
 Exact next requirement:
 

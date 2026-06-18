@@ -388,22 +388,46 @@
       "id": "REQ-20260618-111",
       "title": "Safe test data and complete acceptance coverage",
       "area": "tests",
-      "status": "in_progress",
+      "status": "done",
       "expected_result": "Repeatable seed/cleanup data and local acceptance tests prove PWA, route, workspace, task, module, helper, responsive, and Hebrew behavior.",
       "acceptance_criteria": [
         "All child requirements under this parent have terminal statuses with evidence or exact blockers.",
         "STATUS.md and EVIDENCE.md show parent rollup and remaining child IDs.",
         "No child requirement is closed without proof and targeted verification."
       ],
-      "current_verdict": "partial",
+      "current_verdict": "closed_local",
       "source": "BNA recovery bundle and Appendix A",
       "depends_on_audit_output": false,
       "live_required": false,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "Child REQ-20260618-168 is done with guarded TEST-BNA-SEED plan/seed/cleanup lifecycle, package scripts, and no production-data mutation.",
+        "Child REQ-20260618-169 is done with focused Playwright browser acceptance coverage for Operations route/history, responsive overflow, workspace selector scoping, Assistant context, student detail routing, and Student Portal Hebrew RTL.",
+        "Child REQ-20260618-170 is done with backend/API/RBAC negative tests for route guards, real HTTP middleware isolation, direct task-ID isolation, users/invitations scoping, and accounting scoping.",
+        "Child REQ-20260618-171 is done with PWA identity/cache regression tests for public, Operations, and parent manifests/service workers/cache headers."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "notes": "Parent workstream retained from original active run."
+      "verification": [
+        "node --test tests/test-data-seed-script.test.js tests/browser-acceptance.test.js tests/workspace-auth.test.js tests/workspace-http-isolation.test.js tests/users-scope.test.js tests/accounting-scope.test.js tests/pwa-identity.test.js PASS 33/33",
+        "npm test PASS 209/209",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
+      ],
+      "implementation_commits": [
+        "current batch commit: chore: close test coverage parent requirement"
+      ],
+      "files_changed": [
+        "ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/STATUS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/REQUIREMENTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md",
+        "ops/execution-runs/latest.json",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md"
+      ],
+      "notes": "Closed locally as a non-live parent rollup because all child test-data and acceptance coverage requirements are terminal with evidence. No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed."
     },
     {
       "id": "REQ-20260618-112",

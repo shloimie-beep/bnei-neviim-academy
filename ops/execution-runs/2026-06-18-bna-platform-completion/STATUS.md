@@ -1,18 +1,19 @@
 # Status
 
-Updated: 2026-06-19T03:50:30+03:00
+Updated: 2026-06-19T04:05:30+03:00
 
 Status counts:
 
-- in_progress: 11
+- in_progress: 10
 - needs_verification: 48
 - blocked: 3
 - needs_operator_decision: 1
-- done: 8
+- done: 9
 - already_satisfied: 1
 
 Closed/already satisfied IDs:
 
+- REQ-20260618-111: Safe test data and complete acceptance coverage
 - REQ-20260618-112 BNA-PROC-001: Install root start-here and durable ramble-to-done protocol
 - REQ-20260618-113 BNA-PROC-002: Deterministic execution-run tooling/schema/tests
 - REQ-20260618-114 BNA-PROC-003: Reconcile AGENTS, MEMORY, TASKS, SYSTEM-STATE, briefs, and ledgers
@@ -35,7 +36,6 @@ Open non-blocked IDs:
 - REQ-20260618-108: Students, Goal Board, duplicate cleanup, Hebrew, and RTL (in_progress)
 - REQ-20260618-109: Unified scoped OpenAI helper (in_progress)
 - REQ-20260618-110: Public copy, portal headers, signup routes, and CTAs (in_progress)
-- REQ-20260618-111: Safe test data and complete acceptance coverage (in_progress)
 - REQ-20260618-119 BNA-PWA-001: Separate public and Operations manifests/app identities (needs_verification)
 - REQ-20260618-120 BNA-PWA-002: Isolate service workers, caches, scopes, and cache headers (needs_verification)
 - REQ-20260618-121 BNA-PWA-003: Enforce public-browser and installed-Operations routing invariants (needs_verification)

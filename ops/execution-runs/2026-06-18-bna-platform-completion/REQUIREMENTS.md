@@ -12,7 +12,7 @@
 | REQ-20260618-108 | - | - | in_progress | partial | Students, Goal Board, duplicate cleanup, Hebrew, and RTL |
 | REQ-20260618-109 | - | - | in_progress | partial | Unified scoped OpenAI helper |
 | REQ-20260618-110 | - | - | in_progress | partial | Public copy, portal headers, signup routes, and CTAs |
-| REQ-20260618-111 | - | - | in_progress | partial | Safe test data and complete acceptance coverage |
+| REQ-20260618-111 | - | - | done | closed_local | Safe test data and complete acceptance coverage |
 | REQ-20260618-112 | REQ-20260618-101 | BNA-PROC-001 | done | closed_existing | Install root start-here and durable ramble-to-done protocol |
 | REQ-20260618-113 | REQ-20260618-101 | BNA-PROC-002 | done | closed_existing | Deterministic execution-run tooling/schema/tests |
 | REQ-20260618-114 | REQ-20260618-101 | BNA-PROC-003 | done | closed_local | Reconcile AGENTS, MEMORY, TASKS, SYSTEM-STATE, briefs, and ledgers |

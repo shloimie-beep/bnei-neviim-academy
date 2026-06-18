@@ -468,3 +468,12 @@ Content workspace scoping hardening (2026-06-19T03:50:30+03:00):
 - PASS `npm test` 209/209.
 
 No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed.
+
+Test coverage parent rollup (2026-06-19T04:05:30+03:00):
+
+- PASS `node --test tests/test-data-seed-script.test.js tests/browser-acceptance.test.js tests/workspace-auth.test.js tests/workspace-http-isolation.test.js tests/users-scope.test.js tests/accounting-scope.test.js tests/pwa-identity.test.js` 33/33.
+- PASS `npm test` 209/209.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was performed.

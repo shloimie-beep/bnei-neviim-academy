@@ -4239,3 +4239,26 @@ Verification:
 Status: local `needs_verification`; no deployment, production-data mutation,
 audit crawl, watch loop, or agent-fleet loop was performed. Release approval
 and live smoke are still required before this live-required item can close.
+
+## 2026-06-19 - Test coverage parent rollup
+
+Requirement: `REQ-20260618-111`
+
+Changed:
+
+- Closed the non-live safe test data and complete acceptance coverage parent
+  after verifying all child requirements are terminal with evidence:
+  `REQ-20260618-168`, `REQ-20260618-169`, `REQ-20260618-170`, and
+  `REQ-20260618-171`.
+- Recorded parent rollup evidence in the active execution run and removed the
+  parent from `latest.json` remaining IDs.
+
+Verification:
+
+- PASS `node --test tests/test-data-seed-script.test.js tests/browser-acceptance.test.js tests/workspace-auth.test.js tests/workspace-http-isolation.test.js tests/users-scope.test.js tests/accounting-scope.test.js tests/pwa-identity.test.js` 33/33.
+- PASS `npm test` 209/209.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: local `done`; no deployment, production-data mutation, audit crawl,
+watch loop, or agent-fleet loop was performed.
