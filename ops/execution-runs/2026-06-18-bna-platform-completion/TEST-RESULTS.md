@@ -133,3 +133,11 @@ Canonical task state model (2026-06-18T21:02:35+03:00):
 - PASS Operations HTML script parse via `vm.Script` (2 script blocks).
 - PASS `node --test tests/task-state-model.test.js tests/operations-accessibility.test.js tests/operations-workspace-selector.test.js` 13/13.
 - PASS `npm test` 110/110.
+
+Task metadata and provenance separation (2026-06-18T21:12:45+03:00):
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/task-metadata-provenance.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/task-metadata-provenance.test.js tests/task-state-model.test.js` 6/6.
+- PASS `npm test` 113/113.

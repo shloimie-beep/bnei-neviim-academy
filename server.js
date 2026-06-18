@@ -1607,6 +1607,7 @@ CREATE TABLE IF NOT EXISTS bna_tasks (
   started_at TIMESTAMP,
   completed_at TIMESTAMP,
   archived_at TIMESTAMP,
+  blocker_reason TEXT,
   source TEXT NOT NULL DEFAULT 'manual' CHECK (source IN ('manual', 'ramble', 'telegram', 'web', 'google_drive', 'content_job', 'import', 'ghl_webhook', 'green_invoice')),
   source_context TEXT,
   ai_parsed JSONB,
@@ -2323,6 +2324,7 @@ ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS verification_notes TEXT;
 ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS project_id INTEGER REFERENCES bna_projects(id) ON DELETE SET NULL;
 ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS decision_required BOOLEAN DEFAULT FALSE;
 ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS author TEXT;
+ALTER TABLE bna_tasks ADD COLUMN IF NOT EXISTS blocker_reason TEXT;
 CREATE INDEX IF NOT EXISTS idx_bna_tasks_project_id ON bna_tasks (project_id);
 CREATE INDEX IF NOT EXISTS idx_bna_tasks_decision_required ON bna_tasks (decision_required);
 ALTER TABLE bna_content_jobs DROP CONSTRAINT IF EXISTS bna_content_jobs_source_type_check;
@@ -2819,6 +2821,7 @@ async function createTaskFromText(input = {}, options = {}, db = pool) {
   const decisionRequired = taskDecisionRequiredForStage(stage, requestedDecisionRequired);
   const urgency = safeTaskUrgency(input.urgency);
   const source = safeTaskSource(input.source || 'telegram');
+  const blockerReason = String(input.blocker_reason || input.blocker || input.blocked_reason || '').trim() || null;
   const aiParsed = input.ai_parsed || {
     parser: 'create_task_from_text-v1',
     kind: decisionRequired ? 'decision' : 'task',
@@ -2830,9 +2833,9 @@ async function createTaskFromText(input = {}, options = {}, db = pool) {
   const result = await db.query(
     `INSERT INTO bna_tasks (
        workspace_id, title, notes, stage, category, urgency, energy_required, estimated_minutes, due_date,
-       source, source_context, created_by, assigned_to, ai_parsed, project_id, decision_required, author
+       blocker_reason, source, source_context, created_by, assigned_to, ai_parsed, project_id, decision_required, author
       )
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17, $18)
       RETURNING *`,
     [
       project.workspace_id || null,
@@ -2844,6 +2847,7 @@ async function createTaskFromText(input = {}, options = {}, db = pool) {
       input.energy_required || null,
       input.estimated_minutes || null,
       input.due_date || null,
+      blockerReason,
       source,
       sourceContextToText(input.source_context || input.context_metadata || null),
       createdBy,
@@ -11250,6 +11254,7 @@ app.patch('/api/bna/tasks/:id', requireAdmin, async (req, res) => {
     'verification_notes',
     'decision_required',
     'author',
+    'blocker_reason',
   ]);
   try {
     await assertTaskAccess(req, id);
@@ -11266,6 +11271,7 @@ app.patch('/api/bna/tasks/:id', requireAdmin, async (req, res) => {
       if (!allowedFields.has(key)) continue;
       let nextValue = value;
       if (key === 'assigned_to') nextValue = normalizeTaskAssignee(value);
+      if (key === 'blocker_reason') nextValue = String(value || '').trim().slice(0, 500) || null;
       if (key === 'category') nextValue = safeTaskCategory(value);
       if (key === 'stage') {
         normalizedStageUpdate = normalizeTaskStageValue(value, {
@@ -11394,6 +11400,7 @@ app.post('/api/bna/migrate-db', requireAdmin, async (req, res) => {
       started_at TIMESTAMP,
       completed_at TIMESTAMP,
       archived_at TIMESTAMP,
+      blocker_reason TEXT,
       source TEXT DEFAULT 'manual',
       source_context TEXT,
       ai_parsed JSONB,

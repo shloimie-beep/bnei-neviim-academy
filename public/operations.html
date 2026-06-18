@@ -2074,8 +2074,13 @@
             margin-top: 10px;
         }
 
-        .task-row-meta.primary-only .badge:nth-child(n+6) {
+        .task-row-meta.primary-only .badge:nth-child(n+9) {
             display: none;
+        }
+
+        .metadata-badge strong {
+            color: inherit;
+            font-weight: 900;
         }
 
         .task-open-cue {
@@ -4525,15 +4530,7 @@
                         <div class="task-row-title">${escapeHtml(taskTitle)}</div>
                         ${detail ? `<div class="task-row-detail">${escapeHtml(detail)}</div>` : ''}
                         <div class="task-row-meta primary-only">
-                            <span class="badge badge-project-${taskProjectKey(task)}">${escapeHtml(taskProjectLabel(task))}</span>
-                            <span class="badge badge-urgency-${task.urgency}">${formatUrgency(task.urgency)}</span>
-                            <span class="badge">${escapeHtml(taskOwnerLabel(task))}</span>
-                            <span class="badge">${escapeHtml(taskStageLabel(task))}</span>
-                            ${task.decision_required ? '<span class="badge badge-decision">Decision Required</span>' : ''}
-                            ${Number(task.comment_count || 0) ? `<span class="badge">${Number(task.comment_count)} comment${Number(task.comment_count) === 1 ? '' : 's'}</span>` : ''}
-                            ${task.due_date ? `<span class="badge">Due ${formatDate(task.due_date)}</span>` : ''}
-                            ${task.completed_at ? `<span class="badge">Done ${formatDateTime(task.completed_at)}</span>` : ''}
-                            ${task.verified_at ? `<span class="badge">Verified ${formatDateTime(task.verified_at)}</span>` : ''}
+                            ${renderTaskMetadataBadges(task)}
                         </div>
                         <div class="task-open-cue">Open card for notes, raw capture, verification, and full metadata.</div>
                     </div>
@@ -7029,6 +7026,11 @@
                                     <input type="number" id="taskMinutes" value="${task.estimated_minutes || ''}" placeholder="e.g. 30">
                                 </div>
                             </div>
+                            <div class="form-group">
+                                <label for="taskBlockerReason">Blocker / Waiting On</label>
+                                <input type="text" id="taskBlockerReason" value="${escapeHtml(task.blocker_reason || '')}" placeholder="Human decision, access, external system, or dependency">
+                            </div>
+                            ${isEditing ? renderTaskProvenancePanel(task) : ''}
                             <label class="checkbox-row">
                                 <input type="checkbox" id="taskDecisionRequired" ${task.decision_required || normalizeTaskStage(task.stage) === 'decision_required' ? 'checked' : ''}>
                                 <span>Decision required before this can move forward</span>
@@ -7108,6 +7110,84 @@
             if (!value) return null;
             if (typeof value === 'object') return value;
             try { return JSON.parse(value); } catch { return null; }
+        }
+
+        function renderTaskMetadataBadge(label, value, className = '') {
+            return `<span class="badge metadata-badge ${className}" data-task-meta="${escapeHtml(String(label || '').toLowerCase())}"><strong>${escapeHtml(label)}:</strong> ${escapeHtml(value || 'Not set')}</span>`;
+        }
+
+        function renderTaskMetadataBadges(task) {
+            const stage = normalizeTaskStage(task.stage);
+            const badges = [
+                renderTaskMetadataBadge('Workspace', taskProjectLabel(task), `badge-project-${taskProjectKey(task)}`),
+                renderTaskMetadataBadge('Owner', taskOwnerLabel(task)),
+                renderTaskMetadataBadge('Status', taskStageLabel(task), stage === 'blocked' || task.decision_required ? 'badge-decision' : ''),
+                renderTaskMetadataBadge('Urgency', formatUrgency(task.urgency), `badge-urgency-${task.urgency || 'this_week'}`),
+                renderTaskMetadataBadge('Due', task.due_date ? formatDate(task.due_date) : 'Not set'),
+                renderTaskMetadataBadge('Blocker', taskBlockerLabel(task)),
+                renderTaskMetadataBadge('Source', taskProvenanceLabel(task)),
+            ];
+            if (Number(task.comment_count || 0)) {
+                badges.push(renderTaskMetadataBadge('Comments', `${Number(task.comment_count)} comment${Number(task.comment_count) === 1 ? '' : 's'}`));
+            }
+            if (task.completed_at) badges.push(renderTaskMetadataBadge('Done', formatDateTime(task.completed_at)));
+            if (task.verified_at) badges.push(renderTaskMetadataBadge('Verified', formatDateTime(task.verified_at)));
+            return badges.join('');
+        }
+
+        function taskBlockerLabel(task) {
+            const parsed = parseJsonField(task.ai_parsed) || {};
+            const sourceContext = parseJsonField(task.source_context) || {};
+            const raw = task.blocker_reason || parsed.blocker_reason || parsed.blocker || sourceContext.blocker_reason || sourceContext.blocker || '';
+            const blocker = String(raw || '').replace(/\s+/g, ' ').trim();
+            if (blocker) return blocker.length > 90 ? blocker.slice(0, 87).trim() + '...' : blocker;
+            return normalizeTaskStage(task.stage) === 'blocked' ? 'Needs reason' : 'None';
+        }
+
+        function taskProvenanceLabel(task) {
+            const parsed = parseJsonField(task.ai_parsed) || {};
+            const sourceContext = parseJsonField(task.source_context) || {};
+            const rawId = parsed.raw_id || parsed.rawId || sourceContext.raw_id || sourceContext.rawId || sourceContext.raw_input_id;
+            if (rawId) return `Raw ${rawId}`;
+            const contentJobId = parsed.source_content_job_id || sourceContext.content_job_id;
+            if (contentJobId) return `Content job #${contentJobId}`;
+            if (sourceContext.message_id && sourceContext.chat_id) return `Telegram msg ${sourceContext.message_id}`;
+            if (parsed.parser) return `${formatTaskSource(task.source || parsed.source || sourceContext.source)} parse`;
+            return formatTaskSource(task.source || sourceContext.source || task.created_by || 'manual');
+        }
+
+        function formatTaskSource(value) {
+            const key = String(value || 'manual').trim().toLowerCase();
+            return ({
+                manual: 'Manual',
+                dashboard: 'Dashboard',
+                operator: 'Operator',
+                ramble: 'Ramble',
+                telegram: 'Telegram',
+                web: 'Web',
+                google_drive: 'Drive',
+                content_job: 'Content job',
+                import: 'Import',
+                ghl_webhook: 'Legacy webhook',
+                green_invoice: 'Green Invoice',
+            })[key] || key.replace(/_/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+        }
+
+        function renderTaskProvenancePanel(task) {
+            const parsed = parseJsonField(task.ai_parsed) || {};
+            const sourceContext = parseJsonField(task.source_context) || {};
+            const rows = [
+                ['Source', taskProvenanceLabel(task)],
+                ['Created by', task.created_by || task.author || 'Not set'],
+                ['Created', task.created_at ? formatDateTime(task.created_at) : 'Not set'],
+                ['Parser', parsed.parser || 'Not set'],
+                ['Raw ID', parsed.raw_id || parsed.rawId || sourceContext.raw_id || sourceContext.rawId || sourceContext.raw_input_id || 'Not set'],
+            ];
+            return `
+                <div class="task-row-meta" aria-label="Task provenance">
+                    ${rows.map(([label, value]) => renderTaskMetadataBadge(label, value)).join('')}
+                </div>
+            `;
         }
 
         function transcriptPreview(text) {
@@ -8616,6 +8696,7 @@
                 energy_required: document.getElementById('taskEnergy').value || null,
                 due_date: document.getElementById('taskDueDate').value || null,
                 estimated_minutes: parseInt(document.getElementById('taskMinutes').value) || null,
+                blocker_reason: document.getElementById('taskBlockerReason').value || null,
                 decision_required: decisionRequired
             };
 

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-18T21:02:35+03:00",
+  "updated_at": "2026-06-18T21:12:45+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -171,19 +171,21 @@
       "live_required": true,
       "blocker": null,
       "evidence": [
-        "Task state model now canonicalizes decision_required, ready, in_progress, blocked, done, and archived across schema, API create/filter/update paths, agent queue filters, and Operations UI actions."
+        "Task state model now canonicalizes decision_required, ready, in_progress, blocked, done, and archived across schema, API create/filter/update paths, agent queue filters, and Operations UI actions.",
+        "Task metadata/provenance now separates owner, status, urgency, due, blocker, and source provenance from visible task titles."
       ],
       "deployment_evidence": [],
       "verification": [
         "node --test tests/task-state-model.test.js tests/operations-accessibility.test.js tests/operations-workspace-selector.test.js PASS 13/13",
         "npm test PASS 110/110"
       ],
-      "notes": "Task manager child REQ-136 has local implementation and tests. Parent remains in_progress until owner/status/provenance, intake routing, idempotency, Decisions, calendar, and remaining child requirements are complete.",
+      "notes": "Task manager child REQ-136 and REQ-137 have local implementation and tests. Parent remains in_progress until intake routing, idempotency, Decisions, calendar, and remaining child requirements are complete.",
       "files_changed": [
         "server.js",
         "public/operations.html",
         "tests/task-state-model.test.js"
-      ]
+      ],
+      "updated_at": "2026-06-18T21:12:45+03:00"
     },
     {
       "id": "REQ-20260618-107",
@@ -1300,7 +1302,7 @@
       "area": "tasks",
       "priority": "P0",
       "current_verdict": "partial",
-      "status": "not_started",
+      "status": "needs_verification",
       "expected_result": "Visible tasks have concise titles and structured metadata without raw ramble titles.",
       "acceptance_criteria": [
         "Separate owner/status/urgency/due/blocker/provenance is implemented against the canonical Express/static runtime where applicable.",
@@ -1311,12 +1313,24 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "server.js now stores blocker_reason as a first-class bna_tasks field in create-table, protected migration, task creation, and task patch paths.",
+        "public/operations.html now renders labeled task metadata badges for Workspace, Owner, Status, Urgency, Due, Blocker, and Source instead of unlabeled mixed badges.",
+        "Task modal now edits blocker_reason and shows a separate provenance panel derived from source/source_context/ai_parsed without promoting raw ramble wording into visible titles.",
+        "tests/task-metadata-provenance.test.js covers blocker metadata schema/API support, labeled Operations metadata badges, modal blocker editing, and provenance rendering."
+      ],
       "deployment_evidence": [],
-      "verification": [],
+      "verification": [
+        "PASS node --check server.js",
+        "PASS node --check tests/task-metadata-provenance.test.js",
+        "PASS Operations HTML script parse via vm.Script (2 script blocks)",
+        "PASS node --test tests/task-metadata-provenance.test.js tests/task-state-model.test.js 6/6",
+        "PASS npm test 113/113"
+      ],
       "implementation_commits": [],
       "files_changed": [],
-      "notes": ""
+      "notes": "Local implementation complete; remains needs_verification until final acceptance sweep, release approval, and any required live smoke.",
+      "updated_at": "2026-06-18T21:12:45+03:00"
     },
     {
       "id": "REQ-20260618-138",

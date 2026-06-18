@@ -3268,3 +3268,31 @@ Verification:
 Status: local `needs_verification`; no deployment, production migration,
 production-data mutation, audit crawl, watch loop, or agent-fleet loop was
 performed. Resume at `REQ-20260618-137`.
+
+## 2026-06-18T21:12:45+03:00 - Task Metadata And Provenance
+
+Completed the local task metadata/provenance separation batch for
+`REQ-20260618-137`.
+
+- Added `blocker_reason` as a first-class `bna_tasks` field in table creation,
+  idempotent migration, protected migration SQL, task creation, and task patch
+  paths.
+- Replaced unlabeled task-card badges with labeled metadata for workspace,
+  owner, status, urgency, due date, blocker, and source provenance.
+- Added a task modal blocker field and a separate provenance panel derived from
+  `source`, `source_context`, and `ai_parsed`.
+- Kept raw ramble/source wording as provenance instead of visible task titles.
+- Added focused coverage in `tests/task-metadata-provenance.test.js`.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/task-metadata-provenance.test.js`.
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --test tests/task-metadata-provenance.test.js
+  tests/task-state-model.test.js` 6/6.
+- PASS `npm test` 113/113.
+
+Status: local `needs_verification`; no deployment, production migration,
+production-data mutation, audit crawl, watch loop, or agent-fleet loop was
+performed. Resume at `REQ-20260618-138`.
