@@ -3811,3 +3811,31 @@ Verification:
 Status: local `needs_verification`; no deployment, production-data mutation,
 audit crawl, watch loop, or agent-fleet loop was performed. Resume at
 `REQ-20260618-154`.
+
+## 2026-06-19T00:16:30+03:00 - Goal Board Lane Separation
+
+Completed the local Goal Board lane-separation batch for `REQ-20260618-154`.
+
+- Replaced the single mixed Goal Board card list with explicit lanes for
+  Current Goals, Progress / Check-ins, Approvals, and History.
+- Added exclusive lane assignment so waiting review items land in Approvals,
+  completed goals land in History, partial progress lands in Progress /
+  Check-ins, and the remaining active items stay in Current Goals.
+- Added visible lane headings, counts, and lane-specific empty states.
+- Kept the existing filters while rendering filtered results through the lane
+  layout.
+- Added `tests/goal-board-separation.test.js` for the lane renderer and lane
+  assignment order.
+
+Verification:
+
+- PASS Operations HTML script parse via `vm.Script` (2 script blocks).
+- PASS `node --check tests/goal-board-separation.test.js`.
+- PASS `node --test tests/goal-board-separation.test.js tests/goal-board-language.test.js
+  tests/goal-board.test.js tests/operations-layout-stability.test.js
+  tests/operations-mobile-controls.test.js` 16/16.
+- PASS `npm test` 166/166.
+
+Status: local `needs_verification`; no deployment, production-data mutation,
+audit crawl, watch loop, or agent-fleet loop was performed. Resume at
+`REQ-20260618-155`.

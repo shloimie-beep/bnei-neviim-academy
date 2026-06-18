@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-19T00:08:30+03:00
+Updated: 2026-06-19T00:16:30+03:00
 
 Status counts:
 
@@ -8,8 +8,8 @@ Status counts:
 - done: 4
 - already_satisfied: 1
 - blocked: 3
-- needs_verification: 35
-- not_started: 15
+- needs_verification: 36
+- not_started: 14
 - needs_operator_decision: 1
 
 Closed/already satisfied IDs:
@@ -69,6 +69,7 @@ Open non-blocked IDs begin with:
 - REQ-20260618-151 BNA-ACCOUNTING-001: Workspace payment/accounting scoping and safe actions (needs_verification)
 - REQ-20260618-152 BNA-STUDENT-001: Workspace-and-student detail/analysis isolation (needs_verification)
 - REQ-20260618-153 BNA-GOAL-001: Goal Board controls use plain product language (needs_verification)
+- REQ-20260618-154 BNA-GOAL-002: Separate goals, progress, approvals, and history (needs_verification)
 
 Blocked / operator-decision IDs:
 
@@ -77,6 +78,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current implementation batch: REQ-20260618-153 has local Goal Board plain-language controls and horizontal purpose toolbars plus focused tests. Next implementation target is REQ-20260618-154.
+Current implementation batch: REQ-20260618-154 has local Goal Board Current Goals, Progress / Check-ins, Approvals, and History lanes plus focused tests. Next implementation target is REQ-20260618-155.
 
 No deployment or production-data mutation is approved in this run.

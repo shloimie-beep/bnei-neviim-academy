@@ -2578,6 +2578,37 @@
             gap: 10px;
         }
 
+        .goal-board-section-grid {
+            display: grid;
+            gap: 18px;
+        }
+
+        .goal-board-section {
+            border-top: 1px solid rgba(148, 163, 184, 0.18);
+            display: grid;
+            gap: 10px;
+            padding-top: 12px;
+        }
+
+        .goal-board-section-head {
+            align-items: baseline;
+            display: flex;
+            gap: 8px;
+            justify-content: space-between;
+        }
+
+        .goal-board-section-title {
+            color: #f8fafc;
+            font-size: 13px;
+            font-weight: 900;
+        }
+
+        .goal-board-section-count {
+            color: #94a3b8;
+            font-size: 12px;
+            font-weight: 800;
+        }
+
         .goal-board-toolbar {
             align-items: center;
             display: flex;
@@ -6135,6 +6166,58 @@
             }, {});
         }
 
+        function goalBoardLane(item, deviceList = []) {
+            const status = goalBoardStatus(item);
+            const progress = goalBoardProgress(item);
+            if (goalBoardFilterMatches(item, 'needs_review', deviceList)) return 'approvals';
+            if (status === 'done' || progress >= 100) return 'history';
+            if (progress > 0) return 'progress';
+            return 'goals';
+        }
+
+        function goalBoardLaneGroups(items, deviceList = []) {
+            return items.reduce((groups, item) => {
+                groups[goalBoardLane(item, deviceList)].push(item);
+                return groups;
+            }, {
+                goals: [],
+                progress: [],
+                approvals: [],
+                history: [],
+            });
+        }
+
+        function renderGoalBoardSection(title, items, emptyText) {
+            return `
+                <section class="goal-board-section" aria-label="${escapeHtml(title)}">
+                    <div class="goal-board-section-head">
+                        <div class="goal-board-section-title">${escapeHtml(title)}</div>
+                        <div class="goal-board-section-count">${items.length}</div>
+                    </div>
+                    <div class="goal-board-list">
+                        ${items.length
+                            ? items.map(renderGoalBoardAdminCard).join('')
+                            : `<div class="empty-state" style="padding:16px 12px;"><p>${escapeHtml(emptyText)}</p></div>`}
+                    </div>
+                </section>
+            `;
+        }
+
+        function renderGoalBoardSections(items, deviceList = [], activeFilter = 'all') {
+            if (!items.length) {
+                return `<div class="empty-state" style="padding:22px 12px;"><p>No ${escapeHtml(activeFilter)} goals.</p></div>`;
+            }
+            const groups = goalBoardLaneGroups(items, deviceList);
+            return `
+                <div class="goal-board-section-grid">
+                    ${renderGoalBoardSection('Current Goals', groups.goals, 'No current goals in this filter.')}
+                    ${renderGoalBoardSection('Progress / Check-ins', groups.progress, 'No in-progress check-ins in this filter.')}
+                    ${renderGoalBoardSection('Approvals', groups.approvals, 'No approvals waiting in this filter.')}
+                    ${renderGoalBoardSection('History', groups.history, 'No completed goals in this filter.')}
+                </div>
+            `;
+        }
+
         function normalizeDeviceAccessState(value, fallback = 'accountability_only') {
             const normalized = String(value || '')
                 .trim()
@@ -7009,9 +7092,7 @@
                             </form>
                         </div>
                     </details>
-                    <div class="goal-board-list">
-                        ${filtered.length ? filtered.map(renderGoalBoardAdminCard).join('') : `<div class="empty-state" style="padding:22px 12px;"><p>No ${escapeHtml(activeFilter)} goals.</p></div>`}
-                    </div>
+                    ${renderGoalBoardSections(filtered, deviceList, activeFilter)}
                 </div>
             `;
         }
