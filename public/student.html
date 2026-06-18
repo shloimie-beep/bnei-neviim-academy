@@ -62,6 +62,30 @@
             margin-bottom: 18px;
         }
 
+        .portal-brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+            min-width: 0;
+        }
+
+        .portal-logo {
+            flex: 0 0 auto;
+            width: 46px;
+            height: 46px;
+            object-fit: contain;
+        }
+
+        .portal-brand-name {
+            color: var(--forest);
+            display: block;
+            font-family: "Trebuchet MS", Verdana, sans-serif;
+            font-size: 13px;
+            font-weight: 900;
+            letter-spacing: 0.04em;
+        }
+
         .eyebrow {
             margin: 0 0 8px;
             color: var(--forest);
@@ -561,6 +585,10 @@
                 grid-template-columns: 1fr;
             }
 
+            .portal-brand {
+                align-items: flex-start;
+            }
+
             h1 {
                 font-size: 38px;
                 line-height: 1;
@@ -607,7 +635,13 @@
     <main class="shell">
         <header class="hero">
             <div>
-                <p class="eyebrow">Bnei Neviim Academy</p>
+                <div class="portal-brand" aria-label="BNA Student Portal identity">
+                    <img src="/images/bna-logo-nobg.png" alt="Bnei Nevi'im Academy" class="portal-logo">
+                    <div>
+                        <span class="portal-brand-name">Bnei Neviim Academy</span>
+                        <p class="eyebrow">Student Portal</p>
+                    </div>
+                </div>
                 <h1 id="pageTitle">Student Goal Board</h1>
                 <p class="hero-text" id="pageIntro">Open your private link, review your Torah progress, and work through your goals honestly.</p>
             </div>

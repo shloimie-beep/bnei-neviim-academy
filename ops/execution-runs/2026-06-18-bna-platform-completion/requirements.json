@@ -86,7 +86,8 @@
         "Operations shell now includes an identity-aware workspace context control for super-admin selection versus ordinary scoped-user locked context.",
         "Workspace changes now reset stale module subsection, student, content selection, prompt expansion, and task-modal context before reloading scoped data.",
         "Operations now uses one allowedViews-filtered horizontal module toolbar and the sidebar is reduced to workspace context.",
-        "Operations shell now has stable view-frame, panel/list/empty-state min-height, and allowed-view fallback safeguards against collapsed route/module states."
+        "Operations shell now has stable view-frame, panel/list/empty-state min-height, and allowed-view fallback safeguards against collapsed route/module states.",
+        "Operations shell/login/student portal now share the approved BNA logo pattern while preserving separate Operations, public, signup, and student portal identities/language controls."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -96,14 +97,19 @@
         "node --test tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js PASS 8/8",
         "npm test PASS 85/85",
         "node --test tests/operations-layout-stability.test.js tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js PASS 11/11",
-        "npm test PASS 88/88"
+        "npm test PASS 88/88",
+        "node --test tests/operations-identity-header.test.js tests/pwa-identity.test.js PASS 10/10",
+        "npm test PASS 92/92"
       ],
-      "notes": "Workspace selector, stale-context reset, ordered module toolbar, sidebar simplification, and layout stability portions are locally implemented. Operations shell/navigation parent remains in_progress until remaining header/language child requirements are complete.",
+      "notes": "Operations shell/navigation child requirements REQ-128 through REQ-131 have local implementations and tests. Parent remains in_progress until final acceptance, release approval, deploy, and live smoke.",
       "files_changed": [
         "public/operations.html",
         "tests/operations-workspace-selector.test.js",
         "tests/operations-module-toolbar.test.js",
-        "tests/operations-layout-stability.test.js"
+        "tests/operations-layout-stability.test.js",
+        "public/operations-login.html",
+        "public/student.html",
+        "tests/operations-identity-header.test.js"
       ]
     },
     {
@@ -1016,7 +1022,7 @@
       "area": "operations",
       "priority": "P1",
       "current_verdict": "partial",
-      "status": "not_started",
+      "status": "needs_verification",
       "expected_result": "Public and portal/login headers use one approved BNA logo/header pattern while keeping app identities separate.",
       "acceptance_criteria": [
         "Consistent headers, logo behavior, portal identity, and language controls is implemented against the canonical Express/static runtime where applicable.",
@@ -1027,12 +1033,29 @@
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": null,
-      "evidence": [],
+      "evidence": [
+        "Operations shell sidebar and mobile header now use /images/bna-logo-nobg.png with explicit BNA Operations private portal identity and EN language chip.",
+        "Operations login now uses the same BNA logo asset, Operations portal identity chip, and EN language chip while retaining operations-manifest.json.",
+        "Student portal header now uses the same BNA logo asset with explicit Student Portal identity and keeps EN/HE language controls.",
+        "Public homepage/signup pages retain public manifest identity, BNA logo usage, and English/Hebrew signup language values."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "node --check tests/operations-identity-header.test.js PASS",
+        "Operations, Operations Login, and Student Portal script parse via vm.Script PASS",
+        "node --test tests/operations-identity-header.test.js tests/pwa-identity.test.js PASS 10/10",
+        "npm test PASS 92/92"
+      ],
+      "implementation_commits": [
+        "current batch commit: fix: align operations portal identity headers"
+      ],
+      "files_changed": [
+        "public/operations.html",
+        "public/operations-login.html",
+        "public/student.html",
+        "tests/operations-identity-header.test.js"
+      ],
+      "notes": "Local header/logo/portal identity/language controls are implemented and tested. Requirement remains needs_verification pending final acceptance sweep, release approval, deploy, and live smoke for app-visible changes."
     },
     {
       "id": "REQ-20260618-132",

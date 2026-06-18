@@ -61,6 +61,24 @@
             margin-bottom: 12px;
         }
 
+        .ops-brand-lockup {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .ops-brand-logo,
+        .mobile-brand-logo {
+            flex: 0 0 auto;
+            object-fit: contain;
+        }
+
+        .ops-brand-logo {
+            height: 42px;
+            width: 42px;
+        }
+
         .ops-sidebar-title {
             color: #f8fafc;
             font-size: 18px;
@@ -74,6 +92,25 @@
             font-size: 12px;
             line-height: 1.35;
             margin-top: 5px;
+        }
+
+        .ops-identity-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-top: 10px;
+        }
+
+        .ops-identity-pill {
+            border: 1px solid rgba(148, 163, 184, 0.22);
+            border-radius: 999px;
+            color: #cbd5e1;
+            background: rgba(15, 23, 42, 0.72);
+            font-size: 10px;
+            font-weight: 850;
+            letter-spacing: 0.07em;
+            padding: 5px 8px;
+            text-transform: uppercase;
         }
 
         .workspace-context-control {
@@ -301,6 +338,18 @@
 
         .mobile-app-title {
             min-width: 0;
+        }
+
+        .mobile-brand-row {
+            align-items: center;
+            display: flex;
+            gap: 8px;
+            min-width: 0;
+        }
+
+        .mobile-brand-logo {
+            height: 28px;
+            width: 28px;
         }
 
         .mobile-app-title strong {
@@ -3688,8 +3737,17 @@
             return `
                 <aside class="ops-sidebar" aria-label="BNA Operations workspace context">
                     <div class="ops-sidebar-header">
-                        <div class="ops-sidebar-title">BNA Operations</div>
-                        <div class="ops-sidebar-copy">Telegram and Drive inputs routed into focused work lanes.</div>
+                        <div class="ops-brand-lockup" aria-label="BNA Operations identity">
+                            <img src="/images/bna-logo-nobg.png" alt="Bnei Nevi'im Academy" class="ops-brand-logo">
+                            <div>
+                                <div class="ops-sidebar-title">BNA Operations</div>
+                                <div class="ops-sidebar-copy">Private Operations portal</div>
+                            </div>
+                        </div>
+                        <div class="ops-identity-row">
+                            <span class="ops-identity-pill">Operations portal</span>
+                            <span class="ops-identity-pill" aria-label="Operations language">EN</span>
+                        </div>
                         ${renderWorkspaceContextControl()}
                     </div>
                 </aside>
@@ -3719,7 +3777,10 @@
                 <header class="mobile-app-header">
                     <button type="button" class="menu-button" onclick="openNavDrawer()" aria-label="Open workspace context"><span class="hamburger-lines" aria-hidden="true"></span></button>
                     <div class="mobile-app-title">
-                        <strong>${escapeHtml(label)}</strong>
+                        <div class="mobile-brand-row">
+                            <img src="/images/bna-logo-nobg.png" alt="Bnei Nevi'im Academy" class="mobile-brand-logo">
+                            <strong>${escapeHtml(label)}</strong>
+                        </div>
                         <span>${escapeHtml(sectionLabel)}</span>
                     </div>
                     <span class="page-status-pill">${escapeHtml(new Date().toLocaleDateString('en-GB', { month: 'short', day: 'numeric' }))}</span>

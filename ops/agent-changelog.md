@@ -3099,3 +3099,31 @@ Verification:
 Status: local `needs_verification`; no deployment, production-data mutation,
 audit crawl, watch loop, or agent-fleet loop was performed. Resume at
 `REQ-20260618-131`.
+
+## 2026-06-18T20:33:30+03:00 - Operations Identity And Header Alignment
+
+Completed the local header/logo/portal identity batch for `REQ-20260618-131`.
+
+- Added the approved BNA logo image to the Operations shell sidebar and mobile
+  header.
+- Added explicit Operations portal and EN language identity chips to the
+  Operations shell.
+- Replaced the Operations login placeholder logo with the approved BNA logo.
+- Added Operations portal and EN identity chips to the Operations login card.
+- Added the approved BNA logo to the Student Portal header with explicit
+  Student Portal identity.
+- Kept the Student Portal EN/HE language controls intact.
+- Added focused coverage in `tests/operations-identity-header.test.js`.
+
+Verification:
+
+- PASS `node --check tests/operations-identity-header.test.js`.
+- PASS Operations, Operations Login, and Student Portal script parse via
+  `vm.Script`.
+- PASS `node --test tests/operations-identity-header.test.js
+  tests/pwa-identity.test.js` 10/10.
+- PASS `npm test` 92/92.
+
+Status: local `needs_verification`; no deployment, production-data mutation,
+audit crawl, watch loop, or agent-fleet loop was performed. Resume at
+`REQ-20260618-132`.

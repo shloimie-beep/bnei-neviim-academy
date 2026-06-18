@@ -33,18 +33,29 @@
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
         .logo {
-            width: 64px;
-            height: 64px;
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            border-radius: 16px;
+            width: 76px;
+            height: 76px;
+            display: block;
+            object-fit: contain;
+            margin: 0 auto 16px;
+        }
+        .portal-identity {
             display: flex;
-            align-items: center;
+            flex-wrap: wrap;
             justify-content: center;
-            margin: 0 auto 24px;
-            font-size: 28px;
+            gap: 6px;
+            margin-bottom: 18px;
+        }
+        .portal-pill {
+            border: 1px solid #e2e8f0;
+            border-radius: 999px;
+            color: #475569;
+            background: #f8fafc;
+            font-size: 10px;
             font-weight: 800;
-            color: #c9a227;
-            letter-spacing: -1px;
+            letter-spacing: 0.08em;
+            padding: 5px 8px;
+            text-transform: uppercase;
         }
         h1 {
             font-size: 24px;
@@ -117,7 +128,11 @@
 </head>
 <body>
     <div class="card">
-        <div class="logo">BNA</div>
+        <img src="/images/bna-logo-nobg.png" alt="Bnei Nevi'im Academy" class="logo">
+        <div class="portal-identity">
+            <span class="portal-pill">Operations portal</span>
+            <span class="portal-pill" aria-label="Operations language">EN</span>
+        </div>
         <h1>Welcome back</h1>
         <p class="subtitle">Sign in to BNA Operations</p>
         

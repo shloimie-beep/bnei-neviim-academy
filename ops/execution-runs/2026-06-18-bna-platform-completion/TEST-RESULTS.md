@@ -90,3 +90,10 @@ Operations shell layout stability (2026-06-18T20:28:55+03:00):
 - PASS Operations HTML script parse via `vm.Script` (2 script blocks).
 - PASS `node --test tests/operations-layout-stability.test.js tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js` 11/11.
 - PASS `npm test` 88/88.
+
+Operations identity/header alignment (2026-06-18T20:33:30+03:00):
+
+- PASS `node --check tests/operations-identity-header.test.js`.
+- PASS Operations, Operations Login, and Student Portal script parse via `vm.Script`.
+- PASS `node --test tests/operations-identity-header.test.js tests/pwa-identity.test.js` 10/10.
+- PASS `npm test` 92/92.
