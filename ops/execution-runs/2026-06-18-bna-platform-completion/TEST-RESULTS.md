@@ -185,6 +185,44 @@ Not run for this batch:
 - No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
   social write.
 
+Verified on 2026-06-19 for Resend credential and meeting-intake closeout:
+
+- PASS `node --test tests/provider-credentials-diagnostics.test.js` 2/2.
+- PASS `node --test tests/resend-client.test.js` 5/5.
+- PASS `node --test tests/rabbi-scheller-meeting-reconciliation.test.js` 2/2.
+- PASS `node scripts/provider-credentials-diagnostics.mjs`; no send/upload/
+  meeting/payment write, Resend domains read successfully, missing
+  `RESEND_FROM` / `RESEND_FROM_EMAIL` and `RESEND_DOMAIN` recorded.
+- PASS `npm run keyholder:diagnose -- --no-open`; Resend keyholder and ignored
+  repo secret fingerprints match.
+- PASS `node scripts/provider-env-railway-propagate.mjs --dry-run`; apply
+  mode false, attempted 0, pushed 0, `resend_group_complete: false`.
+- PASS `node scripts/provider-env-railway-audit.mjs`; Railway still missing
+  `RESEND_API_KEY`, and local runtime still missing `RESEND_FROM` and
+  `RESEND_DOMAIN`.
+- PASS combined focused test run:
+  `node --test tests/provider-credentials-diagnostics.test.js
+  tests/resend-client.test.js
+  tests/rabbi-scheller-meeting-reconciliation.test.js` 9/9.
+- PASS `npm run bna:run:validate`; status counts are `blocked: 1`,
+  `needs_operator_decision: 1`, `done: 32`.
+- PASS JSON/JSONL parse check for `latest.json`, `requirements.json`,
+  `RECONCILIATION.json`, and all `ops/agent-task-ledger.jsonl` lines.
+- PASS `node scripts/audit-secrets.mjs`; 0 tracked secret-risk files.
+- PASS `git diff --check`; line-ending warnings only.
+
+Not run for this batch:
+
+- No email send.
+- No DNS mutation.
+- No Zoom meeting creation.
+- No Vimeo upload/library mutation.
+- No Stripe or Green Invoice write.
+- No Railway variable apply.
+- No deploy or live smoke.
+- No production DB mutation.
+- No broad UI crawl, watch loop, or agent-fleet loop.
+
 Verified on 2026-06-19 for PWA public-vs-Operations separation:
 
 - PASS `node --check tests/pwa-separation-contract.test.js`.

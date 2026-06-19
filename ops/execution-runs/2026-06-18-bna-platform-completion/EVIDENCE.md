@@ -767,3 +767,59 @@ Not run for this batch:
 - Remaining evidence gap:
   Resend credential/domain/DNS proof and Vimeo user-level upload/library access
   are still operator-gated and not locally completed.
+
+2026-06-19 Resend credential and meeting-intake evidence:
+
+- Resend source hash/fingerprint evidence:
+  `C:\Users\User\BNA-Keyholder\archived-source\2026-06-19-resend-one-time\resend-one-time-env-425f2ccf2704f615.source.txt`
+  with SHA-256
+  `425f2ccf2704f6159ae713f9ba0c4ea5ecf772bd8569116d062324420747d64a`
+  and fingerprint `425f2ccf2704`.
+- Runtime install locations are local/ignored only:
+  `C:\Users\User\BNA-Keyholder\resend-api-key.txt`,
+  `C:\Users\User\BNA-Keyholder\providers\resend\one-time-api-key.txt`, and
+  `.secrets/resend-api-key.txt`.
+- Downloads source deleted:
+  `C:\Users\User\Downloads\resend one time env.txt` no longer exists after
+  archive/install verification.
+- Keyholder proof:
+  `ops/qa-runs/2026-06-19T08-36-20-033Z-keyholder-diagnostics.md`.
+- Provider readiness proof:
+  `ops/qa-runs/2026-06-19T08-36-15-870Z-provider-credential-diagnostics.md`.
+  It records Zoom `auth_verified_read_only`, Vimeo
+  `auth_verified_read_only` with owner action still required for user access,
+  Resend `credentials_present` and `auth_verified_read_only` with missing
+  sender/domain, Stripe `credentials_present` but live-write gated, and Green
+  Invoice `credentials_missing`.
+- Railway no-mutation proof:
+  `ops/qa-runs/2026-06-19T08-36-25-755Z-provider-env-railway-propagation.md`
+  shows apply mode false, attempted 0, pushed 0, and
+  `resend_group_complete: false`.
+- Railway audit proof:
+  `ops/qa-runs/2026-06-19T08-36-27-669Z-provider-env-railway-audit.md`
+  shows Railway is still missing `RESEND_API_KEY` and local runtime is still
+  missing `RESEND_FROM` and `RESEND_DOMAIN`.
+- Resend runtime hardening:
+  `src/lib/integrations/resend-client.js` now prevents a bare
+  `resend-api-key.txt` file from being reused as sender/domain/API-base config.
+- Meeting reconciliation proof:
+  `ops/ingestion-runs/2026-06-19-rabbi-scheller-meeting-reconciliation/RECONCILIATION.md`
+  and `RECONCILIATION.json`.
+- Prior parse evidence:
+  `ops/ingestion-runs/2026-06-19-one-time-drive-brief-dry-run/PARSE.json`,
+  `CREATED-OR-UPDATED.json`, `DUPLICATES.json`, and `VERIFICATION.md`.
+- Future master-backlog input:
+  `ops/one-time-mishnah/next-master-backlog-input.md`.
+
+Guardrails:
+
+- No secret value was printed, committed, screenshotted, or copied into tracked
+  task notes.
+- No email was sent.
+- No DNS change was made.
+- No Zoom meeting was created.
+- No Vimeo upload/library mutation was performed.
+- No Stripe or Green Invoice write was performed.
+- No Railway variable was changed in this batch.
+- No deployment, production database mutation, broad crawl, watch loop, or
+  agent-fleet loop was run.

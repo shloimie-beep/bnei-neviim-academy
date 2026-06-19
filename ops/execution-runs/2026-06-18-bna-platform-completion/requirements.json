@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-19T11:06:00+03:00",
+  "updated_at": "2026-06-19T11:40:00+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -1329,7 +1329,7 @@
       "source": "RAW-20260619-002",
       "depends_on_audit_output": false,
       "live_required": true,
-      "blocker": "Zoom Server-to-Server OAuth and Vimeo app credentials are installed locally, propagated to Railway production, fingerprint-matched, and live-readiness smoke passed. Remaining external gates: Resend API key/from/domain/DNS owner action and Vimeo user access token or approved manual upload/library operating policy for account-level upload operations.",
+      "blocker": "Zoom Server-to-Server OAuth and Vimeo app credentials are installed locally, propagated to Railway production, fingerprint-matched, and live-readiness smoke passed. Resend API key is now secured locally and read-only domain listing works, but RESEND_FROM, RESEND_DOMAIN, DNS verification, and Railway Resend env propagation remain owner actions because the Resend group is incomplete. Vimeo user-level upload/library access or an approved manual upload policy remains open. Stripe live billing and Green Invoice credentials remain no-write/operator-gated.",
       "evidence": [
         "src/lib/integrations/vimeo.js",
         "src/lib/integrations/zoom.js",
@@ -1353,7 +1353,14 @@
         "ops/qa-runs/2026-06-19T07-51-23-963Z-provider-env-railway-propagation.md",
         "ops/qa-runs/2026-06-19T08-05-01-508Z-provider-env-railway-audit.md",
         "ops/qa-runs/2026-06-19T07-52-10-040Z-provider-credential-diagnostics.md",
-        "ops/live-smokes/2026-06-19T08-04-18-423Z-approved-release-live-smoke.md"
+        "ops/live-smokes/2026-06-19T08-04-18-423Z-approved-release-live-smoke.md",
+        "C:\\Users\\User\\BNA-Keyholder\\archived-source\\2026-06-19-resend-one-time\\resend-one-time-env-425f2ccf2704f615.source.txt",
+        "C:\\Users\\User\\BNA-Keyholder\\providers\\resend\\one-time-api-key.txt",
+        "ops/qa-runs/2026-06-19T08-36-20-033Z-keyholder-diagnostics.md",
+        "ops/qa-runs/2026-06-19T08-36-15-870Z-provider-credential-diagnostics.md",
+        "ops/qa-runs/2026-06-19T08-36-27-669Z-provider-env-railway-audit.md",
+        "ops/qa-runs/2026-06-19T08-36-25-755Z-provider-env-railway-propagation.md",
+        "tests/resend-client.test.js"
       ],
       "deployment_evidence": [
         "Railway provider env propagation set Zoom account/client/secret and Vimeo client/secret with --skip-deploys; no secret values were printed.",
@@ -1372,7 +1379,10 @@
         "node scripts/provider-env-railway-propagate.mjs --apply",
         "node scripts/provider-env-railway-audit.mjs",
         "node scripts/smoke-approved-release-live.mjs",
-        "node scripts/audit-secrets.mjs"
+        "node scripts/audit-secrets.mjs",
+        "node --test tests/resend-client.test.js",
+        "npm run keyholder:diagnose -- --no-open",
+        "node scripts/provider-env-railway-propagate.mjs --dry-run"
       ],
       "acceptance_criteria": [
         "Official docs are recorded with date checked.",
@@ -1384,7 +1394,7 @@
         "Read-only provider auth diagnostics prove Zoom token exchange and Vimeo client-credentials auth without storing returned tokens.",
         "Remaining Resend, Vimeo user-token/upload, production-env, and live-write actions stay operator-gated."
       ],
-      "notes": "Credential-free docs and placeholder repair are implemented. Live readiness remains genuinely blocked by external credentials/owner actions.\n2026-06-19 credential unblock: Zoom account/client/secret and Vimeo client/secret were copied from the temporary Downloads handoff into C:\\Users\\User\\BNA-Keyholder and ignored local .secrets files; the temporary Downloads folder was deleted after hash comparison. Live read-only diagnostics passed for Zoom token exchange and Vimeo client-credentials auth. No returned access token was stored, no meeting/upload/email/deploy/production write occurred, and Resend/Vimeo user-level/live-write gates remain operator decisions.\n2026-06-19 approved release provider closeout: Zoom/Vimeo app credentials were propagated to Railway production and fingerprint-matched. Live approved-release smoke proved provider readiness/status endpoints and no-write preview guards. Resend remains absent and Vimeo user-level upload token remains absent, so this requirement stays needs_operator_decision instead of done."
+      "notes": "Credential-free docs and placeholder repair are implemented. Live readiness remains genuinely blocked by external credentials/owner actions.\n2026-06-19 credential unblock: Zoom account/client/secret and Vimeo client/secret were copied from the temporary Downloads handoff into C:\\Users\\User\\BNA-Keyholder and ignored local .secrets files; the temporary Downloads folder was deleted after hash comparison. Live read-only diagnostics passed for Zoom token exchange and Vimeo client-credentials auth. No returned access token was stored, no meeting/upload/email/deploy/production write occurred, and Resend/Vimeo user-level/live-write gates remain operator decisions.\n2026-06-19 approved release provider closeout: Zoom/Vimeo app credentials were propagated to Railway production and fingerprint-matched. Live approved-release smoke proved provider readiness/status endpoints and no-write preview guards. Resend remains absent and Vimeo user-level upload token remains absent, so this requirement stays needs_operator_decision instead of done.\n2026-06-19 Resend follow-up: the temporary Downloads source C:\\Users\\User\\Downloads\\resend one time env.txt contained one bare secret value, not NAME=value env lines. It was hash-archived into the local BNA keyholder, installed into the ignored keyholder/.secrets runtime path, and deleted from Downloads after fingerprint verification. Provider diagnostics are no-send/no-upload/no-meeting/no-payment and show Resend credentials_present plus auth_verified_read_only via domain listing, but owner_action_required remains because RESEND_FROM and RESEND_DOMAIN are absent. Railway dry-run did not propagate Resend because resend_group_complete=false, so no Railway variable mutation or auto-deploy occurred."
     },
     {
       "id": "REQ-20260619-208",
@@ -1409,7 +1419,11 @@
         "ops/execution-runs/2026-06-18-bna-platform-completion/STATUS.md",
         "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
         "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
-        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md"
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md",
+        "ops/ingestion-runs/2026-06-19-rabbi-scheller-meeting-reconciliation/RECONCILIATION.md",
+        "ops/one-time-mishnah/next-master-backlog-input.md",
+        "ops/qa-runs/2026-06-19T08-36-15-870Z-provider-credential-diagnostics.md",
+        "ops/qa-runs/2026-06-19T08-36-27-669Z-provider-env-railway-audit.md"
       ],
       "deployment_evidence": [],
       "verification": [
@@ -1419,14 +1433,126 @@
         "node --test tests/one-time-drive-brief-ingestion.test.js tests/one-time-external-user-portal.test.js tests/one-time-meeting-drops.test.js tests/int05-integrations-closeout.test.js",
         "node --test tests/one-time-intake-scope-hardening.test.js tests/intake-parser-class-recording.test.js tests/intake-parser-communications.test.js tests/intake-parser-goals.test.js tests/intake-parser-student-questions.test.js tests/intake-parser.test.js tests/telegram-ramble-routing-regression.test.js",
         "node --test tests/one-time-rbac-negative-isolation.test.js tests/one-time-drive-brief-ingestion.test.js tests/intake-parser-workspace-ambiguity.test.js tests/one-time-intake-scope-hardening.test.js tests/bna-helper-tools.test.js",
-        "npm run bna:run:validate"
+        "npm run bna:run:validate",
+        "node --test tests/provider-credentials-diagnostics.test.js tests/resend-client.test.js tests/rabbi-scheller-meeting-reconciliation.test.js",
+        "node scripts/provider-credentials-diagnostics.mjs",
+        "node scripts/provider-env-railway-propagate.mjs --dry-run",
+        "node scripts/provider-env-railway-audit.mjs"
       ],
       "acceptance_criteria": [
         "Focused tests pass or exact failures are recorded.",
         "No watch loops, broad crawls, deploys, or production mutations run.",
         "NEXT-SESSION names the exact next requirement and command."
       ],
-      "notes": "Focused tests/evidence/checkpoint for this local batch are complete. The wider execution run still has open requirements."
+      "notes": "Focused tests/evidence/checkpoint for this local batch are complete. The wider execution run still has open requirements.\n2026-06-19 credential-and-meeting-intake checkpoint added: secure Resend handoff, provider readiness diagnostics, Railway dry-run/audit, Rabbi Scheller Drive dedupe reconciliation, future master-backlog input, and focused tests were added without live sends, uploads, meetings, payments, DNS, Railway mutation, deployment, broad crawl, watch loop, or agent-fleet loop."
+    },
+    {
+      "id": "REQ-20260619-209",
+      "title": "One Time Resend credential handoff secured and readiness audited",
+      "area": "integrations",
+      "status": "done",
+      "expected_result": "The temporary One Time Resend handoff is treated as secret-bearing, archived into the local keyholder, installed only into ignored runtime secret paths, removed from Downloads, audited with fingerprints only, and left no-send/no-DNS/no-production-mutation with remaining owner actions recorded.",
+      "source": "Pasted credential-and-meeting-intake batch, 2026-06-19",
+      "depends_on_audit_output": false,
+      "live_required": false,
+      "blocker": "",
+      "evidence": [
+        "C:\\Users\\User\\BNA-Keyholder\\archived-source\\2026-06-19-resend-one-time\\resend-one-time-env-425f2ccf2704f615.source.txt",
+        "C:\\Users\\User\\BNA-Keyholder\\resend-api-key.txt",
+        "C:\\Users\\User\\BNA-Keyholder\\providers\\resend\\one-time-api-key.txt",
+        ".secrets/resend-api-key.txt (ignored local runtime file; not tracked)",
+        "ops/qa-runs/2026-06-19T08-36-20-033Z-keyholder-diagnostics.md",
+        "ops/qa-runs/2026-06-19T08-36-15-870Z-provider-credential-diagnostics.md",
+        "ops/qa-runs/2026-06-19T08-36-27-669Z-provider-env-railway-audit.md",
+        "ops/qa-runs/2026-06-19T08-36-25-755Z-provider-env-railway-propagation.md",
+        "src/lib/integrations/resend-client.js",
+        "scripts/provider-credentials-diagnostics.mjs",
+        "tests/provider-credentials-diagnostics.test.js",
+        "tests/resend-client.test.js"
+      ],
+      "deployment_evidence": [
+        "Railway Resend propagation was dry-run only and intentionally skipped because RESEND_FROM and RESEND_DOMAIN are missing locally; no Railway variable mutation and no auto-deploy occurred."
+      ],
+      "verification": [
+        "Source metadata inspection: size 36 bytes, variable_count 0, SHA-256 425f2ccf2704f6159ae713f9ba0c4ea5ecf772bd8569116d062324420747d64a; no secret value printed.",
+        "Secure install/archive command PASS; archive hash matched source, installed fingerprint 425f2ccf2704, source_deleted=true.",
+        "node --test tests/provider-credentials-diagnostics.test.js PASS 2/2",
+        "node --test tests/resend-client.test.js PASS 5/5",
+        "node scripts/provider-credentials-diagnostics.mjs PASS no-send/read-only; Resend domains_read, domain_count=1, missing RESEND_FROM/RESEND_DOMAIN.",
+        "npm run keyholder:diagnose -- --no-open PASS; Resend keyholder and repo_secret fingerprints match.",
+        "node scripts/provider-env-railway-propagate.mjs --dry-run PASS; resend_group_complete=false; attempted=0; pushed=0.",
+        "node scripts/provider-env-railway-audit.mjs PASS; Railway missing RESEND_API_KEY; local missing RESEND_FROM/RESEND_DOMAIN."
+      ],
+      "acceptance_criteria": [
+        "No secret value is printed, committed, screenshotted, or written into task notes.",
+        "Source is archived under local keyholder with hash/fingerprint evidence only.",
+        "Downloads source file is deleted after archive/install verification.",
+        "Only ignored runtime secret paths receive the key.",
+        "Resend readiness is separated from Zoom, Vimeo, Stripe, and Green Invoice readiness states.",
+        "No email send, DNS mutation, Railway mutation, or deployment occurs from this handoff because sender/domain fields are missing."
+      ],
+      "notes": "Completed locally. The handoff file contained a bare Resend key only, so RESEND_FROM, RESEND_DOMAIN, DNS verification, and Railway production propagation remain external owner/operator actions recorded under REQ-20260619-207."
+    },
+    {
+      "id": "REQ-20260619-210",
+      "title": "Newest Rabbi Scheller meeting discovery and idempotent reconciliation",
+      "area": "intake",
+      "status": "done",
+      "expected_result": "Connected Drive and local approved intake are checked for the newest Rabbi Elie Scheller / One Time meeting; the newest exact source is recognized as already parsed, and a redacted reconciliation packet records counts/classifications without duplicate visible records or live writes.",
+      "source": "Pasted credential-and-meeting-intake batch, 2026-06-19",
+      "depends_on_audit_output": false,
+      "live_required": false,
+      "blocker": "",
+      "evidence": [
+        "ops/ingestion-runs/2026-06-19-rabbi-scheller-meeting-reconciliation/RECONCILIATION.json",
+        "ops/ingestion-runs/2026-06-19-rabbi-scheller-meeting-reconciliation/RECONCILIATION.md",
+        "ops/ingestion-runs/2026-06-19-one-time-drive-brief-dry-run/PARSE.json",
+        "ops/ingestion-runs/2026-06-19-one-time-drive-brief-dry-run/CREATED-OR-UPDATED.json",
+        "ops/ingestion-runs/2026-06-19-one-time-drive-brief-dry-run/DUPLICATES.json",
+        "ops/ingestion-runs/2026-06-19-one-time-drive-brief-dry-run/VERIFICATION.md",
+        "tests/rabbi-scheller-meeting-reconciliation.test.js"
+      ],
+      "deployment_evidence": [],
+      "verification": [
+        "Google Drive search query Scheller returned 2026-06-18-rabbi-elie-scheller.md as newest relevant candidate.",
+        "Google Drive modified-after search after 2026-06-18T17:16:21Z returned only the same relevant file.",
+        "Google Drive recent_documents top 30 found the same file as newest relevant candidate.",
+        "Local approved intake inspection found prior dry-run parse under ops/ingestion-runs/2026-06-19-one-time-drive-brief-dry-run/.",
+        "node --test tests/rabbi-scheller-meeting-reconciliation.test.js PASS 2/2"
+      ],
+      "acceptance_criteria": [
+        "Newest source ID, filename, modified time, size, and prior hash are recorded without raw private body text.",
+        "Existing parse/dedupe evidence is linked instead of duplicating records.",
+        "Proposed item counts/classifications are recorded.",
+        "Workspace/project routing is One Time only: rabbi_sheller_provider / one_time_mishnah_class.",
+        "No BNA school tasks, public records, or visible duplicate cards are created."
+      ],
+      "notes": "Newest accessible relevant Drive source is 2026-06-18-rabbi-elie-scheller.md, Drive ID 1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI, modified 2026-06-18T17:16:21.504Z. It was already parsed in the existing dry-run packet; this batch created only a redacted reconciliation packet with 64 previously parsed proposed records classified as already satisfied by the existing parse."
+    },
+    {
+      "id": "REQ-20260619-211",
+      "title": "One Time future master-backlog input captured without implementation",
+      "area": "backlog",
+      "status": "done",
+      "expected_result": "A durable redacted future master-backlog input is created for One Time, preserving owner/admin, scoping, dedupe, filtering, UX, evidence, and checkpoint requirements without starting master backlog implementation.",
+      "source": "Pasted credential-and-meeting-intake batch, 2026-06-19",
+      "depends_on_audit_output": false,
+      "live_required": false,
+      "blocker": "",
+      "evidence": [
+        "ops/one-time-mishnah/next-master-backlog-input.md",
+        "tests/rabbi-scheller-meeting-reconciliation.test.js"
+      ],
+      "deployment_evidence": [],
+      "verification": [
+        "node --test tests/rabbi-scheller-meeting-reconciliation.test.js PASS 2/2"
+      ],
+      "acceptance_criteria": [
+        "Backlog input is redacted and scoped to rabbi_sheller_provider / one_time_mishnah_class.",
+        "It records future requirements for Rabbi owner/Admin roles, no leakage, noisy task/decision cleanup, dedupe, relevance/source/workspace filtering, WhatsApp/email UX, toolbar/button UX, ordered batches, evidence, and checkpoints.",
+        "It explicitly says it is not implementation evidence and does not claim backlog completion."
+      ],
+      "notes": "Created only as durable future input. No master backlog implementation, visible row insertion, production mutation, deployment, live write, or broad crawl was started."
     }
   ]
 }

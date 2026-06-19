@@ -5,6 +5,47 @@ approved Railway deployment and focused live smokes have passed for the
 release-gated local work. The run still has external blockers for the audit
 package and remaining provider-owner setup.
 
+2026-06-19 credential-and-meeting-intake closeout:
+
+- Secured the temporary Resend handoff file
+  `C:\Users\User\Downloads\resend one time env.txt` into the local keyholder
+  archive at
+  `C:\Users\User\BNA-Keyholder\archived-source\2026-06-19-resend-one-time\resend-one-time-env-425f2ccf2704f615.source.txt`.
+- The source was a single bare secret value, not `NAME=value` env lines. It was
+  installed only into the BNA keyholder and ignored `.secrets` runtime flow,
+  then deleted from Downloads after hash/fingerprint verification.
+- Resend read-only provider diagnostics passed: credentials are present and
+  the domain list can be read, but `RESEND_FROM` / `RESEND_FROM_EMAIL` and
+  `RESEND_DOMAIN` are still missing.
+- Railway Resend propagation was dry-run only and skipped because the Resend
+  group is incomplete. No Railway variable was changed, no automatic
+  deployment occurred, and no email/DNS/provider write was performed.
+- Provider readiness states were recorded separately for Resend, Zoom, Vimeo,
+  Stripe, and Green Invoice. Zoom/Vimeo app credentials remain read-only
+  verified; Vimeo user access, Stripe live billing, Green Invoice credentials,
+  and Resend sender/domain/DNS remain operator-gated.
+- Connected Drive search confirmed the newest accessible Rabbi Elie Scheller /
+  One Time meeting source is still `2026-06-18-rabbi-elie-scheller.md`, Drive
+  ID `1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI`, modified
+  `2026-06-18T17:16:21.504Z`.
+- The exact source was already parsed by
+  `ops/ingestion-runs/2026-06-19-one-time-drive-brief-dry-run/`; this batch
+  created a redacted reconciliation packet instead of duplicate visible rows:
+  `ops/ingestion-runs/2026-06-19-rabbi-scheller-meeting-reconciliation/`.
+- Created future-only backlog input:
+  `ops/one-time-mishnah/next-master-backlog-input.md`. It does not claim
+  implementation and does not start the master backlog.
+- Added `REQ-20260619-209`, `REQ-20260619-210`, and `REQ-20260619-211` as
+  done for this safe local batch. `REQ-20260619-207` remains
+  `needs_operator_decision` for remaining Resend sender/domain/DNS/Railway,
+  Vimeo user access/manual policy, Stripe live billing, and Green Invoice
+  credentials.
+- Final focused validation for this checkpoint passed:
+  `npm run bna:run:validate` reports `blocked: 1`,
+  `needs_operator_decision: 1`, and `done: 32`.
+- `node scripts/audit-secrets.mjs` passed with 0 tracked secret-risk files.
+- Full `git diff --check` passed with line-ending warnings only.
+
 2026-06-19 approved release closeout:
 
 - Operator approval covered production env propagation, Railway deploy, focused

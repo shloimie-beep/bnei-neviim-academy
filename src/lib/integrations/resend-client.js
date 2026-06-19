@@ -33,6 +33,11 @@ function safeAccountOwner(value = '') {
 
 function getResendConfig(options = {}) {
   const repoRoot = options.repoRoot || process.cwd();
+  const loaderOptions = {
+    repoRoot,
+    ...(options.keyholderRoots !== undefined ? { keyholderRoots: options.keyholderRoots } : {}),
+    ...(options.secretsRoot !== undefined ? { secretsRoot: options.secretsRoot } : {}),
+  };
   const profile = String(options.profile || process.env.RESEND_PROFILE || '').trim().toLowerCase();
   const profilePrefix = ['shloimie', 'rabbi'].includes(profile) ? `RESEND_${profile.toUpperCase()}` : 'RESEND';
   const envFor = (suffix) => profilePrefix === 'RESEND' ? `RESEND_${suffix}` : `${profilePrefix}_${suffix}`;
@@ -42,58 +47,58 @@ function getResendConfig(options = {}) {
       envName: envFor('API_KEY'),
       names: ['resend-api-key', envFor('API_KEY'), profile ? `resend-${profile}` : 'resend'],
       fileNames: ['resend-api-key.txt', `${envFor('API_KEY')}.txt`, profile ? `resend-${profile}.txt` : 'resend.txt'],
-      repoRoot,
+      ...loaderOptions,
     }).value;
   const apiBase = String(options.apiBase || loadConfigValue({
     envName: 'RESEND_API_BASE_URL',
-    names: ['resend-api-key', 'resend'],
-    fileNames: ['resend-api-key.txt', 'RESEND_API_BASE_URL.txt', 'resend.txt'],
-    repoRoot,
+    names: ['resend-api-base-url'],
+    fileNames: ['resend-api-base-url.txt', 'RESEND_API_BASE_URL.txt'],
+    ...loaderOptions,
   }) || 'https://api.resend.com').replace(/\/+$/, '');
   const accountOwner = safeAccountOwner(options.accountOwner || loadConfigValue({
     envName: envFor('ACCOUNT_OWNER'),
-    names: ['resend-api-key', 'resend-account-owner', profile ? `resend-${profile}` : 'resend'],
-    fileNames: ['resend-api-key.txt', `${envFor('ACCOUNT_OWNER')}.txt`, profile ? `resend-${profile}.txt` : 'resend.txt'],
-    repoRoot,
+    names: ['resend-account-owner', profile ? `resend-${profile}-account-owner` : ''],
+    fileNames: ['resend-account-owner.txt', `${envFor('ACCOUNT_OWNER')}.txt`, profile ? `resend-${profile}-account-owner.txt` : ''],
+    ...loaderOptions,
   }) || profile || 'unknown');
   const providerAccount = String(options.providerAccount || loadConfigValue({
     envName: 'RESEND_PROVIDER_ACCOUNT',
-    names: ['resend-api-key', 'resend-provider-account', 'resend'],
-    fileNames: ['resend-api-key.txt', 'RESEND_PROVIDER_ACCOUNT.txt', 'resend.txt'],
-    repoRoot,
+    names: ['resend-provider-account'],
+    fileNames: ['resend-provider-account.txt', 'RESEND_PROVIDER_ACCOUNT.txt'],
+    ...loaderOptions,
   }) || '').trim();
   const rawFrom = String(options.from || loadConfigValue({
     envName: 'RESEND_FROM',
-    names: ['resend-api-key', 'resend-from', 'resend'],
-    fileNames: ['resend-api-key.txt', 'RESEND_FROM.txt', 'resend.txt'],
-    repoRoot,
+    names: ['resend-from'],
+    fileNames: ['resend-from.txt', 'RESEND_FROM.txt'],
+    ...loaderOptions,
   }) || '').trim();
   const fromEmail = normalizeEmail(options.fromEmail || rawFrom || loadConfigValue({
     envName: 'RESEND_FROM_EMAIL',
-    names: ['resend-api-key', 'resend-from-email', 'resend'],
-    fileNames: ['resend-api-key.txt', 'RESEND_FROM_EMAIL.txt', 'resend.txt'],
-    repoRoot,
+    names: ['resend-from-email'],
+    fileNames: ['resend-from-email.txt', 'RESEND_FROM_EMAIL.txt'],
+    ...loaderOptions,
   }));
   const fromName = String(options.fromName || loadConfigValue({
     envName: 'RESEND_FROM_NAME',
-    names: ['resend-api-key', 'resend-from-name', 'resend'],
-    fileNames: ['resend-api-key.txt', 'RESEND_FROM_NAME.txt', 'resend.txt'],
-    repoRoot,
+    names: ['resend-from-name'],
+    fileNames: ['resend-from-name.txt', 'RESEND_FROM_NAME.txt'],
+    ...loaderOptions,
   }) || '').trim();
   const from = rawFrom || (fromEmail ? (fromName ? `${fromName} <${fromEmail}>` : fromEmail) : '');
   const domain = String(options.domain || loadConfigValue({
     envName: envFor('DOMAIN'),
-    names: ['resend-api-key', 'resend-domain', profile ? `resend-${profile}` : 'resend'],
-    fileNames: ['resend-api-key.txt', `${envFor('DOMAIN')}.txt`, profile ? `resend-${profile}.txt` : 'resend.txt'],
-    repoRoot,
+    names: ['resend-domain', profile ? `resend-${profile}-domain` : ''],
+    fileNames: ['resend-domain.txt', `${envFor('DOMAIN')}.txt`, profile ? `resend-${profile}-domain.txt` : ''],
+    ...loaderOptions,
   }) || domainFromEmail(fromEmail)).trim().toLowerCase();
   const fallbackApproved = options.fallbackApproved !== undefined
     ? Boolean(options.fallbackApproved)
     : parseBoolean(loadConfigValue({
       envName: 'RESEND_SEND_FALLBACK_APPROVED',
-      names: ['resend-api-key', 'resend-send-fallback-approved', 'resend'],
-      fileNames: ['resend-api-key.txt', 'RESEND_SEND_FALLBACK_APPROVED.txt', 'resend.txt'],
-      repoRoot,
+      names: ['resend-send-fallback-approved'],
+      fileNames: ['resend-send-fallback-approved.txt', 'RESEND_SEND_FALLBACK_APPROVED.txt'],
+      ...loaderOptions,
     }));
   return {
     apiKey,

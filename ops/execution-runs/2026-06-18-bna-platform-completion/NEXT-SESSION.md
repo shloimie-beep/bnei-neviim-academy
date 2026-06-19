@@ -5,6 +5,46 @@
 This supersedes the earlier stop checkpoint that said the latest
 `requirements.json` changes had not yet been validated.
 
+## Credential And Meeting Intake Checkpoint - 2026-06-19
+
+Current state:
+
+- Resend source `C:\Users\User\Downloads\resend one time env.txt` was archived
+  under the local keyholder, installed into ignored runtime secret paths, and
+  deleted from Downloads after fingerprint verification.
+- Resend API key is present locally and read-only auth/domain-list diagnostics
+  passed, but `RESEND_FROM` / `RESEND_FROM_EMAIL`, `RESEND_DOMAIN`, DNS
+  verification, and Railway Resend env propagation remain open.
+- Railway propagation for Resend was dry-run only and skipped because
+  `resend_group_complete=false`; no Railway env mutation or auto deployment
+  occurred.
+- Newest Rabbi Scheller / One Time Drive source is already parsed:
+  `2026-06-18-rabbi-elie-scheller.md`, Drive ID
+  `1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI`, modified
+  `2026-06-18T17:16:21.504Z`.
+- Redacted reconciliation packet:
+  `ops/ingestion-runs/2026-06-19-rabbi-scheller-meeting-reconciliation/RECONCILIATION.md`.
+- Future-only backlog input:
+  `ops/one-time-mishnah/next-master-backlog-input.md`.
+
+Exact next safe command:
+
+```powershell
+npm run bna:run:status
+```
+
+Do not deploy, mutate Railway variables, send email, change DNS, create Zoom
+meetings, upload Vimeo videos, charge cards, create invoices, run broad crawls,
+or start master backlog implementation unless the next operator instruction
+explicitly asks for that work.
+
+Latest validation:
+
+- `npm run bna:run:validate` passed with `blocked: 1`,
+  `needs_operator_decision: 1`, and `done: 32`.
+- `node scripts/audit-secrets.mjs` passed with 0 tracked secret-risk files.
+- `git diff --check` passed with line-ending warnings only.
+
 Current branch and deployed commit:
 
 - Branch: `codex/agent-control-center-20260619`

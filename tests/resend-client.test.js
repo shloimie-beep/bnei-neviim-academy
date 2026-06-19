@@ -1,7 +1,11 @@
 const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const os = require('node:os');
+const path = require('node:path');
 const test = require('node:test');
 
 const {
+  getResendConfig,
   getResendReadiness,
   sendResendEmail,
 } = require('../src/lib/integrations/resend-client');
@@ -25,6 +29,24 @@ test('missing Resend key returns safe setup blocker', async () => {
   assert.equal(readiness.connected, false);
   assert.equal(readiness.send_allowed, false);
   assert.match(readiness.blocker, /RESEND_API_KEY is not configured/);
+});
+
+test('bare Resend API key file is not reused as sender or domain config', () => {
+  const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'bna-resend-config-'));
+  fs.mkdirSync(path.join(repoRoot, '.secrets'), { recursive: true });
+  fs.writeFileSync(path.join(repoRoot, '.secrets', 'resend-api-key.txt'), 're_secret_bare_key_only');
+
+  try {
+    const config = getResendConfig({ repoRoot, keyholderRoots: [] });
+    assert.equal(config.apiKey, 're_secret_bare_key_only');
+    assert.equal(config.apiBase, 'https://api.resend.com');
+    assert.equal(config.from, '');
+    assert.equal(config.fromEmail, '');
+    assert.equal(config.domain, '');
+    assert.equal(config.fallbackApproved, false);
+  } finally {
+    fs.rmSync(repoRoot, { recursive: true, force: true });
+  }
 });
 
 test('unverified Resend domain blocks production send while preserving account metadata', async () => {

@@ -18,13 +18,18 @@ function secretMode(value = '', fallback = '') {
 
 function getStripeConfig(options = {}) {
   const repoRoot = options.repoRoot || process.cwd();
+  const loaderOptions = {
+    repoRoot,
+    ...(options.keyholderRoots !== undefined ? { keyholderRoots: options.keyholderRoots } : {}),
+    ...(options.secretsRoot !== undefined ? { secretsRoot: options.secretsRoot } : {}),
+  };
   const secret = options.secret !== undefined
     ? { configured: Boolean(options.secret), value: String(options.secret || ''), source_type: 'runtime' }
     : loadSecret({
       envName: options.envName || 'STRIPE_SECRET_KEY',
       names: ['stripe-secret-key', 'stripe', 'STRIPE_SECRET_KEY', 'RABBI_STRIPE_SECRET_KEY'],
       fileNames: ['stripe-secret-key.txt', 'stripe.txt', 'STRIPE_SECRET_KEY.txt', 'RABBI_STRIPE_SECRET_KEY.txt'],
-      repoRoot,
+      ...loaderOptions,
     });
   const rabbiSecret = options.rabbiSecret !== undefined
     ? { configured: Boolean(options.rabbiSecret), value: String(options.rabbiSecret || ''), source_type: 'runtime' }
@@ -32,14 +37,14 @@ function getStripeConfig(options = {}) {
       envName: 'RABBI_STRIPE_SECRET_KEY',
       names: ['rabbi-stripe-secret-key', 'stripe', 'RABBI_STRIPE_SECRET_KEY'],
       fileNames: ['rabbi-stripe-secret-key.txt', 'stripe.txt', 'RABBI_STRIPE_SECRET_KEY.txt'],
-      repoRoot,
+      ...loaderOptions,
     });
   const activeSecret = rabbiSecret.value ? rabbiSecret : secret;
   const modeHint = options.mode || loadConfigValue({
     envName: rabbiSecret.value ? 'RABBI_STRIPE_MODE' : 'STRIPE_MODE',
     names: ['stripe-mode', 'stripe'],
     fileNames: ['stripe-mode.txt', 'STRIPE_MODE.txt', 'RABBI_STRIPE_MODE.txt', 'stripe.txt'],
-    repoRoot,
+    ...loaderOptions,
   });
   return {
     configured: Boolean(activeSecret.value),
@@ -50,13 +55,13 @@ function getStripeConfig(options = {}) {
       envName: 'STRIPE_ACCOUNT_OWNER',
       names: ['stripe-account-owner', 'stripe'],
       fileNames: ['stripe-account-owner.txt', 'STRIPE_ACCOUNT_OWNER.txt', 'stripe.txt'],
-      repoRoot,
+      ...loaderOptions,
     }) || 'unknown').trim() || 'unknown',
     providerAccount: String(options.providerAccount || loadConfigValue({
       envName: 'STRIPE_PROVIDER_ACCOUNT',
       names: ['stripe-provider-account', 'stripe'],
       fileNames: ['stripe-provider-account.txt', 'STRIPE_PROVIDER_ACCOUNT.txt', 'stripe.txt'],
-      repoRoot,
+      ...loaderOptions,
     }) || '').trim(),
   };
 }
