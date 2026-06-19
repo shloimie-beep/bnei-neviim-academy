@@ -202,6 +202,20 @@ remain open.
 - Focused Operations shell test passed 3/3; no deployment, production DB mutation, external
   write, broad crawl, watch loop, or agent-fleet loop was performed.
 
+2026-06-19 shared design-system local closeout:
+
+- Moved `REQ-20260618-105` to local `done`.
+- Preserved the focused shared-shell polish already present in the recovery
+  worktree: Operations local toolbar/card surfaces, Agent Status and task
+  activity readability, settings dashboard/action panels, integration cards,
+  stable metric text, and compact mobile strip behavior.
+- Verified the shared BNA shell contract across public, Operations, parent,
+  student, provider, Operations login, and custom select surfaces, including
+  removal of stale `Family App / Home Accountability` copy from the current
+  Operations shell.
+- Focused brand-shell test passed 4/4; no deployment, production DB mutation,
+  external write, broad crawl, watch loop, or agent-fleet loop was performed.
+
 Still open after this batch:
 
 - `REQ-20260619-203` is locally done. Production deployment/live smoke remains

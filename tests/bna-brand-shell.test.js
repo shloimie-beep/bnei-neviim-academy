@@ -33,7 +33,9 @@ test('Operations shell includes branded mobile header and scoped workspace label
   assert.match(operationsHtml, /BNA/);
   assert.match(operationsHtml, /Workspace Directory/);
   assert.match(operationsHtml, /One Time Mishnah Class/);
-  assert.match(operationsHtml, /Family App \/ Home Accountability/);
+  assert.match(operationsHtml, /Dratler Family/);
+  assert.doesNotMatch(operationsHtml, /Family Directory/);
+  assert.doesNotMatch(operationsHtml, /Family App \/ Home Accountability/);
 });
 
 test('shared shell defines light BNA palette, sticky toolbar, side menus, and top filters', () => {
@@ -48,6 +50,11 @@ test('shared shell defines light BNA palette, sticky toolbar, side menus, and to
   assert.match(shellCss, /body\.bna-portal-page \.section-control/);
   assert.match(shellCss, /body\.bna-ops-shell-page \.filter-dropdown-menu/);
   assert.match(shellCss, /@media \(max-width: 768px\)/);
+  assert.match(operationsHtml, /--ops-card-surface:\s*#fffaf0/);
+  assert.match(operationsHtml, /--ops-card-border:\s*rgba\(201, 162, 39, 0\.28\)/);
+  assert.match(operationsHtml, /\.ops-module-toolbar-track\s*{[\s\S]*grid-template-columns:\s*repeat\(auto-fit, minmax\(88px, 1fr\)\)/);
+  assert.match(operationsHtml, /@media \(max-width: 900px\)[\s\S]*\.ops-module-toolbar-track\s*{[\s\S]*overflow-x:\s*auto/);
+  assert.match(operationsHtml, /\.section-nav,[\s\S]*\.ramble-box\s*{[\s\S]*background:\s*var\(--ops-card-surface\) !important/);
 });
 
 test('custom select enhancer uses light in-app menus for Operations and portals', () => {

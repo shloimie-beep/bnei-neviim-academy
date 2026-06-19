@@ -368,6 +368,34 @@ Protocol/tooling verification evidence:
 - No deployment, production DB mutation, external write, broad crawl, watch
   loop, or agent-fleet loop was performed.
 
+2026-06-19 shared design-system local closeout evidence:
+
+- Shared shell CSS:
+  `public/css/bna-app-shell.css`.
+- Current Operations shell contract source:
+  `public/operations.html`.
+- Portal shell contract sources:
+  `public/parent.html`, `public/student.html`, `public/provider.html`, and
+  `public/operations-login.html`.
+- Custom select shell behavior:
+  `public/js/app-select.js`.
+- Focused shared-shell contract:
+  `tests/bna-brand-shell.test.js`.
+- PASS `node --check tests/bna-brand-shell.test.js`.
+- PASS focused shared design-system contract 4/4:
+  `node --test tests/bna-brand-shell.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `in_progress: 9`, `needs_verification: 9`, `blocked: 2`,
+  `done: 11`.
+- The contract proves the current shared BNA shell loads across live app pages,
+  Operations includes BNA workspace labels without stale family-app branding,
+  shell tokens cover light palette, sticky toolbar, side menus, top filters,
+  mobile rules, and custom select menus, and the new CSS keeps Agent Status,
+  task activity, settings panels, integration cards, metric text, and compact
+  mobile strips within shared shell styling.
+- No deployment, production DB mutation, external write, broad crawl, watch
+  loop, or agent-fleet loop was performed.
+
 Not run:
 
 - No full baseline UI crawl.

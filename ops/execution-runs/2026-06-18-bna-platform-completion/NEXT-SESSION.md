@@ -38,6 +38,11 @@ Current 2026-06-19 checkpoint:
   Agent Run ready/blocked alerts are private in-app rows only, progress updates
   do not create notification spam, and the blocked alert links to the single
   operator Decision.
+- `REQ-20260618-105` is locally done: the shared BNA shell/design-system
+  contract now covers Operations and portal shell labels, light palette tokens,
+  sticky toolbar, side menus, top filters, custom select menus, Agent Status
+  and task activity panels, settings dashboards, integration cards, metric
+  wrapping, compact mobile strips, and removal of stale family-app copy.
 - Manual Agent Mode/browser-judgment smoke remains open.
 - `REQ-20260619-207` is genuinely blocked for live provider setup until
   operator supplies or performs external account-owner actions through the
@@ -45,28 +50,28 @@ Current 2026-06-19 checkpoint:
 
 Exact next requirement:
 
-`REQ-20260618-105` shared responsive design system continuation, while
+`REQ-20260618-106` task manager, intake, and calendar continuation, while
 preserving the already closed `REQ-20260618-103` workspace/RBAC,
-`REQ-20260618-104` Operations shell/navigation, and `REQ-20260618-107`
-module-scoping proof.
+`REQ-20260618-104` Operations shell/navigation, `REQ-20260618-105` design
+system, and `REQ-20260618-107` module-scoping proof.
 
 Exact next command:
 
 ```powershell
-node --test tests\operations-shell-navigation-contract.test.js
+node --test tests\operations-task-comments-and-dictation.test.js tests\ops-02-workflow-correctness.test.js tests\workspace-task-no-stale-agent.test.js
 npm run bna:run:validate
 ```
 
-Then continue `REQ-20260618-105`: inspect the shared shell/design contracts,
-add only missing focused proof or small fixes, and avoid starting a broad
-baseline UI crawl.
+Then continue `REQ-20260618-106`: inspect the canonical task manager,
+Decision/Pending/Tasks/Calendar/Done Activity lanes, raw-intake classification,
+idempotency, and internal calendar links; add only missing focused proof or
+small fixes, and avoid broad UI crawls or production data writes.
 
 Open requirements:
 
 - `REQ-20260618-101` audit harness and audit package
 - `REQ-20260618-102` PWA public-vs-Operations separation is locally
   implemented and needs release/live verification
-- `REQ-20260618-105` design system
 - `REQ-20260618-106` task manager, intake, and calendar
 - `REQ-20260618-108` students, Goal Board, and Hebrew
 - `REQ-20260618-109` unified OpenAI helper

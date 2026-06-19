@@ -23699,6 +23699,41 @@ Remaining:
 - `REQ-20260619-207` remains blocked on secure external provider credentials,
   owner-only account actions, and explicit release approval.
 
+## 2026-06-19T07:29:00+03:00 - Shared Design System Local Proof
+
+Moved `REQ-20260618-105` to local `done`.
+
+- Preserved the focused shared-shell polish already in the recovery worktree:
+  Operations local toolbar/card surfaces, Agent Status and task activity
+  readability, settings dashboard/action panels, integration cards, stable
+  metric text, and compact mobile strip behavior.
+- Verified the shared BNA shell contract across public, Operations, parent,
+  student, provider, Operations login, and custom select surfaces.
+- Confirmed stale `Family App / Home Accountability` copy is no longer part of
+  the current Operations shell contract.
+
+Verification:
+
+- PASS `node --check tests/bna-brand-shell.test.js`.
+- PASS focused shared design-system contract 4/4.
+- PASS `npm run bna:run:validate`.
+
+Guardrails:
+
+- No browser screenshot crawl was run.
+- No deployment was run.
+- No production database mutation was performed.
+- No external account, Drive, Telegram, social, payment, DNS, Zoom, Vimeo, or
+  Resend write was performed.
+- No raw secrets were stored in tracked files.
+- No watch loop or agent-fleet loop was run.
+
+Remaining:
+
+- `REQ-20260618-106` task manager, intake, and calendar is the next broad
+  unblocked requirement.
+- Release/live verification remains withheld until explicit approval.
+
 ## 2026-06-19T09:05:00+03:00 - PWA Separation Local Proof
 
 Moved `REQ-20260618-102` to local `needs_verification`.

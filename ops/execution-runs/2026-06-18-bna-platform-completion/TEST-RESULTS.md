@@ -233,6 +233,27 @@ Not run for this batch:
 - No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
   social write.
 
+Verified on 2026-06-19 for the shared responsive design system:
+
+- PASS `node --check tests/bna-brand-shell.test.js`.
+- PASS focused shared design-system contract 4/4:
+  `node --test tests/bna-brand-shell.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `in_progress: 9`, `needs_verification: 9`, `blocked: 2`,
+  `done: 11`.
+- The suite verifies the shared BNA shell across public, Operations, parent,
+  student, provider, Operations login, and custom select surfaces, including
+  light palette tokens, sticky toolbar, side menus, top filters, mobile rules,
+  current Operations card-surface tokens, and no stale family-app label.
+
+Not run for this batch:
+
+- No browser screenshot crawl.
+- No production DB write/readback.
+- No deployment.
+- No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
+  social write.
+
 Verified on 2026-06-19 for Agent Control notification/audit-history hooks:
 
 - PASS `node --check server.js`.

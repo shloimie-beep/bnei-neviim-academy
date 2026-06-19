@@ -106,16 +106,31 @@
       "id": "REQ-20260618-105",
       "title": "Design system",
       "area": "design",
-      "status": "in_progress",
+      "status": "done",
       "expected_result": "Shared visual system is consistent across Operations, public, parent, provider, and student surfaces without one-off UI drift.",
       "source": "Known June 18 requirement area",
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": "",
-      "evidence": [],
-      "deployment_evidence": [],
-      "verification": [],
-      "notes": "Corrected 2026-06-19: this requirement must not wait for the UI audit package. Only screenshot-specific visual findings depend on uploaded audit evidence; credential-free implementation and focused tests can continue immediately."
+      "evidence": [
+        "public/css/bna-app-shell.css",
+        "public/operations.html",
+        "public/parent.html",
+        "public/student.html",
+        "public/provider.html",
+        "public/operations-login.html",
+        "public/js/app-select.js",
+        "tests/bna-brand-shell.test.js"
+      ],
+      "deployment_evidence": [
+        "Not deployed by operator rule; focused local shared-shell/design contract verifies the current Operations and portal shell behavior without production mutation."
+      ],
+      "verification": [
+        "node --check tests/bna-brand-shell.test.js",
+        "node --test tests/bna-brand-shell.test.js",
+        "npm run bna:run:validate"
+      ],
+      "notes": "Local shared design-system proof is now recorded: the shared BNA shell CSS covers Operations and portal card surfaces, local toolbars, agent/task activity panels, settings dashboards, responsive compact strips, stable metric text, and mobile-safe controls. The brand-shell contract also verifies public/portal/Operations shell labels, light palette tokens, sticky toolbar behavior, side menus, top filters, custom select menus, and removal of stale Family App / Home Accountability labels. Live/deploy verification remains withheld until explicit release approval."
     },
     {
       "id": "REQ-20260618-106",
