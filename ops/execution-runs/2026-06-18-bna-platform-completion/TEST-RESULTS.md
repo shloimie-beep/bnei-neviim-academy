@@ -899,3 +899,14 @@ Parent signup six-month offer browser proof (2026-06-19T10:45:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-165 now has rendered signup proof that English signup shows direct parent signup, parent-app setup, self-governance, six months free, and separate parent decision; Hebrew signup renders RTL parent-offer text; signup thank-you repeats the six-month self-governance offer; and these surfaces exclude one-year/Operations drift with no mobile overflow. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Portal header identity browser proof (2026-06-19T10:55:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/operations-identity-header.test.js`.
+- PASS `node --test tests/operations-identity-header.test.js tests/pwa-identity.test.js tests/public-navigation.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js tests/browser-acceptance.test.js` 28/28.
+- PASS `npm test` 214/214.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-166 now has rendered header proof that public homepage, signup, Hebrew signup, Operations login, Operations shell, and Student Portal preserve approved BNA logo/header identity, correct public/Operations manifest separation, language/RTL controls, and no private Operations drift in public/provider/signup headers. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

@@ -5112,3 +5112,23 @@ Verification:
 - PASS `npm run bna:run:status`.
 
 Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+## 2026-06-19 - Portal header identity browser proof
+
+Requirement: `REQ-20260618-166`
+
+Changed:
+
+- Added browser acceptance coverage for public, signup, Hebrew signup, and Operations login header identity boundaries.
+- Paired that with existing Operations shell and Student Portal browser checks plus static portal-header assertions.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/operations-identity-header.test.js`.
+- PASS `node --test tests/operations-identity-header.test.js tests/pwa-identity.test.js tests/public-navigation.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js tests/browser-acceptance.test.js` 28/28.
+- PASS `npm test` 214/214.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

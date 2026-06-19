@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-19T10:45:30+03:00
+Updated: 2026-06-19T10:55:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -60,7 +60,7 @@ Latest completed local batches:
 
 Exact next requirement:
 
-- REQ-20260618-166 / BNA-PUBLIC-004: Consistent approved portal headers.
+- REQ-20260618-167 / BNA-PUBLIC-005: Public/blog/FAQ/signup/portal route and CTA integrity.
 
 Blocked requirement intentionally skipped:
 
@@ -71,15 +71,15 @@ Exact next command:
 
 ```powershell
 npm run bna:run:status
-node --test tests/operations-identity-header.test.js tests/pwa-identity.test.js tests/public-navigation.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js tests/browser-acceptance.test.js
+node --test tests/public-route-cta-integrity.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js tests/browser-acceptance.test.js
 ```
 
-Then inspect whether `REQ-20260618-166` needs refreshed rendered-page evidence beyond the existing portal-header tests so public, signup, Student Portal, Operations login, and Operations shell headers keep the approved identities without manifest drift. Do not close live-required public items as `done` without release approval, deployment, and live-smoke evidence.
+Then inspect whether `REQ-20260618-167` needs refreshed rendered-route evidence beyond the existing public route/CTA integrity tests so signup/blog/FAQ/student aliases and CTAs stay canonical and out of the private Operations shell. Do not close live-required public items as `done` without release approval, deployment, and live-smoke evidence.
 
 Still open after this batch:
 
-- REQ-20260618-124 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-165 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
-- REQ-20260618-166 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-124 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-166 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
+- REQ-20260618-167 remains `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - REQ-20260618-156 remains `needs_operator_decision` for duplicate-student cleanup approval.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 

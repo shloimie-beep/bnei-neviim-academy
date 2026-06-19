@@ -2024,6 +2024,81 @@ test('Playwright signup pages render direct parent six-month offer', async () =>
   });
 });
 
+test('Playwright public and login headers keep approved portal identities', async () => {
+  await withServer(async (baseUrl) => {
+    const browser = await chromium.launch();
+    const context = await browser.newContext({
+      baseURL: baseUrl,
+      serviceWorkers: 'block',
+      viewport: { width: 390, height: 844 },
+    });
+
+    try {
+      const page = await context.newPage();
+      await page.goto('/', { waitUntil: 'domcontentloaded' });
+      await page.locator('nav .nav-logo').waitFor();
+      const publicHeader = await page.evaluate(() => ({
+        manifest: document.querySelector('link[rel="manifest"]')?.getAttribute('href') || '',
+        logoAlt: document.querySelector('nav .nav-logo')?.getAttribute('alt') || '',
+        text: document.querySelector('nav')?.textContent?.replace(/\s+/g, ' ').trim() || '',
+      }));
+      assert.equal(publicHeader.manifest, '/manifest.json');
+      assert.equal(publicHeader.logoAlt, "Bnei Nevi'im Academy");
+      assert.match(publicHeader.text, /Bnei Nevi'im Academy/);
+      assert.match(publicHeader.text, /Ramat Beit Shemesh/);
+      assert.doesNotMatch(publicHeader.text, /Operations portal|BNA Operations/i);
+      await noHorizontalOverflow(page);
+
+      await page.goto('/signup', { waitUntil: 'domcontentloaded' });
+      await page.locator('nav .logo').waitFor();
+      const signupHeader = await page.evaluate(() => ({
+        manifest: document.querySelector('link[rel="manifest"]')?.getAttribute('href') || '',
+        logoAlt: document.querySelector('nav .logo')?.getAttribute('alt') || '',
+        text: document.querySelector('nav')?.textContent?.replace(/\s+/g, ' ').trim() || '',
+        hasNavActions: Boolean(document.querySelector('nav .nav-actions')),
+      }));
+      assert.equal(signupHeader.manifest, '/manifest.json');
+      assert.equal(signupHeader.logoAlt, "Bnei Nevi'im Academy");
+      assert.equal(signupHeader.hasNavActions, true);
+      assert.match(signupHeader.text, /Back to Home/);
+      assert.doesNotMatch(signupHeader.text, /Operations portal|BNA Operations/i);
+      await noHorizontalOverflow(page);
+
+      await page.goto('/signup-he', { waitUntil: 'domcontentloaded' });
+      await page.locator('nav .logo').waitFor();
+      const signupHeHeader = await page.evaluate(() => ({
+        manifest: document.querySelector('link[rel="manifest"]')?.getAttribute('href') || '',
+        dir: document.documentElement.dir,
+        logoAlt: document.querySelector('nav .logo')?.getAttribute('alt') || '',
+        text: document.querySelector('nav')?.textContent?.replace(/\s+/g, ' ').trim() || '',
+        hasNavActions: Boolean(document.querySelector('nav .nav-actions')),
+      }));
+      assert.equal(signupHeHeader.manifest, '/manifest.json');
+      assert.equal(signupHeHeader.dir, 'rtl');
+      assert.equal(signupHeHeader.logoAlt, "Bnei Nevi'im Academy");
+      assert.equal(signupHeHeader.hasNavActions, true);
+      assert.doesNotMatch(signupHeHeader.text, /Operations portal|BNA Operations/i);
+      await noHorizontalOverflow(page);
+
+      await page.goto('/operations-login.html', { waitUntil: 'domcontentloaded' });
+      await page.locator('.card .logo').waitFor();
+      const loginHeader = await page.evaluate(() => ({
+        manifest: document.querySelector('link[rel="manifest"]')?.getAttribute('href') || '',
+        logoAlt: document.querySelector('.card .logo')?.getAttribute('alt') || '',
+        text: document.querySelector('.card')?.textContent?.replace(/\s+/g, ' ').trim() || '',
+      }));
+      assert.equal(loginHeader.manifest, '/operations-manifest.json');
+      assert.equal(loginHeader.logoAlt, "Bnei Nevi'im Academy");
+      assert.match(loginHeader.text, /Operations portal/);
+      assert.match(loginHeader.text, /Sign in to BNA Operations/);
+      await noHorizontalOverflow(page);
+    } finally {
+      await context.close();
+      await browser.close();
+    }
+  });
+});
+
 test('Playwright Operations acceptance covers routes, history, responsive layout, workspace, helper, and student detail', async () => {
   await withServer(async (baseUrl) => {
     const calls = [];
