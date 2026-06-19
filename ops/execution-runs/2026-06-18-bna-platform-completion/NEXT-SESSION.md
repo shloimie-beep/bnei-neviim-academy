@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-19T08:55:30+03:00
+Updated: 2026-06-19T09:05:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -46,10 +46,11 @@ Latest completed local batches:
 - REQ-20260618-151: Workspace-scoped Accounting now has static/API and browser DOM proof that selected One Time rows show payments, payment intake, reminders, Green Invoice webhook audit rows, summary counts, methods/statuses/emails/amounts, and no payment/send/reprocess mutations while excluding BNA rows. It remains needs_verification only for release approval, deploy, and live smoke.
 - REQ-20260618-152: Student detail isolation now has static/API and browser DOM proof that selected One Time rows request and render only One Time student/detail/goal/device data, clear the stale BNA profile route after workspace switch, and exclude BNA student detail text. It remains needs_verification only for release approval, deploy, and live smoke.
 - REQ-20260618-153: Goal Board control language now has static and browser DOM proof that selected One Time Goal Board and Tablet Access controls use plain product labels and exclude old internal/mock/provider wording. It remains needs_verification only for release approval, deploy, and live smoke.
+- REQ-20260618-154: Goal Board lane separation now has static and browser DOM proof that selected One Time renders separate Current Goals, Progress / Check-ins, Approvals, and History lanes with counts/empty states and pending review isolated in Approvals. It remains needs_verification only for release approval, deploy, and live smoke.
 
 Exact next requirement:
 
-- REQ-20260618-154 / BNA-GOAL-002: Separate goals, progress, approvals, and history.
+- REQ-20260618-155 / BNA-I18N-001: Complete Hebrew localization and RTL behavior.
 
 Blocked requirement intentionally skipped:
 
@@ -60,15 +61,15 @@ Exact next command:
 
 ```powershell
 npm run bna:run:status
-node --test tests/goal-board-separation.test.js tests/goal-board-language.test.js tests/goal-board.test.js tests/browser-acceptance.test.js
+node --test tests/student-portal-i18n.test.js tests/browser-acceptance.test.js
 ```
 
-Then inspect whether `REQ-20260618-154` needs refreshed browser/API evidence beyond the existing Goal Board separation tests so the rendered Goal Board visibly separates current goals, progress/check-ins, approvals, and history. Do not close live-required task items as `done` without release approval, deployment, and live-smoke evidence.
+Then inspect whether `REQ-20260618-155` needs refreshed browser evidence beyond the existing Student Portal i18n tests so Hebrew labels, RTL direction, and localized dynamic cards are proven in the rendered portal. Do not close live-required task items as `done` without release approval, deployment, and live-smoke evidence.
 
 Still open after this batch:
 
-- REQ-20260618-124 through REQ-20260618-153 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
-- REQ-20260618-154 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-124 through REQ-20260618-154 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
+- REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - REQ-20260618-156 remains `needs_operator_decision` for duplicate-student cleanup approval.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 

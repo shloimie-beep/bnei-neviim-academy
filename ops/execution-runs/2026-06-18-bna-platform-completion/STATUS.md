@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-19T08:55:30+03:00
+Updated: 2026-06-19T09:05:30+03:00
 
 Status counts:
 
@@ -92,6 +92,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current verification batch: REQ-20260618-153 now has static and browser DOM proof that Goal Board and Tablet Access controls use plain product language for goals, progress, review, board actions, and tablet access while excluding old internal/mock/provider wording. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-154.
+Current verification batch: REQ-20260618-154 now has static and browser DOM proof that the rendered Goal Board separates Current Goals, Progress / Check-ins, Approvals, and History lanes with counts/empty states and keeps pending review work in Approvals. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-155.
 
 No deployment or production-data mutation is approved in this run.

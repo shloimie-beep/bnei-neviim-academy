@@ -1559,6 +1559,10 @@ async function assertOperationsGoalBoardPlainLanguage(page) {
     /Progress\s*Not Yet\s*Half\s*Done/,
     /Review\s*Open Tablet\s*Keep Closed\s*Open Temporarily/,
     /Board\s*Wait\s*Archive/,
+    /Current Goals\s*0\s*No current goals in this filter\./,
+    /Progress \/ Check-ins\s*0\s*No in-progress check-ins in this filter\./,
+    /Approvals\s*1\s*Admin .* TEST-ONE-TIME-SEED: Review this week Mishnah/,
+    /History\s*0\s*No completed goals in this filter\./,
   ]) {
     assert.match(goalBoardState.text, expected);
   }

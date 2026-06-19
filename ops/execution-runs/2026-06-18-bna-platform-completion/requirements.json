@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-19T08:55:30+03:00",
+  "updated_at": "2026-06-19T09:05:30+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -315,12 +315,14 @@
       "blocker": null,
       "evidence": [
         "REQ-20260618-152 now has browser proof that selected-workspace Students requests and renders One Time student/detail/goal/device data while clearing and excluding the old BNA student detail.",
-        "REQ-20260618-153 now has browser proof that the selected One Time Goal Board and Tablet Access views use plain product language and exclude old internal/mock/provider labels."
+        "REQ-20260618-153 now has browser proof that the selected One Time Goal Board and Tablet Access views use plain product language and exclude old internal/mock/provider labels.",
+        "REQ-20260618-154 now has browser proof that the rendered Goal Board separates Current Goals, Progress / Check-ins, Approvals, and History lanes with counts and keeps the pending review item in Approvals."
       ],
       "deployment_evidence": [],
       "verification": [
         "node --test tests/student-detail-scope.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js PASS 13/13",
-        "node --test tests/goal-board-language.test.js tests/goal-board.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js PASS 16/16"
+        "node --test tests/goal-board-language.test.js tests/goal-board.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js PASS 16/16",
+        "node --test tests/goal-board-separation.test.js tests/goal-board-language.test.js tests/goal-board.test.js tests/browser-acceptance.test.js PASS 13/13"
       ],
       "notes": "Parent remains in_progress until Goal Board, Hebrew/RTL, and duplicate-student cleanup children have terminal statuses or exact blockers.",
       "files_changed": [
@@ -2535,7 +2537,7 @@
       "title": "Separate goals, progress, approvals, and history",
       "area": "students",
       "priority": "P1",
-      "current_verdict": "partial",
+      "current_verdict": "local_complete_pending_release",
       "status": "needs_verification",
       "expected_result": "Goal Board separates current goals, progress/check-ins, decisions/approvals, and history/activity.",
       "acceptance_criteria": [
@@ -2552,17 +2554,24 @@
         "Filtered Goal Board items are assigned to one exclusive lane with goalBoardLane: Approvals, History, Progress / Check-ins, or Current Goals.",
         "Approvals lane catches waiting review items first, History catches completed goals, Progress / Check-ins catches partial progress, and Current Goals catches remaining active goals.",
         "The UI includes visible Current Goals, Progress / Check-ins, Approvals, and History section headings with counts and empty states.",
-        "tests/goal-board-separation.test.js verifies the lane rendering contract and lane assignment order."
+        "tests/goal-board-separation.test.js verifies the lane rendering contract and lane assignment order.",
+        "tests/browser-acceptance.test.js now proves the rendered One Time Goal Board exposes separate Current Goals, Progress / Check-ins, Approvals, and History lanes with counts/empty states, and keeps the pending review item in Approvals rather than mixing it into the current/progress/history lanes."
       ],
       "deployment_evidence": [],
       "verification": [
         "Operations HTML script parse via vm.Script PASS (2 script blocks)",
         "node --check tests/goal-board-separation.test.js PASS",
         "node --test tests/goal-board-separation.test.js tests/goal-board-language.test.js tests/goal-board.test.js tests/operations-layout-stability.test.js tests/operations-mobile-controls.test.js PASS 16/16",
-        "npm test PASS 166/166"
+        "npm test PASS 166/166",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/goal-board-separation.test.js tests/goal-board-language.test.js tests/goal-board.test.js tests/browser-acceptance.test.js PASS 13/13",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: feat: separate goal board lanes"
+        "current batch commit: feat: separate goal board lanes",
+        "current batch commit: test: verify goal board lane separation in browser"
       ],
       "files_changed": [
         "public/operations.html",
@@ -2571,9 +2580,10 @@
         "ops/execution-runs/2026-06-18-bna-platform-completion/STATUS.md",
         "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
         "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
-        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md"
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md",
+        "tests/browser-acceptance.test.js"
       ],
-      "notes": "Local implementation and tests passed. Status remains needs_verification because this item is live_required and still needs final acceptance sweep, release approval, deployment, and live smoke before closure. No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
+      "notes": "Local implementation, static tests, full suite, and browser DOM proof passed. Status remains needs_verification because this item is live_required and still needs release approval, deployment, and live smoke before closure. No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
     },
     {
       "id": "REQ-20260618-155",

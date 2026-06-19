@@ -4899,3 +4899,22 @@ Verification:
 - PASS `npm run bna:run:status`.
 
 Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, or tablet/device mutation was performed.
+
+## 2026-06-19 - Goal Board lane separation browser proof
+
+Requirement: `REQ-20260618-154`
+
+Changed:
+
+- Added rendered browser proof for the Goal Board lane headings, counts, empty states, and pending review placement.
+- Verified the selected One Time Goal Board keeps pending-review work in Approvals instead of mixing it into Current Goals, Progress / Check-ins, or History.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/goal-board-separation.test.js tests/goal-board-language.test.js tests/goal-board.test.js tests/browser-acceptance.test.js` 13/13.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, or tablet/device mutation was performed.
