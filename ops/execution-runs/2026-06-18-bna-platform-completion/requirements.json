@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-19T09:55:30+03:00",
+  "updated_at": "2026-06-19T10:05:30+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -359,7 +359,8 @@
         "REQ-20260618-157 now has browser proof that Operations renders exactly one BNA Assistant shell with connected AI readiness, scoped memory/action registry context, and no duplicate Codex/Kimi/helper persona labels.",
         "REQ-20260618-158 now has browser proof that Assistant status/memory/actions reload under the selected One Time project, render scoped memory context, and hide raw user keys/test usernames.",
         "REQ-20260618-159 now has browser proof that the Assistant Action Registry renders permitted read-only and gated financial actions with risk, confirmation, and audit metadata and no execution controls.",
-        "REQ-20260618-160 now has focused confirmation/audit tests plus browser proof that gated action metadata is visible without Run/Execute controls."
+        "REQ-20260618-160 now has focused confirmation/audit tests plus browser proof that gated action metadata is visible without Run/Execute controls.",
+        "REQ-20260618-161 now has browser proof that the Assistant shell and Decisions routing avoid duplicate helper/provider/dev labels while preserving internal machine-owner values."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -376,7 +377,8 @@
         "npm test PASS 186/186",
         "node --test tests/assistant-shell.test.js tests/assistant-language-cleanup.test.js tests/browser-acceptance.test.js PASS 9/9",
         "node --test tests/assistant-memory-isolation.test.js tests/assistant-shell.test.js tests/browser-acceptance.test.js PASS 11/11",
-        "node --test tests/assistant-actions.test.js tests/assistant-shell.test.js tests/browser-acceptance.test.js PASS 12/12"
+        "node --test tests/assistant-actions.test.js tests/assistant-shell.test.js tests/browser-acceptance.test.js PASS 12/12",
+        "node --test tests/assistant-language-cleanup.test.js tests/assistant-shell.test.js tests/task-intake-routing.test.js tests/browser-acceptance.test.js PASS 12/12"
       ],
       "notes": "Helper parent remains in_progress until final acceptance, release approval, deploy, and live smoke are complete.",
       "files_changed": [
@@ -2905,7 +2907,7 @@
       "title": "Remove duplicate helper identities and dev language",
       "area": "helper",
       "priority": "P1",
-      "current_verdict": "local_implemented_pending_release",
+      "current_verdict": "local_complete_pending_release",
       "status": "needs_verification",
       "expected_result": "UI copy removes duplicate BNA/public/Codex helper identities unless a product reason exists.",
       "acceptance_criteria": [
@@ -2921,7 +2923,8 @@
         "public/operations.html now renders BNA Assistant as one assistant identity, uses Connection/AI setup product language, and avoids duplicate helper/persona labels in the Assistant module.",
         "Operations task owner and routing copy now says System Work for user-visible labels while preserving internal Codex owner values for existing machine-owner compatibility.",
         "server.js low-confidence intake Decisions now offer Send to System Work instead of Send to Codex while preserving assigned_to: Codex internally.",
-        "tests/assistant-language-cleanup.test.js prevents duplicate helper/dev-language labels from returning in Operations Assistant and intake routing surfaces."
+        "tests/assistant-language-cleanup.test.js prevents duplicate helper/dev-language labels from returning in Operations Assistant and intake routing surfaces.",
+        "tests/browser-acceptance.test.js now proves the rendered Assistant shell excludes Codex, Kimi, OpenAI Telegram sidekick, duplicate-helper labels, and raw helper/dev labels; Decisions routing shows Send to System Work, excludes Send to Codex, and still sends the internal assigned_to=Codex value in the mocked API update for machine-owner compatibility."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -2929,10 +2932,15 @@
         "node --check server.js PASS",
         "node --check tests/assistant-language-cleanup.test.js PASS",
         "node --test tests/assistant-language-cleanup.test.js tests/assistant-shell.test.js tests/task-intake-routing.test.js tests/assistant-actions.test.js PASS 14/14",
-        "npm test PASS 180/180"
+        "npm test PASS 180/180",
+        "node --test tests/assistant-language-cleanup.test.js tests/assistant-shell.test.js tests/task-intake-routing.test.js tests/browser-acceptance.test.js PASS 12/12",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: fix: clean assistant product language"
+        "current batch commit: fix: clean assistant product language",
+        "current batch commit: docs: verify assistant language cleanup"
       ],
       "files_changed": [
         "server.js",
@@ -2946,7 +2954,7 @@
         "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
         "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md"
       ],
-      "notes": "Local implementation complete; live-required status remains needs_verification until final acceptance sweep, release approval, deploy, and live smoke. No OpenAI call, deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
+      "notes": "Local implementation, static tests, full suite, and browser DOM proof passed. Status remains needs_verification because this item is live_required and still needs release approval, deployment, and live smoke before closure. No OpenAI call, deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
     },
     {
       "id": "REQ-20260618-162",

@@ -5015,3 +5015,21 @@ Verification:
 - PASS `npm run bna:run:status`.
 
 Status: `needs_verification`; no OpenAI call, helper action execution, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+## 2026-06-19 - Assistant language cleanup browser proof
+
+Requirement: `REQ-20260618-161`
+
+Changed:
+
+- Recorded browser proof that Assistant and Decisions copy avoid duplicate helper/provider/dev labels.
+- Verified user-visible task routing says System Work while internal Codex owner values remain API-only for compatibility.
+
+Verification:
+
+- PASS `node --test tests/assistant-language-cleanup.test.js tests/assistant-shell.test.js tests/task-intake-routing.test.js tests/browser-acceptance.test.js` 12/12.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no OpenAI call, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

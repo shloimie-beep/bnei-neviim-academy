@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-19T09:55:30+03:00
+Updated: 2026-06-19T10:05:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -52,10 +52,11 @@ Latest completed local batches:
 - REQ-20260618-158: Assistant memory scoping now has static/API and browser DOM proof that selected One Time scope requests and renders project/session/role/subject context without exposing raw user keys or usernames. It remains needs_verification only for release approval, deploy, and live smoke.
 - REQ-20260618-159: Assistant action registry now has static/API and browser DOM proof that permitted ready/gated rows render risk, confirmation, and audit metadata without execution controls. It remains needs_verification only for release approval, deploy, and live smoke.
 - REQ-20260618-160: Assistant confirmations/audit trail now has static/API and browser DOM proof that confirmation tiers, audit paths, gated metadata, and no-execution controls are in place. It remains needs_verification only for release approval, deploy, and live smoke.
+- REQ-20260618-161: Assistant language cleanup now has static and browser DOM proof that duplicate helper/provider/dev labels are absent and user-visible machine work is labeled System Work while internal Codex values remain API-only. It remains needs_verification only for release approval, deploy, and live smoke.
 
 Exact next requirement:
 
-- REQ-20260618-161 / BNA-HELPER-005: Remove duplicate helper identities and dev language.
+- REQ-20260618-162 / BNA-HELPER-006: Prevent public/authenticated memory leakage.
 
 Blocked requirement intentionally skipped:
 
@@ -66,15 +67,15 @@ Exact next command:
 
 ```powershell
 npm run bna:run:status
-node --test tests/assistant-language-cleanup.test.js tests/assistant-shell.test.js tests/task-intake-routing.test.js tests/browser-acceptance.test.js
+node --test tests/assistant-memory-isolation.test.js tests/workspace-http-isolation.test.js tests/browser-acceptance.test.js
 ```
 
-Then inspect whether `REQ-20260618-161` needs refreshed browser evidence beyond the existing cleanup tests so Operations visibly avoids duplicate helper identities, provider/dev labels, and user-facing Codex/Kimi task routing language. Do not close live-required task items as `done` without release approval, deployment, and live-smoke evidence.
+Then inspect whether `REQ-20260618-162` needs refreshed browser/API evidence beyond the existing Assistant memory isolation tests so public pages and unauthorized/authenticated contexts cannot read assistant memory or touch assistant-protected data. Do not close live-required task items as `done` without release approval, deployment, and live-smoke evidence.
 
 Still open after this batch:
 
-- REQ-20260618-124 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-160 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
-- REQ-20260618-161 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-124 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-161 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
+- REQ-20260618-162 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - REQ-20260618-156 remains `needs_operator_decision` for duplicate-student cleanup approval.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 

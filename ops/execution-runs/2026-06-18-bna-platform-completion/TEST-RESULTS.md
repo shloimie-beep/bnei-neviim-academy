@@ -846,3 +846,13 @@ Assistant confirmation/audit verification (2026-06-19T09:55:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-160 now has evidence for confirmation tiers and action audit trail: server tests cover confirmation_required/executed/failed audit paths and explicit registered handlers, while browser acceptance proves gated action metadata is visible without Run/Execute controls. No OpenAI call, helper action execution, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+
+Assistant language cleanup browser proof (2026-06-19T10:05:30+03:00):
+
+- PASS `node --test tests/assistant-language-cleanup.test.js tests/assistant-shell.test.js tests/task-intake-routing.test.js tests/browser-acceptance.test.js` 12/12.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-161 now has browser proof that the Assistant shell excludes Codex, Kimi, OpenAI Telegram sidekick, duplicate-helper labels, and raw helper/dev labels; Decisions routing shows Send to System Work, excludes Send to Codex, and still sends internal assigned_to=Codex in the mocked API update for machine-owner compatibility. No OpenAI call, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
