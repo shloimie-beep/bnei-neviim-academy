@@ -3537,7 +3537,7 @@
       "title": "Final local and live acceptance gates",
       "area": "tests",
       "priority": "P0",
-      "current_verdict": "blocked",
+      "current_verdict": "local_acceptance_passed_blocked_on_release_approval",
       "status": "blocked",
       "expected_result": "Final local suite, post-fix audit, deploy preparation, release approval, deploy, and live smoke happen only after all unblocked local requirements pass.",
       "acceptance_criteria": [
@@ -3548,13 +3548,30 @@
       "source": "BNA recovery bundle Appendix A / June 18 authoritative requirements",
       "depends_on_audit_output": false,
       "live_required": false,
-      "blocker": "Final gate depends on completing non-blocked local implementation and explicit operator release approval.",
-      "evidence": [],
+      "blocker": "Explicit operator release approval is required before deployment and live smoke. No deployment is approved in this run.",
+      "evidence": [
+        "Final local acceptance sweep passed on the recovery branch: npm test 215/215 plus execution-run validate/status. Deployment and live smoke were not run because explicit release approval is still required."
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "implementation_commits": [],
-      "files_changed": [],
-      "notes": ""
+      "verification": [
+        "npm test PASS 215/215",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
+      ],
+      "implementation_commits": [
+        "current batch commit: docs: record final local acceptance gate"
+      ],
+      "files_changed": [
+        "ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/STATUS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md",
+        "ops/execution-runs/latest.json",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md"
+      ],
+      "notes": "Local acceptance gate passed. Release approval, deploy, live smoke, and any post-deploy evidence remain blocked until Shloimie explicitly approves release. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was run."
     }
   ]
 }

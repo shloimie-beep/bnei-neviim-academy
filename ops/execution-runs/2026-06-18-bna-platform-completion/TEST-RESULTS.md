@@ -922,3 +922,11 @@ Public route and CTA browser proof (2026-06-19T11:05:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-167 now has rendered route proof that clicking the homepage signup CTA lands on /signup, and /signup, /blog, and /faq all render with the public manifest, public shell copy, canonical /signup CTAs, no private Operations shell text, and no mobile overflow. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Final local acceptance gate (2026-06-19T11:15:30+03:00):
+
+- PASS `npm test` 215/215.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-172 now has local acceptance proof. Release approval, deployment, live smoke, and any post-deploy evidence remain blocked until Shloimie explicitly approves release. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

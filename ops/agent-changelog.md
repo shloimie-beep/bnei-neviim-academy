@@ -5153,3 +5153,20 @@ Verification:
 - PASS `npm run bna:run:status`.
 
 Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+## 2026-06-19 - Final local acceptance gate
+
+Requirement: `REQ-20260618-172`
+
+Changed:
+
+- Recorded final local acceptance status for the active recovery run.
+- Left release/deploy/live-smoke evidence blocked pending explicit operator release approval.
+
+Verification:
+
+- PASS `npm test` 215/215.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: local acceptance passed; release approval, deployment, and live smoke remain blocked. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

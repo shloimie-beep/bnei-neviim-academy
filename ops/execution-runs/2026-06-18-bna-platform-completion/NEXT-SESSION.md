@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-19T11:05:30+03:00
+Updated: 2026-06-19T11:15:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -60,7 +60,7 @@ Latest completed local batches:
 
 Exact next requirement:
 
-- REQ-20260618-172 / BNA-TEST-005: Final local and live acceptance gates.
+- Operator release approval for deploy/live smoke after reviewing the consolidated draft PR.
 
 Blocked requirement intentionally skipped:
 
@@ -71,11 +71,9 @@ Exact next command:
 
 ```powershell
 npm run bna:run:status
-npm test
-npm run bna:run:validate
 ```
 
-Then run a final local acceptance/status sweep and prepare release approval. Do not deploy or run live smoke until Shloimie explicitly approves release; live-required items must remain open or blocked until deploy/live-smoke proof exists.
+Final local acceptance/status sweep has passed. Next action is operator review and explicit release approval before any deployment or live smoke. After approval, run the deploy/live-smoke commands for the approved target and update deployment evidence.
 
 Still open after this batch:
 

@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-19T11:05:30+03:00
+Updated: 2026-06-19T11:15:30+03:00
 
 Status counts:
 
@@ -90,8 +90,8 @@ Blocked / operator-decision IDs:
 - REQ-20260618-117 BNA-AUDIT-002: Produce privacy-safe authenticated audit package: Waiting for user to upload agent-review-package.zip or audit output path
 - REQ-20260618-118 BNA-AUDIT-003: Produce post-fix audit comparison: Requires completed local fix batches and authenticated audit package before comparison.
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
-- REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
+- REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Local acceptance sweep passed; explicit operator release approval is required before deployment and live smoke.
 
-Current verification batch: REQ-20260618-167 now has static and browser proof that homepage signup CTA, /signup, /blog, and /faq use clean public routes, render in the public shell with /manifest.json, avoid private Operations shell text, and remain overflow-safe. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next local step is the final recovery-run status/acceptance sweep before release approval.
+Current verification batch: Final local acceptance sweep passed on the recovery branch: npm test 215/215 and execution-run validate/status passed. Release approval, deploy, live smoke, and audit-output-only screenshots remain blocked or pending by policy; no deployment or production-data mutation was run.
 
 No deployment or production-data mutation is approved in this run.
