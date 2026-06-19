@@ -532,6 +532,45 @@ Protocol/tooling verification evidence:
 - No deployment, production DB mutation, external send/write, broad crawl,
   watch loop, or agent-fleet loop was performed.
 
+2026-06-19 public copy/portal CTA local closeout evidence:
+
+- Public copy, navigation, and portal entry files:
+  `public/index.html`,
+  `public/js/bna-site-nav.js`,
+  `public/css/bna-site-nav.css`,
+  `public/one-time/index.html`,
+  `public/parent-login.html`,
+  `public/parents.html`,
+  `public/provider.html`,
+  `public/rabbi.html`, and
+  `public/service-providers.html`.
+- Focused public/CTA/privacy tests:
+  `tests/ui-01-public-operations-shell.test.js`,
+  `tests/public-helper-bot-landing-sodas.test.js`,
+  `tests/signup-permissions-mobile-homepage.test.js`,
+  `tests/provider-index-mvp.test.js`,
+  `tests/parent-student-polish-contract.test.js`,
+  `tests/one-time-focused-landing.test.js`,
+  `tests/rabbi-checkout-access.test.js`,
+  `tests/public-route-privacy-contract.test.js`,
+  `tests/public-homepage-privacy.test.js`, and
+  `tests/public-content-contamination-guard.test.js`.
+- PASS focused public/CTA/privacy suite 46/46:
+  `node --test tests/ui-01-public-operations-shell.test.js
+  tests/public-helper-bot-landing-sodas.test.js
+  tests/signup-permissions-mobile-homepage.test.js
+  tests/provider-index-mvp.test.js tests/parent-student-polish-contract.test.js
+  tests/one-time-focused-landing.test.js tests/rabbi-checkout-access.test.js
+  tests/public-route-privacy-contract.test.js
+  tests/public-homepage-privacy.test.js
+  tests/public-content-contamination-guard.test.js`.
+- The suite proves current BNA/One Time homepage and landing copy, public
+  helper language, portal header/entry CTA coverage, signup route labels,
+  private Operations route protection, public content privacy, and removal of
+  stale family-app positioning from current user-facing surfaces.
+- No deployment, production DB mutation, external send/write, broad crawl,
+  watch loop, or agent-fleet loop was performed.
+
 Not run:
 
 - No full baseline UI crawl.

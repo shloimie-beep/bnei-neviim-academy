@@ -478,6 +478,7 @@
         /* ===== MISSION SECTION ===== */
         .mission {
             background: var(--white);
+            overflow-x: hidden;
         }
 
         .mission-content {
@@ -582,6 +583,7 @@
         /* ===== LEARNING SECTION ===== */
         .learning {
             background: var(--light-blue);
+            overflow-x: hidden;
         }
 
         .learning-content {
@@ -1041,13 +1043,29 @@
         .ecosystem-card {
             background: #ffffff;
             border: 1px solid rgba(30, 58, 95, 0.12);
-            border-radius: 18px;
+            border-radius: 8px;
             box-shadow: 0 14px 34px rgba(30, 58, 95, 0.08);
             padding: 1.15rem;
             display: grid;
             gap: 0.95rem;
             align-content: start;
             min-width: 0;
+        }
+
+        .ecosystem-media {
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid rgba(30, 58, 95, 0.1);
+            background: #f8fafc;
+        }
+
+        .ecosystem-media img {
+            width: 100%;
+            height: 100%;
+            display: block;
+            object-fit: cover;
         }
 
         .ecosystem-placeholder {
@@ -2516,11 +2534,10 @@
                     </details>
                     <a href="#blog" class="nav-link nav-link--mobile-only" data-i18n="navBlog" data-en-href="#blog" data-he-href="#blog">Blog</a>
                     <a href="#faq" class="nav-link" data-i18n="navFaq" data-en-href="#faq" data-he-href="#faq">FAQ</a>
-                    <a href="/parent/login?onboard=accountability" class="nav-link" data-i18n="navParentLogin" data-en-href="/parent/login?onboard=accountability" data-he-href="/parent/login?onboard=accountability">Parent Login</a>
+                    <a href="/parent/login" class="nav-link" data-i18n="navParentLogin" data-en-href="/parent/login" data-he-href="/parent/login">Parent Login</a>
                     <a href="/student/login" class="nav-link" data-i18n="navStudentLogin" data-en-href="/student/login" data-he-href="/student/login">Student Login</a>
                     <a href="/provider" class="nav-link" data-i18n="navProviderAccess" data-en-href="/provider" data-he-href="/provider">Rabbi / Provider Login</a>
-                    <a href="/operations" class="nav-link" data-i18n="navOperations" data-en-href="/operations" data-he-href="/operations">Operations</a>
-                    <a href="/become-service-provider?onboard=provider" class="nav-link" data-i18n="navProviderJoin" data-en-href="/become-service-provider?onboard=provider" data-he-href="/become-service-provider?onboard=provider">Become a Service Provider</a>
+                    <a href="/become-service-provider?onboard=provider" class="nav-link" data-i18n="navProviderJoin" data-en-href="/become-service-provider?onboard=provider" data-he-href="/become-service-provider?onboard=provider">Advertise your program for free</a>
                 </div>
                 <div class="nav-buttons">
                     <button class="lang-toggle" onclick="toggleLanguage()" data-i18n="langButton">עברית</button>
@@ -2783,37 +2800,37 @@
             <div class="ecosystem-heading">
                 <div class="ecosystem-eyebrow" data-i18n="ecosystemEyebrow">BNA ecosystem</div>
                 <h2 id="ecosystemTitle" data-i18n="ecosystemTitle">A Learning Ecosystem, Not Just a Morning Program</h2>
-                <p data-i18n="ecosystemSubtitle">Bnei Neviim is building a homeschool-friendly Torah learning model: morning Limudei Kodesh, personal accountability, evening programs, and trusted service providers who help families build the right educational path.</p>
+                <p data-i18n="ecosystemSubtitle">Bnei Neviim serves schools, families, and service providers from one connected system: a Jewish AI microschool model, a family accountability app, and a provider network that keeps real people in the center while reducing administrative overhead.</p>
             </div>
 
             <div class="ecosystem-grid">
                 <article class="ecosystem-card">
-                    <div class="ecosystem-placeholder" role="img" aria-label="Placeholder for a morning Torah learning graphic">
-                        <span data-i18n="ecosystemMorningGraphic">Morning learning graphic placeholder</span>
+                    <div class="ecosystem-media">
+                        <img src="/images/learning-moments/forest-learning-01-web.jpg" alt="BNA students learning Torah outdoors">
                     </div>
-                    <h3 data-i18n="ecosystemMorningTitle">Morning Torah Learning</h3>
-                    <p data-i18n="ecosystemMorningText">Relationship-based Limudei Kodesh in a small-group environment, with goals, movement, personal responsibility, and meaningful Torah conversation.</p>
+                    <h3 data-i18n="ecosystemMorningTitle">Schools / AI Microschool</h3>
+                    <p data-i18n="ecosystemMorningText">BNA is building a one-man Jewish AI microschool model where natural-language school management helps run enrollment, tasks, parent updates, classroom records, and decisions without a heavy office.</p>
                 </article>
 
                 <article class="ecosystem-card">
-                    <div class="ecosystem-placeholder" role="img" aria-label="Placeholder for a family and homeschool support graphic">
-                        <span data-i18n="ecosystemFamilyGraphic">Family support graphic placeholder</span>
+                    <div class="ecosystem-media">
+                        <img src="/images/huddle.jpg" alt="BNA students in a small group learning moment">
                     </div>
-                    <h3 data-i18n="ecosystemFamilyTitle">Family / Homeschool Support</h3>
-                    <p data-i18n="ecosystemFamilyText">Parents remain active partners. The system helps track goals, progress, accountability, and next steps for families who need structure outside standard school.</p>
+                    <h3 data-i18n="ecosystemFamilyTitle">Families / Parent App</h3>
+                    <p data-i18n="ecosystemFamilyText">Families can use the accountability app to track goals, progress, student login access, provider requests, and next steps when a child needs structure outside standard school.</p>
                 </article>
 
                 <article class="ecosystem-card">
-                    <div class="ecosystem-placeholder" role="img" aria-label="Placeholder for evening programs and chugim graphic">
-                        <span data-i18n="ecosystemEveningGraphic">Evening programs graphic placeholder</span>
+                    <div class="ecosystem-media">
+                        <img src="/images/learning-moments/forest-learning-03-web.jpg" alt="BNA learning conversation outdoors">
                     </div>
-                    <h3 data-i18n="ecosystemEveningTitle">Evening Programs and Chugim</h3>
-                    <p data-i18n="ecosystemEveningText">Future and active programs can be listed and managed so students can connect to the right learning, movement, creativity, or skill-building environments.</p>
+                    <h3 data-i18n="ecosystemEveningTitle">Less Overhead, Better Teaching</h3>
+                    <p data-i18n="ecosystemEveningText">AI reduces overhead by turning natural language into school workflows, so more tuition and donor support can go toward teaching, mentorship, and better rabbi pay.</p>
                 </article>
 
                 <article class="ecosystem-card">
-                    <div class="ecosystem-placeholder" role="img" aria-label="Placeholder for the service provider network graphic">
-                        <span data-i18n="ecosystemProviderGraphic">Provider network graphic placeholder</span>
+                    <div class="ecosystem-media">
+                        <img src="/images/one-time-existing-site-preview.jpg" alt="Example provider program preview in the BNA network">
                     </div>
                     <h3 data-i18n="ecosystemProviderTitle">Service Provider Network</h3>
                     <p data-i18n="ecosystemProviderText">Providers can join the directory, start with a free profile, share services and classes, and later upgrade for marketing, funnel support, ads, SEO, or profile polish.</p>
@@ -2821,8 +2838,9 @@
             </div>
 
             <div class="ecosystem-ctas" aria-label="Learning ecosystem actions">
-                <a class="ecosystem-cta ecosystem-cta--gold" href="#learning" data-i18n="ecosystemParentCta">Explore the program</a>
-                <a class="ecosystem-cta" href="/become-service-provider?onboard=provider" data-i18n="ecosystemProviderCta">Join the provider list</a>
+                <a class="ecosystem-cta ecosystem-cta--gold" href="/school" data-i18n="ecosystemParentCta">Explore schools</a>
+                <a class="ecosystem-cta" href="/parents" data-i18n="ecosystemFamilyCta">Explore families</a>
+                <a class="ecosystem-cta" href="/become-service-provider?onboard=provider" data-i18n="ecosystemProviderCtaTwo">Join the provider list</a>
                 <button class="ecosystem-cta ecosystem-cta--quiet" type="button" data-helper-open data-i18n="ecosystemHelperCta">Ask the helper</button>
             </div>
         </div>
@@ -3319,8 +3337,7 @@
                 navParentLogin: "Parent Login",
                 navStudentLogin: "Student Login",
                 navProviderAccess: "Rabbi / Provider Login",
-                navOperations: "Operations",
-                navProviderJoin: "Become a Service Provider",
+                navProviderJoin: "Advertise your program for free",
                 homeBlogEyebrow: "Guides and Topics",
                 homeBlogTitle: "Our Philosophy",
                 homeBlogSubtitle: "Ideas that shape how we teach, mentor, and help boys grow.",
@@ -3394,21 +3411,22 @@
                 momentsTitle: "Learning Moments",
                 ecosystemEyebrow: "BNA ecosystem",
                 ecosystemTitle: "A Learning Ecosystem, Not Just a Morning Program",
-                ecosystemSubtitle: "Bnei Neviim is building a homeschool-friendly Torah learning model: morning Limudei Kodesh, personal accountability, evening programs, and trusted service providers who help families build the right educational path.",
+                ecosystemSubtitle: "Bnei Neviim serves schools, families, and service providers from one connected system: a Jewish AI microschool model, a family accountability app, and a provider network that keeps real people in the center while reducing administrative overhead.",
                 ecosystemMorningGraphic: "Morning learning graphic placeholder",
-                ecosystemMorningTitle: "Morning Torah Learning",
-                ecosystemMorningText: "Relationship-based Limudei Kodesh in a small-group environment, with goals, movement, personal responsibility, and meaningful Torah conversation.",
+                ecosystemMorningTitle: "Schools / AI Microschool",
+                ecosystemMorningText: "BNA is building a one-man Jewish AI microschool model where natural-language school management helps run enrollment, tasks, parent updates, classroom records, and decisions without a heavy office.",
                 ecosystemFamilyGraphic: "Family support graphic placeholder",
-                ecosystemFamilyTitle: "Family / Homeschool Support",
-                ecosystemFamilyText: "Parents remain active partners. The system helps track goals, progress, accountability, and next steps for families who need structure outside standard school.",
+                ecosystemFamilyTitle: "Families / Parent App",
+                ecosystemFamilyText: "Families can use the accountability app to track goals, progress, student login access, provider requests, and next steps when a child needs structure outside standard school.",
                 ecosystemEveningGraphic: "Evening programs graphic placeholder",
-                ecosystemEveningTitle: "Evening Programs and Chugim",
-                ecosystemEveningText: "Future and active programs can be listed and managed so students can connect to the right learning, movement, creativity, or skill-building environments.",
+                ecosystemEveningTitle: "Less Overhead, Better Teaching",
+                ecosystemEveningText: "AI reduces overhead by turning natural language into school workflows, so more tuition and donor support can go toward teaching, mentorship, and better rabbi pay.",
                 ecosystemProviderGraphic: "Provider network graphic placeholder",
                 ecosystemProviderTitle: "Service Provider Network",
                 ecosystemProviderText: "Providers can join the directory, start with a free profile, share services and classes, and later upgrade for marketing, funnel support, ads, SEO, or profile polish.",
-                ecosystemParentCta: "Explore the program",
-                ecosystemProviderCta: "Join the provider list",
+                ecosystemParentCta: "Explore schools",
+                ecosystemFamilyCta: "Explore families",
+                ecosystemProviderCtaTwo: "Join the provider list",
                 ecosystemHelperCta: "Ask the helper",
 
                 reviewerName: "Martin Braka",
@@ -3464,8 +3482,7 @@
                 navParentLogin: "כניסת הורים",
                 navStudentLogin: "כניסת תלמיד",
                 navProviderAccess: "כניסת רב / ספק",
-                navOperations: "\u05e0\u05d9\u05d4\u05d5\u05dc",
-                navProviderJoin: "הצטרפות כספק שירות",
+                navProviderJoin: "פרסמו את התוכנית בחינם",
                 homeBlogEyebrow: "\u05de\u05d3\u05e8\u05d9\u05db\u05d9\u05dd \u05d5\u05e0\u05d5\u05e9\u05d0\u05d9\u05dd",
                 homeBlogTitle: "\u05de\u05d0\u05de\u05e8\u05d9\u05dd",
                 homeBlogSubtitle: "\u05e2\u05d9\u05d5\u05df \u05d1\u05e0\u05d5\u05e9\u05d0\u05d9\u05dd \u05e9\u05d4\u05d5\u05e8\u05d9\u05dd \u05e9\u05d5\u05d0\u05dc\u05d9\u05dd \u05e2\u05dc\u05d9\u05d4\u05dd: \u05de\u05e1\u05d2\u05e8\u05ea \u05d7\u05dc\u05d5\u05e4\u05d9\u05ea, \u05dc\u05d9\u05de\u05d5\u05d3 \u05ea\u05d5\u05e8\u05d4, \u05e7\u05e9\u05d1 \u05d5\u05e8\u05d9\u05db\u05d5\u05d6, \u05d7\u05d9\u05e0\u05d5\u05da \u05d1\u05d9\u05ea\u05d9, \u05d4\u05d5\u05e8\u05d5\u05ea, \u05d5\u05d0\u05d7\u05e8\u05d9\u05d5\u05ea \u05d0\u05d9\u05e9\u05d9\u05ea.",
@@ -3598,6 +3615,8 @@
             ecosystemProviderText: "\u05e0\u05d5\u05ea\u05e0\u05d9 \u05e9\u05d9\u05e8\u05d5\u05ea \u05d9\u05db\u05d5\u05dc\u05d9\u05dd \u05dc\u05d4\u05e6\u05d8\u05e8\u05e3 \u05dc\u05d0\u05d9\u05e0\u05d3\u05e7\u05e1, \u05dc\u05d4\u05ea\u05d7\u05d9\u05dc \u05e2\u05dd \u05e4\u05e8\u05d5\u05e4\u05d9\u05dc \u05d7\u05d9\u05e0\u05de\u05d9, \u05dc\u05e9\u05ea\u05e3 \u05e9\u05d9\u05e8\u05d5\u05ea\u05d9\u05dd \u05d5\u05e9\u05d9\u05e2\u05d5\u05e8\u05d9\u05dd, \u05d5\u05d1\u05d4\u05de\u05e9\u05da \u05dc\u05e9\u05d3\u05e8\u05d2 \u05dc\u05e9\u05d9\u05d5\u05d5\u05e7, \u05e4\u05d0\u05e0\u05dc, \u05de\u05d5\u05d3\u05e2\u05d5\u05ea, SEO \u05d0\u05d5 \u05dc\u05d9\u05d8\u05d5\u05e9 \u05e4\u05e8\u05d5\u05e4\u05d9\u05dc.",
             ecosystemParentCta: "\u05dc\u05d4\u05db\u05d9\u05e8 \u05d0\u05ea \u05d4\u05ea\u05d5\u05db\u05e0\u05d9\u05ea",
             ecosystemProviderCta: "\u05dc\u05d4\u05e6\u05d8\u05e8\u05e3 \u05dc\u05e8\u05e9\u05d9\u05de\u05ea \u05e0\u05d5\u05ea\u05e0\u05d9 \u05e9\u05d9\u05e8\u05d5\u05ea",
+            ecosystemFamilyCta: "Explore families",
+            ecosystemProviderCtaTwo: "\u05dc\u05d4\u05e6\u05d8\u05e8\u05e3 \u05dc\u05e8\u05e9\u05d9\u05de\u05ea \u05e0\u05d5\u05ea\u05e0\u05d9 \u05e9\u05d9\u05e8\u05d5\u05ea",
             ecosystemHelperCta: "\u05dc\u05e9\u05d0\u05d5\u05dc \u05d0\u05ea \u05d4\u05e2\u05d5\u05d6\u05e8"
         });
 

@@ -273,6 +273,21 @@ remain open.
   production DB mutation, external send/write, broad crawl, watch loop, or
   agent-fleet loop was performed.
 
+2026-06-19 public copy/portal CTA local closeout:
+
+- Moved `REQ-20260618-110` to local `done`.
+- Preserved the public copy and portal-entry fixes already present in the
+  recovery worktree: current BNA homepage language, updated public navigation,
+  One Time landing CTAs, parent/provider/rabbi/service-provider entry headers,
+  signup path copy, and public helper wording.
+- Updated stale Operations shell expectations in focused tests so the
+  first-class Agents module is treated as intended navigation, not drift.
+- Updated public route privacy coverage for the consolidated Operations route
+  declaration that also serves Agent Run portals behind `requireAdmin`.
+- Focused public/CTA/privacy suite passed 46/46; no deployment, production DB
+  mutation, external write, broad crawl, watch loop, or agent-fleet loop was
+  performed.
+
 Still open after this batch:
 
 - `REQ-20260619-203` is locally done. Production deployment/live smoke remains
@@ -289,19 +304,22 @@ Still open after this batch:
   verification remains withheld until explicit release approval.
 - `REQ-20260618-107` has local module-scoping proof; live/deploy verification
   remains withheld until explicit release approval.
+- `REQ-20260618-110` has local public copy/portal/CTA proof; live/deploy
+  verification remains withheld until explicit release approval.
 - `REQ-20260619-206` has local DB/API route smoke, focused Super Admin browser
   smoke, and private notification/no-spam coverage now; it still needs manual
   Agent Mode/browser-judgment smoke before local closeout.
 - Live Vimeo/Zoom/Resend/DNS/Stripe setup remains blocked on external
   owner/credential actions and explicit operator approval.
 
-Imported remediation requirements are blocked pending audit output:
+Audit-dependent screenshot remediation remains blocked pending audit output:
 
 `Waiting for user to upload agent-review-package.zip or audit output path`
 
-Do not mark the big UI remediation complete in this run until audit output is
-available, implementation is performed, verification passes, and live evidence
-exists where required.
+Do not mark screenshot-specific visual findings complete in this run until
+audit output is available, implementation is performed, verification passes,
+and live evidence exists where required. Credential-free non-screenshot work
+continues without waiting on that package.
 
 Protocol/tooling items completed in this run:
 

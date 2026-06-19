@@ -48,17 +48,18 @@ test('self-governance and SODAS knowledge stay grounded and action-oriented', ()
   assert.match(widget, /looksLikeSafetyIssue/);
 });
 
-test('learning ecosystem landing section includes provider model, placeholders, and CTAs', () => {
+test('learning ecosystem landing section includes audience model, real images, and CTAs', () => {
   assert.match(homepage, /id="learning-ecosystem"/);
   assert.match(homepage, /A Learning Ecosystem, Not Just a Morning Program/);
-  assert.match(homepage, /Morning Torah Learning/);
-  assert.match(homepage, /Family \/ Homeschool Support/);
-  assert.match(homepage, /Evening Programs and Chugim/);
+  assert.match(homepage, /Schools \/ AI Microschool/);
+  assert.match(homepage, /one-man Jewish AI microschool/);
+  assert.match(homepage, /Families \/ Parent App/);
+  assert.match(homepage, /Less Overhead, Better Teaching/);
   assert.match(homepage, /Service Provider Network/);
-  assert.match(homepage, /role="img" aria-label="Placeholder for a morning Torah learning graphic"/);
+  assert.match(homepage, /class="ecosystem-media"[\s\S]*?forest-learning-01-web\.jpg/);
   assert.match(homepage, /href="\/become-service-provider\?onboard=provider"/);
   assert.match(homepage, /data-helper-open/);
-  assert.match(homepage, /ecosystemProviderCta/);
+  assert.match(homepage, /ecosystemProviderCtaTwo/);
   assert.match(homepage, /ecosystemHelperCta/);
 });
 

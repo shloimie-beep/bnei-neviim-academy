@@ -24018,3 +24018,37 @@ Remaining:
 - `REQ-20260619-206` still needs manual Agent Mode/browser-judgment smoke.
 - `REQ-20260619-207` remains blocked on secure external provider credentials,
   owner-only account actions, and explicit release approval.
+
+## 2026-06-19T07:45:29+03:00 - Public Copy Portal CTA Local Proof
+
+Moved `REQ-20260618-110` to local `done`.
+
+- Preserved and committed the current BNA/One Time public copy, site nav,
+  portal entry headers, signup labels, public helper language, and route
+  privacy expectation updates already present in the recovery worktree.
+- Updated focused test expectations for the consolidated first-class Agents
+  navigation and the protected Operations Agent Run route declaration.
+- Verified public homepage, One Time landing, parent/provider/rabbi/service
+  provider entry pages, signup routes, public helper copy, public content
+  privacy, and private Operations route protection.
+
+Verification:
+
+- PASS focused public/CTA/privacy suite 46/46.
+- PASS `npm run bna:run:validate`.
+
+Guardrails:
+
+- No browser screenshot crawl was run.
+- No deployment was run.
+- No production database mutation was performed.
+- No external account, Drive, Telegram, social, payment, DNS, Zoom, Vimeo, or
+  Resend write was performed.
+- No raw secrets were stored in tracked files.
+- No watch loop or agent-fleet loop was run.
+
+Remaining:
+
+- `REQ-20260618-111` safe test data and complete acceptance-test coverage is
+  the next broad unblocked requirement.
+- Release/live verification remains withheld until explicit approval.

@@ -61,6 +61,11 @@ Current 2026-06-19 checkpoint:
   integration secret handling, mobile assistant layout, and provider-neutral
   OpenAI/Kimi hosted-chat fallback are implemented and locally tested without
   live sends or secret exposure.
+- `REQ-20260618-110` is locally done: public homepage/nav copy, One Time
+  landing CTAs, parent/provider/rabbi/service-provider portal headers, signup
+  route labels, public helper copy, Operations route privacy expectations, and
+  public content contamination guards are implemented and locally tested
+  without deployment.
 - Manual Agent Mode/browser-judgment smoke remains open.
 - `REQ-20260619-207` is genuinely blocked for live provider setup until
   operator supplies or performs external account-owner actions through the
@@ -68,31 +73,30 @@ Current 2026-06-19 checkpoint:
 
 Exact next requirement:
 
-`REQ-20260618-110` public copy, portal headers, signup routes, and CTA
-continuation, while
+`REQ-20260618-111` safe test data and complete acceptance-test coverage, while
 preserving the already closed `REQ-20260618-103` workspace/RBAC,
 `REQ-20260618-104` Operations shell/navigation, `REQ-20260618-105` design
-system, `REQ-20260618-106` task/intake/calendar, and
-`REQ-20260618-109` helper proof.
+system, `REQ-20260618-106` task/intake/calendar, `REQ-20260618-108`
+student/Goal Board/Hebrew, `REQ-20260618-109` helper proof, and
+`REQ-20260618-110` public copy/CTA proof.
 
 Exact next command:
 
 ```powershell
-node --test tests\ui-01-public-operations-shell.test.js tests\public-helper-bot-landing-sodas.test.js tests\signup-permissions-mobile-homepage.test.js tests\provider-index-mvp.test.js tests\parent-student-polish-contract.test.js
+node --test tests\req022-seed-test-data.test.js tests\agent-control-center.test.js tests\agent-control-api-readback.test.js tests\agent-control-browser-smoke.test.js
 npm run bna:run:validate
 ```
 
-Then continue `REQ-20260618-110`: inspect public homepage/nav copy, portal
-headers, parent/student/provider login paths, signup route CTAs, and public
-helper copy; add only missing focused proof or small fixes, and avoid broad UI
-crawls, live sends, deploys, or production writes.
+Then continue `REQ-20260618-111`: inspect safe seed/demo-data helpers,
+acceptance-test coverage for the locally remediated flows, and any existing
+test gaps in the active run. Add focused proof without touching production
+data, live sends, deploys, broad UI crawls, watch loops, or agent-fleet loops.
 
 Open requirements:
 
 - `REQ-20260618-101` audit harness and audit package
 - `REQ-20260618-102` PWA public-vs-Operations separation is locally
   implemented and needs release/live verification
-- `REQ-20260618-110` public copy and portal headers
 - `REQ-20260618-111` test data and acceptance tests
 - `REQ-20260618-112` Agent Control Center parent
 - `REQ-20260618-113` through `REQ-20260618-118` have local API/browser proof

@@ -30,14 +30,16 @@
       location: 'Ramat Beit Shemesh',
       home: 'Home',
       school: 'School',
-      parents: 'Parents / Families / Parent App',
+      parents: 'Families',
       serviceProviders: 'Service Providers',
+      audience: 'Explore',
+      portals: 'Portal Login',
       blog: 'Blog',
       faq: 'FAQ',
       parentLogin: 'Parent Login',
       studentLogin: 'Student Login',
       providerLogin: 'Rabbi / Provider Login',
-      providerJoin: 'Become a Service Provider',
+      providerJoin: 'Advertise your program for free',
       contact: 'Contact Us',
       signup: 'Register',
       backToRegistration: 'Back to registration',
@@ -48,12 +50,17 @@
       brand: "Bnei Nevi'im Academy",
       location: 'רמת בית שמש',
       home: 'בית',
+      school: 'בית הספר',
+      parents: 'משפחות',
+      serviceProviders: 'ספקי שירות',
+      audience: 'למי זה מתאים',
+      portals: 'כניסה לפורטלים',
       blog: 'מאמרים',
       faq: 'שאלות',
       parentLogin: 'הורים',
       studentLogin: 'תלמיד',
       providerLogin: 'רב / ספק',
-      providerJoin: 'הצטרפות כספק',
+      providerJoin: 'פרסמו את התוכנית בחינם',
       contact: 'צור קשר',
       signup: 'הרשמה',
       backToRegistration: 'חזרה להרשמה',
@@ -170,6 +177,37 @@
       .join('');
   }
 
+  function renderAudienceDropdown(active, copy, lang) {
+    const items = [
+      { id: 'school', href: schoolUrl(lang), label: copy.school || COPY.en.school },
+      { id: 'parents', href: parentsUrl(lang), label: copy.parents || COPY.en.parents },
+      { id: 'service-providers', href: serviceProvidersUrl(lang), label: copy.serviceProviders || COPY.en.serviceProviders },
+    ];
+    const activeAttrs = items.some((item) => item.id === active) ? ' aria-current="page"' : '';
+    return `
+      <details class="bna-site-nav-dropdown bna-site-nav-audience">
+        <summary${activeAttrs}>${escapeHtml(copy.audience || COPY.en.audience)}</summary>
+        <div class="bna-site-nav-dropdown-panel">
+          ${items.map((item) => `<a href="${escapeHtml(item.href)}"${active === item.id ? ' aria-current="page"' : ''}>${escapeHtml(item.label)}</a>`).join('')}
+        </div>
+      </details>`;
+  }
+
+  function renderPortalDropdown(copy) {
+    const items = [
+      [copy.parentLogin || COPY.en.parentLogin, '/parent/login'],
+      [copy.studentLogin || COPY.en.studentLogin, '/student/login'],
+      [copy.providerLogin || COPY.en.providerLogin, '/provider'],
+    ];
+    return `
+      <details class="bna-site-nav-dropdown bna-site-nav-portals">
+        <summary>${escapeHtml(copy.portals || COPY.en.portals)}</summary>
+        <div class="bna-site-nav-dropdown-panel">
+          ${items.map(([label, href]) => `<a href="${escapeHtml(href)}">${escapeHtml(label)}</a>`).join('')}
+        </div>
+      </details>`;
+  }
+
   function inferActiveNav() {
     const path = window.location.pathname.replace(/\/$/, '') || '/';
     if (path === '/' || path === '/he' || path === '/index.html') return 'home';
@@ -209,9 +247,6 @@
     const signupHref = registrationLink(mount, lang);
     const signupLabel = registrationLabel(mount, lang);
     const switchHref = languageSwitchUrl(lang);
-    const schoolLabel = copy.school || COPY.en.school;
-    const parentsLabel = copy.parents || COPY.en.parents;
-    const serviceProvidersLabel = copy.serviceProviders || COPY.en.serviceProviders;
 
     mount.innerHTML = `
       <nav class="bna-site-nav" aria-label="Primary navigation">
@@ -229,9 +264,7 @@
           <div class="bna-site-nav-actions" id="mainNavActions">
             <div class="bna-site-nav-menu" aria-label="Primary links">
               ${renderNavLink(active, { id: 'home', href: homeUrl(lang), label: copy.home })}
-              ${renderNavLink(active, { id: 'school', href: schoolUrl(lang), label: schoolLabel })}
-              ${renderNavLink(active, { id: 'parents', href: parentsUrl(lang), label: parentsLabel })}
-              ${renderNavLink(active, { id: 'service-providers', href: serviceProvidersUrl(lang), label: serviceProvidersLabel })}
+              ${renderAudienceDropdown(active, copy, lang)}
               <details class="bna-site-nav-dropdown bna-site-nav-dropdown-desktop">
                 <summary>${escapeHtml(copy.blog)}</summary>
                 <div class="bna-site-nav-dropdown-panel">
@@ -240,9 +273,7 @@
               </details>
               ${renderNavLink(active, { id: 'blog', href: blogUrl(lang), label: copy.blog, classes: 'bna-site-nav-mobile-only' })}
               ${renderNavLink(active, { id: 'faq', href: faqUrl(lang), label: copy.faq })}
-              <a class="bna-site-nav-link" href="/parent/login">${escapeHtml(copy.parentLogin)}</a>
-              <a class="bna-site-nav-link" href="/student/login">${escapeHtml(copy.studentLogin)}</a>
-              <a class="bna-site-nav-link" href="/provider">${escapeHtml(copy.providerLogin)}</a>
+              ${renderPortalDropdown(copy)}
             </div>
             <div class="bna-site-nav-buttons">
               <button class="bna-site-lang-toggle" id="languageToggle" type="button">${escapeHtml(copy.language)}</button>

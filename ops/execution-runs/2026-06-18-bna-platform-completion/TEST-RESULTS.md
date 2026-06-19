@@ -394,3 +394,30 @@ Not run for this batch:
 - No deployment.
 - No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
   social write.
+
+Verified on 2026-06-19 for public copy/portal CTA closeout:
+
+- PASS focused public/CTA/privacy suite 46/46:
+  `node --test tests/ui-01-public-operations-shell.test.js
+  tests/public-helper-bot-landing-sodas.test.js
+  tests/signup-permissions-mobile-homepage.test.js
+  tests/provider-index-mvp.test.js tests/parent-student-polish-contract.test.js
+  tests/one-time-focused-landing.test.js tests/rabbi-checkout-access.test.js
+  tests/public-route-privacy-contract.test.js
+  tests/public-homepage-privacy.test.js
+  tests/public-content-contamination-guard.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `in_progress: 5`, `needs_verification: 9`, `blocked: 2`,
+  `done: 15`.
+- The suite verifies current BNA/One Time copy, public helper and landing CTA
+  language, signup/portal entry headers, safe public route aliases, Operations
+  route protection, public content privacy, and no stale family-app positioning
+  on current user-facing shells.
+
+Not run for this batch:
+
+- No broad UI crawl or audit harness rebuild.
+- No production DB write/readback.
+- No deployment.
+- No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
+  social write.

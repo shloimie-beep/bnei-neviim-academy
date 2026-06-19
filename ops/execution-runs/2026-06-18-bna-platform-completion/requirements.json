@@ -275,16 +275,42 @@
       "id": "REQ-20260618-110",
       "title": "Public copy and portal headers",
       "area": "copy",
-      "status": "in_progress",
+      "status": "done",
       "expected_result": "Public copy, portal headers, and CTA language match the BNA product reality and avoid stale family-app wording.",
       "source": "Known June 18 requirement area",
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": "",
-      "evidence": [],
-      "deployment_evidence": [],
-      "verification": [],
-      "notes": "Corrected 2026-06-19: this requirement must not wait for the UI audit package. Only screenshot-specific visual findings depend on uploaded audit evidence; credential-free implementation and focused tests can continue immediately."
+      "evidence": [
+        "public/css/bna-site-nav.css",
+        "public/index.html",
+        "public/js/bna-site-nav.js",
+        "public/one-time/index.html",
+        "public/parent-login.html",
+        "public/parents.html",
+        "public/provider.html",
+        "public/rabbi.html",
+        "public/service-providers.html",
+        "tests/ui-01-public-operations-shell.test.js",
+        "tests/public-helper-bot-landing-sodas.test.js",
+        "tests/signup-permissions-mobile-homepage.test.js",
+        "tests/provider-index-mvp.test.js",
+        "tests/parent-student-polish-contract.test.js",
+        "tests/one-time-focused-landing.test.js",
+        "tests/rabbi-checkout-access.test.js",
+        "tests/public-route-privacy-contract.test.js",
+        "tests/public-homepage-privacy.test.js",
+        "tests/public-content-contamination-guard.test.js"
+      ],
+      "deployment_evidence": [
+        "Not deployed by operator rule; focused local public copy, portal entry, CTA, and route privacy contracts verify current behavior without production mutation."
+      ],
+      "verification": [
+        "node --test tests/ui-01-public-operations-shell.test.js tests/public-helper-bot-landing-sodas.test.js tests/signup-permissions-mobile-homepage.test.js tests/provider-index-mvp.test.js tests/parent-student-polish-contract.test.js",
+        "node --test tests/ui-01-public-operations-shell.test.js tests/public-helper-bot-landing-sodas.test.js tests/signup-permissions-mobile-homepage.test.js tests/provider-index-mvp.test.js tests/parent-student-polish-contract.test.js tests/one-time-focused-landing.test.js tests/rabbi-checkout-access.test.js tests/public-route-privacy-contract.test.js tests/public-homepage-privacy.test.js tests/public-content-contamination-guard.test.js",
+        "npm run bna:run:validate"
+      ],
+      "notes": "Local public copy/portal-header proof is now recorded: the public homepage, site nav, One Time landing, parent/provider/rabbi/service-provider entry pages, signup/CTA paths, and public route privacy contracts use current BNA/One Time language, preserve separate portal entry points, avoid stale family-app positioning, and keep Operations/private data out of public copy. Corrected 2026-06-19: this requirement did not wait for the UI audit package; only screenshot-specific visual findings depend on uploaded audit evidence."
     },
     {
       "id": "REQ-20260618-111",
