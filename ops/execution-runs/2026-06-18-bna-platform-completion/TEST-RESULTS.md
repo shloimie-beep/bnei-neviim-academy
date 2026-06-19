@@ -422,6 +422,35 @@ Not run for this batch:
 - No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
   social write.
 
+Verified on 2026-06-19 for Zoom/Vimeo credential secure install:
+
+- PASS `node --test tests/provider-credentials-diagnostics.test.js` 2/2.
+- PASS `node --test tests/provider-integrations-secret-storage.test.js` 5/5.
+- PASS `node --test tests/integrations-secret-loader.test.js` 6/6.
+- PASS `node scripts/provider-credentials-diagnostics.mjs --no-network`.
+- PASS `node scripts/provider-credentials-diagnostics.mjs`.
+- PASS `node --test tests/active-run-acceptance-coverage.test.js` 2/2.
+- PASS `npm run bna:run:validate`; final status counts `blocked: 1`,
+  `needs_operator_decision: 12`, `done: 18`.
+- PASS `node scripts/audit-secrets.mjs`; 0 tracked secret-risk files found.
+- PASS `git check-ignore` for local Zoom/Vimeo `.secrets/` files.
+- Final live provider diagnostic:
+  `ops/qa-runs/2026-06-19T06-25-26-055Z-provider-credential-diagnostics.md`.
+- Live diagnostic result:
+  Zoom `token_ready`, HTTP 200, 39 scopes; Vimeo
+  `client_credentials_ready`, HTTP 200, one public scope.
+- Returned provider access tokens were not stored; only fingerprints are
+  present in the evidence.
+
+Not run for this credential batch:
+
+- No Zoom meeting create.
+- No Vimeo upload, folder write, or library publish.
+- No Resend email send or DNS/domain mutation.
+- No Railway/production env mutation.
+- No deployment or live smoke.
+- No production DB mutation.
+
 Verified on 2026-06-19 for Agent Control interactive browser proof:
 
 - PASS `node --check tests\agent-control-browser-smoke.test.js`.

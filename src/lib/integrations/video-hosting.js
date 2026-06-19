@@ -42,6 +42,18 @@ function getVideoHostingConfig(options = {}) {
     fileNames: ['vimeo-access-token.txt', 'VIMEO_ACCESS_TOKEN.txt', 'vimeo.txt'],
     repoRoot,
   }).value;
+  const vimeoClientId = options.vimeoClientId !== undefined ? String(options.vimeoClientId || '').trim() : loadSecret({
+    envName: 'VIMEO_CLIENT_ID',
+    names: ['vimeo-client-id', 'vimeo'],
+    fileNames: ['vimeo-client-id.txt', 'VIMEO_CLIENT_ID.txt', 'vimeo.txt'],
+    repoRoot,
+  }).value;
+  const vimeoClientSecret = options.vimeoClientSecret !== undefined ? String(options.vimeoClientSecret || '').trim() : loadSecret({
+    envName: 'VIMEO_CLIENT_SECRET',
+    names: ['vimeo-client-secret', 'vimeo'],
+    fileNames: ['vimeo-client-secret.txt', 'VIMEO_CLIENT_SECRET.txt', 'vimeo.txt'],
+    repoRoot,
+  }).value;
   const providerDecision = String(options.providerDecision || loadConfigValue({
     envName: 'BNA_VIDEO_HOST_PROVIDER',
     names: ['video-host-provider', 'video-hosting', 'vimeo'],
@@ -50,6 +62,8 @@ function getVideoHostingConfig(options = {}) {
   }) || 'vimeo').trim().toLowerCase();
   return {
     vimeoToken,
+    vimeoClientId,
+    vimeoClientSecret,
     providerDecision,
     accountOwner: String(options.accountOwner || loadConfigValue({
       envName: 'BNA_VIDEO_HOST_ACCOUNT_OWNER',
@@ -91,6 +105,7 @@ function getVideoHostingReadiness(options = {}) {
     decisionTable: VIDEO_HOST_DECISION_OPTIONS,
     vimeo: {
       configured: Boolean(config.vimeoToken),
+      appCredentialsConfigured: Boolean(config.vimeoClientId && config.vimeoClientSecret),
       planConfigured: Boolean(config.vimeoPlan),
       manualUploadFallbackReady: manualFallbackReady,
       apiUploadStatus: config.vimeoToken && config.vimeoPlan ? 'needs_upload_access_check' : 'manual_only',

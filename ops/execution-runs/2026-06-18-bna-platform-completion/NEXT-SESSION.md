@@ -91,21 +91,23 @@ Current 2026-06-19 checkpoint:
 - Manual Agent Mode/browser-judgment execution is locally complete. The
   remaining Agent Control gates are live-required release/deploy verification
   and external approval, not another local manual smoke.
-- Latest validation after release-gate normalization:
-  `needs_operator_decision: 11`, `blocked: 2`, `done: 18`.
-- `REQ-20260619-207` is genuinely blocked for live provider setup until
-  operator supplies or performs external account-owner actions through the
-  secure keyholder/environment workflow.
+- Latest validation after credential install:
+  `needs_operator_decision: 12`, `blocked: 1`, `done: 18`.
+- `REQ-20260619-207` is now `needs_operator_decision`: Zoom Server-to-Server
+  OAuth and Vimeo app credentials are securely installed and passed read-only
+  auth diagnostics. Remaining gates are Resend credential/domain/DNS owner
+  action, Vimeo user-level upload/library access or approved manual policy,
+  production env propagation if requested, and explicit approval before live
+  sends/uploads/meetings/deploy/live smoke.
 
 Exact next requirement:
 
 No credential-free implementation row is currently `in_progress`. The exact
 next gate is release approval for deploy/live smoke of the live-required rows,
-or external input for the two blockers: audit output for `REQ-20260618-101`
-and owner/credential actions for `REQ-20260619-207`. The local manual Agent
-Mode/browser-judgment smoke is complete. The latest focused Agent Control/
-active-run suite passed 12/12 and `npm run bna:run:validate` passed with
-status counts `needs_operator_decision: 11`, `blocked: 2`, `done: 18`.
+or external input for the remaining blocker/decision gates: audit output for
+`REQ-20260618-101`, Resend owner setup, Vimeo user-level upload/library access
+or approved manual policy, and production env propagation if requested. The
+local manual Agent Mode/browser-judgment smoke is complete.
 
 Exact next command:
 
@@ -117,6 +119,19 @@ npm run bna:run:validate
 Then stop unless explicit release approval, audit output, or credential/owner
 input is available. Do not touch production data, live sends, deploys, broad UI
 crawls, watch loops, or agent-fleet loops without the required approval/input.
+
+Credential checkpoint from 2026-06-19:
+
+```powershell
+node scripts\provider-credentials-diagnostics.mjs
+npm run bna:run:validate
+```
+
+The temporary `C:\Users\User\Downloads\codes` folder has already been deleted
+after secure archival. Do not look for it or recreate it. Secure archive:
+`C:\Users\User\BNA-Keyholder\incoming\2026-06-19-zoom-vimeo-codes`.
+Final redacted credential proof:
+`ops\qa-runs\2026-06-19T06-25-26-055Z-provider-credential-diagnostics.md`.
 
 Open requirements:
 
@@ -131,8 +146,10 @@ Open requirements:
   for explicit release approval before deploy/live smoke.
 - `REQ-20260619-206` has local closed-loop proof and is waiting for explicit
   release approval before deploy/live smoke.
-- `REQ-20260619-207` is blocked on external owner/credential actions for
-  Vimeo, Zoom, and Resend.
+- `REQ-20260619-207` has Zoom/Vimeo app credentials installed and read-only
+  auth proven; it is waiting on Resend owner setup, Vimeo user-level
+  upload/library access or approved manual policy, production env propagation
+  if requested, and explicit approval before live writes/deploy/live smoke.
 
 Current audit blocker:
 

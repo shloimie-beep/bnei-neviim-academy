@@ -1028,12 +1028,12 @@
       "id": "REQ-20260619-207",
       "title": "Secure Vimeo, Zoom, and Resend readiness plus credential Decisions",
       "area": "integrations",
-      "status": "blocked",
+      "status": "needs_operator_decision",
       "expected_result": "Vimeo, Zoom, and Resend are prepared through one secure readiness model, exact env names, official-doc handoffs, no secret exposure, and owner-action Decisions for missing credentials/account authority.",
       "source": "RAW-20260619-002",
       "depends_on_audit_output": false,
       "live_required": true,
-      "blocker": "External account-owner credentials/actions are required for live connection checks, uploads, sends, meetings, DNS writes, and payment setup. Store secrets only through keyholder/server env after explicit operator approval.",
+      "blocker": "Zoom Server-to-Server OAuth credentials and Vimeo client credentials are securely installed and passed live read-only auth checks. Remaining external gates: Resend API key/domain/DNS owner action, Vimeo user access token or approved upload/library policy for account-level operations, explicit approval before live sends/uploads/meeting creation/deploy/live smoke, and production env propagation if requested.",
       "evidence": [
         "src/lib/integrations/vimeo.js",
         "src/lib/integrations/zoom.js",
@@ -1043,19 +1043,34 @@
         "docs/integrations/RESEND.md",
         "docs/integrations/OPERATOR-CREDENTIAL-HANDOFF.md",
         "docs/integrations/one-time-secure-integration-handoff.md",
-        ".env.example"
+        ".env.example",
+        "scripts/provider-credentials-diagnostics.mjs",
+        "tests/provider-credentials-diagnostics.test.js",
+        "src/lib/integrations/video-hosting.js",
+        "docs/local-keyholder.md",
+        "ops/qa-runs/2026-06-19T06-25-26-055Z-provider-credential-diagnostics.md",
+        "C:\\Users\\User\\BNA-Keyholder\\incoming\\2026-06-19-zoom-vimeo-codes"
       ],
       "deployment_evidence": [],
       "verification": [
-        "node --test tests/int05-integrations-closeout.test.js tests/one-time-drive-brief-ingestion.test.js"
+        "node --test tests/int05-integrations-closeout.test.js tests/one-time-drive-brief-ingestion.test.js",
+        "node --test tests/provider-credentials-diagnostics.test.js",
+        "node --test tests/provider-integrations-secret-storage.test.js",
+        "node --test tests/integrations-secret-loader.test.js",
+        "node scripts/provider-credentials-diagnostics.mjs --no-network",
+        "node scripts/provider-credentials-diagnostics.mjs"
       ],
       "acceptance_criteria": [
         "Official docs are recorded with date checked.",
         "Env names are placeholders only; no values are committed.",
         "Operations/parser Decisions name each missing owner action.",
-        "Existing helpers remain no-write without explicit confirmations."
+        "Existing helpers remain no-write without explicit confirmations.",
+        "Zoom credentials are stored only in the local keyholder and ignored .secrets runtime files, with no tracked secret values.",
+        "Vimeo app credentials are stored only in the local keyholder and ignored .secrets runtime files, with no tracked secret values.",
+        "Read-only provider auth diagnostics prove Zoom token exchange and Vimeo client-credentials auth without storing returned tokens.",
+        "Remaining Resend, Vimeo user-token/upload, production-env, and live-write actions stay operator-gated."
       ],
-      "notes": "Credential-free docs and placeholder repair are implemented. Live readiness remains genuinely blocked by external credentials/owner actions."
+      "notes": "Credential-free docs and placeholder repair are implemented. Live readiness remains genuinely blocked by external credentials/owner actions.\n2026-06-19 credential unblock: Zoom account/client/secret and Vimeo client/secret were copied from the temporary Downloads handoff into C:\\Users\\User\\BNA-Keyholder and ignored local .secrets files; the temporary Downloads folder was deleted after hash comparison. Live read-only diagnostics passed for Zoom token exchange and Vimeo client-credentials auth. No returned access token was stored, no meeting/upload/email/deploy/production write occurred, and Resend/Vimeo user-level/live-write gates remain operator decisions."
     },
     {
       "id": "REQ-20260619-208",

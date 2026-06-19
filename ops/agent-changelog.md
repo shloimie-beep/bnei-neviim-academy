@@ -24133,6 +24133,44 @@ Remaining:
   takeover is available.
 - Release/live verification still requires explicit operator approval.
 
+## 2026-06-19 - Zoom/Vimeo credentials secured and smoke-tested
+
+Secured the temporary Zoom/Vimeo credential handoff without committing secret
+values.
+
+- Archived the original handoff under
+  `C:\Users\User\BNA-Keyholder\incoming\2026-06-19-zoom-vimeo-codes`.
+- Installed normalized Zoom Server-to-Server OAuth and Vimeo app credential
+  files into the local keyholder and ignored `.secrets/` runtime folder.
+- Deleted `C:\Users\User\Downloads\codes` after verifying each original source
+  file hash existed in the secure archive.
+- Added `scripts/provider-credentials-diagnostics.mjs` and
+  `tests/provider-credentials-diagnostics.test.js`.
+- Updated Vimeo/video-hosting readiness to report app credentials separately
+  from user-level upload access.
+- Updated the active run: `REQ-20260619-207` is now
+  `needs_operator_decision`, with Zoom and Vimeo app auth proven and Resend /
+  Vimeo user-level / release gates still open.
+
+Verification:
+
+- PASS `node --test tests/provider-credentials-diagnostics.test.js`.
+- PASS `node --test tests/provider-integrations-secret-storage.test.js`.
+- PASS `node --test tests/integrations-secret-loader.test.js`.
+- PASS `node scripts/provider-credentials-diagnostics.mjs --no-network`.
+- PASS `node scripts/provider-credentials-diagnostics.mjs`.
+- PASS `node --test tests/active-run-acceptance-coverage.test.js`.
+- PASS `npm run bna:run:validate` with counts `blocked: 1`,
+  `needs_operator_decision: 12`, `done: 18`.
+- PASS `node scripts/audit-secrets.mjs`.
+
+Guardrails:
+
+- No raw secret value was written to tracked files.
+- No returned provider access token was stored.
+- No Zoom meeting, Vimeo upload, Resend send, Railway/production env mutation,
+  deployment, live smoke, or production DB mutation was performed.
+
 ## 2026-06-19T08:25:38+03:00 - Agent Control Manual Browser Judgment Closed Locally
 
 Completed the manual Agent Mode/browser-judgment gate with the in-app browser

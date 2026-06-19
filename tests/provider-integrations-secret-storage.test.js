@@ -98,6 +98,16 @@ test('Vimeo adapter supports auth readiness, parsing, manual fallback, and redac
   assert.equal(intent.preview_only, true);
   assert.equal(intent.external_write_performed, false);
   assert.equal(intent.status, 'manual_upload_required');
+  assert.equal(vimeo.getVideoHostingReadiness({
+    config: {
+      providerDecision: 'vimeo',
+      vimeoToken: '',
+      vimeoClientId: 'client-id-present',
+      vimeoClientSecret: 'client-secret-present',
+      accountOwner: 'unknown',
+      vimeoPlan: '',
+    },
+  }).vimeo.appCredentialsConfigured, true);
 
   const attached = vimeo.attachVimeoUrl({ content_id: 42, vimeo_url: 'https://vimeo.com/987654321' });
   assert.equal(attached.ok, true);

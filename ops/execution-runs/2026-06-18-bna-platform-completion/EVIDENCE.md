@@ -707,3 +707,28 @@ Not run for this batch:
   open state concrete and externally actionable.
 - No deployment, production DB mutation, external write, broad crawl, watch
   loop, or agent-fleet loop was performed.
+
+2026-06-19 Zoom/Vimeo credential evidence:
+
+- Secure local archive:
+  `C:\Users\User\BNA-Keyholder\incoming\2026-06-19-zoom-vimeo-codes`.
+- Temporary handoff deleted after hash comparison:
+  `C:\Users\User\Downloads\codes` no longer exists.
+- Local runtime secret files are under ignored `.secrets/`; no raw secret value
+  was added to tracked files.
+- Diagnostic script:
+  `scripts/provider-credentials-diagnostics.mjs`.
+- Diagnostic tests:
+  `tests/provider-credentials-diagnostics.test.js`.
+- Vimeo readiness metadata:
+  `src/lib/integrations/video-hosting.js`.
+- Keyholder file-name documentation:
+  `docs/local-keyholder.md`.
+- Final live redacted diagnostic report:
+  `ops/qa-runs/2026-06-19T06-25-26-055Z-provider-credential-diagnostics.md`.
+- Final provider status:
+  Zoom `token_ready`; Vimeo `client_credentials_ready`; returned tokens were
+  fingerprinted only and not stored.
+- Remaining evidence gap:
+  Resend credential/domain/DNS proof and Vimeo user-level upload/library access
+  are still operator-gated and not locally completed.

@@ -468,3 +468,28 @@ Still open after manual browser proof:
   `needs_operator_decision: 11`, `done: 18`.
 - The only remaining open work is external: release approval, audit
   package/output, and Vimeo/Zoom/Resend owner/credential actions.
+
+2026-06-19 Zoom/Vimeo credential secure install:
+
+- Secured the temporary `C:\Users\User\Downloads\codes` handoff into the local
+  keyholder archive at
+  `C:\Users\User\BNA-Keyholder\incoming\2026-06-19-zoom-vimeo-codes`.
+- Installed normalized Zoom Server-to-Server OAuth fields and Vimeo app
+  credentials into the local keyholder plus ignored `.secrets/` runtime files.
+- Corrected the Zoom client ID from the screenshot after a read-only variant
+  test proved the text handoff value was not the working client ID.
+- Deleted `C:\Users\User\Downloads\codes` after verifying all original source
+  file hashes existed in the secure keyholder archive.
+- Added redacted provider credential diagnostics and tests. Final live
+  diagnostics show Zoom `token_ready` with 39 scopes and Vimeo
+  `client_credentials_ready` with one public scope. Returned access tokens were
+  fingerprinted only and not stored.
+- `npm run bna:run:validate` passed with status counts `blocked: 1`,
+  `needs_operator_decision: 12`, `done: 18`.
+- Moved `REQ-20260619-207` from generic `blocked` to
+  `needs_operator_decision`: Zoom and Vimeo app auth are locally proven, while
+  Resend, Vimeo user-level upload/library access, production env propagation,
+  live writes, deployment, and live smoke still require explicit operator
+  approval or owner action.
+- No meeting creation, video upload, email send, deployment, production DB
+  mutation, or production env mutation was performed.

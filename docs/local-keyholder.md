@@ -19,6 +19,12 @@ resend-api-key.txt
 stripe-secret-key.txt
 railway-token.txt
 kimi-api-key.txt
+zoom-account-id.txt
+zoom-client-id.txt
+zoom-client-secret.txt
+vimeo-client-id.txt
+vimeo-client-secret.txt
+vimeo-access-token.txt
 README.txt
 keyholder-log.jsonl
 ```
