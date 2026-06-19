@@ -1,4 +1,5 @@
 import fs from 'fs';
+import os from 'os';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createRequire } from 'module';
@@ -20,6 +21,7 @@ const {
   parseContentOutputTypeFromText: parseContentOutputTypeFromTextCore,
   shouldBlockContentDraftEditIntent,
 } = require('../src/lib/bna/telegram-content-intent');
+const integrationSecretLoader = require('../src/lib/integrations/secret-loader');
 const {
   isConfirmationText,
   isHandlerBlocked,
@@ -152,6 +154,10 @@ const agentReplyQueue = [];
 let agentReplyRunning = false;
 let agentReplySequence = 0;
 let activeTelegramCodexEnabled = true;
+let activeBridgeConfig = null;
+let activeBridgeBotIdentity = null;
+let stopBridgeRuntimeHeartbeat = null;
+let bridgeShutdownInProgress = false;
 
 function appendAgentTaskLedger(entry) {
   const payload = {
@@ -265,22 +271,41 @@ function parseEnvFile(content) {
   return result;
 }
 
-function loadConfig() {
+function loadBridgeEnv() {
   const fromFile = fs.existsSync(envLocalPath)
     ? parseEnvFile(fs.readFileSync(envLocalPath, 'utf8'))
     : {};
+  return { ...fromFile, ...process.env };
+}
 
+function parseJsonConfig(value, label) {
+  const raw = String(value || '').trim();
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw);
+  } catch (error) {
+    throw new Error(`${label} is not valid JSON: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+function loadConfig() {
   const academyToken = fs.existsSync(academyTokenFile)
     ? fs.readFileSync(academyTokenFile, 'utf8').trim()
     : '';
-  const openaiSecret = fs.existsSync(path.join(repoRoot, '.secrets', 'openai-api-key.txt'))
-    ? fs.readFileSync(path.join(repoRoot, '.secrets', 'openai-api-key.txt'), 'utf8').trim()
-    : '';
-  const kimiSecret = fs.existsSync(path.join(repoRoot, '.secrets', 'kimi-api-key.txt'))
-    ? fs.readFileSync(path.join(repoRoot, '.secrets', 'kimi-api-key.txt'), 'utf8').trim()
-    : '';
 
-  const env = { ...fromFile, ...process.env };
+  const env = loadBridgeEnv();
+  const openaiSecret = integrationSecretLoader.loadConfigValue({
+    envName: 'OPENAI_API_KEY',
+    names: ['openai-api-key', 'openaiv2'],
+    fileNames: ['openai-api-key.txt', 'openaiv2.txt'],
+    repoRoot,
+  }) || env.OPENAI_API_KEY || '';
+  const kimiSecret = integrationSecretLoader.loadConfigValue({
+    envName: 'KIMI_API_KEY',
+    names: ['kimi-api-key'],
+    fileNames: ['kimi-api-key.txt'],
+    repoRoot,
+  }) || env.KIMI_API_KEY || '';
   const rabbiElieToken = fs.existsSync(rabbiElieTokenFile)
     ? fs.readFileSync(rabbiElieTokenFile, 'utf8').trim()
     : '';
@@ -325,6 +350,7 @@ function loadConfig() {
     bridgeProfile,
     bridgeProfileLabel: isRabbiElieProfile ? 'Rabbi Elie Scheller / One Time' : 'BNA academy',
     scopedProjectKey: isRabbiElieProfile ? ONE_TIME_PROJECT_KEY : '',
+    runtimeAgentKey: isRabbiElieProfile ? '' : 'telegram-academy-bridge',
     agentDisplayName: isRabbiElieProfile ? 'Rabbi Elie Scheller' : 'Shloimie',
     agentContextFiles: isRabbiElieProfile ? RABBI_ELIE_AGENT_FILES : [],
     codexEnabled,
@@ -360,33 +386,56 @@ function loadConfig() {
     telegramUploadMaxBytes: Number(env.TELEGRAM_UPLOAD_MAX_BYTES || 45 * 1024 * 1024),
     driveWatchIntervalMs: Number(env.DRIVE_WATCH_INTERVAL_MS || 10000),
     taskWatchIntervalMs: Number(env.TELEGRAM_TASK_WATCH_INTERVAL_MS || 45000),
+    runtimeHeartbeatMs: Number(env.TELEGRAM_BRIDGE_HEARTBEAT_MS || 45000),
   };
 }
 
 function loadGoogleDriveAuth() {
-  if (!fs.existsSync(googleOAuthClientFile)) {
-    throw new Error('Missing .secrets/google-oauth-client.json');
-  }
-  if (!fs.existsSync(googleRefreshTokenFile)) {
-    throw new Error('Missing .secrets/google-refresh-token.txt. Send /drive_auth first.');
-  }
-
-  const parsed = JSON.parse(fs.readFileSync(googleOAuthClientFile, 'utf8'));
-  const client = parsed.web || parsed.installed;
-  const auth = new google.auth.OAuth2(
-    client.client_id,
-    client.client_secret,
-    client.redirect_uris?.[0]
+  const env = loadBridgeEnv();
+  const inlineClient = parseJsonConfig(
+    env.GOOGLE_OAUTH_CLIENT_JSON || env.GOOGLE_OAUTH_CLIENT_CONFIG || '',
+    'GOOGLE_OAUTH_CLIENT_JSON'
   );
-  auth.setCredentials({ refresh_token: fs.readFileSync(googleRefreshTokenFile, 'utf8').trim() });
+  const fileClient = fs.existsSync(googleOAuthClientFile)
+    ? parseJsonConfig(fs.readFileSync(googleOAuthClientFile, 'utf8'), '.secrets/google-oauth-client.json')
+    : null;
+  const parsed = inlineClient || fileClient || {};
+  const client = parsed.web || parsed.installed || {};
+  const clientId = env.GOOGLE_CLIENT_ID || client.client_id || '';
+  const clientSecret = env.GOOGLE_CLIENT_SECRET || client.client_secret || '';
+  const redirectUri = env.GOOGLE_REDIRECT_URI || client.redirect_uris?.[0];
+  const refreshToken = env.GOOGLE_REFRESH_TOKEN || (
+    fs.existsSync(googleRefreshTokenFile)
+      ? fs.readFileSync(googleRefreshTokenFile, 'utf8').trim()
+      : ''
+  );
+  if (!clientId || !clientSecret) {
+    throw new Error('Google OAuth client is not configured. Set GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET on the worker or provide .secrets/google-oauth-client.json.');
+  }
+  if (!refreshToken) {
+    throw new Error('Google refresh token is not configured. Set GOOGLE_REFRESH_TOKEN on the worker or send /drive_auth from the local bridge to create .secrets/google-refresh-token.txt.');
+  }
+  const auth = new google.auth.OAuth2(
+    clientId,
+    clientSecret,
+    redirectUri
+  );
+  auth.setCredentials({ refresh_token: refreshToken });
   return auth;
 }
 
 function loadGoogleDrivePipelineConfig() {
-  if (!fs.existsSync(googleDrivePipelineFile)) {
-    throw new Error('Missing .secrets/google-drive-pipeline.json. Run npm run drive:setup first.');
+  const env = loadBridgeEnv();
+  if (String(env.GOOGLE_DRIVE_PIPELINE_CONFIG || '').trim()) {
+    return parseJsonConfig(env.GOOGLE_DRIVE_PIPELINE_CONFIG, 'GOOGLE_DRIVE_PIPELINE_CONFIG');
   }
-  return JSON.parse(fs.readFileSync(googleDrivePipelineFile, 'utf8'));
+  if (fs.existsSync(googleDrivePipelineFile)) {
+    return parseJsonConfig(fs.readFileSync(googleDrivePipelineFile, 'utf8'), '.secrets/google-drive-pipeline.json');
+  }
+  if (String(env.GOOGLE_DRIVE_PIPELINE_FOLDER_ID || '').trim()) {
+    throw new Error('Google Drive pipeline root ID is configured, but Telegram Drive intake needs GOOGLE_DRIVE_PIPELINE_CONFIG with stage folder IDs.');
+  }
+  throw new Error('Google Drive pipeline config is not configured. Set GOOGLE_DRIVE_PIPELINE_CONFIG on the worker or run npm run drive:setup locally to create .secrets/google-drive-pipeline.json.');
 }
 
 function loadOffset() {
@@ -549,6 +598,7 @@ function buildApiSystemInstructions(config = {}) {
     'Use ASCII characters only in the final reply.',
     'If the message contains a ramble, break it into the clearest next tasks.',
     'If the operator asks to make or refine a prompt for Codex or ChatGPT, treat that as planning mode first: show a visible prompt/brief draft in chat and refine it before implementation unless they explicitly ask to build, test, run, or apply it.',
+    'If the operator asks for goal mode, says to set the prompt as a goal, gives a GPT/ChatGPT correction output, or asks to work through the whole prompt/list until done, produce a BNA_GOAL_MODE_EXECUTION_PACKET using tasks-pending/_template-goal-mode-correction-output.md and route it to Codex execution instead of only summarizing.',
     'When the operator says to test something that can be verified through browser interaction, assume Playwright/browser automation is required and report the actual browser checks performed.',
     'If the operator says "build everything", choose the order from TASKS.md and the newest tasks-pending handoffs, start executing, and do not ask for ordering confirmation unless there is a real blocker or product decision.',
     'Use the BNA lanes Tasks, Students, Content, Contacts, and Accounting. Do not use the old Pipeline, Signups, Billing, or Ramble tab language.',
@@ -2333,6 +2383,7 @@ function buildCodexPrompt(config, messageText, chatId, messageId, extraContext =
     '- Keep the final Telegram reply practical and concise.',
     '- If the operator asks to build, fix, inspect, wire, deploy, test, or update the repo, do the work end-to-end when feasible.',
     '- If the operator says "build everything", choose the order from TASKS.md and the newest tasks-pending handoffs, start executing, and do not ask for ordering confirmation unless there is a real blocker or product decision.',
+    '- If the operator asks for goal mode, says to set the prompt as a goal, gives a GPT/ChatGPT correction output, or asks to work through the whole prompt/list until done, produce a BNA_GOAL_MODE_EXECUTION_PACKET using tasks-pending/_template-goal-mode-correction-output.md and route it to Codex execution instead of only summarizing.',
     '- If the operator asks to make or refine a prompt for Codex or ChatGPT, treat that as planning mode first: show a visible prompt/brief draft in chat and refine it before implementation unless they explicitly ask to build, test, run, or apply it.',
     '- When the operator says to test something that can be verified through browser interaction, assume Playwright/browser automation is required and report the actual browser checks performed.',
     '- If you change files, include a short summary and verification in the final reply.',
@@ -2953,7 +3004,9 @@ async function runKimiApiFallback(config, messageText, chatId, messageId) {
   return cleanKimiOutput(text);
 }
 
-async function runChatApiProvider(provider, messages) {
+async function runChatApiProvider(provider, messages, options = {}) {
+  const maxTokens = Number.isFinite(options.maxTokens) ? options.maxTokens : 2200;
+  const temperature = Number.isFinite(options.temperature) ? options.temperature : null;
   const response = await fetch(`${provider.baseUrl.replace(/\/+$/, '')}/chat/completions`, {
     method: 'POST',
     headers: {
@@ -2962,7 +3015,8 @@ async function runChatApiProvider(provider, messages) {
     },
     body: JSON.stringify({
       model: provider.model,
-      max_tokens: 2200,
+      max_tokens: maxTokens,
+      ...(temperature === null ? {} : { temperature }),
       ...(provider.kind === 'kimi' ? { thinking: { type: 'disabled' } } : {}),
       messages,
     }),
@@ -2981,6 +3035,31 @@ async function runChatApiProvider(provider, messages) {
       ? content
       : '';
   return cleanKimiOutput(text);
+}
+
+async function runConfiguredChatCompletion(config, messages, options = {}) {
+  const providers = apiProviderConfigs(config);
+  const purpose = options.purpose || 'chat completion';
+  const errors = [];
+
+  for (const provider of providers) {
+    try {
+      const text = await runChatApiProvider(provider, messages, options);
+      if (String(text || '').trim()) {
+        return {
+          provider: provider.label,
+          providerKind: provider.kind,
+          text: String(text || '').trim(),
+          errors,
+        };
+      }
+      errors.push(`${provider.label}: empty response`);
+    } catch (error) {
+      errors.push(`${provider.label}: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  throw new Error(`No API provider succeeded for ${purpose}. ${errors.join(' | ') || 'No OpenAI/Kimi API key configured.'}`);
 }
 
 function shouldUseOpenAiResearch(text) {
@@ -3180,6 +3259,96 @@ async function appRequest(config, method, endpoint, body = null) {
   return data;
 }
 
+async function reportBridgeRuntimeStatus(config, {
+  status = 'running',
+  botIdentity = null,
+  details = {},
+} = {}) {
+  if (!config?.runtimeAgentKey) return null;
+  if (!config.opsUsername || !config.opsPassword) return null;
+
+  try {
+    const result = await appRequest(config, 'POST', '/api/bna/agent-fleet/status', {
+      agent_key: config.runtimeAgentKey,
+      status,
+      pid: process.pid,
+      mode: isScopedProjectBot(config) ? 'scoped-polling' : 'academy-polling',
+      host: os.hostname(),
+      started_at: readBridgeLock().startedAt || null,
+      stale_after_ms: Math.max(Number(config.runtimeHeartbeatMs || 45000) * 3, 180000),
+      queue_size: 1,
+      ready_count: 1,
+      details: {
+        script: 'scripts/telegram-kimi-bridge.mjs',
+        bridge_profile: config.bridgeProfile || 'bna',
+        bridge_profile_label: config.bridgeProfileLabel || 'BNA academy',
+        bot_username: botIdentity?.username || '',
+        bot_id: botIdentity?.id || null,
+        active_source: 'scripts/telegram-kimi-bridge.mjs',
+        process_selector: process.env.BNA_RAILWAY_PROCESS || process.env.RAILWAY_PROCESS || process.env.PROCESS_TYPE || 'local',
+        api_path: apiProviderPathLabel(config),
+        telegram_default_reply_mode: config.telegramDefaultReplyMode || 'openai',
+        allowed_chat_ids_count: Array.isArray(config.allowedChatIds) ? config.allowedChatIds.length : 0,
+        codex_enabled: Boolean(config.codexEnabled),
+        ...details,
+      },
+    });
+    updateBridgeLock({
+      runtime_status: status,
+      runtime_reported_at: new Date().toISOString(),
+    });
+    return result;
+  } catch (error) {
+    log(`Bridge runtime status report failed: ${error instanceof Error ? error.message : String(error)}`);
+    return null;
+  }
+}
+
+function startBridgeRuntimeHeartbeat(config, botIdentity) {
+  if (!config?.runtimeAgentKey || !config.opsUsername || !config.opsPassword) {
+    return async () => null;
+  }
+
+  let stopped = false;
+  const intervalMs = Math.max(30000, Number(config.runtimeHeartbeatMs || 45000));
+  const sendHeartbeat = async (status = 'running', details = {}) => {
+    if (stopped && status === 'running') return null;
+    return reportBridgeRuntimeStatus(config, { status, botIdentity, details });
+  };
+
+  sendHeartbeat('running', { lifecycle: 'startup' }).catch(() => null);
+  const interval = setInterval(() => {
+    sendHeartbeat('running', { lifecycle: 'heartbeat' }).catch(() => null);
+  }, intervalMs);
+  interval.unref?.();
+
+  return async (status = 'stopped', details = {}) => {
+    if (stopped) return null;
+    stopped = true;
+    clearInterval(interval);
+    return sendHeartbeat(status, details);
+  };
+}
+
+async function shutdownBridge(exitCode = 0, status = 'stopped', details = {}) {
+  if (bridgeShutdownInProgress) return;
+  bridgeShutdownInProgress = true;
+  try {
+    if (stopBridgeRuntimeHeartbeat) {
+      await stopBridgeRuntimeHeartbeat(status, details);
+    } else if (activeBridgeConfig) {
+      await reportBridgeRuntimeStatus(activeBridgeConfig, {
+        status,
+        botIdentity: activeBridgeBotIdentity,
+        details,
+      });
+    }
+  } finally {
+    releaseLock();
+    process.exit(exitCode);
+  }
+}
+
 async function parseCanonicalIntakeToApp(config, text, context = {}) {
   const raw = String(text || '').trim();
   if (!raw) return null;
@@ -3192,6 +3361,10 @@ async function parseCanonicalIntakeToApp(config, text, context = {}) {
     source_message_id: context.message_id || null,
     created_by: config.bridgeProfile || 'telegram_bridge',
     project_key: context.project_key || config.scopedProjectKey || undefined,
+    intake_type: /\b(website|homepage|correction|missed|fix everything|big ramble|large ramble)\b/i.test(raw) ? 'broad_correction' : 'general',
+    requirement_register_path: /\b(website|homepage|correction|missed|fix everything|big ramble|large ramble)\b/i.test(raw)
+      ? `tasks-pending/${new Date().toISOString().slice(0, 10)}-website-ramble-correction-audit.md`
+      : undefined,
     dry_run: Boolean(context.dry_run),
   });
 }
@@ -4280,6 +4453,10 @@ async function captureScopedProjectToApp(config, text, chatId, messageId) {
     enabled: true,
     tasksCreated: createdTask?.id ? 1 : 0,
     tasks: createdTask?.id ? [createdTask] : [],
+    rawIntake: intakeResult?.raw_intake || null,
+    rawIntakeId: intakeResult?.raw_intake?.stable_id || null,
+    rambleProtocol: intakeResult?.parsed?.ramble_protocol || null,
+    parsedItemCounts: intakeResult?.parsed?.ramble_protocol?.item_counts || null,
     eventsCreated: 0,
     commentsCreated: 0,
     supportTicketsCreated: 0,
@@ -4627,6 +4804,10 @@ async function captureRambleToApp(config, text, chatId, messageId) {
     tasks: taskResult?.tasks || (taskResult?.task ? [taskResult.task] : []),
     observableTicket: taskResult?.ticket || null,
     observableTicketsCreated: taskResult?.ticket?.id ? 1 : 0,
+    rawIntake: taskResult?.raw_intake || null,
+    rawIntakeId: taskResult?.raw_intake?.stable_id || null,
+    rambleProtocol: taskResult?.parsed?.ramble_protocol || null,
+    parsedItemCounts: taskResult?.parsed?.ramble_protocol?.item_counts || null,
     agentJobs: taskResult?.agent_jobs || (taskResult?.agent_job ? [taskResult.agent_job] : []),
     agentJobsCreated: Number(taskResult?.agent_jobs?.length || (taskResult?.agent_job ? 1 : 0)),
     eventsCreated,
@@ -4915,7 +5096,7 @@ async function sendContentNextActionButtons(botToken, chatId, replyToMessageId, 
     'What do you want to do with it?',
   ].filter(Boolean);
 
-  await telegramRequest(botToken, 'sendMessage', {
+  const params = {
     chat_id: chatId,
     text: lines.join('\n'),
     reply_to_message_id: replyToMessageId || undefined,
@@ -4929,7 +5110,17 @@ async function sendContentNextActionButtons(botToken, chatId, replyToMessageId, 
         [{ text: 'Open Content Queue', url: 'https://bneineviimacademy.org/operations?view=content' }],
       ],
     },
-  });
+  };
+  try {
+    await telegramRequest(botToken, 'sendMessage', params);
+  } catch (error) {
+    if (params.reply_to_message_id) {
+      delete params.reply_to_message_id;
+      await telegramRequest(botToken, 'sendMessage', params);
+      return;
+    }
+    throw error;
+  }
 }
 
 function compactTelegramLine(value, maxLength = 110) {
@@ -4955,6 +5146,38 @@ function compactTelegramLine(value, maxLength = 110) {
 
 function taskSummaryTitle(task = {}, maxLength = 110) {
   return compactTelegramLine(task.title || `Task #${task.id || '?'}`, maxLength) || `Task #${task.id || '?'}`;
+}
+
+function buildRambleCaptureConfirmationLines(captureSummary = {}) {
+  if (!hasStructuredCapture(captureSummary)) return [];
+  const sourceDate = String(captureSummary.rambleProtocol?.source_date || todayFolderName()).slice(0, 10);
+  const memoryPath = captureSummary.rambleProtocol?.raw_capture_path || `memory/${sourceDate}.md`;
+  const rawId = captureSummary.rawIntakeId || captureSummary.rawIntake?.stable_id || captureSummary.rambleProtocol?.raw_id || '';
+  const counts = captureSummary.parsedItemCounts || captureSummary.rambleProtocol?.item_counts || {};
+  const countParts = [
+    ['requirements', counts.requirements],
+    ['tasks', counts.tasks],
+    ['decisions', counts.decisions],
+    ['open questions', counts.open_questions],
+  ].filter(([, count]) => Number(count || 0) > 0)
+    .map(([label, count]) => `${count} ${label}`);
+  const registerPath = captureSummary.rawIntake?.requirement_register_path || captureSummary.rambleProtocol?.requirement_register_path || '';
+  const goalMode = Boolean(captureSummary.rambleProtocol?.goal_mode_required || captureSummary.rambleProtocol?.goal_mode_execution_requested);
+  const needsHandoff = Boolean(
+    captureSummary.rambleProtocol?.needs_internal_handoff ||
+    (captureSummary.tasks || []).some((task) => /codex|kimi|system|agent/i.test(String(task?.assigned_to || ''))) ||
+    Number(captureSummary.agentJobsCreated || 0)
+  );
+  return [
+    'Ramble protocol:',
+    rawId ? `- Raw ID: ${rawId}.` : '',
+    `- Raw saved: ${memoryPath}; visible items are distilled, not raw transcript.`,
+    countParts.length ? `- Parsed counts: ${countParts.join(', ')}.` : '',
+    registerPath ? `- Requirement register: ${registerPath}.` : '',
+    goalMode ? '- Goal mode: create/continue the Codex goal and work requirements to terminal statuses.' : '',
+    needsHandoff ? '- Future Codex handoff: tasks-pending/_template-ramble-intake.md.' : '',
+    '- Done requires ledger/changelog plus proof, live smoke, blocker, or superseded status.',
+  ].filter(Boolean);
 }
 
 function captureSummaryText(captureSummary = {}) {
@@ -5053,6 +5276,8 @@ function captureSummaryText(captureSummary = {}) {
     }
   }
 
+  lines.push(...buildRambleCaptureConfirmationLines(captureSummary));
+
   return lines.length ? lines.join('\n') : 'Captured in BNA.';
 }
 
@@ -5071,6 +5296,7 @@ function hasStructuredCapture(captureSummary = {}) {
     Number(captureSummary.supportTicketsCreated || 0) ||
     Number(captureSummary.observableTicketsCreated || 0) ||
     Number(captureSummary.agentJobsCreated || 0) ||
+    Boolean(captureSummary.rawIntakeId || captureSummary.rawIntake?.stable_id) ||
     captureSummary.studentMatchDecisions?.length
   );
 }
@@ -5090,9 +5316,11 @@ function runnableCodexTasksFromCapture(captureSummary = {}) {
 
 function shouldWorkExistingCodexQueue(text) {
   const normalized = String(text || '').toLowerCase();
-  if (!/\b(task|tasks|todo|queue|queued|work|finish|done|codex)\b/.test(normalized)) return false;
+  if (!/\b(task|tasks|todo|queue|queued|work|finish|done|codex|goal|goalmode|prompt|output|correction|packet)\b/.test(normalized)) return false;
   return (
     /\b(work through|keep going|finish up|finish everything|build everything|do all|all of the tasks|all those tasks|start doing|until (they'?re|they are|its|it's) done|not just waiting|not waiting)\b/.test(normalized)
+    || /\b(goal\s*mode|goal\s*setting\s*mode|goalmode|set (it|this|that) as a goal|make (it|this|that) a goal)\b/.test(normalized)
+    || /\b(work through (the )?(whole|entire|full) (prompt|output|list|register|correction|packet)|do all (of )?(those|these|the) things|keep (working|going) (until|till) (everything|it|they) (is|are|'?s|'?re)? done)\b/.test(normalized)
     || /\b(tasks? (are|is) getting worked on|tasks?.*worked on)\b/.test(normalized)
   );
 }
@@ -5132,6 +5360,7 @@ function buildCodexTaskWorkMessage(originalText, tasks = [], source = 'captured'
     'Instructions for this work batch:',
     '- Start working through the listed Codex tasks now; do not just summarize them.',
     '- Choose the safest practical order when there are multiple tasks.',
+    '- If the source is a GPT/ChatGPT correction output or goal-mode packet, create/continue the active Codex goal and work the dated requirement register until every item reaches a terminal status.',
     '- Keep edits scoped and preserve existing data.',
     '- When a listed task is finished, update the app task record to stage done when possible, append the shared ledger/changelog, and include verification.',
     '- If a listed task is too large to finish in this batch, leave it in progress or assigned with clear next steps, not forgotten.',
@@ -6278,145 +6507,109 @@ async function transcribeMediaWithOpenAI(config, localPath, descriptor) {
 }
 
 async function generateWhatsAppDraft(config, transcriptText, caption) {
-  if (!config.openaiApiKey) {
-    throw new Error('OPENAI_API_KEY is not configured for WhatsApp summary generation');
-  }
-
   const platformMemory = buildPlatformMemoryContext('whatsapp_update');
   const approvedExamples = await getApprovedOutputExamples(config, 'whatsapp_update', 3);
 
-  const response = await fetch(`${config.openaiBaseUrl.replace(/\/+$/, '')}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${config.openaiApiKey}`,
+  const completion = await runConfiguredChatCompletion(config, [
+    {
+      role: 'system',
+      content: [
+        'You write short WhatsApp captions for Bnei Neviim Academy parents.',
+        'Before drafting, use the brand kit, platform prompt, and approved examples provided by the user message.',
+        'Return only the message to copy and paste.',
+        'Write in English unless the operator explicitly asks for Hebrew.',
+        "Use Shloimie's BNA voice: professional, direct, warm, grounded, parent-friendly, concise, and Torah-aware when the source is Torah-based.",
+        'This is not marketing copy. It is a clear parent update from someone serious about Torah, growth, and the whole child.',
+        'For a daily class update, begin with "Today at Bnei Neviim Academy:" unless the operator says it will be pasted under a video.',
+        'For a weekly recap, begin with "This week at Bnei Neviim Academy:" unless the operator says it will be pasted under a video.',
+        'Use plain short bullet points unless a paragraph is clearly better; do not use emojis unless the operator explicitly asks for them.',
+        'Lead with the actual learning, discussion, practical message, source, question, class detail, logistics, or tomorrow note.',
+        'Ignore operator backend notes, parser/debug comments, task instructions, Codex/system work, dashboard fixes, and technical corrections; do not include them in parent-facing copy.',
+        'Do not overhype. Do not invent facts, quotes, sources, outcomes, or student details.',
+        'Avoid phrases like "our learners explored", "journey", "special moments", "that is very special", "we are thrilled", "we are excited", "the practical message is simple", and similar marketing language.',
+        'Do not write "if Torah really matters, the basics have to support it"; state the sleep, breakfast, food, screens, and routine points directly.',
+        'Do not describe the conversation as something you "turned into" another idea. State what was discussed or learned directly.',
+        'Do not describe how students felt unless the transcript explicitly says so.',
+        'Do not expose private student accountability details.',
+        'If the copy will be pasted under an uploaded video, write it like a compact newsletter caption: video-summary bullets first, weekly recap bullets second.',
+        'If the transcript has one main message or concern, lead with short bullet points on that main point before listing other updates.',
+        'If the transcript also includes other activities, add a separate section called "This week at BNA" or similar.',
+        'Do not use meta labels like "Main message from the video" when the message is going under the video.',
+        'If the transcript includes logistics like food, breakfast, location, forest, or tomorrow, include those clearly.',
+        'If Hebrew names or Torah terms appear, preserve them as best as possible.',
+      ].join(' '),
     },
-    body: JSON.stringify({
-      model: config.openaiSummaryModel,
-      temperature: 0.4,
-      messages: [
-        {
-          role: 'system',
-          content: [
-            'You write short WhatsApp captions for Bnei Neviim Academy parents.',
-            'Before drafting, use the brand kit, platform prompt, and approved examples provided by the user message.',
-            'Return only the message to copy and paste.',
-            'Write in English unless the operator explicitly asks for Hebrew.',
-            "Use Shloimie's BNA voice: professional, direct, warm, grounded, parent-friendly, concise, and Torah-aware when the source is Torah-based.",
-            'This is not marketing copy. It is a clear parent update from someone serious about Torah, growth, and the whole child.',
-            'For a daily class update, begin with "Today at Bnei Neviim Academy:" unless the operator says it will be pasted under a video.',
-            'For a weekly recap, begin with "This week at Bnei Neviim Academy:" unless the operator says it will be pasted under a video.',
-            'Use plain short bullet points unless a paragraph is clearly better; do not use emojis unless the operator explicitly asks for them.',
-            'Lead with the actual learning, discussion, practical message, source, question, class detail, logistics, or tomorrow note.',
-            'Ignore operator backend notes, parser/debug comments, task instructions, Codex/system work, dashboard fixes, and technical corrections; do not include them in parent-facing copy.',
-            'Do not overhype. Do not invent facts, quotes, sources, outcomes, or student details.',
-            'Avoid phrases like "our learners explored", "journey", "special moments", "that is very special", "we are thrilled", "we are excited", "the practical message is simple", and similar marketing language.',
-            'Do not write "if Torah really matters, the basics have to support it"; state the sleep, breakfast, food, screens, and routine points directly.',
-            'Do not describe the conversation as something you "turned into" another idea. State what was discussed or learned directly.',
-            'Do not describe how students felt unless the transcript explicitly says so.',
-            'Do not expose private student accountability details.',
-            'If the copy will be pasted under an uploaded video, write it like a compact newsletter caption: video-summary bullets first, weekly recap bullets second.',
-            'If the transcript has one main message or concern, lead with short bullet points on that main point before listing other updates.',
-            'If the transcript also includes other activities, add a separate section called "This week at BNA" or similar.',
-            'Do not use meta labels like "Main message from the video" when the message is going under the video.',
-            'If the transcript includes logistics like food, breakfast, location, forest, or tomorrow, include those clearly.',
-            'If Hebrew names or Torah terms appear, preserve them as best as possible.',
-          ].join(' '),
-        },
-        {
-          role: 'user',
-          content: [
-            'Caption/instructions:',
-            caption || '[none]',
-            '',
-            'Brand kit and platform memory:',
-            platformMemory || '[none]',
-            '',
-            'Recent approved WhatsApp examples:',
-            formatApprovedExamples(approvedExamples),
-            '',
-            'Transcript:',
-            transcriptText.slice(0, 12000),
-          ].join('\n'),
-        },
-      ],
-    }),
+    {
+      role: 'user',
+      content: [
+        'Caption/instructions:',
+        caption || '[none]',
+        '',
+        'Brand kit and platform memory:',
+        platformMemory || '[none]',
+        '',
+        'Recent approved WhatsApp examples:',
+        formatApprovedExamples(approvedExamples),
+        '',
+        'Transcript:',
+        transcriptText.slice(0, 12000),
+      ].join('\n'),
+    },
+  ], {
+    purpose: 'WhatsApp summary generation',
+    temperature: 0.4,
+    maxTokens: 2200,
   });
-
-  const body = await response.text();
-  if (!response.ok) {
-    throw new Error(`OpenAI WhatsApp draft ${response.status}: ${body.slice(0, 500)}`);
-  }
-
-  const data = JSON.parse(body);
-  return String(data?.choices?.[0]?.message?.content || '').trim();
+  return completion.text;
 }
 
 async function generateFacebookDraft(config, transcriptText, caption) {
-  if (!config.openaiApiKey) {
-    throw new Error('OPENAI_API_KEY is not configured for Facebook draft generation');
-  }
-
   const platformMemory = buildPlatformMemoryContext('facebook_post');
   const approvedExamples = await getApprovedOutputExamples(config, 'facebook_post', 3);
 
-  const response = await fetch(`${config.openaiBaseUrl.replace(/\/+$/, '')}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${config.openaiApiKey}`,
+  const completion = await runConfiguredChatCompletion(config, [
+    {
+      role: 'system',
+      content: [
+        'You write Facebook posts for Bnei Neviim Academy.',
+        'Use the brand kit, platform prompt, and approved examples provided by the user message.',
+        'Return only the Facebook post text.',
+        'Write in English unless the operator explicitly asks for Hebrew.',
+        "Use Shloimie's BNA voice: professional, grounded, concise, specific, slightly poetic only when it sharpens the truth, and never generic or fluffy.",
+        'If the source is about a specific day, begin with "Today at Bnei Neviim Academy, " followed immediately by one concrete detail from the transcript.',
+        'If the source covers a full week or multiple recordings, begin with "This week at Bnei Neviim Academy, " followed immediately by one concrete detail from the transcript.',
+        'Use 1 to 3 short paragraphs.',
+        'Show what happened at BNA with confidence and specificity; do not sound like a brochure or generic school marketing.',
+        'Explain the deeper educational point in plain language only after the concrete detail.',
+        'Use a final-line CTA only when appropriate: "Contact us to learn more about enrolling."',
+        'Do not overhype. Do not invent facts, quotes, sources, outcomes, or student details. Preserve Hebrew names and Torah terms when they appear.',
+        'Avoid phrases like "our learners explored", "journey", "special moments", "we are thrilled", "we are excited", and "the practical message is simple".',
+        'Do not write "we turned the conversation into..." or similar setup language. Go directly into what was discussed, learned, practiced, or noticed.',
+        'Do not describe how students felt unless the transcript explicitly says so.',
+      ].join(' '),
     },
-    body: JSON.stringify({
-      model: config.openaiSummaryModel,
-      temperature: 0.45,
-      messages: [
-        {
-          role: 'system',
-          content: [
-            'You write Facebook posts for Bnei Neviim Academy.',
-            'Use the brand kit, platform prompt, and approved examples provided by the user message.',
-            'Return only the Facebook post text.',
-            'Write in English unless the operator explicitly asks for Hebrew.',
-            "Use Shloimie's BNA voice: professional, grounded, concise, specific, slightly poetic only when it sharpens the truth, and never generic or fluffy.",
-            'If the source is about a specific day, begin with "Today at Bnei Neviim Academy, " followed immediately by one concrete detail from the transcript.',
-            'If the source covers a full week or multiple recordings, begin with "This week at Bnei Neviim Academy, " followed immediately by one concrete detail from the transcript.',
-            'Use 1 to 3 short paragraphs.',
-            'Show what happened at BNA with confidence and specificity; do not sound like a brochure or generic school marketing.',
-            'Explain the deeper educational point in plain language only after the concrete detail.',
-            'Use a final-line CTA only when appropriate: "Contact us to learn more about enrolling."',
-            'Do not overhype. Do not invent facts, quotes, sources, outcomes, or student details. Preserve Hebrew names and Torah terms when they appear.',
-            'Avoid phrases like "our learners explored", "journey", "special moments", "we are thrilled", "we are excited", and "the practical message is simple".',
-            'Do not write "we turned the conversation into..." or similar setup language. Go directly into what was discussed, learned, practiced, or noticed.',
-            'Do not describe how students felt unless the transcript explicitly says so.',
-          ].join(' '),
-        },
-        {
-          role: 'user',
-          content: [
-            'Caption/instructions:',
-            caption || '[none]',
-            '',
-            'Brand kit and platform memory:',
-            platformMemory || '[none]',
-            '',
-            'Recent approved Facebook examples:',
-            formatApprovedExamples(approvedExamples),
-            '',
-            'Transcript:',
-            transcriptText.slice(0, 14000),
-          ].join('\n'),
-        },
-      ],
-    }),
+    {
+      role: 'user',
+      content: [
+        'Caption/instructions:',
+        caption || '[none]',
+        '',
+        'Brand kit and platform memory:',
+        platformMemory || '[none]',
+        '',
+        'Recent approved Facebook examples:',
+        formatApprovedExamples(approvedExamples),
+        '',
+        'Transcript:',
+        transcriptText.slice(0, 14000),
+      ].join('\n'),
+    },
+  ], {
+    purpose: 'Facebook draft generation',
+    temperature: 0.45,
+    maxTokens: 2200,
   });
-
-  const body = await response.text();
-  if (!response.ok) {
-    throw new Error(`OpenAI Facebook draft ${response.status}: ${body.slice(0, 500)}`);
-  }
-
-  const data = JSON.parse(body);
-  return String(data?.choices?.[0]?.message?.content || '').trim();
+  return completion.text;
 }
 
 async function generateContentTitle(config, transcriptText, caption, fallbackName) {
@@ -6426,37 +6619,27 @@ async function generateContentTitle(config, transcriptText, caption, fallbackNam
   }
 
   try {
-    const response = await fetch(`${config.openaiBaseUrl.replace(/\/+$/, '')}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${config.openaiApiKey}`,
+    const completion = await runConfiguredChatCompletion(config, [
+      {
+        role: 'system',
+        content: 'Create a clear 5 to 9 word internal title for this Bnei Neviim content item. Return only the title. The title must be in English, even if the transcript is Hebrew or another language.',
       },
-      body: JSON.stringify({
-        model: config.openaiSummaryModel,
-        temperature: 0.2,
-        messages: [
-          {
-            role: 'system',
-            content: 'Create a clear 5 to 9 word internal title for this Bnei Neviim content item. Return only the title. The title must be in English, even if the transcript is Hebrew or another language.',
-          },
-          {
-            role: 'user',
-            content: [
-              'Operator instruction:',
-              caption || '[none]',
-              '',
-              'Transcript excerpt:',
-              String(transcriptText || '').slice(0, 5000),
-            ].join('\n'),
-          },
-        ],
-      }),
+      {
+        role: 'user',
+        content: [
+          'Operator instruction:',
+          caption || '[none]',
+          '',
+          'Transcript excerpt:',
+          String(transcriptText || '').slice(0, 5000),
+        ].join('\n'),
+      },
+    ], {
+      purpose: 'content title generation',
+      temperature: 0.2,
+      maxTokens: 80,
     });
-    const body = await response.text();
-    if (!response.ok) return fallback;
-    const data = JSON.parse(body);
-    return String(data?.choices?.[0]?.message?.content || fallback)
+    return String(completion.text || fallback)
       .replace(/^["']|["']$/g, '')
       .trim()
       .slice(0, 120) || fallback;
@@ -6467,50 +6650,40 @@ async function generateContentTitle(config, transcriptText, caption, fallbackNam
 }
 
 async function describeImageWithOpenAI(config, localPath, caption = '') {
-  if (!config.openaiApiKey) {
-    throw new Error('OPENAI_API_KEY is not configured for image description');
-  }
-
   const mimeType = detectLocalFileDescriptor(localPath).mimeType || 'image/jpeg';
   const imageBuffer = fs.readFileSync(localPath);
   const dataUrl = `data:${mimeType};base64,${imageBuffer.toString('base64')}`;
 
-  const response = await fetch(`${config.openaiBaseUrl.replace(/\/+$/, '')}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${config.openaiApiKey}`,
-    },
-    body: JSON.stringify({
-      model: config.openaiSummaryModel,
+  try {
+    const completion = await runConfiguredChatCompletion(config, [
+      {
+        role: 'system',
+        content: [
+          'Describe this Bnei Neviim Academy image for an internal content pipeline.',
+          'Return a concise but useful description: what is visible, likely setting, people/activity if clear, and any useful context for WhatsApp or Facebook reuse.',
+          'Do not identify people by name unless the caption explicitly names them.',
+        ].join(' '),
+      },
+      {
+        role: 'user',
+        content: [
+          { type: 'text', text: `Operator caption/instructions:\n${caption || '[none]'}` },
+          { type: 'image_url', image_url: { url: dataUrl } },
+        ],
+      },
+    ], {
+      purpose: 'image description',
       temperature: 0.25,
-      messages: [
-        {
-          role: 'system',
-          content: [
-            'Describe this Bnei Neviim Academy image for an internal content pipeline.',
-            'Return a concise but useful description: what is visible, likely setting, people/activity if clear, and any useful context for WhatsApp or Facebook reuse.',
-            'Do not identify people by name unless the caption explicitly names them.',
-          ].join(' '),
-        },
-        {
-          role: 'user',
-          content: [
-            { type: 'text', text: `Operator caption/instructions:\n${caption || '[none]'}` },
-            { type: 'image_url', image_url: { url: dataUrl } },
-          ],
-        },
-      ],
-    }),
-  });
-
-  const body = await response.text();
-  if (!response.ok) {
-    throw new Error(`OpenAI image description ${response.status}: ${body.slice(0, 500)}`);
+      maxTokens: 900,
+    });
+    return completion.text;
+  } catch (error) {
+    if (String(caption || '').trim()) {
+      log(`Image description provider failed; using caption fallback: ${error instanceof Error ? error.message : String(error)}`);
+      return `Operator image caption/instructions: ${caption.trim()}`;
+    }
+    throw error;
   }
-
-  const data = JSON.parse(body);
-  return String(data?.choices?.[0]?.message?.content || '').trim();
 }
 
 function shouldPublishImageToWebsite(caption = '') {
@@ -6654,7 +6827,20 @@ function detectWeeklyReportIntent(text) {
     && /\b(end|week|newsletter|parent\s+update|letter|report|what\s+we\s+learned)\b/.test(normalized);
   const organizeWeeklyRecordings = /\b(organize|arrange|pull together|put together|summarize|review|use)\b[\s\S]{0,120}\b(recordings?|transcripts?|audios?|videos?|content)\b[\s\S]{0,80}\b(this week|week|weekly)\b/.test(normalized)
     || /\b(all|every)\b[\s\S]{0,50}\b(recordings?|transcripts?|audios?|videos?)\b[\s\S]{0,80}\b(this week|week|weekly)\b/.test(normalized);
-  return (wantsReport && mentionsSource) || directTranscriptAsk || organizeWeeklyRecordings;
+  const wantsErevShabbosMessage = /\b(?:erev|eruv|arab)\s+shabb(?:os|at)\b/.test(normalized)
+    || /\bshabb(?:os|at)\s+(?:message|update|whatsapp|whats\s*app)\b/.test(normalized)
+    || /\bparsha\s+(?:message|update|whatsapp|whats\s*app|summary)\b/.test(normalized);
+  const wantsWhatsappParentMessage = /\b(?:whatsapp|whats\s*app)\b/.test(normalized)
+    && /\b(?:message|update|copy|draft|parents?|group)\b/.test(normalized);
+  const weeklyLearningContext = /\b(?:this|last|past)\s+week\b/.test(normalized)
+    || /\bwhat\s+we\s+learned\b/.test(normalized)
+    || /\b(last\s+(?:little\s+)?video\s+message|last\s+message)\b/.test(normalized)
+    || /\bparsha\b/.test(normalized);
+  return (wantsReport && mentionsSource)
+    || directTranscriptAsk
+    || organizeWeeklyRecordings
+    || (wantsErevShabbosMessage && (mentionsSource || weeklyLearningContext))
+    || (wantsWhatsappParentMessage && weeklyLearningContext);
 }
 
 function parseRequestedContentJobId(text) {
@@ -6759,67 +6945,51 @@ function formatJobSummaryForPrompt(job) {
 }
 
 async function generateWeeklyReportDraft(config, jobsInput, operatorInstruction) {
-  if (!config.openaiApiKey) {
-    throw new Error('OPENAI_API_KEY is not configured for weekly report generation');
-  }
-
   const jobs = (Array.isArray(jobsInput) ? jobsInput : [jobsInput]).filter(Boolean);
   if (!jobs.length || !jobs.some(contentJobHasTranscript)) {
     throw new Error('No selected content jobs have transcripts yet.');
   }
 
-  const response = await fetch(`${config.openaiBaseUrl.replace(/\/+$/, '')}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${config.openaiApiKey}`,
+  const completion = await runConfiguredChatCompletion(config, [
+    {
+      role: 'system',
+      content: [
+        'You write parent-facing Bnei Neviim Academy weekly newsletters.',
+        'Use the transcript as the factual source. Do not invent details.',
+        'Bnei Neviim Academy is in Beit Shemesh, Israel; use Israel school context and Israel Parsha assumptions unless the operator explicitly says otherwise.',
+        'Use all provided recordings. The first recording is usually the newest/latest recording; give it proper attention if the operator mentions the last video.',
+        'Write in English unless the operator explicitly asks for Hebrew.',
+        "Preserve Jewish terms naturally: Torah, Hashem, Har Sinai, naaseh v'nishma, Moshe Rabbeinu, gaavah, anavah.",
+        "Use Shloimie's BNA voice: calm, direct, honest, parent-friendly, Torah-aware, practical, concise, and slightly poetic only where useful.",
+        'Begin with a short opening paragraph that starts: "This week at Bnei Neviim Academy, " and includes a concrete learning theme or class detail.',
+        'Use the format Subject, Preheader, What we learned, What stood out, Growth we are building, A few practical notes, and Closing unless the operator asks for WhatsApp-only copy.',
+        'For Erev Shabbos, Shabbos, Parsha, or WhatsApp-only requests, write a concise WhatsApp message: latest video summary first when requested, then what the boys learned, then actual class questions.',
+        'Use actual topics, sources, questions, discussions, class moments, logistics, and practical notes.',
+        'No generic newsletter language, vague summaries, fluffy encouragement, or school-brochure language.',
+        'Avoid phrases like "our learners explored", "special moments", "amazing journey", "we are thrilled", "we are excited", and "the practical message is simple".',
+        'Do not write "we turned the conversation into..." or similar setup language. State what happened directly.',
+        'Do not expose private student accountability details.',
+        'If the operator gives a Masmid of the Week note, include it as a positive parent-facing shout-out.',
+        'Return only the final message to copy and paste.',
+      ].join(' '),
     },
-    body: JSON.stringify({
-      model: config.openaiSummaryModel,
-      temperature: 0.45,
-      messages: [
-        {
-          role: 'system',
-          content: [
-            'You write parent-facing Bnei Neviim Academy weekly newsletters.',
-            'Use the transcript as the factual source. Do not invent details.',
-            'Use all provided recordings. The first recording is usually the newest/latest recording; give it proper attention if the operator mentions the last video.',
-            'Write in English unless the operator explicitly asks for Hebrew.',
-            "Preserve Jewish terms naturally: Torah, Hashem, Har Sinai, naaseh v'nishma, Moshe Rabbeinu, gaavah, anavah.",
-            "Use Shloimie's BNA voice: calm, direct, honest, parent-friendly, Torah-aware, practical, concise, and slightly poetic only where useful.",
-            'Begin with a short opening paragraph that starts: "This week at Bnei Neviim Academy, " and includes a concrete learning theme or class detail.',
-            'Use the format Subject, Preheader, What we learned, What stood out, Growth we are building, A few practical notes, and Closing unless the operator asks for WhatsApp-only copy.',
-            'Use actual topics, sources, questions, discussions, class moments, logistics, and practical notes.',
-            'No generic newsletter language, vague summaries, fluffy encouragement, or school-brochure language.',
-            'Avoid phrases like "our learners explored", "special moments", "amazing journey", "we are thrilled", "we are excited", and "the practical message is simple".',
-            'Do not write "we turned the conversation into..." or similar setup language. State what happened directly.',
-            'Do not expose private student accountability details.',
-            'If the operator gives a Masmid of the Week note, include it as a positive parent-facing shout-out.',
-            'Return only the final message to copy and paste.',
-          ].join(' '),
-        },
-        {
-          role: 'user',
-          content: [
-            `Operator instruction: ${operatorInstruction || '[none]'}`,
-            '',
-            `Content jobs included: ${jobs.map((job) => `#${job.id} ${job.title || 'Untitled'}`).join('; ')}`,
-            '',
-            'Weekly recordings, summaries, and transcripts:',
-            formatWeeklyJobsForPrompt(jobs),
-          ].join('\n'),
-        },
-      ],
-    }),
+    {
+      role: 'user',
+      content: [
+        `Operator instruction: ${operatorInstruction || '[none]'}`,
+        '',
+        `Content jobs included: ${jobs.map((job) => `#${job.id} ${job.title || 'Untitled'}`).join('; ')}`,
+        '',
+        'Weekly recordings, summaries, and transcripts:',
+        formatWeeklyJobsForPrompt(jobs),
+      ].join('\n'),
+    },
+  ], {
+    purpose: 'weekly report generation',
+    temperature: 0.45,
+    maxTokens: 2200,
   });
-
-  const body = await response.text();
-  if (!response.ok) {
-    throw new Error(`OpenAI weekly report draft ${response.status}: ${body.slice(0, 500)}`);
-  }
-
-  const data = JSON.parse(body);
-  return String(data?.choices?.[0]?.message?.content || '').trim();
+  return completion.text;
 }
 
 function detectWeeklyTranscriptTopicIntent(text) {
@@ -6838,62 +7008,44 @@ function detectWeeklyTranscriptTopicIntent(text) {
 }
 
 async function generateWeeklyTranscriptTopicInventory(config, jobsInput, operatorInstruction) {
-  if (!config.openaiApiKey) {
-    throw new Error('OPENAI_API_KEY is not configured for transcript topic generation');
-  }
-
   const jobs = (Array.isArray(jobsInput) ? jobsInput : [jobsInput]).filter(Boolean);
   if (!jobs.length || !jobs.some(contentJobHasTranscript)) {
     throw new Error('No selected content jobs have transcripts yet.');
   }
 
   const detailed = /\b(detailed|all notes|class report|everything|all of them|all the topics)\b/i.test(String(operatorInstruction || ''));
-  const response = await fetch(`${config.openaiBaseUrl.replace(/\/+$/, '')}/chat/completions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${config.openaiApiKey}`,
+  const completion = await runConfiguredChatCompletion(config, [
+    {
+      role: 'system',
+      content: [
+        'You create factual topic inventories from Bnei Neviim Academy class transcripts.',
+        'Use every provided transcript and structured summary. Do not invent details.',
+        'Return the actual answer directly. Do not ask the operator to pick a format or answer a follow-up question.',
+        'Write in English. Preserve Jewish/Torah terms naturally when they appear, but do not over-polish into marketing copy.',
+        'Separate real learning topics from operations, logistics, student accountability, payments, and private admin details.',
+        detailed
+          ? 'Use a detailed class-report structure with headings, sub-bullets, questions discussed, sources/topics mentioned, and practical themes.'
+          : 'Use concise bullet points grouped by topic.',
+        'Keep it useful for turning into a parent update later, but do not write the parent update unless asked.',
+      ].join(' '),
     },
-    body: JSON.stringify({
-      model: config.openaiSummaryModel,
-      temperature: 0.25,
-      messages: [
-        {
-          role: 'system',
-          content: [
-            'You create factual topic inventories from Bnei Neviim Academy class transcripts.',
-            'Use every provided transcript and structured summary. Do not invent details.',
-            'Return the actual answer directly. Do not ask the operator to pick a format or answer a follow-up question.',
-            'Write in English. Preserve Jewish/Torah terms naturally when they appear, but do not over-polish into marketing copy.',
-            'Separate real learning topics from operations, logistics, student accountability, payments, and private admin details.',
-            detailed
-              ? 'Use a detailed class-report structure with headings, sub-bullets, questions discussed, sources/topics mentioned, and practical themes.'
-              : 'Use concise bullet points grouped by topic.',
-            'Keep it useful for turning into a parent update later, but do not write the parent update unless asked.',
-          ].join(' '),
-        },
-        {
-          role: 'user',
-          content: [
-            `Operator instruction: ${operatorInstruction || '[none]'}`,
-            '',
-            `Content jobs included: ${jobs.map((job) => `#${job.id} ${job.title || 'Untitled'}`).join('; ')}`,
-            '',
-            'Weekly recordings, summaries, and transcripts:',
-            formatWeeklyJobsForPrompt(jobs, 110000),
-          ].join('\n'),
-        },
-      ],
-    }),
+    {
+      role: 'user',
+      content: [
+        `Operator instruction: ${operatorInstruction || '[none]'}`,
+        '',
+        `Content jobs included: ${jobs.map((job) => `#${job.id} ${job.title || 'Untitled'}`).join('; ')}`,
+        '',
+        'Weekly recordings, summaries, and transcripts:',
+        formatWeeklyJobsForPrompt(jobs, 110000),
+      ].join('\n'),
+    },
+  ], {
+    purpose: 'transcript topic generation',
+    temperature: 0.25,
+    maxTokens: 2200,
   });
-
-  const body = await response.text();
-  if (!response.ok) {
-    throw new Error(`OpenAI transcript topic inventory ${response.status}: ${body.slice(0, 500)}`);
-  }
-
-  const data = JSON.parse(body);
-  return String(data?.choices?.[0]?.message?.content || '').trim();
+  return completion.text;
 }
 
 async function handleWeeklyTranscriptTopicRequest(config, msg, forcedInstruction = '') {
@@ -7301,22 +7453,7 @@ async function reviseContentDraftWithProvider(provider, { output, job, sourceJob
 async function reviseContentDraft(config, { output, job, sourceJobs = [], instruction }) {
   const platformMemory = buildPlatformMemoryContext(output.output_type);
   const approvedExamples = await getApprovedOutputExamples(config, output.output_type, 3);
-  const providers = [
-    config.openaiApiKey ? {
-      kind: 'openai',
-      label: 'OpenAI',
-      apiKey: config.openaiApiKey,
-      baseUrl: config.openaiBaseUrl,
-      model: config.openaiSummaryModel,
-    } : null,
-    config.kimiApiKey ? {
-      kind: 'kimi',
-      label: 'Kimi',
-      apiKey: config.kimiApiKey,
-      baseUrl: config.kimiApiBaseUrl,
-      model: config.kimiApiModel,
-    } : null,
-  ].filter(Boolean);
+  const providers = apiProviderConfigs(config);
 
   const errors = [];
   for (const provider of providers) {
@@ -7703,6 +7840,23 @@ async function parseMixedContentJob(config, jobId, options = {}) {
     ].filter(Boolean).join(' '),
     archive_source_after_parse: Boolean(options.archiveSourceAfterParse),
   });
+}
+
+async function markContentJobParsedAfterMixedParse(config, jobId, existingNotes = '') {
+  try {
+    const result = await appRequest(config, 'PATCH', `/api/bna/content-jobs/${jobId}`, {
+      drive_stage: '04 Parsed',
+      notes: appendContentJobNote(existingNotes, [
+        `Auto-parse stage sync (${new Date().toISOString()}):`,
+        '- Mixed-recording parser completed successfully.',
+        '- Content job stage marked 04 Parsed after successful parse.',
+      ]),
+    });
+    return result?.job || null;
+  } catch (error) {
+    log(`Could not mark content job #${jobId} as 04 Parsed after auto-parse: ${error instanceof Error ? error.message : String(error)}`);
+    return null;
+  }
 }
 
 async function parseMixedRecordingIntake(config, payload = {}, options = {}) {
@@ -8500,6 +8654,7 @@ async function handleMediaMessage(config, msg) {
       if (contentJobId && routing.shouldParse) {
         try {
           const parsed = await parseMixedContentJob(config, contentJobId);
+          await markContentJobParsedAfterMixedParse(config, contentJobId, contentJob?.job?.notes || '');
           const counts = parsed?.counts || {};
           replyLines.push(`Auto-parsed tasks/students: tasks ${counts.tasks || 0}, students ${counts.accountability_events || 0}, Torah ${counts.torah_learning_entries || counts.group_goal_entries || 0}.`);
         } catch (error) {
@@ -8792,6 +8947,7 @@ async function handleDropIngestCommand(config, msg) {
       if (contentJobId && routing.shouldParse) {
         try {
           const parsed = await parseMixedContentJob(config, contentJobId);
+          await markContentJobParsedAfterMixedParse(config, contentJobId, contentJob?.job?.notes || '');
           const counts = parsed?.counts || {};
           replyLines.push(`Auto-parsed tasks/students: tasks ${counts.tasks || 0}, students ${counts.accountability_events || 0}, Torah ${counts.torah_learning_entries || counts.group_goal_entries || 0}.`);
         } catch (error) {
@@ -9147,12 +9303,242 @@ async function handleWebsiteImageIngestCommand(config, msg) {
   return true;
 }
 
+const DEFAULT_DRIVE_INGEST_CAPTION = [
+  'Auto Drive Intake:',
+  'Transcribe audio/video or describe image.',
+  'Title/name it from the content.',
+  'Save it in the BNA content queue with the Drive link.',
+  'Then ask the operator what to do next with platform action buttons.',
+].join(' ');
+
+function parseRepairDriveJobIds(args = []) {
+  return [...new Set(args
+    .filter((arg) => !String(arg || '').startsWith('--'))
+    .flatMap((arg) => String(arg || '').split(/[,\s]+/))
+    .map((part) => {
+      const match = part.match(/(?:job[#:]?)?(\d+)/i);
+      return match ? Number(match[1]) : 0;
+    })
+    .filter(Boolean))];
+}
+
+function appendContentJobNote(existingNotes, noteLines = []) {
+  const note = (Array.isArray(noteLines) ? noteLines : [noteLines])
+    .filter(Boolean)
+    .join('\n')
+    .trim();
+  return [String(existingNotes || '').trim(), note].filter(Boolean).join('\n\n');
+}
+
+async function findDriveFileById(drive, fileId) {
+  const result = await drive.files.get({
+    fileId,
+    supportsAllDrives: true,
+    fields: 'id,name,mimeType,size,webViewLink,parents,createdTime,modifiedTime',
+  });
+  return result.data;
+}
+
+async function loadContentJobById(config, jobId) {
+  const jobs = await getContentJobs(config);
+  return jobs.find((job) => Number(job.id) === Number(jobId)) || null;
+}
+
+async function reprocessDriveContentJob(config, jobId, options = {}) {
+  const job = await loadContentJobById(config, jobId);
+  if (!job) throw new Error(`Content job #${jobId} was not found`);
+  const driveFileId = String(job.drive_file_id || '').trim();
+  if (!driveFileId) throw new Error(`Content job #${jobId} has no Drive file ID`);
+
+  const existingTranscriptChars = String(job.transcript_text || '').trim().length;
+  if (existingTranscriptChars && !options.force) {
+    let parseResult = null;
+    let finalDriveStage = job.drive_stage || '';
+    const routing = classifyMediaRouting(job.caption || '', job.transcript_text || '');
+    if (options.parse || (options.autoParse && routing.shouldParse)) {
+      parseResult = await parseMixedContentJob(config, jobId, {
+        instruction: 'Repair follow-up after Drive transcription reprocess. Parse only actual operator tasks, student accountability, Torah learning updates, class topics, and source questions heard in the transcript.',
+      });
+      if (parseResult?.success && !parseResult?.dry_run) {
+        const stagePatch = await appRequest(config, 'PATCH', `/api/bna/content-jobs/${jobId}`, {
+          drive_stage: '04 Parsed',
+          notes: appendContentJobNote(job.notes, [
+            `Reprocess parse notes (${new Date().toISOString()}):`,
+            '- Existing transcript parsed through the mixed-recording parser.',
+            '- Content job stage marked 04 Parsed after successful parse.',
+          ]),
+        });
+        finalDriveStage = stagePatch?.job?.drive_stage || '04 Parsed';
+      }
+    }
+    return {
+      job_id: Number(jobId),
+      skipped: true,
+      reason: 'already_has_transcript',
+      transcript_chars: existingTranscriptChars,
+      status: job.status || '',
+      drive_stage: finalDriveStage,
+      parse: parseResult
+        ? {
+            success: Boolean(parseResult.success),
+            skipped: Boolean(parseResult.skipped),
+            counts: parseResult.counts || {},
+          }
+        : null,
+    };
+  }
+
+  const auth = loadGoogleDriveAuth();
+  const pipelineConfig = loadGoogleDrivePipelineConfig();
+  const drive = google.drive({ version: 'v3', auth });
+  const driveFile = await findDriveFileById(drive, driveFileId);
+  const targetFolderId = pipelineConfig.stages?.['03 Transcribed'] || '';
+
+  if (options.dryRun) {
+    return {
+      job_id: Number(jobId),
+      dry_run: true,
+      title: job.title || '',
+      status: job.status || '',
+      drive_stage: job.drive_stage || '',
+      drive_file: {
+        id: driveFile.id,
+        name: driveFile.name || '',
+        mime_type: driveFile.mimeType || '',
+        size_bytes: Number(driveFile.size || 0),
+      },
+      would_update: existingTranscriptChars ? 'skip_without_force' : 'transcribe_and_patch_existing_job',
+    };
+  }
+
+  let localPath = '';
+  try {
+    localPath = await downloadDriveFileToMediaInbox(drive, driveFile);
+    const descriptor = detectLocalFileDescriptor(localPath);
+    let transcription = null;
+    let transcriptText = '';
+
+    if (isImageMime(descriptor.mimeType)) {
+      transcriptText = await describeImageWithOpenAI(config, localPath, job.caption || DEFAULT_DRIVE_INGEST_CAPTION);
+      transcription = { text: transcriptText, kind: 'image_description' };
+    } else if (isAudioVideoMime(descriptor.mimeType) || ['video', 'voice', 'document', 'audio'].includes(descriptor.kind)) {
+      transcription = await transcribeMediaWithOpenAI(config, localPath, descriptor);
+      transcriptText = getTranscriptText(transcription);
+    } else {
+      throw new Error(`Drive file MIME type ${descriptor.mimeType || driveFile.mimeType || 'unknown'} is not supported for automatic reprocessing`);
+    }
+
+    if (!String(transcriptText || '').trim()) {
+      throw new Error('Transcription returned empty text');
+    }
+
+    let movedFile = null;
+    if (targetFolderId) {
+      movedFile = await moveDriveFile(drive, driveFile, targetFolderId);
+    }
+
+    const relativeLocalPath = path.relative(repoRoot, localPath).replace(/\\/g, '/');
+    const reprocessNotes = [
+      `Reprocess notes (${new Date().toISOString()}):`,
+      `- Reprocessed existing Drive content job #${jobId}.`,
+      `- Drive file: ${driveFile.name || driveFile.id} (${driveFile.id}).`,
+      `- Downloaded to: ${relativeLocalPath}.`,
+      `- Transcript captured: ${transcriptText.length} characters.`,
+      transcription?.processing?.mode
+        ? `- Transcription processing: ${transcription.processing.mode}, ${transcription.processing.chunk_count || 1} chunk(s).`
+        : '',
+      targetFolderId ? '- Drive file moved to stage: 03 Transcribed.' : '- Drive file not moved: 03 Transcribed folder is not configured.',
+    ];
+
+    const updated = await appRequest(config, 'PATCH', `/api/bna/content-jobs/${jobId}`, {
+      status: 'transcribed',
+      transcript_text: transcriptText,
+      transcript_json: transcription,
+      drive_folder_id: movedFile?.parents?.[0] || targetFolderId || job.drive_folder_id || null,
+      drive_stage: '03 Transcribed',
+      notes: appendContentJobNote(job.notes, reprocessNotes),
+    });
+
+    let parseResult = null;
+    let finalPatchedJob = updated?.job || {};
+    const routing = classifyMediaRouting(job.caption || '', transcriptText);
+    if (options.parse || (options.autoParse && routing.shouldParse)) {
+      parseResult = await parseMixedContentJob(config, jobId, {
+        instruction: 'Repair follow-up after Drive transcription reprocess. Parse only actual operator tasks, student accountability, Torah learning updates, class topics, and source questions heard in the transcript.',
+      });
+      if (parseResult?.success && !parseResult?.dry_run) {
+        const stagePatch = await appRequest(config, 'PATCH', `/api/bna/content-jobs/${jobId}`, {
+          drive_stage: '04 Parsed',
+          notes: appendContentJobNote(updated?.job?.notes || appendContentJobNote(job.notes, reprocessNotes), [
+            `Reprocess parse notes (${new Date().toISOString()}):`,
+            '- Reprocessed transcript parsed through the mixed-recording parser.',
+            '- Content job stage marked 04 Parsed after successful parse.',
+          ]),
+        });
+        finalPatchedJob = stagePatch?.job || finalPatchedJob;
+      }
+    }
+
+    return {
+      job_id: Number(jobId),
+      status: finalPatchedJob?.status || updated?.job?.status || 'transcribed',
+      drive_stage: finalPatchedJob?.drive_stage || updated?.job?.drive_stage || '03 Transcribed',
+      transcript_chars: transcriptText.length,
+      local_path: relativeLocalPath,
+      drive_file_name: driveFile.name || '',
+      parse: parseResult
+        ? {
+            success: Boolean(parseResult.success),
+            skipped: Boolean(parseResult.skipped),
+            counts: parseResult.counts || {},
+          }
+        : null,
+    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    try {
+      await appRequest(config, 'PATCH', `/api/bna/content-jobs/${jobId}`, {
+        status: 'blocked',
+        notes: appendContentJobNote(job.notes, [
+          `Reprocess failed (${new Date().toISOString()}):`,
+          `- Drive file: ${driveFile.name || driveFile.id} (${driveFile.id}).`,
+          localPath ? `- Downloaded to: ${path.relative(repoRoot, localPath).replace(/\\/g, '/')}.` : '',
+          `- Error: ${message}`,
+        ]),
+      });
+    } catch (patchError) {
+      log(`Could not mark content job #${jobId} blocked after reprocess failure: ${patchError instanceof Error ? patchError.message : String(patchError)}`);
+    }
+    throw error;
+  }
+}
+
+async function repairDriveContentJobsFromArgs(config, args = []) {
+  const jobIds = parseRepairDriveJobIds(args);
+  if (!jobIds.length) {
+    throw new Error('Provide one or more content job IDs, for example: reprocess-drive-job 73 74');
+  }
+  const options = {
+    dryRun: args.includes('--dry-run'),
+    force: args.includes('--force'),
+    parse: args.includes('--parse'),
+    autoParse: args.includes('--auto-parse'),
+  };
+  const results = [];
+  for (const jobId of jobIds) {
+    const result = await reprocessDriveContentJob(config, jobId, options);
+    results.push(result);
+    console.log(JSON.stringify(result));
+  }
+  return results;
+}
+
 async function handleDriveIngestCommand(config, msg) {
   const chatId = String(msg.chat.id);
   const messageId = msg.message_id;
   const text = getTelegramMessageText(msg);
   const caption = text.replace(/^\/(?:ingest_drive|drive)\b/i, '').trim()
-    || 'WhatsApp update: make this into a parent WhatsApp summary with bullet points and split the video if needed.';
+    || DEFAULT_DRIVE_INGEST_CAPTION;
 
   let drive;
   let pipelineConfig;
@@ -9365,6 +9751,9 @@ async function handleDriveIngestCommand(config, msg) {
       const outputs = routing.contentLane
         ? buildGeneratedContentOutputs(descriptor.kind, caption, { whatsAppDraft, facebookDraft })
         : [];
+      const processingNotes = replyLines.length
+        ? `Processing notes:\n${replyLines.join('\n')}`
+        : '';
       const contentJob = await appRequest(config, 'POST', '/api/bna/content-jobs', {
         title: contentTitle,
         source_type: 'google_drive',
@@ -9387,6 +9776,7 @@ async function handleDriveIngestCommand(config, msg) {
           whatsAppVideoParts.length
             ? `WhatsApp video parts: ${whatsAppVideoParts.map((part) => path.relative(repoRoot, part.localPath).replace(/\\/g, '/')).join(', ')}`
             : '',
+          processingNotes,
         ].filter(Boolean).join('\n'),
         outputs,
       });
@@ -9404,6 +9794,7 @@ async function handleDriveIngestCommand(config, msg) {
       if (contentJobId && routing.shouldParse) {
         try {
           const parsed = await parseMixedContentJob(config, contentJobId);
+          await markContentJobParsedAfterMixedParse(config, contentJobId, contentJob?.job?.notes || '');
           const counts = parsed?.counts || {};
           finalDriveStage = '04 Parsed';
           replyLines.push(`Auto-parsed tasks/students: tasks ${counts.tasks || 0}, students ${counts.accountability_events || 0}, Torah ${counts.torah_learning_entries || counts.group_goal_entries || 0}.`);
@@ -10348,13 +10739,7 @@ async function maybeAutoIngestDrive(config) {
   await handleDriveIngestCommand(config, {
     chat: { id: chatId },
     message_id: 0,
-    text: [
-      '/ingest_drive Auto Drive Intake:',
-      'Transcribe audio/video or describe image.',
-      'Title/name it from the content.',
-      'Save it in the BNA content queue with the Drive link.',
-      'Then ask the operator what to do next with WhatsApp and Facebook buttons.',
-    ].join(' '),
+    text: `/ingest_drive ${DEFAULT_DRIVE_INGEST_CAPTION}`,
   });
   return true;
 }
@@ -10448,15 +10833,25 @@ async function main() {
     return;
   }
 
+  if (command === 'reprocess-drive-job' || command === 'repair-drive-content-job') {
+    const config = loadConfig();
+    await repairDriveContentJobsFromArgs(config, args.slice(1));
+    return;
+  }
+
   acquireLock();
   process.on('exit', releaseLock);
   process.on('SIGINT', () => {
-    releaseLock();
-    process.exit(0);
+    shutdownBridge(0, 'stopped', { lifecycle: 'signal', signal: 'SIGINT' }).catch(() => {
+      releaseLock();
+      process.exit(0);
+    });
   });
   process.on('SIGTERM', () => {
-    releaseLock();
-    process.exit(0);
+    shutdownBridge(0, 'stopped', { lifecycle: 'signal', signal: 'SIGTERM' }).catch(() => {
+      releaseLock();
+      process.exit(0);
+    });
   });
 
   const config = loadConfig();
@@ -10472,9 +10867,11 @@ async function main() {
     throw new Error('Rabbi Elie scoped bot requires TELEGRAM_CHAT_ID_RABBI_ELIE_SCHELLER (or RABBI_ELIE_SCHELLER_TELEGRAM_CHAT_ID / ONE_TIME_TELEGRAM_CHAT_ID) before startup.');
   }
   activeTelegramCodexEnabled = Boolean(config.codexEnabled);
+  activeBridgeConfig = config;
   activeTokenFingerprint = config.botToken.slice(0, 10).replace(/[^a-zA-Z0-9_-]/g, '_');
 
   const botIdentity = await getBotIdentity(config.botToken);
+  activeBridgeBotIdentity = botIdentity;
   const academyIdentity = config.academyToken
     ? await getBotIdentity(config.academyToken)
     : null;
@@ -10494,6 +10891,7 @@ async function main() {
   });
 
   await ensurePollingMode(config.botToken);
+  stopBridgeRuntimeHeartbeat = startBridgeRuntimeHeartbeat(config, botIdentity);
 
   let offset = loadOffset();
   let busy = false;
@@ -10640,7 +11038,21 @@ async function main() {
   }
 }
 
-main().catch((error) => {
+main().catch(async (error) => {
   log(`Fatal bridge error: ${error instanceof Error ? error.stack || error.message : String(error)}`);
+  const detail = {
+    lifecycle: 'fatal_error',
+    error_message: (error instanceof Error ? error.message : String(error)).slice(0, 400),
+  };
+  if (stopBridgeRuntimeHeartbeat) {
+    await stopBridgeRuntimeHeartbeat('error', detail);
+  } else if (activeBridgeConfig) {
+    await reportBridgeRuntimeStatus(activeBridgeConfig, {
+      status: 'error',
+      botIdentity: activeBridgeBotIdentity,
+      details: detail,
+    });
+  }
+  releaseLock();
   process.exit(1);
 });

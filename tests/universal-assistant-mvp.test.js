@@ -120,6 +120,8 @@ test('operations, student, and setup surfaces call the universal assistant route
   assert.match(setupHtml, /Setup Assistant/);
   assert.match(setupHtml, /\/api\/assistant\/message/);
   assert.match(setupHtml, /action: 'create_ticket'/);
+  assert.match(setupHtml, /value="developer_tester"/);
+  assert.match(setupHtml, /tester_name: isDeveloperTester \? name : undefined/);
 
   for (const html of [signupHtml, signupHeHtml]) {
     assert.match(html, /class="signup-assistant"/);

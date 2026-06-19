@@ -1,8 +1,12 @@
 const crypto = require('crypto');
+const { confirmationPolicyForTool, inferSideEffectLevel } = require('./confirmation-gates');
 const { helperPermissionForTool } = require('./permissions');
 const { redactText, redactValue } = require('./redaction');
 const { helperResultCard, helperResultLink } = require('./result-links');
 const vimeoIntegration = require('../../integrations/vimeo');
+const { parseIntakeText } = require('../intake-parser');
+const { extractedItemCounts, normalizeSourceChannel } = require('../ramble-protocol');
+const { STANDING_GOALS, affectedGoalIdsForText } = require('../goal-registry');
 
 const REQUIRED_HELPER_TOOL_NAMES = [
   'create_task',
@@ -15,9 +19,14 @@ const REQUIRED_HELPER_TOOL_NAMES = [
   'add_decision_comment',
   'convert_decision_to_task',
   'send_decision_to_codex',
+  'open_operations_view',
   'create_codex_work_item',
   'audit_queue_status',
   'show_task_report',
+  'create_support_ticket',
+  'capture_raw_intake',
+  'show_goal_status',
+  'run_watchdog_audit',
   'create_student',
   'create_content_item',
   'draft_social_post',
@@ -28,12 +37,15 @@ const REQUIRED_HELPER_TOOL_NAMES = [
   'create_integration_setup_task',
   'save_provider_api_key',
   'rotate_provider_api_key',
+  'create_automation',
+  'update_automation',
   'test_resend_connection',
   'test_buffer_connection',
   'test_vimeo_connection',
   'test_wapi_connection',
   'mark_integration_blocked_until_thursday',
   'create_dns_setup_task',
+  'create_provider_classroom_draft',
   'ingest_class_video_from_drive_or_upload',
   'transcribe_video',
   'parse_student_questions',
@@ -52,7 +64,6 @@ const FALLBACK_ONLY_TOOL_NAMES = [
   'create_worksheet',
   'create_provider_profile',
   'create_setup_flow',
-  'create_automation',
   'ingest_class_video_from_drive_or_upload',
   'transcribe_video',
   'parse_student_questions',
@@ -89,6 +100,11 @@ const CONTENT_SOURCE_TYPES = new Set(['telegram_media', 'telegram_text', 'manual
 const CONTENT_STATUSES = new Set(['ingested', 'transcribing', 'transcribed', 'parsing', 'drafting', 'needs_approval', 'approved', 'published', 'blocked', 'archived']);
 const INTEGRATION_TYPES = new Set(['resend', 'buffer', 'wapi', 'vimeo', 'zoom', 'stripe', 'godaddy_dns', 'google_drive', 'other']);
 const INTEGRATION_STATUSES = new Set(['not_configured', 'needs_provider_account', 'needs_api_key', 'needs_dns', 'needs_owner_access', 'blocked_until_thursday', 'ready_for_test', 'connected', 'failed', 'disabled']);
+const OPERATIONS_VIEWS = new Set(['dashboard', 'watchdog', 'pipelines', 'tasks', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings']);
+const SUPPORT_TICKET_CATEGORIES = new Set(['task_manager', 'bot_api', 'automation', 'login', 'access', 'payment', 'recording', 'worksheet', 'drive', 'student_parent_data', 'link', 'other']);
+const SUPPORT_TICKET_SEVERITIES = new Set(['low', 'normal', 'high', 'blocking']);
+const AUTOMATION_STATUSES = new Set(['active', 'guarded', 'draft', 'blocked', 'paused', 'archived']);
+const AUTOMATION_TYPES = new Set(['workflow', 'integration', 'bot', 'scheduler', 'content', 'accounting', 'student', 'system']);
 
 function compactText(value, max = 1000) {
   return String(value || '').replace(/\r/g, '').trim().slice(0, max);
@@ -97,6 +113,40 @@ function compactText(value, max = 1000) {
 function normalizeEnum(value, allowed, fallback) {
   const normalized = String(value || fallback || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
   return allowed.has(normalized) ? normalized : fallback;
+}
+
+function helperSlug(value = '', fallback = '') {
+  const normalized = String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/['"]/g, '')
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '_')
+    .replace(/^_+|_+$/g, '');
+  return normalized || fallback;
+}
+
+function normalizeProjectKey(value = '') {
+  const normalized = helperSlug(value, '');
+  if (['bna', 'bnei_neviim', 'bnei_neviim_academy', 'school'].includes(normalized)) return 'bna';
+  if (['one_time', 'one_time_mishnah', 'one_time_mishna', 'one_time_mishnah_class', 'one_time_mishna_class', 'rabbi_sheller_provider', 'rabbi_scheller_provider', 'mishnah', 'mishna'].includes(normalized)) return 'one_time_mishnah_class';
+  return normalized;
+}
+
+function safeAutomationStatus(value = '', fallback = 'draft') {
+  const normalized = helperSlug(value, fallback);
+  return AUTOMATION_STATUSES.has(normalized) ? normalized : fallback;
+}
+
+function safeAutomationType(value = '', fallback = 'workflow') {
+  const normalized = helperSlug(value, fallback);
+  return AUTOMATION_TYPES.has(normalized) ? normalized : fallback;
+}
+
+function compactJsonArray(value, maxItems = 20, maxLength = 300) {
+  if (Array.isArray(value)) return value.map((item) => compactText(item, maxLength)).filter(Boolean).slice(0, maxItems);
+  const text = compactText(value, maxLength);
+  return text ? [text] : [];
 }
 
 function normalizePlatform(value = '') {
@@ -172,12 +222,22 @@ function validateArgs(schema = {}, args = {}) {
 }
 
 function makeDefinition(definition, handler) {
+  const sideEffectLevel = inferSideEffectLevel(definition);
+  const confirmationPolicy = confirmationPolicyForTool({ ...definition, sideEffectLevel });
   return {
     risk: 'low',
     requiresConfirmation: false,
     schema: {},
     available: true,
+    sideEffectLevel,
+    allowedScopes: ['admin', 'project', 'provider', 'rabbi', 'parent', 'student', 'family'],
+    requiredRole: 'scope_resolver',
+    confirmationPolicy: confirmationPolicy.policy,
+    auditMetadata: { registry: 'bna_helper_tool_registry' },
     ...definition,
+    sideEffectLevel,
+    requiresConfirmation: Boolean(definition.requiresConfirmation) || confirmationPolicy.requiresConfirmation,
+    confirmationPolicy: confirmationPolicy.policy,
     handler,
   };
 }
@@ -538,6 +598,219 @@ async function rotateProviderApiKeyTool({ args, context, db }) {
   });
 }
 
+async function projectIdForAutomation(db, projectKey = '') {
+  const key = normalizeProjectKey(projectKey);
+  if (!key) return null;
+  const result = await db.query('SELECT id FROM bna_projects WHERE project_key = $1 LIMIT 1', [key]).catch(() => ({ rows: [] }));
+  return result.rows[0]?.id || null;
+}
+
+function automationToolView(row = {}) {
+  return redactValue({
+    id: row.id,
+    automation_key: row.automation_key,
+    name: row.name,
+    summary: row.summary,
+    package_key: row.package_key,
+    service_key: row.service_key,
+    status: row.status,
+    automation_type: row.automation_type,
+    trigger_label: row.trigger_label,
+    channel: row.channel,
+    setup_blockers: row.setup_blockers || [],
+    related_task_ids: row.related_task_ids || [],
+    metadata: row.metadata || {},
+  });
+}
+
+function automationDefaultsFromArgs(args = {}, context = {}) {
+  const rawName = compactText(args.name || args.title || args.summary || 'Helper automation draft', 180);
+  const lower = `${rawName} ${args.summary || ''} ${args.description || ''} ${args.action || ''}`.toLowerCase();
+  const automationType = safeAutomationType(args.automation_type || (/billing|payment|invoice|tuition/.test(lower) ? 'accounting' : 'workflow'));
+  const packageKey = helperSlug(args.package_key || args.package || (automationType === 'accounting' ? 'accounting' : 'operations'), 'operations');
+  const serviceKey = helperSlug(args.service_key || args.service || rawName, 'helper_workflow');
+  const projectKey = normalizeProjectKey(args.project_key || context.projectKey || context.project_key || '');
+  const automationKey = helperSlug(
+    args.automation_key || `helper_${projectKey || 'global'}_${packageKey}_${serviceKey}`,
+    `helper_${Date.now()}`
+  ).slice(0, 180);
+  const setupBlockers = compactJsonArray(args.setup_blockers || args.blockers || args.blocker || '', 20, 300);
+  return {
+    automationKey,
+    name: rawName,
+    summary: compactText(args.summary || args.purpose || `Helper-created ${automationType} workflow draft.`, 900),
+    description: compactText(args.description || args.action || args.summary || rawName, 4000),
+    packageKey,
+    packageName: compactText(args.package_name || packageKey.replace(/_/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase()), 180),
+    serviceKey,
+    serviceName: compactText(args.service_name || serviceKey.replace(/_/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase()), 180),
+    projectKey,
+    owner: compactText(args.owner || context.userName || 'Shloimie', 120),
+    responsiblePerson: compactText(args.responsible_person || args.assigned_to || context.userName || 'Shloimie', 120),
+    status: safeAutomationStatus(args.status || 'draft'),
+    automationType,
+    triggerType: helperSlug(args.trigger_type || args.trigger || 'manual_review', 'manual_review'),
+    triggerLabel: compactText(args.trigger_label || args.trigger || 'Manual helper-created workflow draft', 180),
+    channel: helperSlug(args.channel || (automationType === 'accounting' ? 'accounting' : 'dashboard'), 'dashboard'),
+    audience: compactText(args.audience || 'BNA Operations', 900),
+    setupBlockers: setupBlockers.length ? setupBlockers : ['Review trigger, permissions, owner, and rollback before enabling any live handler.'],
+  };
+}
+
+async function createAutomationTool({ args, context, db }) {
+  const spec = automationDefaultsFromArgs(args, context);
+  const projectId = await projectIdForAutomation(db, spec.projectKey);
+  const metadata = redactValue({
+    source: 'bna_helper',
+    helper_created: true,
+    raw_prompt: args.raw_prompt || args.prompt || null,
+    no_external_write: true,
+    no_send_publish_charge_or_sync: true,
+  });
+  const permissions = {
+    registry_edits_only: true,
+    helper_created_draft: true,
+    live_handler_requires_separate_approval: true,
+    no_external_send_publish_charge_or_sync: true,
+  };
+  const result = await db.query(
+    `INSERT INTO bna_automations (
+       automation_key, name, summary, description, package_key, package_name,
+       service_key, service_name, scope_type, project_id, owner, responsible_person,
+       status, automation_type, trigger_type, trigger_label, channel, audience,
+       permissions, setup_blockers, related_task_ids, config, metadata, created_by, updated_by
+     ) VALUES (
+       $1, $2, $3, $4, $5, $6,
+       $7, $8, 'project', $9, $10, $11,
+       $12, $13, $14, $15, $16, $17,
+       $18::jsonb, $19::jsonb, '[]'::jsonb, '{}'::jsonb, $20::jsonb, $21, $21
+     )
+     ON CONFLICT (automation_key) DO UPDATE SET
+       name = EXCLUDED.name,
+       summary = EXCLUDED.summary,
+       description = EXCLUDED.description,
+       package_key = EXCLUDED.package_key,
+       package_name = EXCLUDED.package_name,
+       service_key = EXCLUDED.service_key,
+       service_name = EXCLUDED.service_name,
+       project_id = COALESCE(EXCLUDED.project_id, bna_automations.project_id),
+       owner = EXCLUDED.owner,
+       responsible_person = EXCLUDED.responsible_person,
+       status = EXCLUDED.status,
+       automation_type = EXCLUDED.automation_type,
+       trigger_type = EXCLUDED.trigger_type,
+       trigger_label = EXCLUDED.trigger_label,
+       channel = EXCLUDED.channel,
+       audience = EXCLUDED.audience,
+       permissions = COALESCE(bna_automations.permissions, '{}'::jsonb) || EXCLUDED.permissions,
+       setup_blockers = EXCLUDED.setup_blockers,
+       metadata = COALESCE(bna_automations.metadata, '{}'::jsonb) || EXCLUDED.metadata,
+       updated_by = EXCLUDED.updated_by,
+       updated_at = NOW()
+     RETURNING *`,
+    [
+      spec.automationKey,
+      spec.name,
+      spec.summary,
+      spec.description,
+      spec.packageKey,
+      spec.packageName,
+      spec.serviceKey,
+      spec.serviceName,
+      projectId,
+      spec.owner,
+      spec.responsiblePerson,
+      spec.status,
+      spec.automationType,
+      spec.triggerType,
+      spec.triggerLabel,
+      spec.channel,
+      spec.audience,
+      JSON.stringify(permissions),
+      JSON.stringify(spec.setupBlockers),
+      JSON.stringify(metadata),
+      context.userName || 'BNA Helper',
+    ]
+  );
+  const row = result.rows[0];
+  return helperResultCard({
+    tool: 'create_automation',
+    recordType: 'automation',
+    recordId: row.id,
+    label: `Automation #${row.id}`,
+    summary: `Created or updated local ${spec.automationType} workflow draft "${row.name}". No external send, publish, charge, or sync was performed.`,
+    url: `/operations?view=automations&automation=${encodeURIComponent(String(row.id))}`,
+    data: { automation: automationToolView(row) },
+  });
+}
+
+async function updateAutomationTool({ args, context, db }) {
+  const automationId = normalizeNumber(args.automation_id || args.id);
+  const automationKey = helperSlug(args.automation_key || args.key || '', '');
+  if (!automationId && !automationKey) {
+    const error = new Error('automation_id or automation_key is required');
+    error.statusCode = 400;
+    throw error;
+  }
+  const lookup = automationId
+    ? await db.query('SELECT * FROM bna_automations WHERE id = $1 LIMIT 1', [automationId])
+    : await db.query('SELECT * FROM bna_automations WHERE automation_key = $1 LIMIT 1', [automationKey]);
+  const existing = lookup.rows[0];
+  if (!existing) {
+    const error = new Error('Automation was not found');
+    error.statusCode = 404;
+    throw error;
+  }
+  const fields = [];
+  const values = [];
+  const add = (field, value, cast = '') => {
+    values.push(value);
+    fields.push(`${field} = $${values.length}${cast}`);
+  };
+  if (Object.prototype.hasOwnProperty.call(args, 'name')) add('name', compactText(args.name, 180) || existing.name);
+  if (Object.prototype.hasOwnProperty.call(args, 'summary')) add('summary', compactText(args.summary, 900) || existing.summary);
+  if (Object.prototype.hasOwnProperty.call(args, 'description') || Object.prototype.hasOwnProperty.call(args, 'action')) {
+    add('description', compactText(args.description || args.action, 4000) || existing.description);
+  }
+  if (Object.prototype.hasOwnProperty.call(args, 'status') || Object.prototype.hasOwnProperty.call(args, 'enabled')) {
+    add('status', Object.prototype.hasOwnProperty.call(args, 'enabled') ? (args.enabled ? 'guarded' : 'paused') : safeAutomationStatus(args.status, existing.status || 'draft'));
+  }
+  if (Object.prototype.hasOwnProperty.call(args, 'trigger_label') || Object.prototype.hasOwnProperty.call(args, 'trigger')) {
+    add('trigger_label', compactText(args.trigger_label || args.trigger, 180) || existing.trigger_label);
+  }
+  if (Object.prototype.hasOwnProperty.call(args, 'setup_blockers') || Object.prototype.hasOwnProperty.call(args, 'blocker')) {
+    add('setup_blockers', JSON.stringify(compactJsonArray(args.setup_blockers || args.blocker, 20, 300)), '::jsonb');
+  }
+  const metadata = redactValue({
+    source: 'bna_helper',
+    helper_updated: true,
+    change_note: args.change_note || args.reason || null,
+    no_external_write: true,
+  });
+  values.push(JSON.stringify(metadata));
+  fields.push(`metadata = COALESCE(metadata, '{}'::jsonb) || $${values.length}::jsonb`);
+  add('updated_by', context.userName || 'BNA Helper');
+  values.push(existing.id);
+  const result = await db.query(
+    `UPDATE bna_automations
+     SET ${fields.join(', ')},
+         updated_at = NOW()
+     WHERE id = $${values.length}
+     RETURNING *`,
+    values
+  );
+  const row = result.rows[0];
+  return helperResultCard({
+    tool: 'update_automation',
+    recordType: 'automation',
+    recordId: row.id,
+    label: `Automation #${row.id}`,
+    summary: `Updated local automation metadata for "${row.name}". No automation run, external send, payment, publish, or sync was performed.`,
+    url: `/operations?view=automations&automation=${encodeURIComponent(String(row.id))}`,
+    data: { automation: automationToolView(row) },
+  });
+}
+
 function localIntegrationReadiness(type = '') {
   const normalized = normalizeIntegrationType(type);
   if (normalized === 'resend') return { configured: Boolean(process.env.RESEND_API_KEY), required_env: 'RESEND_API_KEY', status_if_missing: 'needs_api_key' };
@@ -758,6 +1031,126 @@ async function attachVimeoUrlToLibraryItemTool({ args, context, deps, db }) {
     label: 'Vimeo URL attached',
     summary: 'Attached a manual Vimeo URL for review. Publishing still requires approval.',
     data: { attached, content_job: updated },
+  });
+}
+
+async function captureRawIntakeTool({ args, context, deps, db }) {
+  const rawText = compactText(args.raw_text || args.text || args.message || args.prompt, 20000);
+  if (!rawText) throw Object.assign(new Error('raw_text is required'), { code: 'schema_validation_failed', statusCode: 400 });
+  const sourceChannel = normalizeSourceChannel(args.source_channel || args.source_type || 'operations_helper');
+  const metadata = {
+    helper_scope: context.helperScope?.scopeType || context.scopeType || 'admin',
+    workspace_key: context.workspaceKey || null,
+    project_key: context.projectKey || null,
+    source_date: args.source_date || null,
+    page_path: context.pageContext?.path || context.req?.originalUrl || null,
+    helper_tool: 'capture_raw_intake',
+  };
+  let rawRecord = null;
+  if (typeof deps.createRawIntakeRecord === 'function') {
+    rawRecord = await deps.createRawIntakeRecord({
+      rawInput: rawText,
+      source_type: args.source_type || sourceChannel,
+      source_channel: sourceChannel,
+      source_user: context.userName || 'BNA Helper',
+      intake_type: args.intake_type || 'helper',
+      metadata,
+      req: context.req,
+      db,
+    });
+  }
+  const parsed = parseIntakeText({
+    raw_input: rawText,
+    source_type: args.source_type || sourceChannel,
+    source_channel: sourceChannel,
+    source_date: args.source_date || null,
+    workspace_key: context.workspaceKey || undefined,
+    project_key: context.projectKey || undefined,
+    raw_id: rawRecord?.stable_id || args.raw_id || null,
+  });
+  if (rawRecord && typeof deps.updateRawIntakeRecordAfterParse === 'function') {
+    rawRecord = await deps.updateRawIntakeRecordAfterParse(rawRecord, parsed, {
+      parser_version: parsed.parser_version,
+    }, db);
+  }
+  const counts = extractedItemCounts(parsed);
+  const rawId = rawRecord?.stable_id || parsed.ramble_protocol?.raw_id || null;
+  return helperResultCard({
+    tool: 'capture_raw_intake',
+    recordType: 'raw_intake',
+    recordId: rawRecord?.id || null,
+    label: rawId || 'Raw intake captured',
+    summary: `Captured raw intake${rawId ? ` ${rawId}` : ''}; parsed ${Object.entries(counts).filter(([, count]) => count).map(([key, count]) => `${count} ${key}`).join(', ') || 'no confident lanes yet'}.`,
+    url: rawRecord?.id ? helperResultLink('intake', rawRecord.id) : '/operations?view=intake',
+    data: {
+      raw_id: rawId,
+      parse_status: rawRecord?.parse_status || 'parsed_local',
+      counts,
+      requirement_register_path: parsed.ramble_protocol?.requirement_register_path || null,
+      goal_mode_execution_requested: Boolean(parsed.ramble_protocol?.goal_mode_execution_requested),
+      should_create_or_continue_goal: Boolean(parsed.ramble_protocol?.should_create_or_continue_goal),
+      related_goal_ids: [...new Set([
+        ...affectedGoalIdsForText(rawText),
+        ...((parsed.goal_candidates || []).flatMap((item) => item.related_goal_ids || [])),
+      ])],
+      filing_targets: parsed.ramble_protocol?.filing_targets || [],
+      raw_text_returned: false,
+    },
+  });
+}
+
+async function showGoalStatusTool({ args }) {
+  const related = args.text ? affectedGoalIdsForText(args.text) : [];
+  const goals = related.length
+    ? STANDING_GOALS.filter((goal) => related.includes(goal.id))
+    : STANDING_GOALS;
+  return helperResultCard({
+    tool: 'show_goal_status',
+    recordType: 'goal_memory',
+    recordId: null,
+    label: 'Goal status',
+    summary: `Showing ${goals.length} standing goal(s).`,
+    url: '/operations?view=watchdog',
+    data: {
+      goals,
+      related_goal_ids: related,
+      source: 'QUALITY-GOALS.md',
+    },
+  });
+}
+
+async function runWatchdogAuditTool({ args, context, deps, db }) {
+  const task = await deps.createTaskFromText({
+    title: args.title || 'Run BNA watchdog audit',
+    raw_text: args.reason || args.notes || 'Run the requested local-safe watchdog audit and report findings.',
+    notes: [
+      args.reason || args.notes || 'Run the requested local-safe watchdog audit.',
+      `Suggested command: ${args.command || 'npm run watchdog:audit'}`,
+      'Do not send, publish, charge, change DNS, upload, sync, or copy credentials.',
+    ].join('\n'),
+    assigned_to: 'Codex',
+    category: 'technology',
+    urgency: normalizeEnum(args.urgency, TASK_URGENCIES, 'this_week'),
+    project_key: args.project_key || context.projectKey || undefined,
+    source: 'web',
+    created_by: context.userName || 'BNA Helper',
+    task_kind: 'agent_job',
+    stage: 'assigned',
+    agent_executable: true,
+    ai_parsed: {
+      kind: 'watchdog_audit_request',
+      command: args.command || 'npm run watchdog:audit',
+      source: 'bna_helper',
+    },
+  }, { req: context.req }, db);
+  return helperResultCard({
+    tool: 'run_watchdog_audit',
+    recordType: 'task',
+    recordId: task.id,
+    label: taskLabel(task),
+    summary: `Created Codex watchdog audit task #${task.id}.`,
+    url: helperResultLink('task', task.id),
+    data: { task_id: task.id, command: args.command || 'npm run watchdog:audit' },
   });
 }
 
@@ -1069,6 +1462,29 @@ async function convertDecisionTool({ args, context, deps, db, codex = false }) {
   });
 }
 
+async function openOperationsViewTool({ args, context }) {
+  const view = OPERATIONS_VIEWS.has(String(args.view || '').trim()) ? String(args.view || '').trim() : 'tasks';
+  const params = new URLSearchParams();
+  params.set('view', view);
+  if (args.section) params.set('section', compactText(args.section, 80));
+  if (args.workspace_key || context.workspaceKey) params.set('workspace', compactText(args.workspace_key || context.workspaceKey, 120));
+  if (args.task_id) params.set('task', String(args.task_id));
+  if (args.student_id) params.set('student', String(args.student_id));
+  if (args.content_job_id) params.set('content_job', String(args.content_job_id));
+  if (args.calendar_mode) params.set('calendar_mode', compactText(args.calendar_mode, 40));
+  if (args.date) params.set('date', compactText(args.date, 40));
+  const sectionLabel = args.section ? ` / ${args.section}` : '';
+  return helperResultCard({
+    tool: 'open_operations_view',
+    recordType: 'operations_route',
+    recordId: args.task_id || args.student_id || args.content_job_id || null,
+    label: `Open ${view}${sectionLabel}`,
+    summary: `Prepared an Operations link for ${view}${sectionLabel}.`,
+    url: `/operations?${params.toString()}`,
+    data: { view, section: args.section || null },
+  });
+}
+
 async function auditQueueStatusTool({ args, context, deps }) {
   const snapshot = await deps.buildCodexQueueSnapshot(context.req, { limit: args.limit || 50 });
   return helperResultCard({
@@ -1079,6 +1495,51 @@ async function auditQueueStatusTool({ args, context, deps }) {
     summary: `Codex queue: ${snapshot.queue?.queued || 0} queued, ${snapshot.queue?.running || 0} running, ${snapshot.queue?.blocked || 0} blocked.`,
     url: '/operations?view=tasks&section=tasks',
     data: snapshot,
+  });
+}
+
+async function createSupportTicketTool({ args, context, deps, db }) {
+  const project = await deps.resolveProjectFromInput({ project_key: args.project_key || context.projectKey || 'bna' }, db);
+  deps.assertProjectAccess(context.req, project);
+  const title = compactText(args.title || args.description || 'Helper support report', 180);
+  const description = compactText(args.description || args.body || args.expected || title, 4000);
+  const severity = normalizeEnum(args.severity, SUPPORT_TICKET_SEVERITIES, 'normal');
+  const category = normalizeEnum(args.category, SUPPORT_TICKET_CATEGORIES, 'task_manager');
+  const sourceContext = redactValue({
+    source: 'bna_helper',
+    page_context: context.pageContext || {},
+    expected: args.expected || null,
+    selected_record: context.selectedRecord || context.pageContext?.selectedRecord || null,
+  });
+  const result = await db.query(
+    `INSERT INTO bna_support_tickets (
+       project_id, title, description, severity, status, category,
+       reporter_name, reporter_role, assigned_to, source, source_context, created_by
+     )
+     VALUES ($1, $2, $3, $4, 'open', $5, $6, $7, $8, 'dashboard', $9::jsonb, $10)
+     RETURNING *`,
+    [
+      project.id,
+      title,
+      description || null,
+      severity,
+      category,
+      context.userName || 'BNA Helper',
+      context.userRole || 'admin',
+      compactText(args.assigned_to || (['blocking', 'high'].includes(severity) ? 'Codex' : 'Shloimie'), 120),
+      JSON.stringify(sourceContext),
+      context.userName || 'BNA Helper',
+    ]
+  );
+  const ticket = result.rows[0];
+  return helperResultCard({
+    tool: 'create_support_ticket',
+    recordType: 'support_ticket',
+    recordId: ticket.id,
+    label: `Support ticket #${ticket.id}`,
+    summary: `Created support ticket #${ticket.id}.`,
+    url: '/operations?view=admin&section=tickets',
+    data: { ticket },
   });
 }
 
@@ -1180,6 +1641,96 @@ async function createContentItemTool({ args, context, deps, db }) {
     label: `Content item #${job.id}`,
     summary: `Created content item #${job.id}.`,
     data: { job },
+  });
+}
+
+function normalizeClassCount(value) {
+  const number = Number(String(value || '').match(/\d+/)?.[0] || 0);
+  if (!Number.isFinite(number) || number <= 0) return null;
+  return Math.max(1, Math.min(number, 52));
+}
+
+function normalizeBooleanInput(value, fallback = false) {
+  if (value === undefined || value === null || value === '') return fallback;
+  if (typeof value === 'boolean') return value;
+  const text = String(value).trim().toLowerCase();
+  if (['true', '1', 'yes', 'y', 'enabled', 'on'].includes(text)) return true;
+  if (['false', '0', 'no', 'n', 'disabled', 'off'].includes(text)) return false;
+  return fallback;
+}
+
+async function createProviderClassroomDraftTool({ args, context, deps, db }) {
+  const projectKey = args.project_key || context.projectKey || 'one_time_mishnah_class';
+  const project = await deps.resolveProjectFromInput({ project_key: projectKey }, db);
+  deps.assertProjectAccess(context.req, project);
+  const rawPrompt = compactText(args.raw_prompt || args.prompt || args.notes || args.title, 4000);
+  const classCount = normalizeClassCount(args.class_count || rawPrompt);
+  const setupPlan = {
+    title: args.title,
+    provider_id: args.provider_id || null,
+    provider_name: args.provider_name || null,
+    workspace_key: args.workspace_key || context.workspaceKey || null,
+    project_key: project.project_key || projectKey,
+    status: 'draft',
+    class_count: classCount,
+    community_dialogue_style: args.community_dialogue_style || 'Rabbi/teacher-led Q&A with private student replies',
+    student_access: args.student_access || 'Provider-managed member/student access; BNA admin review before grants',
+    display_rules: args.display_rules || 'Teacher-approved posts and responses only; internal classroom first',
+    message_permissions: args.message_permissions || 'Students may reply privately to the teacher; no student-to-student chat unless explicitly enabled',
+    student_to_teacher_replies: normalizeBooleanInput(args.student_to_teacher_replies, true),
+    student_to_student_chat_enabled: normalizeBooleanInput(args.student_to_student_chat_enabled, false),
+    teacher_moderation_required: normalizeBooleanInput(args.teacher_moderation_required, true),
+    public_display_enabled: normalizeBooleanInput(args.public_display_enabled, false),
+  };
+  const setupQuestions = [
+    classCount ? null : 'How many classes or weeks should this classroom start with?',
+    args.community_dialogue_style ? null : 'What dialogue style should this use?',
+    args.student_access ? null : 'Who should receive student/member access first?',
+    args.display_rules ? null : 'What may appear on the public/community display after teacher approval?',
+    args.message_permissions ? null : 'Should student-to-student chat stay off?',
+  ].filter(Boolean);
+  const notes = [
+    rawPrompt ? `Raw prompt: ${rawPrompt}` : '',
+    `Class count: ${classCount || 'needs provider answer'}`,
+    `Dialogue style: ${setupPlan.community_dialogue_style}`,
+    `Student access: ${setupPlan.student_access}`,
+    `Display rules: ${setupPlan.display_rules}`,
+    `Message permissions: ${setupPlan.message_permissions}`,
+    `Moderation: private student-to-teacher replies, no student-student chat unless enabled, teacher moderation/publish queue.`,
+    setupQuestions.length ? `Open setup questions:\n- ${setupQuestions.join('\n- ')}` : '',
+  ].filter(Boolean).join('\n');
+  const task = await deps.createTaskFromText({
+    title: args.title,
+    raw_text: rawPrompt || args.title,
+    notes,
+    summary: `Provider classroom/community setup draft for ${setupPlan.provider_name || setupPlan.workspace_key || project.project_key}.`,
+    assigned_to: args.assigned_to || 'Shloimie',
+    category: 'community_setup',
+    urgency: 'this_week',
+    source: 'web',
+    created_by: context.userName || 'BNA Helper',
+    stage: 'assigned',
+    task_kind: 'provider_classroom_draft',
+    project_key: project.project_key || projectKey,
+    ai_parsed: {
+      parser: 'bna-helper-tool-registry',
+      kind: 'provider_classroom_draft',
+      action_id: 'create_provider_classroom_draft',
+      setup_plan: setupPlan,
+      setup_questions: setupQuestions,
+      no_external_write: true,
+      no_google_classroom_write: true,
+      no_payment_or_access_grant: true,
+    },
+  }, { req: context.req }, db);
+  return helperResultCard({
+    tool: 'create_provider_classroom_draft',
+    recordType: 'task',
+    recordId: task.id,
+    label: taskLabel(task),
+    summary: `Created provider classroom setup draft #${task.id}. No external classroom, message, payment, or access write was performed.`,
+    url: helperResultLink('task', task.id),
+    data: { task, setup_plan: setupPlan, setup_questions: setupQuestions },
   });
 }
 
@@ -1360,6 +1911,43 @@ function unsupportedFallbackTool(toolName) {
 function buildToolRegistry(deps = {}) {
   const tools = [
     makeDefinition({
+      name: 'capture_raw_intake',
+      description: 'Capture natural language as raw intake, parse it into BNA lanes, and return raw ID plus counts.',
+      category: 'intake',
+      risk: 'medium',
+      schema: {
+        raw_text: { type: 'string', required: true, maxLength: 20000 },
+        source_type: { type: 'string', maxLength: 80, default: 'operations_helper' },
+        source_channel: { type: 'string', maxLength: 80, default: 'operations_helper' },
+        source_date: { type: 'string', maxLength: 40 },
+        intake_type: { type: 'string', maxLength: 80, default: 'helper' },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, captureRawIntakeTool),
+    makeDefinition({
+      name: 'show_goal_status',
+      description: 'Show standing BNA goals or goals related to supplied text.',
+      category: 'watchdog',
+      schema: {
+        text: { type: 'string', maxLength: 4000 },
+        goal_id: { type: 'string', maxLength: 80 },
+      },
+    }, showGoalStatusTool),
+    makeDefinition({
+      name: 'run_watchdog_audit',
+      description: 'Create a Codex-owned request to run a local-safe watchdog audit.',
+      category: 'watchdog',
+      risk: 'medium',
+      schema: {
+        title: { type: 'string', maxLength: 240 },
+        command: { type: 'string', maxLength: 240, default: 'npm run watchdog:audit' },
+        reason: { type: 'string', maxLength: 2000 },
+        notes: { type: 'string', maxLength: 2000 },
+        urgency: { type: 'string', maxLength: 40, default: 'this_week' },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, runWatchdogAuditTool),
+    makeDefinition({
       name: 'create_task',
       description: 'Create an Operations task.',
       category: 'tasks',
@@ -1483,6 +2071,21 @@ function buildToolRegistry(deps = {}) {
       },
     }, (payload) => convertDecisionTool({ ...payload, codex: true })),
     makeDefinition({
+      name: 'open_operations_view',
+      description: 'Open a scoped Operations view, lane, record detail, or calendar route.',
+      category: 'navigation',
+      schema: {
+        view: { type: 'string', required: true, maxLength: 80 },
+        section: { type: 'string', maxLength: 80 },
+        task_id: { type: 'integer' },
+        student_id: { type: 'integer' },
+        content_job_id: { type: 'integer' },
+        calendar_mode: { type: 'string', maxLength: 40 },
+        date: { type: 'string', maxLength: 40 },
+        workspace_key: { type: 'string', maxLength: 120 },
+      },
+    }, openOperationsViewTool),
+    makeDefinition({
       name: 'create_codex_work_item',
       description: 'Create a Codex-owned machine work item.',
       category: 'codex',
@@ -1512,6 +2115,21 @@ function buildToolRegistry(deps = {}) {
         limit: { type: 'integer', default: 25 },
       },
     }, showTaskReportTool),
+    makeDefinition({
+      name: 'create_support_ticket',
+      description: 'Create a first-party Operations support ticket or problem report.',
+      category: 'support',
+      risk: 'medium',
+      schema: {
+        title: { type: 'string', required: true, maxLength: 180 },
+        description: { type: 'string', maxLength: 4000 },
+        expected: { type: 'string', maxLength: 2000 },
+        severity: { type: 'string', maxLength: 40, default: 'normal' },
+        category: { type: 'string', maxLength: 80, default: 'task_manager' },
+        assigned_to: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, createSupportTicketTool),
     makeDefinition({
       name: 'create_student',
       description: 'Create a BNA student record.',
@@ -1628,6 +2246,58 @@ function buildToolRegistry(deps = {}) {
         project_key: { type: 'string', maxLength: 120 },
       },
     }, createIntegrationSetupTaskTool),
+    makeDefinition({
+      name: 'create_automation',
+      description: 'Create a local Automation Center workflow or billing workflow draft without running external actions.',
+      category: 'automations',
+      risk: 'medium',
+      requiresConfirmation: true,
+      schema: {
+        name: { type: 'string', required: true, maxLength: 180 },
+        summary: { type: 'string', maxLength: 900 },
+        description: { type: 'string', maxLength: 4000 },
+        action: { type: 'string', maxLength: 4000 },
+        trigger: { type: 'string', maxLength: 180 },
+        trigger_label: { type: 'string', maxLength: 180 },
+        package_key: { type: 'string', maxLength: 80 },
+        package_name: { type: 'string', maxLength: 180 },
+        service_key: { type: 'string', maxLength: 80 },
+        service_name: { type: 'string', maxLength: 180 },
+        status: { type: 'string', maxLength: 40, default: 'draft' },
+        automation_type: { type: 'string', maxLength: 40, default: 'workflow' },
+        channel: { type: 'string', maxLength: 80 },
+        audience: { type: 'string', maxLength: 900 },
+        setup_blockers: { type: 'array', maxItems: 20 },
+        owner: { type: 'string', maxLength: 120 },
+        responsible_person: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120 },
+        raw_prompt: { type: 'string', maxLength: 4000 },
+      },
+    }, createAutomationTool),
+    makeDefinition({
+      name: 'update_automation',
+      description: 'Edit, pause, disable, or re-enable local Automation Center metadata without running the automation.',
+      category: 'automations',
+      risk: 'medium',
+      requiresConfirmation: true,
+      schema: {
+        automation_id: { type: 'integer' },
+        automation_key: { type: 'string', maxLength: 180 },
+        name: { type: 'string', maxLength: 180 },
+        summary: { type: 'string', maxLength: 900 },
+        description: { type: 'string', maxLength: 4000 },
+        action: { type: 'string', maxLength: 4000 },
+        status: { type: 'string', maxLength: 40 },
+        enabled: { type: 'boolean' },
+        trigger: { type: 'string', maxLength: 180 },
+        trigger_label: { type: 'string', maxLength: 180 },
+        setup_blockers: { type: 'array', maxItems: 20 },
+        blocker: { type: 'string', maxLength: 300 },
+        reason: { type: 'string', maxLength: 1000 },
+        change_note: { type: 'string', maxLength: 1000 },
+        project_key: { type: 'string', maxLength: 120 },
+      },
+    }, updateAutomationTool),
     makeDefinition({
       name: 'save_provider_api_key',
       description: 'Register a provider-owned secret reference and fingerprint without returning the raw key.',
@@ -1767,6 +2437,30 @@ function buildToolRegistry(deps = {}) {
         project_key: { type: 'string', maxLength: 120 },
       },
     }, attachVimeoUrlToLibraryItemTool),
+    makeDefinition({
+      name: 'create_provider_classroom_draft',
+      description: 'Create a first-party provider classroom/community setup draft from natural language.',
+      category: 'community',
+      risk: 'medium',
+      schema: {
+        title: { type: 'string', required: true, maxLength: 240 },
+        raw_prompt: { type: 'string', maxLength: 4000 },
+        provider_id: { type: 'integer' },
+        provider_name: { type: 'string', maxLength: 180 },
+        workspace_key: { type: 'string', maxLength: 120 },
+        project_key: { type: 'string', maxLength: 120, default: 'one_time_mishnah_class' },
+        class_count: { type: 'integer' },
+        community_dialogue_style: { type: 'string', maxLength: 240 },
+        student_access: { type: 'string', maxLength: 240 },
+        display_rules: { type: 'string', maxLength: 280 },
+        message_permissions: { type: 'string', maxLength: 300 },
+        student_to_teacher_replies: { type: 'boolean' },
+        student_to_student_chat_enabled: { type: 'boolean' },
+        teacher_moderation_required: { type: 'boolean' },
+        public_display_enabled: { type: 'boolean' },
+        assigned_to: { type: 'string', maxLength: 120 },
+      },
+    }, createProviderClassroomDraftTool),
     ...FALLBACK_ONLY_TOOL_NAMES.map((name) => makeDefinition({
       name,
       description: `${name.replace(/_/g, ' ')} fallback/setup blocker.`,
@@ -1798,6 +2492,10 @@ function buildToolRegistry(deps = {}) {
           description: tool.description,
           category: tool.category,
           risk: tool.risk,
+          side_effect_level: tool.sideEffectLevel,
+          allowed_scopes: tool.allowedScopes,
+          required_role: tool.requiredRole,
+          confirmation_policy: tool.confirmationPolicy,
           available: Boolean(tool.available && permission.allowed),
           unavailable_reason: !tool.available ? tool.unavailableReason || 'unavailable' : permission.allowed ? null : permission.reason,
           requires_confirmation: Boolean(tool.requiresConfirmation),
@@ -1842,6 +2540,10 @@ function safeToolForClient(tool) {
     description: tool.description,
     category: tool.category,
     risk: tool.risk,
+    side_effect_level: tool.sideEffectLevel,
+    allowed_scopes: tool.allowedScopes,
+    required_role: tool.requiredRole,
+    confirmation_policy: tool.confirmationPolicy,
     available: Boolean(tool.available),
     requires_confirmation: Boolean(tool.requiresConfirmation),
   };

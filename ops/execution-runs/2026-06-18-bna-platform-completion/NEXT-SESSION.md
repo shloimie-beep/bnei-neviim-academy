@@ -55,6 +55,12 @@ Current 2026-06-19 checkpoint:
   and device-accountability gates are child-safe, parent-managed student
   username/password login is scoped and audited, and parent/student Hebrew/RTL
   labels plus long-link/card wrapping are covered by focused tests.
+- `REQ-20260618-109` is locally done: helper scope/profile/knowledge modules,
+  tool registry side-effect levels, confirmation gates, scoped permissions,
+  natural-language planner actions, audit/action logs, redaction, provider
+  integration secret handling, mobile assistant layout, and provider-neutral
+  OpenAI/Kimi hosted-chat fallback are implemented and locally tested without
+  live sends or secret exposure.
 - Manual Agent Mode/browser-judgment smoke remains open.
 - `REQ-20260619-207` is genuinely blocked for live provider setup until
   operator supplies or performs external account-owner actions through the
@@ -62,30 +68,30 @@ Current 2026-06-19 checkpoint:
 
 Exact next requirement:
 
-`REQ-20260618-109` unified OpenAI/helper continuation, while
+`REQ-20260618-110` public copy, portal headers, signup routes, and CTA
+continuation, while
 preserving the already closed `REQ-20260618-103` workspace/RBAC,
 `REQ-20260618-104` Operations shell/navigation, `REQ-20260618-105` design
 system, `REQ-20260618-106` task/intake/calendar, and
-`REQ-20260618-108` student/Goal Board/Hebrew proof.
+`REQ-20260618-109` helper proof.
 
 Exact next command:
 
 ```powershell
-node --test tests\bna-helper-tools.test.js tests\helper-scope-profile-knowledge.test.js tests\universal-assistant-contract.test.js tests\universal-assistant-mvp.test.js tests\ai-provider-selection.test.js
+node --test tests\ui-01-public-operations-shell.test.js tests\public-helper-bot-landing-sodas.test.js tests\signup-permissions-mobile-homepage.test.js tests\provider-index-mvp.test.js tests\parent-student-polish-contract.test.js
 npm run bna:run:validate
 ```
 
-Then continue `REQ-20260618-109`: inspect the unified helper/OpenAI provider
-path, scoped memory, helper profile/knowledge, tool registry, permissions,
-confirmation gates, and helper audit logs; add only missing focused proof or
-small fixes, and avoid live sends, secret logging, or production writes.
+Then continue `REQ-20260618-110`: inspect public homepage/nav copy, portal
+headers, parent/student/provider login paths, signup route CTAs, and public
+helper copy; add only missing focused proof or small fixes, and avoid broad UI
+crawls, live sends, deploys, or production writes.
 
 Open requirements:
 
 - `REQ-20260618-101` audit harness and audit package
 - `REQ-20260618-102` PWA public-vs-Operations separation is locally
   implemented and needs release/live verification
-- `REQ-20260618-109` unified OpenAI helper
 - `REQ-20260618-110` public copy and portal headers
 - `REQ-20260618-111` test data and acceptance tests
 - `REQ-20260618-112` Agent Control Center parent

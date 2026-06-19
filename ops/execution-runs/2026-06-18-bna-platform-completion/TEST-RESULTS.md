@@ -307,6 +307,39 @@ Not run for this batch:
 - No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
   social write.
 
+Verified on 2026-06-19 for unified helper/OpenAI:
+
+- PASS `node --check scripts/telegram-kimi-bridge.mjs`.
+- PASS `node --check scripts/smoke-openai-sidekick.mjs`.
+- PASS helper module syntax checks:
+  `node --check src/lib/bna/helper/audit-log.js`,
+  `src/lib/bna/helper/context.js`,
+  `src/lib/bna/helper/planner.js`,
+  `src/lib/bna/helper/redaction.js`, and
+  `src/lib/bna/helper/tool-registry.js`.
+- PASS focused helper/provider/assistant suite 48/48:
+  `node --test tests/bna-helper-tools.test.js
+  tests/helper-scope-profile-knowledge.test.js
+  tests/universal-assistant-contract.test.js
+  tests/universal-assistant-mvp.test.js tests/ai-provider-selection.test.js
+  tests/mobile-assistant-keyboard-layout.test.js
+  tests/provider-integrations-secret-storage.test.js
+  tests/public-helper-retrieval.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `in_progress: 6`, `needs_verification: 9`, `blocked: 2`,
+  `done: 14`.
+- The suite verifies provider-neutral OpenAI/Kimi fallback, scoped helper
+  memory/profile/knowledge, tool permissions, confirmation gates, action/audit
+  logs, secret redaction, public helper retrieval, and mobile assistant layout.
+
+Not run for this batch:
+
+- No live OpenAI/Kimi call.
+- No production DB write/readback.
+- No deployment.
+- No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
+  social write.
+
 Verified on 2026-06-19 for Agent Control notification/audit-history hooks:
 
 - PASS `node --check server.js`.

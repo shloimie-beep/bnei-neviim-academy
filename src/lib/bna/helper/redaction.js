@@ -6,13 +6,17 @@ const SECRET_PATTERNS = [
   /\bAIza[0-9A-Za-z_-]{20,}\b/g,
   /\bya29\.[0-9A-Za-z._-]{20,}\b/g,
   /\bBearer\s+[A-Za-z0-9._~+/=-]{16,}\b/gi,
-  /\b(refresh_token|access_token|api_key|apikey|password|secret|authorization)\b\s*[:=]\s*['"]?[^'"\s,}]+/gi,
+  /\b(refresh_token|access_token|api_key|apikey|password|secret|token|authorization)\b\s*[:=]\s*['"]?[^'"\s,}]+/gi,
 ];
 
 const STUDENT_ACCESS_PATTERNS = [
   /\b(student_access_code|access_code|portal_link|magic_link)\b\s*[:=]\s*['"]?[^'"\s,}]+/gi,
   /\/student\.html\?code=[A-Za-z0-9._~-]+/gi,
   /\/parent-login\.html\?token=[A-Za-z0-9._~-]+/gi,
+];
+
+const PRIVATE_RECORD_PATTERNS = [
+  /\b(student_id|studentId|household_id|householdId|parent_id|parentId|provider_profile_id|providerProfileId|class_session_id|classSessionId)\b\s*[:=]\s*['"]?[^'"\s,&}]+/g,
 ];
 
 function stableHash(value = '') {
@@ -23,6 +27,7 @@ function redactText(value = '') {
   let text = String(value || '');
   for (const pattern of SECRET_PATTERNS) text = text.replace(pattern, '[redacted-secret]');
   for (const pattern of STUDENT_ACCESS_PATTERNS) text = text.replace(pattern, '[redacted-access]');
+  for (const pattern of PRIVATE_RECORD_PATTERNS) text = text.replace(pattern, '[redacted-record-id]');
   return text;
 }
 

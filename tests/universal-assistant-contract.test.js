@@ -60,7 +60,9 @@ test('assistant widget is one chat UI with input, spinner, and server-side calls
   assert.match(widget, /function isMobileKeyboardSurface\(\)/);
   assert.match(widget, /function focusAssistantInput\(options = \{\}\)/);
   assert.match(widget, /input\.focus\(\{ preventScroll: true \}\)/);
-  assert.match(widget, /height: min\(70dvh, calc\(var\(--app-vh\) \* 0\.7\)\)/);
+  assert.match(widget, /--assistant-mobile-panel-height: clamp\(280px, calc\(var\(--app-vh\) \* 0\.72\), calc\(var\(--app-vh\) - 24px\)\)/);
+  assert.match(widget, /bottom: calc\(max\(8px, env\(safe-area-inset-bottom\)\) \+ var\(--keyboard-offset\)\)/);
+  assert.match(widget, /keepAssistantComposerReachable/);
   assert.match(widget, /transform: translateY\(110%\)/);
   assert.match(widget, /bna-bot-launcher\.is-panel-open/);
   assert.match(widget, /launcher\.classList\.toggle\('is-panel-open', open\)/);

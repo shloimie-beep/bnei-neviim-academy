@@ -19,6 +19,32 @@ function extractTaskId(text = '') {
   return value ? Number(value) : null;
 }
 
+function selectedTaskId(context = {}) {
+  const record = context.pageContext?.selectedRecord || context.selectedRecord || {};
+  if (String(record.type || '').toLowerCase() === 'task' && record.id) return Number(record.id) || null;
+  return null;
+}
+
+function selectedAutomationId(context = {}) {
+  const record = context.pageContext?.selectedRecord || context.selectedRecord || {};
+  const type = String(record.type || '').toLowerCase();
+  if ((type === 'automation' || type === 'workflow') && record.id) return Number(record.id) || null;
+  return null;
+}
+
+function extractAutomationId(text = '') {
+  const value = firstMatch(text, /(?:automation|workflow)\s*#?\s*(\d+)/i) || firstMatch(text, /#\s*(\d+)\b/);
+  return value ? Number(value) : null;
+}
+
+function extractAutomationIdOrSelected(text = '', context = {}) {
+  return extractAutomationId(text) || selectedAutomationId(context);
+}
+
+function extractTaskIdOrSelected(text = '', context = {}) {
+  return extractTaskId(text) || selectedTaskId(context);
+}
+
 function extractEmail(text = '') {
   return firstMatch(text, /\b([A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,})\b/i);
 }
@@ -53,6 +79,110 @@ function guessIntegrationType(text = '') {
   return 'other';
 }
 
+function extractClassCount(text = '') {
+  const value = String(text || '');
+  const numeric = value.match(/\b(\d{1,2})[\s-]*(?:classes|class sessions|class|sessions|weeks|meetings|shiurim|lessons)\b/i);
+  if (numeric) return Math.max(1, Math.min(Number(numeric[1]), 52));
+  const words = {
+    one: 1,
+    two: 2,
+    three: 3,
+    four: 4,
+    five: 5,
+    six: 6,
+    seven: 7,
+    eight: 8,
+    nine: 9,
+    ten: 10,
+    twelve: 12,
+  };
+  const word = value.match(/\b(one|two|three|four|five|six|seven|eight|nine|ten|twelve)[\s-]*(?:classes|class sessions|class|sessions|weeks|meetings|shiurim|lessons)\b/i)?.[1];
+  return word ? words[word.toLowerCase()] : undefined;
+}
+
+function providerClassroomArgs(text = '', context = {}) {
+  const lower = String(text || '').toLowerCase();
+  const privateReplies = /\b(private|privately|directly to (?:rabbi|teacher|provider))\b/.test(lower);
+  const publicDisplay = /\b(public|community display|publish(?:es|ed|ing)?|featured|show selected)\b/.test(lower);
+  const noStudentChat = /\b(no student[-\s]?student|no open chat|no group chat|private only)\b/.test(lower);
+  const dialogueStyle = privateReplies
+    ? 'Rabbi/teacher-led Q&A with private student replies'
+    : /\bannouncement\b/.test(lower)
+      ? 'Announcements with teacher-controlled replies'
+      : /\bdiscussion|dialogue|community\b/.test(lower)
+        ? 'Moderated community dialogue'
+        : 'Guided classroom Q&A';
+  return {
+    title: textAfterIntent(text, /\b(?:start|open|create|make|set up|setup|launch)\b\s*(?:a\s*)?(?:provider\s*)?(?:classroom|learning community|community|course)\s*(?:for|:|-)?\s*([\s\S]+)$/i, 'Provider classroom setup draft'),
+    raw_prompt: text,
+    class_count: extractClassCount(text),
+    community_dialogue_style: dialogueStyle,
+    student_access: /\b(member|membership|participants?)\b/.test(lower)
+      ? 'Provider members/participants after BNA admin review'
+      : 'Provider-managed students/members after BNA admin review',
+    display_rules: publicDisplay
+      ? 'Only teacher-approved replies/questions may be published to the public/community display'
+      : 'Internal classroom first; public/community display remains off until approved',
+    message_permissions: noStudentChat || privateReplies
+      ? 'Students may reply privately to the teacher; no student-to-student chat unless explicitly enabled'
+      : 'Teacher-moderated replies; student-to-student chat disabled by default',
+    student_to_teacher_replies: true,
+    student_to_student_chat_enabled: false,
+    teacher_moderation_required: true,
+    public_display_enabled: publicDisplay,
+    workspace_key: context.workspaceKey || undefined,
+    project_key: context.projectKey || undefined,
+  };
+}
+
+function automationCreateArgs(text = '', context = {}) {
+  const billing = /\b(billing|payment|invoice|tuition|green invoice|stripe)\b/i.test(text);
+  const name = textAfterIntent(
+    text,
+    /\b(?:create|add|make|set up|setup|build)\b\s*(?:a\s*)?(?:new\s*)?(?:billing\s*)?(?:automation|workflow)\s*(?:for|called|named|:|-)?\s*([\s\S]+)$/i,
+    billing ? 'Billing workflow draft' : 'Automation workflow draft'
+  );
+  return {
+    name: name || (billing ? 'Billing workflow draft' : 'Automation workflow draft'),
+    summary: text,
+    description: text,
+    raw_prompt: text,
+    package_key: billing ? 'accounting' : 'operations',
+    package_name: billing ? 'Accounting' : 'Operations',
+    automation_type: billing ? 'accounting' : 'workflow',
+    trigger: /\b(remind|reminder)\b/i.test(text) ? 'Reminder trigger after operator approval' : 'Manual helper-created workflow draft',
+    channel: billing ? 'accounting' : 'dashboard',
+    setup_blockers: ['Review trigger, permissions, owner, and rollback before enabling any live handler.'],
+    project_key: context.projectKey || undefined,
+  };
+}
+
+function automationUpdateArgs(text = '', context = {}) {
+  const lower = String(text || '').toLowerCase();
+  const args = {
+    automation_id: extractAutomationIdOrSelected(text, context) || undefined,
+    reason: text,
+    project_key: context.projectKey || undefined,
+  };
+  if (/\b(disable|pause|turn off|stop)\b/i.test(text)) {
+    args.enabled = false;
+    args.status = 'paused';
+    args.change_note = 'Paused by helper natural-language request.';
+  } else if (/\b(enable|turn on|reactivate|unpause)\b/i.test(text)) {
+    args.enabled = true;
+    args.status = 'guarded';
+    args.change_note = 'Re-enabled into guarded status by helper natural-language request.';
+  } else if (/\b(block|blocked)\b/i.test(text)) {
+    args.status = 'blocked';
+    args.blocker = textAfterIntent(text, /\b(?:block|blocked|because|reason)\b\s*[:\-]?\s*([\s\S]+)$/i, text);
+  } else {
+    args.status = firstMatch(text, /\bstatus\s*(?:to|=|:)\s*(active|guarded|draft|blocked|paused|archived)\b/i) || undefined;
+    args.description = textAfterIntent(text, /\b(?:edit|update|change)\b\s*(?:automation|workflow)?\s*#?\d*\s*(?:to|:|-)?\s*([\s\S]+)$/i, text);
+  }
+  if (lower.includes('billing') || lower.includes('payment')) args.summary = text;
+  return args;
+}
+
 function extractDomain(text = '') {
   return firstMatch(text, /\b((?:[a-z0-9-]+\.)+[a-z]{2,})\b/i);
 }
@@ -66,13 +196,127 @@ function guessScheduledAt(text = '') {
   return time;
 }
 
+function guessSupportCategory(text = '') {
+  const lower = String(text || '').toLowerCase();
+  if (/\b(bot|api|openai|kimi|telegram|assistant)\b/.test(lower)) return 'bot_api';
+  if (/\b(automation|scheduler|cron)\b/.test(lower)) return 'automation';
+  if (/\b(login|password|sign in|access code)\b/.test(lower)) return 'login';
+  if (/\b(access|permission|locked|role)\b/.test(lower)) return 'access';
+  if (/\b(payment|billing|charge|refund|stripe)\b/.test(lower)) return 'payment';
+  if (/\b(recording|video|vimeo)\b/.test(lower)) return 'recording';
+  if (/\b(worksheet|source sheet|assignment)\b/.test(lower)) return 'worksheet';
+  if (/\b(drive|google doc|upload)\b/.test(lower)) return 'drive';
+  if (/\b(student|parent|family|kid|child)\b/.test(lower)) return 'student_parent_data';
+  if (/\b(link|url|button|route|page)\b/.test(lower)) return 'link';
+  return 'task_manager';
+}
+
+function guessSeverity(text = '') {
+  const lower = String(text || '').toLowerCase();
+  if (/\b(blocking|can't work|cannot work|down|broken|urgent)\b/.test(lower)) return 'blocking';
+  if (/\b(high|serious|major)\b/.test(lower)) return 'high';
+  if (/\b(low|minor|small)\b/.test(lower)) return 'low';
+  return 'normal';
+}
+
+function currentOperationsRouteArgs(context = {}) {
+  const pageContext = context.pageContext || {};
+  const query = pageContext.query && typeof pageContext.query === 'object' ? pageContext.query : {};
+  const view = compactText(query.view || pageContext.view || context.view || '', 80);
+  if (!view) return null;
+  const args = {
+    view,
+    section: compactText(query.section || pageContext.section || pageContext.visibleSection || '', 80) || undefined,
+    workspace_key: compactText(query.workspace || context.workspaceKey || '', 120) || undefined,
+  };
+  const selectedTask = pageContext.selectedRecord?.type === 'task' ? pageContext.selectedRecord?.id : null;
+  const taskId = query.task || selectedTask;
+  if (taskId && Number.isFinite(Number(taskId))) args.task_id = Number(taskId);
+  if (query.student && Number.isFinite(Number(query.student))) args.student_id = Number(query.student);
+  if (query.content_job && Number.isFinite(Number(query.content_job))) args.content_job_id = Number(query.content_job);
+  return Object.fromEntries(Object.entries(args).filter(([, value]) => value !== undefined && value !== ''));
+}
+
+function navigationArgs(text = '', context = {}) {
+  const lower = String(text || '').toLowerCase();
+  const currentPageIntent = /\b(?:this|that|current)\s+(?:page|screen|view|route|link)\b/.test(lower)
+    || /\b(?:link|url)\s+(?:to|for)\s+(?:this|that|current)\b/.test(lower)
+    || /\bbring me\b.{0,80}\b(?:to|right to)\b.{0,80}\b(?:page|link|route)\b/.test(lower);
+  if (currentPageIntent) {
+    const currentArgs = currentOperationsRouteArgs(context);
+    if (currentArgs) return currentArgs;
+  }
+  const taskId = extractTaskIdOrSelected(text, context);
+  if (/\b(task|ticket)\s*#?\d+\b/.test(lower) || /\b(go back|return|open|show|edit)\b.*\btask\b/.test(lower)) {
+    return { view: 'tasks', section: 'tasks', task_id: taskId || undefined };
+  }
+  if (/\bdecision|decisions|approval|approvals\b/.test(lower)) return { view: 'tasks', section: 'decisions' };
+  if (/\bpending|blocked|blockers|waiting\b/.test(lower)) return { view: 'tasks', section: 'pending' };
+  if (/\bdone|completed|history|activity\b/.test(lower)) return { view: 'tasks', section: lower.includes('activity') ? 'activity' : 'done' };
+  if (/\b(?:settings?|setup|configuration)\b.*\b(?:calendar|classroom)\b/.test(lower) || /\bcalendar[_\s/-]*classroom\b/.test(lower)) {
+    return { view: 'settings', section: 'calendar_classroom', workspace_key: context.workspaceKey || undefined };
+  }
+  if (/\b(calendar|schedule|scheduled|date|day|week|month)\b/.test(lower)) return { view: 'tasks', section: 'schedule', calendar_mode: lower.includes('week') ? 'week' : lower.includes('day') ? 'day' : undefined };
+  if (/\bcontent|recording|library|post|social\b/.test(lower)) return { view: 'content', section: 'library' };
+  if (/\bstudent|students|accountability\b/.test(lower)) return { view: 'students', section: 'list' };
+  if (/\bcontact|contacts|parent|lead|people\b/.test(lower)) return { view: 'contacts', section: 'overview' };
+  if (/\badmin|ticket|support\b/.test(lower)) return { view: 'admin', section: 'tickets' };
+  return null;
+}
+
+function extractTaskUpdateArgs(text = '', context = {}) {
+  const taskId = extractTaskIdOrSelected(text, context);
+  if (!taskId) return null;
+  const args = { task_id: taskId };
+  const title = firstMatch(text, /\btitle\s*(?:to|=|:|-)\s*([^,\n]+)/i);
+  const notes = firstMatch(text, /\b(?:notes?|description)\s*(?:to|=|:|-)\s*([\s\S]+)/i);
+  const assignee = firstMatch(text, /\bassign(?:ed)?\s*(?:to|=|:|-)\s*([^,\n]+)/i);
+  const dueDate = firstMatch(text, /\b(?:due|date)\s*(?:to|=|:|-)\s*([^,\n]+)/i);
+  const stage = firstMatch(text, /\b(?:stage|status)\s*(?:to|=|:|-)\s*(raw input|needs decision|assigned|in progress|done|archive|raw_input|needs_decision|in_progress)/i);
+  if (title) args.title = title;
+  if (notes) args.notes = notes;
+  if (assignee) args.assigned_to = assignee;
+  if (dueDate) args.due_date = dueDate;
+  if (stage) args.stage = stage.replace(/\s+/g, '_').toLowerCase();
+  return Object.keys(args).length > 1 ? args : null;
+}
+
 function deterministicPlan(message = '', registry, context = {}) {
   const text = compactText(redactText(message), 4000);
   const lower = text.toLowerCase();
   const actions = [];
   let reply = 'I can help with that.';
 
-  if (/\b(show|audit|status|report)\b.*\b(codex|agent|queue)\b/.test(lower)) {
+  if (/\b(capture|save|remember|raw intake|ramble|transcript|recording|goal mode|set (it|this|that) as a goal|make (it|this|that) a goal|from now on|always|never|every time|do all those things|finish everything)\b/i.test(text)) {
+    reply = 'I can capture this as raw intake, parse it into BNA lanes, and return the raw ID plus counts.';
+    actions.push({
+      tool: 'capture_raw_intake',
+      label: 'Capture raw intake',
+      args: {
+        raw_text: text,
+        source_type: 'operations_helper',
+        source_channel: 'operations_helper',
+        project_key: context.projectKey || undefined,
+      },
+      reason: 'Universal natural-language intake request',
+    });
+  } else if (/\b(show|list|status)\b.*\b(goals?|quality goals?|watchdog goals?)\b|\bwhat goals?\b/i.test(text)) {
+    reply = 'I can show the related BNA standing goals.';
+    actions.push({
+      tool: 'show_goal_status',
+      label: 'Show related goals',
+      args: { text },
+      reason: 'Goal memory status request',
+    });
+  } else if (/\b(run|start|create|request)\b.*\bwatchdog\b.*\b(audit|check|scan)\b|\bwatchdog\b.*\b(audit|check|scan)\b/i.test(text)) {
+    reply = 'I can create a Codex-owned watchdog audit request.';
+    actions.push({
+      tool: 'run_watchdog_audit',
+      label: 'Request watchdog audit',
+      args: { reason: text, project_key: context.projectKey || undefined },
+      reason: 'Watchdog audit helper request',
+    });
+  } else if (/\b(show|audit|status|report)\b.*\b(codex|agent|queue)\b/.test(lower)) {
     reply = 'I can show the current Codex queue status.';
     actions.push({ tool: 'audit_queue_status', label: 'Show Codex queue', args: { limit: 50 }, reason: 'Queue/report request' });
   } else if (/\b(zoom|godaddy|dns|domain)\b.*\b(blocked|thursday|owner access|delegate)\b|\b(blocked|thursday)\b.*\b(zoom|godaddy|dns|domain)\b/i.test(text)) {
@@ -93,6 +337,28 @@ function deterministicPlan(message = '', registry, context = {}) {
       label: 'Create DNS setup task',
       args: { integration_type: integrationType, provider: integrationType, domain: domain || '', purpose: integrationType === 'resend' ? 'resend' : 'verification' },
       reason: 'DNS setup request',
+    });
+  } else if (/\b(create|add|make|set up|setup|build)\b.*\b(automation|workflow)\b/i.test(text)) {
+    const billing = /\b(billing|payment|invoice|tuition|green invoice|stripe)\b/i.test(text);
+    reply = billing
+      ? 'I can create a guarded local billing workflow draft without sending reminders or changing payments.'
+      : 'I can create a guarded local automation draft without running it.';
+    actions.push({
+      tool: 'create_automation',
+      label: billing ? 'Create billing workflow draft' : 'Create automation draft',
+      args: automationCreateArgs(text, context),
+      reason: billing ? 'Billing workflow helper request' : 'Automation helper request',
+    });
+  } else if (/\b(disable|pause|turn off|stop|enable|turn on|reactivate|unpause|edit|update|change|block)\b.*\b(automation|workflow)\b/i.test(text)) {
+    const args = automationUpdateArgs(text, context);
+    reply = args.automation_id
+      ? `I can update automation #${args.automation_id} metadata without running it.`
+      : 'I can update the selected automation once its ID is available.';
+    actions.push({
+      tool: 'update_automation',
+      label: args.enabled === false ? 'Pause automation' : args.enabled === true ? 'Re-enable automation' : 'Update automation',
+      args,
+      reason: 'Automation edit helper request',
     });
   } else if (/\b(show|check|test|status)\b.*\b(integration|resend|buffer|vimeo|zoom|wapi|whatsapp|stripe|dns|godaddy)\b|\b(integration|resend|buffer|vimeo|zoom|wapi|whatsapp|stripe|dns|godaddy)\b.*\b(show|check|test|status|ready|readiness)\b/i.test(text)) {
     const integrationType = guessIntegrationType(text);
@@ -143,15 +409,60 @@ function deterministicPlan(message = '', registry, context = {}) {
       args: url ? { vimeo_url: url, project_key: context.projectKey || undefined } : { title: 'Vimeo class video', reason: text, project_key: context.projectKey || undefined },
       reason: 'Vimeo video workflow request',
     });
-  } else if (/\b(mark|set)\b.*\btask\s*#?\d+\b.*\b(done|complete|completed)\b/.test(lower)) {
-    const taskId = extractTaskId(text);
+  } else if (/\b(?:settings?|setup|configuration)\b.*\b(?:calendar|classroom)\b|\bcalendar[_\s/-]*classroom\b/i.test(text) && navigationArgs(text, context)) {
+    const args = navigationArgs(text, context);
+    reply = `I can open ${args.view}${args.section ? ` / ${args.section}` : ''}.`;
+    actions.push({ tool: 'open_operations_view', label: `Open ${args.view} / ${args.section || 'overview'}`, args, reason: 'Operations settings navigation request' });
+  } else if (/\b(start|open|create|make|set up|setup|launch)\b.{0,90}\b(classroom|learning community|community|course)\b/i.test(text)) {
+    reply = 'I can create a provider classroom setup draft and capture the remaining setup questions.';
+    actions.push({
+      tool: 'create_provider_classroom_draft',
+      label: 'Create classroom draft',
+      args: providerClassroomArgs(text, context),
+      reason: 'Provider classroom/community setup request',
+    });
+  } else if (/\b(edit|update|change|set)\b.*\btask\b/i.test(text) && extractTaskUpdateArgs(text, context)) {
+    const args = extractTaskUpdateArgs(text, context);
+    reply = `I can update task #${args.task_id}.`;
+    actions.push({ tool: 'update_task', label: 'Update task', args, reason: 'Task edit/update request' });
+  } else if (
+    /\b(mark|set)\b.*\btask\s*#?\d+\b.*\b(done|complete|completed)\b/.test(lower)
+    || (selectedTaskId(context) && /\b(mark|set)\b.*\b(this|selected|current)?\s*\b(done|complete|completed)\b/.test(lower))
+  ) {
+    const taskId = extractTaskIdOrSelected(text, context);
     reply = `I can mark task #${taskId} done.`;
     actions.push({ tool: 'mark_task_done', label: 'Mark task done', args: { task_id: taskId, verification_notes: 'Marked done by BNA Helper.' }, reason: 'Task completion request' });
   } else if (/\badd\b.*\bcomment\b.*\btask\s*#?\d+\b/.test(lower)) {
-    const taskId = extractTaskId(text);
+    const taskId = extractTaskIdOrSelected(text, context);
     const body = textAfterIntent(text, /(?:comment|note)\s*(?:to|on)?\s*task\s*#?\d+\s*[:\-]?\s*([\s\S]+)$/i, 'Helper comment');
     reply = `I can add that comment to task #${taskId}.`;
     actions.push({ tool: 'add_task_comment', label: 'Add task comment', args: { task_id: taskId, body }, reason: 'Task comment request' });
+  } else if (/\b(report|file|create|open)\b.*\b(problem|bug|issue|support ticket|ticket)\b|\b(broken|not working|looks wrong|looked wrong|error)\b/i.test(text)) {
+    const title = textAfterIntent(text, /(?:report|file|create|open)?\s*(?:a\s*)?(?:problem|bug|issue|support ticket|ticket)\s*(?:about|for|:|-)?\s*([\s\S]+)$/i, text);
+    reply = 'I can create a first-party support ticket with the current page context.';
+    actions.push({
+      tool: 'create_support_ticket',
+      label: 'Create support ticket',
+      args: {
+        title: title.slice(0, 180) || 'Helper support report',
+        description: text,
+        severity: guessSeverity(text),
+        category: guessSupportCategory(text),
+        project_key: context.projectKey || undefined,
+      },
+      reason: 'Problem report request',
+    });
+  } else if (
+    (
+      /\b(go to|open|show|return|go back|back to|take me to)\b/i.test(text)
+      || /^(tasks?|decisions?|pending|content|calendar|schedule|scheduling|done|activity|students?|contacts?)$/i.test(text.trim())
+    )
+    && navigationArgs(text, context)
+  ) {
+    const args = navigationArgs(text, context);
+    const label = args.task_id ? `Open task #${args.task_id}` : `Open ${args.view}${args.section ? ` / ${args.section}` : ''}`;
+    reply = `I can open ${args.view}${args.section ? ` / ${args.section}` : ''}.`;
+    actions.push({ tool: 'open_operations_view', label, args, reason: 'Operations navigation request' });
   } else if (/\b(send|email)\b.*\bemail\b|\bsend this email\b/i.test(text)) {
     const to = extractEmail(text);
     const subject = extractSubject(text) || 'BNA update';
@@ -248,7 +559,11 @@ async function aiPlan(message = '', registry, context = {}) {
           'Hosted AI may only plan. It must never claim execution.',
           'Output shape: {"reply":"string","actions":[{"tool":"name","label":"short","args":{},"reason":"short"}],"missing_input":[],"notes":"string"}',
           'Use only listed tools and compact args. Do not include secrets.',
+          'Use capture_raw_intake for rambles, transcripts, uploaded-class notes, goal-mode requests, and durable memory phrases before creating ordinary tasks.',
+          'Use show_goal_status for goal-memory/status questions and run_watchdog_audit for watchdog audit requests.',
           'External sends, social publishing, payments, destructive changes, and Buffer scheduling require confirmation.',
+          'Use open_operations_view for navigation requests such as open tasks, decisions, pending, content, calendar, or a task detail.',
+          'Use create_support_ticket for problem, bug, broken UI, or support-ticket reports.',
         ].join('\n'),
       },
       {

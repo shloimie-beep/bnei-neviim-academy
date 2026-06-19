@@ -50,6 +50,9 @@ function sanitizeHelperPageContext(input = {}) {
       projectKey: compactText(workspace.projectKey || workspace.project_key || context.project_key || '', 120),
       providerId: compactText(workspace.providerId || workspace.provider_id || '', 120) || null,
       workspaceKey: compactText(workspace.workspaceKey || workspace.workspace_key || context.workspace_key || '', 120),
+      displayName: compactText(workspace.displayName || workspace.display_name || '', 160),
+      workspaceType: compactText(workspace.workspaceType || workspace.workspace_type || '', 80),
+      roleLabel: compactText(workspace.roleLabel || workspace.role_label || '', 120),
     },
     actor: {
       role: compactText(actor.role || context.actor_role || '', 80),

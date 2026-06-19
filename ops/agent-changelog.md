@@ -23805,6 +23805,45 @@ Remaining:
   requirement.
 - Release/live verification remains withheld until explicit approval.
 
+## 2026-06-19T07:39:07+03:00 - Unified Helper OpenAI Local Proof
+
+Moved `REQ-20260618-109` to local `done`.
+
+- Committed the unified helper runtime: scoped helper resolver, safety/profile/
+  knowledge modules, confirmation gate inference, side-effect metadata,
+  redaction, tool registry expansion, planner actions, deep links, support
+  ticket/intake/automation/provider-classroom drafts, and helper action-log
+  compatibility rows.
+- Verified the provider-neutral hosted-chat/content path uses OpenAI/Kimi
+  fallback and keyholder secret-loader names without showing provider failures
+  to ordinary users.
+- Verified Operations helper context/profile/knowledge/tool calls, scoped
+  permissions, confirmation gates, audit logs, mobile assistant keyboard
+  behavior, provider integration secret redaction, and bounded public helper
+  retrieval.
+
+Verification:
+
+- PASS syntax checks for Telegram bridge, OpenAI smoke, and helper modules.
+- PASS focused helper/provider/assistant suite 48/48.
+- PASS `npm run bna:run:validate`.
+
+Guardrails:
+
+- No live OpenAI/Kimi call was run.
+- No deployment was run.
+- No production database mutation was performed.
+- No external account, Drive, Telegram, social, payment, DNS, Zoom, Vimeo, or
+  Resend write was performed.
+- No raw secrets were stored in tracked files.
+- No watch loop or agent-fleet loop was run.
+
+Remaining:
+
+- `REQ-20260618-110` public copy, portal headers, signup routes, and CTAs is
+  the next broad unblocked requirement.
+- Release/live verification remains withheld until explicit approval.
+
 ## 2026-06-19T09:05:00+03:00 - PWA Separation Local Proof
 
 Moved `REQ-20260618-102` to local `needs_verification`.

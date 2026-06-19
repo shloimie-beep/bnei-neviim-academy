@@ -176,7 +176,7 @@
         surfaceLabel: he ? 'מרחב ספק' : 'Provider workspace',
         intro: he
           ? 'שלום, אני מסייע הספקים של BNA. אפשר לעדכן פרופיל, שירותים, תמונות, שאלות מהורים, Google וחסימות שדרוג.'
-          : "Hi, I'm the BNA provider assistant. I can help with your profile, services, pictures, parent questions, Google status, and upgrade blockers.",
+          : "Hi, I'm the BNA provider assistant. I can help with your profile, services, pictures, classroom setup drafts, parent questions, Google status, and upgrade blockers.",
         cards: he
           ? [
             ['פרופיל ציבורי', 'כותרת, תיאור, שירותים, תמונות ואזור שירות.'],
@@ -185,12 +185,13 @@
           ]
           : [
             ['Public profile', 'Headline, bio, services, pictures, and service area.'],
+            ['Classrooms', 'Start a classroom/community setup draft with class count, access, dialogue style, display rules, and message permissions.'],
             ['Parent conversations', 'Inbound questions, replies, and support tickets.'],
-            ['Connections and upgrade', 'Google Business, plan limits, and upgrade link status.'],
+            ['Connections', 'Google Business, plan limits, and upgrade link status.'],
           ],
         prompts: he
           ? ['עדכן את תיאור הפרופיל שלי.', 'מה חסר כדי לחבר Google Business?', 'אני רוצה להוסיף תמונה לפרופיל.']
-          : ['Update my profile description.', 'What is missing for Google Business?', 'I want to add a profile picture.'],
+          : ['Start an 8-class classroom where students reply privately to the teacher.', 'Update my profile description.', 'What is missing for Google Business?'],
       };
     }
     if (isSignup) {
@@ -309,6 +310,7 @@
       --keyboard-offset: 0px;
       --assistant-header-height: 56px;
       --assistant-composer-height: 76px;
+      --assistant-mobile-panel-height: clamp(280px, calc(var(--app-vh) * 0.72), calc(var(--app-vh) - 24px));
     }
     html,
     body {
@@ -400,6 +402,8 @@
       max-height: var(--app-vh);
       display: grid;
       grid-template-rows: auto minmax(0, 1fr) auto auto;
+      box-sizing: border-box;
+      overflow: hidden;
       background: #fffaf0;
       color: #172019;
       border-left: 1px solid rgba(23, 32, 25, 0.12);
@@ -466,6 +470,7 @@
       padding: 0.7rem;
       max-height: min(42vh, 320px);
       overflow: auto;
+      min-width: 0;
     }
     .bna-bot-history.is-open { display: block; }
     .bna-bot-history-head {
@@ -525,6 +530,7 @@
     }
     .bna-bot-thread {
       min-height: 0;
+      min-width: 0;
       overflow: auto;
       overscroll-behavior: contain;
       padding: 1rem;
@@ -585,6 +591,7 @@
       padding: 0 1rem 0.75rem;
       color: #60705f;
       font: 0.82rem "Trebuchet MS", Verdana, sans-serif;
+      min-width: 0;
     }
     .bna-bot-typing.is-visible { display: flex; }
     .bna-bot-spinner {
@@ -603,6 +610,9 @@
       padding: 0.75rem 0.75rem max(0.75rem, env(safe-area-inset-bottom));
       border-top: 1px solid rgba(23, 32, 25, 0.12);
       background: #fff;
+      box-sizing: border-box;
+      min-width: 0;
+      flex-shrink: 0;
     }
     .bna-bot-input {
       min-height: 44px;
@@ -615,6 +625,7 @@
       font: 0.92rem "Trebuchet MS", Verdana, sans-serif;
       resize: none;
       overflow: auto;
+      min-width: 0;
     }
     .bna-bot-send {
       min-width: 52px;
@@ -646,25 +657,33 @@
       [dir="rtl"] .bna-bot-panel {
         top: auto;
         right: 8px;
-        bottom: max(8px, env(safe-area-inset-bottom));
+        bottom: calc(max(8px, env(safe-area-inset-bottom)) + var(--keyboard-offset));
         left: 8px;
         width: auto;
-        height: min(70dvh, calc(var(--app-vh) * 0.7));
-        min-height: min(360px, calc(var(--app-vh) - 24px));
-        max-height: calc(var(--app-vh) - 24px);
+        max-width: calc(100vw - 16px);
+        height: var(--assistant-mobile-panel-height);
+        min-height: min(280px, calc(var(--app-vh) - 24px));
+        max-height: calc(var(--app-vh) - 16px);
         border: 1px solid rgba(23, 32, 25, 0.12);
         border-radius: 16px 16px 10px 10px;
         box-shadow: 0 -18px 52px rgba(27, 49, 32, 0.22);
         transform: translateY(110%);
+        contain: layout paint;
       }
       .bna-bot-panel.is-open,
       [dir="rtl"] .bna-bot-panel.is-open { transform: translateY(0); }
       .bna-bot-launcher.is-panel-open {
-        bottom: calc(min(70dvh, calc(var(--app-vh) * 0.7)) + 18px);
+        bottom: calc(var(--assistant-mobile-panel-height) + var(--keyboard-offset) + 18px);
         z-index: 6402;
       }
+      body.bna-assistant-keyboard-open .bna-bot-launcher.is-panel-open {
+        display: none;
+      }
       .bna-bot-head { padding: 0.82rem 0.9rem; }
-      .bna-bot-thread { padding: 0.78rem; }
+      .bna-bot-thread {
+        padding: 0.78rem;
+        max-width: 100%;
+      }
       .bna-bot-form { padding: 0.65rem; }
       .bna-bot-input { font-size: 16px; }
     }
@@ -740,10 +759,29 @@
   let dismissedPublicPrompt = publicNudgesSuppressed();
 
   function syncVisualViewportHeight() {
-    const height = window.visualViewport?.height || window.innerHeight || document.documentElement.clientHeight;
-    const keyboardOffset = Math.max(0, (window.innerHeight || height) - height - (window.visualViewport?.offsetTop || 0));
+    const visualViewport = window.visualViewport;
+    const height = visualViewport?.height || window.innerHeight || document.documentElement.clientHeight;
+    const layoutHeight = window.innerHeight || height;
+    const keyboardOffset = Math.max(0, layoutHeight - height - (visualViewport?.offsetTop || 0));
     document.documentElement.style.setProperty('--app-vh', `${Math.max(320, Math.round(height))}px`);
     document.documentElement.style.setProperty('--keyboard-offset', `${Math.round(keyboardOffset)}px`);
+    document.body?.classList.toggle('bna-assistant-keyboard-open', keyboardOffset > 40);
+  }
+
+  function keepAssistantComposerReachable() {
+    if (!panel.classList.contains('is-open')) return;
+    syncVisualViewportHeight();
+    threadEl.scrollTop = threadEl.scrollHeight;
+    if (!isMobileKeyboardSurface()) return;
+    try {
+      form.scrollIntoView({ block: 'end', inline: 'nearest' });
+    } catch {}
+  }
+
+  function handleAssistantViewportChange() {
+    syncVisualViewportHeight();
+    if (!panel.classList.contains('is-open')) return;
+    window.requestAnimationFrame?.(keepAssistantComposerReachable);
   }
 
   function isMobileKeyboardSurface() {
@@ -761,9 +799,9 @@
     }
   }
 
-  window.visualViewport?.addEventListener('resize', syncVisualViewportHeight);
-  window.visualViewport?.addEventListener('scroll', syncVisualViewportHeight);
-  window.addEventListener('resize', syncVisualViewportHeight);
+  window.visualViewport?.addEventListener('resize', handleAssistantViewportChange);
+  window.visualViewport?.addEventListener('scroll', handleAssistantViewportChange);
+  window.addEventListener('resize', handleAssistantViewportChange);
   syncVisualViewportHeight();
 
   appendMessage('assistant', introCopy(), { actions: publicInitialHelperActions() });
@@ -879,7 +917,7 @@
     launcher.setAttribute('aria-expanded', String(open));
     if (open) {
       clearPublicFollowup();
-      syncVisualViewportHeight();
+      keepAssistantComposerReachable();
       if (options.focus !== false) focusAssistantInput();
       if (threadId) loadThread(threadId);
     }
@@ -1208,11 +1246,9 @@
     }
   });
   input.addEventListener('focus', () => {
-    syncVisualViewportHeight();
-    setTimeout(syncVisualViewportHeight, 120);
-    setTimeout(() => {
-      threadEl.scrollTop = threadEl.scrollHeight;
-    }, 160);
+    keepAssistantComposerReachable();
+    setTimeout(keepAssistantComposerReachable, 120);
+    setTimeout(keepAssistantComposerReachable, 260);
   });
   document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape') {

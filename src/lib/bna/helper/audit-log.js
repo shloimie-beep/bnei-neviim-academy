@@ -59,6 +59,41 @@ async function insertHelperAudit(db, entry = {}) {
       entry.error_message || null,
     ]
   );
+  try {
+    await insertHelperActionLog(db, entry);
+  } catch {
+    // The detailed helper audit table is canonical; the compatibility action
+    // log is best-effort for older dashboards and reports.
+  }
+  return result.rows[0];
+}
+
+async function insertHelperActionLog(db, entry = {}) {
+  const helperScope = [entry.workspace_key, entry.project_key, entry.user_role]
+    .filter(Boolean)
+    .join(':') || 'unknown';
+  const result = await db.query(
+    `INSERT INTO bna_helper_action_log (
+       helper_scope, workspace_id, actor, user_role, tool_name, action_summary,
+       input_metadata, outcome, result_metadata, confirmation_required,
+       confirmed_at, error
+     ) VALUES ($1, $2, $3, $4, $5, $6, $7::jsonb, $8, $9::jsonb, $10, $11, $12)
+     RETURNING *`,
+    [
+      helperScope,
+      entry.workspace_id || null,
+      entry.user_name || entry.actor || null,
+      entry.user_role || null,
+      entry.tool_name || 'unknown',
+      entry.action_label || entry.action_summary || null,
+      JSON.stringify(redactValue(entry.args || entry.input_metadata || {})),
+      entry.status || entry.outcome || 'recorded',
+      JSON.stringify(redactValue(entry.result || entry.result_metadata || {})),
+      Boolean(entry.requires_confirmation),
+      entry.confirmed_at || null,
+      entry.error_message || entry.error || null,
+    ]
+  );
   return result.rows[0];
 }
 
@@ -159,6 +194,7 @@ async function listHelperAudit(db, { limit = 100 } = {}) {
 }
 
 module.exports = {
+  insertHelperActionLog,
   insertHelperAudit,
   listHelperAudit,
   loadHelperPlan,

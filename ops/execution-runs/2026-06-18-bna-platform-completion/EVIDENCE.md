@@ -475,6 +475,63 @@ Protocol/tooling verification evidence:
 - No deployment, production DB mutation, external write, broad crawl, watch
   loop, or agent-fleet loop was performed.
 
+2026-06-19 unified helper/OpenAI local closeout evidence:
+
+- Helper API routes and storage:
+  `server.js`.
+- Operations helper drawer/context client:
+  `public/operations.html`.
+- Public assistant widget and setup assistant:
+  `public/js/bna-bot-widget.js` and `public/assistant-setup.html`.
+- Provider-neutral Telegram hosted-chat/content path:
+  `scripts/telegram-kimi-bridge.mjs`.
+- Provider/keyholder smoke path:
+  `scripts/smoke-openai-sidekick.mjs`.
+- Helper modules:
+  `src/lib/bna/helper/audit-log.js`,
+  `src/lib/bna/helper/context.js`,
+  `src/lib/bna/helper/planner.js`,
+  `src/lib/bna/helper/redaction.js`,
+  `src/lib/bna/helper/tool-registry.js`,
+  `src/lib/bna/helper/action-planner.js`,
+  `src/lib/bna/helper/confirmation-gates.js`,
+  `src/lib/bna/helper/knowledge.js`,
+  `src/lib/bna/helper/profile.js`,
+  `src/lib/bna/helper/safety.js`, and
+  `src/lib/bna/helper/scope.js`.
+- Focused helper tests:
+  `tests/bna-helper-tools.test.js`,
+  `tests/helper-scope-profile-knowledge.test.js`,
+  `tests/universal-assistant-contract.test.js`,
+  `tests/universal-assistant-mvp.test.js`,
+  `tests/ai-provider-selection.test.js`,
+  `tests/mobile-assistant-keyboard-layout.test.js`,
+  `tests/provider-integrations-secret-storage.test.js`, and
+  `tests/public-helper-retrieval.test.js`.
+- PASS syntax checks:
+  `node --check scripts/telegram-kimi-bridge.mjs`,
+  `node --check scripts/smoke-openai-sidekick.mjs`, and
+  helper module `node --check` commands.
+- PASS focused helper/provider/assistant suite 48/48:
+  `node --test tests/bna-helper-tools.test.js
+  tests/helper-scope-profile-knowledge.test.js
+  tests/universal-assistant-contract.test.js
+  tests/universal-assistant-mvp.test.js tests/ai-provider-selection.test.js
+  tests/mobile-assistant-keyboard-layout.test.js
+  tests/provider-integrations-secret-storage.test.js
+  tests/public-helper-retrieval.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `in_progress: 6`, `needs_verification: 9`, `blocked: 2`,
+  `done: 14`.
+- The suite proves provider-neutral AI fallback, scoped helper names/profile
+  questionnaires/knowledge visibility, cross-scope helper denial, explicit
+  confirmation gates for risky tools, safe redaction of secrets/tokens/student
+  access/private record IDs, helper action/audit storage, mobile assistant
+  keyboard behavior, provider integration secret-storage redaction, and
+  bounded public helper retrieval.
+- No deployment, production DB mutation, external send/write, broad crawl,
+  watch loop, or agent-fleet loop was performed.
+
 Not run:
 
 - No full baseline UI crawl.

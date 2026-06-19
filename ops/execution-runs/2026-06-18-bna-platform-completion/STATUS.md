@@ -254,6 +254,25 @@ remain open.
   mutation, external write, broad crawl, watch loop, or agent-fleet loop was
   performed.
 
+2026-06-19 unified helper/OpenAI local closeout:
+
+- Moved `REQ-20260618-109` to local `done`.
+- Preserved and committed the unified helper runtime already present in the
+  recovery worktree: scoped helper resolution, helper safety/profile/knowledge
+  modules, confirmation policy inference, side-effect levels, redaction, tool
+  registry expansion, natural-language planner routes, deep-link actions,
+  support-ticket/intake/automation/provider-classroom draft tools, and helper
+  action-log compatibility writes.
+- Verified hosted chat/content generation uses the provider-neutral
+  OpenAI/Kimi fallback path and keyholder secret-loader names without exposing
+  provider failures to users.
+- Verified Operations helper context, profile, knowledge, tool permissions,
+  confirmation gates, audit logs, mobile assistant keyboard behavior,
+  provider integration secret redaction, and public helper retrieval.
+- Focused helper/provider/assistant suite passed 48/48; no deployment,
+  production DB mutation, external send/write, broad crawl, watch loop, or
+  agent-fleet loop was performed.
+
 Still open after this batch:
 
 - `REQ-20260619-203` is locally done. Production deployment/live smoke remains

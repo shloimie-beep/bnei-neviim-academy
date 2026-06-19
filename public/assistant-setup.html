@@ -148,6 +148,7 @@
             <select id="setupMode">
               <option value="parent">Parent</option>
               <option value="provider">Provider</option>
+              <option value="developer_tester">Developer tester</option>
             </select>
           </label>
           <label>
@@ -209,17 +210,35 @@
       const phone = text('setupPhone');
       const request = text('setupMessage');
       const contact = [name, email, phone].filter(Boolean).join(' / ');
+      const isDeveloperTester = mode === 'developer_tester';
+      const roleTitle = isDeveloperTester ? 'Developer tester bug report' : `${mode === 'provider' ? 'Provider' : 'Parent'} setup request`;
       try {
         const response = await fetch('/api/assistant/message', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             mode,
+            role: isDeveloperTester ? 'developer_tester' : mode,
             surface: 'setup_page',
             action: 'create_ticket',
-            title: `${mode === 'provider' ? 'Provider' : 'Parent'} setup request`,
+            title: roleTitle,
+            tester_name: isDeveloperTester ? name : undefined,
+            tester_email: isDeveloperTester ? email : undefined,
             message: [contact ? `Contact: ${contact}` : '', request].filter(Boolean).join('\\n\\n'),
-            context: { mode, surface: 'setup_page' },
+            context: {
+              mode,
+              role: isDeveloperTester ? 'developer_tester' : mode,
+              surface: 'setup_page',
+              path: window.location.pathname,
+              page_title: document.title,
+              user_agent: navigator.userAgent,
+              platform: navigator.platform,
+              language: navigator.language,
+              viewport: {
+                width: window.innerWidth,
+                height: window.innerHeight,
+              },
+            },
           }),
         });
         const result = await response.json().catch(() => ({}));

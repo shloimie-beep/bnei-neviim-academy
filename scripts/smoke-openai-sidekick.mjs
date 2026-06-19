@@ -10,6 +10,7 @@ const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, '..');
 const require = createRequire(import.meta.url);
 const { buildBnaAiContextSummary } = require('../src/lib/bna/ai-context');
+const integrationSecretLoader = require('../src/lib/integrations/secret-loader');
 const envLocalPath = path.join(repoRoot, '.env.local');
 const secretsDir = path.join(repoRoot, '.secrets');
 const reportDir = path.join(repoRoot, 'ops', 'openai-smokes');
@@ -141,8 +142,18 @@ function sanitizeForPrompt(summary) {
 }
 
 function selectAiSmokeProvider(env) {
-  const openaiApiKey = readSecret('openai-api-key.txt') || normalizeLoadedSecret(env.OPENAI_API_KEY) || '';
-  const kimiApiKey = readSecret('kimi-api-key.txt') || normalizeLoadedSecret(env.KIMI_API_KEY) || '';
+  const openaiApiKey = integrationSecretLoader.loadConfigValue({
+    envName: 'OPENAI_API_KEY',
+    names: ['openai-api-key', 'openaiv2'],
+    fileNames: ['openai-api-key.txt', 'openaiv2.txt'],
+    repoRoot,
+  }) || readSecret('openai-api-key.txt') || normalizeLoadedSecret(env.OPENAI_API_KEY) || '';
+  const kimiApiKey = integrationSecretLoader.loadConfigValue({
+    envName: 'KIMI_API_KEY',
+    names: ['kimi-api-key'],
+    fileNames: ['kimi-api-key.txt'],
+    repoRoot,
+  }) || readSecret('kimi-api-key.txt') || normalizeLoadedSecret(env.KIMI_API_KEY) || '';
   const preferred = normalizeAiPrimaryProvider(env.BNA_AI_PRIMARY_PROVIDER || env.AI_PRIMARY_PROVIDER || 'openai');
   if (preferred === 'kimi' && kimiApiKey) {
     return {
