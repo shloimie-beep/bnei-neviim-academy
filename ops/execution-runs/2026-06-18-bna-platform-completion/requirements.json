@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-19T07:25:30+03:00",
+  "updated_at": "2026-06-19T07:35:30+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -250,7 +250,8 @@
         "Content items now expose workspace/project context, source/Drive provenance, transcript/parse state, output counts, approval state, dates, and an expanded provenance panel in Operations.",
         "Content Drive intake/routing now resolves workspace-specific folders, rejects known folder/workspace mismatches, scopes bundles by workspace, and blocks mixed-workspace combined outputs.",
         "Live/class sessions now support direct workspace project filtering and the Calendar class-session feed stays selected-workspace scoped.",
-        "REQ-20260618-144 now has browser proof that the selected workspace Content view renders teaching/research material while filtering task, accountability, progress, timer, and parser-review phrases."
+        "REQ-20260618-144 now has browser proof that the selected workspace Content view renders teaching/research material while filtering task, accountability, progress, timer, and parser-review phrases.",
+        "REQ-20260618-145 now has browser proof that expanded Content cards expose selected-workspace metadata, Drive/source provenance, transcript/parse state, output counts, approval state, dates, and capture identifiers."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -267,10 +268,11 @@
         "node --test tests/content-boundary.test.js tests/telegram-content-intent.test.js tests/browser-acceptance.test.js PASS 10/10",
         "npm test PASS 210/210",
         "npm run bna:run:validate PASS",
-        "npm run bna:run:status PASS"
+        "npm run bna:run:status PASS",
+        "node --test tests/content-metadata-provenance.test.js tests/content-boundary.test.js tests/browser-acceptance.test.js PASS 8/8"
       ],
       "notes": "Scoped modules parent remains in_progress until Automations, Integrations, Users, Accounting, and remaining module children have terminal statuses.",
-      "updated_at": "2026-06-19T07:25:30+03:00",
+      "updated_at": "2026-06-19T07:35:30+03:00",
       "files_changed": [
         "server.js",
         "public/operations.html",
@@ -2007,7 +2009,7 @@
       "title": "Content metadata and provenance",
       "area": "modules",
       "priority": "P1",
-      "current_verdict": "local_implemented_pending_release",
+      "current_verdict": "local_complete_pending_release",
       "status": "needs_verification",
       "expected_result": "Content items show workspace/project, title, dates, source, transcript status, topics, sources, questions, outputs, approval state, and provenance.",
       "acceptance_criteria": [
@@ -2022,7 +2024,8 @@
       "evidence": [
         "GET /api/bna/content-jobs now accepts explicit project filters, applies scopedProjectKey/requestedProjectKey filtering, joins workspace/project metadata, and returns transcript_status, parse_status, output counts, approval counts, latest_output_at, and source/Drive provenance fields.",
         "Operations Content now requests jobs with selectedProjectFilter and displays workspace, source, transcript status, output summary, approval state, dates, and a provenance panel for each expanded content card.",
-        "tests/content-metadata-provenance.test.js covers server metadata/provenance query behavior and visible Operations content provenance rendering."
+        "tests/content-metadata-provenance.test.js covers server metadata/provenance query behavior and visible Operations content provenance rendering.",
+        "tests/browser-acceptance.test.js now proves the expanded Operations Content card shows the selected One Time workspace, Drive source/mime provenance, transcribed/parsed state, output and approval counts, created/updated/latest-output dates, Drive file/folder IDs, Telegram source IDs, media URL, and local capture path."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -2030,18 +2033,25 @@
         "node --check tests/content-metadata-provenance.test.js PASS",
         "Operations HTML script parse via vm.Script PASS (2 script blocks)",
         "node --test tests/content-metadata-provenance.test.js tests/content-boundary.test.js tests/community-workspace-scope.test.js PASS 7/7",
-        "npm test PASS 134/134"
+        "npm test PASS 134/134",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/content-metadata-provenance.test.js tests/content-boundary.test.js tests/browser-acceptance.test.js PASS 8/8",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: feat: show content provenance"
+        "current batch commit: feat: show content provenance",
+        "current batch commit: test: verify content provenance in browser"
       ],
       "files_changed": [
         "server.js",
         "public/operations.html",
-        "tests/content-metadata-provenance.test.js"
+        "tests/content-metadata-provenance.test.js",
+        "tests/browser-acceptance.test.js"
       ],
-      "notes": "Local implementation complete. Live-required item remains needs_verification until final acceptance sweep, release approval, deploy, and live smoke.",
-      "updated_at": "2026-06-18T22:55:30+03:00"
+      "notes": "Local implementation, static/API checks, and browser DOM proof are complete. Live-required closure remains pending release approval, deploy, and live smoke.",
+      "updated_at": "2026-06-19T07:35:30+03:00"
     },
     {
       "id": "REQ-20260618-146",

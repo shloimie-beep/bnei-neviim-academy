@@ -679,3 +679,14 @@ Content boundary browser proof (2026-06-19T07:25:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-144 now has browser proof that after switching to the One Time workspace, the Content module requests content jobs with `project=one_time_mishnah_class`, renders reusable Mishnah teaching topics/questions/sources/highlights, and excludes task/accountability/progress/timer/parser-review phrases from the visible card. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+
+Content metadata/provenance browser proof (2026-06-19T07:35:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/content-metadata-provenance.test.js tests/content-boundary.test.js tests/browser-acceptance.test.js` 8/8.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-145 now has browser proof that the expanded selected-workspace Content card displays workspace, Drive/source, transcript, parse, output count, approval state, created/updated/latest-output dates, Drive file/folder IDs, Telegram source IDs, media URL, and local capture metadata. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

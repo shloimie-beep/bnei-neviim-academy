@@ -4728,3 +4728,22 @@ Verification:
 - PASS `npm run bna:run:status`.
 
 Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+## 2026-06-19 - Content provenance browser proof
+
+Requirement: `REQ-20260618-145`
+
+Changed:
+
+- Extended the browser Content fixture with workspace/project, Drive, transcript, parse, output, approval, source-message, media, and local-capture metadata.
+- Verified the expanded Operations Content card renders compact metadata plus the Content provenance panel for the selected One Time workspace.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/content-metadata-provenance.test.js tests/content-boundary.test.js tests/browser-acceptance.test.js` 8/8.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

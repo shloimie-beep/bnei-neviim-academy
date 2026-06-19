@@ -356,13 +356,33 @@ function operationsFixture(pathname, url, options = {}) {
           source_type: 'video',
           status: 'transcribed',
           project_key: workspaceProject,
+          project_name: project === 'one_time_mishnah_class' ? 'One Time Mishnah Class' : 'BNA',
+          project_short_name: project === 'one_time_mishnah_class' ? 'One Time' : 'BNA',
+          workspace_key: project === 'one_time_mishnah_class' ? 'one_time_mishnah_class' : 'bna',
+          workspace_name: project === 'one_time_mishnah_class' ? 'One Time Mishnah Class' : 'BNA',
+          workspace_type: project === 'one_time_mishnah_class' ? 'service_provider' : 'school',
           workspace_label: project === 'one_time_mishnah_class' ? 'One Time Mishnah Class' : 'BNA',
           workspace_short_label: project === 'one_time_mishnah_class' ? 'One Time' : 'BNA',
-          source_label: 'Class recording',
-          transcript_status: 'ready',
+          transcript_status: 'transcribed',
+          transcript_text: 'The class explored a Mishnah about found objects.',
+          parse_status: 'parsed',
+          output_count: 3,
+          needs_approval_output_count: 1,
+          approved_output_count: 1,
+          published_output_count: 1,
+          latest_output_at: '2026-06-18T13:00:00+03:00',
+          drive_stage: 'workspace_imported',
+          drive_file_id: 'drive-file-801',
+          drive_folder_id: project === 'one_time_mishnah_class' ? 'drive-folder-one-time' : 'drive-folder-bna',
+          source_message_id: 'telegram-message-801',
+          source_chat_id: 'telegram-chat-801',
+          mime_type: 'video/mp4',
+          media_url: 'https://example.invalid/content/801.mp4',
+          local_path: 'media/content/TEST-BNA-SEED-801.mp4',
           created_at: '2026-06-18T12:00:00+03:00',
           updated_at: '2026-06-18T12:30:00+03:00',
           parse_json: {
+            parsed_at: '2026-06-18T12:35:00+03:00',
             summary: 'Students explored how a Mishnah frames responsibility for found objects.',
             topics: [
               'Mishnah structure for lost objects',
@@ -1112,6 +1132,52 @@ async function assertOperationsContentBoundary(page, calls) {
   assert.doesNotMatch(contentState.text, /parser fallback/i);
 }
 
+async function assertOperationsContentMetadataProvenance(page, calls) {
+  await page.locator('.ops-module-button').filter({ hasText: 'Content' }).click();
+  await page.locator('.ops-view-frame[data-current-view="content"]').waitFor();
+  await waitForCall(
+    calls,
+    (call) => call.pathname === '/api/bna/content-jobs' && call.project === 'one_time_mishnah_class',
+    'Content provenance request scoped to One Time workspace',
+  );
+  const contentCard = page.locator('.content-library-card').filter({ hasText: 'TEST-BNA-SEED Mishnah teaching clip' }).first();
+  await contentCard.waitFor();
+  const expanded = await contentCard.evaluate((node) => node.classList.contains('expanded'));
+  if (!expanded) {
+    await contentCard.locator('.content-card-compact').click();
+  }
+  await contentCard.locator('[aria-label="Content provenance"]').waitFor();
+  const metadataState = await contentCard.evaluate((node) => {
+    const compactMeta = node.querySelector('.content-card-compact .content-source-meta');
+    const provenance = node.querySelector('[aria-label="Content provenance"]');
+    return {
+      compactText: compactMeta?.textContent?.replace(/\s+/g, ' ').trim() || '',
+      provenanceText: provenance?.textContent?.replace(/\s+/g, ' ').trim() || '',
+    };
+  });
+  assert.match(metadataState.compactText, /Workspace:\s*One Time/);
+  assert.match(metadataState.compactText, /Source:\s*Drive - Workspace Imported - video\/mp4/);
+  assert.match(metadataState.compactText, /Transcript:\s*Transcribed/);
+  assert.match(metadataState.compactText, /Outputs:\s*3 outputs, 1 need approval, 1 approved, 1 published/);
+  assert.match(metadataState.compactText, /Approval:\s*1 need approval/);
+  assert.match(metadataState.provenanceText, /Workspace\s*One Time/);
+  assert.match(metadataState.provenanceText, /Source\s*Drive - Workspace Imported - video\/mp4/);
+  assert.match(metadataState.provenanceText, /Transcript\s*Transcribed/);
+  assert.match(metadataState.provenanceText, /Parse\s*Parsed/);
+  assert.match(metadataState.provenanceText, /Outputs\s*3 outputs, 1 need approval, 1 approved, 1 published/);
+  assert.match(metadataState.provenanceText, /Approval\s*1 need approval/);
+  assert.match(metadataState.provenanceText, /Created/);
+  assert.match(metadataState.provenanceText, /Updated/);
+  assert.match(metadataState.provenanceText, /Latest output/);
+  assert.match(metadataState.provenanceText, /Drive file\s*drive-file-801/);
+  assert.match(metadataState.provenanceText, /Drive folder\s*drive-folder-one-time/);
+  assert.match(metadataState.provenanceText, /Source message\s*telegram-message-801/);
+  assert.match(metadataState.provenanceText, /Source chat\s*telegram-chat-801/);
+  assert.match(metadataState.provenanceText, /MIME type\s*video\/mp4/);
+  assert.match(metadataState.provenanceText, /Media URL\s*https:\/\/example\.invalid\/content\/801\.mp4/);
+  assert.match(metadataState.provenanceText, /Local capture\s*media\/content\/TEST-BNA-SEED-801\.mp4/);
+}
+
 async function assertStudentPortalIdentity(page) {
   const identity = await page.evaluate(() => ({
     hasLogo: Array.from(document.images).some((img) => (
@@ -1248,6 +1314,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       await assertOperationsShellStable(page, 'refreshed operations shell');
       await assertOperationsContactsCommunityScope(page, calls);
       await assertOperationsContentBoundary(page, calls);
+      await assertOperationsContentMetadataProvenance(page, calls);
     } finally {
       await context.close();
       await browser.close();

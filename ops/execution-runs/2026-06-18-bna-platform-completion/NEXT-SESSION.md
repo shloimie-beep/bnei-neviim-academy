@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-19T07:25:30+03:00
+Updated: 2026-06-19T07:35:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -37,10 +37,11 @@ Latest completed local batches:
 - REQ-20260618-142: Idempotent parser routing has refreshed focused parser/backend evidence that deterministic parser item keys, scoped student matching, and idempotent task/accountability/group/timer routing prevent duplicates. It remains needs_verification only for release approval, deploy, and live smoke.
 - REQ-20260618-143: Workspace-scoped communities now have static/API and browser DOM proof that Contacts requests the selected workspace and shows workspace labels for scoped community records. It remains needs_verification only for release approval, deploy, and live smoke.
 - REQ-20260618-144: Content boundary now has static/backend and browser DOM proof that reusable teaching/research material renders in the selected workspace Content card while task, accountability, progress, timer, and parser-review phrases are filtered out. It remains needs_verification only for release approval, deploy, and live smoke.
+- REQ-20260618-145: Content metadata/provenance now has static/API and browser DOM proof that expanded Content cards show selected workspace, Drive/source, transcript/parse, output, approval, date, Drive ID, Telegram source, media URL, and local capture metadata. It remains needs_verification only for release approval, deploy, and live smoke.
 
 Exact next requirement:
 
-- REQ-20260618-145 / BNA-CONTENT-002: Content metadata and provenance.
+- REQ-20260618-146 / BNA-CONTENT-003: Workspace-specific Drive intake/routing.
 
 Blocked requirement intentionally skipped:
 
@@ -51,15 +52,15 @@ Exact next command:
 
 ```powershell
 npm run bna:run:status
-node --test tests/content-metadata-provenance.test.js tests/content-boundary.test.js tests/browser-acceptance.test.js
+node --test tests/content-drive-routing.test.js tests/content-metadata-provenance.test.js tests/browser-acceptance.test.js
 ```
 
-Then inspect whether `REQ-20260618-145` needs refreshed browser/API evidence beyond the existing metadata/provenance implementation so Content cards visibly prove workspace/project, source/Drive provenance, transcript/parse state, outputs, approval state, dates, and expanded provenance details. Do not close live-required task items as `done` without release approval, deployment, and live-smoke evidence.
+Then inspect whether `REQ-20260618-146` needs refreshed browser/API evidence beyond the existing Drive routing tests so content intake, edits, bundles, and combined outputs prove workspace-specific Drive routing and no mixed-workspace output creation. Do not close live-required task items as `done` without release approval, deployment, and live-smoke evidence.
 
 Still open after this batch:
 
 - REQ-20260618-124 through REQ-20260618-143 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
-- REQ-20260618-145 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-146 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - REQ-20260618-156 remains `needs_operator_decision` for duplicate-student cleanup approval.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 
