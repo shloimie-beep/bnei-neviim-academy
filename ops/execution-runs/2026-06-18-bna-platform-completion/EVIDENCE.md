@@ -644,3 +644,35 @@ Not run:
 - No watch loop or agent-fleet loop.
 - No deployment.
 - No production data mutation.
+
+2026-06-19 Agent Control interactive browser proof:
+
+- Interactive browser smoke test:
+  `tests/agent-control-browser-smoke.test.js`.
+- Interactive report:
+  `ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-report.md`.
+- Interactive JSON report:
+  `ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-report.json`.
+- Interactive screenshot:
+  `ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-run.png`.
+- PASS focused Agent Control/active-run suite 12/12:
+  `node --test tests/agent-control-center.test.js
+  tests/agent-control-api-readback.test.js
+  tests/agent-control-browser-smoke.test.js
+  tests/agent-control-manual-smoke-prompt.test.js
+  tests/active-run-acceptance-coverage.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `needs_verification: 13`, `blocked: 2`, `done: 16`.
+- The interactive smoke proves the real Operations Agent Run portal controls
+  can claim a safe local run, post progress, attach local evidence, submit a
+  passing result, seal the run, reload detail, and read back `Sealed Pass`
+  without production writes, external writes, secrets, broad crawls, watch
+  loops, or agent-fleet loops.
+
+Not run for this batch:
+
+- No actual manual Agent Mode/browser-judgment execution.
+- No production DB write/readback.
+- No deployment.
+- No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
+  social write.

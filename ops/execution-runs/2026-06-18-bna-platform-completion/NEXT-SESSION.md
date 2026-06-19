@@ -34,6 +34,13 @@ Current 2026-06-19 checkpoint:
   `/operations/agents/runs/run_agent_control_smoke` render correctly at
   1440x900, 768x1024, 390x844, and 360x800 with fake local data, screenshots,
   no overflow, and no console/page errors.
+- `REQ-20260619-206` also has interactive Super Admin browser proof now: the
+  real Operations Agent Run portal was exercised with fake local data through
+  `Claim Run`, `Post Progress`, `Attach Evidence`, `Submit Result`, `Seal Run`,
+  page reload, and persisted `Sealed Pass` readback. Evidence:
+  `ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-report.md`
+  and
+  `ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-run.png`.
 - `REQ-20260618-122` has local notification/audit-history coverage now:
   Agent Run ready/blocked alerts are private in-app rows only, progress updates
   do not create notification spam, and the blocked alert links to the single
@@ -72,8 +79,9 @@ Current 2026-06-19 checkpoint:
   production write.
 - `REQ-20260618-112`, `REQ-20260618-122`, `REQ-20260618-123`, and
   `REQ-20260619-206` are now in `needs_verification`: local Agent Control
-  implementation, API/browser smoke, notification/no-spam proof, safe test
-  data, and the copy-ready manual Agent Mode smoke prompt are implemented.
+  implementation, API/browser smoke, interactive browser click-through,
+  notification/no-spam proof, safe test data, and the copy-ready manual Agent
+  Mode smoke prompt are implemented.
 - Manual Agent Mode/browser-judgment execution remains open.
 - `REQ-20260619-207` is genuinely blocked for live provider setup until
   operator supplies or performs external account-owner actions through the
@@ -84,7 +92,9 @@ Exact next requirement:
 No credential-free implementation row is currently `in_progress`. The exact
 next verification gate is the manual Agent Mode/browser-judgment smoke for
 `REQ-20260618-112`, `REQ-20260618-123`, and `REQ-20260619-206`, using
-`ops/agent-control/2026-06-19-manual-agent-mode-smoke.md`.
+`ops/agent-control/2026-06-19-manual-agent-mode-smoke.md`. The latest focused
+Agent Control/active-run suite passed 12/12 and `npm run bna:run:validate`
+passed with status counts `needs_verification: 13`, `blocked: 2`, `done: 16`.
 
 Exact next command:
 
@@ -107,7 +117,8 @@ Open requirements:
   implemented and needs release/live verification
 - `REQ-20260618-112` Agent Control Center parent
 - `REQ-20260618-113` through `REQ-20260618-118` have local API/browser proof
-  but still need manual Agent Mode/browser-judgment closeout before closure
+  including interactive click-through/readback, but still need manual Agent
+  Mode/browser-judgment closeout before closure
 - `REQ-20260618-120` has local negative API smoke; browser/live proof remains
   withheld until release approval
 - `REQ-20260618-121` Playwright/browser verification policy has focused local
@@ -126,7 +137,8 @@ Credential-free implementation must continue without waiting for that package.
 Deferred Agent Control manual-smoke check:
 
 ```powershell
-node --test tests\agent-control-center.test.js tests\agent-control-api-readback.test.js tests\agent-control-browser-smoke.test.js; npm run bna:run:validate
+node --test tests\agent-control-center.test.js tests\agent-control-api-readback.test.js tests\agent-control-browser-smoke.test.js tests\agent-control-manual-smoke-prompt.test.js tests\active-run-acceptance-coverage.test.js
+npm run bna:run:validate
 ```
 
 Use this only when returning to `REQ-20260618-123` / `REQ-20260619-206`:

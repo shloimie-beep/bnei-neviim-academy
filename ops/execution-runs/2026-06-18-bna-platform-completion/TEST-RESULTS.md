@@ -422,6 +422,31 @@ Not run for this batch:
 - No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
   social write.
 
+Verified on 2026-06-19 for Agent Control interactive browser proof:
+
+- PASS `node --check tests\agent-control-browser-smoke.test.js`.
+- PASS `node --test tests\agent-control-browser-smoke.test.js` 2/2.
+- PASS focused Agent Control/active-run suite 12/12:
+  `node --test tests\agent-control-center.test.js
+  tests\agent-control-api-readback.test.js
+  tests\agent-control-browser-smoke.test.js
+  tests\agent-control-manual-smoke-prompt.test.js
+  tests\active-run-acceptance-coverage.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `needs_verification: 13`, `blocked: 2`, `done: 16`.
+- The browser smoke verifies the real Operations Agent Run portal can claim,
+  record progress, attach local evidence, submit, seal, reload, and read back
+  a `Sealed Pass` state using fake local data only.
+
+Not run for this batch:
+
+- No actual manual Agent Mode/browser-judgment execution.
+- No broad UI crawl or audit harness rebuild.
+- No production DB write/readback.
+- No deployment.
+- No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
+  social write.
+
 Verified on 2026-06-19 for Agent Control manual-smoke prompt:
 
 - PASS `node --check tests/agent-control-manual-smoke-prompt.test.js`.

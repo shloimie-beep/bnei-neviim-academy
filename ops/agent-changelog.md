@@ -24132,3 +24132,45 @@ Remaining:
   `ops/agent-control/2026-06-19-manual-agent-mode-smoke.md` when browser
   takeover is available.
 - Release/live verification still requires explicit operator approval.
+
+## 2026-06-19T08:11:57+03:00 - Agent Control Interactive Browser Proof
+
+Added interactive local browser proof for the Agent Control closed loop while
+keeping Agent Mode/manual judgment open.
+
+- Extended `tests/agent-control-browser-smoke.test.js` with a fake local
+  Agent Run mutation fixture.
+- The smoke opens the real Operations Agent Run portal, clicks `Claim Run`,
+  posts progress, attaches local evidence, submits a passing result, seals the
+  run, reloads detail, and verifies persisted `Sealed Pass` readback.
+- Generated
+  `ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-report.md`,
+  `ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-report.json`,
+  and
+  `ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-run.png`.
+- Updated active-run requirements, status, evidence, test results, and
+  next-session checkpoint.
+
+Verification:
+
+- PASS `node --check tests\agent-control-browser-smoke.test.js`.
+- PASS `node --test tests\agent-control-browser-smoke.test.js` 2/2.
+- PASS focused Agent Control/active-run suite 12/12.
+- PASS `npm run bna:run:validate`.
+
+Guardrails:
+
+- No actual manual Agent Mode execution was performed in this Codex run.
+- No deployment was run.
+- No production database mutation was performed.
+- No external account, Drive, Telegram, social, payment, DNS, Zoom, Vimeo, or
+  Resend write was performed.
+- No raw secrets were stored in tracked files.
+- No broad UI crawl, watch loop, or agent-fleet loop was run.
+
+Remaining:
+
+- Run the manual Agent Mode/browser-judgment smoke using
+  `ops/agent-control/2026-06-19-manual-agent-mode-smoke.md` when browser
+  takeover is available.
+- Release/live verification still requires explicit operator approval.

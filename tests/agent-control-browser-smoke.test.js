@@ -215,6 +215,161 @@ const runArtifacts = [
   },
 ];
 
+const agentRunDecisions = [];
+const agentRunMutations = [];
+
+function resetInteractiveAgentRunFixture() {
+  agentRun.status = 'ready';
+  agentRun.result_summary = '';
+  agentRun.result_payload = {};
+  agentRun.blocker = '';
+  agentRun.artifact_count = 1;
+  agentRun.event_count = 2;
+  agentRun.updated_at = '2026-06-19T11:20:00.000Z';
+  runEvents.splice(0, runEvents.length,
+    {
+      id: 1,
+      run_id: 9101,
+      event_type: 'created',
+      actor_name: 'Super Admin',
+      body: 'Agent run created for browser smoke.',
+      metadata: {},
+      created_at: '2026-06-19T11:10:00.000Z',
+    },
+    {
+      id: 2,
+      run_id: 9101,
+      event_type: 'prompt_generated',
+      actor_name: 'Super Admin',
+      body: 'Prompt generated without credentials.',
+      metadata: {},
+      created_at: '2026-06-19T11:10:10.000Z',
+    },
+  );
+  runArtifacts.splice(0, runArtifacts.length,
+    {
+      id: 1,
+      run_id: 9101,
+      artifact_type: 'report',
+      title: 'Agent Control API readback report',
+      path: 'tests/agent-control-api-readback.test.js',
+      url: '',
+      redaction_status: 'not_needed',
+      metadata: { fixture: true },
+      created_at: '2026-06-19T11:12:00.000Z',
+    },
+  );
+  agentRunDecisions.splice(0, agentRunDecisions.length);
+  agentRunMutations.splice(0, agentRunMutations.length);
+}
+
+function recordRunEvent(eventType, body, metadata = {}) {
+  runEvents.push({
+    id: runEvents.length + 1,
+    run_id: 9101,
+    event_type: eventType,
+    actor_name: 'Browser QA local smoke',
+    body,
+    metadata,
+    created_at: `2026-06-19T11:${String(20 + runEvents.length).padStart(2, '0')}:00.000Z`,
+  });
+  agentRun.event_count = runEvents.length;
+}
+
+async function readJsonBody(req) {
+  const chunks = [];
+  for await (const chunk of req) chunks.push(chunk);
+  const text = Buffer.concat(chunks).toString('utf8');
+  if (!text.trim()) return {};
+  try {
+    return JSON.parse(text);
+  } catch {
+    return {};
+  }
+}
+
+async function handleAgentRunMutation(req, res, pathname) {
+  const match = pathname.match(/^\/api\/bna\/agent-runs\/([^/]+)\/([^/]+)$/);
+  if (!match || match[1] !== runKey) return false;
+  const action = match[2];
+  const payload = await readJsonBody(req);
+  agentRunMutations.push({ action, payload });
+
+  if (action === 'claim') {
+    agentRun.status = 'claimed';
+    recordRunEvent('claimed', 'Browser QA local smoke claimed the run.');
+    json(res, { success: true, run: agentRun });
+    return true;
+  }
+
+  if (action === 'progress') {
+    recordRunEvent(payload.event_type || 'progress', payload.summary || 'Progress update.', payload.metadata || {});
+    json(res, { success: true, event: runEvents[runEvents.length - 1] });
+    return true;
+  }
+
+  if (action === 'artifacts') {
+    const artifact = {
+      id: runArtifacts.length + 1,
+      run_id: 9101,
+      artifact_type: payload.artifact_type || 'note',
+      title: payload.title || 'Evidence',
+      path: payload.path || '',
+      url: payload.url || '',
+      redaction_status: payload.redaction_status || 'not_needed',
+      metadata: { fixture: true },
+      created_at: '2026-06-19T11:30:00.000Z',
+    };
+    runArtifacts.push(artifact);
+    agentRun.artifact_count = runArtifacts.length;
+    recordRunEvent('evidence_attached', artifact.title, { path: artifact.path, url: artifact.url });
+    json(res, { success: true, artifact });
+    return true;
+  }
+
+  if (action === 'submit' || action === 'seal') {
+    agentRun.result_summary = payload.summary || '';
+    agentRun.result_payload = {
+      outcome: payload.outcome || 'blocked',
+      criterion_results: payload.criterion_results || [],
+      automated_gates_passed: Boolean(payload.automated_gates_passed),
+    };
+    if (action === 'submit') {
+      agentRun.status = 'submitted';
+      recordRunEvent('submitted', agentRun.result_summary || 'Run submitted for seal.', agentRun.result_payload);
+      json(res, { success: true, run: agentRun });
+      return true;
+    }
+    const outcome = payload.outcome || 'blocked';
+    agentRun.status = outcome === 'pass' ? 'sealed_pass' : outcome === 'fail' ? 'sealed_fail' : 'blocked';
+    recordRunEvent('sealed', agentRun.result_summary || 'Run sealed.', agentRun.result_payload);
+    if (['blocked', 'needs_operator'].includes(outcome)) {
+      agentRunDecisions.push({
+        id: `DEC-${agentRunDecisions.length + 1}`,
+        title: 'Manual Agent Mode smoke requires operator/browser judgment',
+        source_run_key: runKey,
+      });
+    }
+    json(res, { success: true, run: agentRun, decisions: agentRunDecisions });
+    return true;
+  }
+
+  if (action === 'block') {
+    agentRun.status = 'blocked';
+    agentRun.blocker = payload.blocker || 'Needs operator action.';
+    recordRunEvent('blocked', agentRun.blocker);
+    agentRunDecisions.push({
+      id: `DEC-${agentRunDecisions.length + 1}`,
+      title: agentRun.blocker,
+      source_run_key: runKey,
+    });
+    json(res, { success: true, run: agentRun, decisions: agentRunDecisions });
+    return true;
+  }
+
+  return false;
+}
+
 function json(res, body, status = 200) {
   res.writeHead(status, { 'Content-Type': 'application/json' });
   res.end(JSON.stringify(body));
@@ -310,6 +465,15 @@ async function withServer(callback) {
   let activePort = 0;
   const server = http.createServer((req, res) => {
     const url = new URL(req.url || '/', `http://127.0.0.1:${activePort || 0}`);
+    if (req.method === 'POST' && url.pathname.startsWith('/api/bna/agent-runs/')) {
+      handleAgentRunMutation(req, res, url.pathname).then((handled) => {
+        if (!handled) {
+          res.writeHead(404);
+          res.end('not found');
+        }
+      });
+      return;
+    }
     if (url.pathname === '/operations' || url.pathname.startsWith('/operations/agents/runs/')) {
       res.writeHead(200, { 'Content-Type': 'text/html' });
       res.end(fs.readFileSync(operationsHtmlPath));
@@ -341,6 +505,15 @@ async function assertNoHorizontalOverflow(page, label) {
   }));
   assert.ok(metrics.scrollWidth <= metrics.width + 1, `${label} overflow ${metrics.scrollWidth} > ${metrics.width}`);
   return metrics;
+}
+
+async function waitForMutationCount(expected, label) {
+  const started = Date.now();
+  while (Date.now() - started < 5000) {
+    if (agentRunMutations.length >= expected) return;
+    await new Promise((resolve) => setTimeout(resolve, 50));
+  }
+  assert.fail(`${label} did not reach ${expected} Agent Run mutations; saw ${agentRunMutations.map((entry) => entry.action).join(', ')}`);
 }
 
 test('Super Admin Agent Control browser smoke renders list, run portal, prompt, and evidence controls', async () => {
@@ -448,6 +621,123 @@ test('Super Admin Agent Control browser smoke renders list, run portal, prompt, 
           '',
           'Screenshots:',
           ...report.screenshots.map((screenshot) => `- ${screenshot}`),
+          '',
+        ].join('\n'),
+      );
+    } finally {
+      await browser.close();
+    }
+  });
+});
+
+test('Super Admin Agent Control browser smoke submits and seals a safe local run', async () => {
+  resetInteractiveAgentRunFixture();
+  await withServer(async (baseUrl) => {
+    const browser = await chromium.launch({ headless: true });
+    const page = await browser.newPage({ viewport: { width: 1280, height: 860 } });
+    const consoleErrors = [];
+    page.on('console', (message) => {
+      if (message.type() === 'error') consoleErrors.push(message.text());
+    });
+    page.on('pageerror', (error) => consoleErrors.push(error.message));
+
+    try {
+      await page.goto(`${baseUrl}/operations/agents/runs/${runKey}?run=${runKey}&workspace=platform&view=agents`, { waitUntil: 'networkidle' });
+      await page.waitForSelector('.agent-run-portal', { timeout: 15000 });
+
+      const claimButton = page.getByRole('button', { name: 'Claim Run' });
+      assert.equal(await claimButton.count(), 1);
+      await claimButton.click();
+      await waitForMutationCount(1, 'claim');
+      await page.waitForFunction(() => /Agent run claimed\.|Claimed/.test(document.body.textContent), null, { timeout: 15000 });
+
+      const progressBox = page.locator('textarea[placeholder="Progress update, finding, or checkpoint..."]');
+      assert.equal(await progressBox.count(), 1);
+      await progressBox.fill('Manual Agent Mode prompt reviewed; UI controls are present and safe local data only.');
+      const progressButton = page.getByRole('button', { name: 'Post Progress' });
+      assert.equal(await progressButton.count(), 1);
+      await progressButton.click();
+      await waitForMutationCount(2, 'progress');
+      await page.waitForFunction(() => /Progress posted\.|Manual Agent Mode prompt reviewed/.test(document.body.textContent), null, { timeout: 15000 });
+
+      await page.locator('input[name="title"]').fill('Interactive Agent Control smoke evidence');
+      await page.locator('input[name="path"]').fill('ops/playwright-smokes/2026-06-19-agent-control-browser-local/interactive-run.png');
+      const evidenceButton = page.getByRole('button', { name: 'Attach Evidence' });
+      assert.equal(await evidenceButton.count(), 1);
+      await evidenceButton.click();
+      await waitForMutationCount(3, 'evidence');
+      await page.waitForFunction(() => /Evidence attached\.|Interactive Agent Control smoke evidence/.test(document.body.textContent), null, { timeout: 15000 });
+
+      await page.locator('textarea[placeholder="Concise verifier result..."]').fill('Interactive local browser flow verified with safe fake data.');
+      await page.locator('textarea[name="criterion_note_0"]').fill('Agent Control list and run portal rendered through local browser smoke.');
+      await page.locator('textarea[name="criterion_note_1"]').fill('Progress, evidence, submit, and seal controls were exercised with fake local data.');
+      const submitButton = page.getByRole('button', { name: 'Submit Result' });
+      assert.equal(await submitButton.count(), 1);
+      await submitButton.click();
+      await waitForMutationCount(4, 'submit');
+      await page.waitForFunction(() => /Agent run submitted for seal\.|Submitted/.test(document.body.textContent), null, { timeout: 15000 });
+
+      await page.locator('textarea[placeholder="Concise verifier result..."]').fill('Interactive local browser flow verified with safe fake data.');
+      const sealButton = page.getByRole('button', { name: 'Seal Run' });
+      assert.equal(await sealButton.count(), 1);
+      await sealButton.click();
+      await waitForMutationCount(5, 'seal');
+      await page.waitForFunction(() => /Agent run sealed\.|Sealed Pass/.test(document.body.textContent), null, { timeout: 15000 });
+      await page.reload({ waitUntil: 'networkidle' });
+      await page.waitForSelector('.agent-run-portal', { timeout: 15000 });
+      await page.waitForFunction(() => /Sealed Pass/.test(document.querySelector('.agent-run-portal')?.innerText || ''), null, { timeout: 15000 });
+
+      const finalText = await page.locator('.agent-run-portal').evaluate((node) => node.innerText.replace(/\s+/g, ' ').trim());
+      assert.match(finalText, /Sealed Pass/);
+      assert.match(finalText, /Interactive Agent Control smoke evidence/);
+      assert.match(finalText, /Manual Agent Mode prompt reviewed/);
+      assert.doesNotMatch(finalText, /admin-pass|api[_ -]?key\s*[:=]|token\s*[:=]|password\s*[:=]/i);
+      await assertNoHorizontalOverflow(page, 'interactive run');
+      await page.screenshot({ path: path.join(outDir, 'interactive-run.png'), fullPage: true });
+
+      assert.deepEqual(consoleErrors, []);
+      assert.deepEqual(agentRunMutations.map((entry) => entry.action), ['claim', 'progress', 'artifacts', 'submit', 'seal']);
+      assert.equal(agentRunDecisions.length, 0);
+      assert.equal(agentRun.status, 'sealed_pass');
+      assert.equal(runArtifacts.length, 2);
+      assert.ok(runEvents.some((event) => event.event_type === 'sealed'));
+
+      const report = {
+        ok: true,
+        target: `/operations/agents/runs/${runKey}`,
+        runKey,
+        actionSequence: agentRunMutations.map((entry) => entry.action),
+        finalStatus: agentRun.status,
+        artifactCount: runArtifacts.length,
+        eventTypes: runEvents.map((event) => event.event_type),
+        screenshot: path.relative(root, path.join(outDir, 'interactive-run.png')).replace(/\\/g, '/'),
+        guardrails: {
+          productionWrites: false,
+          productionDataMutation: false,
+          externalWrites: false,
+          secretsInFixture: false,
+          broadCrawl: false,
+        },
+      };
+      fs.writeFileSync(path.join(outDir, 'interactive-report.json'), JSON.stringify(report, null, 2));
+      fs.writeFileSync(
+        path.join(outDir, 'interactive-report.md'),
+        [
+          '# Agent Control Interactive Browser Smoke',
+          '',
+          'PASS. The real Operations Agent Run portal controls were exercised with fake local data only.',
+          '',
+          `- Run target: ${report.target}`,
+          `- Run key: ${runKey}`,
+          `- Action sequence: ${report.actionSequence.join(' -> ')}`,
+          `- Final status: ${report.finalStatus}`,
+          `- Artifacts after run: ${report.artifactCount}`,
+          '- Production writes: no',
+          '- External writes: no',
+          '- Broad crawl: no',
+          '',
+          'Evidence:',
+          `- ${report.screenshot}`,
           '',
         ].join('\n'),
       );

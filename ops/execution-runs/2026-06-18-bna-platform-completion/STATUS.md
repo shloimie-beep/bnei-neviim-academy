@@ -396,3 +396,27 @@ Still open:
 - Only `REQ-20260618-101` and screenshot-specific visual findings remain
   blocked on the external audit package. Credential-free non-screenshot work
   continues without waiting on that package.
+
+2026-06-19 Agent Control interactive browser proof:
+
+- Added an interactive Super Admin browser smoke to
+  `tests/agent-control-browser-smoke.test.js`.
+- The smoke uses the existing fake local Agent Run fixture only. It opens the
+  real Operations Agent Run portal, clicks `Claim Run`, posts progress,
+  attaches local evidence, submits a passing result, seals the run, reloads the
+  detail page, and verifies persisted `Sealed Pass` readback.
+- Evidence generated under
+  `ops/playwright-smokes/2026-06-19-agent-control-browser-local/`:
+  `interactive-report.md`, `interactive-report.json`, and
+  `interactive-run.png`.
+- Focused Agent Control/active-run suite passed 12/12.
+- `npm run bna:run:validate` passed with status counts
+  `needs_verification: 13`, `blocked: 2`, `done: 16`.
+- No deployment, production DB mutation, external write, broad crawl, watch
+  loop, or agent-fleet loop was performed.
+
+Still open after interactive proof:
+
+- Manual Agent Mode/browser-judgment smoke remains open.
+- Release/live verification remains withheld until explicit operator approval.
+- `REQ-20260618-101` remains blocked on the external audit package/output.
