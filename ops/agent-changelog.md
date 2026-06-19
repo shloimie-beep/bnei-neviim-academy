@@ -4861,3 +4861,22 @@ Verification:
 - PASS `npm run bna:run:status`.
 
 Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, payment send, Green Invoice reprocess, or accounting mutation was performed.
+
+## 2026-06-19 - Student workspace isolation browser proof
+
+Requirement: `REQ-20260618-152`
+
+Changed:
+
+- Added separate One Time student, parent, goal, and device fixtures to the browser acceptance harness.
+- Verified the Students module reloads under the selected One Time workspace, requests student/detail-adjacent APIs with the selected project, renders only One Time student/profile/goal/device details, and excludes the old BNA student detail after workspace switch and reload.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/student-detail-scope.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js` 13/13.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, duplicate-student merge, or student mutation was performed.

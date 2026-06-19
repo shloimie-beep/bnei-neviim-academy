@@ -15,6 +15,9 @@ const { app } = require('../server');
 const TEST_STUDENT_ID = 301;
 const TEST_STUDENT_NAME = 'TEST BNA Seed Student';
 const TEST_ACCESS_CODE = 'TEST-SEED-CODE';
+const ONE_TIME_STUDENT_ID = 302;
+const ONE_TIME_STUDENT_NAME = 'TEST One Time Seed Student';
+const ONE_TIME_ACCESS_CODE = 'TEST-ONE-TIME-CODE';
 
 function basicAuth(username, password) {
   return `Basic ${Buffer.from(`${username}:${password}`).toString('base64')}`;
@@ -45,35 +48,37 @@ function projectFrom(url) {
   return url.searchParams.get('project') || 'all';
 }
 
-function fixtureStudent() {
+function fixtureStudent(projectKey = 'bna') {
+  const isOneTime = projectKey === 'one_time_mishnah_class';
   return {
-    id: TEST_STUDENT_ID,
-    workspace_id: 1,
-    project_key: 'bna',
-    workspace_key: 'bna',
-    workspace_name: 'BNA',
-    name: TEST_STUDENT_NAME,
-    parent_name: 'TEST BNA Seed Parent',
-    parent_email: 'test-bna-seed@example.invalid',
-    grade: 'TEST',
-    age: 11,
+    id: isOneTime ? ONE_TIME_STUDENT_ID : TEST_STUDENT_ID,
+    workspace_id: isOneTime ? 2 : 1,
+    project_key: isOneTime ? 'one_time_mishnah_class' : 'bna',
+    workspace_key: isOneTime ? 'one_time_mishnah_class' : 'bna',
+    workspace_name: isOneTime ? 'One Time Mishnah Class' : 'BNA',
+    name: isOneTime ? ONE_TIME_STUDENT_NAME : TEST_STUDENT_NAME,
+    parent_name: isOneTime ? 'TEST One Time Seed Parent' : 'TEST BNA Seed Parent',
+    parent_email: isOneTime ? 'test-one-time-seed@example.invalid' : 'test-bna-seed@example.invalid',
+    grade: isOneTime ? 'Provider' : 'TEST',
+    age: isOneTime ? 12 : 11,
     status: 'active',
-    student_access_code: TEST_ACCESS_CODE,
-    tags: ['TEST'],
-    notes: 'TEST-BNA-SEED student fixture',
+    student_access_code: isOneTime ? ONE_TIME_ACCESS_CODE : TEST_ACCESS_CODE,
+    tags: [isOneTime ? 'ONE_TIME' : 'TEST'],
+    notes: isOneTime ? 'TEST-ONE-TIME-SEED student fixture' : 'TEST-BNA-SEED student fixture',
   };
 }
 
-function fixtureGoal() {
+function fixtureGoal(projectKey = 'bna') {
+  const isOneTime = projectKey === 'one_time_mishnah_class';
   return {
-    id: 401,
-    workspace_id: 1,
-    student_id: TEST_STUDENT_ID,
-    student_name: TEST_STUDENT_NAME,
+    id: isOneTime ? 402 : 401,
+    workspace_id: isOneTime ? 2 : 1,
+    student_id: isOneTime ? ONE_TIME_STUDENT_ID : TEST_STUDENT_ID,
+    student_name: isOneTime ? ONE_TIME_STUDENT_NAME : TEST_STUDENT_NAME,
     event_type: 'student_goal',
-    title: 'TEST-BNA-SEED: Finish today honestly',
-    topic: 'Self governance',
-    progress_percent: 50,
+    title: isOneTime ? 'TEST-ONE-TIME-SEED: Review this week Mishnah' : 'TEST-BNA-SEED: Finish today honestly',
+    topic: isOneTime ? 'Mishnah provider accountability' : 'Self governance',
+    progress_percent: isOneTime ? 25 : 50,
     source: 'manual',
     created_at: '2026-06-18T08:00:00+03:00',
     metadata: {
@@ -81,11 +86,13 @@ function fixtureGoal() {
       urgency: 'today',
       status: 'active',
       due_at: '2026-06-19T20:00:00+03:00',
-      student_summary: 'Student sees only the assigned goal summary.',
+      student_summary: isOneTime
+        ? 'One Time student sees only the provider-assigned goal summary.'
+        : 'Student sees only the assigned goal summary.',
       agreement: {
         bedtime_time: '21:30',
         wake_time: '07:00',
-        student_commitment: 'I will check off honestly.',
+        student_commitment: isOneTime ? 'I will review with the provider.' : 'I will check off honestly.',
         chosen_consequence: 'Review with rebbi',
       },
       consequence: {
@@ -101,8 +108,9 @@ function operationsFixture(pathname, url, options = {}) {
   const scopedOneTime = authMode === 'scoped_one_time';
   const project = projectFrom(url);
   const workspaceProject = project === 'all' ? 'all' : project;
-  const student = fixtureStudent();
-  const goal = fixtureGoal();
+  const activeFixtureProject = project === 'one_time_mishnah_class' ? 'one_time_mishnah_class' : 'bna';
+  const student = fixtureStudent(activeFixtureProject);
+  const goal = fixtureGoal(activeFixtureProject);
 
   const routes = {
     '/api/bna/auth/me': {
@@ -683,14 +691,14 @@ function operationsFixture(pathname, url, options = {}) {
     },
     '/api/bna/content-prompts': { prompts: [] },
     '/api/bna/content-bundles': { bundles: [] },
-    '/api/bna/students': { students: project === 'one_time_mishnah_class' ? [] : [student] },
+    '/api/bna/students': { students: [student] },
     '/api/bna/devices': {
       devices: [
         {
           id: 501,
-          workspace_id: 1,
-          student_id: TEST_STUDENT_ID,
-          device_name: 'TEST-BNA-SEED Tablet',
+          workspace_id: student.workspace_id,
+          student_id: student.id,
+          device_name: project === 'one_time_mishnah_class' ? 'TEST-ONE-TIME-SEED Tablet' : 'TEST-BNA-SEED Tablet',
           status: 'approved_access',
           provider: 'mock',
           active_session: {
@@ -702,8 +710,10 @@ function operationsFixture(pathname, url, options = {}) {
     },
     '/api/bna/device-access-rules': { rules: [] },
     '/api/bna/torah-learning': {
-      group: { groupPercentage: 50 },
-      students: [{ id: TEST_STUDENT_ID, percentage: 50, daily_completion_percentage: 50 }],
+      group: { groupPercentage: project === 'one_time_mishnah_class' ? 0 : 50 },
+      students: project === 'one_time_mishnah_class'
+        ? []
+        : [{ id: TEST_STUDENT_ID, percentage: 50, daily_completion_percentage: 50 }],
     },
     '/api/bna/accountability': { events: [goal] },
     '/api/bna/group-goals': { goals: [] },
@@ -1479,6 +1489,47 @@ async function assertOperationsUsersWorkspaceScope(page, calls) {
   assert.doesNotMatch(usersState.text, /Send invitation|Invite user|Create user|Delete user/i);
 }
 
+async function assertOperationsStudentWorkspaceScope(page, calls) {
+  await page.locator('.ops-module-button').filter({ hasText: 'Students' }).click();
+  await page.locator('.ops-view-frame[data-current-view="students"]').waitFor();
+  for (const [pathname, label] of [
+    ['/api/bna/students', 'Students request scoped to One Time workspace'],
+    ['/api/bna/devices', 'Student devices request scoped to One Time workspace'],
+    ['/api/bna/device-access-rules', 'Device rules request scoped to One Time workspace'],
+    ['/api/bna/torah-learning', 'Torah learning summary request scoped to One Time workspace'],
+    ['/api/bna/accountability', 'Accountability request scoped to One Time workspace'],
+    ['/api/bna/group-goals', 'Group goals request scoped to One Time workspace'],
+  ]) {
+    await waitForCall(
+      calls,
+      (call) => call.pathname === pathname && call.project === 'one_time_mishnah_class',
+      label,
+    );
+  }
+
+  const studentsFrame = page.locator('.ops-view-frame[data-current-view="students"]');
+  await studentsFrame.getByText(ONE_TIME_STUDENT_NAME).waitFor();
+  const overviewState = await studentsFrame.locator('.container').first().evaluate((node) => ({
+    text: node.textContent?.replace(/\s+/g, ' ').trim() || '',
+  }));
+  assert.match(overviewState.text, new RegExp(ONE_TIME_STUDENT_NAME));
+  assert.match(overviewState.text, /TEST-ONE-TIME-SEED: Review this week Mishnah/);
+  assert.doesNotMatch(overviewState.text, new RegExp(`${TEST_STUDENT_NAME}|TEST-BNA-SEED|${TEST_ACCESS_CODE}`));
+
+  await studentsFrame.locator('.student-card').filter({ hasText: ONE_TIME_STUDENT_NAME }).first().click();
+  await studentsFrame.locator('.student-profile-hero').filter({ hasText: ONE_TIME_STUDENT_NAME }).waitFor();
+  assert.match(page.url(), new RegExp(`student=${ONE_TIME_STUDENT_ID}`));
+
+  const profileState = await studentsFrame.locator('.container').first().evaluate((node) => ({
+    text: node.textContent?.replace(/\s+/g, ' ').trim() || '',
+  }));
+  assert.match(profileState.text, /TEST One Time Seed Parent/);
+  assert.match(profileState.text, /Mishnah provider accountability/);
+  assert.match(profileState.text, /TEST-ONE-TIME-SEED Tablet/);
+  assert.doesNotMatch(profileState.text, new RegExp(`${TEST_STUDENT_NAME}|TEST BNA Seed Parent|TEST-BNA-SEED|${TEST_ACCESS_CODE}`));
+  assert.equal(await studentsFrame.locator('.student-profile-hero').filter({ hasText: TEST_STUDENT_NAME }).count(), 0);
+}
+
 async function assertOperationsAccountingWorkspaceScope(page, calls) {
   await page.locator('.ops-module-button').filter({ hasText: 'Accounting' }).click();
   await page.locator('.ops-view-frame[data-current-view="accounting"]').waitFor();
@@ -1793,6 +1844,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       await page.reload({ waitUntil: 'domcontentloaded' });
       await page.locator('.ops-view-frame[data-current-view="tasks"]').waitFor();
       await assertOperationsShellStable(page, 'refreshed operations shell');
+      await assertOperationsStudentWorkspaceScope(page, calls);
       await assertOperationsLiveClassesWorkspaceScope(page, calls);
       await assertOperationsAutomationsWorkspaceStatus(page, calls);
       await assertOperationsIntegrationsWorkspaceStatus(page, calls);

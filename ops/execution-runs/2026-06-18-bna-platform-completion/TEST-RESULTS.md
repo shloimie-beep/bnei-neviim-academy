@@ -756,3 +756,14 @@ Accounting workspace browser proof (2026-06-19T08:35:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-151 now has browser proof that after switching to One Time workspace, Accounting requests `project=one_time_mishnah_class` for signups, payments, payment intake, payment reminders, and Green Invoice webhooks; shows scoped paid/intake records, summary counts, methods/statuses/emails/amounts, and excludes BNA payment/intake/webhook rows. No audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, payment send, Green Invoice reprocess, or accounting mutation was performed.
+
+
+Student workspace isolation browser proof (2026-06-19T08:45:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/student-detail-scope.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js` 13/13.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-152 now has browser proof that after switching to One Time workspace and reloading, Students requests `project=one_time_mishnah_class` for student, device, device-rule, Torah, accountability, and group-goal data; renders the One Time student card/profile/goal/device details; clears the previous BNA detail route; and excludes BNA student, parent, access-code, and goal text. No audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, duplicate-student merge, or student mutation was performed.

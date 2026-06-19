@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-19T08:35:30+03:00
+Updated: 2026-06-19T08:45:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -44,10 +44,11 @@ Latest completed local batches:
 - REQ-20260618-149: Scoped Integrations now has static/API and browser DOM proof that selected One Time workspace rows show Buffer Connected/Not connected/Error states, account identity, last check, needed action, failure reason, and workspace labels without active GHL social-runtime copy. It remains needs_verification only for release approval, deploy, and live smoke.
 - REQ-20260618-150: Workspace-scoped Users now has static/API and browser DOM proof that selected One Time rows show users, roles/access levels, login usernames, invitation records, and no mutation/send controls while excluding BNA rows. It remains needs_verification only for release approval, deploy, and live smoke.
 - REQ-20260618-151: Workspace-scoped Accounting now has static/API and browser DOM proof that selected One Time rows show payments, payment intake, reminders, Green Invoice webhook audit rows, summary counts, methods/statuses/emails/amounts, and no payment/send/reprocess mutations while excluding BNA rows. It remains needs_verification only for release approval, deploy, and live smoke.
+- REQ-20260618-152: Student detail isolation now has static/API and browser DOM proof that selected One Time rows request and render only One Time student/detail/goal/device data, clear the stale BNA profile route after workspace switch, and exclude BNA student detail text. It remains needs_verification only for release approval, deploy, and live smoke.
 
 Exact next requirement:
 
-- REQ-20260618-152 / BNA-STUDENT-001: Workspace-and-student detail/analysis isolation.
+- REQ-20260618-153 / BNA-GOAL-001: Goal Board controls use plain product language.
 
 Blocked requirement intentionally skipped:
 
@@ -58,15 +59,15 @@ Exact next command:
 
 ```powershell
 npm run bna:run:status
-node --test tests/student-detail-scope.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js
+node --test tests/goal-board.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js
 ```
 
-Then inspect whether `REQ-20260618-152` needs refreshed browser/API evidence beyond the existing student detail scope tests so Student detail and analysis views visibly prove selected-workspace isolation and no cross-workspace/student leakage. Do not close live-required task items as `done` without release approval, deployment, and live-smoke evidence.
+Then inspect whether `REQ-20260618-153` needs refreshed browser/API evidence beyond the existing Goal Board tests so the rendered Goal Board controls use plain product language and expose no device-provider/internal terms. Do not close live-required task items as `done` without release approval, deployment, and live-smoke evidence.
 
 Still open after this batch:
 
-- REQ-20260618-124 through REQ-20260618-151 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
-- REQ-20260618-152 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-124 through REQ-20260618-152 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
+- REQ-20260618-153 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - REQ-20260618-156 remains `needs_operator_decision` for duplicate-student cleanup approval.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 
