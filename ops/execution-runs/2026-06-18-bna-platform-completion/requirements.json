@@ -360,7 +360,8 @@
         "REQ-20260618-158 now has browser proof that Assistant status/memory/actions reload under the selected One Time project, render scoped memory context, and hide raw user keys/test usernames.",
         "REQ-20260618-159 now has browser proof that the Assistant Action Registry renders permitted read-only and gated financial actions with risk, confirmation, and audit metadata and no execution controls.",
         "REQ-20260618-160 now has focused confirmation/audit tests plus browser proof that gated action metadata is visible without Run/Execute controls.",
-        "REQ-20260618-161 now has browser proof that the Assistant shell and Decisions routing avoid duplicate helper/provider/dev labels while preserving internal machine-owner values."
+        "REQ-20260618-161 now has browser proof that the Assistant shell and Decisions routing avoid duplicate helper/provider/dev labels while preserving internal machine-owner values.",
+        "REQ-20260618-162 now has focused API/browser proof that public unauthenticated requests cannot read Assistant memory or query the database, scoped authenticated users remain isolated, and rendered Assistant memory context hides raw user keys/test usernames."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -378,9 +379,11 @@
         "node --test tests/assistant-shell.test.js tests/assistant-language-cleanup.test.js tests/browser-acceptance.test.js PASS 9/9",
         "node --test tests/assistant-memory-isolation.test.js tests/assistant-shell.test.js tests/browser-acceptance.test.js PASS 11/11",
         "node --test tests/assistant-actions.test.js tests/assistant-shell.test.js tests/browser-acceptance.test.js PASS 12/12",
-        "node --test tests/assistant-language-cleanup.test.js tests/assistant-shell.test.js tests/task-intake-routing.test.js tests/browser-acceptance.test.js PASS 12/12"
+        "node --test tests/assistant-language-cleanup.test.js tests/assistant-shell.test.js tests/task-intake-routing.test.js tests/browser-acceptance.test.js PASS 12/12",
+        "node --test tests/assistant-memory-isolation.test.js tests/workspace-http-isolation.test.js tests/browser-acceptance.test.js PASS 10/10",
+        "npm test PASS 210/210"
       ],
-      "notes": "Helper parent remains in_progress until final acceptance, release approval, deploy, and live smoke are complete.",
+      "notes": "Helper parent remains in_progress until final acceptance, release approval, deploy, and live smoke are complete. REQ-20260618-157 through REQ-20260618-162 now have focused local and browser proof.",
       "files_changed": [
         "server.js",
         "public/operations.html",
@@ -394,7 +397,14 @@
         "tests/assistant-language-cleanup.test.js",
         "tests/assistant-memory-isolation.test.js",
         "tests/browser-acceptance.test.js",
-        "ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json"
+        "ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/STATUS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md",
+        "ops/execution-runs/latest.json",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md"
       ]
     },
     {
@@ -2963,7 +2973,7 @@
       "title": "Prevent public/authenticated memory leakage",
       "area": "helper",
       "priority": "P0",
-      "current_verdict": "local_implemented_pending_release",
+      "current_verdict": "local_complete_pending_release",
       "status": "needs_verification",
       "expected_result": "Public helper cannot remember authenticated operator context or leak cross-user/workspace memory.",
       "acceptance_criteria": [
@@ -2980,17 +2990,23 @@
         "resolveAssistantMemoryScope now enforces operations-only memory plus Assistant, module, and subject-specific allowedViews before any bna_assistant_memory query runs.",
         "Assistant memory responses now redact the raw user_key from client-facing scope and return user_scope: current_user instead.",
         "Assistant status, memory, action registry, and action execution routes now set private no-store headers before authentication, and Operations API requests use cache: no-store.",
-        "tests/assistant-memory-isolation.test.js proves public unauthenticated memory requests return 401, carry private no-store headers, and do not query the database."
+        "tests/assistant-memory-isolation.test.js proves public unauthenticated memory requests return 401, carry private no-store headers, and do not query the database.",
+        "Focused HTTP/browser proof now confirms public unauthenticated memory requests return 401 with private no-store headers before database access, scoped workspace HTTP isolation still blocks cross-module enumeration and cross-workspace task comments, and the rendered Operations Assistant shell keeps scoped memory context without exposing raw user keys or test usernames."
       ],
       "deployment_evidence": [],
       "verification": [
         "node --check server.js PASS",
         "node --check tests/assistant-memory-isolation.test.js PASS",
         "node --test tests/assistant-memory-isolation.test.js tests/assistant-shell.test.js tests/workspace-auth.test.js tests/assistant-actions.test.js tests/workspace-http-isolation.test.js PASS 26/26",
-        "npm test PASS 186/186"
+        "npm test PASS 186/186",
+        "node --test tests/assistant-memory-isolation.test.js tests/workspace-http-isolation.test.js tests/browser-acceptance.test.js PASS 10/10",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: fix: isolate assistant memory access"
+        "current batch commit: fix: isolate assistant memory access",
+        "current batch commit: docs: verify assistant memory leakage protections"
       ],
       "files_changed": [
         "server.js",
@@ -3005,9 +3021,12 @@
         "ops/execution-runs/2026-06-18-bna-platform-completion/REQUIREMENTS.md",
         "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
         "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
-        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md"
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md",
+        "ops/execution-runs/latest.json",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md"
       ],
-      "notes": "Local implementation complete; live-required status remains needs_verification until final acceptance sweep, release approval, deploy, and live smoke. No OpenAI call, live helper action execution, deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
+      "notes": "Local API and browser acceptance proof is complete; live-required status remains needs_verification until final acceptance sweep, release approval, deploy, and live smoke. No OpenAI call, helper action execution, deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
     },
     {
       "id": "REQ-20260618-163",

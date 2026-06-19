@@ -856,3 +856,12 @@ Assistant language cleanup browser proof (2026-06-19T10:05:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-161 now has browser proof that the Assistant shell excludes Codex, Kimi, OpenAI Telegram sidekick, duplicate-helper labels, and raw helper/dev labels; Decisions routing shows Send to System Work, excludes Send to Codex, and still sends internal assigned_to=Codex in the mocked API update for machine-owner compatibility. No OpenAI call, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Assistant public/authenticated memory leakage proof (2026-06-19T10:15:30+03:00):
+
+- PASS `node --test tests/assistant-memory-isolation.test.js tests/workspace-http-isolation.test.js tests/browser-acceptance.test.js` 10/10.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-162 now has focused proof that public unauthenticated Assistant memory requests return 401 with private no-store headers and do not touch the database, scoped authenticated HTTP access remains isolated from cross-module enumeration and cross-workspace task comments, and the rendered Operations Assistant shell keeps scoped memory context while hiding raw user keys/test usernames. No OpenAI call, helper action execution, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

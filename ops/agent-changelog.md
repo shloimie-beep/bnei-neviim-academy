@@ -5033,3 +5033,21 @@ Verification:
 - PASS `npm run bna:run:status`.
 
 Status: `needs_verification`; no OpenAI call, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+## 2026-06-19 - Assistant memory leakage proof
+
+Requirement: `REQ-20260618-162`
+
+Changed:
+
+- Recorded focused API/browser proof that public unauthenticated Assistant memory access is blocked before database access.
+- Verified private no-store headers, scoped authenticated HTTP isolation, and rendered Assistant memory context without raw user keys/test usernames.
+
+Verification:
+
+- PASS `node --test tests/assistant-memory-isolation.test.js tests/workspace-http-isolation.test.js tests/browser-acceptance.test.js` 10/10.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no OpenAI call, helper action execution, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
