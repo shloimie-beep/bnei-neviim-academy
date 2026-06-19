@@ -865,3 +865,15 @@ Assistant public/authenticated memory leakage proof (2026-06-19T10:15:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-162 now has focused proof that public unauthenticated Assistant memory requests return 401 with private no-store headers and do not touch the database, scoped authenticated HTTP access remains isolated from cross-module enumeration and cross-workspace task comments, and the rendered Operations Assistant shell keeps scoped memory context while hiding raw user keys/test usernames. No OpenAI call, helper action execution, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Public navigation browser proof (2026-06-19T10:25:30+03:00):
+
+- PASS `rg public Operations links` with no matches.
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/public-navigation.test.js`.
+- PASS `node --test tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js tests/browser-acceptance.test.js` 19/19.
+- PASS `npm test` 211/211.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-163 now has rendered public homepage proof that the primary nav uses the public manifest, shows Home, Blog, FAQ, Contact Us, and Sign Up, links only to public/contact destinations, excludes private Operations login/portal/BNA Operations text and hrefs, and has no horizontal overflow at mobile or desktop widths. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

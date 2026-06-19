@@ -1871,6 +1871,55 @@ async function waitForCall(calls, predicate, label) {
   assert.fail(`Timed out waiting for API call: ${label}`);
 }
 
+test('Playwright public homepage keeps private Operations links out of primary navigation', async () => {
+  await withServer(async (baseUrl) => {
+    const browser = await chromium.launch();
+    const context = await browser.newContext({
+      baseURL: baseUrl,
+      serviceWorkers: 'block',
+      viewport: { width: 390, height: 844 },
+    });
+
+    try {
+      const page = await context.newPage();
+      await page.goto('/', { waitUntil: 'domcontentloaded' });
+      await page.locator('nav').waitFor();
+
+      const navState = await page.evaluate(() => {
+        const nav = document.querySelector('nav');
+        const hrefs = Array.from(nav?.querySelectorAll('a') || [])
+          .map((node) => node.getAttribute('href') || '');
+        return {
+          manifest: document.querySelector('link[rel="manifest"]')?.getAttribute('href') || '',
+          navText: nav?.textContent?.replace(/\s+/g, ' ').trim() || '',
+          hrefs,
+        };
+      });
+
+      assert.equal(navState.manifest, '/manifest.json');
+      assert.match(navState.navText, /Home/);
+      assert.match(navState.navText, /Blog/);
+      assert.match(navState.navText, /FAQ/);
+      assert.match(navState.navText, /Contact Us/);
+      assert.match(navState.navText, /Sign Up/);
+      assert.ok(navState.hrefs.includes('/'));
+      assert.ok(navState.hrefs.includes('/signup'));
+      assert.ok(navState.hrefs.includes('https://wa.me/972534932631'));
+      assert.ok(navState.hrefs.some((href) => href === '#faq'));
+      assert.ok(navState.hrefs.some((href) => href === '#blog'));
+      assert.doesNotMatch(navState.navText, /Operations|Operations login|Operations portal|BNA Operations/i);
+      assert.ok(navState.hrefs.every((href) => !/\/operations\b|operations-login/i.test(href)), JSON.stringify(navState.hrefs));
+      await noHorizontalOverflow(page);
+
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await noHorizontalOverflow(page);
+    } finally {
+      await context.close();
+      await browser.close();
+    }
+  });
+});
+
 test('Playwright Operations acceptance covers routes, history, responsive layout, workspace, helper, and student detail', async () => {
   await withServer(async (baseUrl) => {
     const calls = [];

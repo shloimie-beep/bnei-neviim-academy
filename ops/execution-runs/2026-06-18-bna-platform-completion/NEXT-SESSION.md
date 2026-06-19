@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-19T10:15:30+03:00
+Updated: 2026-06-19T10:25:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -54,10 +54,11 @@ Latest completed local batches:
 - REQ-20260618-160: Assistant confirmations/audit trail now has static/API and browser DOM proof that confirmation tiers, audit paths, gated metadata, and no-execution controls are in place. It remains needs_verification only for release approval, deploy, and live smoke.
 - REQ-20260618-161: Assistant language cleanup now has static and browser DOM proof that duplicate helper/provider/dev labels are absent and user-visible machine work is labeled System Work while internal Codex values remain API-only. It remains needs_verification only for release approval, deploy, and live smoke.
 - REQ-20260618-162: Assistant memory leakage protections now have focused API/browser proof that public unauthenticated memory requests are blocked before database access, private no-store headers are set, scoped authenticated access stays isolated, and rendered Assistant memory context hides raw user keys/test usernames. It remains needs_verification only for release approval, deploy, and live smoke.
+- REQ-20260618-163: Public navigation privacy now has source and browser proof that the served homepage primary navigation stays prospect/family-facing, uses the public manifest, excludes private Operations login/portal text and hrefs, and remains overflow-safe. It remains needs_verification only for release approval, deploy, and live smoke.
 
 Exact next requirement:
 
-- REQ-20260618-163 / BNA-PUBLIC-001: Remove Operations login from public primary navigation.
+- REQ-20260618-164 / BNA-PUBLIC-002: Provider CTA: Advertise your program for free.
 
 Blocked requirement intentionally skipped:
 
@@ -68,15 +69,15 @@ Exact next command:
 
 ```powershell
 npm run bna:run:status
-node --test tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js
+node --test tests/public-provider-cta.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/browser-acceptance.test.js
 ```
 
-Then inspect whether `REQ-20260618-163` needs refreshed public-page/static evidence beyond the existing public navigation privacy tests so public primary navigation never exposes private Operations login routes while private Operations routes remain intact. Do not close live-required public items as `done` without release approval, deployment, and live-smoke evidence.
+Then inspect whether `REQ-20260618-164` needs refreshed rendered-page evidence beyond the existing provider CTA tests so the public homepage clearly offers providers a free community listing path without private Operations links. Do not close live-required public items as `done` without release approval, deployment, and live-smoke evidence.
 
 Still open after this batch:
 
-- REQ-20260618-124 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-162 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
-- REQ-20260618-163 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-124 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-163 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
+- REQ-20260618-164 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - REQ-20260618-156 remains `needs_operator_decision` for duplicate-student cleanup approval.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 

@@ -428,7 +428,8 @@
         "Homepage provider CTA now says Advertise your program for free and explains free community listing expectations.",
         "Parent signup pages, signup thank-you, and parent manifest now use direct parent signup, self-governance positioning, and the six months free parent app offer.",
         "Portal header identity coverage now spans public homepage/provider listing, parent PWA signup launch, English/Hebrew signup, Student Portal, Operations shell, and Operations login while preserving manifest separation.",
-        "Public/blog/FAQ/signup/portal route and CTA integrity now uses clean public aliases, canonical signup/student portal URLs, and focused route regression coverage."
+        "Public/blog/FAQ/signup/portal route and CTA integrity now uses clean public aliases, canonical signup/student portal URLs, and focused route regression coverage.",
+        "REQ-20260618-163 now has browser proof that the served public homepage primary navigation remains prospect/family-facing and does not expose private Operations login routes while private Operations routes stay intact."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -441,9 +442,11 @@
         "node --test tests/operations-identity-header.test.js tests/pwa-identity.test.js tests/public-navigation.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js PASS 21/21",
         "npm test PASS 197/197",
         "node --test tests/public-route-cta-integrity.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js PASS 26/26",
-        "npm test PASS 202/202"
+        "npm test PASS 202/202",
+        "node --test tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js tests/browser-acceptance.test.js PASS 19/19",
+        "npm test PASS 211/211"
       ],
-      "notes": "Public/copy parent remains in_progress until final acceptance, release approval, deploy, and live smoke are complete.",
+      "notes": "Public/copy parent remains in_progress until final acceptance, release approval, deploy, and live smoke are complete. REQ-20260618-163 now has source and browser proof.",
       "files_changed": [
         "tests/public-navigation.test.js",
         "public/index.html",
@@ -457,7 +460,16 @@
         "server.js",
         "public/js/bna-content.js",
         "public/sitemap.xml",
-        "tests/public-route-cta-integrity.test.js"
+        "tests/public-route-cta-integrity.test.js",
+        "tests/browser-acceptance.test.js",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/STATUS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md",
+        "ops/execution-runs/latest.json",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md"
       ]
     },
     {
@@ -3035,7 +3047,7 @@
       "title": "Remove Operations login from public primary navigation",
       "area": "public",
       "priority": "P1",
-      "current_verdict": "local_already_satisfied_pending_release",
+      "current_verdict": "local_complete_pending_release",
       "status": "needs_verification",
       "expected_result": "Public navigation focuses on prospects/families and does not advertise private Operations login.",
       "acceptance_criteria": [
@@ -3051,17 +3063,25 @@
         "Public homepage primary navigation contains Home, Blog, FAQ, Contact Us, and Sign Up, with no Operations login/portal link.",
         "Shared public pages and nav/content scripts contain no /operations, /operations-login, BNA Operations, Operations portal, or Operations login public links.",
         "Private /operations and /operations-login.html routes remain intact as private app/login surfaces outside public navigation.",
-        "tests/public-navigation.test.js now guards the public nav and shared public pages against private Operations links returning."
+        "tests/public-navigation.test.js now guards the public nav and shared public pages against private Operations links returning.",
+        "Playwright now serves the public homepage and proves the rendered primary navigation uses the public manifest, shows Home, Blog, FAQ, Contact Us, and Sign Up, links to /, #blog, #faq, WhatsApp contact, and /signup, excludes Operations/Operations login/Operations portal/BNA Operations text and hrefs, and has no horizontal overflow at mobile or desktop widths."
       ],
       "deployment_evidence": [],
       "verification": [
         "rg /operations and Operations login strings across public prospect pages PASS with no matches",
         "node --check tests/public-navigation.test.js PASS",
         "node --test tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js PASS 13/13",
-        "npm test PASS 189/189"
+        "npm test PASS 189/189",
+        "rg public Operations links PASS with no matches",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js tests/browser-acceptance.test.js PASS 19/19",
+        "npm test PASS 211/211",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: test: guard public navigation privacy"
+        "current batch commit: test: guard public navigation privacy",
+        "current batch commit: test: verify public navigation in browser"
       ],
       "files_changed": [
         "tests/public-navigation.test.js",
@@ -3070,9 +3090,13 @@
         "ops/execution-runs/2026-06-18-bna-platform-completion/REQUIREMENTS.md",
         "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
         "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
-        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md"
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md",
+        "tests/browser-acceptance.test.js",
+        "ops/execution-runs/latest.json",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md"
       ],
-      "notes": "Public navigation was already clean in the recovered branch; this batch adds durable regression coverage. Live-required status remains needs_verification until final acceptance sweep, release approval, deploy, and live smoke. No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
+      "notes": "Local source and browser proof is complete; live-required status remains needs_verification until final acceptance sweep, release approval, deploy, and live smoke. No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
     },
     {
       "id": "REQ-20260618-164",

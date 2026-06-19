@@ -5051,3 +5051,24 @@ Verification:
 - PASS `npm run bna:run:status`.
 
 Status: `needs_verification`; no OpenAI call, helper action execution, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+## 2026-06-19 - Public navigation browser proof
+
+Requirement: `REQ-20260618-163`
+
+Changed:
+
+- Added browser acceptance coverage for the served public homepage primary navigation.
+- Verified public manifest identity, prospect/family-facing links, no private Operations login links, and mobile/desktop overflow safety.
+
+Verification:
+
+- PASS `rg public Operations links` with no matches.
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/public-navigation.test.js`.
+- PASS `node --test tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js tests/browser-acceptance.test.js` 19/19.
+- PASS `npm test` 211/211.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

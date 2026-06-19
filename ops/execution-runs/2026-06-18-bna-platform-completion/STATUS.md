@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-19T10:15:30+03:00
+Updated: 2026-06-19T10:25:30+03:00
 
 Status counts:
 
@@ -92,6 +92,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current verification batch: REQ-20260618-162 now has focused API and browser proof that public unauthenticated Assistant memory requests are blocked before database access, private no-store headers are set, scoped authenticated access remains isolated, and the rendered Assistant shell hides raw user keys/test usernames. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-163.
+Current verification batch: REQ-20260618-163 now has source and browser proof that the served public homepage primary navigation uses the public manifest, shows prospect/family-facing links, excludes private Operations login/portal text and hrefs, and remains overflow-safe on mobile and desktop. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-164.
 
 No deployment or production-data mutation is approved in this run.
