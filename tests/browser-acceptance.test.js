@@ -1345,14 +1345,14 @@ async function assertOperationsTaskDiagnosticsClean(page) {
   await page.locator('.focus-panel[aria-label="Tasks overview"]').waitFor();
 }
 
-async function assertOperationsAssistantShell(page, calls) {
+async function assertOperationsAssistantShell(page, calls, expectedProject = 'all') {
   await page.locator('.ops-module-button').filter({ hasText: 'Assistant' }).click();
   await page.locator('.ops-view-frame[data-current-view="assistant"]').waitFor();
   assert.match(page.url(), /view=assistant/);
   for (const pathname of ['/api/bna/assistant/status', '/api/bna/assistant/memory', '/api/bna/assistant/actions']) {
     await waitForCall(
       calls,
-      (call) => call.pathname === pathname,
+      (call) => call.pathname === pathname && call.project === expectedProject,
       `Assistant shell loaded ${pathname}`,
     );
   }
@@ -1372,6 +1372,7 @@ async function assertOperationsAssistantShell(page, calls) {
     /Setup\s*Ready/,
     /Memory Scope/,
     /assistant\s*\/\s*workspace/,
+    new RegExp(`Project\\s*${expectedProject}`),
     /Session\s*current_user/,
     /Action Registry/,
     /Read calendar context/,
@@ -1381,7 +1382,7 @@ async function assertOperationsAssistantShell(page, calls) {
   ]) {
     assert.match(assistantState.text, expected);
   }
-  assert.doesNotMatch(assistantState.text, /\bCodex\b|\bKimi\b|OpenAI Telegram sidekick|No duplicate helper personas|single visible helper/i);
+  assert.doesNotMatch(assistantState.text, /\bCodex\b|\bKimi\b|OpenAI Telegram sidekick|No duplicate helper personas|single visible helper|user_key|super-admin-test|one-time-test/i);
 }
 
 async function assertOperationsCalendarModule(page) {
@@ -1937,6 +1938,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       await page.reload({ waitUntil: 'domcontentloaded' });
       await page.locator('.ops-view-frame[data-current-view="tasks"]').waitFor();
       await assertOperationsShellStable(page, 'refreshed operations shell');
+      await assertOperationsAssistantShell(page, calls, 'one_time_mishnah_class');
       await assertOperationsStudentWorkspaceScope(page, calls);
       await assertOperationsGoalBoardPlainLanguage(page);
       await assertOperationsLiveClassesWorkspaceScope(page, calls);

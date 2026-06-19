@@ -4956,3 +4956,22 @@ Verification:
 - PASS `npm run bna:run:status`.
 
 Status: `needs_verification`; no OpenAI call, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+## 2026-06-19 - Assistant memory scope browser proof
+
+Requirement: `REQ-20260618-158`
+
+Changed:
+
+- Added rendered browser proof that Assistant status, memory, and action routes reload under the selected One Time workspace project.
+- Verified Memory Scope displays project/session/role/subject context and scoped memory rows without exposing raw user keys or test usernames.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/assistant-memory-isolation.test.js tests/assistant-shell.test.js tests/browser-acceptance.test.js` 11/11.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no OpenAI call, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

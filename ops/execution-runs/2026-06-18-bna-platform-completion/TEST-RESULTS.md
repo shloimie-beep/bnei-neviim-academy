@@ -811,3 +811,14 @@ Assistant shell browser proof (2026-06-19T09:25:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-157 now has browser proof that Operations renders exactly one Assistant module and one BNA Assistant shell, loads assistant status/memory/actions routes, shows connected AI readiness, Setup Ready, scoped Memory Scope, Action Registry, Read calendar context, and one-assistant guardrails, and excludes Codex, Kimi, OpenAI Telegram sidekick, and duplicate-helper labels. No OpenAI call, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+
+Assistant memory scope browser proof (2026-06-19T09:35:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/assistant-memory-isolation.test.js tests/assistant-shell.test.js tests/browser-acceptance.test.js` 11/11.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-158 now has browser proof that after switching to One Time workspace and reloading, Assistant status, memory, and action routes request `project=one_time_mishnah_class`, Memory Scope renders assistant/workspace context, Project one_time_mishnah_class, Session current_user, role/subject context, and scoped memory rows, and raw user keys/test usernames remain hidden. No OpenAI call, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

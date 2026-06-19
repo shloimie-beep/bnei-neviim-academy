@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-19T09:25:30+03:00",
+  "updated_at": "2026-06-19T09:35:30+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -356,7 +356,8 @@
         "Operations Assistant loads memory and action registry scope through selectedProjectFilter and displays scoped Memory Scope plus Action Registry rows without duplicate helper personas.",
         "Operations-facing Assistant copy now uses one assistant identity and System Work product labels while preserving internal Codex/provider values where operationally required.",
         "Assistant memory now blocks public/no-auth access, requires Assistant plus module/subject views, redacts raw user keys from client scope, and sets private no-store response headers.",
-        "REQ-20260618-157 now has browser proof that Operations renders exactly one BNA Assistant shell with connected AI readiness, scoped memory/action registry context, and no duplicate Codex/Kimi/helper persona labels."
+        "REQ-20260618-157 now has browser proof that Operations renders exactly one BNA Assistant shell with connected AI readiness, scoped memory/action registry context, and no duplicate Codex/Kimi/helper persona labels.",
+        "REQ-20260618-158 now has browser proof that Assistant status/memory/actions reload under the selected One Time project, render scoped memory context, and hide raw user keys/test usernames."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -371,7 +372,8 @@
         "npm test PASS 180/180",
         "node --test tests/assistant-memory-isolation.test.js tests/assistant-shell.test.js tests/workspace-auth.test.js tests/assistant-actions.test.js tests/workspace-http-isolation.test.js PASS 26/26",
         "npm test PASS 186/186",
-        "node --test tests/assistant-shell.test.js tests/assistant-language-cleanup.test.js tests/browser-acceptance.test.js PASS 9/9"
+        "node --test tests/assistant-shell.test.js tests/assistant-language-cleanup.test.js tests/browser-acceptance.test.js PASS 9/9",
+        "node --test tests/assistant-memory-isolation.test.js tests/assistant-shell.test.js tests/browser-acceptance.test.js PASS 11/11"
       ],
       "notes": "Helper parent remains in_progress until final acceptance, release approval, deploy, and live smoke are complete.",
       "files_changed": [
@@ -2719,7 +2721,7 @@
       "title": "Scope helper memory by user/role/workspace/context",
       "area": "helper",
       "priority": "P0",
-      "current_verdict": "partial",
+      "current_verdict": "local_complete_pending_release",
       "status": "needs_verification",
       "expected_result": "Helper memory/context is isolated by user, role, workspace, module, and student/family/provider context.",
       "acceptance_criteria": [
@@ -2736,17 +2738,24 @@
         "createWorkspaceScopeMigrationSQL now backfills/migrates assistant memory scope columns and indexes so existing installs can adopt scoped memory safely.",
         "resolveAssistantMemoryScope derives assistant memory context from selected/scoped project access, authenticated identity, user role, surface, module, and subject context.",
         "GET /api/bna/assistant/memory is read-only, shared-auth scoped, and filters by exact workspace/project/user/role/surface/module/subject scope before returning memory rows.",
-        "Operations Assistant loads memory with selectedProjectFilter and renders Memory Scope details so user, role, workspace/project, and subject context are visible without exposing cross-context memory."
+        "Operations Assistant loads memory with selectedProjectFilter and renders Memory Scope details so user, role, workspace/project, and subject context are visible without exposing cross-context memory.",
+        "tests/browser-acceptance.test.js now proves that after switching to the One Time workspace and reloading, Assistant status, memory, and action routes are requested with project=one_time_mishnah_class; the Memory Scope renders assistant/workspace, Project one_time_mishnah_class, Session current_user, role/subject context, and scoped memory rows; and raw user keys/test usernames are not exposed."
       ],
       "deployment_evidence": [],
       "verification": [
         "node --test tests/assistant-shell.test.js tests/workspace-schema.test.js tests/workspace-auth.test.js tests/operations-workspace-selector.test.js PASS 22/22",
         "npm test PASS 173/173",
         "npm run bna:run:validate PASS after run-file update",
-        "npm run bna:run:status PASS after run-file update"
+        "npm run bna:run:status PASS after run-file update",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/assistant-memory-isolation.test.js tests/assistant-shell.test.js tests/browser-acceptance.test.js PASS 11/11",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: feat: scope assistant memory context"
+        "current batch commit: feat: scope assistant memory context",
+        "current batch commit: test: verify assistant memory scope in browser"
       ],
       "files_changed": [
         "server.js",
@@ -2760,9 +2769,10 @@
         "ops/execution-runs/2026-06-18-bna-platform-completion/REQUIREMENTS.md",
         "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
         "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
-        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md"
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md",
+        "tests/browser-acceptance.test.js"
       ],
-      "notes": "Local implementation and tests complete. Live-required item remains needs_verification until release approval, deploy, and live smoke. Helper action execution, confirmation tiers/audit logs, duplicate dev-language cleanup, and public/authenticated memory-leak prevention remain open under REQ-20260618-159 through REQ-20260618-162. No OpenAI call, deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
+      "notes": "Local implementation, static/API tests, full suite, and browser DOM proof passed. Status remains needs_verification because this item is live_required and still needs release approval, deployment, and live smoke before closure. No OpenAI call, deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
     },
     {
       "id": "REQ-20260618-159",

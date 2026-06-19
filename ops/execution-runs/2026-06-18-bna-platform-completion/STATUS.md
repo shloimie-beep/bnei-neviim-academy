@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-19T09:25:30+03:00
+Updated: 2026-06-19T09:35:30+03:00
 
 Status counts:
 
@@ -92,6 +92,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current verification batch: REQ-20260618-157 now has static/API and browser DOM proof that Operations exposes exactly one BNA Assistant shell with connected AI readiness, scoped memory/action registry context, and no duplicate Codex/Kimi/helper persona labels. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-158.
+Current verification batch: REQ-20260618-158 now has static/API and browser DOM proof that Assistant memory/status/actions reload under the selected One Time workspace, render scoped project/session/role/subject context, and do not expose raw user keys or test usernames. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-159.
 
 No deployment or production-data mutation is approved in this run.
