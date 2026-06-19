@@ -477,6 +477,27 @@ Not run for this batch:
 - No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
   social write.
 
+Verified on 2026-06-19 for release-gate normalization:
+
+- PASS requirements JSON update: remaining live-required rows are now
+  `needs_operator_decision` with explicit release-approval blockers and
+  withheld-live-verification deployment evidence.
+- PASS `npm run bna:run:validate`; active run remains partial and valid.
+- PASS focused Agent Control/active-run suite 12/12:
+  `node --test tests\active-run-acceptance-coverage.test.js
+  tests\agent-control-center.test.js tests\agent-control-api-readback.test.js
+  tests\agent-control-browser-smoke.test.js
+  tests\agent-control-manual-smoke-prompt.test.js`.
+- Final status counts after normalization: `blocked: 2`,
+  `needs_operator_decision: 11`, `done: 18`.
+
+Not run for this batch:
+
+- No production DB write/readback.
+- No deployment or live smoke.
+- No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
+  social write.
+
 Verified on 2026-06-19 for Agent Control manual-smoke prompt:
 
 - PASS `node --check tests/agent-control-manual-smoke-prompt.test.js`.

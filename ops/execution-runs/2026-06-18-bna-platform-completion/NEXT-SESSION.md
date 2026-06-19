@@ -9,9 +9,10 @@ Start here:
 
 Current 2026-06-19 checkpoint:
 
-- `REQ-20260618-102` has local PWA separation proof now: public, parent, and
-  Operations manifests have distinct identities/start URLs/scopes; the public
-  service worker is tracked and bypasses private app prefixes; live/deploy
+- `REQ-20260618-102` has local PWA separation proof now and is a
+  `needs_operator_decision` release gate: public, parent, and Operations
+  manifests have distinct identities/start URLs/scopes; the public service
+  worker is tracked and bypasses private app prefixes; live/deploy
   verification remains withheld until explicit release approval.
 - `REQ-20260619-201`, `REQ-20260619-202`, and `REQ-20260619-208` are locally
   done for this no-write batch.
@@ -77,20 +78,21 @@ Current 2026-06-19 checkpoint:
   generated TEST_REQ022 seed/cleanup artifacts, package script, and active-run
   acceptance coverage tests are implemented and locally verified without any
   production write.
-- `REQ-20260618-112`, `REQ-20260618-122`, and `REQ-20260619-206` remain in
-  `needs_verification`: local Agent Control
-  implementation, API/browser smoke, interactive browser click-through,
-  notification/no-spam proof, safe test data, and the copy-ready manual Agent
-  Mode smoke prompt are implemented, but deployment/live proof is withheld
-  until explicit release approval.
+- `REQ-20260618-112` through `REQ-20260618-118`, `REQ-20260618-120`,
+  `REQ-20260618-122`, and `REQ-20260619-206` are
+  `needs_operator_decision` release gates: local Agent Control implementation,
+  API/browser smoke, interactive browser click-through, manual browser
+  judgment, notification/no-spam proof, safe test data, RBAC proof, and prompt
+  evidence are implemented, but deployment/live proof is withheld until
+  explicit release approval.
 - `REQ-20260618-121` and `REQ-20260618-123` are locally done after the
   in-app browser manual Agent Mode smoke. Evidence:
   `ops/playwright-smokes/2026-06-19-agent-control-manual-browser/manual-browser-report.md`.
 - Manual Agent Mode/browser-judgment execution is locally complete. The
   remaining Agent Control gates are live-required release/deploy verification
   and external approval, not another local manual smoke.
-- Latest validation after this closeout: `needs_verification: 11`,
-  `blocked: 2`, `done: 18`.
+- Latest validation after release-gate normalization:
+  `needs_operator_decision: 11`, `blocked: 2`, `done: 18`.
 - `REQ-20260619-207` is genuinely blocked for live provider setup until
   operator supplies or performs external account-owner actions through the
   secure keyholder/environment workflow.
@@ -103,7 +105,7 @@ or external input for the two blockers: audit output for `REQ-20260618-101`
 and owner/credential actions for `REQ-20260619-207`. The local manual Agent
 Mode/browser-judgment smoke is complete. The latest focused Agent Control/
 active-run suite passed 12/12 and `npm run bna:run:validate` passed with
-status counts `needs_verification: 11`, `blocked: 2`, `done: 18`.
+status counts `needs_operator_decision: 11`, `blocked: 2`, `done: 18`.
 
 Exact next command:
 
@@ -118,17 +120,19 @@ crawls, watch loops, or agent-fleet loops without the required approval/input.
 
 Open requirements:
 
-- `REQ-20260618-101` audit harness and audit package
-- `REQ-20260618-102` PWA public-vs-Operations separation is locally
-  implemented and needs release/live verification
-- `REQ-20260618-112` Agent Control Center parent
-- `REQ-20260618-113` through `REQ-20260618-118` have local API/browser proof
-  including interactive click-through/readback, but still need manual Agent
-  Mode/browser-judgment closeout before closure
-- `REQ-20260618-120` has local negative API smoke; browser/live proof remains
-  withheld until release approval
-- `REQ-20260618-122` notification/audit-history hooks are locally implemented
-  and need manual/release/live verification when deployment is approved
+- `REQ-20260618-101` is blocked on the external audit package/output.
+- `REQ-20260618-102` is locally implemented and waiting for explicit release
+  approval before deploy/live smoke.
+- `REQ-20260618-112` through `REQ-20260618-118` are locally implemented and
+  waiting for explicit release approval before deploy/live smoke.
+- `REQ-20260618-120` has local negative API smoke and is waiting for explicit
+  release approval before deploy/live smoke.
+- `REQ-20260618-122` has local notification/audit-history proof and is waiting
+  for explicit release approval before deploy/live smoke.
+- `REQ-20260619-206` has local closed-loop proof and is waiting for explicit
+  release approval before deploy/live smoke.
+- `REQ-20260619-207` is blocked on external owner/credential actions for
+  Vimeo, Zoom, and Resend.
 
 Current audit blocker:
 
@@ -163,7 +167,8 @@ Do not mark Agent Control Center complete until:
 - private in-app notification/no-spam proof exists;
 - safe demo data/E2E/manual Agent Mode prompt is recorded;
 - `npm run bna:run:validate` passes;
-- release/deploy approval is explicit if live closeout is required.
+- release/deploy approval is explicit and deploy/live smoke evidence exists for
+  live-required rows.
 
 Prompt after the audit ZIP/output exists:
 

@@ -696,3 +696,14 @@ Not run for this batch:
   manual report path.
 - No deployment, production DB mutation, external write, broad crawl, watch
   loop, or agent-fleet loop was performed.
+
+2026-06-19 release-gate evidence normalization:
+
+- Remaining live-required rows are now explicitly marked
+  `needs_operator_decision`, not generic local verification work.
+- The release-gated rows carry deployment evidence stating that live
+  verification is intentionally withheld until explicit operator approval.
+- This preserves the no-production-mutation rule while making the remaining
+  open state concrete and externally actionable.
+- No deployment, production DB mutation, external write, broad crawl, watch
+  loop, or agent-fleet loop was performed.

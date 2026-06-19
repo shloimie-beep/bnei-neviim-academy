@@ -24174,6 +24174,45 @@ Remaining:
 - `REQ-20260618-101` still needs the audit package/output.
 - `REQ-20260619-207` still needs owner/credential actions.
 
+## 2026-06-19T08:31:28+03:00 - Release Gates Normalized
+
+Normalized the active run so all remaining non-closed rows are genuine external
+gates rather than stale local verification work.
+
+- Converted the remaining live-required rows from `needs_verification` to
+  `needs_operator_decision`.
+- Affected rows: `REQ-20260618-102`, `REQ-20260618-112` through
+  `REQ-20260618-118`, `REQ-20260618-120`, `REQ-20260618-122`, and
+  `REQ-20260619-206`.
+- Each row now names explicit operator release approval as the blocker before
+  deployment, production mutation, live smoke, or live closeout.
+- Added withheld-release deployment evidence to those rows.
+- Updated active-run status, evidence, test results, and next-session
+  checkpoint.
+
+Verification:
+
+- PASS open-row audit: no `not_started`, `in_progress`, or
+  `needs_verification` rows remain.
+- PASS focused Agent Control/active-run suite 12/12.
+- PASS `npm run bna:run:validate` with status counts `blocked: 2`,
+  `needs_operator_decision: 11`, `done: 18`.
+
+Guardrails:
+
+- No deployment was run.
+- No production database mutation was performed.
+- No external account, Drive, Telegram, social, payment, DNS, Zoom, Vimeo, or
+  Resend write was performed.
+- No raw secrets were stored in tracked files.
+- No broad UI crawl, watch loop, or agent-fleet loop was run.
+
+Remaining:
+
+- Explicit operator release approval is needed before deploy/live smoke.
+- `REQ-20260618-101` still needs the audit package/output.
+- `REQ-20260619-207` still needs owner/credential actions.
+
 ## 2026-06-19T08:11:57+03:00 - Agent Control Interactive Browser Proof
 
 Added interactive local browser proof for the Agent Control closed loop while

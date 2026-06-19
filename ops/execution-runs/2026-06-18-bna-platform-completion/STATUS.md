@@ -451,3 +451,20 @@ Still open after manual browser proof:
   `REQ-20260618-120`, `REQ-20260618-122`, and `REQ-20260619-206`.
 - `REQ-20260618-101` remains blocked on the external audit package/output.
 - `REQ-20260619-207` remains blocked on external owner/credential actions.
+
+2026-06-19 release-gate normalization:
+
+- Converted the remaining live-required local-complete rows from generic
+  `needs_verification` to `needs_operator_decision`.
+- The affected rows are `REQ-20260618-102`, `REQ-20260618-112` through
+  `REQ-20260618-118`, `REQ-20260618-120`, `REQ-20260618-122`, and
+  `REQ-20260619-206`.
+- Each row now names the same external blocker: explicit operator release
+  approval is required before deployment, production data mutation, live smoke,
+  or live closeout.
+- No credential-free implementation row remains `in_progress` or
+  `needs_verification`.
+- `npm run bna:run:validate` passed with status counts `blocked: 2`,
+  `needs_operator_decision: 11`, `done: 18`.
+- The only remaining open work is external: release approval, audit
+  package/output, and Vimeo/Zoom/Resend owner/credential actions.
