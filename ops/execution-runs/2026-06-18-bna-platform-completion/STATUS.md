@@ -1,8 +1,9 @@
 # Status
 
-Current status: recovery run remains partial; One Time intake/API readback and
-owner/admin scoped-access gaps are locally closed, while One Time UI/browser
-smoke and Agent Control Center smoke work remain open.
+Current status: recovery run remains partial; One Time intake/API readback,
+owner/admin scoped access, and the One Time Operations UI/browser-smoke gap
+are locally closed. Agent Control Center smoke work and older platform items
+remain open.
 
 2026-06-19 One Time ramble/agent/integrations follow-up batch:
 
@@ -69,14 +70,34 @@ smoke and Agent Control Center smoke work remain open.
   integration write, Drive write, Telegram send, or broad UI crawl was
   performed.
 
+2026-06-19 One Time Operations UI/browser smoke continuation:
+
+- Added `tests/one-time-operations-ui-smoke.test.js`, a local Playwright
+  smoke with a tiny fake Operations server and fake One Time-scoped data.
+- Exposed `Agents` and `Contacts/Members` consistently for One Time
+  owner/admin allowed views, provider navigation, seed metadata, and the action
+  registry.
+- Replaced the scoped Agents empty/denied screen with a read-only One Time
+  Agent Status surface showing queue heartbeat, scoped machine-work tasks,
+  blockers, and task links without Super Admin claim/submit/seal controls.
+- Browser smoke proves One Time owner scope, disabled cross-workspace switcher
+  entries, visible provider modules, no school-only Students/Accounting
+  modules, working no-write Drive Brief preview, scoped Agents status, and
+  mobile no-overflow behavior.
+- Evidence written to
+  `ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/`.
+- Focused tests passed 55/55; no deployment, production DB mutation, external
+  integration write, Drive write, Telegram send, or broad UI crawl was
+  performed.
+
 Still open after this batch:
 
 - `REQ-20260619-203` is locally done. Production deployment/live smoke remains
   withheld until explicit release approval.
 - `REQ-20260619-204` is locally done. Production deployment/live smoke remains
   withheld until explicit release approval.
-- `REQ-20260619-205` needs One Time module/button audit and role-based browser
-  smoke.
+- `REQ-20260619-205` is locally done. Production deployment/live smoke remains
+  withheld until explicit release approval.
 - `REQ-20260619-206` needs Agent Control Center DB/API/browser/manual Agent
   Mode smoke continuation.
 - Live Vimeo/Zoom/Resend/DNS/Stripe setup remains blocked on external

@@ -11850,19 +11850,92 @@
             ];
         }
 
-        function renderAgents() {
-            if (!taskAgentControlEnabled()) {
-                return `
-                    <div class="container">
-                        <div class="page-heading task-heading">
-                            <div>
-                                <div class="page-kicker">Agent Control</div>
-                                <h2>Agent Runs</h2>
-                                <p>This workspace login does not have Super Admin access to agent run controls.</p>
-                            </div>
+        function scopedAgentWorkTasks() {
+            return tasks
+                .filter(task => {
+                    const agentStatus = String(task.agent_status || '').toLowerCase();
+                    return taskIsMachine(task)
+                        || ['queued', 'running', 'completed', 'failed', 'blocked_needs_human_decision', 'needs_verification'].includes(agentStatus)
+                        || Number(task.active_agent_run_id || 0) > 0;
+                })
+                .slice()
+                .sort(sortTasks);
+        }
+
+        function scopedAgentStatusCounts(items = scopedAgentWorkTasks()) {
+            return items.reduce((counts, task) => {
+                const status = String(task.agent_status || '').toLowerCase();
+                if (status === 'queued') counts.queued += 1;
+                else if (status === 'running') counts.running += 1;
+                else if (status === 'failed') counts.failed += 1;
+                else if (status === 'blocked_needs_human_decision') counts.blocked += 1;
+                else if (status === 'completed') counts.completed += 1;
+                else if (status === 'needs_verification') counts.needsVerification += 1;
+                else counts.tracked += 1;
+                return counts;
+            }, { queued: 0, running: 0, blocked: 0, failed: 0, completed: 0, needsVerification: 0, tracked: 0 });
+        }
+
+        function renderScopedAgentStatus() {
+            const workItems = scopedAgentWorkTasks();
+            const counts = scopedAgentStatusCounts(workItems);
+            const queue = agentFleetStatus?.queue || {};
+            const fleet = agentFleetStatus?.fleet || {};
+            const visibleItems = workItems.slice(0, 12);
+            return `
+                <div class="container agent-control-center" data-scoped-agent-status>
+                    <div class="page-heading task-heading">
+                        <div>
+                            <div class="page-kicker">One Time Agent Status</div>
+                            <h2>Agent Work</h2>
+                            <p>Scoped machine work, queue heartbeat, verification handoffs, and blockers for the One Time workspace.</p>
+                        </div>
+                        <div class="task-actions">
+                            <button class="task-action primary" type="button" onclick="loadData({ background: true })">Refresh</button>
+                            <button class="task-action" type="button" onclick="openCommandTarget('tasks', 'codex_queue')">Codex Queue</button>
+                            <button class="task-action" type="button" onclick="openCommandTarget('tasks', 'tasks')">Open Tasks</button>
                         </div>
                     </div>
-                `;
+                    <section class="focus-panel compact-panel">
+                        <div class="task-section-header">
+                            <div>
+                                <h3>Queue Heartbeat</h3>
+                                <span>${escapeHtml(fleet.last_seen_at ? `Last seen ${formatDateTime(fleet.last_seen_at)}` : 'No worker heartbeat loaded')}</span>
+                            </div>
+                            <span class="page-status-pill">${escapeHtml(String(fleet.status || 'unknown').replace(/_/g, ' '))}</span>
+                        </div>
+                        <div class="metric-grid">
+                            ${renderMetricButton('Queued', Number(queue.pending ?? counts.queued), 'One Time machine work waiting.', "openCommandTarget('tasks', 'codex_queue')")}
+                            ${renderMetricButton('Running', Number(queue.in_progress ?? counts.running), 'One Time machine work in progress.', "openCommandTarget('tasks', 'codex_queue')")}
+                            ${renderMetricButton('Needs Review', counts.needsVerification, 'Submitted work awaiting verification.', "openCommandTarget('tasks', 'codex_queue')")}
+                            ${renderMetricButton('Blocked', counts.blocked, 'Machine work waiting on a human or external dependency.', "openCommandTarget('tasks', 'pending')")}
+                        </div>
+                    </section>
+                    <section class="task-board agent-run-board" aria-label="Scoped agent work">
+                        ${visibleItems.length ? visibleItems.map(task => `
+                            <article class="task-card agent-run-card">
+                                <div class="task-card-main">
+                                    <div class="task-row-meta">
+                                        <span class="task-type-badge">${escapeHtml(String(task.agent_status || 'tracked').replace(/_/g, ' '))}</span>
+                                        <span class="badge">${escapeHtml(taskProjectLabel(task))}</span>
+                                        <span class="badge">${escapeHtml(taskStageLabel(task))}</span>
+                                    </div>
+                                    <h3>#${Number(task.id || 0)} ${escapeHtml(taskDisplayTitle(task))}</h3>
+                                    <p>${escapeHtml(limitTextClient(task.notes || task.description || 'One Time agent-status task.', 220))}</p>
+                                </div>
+                                <div class="task-row-actions">
+                                    <button class="task-action primary" type="button" onclick="openTaskDetail(event, ${Number(task.id || 0)})">Open Task</button>
+                                </div>
+                            </article>
+                        `).join('') : '<div class="task-empty">No One Time agent work is queued or running right now.</div>'}
+                    </section>
+                </div>
+            `;
+        }
+
+        function renderAgents() {
+            if (!taskAgentControlEnabled()) {
+                return renderScopedAgentStatus();
             }
             if (agentRunDeepKey) return renderAgentRunPortal();
             const visibleRows = filteredAgentRuns();
@@ -29089,7 +29162,7 @@
             const nav = {
                 platform: ['dashboard', 'watchdog', 'admin', 'tasks', 'agents', 'students', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'pipelines', 'accounting', 'automations', 'integrations', 'api_usage', 'settings'],
                 bna: ['dashboard', 'watchdog', 'tasks', 'students', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'communications', 'service_providers', 'accounting', 'automations', 'integrations', 'settings'],
-                service_provider: ['dashboard', 'watchdog', 'service_providers', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'communications', 'tasks', 'automations', 'integrations', 'api_usage', 'settings'],
+                service_provider: ['dashboard', 'watchdog', 'service_providers', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'communications', 'tasks', 'agents', 'automations', 'integrations', 'api_usage', 'settings'],
                 family: ['dashboard', 'contacts', 'tasks', 'calendar', 'communications', 'service_providers', 'settings'],
                 household: ['dashboard', 'contacts', 'tasks', 'calendar', 'communications', 'service_providers', 'settings']
             };
@@ -30504,7 +30577,7 @@
                 const needsDialogueData = needsDashboardData || ['internal_dialogue', 'communications'].includes(activeView) || (activeView === 'integrations' && activeIntegrationsSection === 'automations') || (activeView === 'settings' && ['bot_permissions', 'automations'].includes(activeSettingsSection));
                 const needsProjectData = needsDashboardData || ['pipelines', 'service_providers', 'admin'].includes(activeView) || (activeView === 'settings' && ['workspace', 'workspace_core', 'users_roles', 'users_access'].includes(activeSettingsSection));
                 const needsTaskData = needsDashboardData || ['watchdog', 'tasks', 'agents', 'pipelines', 'internal_dialogue'].includes(activeView);
-                const needsAgentFleetData = needsDashboardData || ['watchdog', 'tasks', 'api_usage', 'admin', 'internal_dialogue'].includes(activeView);
+                const needsAgentFleetData = needsDashboardData || ['watchdog', 'tasks', 'agents', 'api_usage', 'admin', 'internal_dialogue'].includes(activeView);
                 const needsQueueHealthData = needsDashboardData || ['watchdog', 'tasks', 'admin'].includes(activeView);
                 const canUseAgentControl = opsMe?.scope?.type === 'all';
                 const needsAgentRunData = canUseAgentControl && ['agents', 'tasks'].includes(activeView);

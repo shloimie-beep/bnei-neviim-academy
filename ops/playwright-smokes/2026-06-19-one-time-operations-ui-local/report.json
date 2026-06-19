@@ -1,0 +1,107 @@
+{
+  "ok": true,
+  "target": "/operations?workspace=rabbi_sheller_provider&view=content&section=meetings&nav=modules",
+  "initialContract": {
+    "currentWorkspace": "rabbi_sheller_provider",
+    "roleLabel": "Workspace Owner",
+    "navIds": [
+      "dashboard",
+      "watchdog",
+      "service_providers",
+      "contacts",
+      "community",
+      "content",
+      "live_classes",
+      "calendar",
+      "communications",
+      "tasks",
+      "agents",
+      "automations",
+      "integrations",
+      "api_usage",
+      "settings"
+    ],
+    "navLabels": [
+      "Dashboard",
+      "Watchdog",
+      "Program",
+      "Members",
+      "Community",
+      "Content",
+      "Live",
+      "Schedule",
+      "Communications",
+      "Tasks",
+      "Agents",
+      "Automations",
+      "Integrations",
+      "Reporting",
+      "Settings"
+    ],
+    "toolbarIds": [
+      "decisions",
+      "tasks",
+      "agents",
+      "calendar",
+      "content",
+      "community",
+      "automations",
+      "integrations"
+    ],
+    "workspaceOptions": [
+      {
+        "label": "Platform Operations Super Admin / Member Super Admin",
+        "disabled": true,
+        "current": false
+      },
+      {
+        "label": "Bnei Neviim Academy School / Member School",
+        "disabled": true,
+        "current": false
+      },
+      {
+        "label": "One Time Mishnah Class Service Provider / project owner Current",
+        "disabled": false,
+        "current": true
+      },
+      {
+        "label": "Dratler Family Family / Member Family",
+        "disabled": true,
+        "current": false
+      }
+    ],
+    "hasStudentsText": false,
+    "hasAccountingText": false,
+    "driveButton": true
+  },
+  "previewRequests": [
+    {
+      "method": "POST",
+      "body": {
+        "source": {
+          "drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+          "title": "2026-06-18-rabbi-elie-scheller.md",
+          "url": "https://drive.google.com/file/d/1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI/view",
+          "created_time": "2026-06-18T17:16:22.555Z",
+          "modified_time": "2026-06-18T17:16:21.504Z",
+          "mime_type": "text/markdown"
+        }
+      }
+    }
+  ],
+  "mobileMetrics": {
+    "width": 390,
+    "scrollWidth": 390,
+    "hasAgentStatus": true,
+    "toolbarAgents": true
+  },
+  "screenshots": [
+    "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/desktop.png",
+    "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/mobile-agents.png"
+  ],
+  "guardrails": {
+    "productionWrites": false,
+    "secretsInFixture": false,
+    "productionDataMutation": false
+  }
+}

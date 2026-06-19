@@ -8246,10 +8246,10 @@ function identifyOpsUser(username, password = null) {
   if (!user) return null;
   const normalizedUser = user.toLowerCase();
   const platformAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
-  const providerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
+  const providerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
   // Owner gets full provider view + settings; manager gets provider view without sensitive admin
-  const ownerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
-  const managerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations'];
+  const ownerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
+  const managerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations'];
 
   if (OPS_USERNAME && (normalizedUser === OPS_USERNAME.toLowerCase() || OPS_LOGIN_ALIASES.has(normalizedUser))) {
     if (pass !== null && pass.toLowerCase() !== String(OPS_PASSWORD || '').toLowerCase()) return null;
@@ -29658,7 +29658,7 @@ async function ensureDefaultProjects(db = pool) {
       account_type: 'external_user',
       project_scope: ONE_TIME_PROJECT_KEY,
       account_owner: true,
-      allowed_views: ['dashboard', 'watchdog', 'pipelines', 'tasks', 'community', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'api_usage', 'integrations', 'settings'],
+      allowed_views: ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'community', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'api_usage', 'integrations', 'settings'],
     },
   }, db);
   await ensureProjectMember(oneTime, oneTimeManagerAssignment.person_name, {
@@ -29668,7 +29668,8 @@ async function ensureDefaultProjects(db = pool) {
     metadata: {
       account_type: 'internal_admin',
       project_scope: ONE_TIME_PROJECT_KEY,
-      admin_for_owner: oneTimeOwnerAssignment.person_name,
+      admin_for_owner: 'Rabbi Elie Scheller',
+      admin_for_owner_source: oneTimeOwnerAssignment.person_name,
     },
   }, db);
 

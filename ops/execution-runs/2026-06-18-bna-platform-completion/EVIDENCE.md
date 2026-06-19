@@ -170,6 +170,36 @@ Protocol/tooling verification evidence:
   workspace/project override returns 403 before any raw intake or parse-run row
   is written.
 
+2026-06-19 One Time Operations UI/browser smoke evidence:
+
+- UI/auth implementation:
+  `server.js` and `public/operations.html`.
+- Action registry:
+  `ops/action-registry.json`.
+- Browser smoke:
+  `tests/one-time-operations-ui-smoke.test.js`.
+- Smoke report:
+  `ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.md`
+  and `ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.json`.
+- Screenshots:
+  `ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/desktop.png`
+  and
+  `ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/mobile-agents.png`.
+- PASS `node --check server.js`.
+- PASS `node --check tests/one-time-operations-ui-smoke.test.js`.
+- PASS `node --test tests/one-time-operations-ui-smoke.test.js`.
+- PASS focused One Time UI/RBAC/regression suite 55/55:
+  `node --test tests/one-time-operations-ui-smoke.test.js
+  tests/operations-module-scoping.test.js
+  tests/one-time-external-user-portal.test.js
+  tests/one-time-rbac-negative-isolation.test.js
+  tests/one-time-drive-brief-ingestion.test.js
+  tests/one-time-intake-api-readback.test.js tests/one-time-meeting-drops.test.js`.
+- The browser smoke proves the scoped One Time owner view exposes provider
+  modules and the read-only Agent Status UI, hides school-only
+  Students/Accounting, clicks the no-write Drive Brief preview, and passes
+  mobile overflow checks with fake local data only.
+
 Not run:
 
 - No full baseline UI crawl.

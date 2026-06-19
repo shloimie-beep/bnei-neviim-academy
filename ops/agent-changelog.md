@@ -23570,3 +23570,47 @@ Remaining:
   smoke.
 - `REQ-20260619-206` needs Agent Control Center DB/API/browser/manual Agent
   Mode smoke continuation.
+
+## 2026-06-19T07:25:00+03:00 - One Time Operations UI Browser Smoke
+
+Closed the local One Time UI/browser-smoke gap for `REQ-20260619-205`.
+
+- Exposed One Time scoped `Agents` and `Contacts/Members` consistently across
+  allowed views, provider navigation, seed metadata, and the action registry.
+- Added a read-only scoped Agent Status surface for One Time owner/admin users
+  that shows queue heartbeat, machine-work tasks, blockers, and task links
+  without Super Admin claim/submit/seal controls.
+- Added a focused local Playwright smoke with fake One Time data proving the
+  owner workspace, disabled cross-workspace switcher, scoped modules,
+  no-write Drive Brief preview, scoped Agents status, and mobile no-overflow
+  behavior.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/one-time-operations-ui-smoke.test.js`.
+- PASS `node --test tests/one-time-operations-ui-smoke.test.js` 1/1.
+- PASS focused One Time UI/RBAC/regression suite 55/55.
+
+Evidence:
+
+- `tests/one-time-operations-ui-smoke.test.js`.
+- `ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.md`.
+- `ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/desktop.png`.
+- `ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/mobile-agents.png`.
+
+Guardrails:
+
+- No deployment was run.
+- No production database mutation was performed.
+- No external account, Drive, Telegram, social, payment, DNS, Zoom, Vimeo, or
+  Resend write was performed.
+- No raw secrets were stored in tracked files.
+- No full UI crawl, watch loop, or agent-fleet loop was run.
+
+Remaining:
+
+- `REQ-20260619-206` needs Agent Control Center DB/API/browser/manual Agent
+  Mode smoke continuation.
+- `REQ-20260619-207` remains blocked on secure external provider credentials,
+  owner-only account actions, and explicit release approval.

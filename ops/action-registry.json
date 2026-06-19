@@ -220,6 +220,21 @@
       "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-010", "GOAL-CORE-015"]
     },
     {
+      "action_id": "ACTION-ONETIME-SCOPED-AGENT-STATUS",
+      "label": "One Time Agent Status",
+      "surface": "operations_agent_control_center",
+      "route": "/operations?workspace=rabbi_sheller_provider&view=agents",
+      "selector_hint": "[data-scoped-agent-status] Refresh, Codex Queue, Open Tasks, Open Task",
+      "expected_behavior": "Shows scoped One Time machine-work status, queue heartbeat, blockers, and task links for project owner/admin users without exposing Super Admin claim, submit, seal, or production mutation controls.",
+      "permission": "project_owner/project_admin",
+      "status": "active",
+      "test": {
+        "type": "browser_smoke",
+        "expected_result": "tests/one-time-operations-ui-smoke.test.js renders [data-scoped-agent-status], verifies One Time tasks, and confirms Claim/Seal controls are absent for scoped users."
+      },
+      "related_goal_ids": ["GOAL-CORE-002", "GOAL-CORE-006", "GOAL-CORE-010", "GOAL-CORE-015"]
+    },
+    {
       "action_id": "ACTION-ONETIME-DRIVE-BRIEF-PREVIEW",
       "label": "Preview Drive Brief",
       "surface": "operations_content_meeting_drops",

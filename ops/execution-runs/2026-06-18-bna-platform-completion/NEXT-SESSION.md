@@ -18,8 +18,9 @@ Current 2026-06-19 checkpoint:
 - `REQ-20260619-204` is locally done: helper/route isolation, owner/admin
   auth, canonical seed assignment reuse, scoped-access readback, and BNA
   workspace override denial are implemented and tested.
-- `REQ-20260619-205` needs One Time module/button audit and role-based browser
-  smoke.
+- `REQ-20260619-205` is locally done: One Time module/button audit,
+  role-based browser smoke, read-only scoped Agents status, and no-write Drive
+  Brief preview were implemented and tested locally.
 - `REQ-20260619-206` continues the Agent Control Center DB/API/browser/manual
   Agent Mode smoke work from `REQ-20260618-112` through `REQ-20260618-123`.
 - `REQ-20260619-207` is genuinely blocked for live provider setup until
@@ -28,20 +29,22 @@ Current 2026-06-19 checkpoint:
 
 Exact next requirement:
 
-`REQ-20260619-205` One Time module/button audit and role-based browser smoke.
-After that, continue `REQ-20260619-206` Agent Control Center DB/API/browser
-and manual Agent Mode smoke.
+`REQ-20260619-206` Agent Control Center DB/API/browser and manual Agent Mode
+smoke.
 
 Exact next command:
 
 ```powershell
-node --test tests\one-time-intake-api-readback.test.js tests\one-time-rbac-negative-isolation.test.js tests\one-time-drive-brief-ingestion.test.js
+node --test tests\agent-control-center.test.js
+npm run bna:run:validate
 ```
 
-Then inspect `public\operations.html`, `ops\action-registry.json`, and
-`ops\route-registry.json` for One Time scoped modules/buttons. Add or run a
-focused role-based browser smoke only for One Time Operations surfaces; do not
-start a broad baseline UI crawl.
+Then continue `REQ-20260618-121`: add a safe local DB/API smoke for one demo
+task creating an Agent Run, attaching evidence, submitting a blocked or fail
+result, and proving task/decision side effects without touching production
+data. After the API smoke, add focused browser smoke evidence for Super Admin
+Agent Control Center list and Agent Run portal only; do not start a broad
+baseline UI crawl.
 
 Open requirements:
 

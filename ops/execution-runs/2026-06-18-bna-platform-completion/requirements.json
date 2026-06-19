@@ -609,7 +609,7 @@
       "id": "REQ-20260619-205",
       "title": "One Time users, modules, buttons, community, tasks, calendar, agents, and integrations UI",
       "area": "operations",
-      "status": "needs_verification",
+      "status": "done",
       "expected_result": "One Time Operations surfaces expose useful scoped modules and clear real actions without duplicated controls, debug labels, or irrelevant empty modules.",
       "source": "RAW-20260619-002",
       "depends_on_audit_output": false,
@@ -618,19 +618,31 @@
       "evidence": [
         "public/operations.html",
         "ops/action-registry.json",
-        "ops/route-registry.json"
+        "ops/route-registry.json",
+        "tests/one-time-operations-ui-smoke.test.js",
+        "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.md",
+        "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.json",
+        "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/desktop.png",
+        "ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/mobile-agents.png"
       ],
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "Not deployed by operator rule; local Playwright smoke uses fake One Time-scoped data and performs no production DB, external integration, Drive, email, Zoom, Vimeo, Resend, DNS, or deployment write."
+      ],
       "verification": [
-        "Operations inline script syntax check",
-        "node --test tests/one-time-drive-brief-ingestion.test.js tests/one-time-meeting-drops.test.js"
+        "node --check server.js",
+        "node --check tests/one-time-operations-ui-smoke.test.js",
+        "node --test tests/one-time-operations-ui-smoke.test.js",
+        "node --test tests/one-time-operations-ui-smoke.test.js tests/operations-module-scoping.test.js tests/one-time-external-user-portal.test.js tests/one-time-rbac-negative-isolation.test.js tests/one-time-drive-brief-ingestion.test.js tests/one-time-intake-api-readback.test.js tests/one-time-meeting-drops.test.js"
       ],
       "acceptance_criteria": [
         "Meeting Drops includes Preview Drive Brief and Structure Latest paths.",
         "Preview panel shows counts, roles, idempotency, and blockers.",
-        "Visible action and route are registered."
+        "Visible action and route are registered.",
+        "Role-based browser smoke proves One Time owner sees scoped provider modules, Contacts/Members, Tasks, Community, Content, Live/Schedule, Agents, Integrations, and Settings while school-only Students and Accounting are hidden.",
+        "Scoped Agents view shows read-only One Time machine-work status without Super Admin claim/seal controls.",
+        "Mobile browser smoke has no horizontal overflow."
       ],
-      "notes": "Preview Drive Brief UI/action/route are implemented and statically verified. Full role-based browser smoke and button audit remain open."
+      "notes": "Local browser smoke renders the scoped One Time owner UI with fake data, clicks the no-write Drive Brief preview, proves school-only Students/Accounting are absent, verifies the new read-only scoped Agents status panel, and captures desktop/mobile screenshots. Contacts/Members and Agents are now aligned across One Time allowed views, provider navigation, seed metadata, and action-registry coverage. Production deployment/live smoke remains withheld until explicit release approval."
     },
     {
       "id": "REQ-20260619-206",

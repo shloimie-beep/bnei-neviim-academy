@@ -25,8 +25,8 @@ Still required before local completion:
 
 - DB-backed route smoke for the new `bna_agent_*` tables and APIs.
 - Negative scoped-identity API tests.
-- Browser smoke for `/operations?view=agents` and
-  `/operations/agents/runs/:runKey`.
+- Super Admin Agent Control Center browser smoke for `/operations?view=agents`
+  and `/operations/agents/runs/:runKey`.
 - Safe demo task/run fixture.
 - Manual Agent Mode smoke using the generated prompt.
 - Full-suite regression after DB/API/browser smoke changes.
@@ -101,3 +101,25 @@ Not run for this batch:
 - No production DB write/readback.
 - No deployment.
 - No external Zoom/Vimeo/Resend/DNS/Stripe write.
+
+Verified on 2026-06-19 for One Time Operations UI/browser smoke:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/one-time-operations-ui-smoke.test.js`.
+- PASS `node --test tests/one-time-operations-ui-smoke.test.js` 1/1.
+- PASS focused One Time UI/RBAC/regression suite 55/55:
+  `node --test tests/one-time-operations-ui-smoke.test.js
+  tests/operations-module-scoping.test.js
+  tests/one-time-external-user-portal.test.js
+  tests/one-time-rbac-negative-isolation.test.js
+  tests/one-time-drive-brief-ingestion.test.js
+  tests/one-time-intake-api-readback.test.js tests/one-time-meeting-drops.test.js`.
+- PASS local Playwright screenshots and report:
+  `ops/playwright-smokes/2026-06-19-one-time-operations-ui-local/report.md`.
+
+Not run for this batch:
+
+- No broad UI crawl or audit harness rebuild.
+- No production DB write/readback.
+- No deployment.
+- No external Zoom/Vimeo/Resend/DNS/Stripe/Drive/Telegram write.
