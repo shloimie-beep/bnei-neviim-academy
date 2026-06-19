@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-19T08:15:30+03:00
+Updated: 2026-06-19T08:25:30+03:00
 
 Status counts:
 
@@ -92,6 +92,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current verification batch: REQ-20260618-149 now has static/API and browser DOM proof that Integrations is selected-workspace scoped and renders Buffer Connected/Not connected/Error states, account identity, last check, needed action, failure reason, and workspace labels while avoiding active GHL social-runtime copy. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-150.
+Current verification batch: REQ-20260618-150 now has static/API and browser DOM proof that Users and invitations are selected-workspace scoped and render member names, access levels, login usernames, invitation email/status, and summary counts while excluding BNA rows and mutation/send controls. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-151.
 
 No deployment or production-data mutation is approved in this run.

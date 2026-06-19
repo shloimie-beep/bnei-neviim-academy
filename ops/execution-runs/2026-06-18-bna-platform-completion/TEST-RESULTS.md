@@ -734,3 +734,14 @@ Integrations status browser proof (2026-06-19T08:15:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-149 now has browser proof that after switching to One Time workspace, Integrations requests `project=one_time_mishnah_class`, shows Buffer Connected/Not connected/Error states, account identity, last check, needed action, failure reason, and One Time workspace labels, and avoids active GHL/GoHighLevel/LeadConnector copy inside the integration panel. No audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, or external account mutation was performed.
+
+
+Workspace users browser proof (2026-06-19T08:25:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/users-scope.test.js tests/operations-module-toolbar.test.js tests/browser-acceptance.test.js` 9/9.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-150 now has browser proof that after switching to One Time workspace, Users requests `project=one_time_mishnah_class` for members and invitations, shows member names, access levels, login usernames, invitation email/status, and summary counts, excludes BNA rows, and exposes no invitation-send or user-mutation controls. No audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, invitation send, or account mutation was performed.

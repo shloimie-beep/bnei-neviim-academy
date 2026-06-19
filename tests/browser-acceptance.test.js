@@ -407,8 +407,80 @@ function operationsFixture(pathname, url, options = {}) {
             },
           ],
     },
-    '/api/bna/users': { users: [] },
-    '/api/bna/invitations': { invitations: [] },
+    '/api/bna/users': {
+      users: project === 'one_time_mishnah_class'
+        ? [
+            {
+              id: 901,
+              person_name: 'One Time Manager',
+              login_username: 'one-time-manager',
+              role: 'workspace_member',
+              access_level: 'manager',
+              active: true,
+              project_key: 'one_time_mishnah_class',
+              project_name: 'One Time Mishnah Class',
+              project_short_name: 'One Time',
+              workspace_name: 'One Time Mishnah Class',
+            },
+            {
+              id: 902,
+              person_name: 'One Time Viewer',
+              login_username: 'one-time-viewer',
+              role: 'workspace_member',
+              access_level: 'viewer',
+              active: false,
+              project_key: 'one_time_mishnah_class',
+              project_name: 'One Time Mishnah Class',
+              project_short_name: 'One Time',
+              workspace_name: 'One Time Mishnah Class',
+            },
+          ]
+        : [
+            {
+              id: 900,
+              person_name: 'BNA Admin',
+              login_username: 'bna-admin',
+              role: 'super_admin',
+              access_level: 'owner',
+              active: true,
+              project_key: 'bna',
+              project_name: 'BNA',
+              project_short_name: 'BNA',
+              workspace_name: 'BNA',
+            },
+          ],
+    },
+    '/api/bna/invitations': {
+      invitations: project === 'one_time_mishnah_class'
+        ? [
+            {
+              id: 951,
+              person_name: 'One Time Invitee',
+              email: 'invitee-one-time@example.invalid',
+              role: 'workspace_member',
+              access_level: 'member',
+              status: 'pending',
+              project_key: 'one_time_mishnah_class',
+              project_name: 'One Time Mishnah Class',
+              project_short_name: 'One Time',
+              workspace_name: 'One Time Mishnah Class',
+            },
+          ]
+        : [
+            {
+              id: 950,
+              person_name: 'BNA Invitee',
+              email: 'invitee-bna@example.invalid',
+              role: 'workspace_member',
+              access_level: 'member',
+              status: 'pending',
+              project_key: 'bna',
+              project_name: 'BNA',
+              project_short_name: 'BNA',
+              workspace_name: 'BNA',
+            },
+          ],
+    },
     '/api/bna/signups': {
       signups: [
         project === 'one_time_mishnah_class'
@@ -1268,6 +1340,43 @@ async function assertOperationsIntegrationsWorkspaceStatus(page, calls) {
   assert.doesNotMatch(integrationState.text, /GHL|GoHighLevel|LeadConnector/i);
 }
 
+async function assertOperationsUsersWorkspaceScope(page, calls) {
+  await page.locator('.ops-module-button').filter({ hasText: 'Users' }).click();
+  await page.locator('.ops-view-frame[data-current-view="users"]').waitFor();
+  await waitForCall(
+    calls,
+    (call) => call.pathname === '/api/bna/users' && call.project === 'one_time_mishnah_class',
+    'Users request scoped to One Time workspace',
+  );
+  await waitForCall(
+    calls,
+    (call) => call.pathname === '/api/bna/invitations' && call.project === 'one_time_mishnah_class',
+    'Invitations request scoped to One Time workspace',
+  );
+  await page.locator('.focus-panel[aria-label="Workspace users and invitations"]').waitFor();
+  const usersState = await page.evaluate(() => {
+    const panel = document.querySelector('.focus-panel[aria-label="Workspace users and invitations"]');
+    return {
+      text: panel?.textContent?.replace(/\s+/g, ' ').trim() || '',
+    };
+  });
+  assert.match(usersState.text, /Users\s*2/);
+  assert.match(usersState.text, /Active\s*1/);
+  assert.match(usersState.text, /Invitations\s*1/);
+  assert.match(usersState.text, /One Time Manager/);
+  assert.match(usersState.text, /one-time-manager/);
+  assert.match(usersState.text, /manager/);
+  assert.match(usersState.text, /One Time Viewer/);
+  assert.match(usersState.text, /one-time-viewer/);
+  assert.match(usersState.text, /viewer/);
+  assert.match(usersState.text, /One Time Invitee/);
+  assert.match(usersState.text, /invitee-one-time@example\.invalid/);
+  assert.match(usersState.text, /pending/);
+  assert.match(usersState.text, /One Time/);
+  assert.doesNotMatch(usersState.text, /BNA Admin|BNA Invitee|invitee-bna@example\.invalid/);
+  assert.doesNotMatch(usersState.text, /Send invitation|Invite user|Create user|Delete user/i);
+}
+
 async function assertOperationsContactsCommunityScope(page, calls) {
   await page.locator('.ops-module-button').filter({ hasText: 'Contacts' }).click();
   await page.locator('.ops-view-frame[data-current-view="contacts"]').waitFor();
@@ -1541,6 +1650,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       await assertOperationsLiveClassesWorkspaceScope(page, calls);
       await assertOperationsAutomationsWorkspaceStatus(page, calls);
       await assertOperationsIntegrationsWorkspaceStatus(page, calls);
+      await assertOperationsUsersWorkspaceScope(page, calls);
       await assertOperationsContactsCommunityScope(page, calls);
       await assertOperationsContentBoundary(page, calls);
       await assertOperationsContentMetadataProvenance(page, calls);
