@@ -877,3 +877,14 @@ Public navigation browser proof (2026-06-19T10:25:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-163 now has rendered public homepage proof that the primary nav uses the public manifest, shows Home, Blog, FAQ, Contact Us, and Sign Up, links only to public/contact destinations, excludes private Operations login/portal/BNA Operations text and hrefs, and has no horizontal overflow at mobile or desktop widths. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Provider free-listing CTA browser proof (2026-06-19T10:35:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/public-provider-cta.test.js`.
+- PASS `node --test tests/public-provider-cta.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/browser-acceptance.test.js` 16/16.
+- PASS `npm test` 212/212.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-164 now has rendered public homepage proof that the provider listing section says Advertise your program for free, describes Torah classes/chugim/tutoring/mentoring/homeschool/family/youth listing scope, states basic community listings are free, uses the WhatsApp contact CTA, excludes private Operations links, and stays overflow-safe on mobile and desktop. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

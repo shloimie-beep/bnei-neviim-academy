@@ -1920,6 +1920,51 @@ test('Playwright public homepage keeps private Operations links out of primary n
   });
 });
 
+test('Playwright public homepage renders provider free-listing CTA', async () => {
+  await withServer(async (baseUrl) => {
+    const browser = await chromium.launch();
+    const context = await browser.newContext({
+      baseURL: baseUrl,
+      serviceWorkers: 'block',
+      viewport: { width: 390, height: 844 },
+    });
+
+    try {
+      const page = await context.newPage();
+      await page.goto('/', { waitUntil: 'domcontentloaded' });
+      await page.locator('#providers').scrollIntoViewIfNeeded();
+      await page.locator('#providers .provider-listing-button').waitFor();
+
+      const providerState = await page.evaluate(() => {
+        const section = document.querySelector('#providers');
+        const link = section?.querySelector('.provider-listing-button');
+        return {
+          text: section?.textContent?.replace(/\s+/g, ' ').trim() || '',
+          href: link?.getAttribute('href') || '',
+          linkText: link?.textContent?.replace(/\s+/g, ' ').trim() || '',
+        };
+      });
+
+      assert.match(providerState.text, /For local providers/);
+      assert.match(providerState.text, /Advertise your program for free/);
+      assert.match(providerState.text, /Torah class, chug, tutoring option, homeschool support group, family resource, or youth program/);
+      assert.match(providerState.text, /Classes, chugim, tutoring, mentoring, homeschool support, and family or youth services/);
+      assert.match(providerState.text, /Basic community listings are free/);
+      assert.equal(providerState.linkText, 'Advertise your program for free');
+      assert.equal(providerState.href, 'https://wa.me/972534932631');
+      assert.doesNotMatch(providerState.text, /Operations|Operations login|Operations portal|BNA Operations/i);
+      assert.doesNotMatch(providerState.href, /\/operations\b|operations-login/i);
+      await noHorizontalOverflow(page);
+
+      await page.setViewportSize({ width: 1440, height: 900 });
+      await noHorizontalOverflow(page);
+    } finally {
+      await context.close();
+      await browser.close();
+    }
+  });
+});
+
 test('Playwright Operations acceptance covers routes, history, responsive layout, workspace, helper, and student detail', async () => {
   await withServer(async (baseUrl) => {
     const calls = [];

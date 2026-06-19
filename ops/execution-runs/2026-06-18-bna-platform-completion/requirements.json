@@ -429,7 +429,8 @@
         "Parent signup pages, signup thank-you, and parent manifest now use direct parent signup, self-governance positioning, and the six months free parent app offer.",
         "Portal header identity coverage now spans public homepage/provider listing, parent PWA signup launch, English/Hebrew signup, Student Portal, Operations shell, and Operations login while preserving manifest separation.",
         "Public/blog/FAQ/signup/portal route and CTA integrity now uses clean public aliases, canonical signup/student portal URLs, and focused route regression coverage.",
-        "REQ-20260618-163 now has browser proof that the served public homepage primary navigation remains prospect/family-facing and does not expose private Operations login routes while private Operations routes stay intact."
+        "REQ-20260618-163 now has browser proof that the served public homepage primary navigation remains prospect/family-facing and does not expose private Operations login routes while private Operations routes stay intact.",
+        "REQ-20260618-164 now has browser proof that the served public homepage shows the provider free-listing CTA and scope without private Operations links."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -444,9 +445,11 @@
         "node --test tests/public-route-cta-integrity.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js PASS 26/26",
         "npm test PASS 202/202",
         "node --test tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js tests/browser-acceptance.test.js PASS 19/19",
-        "npm test PASS 211/211"
+        "npm test PASS 211/211",
+        "node --test tests/public-provider-cta.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/browser-acceptance.test.js PASS 16/16",
+        "npm test PASS 212/212"
       ],
-      "notes": "Public/copy parent remains in_progress until final acceptance, release approval, deploy, and live smoke are complete. REQ-20260618-163 now has source and browser proof.",
+      "notes": "Public/copy parent remains in_progress until final acceptance, release approval, deploy, and live smoke are complete. REQ-20260618-163 and REQ-20260618-164 now have rendered public-page proof.",
       "files_changed": [
         "tests/public-navigation.test.js",
         "public/index.html",
@@ -3105,7 +3108,7 @@
       "title": "Provider CTA: Advertise your program for free",
       "area": "public",
       "priority": "P1",
-      "current_verdict": "local_implemented_pending_release",
+      "current_verdict": "local_complete_pending_release",
       "status": "needs_verification",
       "expected_result": "Service-provider positioning uses Advertise your program for free and explains what can be listed for free.",
       "acceptance_criteria": [
@@ -3122,17 +3125,24 @@
         "Provider copy explains free listing scope for Torah classes, chugim, tutoring, mentoring, homeschool support, family resources, and youth services.",
         "Provider listing details tell parents they should see a clear name, description, location, age range, schedule, and contact path, and clarify that basic community listings are free.",
         "The provider CTA uses the existing WhatsApp contact path, keeps private Operations links out of public copy, and includes responsive layout styling.",
-        "English and Hebrew translation keys cover the provider CTA section."
+        "English and Hebrew translation keys cover the provider CTA section.",
+        "Playwright now serves the public homepage provider section and proves the free-listing CTA renders For local providers, Advertise your program for free, free listing scope, parent-facing listing details, the WhatsApp contact path, no private Operations text or hrefs, and mobile/desktop overflow safety."
       ],
       "deployment_evidence": [],
       "verification": [
         "node --check tests/public-provider-cta.test.js PASS",
         "Public homepage inline script parse PASS 1 script block",
         "node --test tests/public-provider-cta.test.js tests/public-navigation.test.js tests/pwa-identity.test.js PASS 11/11",
-        "npm test PASS 191/191"
+        "npm test PASS 191/191",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/public-provider-cta.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/browser-acceptance.test.js PASS 16/16",
+        "npm test PASS 212/212",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: feat: add provider free listing cta"
+        "current batch commit: feat: add provider free listing cta",
+        "current batch commit: test: verify provider CTA in browser"
       ],
       "files_changed": [
         "public/index.html",
@@ -3142,9 +3152,13 @@
         "ops/execution-runs/2026-06-18-bna-platform-completion/REQUIREMENTS.md",
         "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
         "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
-        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md"
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md",
+        "tests/browser-acceptance.test.js",
+        "ops/execution-runs/latest.json",
+        "ops/agent-task-ledger.jsonl",
+        "ops/agent-changelog.md"
       ],
-      "notes": "Local implementation complete; live-required status remains needs_verification until final acceptance sweep, release approval, deploy, and live smoke. No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
+      "notes": "Local static and browser proof is complete; live-required status remains needs_verification until final acceptance sweep, release approval, deploy, and live smoke. No deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
     },
     {
       "id": "REQ-20260618-165",
