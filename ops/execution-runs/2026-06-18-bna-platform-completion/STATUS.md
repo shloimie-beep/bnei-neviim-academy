@@ -288,6 +288,23 @@ remain open.
   mutation, external write, broad crawl, watch loop, or agent-fleet loop was
   performed.
 
+2026-06-19 safe test-data/acceptance coverage local closeout:
+
+- Moved `REQ-20260618-111` to local `done`.
+- Added a dry-run-first `TEST_REQ022` seed harness and package script for safe
+  school, service-provider, family, workspace-role, student, assignment, task,
+  Decision, calendar, content/research, community, automation, Hebrew portal,
+  helper-audit, and cleanup fixtures.
+- Generated seed and cleanup dry-run artifacts under
+  `ops/seed-runs/2026-06-18-req022-local/` and
+  `ops/seed-runs/2026-06-18-req022-cleanup-local/`.
+- Added active-run acceptance coverage that proves locally done requirements
+  have evidence and verification, with release/no-deploy handling for
+  live-visible rows.
+- Focused safe-seed/acceptance/Agent Control suite passed 14/14; no deployment,
+  production DB mutation, external write, broad crawl, watch loop, or
+  agent-fleet loop was performed.
+
 Still open after this batch:
 
 - `REQ-20260619-203` is locally done. Production deployment/live smoke remains
@@ -357,5 +374,6 @@ Still open:
 - No deployment or production mutation was performed.
 - Manual Agent Mode smoke remains open. Agent Run notification/no-spam hooks
   now have local API proof.
-- Audit-dependent `REQ-20260618-101` through `REQ-20260618-111` remain blocked
-  on the external audit package only.
+- Only `REQ-20260618-101` and screenshot-specific visual findings remain
+  blocked on the external audit package. Credential-free non-screenshot work
+  continues without waiting on that package.

@@ -24052,3 +24052,44 @@ Remaining:
 - `REQ-20260618-111` safe test data and complete acceptance-test coverage is
   the next broad unblocked requirement.
 - Release/live verification remains withheld until explicit approval.
+
+## 2026-06-19T07:53:04+03:00 - Safe Test Data Acceptance Local Proof
+
+Moved `REQ-20260618-111` to local `done`.
+
+- Added `scripts/seed-req022-test-data.mjs`, a dry-run-first safe fixture
+  generator for school/provider/family workspaces, roles, students,
+  assignments, tasks, Decisions, calendar, content/research, community,
+  automations, Hebrew portal, helper audit, and cleanup coverage.
+- Generated seed and cleanup dry-run artifacts under
+  `ops/seed-runs/2026-06-18-req022-local/` and
+  `ops/seed-runs/2026-06-18-req022-cleanup-local/`.
+- Added `tests/active-run-acceptance-coverage.test.js` to prove locally done
+  active-run requirements carry evidence, verification, and release/no-deploy
+  handling where relevant.
+- Exposed the safe seed harness through `npm run seed:req022` while staging
+  only that package-script line.
+
+Verification:
+
+- PASS `node --check scripts/seed-req022-test-data.mjs`.
+- PASS `node --check tests/req022-seed-test-data.test.js`.
+- PASS `node --check tests/active-run-acceptance-coverage.test.js`.
+- PASS focused safe-seed/acceptance/Agent Control suite 14/14.
+- PASS `npm run bna:run:validate`.
+
+Guardrails:
+
+- Seed and cleanup were dry-run only.
+- No deployment was run.
+- No production database mutation was performed.
+- No external account, Drive, Telegram, social, payment, DNS, Zoom, Vimeo, or
+  Resend write was performed.
+- No raw secrets were stored in tracked files.
+- No broad UI crawl, watch loop, or agent-fleet loop was run.
+
+Remaining:
+
+- `REQ-20260618-112` Agent Control Center parent closeout is the next broad
+  unblocked requirement.
+- Manual Agent Mode/browser-judgment smoke remains the main local closeout gap.

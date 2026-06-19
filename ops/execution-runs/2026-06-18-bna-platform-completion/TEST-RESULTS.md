@@ -421,3 +421,28 @@ Not run for this batch:
 - No deployment.
 - No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
   social write.
+
+Verified on 2026-06-19 for safe test-data/acceptance coverage closeout:
+
+- PASS `node --check scripts/seed-req022-test-data.mjs`.
+- PASS `node --check tests/req022-seed-test-data.test.js`.
+- PASS `node --check tests/active-run-acceptance-coverage.test.js`.
+- PASS focused safe-seed/acceptance/Agent Control suite 14/14:
+  `node --test tests/req022-seed-test-data.test.js
+  tests/active-run-acceptance-coverage.test.js
+  tests/agent-control-center.test.js tests/agent-control-api-readback.test.js
+  tests/agent-control-browser-smoke.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `in_progress: 4`, `needs_verification: 9`, `blocked: 2`,
+  `done: 16`.
+- The suite verifies the safe seed harness, generated dry-run seed/cleanup
+  artifacts, active-run evidence/verification coverage, scoped Agent Control
+  acceptance path, and negative non-Super-Admin Agent Control isolation.
+
+Not run for this batch:
+
+- No broad UI crawl or audit harness rebuild.
+- No production DB write/readback.
+- No deployment.
+- No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
+  social write.

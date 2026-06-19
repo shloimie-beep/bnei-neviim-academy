@@ -571,6 +571,47 @@ Protocol/tooling verification evidence:
 - No deployment, production DB mutation, external send/write, broad crawl,
   watch loop, or agent-fleet loop was performed.
 
+2026-06-19 safe test-data/acceptance coverage local closeout evidence:
+
+- Safe seed harness:
+  `scripts/seed-req022-test-data.mjs`.
+- Package entry:
+  `package.json` script `seed:req022`.
+- Seed/cleanup contract tests:
+  `tests/req022-seed-test-data.test.js`.
+- Active-run acceptance coverage test:
+  `tests/active-run-acceptance-coverage.test.js`.
+- Generated dry-run seed artifacts:
+  `ops/seed-runs/2026-06-18-req022-local/plan.json`,
+  `ops/seed-runs/2026-06-18-req022-local/report.md`,
+  `ops/seed-runs/2026-06-18-req022-local/seed.sql`, and
+  `ops/seed-runs/2026-06-18-req022-local/cleanup.sql`.
+- Generated dry-run cleanup artifacts:
+  `ops/seed-runs/2026-06-18-req022-cleanup-local/plan.json`,
+  `ops/seed-runs/2026-06-18-req022-cleanup-local/report.md`,
+  `ops/seed-runs/2026-06-18-req022-cleanup-local/cleanup.sql`, and
+  `ops/seed-runs/2026-06-18-req022-cleanup-local/seed.sql`.
+- PASS syntax checks:
+  `node --check scripts/seed-req022-test-data.mjs`,
+  `node --check tests/req022-seed-test-data.test.js`, and
+  `node --check tests/active-run-acceptance-coverage.test.js`.
+- PASS focused safe-seed/acceptance/Agent Control suite 14/14:
+  `node --test tests/req022-seed-test-data.test.js
+  tests/active-run-acceptance-coverage.test.js
+  tests/agent-control-center.test.js tests/agent-control-api-readback.test.js
+  tests/agent-control-browser-smoke.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `in_progress: 4`, `needs_verification: 9`, `blocked: 2`,
+  `done: 16`.
+- The suite proves dry-run-first fixture generation, explicit apply/cleanup
+  confirmation phrases, no external writes, no secrets printed, scoped
+  idempotent SQL, cleanup limited to prefixed/metadata-tagged rows, generated
+  school/provider/family/student/task/Decision/calendar/content/community/
+  automation/helper-audit fixtures, and active-run evidence/verification
+  coverage for locally done requirements.
+- No deployment, production DB mutation, external send/write, broad crawl,
+  watch loop, or agent-fleet loop was performed.
+
 Not run:
 
 - No full baseline UI crawl.

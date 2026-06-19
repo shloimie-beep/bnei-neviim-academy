@@ -316,16 +316,35 @@
       "id": "REQ-20260618-111",
       "title": "Test data and acceptance tests",
       "area": "tests",
-      "status": "in_progress",
+      "status": "done",
       "expected_result": "Acceptance tests and safe test data prove the remediated flows without mutating production data unsafely.",
       "source": "Known June 18 requirement area",
       "depends_on_audit_output": false,
       "live_required": false,
       "blocker": "",
-      "evidence": [],
+      "evidence": [
+        "scripts/seed-req022-test-data.mjs",
+        "tests/req022-seed-test-data.test.js",
+        "tests/active-run-acceptance-coverage.test.js",
+        "package.json",
+        "ops/seed-runs/2026-06-18-req022-local/plan.json",
+        "ops/seed-runs/2026-06-18-req022-local/report.md",
+        "ops/seed-runs/2026-06-18-req022-local/seed.sql",
+        "ops/seed-runs/2026-06-18-req022-local/cleanup.sql",
+        "ops/seed-runs/2026-06-18-req022-cleanup-local/plan.json",
+        "ops/seed-runs/2026-06-18-req022-cleanup-local/report.md",
+        "ops/seed-runs/2026-06-18-req022-cleanup-local/cleanup.sql",
+        "ops/seed-runs/2026-06-18-req022-cleanup-local/seed.sql"
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "notes": "Corrected 2026-06-19: this requirement must not wait for the UI audit package. Only screenshot-specific visual findings depend on uploaded audit evidence; credential-free implementation and focused tests can continue immediately."
+      "verification": [
+        "node --check scripts/seed-req022-test-data.mjs",
+        "node --check tests/req022-seed-test-data.test.js",
+        "node --check tests/active-run-acceptance-coverage.test.js",
+        "node --test tests/req022-seed-test-data.test.js tests/active-run-acceptance-coverage.test.js tests/agent-control-center.test.js tests/agent-control-api-readback.test.js tests/agent-control-browser-smoke.test.js",
+        "npm run bna:run:validate"
+      ],
+      "notes": "Local safe test-data and acceptance coverage proof is now recorded: the TEST_REQ022 seed harness is dry-run by default, requires explicit apply/cleanup confirmation before database writes, prints no secrets, declares no external writes, generates scoped school/provider/family/student/task/decision/calendar/content/community/automation/helper-audit fixtures, and includes cleanup SQL that deletes only prefixed or metadata-tagged rows. The active-run acceptance coverage test proves locally done requirements have evidence and verification, with release/no-deploy handling for live-visible items. Corrected 2026-06-19: this requirement did not wait for the UI audit package; only screenshot-specific visual findings depend on uploaded audit evidence."
     },
     {
       "id": "REQ-20260618-112",
@@ -695,7 +714,9 @@
         "ops/audits/2026-06-18-ramble-agent-integrations-baseline.md"
       ],
       "deployment_evidence": [],
-      "verification": [],
+      "verification": [
+        "npm run bna:run:validate"
+      ],
       "acceptance_criteria": [
         "Raw prompt has a stable raw ID.",
         "Active run requirements are extended rather than restarted.",

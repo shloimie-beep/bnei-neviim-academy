@@ -66,6 +66,10 @@ Current 2026-06-19 checkpoint:
   route labels, public helper copy, Operations route privacy expectations, and
   public content contamination guards are implemented and locally tested
   without deployment.
+- `REQ-20260618-111` is locally done: the dry-run-first safe seed harness,
+  generated TEST_REQ022 seed/cleanup artifacts, package script, and active-run
+  acceptance coverage tests are implemented and locally verified without any
+  production write.
 - Manual Agent Mode/browser-judgment smoke remains open.
 - `REQ-20260619-207` is genuinely blocked for live provider setup until
   operator supplies or performs external account-owner actions through the
@@ -73,31 +77,33 @@ Current 2026-06-19 checkpoint:
 
 Exact next requirement:
 
-`REQ-20260618-111` safe test data and complete acceptance-test coverage, while
+`REQ-20260618-112` Agent Control Center parent closeout, while
 preserving the already closed `REQ-20260618-103` workspace/RBAC,
 `REQ-20260618-104` Operations shell/navigation, `REQ-20260618-105` design
 system, `REQ-20260618-106` task/intake/calendar, `REQ-20260618-108`
 student/Goal Board/Hebrew, `REQ-20260618-109` helper proof, and
-`REQ-20260618-110` public copy/CTA proof.
+`REQ-20260618-110` public copy/CTA proof, and `REQ-20260618-111` safe
+test-data/acceptance proof.
 
 Exact next command:
 
 ```powershell
-node --test tests\req022-seed-test-data.test.js tests\agent-control-center.test.js tests\agent-control-api-readback.test.js tests\agent-control-browser-smoke.test.js
+node --test tests\agent-control-center.test.js tests\agent-control-api-readback.test.js tests\agent-control-browser-smoke.test.js tests\active-run-acceptance-coverage.test.js
 npm run bna:run:validate
 ```
 
-Then continue `REQ-20260618-111`: inspect safe seed/demo-data helpers,
-acceptance-test coverage for the locally remediated flows, and any existing
-test gaps in the active run. Add focused proof without touching production
-data, live sends, deploys, broad UI crawls, watch loops, or agent-fleet loops.
+Then continue the Agent Control closeout cluster: reassess `REQ-20260618-112`,
+`REQ-20260618-122`, `REQ-20260618-123`, and `REQ-20260619-206`; record the
+canonical manual Agent Mode smoke prompt/result if available; otherwise leave
+only the manual browser-judgment step open with exact evidence and next action.
+Do not touch production data, live sends, deploys, broad UI crawls, watch
+loops, or agent-fleet loops.
 
 Open requirements:
 
 - `REQ-20260618-101` audit harness and audit package
 - `REQ-20260618-102` PWA public-vs-Operations separation is locally
   implemented and needs release/live verification
-- `REQ-20260618-111` test data and acceptance tests
 - `REQ-20260618-112` Agent Control Center parent
 - `REQ-20260618-113` through `REQ-20260618-118` have local API/browser proof
   but still need manual Agent Mode/browser-judgment closeout before closure
