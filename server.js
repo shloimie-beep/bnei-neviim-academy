@@ -79,6 +79,11 @@ const {
   parseJsonMaybe: parseAgentJsonMaybe,
 } = require('./src/lib/bna/agent-control');
 const {
+  LATEST_ONE_TIME_DRIVE_BRIEF_SOURCE,
+  assertOneTimeScopedPreview,
+  buildOneTimeDriveBriefIngestionPreview,
+} = require('./src/lib/bna/one-time-drive-brief');
+const {
   hasContactLeadPipelineBuildIntent,
   hasInterestedParentLeadCaptureIntent,
 } = require('./src/lib/bna/telegram-contact-lead-capture');
@@ -29626,15 +29631,25 @@ async function ensureDefaultProjects(db = pool) {
   }, db);
 
   await ensureProjectMember(bna, 'Shloimie', { role: 'operator', access_level: 'owner' }, db);
-  await ensureProjectMember(oneTime, 'Shloimie', { role: 'project owner', access_level: 'owner' }, db);
   await ensureProjectMember(oneTime, 'Rabbi Elie Scheller', {
-    role: 'external account admin',
-    access_level: 'manager',
-    login_username: ONE_TIME_OPS_USERNAME || null,
+    role: 'project owner',
+    access_level: 'owner',
+    login_username: ONE_TIME_OWNER_USERNAME || null,
     metadata: {
       account_type: 'external_user',
       project_scope: ONE_TIME_PROJECT_KEY,
+      account_owner: true,
       allowed_views: ['dashboard', 'watchdog', 'pipelines', 'tasks', 'community', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'api_usage', 'integrations', 'settings'],
+    },
+  }, db);
+  await ensureProjectMember(oneTime, 'Shloimie', {
+    role: 'project admin',
+    access_level: 'manager',
+    login_username: ONE_TIME_MANAGER_USERNAME || ONE_TIME_OPS_USERNAME || null,
+    metadata: {
+      account_type: 'internal_admin',
+      project_scope: ONE_TIME_PROJECT_KEY,
+      admin_for_owner: 'Rabbi Elie Scheller',
     },
   }, db);
 
@@ -51987,6 +52002,31 @@ app.get('/api/bna/project-meetings', requireAdmin, async (req, res) => {
       params
     );
     res.json({ meetings: result.rows.map(projectMeetingView) });
+  } catch (err) {
+    res.status(err.statusCode || 500).json({ error: err.message });
+  }
+});
+
+app.post('/api/bna/project-meetings/one-time-drive-brief/preview', requireAdmin, async (req, res) => {
+  try {
+    const body = req.body || {};
+    const source = {
+      ...LATEST_ONE_TIME_DRIVE_BRIEF_SOURCE,
+      ...(body.source || {}),
+      drive_file_id: body.drive_file_id || body.driveFileId || body.source?.drive_file_id,
+      title: body.title || body.source?.title,
+      url: body.url || body.source?.url,
+      created_time: body.created_time || body.source?.created_time,
+      modified_time: body.modified_time || body.source?.modified_time,
+      mime_type: body.mime_type || body.source?.mime_type,
+    };
+    const preview = buildOneTimeDriveBriefIngestionPreview({
+      text: body.raw_text || body.markdown || body.text || '',
+      source,
+      fetched_at: new Date().toISOString(),
+    });
+    assertOneTimeScopedPreview(preview);
+    res.json(preview);
   } catch (err) {
     res.status(err.statusCode || 500).json({ error: err.message });
   }

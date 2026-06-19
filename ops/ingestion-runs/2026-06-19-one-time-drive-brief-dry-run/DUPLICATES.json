@@ -1,0 +1,10 @@
+{
+  "ingestion_run_id": "2026-06-19-one-time-drive-brief-dry-run",
+  "checked_by": [
+    "source_key",
+    "record_key"
+  ],
+  "source_key": "288fc754050931b3e196e9ed4dabc76cfba708a14101a387",
+  "duplicates_created": 0,
+  "note": "No production database write was attempted; duplicate prevention is proven locally by deterministic record keys in tests."
+}

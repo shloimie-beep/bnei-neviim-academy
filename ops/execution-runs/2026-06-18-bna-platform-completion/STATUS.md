@@ -3,6 +3,35 @@
 Current status: recovery run remains partial; Agent Control Center local batch
 implemented and focused-test verified.
 
+2026-06-19 One Time ramble/agent/integrations follow-up batch:
+
+- Raw follow-up prompt preserved as
+  `raw-input/RAW-20260619-002-next-ramble-agent-integrations-codex-prompt.md`.
+- Newest Drive source discovered through the connector:
+  `2026-06-18-rabbi-elie-scheller.md`, Drive ID
+  `1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI`.
+- Added no-write One Time Drive brief parser/preview helper, authenticated API
+  preview route, Operations Meeting Drops preview button/panel, action/route
+  registry entries, provider docs, operator credential handoff, and dry-run
+  ingestion evidence.
+- Corrected One Time local seed model so Rabbi Elie Scheller is project owner
+  and Shloimie is project admin/manager; legacy `ONE_TIME_OPS_USERNAME` remains
+  manager compatibility.
+- Corrected active-run requirements so non-screenshot work no longer waits on
+  the UI audit package. Only screenshot-specific visual findings depend on the
+  uploaded audit evidence.
+- Focused tests passed; no deployment, no production DB mutation, and no
+  external integration write was performed.
+
+Still open after this batch:
+
+- Future Telegram/Drive/transcript/ramble canonical ingestion hardening beyond
+  the One Time Drive brief parser.
+- DB/API smoke, negative scoped-identity tests, browser smoke, full One Time
+  button audit, safe demo agent run, and manual Agent Mode smoke.
+- Live Vimeo/Zoom/Resend/DNS/Stripe setup remains blocked on external
+  owner/credential actions and explicit operator approval.
+
 Imported remediation requirements are blocked pending audit output:
 
 `Waiting for user to upload agent-review-package.zip or audit output path`

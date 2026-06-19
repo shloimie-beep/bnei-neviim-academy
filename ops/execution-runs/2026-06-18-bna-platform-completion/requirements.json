@@ -22,141 +22,151 @@
       "id": "REQ-20260618-102",
       "title": "PWA public-vs-Operations separation",
       "area": "pwa",
-      "status": "blocked",
+      "status": "in_progress",
       "expected_result": "Public, parent, and Operations PWA identities remain separate and cannot route users into the wrong app shell.",
       "source": "Known June 18 requirement area",
-      "depends_on_audit_output": true,
+      "depends_on_audit_output": false,
       "live_required": true,
-      "blocker": "Waiting for user to upload agent-review-package.zip or audit output path",
+      "blocker": "",
       "evidence": [],
       "deployment_evidence": [],
-      "verification": []
+      "verification": [],
+      "notes": "Corrected 2026-06-19: this requirement must not wait for the UI audit package. Only screenshot-specific visual findings depend on uploaded audit evidence; credential-free implementation and focused tests can continue immediately."
     },
     {
       "id": "REQ-20260618-103",
       "title": "Workspace model and RBAC",
       "area": "workspace",
-      "status": "blocked",
+      "status": "in_progress",
       "expected_result": "Workspace model and role-based access controls match the BNA school/service-provider/family product model and prevent cross-scope leakage.",
       "source": "Known June 18 requirement area",
-      "depends_on_audit_output": true,
+      "depends_on_audit_output": false,
       "live_required": true,
-      "blocker": "Waiting for user to upload agent-review-package.zip or audit output path",
+      "blocker": "",
       "evidence": [],
       "deployment_evidence": [],
-      "verification": []
+      "verification": [],
+      "notes": "Corrected 2026-06-19: this requirement must not wait for the UI audit package. Only screenshot-specific visual findings depend on uploaded audit evidence; credential-free implementation and focused tests can continue immediately."
     },
     {
       "id": "REQ-20260618-104",
       "title": "Operations shell and navigation",
       "area": "operations",
-      "status": "blocked",
+      "status": "in_progress",
       "expected_result": "Operations shell and navigation are mobile-safe, scan-friendly, and route users into the expected modules.",
       "source": "Known June 18 requirement area",
-      "depends_on_audit_output": true,
+      "depends_on_audit_output": false,
       "live_required": true,
-      "blocker": "Waiting for user to upload agent-review-package.zip or audit output path",
+      "blocker": "",
       "evidence": [],
       "deployment_evidence": [],
-      "verification": []
+      "verification": [],
+      "notes": "Corrected 2026-06-19: this requirement must not wait for the UI audit package. Only screenshot-specific visual findings depend on uploaded audit evidence; credential-free implementation and focused tests can continue immediately."
     },
     {
       "id": "REQ-20260618-105",
       "title": "Design system",
       "area": "design",
-      "status": "blocked",
+      "status": "in_progress",
       "expected_result": "Shared visual system is consistent across Operations, public, parent, provider, and student surfaces without one-off UI drift.",
       "source": "Known June 18 requirement area",
-      "depends_on_audit_output": true,
+      "depends_on_audit_output": false,
       "live_required": true,
-      "blocker": "Waiting for user to upload agent-review-package.zip or audit output path",
+      "blocker": "",
       "evidence": [],
       "deployment_evidence": [],
-      "verification": []
+      "verification": [],
+      "notes": "Corrected 2026-06-19: this requirement must not wait for the UI audit package. Only screenshot-specific visual findings depend on uploaded audit evidence; credential-free implementation and focused tests can continue immediately."
     },
     {
       "id": "REQ-20260618-106",
       "title": "Task manager, intake, and calendar",
       "area": "tasks",
-      "status": "blocked",
+      "status": "in_progress",
       "expected_result": "Tasks, intake, decisions, calendar, blocked work, and activity lanes are clear and do not hide Codex/system work as human pending work.",
       "source": "Known June 18 requirement area",
-      "depends_on_audit_output": true,
+      "depends_on_audit_output": false,
       "live_required": true,
-      "blocker": "Waiting for user to upload agent-review-package.zip or audit output path",
+      "blocker": "",
       "evidence": [],
       "deployment_evidence": [],
-      "verification": []
+      "verification": [],
+      "notes": "Corrected 2026-06-19: this requirement must not wait for the UI audit package. Only screenshot-specific visual findings depend on uploaded audit evidence; credential-free implementation and focused tests can continue immediately."
     },
     {
       "id": "REQ-20260618-107",
       "title": "Module scoping",
       "area": "modules",
-      "status": "blocked",
+      "status": "in_progress",
       "expected_result": "Community, content, classes, communications, automations, integrations, and admin modules honor selected workspace/project scope.",
       "source": "Known June 18 requirement area",
-      "depends_on_audit_output": true,
+      "depends_on_audit_output": false,
       "live_required": true,
-      "blocker": "Waiting for user to upload agent-review-package.zip or audit output path",
+      "blocker": "",
       "evidence": [],
       "deployment_evidence": [],
-      "verification": []
+      "verification": [],
+      "notes": "Corrected 2026-06-19: this requirement must not wait for the UI audit package. Only screenshot-specific visual findings depend on uploaded audit evidence; credential-free implementation and focused tests can continue immediately."
     },
     {
       "id": "REQ-20260618-108",
       "title": "Students, Goal Board, and Hebrew",
       "area": "students",
-      "status": "blocked",
+      "status": "in_progress",
       "expected_result": "Student detail, accountability, Goal Board, devices, assignments, and Hebrew/RTL states are scoped, readable, and child-safe.",
       "source": "Known June 18 requirement area",
-      "depends_on_audit_output": true,
+      "depends_on_audit_output": false,
       "live_required": true,
-      "blocker": "Waiting for user to upload agent-review-package.zip or audit output path",
+      "blocker": "",
       "evidence": [],
       "deployment_evidence": [],
-      "verification": []
+      "verification": [],
+      "notes": "Corrected 2026-06-19: this requirement must not wait for the UI audit package. Only screenshot-specific visual findings depend on uploaded audit evidence; credential-free implementation and focused tests can continue immediately."
     },
     {
       "id": "REQ-20260618-109",
       "title": "Unified OpenAI helper",
       "area": "helper",
-      "status": "blocked",
+      "status": "in_progress",
       "expected_result": "Helper behavior, permissions, tool routing, audit logs, and confirmation gates are unified and scoped across pages.",
       "source": "Known June 18 requirement area",
-      "depends_on_audit_output": true,
+      "depends_on_audit_output": false,
       "live_required": true,
-      "blocker": "Waiting for user to upload agent-review-package.zip or audit output path",
+      "blocker": "",
       "evidence": [],
       "deployment_evidence": [],
-      "verification": []
+      "verification": [],
+      "notes": "Corrected 2026-06-19: this requirement must not wait for the UI audit package. Only screenshot-specific visual findings depend on uploaded audit evidence; credential-free implementation and focused tests can continue immediately."
     },
     {
       "id": "REQ-20260618-110",
       "title": "Public copy and portal headers",
       "area": "copy",
-      "status": "blocked",
+      "status": "in_progress",
       "expected_result": "Public copy, portal headers, and CTA language match the BNA product reality and avoid stale family-app wording.",
       "source": "Known June 18 requirement area",
-      "depends_on_audit_output": true,
+      "depends_on_audit_output": false,
       "live_required": true,
-      "blocker": "Waiting for user to upload agent-review-package.zip or audit output path",
+      "blocker": "",
       "evidence": [],
       "deployment_evidence": [],
-      "verification": []
+      "verification": [],
+      "notes": "Corrected 2026-06-19: this requirement must not wait for the UI audit package. Only screenshot-specific visual findings depend on uploaded audit evidence; credential-free implementation and focused tests can continue immediately."
     },
     {
       "id": "REQ-20260618-111",
       "title": "Test data and acceptance tests",
       "area": "tests",
-      "status": "blocked",
+      "status": "in_progress",
       "expected_result": "Acceptance tests and safe test data prove the remediated flows without mutating production data unsafely.",
       "source": "Known June 18 requirement area",
-      "depends_on_audit_output": true,
+      "depends_on_audit_output": false,
       "live_required": false,
-      "blocker": "Waiting for user to upload agent-review-package.zip or audit output path",
+      "blocker": "",
       "evidence": [],
       "deployment_evidence": [],
-      "verification": []
+      "verification": [],
+      "notes": "Corrected 2026-06-19: this requirement must not wait for the UI audit package. Only screenshot-specific visual findings depend on uploaded audit evidence; credential-free implementation and focused tests can continue immediately."
     },
     {
       "id": "REQ-20260618-112",
@@ -457,6 +467,232 @@
         "node --test tests/agent-control-center.test.js"
       ],
       "notes": "Focused contract coverage exists, but full safe demo data, API/browser E2E, and manual Agent Mode smoke prompt remain open."
+    },
+    {
+      "id": "REQ-20260619-201",
+      "title": "Follow-up prompt intake and execution-run registration",
+      "area": "intake",
+      "status": "done",
+      "expected_result": "The June 19 ramble/agent/integrations follow-up prompt is preserved as raw intake and attached to the active recovery run without starting a parallel protocol.",
+      "source": "RAW-20260619-002 / BNA_NEXT_RAMBLE_AGENT_INTEGRATIONS_CODEX_PROMPT.md",
+      "depends_on_audit_output": false,
+      "live_required": false,
+      "blocker": "",
+      "evidence": [
+        "raw-input/RAW-20260619-002-next-ramble-agent-integrations-codex-prompt.md",
+        "tasks-pending/2026-06-19-ramble-agent-integrations-followup.md",
+        "ops/audits/2026-06-18-ramble-agent-integrations-baseline.md"
+      ],
+      "deployment_evidence": [],
+      "verification": [],
+      "acceptance_criteria": [
+        "Raw prompt has a stable raw ID.",
+        "Active run requirements are extended rather than restarted.",
+        "No production mutation or deploy is performed."
+      ],
+      "notes": "Local intake and run registration completed."
+    },
+    {
+      "id": "REQ-20260619-202",
+      "title": "Newest One Time Drive meeting discovery and idempotent dry-run parse",
+      "area": "ingestion",
+      "status": "done",
+      "expected_result": "Newest Rabbi Elie / One Time Drive brief is discovered, routed to One Time only, parsed into deterministic Decisions, Tasks, Calendar, Content, Community, Integration records, and Notes without duplicate writes.",
+      "source": "Google Drive connector discovery / 2026-06-18-rabbi-elie-scheller.md",
+      "depends_on_audit_output": false,
+      "live_required": false,
+      "blocker": "",
+      "evidence": [
+        "src/lib/bna/one-time-drive-brief.js",
+        "server.js",
+        "public/operations.html",
+        "ops/ingestion-runs/2026-06-19-one-time-drive-brief-dry-run/PARSE.json",
+        "tests/one-time-drive-brief-ingestion.test.js"
+      ],
+      "deployment_evidence": [],
+      "verification": [
+        "node --check src/lib/bna/one-time-drive-brief.js",
+        "node --test tests/one-time-drive-brief-ingestion.test.js",
+        "node --test tests/one-time-drive-brief-ingestion.test.js tests/one-time-external-user-portal.test.js tests/one-time-meeting-drops.test.js tests/int05-integrations-closeout.test.js"
+      ],
+      "acceptance_criteria": [
+        "All generated records carry one_time_mishnah_class/rabbi_sheller_provider scope.",
+        "Rerun uses the same source_key and record_key values.",
+        "No external write or production mutation occurs.",
+        "Credential Decisions are exact and owner-actionable."
+      ],
+      "notes": "Newest source was discovered through Drive connector and parsed locally into deterministic no-write preview records. Production database writes were intentionally avoided."
+    },
+    {
+      "id": "REQ-20260619-203",
+      "title": "Future Telegram, Drive, transcript, and ramble ingestion hardening",
+      "area": "ingestion",
+      "status": "in_progress",
+      "expected_result": "Future natural-language sources use canonical raw-first intake, workspace resolution, entity resolution, visible-title cleanup, schema validation, retry limits, and single Decision routing for ambiguity.",
+      "source": "RAW-20260619-002",
+      "depends_on_audit_output": false,
+      "live_required": true,
+      "blocker": "",
+      "evidence": [
+        "src/lib/bna/one-time-drive-brief.js",
+        "server.js",
+        "src/lib/bna/intake-parser.js"
+      ],
+      "deployment_evidence": [],
+      "verification": [],
+      "acceptance_criteria": [
+        "One Time aliases cannot silently route into default BNA scope.",
+        "Low-confidence scope creates one routing Decision, not many visible tasks.",
+        "Parser output contains decisions/tasks/calendar/content/community/integration/notes/unresolved/deduplication keys."
+      ],
+      "notes": "This batch adds a concrete One Time Drive parser; broader future-channel parser hardening remains open."
+    },
+    {
+      "id": "REQ-20260619-204",
+      "title": "One Time workspace isolation and owner/admin roles",
+      "area": "workspace",
+      "status": "needs_verification",
+      "expected_result": "Rabbi Elie Scheller is One Time Owner, Shloimie is One Time Admin/manager, and One Time material is isolated from BNA school/family/default workspaces.",
+      "source": "RAW-20260619-002",
+      "depends_on_audit_output": false,
+      "live_required": true,
+      "blocker": "",
+      "evidence": [
+        "server.js",
+        "src/lib/bna/one-time-drive-brief.js",
+        "tests/one-time-drive-brief-ingestion.test.js",
+        "tests/one-time-external-user-portal.test.js"
+      ],
+      "deployment_evidence": [],
+      "verification": [
+        "node --test tests/one-time-drive-brief-ingestion.test.js tests/one-time-external-user-portal.test.js"
+      ],
+      "acceptance_criteria": [
+        "Seed membership maps Rabbi to owner and Shloimie to project admin/manager.",
+        "Legacy ONE_TIME_OPS_USERNAME remains manager compatibility, not owner.",
+        "Generated One Time records reject default BNA routing."
+      ],
+      "notes": "Local seed and tests prove the requested owner/admin mapping. Still needs DB readback and negative scoped-identity/API smoke before live closeout."
+    },
+    {
+      "id": "REQ-20260619-205",
+      "title": "One Time users, modules, buttons, community, tasks, calendar, agents, and integrations UI",
+      "area": "operations",
+      "status": "needs_verification",
+      "expected_result": "One Time Operations surfaces expose useful scoped modules and clear real actions without duplicated controls, debug labels, or irrelevant empty modules.",
+      "source": "RAW-20260619-002",
+      "depends_on_audit_output": false,
+      "live_required": true,
+      "blocker": "",
+      "evidence": [
+        "public/operations.html",
+        "ops/action-registry.json",
+        "ops/route-registry.json"
+      ],
+      "deployment_evidence": [],
+      "verification": [
+        "Operations inline script syntax check",
+        "node --test tests/one-time-drive-brief-ingestion.test.js tests/one-time-meeting-drops.test.js"
+      ],
+      "acceptance_criteria": [
+        "Meeting Drops includes Preview Drive Brief and Structure Latest paths.",
+        "Preview panel shows counts, roles, idempotency, and blockers.",
+        "Visible action and route are registered."
+      ],
+      "notes": "Preview Drive Brief UI/action/route are implemented and statically verified. Full role-based browser smoke and button audit remain open."
+    },
+    {
+      "id": "REQ-20260619-206",
+      "title": "Closed agent verification loop follow-up",
+      "area": "agents",
+      "status": "in_progress",
+      "expected_result": "Agent Control Center remains the single verification loop for implementation, tests, Browser QA prompts, progress/evidence, seal/pass/fail/block, and durable resume state.",
+      "source": "RAW-20260619-002 and RAW-20260619-001",
+      "depends_on_audit_output": false,
+      "live_required": true,
+      "blocker": "",
+      "evidence": [
+        "src/lib/bna/agent-control.js",
+        "server.js",
+        "public/operations.html",
+        "tests/agent-control-center.test.js"
+      ],
+      "deployment_evidence": [],
+      "verification": [
+        "node --test tests/agent-control-center.test.js"
+      ],
+      "acceptance_criteria": [
+        "No parallel agent queue is created.",
+        "Agent results are stored in BNA/task system routes.",
+        "Blocked outcomes create one linked Decision."
+      ],
+      "notes": "Prior local batch implemented the core. DB/API/browser/manual Agent Mode smokes remain open."
+    },
+    {
+      "id": "REQ-20260619-207",
+      "title": "Secure Vimeo, Zoom, and Resend readiness plus credential Decisions",
+      "area": "integrations",
+      "status": "blocked",
+      "expected_result": "Vimeo, Zoom, and Resend are prepared through one secure readiness model, exact env names, official-doc handoffs, no secret exposure, and owner-action Decisions for missing credentials/account authority.",
+      "source": "RAW-20260619-002",
+      "depends_on_audit_output": false,
+      "live_required": true,
+      "blocker": "External account-owner credentials/actions are required for live connection checks, uploads, sends, meetings, DNS writes, and payment setup. Store secrets only through keyholder/server env after explicit operator approval.",
+      "evidence": [
+        "src/lib/integrations/vimeo.js",
+        "src/lib/integrations/zoom.js",
+        "src/lib/integrations/resend-client.js",
+        "docs/integrations/VIMEO.md",
+        "docs/integrations/ZOOM.md",
+        "docs/integrations/RESEND.md",
+        "docs/integrations/OPERATOR-CREDENTIAL-HANDOFF.md",
+        "docs/integrations/one-time-secure-integration-handoff.md",
+        ".env.example"
+      ],
+      "deployment_evidence": [],
+      "verification": [
+        "node --test tests/int05-integrations-closeout.test.js tests/one-time-drive-brief-ingestion.test.js"
+      ],
+      "acceptance_criteria": [
+        "Official docs are recorded with date checked.",
+        "Env names are placeholders only; no values are committed.",
+        "Operations/parser Decisions name each missing owner action.",
+        "Existing helpers remain no-write without explicit confirmations."
+      ],
+      "notes": "Credential-free docs and placeholder repair are implemented. Live readiness remains genuinely blocked by external credentials/owner actions."
+    },
+    {
+      "id": "REQ-20260619-208",
+      "title": "Tests, evidence, and resumable checkpoint",
+      "area": "tests",
+      "status": "done",
+      "expected_result": "Focused tests, evidence artifacts, active-run docs, ledger/changelog, and NEXT-SESSION checkpoint are updated before ending the session.",
+      "source": "RAW-20260619-002",
+      "depends_on_audit_output": false,
+      "live_required": false,
+      "blocker": "",
+      "evidence": [
+        "tests/one-time-drive-brief-ingestion.test.js",
+        "ops/ingestion-runs/2026-06-19-one-time-drive-brief-dry-run/",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/STATUS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md"
+      ],
+      "deployment_evidence": [],
+      "verification": [
+        "node --check server.js",
+        "node --check src/lib/bna/one-time-drive-brief.js",
+        "Operations inline script syntax check",
+        "node --test tests/one-time-drive-brief-ingestion.test.js tests/one-time-external-user-portal.test.js tests/one-time-meeting-drops.test.js tests/int05-integrations-closeout.test.js",
+        "npm run bna:run:validate"
+      ],
+      "acceptance_criteria": [
+        "Focused tests pass or exact failures are recorded.",
+        "No watch loops, broad crawls, deploys, or production mutations run.",
+        "NEXT-SESSION names the exact next requirement and command."
+      ],
+      "notes": "Focused tests/evidence/checkpoint for this local batch are complete. The wider execution run still has open requirements."
     }
   ]
 }

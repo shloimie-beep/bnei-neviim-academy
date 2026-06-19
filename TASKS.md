@@ -6,6 +6,14 @@ not authorize active GHL runtime paths.
 
 ## Now
 
+- [ ] Continue `RAW-20260619-002` / `REQ-20260619-203` after the local
+  One Time Drive brief no-write batch. Completed locally: newest Drive brief
+  discovery, deterministic One Time-only dry-run parse, Operations Preview
+  Drive Brief action, Rabbi Owner/Shloimie Admin seed repair, secure
+  Vimeo/Zoom/Resend docs, credential handoff, focused tests 49/49, and active
+  run evidence updates. Next: broaden canonical Telegram/Drive/transcript/
+  ramble ingestion hardening and add negative One Time scope/RBAC tests without
+  production data mutation or deployment.
 - [ ] Continue `RAW-20260619-001` / `REQ-20260618-112` Agent Control Center
   from branch `codex/agent-control-center-20260619`. Local backend/API/UI,
   prompt generation, seal validation, action-registry coverage, and focused

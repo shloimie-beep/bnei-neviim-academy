@@ -23388,3 +23388,57 @@ Remaining:
 - Local DB/API smoke, negative RBAC tests, browser smoke evidence, safe demo
   data/E2E, notification hooks, and manual Agent Mode smoke remain open before
   any release approval.
+
+## 2026-06-19T06:20:00+03:00 - One Time Drive Brief Ingestion Preview Local Batch
+
+Registered `RAW-20260619-002` and resumed the active June 18 platform-completion
+run for the One Time ramble/agent/integrations follow-up.
+
+- Discovered the newest Drive source through the connector:
+  `2026-06-18-rabbi-elie-scheller.md`, Drive ID
+  `1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI`.
+- Added `src/lib/bna/one-time-drive-brief.js` for deterministic no-write
+  parsing into Decisions, Tasks, Calendar, Content, Community, Integration
+  records, and Notes with One Time-only scope and stable record keys.
+- Added authenticated preview route
+  `POST /api/bna/project-meetings/one-time-drive-brief/preview`.
+- Added Operations Content > Meeting Drops `Preview Drive Brief` action and
+  preview panel with counts, owner/admin assignments, idempotency, and blockers.
+- Corrected local One Time seed roles: Rabbi Elie Scheller is project owner,
+  Shloimie is project admin/manager, and legacy One Time operations username
+  remains manager compatibility.
+- Added secure Vimeo, Zoom, Resend, and operator credential handoff docs, plus
+  placeholder-only `.env.example` names.
+- Registered the new visible action and route, created dry-run ingestion
+  evidence, and updated the active execution-run requirements/status/evidence.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check src/lib/bna/one-time-drive-brief.js`.
+- PASS Operations inline script syntax extraction/new Function check.
+- PASS JSON validation for the action registry, route registry, active
+  requirements, and dry-run parse artifact.
+- PASS focused suite 49/49:
+  `tests/one-time-drive-brief-ingestion.test.js`,
+  `tests/one-time-external-user-portal.test.js`,
+  `tests/one-time-meeting-drops.test.js`, and
+  `tests/int05-integrations-closeout.test.js`.
+- PASS `npm run bna:run:validate`.
+
+Guardrails:
+
+- No deployment, production database mutation, external integration write,
+  Drive write, Telegram send, social post, payment, DNS write, watch loop,
+  agent-fleet loop, or full UI crawl was run.
+- No API keys, passwords, tokens, client secrets, webhook secrets, or DNS
+  secret values were stored in tracked files.
+
+Remaining:
+
+- Continue `REQ-20260619-203` canonical future ingestion hardening.
+- Continue `REQ-20260619-204` negative One Time scope/RBAC tests.
+- Continue `REQ-20260619-205` One Time module/button/browser audit.
+- Continue `REQ-20260619-206` Agent Control Center DB/API/browser/manual smoke.
+- `REQ-20260619-207` remains genuinely blocked on external owner
+  credentials/actions and explicit approval for any live provider setup.

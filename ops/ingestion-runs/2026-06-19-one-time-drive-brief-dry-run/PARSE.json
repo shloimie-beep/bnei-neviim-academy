@@ -1,0 +1,1723 @@
+{
+  "success": true,
+  "dry_run": true,
+  "external_write_performed": false,
+  "parser_version": "one-time-drive-brief-v1",
+  "generated_at": "2026-06-19T00:00:00.000Z",
+  "source": {
+    "drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+    "title": "2026-06-18-rabbi-elie-scheller.md",
+    "url": "https://drive.google.com/file/d/1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI/view",
+    "created_time": "2026-06-18T17:16:22.555Z",
+    "modified_time": "2026-06-18T17:16:21.504Z",
+    "mime_type": "text/markdown",
+    "sha256": "023c6c44dde92f7c460ca999c1f16143257928531d4609c2ac1aac4a95eb423b",
+    "raw_text_present": false,
+    "raw_text_committed_to_git": false
+  },
+  "source_tables_detected": {
+    "account_access_rows": 0,
+    "timeline_rows": 0
+  },
+  "routing": {
+    "workspace_key": "rabbi_sheller_provider",
+    "project_key": "one_time_mishnah_class",
+    "confidence": 0.98,
+    "default_bna_workspace_allowed": false,
+    "reason": "Rabbi Elie Scheller / One Time Mishnah Class source must stay in the One Time provider workspace."
+  },
+  "owner_assignments": [
+    {
+      "person_name": "Rabbi Elie Scheller",
+      "role": "project owner",
+      "access_level": "owner",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class"
+    },
+    {
+      "person_name": "Shloimie",
+      "role": "project admin",
+      "access_level": "manager",
+      "workspace_key": "rabbi_sheller_provider",
+      "project_key": "one_time_mishnah_class"
+    }
+  ],
+  "idempotency": {
+    "source_key": "288fc754050931b3e196e9ed4dabc76cfba708a14101a387",
+    "source_fingerprint": "023c6c44dde92f7c460ca999c1f16143257928531d4609c2ac1aac4a95eb423b",
+    "duplicate_policy": "match by source_key plus each record_key; update same record, do not create duplicate visible cards"
+  },
+  "records": {
+    "decisions": [
+      {
+        "id": "DEC-20260618-201",
+        "record_key": "b807d332847b6bb9f184af7a396f16ed",
+        "item_key": "zoom_access",
+        "item_type": "decision",
+        "title": "Verify Zoom owner role, license, and app-management path",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-06-19",
+        "status": "needs_operator_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "decision_type": "access_or_integration",
+        "service": "Zoom",
+        "required_inputs": [
+          "Zoom account ID",
+          "Shloimie role",
+          "license state",
+          "Server-to-Server OAuth app permission",
+          "required scopes"
+        ],
+        "blocked_actions": [
+          "meeting_create",
+          "account_grant",
+          "role_change",
+          "user_management"
+        ],
+        "notes": ""
+      },
+      {
+        "id": "DEC-20260618-202",
+        "record_key": "8ccad6729d9148ad338f96acd7c8779b",
+        "item_key": "vimeo_access",
+        "item_type": "decision",
+        "title": "Decide Vimeo seat, user, token, and manual-library strategy",
+        "owner": "Rabbi Elie",
+        "due_date": "2026-06-19",
+        "status": "needs_operator_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "decision_type": "access_or_integration",
+        "service": "Vimeo",
+        "required_inputs": [
+          "Vimeo team seat decision",
+          "temporary shared-login exception decision",
+          "token/app ownership",
+          "approved domains for embeds"
+        ],
+        "blocked_actions": [
+          "video_upload",
+          "privacy_change",
+          "folder_write"
+        ],
+        "notes": ""
+      },
+      {
+        "id": "DEC-20260618-203",
+        "record_key": "40a092436276efd38c63979d0e1d7cae",
+        "item_key": "resend_account",
+        "item_type": "decision",
+        "title": "Decide Resend recovery, new account, or alternate email provider",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-06-20",
+        "status": "needs_operator_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "decision_type": "access_or_integration",
+        "service": "Resend",
+        "required_inputs": [
+          "Resend account owner",
+          "sending domain",
+          "from identity",
+          "API key stored server-side",
+          "DNS records from dashboard"
+        ],
+        "blocked_actions": [
+          "email_send",
+          "domain_verify_write"
+        ],
+        "notes": ""
+      },
+      {
+        "id": "DEC-20260618-204",
+        "record_key": "32a8588f99ccb3dca3a3e75a0ce33066",
+        "item_key": "dns_domain",
+        "item_type": "decision",
+        "title": "Identify One Time launch domain and DNS authority",
+        "owner": "Rabbi Elie",
+        "due_date": "2026-06-20",
+        "status": "needs_operator_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "decision_type": "access_or_integration",
+        "service": "DNS/domain",
+        "required_inputs": [
+          "domain name",
+          "registrar",
+          "DNS host",
+          "delegated access or screenshare plan",
+          "provider-generated records"
+        ],
+        "blocked_actions": [
+          "dns_record_create",
+          "domain_connect"
+        ],
+        "notes": ""
+      },
+      {
+        "id": "DEC-20260618-205",
+        "record_key": "37e5c16741df230e1c048525d23985c9",
+        "item_key": "stripe_payment",
+        "item_type": "decision",
+        "title": "Confirm Stripe role, live/test mode, and payment structure",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-06-19",
+        "status": "needs_operator_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "decision_type": "access_or_integration",
+        "service": "Stripe",
+        "required_inputs": [
+          "Shloimie role",
+          "developer/webhook access",
+          "test/live separation",
+          "products/prices",
+          "webhook endpoint plan"
+        ],
+        "blocked_actions": [
+          "checkout_create",
+          "live_billing",
+          "refund"
+        ],
+        "notes": ""
+      },
+      {
+        "id": "DEC-20260618-206",
+        "record_key": "592e67c56d10030c2972ccdaebee0f01",
+        "item_key": "calendar_source",
+        "item_type": "decision",
+        "title": "Choose internal calendar now or external sync after smoke tests",
+        "owner": "Shloimie",
+        "due_date": "2026-06-20",
+        "status": "needs_operator_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "decision_type": "access_or_integration",
+        "service": "Calendar",
+        "required_inputs": [
+          "calendar source of truth",
+          "class reminder policy",
+          "Zoom/calendar dependency decision"
+        ],
+        "blocked_actions": [
+          "external_calendar_sync",
+          "student_reminder_send"
+        ],
+        "notes": ""
+      },
+      {
+        "id": "DEC-20260618-207",
+        "record_key": "1c3f4c0b2a99482f3f48144861502311",
+        "item_key": "youtube_deferred",
+        "item_type": "decision",
+        "title": "Defer or grant YouTube channel access for Week 3 content workflow",
+        "owner": "Rabbi Elie",
+        "due_date": "2026-07-03",
+        "status": "needs_operator_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "decision_type": "access_or_integration",
+        "service": "YouTube",
+        "required_inputs": [
+          "channel permission decision",
+          "upload/analytics need",
+          "posting owner"
+        ],
+        "blocked_actions": [
+          "youtube_upload",
+          "analytics_read"
+        ],
+        "notes": ""
+      },
+      {
+        "id": "DEC-20260618-208",
+        "record_key": "adddb759bb95e17b945f69ba1b4a0aea",
+        "item_key": "meta_deferred",
+        "item_type": "decision",
+        "title": "Schedule separate Meta access session before ads or page posting",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-06-24",
+        "status": "needs_operator_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "decision_type": "access_or_integration",
+        "service": "Meta/Facebook",
+        "required_inputs": [
+          "business/page role",
+          "pixel/domain status",
+          "ad spend decision"
+        ],
+        "blocked_actions": [
+          "ad_launch",
+          "pixel_write",
+          "lead_form_sync"
+        ],
+        "notes": ""
+      },
+      {
+        "id": "DEC-20260618-209",
+        "record_key": "1c179725973c992d4d5df2190be92abc",
+        "item_key": "email_provider_decision",
+        "item_type": "decision",
+        "title": "Choose first-party email path without reviving active GHL runtime",
+        "owner": "Shloimie + Rabbi Elie",
+        "due_date": "2026-06-24",
+        "status": "needs_operator_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "decision_type": "access_or_integration",
+        "service": "Google/email provider",
+        "required_inputs": [
+          "email provider decision",
+          "domain records",
+          "legal import policy for email lists"
+        ],
+        "blocked_actions": [
+          "crm_publish",
+          "bulk_email_send",
+          "contact_import"
+        ],
+        "notes": "The meeting brief mentions GHL historically; active runtime remains first-party BNA unless the operator explicitly approves otherwise."
+      },
+      {
+        "id": "DEC-20260618-221",
+        "record_key": "76d30275da1d208e91cd35a54f70af9e",
+        "item_key": "launch_positioning",
+        "item_type": "decision",
+        "title": "Confirm Worldwide Mishnayos launch positioning and starting masechta",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-06-20",
+        "status": "needs_operator_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "decision_type": "product_or_launch",
+        "required_inputs": [
+          "owner approval",
+          "written choice",
+          "evidence path"
+        ],
+        "blocked_actions": [
+          "public_launch",
+          "checkout_enable",
+          "member_notice_send"
+        ]
+      },
+      {
+        "id": "DEC-20260618-222",
+        "record_key": "c6fe4ccc1c1cd03c33fc97d06a74dbfa",
+        "item_key": "first_offer",
+        "item_type": "decision",
+        "title": "Choose first funnel offer and pricing",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-06-20",
+        "status": "needs_operator_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "decision_type": "product_or_launch",
+        "required_inputs": [
+          "owner approval",
+          "written choice",
+          "evidence path"
+        ],
+        "blocked_actions": [
+          "public_launch",
+          "checkout_enable",
+          "member_notice_send"
+        ]
+      },
+      {
+        "id": "DEC-20260618-223",
+        "record_key": "7f517b7d9f2ef3af0974e717f8ee061c",
+        "item_key": "first_100_offer",
+        "item_type": "decision",
+        "title": "Approve or reject first-100 free-month/shout-out/kit offer",
+        "owner": "Rabbi Elie",
+        "due_date": "2026-06-21",
+        "status": "needs_operator_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "decision_type": "product_or_launch",
+        "required_inputs": [
+          "owner approval",
+          "written choice",
+          "evidence path"
+        ],
+        "blocked_actions": [
+          "public_launch",
+          "checkout_enable",
+          "member_notice_send"
+        ]
+      },
+      {
+        "id": "DEC-20260618-224",
+        "record_key": "e54f45df84c2a66d9116a979c8c9f971",
+        "item_key": "live_format",
+        "item_type": "decision",
+        "title": "Choose live format: room broadcast, Zoom-only, or hybrid",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-06-21",
+        "status": "needs_operator_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "decision_type": "product_or_launch",
+        "required_inputs": [
+          "owner approval",
+          "written choice",
+          "evidence path"
+        ],
+        "blocked_actions": [
+          "public_launch",
+          "checkout_enable",
+          "member_notice_send"
+        ]
+      },
+      {
+        "id": "DEC-20260618-225",
+        "record_key": "c3da4b3deb16c85572dc593253846987",
+        "item_key": "question_model",
+        "item_type": "decision",
+        "title": "Choose student question submission and moderation model",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-06-21",
+        "status": "needs_operator_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "decision_type": "product_or_launch",
+        "required_inputs": [
+          "owner approval",
+          "written choice",
+          "evidence path"
+        ],
+        "blocked_actions": [
+          "public_launch",
+          "checkout_enable",
+          "member_notice_send"
+        ]
+      },
+      {
+        "id": "DEC-20260618-226",
+        "record_key": "b66664ae9e62d22274c043171d4a7527",
+        "item_key": "video_library_policy",
+        "item_type": "decision",
+        "title": "Decide same-day video library posting requirements",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-06-24",
+        "status": "needs_operator_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "decision_type": "product_or_launch",
+        "required_inputs": [
+          "owner approval",
+          "written choice",
+          "evidence path"
+        ],
+        "blocked_actions": [
+          "public_launch",
+          "checkout_enable",
+          "member_notice_send"
+        ]
+      },
+      {
+        "id": "DEC-20260618-227",
+        "record_key": "c97e1557e75cd5d3a0064c4b80378361",
+        "item_key": "payment_policy",
+        "item_type": "decision",
+        "title": "Set refunds, cancellation, sharing, bank, and accounting rules",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-06-24",
+        "status": "needs_operator_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "decision_type": "product_or_launch",
+        "required_inputs": [
+          "owner approval",
+          "written choice",
+          "evidence path"
+        ],
+        "blocked_actions": [
+          "public_launch",
+          "checkout_enable",
+          "member_notice_send"
+        ]
+      },
+      {
+        "id": "DEC-20260618-228",
+        "record_key": "b22b76407f4e2da086bbba0b83ff7e84",
+        "item_key": "ai_review_standard",
+        "item_type": "decision",
+        "title": "Set public AI review and visual guardrail standard",
+        "owner": "Rabbi Elie",
+        "due_date": "2026-06-24",
+        "status": "needs_operator_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "decision_type": "product_or_launch",
+        "required_inputs": [
+          "owner approval",
+          "written choice",
+          "evidence path"
+        ],
+        "blocked_actions": [
+          "public_launch",
+          "checkout_enable",
+          "member_notice_send"
+        ]
+      }
+    ],
+    "tasks": [
+      {
+        "id": "TASK-20260618-241",
+        "record_key": "474e37f89869db5db2046e2e91a50936",
+        "item_key": "verify_zoom",
+        "item_type": "task",
+        "title": "Verify Zoom account role, plan/license, and app-management path",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-06-19",
+        "status": "waiting_on_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "task_kind": "decision_followup",
+        "target_lane": "Decisions",
+        "dependency_kind": "decision",
+        "next_action": "Record the owner decision or credential/access evidence before implementation."
+      },
+      {
+        "id": "TASK-20260618-242",
+        "record_key": "3be790da63ec24ebcc6a38870be04970",
+        "item_key": "confirm_vimeo",
+        "item_type": "task",
+        "title": "Confirm Vimeo seat/user/API strategy",
+        "owner": "Rabbi Elie",
+        "due_date": "2026-06-19",
+        "status": "waiting_on_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "task_kind": "decision_followup",
+        "target_lane": "Decisions",
+        "dependency_kind": "decision",
+        "next_action": "Record the owner decision or credential/access evidence before implementation."
+      },
+      {
+        "id": "TASK-20260618-243",
+        "record_key": "bf4aa81cd8f10b13f4e330e011e9c9e9",
+        "item_key": "confirm_stripe",
+        "item_type": "task",
+        "title": "Confirm Stripe role, live/test mode, and payment structure",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-06-19",
+        "status": "waiting_on_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "task_kind": "decision_followup",
+        "target_lane": "Decisions",
+        "dependency_kind": "decision",
+        "next_action": "Record the owner decision or credential/access evidence before implementation."
+      },
+      {
+        "id": "TASK-20260618-244",
+        "record_key": "da3787e96258abe9ed36e30b27bcdde6",
+        "item_key": "identify_dns",
+        "item_type": "task",
+        "title": "Identify domain registrar/DNS host and verification notices",
+        "owner": "Rabbi Elie",
+        "due_date": "2026-06-20",
+        "status": "waiting_on_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "task_kind": "decision_followup",
+        "target_lane": "Decisions",
+        "dependency_kind": "decision",
+        "next_action": "Record the owner decision or credential/access evidence before implementation."
+      },
+      {
+        "id": "TASK-20260618-245",
+        "record_key": "69050baf8d3fb55373b9ad084bcf6c7e",
+        "item_key": "choose_resend",
+        "item_type": "task",
+        "title": "Decide Resend recovery vs new One Time account vs alternate email provider",
+        "owner": "Shloimie + Rabbi Elie",
+        "due_date": "2026-06-20",
+        "status": "waiting_on_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "task_kind": "decision_followup",
+        "target_lane": "Decisions",
+        "dependency_kind": "decision",
+        "next_action": "Record the owner decision or credential/access evidence before implementation."
+      },
+      {
+        "id": "TASK-20260618-246",
+        "record_key": "4fc1ec20dafe542c8ac6ec3069362d47",
+        "item_key": "verify_roles",
+        "item_type": "task",
+        "title": "Confirm One Time workspace owner/admin model and safe login handoff",
+        "owner": "Shloimie + Codex",
+        "due_date": "2026-06-21",
+        "status": "ready_for_codex",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "task_kind": "agent_job",
+        "target_lane": "Tasks",
+        "dependency_kind": "codex",
+        "next_action": "Codex can implement and verify this without credentials."
+      },
+      {
+        "id": "TASK-20260618-247",
+        "record_key": "6d820da93ece6b77b51bd6e5b7ff56ee",
+        "item_key": "zoom_workflow",
+        "item_type": "task",
+        "title": "Create Zoom app after owner approval or document manual Zoom workflow",
+        "owner": "Shloimie",
+        "due_date": "2026-06-26",
+        "status": "blocked_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "task_kind": "pending_access",
+        "target_lane": "Pending",
+        "dependency_kind": "blocked",
+        "next_action": "Record the owner decision or credential/access evidence before implementation."
+      },
+      {
+        "id": "TASK-20260618-248",
+        "record_key": "69d550032d187fbd5c0989aa6bfd6454",
+        "item_key": "vimeo_workflow",
+        "item_type": "task",
+        "title": "Configure Vimeo API after approval or document manual video-library workflow",
+        "owner": "Shloimie",
+        "due_date": "2026-06-26",
+        "status": "blocked_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "task_kind": "pending_access",
+        "target_lane": "Pending",
+        "dependency_kind": "blocked",
+        "next_action": "Record the owner decision or credential/access evidence before implementation."
+      },
+      {
+        "id": "TASK-20260618-249",
+        "record_key": "9cc90168ec25c97b3906aadc9ab7f052",
+        "item_key": "email_dns",
+        "item_type": "task",
+        "title": "Configure Resend/email sending domain records after DNS access",
+        "owner": "Shloimie + Rabbi Elie",
+        "due_date": "2026-06-27",
+        "status": "blocked_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "task_kind": "pending_access",
+        "target_lane": "Pending",
+        "dependency_kind": "blocked",
+        "next_action": "Record the owner decision or credential/access evidence before implementation."
+      },
+      {
+        "id": "TASK-20260618-250",
+        "record_key": "147e0fbc5ea6c0fdc3571afde2e734e6",
+        "item_key": "stripe_plan",
+        "item_type": "task",
+        "title": "Draft Stripe products, prices, and webhook/access plan",
+        "owner": "Shloimie",
+        "due_date": "2026-06-28",
+        "status": "blocked_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "task_kind": "pending_access",
+        "target_lane": "Pending",
+        "dependency_kind": "blocked",
+        "next_action": "Record the owner decision or credential/access evidence before implementation."
+      },
+      {
+        "id": "TASK-20260618-251",
+        "record_key": "485499ad0ce68cb29431bbdbb0a56fcb",
+        "item_key": "internal_calendar",
+        "item_type": "task",
+        "title": "Create internal One Time calendar from due dates and milestones",
+        "owner": "Codex",
+        "due_date": "2026-07-01",
+        "status": "ready_for_codex",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "task_kind": "agent_job",
+        "target_lane": "Tasks",
+        "dependency_kind": "codex",
+        "next_action": "Codex can implement and verify this without credentials."
+      },
+      {
+        "id": "TASK-20260618-252",
+        "record_key": "b7299eaae1b403fc71d82be27dda2eaf",
+        "item_key": "content_workflow",
+        "item_type": "task",
+        "title": "Build upload, naming, review, posting, and ad-candidate content workflow",
+        "owner": "Shloimie + Rabbi Elie",
+        "due_date": "2026-07-06",
+        "status": "blocked_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "task_kind": "pending_access",
+        "target_lane": "Pending",
+        "dependency_kind": "blocked",
+        "next_action": "Record the owner decision or credential/access evidence before implementation."
+      },
+      {
+        "id": "TASK-20260618-253",
+        "record_key": "148088730ed7764d9dc63dbf89c36293",
+        "item_key": "registration_funnel",
+        "item_type": "task",
+        "title": "Finalize registration funnel, first offer, pricing, refund, and cancellation",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-07-07",
+        "status": "waiting_on_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "task_kind": "decision_followup",
+        "target_lane": "Decisions",
+        "dependency_kind": "decision",
+        "next_action": "Record the owner decision or credential/access evidence before implementation."
+      },
+      {
+        "id": "TASK-20260618-254",
+        "record_key": "4eec9dc42e3d5add5ff265379a5951f4",
+        "item_key": "pilot_workflow",
+        "item_type": "task",
+        "title": "Pilot Zoom, Vimeo, and content workflow with one class recording",
+        "owner": "Shloimie + Rabbi Elie",
+        "due_date": "2026-07-08",
+        "status": "blocked_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "task_kind": "pending_access",
+        "target_lane": "Pending",
+        "dependency_kind": "blocked",
+        "next_action": "Record the owner decision or credential/access evidence before implementation."
+      },
+      {
+        "id": "TASK-20260618-255",
+        "record_key": "293538b7836f8ffe015e425b2f9121c0",
+        "item_key": "end_to_end_test",
+        "item_type": "task",
+        "title": "Run end-to-end signup, payment, access, reminder, recording, and support test",
+        "owner": "Shloimie + Codex",
+        "due_date": "2026-07-14",
+        "status": "blocked_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "task_kind": "pending_access",
+        "target_lane": "Pending",
+        "dependency_kind": "blocked",
+        "next_action": "Record the owner decision or credential/access evidence before implementation."
+      },
+      {
+        "id": "TASK-20260618-256",
+        "record_key": "0aa834934933101467c2e44a486cdcbe",
+        "item_key": "launch_rehearsal",
+        "item_type": "task",
+        "title": "Run launch rehearsal for class format, camera, questions, and worksheet flow",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-07-15",
+        "status": "blocked_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "task_kind": "pending_access",
+        "target_lane": "Pending",
+        "dependency_kind": "blocked",
+        "next_action": "Record the owner decision or credential/access evidence before implementation."
+      },
+      {
+        "id": "TASK-20260618-257",
+        "record_key": "d8556ebca74a1292541381112a842974",
+        "item_key": "go_no_go",
+        "item_type": "task",
+        "title": "Review unresolved Decisions and set launch go/no-go",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-07-16",
+        "status": "waiting_on_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "task_kind": "decision_followup",
+        "target_lane": "Decisions",
+        "dependency_kind": "decision",
+        "next_action": "Record the owner decision or credential/access evidence before implementation."
+      }
+    ],
+    "calendar_events": [
+      {
+        "id": "CAL-20260618-261",
+        "record_key": "bc08b0e22e37b3d3fa34786bea2bec8e",
+        "item_key": "calendar_verify_zoom",
+        "item_type": "calendar_event",
+        "title": "Verify Zoom account role, plan/license, and app-management path",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-06-19",
+        "status": "pending_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "start_date": "2026-06-19",
+        "visibility": "internal",
+        "related_task_id": "TASK-20260618-241",
+        "external_calendar_sync": false
+      },
+      {
+        "id": "CAL-20260618-262",
+        "record_key": "0a16ae35f97658a1372363f52cf359a5",
+        "item_key": "calendar_confirm_vimeo",
+        "item_type": "calendar_event",
+        "title": "Confirm Vimeo seat/user/API strategy",
+        "owner": "Rabbi Elie",
+        "due_date": "2026-06-19",
+        "status": "pending_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "start_date": "2026-06-19",
+        "visibility": "internal",
+        "related_task_id": "TASK-20260618-242",
+        "external_calendar_sync": false
+      },
+      {
+        "id": "CAL-20260618-263",
+        "record_key": "b92721cd828dec37ccdc7f87138851be",
+        "item_key": "calendar_confirm_stripe",
+        "item_type": "calendar_event",
+        "title": "Confirm Stripe role, live/test mode, and payment structure",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-06-19",
+        "status": "pending_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "start_date": "2026-06-19",
+        "visibility": "internal",
+        "related_task_id": "TASK-20260618-243",
+        "external_calendar_sync": false
+      },
+      {
+        "id": "CAL-20260618-264",
+        "record_key": "542864440a13b073768268fde14f1fa2",
+        "item_key": "calendar_identify_dns",
+        "item_type": "calendar_event",
+        "title": "Identify domain registrar/DNS host and verification notices",
+        "owner": "Rabbi Elie",
+        "due_date": "2026-06-20",
+        "status": "pending_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "start_date": "2026-06-20",
+        "visibility": "internal",
+        "related_task_id": "TASK-20260618-244",
+        "external_calendar_sync": false
+      },
+      {
+        "id": "CAL-20260618-265",
+        "record_key": "bc1c9f5a24f0afc3bd9a362bfefaf908",
+        "item_key": "calendar_choose_resend",
+        "item_type": "calendar_event",
+        "title": "Decide Resend recovery vs new One Time account vs alternate email provider",
+        "owner": "Shloimie + Rabbi Elie",
+        "due_date": "2026-06-20",
+        "status": "pending_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "start_date": "2026-06-20",
+        "visibility": "internal",
+        "related_task_id": "TASK-20260618-245",
+        "external_calendar_sync": false
+      },
+      {
+        "id": "CAL-20260618-266",
+        "record_key": "5f967a5beeeb231cdbd673d726126445",
+        "item_key": "calendar_verify_roles",
+        "item_type": "calendar_event",
+        "title": "Confirm One Time workspace owner/admin model and safe login handoff",
+        "owner": "Shloimie + Codex",
+        "due_date": "2026-06-21",
+        "status": "internal_draft",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "start_date": "2026-06-21",
+        "visibility": "internal",
+        "related_task_id": "TASK-20260618-246",
+        "external_calendar_sync": false
+      },
+      {
+        "id": "CAL-20260618-267",
+        "record_key": "32f0bcd76e3d5211991cff264a6803e6",
+        "item_key": "calendar_zoom_workflow",
+        "item_type": "calendar_event",
+        "title": "Create Zoom app after owner approval or document manual Zoom workflow",
+        "owner": "Shloimie",
+        "due_date": "2026-06-26",
+        "status": "pending_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "start_date": "2026-06-26",
+        "visibility": "internal",
+        "related_task_id": "TASK-20260618-247",
+        "external_calendar_sync": false
+      },
+      {
+        "id": "CAL-20260618-268",
+        "record_key": "be8c8358fbaac5d57911d0bc118f82c4",
+        "item_key": "calendar_vimeo_workflow",
+        "item_type": "calendar_event",
+        "title": "Configure Vimeo API after approval or document manual video-library workflow",
+        "owner": "Shloimie",
+        "due_date": "2026-06-26",
+        "status": "pending_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "start_date": "2026-06-26",
+        "visibility": "internal",
+        "related_task_id": "TASK-20260618-248",
+        "external_calendar_sync": false
+      },
+      {
+        "id": "CAL-20260618-269",
+        "record_key": "d4e7abcfd24dbcd766a8a6aa1dd942b0",
+        "item_key": "calendar_email_dns",
+        "item_type": "calendar_event",
+        "title": "Configure Resend/email sending domain records after DNS access",
+        "owner": "Shloimie + Rabbi Elie",
+        "due_date": "2026-06-27",
+        "status": "pending_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "start_date": "2026-06-27",
+        "visibility": "internal",
+        "related_task_id": "TASK-20260618-249",
+        "external_calendar_sync": false
+      },
+      {
+        "id": "CAL-20260618-270",
+        "record_key": "845615e1cd75b773d05b1f41bbd82bf9",
+        "item_key": "calendar_stripe_plan",
+        "item_type": "calendar_event",
+        "title": "Draft Stripe products, prices, and webhook/access plan",
+        "owner": "Shloimie",
+        "due_date": "2026-06-28",
+        "status": "pending_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "start_date": "2026-06-28",
+        "visibility": "internal",
+        "related_task_id": "TASK-20260618-250",
+        "external_calendar_sync": false
+      },
+      {
+        "id": "CAL-20260618-271",
+        "record_key": "8e269d04f6086275401c485a4dc9d905",
+        "item_key": "calendar_internal_calendar",
+        "item_type": "calendar_event",
+        "title": "Create internal One Time calendar from due dates and milestones",
+        "owner": "Codex",
+        "due_date": "2026-07-01",
+        "status": "internal_draft",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "start_date": "2026-07-01",
+        "visibility": "internal",
+        "related_task_id": "TASK-20260618-251",
+        "external_calendar_sync": false
+      },
+      {
+        "id": "CAL-20260618-272",
+        "record_key": "7e018ad60769675aa2def88e14f468da",
+        "item_key": "calendar_content_workflow",
+        "item_type": "calendar_event",
+        "title": "Build upload, naming, review, posting, and ad-candidate content workflow",
+        "owner": "Shloimie + Rabbi Elie",
+        "due_date": "2026-07-06",
+        "status": "pending_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "start_date": "2026-07-06",
+        "visibility": "internal",
+        "related_task_id": "TASK-20260618-252",
+        "external_calendar_sync": false
+      },
+      {
+        "id": "CAL-20260618-273",
+        "record_key": "cfbf4099d04c9729daed40b71d270683",
+        "item_key": "calendar_registration_funnel",
+        "item_type": "calendar_event",
+        "title": "Finalize registration funnel, first offer, pricing, refund, and cancellation",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-07-07",
+        "status": "pending_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "start_date": "2026-07-07",
+        "visibility": "internal",
+        "related_task_id": "TASK-20260618-253",
+        "external_calendar_sync": false
+      },
+      {
+        "id": "CAL-20260618-274",
+        "record_key": "f78edbc9fcca542425431367f9d5dea8",
+        "item_key": "calendar_pilot_workflow",
+        "item_type": "calendar_event",
+        "title": "Pilot Zoom, Vimeo, and content workflow with one class recording",
+        "owner": "Shloimie + Rabbi Elie",
+        "due_date": "2026-07-08",
+        "status": "pending_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "start_date": "2026-07-08",
+        "visibility": "internal",
+        "related_task_id": "TASK-20260618-254",
+        "external_calendar_sync": false
+      },
+      {
+        "id": "CAL-20260618-275",
+        "record_key": "68e467d79e0a79ac5d23e105d21563ef",
+        "item_key": "calendar_end_to_end_test",
+        "item_type": "calendar_event",
+        "title": "Run end-to-end signup, payment, access, reminder, recording, and support test",
+        "owner": "Shloimie + Codex",
+        "due_date": "2026-07-14",
+        "status": "pending_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "start_date": "2026-07-14",
+        "visibility": "internal",
+        "related_task_id": "TASK-20260618-255",
+        "external_calendar_sync": false
+      },
+      {
+        "id": "CAL-20260618-276",
+        "record_key": "f81292ebdde52c96926fbb8c792de071",
+        "item_key": "calendar_launch_rehearsal",
+        "item_type": "calendar_event",
+        "title": "Run launch rehearsal for class format, camera, questions, and worksheet flow",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-07-15",
+        "status": "pending_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "start_date": "2026-07-15",
+        "visibility": "internal",
+        "related_task_id": "TASK-20260618-256",
+        "external_calendar_sync": false
+      },
+      {
+        "id": "CAL-20260618-277",
+        "record_key": "f721fc965247e225ad67253d8644f081",
+        "item_key": "calendar_go_no_go",
+        "item_type": "calendar_event",
+        "title": "Review unresolved Decisions and set launch go/no-go",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-07-16",
+        "status": "pending_external",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "start_date": "2026-07-16",
+        "visibility": "internal",
+        "related_task_id": "TASK-20260618-257",
+        "external_calendar_sync": false
+      }
+    ],
+    "content_items": [
+      {
+        "id": "CONTENT-20260618-301",
+        "record_key": "1ae77c71515dfd7f524660df9530ff41",
+        "item_key": "mishnayos_launch_positioning",
+        "item_type": "content_item",
+        "title": "One Time Mishnayos launch positioning",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-06-20",
+        "status": "needs_review",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "summary": "Meeting brief says launch positioning, first offer, live format, and AI review standards need confirmation.",
+        "content_visibility": "internal"
+      },
+      {
+        "id": "CONTENT-20260618-302",
+        "record_key": "dde1052c8e5b283dcf7598cf12cfd7da",
+        "item_key": "ai_video_guardrails",
+        "item_type": "content_item",
+        "title": "AI video and public copy guardrails",
+        "owner": "Rabbi Elie",
+        "due_date": "2026-06-24",
+        "status": "needs_review",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "summary": "AI outputs must be human-reviewed; public visuals need Jewish dress/tzniut/logical-animation guardrails before publication.",
+        "content_visibility": "internal"
+      }
+    ],
+    "community_records": [
+      {
+        "id": "COMMUNITY-20260618-321",
+        "record_key": "2843edf09aca74b4f1189f813891d171",
+        "item_key": "moderated_question_model",
+        "item_type": "community_record",
+        "title": "Use structured questions or moderated channels at launch",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-06-21",
+        "status": "needs_decision",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "community_visibility": "moderated_only",
+        "open_forum_enabled": false
+      }
+    ],
+    "integration_items": [
+      {
+        "id": "INT-20260618-281",
+        "record_key": "5974cde0af93b04da6a32362b4a1f90e",
+        "item_key": "integration_zoom_access",
+        "item_type": "integration_item",
+        "title": "Zoom readiness gate",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-06-19",
+        "status": "credential_or_owner_action_required",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "integration_type": "zoom",
+        "active_runtime": true,
+        "safe_actions": [
+          "readiness_check",
+          "preview"
+        ],
+        "blocked_actions": [
+          "meeting_create",
+          "account_grant",
+          "role_change",
+          "user_management"
+        ],
+        "required_secure_inputs": [
+          "Zoom account ID",
+          "Shloimie role",
+          "license state",
+          "Server-to-Server OAuth app permission",
+          "required scopes"
+        ],
+        "secret_storage_policy": "keyholder_or_server_env_only"
+      },
+      {
+        "id": "INT-20260618-282",
+        "record_key": "16c705ce386d5ec9c22cbbe0d070113f",
+        "item_key": "integration_vimeo_access",
+        "item_type": "integration_item",
+        "title": "Vimeo readiness gate",
+        "owner": "Rabbi Elie",
+        "due_date": "2026-06-19",
+        "status": "credential_or_owner_action_required",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "integration_type": "vimeo",
+        "active_runtime": true,
+        "safe_actions": [
+          "readiness_check",
+          "preview"
+        ],
+        "blocked_actions": [
+          "video_upload",
+          "privacy_change",
+          "folder_write"
+        ],
+        "required_secure_inputs": [
+          "Vimeo team seat decision",
+          "temporary shared-login exception decision",
+          "token/app ownership",
+          "approved domains for embeds"
+        ],
+        "secret_storage_policy": "keyholder_or_server_env_only"
+      },
+      {
+        "id": "INT-20260618-283",
+        "record_key": "f61c0a1c1989b461944f34074c8e712c",
+        "item_key": "integration_resend_account",
+        "item_type": "integration_item",
+        "title": "Resend readiness gate",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-06-20",
+        "status": "credential_or_owner_action_required",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "integration_type": "resend",
+        "active_runtime": true,
+        "safe_actions": [
+          "readiness_check",
+          "preview"
+        ],
+        "blocked_actions": [
+          "email_send",
+          "domain_verify_write"
+        ],
+        "required_secure_inputs": [
+          "Resend account owner",
+          "sending domain",
+          "from identity",
+          "API key stored server-side",
+          "DNS records from dashboard"
+        ],
+        "secret_storage_policy": "keyholder_or_server_env_only"
+      },
+      {
+        "id": "INT-20260618-284",
+        "record_key": "962f472868c84dfdde7557834327f807",
+        "item_key": "integration_dns_domain",
+        "item_type": "integration_item",
+        "title": "DNS/domain readiness gate",
+        "owner": "Rabbi Elie",
+        "due_date": "2026-06-20",
+        "status": "credential_or_owner_action_required",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "integration_type": "dns_domain",
+        "active_runtime": true,
+        "safe_actions": [
+          "readiness_check",
+          "preview"
+        ],
+        "blocked_actions": [
+          "dns_record_create",
+          "domain_connect"
+        ],
+        "required_secure_inputs": [
+          "domain name",
+          "registrar",
+          "DNS host",
+          "delegated access or screenshare plan",
+          "provider-generated records"
+        ],
+        "secret_storage_policy": "keyholder_or_server_env_only"
+      },
+      {
+        "id": "INT-20260618-285",
+        "record_key": "14d656683047ea47047af000e9047ade",
+        "item_key": "integration_stripe_payment",
+        "item_type": "integration_item",
+        "title": "Stripe readiness gate",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-06-19",
+        "status": "credential_or_owner_action_required",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "integration_type": "stripe",
+        "active_runtime": true,
+        "safe_actions": [
+          "readiness_check",
+          "preview"
+        ],
+        "blocked_actions": [
+          "checkout_create",
+          "live_billing",
+          "refund"
+        ],
+        "required_secure_inputs": [
+          "Shloimie role",
+          "developer/webhook access",
+          "test/live separation",
+          "products/prices",
+          "webhook endpoint plan"
+        ],
+        "secret_storage_policy": "keyholder_or_server_env_only"
+      },
+      {
+        "id": "INT-20260618-286",
+        "record_key": "e5d52f3cb0be3f02fccac48e5e8e4357",
+        "item_key": "integration_calendar_source",
+        "item_type": "integration_item",
+        "title": "Calendar readiness gate",
+        "owner": "Shloimie",
+        "due_date": "2026-06-20",
+        "status": "credential_or_owner_action_required",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "integration_type": "calendar",
+        "active_runtime": true,
+        "safe_actions": [
+          "readiness_check",
+          "preview"
+        ],
+        "blocked_actions": [
+          "external_calendar_sync",
+          "student_reminder_send"
+        ],
+        "required_secure_inputs": [
+          "calendar source of truth",
+          "class reminder policy",
+          "Zoom/calendar dependency decision"
+        ],
+        "secret_storage_policy": "keyholder_or_server_env_only"
+      },
+      {
+        "id": "INT-20260618-287",
+        "record_key": "5d0319e7f781e859c04b0ed1140bdfaf",
+        "item_key": "integration_youtube_deferred",
+        "item_type": "integration_item",
+        "title": "YouTube readiness gate",
+        "owner": "Rabbi Elie",
+        "due_date": "2026-07-03",
+        "status": "credential_or_owner_action_required",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "integration_type": "youtube",
+        "active_runtime": true,
+        "safe_actions": [
+          "readiness_check",
+          "preview"
+        ],
+        "blocked_actions": [
+          "youtube_upload",
+          "analytics_read"
+        ],
+        "required_secure_inputs": [
+          "channel permission decision",
+          "upload/analytics need",
+          "posting owner"
+        ],
+        "secret_storage_policy": "keyholder_or_server_env_only"
+      },
+      {
+        "id": "INT-20260618-288",
+        "record_key": "462d239bcd7986621c62b464757f9910",
+        "item_key": "integration_meta_deferred",
+        "item_type": "integration_item",
+        "title": "Meta/Facebook readiness gate",
+        "owner": "Rabbi Elie + Shloimie",
+        "due_date": "2026-06-24",
+        "status": "credential_or_owner_action_required",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "integration_type": "meta_facebook",
+        "active_runtime": true,
+        "safe_actions": [
+          "readiness_check",
+          "preview"
+        ],
+        "blocked_actions": [
+          "ad_launch",
+          "pixel_write",
+          "lead_form_sync"
+        ],
+        "required_secure_inputs": [
+          "business/page role",
+          "pixel/domain status",
+          "ad spend decision"
+        ],
+        "secret_storage_policy": "keyholder_or_server_env_only"
+      },
+      {
+        "id": "INT-20260618-289",
+        "record_key": "409101ee73e9e1cab77f7e47cdc8676f",
+        "item_key": "integration_email_provider_decision",
+        "item_type": "integration_item",
+        "title": "Google/email provider readiness gate",
+        "owner": "Shloimie + Rabbi Elie",
+        "due_date": "2026-06-24",
+        "status": "credential_or_owner_action_required",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "integration_type": "email_provider_decision",
+        "active_runtime": false,
+        "safe_actions": [
+          "readiness_check",
+          "preview"
+        ],
+        "blocked_actions": [
+          "crm_publish",
+          "bulk_email_send",
+          "contact_import"
+        ],
+        "required_secure_inputs": [
+          "email provider decision",
+          "domain records",
+          "legal import policy for email lists"
+        ],
+        "secret_storage_policy": "keyholder_or_server_env_only"
+      }
+    ],
+    "notes": [
+      {
+        "id": "NOTE-20260618-341",
+        "record_key": "01390ed0c195799eb6e021f329db8d31",
+        "item_key": "owner_admin_model",
+        "item_type": "note",
+        "title": "One Time role model: Rabbi Owner, Shloimie Admin",
+        "owner": "Codex",
+        "due_date": "2026-06-21",
+        "status": "implemented_locally_needs_live_verification",
+        "workspace_key": "rabbi_sheller_provider",
+        "project_key": "one_time_mishnah_class",
+        "source_drive_file_id": "1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI",
+        "source_title": "2026-06-18-rabbi-elie-scheller.md",
+        "external_write_performed": false,
+        "note_type": "workspace_role",
+        "expected_owner_assignments": [
+          {
+            "person_name": "Rabbi Elie Scheller",
+            "role": "project owner",
+            "access_level": "owner",
+            "workspace_key": "rabbi_sheller_provider",
+            "project_key": "one_time_mishnah_class"
+          },
+          {
+            "person_name": "Shloimie",
+            "role": "project admin",
+            "access_level": "manager",
+            "workspace_key": "rabbi_sheller_provider",
+            "project_key": "one_time_mishnah_class"
+          }
+        ]
+      }
+    ]
+  },
+  "counts": {
+    "decisions": 17,
+    "tasks": 17,
+    "calendar_events": 17,
+    "content_items": 2,
+    "community_records": 1,
+    "integration_items": 9,
+    "notes": 1
+  },
+  "blockers": [
+    {
+      "decision_id": "DEC-20260618-201",
+      "title": "Verify Zoom owner role, license, and app-management path",
+      "owner": "Rabbi Elie + Shloimie",
+      "due_date": "2026-06-19",
+      "required_inputs": [
+        "Zoom account ID",
+        "Shloimie role",
+        "license state",
+        "Server-to-Server OAuth app permission",
+        "required scopes"
+      ],
+      "blocked_actions": [
+        "meeting_create",
+        "account_grant",
+        "role_change",
+        "user_management"
+      ]
+    },
+    {
+      "decision_id": "DEC-20260618-202",
+      "title": "Decide Vimeo seat, user, token, and manual-library strategy",
+      "owner": "Rabbi Elie",
+      "due_date": "2026-06-19",
+      "required_inputs": [
+        "Vimeo team seat decision",
+        "temporary shared-login exception decision",
+        "token/app ownership",
+        "approved domains for embeds"
+      ],
+      "blocked_actions": [
+        "video_upload",
+        "privacy_change",
+        "folder_write"
+      ]
+    },
+    {
+      "decision_id": "DEC-20260618-203",
+      "title": "Decide Resend recovery, new account, or alternate email provider",
+      "owner": "Rabbi Elie + Shloimie",
+      "due_date": "2026-06-20",
+      "required_inputs": [
+        "Resend account owner",
+        "sending domain",
+        "from identity",
+        "API key stored server-side",
+        "DNS records from dashboard"
+      ],
+      "blocked_actions": [
+        "email_send",
+        "domain_verify_write"
+      ]
+    },
+    {
+      "decision_id": "DEC-20260618-204",
+      "title": "Identify One Time launch domain and DNS authority",
+      "owner": "Rabbi Elie",
+      "due_date": "2026-06-20",
+      "required_inputs": [
+        "domain name",
+        "registrar",
+        "DNS host",
+        "delegated access or screenshare plan",
+        "provider-generated records"
+      ],
+      "blocked_actions": [
+        "dns_record_create",
+        "domain_connect"
+      ]
+    },
+    {
+      "decision_id": "DEC-20260618-205",
+      "title": "Confirm Stripe role, live/test mode, and payment structure",
+      "owner": "Rabbi Elie + Shloimie",
+      "due_date": "2026-06-19",
+      "required_inputs": [
+        "Shloimie role",
+        "developer/webhook access",
+        "test/live separation",
+        "products/prices",
+        "webhook endpoint plan"
+      ],
+      "blocked_actions": [
+        "checkout_create",
+        "live_billing",
+        "refund"
+      ]
+    },
+    {
+      "decision_id": "DEC-20260618-206",
+      "title": "Choose internal calendar now or external sync after smoke tests",
+      "owner": "Shloimie",
+      "due_date": "2026-06-20",
+      "required_inputs": [
+        "calendar source of truth",
+        "class reminder policy",
+        "Zoom/calendar dependency decision"
+      ],
+      "blocked_actions": [
+        "external_calendar_sync",
+        "student_reminder_send"
+      ]
+    },
+    {
+      "decision_id": "DEC-20260618-207",
+      "title": "Defer or grant YouTube channel access for Week 3 content workflow",
+      "owner": "Rabbi Elie",
+      "due_date": "2026-07-03",
+      "required_inputs": [
+        "channel permission decision",
+        "upload/analytics need",
+        "posting owner"
+      ],
+      "blocked_actions": [
+        "youtube_upload",
+        "analytics_read"
+      ]
+    },
+    {
+      "decision_id": "DEC-20260618-208",
+      "title": "Schedule separate Meta access session before ads or page posting",
+      "owner": "Rabbi Elie + Shloimie",
+      "due_date": "2026-06-24",
+      "required_inputs": [
+        "business/page role",
+        "pixel/domain status",
+        "ad spend decision"
+      ],
+      "blocked_actions": [
+        "ad_launch",
+        "pixel_write",
+        "lead_form_sync"
+      ]
+    },
+    {
+      "decision_id": "DEC-20260618-209",
+      "title": "Choose first-party email path without reviving active GHL runtime",
+      "owner": "Shloimie + Rabbi Elie",
+      "due_date": "2026-06-24",
+      "required_inputs": [
+        "email provider decision",
+        "domain records",
+        "legal import policy for email lists"
+      ],
+      "blocked_actions": [
+        "crm_publish",
+        "bulk_email_send",
+        "contact_import"
+      ]
+    }
+  ],
+  "acceptance": {
+    "one_time_only": true,
+    "no_public_or_bna_school_records": true,
+    "no_external_writes": true,
+    "no_secrets_in_output": true,
+    "production_mutation_performed": false
+  }
+}

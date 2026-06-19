@@ -30,3 +30,30 @@ Still required before local completion:
 - Safe demo task/run fixture.
 - Manual Agent Mode smoke using the generated prompt.
 - Full-suite regression after DB/API/browser smoke changes.
+
+Verified on 2026-06-19 for One Time ramble/agent/integrations follow-up:
+
+- PASS `node --check server.js`.
+- PASS `node --check src/lib/bna/one-time-drive-brief.js`.
+- PASS Operations inline script syntax check by extracting inline scripts from
+  `public/operations.html` and compiling them with `new Function`.
+- PASS JSON validation for `ops/action-registry.json`,
+  `ops/route-registry.json`,
+  `ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json`,
+  and `ops/ingestion-runs/2026-06-19-one-time-drive-brief-dry-run/PARSE.json`.
+- PASS focused suite 49/49:
+  `node --test tests/one-time-drive-brief-ingestion.test.js
+  tests/one-time-external-user-portal.test.js
+  tests/one-time-meeting-drops.test.js
+  tests/int05-integrations-closeout.test.js`.
+- PASS `npm run bna:run:validate`; status counts after registration:
+  `not_started: 1`, `in_progress: 17`, `needs_verification: 9`,
+  `blocked: 2`, `done: 2`.
+
+Not run for this batch:
+
+- No full `npm test`.
+- No Playwright screenshot smoke.
+- No production DB write/readback.
+- No deployment.
+- No external Zoom/Vimeo/Resend/DNS/Stripe write.

@@ -7,6 +7,35 @@ Start here:
 3. Run `npm run bna:run:status`.
 4. Confirm current branch and HEAD with `git status --short --branch`.
 
+Current 2026-06-19 checkpoint:
+
+- `REQ-20260619-201`, `REQ-20260619-202`, and `REQ-20260619-208` are locally
+  done for this no-write batch.
+- `REQ-20260619-203` remains in progress: broaden future Telegram/Drive/
+  transcript/ramble ingestion hardening beyond the One Time Drive brief parser.
+- `REQ-20260619-204` and `REQ-20260619-205` need DB/API/browser verification:
+  owner/admin readback, negative scoped-identity tests, One Time module/button
+  audit, and role-based Operations smoke.
+- `REQ-20260619-206` continues the Agent Control Center DB/API/browser/manual
+  Agent Mode smoke work from `REQ-20260618-112` through `REQ-20260618-123`.
+- `REQ-20260619-207` is genuinely blocked for live provider setup until
+  operator supplies or performs external account-owner actions through the
+  secure keyholder/environment workflow.
+
+Exact next requirement:
+
+`REQ-20260619-203` canonical future ingestion hardening, then `REQ-20260619-204`
+negative One Time scope/RBAC tests.
+
+Exact next command:
+
+```powershell
+node --test tests\one-time-drive-brief-ingestion.test.js tests\telegram-ramble-routing-regression.test.js tests\intake-parser.test.js
+```
+
+Then add/extend tests for ambiguous One Time routing and cross-workspace denial
+without touching production data.
+
 Open requirements:
 
 - `REQ-20260618-101` audit harness and audit package

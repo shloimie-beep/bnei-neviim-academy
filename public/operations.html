@@ -7955,6 +7955,7 @@
                 if (filters.status) params.set('status', filters.status);
                 return this.request('GET', '/project-meetings' + (params.toString() ? '?' + params.toString() : ''));
             },
+            previewOneTimeDriveBrief(payload = {}) { return this.request('POST', '/project-meetings/one-time-drive-brief/preview', payload); },
             createProjectMeeting(meeting) { return this.request('POST', '/project-meetings', meeting); },
             parseMixedRecording(id, payload = {}) { return this.request('POST', '/content-jobs/' + id + '/parse-mixed-recording', payload); },
             parseIntake(payload = {}) { return this.request('POST', '/intake/parse', payload); },
@@ -8270,8 +8271,8 @@
             no_contact_reason: '',
             workspace_key: 'one_time_mishnah_class',
             account_type: 'external_operations_user',
-            role: 'external account admin',
-            access_level: 'viewer',
+            role: 'project owner',
+            access_level: 'owner',
             login_username: '',
             allowed_views: 'tasks,content,communications,admin',
             create_access_link: false,
@@ -8308,6 +8309,9 @@
         let paymentIntake = [];
         let paymentReminderPreview = null;
         let contentJobs = [];
+        let oneTimeDriveBriefPreview = null;
+        let oneTimeDriveBriefPreviewError = '';
+        let oneTimeDriveBriefPreviewBusy = false;
         let contentPrompts = [];
         let contentPromptLibraryLoading = false;
         let contentPromptLibraryError = '';
@@ -18435,7 +18439,7 @@
                         </label>
                         <label class="announcement-field">
                             <span>Role</span>
-                            <input name="role" value="${escapeHtml(d.role)}" placeholder="external account admin">
+                            <input name="role" value="${escapeHtml(d.role)}" placeholder="project owner">
                         </label>
                         <label class="announcement-field">
                             <span>Access level</span>
@@ -24034,12 +24038,12 @@
                             <h3>${latestCandidate ? escapeHtml(latestCandidate.title || `Content job #${latestCandidate.id}`) : 'No meeting drop detected yet'}</h3>
                             <p>${latestCandidate ? `Latest candidate: job #${Number(latestCandidate.id)}, uploaded ${escapeHtml(formatDateTime(contentUploadedAt(latestCandidate)))}` : 'Drop meeting audio into Drive Raw Intake, then structure it here when the transcript is ready.'}</p>
                         </div>
-                        ${latestCandidate ? `
-                            <div class="task-actions" style="margin-top:0;">
-                                <button class="task-action primary" onclick="structureOneTimeMeeting(event, ${Number(latestCandidate.id)})">Structure Latest</button>
-                            </div>
-                        ` : ''}
+                        <div class="task-actions" style="margin-top:0;">
+                            <button class="task-action" data-preview-one-time-drive-brief onclick="previewLatestOneTimeDriveBrief(event)" ${oneTimeDriveBriefPreviewBusy ? 'disabled' : ''}>${oneTimeDriveBriefPreviewBusy ? 'Previewing...' : 'Preview Drive Brief'}</button>
+                            ${latestCandidate ? `<button class="task-action primary" onclick="structureOneTimeMeeting(event, ${Number(latestCandidate.id)})">Structure Latest</button>` : ''}
+                        </div>
                     </div>
+                    ${renderOneTimeDriveBriefPreviewPanel()}
                     <div class="meeting-drop-grid">
                         <section class="meeting-drop-list">
                             <div class="content-bulk-header">
@@ -24066,6 +24070,81 @@
                     </div>
                 </div>
             `;
+        }
+
+        function renderOneTimeDriveBriefPreviewPanel() {
+            if (oneTimeDriveBriefPreviewBusy) {
+                return '<div class="task-empty compact">Previewing the latest Rabbi Elie / One Time Drive brief without writing records...</div>';
+            }
+            if (oneTimeDriveBriefPreviewError) {
+                return `<div class="error-banner">Drive brief preview failed: ${escapeHtml(oneTimeDriveBriefPreviewError)}</div>`;
+            }
+            const preview = oneTimeDriveBriefPreview;
+            if (!preview) {
+                return '';
+            }
+            const counts = preview.counts || {};
+            const routing = preview.routing || {};
+            const source = preview.source || {};
+            const owners = Array.isArray(preview.owner_assignments) ? preview.owner_assignments : [];
+            const blockers = Array.isArray(preview.blockers) ? preview.blockers : [];
+            const blockerSummary = blockers.slice(0, 6).map(blocker => `
+                <div class="event-card">
+                    <div class="event-type">${escapeHtml(blocker.owner || 'Owner decision')}</div>
+                    <strong>${escapeHtml(blocker.title || 'Decision needed')}</strong>
+                    <div class="event-meta">Due ${escapeHtml(blocker.due_date || 'unscheduled')} &middot; ${escapeHtml((blocker.blocked_actions || []).slice(0, 3).join(', ') || 'external write locked')}</div>
+                </div>
+            `).join('');
+            return `
+                <div class="content-bulk-actions" data-one-time-drive-brief-preview>
+                    <div class="content-bulk-header">
+                        <div>
+                            <div class="event-type">No-write Drive Brief Preview</div>
+                            <h3 style="font-size:16px; margin-top:4px;">${escapeHtml(source.title || 'Rabbi Elie / One Time meeting brief')}</h3>
+                            <p style="color:#94a3b8; font-size:12px; margin-top:4px;">Scope: ${escapeHtml(routing.project_key || 'one_time_mishnah_class')} / ${escapeHtml(routing.workspace_key || 'rabbi_sheller_provider')} &middot; production writes: ${preview.external_write_performed ? 'yes' : 'no'}</p>
+                        </div>
+                        <span>${escapeHtml(preview.parser_version || 'preview')}</span>
+                    </div>
+                    <div class="content-bulk-selected">
+                        <span class="example-chip">${Number(counts.decisions || 0)} Decisions</span>
+                        <span class="example-chip">${Number(counts.tasks || 0)} Tasks</span>
+                        <span class="example-chip">${Number(counts.calendar_events || 0)} Calendar</span>
+                        <span class="example-chip">${Number(counts.content_items || 0)} Content</span>
+                        <span class="example-chip">${Number(counts.community_records || 0)} Community</span>
+                        <span class="example-chip">${Number(counts.integration_items || 0)} Integrations</span>
+                    </div>
+                    <div class="settings-control-grid" style="margin-top:14px;">
+                        ${owners.map(owner => renderSettingsControlRow(owner.person_name || 'Owner', owner.role || 'role', `${owner.access_level || 'access'} / ${owner.workspace_key || ''}`, 'One Time')).join('')}
+                        ${renderSettingsControlRow('Idempotency', 'Stable', preview.idempotency?.duplicate_policy || 'Match by source key and record key.', 'No duplicates')}
+                        ${renderSettingsControlRow('Secrets', preview.acceptance?.no_secrets_in_output ? 'Clean' : 'Review', 'Preview output is scanned for key/token-like material before display.', 'Guarded')}
+                    </div>
+                    ${blockerSummary ? `<div class="meeting-drop-grid" style="margin-top:14px;">${blockerSummary}</div>` : ''}
+                </div>
+            `;
+        }
+
+        async function previewLatestOneTimeDriveBrief(event) {
+            event?.preventDefault?.();
+            oneTimeDriveBriefPreviewBusy = true;
+            oneTimeDriveBriefPreviewError = '';
+            render();
+            try {
+                oneTimeDriveBriefPreview = await api.previewOneTimeDriveBrief({
+                    source: {
+                        drive_file_id: '1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI',
+                        title: '2026-06-18-rabbi-elie-scheller.md',
+                        url: 'https://drive.google.com/file/d/1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI/view',
+                        created_time: '2026-06-18T17:16:22.555Z',
+                        modified_time: '2026-06-18T17:16:21.504Z',
+                        mime_type: 'text/markdown'
+                    }
+                });
+            } catch (error) {
+                oneTimeDriveBriefPreviewError = error.message || 'Could not preview the Drive brief.';
+            } finally {
+                oneTimeDriveBriefPreviewBusy = false;
+                render();
+            }
         }
 
         async function refreshContentPromptLibrary() {
@@ -31093,8 +31172,8 @@
                 no_contact_reason: String(data.get('no_contact_reason') || '').trim(),
                 workspace_key: String(data.get('workspace_key') || 'one_time_mishnah_class').trim(),
                 account_type: String(data.get('account_type') || 'external_operations_user').trim(),
-                role: String(data.get('role') || 'external account admin').trim(),
-                access_level: String(data.get('access_level') || 'viewer').trim(),
+                role: String(data.get('role') || 'project owner').trim(),
+                access_level: String(data.get('access_level') || 'owner').trim(),
                 login_username: String(data.get('login_username') || '').trim(),
                 allowed_views: String(data.get('allowed_views') || '').trim(),
                 create_access_link: data.get('create_access_link') === 'on',

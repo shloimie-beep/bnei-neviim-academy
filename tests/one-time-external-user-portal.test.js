@@ -8,16 +8,19 @@ const driveScript = fs.readFileSync('scripts/setup-one-time-partnership-drive.mj
 const telegramBridge = fs.readFileSync('scripts/telegram-kimi-bridge.mjs', 'utf8');
 
 test('One Time login is promoted to a scoped external admin workspace', () => {
-  assert.match(serverJs, /const platformAllowedViews = \['dashboard', 'watchdog', 'pipelines', 'tasks', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'\]/);
-  assert.match(serverJs, /const providerAllowedViews = \['dashboard', 'watchdog', 'pipelines', 'tasks', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'\]/);
+  assert.match(serverJs, /const platformAllowedViews = \[[\s\S]*'agents'[\s\S]*'admin'[\s\S]*'settings'[\s\S]*\]/);
+  assert.match(serverJs, /const providerAllowedViews = \[[\s\S]*'tasks'[\s\S]*'content'[\s\S]*'integrations'[\s\S]*\]/);
   assert.match(serverJs, /role: 'project_owner'/);
   assert.match(serverJs, /role: 'project_manager'/);
   assert.match(serverJs, /allowedViews: ownerAllowedViews/);
   assert.match(serverJs, /allowedViews: managerAllowedViews/);
   assert.match(serverJs, /const ONE_TIME_OPS_USERNAME/);
   assert.match(serverJs, /old ONE_TIME_OPS_USERNAME maps to manager role/);
-  assert.match(serverJs, /role: 'external account admin'/);
+  assert.match(serverJs, /role: 'project owner'/);
+  assert.match(serverJs, /role: 'project admin'/);
   assert.match(serverJs, /account_type: 'external_user'/);
+  assert.match(serverJs, /account_type: 'internal_admin'/);
+  assert.match(serverJs, /access_level: 'owner'/);
   assert.match(serverJs, /access_level: 'manager'/);
 });
 
@@ -39,10 +42,12 @@ test('One Time admin can receive a short-lived one-click Operations access link'
 
 test('One Time external admin appears in super-admin user management without parent-account mixing', () => {
   assert.match(serverJs, /account_type: 'external_user'/);
-  assert.match(serverJs, /role: 'external account admin'/);
+  assert.match(serverJs, /account_owner: true/);
+  assert.match(serverJs, /admin_for_owner: 'Rabbi Elie Scheller'/);
   assert.match(serverJs, /ONE_TIME_OWNER_USERNAME/);
   assert.match(serverJs, /ONE_TIME_MANAGER_USERNAME/);
-  assert.match(serverJs, /login_username: ONE_TIME_OPS_USERNAME \|\| null/);
+  assert.match(serverJs, /login_username: ONE_TIME_OWNER_USERNAME \|\| null/);
+  assert.match(serverJs, /login_username: ONE_TIME_MANAGER_USERNAME \|\| ONE_TIME_OPS_USERNAME \|\| null/);
   assert.match(operationsHtml, /data-super-admin-user-management/);
   assert.match(operationsHtml, /adminExternalUserRows/);
   assert.match(operationsHtml, /one_time_mishnah_class/);
@@ -117,6 +122,16 @@ test('Workflow B reactivation card documents list segmentation before any sends'
   assert.match(driveScript, /proposedTags: \[[\s\S]*'one-time-list:interested'[\s\S]*'one-time-prior-price:30'/);
   assert.match(driveScript, /routingRules: \[[\s\S]*Do not merge warm interested-list leads[\s\S]*Workflow A lead capture/);
   assert.match(driveScript, /approvalGate: 'No list import, contact update, tag\/custom-field\/workflow, email template\/campaign/);
+});
+
+test('One Time Operations maps Rabbi email contacts as a no-send staging section', () => {
+  assert.match(operationsHtml, /id: 'email_contacts', label: 'Email Contacts'/);
+  assert.match(operationsHtml, /function oneTimeEmailContactLeads/);
+  assert.match(operationsHtml, /one-time-list:rabbi-email-contacts/);
+  assert.match(operationsHtml, /one-time-no-send-until-approved/);
+  assert.match(operationsHtml, /Campaign staging is tagged, but no email, WhatsApp, Telegram, Buffer, payment, or external CRM send is triggered here/);
+  assert.match(operationsHtml, /metadata until Shloimie approves copy, sender, suppressions, and test recipients/);
+  assert.match(operationsHtml, /PROVIDER_PARTICIPANT_SUBTABS\.some\(tab => tab\.id === contactSection\)/);
 });
 
 test('Workflow C landing page routing card documents US and UK market routing before writes', () => {

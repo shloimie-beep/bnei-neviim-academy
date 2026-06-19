@@ -647,8 +647,9 @@
   scheduling, WhatsApp provider, current website/product tiers, and
   ownership/revenue terms, then build the internal-first parent/student/Rabbi
   admin MVP in first-party BNA Operations.
-- One Time user access should stay project-scoped: Shloimie is super admin,
-  Rabbi Elie is an external One Time admin, and future BNA versus One Time
+- One Time user access should stay project-scoped: Rabbi Elie Scheller is the
+  One Time project owner, Shloimie is One Time project admin/manager while also
+  retaining global super-admin authority, and future BNA versus One Time
   parent/student accounts must be separated by `project_id` and project-level
   login scope.
 - Student Operations navigation should be list to student workspace to section
@@ -1250,10 +1251,10 @@ Boys who are: intelligent but disengaged, sensitive/strong-willed, under-challen
 - The app needs a broader Users/accounts model: BNA parents and BNA students are
   separate from Rabbi Elie's One Time parents and One Time students.
 - One Time should be treated as the first real service-provider/white-label
-  workspace: Shloimie is platform super admin/admin manager, Rabbi Elie is a
-  scoped provider/teacher admin, and One Time members/students/parents must not
-  see BNA private students, accounting, family accountability, or Shloimie's
-  super-admin data.
+  workspace: Rabbi Elie is the scoped owner/teacher, Shloimie is the scoped
+  admin/manager and global platform super admin, and One Time
+  members/students/parents must not see BNA private students, accounting,
+  family accountability, or Shloimie's super-admin data.
 - Rabbi Elie needs his own scoped parent and student sections under the One
   Time account/project. Do not mix those records with BNA school students or BNA
   parents.

@@ -1,6 +1,29 @@
 # BNA Current System State
 
-Last updated: 2026-06-18
+Last updated: 2026-06-19
+
+2026-06-19 One Time ramble/agent/integrations follow-up:
+- Active run remains `ops/execution-runs/2026-06-18-bna-platform-completion/`;
+  this was resumed, not restarted.
+- Newest Drive source for Rabbi Elie / One Time was discovered as
+  `2026-06-18-rabbi-elie-scheller.md` with Drive ID
+  `1QondCYFKL0CB6K9wkjVL7aa7enbPBmzI`.
+- A local no-write parser/preview now maps that brief into scoped One Time
+  Decisions, Tasks, Calendar, Content, Community, Integration records, and
+  Notes with deterministic idempotency keys. Evidence:
+  `ops/ingestion-runs/2026-06-19-one-time-drive-brief-dry-run/`.
+- Operations Content > Meeting Drops has a `Preview Drive Brief` action. It
+  shows counts, owner/admin assignments, idempotency, secret-scan status, and
+  credential blockers without creating production rows.
+- Local One Time seed model: Rabbi Elie Scheller is project owner / owner;
+  Shloimie is project admin / manager. Legacy `ONE_TIME_OPS_USERNAME` remains
+  manager compatibility, not owner.
+- Secure Vimeo, Zoom, Resend, and operator credential handoff docs exist under
+  `docs/integrations/`. Live provider setup remains blocked on external owner
+  credentials/actions and explicit approval.
+- Corrected active-run requirements so non-screenshot work no longer waits on
+  the UI audit package; only screenshot-specific visual findings depend on the
+  uploaded audit evidence.
 
 2026-06-18 durable ramble-to-done execution-run setup:
 - New GitHub/Codex sessions should start with `BNA-START-HERE.md`, then read
