@@ -4804,3 +4804,22 @@ Verification:
 - PASS `npm run bna:run:status`.
 
 Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+## 2026-06-19 - Integrations status browser proof
+
+Requirement: `REQ-20260618-149`
+
+Changed:
+
+- Added scoped One Time Buffer integration fixtures for connected, not connected, and error states plus a BNA fixture for leakage checks.
+- Verified the Integrations panel renders account identity, last check, needed action, failure reason, and workspace labels without active GHL social-runtime copy.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/integrations-status.test.js tests/operations-module-toolbar.test.js tests/browser-acceptance.test.js` 10/10.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, or external account mutation was performed.

@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-19T08:05:30+03:00
+Updated: 2026-06-19T08:15:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -41,10 +41,11 @@ Latest completed local batches:
 - REQ-20260618-146: Workspace-specific Drive routing now has static/API and browser DOM proof that One Time content jobs/bundles use the selected workspace project, show One Time Drive folder/file provenance, and exclude the BNA Drive folder. It remains needs_verification only for release approval, deploy, and live smoke.
 - REQ-20260618-147: Workspace-scoped live classes now have static/API and browser DOM proof that One Time Calendar uses the selected workspace project, shows the One Time class-session item with workspace label, and excludes a BNA-only class fixture. It remains needs_verification only for release approval, deploy, and live smoke.
 - REQ-20260618-148: Scoped Automations now has static/API and browser DOM proof that selected One Time workspace status rows show owner, status, last run, next run, failure reason, detail counts, and workspace labels while excluding BNA automation rows. It remains needs_verification only for release approval, deploy, and live smoke.
+- REQ-20260618-149: Scoped Integrations now has static/API and browser DOM proof that selected One Time workspace rows show Buffer Connected/Not connected/Error states, account identity, last check, needed action, failure reason, and workspace labels without active GHL social-runtime copy. It remains needs_verification only for release approval, deploy, and live smoke.
 
 Exact next requirement:
 
-- REQ-20260618-149 / BNA-INTEGRATION-001: Simplified integrations/social accounts states/actions.
+- REQ-20260618-150 / BNA-USER-001: Workspace-scoped users/roles/invitations.
 
 Blocked requirement intentionally skipped:
 
@@ -55,15 +56,15 @@ Exact next command:
 
 ```powershell
 npm run bna:run:status
-node --test tests/integrations-status.test.js tests/operations-module-toolbar.test.js tests/browser-acceptance.test.js
+node --test tests/users-scope.test.js tests/operations-module-toolbar.test.js tests/browser-acceptance.test.js
 ```
 
-Then inspect whether `REQ-20260618-149` needs refreshed browser/API evidence beyond the existing integrations status tests so Integrations visibly proves connected/not connected/error states, account identity, last check, needed action, and no active GHL social runtime copy. Do not close live-required task items as `done` without release approval, deployment, and live-smoke evidence.
+Then inspect whether `REQ-20260618-150` needs refreshed browser/API evidence beyond the existing users scope tests so Users visibly proves scoped members, roles, access levels, login usernames, and invitation records without adding mutation/send actions. Do not close live-required task items as `done` without release approval, deployment, and live-smoke evidence.
 
 Still open after this batch:
 
-- REQ-20260618-124 through REQ-20260618-148 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
-- REQ-20260618-149 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-124 through REQ-20260618-149 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
+- REQ-20260618-150 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - REQ-20260618-156 remains `needs_operator_decision` for duplicate-student cleanup approval.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 

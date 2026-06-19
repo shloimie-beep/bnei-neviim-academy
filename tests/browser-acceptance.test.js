@@ -356,7 +356,57 @@ function operationsFixture(pathname, url, options = {}) {
             },
           ],
     },
-    '/api/bna/integrations/status': { integrations: [] },
+    '/api/bna/integrations/status': {
+      integrations: project === 'one_time_mishnah_class'
+        ? [
+            {
+              provider: 'Buffer',
+              platform: 'Facebook',
+              status: 'connected',
+              account_identity: 'facebook: One Time Page',
+              last_check_at: '2026-06-18T12:05:00+03:00',
+              needed_action: 'Ready to schedule drafts',
+              failure_reason: null,
+              workspace_label: 'One Time Mishnah Class',
+              project_key: 'one_time_mishnah_class',
+            },
+            {
+              provider: 'Buffer',
+              platform: 'LinkedIn',
+              status: 'not_connected',
+              account_identity: '',
+              last_check_at: null,
+              needed_action: 'Connect LinkedIn profile',
+              failure_reason: null,
+              workspace_label: 'One Time Mishnah Class',
+              project_key: 'one_time_mishnah_class',
+            },
+            {
+              provider: 'Buffer',
+              platform: 'YouTube',
+              status: 'error',
+              account_identity: 'youtube: One Time Channel',
+              last_check_at: '2026-06-18T12:10:00+03:00',
+              needed_action: 'Refresh Buffer permission',
+              failure_reason: 'Buffer token lacks YouTube profile access',
+              workspace_label: 'One Time Mishnah Class',
+              project_key: 'one_time_mishnah_class',
+            },
+          ]
+        : [
+            {
+              provider: 'Buffer',
+              platform: 'Facebook',
+              status: 'connected',
+              account_identity: 'facebook: BNA Page',
+              last_check_at: '2026-06-18T09:00:00+03:00',
+              needed_action: 'Ready',
+              failure_reason: null,
+              workspace_label: 'BNA',
+              project_key: 'bna',
+            },
+          ],
+    },
     '/api/bna/users': { users: [] },
     '/api/bna/invitations': { invitations: [] },
     '/api/bna/signups': {
@@ -1182,6 +1232,42 @@ async function assertOperationsAutomationsWorkspaceStatus(page, calls) {
   assert.doesNotMatch(automationState.text, /TEST-BNA-SEED BNA Payment Reminders/);
 }
 
+async function assertOperationsIntegrationsWorkspaceStatus(page, calls) {
+  await page.locator('.ops-module-button').filter({ hasText: 'Integrations' }).click();
+  await page.locator('.ops-view-frame[data-current-view="integrations"]').waitFor();
+  await waitForCall(
+    calls,
+    (call) => call.pathname === '/api/bna/integrations/status' && call.project === 'one_time_mishnah_class',
+    'Integrations status request scoped to One Time workspace',
+  );
+  await page.locator('.focus-panel[aria-label="Integration status"]').waitFor();
+  const integrationState = await page.evaluate(() => {
+    const frame = document.querySelector('.ops-view-frame[data-current-view="integrations"]');
+    const panel = frame?.querySelector('.focus-panel[aria-label="Integration status"]');
+    return {
+      text: panel?.textContent?.replace(/\s+/g, ' ').trim() || '',
+    };
+  });
+  assert.match(integrationState.text, /Connected\s*1/);
+  assert.match(integrationState.text, /Errors\s*1/);
+  assert.match(integrationState.text, /Targets\s*3/);
+  assert.match(integrationState.text, /Buffer Facebook/);
+  assert.match(integrationState.text, /Status\s*Connected/);
+  assert.match(integrationState.text, /Account\s*facebook: One Time Page/);
+  assert.match(integrationState.text, /Needed Action\s*Ready to schedule drafts/);
+  assert.match(integrationState.text, /Buffer LinkedIn/);
+  assert.match(integrationState.text, /Status\s*Not connected/);
+  assert.match(integrationState.text, /Needed Action\s*Connect LinkedIn profile/);
+  assert.match(integrationState.text, /Buffer YouTube/);
+  assert.match(integrationState.text, /Status\s*Error/);
+  assert.match(integrationState.text, /Account\s*youtube: One Time Channel/);
+  assert.match(integrationState.text, /Needed Action\s*Refresh Buffer permission/);
+  assert.match(integrationState.text, /Buffer token lacks YouTube profile access/);
+  assert.match(integrationState.text, /One Time Mishnah Class/);
+  assert.doesNotMatch(integrationState.text, /facebook: BNA Page/);
+  assert.doesNotMatch(integrationState.text, /GHL|GoHighLevel|LeadConnector/i);
+}
+
 async function assertOperationsContactsCommunityScope(page, calls) {
   await page.locator('.ops-module-button').filter({ hasText: 'Contacts' }).click();
   await page.locator('.ops-view-frame[data-current-view="contacts"]').waitFor();
@@ -1454,6 +1540,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       await assertOperationsShellStable(page, 'refreshed operations shell');
       await assertOperationsLiveClassesWorkspaceScope(page, calls);
       await assertOperationsAutomationsWorkspaceStatus(page, calls);
+      await assertOperationsIntegrationsWorkspaceStatus(page, calls);
       await assertOperationsContactsCommunityScope(page, calls);
       await assertOperationsContentBoundary(page, calls);
       await assertOperationsContentMetadataProvenance(page, calls);
