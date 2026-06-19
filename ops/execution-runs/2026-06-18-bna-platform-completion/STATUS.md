@@ -305,6 +305,24 @@ remain open.
   production DB mutation, external write, broad crawl, watch loop, or
   agent-fleet loop was performed.
 
+2026-06-19 Agent Control manual-smoke prompt closeout:
+
+- Moved `REQ-20260618-112`, `REQ-20260618-122`,
+  `REQ-20260618-123`, and `REQ-20260619-206` to
+  `needs_verification`.
+- Added the copy-ready manual Agent Mode smoke prompt at
+  `ops/agent-control/2026-06-19-manual-agent-mode-smoke.md`.
+- Added `tests/agent-control-manual-smoke-prompt.test.js` to prove the prompt
+  includes the safe run key, acceptance criteria, progress/evidence/Decision/
+  Seal Run steps, no-deploy/no-production guardrails, and no secret-shaped
+  values.
+- Focused Agent Control/manual-prompt/acceptance suite passed 11/11.
+- `npm run bna:run:validate` passed with status counts
+  `needs_verification: 13`, `blocked: 2`, `done: 16`.
+- No deployment, production DB mutation, external write, broad crawl, watch
+  loop, or agent-fleet loop was performed. Actual manual Agent Mode/browser-
+  judgment execution and release/live approval remain open verification gates.
+
 Still open after this batch:
 
 - `REQ-20260619-203` is locally done. Production deployment/live smoke remains
@@ -324,8 +342,9 @@ Still open after this batch:
 - `REQ-20260618-110` has local public copy/portal/CTA proof; live/deploy
   verification remains withheld until explicit release approval.
 - `REQ-20260619-206` has local DB/API route smoke, focused Super Admin browser
-  smoke, and private notification/no-spam coverage now; it still needs manual
-  Agent Mode/browser-judgment smoke before local closeout.
+  smoke, private notification/no-spam coverage, safe seed coverage, and a
+  copy-ready manual prompt now; it still needs actual manual Agent Mode/browser
+  judgment and release/live approval before final closeout.
 - Live Vimeo/Zoom/Resend/DNS/Stripe setup remains blocked on external
   owner/credential actions and explicit operator approval.
 

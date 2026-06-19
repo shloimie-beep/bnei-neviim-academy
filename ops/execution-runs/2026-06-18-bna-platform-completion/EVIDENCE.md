@@ -612,6 +612,31 @@ Protocol/tooling verification evidence:
 - No deployment, production DB mutation, external send/write, broad crawl,
   watch loop, or agent-fleet loop was performed.
 
+2026-06-19 Agent Control manual-smoke prompt evidence:
+
+- Manual Agent Mode prompt:
+  `ops/agent-control/2026-06-19-manual-agent-mode-smoke.md`.
+- Prompt contract test:
+  `tests/agent-control-manual-smoke-prompt.test.js`.
+- Updated Agent Control handoff:
+  `tasks-pending/2026-06-19-agent-control-center-closed-loop-verification.md`.
+- PASS `node --check tests/agent-control-manual-smoke-prompt.test.js`.
+- PASS `node --test tests/agent-control-manual-smoke-prompt.test.js` 1/1.
+- PASS focused Agent Control/manual-prompt/acceptance suite 11/11:
+  `node --test tests/agent-control-center.test.js
+  tests/agent-control-api-readback.test.js
+  tests/agent-control-browser-smoke.test.js
+  tests/agent-control-manual-smoke-prompt.test.js
+  tests/active-run-acceptance-coverage.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `needs_verification: 13`, `blocked: 2`, `done: 16`.
+- The suite proves the prompt includes the safe run key, required Agent Run
+  portal checks, progress/evidence/blocked Decision/Seal Run steps, explicit
+  no-deploy/no-production/no-external-write rules, local-route-unavailable
+  blocker language, and no known secret-shaped values.
+- No deployment, production DB mutation, external send/write, broad crawl,
+  watch loop, or agent-fleet loop was performed.
+
 Not run:
 
 - No full baseline UI crawl.

@@ -70,34 +70,35 @@ Current 2026-06-19 checkpoint:
   generated TEST_REQ022 seed/cleanup artifacts, package script, and active-run
   acceptance coverage tests are implemented and locally verified without any
   production write.
-- Manual Agent Mode/browser-judgment smoke remains open.
+- `REQ-20260618-112`, `REQ-20260618-122`, `REQ-20260618-123`, and
+  `REQ-20260619-206` are now in `needs_verification`: local Agent Control
+  implementation, API/browser smoke, notification/no-spam proof, safe test
+  data, and the copy-ready manual Agent Mode smoke prompt are implemented.
+- Manual Agent Mode/browser-judgment execution remains open.
 - `REQ-20260619-207` is genuinely blocked for live provider setup until
   operator supplies or performs external account-owner actions through the
   secure keyholder/environment workflow.
 
 Exact next requirement:
 
-`REQ-20260618-112` Agent Control Center parent closeout, while
-preserving the already closed `REQ-20260618-103` workspace/RBAC,
-`REQ-20260618-104` Operations shell/navigation, `REQ-20260618-105` design
-system, `REQ-20260618-106` task/intake/calendar, `REQ-20260618-108`
-student/Goal Board/Hebrew, `REQ-20260618-109` helper proof, and
-`REQ-20260618-110` public copy/CTA proof, and `REQ-20260618-111` safe
-test-data/acceptance proof.
+No credential-free implementation row is currently `in_progress`. The exact
+next verification gate is the manual Agent Mode/browser-judgment smoke for
+`REQ-20260618-112`, `REQ-20260618-123`, and `REQ-20260619-206`, using
+`ops/agent-control/2026-06-19-manual-agent-mode-smoke.md`.
 
 Exact next command:
 
 ```powershell
-node --test tests\agent-control-center.test.js tests\agent-control-api-readback.test.js tests\agent-control-browser-smoke.test.js tests\active-run-acceptance-coverage.test.js
+node --test tests\agent-control-center.test.js tests\agent-control-api-readback.test.js tests\agent-control-browser-smoke.test.js tests\agent-control-manual-smoke-prompt.test.js tests\active-run-acceptance-coverage.test.js
 npm run bna:run:validate
 ```
 
-Then continue the Agent Control closeout cluster: reassess `REQ-20260618-112`,
-`REQ-20260618-122`, `REQ-20260618-123`, and `REQ-20260619-206`; record the
-canonical manual Agent Mode smoke prompt/result if available; otherwise leave
-only the manual browser-judgment step open with exact evidence and next action.
-Do not touch production data, live sends, deploys, broad UI crawls, watch
-loops, or agent-fleet loops.
+Then run the manual Agent Mode/browser-judgment smoke if an operator/browser
+takeover is available. If it is not available, do not restart implementation;
+leave the affected rows in `needs_verification`, preserve the prompt artifact,
+and report that manual Agent Mode execution is the next action. Do not touch
+production data, live sends, deploys, broad UI crawls, watch loops, or
+agent-fleet loops.
 
 Open requirements:
 
@@ -112,9 +113,9 @@ Open requirements:
 - `REQ-20260618-121` Playwright/browser verification policy has focused local
   proof; manual Agent Mode closeout remains open
 - `REQ-20260618-122` notification/audit-history hooks are locally implemented
-  and need release/live verification when deployment is approved
-- `REQ-20260618-123` is in progress: safe local API/browser demo fixtures
-  exist, while manual Agent Mode smoke remains open
+  and need manual/release/live verification when deployment is approved
+- `REQ-20260618-123` needs verification: safe local API/browser demo fixtures
+  and the manual prompt exist, while actual manual Agent Mode smoke remains open
 
 Current audit blocker:
 

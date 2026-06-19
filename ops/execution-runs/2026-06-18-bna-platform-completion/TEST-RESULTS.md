@@ -422,6 +422,32 @@ Not run for this batch:
 - No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
   social write.
 
+Verified on 2026-06-19 for Agent Control manual-smoke prompt:
+
+- PASS `node --check tests/agent-control-manual-smoke-prompt.test.js`.
+- PASS `node --test tests/agent-control-manual-smoke-prompt.test.js` 1/1.
+- PASS focused Agent Control/manual-prompt/acceptance suite 11/11:
+  `node --test tests/agent-control-center.test.js
+  tests/agent-control-api-readback.test.js
+  tests/agent-control-browser-smoke.test.js
+  tests/agent-control-manual-smoke-prompt.test.js
+  tests/active-run-acceptance-coverage.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `needs_verification: 13`, `blocked: 2`, `done: 16`.
+- The test verifies the copy-ready manual Agent Mode prompt includes safe route
+  scope, acceptance criteria, progress/evidence/Decision/Seal Run steps,
+  production/external-write prohibitions, local-route-unavailable blocker
+  language, and no known secret-shaped values.
+
+Not run for this batch:
+
+- No actual manual Agent Mode/browser-judgment execution.
+- No broad UI crawl or audit harness rebuild.
+- No production DB write/readback.
+- No deployment.
+- No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
+  social write.
+
 Verified on 2026-06-19 for safe test-data/acceptance coverage closeout:
 
 - PASS `node --check scripts/seed-req022-test-data.mjs`.

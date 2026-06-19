@@ -41,7 +41,7 @@ The full prompt is preserved at
 | REQ-20260618-120 | Workspace/RBAC/security controls | "A run URL alone must not grant access." | Auth, Super Admin-only control center, scoped query checks, and cross-scope denials protect runs. | Security | Negative API tests | Needs verification |
 | REQ-20260618-121 | Verification policy and Playwright integration | "Every coherent implementation work package must have a verification plan." | Verification modes route work to automated, browser-agent, operator, or mixed flows without broad crawls/watch loops. | Tests / Policy | Unit/API tests | In progress |
 | REQ-20260618-122 | Notifications and audit history | "Every important action records..." | Run events, task activity/comments, ledger/changelog references, and concise notification hooks are current. | Audit / Notifications | Evidence review + notification tests | In progress |
-| REQ-20260618-123 | End-to-end tests, safe demo data, and manual Agent Mode smoke prompt | "Use safe test data" | Safe seeded/demo loop proves create-run, claim, progress, evidence, submit, seal pass/fail/block, cleanup, and manual Agent Mode prompt. | Tests / Demo data | Unit/API/UI/Playwright + manual prompt path | Not started |
+| REQ-20260618-123 | End-to-end tests, safe demo data, and manual Agent Mode smoke prompt | "Use safe test data" | Safe seeded/demo loop proves create-run, claim, progress, evidence, submit, seal pass/fail/block, cleanup, and manual Agent Mode prompt. | Tests / Demo data | Unit/API/UI/Playwright + manual prompt path | Needs verification |
 
 ## Parsed tasks
 
@@ -51,7 +51,7 @@ The full prompt is preserved at
 | TASK-20260619-002 | Build backend agent-run foundation | Codex | Codex Queue | "Data model and APIs" | Idempotent schema, APIs, prompt rendering, transitions, task feedback, syntax/tests. | Needs verification |
 | TASK-20260619-003 | Build Agents UI and run portal | Codex | Codex Queue | "Super Admin Agents menu" | Agents view, task handoff, copy/open prompt, run page, mobile-safe controls. | Needs verification |
 | TASK-20260619-004 | Add focused verification coverage | Codex | Codex Queue | "Run new targeted agent-control tests." | Unit/API/static UI tests and targeted Playwright where feasible. | In progress |
-| TASK-20260619-005 | Create manual Agent Mode smoke prompt | Codex | Codex Queue | "Required generated operator prompt" | Copy-ready prompt stored in repo with safe run URL/checklist. | Pending |
+| TASK-20260619-005 | Create manual Agent Mode smoke prompt | Codex | Codex Queue | "Required generated operator prompt" | Copy-ready prompt stored in repo with safe run URL/checklist. | Done locally |
 
 ## Decisions
 
@@ -77,11 +77,11 @@ The full prompt is preserved at
 | REQ-20260618-118 | `server.js` | Enforce evidence and criteria before seal; update task comments/status. | API tests |
 | REQ-20260618-119 | `server.js` | Create linked Decision cards and Codex feedback on blocked/fail outcomes. | API tests |
 | REQ-20260618-120 | `server.js` | Require auth, Super Admin control center, scoped project checks. | Negative tests |
-| REQ-20260618-123 | `tests/*`, `ops/operator-prompts/*` | Add safe local acceptance loop and manual prompt. | Focused tests |
+| REQ-20260618-123 | `tests/*`, `ops/agent-control/2026-06-19-manual-agent-mode-smoke.md` | Add safe local acceptance loop and manual prompt. | Focused tests |
 
 ## Final audit
 
 | ID | Status | Evidence | Files changed | Verification | Remaining issue |
 |---|---|---|---|---|---|
-| REQ-20260618-112 | In progress | `raw-input/RAW-20260619-001-agent-control-center-codex-queue-prompt.md`; `src/lib/bna/agent-control.js`; `server.js`; `public/operations.html`; `tests/agent-control-center.test.js` | Agent helper/schema/API/UI/action-registry/tests and active-run docs updated | PASS `node --check server.js`; PASS `node --check src/lib/bna/agent-control.js`; PASS `node --test tests/agent-control-center.test.js`; PASS `npm run bna:run:validate` | DB/API smoke, negative RBAC tests, browser smoke, safe demo data/E2E, notification hooks, manual Agent Mode smoke, release approval remain |
+| REQ-20260618-112 | In progress | `raw-input/RAW-20260619-001-agent-control-center-codex-queue-prompt.md`; `src/lib/bna/agent-control.js`; `server.js`; `public/operations.html`; `tests/agent-control-center.test.js`; `tests/agent-control-api-readback.test.js`; `tests/agent-control-browser-smoke.test.js`; `tests/agent-control-manual-smoke-prompt.test.js`; `ops/agent-control/2026-06-19-manual-agent-mode-smoke.md` | Agent helper/schema/API/UI/action-registry/tests, API/browser smoke, notification hooks, safe seed evidence, manual-smoke prompt, and active-run docs updated | PASS focused Agent Control/API/browser/manual-prompt tests; PASS `npm run bna:run:validate` | Actual manual Agent Mode/browser-judgment execution and release approval remain |
 | REQ-20260618-119 | Done locally | `server.js`; `tests/agent-control-center.test.js`; active `requirements.json` | Failed/blocked outcomes update task state and create/reuse linked operator Decision tasks | PASS focused contract/static test | Live/app closeout not claimed; parent remains open |

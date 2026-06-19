@@ -24093,3 +24093,42 @@ Remaining:
 - `REQ-20260618-112` Agent Control Center parent closeout is the next broad
   unblocked requirement.
 - Manual Agent Mode/browser-judgment smoke remains the main local closeout gap.
+
+## 2026-06-19T07:59:45+03:00 - Agent Control Manual Smoke Prompt Ready
+
+Moved `REQ-20260618-112`, `REQ-20260618-122`, `REQ-20260618-123`, and
+`REQ-20260619-206` to `needs_verification`.
+
+- Added `ops/agent-control/2026-06-19-manual-agent-mode-smoke.md`, a copy-ready
+  manual Agent Mode prompt for the safe `run_agent_control_smoke` flow.
+- Added `tests/agent-control-manual-smoke-prompt.test.js` to verify required
+  acceptance criteria, progress/evidence/Decision/Seal Run steps, production
+  and external-write prohibitions, local-route-unavailable blocker language,
+  and absence of known secret-shaped values.
+- Updated the Agent Control handoff brief and active run checkpoint so the
+  remaining Agent Control gate is actual manual Agent Mode/browser-judgment
+  execution, not more credential-free implementation.
+
+Verification:
+
+- PASS `node --check tests/agent-control-manual-smoke-prompt.test.js`.
+- PASS `node --test tests/agent-control-manual-smoke-prompt.test.js` 1/1.
+- PASS focused Agent Control/manual-prompt/acceptance suite 11/11.
+- PASS `npm run bna:run:validate`.
+
+Guardrails:
+
+- No actual manual Agent Mode execution was performed in this Codex run.
+- No deployment was run.
+- No production database mutation was performed.
+- No external account, Drive, Telegram, social, payment, DNS, Zoom, Vimeo, or
+  Resend write was performed.
+- No raw secrets were stored in tracked files.
+- No broad UI crawl, watch loop, or agent-fleet loop was run.
+
+Remaining:
+
+- Run the manual Agent Mode/browser-judgment smoke using
+  `ops/agent-control/2026-06-19-manual-agent-mode-smoke.md` when browser
+  takeover is available.
+- Release/live verification still requires explicit operator approval.
