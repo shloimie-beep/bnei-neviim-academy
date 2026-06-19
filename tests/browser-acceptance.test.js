@@ -518,10 +518,112 @@ function operationsFixture(pathname, url, options = {}) {
             },
       ],
     },
-    '/api/bna/payments': { payments: [] },
-    '/api/bna/payment-intake': { intake: [] },
-    '/api/bna/payment-reminders/due': { found: 0, due: [] },
-    '/api/bna/green-invoice/webhooks': { events: [] },
+    '/api/bna/payments': {
+      payments: project === 'one_time_mishnah_class'
+        ? [
+            {
+              id: 1001,
+              signup_id: 701,
+              amount: 1000,
+              method: 'green_invoice',
+              status: 'completed',
+              received_at: '2026-06-18T12:20:00+03:00',
+              workspace_label: 'One Time Mishnah Class',
+              project_key: 'one_time_mishnah_class',
+            },
+          ]
+        : [
+            {
+              id: 1000,
+              signup_id: 700,
+              amount: 1000,
+              method: 'cash',
+              status: 'completed',
+              received_at: '2026-06-18T09:20:00+03:00',
+              workspace_label: 'BNA',
+              project_key: 'bna',
+            },
+          ],
+    },
+    '/api/bna/payment-intake': {
+      intake: project === 'one_time_mishnah_class'
+        ? [
+            {
+              id: 1101,
+              parent_name: 'One Time Cash Parent',
+              student_name: 'One Time Cash Learner',
+              parent_email: 'cash-one-time@example.invalid',
+              parent_phone: '0500000002',
+              amount: 750,
+              method: 'cash',
+              status: 'needs_signup',
+              received_at: '2026-06-18T12:25:00+03:00',
+              workspace_label: 'One Time Mishnah Class',
+              project_key: 'one_time_mishnah_class',
+            },
+          ]
+        : [
+            {
+              id: 1100,
+              parent_name: 'BNA Cash Parent',
+              student_name: 'BNA Cash Learner',
+              parent_email: 'cash-bna@example.invalid',
+              parent_phone: '0500000003',
+              amount: 650,
+              method: 'cash',
+              status: 'needs_signup',
+              received_at: '2026-06-18T09:25:00+03:00',
+              workspace_label: 'BNA',
+              project_key: 'bna',
+            },
+          ],
+    },
+    '/api/bna/payment-reminders/due': {
+      found: project === 'one_time_mishnah_class' ? 1 : 0,
+      reminderTarget: '2026-06-23',
+      reminders: project === 'one_time_mishnah_class'
+        ? [
+            {
+              parent_name: 'One Time Parent',
+              student_name: 'One Time Learner',
+              parent_email: 'one-time-parent@example.invalid',
+              payment_amount: 1000,
+              payment_due_date: '2026-06-22',
+              language: 'en',
+            },
+          ]
+        : [],
+      due: [],
+    },
+    '/api/bna/green-invoice/webhooks': {
+      events: project === 'one_time_mishnah_class'
+        ? [
+            {
+              id: 1201,
+              event_type: 'payment.created',
+              transaction_id: 'one-time-txn-001',
+              payer_name: 'One Time Invoice Parent',
+              amount: 1000,
+              status: 'matched',
+              webhook_received_at: '2026-06-18T12:30:00+03:00',
+              signup: { parent_name: 'One Time Parent' },
+              student: { name: 'One Time Learner' },
+            },
+          ]
+        : [
+            {
+              id: 1200,
+              event_type: 'payment.created',
+              transaction_id: 'bna-txn-001',
+              payer_name: 'BNA Invoice Parent',
+              amount: 1000,
+              status: 'matched',
+              webhook_received_at: '2026-06-18T09:30:00+03:00',
+              signup: { parent_name: 'BNA Parent' },
+              student: { name: 'BNA Learner' },
+            },
+          ],
+    },
     '/api/bna/content-jobs': {
       jobs: [
         {
@@ -1377,6 +1479,50 @@ async function assertOperationsUsersWorkspaceScope(page, calls) {
   assert.doesNotMatch(usersState.text, /Send invitation|Invite user|Create user|Delete user/i);
 }
 
+async function assertOperationsAccountingWorkspaceScope(page, calls) {
+  await page.locator('.ops-module-button').filter({ hasText: 'Accounting' }).click();
+  await page.locator('.ops-view-frame[data-current-view="accounting"]').waitFor();
+  for (const [pathname, label] of [
+    ['/api/bna/signups', 'Accounting signups request scoped to One Time workspace'],
+    ['/api/bna/payments', 'Payments request scoped to One Time workspace'],
+    ['/api/bna/payment-intake', 'Payment intake request scoped to One Time workspace'],
+    ['/api/bna/payment-reminders/due', 'Payment reminders request scoped to One Time workspace'],
+    ['/api/bna/green-invoice/webhooks', 'Green Invoice webhook request scoped to One Time workspace'],
+  ]) {
+    await waitForCall(
+      calls,
+      (call) => call.pathname === pathname && call.project === 'one_time_mishnah_class',
+      label,
+    );
+  }
+  const accountingFrame = page.locator('.ops-view-frame[data-current-view="accounting"]');
+  const overviewState = await accountingFrame.locator('.container').first().evaluate((node) => ({
+    text: node.textContent?.replace(/\s+/g, ' ').trim() || '',
+  }));
+  assert.match(overviewState.text, /Total records\s*2/);
+  assert.match(overviewState.text, /Paid\s*2/);
+  assert.match(overviewState.text, /Needs signup\s*1/);
+  assert.match(overviewState.text, /One Time Cash Parent/);
+  assert.doesNotMatch(overviewState.text, /BNA Cash Parent|BNA Invoice Parent/);
+
+  await page.locator('.section-tab').filter({ hasText: 'Payments' }).click();
+  await page.locator('.payment-roster').waitFor();
+  const paymentsState = await accountingFrame.locator('.payment-roster').evaluate((node) => ({
+    text: node.textContent?.replace(/\s+/g, ' ').trim() || '',
+  }));
+  assert.match(paymentsState.text, /One Time Parent/);
+  assert.match(paymentsState.text, /One Time Learner/);
+  assert.match(paymentsState.text, /one-time-parent@example\.invalid/);
+  assert.match(paymentsState.text, /ILS 1000/);
+  assert.match(paymentsState.text, /green_invoice/);
+  assert.match(paymentsState.text, /Paid/);
+  assert.match(paymentsState.text, /One Time Cash Parent/);
+  assert.match(paymentsState.text, /Pre-signup payment/);
+  assert.match(paymentsState.text, /cash-one-time@example\.invalid/);
+  assert.match(paymentsState.text, /ILS 750/);
+  assert.doesNotMatch(paymentsState.text, /BNA Parent|BNA Cash Parent|cash-bna@example\.invalid/);
+}
+
 async function assertOperationsContactsCommunityScope(page, calls) {
   await page.locator('.ops-module-button').filter({ hasText: 'Contacts' }).click();
   await page.locator('.ops-view-frame[data-current-view="contacts"]').waitFor();
@@ -1651,6 +1797,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       await assertOperationsAutomationsWorkspaceStatus(page, calls);
       await assertOperationsIntegrationsWorkspaceStatus(page, calls);
       await assertOperationsUsersWorkspaceScope(page, calls);
+      await assertOperationsAccountingWorkspaceScope(page, calls);
       await assertOperationsContactsCommunityScope(page, calls);
       await assertOperationsContentBoundary(page, calls);
       await assertOperationsContentMetadataProvenance(page, calls);

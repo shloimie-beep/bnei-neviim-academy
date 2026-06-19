@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-19T08:25:30+03:00
+Updated: 2026-06-19T08:35:30+03:00
 
 Status counts:
 
@@ -92,6 +92,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current verification batch: REQ-20260618-150 now has static/API and browser DOM proof that Users and invitations are selected-workspace scoped and render member names, access levels, login usernames, invitation email/status, and summary counts while excluding BNA rows and mutation/send controls. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-151.
+Current verification batch: REQ-20260618-151 now has static/API and browser DOM proof that Accounting requests selected-workspace signups, payments, payment intake, payment reminders, and Green Invoice webhooks, renders scoped payment/intake rows and summary counts, and excludes BNA payment/intake/webhook rows without send, reprocess, or payment mutations. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-152.
 
 No deployment or production-data mutation is approved in this run.

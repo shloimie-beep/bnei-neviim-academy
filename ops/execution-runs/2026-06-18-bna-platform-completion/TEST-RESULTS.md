@@ -745,3 +745,14 @@ Workspace users browser proof (2026-06-19T08:25:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-150 now has browser proof that after switching to One Time workspace, Users requests `project=one_time_mishnah_class` for members and invitations, shows member names, access levels, login usernames, invitation email/status, and summary counts, excludes BNA rows, and exposes no invitation-send or user-mutation controls. No audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, invitation send, or account mutation was performed.
+
+
+Accounting workspace browser proof (2026-06-19T08:35:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/accounting-scope.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js` 12/12.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-151 now has browser proof that after switching to One Time workspace, Accounting requests `project=one_time_mishnah_class` for signups, payments, payment intake, payment reminders, and Green Invoice webhooks; shows scoped paid/intake records, summary counts, methods/statuses/emails/amounts, and excludes BNA payment/intake/webhook rows. No audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, payment send, Green Invoice reprocess, or accounting mutation was performed.

@@ -4842,3 +4842,22 @@ Verification:
 - PASS `npm run bna:run:status`.
 
 Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, invitation send, or account mutation was performed.
+
+## 2026-06-19 - Accounting scope browser proof
+
+Requirement: `REQ-20260618-151`
+
+Changed:
+
+- Added scoped One Time and BNA payment, payment-intake, reminder, and Green Invoice webhook fixtures to the browser acceptance harness.
+- Verified the Accounting panel requests selected-workspace accounting APIs, renders payment/intake summary counts and row details, excludes BNA rows, and exposes no send/reprocess/payment mutation during the proof.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/accounting-scope.test.js tests/operations-workspace-selector.test.js tests/browser-acceptance.test.js` 12/12.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, payment send, Green Invoice reprocess, or accounting mutation was performed.
