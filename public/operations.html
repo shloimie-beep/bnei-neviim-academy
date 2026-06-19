@@ -7641,12 +7641,15 @@
         }
     </style>
     <link rel="stylesheet" href="/css/bna-app-shell.css">
+    <link rel="stylesheet" href="/css/platform-ui/platform-ui.css">
 </head>
 <body class="bna-shell bna-ops-shell-page">
     <div id="app">
         <div class="loading">Loading BNA Operations...</div>
     </div>
 
+    <script src="/js/platform-ui/platform-ui-fixtures.js"></script>
+    <script src="/js/platform-ui/platform-ui.js"></script>
     <script>
         // API Client
         const api = {
@@ -8562,12 +8565,15 @@
             integrations: 'integrations',
             google: 'integrations',
             google_integrations: 'integrations',
-            google_workspace: 'integrations'
+            google_workspace: 'integrations',
+            platform_suite: 'platform_suite',
+            platform_ui: 'platform_suite',
+            suite: 'platform_suite'
         };
         const normalizedInitialView = VIEW_ALIASES[initialView] || initialView;
         const initialViewWasInternalDialogue = ['dialogue', 'internal', 'internal_dialogue'].includes(String(initialView || '').toLowerCase());
         const initialAgentRunMatch = window.location.pathname.match(/^\/operations\/agents\/runs\/([^/?#]+)/);
-        let currentView = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'students', 'community', 'content', 'contacts', 'intake', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'].includes(normalizedInitialView) ? normalizedInitialView : 'dashboard';
+        let currentView = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'community', 'content', 'contacts', 'intake', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'].includes(normalizedInitialView) ? normalizedInitialView : 'dashboard';
         if (initialAgentRunMatch) currentView = 'agents';
         agentRunDeepKey = initialAgentRunMatch ? decodeURIComponent(initialAgentRunMatch[1]) : String(initialParams.get('run') || '');
         let navDrawerOpen = false;
@@ -8735,6 +8741,7 @@
             { id: 'pipelines', label: 'Pipelines', marker: 'PL' },
             { id: 'tasks', label: 'Tasks', marker: 'TS' },
             { id: 'agents', label: 'Agents', marker: 'AG' },
+            { id: 'platform_suite', label: 'Platform Suite', marker: 'PS' },
             { id: 'students', label: 'Students', marker: 'ST' },
             { id: 'contacts', label: 'Parents / Contacts', marker: 'PC' },
             { id: 'community', label: 'Community', marker: 'CO' },
@@ -8756,6 +8763,7 @@
             'decisions',
             'tasks',
             'agents',
+            'platform_suite',
             'calendar',
             'students',
             'content',
@@ -9801,6 +9809,14 @@
                     marker: navById.get('agents')?.marker || 'AG',
                     active: currentView === 'agents',
                     action: "switchView('agents')"
+                } : null,
+                platform_suite: () => canUseView('platform_suite') ? {
+                    id: 'platform_suite',
+                    view: 'platform_suite',
+                    label: navById.get('platform_suite')?.label || 'Platform Suite',
+                    marker: navById.get('platform_suite')?.marker || 'PS',
+                    active: currentView === 'platform_suite',
+                    action: "switchView('platform_suite')"
                 } : null,
                 calendar: () => canUseView('calendar') ? {
                     id: 'calendar',
@@ -29639,7 +29655,7 @@
         }
 
         function allowedViews() {
-            const views = Array.isArray(opsMe?.allowedViews) ? opsMe.allowedViews : ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'students', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
+            const views = Array.isArray(opsMe?.allowedViews) ? opsMe.allowedViews : ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
             return new Set(views);
         }
 
@@ -29833,9 +29849,9 @@
         function workspaceNavViewIds(workspaceKey = currentWorkspaceKey()) {
             const profile = workspaceNavProfile(workspaceKey);
             const nav = {
-                platform: ['dashboard', 'watchdog', 'admin', 'tasks', 'agents', 'students', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'pipelines', 'accounting', 'automations', 'integrations', 'api_usage', 'settings'],
-                bna: ['dashboard', 'watchdog', 'tasks', 'students', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'communications', 'service_providers', 'accounting', 'automations', 'integrations', 'settings'],
-                service_provider: ['dashboard', 'watchdog', 'service_providers', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'communications', 'tasks', 'agents', 'automations', 'integrations', 'api_usage', 'settings'],
+                platform: ['dashboard', 'watchdog', 'admin', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'pipelines', 'accounting', 'automations', 'integrations', 'api_usage', 'settings'],
+                bna: ['dashboard', 'watchdog', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'communications', 'service_providers', 'accounting', 'automations', 'integrations', 'settings'],
+                service_provider: ['dashboard', 'watchdog', 'service_providers', 'agents', 'platform_suite', 'contacts', 'community', 'content', 'live_classes', 'calendar', 'communications', 'tasks', 'automations', 'integrations', 'api_usage', 'settings'],
                 family: ['dashboard', 'contacts', 'tasks', 'calendar', 'communications', 'service_providers', 'settings'],
                 household: ['dashboard', 'contacts', 'tasks', 'calendar', 'communications', 'service_providers', 'settings']
             };
@@ -29851,6 +29867,7 @@
                     admin: { label: 'Workspaces', marker: 'WS' },
                     tasks: { label: 'Operations', marker: 'OP' },
                     agents: { label: 'Agents', marker: 'AG' },
+                    platform_suite: { label: 'Platform Suite', marker: 'PS' },
                     community: { label: 'Community', marker: 'CO' },
                     service_providers: { label: 'Providers', marker: 'PR' },
                     communications: { label: 'Communications', marker: 'CM' },
@@ -29864,6 +29881,8 @@
                     dashboard: { label: 'Dashboard', marker: 'DB' },
                     watchdog: { label: 'Watchdog', marker: 'WG' },
                     tasks: { label: 'Work', marker: 'WK' },
+                    agents: { label: 'Agents', marker: 'AG' },
+                    platform_suite: { label: 'Platform Suite', marker: 'PS' },
                     students: { label: 'Students', marker: 'ST' },
                     contacts: { label: 'Parents', marker: 'PA' },
                     community: { label: 'Community', marker: 'CO' },
@@ -29881,6 +29900,8 @@
                     dashboard: { label: 'Dashboard', marker: 'DB' },
                     watchdog: { label: 'Watchdog', marker: 'WG' },
                     service_providers: { label: 'Program', marker: 'PG' },
+                    agents: { label: 'Agents', marker: 'AG' },
+                    platform_suite: { label: 'Program Suite', marker: 'PS' },
                     contacts: { label: 'Members', marker: 'MB' },
                     community: { label: 'Community', marker: 'CO' },
                     content: { label: 'Content', marker: 'CT' },
@@ -31552,6 +31573,31 @@
             }
         }
 
+        function platformUiWorkspaceId() {
+            return currentWorkspaceIsOneTime() ? 'one_time' : 'bna';
+        }
+
+        function renderPlatformSuite() {
+            return `
+                <main class="container platform-suite-host" data-platform-suite-host>
+                    <div data-platform-ui-root></div>
+                </main>
+            `;
+        }
+
+        function mountPlatformSuite() {
+            const root = document.querySelector('[data-platform-ui-root]');
+            if (!root) return;
+            if (!window.PlatformUi || !window.PlatformUiFixtures) {
+                root.innerHTML = '<section class="empty-state"><h3>Platform Suite unavailable</h3><p>Refresh and try again.</p></section>';
+                return;
+            }
+            window.PlatformUi.init(root, {
+                workspaceId: platformUiWorkspaceId(),
+                moduleKey: 'overview'
+            });
+        }
+
         function render(errors = [], options = {}) {
             if (!options.force && renderShouldWaitForTextEntry()) {
                 deferRenderUntilTextEntrySettles(errors);
@@ -31568,6 +31614,7 @@
                 case 'pipelines': content = renderPipelines(); break;
                 case 'tasks': content = renderTasks(); break;
                 case 'agents': content = renderAgents(); break;
+                case 'platform_suite': content = renderPlatformSuite(); break;
                 case 'students': content = renderStudents(); break;
                 case 'community': content = renderCommunityAdmin(); break;
                 case 'content': content = renderContent(); break;
@@ -31592,6 +31639,7 @@
                 : '';
 
             app.innerHTML = renderAppShell(errorBanner + content + renderTaskModal() + renderSupportTicketModal());
+            if (currentView === 'platform_suite') mountPlatformSuite();
             resetTaskDetailViewportAfterRender();
         }
 
@@ -31612,6 +31660,7 @@
             if (currentView === 'pipelines') return pipelineSection;
             if (currentView === 'tasks') return taskFocus;
             if (currentView === 'agents') return agentRunsTab;
+            if (currentView === 'platform_suite') return 'overview';
             if (currentView === 'students') return studentSection;
             if (currentView === 'community') return communitySection;
             if (currentView === 'content') return contentSection;

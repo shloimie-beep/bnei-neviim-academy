@@ -56,7 +56,7 @@ test('Operations uses the SaaS shell with global nav, workspace switcher, and ne
   assert.match(operations, /function currentSubnavConfig/);
   assert.match(operations, /class="ops-sidebar-drilldown ops-nested-subnav"/);
   assert.match(operations, /class="ops-brand-topbar saas-topbar"/);
-  assert.match(operations, /const MODULE_TOOLBAR_PRIORITY = \[\s*'decisions',\s*'tasks',\s*'agents',\s*'calendar',\s*'students',\s*'content',\s*'community',\s*'accounting',\s*'automations',\s*'admin',\s*'integrations'\s*\]/);
+  assert.match(operations, /const MODULE_TOOLBAR_PRIORITY = \[\s*'decisions',\s*'tasks',\s*'agents',\s*'platform_suite',\s*'calendar',\s*'students',\s*'content',\s*'community',\s*'accounting',\s*'automations',\s*'admin',\s*'integrations'\s*\]/);
   assert.match(operations, /function renderModuleToolbar/);
   assert.match(operations, /data-module-toolbar-priority="\$\{MODULE_TOOLBAR_PRIORITY\.join\(','\)\}"/);
   assert.match(operations, /openCommandTarget\('tasks', 'decisions'\)/);
@@ -152,7 +152,7 @@ test('Operations task and student details are query-addressable routed views', (
   assert.match(operations, /function resetOperationsViewportScroll/);
   assert.match(operations, /let lastTaskDetailScrollResetKey = null/);
   assert.match(operations, /function resetTaskDetailViewportAfterRender/);
-  assert.match(operations, /app\.innerHTML = renderAppShell\(errorBanner \+ content \+ renderTaskModal\(\) \+ renderSupportTicketModal\(\)\);\s*resetTaskDetailViewportAfterRender\(\);/);
+  assert.match(operations, /app\.innerHTML = renderAppShell\(errorBanner \+ content \+ renderTaskModal\(\) \+ renderSupportTicketModal\(\)\);\s*(?:if \(currentView === 'platform_suite'\) mountPlatformSuite\(\);\s*)?resetTaskDetailViewportAfterRender\(\);/);
   assert.match(operations, /lastTaskDetailScrollResetKey === taskDetailKey/);
   assert.match(operations, /openTaskDetail[\s\S]*render\(\);[\s\S]*resetOperationsViewportScroll\(\);/);
   assert.match(operations, /closeTaskDetail[\s\S]*render\(\);[\s\S]*resetOperationsViewportScroll\(\);/);

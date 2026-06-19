@@ -134,6 +134,9 @@ const {
   buildStudyAssistantReadiness,
 } = require('./src/lib/bna/study-assistant-readiness');
 const {
+  buildOneTimeIntegrationReadinessPayload,
+} = require('./src/platform/integrations/readiness');
+const {
   parseIntakeText,
   PARSER_VERSION: INTAKE_PARSER_VERSION,
   stableHash: intakeStableHash,
@@ -8285,11 +8288,11 @@ function identifyOpsUser(username, password = null) {
   const pass = password === null || password === undefined ? null : String(password || '');
   if (!user) return null;
   const normalizedUser = user.toLowerCase();
-  const platformAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
-  const providerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
+  const platformAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'];
+  const providerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
   // Owner gets full provider view + settings; manager gets provider view without sensitive admin
-  const ownerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
-  const managerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations'];
+  const ownerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations', 'settings'];
+  const managerAllowedViews = ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'contacts', 'intake', 'community', 'content', 'live_classes', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'automations', 'api_usage', 'integrations'];
 
   if (OPS_USERNAME && (normalizedUser === OPS_USERNAME.toLowerCase() || OPS_LOGIN_ALIASES.has(normalizedUser))) {
     if (pass !== null && pass.toLowerCase() !== String(OPS_PASSWORD || '').toLowerCase()) return null;
@@ -8391,6 +8394,7 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/one-time/transcript-privacy' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/community-moderation-readiness' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/study-assistant-readiness' && method === 'GET') return true;
+  if (routePath === '/api/bna/one-time/integrations/readiness' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/calendar' && method === 'GET') return true;
   if (routePath === '/api/bna/one-time/source-prep-jobs' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/product-leads' && ['GET', 'POST'].includes(method)) return true;
@@ -11602,6 +11606,10 @@ ALTER TABLE bna_workspaces ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active'
 ALTER TABLE bna_workspaces ADD COLUMN IF NOT EXISTS metadata JSONB DEFAULT '{}'::jsonb;
 ALTER TABLE bna_workspaces ADD COLUMN IF NOT EXISTS created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
 ALTER TABLE bna_workspaces ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+ALTER TABLE bna_workspaces DROP CONSTRAINT IF EXISTS bna_workspaces_type_check;
+ALTER TABLE bna_workspaces
+  ADD CONSTRAINT bna_workspaces_type_check
+  CHECK (type IN ('super_admin', 'school', 'family', 'service_provider', 'household', 'provider', 'project', 'community'));
 UPDATE bna_workspaces
 SET "key" = COALESCE(NULLIF("key", ''), NULLIF(workspace_key, ''), NULLIF(lower(regexp_replace(COALESCE(name, ''), '[^a-zA-Z0-9]+', '_', 'g')), ''), concat('workspace_', id)),
     workspace_key = COALESCE(NULLIF(workspace_key, ''), NULLIF("key", ''), concat('workspace_', id)),
@@ -33433,7 +33441,7 @@ async function buildBnaIdentityPayload({ identity = null, req = null, actor = 'a
     activeWorkspace: workspaceProjectView(activeWorkspace),
     active_workspace: workspaceProjectView(activeWorkspace),
     memberships: memberships.map(workspaceMembershipView),
-    allowedViews: identity?.allowedViews || ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'students', 'contacts', 'intake', 'community', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'],
+    allowedViews: identity?.allowedViews || ['dashboard', 'watchdog', 'pipelines', 'tasks', 'agents', 'platform_suite', 'students', 'contacts', 'intake', 'community', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'accounting', 'automations', 'api_usage', 'admin', 'integrations', 'settings'],
   };
 }
 
@@ -39914,6 +39922,37 @@ app.get('/api/bna/integrations/status', requireAdmin, async (req, res) => {
     res.json(await buildIntegrationStatusPayload());
   } catch (err) {
     const safe = safeIntegrationError(err, 'Integration status failed');
+    res.status(safe.status || 500).json({ success: false, error: safe.error, blocker: safe.blocker });
+  }
+});
+
+app.get('/api/bna/one-time/integrations/readiness', requireAdmin, async (req, res) => {
+  try {
+    const resendConfig = resendServerRuntimeConfig();
+    const resendReadiness = {
+      provider: 'resend',
+      configured: Boolean(resendConfig.apiKey),
+      connected: false,
+      account_owner: resendConfig.accountOwner,
+      provider_account: resendConfig.providerAccount || null,
+      domain: resendConfig.domain || null,
+      from_email_configured: Boolean(resendConfig.fromEmail),
+      domain_verified: false,
+      send_allowed: false,
+      blocker: resendConfig.apiKey
+        ? 'One Time readiness preview does not call the live Resend API; verify the domain during the external release gate.'
+        : 'RESEND_API_KEY is not configured server-side. Drafts are allowed; production send is blocked.',
+    };
+    res.json({
+      success: true,
+      ...buildOneTimeIntegrationReadinessPayload({
+        videoHostingReadiness: videoHostingIntegration.getVideoHostingReadiness({ config: videoHostingRuntimeConfig }),
+        zoomReadiness: zoomIntegration.getZoomReadiness({ config: zoomRuntimeConfig }),
+        resendReadiness,
+      }),
+    });
+  } catch (err) {
+    const safe = safeIntegrationError(err, 'One Time integration readiness failed');
     res.status(safe.status || 500).json({ success: false, error: safe.error, blocker: safe.blocker });
   }
 });

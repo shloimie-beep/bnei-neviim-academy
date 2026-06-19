@@ -1,11 +1,16 @@
 # Deployment
 
-No deployment, push, PR update, Railway doctor, production DB migration, DNS,
-live OAuth, real Vimeo upload, live Zoom mutation, live Resend sending, or
-credential entry is authorized by Prompt 00.
+Prompt 05 completed local integration only.
 
-External gates are recorded in:
+No deploy, push, PR, production DB migration, DNS change, Railway change, live
+email, live Zoom action, live Vimeo action, Resend send/domain mutation, or
+secret propagation was performed.
 
-- `ops/parallel-runs/PARALLEL-20260619-001/DECISIONS-AND-EXTERNAL-GATES.md`
+External release gates remain:
 
-Prompt 00 is local coordination only.
+- Operator approval for push/PR/release scope.
+- Production database backup and migration approval.
+- Railway deploy and doctor approval.
+- Live public/privacy/Operations/One Time smoke approval.
+- Separate approval for each provider live action: Vimeo, Zoom, Resend, DNS, and
+  any secret propagation.

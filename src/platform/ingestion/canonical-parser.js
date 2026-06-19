@@ -175,6 +175,13 @@ function mapCanonicalParserOutput(parsed = {}, input = {}) {
     pushUnique(output, 'decisions', normalizeParsedItem('decision', decision, output, input), seen, existing);
   }
 
+  for (const event of [...(parsed.calendar_events || []), ...(parsed.calendar_items || []), ...(parsed.schedule_items || [])]) {
+    pushUnique(output, 'calendar_events', normalizeParsedItem('calendar_event', {
+      ...event,
+      target_lane: event.target_lane || 'Calendar',
+    }, output, input), seen, existing);
+  }
+
   const parsedTasks = [...(parsed.tasks || []), ...(parsed.tickets || [])];
   for (const task of parsedTasks) {
     if (shouldSuppressRetryNoise(task)) {

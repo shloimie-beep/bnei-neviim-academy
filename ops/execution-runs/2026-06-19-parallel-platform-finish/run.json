@@ -2,7 +2,7 @@
   "run_id": "2026-06-19-parallel-platform-finish",
   "title": "Parallel Platform Finish",
   "created_at": "2026-06-19T15:40:21+03:00",
-  "updated_at": "2026-06-19T15:40:21+03:00",
+  "updated_at": "2026-06-19T16:55:00+03:00",
   "active": true,
   "protocol": "docs/BNA-RAMBLE-TO-DONE.md",
   "requirements_file": "requirements.json",
@@ -13,5 +13,8 @@
     "commit": "b2fd5039990ee1cb370a49d4475a7763fb8548b7",
     "tag": "checkpoint-parallel-20260619-001"
   },
-  "coordination": "ops/parallel-runs/PARALLEL-20260619-001/COORDINATION.json"
+  "coordination": "ops/parallel-runs/PARALLEL-20260619-001/COORDINATION.json",
+  "git_refs": {
+    "branch": "integration/20260619-platform-finish"
+  }
 }

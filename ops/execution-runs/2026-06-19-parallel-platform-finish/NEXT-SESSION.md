@@ -1,21 +1,15 @@
 # Next Session
 
-Open requirements:
+No open local implementation requirement remains in this run.
 
-- `REQ-20260619-401`: run W1 on branch `parallel/20260619-core` in
-  `C:\Users\User\BNA-worktrees\20260619-core`
-- `REQ-20260619-402`: run W2 on branch `parallel/20260619-ui` in
-  `C:\Users\User\BNA-worktrees\20260619-ui`
-- `REQ-20260619-403`: run W3 on branch `parallel/20260619-ingestion` in
-  `C:\Users\User\BNA-worktrees\20260619-ingestion`
-- `REQ-20260619-404`: run W4 on branch `parallel/20260619-onetime` in
-  `C:\Users\User\BNA-worktrees\20260619-onetime`
-- `REQ-20260619-405`: after W1-W4 complete, run Prompt 05 final shared-file
-  integration and verification
+Next work requires explicit operator release approval:
 
-Before each worker starts:
+1. Decide whether to push/PR this integration branch.
+2. Approve or revise the release scope.
+3. Approve production database migration and backup/rollback plan.
+4. Approve Railway deploy/doctor.
+5. Approve live smoke coverage, including authenticated Operations and One Time owner/admin checks.
+6. Approve provider-specific live actions separately: Vimeo, Zoom, Resend, DNS, and any secret propagation.
 
-1. Read `ops/parallel-runs/PARALLEL-20260619-001/README.md`.
-2. Read `CONTRACTS.md`, `FILE-OWNERSHIP.md`, and the worker requirement.
-3. Set the worker outside-Git status file to `running`.
-4. Stay inside owned paths and write shared-file needs to `INTEGRATION.md`.
+Do not deploy, push, mutate production data, change DNS, send email, upload video,
+create Zoom meetings, or copy secrets without explicit operator approval.

@@ -43,6 +43,20 @@ test('W3 parser emits the required schema and resolves One Time aliases', () => 
   assert.ok(parsed.tasks.every((task) => task.title !== parsed.raw_text));
 });
 
+test('W3 parser routes schedule language into Calendar with idempotency', () => {
+  const parsed = parsePlatformIntake({
+    raw_text: 'One Time Mishnah class: schedule a calendar event for the review lesson tomorrow and decide whether parents should get a reminder.',
+    source_provider: 'manual',
+  });
+
+  assert.equal(parsed.schema_valid, true);
+  assert.equal(parsed.workspace.project_key, 'one_time_mishnah_class');
+  assert.ok(parsed.calendar_events.length >= 1);
+  assert.equal(parsed.calendar_events[0].target_lane, 'Calendar');
+  assert.equal(parsed.calendar_events[0].metadata.external_write_performed, false);
+  assert.ok(parsed.calendar_events[0].idempotency_key);
+});
+
 test('W3 parser deduplicates against active or recent records', () => {
   const raw = 'Task: Codex should verify the parent prompt queue status.';
   const first = parsePlatformIntake({ raw_text: raw, source_provider: 'manual' });

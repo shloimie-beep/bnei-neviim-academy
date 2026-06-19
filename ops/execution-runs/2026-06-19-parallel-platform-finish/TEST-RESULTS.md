@@ -1,33 +1,36 @@
 # Test Results
 
-## Pre-Checkpoint Verification
+Final Prompt 05 verification:
 
-- `npm test`: pass, 901/901
-- `npm run bna:run:status`: pass, blocked 1, needs_operator_decision 14, done 34
-- `npm run bna:run:validate`: pass on prior run after checkpoint branch metadata
-  correction
-- JSON/JSONL parsing: pass
-- `node scripts\audit-secrets.mjs`: pass
-- `npm run watchdog:audit`: pass, severity `ok`
-- `git diff --check`: pass after whitespace-only cleanup of generated evidence
-  files
+- `node --check server.js`: pass
+- `node --check scripts/telegram-kimi-bridge.mjs`: pass
+- `node --check scripts/agent-fleet-supervisor.mjs`: pass
+- `node --check scripts/bna-execution-run.mjs`: pass
+- `node --check scripts/google-drive-setup.mjs`: pass
+- `node --check scripts/platform-synthetic-e2e.mjs`: pass
+- `node --test tests/platform-core/*.test.js`: pass, 17/17
+- `node --test tests/ingestion/*.test.js tests/agent-control/*.test.js`: pass, 13/13
+- `node --test tests/platform-ui/platform-ui-contract.test.js`: pass, 7/7
+- `node --test tests/platform-ui/platform-ui-playwright-smoke.mjs`: pass, 1/1
+- `node --test tests/instances/w4-onetime-instance.test.js tests/integrations/w4-onetime-readiness.test.js`: pass, 6/6
+- `node --test tests/workspace-person-household-provider-contract.test.js`: pass, 9/9
+- `npm run ramble:intake-contract`: pass
+- `npm run prompt:queue-contract`: pass
+- `node scripts/platform-synthetic-e2e.mjs`: pass, wrote `ops/parallel-runs/PARALLEL-20260619-001/integration-evidence/synthetic-e2e-acceptance.json`
+- `npm test`: pass, 944/944
+- `node scripts/audit-secrets.mjs`: pass, 3360 tracked paths checked, 0 tracked secret-risk files found
+- `npm run watchdog:audit`: pass, severity `ok`, finding_count `0`
+- JSON/JSONL parse: pass, ledger lines `1275`
+- `git diff --check`: pass with LF/CRLF warnings only
 
-## Post-Coordination Verification
+Browser verification:
 
-- `npm run bna:run:validate`: pass on linked run, not_started 5, done 1
-- `git worktree list`: four worker worktrees present
-- worker branch/head/clean checks: pass
-  - W1 `parallel/20260619-core` at
-    `b2fd5039990ee1cb370a49d4475a7763fb8548b7`, clean
-  - W2 `parallel/20260619-ui` at
-    `b2fd5039990ee1cb370a49d4475a7763fb8548b7`, clean
-  - W3 `parallel/20260619-ingestion` at
-    `b2fd5039990ee1cb370a49d4475a7763fb8548b7`, clean
-  - W4 `parallel/20260619-onetime` at
-    `b2fd5039990ee1cb370a49d4475a7763fb8548b7`, clean
-- runtime status files created:
-  - `C:\Users\User\BNA-parallel-state\PARALLEL-20260619-001\coordinator.json`
-  - `C:\Users\User\BNA-parallel-state\PARALLEL-20260619-001\W1.json`
-  - `C:\Users\User\BNA-parallel-state\PARALLEL-20260619-001\W2.json`
-  - `C:\Users\User\BNA-parallel-state\PARALLEL-20260619-001\W3.json`
-  - `C:\Users\User\BNA-parallel-state\PARALLEL-20260619-001\W4.json`
+- W2 isolated Playwright harness passed at `360x800`, `390x844`, `768x1024`, and `1440x900`.
+- Canonical Operations static harness with Playwright API mocks passed at `360x800`, `390x844`, `768x1024`, and `1440x900`.
+
+Blocked or intentionally not run:
+
+- Authenticated local Operations smoke against the real server: blocked by unavailable shell-visible Operations credentials.
+- Production/live database migration and smoke: external release gate.
+- Railway deploy/doctor/live smoke: external release gate.
+- Vimeo, Zoom, Resend, DNS, secret propagation, and live send/upload/meeting actions: external release gates.
