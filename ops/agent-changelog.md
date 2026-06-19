@@ -5170,3 +5170,18 @@ Verification:
 - PASS `npm run bna:run:status`.
 
 Status: local acceptance passed; release approval, deployment, and live smoke remain blocked. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+## 2026-06-19 - Consolidated draft PR opened
+
+Requirement: `REQ-20260618-172`
+
+Changed:
+
+- Opened consolidated draft PR #4 for the June 18 BNA platform recovery.
+- Recorded the PR URL in the active run handoff files.
+
+Verification:
+
+- PASS `gh pr create --draft`: https://github.com/shloimie-beep/bnei-neviim-academy/pull/4.
+
+Status: local acceptance passed; release approval, deployment, and live smoke remain blocked. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

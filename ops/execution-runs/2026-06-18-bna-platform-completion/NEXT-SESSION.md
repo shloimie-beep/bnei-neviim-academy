@@ -1,10 +1,12 @@
 # Next Session
 
-Updated: 2026-06-19T11:15:30+03:00
+Updated: 2026-06-19T11:25:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
 Current branch: `codex/2026-06-18-bna-platform-completion`.
+
+Draft PR: https://github.com/shloimie-beep/bnei-neviim-academy/pull/4.
 
 Latest completed local batches:
 
@@ -60,7 +62,7 @@ Latest completed local batches:
 
 Exact next requirement:
 
-- Operator release approval for deploy/live smoke after reviewing the consolidated draft PR.
+- Operator release approval for deploy/live smoke after reviewing consolidated draft PR #4: https://github.com/shloimie-beep/bnei-neviim-academy/pull/4.
 
 Blocked requirement intentionally skipped:
 
@@ -73,7 +75,7 @@ Exact next command:
 npm run bna:run:status
 ```
 
-Final local acceptance/status sweep has passed. Next action is operator review and explicit release approval before any deployment or live smoke. After approval, run the deploy/live-smoke commands for the approved target and update deployment evidence.
+Final local acceptance/status sweep has passed and draft PR #4 is open: https://github.com/shloimie-beep/bnei-neviim-academy/pull/4. Next action is operator review and explicit release approval before any deployment or live smoke. After approval, run the deploy/live-smoke commands for the approved target and update deployment evidence.
 
 Still open after this batch:
 

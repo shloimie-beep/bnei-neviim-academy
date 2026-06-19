@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-19T11:15:30+03:00
+Updated: 2026-06-19T11:25:30+03:00
 
 Status counts:
 
@@ -92,6 +92,8 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Local acceptance sweep passed; explicit operator release approval is required before deployment and live smoke.
 
-Current verification batch: Final local acceptance sweep passed on the recovery branch: npm test 215/215 and execution-run validate/status passed. Release approval, deploy, live smoke, and audit-output-only screenshots remain blocked or pending by policy; no deployment or production-data mutation was run.
+Current verification batch: Final local acceptance sweep passed and consolidated draft PR #4 is open: https://github.com/shloimie-beep/bnei-neviim-academy/pull/4. Release approval, deploy, live smoke, and audit-output-only screenshots remain blocked or pending by policy; no deployment or production-data mutation was run.
 
 No deployment or production-data mutation is approved in this run.
+
+Draft PR: https://github.com/shloimie-beep/bnei-neviim-academy/pull/4

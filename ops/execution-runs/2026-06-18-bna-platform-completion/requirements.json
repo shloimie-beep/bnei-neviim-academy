@@ -3550,16 +3550,19 @@
       "live_required": false,
       "blocker": "Explicit operator release approval is required before deployment and live smoke. No deployment is approved in this run.",
       "evidence": [
-        "Final local acceptance sweep passed on the recovery branch: npm test 215/215 plus execution-run validate/status. Deployment and live smoke were not run because explicit release approval is still required."
+        "Final local acceptance sweep passed on the recovery branch: npm test 215/215 plus execution-run validate/status. Deployment and live smoke were not run because explicit release approval is still required.",
+        "Draft consolidated PR opened: https://github.com/shloimie-beep/bnei-neviim-academy/pull/4"
       ],
       "deployment_evidence": [],
       "verification": [
         "npm test PASS 215/215",
         "npm run bna:run:validate PASS",
-        "npm run bna:run:status PASS"
+        "npm run bna:run:status PASS",
+        "gh pr create --draft PASS https://github.com/shloimie-beep/bnei-neviim-academy/pull/4"
       ],
       "implementation_commits": [
-        "current batch commit: docs: record final local acceptance gate"
+        "current batch commit: docs: record final local acceptance gate",
+        "current batch commit: docs: record consolidated PR handoff"
       ],
       "files_changed": [
         "ops/execution-runs/2026-06-18-bna-platform-completion/requirements.json",
@@ -3571,7 +3574,7 @@
         "ops/agent-task-ledger.jsonl",
         "ops/agent-changelog.md"
       ],
-      "notes": "Local acceptance gate passed. Release approval, deploy, live smoke, and any post-deploy evidence remain blocked until Shloimie explicitly approves release. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was run."
+      "notes": "Local acceptance gate passed and draft PR #4 is open. Release approval, deploy, live smoke, and any post-deploy evidence remain blocked until Shloimie explicitly approves release. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was run."
     }
   ]
 }
