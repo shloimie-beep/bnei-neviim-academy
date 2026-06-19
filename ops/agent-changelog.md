@@ -23699,6 +23699,43 @@ Remaining:
 - `REQ-20260619-207` remains blocked on secure external provider credentials,
   owner-only account actions, and explicit release approval.
 
+## 2026-06-19T09:05:00+03:00 - PWA Separation Local Proof
+
+Moved `REQ-20260618-102` to local `needs_verification`.
+
+- Preserved separate public, parent, and Operations PWA identities.
+- Tightened Operations manifest scope to `/operations` and parent manifest
+  scope to `/parent`.
+- Added distinct SVG icons for Operations and Parent installs.
+- Committed the public service worker so it is not merely an ignored local file;
+  the worker caches only the anonymous public shell and bypasses private app
+  prefixes.
+- Added a focused PWA contract test for manifest identity, private-route cache
+  bypass, correct manifest links, and Operations service-worker unregister
+  behavior.
+
+Verification:
+
+- PASS `node --check tests/pwa-separation-contract.test.js`.
+- PASS `node --test tests/pwa-separation-contract.test.js` 3/3.
+- PASS adjacent local PWA suite 17/17.
+
+Guardrails:
+
+- No browser screenshot crawl was run.
+- No deployment was run.
+- No production database mutation was performed.
+- No external account, Drive, Telegram, social, payment, DNS, Zoom, Vimeo, or
+  Resend write was performed.
+- No raw secrets were stored in tracked files.
+- No watch loop or agent-fleet loop was run.
+
+Remaining:
+
+- `REQ-20260618-102` still needs release/live verification after explicit
+  approval.
+- `REQ-20260619-206` still needs manual Agent Mode/browser-judgment smoke.
+
 ## 2026-06-19T08:45:00+03:00 - Agent Control Notification Hooks
 
 Moved the Agent Control notification/audit-history slice to local

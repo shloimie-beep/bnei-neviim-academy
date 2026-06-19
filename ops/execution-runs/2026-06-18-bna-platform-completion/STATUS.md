@@ -139,6 +139,27 @@ remain open.
   mutation, external send, broad crawl, watch loop, or agent-fleet loop was
   performed.
 
+2026-06-19 public/parent/Operations PWA separation continuation:
+
+- Moved `REQ-20260618-102` to local `needs_verification`.
+- Preserved separate public, parent, and Operations PWA identities:
+  public `/manifest.json`, parent `/parent-manifest.json`, and Operations
+  `/operations-manifest.json`.
+- Tightened parent and Operations manifest scopes to `/parent` and
+  `/operations`, added distinct SVG icons, and committed the public
+  `public/sw.js` service worker so it is no longer only a local ignored file.
+- The public service worker caches only anonymous public shell assets and
+  bypasses private app prefixes including Operations, Operations login, parent,
+  student, provider, member/library, and One Time classroom routes.
+- Added `tests/pwa-separation-contract.test.js`, which proves manifest
+  identities, private-prefix bypass, no private manifest precache, correct
+  manifest links, and Operations service-worker unregister behavior.
+- Focused PWA contract test passed 3/3; adjacent local PWA tests also passed
+  17/17 but were not used as formal run evidence because those broader test
+  files remain part of the pre-existing dirty worktree.
+- No deployment, production data mutation, external write, broad crawl, watch
+  loop, or agent-fleet loop was performed.
+
 Still open after this batch:
 
 - `REQ-20260619-203` is locally done. Production deployment/live smoke remains
@@ -147,6 +168,8 @@ Still open after this batch:
   withheld until explicit release approval.
 - `REQ-20260619-205` is locally done. Production deployment/live smoke remains
   withheld until explicit release approval.
+- `REQ-20260618-102` has local PWA separation proof; live/deploy verification
+  remains withheld until explicit release approval.
 - `REQ-20260619-206` has local DB/API route smoke, focused Super Admin browser
   smoke, and private notification/no-spam coverage now; it still needs manual
   Agent Mode/browser-judgment smoke before local closeout.

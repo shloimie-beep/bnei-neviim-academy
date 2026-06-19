@@ -22,16 +22,28 @@
       "id": "REQ-20260618-102",
       "title": "PWA public-vs-Operations separation",
       "area": "pwa",
-      "status": "in_progress",
+      "status": "needs_verification",
       "expected_result": "Public, parent, and Operations PWA identities remain separate and cannot route users into the wrong app shell.",
       "source": "Known June 18 requirement area",
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": "",
-      "evidence": [],
+      "evidence": [
+        "public/manifest.json",
+        "public/operations-manifest.json",
+        "public/parent-manifest.json",
+        "public/sw.js",
+        "public/icons/operations-icon.svg",
+        "public/icons/parent-icon.svg",
+        "tests/pwa-separation-contract.test.js"
+      ],
       "deployment_evidence": [],
-      "verification": [],
-      "notes": "Corrected 2026-06-19: this requirement must not wait for the UI audit package. Only screenshot-specific visual findings depend on uploaded audit evidence; credential-free implementation and focused tests can continue immediately."
+      "verification": [
+        "node --check tests/pwa-separation-contract.test.js",
+        "node --test tests/pwa-separation-contract.test.js",
+        "npm run bna:run:validate"
+      ],
+      "notes": "Local implementation is now recorded: Operations and parent manifests use scoped identities/start URLs, distinct SVG icons are tracked, and the public service worker caches only the anonymous public shell while bypassing private app prefixes including Operations, parent, student, provider, member, and One Time classroom routes. Private Operations surfaces unregister public service workers. Live/deploy verification remains withheld until explicit release approval."
     },
     {
       "id": "REQ-20260618-103",

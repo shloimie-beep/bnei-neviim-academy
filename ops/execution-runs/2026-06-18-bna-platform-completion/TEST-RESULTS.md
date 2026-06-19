@@ -145,6 +145,29 @@ Not run for this batch:
 - No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
   social write.
 
+Verified on 2026-06-19 for PWA public-vs-Operations separation:
+
+- PASS `node --check tests/pwa-separation-contract.test.js`.
+- PASS `node --test tests/pwa-separation-contract.test.js` 3/3.
+- PASS adjacent local PWA suite 17/17:
+  `node --test tests/pwa-separation-contract.test.js
+  tests/operations-pwa-login.test.js
+  tests/parent-pwa-tablet-filter-setup.test.js`.
+- Formal run evidence for this commit uses only
+  `tests/pwa-separation-contract.test.js`; the adjacent broader test files
+  passed locally but remain part of the pre-existing dirty worktree.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `in_progress: 13`, `needs_verification: 9`, `blocked: 2`,
+  `done: 7`.
+
+Not run for this batch:
+
+- No browser screenshot crawl.
+- No production DB write/readback.
+- No deployment.
+- No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
+  social write.
+
 Verified on 2026-06-19 for Agent Control notification/audit-history hooks:
 
 - PASS `node --check server.js`.

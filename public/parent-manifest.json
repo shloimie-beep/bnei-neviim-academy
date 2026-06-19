@@ -4,12 +4,18 @@
   "description": "Bnei Neviim Academy parent portal for family updates, permissions, providers, and student progress.",
   "id": "/parent",
   "start_url": "/parent?source=parent-pwa",
-  "scope": "/",
+  "scope": "/parent",
   "display": "standalone",
   "background_color": "#f8f5ee",
   "theme_color": "#1e3a5f",
   "orientation": "portrait-primary",
   "icons": [
+    {
+      "src": "/icons/parent-icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
     {
       "src": "/icons/icon-192.png",
       "sizes": "192x192",

@@ -9,6 +9,10 @@ Start here:
 
 Current 2026-06-19 checkpoint:
 
+- `REQ-20260618-102` has local PWA separation proof now: public, parent, and
+  Operations manifests have distinct identities/start URLs/scopes; the public
+  service worker is tracked and bypasses private app prefixes; live/deploy
+  verification remains withheld until explicit release approval.
 - `REQ-20260619-201`, `REQ-20260619-202`, and `REQ-20260619-208` are locally
   done for this no-write batch.
 - `REQ-20260619-203` is locally done: One Time scope inheritance,
@@ -58,7 +62,8 @@ in the same active run. Do not start a broad baseline UI crawl.
 Open requirements:
 
 - `REQ-20260618-101` audit harness and audit package
-- `REQ-20260618-102` PWA public-vs-Operations separation
+- `REQ-20260618-102` PWA public-vs-Operations separation is locally
+  implemented and needs release/live verification
 - `REQ-20260618-103` workspace model and RBAC
 - `REQ-20260618-104` Operations shell and navigation
 - `REQ-20260618-105` design system

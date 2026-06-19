@@ -273,6 +273,31 @@ Protocol/tooling verification evidence:
 - The Operations alert route now sends Agent Run notification cards to the
   Agents lane, not Support/Admin.
 
+2026-06-19 PWA public-vs-Operations separation evidence:
+
+- Public manifest:
+  `public/manifest.json`.
+- Operations manifest and icon:
+  `public/operations-manifest.json` and `public/icons/operations-icon.svg`.
+- Parent manifest and icon:
+  `public/parent-manifest.json` and `public/icons/parent-icon.svg`.
+- Public service worker:
+  `public/sw.js`.
+- Focused contract test:
+  `tests/pwa-separation-contract.test.js`.
+- PASS `node --check tests/pwa-separation-contract.test.js`.
+- PASS focused PWA contract test 3/3:
+  `node --test tests/pwa-separation-contract.test.js`.
+- The contract proves public install starts at `/?source=public-pwa`,
+  Operations install starts at `/operations?source=ops-pwa` with scope
+  `/operations`, and parent install starts at `/parent?source=parent-pwa` with
+  scope `/parent`.
+- The service worker proof confirms the public cache shell excludes parent and
+  Operations manifests and bypasses private app prefixes instead of serving
+  private routes from the public cache.
+- Operations and Operations login pages unregister existing public service
+  workers.
+
 Not run:
 
 - No full baseline UI crawl.
