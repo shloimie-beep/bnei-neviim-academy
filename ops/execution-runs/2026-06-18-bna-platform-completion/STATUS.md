@@ -160,6 +160,21 @@ remain open.
 - No deployment, production data mutation, external write, broad crawl, watch
   loop, or agent-fleet loop was performed.
 
+2026-06-19 module-scoping local closeout:
+
+- Moved `REQ-20260618-107` to local `done`.
+- Added focused module-scoping contract coverage proving selected workspace
+  filters are used for Community, Content, Live Classes, communications,
+  integrations, automations, admin data, social/email drafts, and DNS tasks.
+- Reused the One Time RBAC negative isolation test to prove scoped One Time
+  identities can create safe setup tasks only inside their own
+  project/workspace and cannot use secret-bearing helper tools.
+- Confirmed the evidence does not rely on the pre-existing dirty
+  `public/operations.html` worktree entry; the required scoping hooks are
+  present in `HEAD`.
+- Focused tests passed 9/9; no deployment, production DB mutation, external
+  write, broad crawl, watch loop, or agent-fleet loop was performed.
+
 Still open after this batch:
 
 - `REQ-20260619-203` is locally done. Production deployment/live smoke remains
@@ -169,6 +184,8 @@ Still open after this batch:
 - `REQ-20260619-205` is locally done. Production deployment/live smoke remains
   withheld until explicit release approval.
 - `REQ-20260618-102` has local PWA separation proof; live/deploy verification
+  remains withheld until explicit release approval.
+- `REQ-20260618-107` has local module-scoping proof; live/deploy verification
   remains withheld until explicit release approval.
 - `REQ-20260619-206` has local DB/API route smoke, focused Super Admin browser
   smoke, and private notification/no-spam coverage now; it still needs manual

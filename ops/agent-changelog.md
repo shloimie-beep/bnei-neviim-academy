@@ -23736,6 +23736,41 @@ Remaining:
   approval.
 - `REQ-20260619-206` still needs manual Agent Mode/browser-judgment smoke.
 
+## 2026-06-19T07:12:00+03:00 - Module Scoping Local Proof
+
+Moved `REQ-20260618-107` to local `done`.
+
+- Added a focused Operations module-scoping contract for selected workspace
+  filters across Community, Content, Live Classes, communications,
+  integrations, automations, admin data, social/email drafts, and DNS tasks.
+- Reused the One Time RBAC negative isolation test to prove scoped users cannot
+  cross project/workspace boundaries or call secret-bearing helper tools.
+- Confirmed the proof does not depend on the pre-existing dirty
+  `public/operations.html` worktree entry; required scoping hooks are present
+  in `HEAD`.
+
+Verification:
+
+- PASS `node --check tests/operations-module-scoping.test.js`.
+- PASS focused module/RBAC suite 9/9.
+- PASS `npm run bna:run:validate`.
+
+Guardrails:
+
+- No browser screenshot crawl was run.
+- No deployment was run.
+- No production database mutation was performed.
+- No external account, Drive, Telegram, social, payment, DNS, Zoom, Vimeo, or
+  Resend write was performed.
+- No raw secrets were stored in tracked files.
+- No watch loop or agent-fleet loop was run.
+
+Remaining:
+
+- `REQ-20260618-103` workspace model and RBAC remains the next broad
+  unblocked requirement.
+- Release/live verification remains withheld until explicit approval.
+
 ## 2026-06-19T08:45:00+03:00 - Agent Control Notification Hooks
 
 Moved the Agent Control notification/audit-history slice to local

@@ -45,19 +45,20 @@ Current 2026-06-19 checkpoint:
 
 Exact next requirement:
 
-`REQ-20260619-206` manual Agent Mode/browser-judgment smoke for the Agent
-Control Center.
+`REQ-20260618-103` workspace model and RBAC continuation, while preserving the
+already closed `REQ-20260618-107` module-scoping proof.
 
 Exact next command:
 
 ```powershell
-node --test tests\agent-control-center.test.js tests\agent-control-api-readback.test.js tests\agent-control-browser-smoke.test.js
+node --test tests\operations-module-scoping.test.js tests\one-time-rbac-negative-isolation.test.js
 npm run bna:run:validate
 ```
 
-Then continue `REQ-20260618-123`: perform the manual Agent Mode/browser-
-judgment smoke using the generated prompt and record pass/fail/blocked evidence
-in the same active run. Do not start a broad baseline UI crawl.
+Then continue `REQ-20260618-103`: inspect the existing workspace/person/
+household/provider contracts and add only the missing negative isolation or
+RBAC proof needed to close the broad workspace requirement. Do not start a
+broad baseline UI crawl.
 
 Open requirements:
 
@@ -68,7 +69,6 @@ Open requirements:
 - `REQ-20260618-104` Operations shell and navigation
 - `REQ-20260618-105` design system
 - `REQ-20260618-106` task manager, intake, and calendar
-- `REQ-20260618-107` module scoping
 - `REQ-20260618-108` students, Goal Board, and Hebrew
 - `REQ-20260618-109` unified OpenAI helper
 - `REQ-20260618-110` public copy and portal headers
@@ -91,17 +91,17 @@ Current audit blocker:
 user to upload `agent-review-package.zip` or provide the audit output path.
 Credential-free implementation must continue without waiting for that package.
 
-Agent Control Center next exact command:
+Deferred Agent Control manual-smoke check:
 
 ```powershell
 node --test tests\agent-control-center.test.js tests\agent-control-api-readback.test.js tests\agent-control-browser-smoke.test.js; npm run bna:run:validate
 ```
 
-After that, continue `REQ-20260618-123`: perform the manual Agent Mode/browser-
-judgment smoke using the generated Agent Run prompt, record pass/fail/blocked
-evidence in this run, then reassess which Agent Control requirements can move
-from `needs_verification` to locally done while still withholding deployment
-until explicit approval.
+Use this only when returning to `REQ-20260618-123` / `REQ-20260619-206`:
+perform the manual Agent Mode/browser-judgment smoke using the generated Agent
+Run prompt, record pass/fail/blocked evidence in this run, then reassess which
+Agent Control requirements can move from `needs_verification` to locally done
+while still withholding deployment until explicit approval.
 
 Do not run yet:
 

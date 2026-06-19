@@ -109,16 +109,28 @@
       "id": "REQ-20260618-107",
       "title": "Module scoping",
       "area": "modules",
-      "status": "in_progress",
+      "status": "done",
       "expected_result": "Community, content, classes, communications, automations, integrations, and admin modules honor selected workspace/project scope.",
       "source": "Known June 18 requirement area",
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": "",
-      "evidence": [],
-      "deployment_evidence": [],
-      "verification": [],
-      "notes": "Corrected 2026-06-19: this requirement must not wait for the UI audit package. Only screenshot-specific visual findings depend on uploaded audit evidence; credential-free implementation and focused tests can continue immediately."
+      "evidence": [
+        "public/operations.html",
+        "server.js",
+        "src/lib/bna/helper/permissions.js",
+        "tests/operations-module-scoping.test.js",
+        "tests/one-time-rbac-negative-isolation.test.js"
+      ],
+      "deployment_evidence": [
+        "Not deployed by operator rule; focused local contract tests verify selected-workspace filters and One Time RBAC isolation against the consolidated branch without production mutation."
+      ],
+      "verification": [
+        "node --check tests/operations-module-scoping.test.js",
+        "node --test tests/operations-module-scoping.test.js tests/one-time-rbac-negative-isolation.test.js",
+        "npm run bna:run:validate"
+      ],
+      "notes": "Local module-scoping proof is now recorded: Community, Content, Live Classes, communications, integrations, automations, admin, social/email drafts, DNS tasks, and One Time helper/admin routes use selected workspace/project filters or deny cross-scope actions. Live/deploy verification remains withheld until explicit release approval."
     },
     {
       "id": "REQ-20260618-108",

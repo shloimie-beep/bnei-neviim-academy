@@ -298,6 +298,31 @@ Protocol/tooling verification evidence:
 - Operations and Operations login pages unregister existing public service
   workers.
 
+2026-06-19 module-scoping local closeout evidence:
+
+- Operations module shell/data loading:
+  `public/operations.html`.
+- Scoped server read/write helpers and routes:
+  `server.js`.
+- One Time helper RBAC guard:
+  `src/lib/bna/helper/permissions.js`.
+- Focused module-scoping contract:
+  `tests/operations-module-scoping.test.js`.
+- One Time negative isolation contract:
+  `tests/one-time-rbac-negative-isolation.test.js`.
+- PASS `node --check tests/operations-module-scoping.test.js`.
+- PASS focused module/RBAC suite 9/9:
+  `node --test tests/operations-module-scoping.test.js
+  tests/one-time-rbac-negative-isolation.test.js`.
+- The contract proves selected workspace filters are used for Community,
+  Content, Live Classes, communications, integrations, automations, admin,
+  social/email drafts, and DNS task data instead of defaulting to One Time or
+  BNA scope.
+- The RBAC contract proves One Time scoped users are denied cross-project and
+  cross-workspace helper actions and cannot use secret-bearing helper tools.
+- No deployment, production DB mutation, external write, broad crawl, watch
+  loop, or agent-fleet loop was performed.
+
 Not run:
 
 - No full baseline UI crawl.

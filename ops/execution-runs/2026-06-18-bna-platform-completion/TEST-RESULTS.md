@@ -168,6 +168,28 @@ Not run for this batch:
 - No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
   social write.
 
+Verified on 2026-06-19 for module scoping:
+
+- PASS `node --check tests/operations-module-scoping.test.js`.
+- PASS focused module/RBAC suite 9/9:
+  `node --test tests/operations-module-scoping.test.js
+  tests/one-time-rbac-negative-isolation.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `in_progress: 12`, `needs_verification: 9`, `blocked: 2`,
+  `done: 8`.
+- The test proves selected workspace/project filters across Community, Content,
+  Live Classes, communications, integrations, automations, admin data,
+  social/email drafts, and DNS tasks, plus One Time scoped helper/action
+  denial for cross-project, cross-workspace, and secret-bearing tools.
+
+Not run for this batch:
+
+- No browser screenshot crawl.
+- No production DB write/readback.
+- No deployment.
+- No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
+  social write.
+
 Verified on 2026-06-19 for Agent Control notification/audit-history hooks:
 
 - PASS `node --check server.js`.
