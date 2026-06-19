@@ -527,7 +527,7 @@
       "id": "REQ-20260619-203",
       "title": "Future Telegram, Drive, transcript, and ramble ingestion hardening",
       "area": "ingestion",
-      "status": "needs_verification",
+      "status": "done",
       "expected_result": "Future natural-language sources use canonical raw-first intake, workspace resolution, entity resolution, visible-title cleanup, schema validation, retry limits, and single Decision routing for ambiguity.",
       "source": "RAW-20260619-002",
       "depends_on_audit_output": false,
@@ -546,29 +546,33 @@
         "tests/intake-parser-communications.test.js",
         "tests/intake-parser-goals.test.js",
         "tests/intake-parser-student-questions.test.js",
-        "tests/intake-parser-workspace-ambiguity.test.js"
+        "tests/intake-parser-workspace-ambiguity.test.js",
+        "tests/one-time-intake-api-readback.test.js"
       ],
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "Not deployed by operator rule; local VM route smoke uses the existing /api/bna/intake/parse handler with an in-memory Postgres adapter and no production mutation."
+      ],
       "verification": [
         "node --check src/lib/bna/intake-parser.js",
         "node --check src/lib/bna/intake-schema.js",
         "node --check src/lib/bna/ramble-protocol.js",
         "node --check src/lib/bna/goal-registry.js",
         "node --check src/lib/bna/goal-memory.js",
-        "node --test tests/intake-parser-workspace-ambiguity.test.js tests/one-time-intake-scope-hardening.test.js tests/intake-parser.test.js tests/telegram-ramble-routing-regression.test.js"
+        "node --test tests/intake-parser-workspace-ambiguity.test.js tests/one-time-intake-scope-hardening.test.js tests/intake-parser.test.js tests/telegram-ramble-routing-regression.test.js",
+        "node --test tests/one-time-intake-api-readback.test.js tests/one-time-rbac-negative-isolation.test.js tests/intake-parser-workspace-ambiguity.test.js tests/one-time-drive-brief-ingestion.test.js tests/one-time-intake-scope-hardening.test.js"
       ],
       "acceptance_criteria": [
         "One Time aliases cannot silently route into default BNA scope.",
         "Low-confidence scope creates one routing Decision, not many visible tasks.",
         "Parser output contains decisions/tasks/calendar/content/community/integration/notes/unresolved/deduplication keys."
       ],
-      "notes": "This batch adds a concrete One Time Drive parser plus canonical parser helpers for raw-first lanes, goal links, stable IDs, class-recording/content/research/communication lanes, One Time scope inheritance from full raw intake context, and ambiguous workspace routing collapse into one Decision/review item with task fan-out blocked. Needs local raw queue/API readback before live closeout."
+      "notes": "This batch adds a concrete One Time Drive parser plus canonical parser helpers for raw-first lanes, goal links, stable IDs, class-recording/content/research/communication lanes, One Time scope inheritance from full raw intake context, ambiguous workspace routing collapse into one Decision/review item with task fan-out blocked, and local /api/bna/intake/parse readback through the real route with in-memory Postgres rows for bna_raw_intake, parse runs, parse items, and reviews. Production deployment/live smoke remains withheld until explicit release approval."
     },
     {
       "id": "REQ-20260619-204",
       "title": "One Time workspace isolation and owner/admin roles",
       "area": "workspace",
-      "status": "needs_verification",
+      "status": "done",
       "expected_result": "Rabbi Elie Scheller is One Time Owner, Shloimie is One Time Admin/manager, and One Time material is isolated from BNA school/family/default workspaces.",
       "source": "RAW-20260619-002",
       "depends_on_audit_output": false,
@@ -582,20 +586,24 @@
         "tests/one-time-drive-brief-ingestion.test.js",
         "tests/one-time-external-user-portal.test.js",
         "tests/one-time-intake-scope-hardening.test.js",
-        "tests/one-time-rbac-negative-isolation.test.js"
+        "tests/one-time-rbac-negative-isolation.test.js",
+        "tests/one-time-intake-api-readback.test.js"
       ],
-      "deployment_evidence": [],
+      "deployment_evidence": [
+        "Not deployed by operator rule; local VM API smoke proves scoped One Time owner/admin auth and BNA workspace override denial without production mutation."
+      ],
       "verification": [
         "node --test tests/one-time-drive-brief-ingestion.test.js tests/one-time-external-user-portal.test.js",
         "node --test tests/one-time-intake-scope-hardening.test.js",
-        "node --test tests/one-time-rbac-negative-isolation.test.js tests/one-time-drive-brief-ingestion.test.js tests/bna-helper-tools.test.js"
+        "node --test tests/one-time-rbac-negative-isolation.test.js tests/one-time-drive-brief-ingestion.test.js tests/bna-helper-tools.test.js",
+        "node --test tests/one-time-intake-api-readback.test.js tests/one-time-rbac-negative-isolation.test.js tests/intake-parser-workspace-ambiguity.test.js tests/one-time-drive-brief-ingestion.test.js tests/one-time-intake-scope-hardening.test.js"
       ],
       "acceptance_criteria": [
         "Seed membership maps Rabbi to owner and Shloimie to project admin/manager.",
         "Legacy ONE_TIME_OPS_USERNAME remains manager compatibility, not owner.",
         "Generated One Time records reject default BNA routing."
       ],
-      "notes": "Local seed and tests prove the requested owner/admin mapping, parser regression proves future Rabbi Elie / One Time intake inherits the provider workspace/project instead of default BNA, and helper/route negative tests prove cross-project/workspace denial plus One Time workspace assertions on key admin routes. Still needs DB-backed readback/API smoke before live closeout."
+      "notes": "Local seed now uses the canonical oneTimeOwnerAssignments helper, tests prove Rabbi Elie owner and Shloimie admin/manager mapping, parser/API regression proves future Rabbi Elie / One Time intake inherits the provider workspace/project instead of default BNA, helper/route negative tests prove cross-project/workspace denial plus One Time workspace assertions on key admin routes, and the VM API smoke proves scoped owner/admin auth can reach intake while BNA workspace override is rejected. Production deployment/live smoke remains withheld until explicit release approval."
     },
     {
       "id": "REQ-20260619-205",

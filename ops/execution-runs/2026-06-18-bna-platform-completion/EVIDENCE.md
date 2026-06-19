@@ -143,6 +143,33 @@ Protocol/tooling verification evidence:
   `assertWorkspaceAccess(req, 'rabbi_sheller_provider')` coverage for key
   One Time admin routes.
 
+2026-06-19 local raw/API readback continuation evidence:
+
+- API/scope implementation:
+  `server.js`.
+- VM API readback smoke:
+  `tests/one-time-intake-api-readback.test.js`.
+- PASS `node --check server.js`.
+- PASS `node --check tests/one-time-intake-api-readback.test.js`.
+- PASS focused One Time intake/API/RBAC suite 14/14:
+  `node --test tests/one-time-intake-api-readback.test.js
+  tests/one-time-rbac-negative-isolation.test.js
+  tests/intake-parser-workspace-ambiguity.test.js
+  tests/one-time-drive-brief-ingestion.test.js
+  tests/one-time-intake-scope-hardening.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  `REQ-20260619-203` and `REQ-20260619-204` locally done.
+- The VM smoke proves the existing `/api/bna/intake/parse` route, without
+  starting the server, writes and reads back local in-memory rows for
+  `bna_raw_intake`, `bna_intake_parse_runs`, `bna_intake_parse_items`, and
+  `bna_parse_review_queue`; replays upsert the same parse run/items while
+  preserving a separate raw provenance row.
+- The same smoke proves scoped Rabbi Owner and Shloimie Admin credentials reach
+  the intake API, scoped parse metadata carries
+  `rabbi_sheller_provider` / `one_time_mishnah_class`, and an attempted `bna`
+  workspace/project override returns 403 before any raw intake or parse-run row
+  is written.
+
 Not run:
 
 - No full baseline UI crawl.

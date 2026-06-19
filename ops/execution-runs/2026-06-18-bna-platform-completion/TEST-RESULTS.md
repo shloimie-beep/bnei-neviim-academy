@@ -80,6 +80,20 @@ Verified on 2026-06-19 for ambiguous workspace and One Time RBAC continuation:
   tests/intake-parser-workspace-ambiguity.test.js
   tests/one-time-intake-scope-hardening.test.js tests/bna-helper-tools.test.js`.
 
+Verified on 2026-06-19 for local raw/API readback and scoped One Time auth:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/one-time-intake-api-readback.test.js`.
+- PASS focused One Time intake/API/RBAC suite 14/14:
+  `node --test tests/one-time-intake-api-readback.test.js
+  tests/one-time-rbac-negative-isolation.test.js
+  tests/intake-parser-workspace-ambiguity.test.js
+  tests/one-time-drive-brief-ingestion.test.js
+  tests/one-time-intake-scope-hardening.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `not_started: 1`, `in_progress: 14`,
+  `needs_verification: 8`, `blocked: 2`, `done: 6`.
+
 Not run for this batch:
 
 - No full `npm test`.

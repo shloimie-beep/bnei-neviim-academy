@@ -1,7 +1,8 @@
 # Status
 
-Current status: recovery run remains partial; Agent Control Center local batch
-implemented and focused-test verified.
+Current status: recovery run remains partial; One Time intake/API readback and
+owner/admin scoped-access gaps are locally closed, while One Time UI/browser
+smoke and Agent Control Center smoke work remain open.
 
 2026-06-19 One Time ramble/agent/integrations follow-up batch:
 
@@ -49,13 +50,35 @@ implemented and focused-test verified.
 - No deployment, production DB mutation, external integration write, or broad
   UI crawl was performed.
 
+2026-06-19 local raw/API readback continuation:
+
+- Allowed scoped One Time owner/admin users to reach the canonical intake parse
+  API endpoints that match their Operations `intake` view.
+- Injected scoped workspace/project into canonical parse runs so a scoped One
+  Time login parses into `rabbi_sheller_provider` /
+  `one_time_mishnah_class`, while an attempted `bna` override returns 403
+  before any raw intake row is written.
+- Reused `oneTimeOwnerAssignments()` inside `ensureDefaultProjects()` so the
+  server seed and parser/preview helper share the same Rabbi Owner / Shloimie
+  Admin source of truth.
+- Added `tests/one-time-intake-api-readback.test.js`, which VM-loads the real
+  `server.js` routes with fake Express and in-memory Postgres, then proves
+  raw intake, parse run, parse item, review, idempotent parse-run upsert,
+  scoped owner/admin auth, and workspace override denial behavior.
+- Focused tests passed 14/14; no deployment, production DB mutation, external
+  integration write, Drive write, Telegram send, or broad UI crawl was
+  performed.
+
 Still open after this batch:
 
-- `REQ-20260619-203` needs local raw queue/API readback before live closeout.
-- `REQ-20260619-204` still needs DB-backed owner/admin and workspace-access
-  readback/API smoke.
-- Browser smoke, full One Time button audit, safe demo agent run, and manual
-  Agent Mode smoke remain open.
+- `REQ-20260619-203` is locally done. Production deployment/live smoke remains
+  withheld until explicit release approval.
+- `REQ-20260619-204` is locally done. Production deployment/live smoke remains
+  withheld until explicit release approval.
+- `REQ-20260619-205` needs One Time module/button audit and role-based browser
+  smoke.
+- `REQ-20260619-206` needs Agent Control Center DB/API/browser/manual Agent
+  Mode smoke continuation.
 - Live Vimeo/Zoom/Resend/DNS/Stripe setup remains blocked on external
   owner/credential actions and explicit operator approval.
 

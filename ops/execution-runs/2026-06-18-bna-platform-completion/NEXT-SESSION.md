@@ -11,11 +11,13 @@ Current 2026-06-19 checkpoint:
 
 - `REQ-20260619-201`, `REQ-20260619-202`, and `REQ-20260619-208` are locally
   done for this no-write batch.
-- `REQ-20260619-203` is implemented locally and needs verification: One Time
-  scope inheritance and unclear-scope single routing Decision/review behavior
-  are implemented and tested; local raw queue/API readback remains.
-- `REQ-20260619-204` has local negative helper/route isolation tests; DB/API
-  owner/admin and scoped-access readback remains.
+- `REQ-20260619-203` is locally done: One Time scope inheritance,
+  unclear-scope single routing Decision/review behavior, and local raw
+  queue/API readback through `/api/bna/intake/parse` are implemented and
+  tested.
+- `REQ-20260619-204` is locally done: helper/route isolation, owner/admin
+  auth, canonical seed assignment reuse, scoped-access readback, and BNA
+  workspace override denial are implemented and tested.
 - `REQ-20260619-205` needs One Time module/button audit and role-based browser
   smoke.
 - `REQ-20260619-206` continues the Agent Control Center DB/API/browser/manual
@@ -26,17 +28,20 @@ Current 2026-06-19 checkpoint:
 
 Exact next requirement:
 
-`REQ-20260619-203` local raw queue/API readback, then `REQ-20260619-204`
-DB-backed One Time owner/admin and scoped-access readback.
+`REQ-20260619-205` One Time module/button audit and role-based browser smoke.
+After that, continue `REQ-20260619-206` Agent Control Center DB/API/browser
+and manual Agent Mode smoke.
 
 Exact next command:
 
 ```powershell
-node --test tests\one-time-rbac-negative-isolation.test.js tests\intake-parser-workspace-ambiguity.test.js tests\one-time-drive-brief-ingestion.test.js
+node --test tests\one-time-intake-api-readback.test.js tests\one-time-rbac-negative-isolation.test.js tests\one-time-drive-brief-ingestion.test.js
 ```
 
-Then add a safe local API/readback smoke for raw intake parsing and One Time
-owner/admin/scoped access. Do not touch production data.
+Then inspect `public\operations.html`, `ops\action-registry.json`, and
+`ops\route-registry.json` for One Time scoped modules/buttons. Add or run a
+focused role-based browser smoke only for One Time Operations surfaces; do not
+start a broad baseline UI crawl.
 
 Open requirements:
 

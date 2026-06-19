@@ -23530,3 +23530,43 @@ Remaining:
 - `REQ-20260619-203` now needs local raw queue/API readback before closeout.
 - `REQ-20260619-204` needs DB-backed owner/admin and scoped-access API readback.
 - `REQ-20260619-205` still needs One Time browser/button audit.
+
+## 2026-06-19T07:05:00+03:00 - One Time Raw Intake API Readback
+
+Closed the next local verification gap for `REQ-20260619-203` and
+`REQ-20260619-204`.
+
+- Allowed scoped One Time owner/admin users to reach canonical intake API
+  endpoints.
+- Passed scoped workspace/project into canonical parse runs so scoped One Time
+  intake cannot fall back to BNA by omission.
+- Rejected attempted BNA workspace/project overrides for scoped One Time
+  users before any raw intake or parse-run row is written.
+- Reused canonical `oneTimeOwnerAssignments()` in the default project seed so
+  the server seed and One Time parser/preview helper share the same Rabbi
+  Owner / Shloimie Admin source of truth.
+- Added VM route smoke coverage for the existing `/api/bna/intake/parse`
+  handler with fake Express and in-memory Postgres rows for raw intake, parse
+  runs, parse items, and review queue.
+
+Verification:
+
+- PASS `node --check server.js`.
+- PASS `node --check tests/one-time-intake-api-readback.test.js`.
+- PASS focused One Time intake/API/RBAC suite 14/14.
+
+Guardrails:
+
+- No deployment was run.
+- No production database mutation was performed.
+- No external account, Drive, Telegram, social, payment, or DNS write was
+  performed.
+- No raw secrets were stored in tracked files.
+- No full UI crawl, watch loop, or agent-fleet loop was run.
+
+Remaining:
+
+- `REQ-20260619-205` needs One Time module/button audit and role-based browser
+  smoke.
+- `REQ-20260619-206` needs Agent Control Center DB/API/browser/manual Agent
+  Mode smoke continuation.

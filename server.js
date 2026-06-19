@@ -82,6 +82,7 @@ const {
   LATEST_ONE_TIME_DRIVE_BRIEF_SOURCE,
   assertOneTimeScopedPreview,
   buildOneTimeDriveBriefIngestionPreview,
+  oneTimeOwnerAssignments,
 } = require('./src/lib/bna/one-time-drive-brief');
 const {
   hasContactLeadPipelineBuildIntent,
@@ -8335,6 +8336,11 @@ function isScopedOpsPathAllowed(req, identity = null) {
   if (routePath === '/api/bna/helper/knowledge' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/helper/action-log' && method === 'GET') return true;
   if (/^\/api\/bna\/helper\/runs\/[^/]+$/.test(routePath) && method === 'GET') return true;
+  if (routePath === '/api/bna/intake/parse' && method === 'POST') return true;
+  if (routePath === '/api/bna/intake/parse-runs' && method === 'GET') return true;
+  if (/^\/api\/bna\/intake\/parse-runs\/[^/]+$/.test(routePath) && method === 'GET') return true;
+  if (routePath === '/api/bna/intake/review' && method === 'GET') return true;
+  if (/^\/api\/bna\/intake\/review\/[^/]+\/resolve$/.test(routePath) && method === 'POST') return true;
   if (routePath === '/api/bna/projects' && method === 'GET') return true;
   if (routePath === '/api/bna/people' && ['GET', 'POST'].includes(method)) return true;
   if (routePath === '/api/bna/workspace-platform' && method === 'GET') return true;
@@ -19865,6 +19871,8 @@ async function createCanonicalIntakeParseRun({
   created_by = 'dashboard',
   media_url = null,
   intake_type = 'general',
+  workspace_key = '',
+  project_key = '',
   requirement_register_path = null,
   metadata = {},
   dry_run = true,
@@ -19911,6 +19919,8 @@ async function createCanonicalIntakeParseRun({
       source_id,
       source_table,
       source_date: rawIntake?.created_at || null,
+      workspace_key,
+      project_key,
       aiStructuredJson: aiJson,
     });
     const inputHash = intakeStableHash(raw);
@@ -19921,6 +19931,8 @@ async function createCanonicalIntakeParseRun({
       ai_provider: aiJson ? CONTENT_AI_PROVIDER : null,
       dry_run: Boolean(dry_run),
       raw_intake_stable_id: rawIntake?.stable_id || null,
+      workspace_key: workspace_key || null,
+      project_key: project_key || null,
     };
   const runResult = await db.query(
     `INSERT INTO bna_intake_parse_runs (
@@ -29631,9 +29643,16 @@ async function ensureDefaultProjects(db = pool) {
   }, db);
 
   await ensureProjectMember(bna, 'Shloimie', { role: 'operator', access_level: 'owner' }, db);
-  await ensureProjectMember(oneTime, 'Rabbi Elie Scheller', {
-    role: 'project owner',
-    access_level: 'owner',
+  const oneTimeAssignments = oneTimeOwnerAssignments();
+  const oneTimeOwnerAssignment = oneTimeAssignments.find((assignment) => assignment.access_level === 'owner')
+    || oneTimeAssignments[0]
+    || { person_name: 'Rabbi Elie Scheller', role: 'project owner', access_level: 'owner' };
+  const oneTimeManagerAssignment = oneTimeAssignments.find((assignment) => assignment.person_name === 'Shloimie')
+    || oneTimeAssignments.find((assignment) => assignment.access_level === 'manager')
+    || { person_name: 'Shloimie', role: 'project admin', access_level: 'manager' };
+  await ensureProjectMember(oneTime, oneTimeOwnerAssignment.person_name, {
+    role: oneTimeOwnerAssignment.role,
+    access_level: oneTimeOwnerAssignment.access_level,
     login_username: ONE_TIME_OWNER_USERNAME || null,
     metadata: {
       account_type: 'external_user',
@@ -29642,14 +29661,14 @@ async function ensureDefaultProjects(db = pool) {
       allowed_views: ['dashboard', 'watchdog', 'pipelines', 'tasks', 'community', 'content', 'calendar', 'service_providers', 'communications', 'internal_dialogue', 'api_usage', 'integrations', 'settings'],
     },
   }, db);
-  await ensureProjectMember(oneTime, 'Shloimie', {
-    role: 'project admin',
-    access_level: 'manager',
+  await ensureProjectMember(oneTime, oneTimeManagerAssignment.person_name, {
+    role: oneTimeManagerAssignment.role,
+    access_level: oneTimeManagerAssignment.access_level,
     login_username: ONE_TIME_MANAGER_USERNAME || ONE_TIME_OPS_USERNAME || null,
     metadata: {
       account_type: 'internal_admin',
       project_scope: ONE_TIME_PROJECT_KEY,
-      admin_for_owner: 'Rabbi Elie Scheller',
+      admin_for_owner: oneTimeOwnerAssignment.person_name,
     },
   }, db);
 
@@ -53205,6 +53224,18 @@ app.post('/api/bna/intake/parse', requireAdmin, async (req, res) => {
   const rawInput = String(body.raw_input || body.raw_text || body.text || body.ramble || body.transcript_text || '').trim();
   const dryRun = body.dry_run === undefined ? true : Boolean(body.dry_run);
   try {
+    const scopedProjectKey = opsScopeProjectKey(req);
+    const scopedWorkspaceKey = scopedProjectKey ? workspaceKeyForProject(scopedProjectKey) : '';
+    const requestedWorkspaceKey = normalizeWorkspaceKey(body.workspace_key || body.workspace || '');
+    const requestedProjectKey = normalizeProjectKey(body.project_key || body.project || body.workspace_project_key || '');
+    if (scopedWorkspaceKey) {
+      assertWorkspaceAccess(req, requestedWorkspaceKey || scopedWorkspaceKey, 'parse intake');
+      if (requestedProjectKey && requestedProjectKey !== scopedProjectKey) {
+        assertProjectAccess(req, { project_key: requestedProjectKey });
+      }
+    }
+    const parseWorkspaceKey = scopedWorkspaceKey || requestedWorkspaceKey || '';
+    const parseProjectKey = scopedProjectKey || requestedProjectKey || '';
     const source = intakeSourceFromRequest(req, body);
     const result = await createCanonicalIntakeParseRun({
       rawInput,
@@ -53214,10 +53245,14 @@ app.post('/api/bna/intake/parse', requireAdmin, async (req, res) => {
       source_message_id: body.source_message_id || body.message_id || source.source_id || null,
       media_url: body.media_url || body.mediaUrl || null,
       intake_type: body.intake_type || body.intakeType || (body.requirement_register_path ? 'broad_correction' : 'general'),
+      workspace_key: parseWorkspaceKey,
+      project_key: parseProjectKey,
       requirement_register_path: body.requirement_register_path || body.requirementRegisterPath || null,
       metadata: {
         source_chat_id: body.source_chat_id || body.chat_id || null,
         source_message_id: body.source_message_id || body.message_id || null,
+        scoped_workspace_key: scopedWorkspaceKey || null,
+        scoped_project_key: scopedProjectKey || null,
       },
       dry_run: dryRun,
       req,
@@ -53226,7 +53261,7 @@ app.post('/api/bna/intake/parse', requireAdmin, async (req, res) => {
     if (!dryRun) {
       apply = await fileIntakeParseRun(result.parse_run.id, {
         req,
-        projectKey: body.project_key || body.project || body.workspace_project_key || '',
+        projectKey: parseProjectKey || body.project_key || body.project || body.workspace_project_key || '',
       });
     }
     res.json({
