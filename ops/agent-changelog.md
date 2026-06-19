@@ -23734,6 +23734,41 @@ Remaining:
   unblocked requirement.
 - Release/live verification remains withheld until explicit approval.
 
+## 2026-06-19T07:32:20+03:00 - Task Manager Intake Calendar Local Proof
+
+Moved `REQ-20260618-106` to local `done`.
+
+- Verified the task manager separates Decisions, Tasks, Codex Queue,
+  Blocked/Pending, Calendar, and Done / Activity so machine work is not hidden
+  as human Pending.
+- Verified comments remain shared dialogue unless explicitly requeued, system
+  comments do not requeue themselves, and Decision actions create linked
+  executable work while preserving Decision audit history.
+- Verified canonical intake behavior for unclear workspace routing, scoped One
+  Time raw-intake/API readback, idempotent parse rows, BNA override denial, and
+  internal task-calendar actions with external Google Calendar still gated.
+
+Verification:
+
+- PASS focused task/intake/calendar suite 29/29.
+- PASS `npm run bna:run:validate`.
+
+Guardrails:
+
+- No browser screenshot crawl was run.
+- No deployment was run.
+- No production database mutation was performed.
+- No external account, Drive, Telegram, social, payment, DNS, Zoom, Vimeo, or
+  Resend write was performed.
+- No raw secrets were stored in tracked files.
+- No watch loop or agent-fleet loop was run.
+
+Remaining:
+
+- `REQ-20260618-108` students, Goal Board, Hebrew, and RTL is the next broad
+  unblocked requirement.
+- Release/live verification remains withheld until explicit approval.
+
 ## 2026-06-19T09:05:00+03:00 - PWA Separation Local Proof
 
 Moved `REQ-20260618-102` to local `needs_verification`.

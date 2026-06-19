@@ -396,6 +396,42 @@ Protocol/tooling verification evidence:
 - No deployment, production DB mutation, external write, broad crawl, watch
   loop, or agent-fleet loop was performed.
 
+2026-06-19 task manager/intake/calendar local closeout evidence:
+
+- Task manager and internal calendar UI:
+  `public/operations.html`.
+- Task, Decision, raw-intake, parse, activity, and calendar routes:
+  `server.js`.
+- Task comments, dictation, lanes, and selected-date calendar contract:
+  `tests/operations-task-comments-and-dictation.test.js`.
+- Workspace workflow correctness:
+  `tests/ops-02-workflow-correctness.test.js`.
+- Machine-work / Pending separation:
+  `tests/workspace-task-no-stale-agent.test.js`.
+- Canonical One Time intake API readback and idempotent parse rows:
+  `tests/one-time-intake-api-readback.test.js`.
+- Ambiguous workspace routing:
+  `tests/intake-parser-workspace-ambiguity.test.js`.
+- Decision lifecycle and reprocessing:
+  `tests/decision-lifecycle-reprocessing.test.js`.
+- PASS focused task/intake/calendar suite 29/29:
+  `node --test tests/operations-task-comments-and-dictation.test.js
+  tests/ops-02-workflow-correctness.test.js
+  tests/workspace-task-no-stale-agent.test.js
+  tests/one-time-intake-api-readback.test.js
+  tests/intake-parser-workspace-ambiguity.test.js
+  tests/decision-lifecycle-reprocessing.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `in_progress: 8`, `needs_verification: 9`, `blocked: 2`,
+  `done: 12`.
+- The suite proves Decision/Pending/Tasks/Codex Queue/Calendar/Done Activity
+  separation, no implicit requeue from ordinary comments, Decision audit and
+  executable-work routing, scoped/idempotent One Time intake readback, single
+  routing Decision for unclear scope, Hebrew task-calendar date display, and
+  internal calendar actions with external sync still gated.
+- No deployment, production DB mutation, external write, broad crawl, watch
+  loop, or agent-fleet loop was performed.
+
 Not run:
 
 - No full baseline UI crawl.

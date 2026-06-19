@@ -21,8 +21,10 @@ test('OPS-02 workspace directory uses the approved top-level display categories'
 
   assert.match(operations, /label: 'Super Admin'/);
   assert.match(operations, /label: 'School'/);
-  assert.match(operations, /label: 'Service Providers'/);
-  assert.match(operations, /label: 'Family App \/ Home Accountability'/);
+  assert.match(operations, /\{ id: 'service_provider', label: 'Service Provider'/);
+  assert.match(operations, /\{ id: 'family', label: 'Family'/);
+  assert.match(operations, /Choose a workspace type, then choose the specific workspace/);
+  assert.doesNotMatch(operations, /Family App \/ Home Accountability/);
 });
 
 test('OPS-02 provider 7pm class is a first-class schedule object, not a placeholder', () => {

@@ -254,6 +254,31 @@ Not run for this batch:
 - No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
   social write.
 
+Verified on 2026-06-19 for task manager, intake, and calendar:
+
+- PASS focused task/intake/calendar suite 29/29:
+  `node --test tests/operations-task-comments-and-dictation.test.js
+  tests/ops-02-workflow-correctness.test.js
+  tests/workspace-task-no-stale-agent.test.js
+  tests/one-time-intake-api-readback.test.js
+  tests/intake-parser-workspace-ambiguity.test.js
+  tests/decision-lifecycle-reprocessing.test.js`.
+- PASS `npm run bna:run:validate`; active run remains partial and valid with
+  status counts `in_progress: 8`, `needs_verification: 9`, `blocked: 2`,
+  `done: 12`.
+- The suite verifies task-lane separation, explicit-comment requeue behavior,
+  Decision lifecycle/reprocessing, Codex Queue vs human Pending separation,
+  scoped/idempotent raw-intake parse readback, unclear-scope Decision routing,
+  and internal task-calendar actions.
+
+Not run for this batch:
+
+- No browser screenshot crawl.
+- No production DB write/readback.
+- No deployment.
+- No external account, Drive, Telegram, Zoom, Vimeo, Resend, DNS, payment, or
+  social write.
+
 Verified on 2026-06-19 for Agent Control notification/audit-history hooks:
 
 - PASS `node --check server.js`.

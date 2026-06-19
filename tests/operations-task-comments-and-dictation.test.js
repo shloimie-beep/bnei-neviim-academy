@@ -100,13 +100,15 @@ test('Operations defers full re-renders while dictation or text entry is active'
 });
 
 test('Operations moves resolved decisions to Done or actionable Tasks', () => {
-  assert.match(operationsHtml, /const TASK_LANE_IDS = \['decisions', 'pending', 'tasks', 'schedule', 'done', 'activity'\]/);
-  assert.match(operationsHtml, /\{ id: 'done', label: 'Done' \}/);
+  assert.match(operationsHtml, /const TASK_LANE_IDS = \['decisions', 'tasks', 'codex_queue', 'pending', 'schedule', 'done_activity'\]/);
+  assert.match(operationsHtml, /\{ id: 'done_activity', label: 'Done \/ Activity' \}/);
+  assert.match(operationsHtml, /\{ id: 'codex_queue', label: 'Codex Queue' \}/);
   assert.match(operationsHtml, /\{ id: 'tasks', label: 'Tasks' \}/);
   assert.match(operationsHtml, /done: \[\]/);
   assert.match(operationsHtml, /tasks: \[\]/);
-  assert.match(operationsHtml, /done: buckets\.done/);
-  assert.match(operationsHtml, /tasks: buckets\.tasks/);
+  assert.match(operationsHtml, /done_activity: doneActivityTasks/);
+  assert.match(operationsHtml, /codex_queue: codexQueueTasks/);
+  assert.match(operationsHtml, /tasks: regularTasks/);
   assert.match(server, /Decision outcome saved/);
   assert.match(operationsHtml, /chooseTaskDecision/);
   assert.match(server, /actions\/choose-decision/);
@@ -147,10 +149,12 @@ test('Task toolbar uses workspace-aware filters without bucket wording', () => {
   assert.match(operationsHtml, /Workspace Status/);
   assert.match(operationsHtml, /function renderTaskSignalFilters/);
   assert.match(operationsHtml, /<span class="filter-label">Workspace<\/span>/);
-  assert.match(operationsHtml, /<span class="filter-label">Assignee<\/span>/);
+  assert.match(operationsHtml, /<span class="filter-label">Owner<\/span>/);
   assert.match(operationsHtml, /<span class="filter-label">Type<\/span>/);
   assert.match(operationsHtml, /Upcoming/);
   assert.match(operationsHtml, /No date/);
+  assert.match(operationsHtml, /Me \/ Shloimie/);
+  assert.match(operationsHtml, /Rabbi Elie Scheller/);
   assert.match(operationsHtml, /taskSignalFilter !== 'all'/);
 });
 
@@ -164,7 +168,8 @@ test('Task calendar exposes selected-date task actions', () => {
   assert.match(operationsHtml, /taskDueDate/);
   assert.match(operationsHtml, /function moveSelectedTaskToDate/);
   assert.match(operationsHtml, /api\.updateTask\(taskId, \{ due_date: key \}\)/);
-  assert.match(operationsHtml, /Google dry-run/);
+  assert.match(operationsHtml, /Internal calendar/);
+  assert.match(operationsHtml, /openCommandTarget\('calendar', 'list'\)/);
   assert.match(operationsHtml, /function previewSelectedDateGoogleCalendarDryRun/);
   assert.match(operationsHtml, /action_id: 'sync_google_calendar'/);
   assert.match(operationsHtml, /source: 'operations_task_calendar_selected_day'/);

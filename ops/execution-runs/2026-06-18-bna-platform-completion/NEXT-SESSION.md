@@ -43,6 +43,12 @@ Current 2026-06-19 checkpoint:
   sticky toolbar, side menus, top filters, custom select menus, Agent Status
   and task activity panels, settings dashboards, integration cards, metric
   wrapping, compact mobile strips, and removal of stale family-app copy.
+- `REQ-20260618-106` is locally done: task lanes separate Decisions, Tasks,
+  Codex Queue, Blocked/Pending, Calendar, and Done / Activity; comments do not
+  implicitly requeue agent work; Decision lifecycle actions preserve audit;
+  unclear workspace intake creates one routing Decision without task fan-out;
+  scoped One Time intake readback is idempotent and blocks BNA overrides; and
+  the internal task calendar remains canonical while external sync is gated.
 - Manual Agent Mode/browser-judgment smoke remains open.
 - `REQ-20260619-207` is genuinely blocked for live provider setup until
   operator supplies or performs external account-owner actions through the
@@ -50,29 +56,29 @@ Current 2026-06-19 checkpoint:
 
 Exact next requirement:
 
-`REQ-20260618-106` task manager, intake, and calendar continuation, while
+`REQ-20260618-108` students, Goal Board, Hebrew, and RTL continuation, while
 preserving the already closed `REQ-20260618-103` workspace/RBAC,
 `REQ-20260618-104` Operations shell/navigation, `REQ-20260618-105` design
-system, and `REQ-20260618-107` module-scoping proof.
+system, `REQ-20260618-106` task/intake/calendar, and
+`REQ-20260618-107` module-scoping proof.
 
 Exact next command:
 
 ```powershell
-node --test tests\operations-task-comments-and-dictation.test.js tests\ops-02-workflow-correctness.test.js tests\workspace-task-no-stale-agent.test.js
+node --test tests\operations-student-detail-scope.test.js tests\goal-board.test.js tests\hebrew-rtl-ui-labels.test.js tests\student-portal-auth-policy.test.js tests\telegram-goal-board-api-coverage.test.js
 npm run bna:run:validate
 ```
 
-Then continue `REQ-20260618-106`: inspect the canonical task manager,
-Decision/Pending/Tasks/Calendar/Done Activity lanes, raw-intake classification,
-idempotency, and internal calendar links; add only missing focused proof or
-small fixes, and avoid broad UI crawls or production data writes.
+Then continue `REQ-20260618-108`: inspect student isolation, duplicate-student
+cleanup, Goal Board visibility/review gates, parent/student portal Hebrew/RTL
+labels, and Operations student detail scoping; add only missing focused proof
+or small fixes, and avoid broad UI crawls or production data writes.
 
 Open requirements:
 
 - `REQ-20260618-101` audit harness and audit package
 - `REQ-20260618-102` PWA public-vs-Operations separation is locally
   implemented and needs release/live verification
-- `REQ-20260618-106` task manager, intake, and calendar
 - `REQ-20260618-108` students, Goal Board, and Hebrew
 - `REQ-20260618-109` unified OpenAI helper
 - `REQ-20260618-110` public copy and portal headers

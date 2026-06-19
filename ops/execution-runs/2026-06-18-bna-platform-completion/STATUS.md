@@ -216,6 +216,25 @@ remain open.
 - Focused brand-shell test passed 4/4; no deployment, production DB mutation,
   external write, broad crawl, watch loop, or agent-fleet loop was performed.
 
+2026-06-19 task manager/intake/calendar local closeout:
+
+- Moved `REQ-20260618-106` to local `done`.
+- Verified the current task manager separates Decisions, Tasks, Codex Queue,
+  Blocked/Pending, Calendar, and Done / Activity so machine/Codex work does
+  not become a human Pending card.
+- Verified comments stay shared dialogue unless explicitly requeued, system
+  comments do not requeue themselves, resolved Decisions move to Done or
+  linked executable work, and Decision lifecycle actions preserve audit trail.
+- Verified canonical intake behavior for unclear workspace routing: one
+  routing Decision/review is created and task fan-out is blocked, while scoped
+  One Time intake API readback remains idempotent and rejects BNA workspace
+  overrides before writes.
+- Verified the internal task calendar exposes selected-date actions and keeps
+  external Google Calendar behavior dry-run/gated.
+- Focused task/intake/calendar suite passed 29/29; no deployment, production
+  DB mutation, external write, broad crawl, watch loop, or agent-fleet loop was
+  performed.
+
 Still open after this batch:
 
 - `REQ-20260619-203` is locally done. Production deployment/live smoke remains

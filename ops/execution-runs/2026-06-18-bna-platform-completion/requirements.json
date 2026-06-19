@@ -136,16 +136,30 @@
       "id": "REQ-20260618-106",
       "title": "Task manager, intake, and calendar",
       "area": "tasks",
-      "status": "in_progress",
+      "status": "done",
       "expected_result": "Tasks, intake, decisions, calendar, blocked work, and activity lanes are clear and do not hide Codex/system work as human pending work.",
       "source": "Known June 18 requirement area",
       "depends_on_audit_output": false,
       "live_required": true,
       "blocker": "",
-      "evidence": [],
-      "deployment_evidence": [],
-      "verification": [],
-      "notes": "Corrected 2026-06-19: this requirement must not wait for the UI audit package. Only screenshot-specific visual findings depend on uploaded audit evidence; credential-free implementation and focused tests can continue immediately."
+      "evidence": [
+        "public/operations.html",
+        "server.js",
+        "tests/operations-task-comments-and-dictation.test.js",
+        "tests/ops-02-workflow-correctness.test.js",
+        "tests/workspace-task-no-stale-agent.test.js",
+        "tests/one-time-intake-api-readback.test.js",
+        "tests/intake-parser-workspace-ambiguity.test.js",
+        "tests/decision-lifecycle-reprocessing.test.js"
+      ],
+      "deployment_evidence": [
+        "Not deployed by operator rule; focused local task/intake/calendar contracts verify the current Operations runtime without production mutation."
+      ],
+      "verification": [
+        "node --test tests/operations-task-comments-and-dictation.test.js tests/ops-02-workflow-correctness.test.js tests/workspace-task-no-stale-agent.test.js tests/one-time-intake-api-readback.test.js tests/intake-parser-workspace-ambiguity.test.js tests/decision-lifecycle-reprocessing.test.js",
+        "npm run bna:run:validate"
+      ],
+      "notes": "Local task manager/intake/calendar proof is now recorded: Decisions, Tasks, Codex Queue, Blocked/Pending, Calendar, and Done / Activity lanes are separated; human comments remain shared dialogue unless explicitly requeued; system/agent work is first-party lifecycle state instead of human Pending; unclear workspace intake creates one routing Decision without task fan-out; scoped One Time intake API readback is idempotent and blocks BNA override; internal task calendar actions stay canonical while external Google Calendar remains dry-run/gated. Live/deploy verification remains withheld until explicit release approval."
     },
     {
       "id": "REQ-20260618-107",
