@@ -4785,3 +4785,22 @@ Verification:
 - PASS `npm run bna:run:status`.
 
 Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+## 2026-06-19 - Automations status browser proof
+
+Requirement: `REQ-20260618-148`
+
+Changed:
+
+- Added One Time and BNA automation status fixtures to the browser acceptance harness.
+- Verified the One Time Automations module requests scoped status rows and renders owner, status, last run, next run, failure reason, detail counts, and workspace labels while excluding BNA rows.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/automations-status.test.js tests/operations-module-toolbar.test.js tests/browser-acceptance.test.js` 10/10.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

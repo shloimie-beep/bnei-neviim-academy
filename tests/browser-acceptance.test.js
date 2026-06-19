@@ -313,7 +313,49 @@ function operationsFixture(pathname, url, options = {}) {
         },
       ],
     },
-    '/api/bna/automations/status': { automations: [] },
+    '/api/bna/automations/status': {
+      automations: project === 'one_time_mishnah_class'
+        ? [
+            {
+              automation_key: 'content_drive_intake',
+              title: 'TEST-BNA-SEED Content Drive Intake',
+              owner: 'Operations',
+              status: 'running',
+              workspace_label: 'One Time Mishnah Class',
+              project_key: 'one_time_mishnah_class',
+              last_run_at: '2026-06-18T12:00:00+03:00',
+              next_run_at: '2026-06-18T13:00:00+03:00',
+              failure_reason: null,
+              details: { active_count: 2 },
+            },
+            {
+              automation_key: 'codex_task_automation',
+              title: 'TEST-BNA-SEED System Work Automation',
+              owner: 'System Work',
+              status: 'failed',
+              workspace_label: 'One Time Mishnah Class',
+              project_key: 'one_time_mishnah_class',
+              last_run_at: '2026-06-18T11:00:00+03:00',
+              next_run_at: null,
+              failure_reason: 'Needs operator approval before retry',
+              details: { open_count: 1 },
+            },
+          ]
+        : [
+            {
+              automation_key: 'payment_reminders',
+              title: 'TEST-BNA-SEED BNA Payment Reminders',
+              owner: 'Operations',
+              status: 'ready',
+              workspace_label: 'BNA',
+              project_key: 'bna',
+              last_run_at: '2026-06-18T09:00:00+03:00',
+              next_run_at: '2026-06-19T09:00:00+03:00',
+              failure_reason: null,
+              details: { due_count: 0 },
+            },
+          ],
+    },
     '/api/bna/integrations/status': { integrations: [] },
     '/api/bna/users': { users: [] },
     '/api/bna/invitations': { invitations: [] },
@@ -1108,6 +1150,38 @@ async function assertOperationsLiveClassesWorkspaceScope(page, calls) {
   assert.doesNotMatch(calendarState.panelText, /TEST-BNA-SEED BNA-only class/);
 }
 
+async function assertOperationsAutomationsWorkspaceStatus(page, calls) {
+  await page.locator('.ops-module-button').filter({ hasText: 'Automations' }).click();
+  await page.locator('.ops-view-frame[data-current-view="automations"]').waitFor();
+  await waitForCall(
+    calls,
+    (call) => call.pathname === '/api/bna/automations/status' && call.project === 'one_time_mishnah_class',
+    'Automations status request scoped to One Time workspace',
+  );
+  await page.locator('.focus-panel[aria-label="Automation status"]').waitFor();
+  const automationState = await page.evaluate(() => {
+    const frame = document.querySelector('.ops-view-frame[data-current-view="automations"]');
+    return {
+      text: frame?.textContent?.replace(/\s+/g, ' ').trim() || '',
+    };
+  });
+  assert.match(automationState.text, /2 tracked/);
+  assert.match(automationState.text, /1 need attention/);
+  assert.match(automationState.text, /TEST-BNA-SEED Content Drive Intake/);
+  assert.match(automationState.text, /Owner\s*Operations/);
+  assert.match(automationState.text, /Status\s*running/);
+  assert.match(automationState.text, /Last Run/);
+  assert.match(automationState.text, /Next Run/);
+  assert.match(automationState.text, /Active:\s*2/);
+  assert.match(automationState.text, /TEST-BNA-SEED System Work Automation/);
+  assert.match(automationState.text, /Owner\s*System Work/);
+  assert.match(automationState.text, /Status\s*failed/);
+  assert.match(automationState.text, /Needs operator approval before retry/);
+  assert.match(automationState.text, /Open:\s*1/);
+  assert.match(automationState.text, /One Time Mishnah Class/);
+  assert.doesNotMatch(automationState.text, /TEST-BNA-SEED BNA Payment Reminders/);
+}
+
 async function assertOperationsContactsCommunityScope(page, calls) {
   await page.locator('.ops-module-button').filter({ hasText: 'Contacts' }).click();
   await page.locator('.ops-view-frame[data-current-view="contacts"]').waitFor();
@@ -1379,6 +1453,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       await page.locator('.ops-view-frame[data-current-view="tasks"]').waitFor();
       await assertOperationsShellStable(page, 'refreshed operations shell');
       await assertOperationsLiveClassesWorkspaceScope(page, calls);
+      await assertOperationsAutomationsWorkspaceStatus(page, calls);
       await assertOperationsContactsCommunityScope(page, calls);
       await assertOperationsContentBoundary(page, calls);
       await assertOperationsContentMetadataProvenance(page, calls);

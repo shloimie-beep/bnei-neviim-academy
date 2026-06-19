@@ -712,3 +712,14 @@ Live class workspace-scope browser proof (2026-06-19T07:55:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-147 now has browser proof that after switching to One Time workspace, Calendar requests `project=one_time_mishnah_class`, renders the One Time class-session item with the One Time Mishnah Class workspace label, and excludes a BNA-only class fixture. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+
+Automations status browser proof (2026-06-19T08:05:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/automations-status.test.js tests/operations-module-toolbar.test.js tests/browser-acceptance.test.js` 10/10.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-148 now has browser proof that after switching to One Time workspace, Automations requests `project=one_time_mishnah_class`, shows tracked/attention counts, owner, status, last run, next run, failure reason, details, and One Time workspace labels, and excludes a BNA automation fixture. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-19T07:55:30+03:00",
+  "updated_at": "2026-06-19T08:05:30+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -253,7 +253,8 @@
         "REQ-20260618-144 now has browser proof that the selected workspace Content view renders teaching/research material while filtering task, accountability, progress, timer, and parser-review phrases.",
         "REQ-20260618-145 now has browser proof that expanded Content cards expose selected-workspace metadata, Drive/source provenance, transcript/parse state, output counts, approval state, dates, and capture identifiers.",
         "REQ-20260618-146 now has browser proof that the selected One Time Content view requests jobs and bundles with the selected project and exposes One Time Drive folder provenance without BNA Drive folder leakage.",
-        "REQ-20260618-147 now has browser proof that after switching to One Time, Calendar requests project=one_time_mishnah_class, shows the One Time class-session item with workspace label, and excludes a BNA-only class fixture."
+        "REQ-20260618-147 now has browser proof that after switching to One Time, Calendar requests project=one_time_mishnah_class, shows the One Time class-session item with workspace label, and excludes a BNA-only class fixture.",
+        "REQ-20260618-148 now has browser proof that the selected One Time Automations module requests project=one_time_mishnah_class and renders owner, status, last run, next run, failure reason, details, workspace labels, and scoped rows only."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -273,10 +274,11 @@
         "npm run bna:run:status PASS",
         "node --test tests/content-metadata-provenance.test.js tests/content-boundary.test.js tests/browser-acceptance.test.js PASS 8/8",
         "node --test tests/content-drive-routing.test.js tests/content-metadata-provenance.test.js tests/browser-acceptance.test.js PASS 9/9",
-        "node --test tests/class-sessions-scope.test.js tests/operations-calendar.test.js tests/browser-acceptance.test.js PASS 8/8"
+        "node --test tests/class-sessions-scope.test.js tests/operations-calendar.test.js tests/browser-acceptance.test.js PASS 8/8",
+        "node --test tests/automations-status.test.js tests/operations-module-toolbar.test.js tests/browser-acceptance.test.js PASS 10/10"
       ],
       "notes": "Scoped modules parent remains in_progress until Automations, Integrations, Users, Accounting, and remaining module children have terminal statuses.",
-      "updated_at": "2026-06-19T07:55:30+03:00",
+      "updated_at": "2026-06-19T08:05:30+03:00",
       "files_changed": [
         "server.js",
         "public/operations.html",
@@ -2168,7 +2170,7 @@
       "title": "Scoped automations and operational status",
       "area": "modules",
       "priority": "P1",
-      "current_verdict": "partial",
+      "current_verdict": "local_complete_pending_release",
       "status": "needs_verification",
       "expected_result": "Automations are workspace-scoped and show clear owner/status/last run/next run/failure reason.",
       "acceptance_criteria": [
@@ -2184,7 +2186,8 @@
         "GET /api/bna/automations/status now returns workspace/project-scoped automation status rows for payment reminders, Green Invoice webhooks, content Drive intake, and Codex task automation.",
         "Automation status rows include owner, workspace label, status, last_run_at, next_run_at, failure_reason, and per-automation detail counts.",
         "Operations now has an Automations module loaded with selectedProjectFilter and a compact status-only card view.",
-        "Scoped workspace auth allows safe GET /api/bna/automations/status while preserving the old global-only agent-fleet endpoint and no mutation controls were added."
+        "Scoped workspace auth allows safe GET /api/bna/automations/status while preserving the old global-only agent-fleet endpoint and no mutation controls were added.",
+        "tests/browser-acceptance.test.js now proves the selected One Time Automations module requests /api/bna/automations/status with project=one_time_mishnah_class and renders tracked/attention counts, owner, status, last run, next run, failure reason, detail counts, and workspace labels while excluding BNA automation rows."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -2194,10 +2197,16 @@
         "node --test tests/automations-status.test.js tests/workspace-auth.test.js tests/operations-module-toolbar.test.js tests/operations-workspace-selector.test.js tests/workspace-http-isolation.test.js PASS 21/21",
         "node --test tests/operations-calendar.test.js tests/operations-layout-stability.test.js tests/operations-task-diagnostics.test.js tests/operations-design-system.test.js PASS 12/12",
         "node --test tests/operations-accessibility.test.js tests/operations-workspace-selector.test.js tests/automations-status.test.js PASS 14/14",
-        "npm test PASS 144/144"
+        "npm test PASS 144/144",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/automations-status.test.js tests/operations-module-toolbar.test.js tests/browser-acceptance.test.js PASS 10/10",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: feat: surface scoped automations"
+        "current batch commit: feat: surface scoped automations",
+        "current batch commit: test: verify automations status in browser"
       ],
       "files_changed": [
         "server.js",
@@ -2207,9 +2216,11 @@
         "tests/operations-module-toolbar.test.js",
         "tests/operations-workspace-selector.test.js",
         "tests/workspace-auth.test.js",
-        "tests/workspace-http-isolation.test.js"
+        "tests/workspace-http-isolation.test.js",
+        "tests/browser-acceptance.test.js"
       ],
-      "notes": "Local implementation and tests passed. Status remains needs_verification because this live-required Operations/server-visible item still needs release approval, deploy, and live smoke before closure."
+      "notes": "Local implementation, static/API checks, and browser DOM proof are complete. Status remains needs_verification because this live-required Operations/server-visible item still needs release approval, deploy, and live smoke before closure.",
+      "updated_at": "2026-06-19T08:05:30+03:00"
     },
     {
       "id": "REQ-20260618-149",
