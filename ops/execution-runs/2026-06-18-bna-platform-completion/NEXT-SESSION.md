@@ -1,6 +1,6 @@
 # Next Session
 
-Updated: 2026-06-19T10:35:30+03:00
+Updated: 2026-06-19T10:45:30+03:00
 
 Resume the active execution run. Do not restart, re-plan, run a baseline UI crawl, run watch loops, or deploy.
 
@@ -56,10 +56,11 @@ Latest completed local batches:
 - REQ-20260618-162: Assistant memory leakage protections now have focused API/browser proof that public unauthenticated memory requests are blocked before database access, private no-store headers are set, scoped authenticated access stays isolated, and rendered Assistant memory context hides raw user keys/test usernames. It remains needs_verification only for release approval, deploy, and live smoke.
 - REQ-20260618-163: Public navigation privacy now has source and browser proof that the served homepage primary navigation stays prospect/family-facing, uses the public manifest, excludes private Operations login/portal text and hrefs, and remains overflow-safe. It remains needs_verification only for release approval, deploy, and live smoke.
 - REQ-20260618-164: Provider free-listing CTA now has static and browser proof that the public homepage says Advertise your program for free, explains free listing scope, uses WhatsApp contact, excludes private Operations links, and remains overflow-safe. It remains needs_verification only for release approval, deploy, and live smoke.
+- REQ-20260618-165: Parent signup offer now has static and browser proof that signup, Hebrew signup, and thank-you surfaces show direct parent signup/self-governance/six-month-free copy, exclude one-year/Operations drift, and remain overflow-safe. It remains needs_verification only for release approval, deploy, and live smoke.
 
 Exact next requirement:
 
-- REQ-20260618-165 / BNA-PUBLIC-003: Direct parent signup/self-governance messaging and six-month offer.
+- REQ-20260618-166 / BNA-PUBLIC-004: Consistent approved portal headers.
 
 Blocked requirement intentionally skipped:
 
@@ -70,15 +71,15 @@ Exact next command:
 
 ```powershell
 npm run bna:run:status
-node --test tests/public-parent-offer.test.js tests/public-provider-cta.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js tests/browser-acceptance.test.js
+node --test tests/operations-identity-header.test.js tests/pwa-identity.test.js tests/public-navigation.test.js tests/public-parent-offer.test.js tests/public-provider-cta.test.js tests/browser-acceptance.test.js
 ```
 
-Then inspect whether `REQ-20260618-165` needs refreshed rendered-page evidence beyond the existing parent offer tests so direct parent signup, self-governance positioning, and the six-month free parent app offer are visible without one-year/Operations drift. Do not close live-required public items as `done` without release approval, deployment, and live-smoke evidence.
+Then inspect whether `REQ-20260618-166` needs refreshed rendered-page evidence beyond the existing portal-header tests so public, signup, Student Portal, Operations login, and Operations shell headers keep the approved identities without manifest drift. Do not close live-required public items as `done` without release approval, deployment, and live-smoke evidence.
 
 Still open after this batch:
 
-- REQ-20260618-124 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-164 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
-- REQ-20260618-165 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
+- REQ-20260618-124 through REQ-20260618-155 and REQ-20260618-157 through REQ-20260618-165 remain `needs_verification` because local implementation and tests pass, but release approval, deployment, and live smoke are still pending.
+- REQ-20260618-166 through REQ-20260618-167 remain `needs_verification` until final acceptance sweep, release approval, deploy, and live smoke where applicable.
 - REQ-20260618-156 remains `needs_operator_decision` for duplicate-student cleanup approval.
 - Audit-output-only items remain blocked only where screenshot/audit output is genuinely required.
 

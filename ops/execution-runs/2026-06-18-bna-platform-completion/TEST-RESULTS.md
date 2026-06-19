@@ -888,3 +888,14 @@ Provider free-listing CTA browser proof (2026-06-19T10:35:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-164 now has rendered public homepage proof that the provider listing section says Advertise your program for free, describes Torah classes/chugim/tutoring/mentoring/homeschool/family/youth listing scope, states basic community listings are free, uses the WhatsApp contact CTA, excludes private Operations links, and stays overflow-safe on mobile and desktop. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+Parent signup six-month offer browser proof (2026-06-19T10:45:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/public-parent-offer.test.js`.
+- PASS `node --test tests/public-parent-offer.test.js tests/public-provider-cta.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js tests/browser-acceptance.test.js` 27/27.
+- PASS `npm test` 213/213.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-165 now has rendered signup proof that English signup shows direct parent signup, parent-app setup, self-governance, six months free, and separate parent decision; Hebrew signup renders RTL parent-offer text; signup thank-you repeats the six-month self-governance offer; and these surfaces exclude one-year/Operations drift with no mobile overflow. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

@@ -1965,6 +1965,65 @@ test('Playwright public homepage renders provider free-listing CTA', async () =>
   });
 });
 
+test('Playwright signup pages render direct parent six-month offer', async () => {
+  await withServer(async (baseUrl) => {
+    const browser = await chromium.launch();
+    const context = await browser.newContext({
+      baseURL: baseUrl,
+      serviceWorkers: 'block',
+      viewport: { width: 390, height: 844 },
+    });
+
+    try {
+      const page = await context.newPage();
+      await page.goto('/signup', { waitUntil: 'domcontentloaded' });
+      await page.locator('.parent-offer').waitFor();
+      const signupState = await page.evaluate(() => ({
+        manifest: document.querySelector('link[rel="manifest"]')?.getAttribute('href') || '',
+        text: document.querySelector('.parent-offer')?.textContent?.replace(/\s+/g, ' ').trim() || '',
+        language: document.querySelector('#form_language')?.getAttribute('value') || '',
+      }));
+      assert.equal(signupState.manifest, '/manifest.json');
+      assert.equal(signupState.language, 'en');
+      assert.match(signupState.text, /Direct parent signup for BNA families/);
+      assert.match(signupState.text, /parent-app setup/);
+      assert.match(signupState.text, /self-governance/);
+      assert.match(signupState.text, /Parent app access is six months free/);
+      assert.match(signupState.text, /separate parent decision/);
+      assert.doesNotMatch(signupState.text, /one year free|year free|12 months free|Operations/i);
+      await noHorizontalOverflow(page);
+
+      await page.goto('/signup-he', { waitUntil: 'domcontentloaded' });
+      await page.locator('.parent-offer').waitFor();
+      const hebrewState = await page.evaluate(() => ({
+        lang: document.documentElement.lang,
+        dir: document.documentElement.dir,
+        text: document.querySelector('.parent-offer')?.textContent?.replace(/\s+/g, ' ').trim() || '',
+        language: document.querySelector('#form_language')?.getAttribute('value') || '',
+      }));
+      assert.deepEqual({ lang: hebrewState.lang, dir: hebrewState.dir }, { lang: 'he', dir: 'rtl' });
+      assert.equal(hebrewState.language, 'he');
+      assert.match(hebrewState.text, /[\u0590-\u05ff]/);
+      assert.doesNotMatch(hebrewState.text, /one year free|year free|12 months free|Operations/i);
+      await noHorizontalOverflow(page);
+
+      await page.goto('/signup-thank-you?lang=en', { waitUntil: 'domcontentloaded' });
+      await page.locator('#parentAccessNote').waitFor();
+      const thankYouState = await page.evaluate(() => ({
+        text: document.querySelector('#parentAccessNote')?.textContent?.replace(/\s+/g, ' ').trim() || '',
+      }));
+      assert.match(thankYouState.text, /Parent app access is six months free/);
+      assert.match(thankYouState.text, /self-governance goals/);
+      assert.match(thankYouState.text, /separate parent decision/);
+      assert.doesNotMatch(thankYouState.text, /one year free|year free|12 months free|Operations/i);
+      await noHorizontalOverflow(page);
+    } finally {
+      await context.close();
+      await browser.close();
+    }
+  });
+});
+
 test('Playwright Operations acceptance covers routes, history, responsive layout, workspace, helper, and student detail', async () => {
   await withServer(async (baseUrl) => {
     const calls = [];

@@ -5092,3 +5092,23 @@ Verification:
 - PASS `npm run bna:run:status`.
 
 Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+## 2026-06-19 - Parent signup offer browser proof
+
+Requirement: `REQ-20260618-165`
+
+Changed:
+
+- Added browser acceptance coverage for English signup, Hebrew signup, and signup thank-you parent-app offer surfaces.
+- Verified direct parent signup, self-governance, six months free, separate parent decision, no one-year/Operations drift, and mobile overflow safety.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/public-parent-offer.test.js`.
+- PASS `node --test tests/public-parent-offer.test.js tests/public-provider-cta.test.js tests/public-navigation.test.js tests/pwa-identity.test.js tests/operations-identity-header.test.js tests/browser-acceptance.test.js` 27/27.
+- PASS `npm test` 213/213.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
