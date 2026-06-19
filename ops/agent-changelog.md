@@ -4995,3 +4995,23 @@ Verification:
 - PASS `npm run bna:run:status`.
 
 Status: `needs_verification`; no OpenAI call, helper action execution, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+## 2026-06-19 - Assistant confirmation and audit verification
+
+Requirement: `REQ-20260618-160`
+
+Changed:
+
+- Recorded focused verification that Assistant confirmation tiers and action audit trail are implemented locally.
+- Paired server-side confirmation/audit tests with browser proof that gated action metadata is visible without Run/Execute controls.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/assistant-actions.test.js`.
+- PASS `node --test tests/assistant-actions.test.js tests/assistant-shell.test.js tests/browser-acceptance.test.js` 12/12.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no OpenAI call, helper action execution, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

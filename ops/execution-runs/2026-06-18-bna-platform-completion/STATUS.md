@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-19T09:45:30+03:00
+Updated: 2026-06-19T09:55:30+03:00
 
 Status counts:
 
@@ -92,6 +92,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current verification batch: REQ-20260618-159 now has static/API and browser DOM proof that the Assistant Action Registry exposes permitted ready/gated actions with risk, confirmation, and audit metadata while keeping execution controls absent. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-160.
+Current verification batch: REQ-20260618-160 now has static/API and browser DOM proof for Assistant confirmation tiers and action audit trail: gated action metadata renders, confirmation/audit code paths are tested, and no Run/Execute controls or helper action execution occurred. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-161.
 
 No deployment or production-data mutation is approved in this run.

@@ -834,3 +834,15 @@ Assistant action registry browser proof (2026-06-19T09:45:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-159 now has browser proof that the Assistant Action Registry renders ready read-only calendar context and gated audited financial Log payment rows with risk, confirmation, and audit metadata, and no Run/Execute action button. No OpenAI call, helper action execution, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+
+Assistant confirmation/audit verification (2026-06-19T09:55:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/assistant-actions.test.js`.
+- PASS `node --test tests/assistant-actions.test.js tests/assistant-shell.test.js tests/browser-acceptance.test.js` 12/12.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-160 now has evidence for confirmation tiers and action audit trail: server tests cover confirmation_required/executed/failed audit paths and explicit registered handlers, while browser acceptance proves gated action metadata is visible without Run/Execute controls. No OpenAI call, helper action execution, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
