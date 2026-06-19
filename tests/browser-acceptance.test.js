@@ -239,6 +239,16 @@ function operationsFixture(pathname, url, options = {}) {
           project_key: workspaceProject,
           workspace_label: project === 'one_time_mishnah_class' ? 'One Time Mishnah Class' : 'BNA',
         },
+        ...(project === 'one_time_mishnah_class' ? [] : [
+          {
+            id: 'class-bna-only',
+            source_type: 'class_session',
+            title: 'TEST-BNA-SEED BNA-only class',
+            class_date: '2026-06-22',
+            project_key: 'bna',
+            workspace_label: 'BNA',
+          },
+        ]),
         {
           id: 'check-in-1',
           source_type: 'check_in',
@@ -1077,6 +1087,27 @@ async function assertOperationsCalendarModule(page) {
   assert.doesNotMatch(calendarState.pageText, /google calendar|sync calendar|connect calendar/i);
 }
 
+async function assertOperationsLiveClassesWorkspaceScope(page, calls) {
+  await page.locator('.ops-module-button').filter({ hasText: 'Calendar' }).click();
+  await page.locator('.ops-view-frame[data-current-view="calendar"]').waitFor();
+  await waitForCall(
+    calls,
+    (call) => call.pathname === '/api/bna/calendar' && call.project === 'one_time_mishnah_class',
+    'Calendar request scoped to One Time workspace for class sessions',
+  );
+  await page.locator('.focus-panel[aria-label="Internal calendar"]').waitFor();
+  const calendarState = await page.evaluate(() => {
+    const panel = document.querySelector('.focus-panel[aria-label="Internal calendar"]');
+    return {
+      panelText: panel?.textContent?.replace(/\s+/g, ' ').trim() || '',
+    };
+  });
+  assert.match(calendarState.panelText, /TEST-BNA-SEED Live class/);
+  assert.match(calendarState.panelText, /Class/);
+  assert.match(calendarState.panelText, /One Time Mishnah Class/);
+  assert.doesNotMatch(calendarState.panelText, /TEST-BNA-SEED BNA-only class/);
+}
+
 async function assertOperationsContactsCommunityScope(page, calls) {
   await page.locator('.ops-module-button').filter({ hasText: 'Contacts' }).click();
   await page.locator('.ops-view-frame[data-current-view="contacts"]').waitFor();
@@ -1347,6 +1378,7 @@ test('Playwright Operations acceptance covers routes, history, responsive layout
       await page.reload({ waitUntil: 'domcontentloaded' });
       await page.locator('.ops-view-frame[data-current-view="tasks"]').waitFor();
       await assertOperationsShellStable(page, 'refreshed operations shell');
+      await assertOperationsLiveClassesWorkspaceScope(page, calls);
       await assertOperationsContactsCommunityScope(page, calls);
       await assertOperationsContentBoundary(page, calls);
       await assertOperationsContentMetadataProvenance(page, calls);

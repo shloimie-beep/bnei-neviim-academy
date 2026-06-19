@@ -701,3 +701,14 @@ Content Drive routing browser proof (2026-06-19T07:45:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-146 now has browser proof that the selected One Time Content module requests content jobs and content bundles with `project=one_time_mishnah_class`, renders One Time Drive folder/file provenance, and excludes the BNA Drive folder from the selected workspace view. No audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, Drive setup route, or live Drive mutation was performed.
+
+
+Live class workspace-scope browser proof (2026-06-19T07:55:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/class-sessions-scope.test.js tests/operations-calendar.test.js tests/browser-acceptance.test.js` 8/8.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-147 now has browser proof that after switching to One Time workspace, Calendar requests `project=one_time_mishnah_class`, renders the One Time class-session item with the One Time Mishnah Class workspace label, and excludes a BNA-only class fixture. No audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

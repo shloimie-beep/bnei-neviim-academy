@@ -1,6 +1,6 @@
 # Status
 
-Updated: 2026-06-19T07:45:30+03:00
+Updated: 2026-06-19T07:55:30+03:00
 
 Status counts:
 
@@ -92,6 +92,6 @@ Blocked / operator-decision IDs:
 - REQ-20260618-156 BNA-STUDENT-002: Duplicate Menachem cleanup with audit trail/prevention: Production/student data merge requires operator approval after local migration script and dry-run evidence.
 - REQ-20260618-172 BNA-TEST-005: Final local and live acceptance gates: Final gate depends on completing non-blocked local implementation and explicit operator release approval.
 
-Current verification batch: REQ-20260618-146 now has static/API and browser DOM proof that workspace-specific Drive routing keeps One Time content jobs/bundles scoped to project=one_time_mishnah_class, shows One Time Drive folder/file provenance, and excludes BNA Drive folder leakage. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-147.
+Current verification batch: REQ-20260618-147 now has static/API and browser DOM proof that live class sessions are selected-workspace scoped: One Time Calendar requests project=one_time_mishnah_class, shows the One Time class item with workspace label, and excludes a BNA-only class fixture. It remains needs_verification only because release approval, deployment, and live smoke are pending. Next unblocked local verification target is REQ-20260618-148.
 
 No deployment or production-data mutation is approved in this run.

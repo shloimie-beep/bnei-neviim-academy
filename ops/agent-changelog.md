@@ -4766,3 +4766,22 @@ Verification:
 - PASS `npm run bna:run:status`.
 
 Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, agent-fleet loop, Drive setup route, or live Drive mutation was performed.
+
+## 2026-06-19 - Live class workspace browser proof
+
+Requirement: `REQ-20260618-147`
+
+Changed:
+
+- Added a BNA-only class fixture outside the One Time workspace scope.
+- Verified the selected One Time Calendar requests the scoped project, shows the One Time class-session item with workspace label, and excludes the BNA-only class fixture.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --test tests/class-sessions-scope.test.js tests/operations-calendar.test.js tests/browser-acceptance.test.js` 8/8.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
