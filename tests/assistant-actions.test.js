@@ -83,6 +83,10 @@ test('Operations Assistant loads and renders the action registry without executi
   assert.match(renderBlock, /Action Registry/);
   assert.match(renderBlock, /actionPreview = actions\.slice\(0, 8\)/);
   assert.match(renderBlock, /item\.enabled \? 'ready' : 'gated'/);
+  assert.match(renderBlock, /item\.risk_level/);
+  assert.match(renderBlock, /item\.confirmation_required/);
+  assert.match(renderBlock, /item\.confirmation_token/);
+  assert.match(renderBlock, /item\.audit_required/);
   assert.doesNotMatch(renderBlock, /api\.executeAssistantAction/);
   assert.doesNotMatch(renderBlock, /assistant-actions-run/);
 });

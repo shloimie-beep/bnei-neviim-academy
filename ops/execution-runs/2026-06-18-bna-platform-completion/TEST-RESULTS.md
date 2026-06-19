@@ -822,3 +822,15 @@ Assistant memory scope browser proof (2026-06-19T09:35:30+03:00):
 - PASS `npm run bna:run:status`.
 
 REQ-20260618-158 now has browser proof that after switching to One Time workspace and reloading, Assistant status, memory, and action routes request `project=one_time_mishnah_class`, Memory Scope renders assistant/workspace context, Project one_time_mishnah_class, Session current_user, role/subject context, and scoped memory rows, and raw user keys/test usernames remain hidden. No OpenAI call, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+
+Assistant action registry browser proof (2026-06-19T09:45:30+03:00):
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/assistant-actions.test.js`.
+- PASS `node --test tests/assistant-actions.test.js tests/assistant-shell.test.js tests/browser-acceptance.test.js` 12/12.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+REQ-20260618-159 now has browser proof that the Assistant Action Registry renders ready read-only calendar context and gated audited financial Log payment rows with risk, confirmation, and audit metadata, and no Run/Execute action button. No OpenAI call, helper action execution, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.

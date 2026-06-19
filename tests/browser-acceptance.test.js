@@ -325,6 +325,22 @@ function operationsFixture(pathname, url, options = {}) {
           method: 'GET',
           route: '/api/bna/calendar',
           enabled: true,
+          risk_level: 'read_only',
+          confirmation_required: false,
+          confirmation_token: null,
+          audit_required: false,
+        },
+        {
+          action_key: 'accounting.log_payment',
+          label: 'Log payment',
+          module_key: 'accounting',
+          method: 'POST',
+          route: '/api/bna/payments',
+          enabled: false,
+          risk_level: 'financial',
+          confirmation_required: true,
+          confirmation_token: 'LOG_PAYMENT',
+          audit_required: true,
         },
       ],
     },
@@ -1376,13 +1392,19 @@ async function assertOperationsAssistantShell(page, calls, expectedProject = 'al
     /Session\s*current_user/,
     /Action Registry/,
     /Read calendar context/,
+    /calendar\s*·\s*GET\s*\/api\/bna\/calendar/,
+    /read only\s*·\s*no confirmation\s*·\s*no audit/,
+    /Log payment/,
+    /accounting\s*·\s*POST\s*\/api\/bna\/payments/,
+    /financial\s*·\s*confirm LOG_PAYMENT\s*·\s*audit required/,
+    /gated/,
     /One assistant identity/,
     /Visible identity\s*BNA Assistant/,
     /Assistant actions\s*audited/,
   ]) {
     assert.match(assistantState.text, expected);
   }
-  assert.doesNotMatch(assistantState.text, /\bCodex\b|\bKimi\b|OpenAI Telegram sidekick|No duplicate helper personas|single visible helper|user_key|super-admin-test|one-time-test/i);
+  assert.doesNotMatch(assistantState.text, /\bCodex\b|\bKimi\b|OpenAI Telegram sidekick|No duplicate helper personas|single visible helper|user_key|super-admin-test|one-time-test|Run action|Execute action/i);
 }
 
 async function assertOperationsCalendarModule(page) {

@@ -4656,6 +4656,11 @@
                                                     <small style="display:block; color:#94a3b8; font-size:11px; margin-top:3px;">
                                                         ${escapeHtml(item.module_key || 'assistant')} &middot; ${escapeHtml(item.method || 'GET')} ${escapeHtml(item.route || '')}
                                                     </small>
+                                                    <small style="display:block; color:#94a3b8; font-size:11px; margin-top:3px;">
+                                                        ${escapeHtml(String(item.risk_level || 'read_only').replace(/_/g, ' '))}
+                                                        &middot; ${item.confirmation_required ? `confirm ${escapeHtml(item.confirmation_token || 'required')}` : 'no confirmation'}
+                                                        &middot; ${item.audit_required ? 'audit required' : 'no audit'}
+                                                    </small>
                                                 </span>
                                                 <strong>${item.enabled ? 'ready' : 'gated'}</strong>
                                             </div>

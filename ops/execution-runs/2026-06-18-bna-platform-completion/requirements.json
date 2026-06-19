@@ -1,7 +1,7 @@
 {
   "run_id": "2026-06-18-bna-platform-completion",
   "title": "BNA Platform Completion",
-  "updated_at": "2026-06-19T09:35:30+03:00",
+  "updated_at": "2026-06-19T09:45:30+03:00",
   "requirements": [
     {
       "id": "REQ-20260618-101",
@@ -357,7 +357,8 @@
         "Operations-facing Assistant copy now uses one assistant identity and System Work product labels while preserving internal Codex/provider values where operationally required.",
         "Assistant memory now blocks public/no-auth access, requires Assistant plus module/subject views, redacts raw user keys from client scope, and sets private no-store response headers.",
         "REQ-20260618-157 now has browser proof that Operations renders exactly one BNA Assistant shell with connected AI readiness, scoped memory/action registry context, and no duplicate Codex/Kimi/helper persona labels.",
-        "REQ-20260618-158 now has browser proof that Assistant status/memory/actions reload under the selected One Time project, render scoped memory context, and hide raw user keys/test usernames."
+        "REQ-20260618-158 now has browser proof that Assistant status/memory/actions reload under the selected One Time project, render scoped memory context, and hide raw user keys/test usernames.",
+        "REQ-20260618-159 now has browser proof that the Assistant Action Registry renders permitted read-only and gated financial actions with risk, confirmation, and audit metadata and no execution controls."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -373,7 +374,8 @@
         "node --test tests/assistant-memory-isolation.test.js tests/assistant-shell.test.js tests/workspace-auth.test.js tests/assistant-actions.test.js tests/workspace-http-isolation.test.js PASS 26/26",
         "npm test PASS 186/186",
         "node --test tests/assistant-shell.test.js tests/assistant-language-cleanup.test.js tests/browser-acceptance.test.js PASS 9/9",
-        "node --test tests/assistant-memory-isolation.test.js tests/assistant-shell.test.js tests/browser-acceptance.test.js PASS 11/11"
+        "node --test tests/assistant-memory-isolation.test.js tests/assistant-shell.test.js tests/browser-acceptance.test.js PASS 11/11",
+        "node --test tests/assistant-actions.test.js tests/assistant-shell.test.js tests/browser-acceptance.test.js PASS 12/12"
       ],
       "notes": "Helper parent remains in_progress until final acceptance, release approval, deploy, and live smoke are complete.",
       "files_changed": [
@@ -2781,7 +2783,7 @@
       "title": "Permissioned backend action registry",
       "area": "helper",
       "priority": "P0",
-      "current_verdict": "partial",
+      "current_verdict": "local_complete_pending_release",
       "status": "needs_verification",
       "expected_result": "Helper calls existing safe application actions instead of only opening tickets when the action can be completed.",
       "acceptance_criteria": [
@@ -2798,7 +2800,8 @@
         "assistantActionsForIdentity filters registry rows by super-admin or scoped user allowedViews and returns selected-workspace runtime status and confirmation requirements.",
         "GET /api/bna/assistant/actions exposes only permitted registry rows for the current role/workspace context through requireAdmin and shared scoped route access.",
         "POST /api/bna/assistant/actions/:actionKey validates registration and permission but returns a 409 guard until REQ-20260618-160 confirmation tiers and action audit logs are implemented.",
-        "Operations Assistant loads /assistant/actions through selectedProjectFilter and renders an Action Registry card with ready read-only actions and gated mutating actions, without adding execution buttons."
+        "Operations Assistant loads /assistant/actions through selectedProjectFilter and renders an Action Registry card with ready read-only actions and gated mutating actions, without adding execution buttons.",
+        "public/operations.html now renders Assistant action registry risk, confirmation, and audit metadata as read-only row details, and tests/browser-acceptance.test.js proves the rendered registry shows ready read-only calendar context plus gated audited financial Log payment action with confirm LOG_PAYMENT, while no Run/Execute action button is present."
       ],
       "deployment_evidence": [],
       "verification": [
@@ -2807,10 +2810,16 @@
         "node --test tests/assistant-actions.test.js tests/assistant-shell.test.js tests/workspace-auth.test.js tests/operations-workspace-selector.test.js PASS 21/21",
         "npm test PASS 177/177",
         "npm run bna:run:validate PASS after run-file update",
-        "npm run bna:run:status PASS after run-file update"
+        "npm run bna:run:status PASS after run-file update",
+        "node --check tests/browser-acceptance.test.js PASS",
+        "node --test tests/assistant-actions.test.js tests/assistant-shell.test.js tests/browser-acceptance.test.js PASS 12/12",
+        "npm test PASS 210/210",
+        "npm run bna:run:validate PASS",
+        "npm run bna:run:status PASS"
       ],
       "implementation_commits": [
-        "current batch commit: feat: register assistant actions"
+        "current batch commit: feat: register assistant actions",
+        "current batch commit: test: verify assistant action registry in browser"
       ],
       "files_changed": [
         "server.js",
@@ -2824,9 +2833,10 @@
         "ops/execution-runs/2026-06-18-bna-platform-completion/REQUIREMENTS.md",
         "ops/execution-runs/2026-06-18-bna-platform-completion/EVIDENCE.md",
         "ops/execution-runs/2026-06-18-bna-platform-completion/TEST-RESULTS.md",
-        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md"
+        "ops/execution-runs/2026-06-18-bna-platform-completion/NEXT-SESSION.md",
+        "tests/browser-acceptance.test.js"
       ],
-      "notes": "Local registry implementation and tests complete. Live-required item remains needs_verification until release approval, deploy, and live smoke. Actual helper mutation execution intentionally stays blocked until REQ-20260618-160 adds confirmation tiers and action audit logs. No OpenAI call, helper action execution, deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
+      "notes": "Local implementation, static/API tests, full suite, and browser DOM proof passed. Status remains needs_verification because this item is live_required and still needs release approval, deployment, and live smoke before closure. No OpenAI call, helper action execution, deployment, production-data mutation, audit crawl, watch loop, or agent-fleet loop was run."
     },
     {
       "id": "REQ-20260618-160",

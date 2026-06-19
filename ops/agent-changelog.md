@@ -4975,3 +4975,23 @@ Verification:
 - PASS `npm run bna:run:status`.
 
 Status: `needs_verification`; no OpenAI call, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
+
+## 2026-06-19 - Assistant action registry browser proof
+
+Requirement: `REQ-20260618-159`
+
+Changed:
+
+- Rendered Assistant Action Registry risk, confirmation, and audit metadata in Operations without adding execution controls.
+- Added browser proof for ready read-only calendar context and gated audited financial Log payment action rows.
+
+Verification:
+
+- PASS `node --check tests/browser-acceptance.test.js`.
+- PASS `node --check tests/assistant-actions.test.js`.
+- PASS `node --test tests/assistant-actions.test.js tests/assistant-shell.test.js tests/browser-acceptance.test.js` 12/12.
+- PASS `npm test` 210/210.
+- PASS `npm run bna:run:validate`.
+- PASS `npm run bna:run:status`.
+
+Status: `needs_verification`; no OpenAI call, helper action execution, audit crawl, deployment, production-data mutation, watch loop, or agent-fleet loop was performed.
